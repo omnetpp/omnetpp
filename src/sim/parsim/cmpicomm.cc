@@ -20,7 +20,7 @@
 
 #ifdef WITH_MPI
 
-#include <mpi.h> // Intel MPI wants <mpi.h> to precede <stdio.h>
+#include <mpi.h>  // Intel MPI wants <mpi.h> to precede <stdio.h>
 #include <cstdio>
 #include "omnetpp/clog.h"
 #include "omnetpp/globals.h"
@@ -40,8 +40,7 @@ Register_Class(cMPICommunications);
 Register_GlobalConfigOption(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mpicommunications-mpibuffer", CFG_INT, nullptr, "When cMPICommunications is selected as parsim communications class: specifies the size of the MPI communications buffer. The default is to calculate a buffer size based on the number of partitions.");
 
 // default is 256k. If too small, simulation can block in MPI send calls.
-#define MPI_SEND_BUFFER_PER_PARTITION (256*1024)
-
+#define MPI_SEND_BUFFER_PER_PARTITION    (256*1024)
 
 cMPICommunications::cMPICommunications()
 {
@@ -59,8 +58,8 @@ void cMPICommunications::init()
     // sanity check
     int argc = getEnvir()->getArgCount();
     char **argv = getEnvir()->getArgVector();
-    for (int i=1; i<argc; i++)
-        if (argv[i][0]=='-' && argv[i][1]=='p')
+    for (int i = 1; i < argc; i++)
+        if (argv[i][0] == '-' && argv[i][1] == 'p')
             EV_WARN << "cMPICommunications doesn't need -p command-line option, ignored\n";
 
     // init MPI
@@ -71,13 +70,14 @@ void cMPICommunications::init()
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
     EV << "cMPICommunications: started as process " << myRank << " out of " << numPartitions << ".\n";
-    if (numPartitions==1)
+    if (numPartitions == 1)
         EV_WARN << "MPI thinks this process is the only one in the session (did you use mpirun to start this program?)\n";
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;
     int bufSize = getEnvir()->getConfig()->getAsInt(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER);
-    if (bufSize<=0) bufSize = defaultBufSize;
+    if (bufSize <= 0)
+        bufSize = defaultBufSize;
     char *buf = new char[bufSize];
     MPI_Buffer_attach(buf, bufSize);
 }
@@ -109,14 +109,12 @@ cCommBuffer *cMPICommunications::createCommBuffer()
 {
     // we pool only one reusable buffer -- additional buffers are created/deleted on demand
     cMPICommBuffer *buffer;
-    if (recycledBuffer)
-    {
+    if (recycledBuffer) {
         buffer = recycledBuffer;
         buffer->reset();
         recycledBuffer = nullptr;
     }
-    else
-    {
+    else {
         buffer = doCreateCommBuffer();
     }
     return buffer;
@@ -137,7 +135,7 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
     // Note: we must use *buffered* send, otherwise we may block here and
     // cause deadlock
     int status = MPI_Bsend(b->getBuffer(), b->getMessageSize(), MPI_PACKED, destination, tag, MPI_COMM_WORLD);
-    if (status!=MPI_SUCCESS)
+    if (status != MPI_SUCCESS)
         throw cRuntimeError("cMPICommunications::send(): MPI error %d", status);
 }
 
@@ -153,13 +151,14 @@ bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& 
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
     MPI_Status status;
     int msgsize;
-    if (filtTag==PARSIM_ANY_TAG) filtTag=MPI_ANY_TAG;
+    if (filtTag == PARSIM_ANY_TAG)
+        filtTag = MPI_ANY_TAG;
     MPI_Probe(MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
     MPI_Get_count(&status, MPI_PACKED, &msgsize);
     b->allocateAtLeast(msgsize);
     // Note: Source needs to be specific source not MPI_SOURCE_ANY, see example here: http://www.mpi-forum.org/docs/mpi-11-html/node50.html
     int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, status.MPI_SOURCE, filtTag, MPI_COMM_WORLD, &status);
-    if (err!=MPI_SUCCESS)
+    if (err != MPI_SUCCESS)
         throw cRuntimeError("cMPICommunications::receiveBlocking(): MPI error %d", err);
     b->setMessageSize(msgsize);
     receivedTag = status.MPI_TAG;
@@ -173,18 +172,18 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
     MPI_Status status;
     int flag;
-    if (filtTag==PARSIM_ANY_TAG) filtTag=MPI_ANY_TAG;
+    if (filtTag == PARSIM_ANY_TAG)
+        filtTag = MPI_ANY_TAG;
     MPI_Iprobe(MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &flag, &status);
 
     // ... and receive it if we do
-    if (flag)
-    {
+    if (flag) {
         int msgsize;
         MPI_Get_count(&status, MPI_PACKED, &msgsize);
         b->allocateAtLeast(msgsize);
         // Note: source needs to be specific source not MPI_SOURCE_ANY, see example here: http://www.mpi-forum.org/docs/mpi-11-html/node50.html
         int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, status.MPI_SOURCE, filtTag, MPI_COMM_WORLD, &status);
-        if (err!=MPI_SUCCESS)
+        if (err != MPI_SUCCESS)
             throw cRuntimeError("cMPICommunications::receiveNonBlocking(): MPI error %d", err);
         b->setMessageSize(msgsize);
         receivedTag = status.MPI_TAG;
@@ -197,3 +196,4 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
 NAMESPACE_END
 
 #endif  // WITH_MPI
+

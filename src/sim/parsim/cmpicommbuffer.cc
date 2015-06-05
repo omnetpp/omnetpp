@@ -30,7 +30,6 @@ NAMESPACE_BEGIN
 
 Register_Class(cMPICommBuffer);
 
-
 cMPICommBuffer::cMPICommBuffer()
 {
 }
@@ -259,7 +258,7 @@ void cMPICommBuffer::pack(const long double *d, int size)
 // pack string array
 void cMPICommBuffer::pack(const char **d, int size)
 {
-    for (int i=0; i<size; i++)
+    for (int i = 0; i < size; i++)
         pack(d[i]);
 }
 
@@ -362,7 +361,7 @@ void cMPICommBuffer::unpack(long double& d)
 }
 
 // unpack a string
-void cMPICommBuffer::unpack(const char *&d)
+void cMPICommBuffer::unpack(const char *& d)
 {
     int len;
     unpack(len);
@@ -494,5 +493,5 @@ void cMPICommBuffer::unpack(SimTime *d, int size)
 
 NAMESPACE_END
 
-#endif // WITH_MPI
+#endif  // WITH_MPI
 

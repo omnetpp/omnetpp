@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
@@ -30,8 +29,6 @@
 #include "cparsimprotocolbase.h"
 
 NAMESPACE_BEGIN
-
-
 
 cParsimProtocolBase::cParsimProtocolBase() : cParsimSynchronizer()
 {
@@ -59,8 +56,7 @@ void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, in
     int destGateId;
     cMessage *msg;
 
-    switch (tag)
-    {
+    switch (tag) {
         case TAG_CMESSAGE:
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
@@ -94,8 +90,7 @@ bool cParsimProtocolBase::receiveBlocking()
     cCommBuffer *buffer = comm->createCommBuffer();
 
     int tag, sourceProcId;
-    if (!comm->receiveBlocking(PARSIM_ANY_TAG, buffer, tag, sourceProcId))
-    {
+    if (!comm->receiveBlocking(PARSIM_ANY_TAG, buffer, tag, sourceProcId)) {
         comm->recycleCommBuffer(buffer);
         return false;
     }

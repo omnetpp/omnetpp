@@ -23,12 +23,12 @@
 NAMESPACE_BEGIN
 
 cReceivedException::cReceivedException(int sourceProcId, const char *msg)
- : cException("Error occurred in procId=%d: %s", sourceProcId, msg)
+    : cException("Error occurred in procId=%d: %s", sourceProcId, msg)
 {
 }
 
 cReceivedTerminationException::cReceivedTerminationException(int sourceProcId, const char *msg)
- : cTerminationException("Terminating simulation on request from procId=%d: %s", sourceProcId, msg)
+    : cTerminationException("Terminating simulation on request from procId=%d: %s", sourceProcId, msg)
 {
 }
 

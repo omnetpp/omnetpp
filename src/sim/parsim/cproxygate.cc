@@ -29,7 +29,6 @@
 
 NAMESPACE_BEGIN
 
-
 cProxyGate::cProxyGate() : cGate()
 {
     partition = nullptr;
@@ -42,16 +41,16 @@ cProxyGate::cProxyGate() : cGate()
 std::string cProxyGate::info() const
 {
     std::stringstream out;
-    out << "remote:(procId=" << remoteProcId << ",modId=" << remoteModuleId << ",gateId=" << remoteGateId << ") ",
+    out << "remote:(procId=" << remoteProcId << ",modId=" << remoteModuleId << ",gateId=" << remoteGateId << ") ";
     out << cGate::info();
     return out.str();
 }
 
 bool cProxyGate::deliver(cMessage *msg, simtime_t t)
 {
-    ASSERT(nextGate==nullptr);
-    ASSERT(partition!=nullptr);
-    if (remoteProcId==-1)
+    ASSERT(nextGate == nullptr);
+    ASSERT(partition != nullptr);
+    if (remoteProcId == -1)
         throw cRuntimeError(this, "cannot deliver message '%s': not connected to remote gate", msg->getName());
 
     msg->setArrivalTime(t);  // merge arrival time into message

@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
@@ -43,8 +42,7 @@ Register_Class(cNullMessageProtocol);
 
 Register_GlobalConfigOption(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the C++ class that calculates lookahead. The class should subclass from cNMPLookahead.");
 Register_GlobalConfigOption(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the laziness of sending null messages. Values in the range [0,1) are accepted. Laziness=0 causes null messages to be sent out immediately as a new EOT is learned, which may result in excessive null message traffic.");
-extern cConfigOption *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
-
+extern cConfigOption *CFGID_PARSIM_DEBUG;  // registered in cparsimpartition.cc
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
 {
@@ -55,7 +53,7 @@ cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
     std::string lookhClass = getEnvir()->getConfig()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
     lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass.c_str()));
     if (!lookaheadcalc) \
-         throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass.c_str());
+        throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass.c_str());
     laziness = getEnvir()->getConfig()->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
 }
 
@@ -64,7 +62,7 @@ cNullMessageProtocol::~cNullMessageProtocol()
     delete lookaheadcalc;
 
     // segInfo[*].eitEvent/eotEvent messages already deleted with msgQueue.clear()
-    delete [] segInfo;
+    delete[] segInfo;
 }
 
 void cNullMessageProtocol::setContext(cSimulation *sim, cParsimPartition *seg, cParsimCommunications *co)
@@ -77,7 +75,7 @@ void cNullMessageProtocol::startRun()
 {
     EV << "starting Null Message Protocol...\n";
 
-    delete [] segInfo;
+    delete[] segInfo;
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
@@ -87,8 +85,7 @@ void cNullMessageProtocol::startRun()
     int i;
 
     // temporarily initialize everything to zero.
-    for (i=0; i<numSeg; i++)
-    {
+    for (i = 0; i < numSeg; i++) {
         segInfo[i].eotEvent = nullptr;
         segInfo[i].eitEvent = nullptr;
         segInfo[i].lastEotSent = 0.0;
@@ -100,12 +97,10 @@ void cNullMessageProtocol::startRun()
 
     // create "resend-EOT" events and schedule them to zero (1st thing to do)
     EV << "  scheduling 'resend-EOT' events...\n";
-    for (i=0; i<numSeg; i++)
-    {
-        if (i!=myProcId)
-        {
-            sprintf(buf,"resendEOT-%d", i);
-            cMessage *eotMsg =  new cMessage(buf,MK_PARSIM_RESENDEOT);
+    for (i = 0; i < numSeg; i++) {
+        if (i != myProcId) {
+            sprintf(buf, "resendEOT-%d", i);
+            cMessage *eotMsg = new cMessage(buf, MK_PARSIM_RESENDEOT);
             eotMsg->setContextPointer((void *)(long)i);  // khmm...
             segInfo[i].eotEvent = eotMsg;
             rescheduleEvent(eotMsg, 0.0);
@@ -114,12 +109,10 @@ void cNullMessageProtocol::startRun()
 
     // create EIT events and schedule them to zero (null msgs will bump them)
     EV << "  scheduling 'EIT' events...\n";
-    for (i=0; i<numSeg; i++)
-    {
-        if (i!=myProcId)
-        {
-            sprintf(buf,"EIT-%d", i);
-            cMessage *eitMsg =  new cMessage(buf,MK_PARSIM_EIT);
+    for (i = 0; i < numSeg; i++) {
+        if (i != myProcId) {
+            sprintf(buf, "EIT-%d", i);
+            cMessage *eitMsg = new cMessage(buf, MK_PARSIM_EIT);
             segInfo[i].eitEvent = eitMsg;
             rescheduleEvent(eitMsg, 0.0);
         }
@@ -129,7 +122,6 @@ void cNullMessageProtocol::startRun()
     lookaheadcalc->startRun();
 
     EV << "  setup done.\n";
-
 }
 
 void cNullMessageProtocol::endRun()
@@ -150,8 +142,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
 
     // send message
     cCommBuffer *buffer = comm->createCommBuffer();
-    if (sendNull)
-    {
+    if (sendNull) {
         // update "resend-EOT" timer
         segInfo[destProcId].lastEotSent = eot;
         simtime_t eotResendTime = sim->getSimTime() + lookahead*laziness;
@@ -186,8 +177,7 @@ void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, i
     cMessage *msg;
     simtime_t eit;
 
-    switch (tag)
-    {
+    switch (tag) {
         case TAG_CMESSAGE_WITH_NULLMESSAGE:
             buffer->unpack(eit);
             processReceivedEIT(sourceProcId, eit);
@@ -242,28 +232,24 @@ cEvent *cNullMessageProtocol::takeNextEvent()
     // (receiveBlocking()) when we're stuck on an EIT. Or should we do it
     // every 1000 events or so? If MPI receive buffer fills up it can cause
     // deadlock.
-    //receiveNonblocking();
+    // receiveNonblocking();
 
     cEvent *event;
-    while (true)
-    {
+    while (true) {
         event = sim->msgQueue.peekFirst();
         cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : nullptr;
-        if (msg && msg->getKind() == MK_PARSIM_RESENDEOT)
-        {
+        if (msg && msg->getKind() == MK_PARSIM_RESENDEOT) {
             // send null messages if window closed for a partition
-            int procId = (long) msg->getContextPointer();  // khmm...
+            int procId = (long)msg->getContextPointer();  // khmm...
             sendNullMessage(procId, event->getArrivalTime());
         }
-        else if (msg && msg->getKind() == MK_PARSIM_EIT)
-        {
+        else if (msg && msg->getKind() == MK_PARSIM_EIT) {
             // wait until it gets out of the way (i.e. we get a higher EIT)
             {if (debug) EV << "blocking on EIT event `" << event->getName() << "'\n";}
             if (!receiveBlocking())
                 return nullptr;
         }
-        else
-        {
+        else {
             // just a normal event -- go ahead with it
             break;
         }
@@ -271,7 +257,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
 
     // remove event from FES and return it
     cEvent *tmp = sim->msgQueue.removeFirst();
-    ASSERT(tmp==event);
+    ASSERT(tmp == event);
     return event;
 }
 

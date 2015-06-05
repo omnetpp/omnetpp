@@ -34,9 +34,7 @@
 
 NAMESPACE_BEGIN
 
-
 Register_Class(cAdvancedLinkDelayLookahead);
-
 
 cAdvancedLinkDelayLookahead::cAdvancedLinkDelayLookahead()
 {
@@ -46,21 +44,20 @@ cAdvancedLinkDelayLookahead::cAdvancedLinkDelayLookahead()
 
 cAdvancedLinkDelayLookahead::~cAdvancedLinkDelayLookahead()
 {
-    delete [] segInfo;
+    delete[] segInfo;
 }
 
 void cAdvancedLinkDelayLookahead::startRun()
 {
     EV << "starting Link Delay Lookahead...\n";
 
-    delete [] segInfo;
+    delete[] segInfo;
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
 
     // temporarily initialize everything to zero.
-    for (int i=0; i<numSeg; i++)
-    {
+    for (int i = 0; i < numSeg; i++) {
         segInfo[i].numLinks = 0;
         segInfo[i].links = nullptr;
     }
@@ -69,57 +66,50 @@ void cAdvancedLinkDelayLookahead::startRun()
     EV << "  collecting links...\n";
 
     // step 1: count gates
-    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
-    {
+    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
-        if (mod)
-        {
-            for (cModule::GateIterator i(mod); !i.end(); i++)
-            {
+        if (mod) {
+            for (cModule::GateIterator i(mod); !i.end(); i++) {
                 cGate *g = i();
-                cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->getPreviousGate() && pg->getRemoteProcId()>=0)
+                cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
+                if (pg && pg->getPreviousGate() && pg->getRemoteProcId() >= 0)
                     segInfo[pg->getRemoteProcId()].numLinks++;
             }
         }
     }
 
     // step 2: allocate links[]
-    for (int i=0; i<numSeg; i++)
-    {
+    for (int i = 0; i < numSeg; i++) {
         int numLinks = segInfo[i].numLinks;
         segInfo[i].links = new LinkOut *[numLinks];
-        for (int k=0; k<numLinks; k++)
+        for (int k = 0; k < numLinks; k++)
             segInfo[i].links[k] = nullptr;
     }
 
     // step 3: fill in
-    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
-    {
+    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
-        if (mod)
-        {
-            for (cModule::GateIterator i(mod); !i.end(); i++)
-            {
+        if (mod) {
+            for (cModule::GateIterator i(mod); !i.end(); i++) {
                 // if this is a properly connected proxygate, process it
                 // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = i();
-                cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->getPreviousGate() && pg->getRemoteProcId()>=0)
-                {
+                cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
+                if (pg && pg->getPreviousGate() && pg->getRemoteProcId() >= 0) {
                     // check we have a delay on this link (it gives us lookahead)
-                    cGate *fromg  = pg->getPreviousGate();
+                    cGate *fromg = pg->getPreviousGate();
                     cChannel *chan = fromg ? fromg->getChannel() : nullptr;
                     cDatarateChannel *datarateChan = dynamic_cast<cDatarateChannel *>(chan);
                     cPar *delaypar = datarateChan ? datarateChan->getDelay() : nullptr;
                     double linkDelay = delaypar ? delaypar->doubleValue() : 0;
-                    if (linkDelay<=0.0)
+                    if (linkDelay <= 0.0)
                         throw cRuntimeError("cAdvancedLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 
                     // store
                     int procId = pg->getRemoteProcId();
-                    int k=0;
-                    while (segInfo[procId].links[k]) k++; // find 1st empty slot
+                    int k = 0;
+                    while (segInfo[procId].links[k])
+                        k++;  // find 1st empty slot
                     LinkOut *link = new LinkOut;
                     segInfo[procId].links[k] = link;
                     pg->setSynchData(link);

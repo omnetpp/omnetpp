@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
@@ -36,15 +35,13 @@
 
 NAMESPACE_BEGIN
 
-
 Register_Class(cIdealSimulationProtocol);
 
 // load 100,000 values from eventlog at once (~800K allocated memory)
-#define TABLESIZE   "100000"
+#define TABLESIZE    "100000"
 
 Register_GlobalConfigOption(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "parsim-idealsimulationprotocol-tablesize", CFG_INT, TABLESIZE, "When cIdealSimulationProtocol is selected as parsim synchronization class: specifies the memory buffer size for reading the ISP event trace file.");
-extern cConfigOption *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
-
+extern cConfigOption *CFGID_PARSIM_DEBUG;  // registered in cparsimpartition.cc
 
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
@@ -59,14 +56,14 @@ cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 
 cIdealSimulationProtocol::~cIdealSimulationProtocol()
 {
-    delete [] table;
+    delete[] table;
 }
 
 void cIdealSimulationProtocol::startRun()
 {
     char fname[200];
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
-    fin = fopen(fname,"rb");
+    fin = fopen(fname, "rb");
     if (!fin)
         throw cRuntimeError("cIdealSimulationProtocol error: cannot open file `%s' for read", fname);
 
@@ -95,77 +92,72 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
     simtime_t eventTime = event->getArrivalTime();
 
     // if we aren't at the next external even yet --> nothing special to do
-    if (eventTime < nextExternalEvent.t)
-    {
-        ASSERT(event->getSrcProcId()==-1); // must be local message
+    if (eventTime < nextExternalEvent.t) {
+        ASSERT(event->getSrcProcId() == -1);  // must be local message
         return event;
     }
 
     // if we reached the next external event in the log file, do it
-    if (event->getSrcProcId()==nextExternalEvent.srcProcId && eventTime==nextExternalEvent.t)
-    {
-        if (debug) EV << "expected external event (srcProcId=" << event->getSrcProcId()
-                      << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
+    if (event->getSrcProcId() == nextExternalEvent.srcProcId && eventTime == nextExternalEvent.t) {
+        if (debug)
+            EV << "expected external event (srcProcId=" << event->getSrcProcId()
+               << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
         readNextRecordedEvent();
         event->setSchedulingPriority(0);
 
         // remove event from FES and return it
         cEvent *tmp = sim->msgQueue.removeFirst();
-        ASSERT(tmp==event);
+        ASSERT(tmp == event);
         return event;
     }
 
     // next external event not yet here, we have to wait until we've received it
     ASSERT(eventTime > nextExternalEvent.t);
-    if (debug)
-    {
+    if (debug) {
         EV << "next local event at " << eventTime << " is PAST the next external event "
               "expected for t=" << nextExternalEvent.t << " -- waiting...\n";
     }
 
-    do
-    {
+    do {
         if (!receiveBlocking())
             return nullptr;
         event = sim->msgQueue.peekFirst();
         eventTime = event->getArrivalTime();
-    }
-    while (event->getSrcProcId()!=nextExternalEvent.srcProcId || eventTime > nextExternalEvent.t);
+    } while (event->getSrcProcId() != nextExternalEvent.srcProcId || eventTime > nextExternalEvent.t);
 
-    if (eventTime < nextExternalEvent.t)
-    {
+    if (eventTime < nextExternalEvent.t) {
         throw cRuntimeError("cIdealSimulationProtocol: event trace does not match actual events: "
                             "expected event with timestamp %s from proc=%d, and got one with timestamp %s",
                             SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcProcId, SIMTIME_STR(eventTime));
     }
 
     // we have the next external event we wanted, return it
-    ASSERT(eventTime==nextExternalEvent.t);
+    ASSERT(eventTime == nextExternalEvent.t);
     readNextRecordedEvent();
     event->setSchedulingPriority(0);
 
     // remove event from FES and return it
     cEvent *tmp = sim->msgQueue.removeFirst();
-    ASSERT(tmp==event);
+    ASSERT(tmp == event);
     return event;
 }
 
 void cIdealSimulationProtocol::readNextRecordedEvent()
 {
     // if table is empty, load new values into it
-    if (nextPos==numItems)
-    {
+    if (nextPos == numItems) {
         nextPos = 0;
         numItems = fread(table, sizeof(ExternalEvent), tableSize, fin);
-        if (numItems==0)
+        if (numItems == 0)
             throw cTerminationException("cIdealSimulationProtocol: end of event trace file");
     }
 
     // get next entry from table
     nextExternalEvent = table[nextPos++];
 
-    if (debug) EV << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
-                  << " t=" << nextExternalEvent.t << "\n";
+    if (debug)
+        EV << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
+           << " t=" << nextExternalEvent.t << "\n";
 }
 
 void cIdealSimulationProtocol::putBackEvent(cEvent *event)
@@ -175,5 +167,4 @@ void cIdealSimulationProtocol::putBackEvent(cEvent *event)
 }
 
 NAMESPACE_END
-
 

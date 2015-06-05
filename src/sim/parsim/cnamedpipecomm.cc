@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "cnamedpipecomm.h"
 
 #ifndef USE_WINDOWS_PIPES
@@ -44,21 +43,17 @@
 
 NAMESPACE_BEGIN
 
-
 Register_Class(cNamedPipeCommunications);
 
 Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "comm/", "When cNamedPipeCommunications is selected as parsim communications class: selects the prefix (directory+potential filename prefix) where name pipes are created in the file system.");
 
-
 static int readBytes(int fd, void *buf, int len)
 {
     int tot = 0;
-    while (tot<len)
-    {
+    while (tot < len) {
         int n = read(fd, (char *)buf+tot, len-tot);
-        if (n==-1)
-        {
-            if (errno==EAGAIN) // this is not an error
+        if (n == -1) {
+            if (errno == EAGAIN)  // this is not an error
                 n = 0;
             else
                 return -1;
@@ -84,8 +79,8 @@ cNamedPipeCommunications::cNamedPipeCommunications()
 
 cNamedPipeCommunications::~cNamedPipeCommunications()
 {
-    delete [] rpipes;
-    delete [] wpipes;
+    delete[] rpipes;
+    delete[] wpipes;
 }
 
 void cNamedPipeCommunications::init()
@@ -97,22 +92,20 @@ void cNamedPipeCommunications::init()
     // create and open pipes for read
     int i;
     rpipes = new int[numPartitions];
-    for (i=0; i<numPartitions; i++)
-    {
-        if (i==myProcId)
-        {
+    for (i = 0; i < numPartitions; i++) {
+        if (i == myProcId) {
             rpipes[i] = -1;
             continue;
         }
 
         char fname[256];
-        sprintf(fname,"%spipe-%d-%d", prefix.buffer(), myProcId, i);
+        sprintf(fname, "%spipe-%d-%d", prefix.buffer(), myProcId, i);
         EV << "cNamedPipeCommunications: creating and opening pipe '" << fname << "' for read...\n";
         unlink(fname);
-        if (mknod(fname, S_IFIFO|0600, 0)==-1)
+        if (mknod(fname, S_IFIFO|0600, 0) == -1)
             throw cRuntimeError("cNamedPipeCommunications: cannot create pipe '%s': %s", fname, strerror(errno));
-        rpipes[i] = open(fname,O_RDONLY|O_NONBLOCK);
-        if (rpipes[i]==-1)
+        rpipes[i] = open(fname, O_RDONLY|O_NONBLOCK);
+        if (rpipes[i] == -1)
             throw cRuntimeError("cNamedPipeCommunications: cannot open pipe '%s' for read: %s", fname, strerror(errno));
 
         if (rpipes[i] > maxFdPlus1)
@@ -122,32 +115,28 @@ void cNamedPipeCommunications::init()
 
     // open pipes for write
     wpipes = new int[numPartitions];
-    for (i=0; i<numPartitions; i++)
-    {
-        if (i==myProcId)
-        {
+    for (i = 0; i < numPartitions; i++) {
+        if (i == myProcId) {
             wpipes[i] = -1;
             continue;
         }
 
         char fname[256];
-        sprintf(fname,"%spipe-%d-%d", prefix.buffer(), i, myProcId);
+        sprintf(fname, "%spipe-%d-%d", prefix.buffer(), i, myProcId);
         EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
-        wpipes[i] = open(fname,O_WRONLY);
-        for (int k=0; k<30 && wpipes[i]==-1; k++)
-        {
+        wpipes[i] = open(fname, O_WRONLY);
+        for (int k = 0; k < 30 && wpipes[i] == -1; k++) {
             sleep(1);
-            wpipes[i] = open(fname,O_WRONLY);
+            wpipes[i] = open(fname, O_WRONLY);
         }
-        if (wpipes[i]==-1)
+        if (wpipes[i] == -1)
             throw cRuntimeError("cNamedPipeCommunications: cannot open pipe '%s' for write: %s", fname, strerror(errno));
     }
 }
 
 void cNamedPipeCommunications::shutdown()
 {
-    for (int i=0; i<numPartitions; i++)
-    {
+    for (int i = 0; i < numPartitions; i++) {
         close(rpipes[i]);
         close(wpipes[i]);
     }
@@ -181,9 +170,9 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
     struct PipeHeader ph;
     ph.tag = tag;
     ph.contentLength = b->getMessageSize();
-    if (write(fd, &ph, sizeof(ph))==-1)
+    if (write(fd, &ph, sizeof(ph)) == -1)
         throw cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
-    if (write(fd, b->getBuffer(), ph.contentLength)==-1)
+    if (write(fd, b->getBuffer(), ph.contentLength) == -1)
         throw cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
 }
 
@@ -191,7 +180,7 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
 {
     bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
     // TBD implement tag filtering
-    if (recv && filtTag!=PARSIM_ANY_TAG && filtTag!=receivedTag)
+    if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag)
         throw cRuntimeError("cNamedPipeCommunications: tag filtering not implemented");
     return recv;
 }
@@ -205,25 +194,23 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     int i;
     fd_set fdset;
     FD_ZERO(&fdset);
-    for (i=0; i<numPartitions; i++)
-        if (rpipes[i]!=-1)
+    for (i = 0; i < numPartitions; i++)
+        if (rpipes[i] != -1)
             FD_SET(rpipes[i], &fdset);
 
+
     struct timeval tv;
-    tv.tv_sec = blocking ? 1 : 0; // if blocking, wait 1 sec
+    tv.tv_sec = blocking ? 1 : 0;  // if blocking, wait 1 sec
     tv.tv_usec = 0;
 
     int ret = select(maxFdPlus1, &fdset, nullptr, nullptr, &tv);
-    if (ret>0)
-    {
+    if (ret > 0) {
         rrBase = (rrBase+1)%numPartitions;
-        for (int k=0; k<numPartitions; k++)
-        {
-            i = (rrBase+k)%numPartitions; // shift by rrBase for Round-Robin query
-            if (rpipes[i]!=-1 && FD_ISSET(rpipes[i],&fdset))
-            {
+        for (int k = 0; k < numPartitions; k++) {
+            i = (rrBase+k)%numPartitions;  // shift by rrBase for Round-Robin query
+            if (rpipes[i] != -1 && FD_ISSET(rpipes[i], &fdset)) {
                 struct PipeHeader ph;
-                if (readBytes(rpipes[i], &ph, sizeof(ph))==-1)
+                if (readBytes(rpipes[i], &ph, sizeof(ph)) == -1)
                     throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
                                         "to procId=%d: %s", sourceProcId, strerror(errno));
 
@@ -232,7 +219,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
                 b->allocateAtLeast(ph.contentLength);
                 b->setMessageSize(ph.contentLength);
 
-                if (readBytes(rpipes[i], b->getBuffer(), ph.contentLength)==-1)
+                if (readBytes(rpipes[i], b->getBuffer(), ph.contentLength) == -1)
                     throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
                                         "to procId=%d: %s", sourceProcId, strerror(errno));
                 return true;
@@ -247,8 +234,7 @@ bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer,
 {
     // select() call inside receive() will block for max 1s, yielding CPU
     // to other processes in the meantime
-    while (!receive(filtTag, buffer, receivedTag, sourceProcId, true))
-    {
+    while (!receive(filtTag, buffer, receivedTag, sourceProcId, true)) {
         if (getEnvir()->idle())
             return false;
     }

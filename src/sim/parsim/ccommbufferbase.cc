@@ -18,12 +18,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/cexception.h"
 #include "ccommbufferbase.h"
 
 NAMESPACE_BEGIN
-
 
 cCommBufferBase::cCommBufferBase()
 {
@@ -33,9 +31,9 @@ cCommBufferBase::cCommBufferBase()
     mMsgSize = 0;
 }
 
-cCommBufferBase::~cCommBufferBase ()
+cCommBufferBase::~cCommBufferBase()
 {
-    delete [] mBuffer;
+    delete[] mBuffer;
 }
 
 char *cCommBufferBase::getBuffer() const
@@ -50,10 +48,9 @@ int cCommBufferBase::getBufferLength() const
 
 void cCommBufferBase::allocateAtLeast(int size)
 {
-    size += 4; // allocate a bit more room, for sentry (used in cFileCommBuffer, etc.)
-    if (mBufferSize < size)
-    {
-        delete [] mBuffer;
+    size += 4;  // allocate a bit more room, for sentry (used in cFileCommBuffer, etc.)
+    if (mBufferSize < size) {
+        delete[] mBuffer;
         mBuffer = new char[size];
         mBufferSize = size;
     }
@@ -79,8 +76,7 @@ void cCommBufferBase::reset()
 void cCommBufferBase::extendBufferFor(int dataSize)
 {
     // TBD move reallocate+copy out of loop (more efficient)
-    while (mMsgSize+dataSize >= mBufferSize)
-    {
+    while (mMsgSize+dataSize >= mBufferSize) {
         // increase the size of the buffer while
         // retaining its own existing contents
         char *tempBuffer;
@@ -93,10 +89,10 @@ void cCommBufferBase::extendBufferFor(int dataSize)
             mBufferSize += mBufferSize;
 
         tempBuffer = new char[mBufferSize];
-        for(i = 0; i < oldBufferSize; i++)
+        for (i = 0; i < oldBufferSize; i++)
             tempBuffer[i] = mBuffer[i];
 
-        delete [] mBuffer;
+        delete[] mBuffer;
         mBuffer = tempBuffer;
     }
 }
@@ -111,14 +107,12 @@ void cCommBufferBase::assertBufferEmpty()
     if (mPosition == mMsgSize)
         return;
 
-    if (mPosition > mMsgSize)
-    {
+    if (mPosition > mMsgSize) {
         throw cRuntimeError("internal error: cCommBuffer pack/unpack mismatch: "
                              "read %d bytes past end of buffer while unpacking %d bytes",
                              mPosition-mMsgSize, mPosition);
     }
-    else
-    {
+    else {
         throw cRuntimeError("internal error: cCommBuffer pack/unpack mismatch: "
                             "%d extra bytes remained in buffer after unpacking %d bytes",
                             mMsgSize-mPosition, mPosition);

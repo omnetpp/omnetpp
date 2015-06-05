@@ -16,7 +16,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/csimulation.h"
 #include "cparsimsynchr.h"
 
@@ -26,3 +25,4 @@ cEvent *cParsimSynchronizer::guessNextEvent()
 {
     return sim->msgQueue.peekFirst();
 }
+

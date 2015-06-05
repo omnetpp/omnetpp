@@ -26,26 +26,27 @@
 
 NAMESPACE_BEGIN
 
-
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char *caller)
 {
     int argc = getEnvir()->getArgCount();
     char **argv = getEnvir()->getArgVector();
     int i;
-    for (i=1; i<argc; i++)
-        if (argv[i][0]=='-' && argv[i][1]=='p')
+    for (i = 1; i < argc; i++)
+        if (argv[i][0] == '-' && argv[i][1] == 'p')
             break;
-    if (i==argc)
+
+    if (i == argc)
         throw cRuntimeError("%s: missing -p<procId>,<numPartitions> switch on the command line", caller);
 
     char *parg = argv[i];
     myProcId = atoi(parg+2);
     char *s = parg;
-    while (*s!=',' && *s) s++;
+    while (*s != ',' && *s)
+        s++;
     numPartitions = (*s) ? atoi(s+1) : 0;
-    if (myProcId<0 || numPartitions<=0 || myProcId>=numPartitions)
+    if (myProcId < 0 || numPartitions <= 0 || myProcId >= numPartitions)
         throw cRuntimeError("%s: invalid switch '%s' -- should have the format -p<procId>,<numPartitions>",
-                                caller, parg);
+                caller, parg);
 }
 
 NAMESPACE_END

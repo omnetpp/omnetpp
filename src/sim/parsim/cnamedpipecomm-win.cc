@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "cnamedpipecomm.h"
 
 #ifdef USE_WINDOWS_PIPES
@@ -42,16 +41,13 @@
 
 NAMESPACE_BEGIN
 
-
 Register_Class(cNamedPipeCommunications);
 
 Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When cNamedPipeCommunications is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
 
+#define PIPE_INBUFFERSIZE    (1024*1024) /*1MB*/
 
-#define PIPE_INBUFFERSIZE  (1024*1024) /*1MB*/
-
-
-//FIXME resolve duplication -- we have this in Envir as well
+// FIXME resolve duplication -- we have this in Envir as well
 static std::string getWindowsError()
 {
     long errorcode = GetLastError();
@@ -89,8 +85,8 @@ cNamedPipeCommunications::cNamedPipeCommunications()
 
 cNamedPipeCommunications::~cNamedPipeCommunications()
 {
-    delete [] rpipes;
-    delete [] wpipes;
+    delete[] rpipes;
+    delete[] wpipes;
 }
 
 void cNamedPipeCommunications::init()
@@ -102,16 +98,14 @@ void cNamedPipeCommunications::init()
     // create and open pipes for read
     int i;
     rpipes = new HANDLE[numPartitions];
-    for (i=0; i<numPartitions; i++)
-    {
-        if (i==myProcId)
-        {
+    for (i = 0; i < numPartitions; i++) {
+        if (i == myProcId) {
             rpipes[i] = INVALID_HANDLE_VALUE;
             continue;
         }
 
         char fname[256];
-        sprintf(fname,"\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myProcId, i);
+        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myProcId, i);
         EV << "cNamedPipeCommunications: creating pipe '" << fname << "' for read...\n";
 
         int openMode = PIPE_ACCESS_INBOUND;
@@ -123,39 +117,35 @@ void cNamedPipeCommunications::init()
 
     // open pipes for write
     wpipes = new HANDLE[numPartitions];
-    for (i=0; i<numPartitions; i++)
-    {
-        if (i==myProcId)
-        {
+    for (i = 0; i < numPartitions; i++) {
+        if (i == myProcId) {
             wpipes[i] = INVALID_HANDLE_VALUE;
             continue;
         }
 
         char fname[256];
-        sprintf(fname,"\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myProcId);
+        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myProcId);
         EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
-        for (int k=0; k<60; k++)
-        {
-            if (k>0 && k%5==0) EV << "retry " << k << " of 60...\n";
+        for (int k = 0; k < 60; k++) {
+            if (k > 0 && k%5 == 0)
+                EV << "retry " << k << " of 60...\n";
             wpipes[i] = CreateFile(fname, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-            if (wpipes[i]!=INVALID_HANDLE_VALUE)
+            if (wpipes[i] != INVALID_HANDLE_VALUE)
                 break;
-            usleep(1000000); //1s
+            usleep(1000000);  // 1s
         }
         if (wpipes[i] == INVALID_HANDLE_VALUE)
             throw cRuntimeError("cNamedPipeCommunications: CreateFile operation failed: %s", getWindowsError().c_str());
     }
 
     // now wait until everybody else also opens the pipes for write
-    for (i=0; i<numPartitions; i++)
-    {
-        if (i==myProcId)
+    for (i = 0; i < numPartitions; i++) {
+        if (i == myProcId)
             continue;
         EV << "cNamedPipeCommunications: opening pipe from procId=" << i << " for read...\n";
-        if (!ConnectNamedPipe(rpipes[i], nullptr) && GetLastError()!=ERROR_PIPE_CONNECTED)
+        if (!ConnectNamedPipe(rpipes[i], nullptr) && GetLastError() != ERROR_PIPE_CONNECTED)
             throw cRuntimeError("cNamedPipeCommunications: ConnectNamedPipe operation failed: %s", getWindowsError().c_str());
     }
-
 }
 
 void cNamedPipeCommunications::shutdown()
@@ -202,7 +192,7 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
 {
     bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
     // TBD implement tag filtering
-    if (recv && filtTag!=PARSIM_ANY_TAG && filtTag!=receivedTag)
+    if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag)
         throw cRuntimeError("cNamedPipeCommunications: tag filtering not implemented");
     return recv;
 }
@@ -216,19 +206,18 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
     // select pipe to read
     int i, k;
-    for (k=0; k<numPartitions; k++)
-    {
-        i = (rrBase+k)%numPartitions; // shift by rrBase for Round-Robin query
-        if (i==myProcId)
+    for (k = 0; k < numPartitions; k++) {
+        i = (rrBase+k)%numPartitions;  // shift by rrBase for Round-Robin query
+        if (i == myProcId)
             continue;
         unsigned long bytesAvail, bytesLeft;
         if (!PeekNamedPipe(rpipes[i], nullptr, 0, nullptr, &bytesAvail, &bytesLeft))
             throw cRuntimeError("cNamedPipeCommunications: cannot peek pipe to procId=%d: %s",
-                                    i, getWindowsError().c_str());
-        if (bytesAvail>0)
+                    i, getWindowsError().c_str());
+        if (bytesAvail > 0)
             break;
     }
-    if (k==numPartitions)
+    if (k == numPartitions)
         return false;
 
     rrBase = (rrBase+1)%numPartitions;
@@ -240,8 +229,8 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     struct PipeHeader ph;
     if (!ReadFile(h, &ph, sizeof(ph), &bytesRead, nullptr))
         throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
-                                sourceProcId, getWindowsError().c_str());
-    if (bytesRead<sizeof(ph))
+                sourceProcId, getWindowsError().c_str());
+    if (bytesRead < sizeof(ph))
         throw cRuntimeError("cNamedPipeCommunications: ReadFile returned less data than expected");
 
     receivedTag = ph.tag;
@@ -250,11 +239,10 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
     if (!ReadFile(h, b->getBuffer(), ph.contentLength, &bytesRead, nullptr))
         throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
-                                sourceProcId, getWindowsError().c_str());
-    if (bytesRead<ph.contentLength)
+                sourceProcId, getWindowsError().c_str());
+    if (bytesRead < ph.contentLength)
         throw cRuntimeError("cNamedPipeCommunications: ReadFile returned less data than expected");
     return true;
-
 }
 
 bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
@@ -262,11 +250,10 @@ bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer,
     // receive() currently doesn't handle blocking (PeekNamedPipe() returns
     // immediately if nothing has been received), so we need to sleep a little
     // between invocations, in order to save CPU cycles.
-    while (!receive(filtTag, buffer, receivedTag, sourceProcId, true))
-    {
+    while (!receive(filtTag, buffer, receivedTag, sourceProcId, true)) {
         if (getEnvir()->idle())
             return false;
-        usleep(10000); // be polite and wait 0.01s
+        usleep(10000);  // be polite and wait 0.01s
     }
     return true;
 }
@@ -278,4 +265,5 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
 
 NAMESPACE_END
 
-#endif  /* USE_WINDOWS_PIPES */
+#endif /* USE_WINDOWS_PIPES */
+

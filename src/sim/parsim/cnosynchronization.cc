@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
@@ -34,7 +33,6 @@
 NAMESPACE_BEGIN
 
 Register_Class(cNoSynchronization);
-
 
 cNoSynchronization::cNoSynchronization() : cParsimProtocolBase()
 {
@@ -52,18 +50,15 @@ void cNoSynchronization::endRun()
 {
 }
 
-
 cEvent *cNoSynchronization::takeNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
-    if (sim->msgQueue.isEmpty())
-    {
+    if (sim->msgQueue.isEmpty()) {
         EV << "no local events, waiting for something to arrive from other partitions\n";
         if (!receiveBlocking())
             return nullptr;
     }
-    else
-    {
+    else {
         receiveNonblocking();
     }
 

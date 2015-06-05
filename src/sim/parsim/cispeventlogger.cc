@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cstdio>
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/cmodule.h"
@@ -31,7 +30,6 @@
 NAMESPACE_BEGIN
 
 Register_Class(cISPEventLogger);
-
 
 cISPEventLogger::cISPEventLogger() : cNullMessageProtocol()
 {
@@ -48,7 +46,7 @@ void cISPEventLogger::startRun()
 
     char fname[200];
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
-    fout = fopen(fname,"wb");
+    fout = fopen(fname, "wb");
     if (!fout)
         throw cRuntimeError("cISPEventLogger error: cannot open file `%s' for write", fname);
 }
@@ -67,7 +65,7 @@ void cISPEventLogger::processReceivedMessage(cMessage *msg, int destModuleId, in
 
 void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (msg->getSchedulingPriority()!=0)
+    if (msg->getSchedulingPriority() != 0)
         throw cRuntimeError("cISPEventLogger: outgoing message (%s)%s has nonzero priority set -- "
                             "this conflicts with ISP which uses priority for its own purposes",
                             msg->getClassName(), msg->getName());
@@ -78,8 +76,7 @@ cEvent *cISPEventLogger::takeNextEvent()
 {
     cEvent *event = cNullMessageProtocol::takeNextEvent();
 
-    if (event->getSrcProcId()!=-1)  // received from another partition
-    {
+    if (event->getSrcProcId() != -1) {  // received from another partition
         // restore original priority
         event->setSchedulingPriority(0);
 
@@ -88,7 +85,7 @@ cEvent *cISPEventLogger::takeNextEvent()
         e.t = event->getArrivalTime();
         e.srcProcId = event->getSrcProcId();
 
-        if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout)<1)
+        if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout) < 1)
             throw cRuntimeError("cISPEventLogger: file write failed (disk full?)");
     }
 
@@ -102,5 +99,4 @@ void cISPEventLogger::putBackEvent(cEvent *event)
 }
 
 NAMESPACE_END
-
 

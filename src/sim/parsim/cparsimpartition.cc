@@ -82,14 +82,14 @@ void cParsimPartition::endRun()
 
 void cParsimPartition::shutdown()
 {
-    if (!comm) return; // if initialization failed
+    if (!comm)
+        return;  // if initialization failed
 
     cException e("Process has shut down");
     broadcastException(e);
 
     comm->shutdown();
 }
-
 
 void cParsimPartition::connectRemoteGates()
 {
@@ -100,21 +100,16 @@ void cParsimPartition::connectRemoteGates()
     // proxy gates in other partitions (as they need to redirect here)
     //
     EV << "connecting remote gates: step 1 - broadcasting input gates...\n";
-    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
-    {
+    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cModule *mod = sim->getModule(modId);
-        if (mod && !mod->isPlaceholder())
-        {
-            for (cModule::GateIterator i(mod); !i.end(); i++)
-            {
+        if (mod && !mod->isPlaceholder()) {
+            for (cModule::GateIterator i(mod); !i.end(); i++) {
                 cGate *g = i();
-                if (g->getType()==cGate::INPUT)
-                {
+                if (g->getType() == cGate::INPUT) {
                     // if gate is connected to a placeholder module, in another partition that will
                     // be a local module and our module will be a placeholder with proxy gates
                     cGate *srcg = g->getPathStartGate();
-                    if (srcg != g && srcg->getOwnerModule()->isPlaceholder())
-                    {
+                    if (srcg != g && srcg->getOwnerModule()->isPlaceholder()) {
                         // pack gate "address" here
                         buffer->pack(g->getOwnerModule()->getId());
                         buffer->pack(g->getId());
@@ -127,27 +122,25 @@ void cParsimPartition::connectRemoteGates()
             }
         }
     }
-    buffer->pack(-1); // "the end"
+    buffer->pack(-1);  // "the end"
     comm->broadcast(buffer, TAG_SETUP_LINKS);
 
     //
     // Step 2: collect info broadcast by others, and use it to fill in output cProxyGates
     //
     EV << "connecting remote gates: step 2 - collecting broadcasts sent by others...\n";
-    for (int i=0; i<comm->getNumPartitions()-1; i++)
-    {
+    for (int i = 0; i < comm->getNumPartitions()-1; i++) {
         // receive:
         int tag, remoteProcId;
         // note: *must* filter for TAG_SETUP_LINKS here, to prevent race conditions
         if (!comm->receiveBlocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId))
             throw cRuntimeError("connectRemoteGates() interrupted by user");
-        ASSERT(tag==TAG_SETUP_LINKS);
+        ASSERT(tag == TAG_SETUP_LINKS);
 
         EV << "  processing msg from procId=" << remoteProcId << "...\n";
 
         // process what we got:
-        while(true)
-        {
+        while (true) {
             int remoteModId;
             int remoteGateId;
             char *moduleFullPath;
@@ -156,7 +149,7 @@ void cParsimPartition::connectRemoteGates()
 
             // unpack a gate -- modId==-1 indicates end of packet
             buffer->unpack(remoteModId);
-            if (remoteModId==-1)
+            if (remoteModId == -1)
                 break;
             buffer->unpack(remoteGateId);
             buffer->unpack(moduleFullPath);
@@ -166,26 +159,25 @@ void cParsimPartition::connectRemoteGates()
             // find corresponding output gate (if we have it) and set remote
             // gate address to the received one
             cModule *m = sim->getModuleByPath(moduleFullPath);
-            cGate *g = !m ? nullptr : gateIndex==-1 ? m->gate(gateName) : m->gate(gateName,gateIndex);
+            cGate *g = !m ? nullptr : gateIndex == -1 ? m->gate(gateName) : m->gate(gateName, gateIndex);
             cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 
             EV << "    gate: " << moduleFullPath << "." << gateName;
-            if (gateIndex>=0)
+            if (gateIndex >= 0)
                 EV << "["  << gateIndex << "]";
-             EV << " - ";
+            EV << " - ";
             if (!pg)
                 EV << "not here\n";
             else
                 EV << "points to (procId=" << remoteProcId << " moduleId=" << remoteModId << " gateId=" << remoteGateId << ")\n";
 
-            if (pg)
-            {
+            if (pg) {
                 pg->setPartition(this);
-                pg->setRemoteGate(remoteProcId,remoteModId,remoteGateId);
+                pg->setRemoteGate(remoteProcId, remoteModId, remoteGateId);
             }
 
-            delete [] moduleFullPath;
-            delete [] gateName;
+            delete[] moduleFullPath;
+            delete[] gateName;
         }
         buffer->assertBufferEmpty();
     }
@@ -193,18 +185,15 @@ void cParsimPartition::connectRemoteGates()
     comm->recycleCommBuffer(buffer);
 
     // verify that all gates have been connected
-    for (int modId=0; modId<=sim->getLastComponentId(); modId++)
-    {
+    for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cModule *mod = sim->getModule(modId);
-        if (mod && mod->isPlaceholder())
-        {
-            for (cModule::GateIterator i(mod); !i.end(); i++)
-            {
+        if (mod && mod->isPlaceholder()) {
+            for (cModule::GateIterator i(mod); !i.end(); i++) {
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(i());
-                if (pg && pg->getRemoteProcId()==-1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
+                if (pg && pg->getRemoteProcId() == -1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
                     throw cRuntimeError("parallel simulation error: dangling proxy gate '%s' "
-                        "(module '%s' or some of its submodules not instantiated in any partition?)",
-                        pg->getFullPath().c_str(), mod->getFullPath().c_str());
+                                        "(module '%s' or some of its submodules not instantiated in any partition?)",
+                            pg->getFullPath().c_str(), mod->getFullPath().c_str());
             }
         }
     }
@@ -212,8 +201,9 @@ void cParsimPartition::connectRemoteGates()
 
 void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (debug) EV << "sending message '" << msg->getFullName() << "' (for T="
-                  << msg->getArrivalTime() << " to procId=" << procId << ")\n";
+    if (debug)
+        EV << "sending message '" << msg->getFullName() << "' (for T="
+           << msg->getArrivalTime() << " to procId=" << procId << ")\n";
 
     synch->processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }
@@ -221,17 +211,18 @@ void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int mod
 void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
 {
     opp_string errmsg;
-    switch (tag)
-    {
+    switch (tag) {
         case TAG_TERMINATIONEXCEPTION:
             buffer->unpack(errmsg);
             throw cReceivedTerminationException(sourceProcId, errmsg.c_str());
+
         case TAG_EXCEPTION:
             buffer->unpack(errmsg);
             throw cReceivedException(sourceProcId, errmsg.c_str());
+
         default:
             throw cRuntimeError("cParsimPartition::processReceivedBuffer(): unexpected tag %d "
-                                 "from procId %d", tag, sourceProcId);
+                                "from procId %d", tag, sourceProcId);
     }
     buffer->assertBufferEmpty();
 }
@@ -258,7 +249,7 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     // has already been simulated in the originating partition. The following
     // portion of code is analogous to the code in cSimpleModule::sendDelayed().
     EVCB.beginSend(msg);
-    EVCB.messageSendHop(msg, srcg); //TODO store approx propagationDelay, transmissionDelay (they were already simulated remotely)
+    EVCB.messageSendHop(msg, srcg);  // TODO store approx propagationDelay, transmissionDelay (they were already simulated remotely)
     bool keepit = g->deliver(msg, msg->getArrivalTime());
     EVCB.messageSent_OBSOLETE(msg);
     if (!keepit)
@@ -272,12 +263,10 @@ void cParsimPartition::broadcastTerminationException(cTerminationException& e)
     // send TAG_TERMINATIONEXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
     buffer->pack(e.what());
-    try
-    {
+    try {
         comm->broadcast(buffer, TAG_TERMINATIONEXCEPTION);
     }
-    catch (std::exception&)
-    {
+    catch (std::exception&) {
         // swallow exceptions -- here we're not interested in them
     }
     comm->recycleCommBuffer(buffer);
@@ -288,12 +277,10 @@ void cParsimPartition::broadcastException(std::exception& e)
     // send TAG_EXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
     buffer->pack(e.what());
-    try
-    {
+    try {
         comm->broadcast(buffer, TAG_EXCEPTION);
     }
-    catch (std::exception&)
-    {
+    catch (std::exception&) {
         // swallow any exceptions -- here we're not interested in them
     }
     comm->recycleCommBuffer(buffer);
