@@ -19,7 +19,7 @@
 #include <clocale>
 #include <cstdlib>
 #include <cerrno>
-#include "omnetpp/platdep/platmisc.h"  //strcasecmp
+#include "omnetpp/platdep/platmisc.h"  // strcasecmp
 #include "opp_ctype.h"
 #include "stringutil.h"
 #include "unitconversion.h"
@@ -85,50 +85,57 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
 UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 {
     // short name ("Hz", "mW")
-    for (int i=0; unitTable[i].unit; i++)
+    for (int i = 0; unitTable[i].unit; i++)
         if (!strcmp(unitTable[i].unit, unit))
             return unitTable+i;
 
+
     // long name, case insensitive ("herz", "milliwatt")
-    for (int i=0; unitTable[i].unit; i++)
+    for (int i = 0; unitTable[i].unit; i++)
         if (!strcasecmp(unitTable[i].longName, unit))
             return unitTable+i;
 
+
     // long name in plural, case insensitive ("milliwatts")
-    if (unit[strlen(unit)-1]=='s') {
+    if (unit[strlen(unit)-1] == 's') {
         std::string tmp = std::string(unit, strlen(unit)-1);
-        for (int i=0; unitTable[i].unit; i++)
+        for (int i = 0; unitTable[i].unit; i++)
             if (!strcasecmp(unitTable[i].longName, tmp.c_str()))
                 return unitTable+i;
+
     }
     return nullptr;
 }
 
-bool UnitConversion::readNumber(const char *&s, double& number)
+bool UnitConversion::readNumber(const char *& s, double& number)
 {
-    while (opp_isspace(*s)) s++;
+    while (opp_isspace(*s))
+        s++;
 
     char *endp;
     setlocale(LC_NUMERIC, "C");
     errno = 0;
     number = strtod(s, &endp);
-    if (s==endp)
-        return false; // no number read
-    if (errno==ERANGE)
+    if (s == endp)
+        return false;  // no number read
+    if (errno == ERANGE)
         throw opp_runtime_error("overflow or underflow during conversion of `%s'", s);
     s = endp;
 
-    while (opp_isspace(*s)) s++;
-    return true; // OK
+    while (opp_isspace(*s))
+        s++;
+    return true;  // OK
 }
 
-bool UnitConversion::readUnit(const char *&s, std::string& unit)
+bool UnitConversion::readUnit(const char *& s, std::string& unit)
 {
     unit = "";
-    while (opp_isspace(*s)) s++;
+    while (opp_isspace(*s))
+        s++;
     while (opp_isalpha(*s))
         unit.append(1, *s++);
-    while (opp_isspace(*s)) s++;
+    while (opp_isspace(*s))
+        s++;
     return !unit.empty();
 }
 
@@ -156,8 +163,7 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
     }
 
     // now process the rest: [<number> <unit>]*
-    while (*s)
-    {
+    while (*s) {
         // read number and unit
         double d;
         if (!readNumber(s, d))
@@ -202,18 +208,18 @@ std::string UnitConversion::getUnitDescription(const char *unit)
 double UnitConversion::getConversionFactor(const char *unit, const char *targetUnit)
 {
     // if there are no units or if units are the same, no conversion is needed
-    if (unit==targetUnit || opp_strcmp(unit, targetUnit)==0)
+    if (unit == targetUnit || opp_strcmp(unit, targetUnit) == 0)
         return 1.0;
 
     // if only one unit is given, that's an error
     if (opp_isempty(unit) || opp_isempty(targetUnit))
-        return 0; // cannot convert
+        return 0;  // cannot convert
 
     // we'll need to convert
     UnitDesc *unitDesc = lookupUnit(unit);
     UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
-    if (unitDesc==nullptr || targetUnitDesc==nullptr || strcmp(unitDesc->baseUnit, targetUnitDesc->baseUnit)!=0)
-        return 0; // cannot convert
+    if (unitDesc == nullptr || targetUnitDesc == nullptr || strcmp(unitDesc->baseUnit, targetUnitDesc->baseUnit) != 0)
+        return 0;  // cannot convert
 
     // the solution
     return unitDesc->mult / targetUnitDesc->mult;
@@ -222,20 +228,19 @@ double UnitConversion::getConversionFactor(const char *unit, const char *targetU
 double UnitConversion::convertUnit(double d, const char *unit, const char *targetUnit)
 {
     if (d == 0 && opp_isempty(unit))
-        return 0; // accept 0 without unit
+        return 0;  // accept 0 without unit
 
     double factor = getConversionFactor(unit, targetUnit);
-    if (factor == 0)
-    {
+    if (factor == 0) {
         // could not convert: issue appropriate message
         const char *explanation = "";
 
         // Kbps -> kbps (renamed in OMNeT++ 4.2)
-        if (unit && strcmp(unit, "Kbps")==0)
+        if (unit && strcmp(unit, "Kbps") == 0)
             explanation = ": please use kbps instead of Kbps";
 
         // KB -> KiB, MB -> MiB, GB -> GiB, TB -> TiB (renamed in OMNeT++ 4.2)
-        if (unit && strlen(unit)==2 && unit[1]=='B' && strstr("kB KB MB GB TB", unit)!=nullptr)
+        if (unit && strlen(unit) == 2 && unit[1] == 'B' && strstr("kB KB MB GB TB", unit) != nullptr)
             explanation = ": please use IEC binary prefixes for byte multiples: KiB, MiB, GiB, TiB";
 
         throw opp_runtime_error("Cannot convert unit %s to %s%s",
@@ -255,17 +260,17 @@ const char *UnitConversion::getLongName(const char *unit)
 const char *UnitConversion::getBaseUnit(const char *unit)
 {
     UnitDesc *unitDesc = lookupUnit(unit);
-    return unitDesc ? unitDesc->baseUnit: nullptr;
+    return unitDesc ? unitDesc->baseUnit : nullptr;
 }
 
 std::vector<const char *> UnitConversion::getAllUnits()
 {
     std::vector<const char *> result;
-    for (int i=0; unitTable[i].unit; i++)
+    for (int i = 0; unitTable[i].unit; i++)
         result.push_back(unitTable[i].unit);
     return result;
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 

@@ -30,9 +30,9 @@
 NAMESPACE_BEGIN
 namespace common {
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
-//#define TRACE_FILEREADER
+// #define TRACE_FILEREADER
 
 FileChangedError::FileChangedError(FileReader::FileChangedState change, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
 {
@@ -42,16 +42,16 @@ FileChangedError::FileChangedError(FileReader::FileChangedState change, const ch
 }
 
 FileReader::FileReader(const char *fileName, size_t bufferSize)
-   : fileName(fileName), bufferSize(bufferSize),
-     bufferBegin(new char[bufferSize]),
-     bufferEnd(bufferBegin + bufferSize),
-     maxLineSize(bufferSize / 2),
-     lastSavedBufferBegin(new char[bufferSize])
+    : fileName(fileName), bufferSize(bufferSize),
+    bufferBegin(new char[bufferSize]),
+    bufferEnd(bufferBegin + bufferSize),
+    maxLineSize(bufferSize / 2),
+    lastSavedBufferBegin(new char[bufferSize])
 {
 #ifdef TRACE_FILEREADER
-	TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
+    TRACE_CALL("FileReader::FileReader(%s, %d)", fileName, bufferSize);
 #endif
-	lastSavedSize = -1;
+    lastSavedSize = -1;
     file = nullptr;
     fileSize = -1;
     bufferFileOffset = -1;
@@ -71,8 +71,8 @@ FileReader::~FileReader()
 #ifdef TRACE_FILEREADER
     TRACE_CALL("FileReader::~FileReader(%s)", fileName.c_str());
 #endif
-    delete [] bufferBegin;
-    delete [] lastSavedBufferBegin;
+    delete[] bufferBegin;
+    delete[] lastSavedBufferBegin;
     ensureFileClosed();
 }
 
@@ -122,7 +122,7 @@ void FileReader::ensureFileClosed()
 
 file_offset_t FileReader::pointerToFileOffset(char *pointer) const
 {
-	Assert(bufferBegin <= pointer && pointer <= bufferEnd);
+    Assert(bufferBegin <= pointer && pointer <= bufferEnd);
     file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
     Assert(fileOffset >= 0 && fileOffset <= fileSize);
     return fileOffset;
@@ -131,9 +131,9 @@ file_offset_t FileReader::pointerToFileOffset(char *pointer) const
 void FileReader::checkConsistency(bool checkDataPointer) const
 {
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
-      ((!dataBegin && !dataEnd) ||
-       (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
-        (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
+        ((!dataBegin && !dataEnd) ||
+         (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
+          (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
 
     if (!ok)
         throw opp_runtime_error("FileReader: internal error");
@@ -143,7 +143,7 @@ FileReader::FileChangedState FileReader::checkFileForChanges()
 {
     int64_t newFileSize = getFileSizeInternal();
     if (newFileSize == fileSize)
-        return UNCHANGED; // NOTE: assuming that the content is not overwritten... :(
+        return UNCHANGED;  // NOTE: assuming that the content is not overwritten... :(
     else {
 #ifdef TRACE_FILEREADER
         int readBytes =
@@ -280,20 +280,21 @@ void FileReader::fillBuffer(bool forward)
 #endif
 }
 
-bool FileReader::isLineStart(char *s) {
+bool FileReader::isLineStart(char *s)
+{
     Assert(bufferBegin <= s && s <= bufferEnd);
     if (s == bufferBegin) {
         // first line of file
         if (bufferFileOffset == 0)
             return true;
-        else { // slow path
+        else {  // slow path
             file_offset_t fileOffset = pointerToFileOffset(s) - 1;
             if (!file)
                 throw opp_runtime_error("File is not open '%s'", fileName.c_str());
             opp_fseek(file, fileOffset, SEEK_SET);
             if (ferror(file))
                 throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-            char previousChar = fgetc(file); // khmm: EOF
+            char previousChar = fgetc(file);  // khmm: EOF
             if (ferror(file))
                 throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
             return previousChar == '\n';
@@ -310,13 +311,13 @@ bool FileReader::isLineStart(char *s) {
 char *FileReader::findNextLineStart(char *start, bool bufferFilled)
 {
 #ifdef TRACE_FILEREADER
-	TRACE_CALL("FileReader::findNextLineStart(start: %p)", start);
+    TRACE_CALL("FileReader::findNextLineStart(start: %p)", start);
 #endif
 
-	char *s = start;
+    char *s = start;
 
     // find next CR/LF (fast path)
-    while (s < dataEnd && *s != '\r' && *s!= '\n')
+    while (s < dataEnd && *s != '\r' && *s != '\n')
         s++;
 
     if (s < dataEnd && *s == '\r')
@@ -326,19 +327,18 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
         s++;
 
     Assert(s <= dataEnd);
-    if (s == dataEnd) // did we reach the end of the data in the buffer? (slow path)
-    {
+    if (s == dataEnd) {  // did we reach the end of the data in the buffer? (slow path)
         file_offset_t fileOffset = pointerToFileOffset(start);
 
 #ifdef TRACE_FILEREADER
         TPRINTF("FileReader::findNextLineStart start file offset %" LL "d", fileOffset);
 #endif
 
-        if (s != start && isLineStart(s)) // line just ends at the end of data buffer
-            ; // void
-        else if (fileOffset == getFileSize()) // searching from the end of the file
+        if (s != start && isLineStart(s))  // line just ends at the end of data buffer
+            ;  // void
+        else if (fileOffset == getFileSize())  // searching from the end of the file
             return nullptr;
-        else if (!bufferFilled) { // refill buffer
+        else if (!bufferFilled) {  // refill buffer
             seekTo(fileOffset, maxLineSize);
 
 #ifdef TRACE_FILEREADER
@@ -348,9 +348,9 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
             fillBuffer(true);
             s = findNextLineStart(fileOffsetToPointer(fileOffset), true);
         }
-        else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
+        else if (getDataEndFileOffset() == getFileSize())  // searching reached to the end of the file without CR/LF
             return nullptr;
-        else // line too long
+        else  // line too long
             throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
 
@@ -364,7 +364,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
 char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 {
 #ifdef TRACE_FILEREADER
-	TRACE_CALL("FileReader::findPreviousLineStart(start: %p)", start);
+    TRACE_CALL("FileReader::findPreviousLineStart(start: %p)", start);
 #endif
 
     char *s = start - 1;
@@ -376,25 +376,24 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         s--;
 
     // find previous CR/LF (fast path)
-    while (s >= dataBegin && *s != '\r' && *s!= '\n')
+    while (s >= dataBegin && *s != '\r' && *s != '\n')
         s--;
 
     s++;
 
     Assert(s >= dataBegin);
-    if (s == dataBegin) // did we reach the beginning of the data in the buffer? (slow path)
-    {
+    if (s == dataBegin) {  // did we reach the beginning of the data in the buffer? (slow path)
         file_offset_t fileOffset = pointerToFileOffset(start);
 
 #ifdef TRACE_FILEREADER
         TPRINTF("FileReader::findPreviousLineStart start file offset %" LL "d", fileOffset);
 #endif
 
-        if (s != start && isLineStart(s)) // line starts at the beginning of the data buffer
-            ; // void
-        else if (fileOffset == 0) // searching from the beginning of the file
+        if (s != start && isLineStart(s))  // line starts at the beginning of the data buffer
+            ;  // void
+        else if (fileOffset == 0)  // searching from the beginning of the file
             return nullptr;
-        else if (!bufferFilled) { // refill buffer
+        else if (!bufferFilled) {  // refill buffer
             seekTo(fileOffset, maxLineSize);
 
 #ifdef TRACE_FILEREADER
@@ -404,9 +403,9 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
             fillBuffer(false);
             s = findPreviousLineStart(fileOffsetToPointer(fileOffset), true);
         }
-        else if (getDataBeginFileOffset() == 0) // searching reached to the beginning of the file without CR/LF
+        else if (getDataBeginFileOffset() == 0)  // searching reached to the beginning of the file without CR/LF
             return dataBegin;
-        else // line too long
+        else  // line too long
             throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
 
@@ -533,6 +532,7 @@ char *FileReader::findNextLineBufferPointer(const char *search, bool caseSensiti
     while ((line = getNextLineBufferPointer()) != nullptr)
         if (opp_strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
+
     return nullptr;
 }
 
@@ -542,6 +542,7 @@ char *FileReader::findPreviousLineBufferPointer(const char *search, bool caseSen
     while ((line = getPreviousLineBufferPointer()) != nullptr)
         if (opp_strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
+
     return nullptr;
 }
 
@@ -621,7 +622,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 
         if (moveSize > 0 && moveSrc != moveDest) {
 #ifdef TRACE_FILEREADER
-        	TPRINTF("FileReader::Keeping data from file offset: %" LL "d with length: %d", pointerToFileOffset(moveSrc), moveSize);
+            TPRINTF("FileReader::Keeping data from file offset: %" LL "d with length: %d", pointerToFileOffset(moveSrc), moveSize);
 #endif
 
             fflush(stdout);
@@ -649,13 +650,13 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 }
 
 /*
-Example code:
+   Example code:
 
-#include <iostream>
-using namespace std;
+   #include <iostream>
+   using namespace std;
 
-int main(int argc, char **argv)
-{
+   int main(int argc, char **argv)
+   {
     if (argc<2)
         return 1;
 
@@ -670,9 +671,8 @@ int main(int argc, char **argv)
     }
 
     return 0;
-}
-*/
-
-} // namespace common
+   }
+ */
+}  // namespace common
 NAMESPACE_END
 

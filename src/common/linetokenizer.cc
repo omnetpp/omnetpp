@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cassert>
 #include <sstream>
 #include <cstring>
@@ -23,7 +22,6 @@
 
 NAMESPACE_BEGIN
 namespace common {
-
 
 LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char sep2)
     : sep1(sep1), sep2(sep2)
@@ -40,25 +38,30 @@ LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char se
 
 LineTokenizer::~LineTokenizer()
 {
-    delete [] vec;
-    delete [] lineBuffer;
+    delete[] vec;
+    delete[] lineBuffer;
 }
 
 inline int h2d(char c)
 {
-    if (c>='0' && c<='9') return c-'0';
-    if (c>='A' && c<='F') return c-'A'+10;
-    if (c>='a' && c<='f') return c-'a'+10;
+    if (c >= '0' && c <= '9')
+        return c-'0';
+    if (c >= 'A' && c <= 'F')
+        return c-'A'+10;
+    if (c >= 'a' && c <= 'f')
+        return c-'a'+10;
     return -1;
 }
 
-inline int h2d(char *&s)
+inline int h2d(char *& s)
 {
     int a = h2d(*s);
-    if (a<0) return 0;
+    if (a < 0)
+        return 0;
     s++;
     int b = h2d(*s);
-    if (b<0) return a;
+    if (b < 0)
+        return a;
     s++;
     return a*16+b;
 }
@@ -69,15 +72,12 @@ static void interpretBackslashes(char *buffer)
     // is always shorter (or equal) than the input.
     char *s = buffer;
     char *d = buffer;
-    for (; *s; s++, d++)
-    {
-        if (*s=='\\')
-        {
+    for ( ; *s; s++, d++) {
+        if (*s == '\\') {
             // allow backslash as quote character, also interpret backslash sequences
             // note: this must be kept consistent with opp_quotestr()/opp_parsequotedstr()
             s++;
-            switch(*s)
-            {
+            switch (*s) {
                 case 'b': *d = '\b'; break;
                 case 'f': *d = '\f'; break;
                 case 'n': *d = '\n'; break;
@@ -91,8 +91,7 @@ static void interpretBackslashes(char *buffer)
                 default: *d = *s; // be tolerant with unrecogized backslash sequences
             }
         }
-        else
-        {
+        else {
             *d = *s;
         }
     }
@@ -105,7 +104,7 @@ int LineTokenizer::tokenize(const char *line, int length)
         throw opp_runtime_error("Cannot tokenize lines longer than %d", lineBufferSize - 1);
 
     strncpy(lineBuffer, line, length);
-    lineBuffer[length] = '\0'; // guard
+    lineBuffer[length] = '\0';  // guard
 
     char *s = lineBuffer + length - 1;
     while (s >= lineBuffer && (*s == '\r' || *s == '\n'))
@@ -115,29 +114,29 @@ int LineTokenizer::tokenize(const char *line, int length)
     s = lineBuffer;
 
     // loop through the tokens on the line
-    for (;;)
-    {
+    for (;;) {
         // skip separators before token
-        while (*s==sep1 || *s==sep2) s++;
+        while (*s == sep1 || *s == sep2)
+            s++;
 
         char *token;
-        if (!*s)
-        {
+        if (!*s) {
             // end of line found -- exit loop
             break;
         }
-        else if (*s=='"')
-        {
+        else if (*s == '"') {
             // parse quoted string
             token = s+1;
             s++;
             // try to find end of quoted string
             bool containsBackslash = false;
-            while (*s && *s!='"')
-                if (*s++=='\\')
-                    {s++; containsBackslash = true;}
+            while (*s && *s != '"')
+                if (*s++ == '\\') {
+                    s++;
+                    containsBackslash = true;
+                }
             // check we found the close quote
-            if (*s!='"')
+            if (*s != '"')
                 throw opp_runtime_error("Unmatched quote in file");
             // terminate quoted string with zero, overwriting close quote
             *s++ = 0;
@@ -145,20 +144,20 @@ int LineTokenizer::tokenize(const char *line, int length)
             // to interpret the escape sequences
             if (containsBackslash)
                 interpretBackslashes(token);
-
         }
-        else
-        {
+        else {
             // parse unquoted string
             token = s;
             // try find end of string
-            while (*s && *s!=sep1 && *s!=sep2) s++;
+            while (*s && *s != sep1 && *s != sep2)
+                s++;
             // terminate string with zero (if we are not already at end of the line)
-            if (*s) *s++ = 0;
+            if (*s)
+                *s++ = 0;
         }
 
         // add token to the array (if there's room); s points to the rest of the string
-        if (numtokens==vecsize)
+        if (numtokens == vecsize)
             throw opp_runtime_error("Too many tokens on a line, max %d allowed", vecsize-1);
         vec[numtokens++] = token;
     }

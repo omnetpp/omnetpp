@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cstring>
 #include "omnetpp/platdep/platmisc.h"
 #include "fileglobber.h"
@@ -23,7 +22,7 @@
 
 #include <io.h>
 #include <direct.h>
-#include <cstdlib> // _MAX_PATH
+#include <cstdlib>  // _MAX_PATH
 
 NAMESPACE_BEGIN
 namespace common {
@@ -50,12 +49,10 @@ FileGlobber::~FileGlobber()
 
 const char *FileGlobber::getNext()
 {
-    if (!data)
-    {
+    if (!data) {
         // first call
         data = new GlobPrivateData();
-        if (!strchr(fnamepattern.c_str(),'*') && !strchr(fnamepattern.c_str(),'?'))
-        {
+        if (!strchr(fnamepattern.c_str(), '*') && !strchr(fnamepattern.c_str(), '?')) {
             data->nowildcard = true;
             return fnamepattern.c_str();
         }
@@ -63,48 +60,46 @@ const char *FileGlobber::getNext()
         data->nowildcard = false;
 
         // remember directory in data->dir
-        strcpy(data->dir,fnamepattern.c_str());
+        strcpy(data->dir, fnamepattern.c_str());
         char *s = data->dir + strlen(data->dir);
-        while (--s>=data->dir)
-            if (*s=='/' || *s=='\\')
+        while (--s >= data->dir)
+            if (*s == '/' || *s == '\\')
                 break;
-        *(s+1)='\0';  // points (s+1) points either after last "/" or at beg of string.
 
-        if (strchr(data->dir,'*') || strchr(data->dir,'?'))
+        *(s+1) = '\0';  // points (s+1) points either after last "/" or at beg of string.
+
+        if (strchr(data->dir, '*') || strchr(data->dir, '?'))
             throw std::runtime_error(std::string(data->dir)+": wildcard characters in directory names are not allowed");
 
         // get first file
         data->handle = _findfirst(fnamepattern.c_str(), &data->fdata);
-        if (data->handle<0)
-        {
+        if (data->handle < 0) {
             _findclose(data->handle);
             return nullptr;
         }
 
         // concat file name on directory
-        strcpy(data->tmpfname,data->dir);
-        strcat(data->tmpfname,data->fdata.name);
+        strcpy(data->tmpfname, data->dir);
+        strcat(data->tmpfname, data->fdata.name);
         return data->tmpfname;
     }
-    else
-    {
+    else {
         // subsequent calls
         if (data->nowildcard)
             return nullptr;
-        int done=_findnext(data->handle, &data->fdata);
-        if (done)
-        {
+        int done = _findnext(data->handle, &data->fdata);
+        if (done) {
             _findclose(data->handle);
             return nullptr;
         }
         // concat file name on directory
-        strcpy(data->tmpfname,data->dir);
-        strcat(data->tmpfname,data->fdata.name);
+        strcpy(data->tmpfname, data->dir);
+        strcat(data->tmpfname, data->fdata.name);
         return data->tmpfname;
     }
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 
 #elif defined __ANDROID__
@@ -144,7 +139,7 @@ const char *FileGlobber::getNext()
         // first call
         data = new GlobPrivateData();
 
-        if (!strchr(fnamepattern.c_str(),'*') && !strchr(fnamepattern.c_str(),'?')) {
+        if (!strchr(fnamepattern.c_str(), '*') && !strchr(fnamepattern.c_str(), '?')) {
             data->nowildcard = true;
             return fnamepattern.c_str();
         }
@@ -152,66 +147,68 @@ const char *FileGlobber::getNext()
         data->nowildcard = false;
 
         // remember directory in data->dir
-        strcpy(data->dir,fnamepattern.c_str());
+        strcpy(data->dir, fnamepattern.c_str());
         char *s = data->dir + strlen(data->dir);
-        while (--s>=data->dir)
-            if (*s=='/' || *s=='\\')
+        while (--s >= data->dir)
+            if (*s == '/' || *s == '\\')
                 break;
-        *(s+1)='\0';  // points (s+1) points either after last "/" or at beginning of string.
 
-        if (strchr(data->dir,'*') || strchr(data->dir,'?'))
+        *(s+1) = '\0';  // points (s+1) points either after last "/" or at beginning of string.
+
+        if (strchr(data->dir, '*') || strchr(data->dir, '?'))
             throw std::runtime_error(std::string(data->dir)+": wildcard characters in directory names are not allowed");
 
-	// get first file
-	errno = 0;
+        // get first file
+        errno = 0;
 
-	if (std::string(data->dir).size() == 0)
-	    data->pdir = opendir(".");
-	else
-	    data->pdir = opendir(data->dir);
+        if (std::string(data->dir).size() == 0)
+            data->pdir = opendir(".");
+        else
+            data->pdir = opendir(data->dir);
 
-	if (!data->pdir)
-	    throw std::runtime_error(std::string(data->dir)+": directory cannot be opened");
+        if (!data->pdir)
+            throw std::runtime_error(std::string(data->dir)+": directory cannot be opened");
 
-	data->pent = readdir(data->pdir);
+        data->pent = readdir(data->pdir);
 
-	if (errno)
-	    throw std::runtime_error(std::string(data->dir)+": cannot read directory");
+        if (errno)
+            throw std::runtime_error(std::string(data->dir)+": cannot read directory");
 
-	if (!data->pent)
-	    return nullptr;
+        if (!data->pent)
+            return nullptr;
 
-	if (fnmatch( fnamepattern.c_str(), data->pent->d_name, 0 ) != 0)
-	    return getNext();
+        if (fnmatch(fnamepattern.c_str(), data->pent->d_name, 0) != 0)
+            return getNext();
 
         // concat file name on directory
-        strcpy(data->tmpfname,data->dir);
-        strcat(data->tmpfname,data->pent->d_name);
+        strcpy(data->tmpfname, data->dir);
+        strcat(data->tmpfname, data->pent->d_name);
         return data->tmpfname;
-    } else {
+    }
+    else {
         // subsequent calls
         if (data->nowildcard)
             return nullptr;
 
-	data->pent = readdir(data->pdir);
-	if (errno)
-	    throw std::runtime_error(std::string(data->dir)+": cannot read directory");
+        data->pent = readdir(data->pdir);
+        if (errno)
+            throw std::runtime_error(std::string(data->dir)+": cannot read directory");
 
-	if (!data->pent) {
-	    return nullptr;
-	}
+        if (!data->pent) {
+            return nullptr;
+        }
 
-	if (fnmatch(fnamepattern.c_str(), data->pent->d_name, 0 ) != 0)
+        if (fnmatch(fnamepattern.c_str(), data->pent->d_name, 0) != 0)
             return getNext();
 
         // concat file name on directory
-        strcpy(data->tmpfname,data->dir);
-        strcat(data->tmpfname,data->pent->d_name);
+        strcpy(data->tmpfname, data->dir);
+        strcat(data->tmpfname, data->pent->d_name);
         return data->tmpfname;
     }
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 
 #else
@@ -242,34 +239,30 @@ FileGlobber::~FileGlobber()
 
 const char *FileGlobber::getNext()
 {
-    if (!data)
-    {
+    if (!data) {
         data = new GlobPrivateData();
-        if (!strchr(fnamepattern.c_str(),'*') && !strchr(fnamepattern.c_str(),'?'))
-        {
+        if (!strchr(fnamepattern.c_str(), '*') && !strchr(fnamepattern.c_str(), '?')) {
             data->nowildcard = true;
             return fnamepattern.c_str();
         }
 
         data->nowildcard = false;
-        if (glob(fnamepattern.c_str(), 0, nullptr, &data->globdata)!=0)
+        if (glob(fnamepattern.c_str(), 0, nullptr, &data->globdata) != 0)
             return nullptr;
         data->globpos = 0;
         return data->globdata.gl_pathv[data->globpos++];
     }
-    else
-    {
+    else {
         if (data->nowildcard)
             return nullptr;
         return data->globdata.gl_pathv[data->globpos++];
     }
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 
 #endif
-
 
 NAMESPACE_BEGIN
 namespace common {
@@ -278,11 +271,11 @@ std::vector<std::string> FileGlobber::getFilenames()
 {
     std::vector<std::string> v;
     const char *filename;
-    while ((filename=getNext())!=nullptr)
+    while ((filename = getNext()) != nullptr)
         v.push_back(filename);
     return v;
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 

@@ -27,8 +27,8 @@ namespace common {
 class PThreadInit
 {
   public:
-    PThreadInit() { pthread_win32_process_attach_np (); }
-    ~PThreadInit() { pthread_win32_process_detach_np (); }
+    PThreadInit() { pthread_win32_process_attach_np(); }
+    ~PThreadInit() { pthread_win32_process_detach_np(); }
 };
 
 static PThreadInit dummy;
@@ -37,21 +37,19 @@ static PThreadInit dummy;
 
 void ReentrantReadWriteLock::deleteThreadLocalState(void *tls)
 {
-    if (tls)
-    {
-        delete (ThreadLocalState*)tls;
+    if (tls) {
+        delete (ThreadLocalState *)tls;
     }
 }
 
 inline void handleErrors(int rc, const char *msg)
 {
-    switch (rc)
-    {
-    case 0: return;
-    case EAGAIN: throw opp_runtime_error("%s (resource limit exceeded).", msg);
-    case EINVAL: throw opp_runtime_error("%s (invalid argument error).", msg);
-    case ENOMEM: throw opp_runtime_error("%s (out of memory).", msg);
-    default: throw opp_runtime_error("%s (unknown error, errno = %d).", msg, rc);
+    switch (rc) {
+        case 0: return;
+        case EAGAIN: throw opp_runtime_error("%s (resource limit exceeded).", msg);
+        case EINVAL: throw opp_runtime_error("%s (invalid argument error).", msg);
+        case ENOMEM: throw opp_runtime_error("%s (out of memory).", msg);
+        default: throw opp_runtime_error("%s (unknown error, errno = %d).", msg, rc);
     }
 }
 
@@ -70,15 +68,13 @@ ReentrantReadWriteLock::~ReentrantReadWriteLock()
     pthread_key_delete(key);
 }
 
-ReentrantReadWriteLock::ThreadLocalState &ReentrantReadWriteLock::getThreadLocalState()
+ReentrantReadWriteLock::ThreadLocalState& ReentrantReadWriteLock::getThreadLocalState()
 {
-    ThreadLocalState *tls = (ThreadLocalState*)pthread_getspecific(key);
-    if (!tls)
-    {
+    ThreadLocalState *tls = (ThreadLocalState *)pthread_getspecific(key);
+    if (!tls) {
         tls = new ThreadLocalState();
         int rc = pthread_setspecific(key, tls);
-        if (rc)
-        {
+        if (rc) {
             delete tls;
             handleErrors(rc, "Can not set thread local data");
         }
@@ -89,16 +85,14 @@ ReentrantReadWriteLock::ThreadLocalState &ReentrantReadWriteLock::getThreadLocal
 
 void ReentrantReadWriteLock::lockRead()
 {
-    ThreadLocalState &tls = getThreadLocalState();
+    ThreadLocalState& tls = getThreadLocalState();
 
-    if (tls.readLockCount > 0)
-    {
+    if (tls.readLockCount > 0) {
         ++tls.readLockCount;
         return;
     }
 
-    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread))
-    {
+    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread)) {
         ++tls.readLockCount;
         return;
     }
@@ -111,32 +105,29 @@ void ReentrantReadWriteLock::lockRead()
 
 bool ReentrantReadWriteLock::tryLockRead()
 {
-    ThreadLocalState &tls = getThreadLocalState();
+    ThreadLocalState& tls = getThreadLocalState();
 
-    if (tls.readLockCount > 0)
-    {
+    if (tls.readLockCount > 0) {
         ++tls.readLockCount;
         return true;
     }
 
-    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread))
-    {
+    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread)) {
         ++tls.readLockCount;
         return true;
     }
 
     int rc = pthread_rwlock_tryrdlock(&rwlock);
-    switch (rc)
-    {
-    case 0: ++tls.readLockCount; return true;
-    case EBUSY: return false;
-    default: handleErrors(rc, "Error in tryLockRead()"); return false;
+    switch (rc) {
+        case 0: ++tls.readLockCount; return true;
+        case EBUSY: return false;
+        default: handleErrors(rc, "Error in tryLockRead()"); return false;
     }
 }
 
 bool ReentrantReadWriteLock::hasReadLock()
 {
-    ThreadLocalState &tls = getThreadLocalState();
+    ThreadLocalState& tls = getThreadLocalState();
     return tls.readLockCount > 0;
 }
 
@@ -144,15 +135,13 @@ void ReentrantReadWriteLock::lockWrite()
 {
     int rc;
 
-    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread))
-    {
+    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread)) {
         ++writeLockCount;
         return;
     }
 
-    ThreadLocalState &tls = getThreadLocalState();
-    if (tls.readLockCount > 0)
-    {
+    ThreadLocalState& tls = getThreadLocalState();
+    if (tls.readLockCount > 0) {
         // unlock the reader, and lock it again when the write unlocked and readerLockCount > 0
         rc = pthread_rwlock_unlock(&rwlock);
         handleErrors(rc, "Can not release read lock before acquiring write lock");
@@ -169,38 +158,36 @@ bool ReentrantReadWriteLock::tryLockWrite()
 {
     int rc;
 
-    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread))
-    {
+    if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread)) {
         ++writeLockCount;
         return true;
     }
 
-    ThreadLocalState &tls = getThreadLocalState();
-    if (tls.readLockCount > 0)
-    {
+    ThreadLocalState& tls = getThreadLocalState();
+    if (tls.readLockCount > 0) {
         // unlock the reader, and lock it again when the write unlocked and readerLockCount > 0
         rc = pthread_rwlock_unlock(&rwlock);
         handleErrors(rc, "Can not release read lock before acquiring write lock");
     }
 
     rc = pthread_rwlock_trywrlock(&rwlock);
-    switch (rc)
-    {
-    case 0:
-        writerThread = pthread_self();
-        writeLockCount = 1;
-        return true;
-    case EBUSY:
-        if (tls.readLockCount > 0)
-        {
-            // FIXME we might loose the read lock as a result of tryLockWrite()
-            rc = pthread_rwlock_rdlock(&rwlock);
-            handleErrors(rc, "Can not reacquire read lock in tryLockWrite()");
-        }
-        return false;
-    default:
-        handleErrors(rc, "Error in tryLockWrite()");
-        return false; // unreachable
+    switch (rc) {
+        case 0:
+            writerThread = pthread_self();
+            writeLockCount = 1;
+            return true;
+
+        case EBUSY:
+            if (tls.readLockCount > 0) {
+                // FIXME we might loose the read lock as a result of tryLockWrite()
+                rc = pthread_rwlock_rdlock(&rwlock);
+                handleErrors(rc, "Can not reacquire read lock in tryLockWrite()");
+            }
+            return false;
+
+        default:
+            handleErrors(rc, "Error in tryLockWrite()");
+            return false;  // unreachable
     }
 }
 
@@ -211,7 +198,7 @@ bool ReentrantReadWriteLock::hasWriteLock()
 
 void ReentrantReadWriteLock::unlockRead()
 {
-    ThreadLocalState &tls = getThreadLocalState();
+    ThreadLocalState& tls = getThreadLocalState();
 
     if (tls.readLockCount == 0)
         throw opp_runtime_error("Missing lockRead() call");
@@ -221,8 +208,7 @@ void ReentrantReadWriteLock::unlockRead()
     if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread))
         return;
 
-    if (tls.readLockCount == 0)
-    {
+    if (tls.readLockCount == 0) {
         int rc = pthread_rwlock_unlock(&rwlock);
         handleErrors(rc, "Can not release read lock");
     }
@@ -235,22 +221,20 @@ void ReentrantReadWriteLock::unlockWrite()
 
     --writeLockCount;
 
-    if (writeLockCount == 0)
-    {
+    if (writeLockCount == 0) {
         // release write lock
         int rc = pthread_rwlock_unlock(&rwlock);
         handleErrors(rc, "Can not release write lock");
 
         // reacquire read lock when needed
-        ThreadLocalState &tls = getThreadLocalState();
-        if (tls.readLockCount > 0)
-        {
+        ThreadLocalState& tls = getThreadLocalState();
+        if (tls.readLockCount > 0) {
             rc = pthread_rwlock_rdlock(&rwlock);
             handleErrors(rc, "Can not reacquire read lock after releasing write lock");
         }
     }
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 

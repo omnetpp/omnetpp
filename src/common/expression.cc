@@ -24,13 +24,12 @@
 NAMESPACE_BEGIN
 namespace common {
 
-
-#define E_ESTKOFLOW   "Stack overflow"
-#define E_ESTKUFLOW   "Stack underflow"
-#define E_EBADARGS    "Wrong arguments for '%s'"
-#define E_BADEXP      "Malformed expression"
-#define E_ECANTCAST   "Cannot cast to %s"
-#define E_DIMLESS     "Error in expression: `%s': argument(s) must be dimensionless"
+#define E_ESTKOFLOW    "Stack overflow"
+#define E_ESTKUFLOW    "Stack underflow"
+#define E_EBADARGS     "Wrong arguments for '%s'"
+#define E_BADEXP       "Malformed expression"
+#define E_ECANTCAST    "Cannot cast to %s"
+#define E_DIMLESS      "Error in expression: `%s': argument(s) must be dimensionless"
 
 StringPool Expression::Elem::stringPool;
 
@@ -41,24 +40,23 @@ void Expression::Elem_eq(Elem& e, const Elem& other)
 
     memcpy(&e, &other, sizeof(Elem));
 
-    if (e.type==Elem::STR)
+    if (e.type == Elem::STR)
         e.s = opp_strdup(e.s);
-    else if (e.type==Elem::FUNCTOR)
+    else if (e.type == Elem::FUNCTOR)
         e.fu = e.fu->dup();
 }
 
 // should be member of Elem, but the VC++ 9.0 linker disagrees
 int Expression::Elem_getNumArgs(const Elem& e)
 {
-    switch(e.type)
-    {
+    switch (e.type) {
         case Elem::UNDEF: case Elem::BOOL: case Elem::DBL: case Elem::STR:
             return 0;
         case Elem::FUNCTOR:
             return e.getFunctor()->getNumArgs();
             break;
         case Elem::OP:
-            switch(e.getOp()) {
+            switch (e.getOp()) {
                 case NEG: case NOT: case BIN_NOT: return 1;
                 case IIF: return 3;
                 default: return 2;
@@ -67,12 +65,11 @@ int Expression::Elem_getNumArgs(const Elem& e)
     }
 }
 
-//std::string Expression::Elem::str() const
+// std::string Expression::Elem::str() const
 std::string Expression::Elem_str(int type, bool b, double d, const char *s, Functor *fu, int op)
 {
     std::stringstream os;
-    switch(type)
-    {
+    switch (type) {
         case Elem::UNDEF: os << "<undefined>"; break;
         case Elem::BOOL: os << (b ? "true" : "false"); break;
         case Elem::DBL: os << d; break;
@@ -87,8 +84,7 @@ std::string Expression::Elem_str(int type, bool b, double d, const char *s, Func
 std::string Expression::Value::str()
 {
     char buf[32];
-    switch (type)
-    {
+    switch (type) {
       case BOOL: return bl ? "true" : "false";
       case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
       case STR:  return opp_quotestr(s.c_str());
@@ -101,8 +97,8 @@ std::string Expression::Function_str(const char *name, std::string args[], int n
 {
     std::stringstream os;
     os << name << "(";
-    for (int i=0; i<numargs; i++)
-        os << (i==0 ? "" : ", ") << args[i];
+    for (int i = 0; i < numargs; i++)
+        os << (i == 0 ? "" : ", ") << args[i];
     os << ")";
     return os.str();
 }
@@ -115,33 +111,34 @@ Expression::Expression()
 
 Expression::~Expression()
 {
-    delete [] elems;
+    delete[] elems;
 }
 
 void Expression::copy(const Expression& other)
 {
-    delete [] elems;
+    delete[] elems;
     nelems = other.nelems;
     elems = new Elem[nelems];
-    for (int i=0; i<nelems; i++)
+    for (int i = 0; i < nelems; i++)
         elems[i] = other.elems[i];
 }
 
 Expression& Expression::operator=(const Expression& other)
 {
-    if (this==&other) return *this;
+    if (this == &other)
+        return *this;
     copy(other);
     return *this;
 }
 
 void Expression::setExpression(Elem e[], int n)
 {
-    delete [] elems;
+    delete[] elems;
     elems = e;
     nelems = n;
 }
 
-#define ulong(x) ((unsigned long)(x))
+#define ulong(x)    ((unsigned long)(x))
 
 Expression::Value Expression::evaluate() const
 {
@@ -152,8 +149,7 @@ Expression::Value Expression::evaluate() const
     for (int i = 0; i < nelems; i++)
     {
        Elem& e = elems[i];
-       switch (e.type)
-       {
+       switch (e.type) {
            case Elem::BOOL:
              if (tos>=stksize-1)
                  throw opp_runtime_error(E_ESTKOFLOW);
@@ -193,8 +189,7 @@ Expression::Value Expression::evaluate() const
                  // unary
                  if (tos<0)
                      throw opp_runtime_error(E_ESTKUFLOW);
-                 switch (e.op)
-                 {
+                 switch (e.op) {
                      case NEG:
                          if (stk[tos].type!=Value::DBL)
                              throw opp_runtime_error(E_EBADARGS,"-");
@@ -231,8 +226,7 @@ Expression::Value Expression::evaluate() const
                  // binary
                  if (tos<1)
                      throw opp_runtime_error(E_ESTKUFLOW);
-                 switch(e.op)
-                 {
+                 switch (e.op) {
                    case ADD:
                        // double addition or string concatenation
                        if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL) {
@@ -386,7 +380,7 @@ Expression::Value Expression::evaluate() const
              throw opp_runtime_error(E_BADEXP);
        }
     }
-    if (tos!=0)
+    if (tos != 0)
         throw opp_runtime_error(E_BADEXP);
 
     return stk[tos];
@@ -395,32 +389,32 @@ Expression::Value Expression::evaluate() const
 bool Expression::boolValue()
 {
     Value v = evaluate();
-    if (v.type!=Value::BOOL)
-        throw opp_runtime_error(E_ECANTCAST,"bool");
+    if (v.type != Value::BOOL)
+        throw opp_runtime_error(E_ECANTCAST, "bool");
     return v.bl;
 }
 
 long Expression::longValue(const char *expectedUnit)
 {
     Value v = evaluate();
-    if (v.type!=Value::DBL)
-        throw opp_runtime_error(E_ECANTCAST,"long");
+    if (v.type != Value::DBL)
+        throw opp_runtime_error(E_ECANTCAST, "long");
     return (long)(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
 }
 
 double Expression::doubleValue(const char *expectedUnit)
 {
     Value v = evaluate();
-    if (v.type!=Value::DBL)
-        throw opp_runtime_error(E_ECANTCAST,"double");
+    if (v.type != Value::DBL)
+        throw opp_runtime_error(E_ECANTCAST, "double");
     return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
 }
 
 std::string Expression::stringValue()
 {
     Value v = evaluate();
-    if (v.type!=Value::STR)
-        throw opp_runtime_error(E_ECANTCAST,"string");
+    if (v.type != Value::STR)
+        throw opp_runtime_error(E_ECANTCAST, "string");
     return v.s;
 }
 
@@ -430,8 +424,7 @@ std::string Expression::str() const
     // only instead of actual calculations we store the result as string.
     // We need to keep track of operator precendences to be able to add parens where needed.
 
-    try
-    {
+    try {
         const int stksize = 20;
         std::string strstk[stksize];
         int pristk[stksize];
@@ -440,8 +433,7 @@ std::string Expression::str() const
         for (int i = 0; i < nelems; i++)
         {
            Elem& e = elems[i];
-           switch (e.type)
-           {
+           switch (e.type) {
                case Elem::BOOL:
                  if (tos>=stksize-1)
                      throw opp_runtime_error(E_ESTKOFLOW);
@@ -481,8 +473,7 @@ std::string Expression::str() const
                      if (tos<0)
                          throw opp_runtime_error(E_ESTKUFLOW);
                      const char *op;
-                     switch (e.op)
-                     {
+                     switch (e.op) {
                          case NEG: op=" -"; break;
                          case NOT: op=" !"; break;
                          case BIN_NOT: op=" ~"; break;
@@ -506,8 +497,7 @@ std::string Expression::str() const
                          throw opp_runtime_error(E_ESTKUFLOW);
                      int pri;
                      const char *op;
-                     switch(e.op)
-                     {
+                     switch (e.op) {
                          //
                          // Precedences, based on expr.y:
                          //   prec=7: && || ##
@@ -563,12 +553,11 @@ std::string Expression::str() const
                  throw opp_runtime_error(E_BADEXP);
            }
         }
-        if (tos!=0)
+        if (tos != 0)
             throw opp_runtime_error(E_BADEXP);
         return strstk[tos];
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         std::string ret = std::string("[[ ") + e.what() + " ]]";
         return ret;
     }
@@ -582,16 +571,15 @@ void Expression::parse(const char *text, Resolver *resolver)
 
 bool Expression::isAConstant() const
 {
-    for (int i=0; i<nelems; i++)
-    {
-        switch(elems[i].type)
-        {
+    for (int i = 0; i < nelems; i++) {
+        switch (elems[i].type) {
             // literals and anything calculated from them are OK
             case Elem::BOOL:
             case Elem::DBL:
             case Elem::STR:
             case Elem::OP:
-                continue; //OK
+                continue;  // OK
+
             default:
                 return false;
         }
@@ -601,10 +589,10 @@ bool Expression::isAConstant() const
 
 //----------------------
 
-#define F0(name)   {#name, (double(*)(...)) (double(*)())name, 0}
-#define F1(name)   {#name, (double(*)(...)) (double(*)(double))name, 1}
-#define F2(name)   {#name, (double(*)(...)) (double(*)(double,double))name, 2}
-#define F3(name)   {#name, (double(*)(...)) (double(*)(double,double,double))name, 3}
+#define F0(name)    { #name, (double (*)(...))(double (*)())name, 0 }
+#define F1(name)    { #name, (double (*)(...))(double (*)(double))name, 1 }
+#define F2(name)    { #name, (double (*)(...))(double (*)(double, double))name, 2 }
+#define F3(name)    { #name, (double (*)(...))(double (*)(double, double, double))name, 3 }
 
 MathFunction::FuncDesc MathFunction::functable[] = {
     F1(acos),
@@ -624,7 +612,7 @@ MathFunction::FuncDesc MathFunction::functable[] = {
     F2(hypot),
     F1(log),
     F1(log10),
-    {nullptr, nullptr, 0}
+    { nullptr, nullptr, 0 }
 };
 
 MathFunction::MathFunction(const char *name)
@@ -648,27 +636,28 @@ Expression::Functor *MathFunction::dup() const
 
 const char *MathFunction::getName() const
 {
-     return funcname.c_str();
+    return funcname.c_str();
 }
 
 MathFunction::FuncDesc *MathFunction::lookup(const char *name)
 {
-    for (FuncDesc *f = functable; f->name!=nullptr; f++)
-        if (strcmp(f->name, name)==0)
+    for (FuncDesc *f = functable; f->name != nullptr; f++)
+        if (strcmp(f->name, name) == 0)
             return f;
+
     return nullptr;
 }
 
 bool MathFunction::supports(const char *name)
 {
-    return lookup(name)!=nullptr;
+    return lookup(name) != nullptr;
 }
 
 const char *MathFunction::getArgTypes() const
 {
     Assert(Expression::Value::DBL == 'D');
     FuncDesc *fd = lookup(funcname.c_str());
-    int n = fd==nullptr ? 0 : fd->argcount;
+    int n = fd == nullptr ? 0 : fd->argcount;
     const char *ddd = "DDDDDDDDDDDDDDDDDD";
     return ddd+strlen(ddd)-n;
 }
@@ -681,8 +670,7 @@ char MathFunction::getReturnType() const
 Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
 {
     Assert(numargs==argcount);
-    switch (numargs)
-    {
+    switch (numargs) {
         case 0: return f();
         case 1: return f(args[0].dbl);
         case 2: return f(args[0].dbl, args[1].dbl);

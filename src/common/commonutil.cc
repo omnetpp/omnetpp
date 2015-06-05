@@ -62,12 +62,12 @@ const char *opp_gethostname()
 
 int CallTracer::depth;
 
-CallTracer::CallTracer(const char *fmt,...)
+CallTracer::CallTracer(const char *fmt, ...)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, fmt);
     funcname = buf;
-    std::cout << std::setw(depth++*2) << "" << " ++ " << funcname << std::endl;
+    std::cout << std::setw(depth++ *2) << "" << " ++ " << funcname << std::endl;
 }
 
 CallTracer::~CallTracer()

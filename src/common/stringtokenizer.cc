@@ -26,7 +26,6 @@
 NAMESPACE_BEGIN
 namespace common {
 
-
 StringTokenizer::StringTokenizer(const char *s, const char *delim)
 {
     if (!s)
@@ -35,13 +34,13 @@ StringTokenizer::StringTokenizer(const char *s, const char *delim)
         delim = " \t\n\r\f";
     delimiter = delim;
     str = new char[strlen(s)+1];
-    strcpy(str,s);
+    strcpy(str, s);
     rest = str;
 }
 
 StringTokenizer::~StringTokenizer()
 {
-    delete [] str;
+    delete[] str;
 }
 
 void StringTokenizer::setDelimiter(const char *delim)
@@ -51,20 +50,23 @@ void StringTokenizer::setDelimiter(const char *delim)
     delimiter = delim;
 }
 
-inline void skipDelimiters(char *&s, const char *delims)
+inline void skipDelimiters(char *& s, const char *delims)
 {
-    while (*s && strchr(delims, *s)!=nullptr) s++;
+    while (*s && strchr(delims, *s) != nullptr)
+        s++;
 }
 
-inline void skipToken(char *&s, const char *delims)
+inline void skipToken(char *& s, const char *delims)
 {
-    while (*s && strchr(delims, *s)==nullptr) s++;
+    while (*s && strchr(delims, *s) == nullptr)
+        s++;
 }
 
 const char *StringTokenizer::nextToken()
 {
     skipDelimiters(rest, delimiter.c_str());
-    if (!*rest) return nullptr;
+    if (!*rest)
+        return nullptr;
     const char *token = rest;
     skipToken(rest, delimiter.c_str());
     if (*rest)
@@ -82,11 +84,11 @@ std::vector<std::string> StringTokenizer::asVector()
 {
     const char *s;
     std::vector<std::string> v;
-    while ((s=nextToken())!=nullptr)
+    while ((s = nextToken()) != nullptr)
         v.push_back(std::string(s));
     return v;
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 

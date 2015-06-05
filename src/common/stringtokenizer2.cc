@@ -35,7 +35,6 @@ StringTokenizerException::StringTokenizerException(const char *messagefmt, ...) 
     errormsg = buf;
 }
 
-
 StringTokenizer2::StringTokenizer2(const char *s, const char *delim, const char *parens, const char *quotes)
     : tokenStart(-1), tokenEnd(-1)
 {
@@ -99,43 +98,36 @@ char *StringTokenizer2::readToken()
     // copy the token to the beginning of buffer
     dst = str;
 
-    while (src < end)
-    {
+    while (src < end) {
         char ch = *src;
 
-        if (ch == '\\')
-        {
+        if (ch == '\\') {
             char next = *(src+1);
-            if (next && (next == '\\' || isQuote(next) || isParen(next) || isDelimiter(next)) )
-            {
+            if (next && (next == '\\' || isQuote(next) || isParen(next) || isDelimiter(next))) {
                 if (quoteChar)
-                    *dst++ = ch; // preserve \ within quotes
+                    *dst++ = ch;  // preserve \ within quotes
                 *dst++ = next;
                 src += 2;
                 continue;
             }
         }
 
-        if (quoteChar) // within quote
-        {
+        if (quoteChar) {  // within quote
             if (ch == quoteChar)
                 quoteChar = 0;
         }
-        else if (isQuote(ch)) // start quote
+        else if (isQuote(ch))  // start quote
             quoteChar = ch;
-        else if ((pos=parenChars.find(ch)) != std::string::npos) // paren
-        {
-            if (pos % 2 == 0) // open
+        else if ((pos = parenChars.find(ch)) != std::string::npos) {  // paren
+            if (pos % 2 == 0)  // open
                 parens.push(ch);
-            else // close
-            {
+            else {  // close
                 if (parens.empty() || parens.top() != parenChars[pos-1])
                     throw StringTokenizerException("Unmatched closing parenthesis: %c.", ch);
                 parens.pop();
             }
         }
-        if (parens.empty() && !quoteChar && isDelimiter(ch)) // delim
-        {
+        if (parens.empty() && !quoteChar && isDelimiter(ch)) {  // delim
             break;
         }
 
@@ -158,25 +150,22 @@ bool StringTokenizer2::hasMoreTokens()
     return *src;
 }
 
-
 const char *StringTokenizer2::nextToken()
 {
     skipDelimiters();
-    if (*src)
-    {
+    if (*src) {
         tokenStart = src - str;
         char *ptr = readToken();
         tokenEnd = src - str;
         return ptr;
     }
-    else
-    {
+    else {
         tokenStart = -1;
         tokenEnd = -1;
         return nullptr;
     }
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 

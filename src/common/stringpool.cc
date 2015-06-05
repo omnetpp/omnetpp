@@ -25,35 +25,35 @@ StringPool::StringPool()
 
 StringPool::~StringPool()
 {
-    for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
-        delete [] *it;
-    //XXX this one may be faster, test:
-    //while (pool.size()>0) {
+    for (StringSet::iterator it = pool.begin(); it != pool.end(); ++it)
+        delete[] *it;
+    // XXX this one may be faster, test:
+    // while (pool.size()>0) {
     //    delete [] *pool.begin();
     //    pool.erase(pool.begin());
-    //}
+    // }
 }
 
 void StringPool::clear()
 {
-    for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
-        delete [] *it;
+    for (StringSet::iterator it = pool.begin(); it != pool.end(); ++it)
+        delete[] *it;
     pool.clear();
 }
 
 const char *StringPool::get(const char *s)
 {
-    if (s==nullptr)
-        return ""; // must not be nullptr because SWIG-generated code will crash!
+    if (s == nullptr)
+        return "";  // must not be nullptr because SWIG-generated code will crash!
     StringSet::iterator it = pool.find(const_cast<char *>(s));
-    if (it!=pool.end())
+    if (it != pool.end())
         return *it;
     char *str = new char[strlen(s)+1];
-    strcpy(str,s);
+    strcpy(str, s);
     pool.insert(str);
     return str;
 }
 
-} // namespace common
+}  // namespace common
 NAMESPACE_END
 
