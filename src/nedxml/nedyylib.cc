@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cassert>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
@@ -34,9 +33,10 @@ LineColumn pos, prevpos;
 std::string slashifyFilename(const char *fname)
 {
     std::string fnamewithslash = np->getFileName();
-    for (char *s=const_cast<char *>(fnamewithslash.data()); *s; s++)
-        if (*s=='\\')
-            *s='/';
+    for (char *s = const_cast<char *>(fnamewithslash.data()); *s; s++)
+        if (*s == '\\')
+            *s = '/';
+
     return fnamewithslash;
 }
 
@@ -48,7 +48,7 @@ const char *toString(YYLTYPE pos)
 const char *toString(long l)
 {
     static char buf[32];
-    sprintf(buf,"%ld", l);
+    sprintf(buf, "%ld", l);
     return buf;
 }
 
@@ -56,16 +56,17 @@ std::string removeSpaces(YYLTYPE pos)
 {
     const char *s = np->getSource()->get(pos);
     std::string result;
-    for (; *s; s++)
+    for ( ; *s; s++)
         if (!opp_isspace(*s))
             result += *s;
+
     return result;
 }
 
 const char *currentLocation()
 {
     static char buf[200];
-    sprintf(buf,"%s:%d", np->getFileName(), pos.li);
+    sprintf(buf, "%s:%d", np->getFileName(), pos.li);
     return buf;
 }
 
@@ -77,7 +78,7 @@ NEDElement *createElementWithTag(int tagcode, NEDElement *parent)
 
     // add to parent
     if (parent)
-       parent->appendChild(e);
+        parent->appendChild(e);
 
     return e;
 }
@@ -86,7 +87,7 @@ NEDElement *getOrCreateElementWithTag(int tagcode, NEDElement *parent)
 {
     assert(parent);
     NEDElement *e = parent->getFirstChildWithTag(tagcode);
-    return e!=nullptr ? e : createElementWithTag(tagcode, parent);
+    return e != nullptr ? e : createElementWithTag(tagcode, parent);
 }
 
 void storePos(NEDElement *node, YYLTYPE pos)
@@ -125,15 +126,14 @@ PropertyElement *addComponentProperty(NEDElement *node, const char *name)
 {
     // add propery under the ParametersElement; create that if not yet exists
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
-    if (!params)
-    {
+    if (!params) {
         params = createElementWithTag(NED_PARAMETERS, node);
 
         // move parameters section in front of potential gates, types, etc sections
         NEDElement *prev;
-        while ((prev=params->getPrevSibling())!=nullptr &&
-                 (prev->getTagCode()==NED_GATES || prev->getTagCode()==NED_TYPES ||
-                  prev->getTagCode()==NED_SUBMODULES || prev->getTagCode()==NED_CONNECTIONS))
+        while ((prev = params->getPrevSibling()) != nullptr &&
+               (prev->getTagCode() == NED_GATES || prev->getTagCode() == NED_TYPES ||
+                prev->getTagCode() == NED_SUBMODULES || prev->getTagCode() == NED_CONNECTIONS))
         {
             node->removeChild(params);
             node->insertChildBefore(prev, params);
@@ -182,7 +182,7 @@ PropertyElement *setIsNetworkProperty(NEDElement *node)
 void addComment(NEDElement *node, const char *locId, const char *text, const char *defaultValue)
 {
     // don't store empty string or the default
-    if (!text[0] || strcmp(text,defaultValue)==0)
+    if (!text[0] || strcmp(text, defaultValue) == 0)
         return;
 
     CommentElement *comment = (CommentElement *)createElementWithTag(NED_COMMENT);
@@ -232,9 +232,8 @@ void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE las
 
 void storeInnerComments(NEDElement *node, YYLTYPE pos)
 {
-    for (;;)
-    {
-        const char *comment = np->getSource()->getNextInnerComment(pos); // updates "pos"
+    for (;;) {
+        const char *comment = np->getSource()->getNextInnerComment(pos);  // updates "pos"
         if (!comment)
             break;
         addComment(node, "inner", comment, "");
@@ -243,22 +242,22 @@ void storeInnerComments(NEDElement *node, YYLTYPE pos)
 
 ParamElement *addParameter(NEDElement *params, YYLTYPE namepos)
 {
-    ParamElement *param = (ParamElement *)createElementWithTag(NED_PARAM,params);
-    param->setName( toString( namepos) );
+    ParamElement *param = (ParamElement *)createElementWithTag(NED_PARAM, params);
+    param->setName(toString(namepos));
     return param;
 }
 
 ParamElement *addParameter(NEDElement *params, const char *name, YYLTYPE namepos)
 {
-    ParamElement *param = (ParamElement *)createElementWithTag(NED_PARAM,params);
+    ParamElement *param = (ParamElement *)createElementWithTag(NED_PARAM, params);
     param->setName(name);
     return param;
 }
 
 GateElement *addGate(NEDElement *gates, YYLTYPE namepos)
 {
-    GateElement *gate = (GateElement *)createElementWithTag(NED_GATE,gates);
-    gate->setName( toString( namepos) );
+    GateElement *gate = (GateElement *)createElementWithTag(NED_GATE, gates);
+    gate->setName(toString(namepos));
     return gate;
 }
 
@@ -273,8 +272,8 @@ YYLTYPE trimQuotes(YYLTYPE vectorpos)
 YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
 {
     // should check it's really '{{' and '}}' that get chopped off
-    vectorpos.first_column+=2;
-    vectorpos.last_column-=2;
+    vectorpos.first_column += 2;
+    vectorpos.last_column -= 2;
     return vectorpos;
 }
 
@@ -294,14 +293,14 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
 
         // in the DTD, whilespaces and expressions are at front, insert there
         NEDElement *insertPos = elem->getFirstChild();
-        while (insertPos && (insertPos->getTagCode()==NED_COMMENT || insertPos->getTagCode()==NED_EXPRESSION))
+        while (insertPos && (insertPos->getTagCode() == NED_COMMENT || insertPos->getTagCode() == NED_EXPRESSION))
             insertPos = insertPos->getNextSibling();
         if (!insertPos)
             elem->appendChild(expr);
         else
             elem->insertChildBefore(insertPos, expr);
-
-    } else {
+    }
+    else {
         elem->setAttribute(attrname, toString(exprpos));
     }
 }
@@ -322,22 +321,26 @@ void swapConnection(NEDElement *conn)
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2)
 {
     std::string oldv1(node->getAttribute(attr1));
-    node->setAttribute(attr1,node->getAttribute(attr2));
-    node->setAttribute(attr2,oldv1.c_str());
+    node->setAttribute(attr1, node->getAttribute(attr2));
+    node->setAttribute(attr2, oldv1.c_str());
 }
 
 void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2)
 {
     ExpressionElement *expr1, *expr2;
-    for (expr1=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr1; expr1=expr1->getNextExpressionSibling())
-        if (!strcmp(expr1->getTarget(),attr1))
-            break;
-    for (expr2=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2=expr2->getNextExpressionSibling())
-        if (!strcmp(expr2->getTarget(),attr2))
+    for (expr1 = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr1; expr1 = expr1->getNextExpressionSibling())
+        if (!strcmp(expr1->getTarget(), attr1))
             break;
 
-    if (expr1) expr1->setTarget(attr2);
-    if (expr2) expr2->setTarget(attr1);
+    for (expr2 = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2 = expr2->getNextExpressionSibling())
+        if (!strcmp(expr2->getTarget(), attr2))
+            break;
+
+
+    if (expr1)
+        expr1->setTarget(attr2);
+    if (expr2)
+        expr2->setTarget(attr1);
 }
 
 void transferChildren(NEDElement *from, NEDElement *to)
@@ -409,8 +412,8 @@ LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a st
         if (*endp == '\0')
             isString = true;
     }
-    catch (std::exception& e) { /*not string*/ }
-
+    catch (std::exception& e) {  /*not string*/
+    }
     if (isString)
         return createStringLiteral(textpos);
     else
@@ -476,21 +479,20 @@ LiteralElement *createQuantityLiteral(YYLTYPE textpos)
 NEDElement *unaryMinus(NEDElement *node)
 {
     // if not a constant, must apply unary minus operator
-    if (node->getTagCode()!=NED_LITERAL)
+    if (node->getTagCode() != NED_LITERAL)
         return createOperator("-", node);
 
     LiteralElement *constNode = (LiteralElement *)node;
 
-    if (constNode->getType()==NED_CONST_QUANTITY)
+    if (constNode->getType() == NED_CONST_QUANTITY)
         return createOperator("-", node);
 
     // only int and real constants can be negative, string, bool, etc cannot
-    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)
-    {
-       char msg[140];
-       sprintf(msg,"unary minus not accepted before '%.100s'",constNode->getValue());
-       np->error(msg, pos.li);
-       return node;
+    if (constNode->getType() != NED_CONST_INT && constNode->getType() != NED_CONST_DOUBLE) {
+        char msg[140];
+        sprintf(msg, "unary minus not accepted before '%.100s'", constNode->getValue());
+        np->error(msg, pos.li);
+        return node;
     }
 
     // prepend the constant with a '-'
@@ -498,11 +500,12 @@ NEDElement *unaryMinus(NEDElement *node)
     buf[0] = '-';
     strcpy(buf+1, constNode->getValue());
     constNode->setValue(buf);
-    constNode->setText(buf); // for int and double literals, text and value are the same string
-    delete [] buf;
+    constNode->setText(buf);  // for int and double literals, text and value are the same string
+    delete[] buf;
 
     return node;
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
+

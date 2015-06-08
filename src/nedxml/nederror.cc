@@ -26,7 +26,6 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace nedxml {
 
-
 void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
 {
     entries.push_back(Entry());
@@ -40,8 +39,7 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, co
     e.severity = severity;
     e.message = message;
 
-    if (doprint)
-    {
+    if (doprint) {
         const char *severitytext = severityName(severity);
         if (loc && !loc[0])
             fprintf(stderr, "%s: %s\n", severitytext, message);
@@ -51,10 +49,10 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, co
             fprintf(stderr, "<%s>: %s: %s\n", context->getTagName(), severitytext, message);
         else
             fprintf(stderr, "%s: %s\n", severitytext, message);
-   }
+    }
 }
 
-#define BUFLEN  1024
+#define BUFLEN    1024
 
 void NEDErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
 {
@@ -100,54 +98,60 @@ void NEDErrorStore::add(const char *location, int severity, const char *messagef
 
 bool NEDErrorStore::containsError() const
 {
-    for (int i=0; i<(int)entries.size(); i++)
+    for (int i = 0; i < (int)entries.size(); i++)
         if (entries[i].severity == NED_SEVERITY_ERROR)
             return true;
+
     return false;
 }
 
 const char *NEDErrorStore::errorSeverity(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return nullptr;
+    if (i < 0 || i >= (int)entries.size())
+        return nullptr;
     return severityName(entries[i].severity);
 }
 
 int NEDErrorStore::errorSeverityCode(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return -1;
+    if (i < 0 || i >= (int)entries.size())
+        return -1;
     return entries[i].severity;
 }
 
 const char *NEDErrorStore::errorLocation(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return nullptr;
+    if (i < 0 || i >= (int)entries.size())
+        return nullptr;
     return entries[i].location.c_str();
 }
 
 NEDElement *NEDErrorStore::errorContext(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return nullptr;
+    if (i < 0 || i >= (int)entries.size())
+        return nullptr;
     return entries[i].context;
 }
 
 const char *NEDErrorStore::errorText(int i) const
 {
-    if (i<0 || i>=(int)entries.size()) return nullptr;
+    if (i < 0 || i >= (int)entries.size())
+        return nullptr;
     return entries[i].message.c_str();
 }
 
 int NEDErrorStore::findFirstErrorFor(NEDElement *node, int startIndex) const
 {
-    for (int i=startIndex; i<(int)entries.size(); i++)
-        if (entries[i].context==node)
+    for (int i = startIndex; i < (int)entries.size(); i++)
+        if (entries[i].context == node)
             return i;
+
     return -1;
 }
 
 const char *NEDErrorStore::severityName(int severity)
 {
-    switch (severity)
-    {
+    switch (severity) {
         case NED_SEVERITY_INFO:    return "Info";
         case NED_SEVERITY_WARNING: return "Warning";
         case NED_SEVERITY_ERROR:   return "Error";
@@ -170,8 +174,9 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
     else
         fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, message);
     // exit(-1);
-    //__asm int 3; //FIXME this windows-only
+    // __asm int 3; //FIXME this windows-only
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
+

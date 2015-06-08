@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -36,10 +35,9 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace nedxml {
 
-#define MAGIC_PREFIX   "@expr@"  // note: must agree with ned2.lex
+#define MAGIC_PREFIX    "@expr@"  // note: must agree with ned2.lex
 
 NEDParser *np;
-
 
 //--------
 
@@ -134,7 +132,7 @@ NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
     parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
     NEDElement *tree = parseNEDText(source.c_str(), "buffer");
-    return tree ? tree->getFirstChild() : nullptr; // unwrap from NedFileElement
+    return tree ? tree->getFirstChild() : nullptr;  // unwrap from NedFileElement
 }
 
 NEDElement *NEDParser::parseMSGFile(const char *osfname, const char *fname)
@@ -146,7 +144,7 @@ NEDElement *NEDParser::parseMSGFile(const char *osfname, const char *fname)
 
 NEDElement *NEDParser::parseMSGText(const char *nedtext, const char *fname)
 {
-    if (!loadText(nedtext,fname))
+    if (!loadText(nedtext, fname))
         return nullptr;
     return parseMSG();
 }
@@ -157,22 +155,26 @@ bool NEDParser::loadFile(const char *osfname, const char *fname)
         fname = osfname;
 
     // init class members
-    if (nedsource) delete nedsource;
+    if (nedsource)
+        delete nedsource;
     nedsource = new NEDFileBuffer();
     filename = fname;
     errors->clear();
 
     // resolve "~" in file name
     char osfname2[1000];
-    if (osfname[0]=='~') {
+    if (osfname[0] == '~') {
         sprintf(osfname2, "%s%s", getenv("HOME"), osfname+1);
-    } else {
+    }
+    else {
         strcpy(osfname2, osfname);
     }
 
     // load whole file into memory
-    if (!nedsource->readFile(osfname2))
-        {errors->addError("", "cannot read %s", fname); return false;}
+    if (!nedsource->readFile(osfname2)) {
+        errors->addError("", "cannot read %s", fname);
+        return false;
+    }
     return true;
 }
 
@@ -182,14 +184,17 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
         fname = "buffer";
 
     // init vars
-    if (nedsource) delete nedsource;
+    if (nedsource)
+        delete nedsource;
     nedsource = new NEDFileBuffer();
     filename = fname;
     errors->clear();
 
     // prepare nedsource object
-    if (!nedsource->setData(nedtext))
-        {errors->addError("", "unable to allocate work memory"); return false;}
+    if (!nedsource->setData(nedtext)) {
+        errors->addError("", "unable to allocate work memory");
+        return false;
+    }
     return true;
 }
 
@@ -211,29 +216,29 @@ NEDElement *NEDParser::parseMSG()
 bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
 {
     // we regard expressions to be always in the new syntax
-    if (strncmp(txt, MAGIC_PREFIX, strlen(MAGIC_PREFIX))==0)
+    if (strncmp(txt, MAGIC_PREFIX, strlen(MAGIC_PREFIX)) == 0)
         return true;
 
     // first, remove all comments and string literals
-    char *buf = new char [strlen(txt)+1];
+    char *buf = new char[strlen(txt)+1];
     const char *s;
     char *d;
     bool whitespaceOnly = true;
-    for (s=txt, d=buf; *s; )
-    {
-        if (*s=='/' && *(s+1)=='/') {
+    for (s = txt, d = buf; *s; ) {
+        if (*s == '/' && *(s+1) == '/') {
             // if there's a comment, skip rest of the line
             s += 2;
-            while (*s && *s!='\r' && *s!='\n')
+            while (*s && *s != '\r' && *s != '\n')
                 s++;
         }
-        else if (*s=='"') {
+        else if (*s == '"') {
             // leave out string literals as well
             s++;
-            while (*s && *s!='\r' && *s!='\n' && *s!='"')
-                if (*s++=='\\')
+            while (*s && *s != '\r' && *s != '\n' && *s != '"')
+                if (*s++ == '\\')
                     s++;
-            if (*s=='"')
+
+            if (*s == '"')
                 s++;
         }
         else {
@@ -242,14 +247,13 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
 
             // copy everything else
             *d++ = *s++;
-
         }
     }
     *d = '\0';
 
     // Only in NED2 are curly braces {} and "@" allowed and widely used.
     //
-    bool containsNED2Chars = strchr(buf,'{') || strchr(buf,'}') || strchr(buf,'@');
+    bool containsNED2Chars = strchr(buf, '{') || strchr(buf, '}') || strchr(buf, '@');
 
     // If needed, check whether it contains the keyword "package";
     // it is only used in NED2. We have to search "whole words only",
@@ -257,14 +261,17 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
     // Note: this is not bulletproof, because NED2 keywords were not
     // reserved in NED1.
     //
-    bool containsPackageKeyword=false;
+    bool containsPackageKeyword = false;
     if (!containsNED2Chars)
-        for (const char *s = strstr(buf,"package"); s!=nullptr; s = strstr(s+1,"package"))
-            if (opp_isspace(s[strlen("package")]) && (s==buf || opp_isspace(s[-1])))
-                {containsPackageKeyword=true; break;}
+        for (const char *s = strstr(buf, "package"); s != nullptr; s = strstr(s+1, "package"))
+            if (opp_isspace(s[strlen("package")]) && (s == buf || opp_isspace(s[-1]))) {
+                containsPackageKeyword = true;
+                break;
+            }
+
 
     // cleanup
-    delete [] buf;
+    delete[] buf;
 
     return whitespaceOnly || containsNED2Chars || containsPackageKeyword;
 }
@@ -276,5 +283,6 @@ void NEDParser::error(const char *msg, int line)
     errors->addError(os.str().c_str(), "%s", msg);
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
+

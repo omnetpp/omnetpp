@@ -29,19 +29,18 @@ namespace nedxml {
 
 using std::ostream;
 
-
 long NEDElement::lastId = 0;
 long NEDElement::numCreated = 0;
 long NEDElement::numExisting = 0;
 
 bool NEDElement::stringToBool(const char *s)
 {
-    if (!strcmp(s,"true"))
+    if (!strcmp(s, "true"))
         return true;
-    else if (!strcmp(s,"false"))
+    else if (!strcmp(s, "false"))
         return false;
     else
-        throw NEDException("invalid attribute value '%s': should be 'true' or 'false'",(s?s:""));
+        throw NEDException("invalid attribute value '%s': should be 'true' or 'false'", (s ? s : ""));
 }
 
 const char *NEDElement::boolToString(bool b)
@@ -52,31 +51,37 @@ const char *NEDElement::boolToString(bool b)
 int NEDElement::stringToEnum(const char *s, const char *vals[], int nums[], int n)
 {
     if (!s)
-        throw NEDException("attribute cannot be empty: should be one of the allowed words '%s', etc.",vals[0]);
-    for (int i=0; i<n; i++)
-        if (!strcmp(s,vals[i]))
+        throw NEDException("attribute cannot be empty: should be one of the allowed words '%s', etc.", vals[0]);
+    for (int i = 0; i < n; i++)
+        if (!strcmp(s, vals[i]))
             return nums[i];
-    if (n==0) throw NEDException("call to stringToEnum() with n=0");
-    throw NEDException("invalid attribute value '%s': should be one of the allowed words '%s', etc.",s,vals[0]);
+
+    if (n == 0)
+        throw NEDException("call to stringToEnum() with n=0");
+    throw NEDException("invalid attribute value '%s': should be one of the allowed words '%s', etc.", s, vals[0]);
 }
 
 const char *NEDElement::enumToString(int b, const char *vals[], int nums[], int n)
 {
-    for (int i=0; i<n; i++)
-        if (nums[i]==b)
+    for (int i = 0; i < n; i++)
+        if (nums[i] == b)
             return vals[i];
-    if (n==0) throw NEDException("call to enumToString() with n=0");
-    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)",b,vals[0],nums[0]);
+
+    if (n == 0)
+        throw NEDException("call to enumToString() with n=0");
+    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
 }
 
 void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
 {
     // code almost identical to enumToString()
-    for (int i=0; i<n; i++)
-        if (nums[i]==b)
+    for (int i = 0; i < n; i++)
+        if (nums[i] == b)
             return;
-    if (n==0) throw NEDException("call to validateEnum() with n=0");
-    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)",b,vals[0],nums[0]);
+
+    if (n == 0)
+        throw NEDException("call to validateEnum() with n=0");
+    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
 }
 
 NEDElement::NEDElement()
@@ -111,13 +116,11 @@ NEDElement::NEDElement(NEDElement *parent)
 
 NEDElement::~NEDElement()
 {
-    if (parent)
-    {
+    if (parent) {
         parent->removeChild(this);
     }
     delete userData;
-    while (firstChild)
-    {
+    while (firstChild) {
         delete removeChild(firstChild);
     }
     numExisting--;
@@ -134,11 +137,10 @@ NEDElement *NEDElement::dupTree() const
 void NEDElement::applyDefaults()
 {
     int n = getNumAttributes();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         const char *defaultval = getAttributeDefault(i);
         if (defaultval)
-            setAttribute(i,defaultval);
+            setAttribute(i, defaultval);
     }
 }
 
@@ -175,11 +177,9 @@ void NEDElement::setSourceRegion(const NEDSourceRegion& region)
 int NEDElement::lookupAttribute(const char *attr) const
 {
     int n = getNumAttributes();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         const char *attnamei = getAttributeName(i);
-        if (attr[0]==attnamei[0] && !strcmp(attr,attnamei))
-        {
+        if (attr[0] == attnamei[0] && !strcmp(attr, attnamei)) {
             return i;
         }
     }
@@ -195,7 +195,7 @@ const char *NEDElement::getAttribute(const char *attr) const
 void NEDElement::setAttribute(const char *attr, const char *value)
 {
     int k = lookupAttribute(attr);
-    setAttribute(k,value);
+    setAttribute(k, value);
 }
 
 const char *NEDElement::getAttributeDefault(const char *attr) const
@@ -211,7 +211,7 @@ NEDElement *NEDElement::getParent() const
 
 NEDElement *NEDElement::getFirstChild() const
 {
-   return firstChild;
+    return firstChild;
 }
 
 NEDElement *NEDElement::getLastChild() const
@@ -247,8 +247,7 @@ void NEDElement::insertChildBefore(NEDElement *where, NEDElement *node)
 {
     if (node->parent)
         node->parent->removeChild(node);
-    if (!where)
-    {
+    if (!where) {
         appendChild(node);
         return;
     }
@@ -279,9 +278,8 @@ NEDElement *NEDElement::removeChild(NEDElement *node)
 NEDElement *NEDElement::getFirstChildWithTag(int tagcode) const
 {
     NEDElement *node = firstChild;
-    while (node)
-    {
-        if (node->getTagCode()==tagcode)
+    while (node) {
+        if (node->getTagCode() == tagcode)
             return node;
         node = node->getNextSibling();
     }
@@ -291,19 +289,17 @@ NEDElement *NEDElement::getFirstChildWithTag(int tagcode) const
 NEDElement *NEDElement::getNextSiblingWithTag(int tagcode) const
 {
     NEDElement *node = this->nextSibling;
-    while (node)
-    {
-        if (node->getTagCode()==tagcode)
+    while (node) {
+        if (node->getTagCode() == tagcode)
             return node;
         node = node->getNextSibling();
     }
     return nullptr;
 }
 
-
 int NEDElement::getNumChildren() const
 {
-    int n=0;
+    int n = 0;
     for (NEDElement *node = firstChild; node; node = node->getNextSibling())
         n++;
     return n;
@@ -311,19 +307,19 @@ int NEDElement::getNumChildren() const
 
 int NEDElement::getNumChildrenWithTag(int tagcode) const
 {
-    int n=0;
+    int n = 0;
     for (NEDElement *node = firstChild; node; node = node->getNextSibling())
-        if (node->getTagCode()==tagcode)
+        if (node->getTagCode() == tagcode)
             n++;
+
     return n;
 }
 
 NEDElement *NEDElement::getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue)
 {
-    for (NEDElement *child=getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode))
-    {
+    for (NEDElement *child = getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode)) {
         const char *val = child->getAttribute(attr);
-        if (val && !strcmp(val,attrvalue))
+        if (val && !strcmp(val, attrvalue))
             return child;
     }
     return nullptr;
@@ -332,7 +328,7 @@ NEDElement *NEDElement::getFirstChildWithAttribute(int tagcode, const char *attr
 NEDElement *NEDElement::getParentWithTag(int tagcode)
 {
     NEDElement *node = this;
-    while (node && node->getTagCode()!=tagcode)
+    while (node && node->getTagCode() != tagcode)
         node = node->getParent();
     return node;
 }
@@ -348,6 +344,6 @@ NEDElementUserData *NEDElement::getUserData() const
     return userData;
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

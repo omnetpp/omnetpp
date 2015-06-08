@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -37,16 +36,16 @@ namespace nedxml {
 
 using std::ostream;
 
-#define H  (*hOutp)
-#define CC (*ccOutp)
+#define H     (*hOutp)
+#define CC    (*ccOutp)
 
 // compatibility mode makes output more similar to opp_msgc's
-//#define MSGC_COMPATIBILE
+// #define MSGC_COMPATIBILE
 
 #ifdef MSGC_COMPATIBILE
-#define PROGRAM "opp_msgc"
+#define PROGRAM    "opp_msgc"
 #else
-#define PROGRAM "nedtool"
+#define PROGRAM    "nedtool"
 #endif
 
 #ifdef MSGC_COMPATIBILE
@@ -56,7 +55,7 @@ inline std::string SL(const std::string& s)
     return s.substr(0, s.find_last_of(':'));
 }
 #else
-#define SL(x)  (x)
+#define SL(x)    (x)
 #endif
 
 inline std::string TS(const std::string& s)
@@ -73,7 +72,7 @@ std::string canonicalizeQName(const std::string& namespac, const std::string& na
 {
     std::string qname;
     if (name.find("::") != name.npos) {
-        qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
+        qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
     }
     else if (!namespac.empty() && !name.empty()) {
         qname = namespac + "::" + name;
@@ -83,7 +82,7 @@ std::string canonicalizeQName(const std::string& namespac, const std::string& na
     return qname;
 }
 
-std::ostream& operator << (std::ostream& o, const std::pair<std::string,int>& p)
+std::ostream& operator<<(std::ostream& o, const std::pair<std::string, int>& p)
 {
     return o << '(' << p.first << ':' << p.second << ')';
 }
@@ -93,11 +92,11 @@ std::string ptr2str(const char *ptr)
     return ptr ? ptr : "";
 }
 
-template <typename T>
+template<typename T>
 std::string join(const T& v, const std::string& delim)
 {
     std::ostringstream s;
-    for (typename T::const_iterator i=v.begin(); i != v.end(); ++i) {
+    for (typename T::const_iterator i = v.begin(); i != v.end(); ++i) {
         if (i != v.begin()) {
             s << delim;
         }
@@ -172,7 +171,6 @@ void MsgCppGenerator::initDescriptors()
     }
 }
 
-
 MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions& options)
 {
     initDescriptors();
@@ -241,9 +239,11 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
 
     if (type0 == "struct-decl") {
         type = STRUCT;
-    } else if (type0 == "message-decl" || type0 == "packet-decl") {
+    }
+    else if (type0 == "message-decl" || type0 == "packet-decl") {
         type = COWNEDOBJECT;
-    } else if (type0 == "class-decl") {
+    }
+    else if (type0 == "class-decl") {
         if (!isCobject) {
             type = FOREIGN;
             if (!baseclass.empty()) {
@@ -252,21 +252,26 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
         }
         else if (baseclass == "") {
             type = COWNEDOBJECT;
-        } else if (baseclass == "void") {
+        }
+        else if (baseclass == "void") {
             type = FOREIGN;
-        } else {
+        }
+        else {
             StringVector found = lookupExistingClassName(baseclass);
             if (found.size() == 1) {
                 type = getClassType(found[0]);
-            } else if (found.empty()) {
+            }
+            else if (found.empty()) {
                 errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
                 type = COBJECT;
-            } else {
+            }
+            else {
                 errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
                 type = getClassType(found[0]);
             }
         }
-    } else {
+    }
+    else {
         errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
     }
 
@@ -274,133 +279,134 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
         if (classType[classqname] != type) {
             errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
         }
-    } else {
-        //print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
+    }
+    else {
+        // print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
         classType[classqname] = type;
     }
 }
 
 const char *PARSIMPACK_BOILERPLATE =
-        "NAMESPACE_BEGIN\n"
-        "\n"
-        "// Template pack/unpack rules. They are declared *after* a1l type-specific pack functions for multiple reasons.\n"
-        "// They are in the omnetpp namespace, to allow them to be found by argument-dependent lookup via the cCommBuffer argument\n"
-        "\n"
-        "// Packing/unpacking an std::vector\n"
-        "template<typename T, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, const std::vector<T,A>& v)\n"
-        "{\n"
-        "    int n = v.size();\n"
-        "    doPacking(buffer, n);\n"
-        "    for (int i = 0; i < n; i++)\n"
-        "        doPacking(buffer, v[i]);\n"
-        "}\n"
-        "\n"
-        "template<typename T, typename A>\n"
-        "void doUnpacking(OPP::cCommBuffer *buffer, std::vector<T,A>& v)\n"
-        "{\n"
-        "    int n;\n"
-        "    doUnpacking(buffer, n);\n"
-        "    v.resize(n);\n"
-        "    for (int i = 0; i < n; i++)\n"
-        "        doUnpacking(buffer, v[i]);\n"
-        "}\n"
-        "\n"
-        "// Packing/unpacking an std::list\n"
-        "template<typename T, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, const std::list<T,A>& l)\n"
-        "{\n"
-        "    doPacking(buffer, (int)l.size());\n"
-        "    for (typename std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)\n"
-        "        doPacking(buffer, (T&)*it);\n"
-        "}\n"
-        "\n"
-        "template<typename T, typename A>\n"
-        "void doUnpacking(OPP::cCommBuffer *buffer, std::list<T,A>& l)\n"
-        "{\n"
-        "    int n;\n"
-        "    doUnpacking(buffer, n);\n"
-        "    for (int i=0; i<n; i++) {\n"
-        "        l.push_back(T());\n"
-        "        doUnpacking(buffer, l.back());\n"
-        "    }\n"
-        "}\n"
-        "\n"
-        "// Packing/unpacking an std::set\n"
-        "template<typename T, typename Tr, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, const std::set<T,Tr,A>& s)\n"
-        "{\n"
-        "    doPacking(buffer, (int)s.size());\n"
-        "    for (typename std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)\n"
-        "        doPacking(buffer, *it);\n"
-        "}\n"
-        "\n"
-        "template<typename T, typename Tr, typename A>\n"
-        "void doUnpacking(OPP::cCommBuffer *buffer, std::set<T,Tr,A>& s)\n"
-        "{\n"
-        "    int n;\n"
-        "    doUnpacking(buffer, n);\n"
-        "    for (int i=0; i<n; i++) {\n"
-        "        T x;\n"
-        "        doUnpacking(buffer, x);\n"
-        "        s.insert(x);\n"
-        "    }\n"
-        "}\n"
-        "\n"
-        "// Packing/unpacking an std::map\n"
-        "template<typename K, typename V, typename Tr, typename A>\n"
-        "void doPacking(OPP::cCommBuffer *buffer, const std::map<K,V,Tr,A>& m)\n"
-        "{\n"
-        "    doPacking(buffer, (int)m.size());\n"
-        "    for (typename std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {\n"
-        "        doPacking(buffer, it->first);\n"
-        "        doPacking(buffer, it->second);\n"
-        "    }\n"
-        "}\n"
-        "\n"
-        "template<typename K, typename V, typename Tr, typename A>\n"
-        "void doUnpacking(OPP::cCommBuffer *buffer, std::map<K,V,Tr,A>& m)\n"
-        "{\n"
-        "    int n;\n"
-        "    doUnpacking(buffer, n);\n"
-        "    for (int i=0; i<n; i++) {\n"
-        "        K k; V v;\n"
-        "        doUnpacking(buffer, k);\n"
-        "        doUnpacking(buffer, v);\n"
-        "        m[k] = v;\n"
-        "    }\n"
-        "}\n"
-        "\n"
-        "// Default pack/unpack function for arrays\n"
-        "template<typename T>\n"
-        "void doArrayPacking(OPP::cCommBuffer *b, const T *t, int n)\n"
-        "{\n"
-        "    for (int i = 0; i < n; i++)\n"
-        "        doPacking(b, t[i]);\n"
-        "}\n"
-        "\n"
-        "template<typename T>\n"
-        "void doArrayUnpacking(OPP::cCommBuffer *b, T *t, int n)\n"
-        "{\n"
-        "    for (int i = 0; i < n; i++)\n"
-        "        doUnpacking(b, t[i]);\n"
-        "}\n"
-        "\n"
-        "// Default rule to prevent compiler from choosing base class' doPacking() function\n"
-        "template<typename T>\n"
-        "void doPacking(OPP::cCommBuffer *, const T& t)\n"
-        "{\n"
-        "    throw OPP::cRuntimeError(\"Parsim error: no doPacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
-        "}\n"
-        "\n"
-        "template<typename T>\n"
-        "void doUnpacking(OPP::cCommBuffer *, T& t)\n"
-        "{\n"
-        "    throw OPP::cRuntimeError(\"Parsim error: no doUnpacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
-        "}\n"
-        "\n"
-        "NAMESPACE_END\n"
-        "\n";
+    "NAMESPACE_BEGIN\n"
+    "\n"
+    "// Template pack/unpack rules. They are declared *after* a1l type-specific pack functions for multiple reasons.\n"
+    "// They are in the omnetpp namespace, to allow them to be found by argument-dependent lookup via the cCommBuffer argument\n"
+    "\n"
+    "// Packing/unpacking an std::vector\n"
+    "template<typename T, typename A>\n"
+    "void doPacking(OPP::cCommBuffer *buffer, const std::vector<T,A>& v)\n"
+    "{\n"
+    "    int n = v.size();\n"
+    "    doPacking(buffer, n);\n"
+    "    for (int i = 0; i < n; i++)\n"
+    "        doPacking(buffer, v[i]);\n"
+    "}\n"
+    "\n"
+    "template<typename T, typename A>\n"
+    "void doUnpacking(OPP::cCommBuffer *buffer, std::vector<T,A>& v)\n"
+    "{\n"
+    "    int n;\n"
+    "    doUnpacking(buffer, n);\n"
+    "    v.resize(n);\n"
+    "    for (int i = 0; i < n; i++)\n"
+    "        doUnpacking(buffer, v[i]);\n"
+    "}\n"
+    "\n"
+    "// Packing/unpacking an std::list\n"
+    "template<typename T, typename A>\n"
+    "void doPacking(OPP::cCommBuffer *buffer, const std::list<T,A>& l)\n"
+    "{\n"
+    "    doPacking(buffer, (int)l.size());\n"
+    "    for (typename std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)\n"
+    "        doPacking(buffer, (T&)*it);\n"
+    "}\n"
+    "\n"
+    "template<typename T, typename A>\n"
+    "void doUnpacking(OPP::cCommBuffer *buffer, std::list<T,A>& l)\n"
+    "{\n"
+    "    int n;\n"
+    "    doUnpacking(buffer, n);\n"
+    "    for (int i=0; i<n; i++) {\n"
+    "        l.push_back(T());\n"
+    "        doUnpacking(buffer, l.back());\n"
+    "    }\n"
+    "}\n"
+    "\n"
+    "// Packing/unpacking an std::set\n"
+    "template<typename T, typename Tr, typename A>\n"
+    "void doPacking(OPP::cCommBuffer *buffer, const std::set<T,Tr,A>& s)\n"
+    "{\n"
+    "    doPacking(buffer, (int)s.size());\n"
+    "    for (typename std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)\n"
+    "        doPacking(buffer, *it);\n"
+    "}\n"
+    "\n"
+    "template<typename T, typename Tr, typename A>\n"
+    "void doUnpacking(OPP::cCommBuffer *buffer, std::set<T,Tr,A>& s)\n"
+    "{\n"
+    "    int n;\n"
+    "    doUnpacking(buffer, n);\n"
+    "    for (int i=0; i<n; i++) {\n"
+    "        T x;\n"
+    "        doUnpacking(buffer, x);\n"
+    "        s.insert(x);\n"
+    "    }\n"
+    "}\n"
+    "\n"
+    "// Packing/unpacking an std::map\n"
+    "template<typename K, typename V, typename Tr, typename A>\n"
+    "void doPacking(OPP::cCommBuffer *buffer, const std::map<K,V,Tr,A>& m)\n"
+    "{\n"
+    "    doPacking(buffer, (int)m.size());\n"
+    "    for (typename std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {\n"
+    "        doPacking(buffer, it->first);\n"
+    "        doPacking(buffer, it->second);\n"
+    "    }\n"
+    "}\n"
+    "\n"
+    "template<typename K, typename V, typename Tr, typename A>\n"
+    "void doUnpacking(OPP::cCommBuffer *buffer, std::map<K,V,Tr,A>& m)\n"
+    "{\n"
+    "    int n;\n"
+    "    doUnpacking(buffer, n);\n"
+    "    for (int i=0; i<n; i++) {\n"
+    "        K k; V v;\n"
+    "        doUnpacking(buffer, k);\n"
+    "        doUnpacking(buffer, v);\n"
+    "        m[k] = v;\n"
+    "    }\n"
+    "}\n"
+    "\n"
+    "// Default pack/unpack function for arrays\n"
+    "template<typename T>\n"
+    "void doArrayPacking(OPP::cCommBuffer *b, const T *t, int n)\n"
+    "{\n"
+    "    for (int i = 0; i < n; i++)\n"
+    "        doPacking(b, t[i]);\n"
+    "}\n"
+    "\n"
+    "template<typename T>\n"
+    "void doArrayUnpacking(OPP::cCommBuffer *b, T *t, int n)\n"
+    "{\n"
+    "    for (int i = 0; i < n; i++)\n"
+    "        doUnpacking(b, t[i]);\n"
+    "}\n"
+    "\n"
+    "// Default rule to prevent compiler from choosing base class' doPacking() function\n"
+    "template<typename T>\n"
+    "void doPacking(OPP::cCommBuffer *, const T& t)\n"
+    "{\n"
+    "    throw OPP::cRuntimeError(\"Parsim error: no doPacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
+    "}\n"
+    "\n"
+    "template<typename T>\n"
+    "void doUnpacking(OPP::cCommBuffer *, T& t)\n"
+    "{\n"
+    "    throw OPP::cRuntimeError(\"Parsim error: no doUnpacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
+    "}\n"
+    "\n"
+    "NAMESPACE_END\n"
+    "\n";
 
 void MsgCppGenerator::generate(MsgFileElement *fileElement)
 {
@@ -437,7 +443,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     H << "\n";
 
     if (opts.exportDef.length() > 4 && opts.exportDef.substr(opts.exportDef.length()-4) == "_API") {
-        //# generate boilerplate code for dll export
+        // # generate boilerplate code for dll export
         std::string exportbase = opts.exportDef.substr(0, opts.exportDef.length()-4);
         H << "// dll export symbol\n";
         H << "#ifndef " << opts.exportDef << "\n";
@@ -465,8 +471,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
     CC << PARSIMPACK_BOILERPLATE;
 
-    if (!firstNS)
-    {
+    if (!firstNS) {
         H << "\n\n";
         CC << "\n";
         generateTemplates();
@@ -477,21 +482,18 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                            struct-decl|class-decl|message-decl|packet-decl|enum-decl|
                            struct|class|message|packet|enum)*)>
      */
-    for (NEDElement *child = fileElement->getFirstChild(); child; child=child->getNextSibling())
-    {
+    for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 // open namespace(s)
-                if (!namespaceName.empty())
-                {
+                if (!namespaceName.empty()) {
                     generateNamespaceEnd();
                 }
                 namespaceName = ptr2str(child->getAttribute("name"));
                 generateNamespaceBegin(child);
                 break;
 
-            case NED_CPLUSPLUS:
-            {
+            case NED_CPLUSPLUS: {
                 // print C++ block
                 std::string body = ptr2str(child->getAttribute("body"));
                 body = body.substr(body.find_first_not_of("\r\n"));
@@ -501,7 +503,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                 H << "// cplusplus {{\n"
                   << body
                   << "\n// }}\n\n"
-                  ;
+                ;
                 break;
             }
 
@@ -512,14 +514,12 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                 extractClassDecl(child);
                 break;
 
-            case NED_ENUM_DECL:
-            {
+            case NED_ENUM_DECL: {
                 // forward declaration -- add to table
                 std::string name = ptr2str(child->getAttribute("name"));
                 if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
                     enumType[name] = canonicalizeQName(namespaceName, name);
-                else
-                {
+                else {
                     errors->addError(child, "Namespace name is reserved word: '%s'", name.c_str());
                 }
                 break;
@@ -555,7 +555,6 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                     generateDescriptorClass(classInfo);
                 break;
             }
-
         }
     }
 
@@ -572,18 +571,14 @@ MsgCppGenerator::Properties MsgCppGenerator::extractPropertiesOf(NEDElement *nod
 {
     Properties props;
 
-    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(NED_PROPERTY)); child; child = child->getNextPropertySibling())
-    {
+    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(NED_PROPERTY)); child; child = child->getNextPropertySibling()) {
         std::string propname = ptr2str(child->getAttribute("name"));
         std::string propval;
-        for (PropertyKeyElement *key = child->getFirstPropertyKeyChild(); key; key = key->getNextPropertyKeySibling())
-        {
+        for (PropertyKeyElement *key = child->getFirstPropertyKeyChild(); key; key = key->getNextPropertyKeySibling()) {
             std::string keyname = ptr2str(key->getAttribute("name"));
-            if (keyname.empty())
-            {
+            if (keyname.empty()) {
                 const char *sep = "";
-                for (LiteralElement *lit = key->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling())
-                {
+                for (LiteralElement *lit = key->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling()) {
                     std::string s = ptr2str(lit->getAttribute("value"));
                     propval = propval + sep + s;
                     sep = ",";
@@ -610,11 +605,9 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
     classInfo.msgbase = ptr2str(node->getAttribute("extends-name"));
     classInfo.props = extractPropertiesOf(node);
 
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
-    {
+    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_FIELD:
-            {
+            case NED_FIELD: {
                 ClassInfo::FieldInfo f;
                 f.nedElement = child;
                 f.fname = ptr2str(child->getAttribute("name"));
@@ -636,17 +629,22 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
                     classInfo.fieldlist.push_back(f);
                 break;
             }
+
             case NED_PROPERTY:
-                //skip properties here, properties already extracted
+                // skip properties here, properties already extracted
                 break;
+
             case NED_PROPERTY_DECL:
                 errors->addError(child, "syntax error: property '%s' declaration unaccepted here", child->getTagName());
                 break;
+
             case NED_PROPERTY_KEY:
                 errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName());
                 break;
+
             case NED_COMMENT:
                 break;
+
             default:
                 errors->addError(child, "unaccepted element: '%s'", child->getTagName());
                 break;
@@ -681,19 +679,21 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         StringVector found = lookupExistingEnumName(it->enumname);
         if (found.size() == 1) {
             it->enumqname = found[0];
-        } else if (found.empty()) {
+        }
+        else if (found.empty()) {
             errors->addError(it->nedElement, "undeclared enum '%s' in field '%s' in '%s'\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str());
             it->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
             CC << "  Declared enums:\n";
-            for (std::map<std::string,std::string>::iterator x=enumType.begin(); x != enumType.end(); ++x)
+            for (std::map<std::string, std::string>::iterator x = enumType.begin(); x != enumType.end(); ++x)
                 CC << "    " << x->first << " : " << x->second << "\n";
             CC << "\n*/\n\n";
-        } else {
+        }
+        else {
             errors->addWarning(it->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
             it->enumqname = found[0];
         }
-        it->fprops["enum"] = it->enumqname; // need to modify the property in place
+        it->fprops["enum"] = it->enumqname;  // need to modify the property in place
         if (it->tostring.empty())
             it->tostring = std::string("enum2string($, \"") + it->enumqname + "\")";
         if (it->fromstring.empty())
@@ -703,14 +703,15 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     // variable name
     if (info.classtype == STRUCT) {
         it->var = it->fname;
-    } else {
+    }
+    else {
         it->var = it->fname + info.fieldnamesuffix;
         it->argname = it->fname;
     }
 
     it->varsize = it->fname + "_arraysize";
     std::string sizetypeprop = getProperty(it->fprops, "sizetype");
-    it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  //TODO change to size_t
+    it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // default method names
     if (info.classtype != STRUCT) {
@@ -721,7 +722,8 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         if (info.omitgetverb) {
             it->getter = it->fname;
             it->getsize = it->fname + "ArraySize";
-        } else {
+        }
+        else {
             it->getter = std::string("get") + capfieldname;
             it->getsize = std::string("get") + capfieldname + "ArraySize";
         }
@@ -754,10 +756,12 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         StringVector found = lookupExistingClassName(it->ftype);
         if (found.size() == 1) {
             it->ftypeqname = "::" + found[0];
-        } else if (found.empty()) {
+        }
+        else if (found.empty()) {
             errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
             it->ftypeqname = OPP_PREFIX "cObject";
-        } else {
+        }
+        else {
             errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
             it->ftypeqname = "::" + found[0];
         }
@@ -769,8 +773,9 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->datatype = it->ftype;
         it->argtype = std::string("const ") + it->ftype + "&";
         it->rettype = it->ftype + "&";
-        //it->fval = "" unless (it->fval != "");
-    } else if (it->fkind == "basic") {
+        // it->fval = "" unless (it->fval != "");
+    }
+    else if (it->fkind == "basic") {
         if (tdIt == PRIMITIVE_TYPES.end())
             throw NEDException("internal error - unknown primitive data type '%s'", it->ftype.c_str());
         // defaults:
@@ -789,7 +794,8 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->rettype = "const char *";
             it->maybe_c_str = ".c_str()";
         }
-    } else {
+    }
+    else {
         throw NEDException("internal error");
     }
 }
@@ -803,12 +809,14 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         StringVector found = lookupExistingClassName(info.msgbase);
         if (found.size() == 1) {
             info.msgbaseqname = found[0];
-        } else if (found.empty()) {
+        }
+        else if (found.empty()) {
             errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(classType, "','").c_str());
             info.msgbaseqname = OPP_PREFIX "cMessage";
-        } else {
+        }
+        else {
             errors->addError(info.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
-                             info.msgname.c_str(), info.msgbase.c_str(), join(found, "','").c_str());
+                    info.msgname.c_str(), info.msgbase.c_str(), join(found, "','").c_str());
             info.msgbaseqname = found[0];
         }
     }
@@ -820,11 +828,14 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     else if (info.msgbase == "") {
         if (info.keyword == "message" || info.keyword == "packet") {
             info.classtype = COWNEDOBJECT;
-        } else if (info.keyword == "class") {
-            info.classtype = COBJECT; // Note: we never generate non-cObject classes
-        } else if (info.keyword == "struct") {
+        }
+        else if (info.keyword == "class") {
+            info.classtype = COBJECT;  // Note: we never generate non-cObject classes
+        }
+        else if (info.keyword == "struct") {
             info.classtype = STRUCT;
-        } else {
+        }
+        else {
             throw NEDException("internal error: invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
         }
         // if announced earlier as noncpolymorphic, accept that.
@@ -847,12 +858,14 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
 
     // check earlier declarations and register this class
     if (isClassDeclared(info.msgqname)) {
-        if (0) { // XXX add condition
+        if (0) {  // XXX add condition
             errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
-        } else if (getClassType(info.msgqname) != info.classtype) {
+        }
+        else if (getClassType(info.msgqname) != info.classtype) {
             errors->addError(info.nedElement, "definition of '%s' inconsistent with earlier declaration(s)\n", info.msgname.c_str());
         }
-    } else {
+    }
+    else {
         classType[info.msgqname] = info.classtype;
     }
 
@@ -868,7 +881,8 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         info.msgclass = info.msgname + "_Base";
         info.realmsgclass = info.msgname;
         info.msgdescclass = info.realmsgclass + "Descriptor";
-    } else {
+    }
+    else {
         info.gap = 0;
         info.msgclass = info.msgname;
         info.realmsgclass = info.msgname;
@@ -877,20 +891,27 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     if (info.msgbase == "") {
         if (info.msgqname == OPP_PREFIX "cObject") {
             info.msgbaseclass = "";
-        } else if (info.keyword == "message") {
+        }
+        else if (info.keyword == "message") {
             info.msgbaseclass = OPP_PREFIX "cMessage";
-        } else if (info.keyword == "packet") {
+        }
+        else if (info.keyword == "packet") {
             info.msgbaseclass = OPP_PREFIX "cPacket";
-        } else if (info.keyword == "class") {
+        }
+        else if (info.keyword == "class") {
             info.msgbaseclass = OPP_PREFIX "cObject";  // note: all classes we generate subclass from cObject!
-        } else if (info.keyword == "struct") {
+        }
+        else if (info.keyword == "struct") {
             info.msgbaseclass = "";
-        } else {
+        }
+        else {
             throw NEDException("internal error");
         }
-    } else if (info.msgbase == "void") {
+    }
+    else if (info.msgbase == "void") {
         info.msgbaseclass = "";
-    } else {
+    }
+    else {
         info.msgbaseclass = info.msgbaseqname;
     }
 
@@ -898,7 +919,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     info.fieldnamesuffix = getProperty(info.props, "fieldNameSuffix", "");
     if (info.omitgetverb && info.fieldnamesuffix.empty()) {
         errors->addWarning(info.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
-                "adding '_var' suffix to data members to prevent name conflict between them and getter methods\n");
+                                            "adding '_var' suffix to data members to prevent name conflict between them and getter methods\n");
         info.fieldnamesuffix = "_var";
     }
 
@@ -907,12 +928,10 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         info.implements = StringTokenizer(s.c_str(), ",").asVector();
     }
 
-    for (ClassInfo::Fieldlist::iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         prepareFieldForCodeGeneration(info, &(*it));
     }
-    for (ClassInfo::Fieldlist::iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
         prepareFieldForCodeGeneration(info, &(*it));
     }
 }
@@ -926,8 +945,7 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
 #ifdef MSGC_COMPATIBILE
     // remove comments
     size_t p1;
-    while ((p1 = str.find("//")) != str.npos)
-    {
+    while ((p1 = str.find("//")) != str.npos) {
         size_t p2 = str.find("\n", p1);
         std::string s2 = str.substr(0, p1) + str.substr(p2);
         str = s2;
@@ -949,8 +967,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     H << " * Class generated from <tt>" << SL(info.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(info.nedElement);
 
-    if (info.gap)
-    {
+    if (info.gap) {
         H << " *\n";
         H << " * " << info.msgclass << " is only useful if it gets subclassed, and " << info.realmsgclass << " is derived from it.\n";
         H << " * The minimum code to be written for " << info.realmsgclass << " is the following:\n";
@@ -964,10 +981,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
             if (info.keyword == "message" || info.keyword == "packet") {
                 H << " *     " << info.realmsgclass << "(const char *name=nullptr, int kind=0) : " << info.msgclass << "(name,kind) {}\n";
-            } else {
+            }
+            else {
                 H << " *     " << info.realmsgclass << "(const char *name=nullptr) : " << info.msgclass << "(name) {}\n";
             }
-        } else {
+        }
+        else {
             H << " *     " << info.realmsgclass << "() : " << info.msgclass << "() {}\n";
         }
         H << " *     " << info.realmsgclass << "(const " << info.realmsgclass << "& other) : " << info.msgclass << "(other) {copy(other);}\n";
@@ -1005,15 +1024,18 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     H << "  protected:\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fispointer) {
-            errors->addError(it->nedElement, "pointers not supported yet in '%s'\n", info.msgname.c_str()); return;
+            errors->addError(it->nedElement, "pointers not supported yet in '%s'\n", info.msgname.c_str());
+            return;
         }
         if (!it->fisabstract) {
             if (it->fisarray && !it->farraysize.empty()) {
                 H << "    " << it->datatype << " " << it->var << "[" << it->farraysize << "];\n";
-            } else if (it->fisarray && it->farraysize.empty()) {
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
                 H << "    " << it->datatype << " *" << it->var << "; // array ptr\n";
                 H << "    " << it->fsizetype << " " << it->varsize << ";\n";
-            } else {
+            }
+            else {
                 H << "    " << it->datatype << " " << it->var << ";\n";
             }
         }
@@ -1026,17 +1048,20 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     H << "    bool operator==(const " << info.msgclass << "&);\n";
     if (info.gap) {
         H << "    // make constructors protected to avoid instantiation\n";
-    } else {
+    }
+    else {
         H << "\n";
         H << "  public:\n";
     }
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
         if (info.keyword == "message" || info.keyword == "packet") {
             H << "    " << info.msgclass << "(const char *name=nullptr, int kind=0);\n";
-        } else {
+        }
+        else {
             H << "    " << info.msgclass << "(const char *name=nullptr);\n";
         }
-    } else {
+    }
+    else {
         H << "    " << info.msgclass << "();\n";
     }
     H << "    " << info.msgclass << "(const " << info.msgclass << "& other);\n";
@@ -1052,15 +1077,15 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     }
     if (info.gap) {
         H << "    virtual " << info.msgclass << " *dup() const {throw " OPP_PREFIX "cRuntimeError(\"You forgot to manually add a dup() function to class " << info.realmsgclass << "\");}\n";
-    } else {
+    }
+    else {
         H << "    virtual " << info.msgclass << " *dup() const {return new " << info.msgclass << "(*this);}\n";
     }
     H << "    virtual void parsimPack(" OPP_PREFIX "cCommBuffer *b) const;\n";
     H << "    virtual void parsimUnpack(" OPP_PREFIX "cCommBuffer *b);\n";
     H << "\n";
     H << "    // field getter/setter methods\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         std::string pure;
         if (it->fisabstract)
             pure = " = 0";
@@ -1073,14 +1098,16 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             if (isstruct)
                 H << "    virtual const " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k) const {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "(k);}\n";
             H << "    virtual void " << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")" << pure << ";\n";
-        } else if (it->fisarray && it->farraysize.empty()) {
+        }
+        else if (it->fisarray && it->farraysize.empty()) {
             H << "    virtual void " << it->alloc << "(" << it->fsizetype << " size)" << pure << ";\n";
             H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
             H << "    virtual " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "" << pure << ";\n";
             if (isstruct)
                 H << "    virtual const " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k) const {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "(k);}\n";
             H << "    virtual void " << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")" << pure << ";\n";
-        } else {
+        }
+        else {
             H << "    virtual " << it->rettype << " " << it->getter << "()" << constifprimitivetype << "" << pure << ";\n";
             if (isstruct)
                 H << "    virtual const " << it->rettype << " " << it->getter << "() const {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "();}\n";
@@ -1103,36 +1130,38 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             // CAREFUL when assigning values to existing members gets implemented!
             // The msg kind passed to the ctor should take priority!!!
             CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name, int kind) : ::" << info.msgbaseclass << "(name,kind)\n";
-        } else {
+        }
+        else {
             if (info.msgbaseclass == "") {
                 CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name)\n";
-            } else {
+            }
+            else {
                 CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name) : ::" << info.msgbaseclass << "(name)\n";
             }
         }
-    } else {
+    }
+    else {
         if (info.msgbaseclass == "") {
             CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
-        } else {
+        }
+        else {
             CC << "" << info.msgclass << "::" << info.msgclass << "() : ::" << info.msgbaseclass << "()\n";
         }
     }
     CC << "{\n";
-    //CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == COBJECT);
-    //CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == CNAMEDOBJECT);
-    //CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == COWNEDOBJECT);
-    for (ClassInfo::Fieldlist::const_iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it)
-    {
+    // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == COBJECT);
+    // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == CNAMEDOBJECT);
+    // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == COWNEDOBJECT);
+    for (ClassInfo::Fieldlist::const_iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
         std::string capfieldname = it->fname;
         capfieldname[0] = toupper(capfieldname[0]);
         std::string setter = "set" + capfieldname;
-        //FIXME setter function name - ezt a base class leirobol kellene venni
+        // FIXME setter function name - ezt a base class leirobol kellene venni
         CC << "    this->" << setter << "(" << it->fval << ");\n";
     }
     if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
         CC << "\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
             if (it->fisarray && !it->farraysize.empty()) {
                 if (it->fkind == "basic" && !it->fval.empty()) {
@@ -1140,18 +1169,20 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
                 }
                 if (getClassType(it->ftype) == COWNEDOBJECT) {
-                  CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                  CC << "        take(&(this->" << it->var << "[i]));\n";
+                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
+                    CC << "        take(&(this->" << it->var << "[i]));\n";
                 }
-            } else if (it->fisarray && it->farraysize.empty()) {
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    " << it->varsize << " = 0;\n";
                 CC << "    this->" << it->var << " = 0;\n";
-            } else {
+            }
+            else {
                 if (!it->fval.empty()) {
-                  CC << "    this->" << it->var << " = " << it->fval << ";\n";
+                    CC << "    this->" << it->var << " = " << it->fval << ";\n";
                 }
                 if (getClassType(it->ftype) == COWNEDOBJECT) {
-                  CC << "    take(&(this->" << it->var << "));\n";
+                    CC << "    take(&(this->" << it->var << "));\n";
                 }
             }
         }
@@ -1163,37 +1194,39 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         CC << " : ::" << info.msgbaseclass << "(other)";
     }
     CC << "\n{\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
-      if (!it->fisabstract) {
-        if (it->fisarray && !it->farraysize.empty()) {
-          if (getClassType(it->ftype) == COWNEDOBJECT) {
-            CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-            CC << "        take(&(this->" << it->var << "[i]));\n";
-          }
-        } else if (it->fisarray && it->farraysize.empty()) {
-          CC << "    " << it->varsize << " = 0;\n";
-          CC << "    this->" << it->var << " = 0;\n";
-        } else if (!it->fisarray && getClassType(it->ftype) == COWNEDOBJECT) {
-          CC << "    take(&(this->" << it->var << "));\n";
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
+        if (!it->fisabstract) {
+            if (it->fisarray && !it->farraysize.empty()) {
+                if (getClassType(it->ftype) == COWNEDOBJECT) {
+                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
+                    CC << "        take(&(this->" << it->var << "[i]));\n";
+                }
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
+                CC << "    " << it->varsize << " = 0;\n";
+                CC << "    this->" << it->var << " = 0;\n";
+            }
+            else if (!it->fisarray && getClassType(it->ftype) == COWNEDOBJECT) {
+                CC << "    take(&(this->" << it->var << "));\n";
+            }
         }
-      }
     }
     CC << "    copy(other);\n";
     CC << "}\n\n";
 
     CC << "" << info.msgclass << "::~" << info.msgclass << "()\n";
     CC << "{\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
             if (getClassType(it->ftype) == COWNEDOBJECT) {
                 if (!it->fisarray) {
                     CC << "    drop(&(this->" << it->var << "));\n";
-                } else if (!it->farraysize.empty()) {
+                }
+                else if (!it->farraysize.empty()) {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        drop(&(this->" << it->var << "[i]));\n";
-                } else {
+                }
+                else {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->varsize << "; i++)\n";
                     CC << "        drop(&(this->" << it->var << "[i]));\n";
                 }
@@ -1217,8 +1250,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
     CC << "void " << info.msgclass << "::copy(const " << info.msgclass << "& other)\n";
     CC << "{\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
             ClassType classType = getClassType(it->ftype);
             if (it->fisarray && !it->farraysize.empty()) {
@@ -1228,7 +1260,8 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        this->" << it->var << "[i].setName(other." << it->var << "[i].getName());\n";
                 }
-            } else if (it->fisarray && it->farraysize.empty()) {
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    delete [] this->" << it->var << ";\n";
                 CC << "    this->" << it->var << " = (other." << it->varsize << "==0) ? nullptr : new " << it->datatype << "[other." << it->varsize << "];\n";
                 CC << "    " << it->varsize << " = other." << it->varsize << ";\n";
@@ -1239,10 +1272,12 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
                     CC << "        this->" << it->var << "[i].setName(other." << it->var << "[i].getName());\n";
                     CC << "    }\n";
-                } else {
+                }
+                else {
                     CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
                 }
-            } else {
+            }
+            else {
                 CC << "    this->" << it->var << " = other." << it->var << ";\n";
                 if (!it->fisarray && (classType == COWNEDOBJECT || classType == CNAMEDOBJECT)) {
                     CC << "    this->" << it->var << ".setName(other." << it->var << ".getName());\n";
@@ -1262,24 +1297,28 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     if (info.msgbaseclass != "") {
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
             if (info.msgbaseclass != OPP_PREFIX "cObject")
-                CC << "    ::" << info.msgbaseclass << "::parsimPack(b);\n" ;
-        } else {
-            CC << "    doPacking(b,(::" << info.msgbaseclass << "&)*this);\n"; // this would do for cOwnedObject too, but the other is nicer
+                CC << "    ::" << info.msgbaseclass << "::parsimPack(b);\n";
+        }
+        else {
+            CC << "    doPacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fnopack) {
             // @nopack specified
-        } else if (it->fisabstract) {
+        }
+        else if (it->fisabstract) {
             CC << "    // field " << it->fname << " is abstract -- please do packing in customized class\n";
-        } else {
+        }
+        else {
             if (it->fisarray && !it->farraysize.empty()) {
                 CC << "    doArrayPacking(b,this->" << it->var << "," << it->farraysize << ");\n";
-            } else if (it->fisarray && it->farraysize.empty()) {
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    b->pack(" << it->varsize << ");\n";
                 CC << "    doArrayPacking(b,this->" << it->var << "," << it->varsize << ");\n";
-            } else {
+            }
+            else {
                 CC << "    doPacking(b,this->" << it->var << ");\n";
             }
         }
@@ -1292,20 +1331,23 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
             if (info.msgbaseclass != OPP_PREFIX "cObject")
                 CC << "    ::" << info.msgbaseclass << "::parsimUnpack(b);\n";
-        } else {
-            CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n"; // this would do for cOwnedObject too, but the other is nicer
+        }
+        else {
+            CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fnopack) {
             // @nopack specified
-        } else if (it->fisabstract) {
+        }
+        else if (it->fisabstract) {
             CC << "    // field " << it->fname << " is abstract -- please do unpacking in customized class\n";
-        } else {
+        }
+        else {
             if (it->fisarray && !it->farraysize.empty()) {
                 CC << "    doArrayUnpacking(b,this->" << it->var << "," << it->farraysize << ");\n";
-            } else if (it->fisarray && it->farraysize.empty()) {
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    delete [] this->" << it->var << ";\n";
                 CC << "    b->unpack(" << it->varsize << ");\n";
                 CC << "    if (" << it->varsize << "==0) {\n";
@@ -1314,15 +1356,15 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "        this->" << it->var << " = new " << it->datatype << "[" << it->varsize << "];\n";
                 CC << "        doArrayUnpacking(b,this->" << it->var << "," << it->varsize << ");\n";
                 CC << "    }\n";
-            } else {
+            }
+            else {
                 CC << "    doUnpacking(b,this->" << it->var << ");\n";
             }
         }
     }
     CC << "}\n\n";
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
             bool isstruct = (it->fkind == "struct");
             const char *constifprimitivetype = (!isstruct ? " const" : "");
@@ -1341,7 +1383,8 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    if (k>=" << it->farraysize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
-            } else if (it->fisarray && it->farraysize.empty()) {
+            }
+            else if (it->fisarray && it->farraysize.empty()) {
                 CC << "void " << info.msgclass << "::" << it->alloc << "(" << it->fsizetype << " size)\n";
                 CC << "{\n";
                 CC << "    " << it->datatype << " *" << it->var << "2 = (size==0) ? nullptr : new " << it->datatype << "[size];\n";
@@ -1374,7 +1417,8 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    if (k>=" << it->varsize << ") throw " OPP_PREFIX "cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
-            } else {
+            }
+            else {
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << constifprimitivetype << "\n";
                 CC << "{\n";
                 CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
@@ -1396,13 +1440,13 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     H << " */\n";
     if (info.msgbaseclass.empty()) {
         H << "struct " << TS(opts.exportDef) << info.msgclass << "\n";
-    } else {
+    }
+    else {
         H << "struct " << TS(opts.exportDef) << info.msgclass << " : public ::" << info.msgbaseqname << "\n";
     }
     H << "{\n";
     H << "    " << info.msgclass << "();\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         H << "    " << it->datatype << " " << it->var;
         if (it->fisarray) {
             H << "[" << it->farraysize << "]";
@@ -1422,15 +1466,13 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
     CC << "{\n";
     // override baseclass fields initial value
-    for (ClassInfo::Fieldlist::const_iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
         CC << "    this->" << it->var << " = " << it->fval << ";\n";
     }
     if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
-        CC << "\n" ;
+        CC << "\n";
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisabstract)
             throw NEDException("abstract fields are not supported in a struct");
         if (getClassType(it->ftype) == COWNEDOBJECT)
@@ -1442,7 +1484,8 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                 CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
             }
-        } else {
+        }
+        else {
             if (!it->fval.empty()) {
                 CC << "    this->" << it->var << " = " << it->fval << ";\n";
             }
@@ -1457,11 +1500,11 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         CC << "    doPacking(b,(::" << info.msgbaseclass << "&)a);\n";
     }
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisarray) {
             CC << "    doArrayPacking(b,a." << it->var << "," << it->farraysize << ");\n";
-        } else {
+        }
+        else {
             CC << "    doPacking(b,a." << it->var << ");\n";
         }
     }
@@ -1473,11 +1516,11 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)a);\n";
     }
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-    {
+    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisarray) {
             CC << "    doArrayUnpacking(b,a." << it->var << "," << it->farraysize << ");\n";
-        } else {
+        }
+        else {
             CC << "    doUnpacking(b,a." << it->var << ");\n";
         }
     }
@@ -1585,10 +1628,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return 0;\n";
-    } else {
+    }
+    else {
         CC << "    static unsigned int fieldTypeFlags[] = {\n";
-        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-        {
+        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
             StringVector flags;
             ClassType classType = getClassType(it->ftype);
             if (it->fisarray)
@@ -1606,11 +1649,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 flags.push_back("FD_ISEDITABLE");
             std::string flagss;
             if (flags.empty())
-                flagss = "0" ;
-            else
-            {
+                flagss = "0";
+            else {
                 flagss = flags[0];
-                for (size_t i=1; i<flags.size(); i++)
+                for (size_t i = 1; i < flags.size(); i++)
                     flagss = flagss + " | " + flags[i];
             }
 
@@ -1633,10 +1675,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return nullptr;\n";
-    } else {
+    }
+    else {
         CC << "    static const char *fieldNames[] = {\n";
-        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-        {
+        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
             CC << "        \"" << it->fname << "\",\n";
         }
         CC << "    };\n";
@@ -1651,8 +1693,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " OPP_PREFIX "cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     if (fieldcount > 0) {
         CC << "    int base = basedesc ? basedesc->getFieldCount() : 0;\n";
-        for (size_t i=0; i < info.fieldlist.size(); ++i)
-        {
+        for (size_t i = 0; i < info.fieldlist.size(); ++i) {
             const ClassInfo::FieldInfo& field = info.fieldlist[i];
             char c = field.fname[0];
             CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<field.fname<<"\")==0) return base+" << i << ";\n";
@@ -1673,11 +1714,11 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return nullptr;\n";
-    } else {
+    }
+    else {
         CC << "    static const char *fieldTypeStrings[] = {\n";
-        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it)
-        {
-            CC << "        \"" << it->ftype << "\",\n"; // note: NOT $fieldtypeqname! that's getFieldStructName()
+        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
+            CC << "        \"" << it->ftype << "\",\n";  // note: NOT $fieldtypeqname! that's getFieldStructName()
         }
         CC << "    };\n";
         CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
@@ -1695,9 +1736,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
     CC << "    switch (field) {\n";
-    for (size_t i=0; i < fieldcount; ++i)
-    {
-        const Properties &ref = info.fieldlist[i].fprops;
+    for (size_t i = 0; i < fieldcount; ++i) {
+        const Properties& ref = info.fieldlist[i].fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ": {\n";
             CC << "            static const char *names[] = { ";
@@ -1714,7 +1754,6 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "}\n";
     CC << "\n";
 
-
     // getFieldProperty()
     CC << "const char *" << info.msgdescclass << "::getFieldProperty(int field, const char *propertyname) const\n";
     CC << "{\n";
@@ -1726,10 +1765,9 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "    switch (field) {\n";
 
-    for (size_t i=0; i < fieldcount; ++i)
-    {
+    for (size_t i = 0; i < fieldcount; ++i) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        const Properties &ref = field.fprops;
+        const Properties& ref = field.fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ":\n";
             for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
@@ -1756,15 +1794,17 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
-    for (size_t i=0; i < fieldcount; i++) {
+    for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.fisarray) {
             CC << "        case " << i << ": ";
             if (!field.farraysize.empty()) {
                 CC << "return " << field.farraysize << ";\n";
-            } else if (info.classtype == STRUCT) {
+            }
+            else if (info.classtype == STRUCT) {
                 CC << "return pp->" << field.varsize << ";\n";
-            } else {
+            }
+            else {
                 CC << "return pp->" << field.getsize << "();\n";
             }
         }
@@ -1785,8 +1825,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
-    for (size_t i=0; i<fieldcount; i++)
-    {
+    for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.fkind == "basic" || (field.fkind == "struct" && !field.tostring.empty())) {
             size_t pos = field.tostring.find('$');
@@ -1808,36 +1847,45 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 if (field.fisarray) {
                     if (!field.farraysize.empty()) {
                         CC << "if (i>=" << field.farraysize << ") return \"\";\n";
-                    } else {
+                    }
+                    else {
                         CC << "if (i>=pp->" << field.varsize << ") return \"\";\n";
                     }
                     CC << "                return " << tostringB << "pp->" << field.var << "[i]" << tostringE << ";\n";
-                } else {
+                }
+                else {
                     CC << "return " << tostringB << "pp->" << field.var << tostringE << ";\n";
                 }
-            } else {
+            }
+            else {
                 if (field.fisarray) {
                     CC << "return " << tostringB << "pp->" << field.getter << "(i)" << tostringE << ";\n";
-                } else {
+                }
+                else {
                     CC << "return " << tostringB << "pp->" << field.getter << "()" << tostringE << ";\n";
                 }
             }
-        } else if (field.fkind == "struct") {
+        }
+        else if (field.fkind == "struct") {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
                     CC << "{std::stringstream out; out << pp->" << field.var << "[i]; return out.str();}\n";
-                } else {
+                }
+                else {
                     CC << "{std::stringstream out; out << pp->" << field.var << "; return out.str();}\n";
                 }
-            } else {
+            }
+            else {
                 if (field.fisarray) {
                     CC << "{std::stringstream out; out << pp->" << field.getter << "(i); return out.str();}\n";
-                } else {
+                }
+                else {
                     CC << "{std::stringstream out; out << pp->" << field.getter << "(); return out.str();}\n";
                 }
             }
-        } else {
+        }
+        else {
             throw NEDException("internal error");
         }
     }
@@ -1857,8 +1905,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
-    for (size_t i=0; i < fieldcount; i++)
-    {
+    for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.feditable || (info.generate_setters_in_descriptor && field.fkind == "basic" && field.editNotDisabled)) {
             if (field.fromstring.empty()) {
@@ -1879,17 +1926,21 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 if (field.fisarray) {
                     if (!field.farraysize.empty()) {
                         CC << "if (i>=" << field.farraysize << ") return false;\n";
-                    } else {
+                    }
+                    else {
                         CC << "if (i>=pp->" << field.varsize << ") return false;\n";
                     }
                     CC << "                pp->"<<field.var << "[i] = " << fromstring << "; return true;\n";
-                } else {
+                }
+                else {
                     CC << "pp->" << field.var << " = " << fromstring << "; return true;\n";
                 }
-            } else {
+            }
+            else {
                 if (field.fisarray) {
                     CC << "pp->" << field.setter << "(i," << fromstring << "); return true;\n";
-                } else {
+                }
+                else {
                     CC << "pp->" << field.setter << "(" << fromstring << "); return true;\n";
                 }
             }
@@ -1911,10 +1962,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     if (fieldcount == 0) {
         CC << "    return nullptr;\n";
-    } else {
+    }
+    else {
         CC << "    switch (field) {\n";
-        for (size_t i=0; i < fieldcount; i++)
-        {
+        for (size_t i = 0; i < fieldcount; i++) {
             const ClassInfo::FieldInfo& field = info.fieldlist[i];
             bool opaque = field.fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
             if (field.fkind == "struct" && !opaque) {
@@ -1938,23 +1989,25 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
-    for (size_t i=0; i < fieldcount; i++)
-    {
+    for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        bool opaque = field.fopaque;  //# TODO: @opaque should rather be the attribute of the field's type, not the field itself
+        bool opaque = field.fopaque;  // # TODO: @opaque should rather be the attribute of the field's type, not the field itself
         if (field.fkind == "struct" && !opaque) {
             std::string cast;
             std::string value;
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
                     value = std::string("pp->") + field.var + "[i]";
-                } else {
+                }
+                else {
                     value = std::string("pp->") + field.var;
                 }
-            } else {
+            }
+            else {
                 if (field.fisarray) {
                     value = std::string("pp->") + field.getter + "(i)";
-                } else {
+                }
+                else {
                     value = std::string("pp->") + field.getter + "()";
                 }
             }
@@ -1964,7 +2017,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 cast = cast + "static_cast<" OPP_PREFIX "cObject *>";
             if (field.fispointer) {
                 CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
-            } else {
+            }
+            else {
                 CC << "        case " << i << ": return " << cast << "(&" << value << "); break;\n";
             }
         }
@@ -1983,15 +2037,12 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
     info.enumQName = canonicalizeQName(namespaceName, info.enumName);
 
     // prepare enum items:
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
-    {
+    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_ENUM_FIELDS:
-                for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling())
-                {
+                for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
-                        case NED_ENUM_FIELD:
-                        {
+                        case NED_ENUM_FIELD: {
                             EnumInfo::EnumItem f;
                             f.nedElement = e;
                             f.name = ptr2str(e->getAttribute("name"));
@@ -1999,15 +2050,19 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
                             info.fieldlist.push_back(f);
                             break;
                         }
+
                         case NED_COMMENT:
                             break;
+
                         default:
                             errors->addError(e, "unaccepted element '%s'", e->getTagName());
                     }
                 }
                 break;
+
             case NED_COMMENT:
                 break;
+
             default:
                 errors->addError(child, "unaccepted element '%s'", child->getTagName());
                 break;
@@ -2024,8 +2079,7 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     H << " */\n";
 
     H << "enum " << enumInfo.enumName <<" {\n";
-    for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); )
-    {
+    for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); ) {
         H << "    " << it->name << " = " << it->value;
         if (++it != enumInfo.fieldlist.end())
             H << ",";
@@ -2038,17 +2092,15 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     CC << "    " OPP_PREFIX "cEnum *e = " OPP_PREFIX "cEnum::find(\"" << enumInfo.enumQName << "\");\n";
     CC << "    if (!e) " OPP_PREFIX "enums.getInstance()->add(e = new " OPP_PREFIX "cEnum(\"" << enumInfo.enumQName << "\"));\n";
     // enum inheritance: we should add fields from base enum as well, but that could only be done when importing is in place
-    for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); ++it)
-    {
+    for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); ++it) {
         CC << "    e->insert(" << it->name << ", \"" << it->name << "\");\n";
     }
     CC << ");\n\n";
 }
 
-
 std::string MsgCppGenerator::prefixWithNamespace(const std::string& name)
 {
-    return !namespaceName.empty() ? namespaceName + "::" + name : name; // prefer name from local namespace
+    return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
 }
 
 bool MsgCppGenerator::getPropertyAsBool(const Properties& p, const char *name, bool defval)
@@ -2072,20 +2124,18 @@ std::string MsgCppGenerator::getProperty(const Properties& p, const char *name, 
 MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingClassName(const std::string& name)
 {
     StringVector ret;
-    std::map<std::string,ClassType>::iterator it;
+    std::map<std::string, ClassType>::iterator it;
 
-    if (name.empty())
-    {
+    if (name.empty()) {
         ret.push_back(name);
         return ret;
     }
 
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
-        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
+        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
         it = classType.find(qname);
-        if (it != classType.end())
-        {
+        if (it != classType.end()) {
             ret.push_back(it->first);
             return ret;
         }
@@ -2093,21 +2143,17 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingClassName(const std
     else {
         std::string qname = prefixWithNamespace(name);
         it = classType.find(qname);
-        if (it != classType.end())
-        {
+        if (it != classType.end()) {
             ret.push_back(it->first);
             return ret;
         }
     }
     size_t namelength = name.length();
-    for (it = classType.begin(); it != classType.end(); ++it)
-    {
+    for (it = classType.begin(); it != classType.end(); ++it) {
         size_t l = it->first.length();
-        if (l >= namelength)
-        {
+        if (l >= namelength) {
             size_t pos = l - namelength;
-            if ((pos == 0 || it->first[pos-1] == ':') && (it->first.substr(pos) == name))
-            {
+            if ((pos == 0 || it->first[pos-1] == ':') && (it->first.substr(pos) == name)) {
                 ret.push_back(it->first);
             }
         }
@@ -2118,43 +2164,37 @@ MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingClassName(const std
 MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingEnumName(const std::string& name)
 {
     StringVector ret;
-    std::map<std::string,std::string>::iterator it;
+    std::map<std::string, std::string>::iterator it;
 
-    if (name.empty())
-    {
-        //ret.push_back(name);
+    if (name.empty()) {
+        // ret.push_back(name);
         return ret;
     }
 
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
-        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name; // remove leading "::", because names in @classes don't have it either
+        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
         it = enumType.find(qname);
-        if (it != enumType.end())
-        {
+        if (it != enumType.end()) {
             ret.push_back(it->second);
             return ret;
         }
     }
     else {
-        std::string qname = prefixWithNamespace(name); // prefer name from local namespace
+        std::string qname = prefixWithNamespace(name);  // prefer name from local namespace
         it = enumType.find(qname);
-        if (it != enumType.end())
-        {
+        if (it != enumType.end()) {
             ret.push_back(it->second);
             return ret;
         }
     }
 
     size_t namelength = name.length();
-    for (it = enumType.begin(); it != enumType.end(); ++it)
-    {
+    for (it = enumType.begin(); it != enumType.end(); ++it) {
         size_t l = it->second.length();
-        if (l >= namelength)
-        {
+        if (l >= namelength) {
             size_t pos = l - namelength;
-            if ((pos == 0 || it->second[pos-1] == ':') && (it->second.substr(pos) == name))
-            {
+            if ((pos == 0 || it->second[pos-1] == ':') && (it->second.substr(pos) == name)) {
                 ret.push_back(it->second);
             }
         }
@@ -2214,47 +2254,43 @@ void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
     }
 
     // output namespace-begin lines; also check for reserved words
-    H  << std::endl;
-    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it)
-    {
+    H << std::endl;
+    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it) {
         if (RESERVED_WORDS.find(*it) != RESERVED_WORDS.end())
             errors->addError(element, "namespace name '%s' is a reserved word\n", (*it).c_str());
-        H  << "namespace " << *it << " {\n";
+        H << "namespace " << *it << " {\n";
         CC << "namespace " << *it << " {\n";
     }
-    H  << std::endl;
+    H << std::endl;
     CC << std::endl;
 
     generateTemplates();
-
 }
 
 void MsgCppGenerator::generateNamespaceEnd()
 {
 #ifdef MSGC_COMPATIBILE
-    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it)
-    {
-        H  << "}; // end namespace " << *it << std::endl;
+    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it) {
+        H << "}; // end namespace " << *it << std::endl;
         CC << "}; // end namespace " << *it << std::endl;
     }
 #else
-    for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it)
-    {
-        H  << "} // namespace " << *it << std::endl;
+    for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it) {
+        H << "} // namespace " << *it << std::endl;
         CC << "} // namespace " << *it << std::endl;
     }
 #endif
-    H  << std::endl;
+    H << std::endl;
     CC << std::endl;
     namespaceNameVector.clear();
 }
 
 MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& s)
 {
-    std::map<std::string,ClassType>::iterator it = classType.find(s);
+    std::map<std::string, ClassType>::iterator it = classType.find(s);
     return it != classType.end() ? it->second : UNKNOWN;
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

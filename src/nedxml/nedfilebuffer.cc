@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <sys/stat.h>
 #include <cstring>
 #include <cstdio>
@@ -46,42 +45,46 @@ NEDFileBuffer::NEDFileBuffer()
 
 NEDFileBuffer::~NEDFileBuffer()
 {
-    delete [] wholeFile;
-    delete [] lineBeg;
-    delete [] commentBuf;
+    delete[] wholeFile;
+    delete[] lineBeg;
+    delete[] commentBuf;
 }
 
 bool NEDFileBuffer::readFile(const char *filename)
 {
     // load file into memory
-    if (wholeFile) return false; // reinit not supported
+    if (wholeFile)
+        return false;  // reinit not supported
 
     // Note: must use binary mode on the file, otherwise due to CR/LF conversion
     // the number of characters actually stored will be less than "size"
     // (which is the same as fread()'s return value), and we'll get garbage
     // at the end of the buffer.
-    FILE *intmp = fopen(filename,"rb");
-    if (!intmp) return false;
+    FILE *intmp = fopen(filename, "rb");
+    if (!intmp)
+        return false;
 
     struct stat statbuf;
     fstat(fileno(intmp), &statbuf);
     int size = statbuf.st_size;
-    wholeFile = new char [size+2];  // +1 because last line may need an extra '\n'
+    wholeFile = new char[size+2];  // +1 because last line may need an extra '\n'
 
-    int bytes = fread(wholeFile,1,size,intmp);
+    int bytes = fread(wholeFile, 1, size, intmp);
     fclose(intmp);
-    wholeFile[size]='\0';
-    if (bytes != size) return false;
+    wholeFile[size] = '\0';
+    if (bytes != size)
+        return false;
 
     return indexLines();
 }
 
 bool NEDFileBuffer::setData(const char *data)
 {
-    if (wholeFile) return false;  // reinit not supported
+    if (wholeFile)
+        return false;  // reinit not supported
 
-    wholeFile = new char [strlen(data)+2]; // +1 because last line may need an extra '\n'
-    strcpy(wholeFile,data);
+    wholeFile = new char[strlen(data)+2];  // +1 because last line may need an extra '\n'
+    strcpy(wholeFile, data);
     return indexLines();
 }
 
@@ -92,75 +95,88 @@ bool NEDFileBuffer::indexLines()
 {
     // convert all CR and CR+LF into LF to avoid trouble
     char *s, *d;
-    for (s=d=wholeFile; d==wholeFile || *(d-1); )
-    {
-        if (*s=='\r' && *(s+1)=='\n')  s++;
-        else if (*s=='\r') {s++; *d++ = '\n';}
-        else *d++ = *s++;
+    for (s = d = wholeFile; d == wholeFile || *(d-1); ) {
+        if (*s == '\r' && *(s+1) == '\n')
+            s++;
+        else if (*s == '\r') {
+            s++;
+            *d++ = '\n';
+        }
+        else
+            *d++ = *s++;
     }
 
     // terminate last line if necessary
     d--;  // now d points to terminating zero
-    if (*(d-1)!='\n') {*d++ = '\n'; *d = '\0';}
+    if (*(d-1) != '\n') {
+        *d++ = '\n';
+        *d = '\0';
+    }
 
     // count lines
     numLines = 0;
     for (s = wholeFile; *s; s++)
-        if (*s=='\n')
+        if (*s == '\n')
             numLines++;
 
+
     // allocate array
-    lineBeg = new char * [numLines+2];
+    lineBeg = new char *[numLines+2];
 
     // fill in array
     lineBeg[0] = nullptr;
     lineBeg[1] = wholeFile;
     int line = 2;
     for (s = wholeFile; *s; s++)
-        if (*s=='\n')
+        if (*s == '\n')
             lineBeg[line++] = s+1;
 
+
     // last line plus one points to end of file (terminating zero)
-    assert(line==numLines+2);
-    assert(lineBeg[numLines+1]==s);
+    assert(line == numLines+2);
+    assert(lineBeg[numLines+1] == s);
 
     return true;
 }
 
 int NEDFileBuffer::getLineType(int lineNumber)
 {
-    return getLineType(getPosition(lineNumber,0));
+    return getLineType(getPosition(lineNumber, 0));
 }
 
 int NEDFileBuffer::getLineType(const char *s)
 {
-    while (*s==' ' || *s=='\t') s++;
-    if (*s=='/' && *(s+1)=='/') return COMMENT_LINE;
-    if (!*s || *s=='\n') return BLANK_LINE; // if there's only punctuation, it'll count as BLANK too
+    while (*s == ' ' || *s == '\t')
+        s++;
+    if (*s == '/' && *(s+1) == '/')
+        return COMMENT_LINE;
+    if (!*s || *s == '\n')
+        return BLANK_LINE;  // if there's only punctuation, it'll count as BLANK too
     return CODE_LINE;
 }
 
 bool NEDFileBuffer::lineContainsCode(const char *s)
 {
     // tolerant version: punctuation does not count as code
-    while (*s==' ' || *s=='\t' || *s==':' || *s==',' || *s==';') s++;
-    if (*s=='/' && *(s+1)=='/') return false;
-    if (!*s || *s=='\n') return false;
+    while (*s == ' ' || *s == '\t' || *s == ':' || *s == ',' || *s == ';')
+        s++;
+    if (*s == '/' && *(s+1) == '/')
+        return false;
+    if (!*s || *s == '\n')
+        return false;
     return true;
 }
 
-
 int NEDFileBuffer::getLineIndent(int lineNumber)
 {
-    return getLineIndent(getPosition(lineNumber,0));
+    return getLineIndent(getPosition(lineNumber, 0));
 }
 
 int NEDFileBuffer::getLineIndent(const char *s)
 {
     int co = 0;
-    while (*s==' ' || *s=='\t')
-    {
-        co += (*s=='\t') ? 8-(co%8) : 1;
+    while (*s == ' ' || *s == '\t') {
+        co += (*s == '\t') ? 8-(co%8) : 1;
         s++;
     }
     return co;
@@ -169,20 +185,22 @@ int NEDFileBuffer::getLineIndent(const char *s)
 char *NEDFileBuffer::getPosition(int line, int column)
 {
     // tolerant version: if line is out of range, return beginning or end of file
-    if (line<1)
+    if (line < 1)
         return lineBeg[1];
-    if (line>numLines)
+    if (line > numLines)
         return lineBeg[numLines]+strlen(lineBeg[numLines]);
 
     char *s = lineBeg[line];
 
     int co = 0;
-    while (co<column)
-    {
-        if (!*s) return s;
-        if (*s=='\n')
-            {column-=co; co=0;}
-        else if (*s=='\t')
+    while (co < column) {
+        if (!*s)
+            return s;
+        if (*s == '\n') {
+            column -= co;
+            co = 0;
+        }
+        else if (*s == '\t')
             co += 8-(co%8);
         else
             co++;
@@ -193,17 +211,20 @@ char *NEDFileBuffer::getPosition(int line, int column)
 
 const char *NEDFileBuffer::get(YYLTYPE pos)
 {
-    if (end) {*end = savedChar; end=nullptr;}
+    if (end) {
+        *end = savedChar;
+        end = nullptr;
+    }
 
     // return nullptr
-    if (pos.first_line==0 && pos.last_line==0)
+    if (pos.first_line == 0 && pos.last_line == 0)
         return nullptr;
 
     if (isEmpty(pos))
         return "";
 
     // the meat of the whole stuff:
-    end = getPosition(pos.last_line,  pos.last_column);
+    end = getPosition(pos.last_line, pos.last_column);
     savedChar = *end;
     *end = '\0';
 
@@ -219,15 +240,19 @@ const char *NEDFileBuffer::getFileComment()
 // all subsequent comment and blank lines will be included, up to the _last blank_ line
 YYLTYPE NEDFileBuffer::getFileCommentPos()
 {
-    if (end) {*end = savedChar; end=nullptr;}
+    if (end) {
+        *end = savedChar;
+        end = nullptr;
+    }
 
     // seek end of comment block (that is, last blank line before a code line or eof)
     int lastBlank = 0;
     int lineType;
     int line;
-    for (line=1; line<=numLines && (lineType=getLineType(line))!=CODE_LINE; line++)
-        if (lineType==BLANK_LINE)
+    for (line = 1; line <= numLines && (lineType = getLineType(line)) != CODE_LINE; line++)
+        if (lineType == BLANK_LINE)
             lastBlank = line;
+
 
     // if file doesn't contain code line, take the whole file
     if (line > numLines)
@@ -251,7 +276,7 @@ int NEDFileBuffer::topLineOfBannerComment(int li)
 {
     // seek beginning of comment block
     int codeLineIndent = getLineIndent(li);
-    while (li>=2 && getLineType(li-1)==COMMENT_LINE && getLineIndent(li-1) <= codeLineIndent)
+    while (li >= 2 && getLineType(li-1) == COMMENT_LINE && getLineIndent(li-1) <= codeLineIndent)
         li--;
     return li;
 }
@@ -264,13 +289,16 @@ const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
 YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
 {
     trimSpaceAndComments(pos);
-    if (end) {*end = savedChar; end=nullptr;}
+    if (end) {
+        *end = savedChar;
+        end = nullptr;
+    }
 
     // there must be nothing before it on the same line
     char *beg = getPosition(pos.first_line, pos.first_column);
-    for (char *s=getPosition(pos.first_line, 0); s<beg; s++)
-        if (*s!=' ' && *s!='\t')
-            return makeYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
+    for (char *s = getPosition(pos.first_line, 0); s < beg; s++)
+        if (*s != ' ' && *s != '\t')
+            return makeYYLTYPE(1, 0, 1, 0); // empty pos, will be returned as ""
 
     // return comment block
     YYLTYPE commentPos;
@@ -293,25 +321,26 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
 YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
 {
     trimSpaceAndComments(pos);
-    if (end) {*end = savedChar; end=nullptr;}
+    if (end) {
+        *end = savedChar;
+        end = nullptr;
+    }
 
     // there must be no code after it on the same line
     char *endp = getPosition(pos.last_line, pos.last_column);
     if (lineContainsCode(endp))
-        return makeYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
+        return makeYYLTYPE(1, 0, 1, 0);  // empty pos, will be returned as ""
 
     // seek 1st line after comment (lineAfter)
     int lineAfter;
 
-    if (pos.last_line>=numLines) // 'pos' ends on last line of file
-    {
+    if (pos.last_line >= numLines) {  // 'pos' ends on last line of file
         lineAfter = numLines+1;
     }
-    else
-    {
+    else {
         // seek fwd to next code line (or end of file)
         lineAfter = pos.last_line+1;
-        while (lineAfter<=numLines && getLineType(lineAfter)!=CODE_LINE)
+        while (lineAfter <= numLines && getLineType(lineAfter) != CODE_LINE)
             lineAfter++;
 
         // now seek back to beginning of comment block
@@ -330,8 +359,9 @@ YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
 static const char *findCommentOnLine(const char *s)
 {
     // find comment on this line
-    while (*s!='\n' && (*s!='/' || *(s+1)!='/')) s++;
-    if (*s!='/' || *(s+1)!='/')
+    while (*s != '\n' && (*s != '/' || *(s+1) != '/'))
+        s++;
+    if (*s != '/' || *(s+1) != '/')
         return nullptr;
     return s;
 }
@@ -341,19 +371,17 @@ const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
     // FIXME unfortunately, this will collect comments even from
     // inside single-line or multi-line string literals
     // (like "Hello //World")
-    while (!isEmpty(pos))
-    {
+    while (!isEmpty(pos)) {
         const char *s = getPosition(pos.first_line, pos.first_column);
         const char *comment = findCommentOnLine(s);
-        if (comment)
-        {
+        if (comment) {
             int commentColumn = pos.first_column + comment - s;
-            if (pos.first_line==pos.last_line && commentColumn >= pos.last_column)
-                return nullptr; // comment is past the end of "pos"
+            if (pos.first_line == pos.last_line && commentColumn >= pos.last_column)
+                return nullptr;  // comment is past the end of "pos"
 
             // seek fwd to next code line (or end of block)
             int lineAfter = pos.first_line+1;
-            while (lineAfter<pos.last_line && getLineType(lineAfter)!=CODE_LINE)
+            while (lineAfter < pos.last_line && getLineType(lineAfter) != CODE_LINE)
                 lineAfter++;
 
             YYLTYPE commentPos;
@@ -398,20 +426,20 @@ const char *NEDFileBuffer::getFullText()
 char *NEDFileBuffer::stripComment(const char *comment)
 {
     // expand buffer if necessary
-    if (commentBufLen < (int)strlen(comment)+1)
-    {
+    if (commentBufLen < (int)strlen(comment)+1) {
         commentBufLen = strlen(comment)+1;
-        delete [] commentBuf;
+        delete[] commentBuf;
         commentBuf = new char[commentBufLen];
     }
 
     const char *s = comment;
     char *d = commentBuf;
     bool incomment = false;
-    while(*s)
-    {
-        if ((*s=='/' && *(s+1)=='/')) incomment = true;
-        if (*s=='\n') incomment = false;
+    while (*s) {
+        if ((*s == '/' && *(s+1) == '/'))
+            incomment = true;
+        if (*s == '\n')
+            incomment = false;
 
         if (incomment || opp_isspace(*s))
             *d++ = *s++;
@@ -424,14 +452,15 @@ char *NEDFileBuffer::stripComment(const char *comment)
 
 void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
 {
-    if (end) {*end = savedChar; end=nullptr;}
+    if (end) {
+        *end = savedChar;
+        end = nullptr;
+    }
 
     // skip space and comments with the beginning of the region
     const char *s = getPosition(pos.first_line, pos.first_column);
-    while (opp_isspace(*s) || (*s=='/' && *(s+1)=='/'))
-    {
-        if (*s=='\n' || *s=='/')
-        {
+    while (opp_isspace(*s) || (*s == '/' && *(s+1) == '/')) {
+        if (*s == '\n' || *s == '/') {
             // newline or comment: skip to next line
             pos.first_line++;
             pos.first_column = 0;
@@ -439,22 +468,20 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
                 break;
             s = getPosition(pos.first_line, pos.first_column);
         }
-        else if (*s=='\t')
-        {
+        else if (*s == '\t') {
             pos.first_column += 8 - (pos.first_column % 8);
             s++;
         }
-        else // treat the rest as space
-        {
+        else {  // treat the rest as space
             pos.first_column++;
             s++;
         }
     }
 
     // just make sure "start" doesn't overtake "end"
-    if (pos.first_line>pos.last_line)
+    if (pos.first_line > pos.last_line)
         pos.first_line = pos.last_line;
-    if (pos.first_line==pos.last_line && pos.first_column>pos.last_column)
+    if (pos.first_line == pos.last_line && pos.first_column > pos.last_column)
         pos.first_column = pos.last_column;
 
     // TBD decrement last_line/last_column while they point into space/comment;
@@ -462,6 +489,6 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
     // YYLTYPEs with trailing spaces/comments.
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

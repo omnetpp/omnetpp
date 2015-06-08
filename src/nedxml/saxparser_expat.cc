@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cstring>
 #include <cstdio>
 #include <cassert>
@@ -28,11 +27,10 @@ namespace nedxml {
 
 static bool hasDTD;
 
-
 static void expatStartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
 {
     SAXHandler *sh = (SAXHandler *)userData;
-    sh->startElement(name,atts);
+    sh->startElement(name, atts);
 }
 
 static void expatEndElementHandler(void *userData, const XML_Char *name)
@@ -44,13 +42,13 @@ static void expatEndElementHandler(void *userData, const XML_Char *name)
 static void expatCharacterDataHandler(void *userData, const XML_Char *s, int len)
 {
     SAXHandler *sh = (SAXHandler *)userData;
-    sh->characterData(s,len);
+    sh->characterData(s, len);
 }
 
 static void expatProcessingInstructionHandler(void *userData, const XML_Char *target, const XML_Char *data)
 {
     SAXHandler *sh = (SAXHandler *)userData;
-    sh->processingInstruction(target,data);
+    sh->processingInstruction(target, data);
 }
 
 static void expatCommentHandler(void *userData, const XML_Char *data)
@@ -58,7 +56,6 @@ static void expatCommentHandler(void *userData, const XML_Char *data)
     SAXHandler *sh = (SAXHandler *)userData;
     sh->comment(data);
 }
-
 
 static void expatStartCdataSectionHandler(void *userData)
 {
@@ -111,9 +108,8 @@ void SAXParser::setHandler(SAXHandler *sh)
 bool SAXParser::parse(const char *filename)
 {
     // open file
-    FILE *f = fopen(filename,"r");
-    if (!f)
-    {
+    FILE *f = fopen(filename, "r");
+    if (!f) {
         sprintf(errortext, "Cannot open file");
         return false;
     }
@@ -130,20 +126,18 @@ bool SAXParser::parse(const char *filename)
     do {
         size_t len = fread(buf, 1, sizeof(buf), f);
         done = len < sizeof(buf);
-        if (!XML_Parse(parser, buf, len, done))
-        {
+        if (!XML_Parse(parser, buf, len, done)) {
             sprintf(errortext, "Parse error: %s at line %ld",
                     XML_ErrorString(XML_GetErrorCode(parser)),
                     (long)XML_GetCurrentLineNumber(parser));
             err = true;
             done = true;
         }
-        if (hasDTD)
-        {
+        if (hasDTD) {
             sprintf(errortext, "Cannot validate document and complete default attributes "
-                    "from DTD, because underlying parser (Expat) does not support it. "
-                    "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
-                    " %s",
+                               "from DTD, because underlying parser (Expat) does not support it. "
+                               "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
+                               " %s",
                     filename);
             err = true;
             done = true;
@@ -165,19 +159,17 @@ bool SAXParser::parseContent(const char *content)
     bool err = false;
     hasDTD = false;
 
-    if (!XML_Parse(parser, content, strlen(content), true))
-    {
+    if (!XML_Parse(parser, content, strlen(content), true)) {
         sprintf(errortext, "Parse error: %s at line %d",
                 XML_ErrorString(XML_GetErrorCode(parser)),
                 XML_GetCurrentLineNumber(parser));
         err = true;
     }
-    if (hasDTD)
-    {
+    if (hasDTD) {
         sprintf(errortext, "Cannot validate document and complete default attributes "
-                "from DTD, because underlying parser (Expat) does not support it. "
-                "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
-                "all XML content");
+                           "from DTD, because underlying parser (Expat) does not support it. "
+                           "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
+                           "all XML content");
         err = true;
     }
 
@@ -197,6 +189,6 @@ int SAXParser::getCurrentLineNumber()
     return XML_GetCurrentLineNumber(*(XML_Parser *)currentparser);
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

@@ -12,7 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <cstring>
 #include <cstdio>
 #include <cassert>
@@ -56,6 +55,6 @@ int SAXParser::getCurrentLineNumber()
     return 0;
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

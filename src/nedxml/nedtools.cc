@@ -24,25 +24,23 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace nedxml {
 
-
 void NEDTools::repairNEDElementTree(NEDElement *tree)
 {
-    while (true)
-    {
+    while (true) {
         // try DTD validation, and find first problem
         NEDErrorStore errors;
         NEDDTDValidator dtdvalidator(&errors);
         dtdvalidator.validate(tree);
         if (errors.empty())
-            break; // we're done
+            break;  // we're done
         NEDElement *errnode = errors.errorContext(0);
         if (!errnode)
-            break; // this shouldn't happen, but if it does we can't go on
+            break;  // this shouldn't happen, but if it does we can't go on
         if (!errnode->getParent())
-            break; // we can't help if root node is wrong
+            break;  // we can't help if root node is wrong
 
         // throw out problem node, and try again
-        //printf("DBG: repairNEDElementTree: discarding <%s>\n", errnode->getTagName());
+        // printf("DBG: repairNEDElementTree: discarding <%s>\n", errnode->getTagName());
         errnode->getParent()->removeChild(errnode);
     }
 }
@@ -50,10 +48,9 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
 void NEDTools::splitToFiles(FilesElement *tree)
 {
     FilesElement *tmpTree = new FilesElement();
-    for (NEDElement *child=tree->getFirstChild(); child; child = child->getNextSibling())
-    {
+    for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
         // ignore msg files
-        if (child->getTagCode()!=NED_NED_FILE)
+        if (child->getTagCode() != NED_NED_FILE)
             continue;
 
         NedFileElement *fileNode = (NedFileElement *)child;
@@ -64,12 +61,11 @@ void NEDTools::splitToFiles(FilesElement *tree)
         splitFileName(fileNode->getFilename(), directory, filename);
 
         // go through NED components in the file, and create new NED files for them
-        for (NEDElement *child=fileNode->getFirstChild(); child; )
-        {
+        for (NEDElement *child = fileNode->getFirstChild(); child; ) {
             int type = child->getTagCode();
-            if (type!=NED_SIMPLE_MODULE && type!=NED_COMPOUND_MODULE &&
-                type!=NED_CHANNEL && type!=NED_MODULE_INTERFACE &&
-                type!=NED_CHANNEL_INTERFACE)
+            if (type != NED_SIMPLE_MODULE && type != NED_COMPOUND_MODULE &&
+                type != NED_CHANNEL && type != NED_MODULE_INTERFACE &&
+                type != NED_CHANNEL_INTERFACE)
             {
                 child = child->getNextSibling();
                 continue;
@@ -86,12 +82,13 @@ void NEDTools::splitToFiles(FilesElement *tree)
             tmpTree->appendChild(newFileNode);
 
             // copy comments and imports from old file
-            for (NEDElement *child2=fileNode->getFirstChild(); child2; child2 = child2->getNextSibling())
-                if (child2->getTagCode()==NED_COMMENT || child2->getTagCode()==NED_IMPORT)
+            for (NEDElement *child2 = fileNode->getFirstChild(); child2; child2 = child2->getNextSibling())
+                if (child2->getTagCode() == NED_COMMENT || child2->getTagCode() == NED_IMPORT)
                     newFileNode->appendChild(child2->dupTree());
 
+
             // move NED component into new file
-            child = child->getNextSibling(); // adjust iterator
+            child = child->getNextSibling();  // adjust iterator
             fileNode->removeChild(componentNode);
             newFileNode->appendChild(componentNode);
         }
@@ -104,6 +101,6 @@ void NEDTools::splitToFiles(FilesElement *tree)
         tree->appendChild(tmpTree->removeChild(tmpTree->getFirstChild()));
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

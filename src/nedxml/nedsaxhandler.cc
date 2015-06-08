@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "nedsaxhandler.h"
 #include "nedelements.h"
 #include "nederror.h"
@@ -22,7 +21,6 @@
 
 NAMESPACE_BEGIN
 namespace nedxml {
-
 
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
 {
@@ -56,16 +54,14 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
         node = new UnknownElement();
         node->setAttribute("element", name);
     }
-
     // "debug info"
     char buf[200];
-    sprintf(buf,"%s:%d",sourceFilename, parser->getCurrentLineNumber());
+    sprintf(buf, "%s:%d", sourceFilename, parser->getCurrentLineNumber());
     node->setSourceLocation(buf);
 
     // set attributes
-    if (!unknown)
-    {
-        for (int i=0; atts && atts[i]; i+=2) {
+    if (!unknown) {
+        for (int i = 0; atts && atts[i]; i += 2) {
             try {
                 node->setAttribute(atts[i], atts[i+1]);
             }
@@ -78,7 +74,8 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
     // add to tree
     if (!root) {
         root = current = node;
-    } else {
+    }
+    else {
         current->appendChild(node);
         current = node;
     }
@@ -114,6 +111,6 @@ void NEDSAXHandler::endCdataSection()
     // ignore
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

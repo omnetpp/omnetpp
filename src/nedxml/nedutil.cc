@@ -34,8 +34,8 @@ namespace nedxml {
 static void renameTag(DisplayString& ds, const char *from, const char *to)
 {
     int n = ds.getNumArgs(from);
-    for (int i=0; i<n; i++)
-        ds.setTagArg(to, i, ds.getTagArg(from,i));
+    for (int i = 0; i < n; i++)
+        ds.setTagArg(to, i, ds.getTagArg(from, i));
     ds.removeTag(from);
 }
 
@@ -43,14 +43,13 @@ std::string DisplayStringUtil::upgradeBackgroundDisplayString(const char *s)
 {
     DisplayString ds;
     parseDisplayString(s, ds);
-    renameTag(ds, "p",  "bgp");
-    renameTag(ds, "b",  "bgb");
+    renameTag(ds, "p", "bgp");
+    renameTag(ds, "b", "bgb");
     renameTag(ds, "tt", "bgtt");
-    if (ds.containsTag("o"))
-    {
-        ds.setTagArg("bgb", 2, ds.getTagArg("o",0));
-        ds.setTagArg("bgb", 3, ds.getTagArg("o",1));
-        ds.setTagArg("bgb", 4, ds.getTagArg("o",2));
+    if (ds.containsTag("o")) {
+        ds.setTagArg("bgb", 2, ds.getTagArg("o", 0));
+        ds.setTagArg("bgb", 3, ds.getTagArg("o", 1));
+        ds.setTagArg("bgb", 4, ds.getTagArg("o", 2));
         ds.removeTag("o");
     }
     return ds.str();
@@ -60,11 +59,10 @@ std::string DisplayStringUtil::upgradeSubmoduleDisplayString(const char *s)
 {
     DisplayString ds;
     parseDisplayString(s, ds);
-    if (ds.containsTag("o"))
-    {
-        ds.setTagArg("b", 3, ds.getTagArg("o",0));
-        ds.setTagArg("b", 4, ds.getTagArg("o",1));
-        ds.setTagArg("b", 5, ds.getTagArg("o",2));
+    if (ds.containsTag("o")) {
+        ds.setTagArg("b", 3, ds.getTagArg("o", 0));
+        ds.setTagArg("b", 4, ds.getTagArg("o", 1));
+        ds.setTagArg("b", 5, ds.getTagArg("o", 2));
         ds.removeTag("o");
     }
     return ds.str();
@@ -90,20 +88,18 @@ std::string DisplayStringUtil::toOldBackgroundDisplayString(const char *s)
 {
     DisplayString ds;
     parseDisplayString(s, ds);
-    for (int i=0; i<ds.getNumTags(); i++)
-    {
+    for (int i = 0; i < ds.getNumTags(); i++) {
         const char *t = ds.getTagName(i);
-        if (strcmp(t,"bgp")!=0 && strcmp(t,"bgb")!=0 && strcmp(t,"bgtt")!=0)
+        if (strcmp(t, "bgp") != 0 && strcmp(t, "bgb") != 0 && strcmp(t, "bgtt") != 0)
             ds.removeTag(i--);
     }
-    renameTag(ds, "bgp",  "p");
-    renameTag(ds, "bgb",  "b");
+    renameTag(ds, "bgp", "p");
+    renameTag(ds, "bgb", "b");
     renameTag(ds, "bgtt", "tt");
-    if (ds.getNumArgs("b")>3)
-    {
-        ds.setTagArg("o", 0, ds.getTagArg("b",3));
-        ds.setTagArg("o", 1, ds.getTagArg("b",4));
-        ds.setTagArg("o", 2, ds.getTagArg("b",5));
+    if (ds.getNumArgs("b") > 3) {
+        ds.setTagArg("o", 0, ds.getTagArg("b", 3));
+        ds.setTagArg("o", 1, ds.getTagArg("b", 4));
+        ds.setTagArg("o", 2, ds.getTagArg("b", 5));
         ds.setTagArg("b", 3, "");
         ds.setTagArg("b", 4, "");
         ds.setTagArg("b", 5, "");
@@ -115,11 +111,10 @@ std::string DisplayStringUtil::toOldSubmoduleDisplayString(const char *s)
 {
     DisplayString ds;
     parseDisplayString(s, ds);
-    if (ds.getNumArgs("b")>3)
-    {
-        ds.setTagArg("o", 0, ds.getTagArg("b",3));
-        ds.setTagArg("o", 1, ds.getTagArg("b",4));
-        ds.setTagArg("o", 2, ds.getTagArg("b",5));
+    if (ds.getNumArgs("b") > 3) {
+        ds.setTagArg("o", 0, ds.getTagArg("b", 3));
+        ds.setTagArg("o", 1, ds.getTagArg("b", 4));
+        ds.setTagArg("o", 2, ds.getTagArg("b", 5));
         ds.setTagArg("b", 3, "");
         ds.setTagArg("b", 4, "");
         ds.setTagArg("b", 5, "");
@@ -183,9 +178,9 @@ bool NEDElementUtil::propertyAsBool(PropertyElement *property)
     if (!literal)
         return true;  // so that @isNetwork is equivalent to @isNetwork(true)
     const char *value = literal->getValue();
-    if (strcmp(value, "true")!=0 && strcmp(value, "false")!=0)
+    if (strcmp(value, "true") != 0 && strcmp(value, "false") != 0)
         throw NEDException(property, "boolean value expected");
-    return value[0]=='t';
+    return value[0] == 't';
 }
 
 const char *NEDElementUtil::propertyAsString(PropertyElement *property)
@@ -195,17 +190,18 @@ const char *NEDElementUtil::propertyAsString(PropertyElement *property)
     LiteralElement *literal = getTheOnlyValueFrom(property);
     if (!literal)
         return nullptr;
-    return literal->getValue(); // return anything as string
+    return literal->getValue();  // return anything as string
 }
 
 int NEDElementUtil::compare(NEDElement *node1, NEDElement *node2)
 {
     int diff;
-    if ((diff=node1->getTagCode()-node2->getTagCode()) != 0)
+    if ((diff = node1->getTagCode()-node2->getTagCode()) != 0)
         return diff;
-    for (int i=0; i<node1->getNumAttributes(); i++)
-        if ((diff = opp_strcmp(node1->getAttribute(i), node2->getAttribute(i)))!=0)
+    for (int i = 0; i < node1->getNumAttributes(); i++)
+        if ((diff = opp_strcmp(node1->getAttribute(i), node2->getAttribute(i))) != 0)
             return diff;
+
     return 0;
 }
 
@@ -231,10 +227,10 @@ int NEDElementUtil::compareTree(NEDElement *node1, NEDElement *node2)
 bool NEDElementUtil::isNEDType(NEDElement *node)
 {
     int tag = node->getTagCode();
-    return tag==NED_SIMPLE_MODULE || tag==NED_MODULE_INTERFACE || tag==NED_COMPOUND_MODULE ||
-           tag==NED_CHANNEL_INTERFACE || tag==NED_CHANNEL;
+    return tag == NED_SIMPLE_MODULE || tag == NED_MODULE_INTERFACE || tag == NED_COMPOUND_MODULE ||
+           tag == NED_CHANNEL_INTERFACE || tag == NED_CHANNEL;
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
 

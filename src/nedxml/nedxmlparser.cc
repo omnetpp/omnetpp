@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "saxparser.h"
 #include "nedsaxhandler.h"
 #include "nederror.h"
@@ -30,13 +29,13 @@ NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 
     parser.setHandler(&sh);
     bool ok = parser.parse(filename);
-    if (!ok)
-    {
+    if (!ok) {
         errors->addError("", "error reading `%s': %s", filename, parser.getErrorMessage());
         return nullptr;
     }
     return sh.getTree();
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
+

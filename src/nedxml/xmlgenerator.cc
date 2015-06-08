@@ -62,7 +62,8 @@ void NEDXMLGenerator::setSourceLocationAttributes(bool srcloc)
 void NEDXMLGenerator::setIndentSize(int indentsiz)
 {
     indentSize = indentsiz;
-    if (indentSize>16) indentSize=16;
+    if (indentSize > 16)
+        indentSize = 16;
 }
 
 void NEDXMLGenerator::generate(ostream& out, NEDElement *tree)
@@ -83,21 +84,20 @@ std::string NEDXMLGenerator::generate(NEDElement *tree)
 
 void NEDXMLGenerator::printAttrValue(ostream& out, const char *s)
 {
-    for (; *s; s++)
-    {
+    for ( ; *s; s++) {
         unsigned char c = *s;
-        if (c=='<')
-           out << "&lt;";
-        else if (c=='>')
-           out << "&gt;";
-        else if (c=='"')
-           out << "&quot;";
-        else if (c=='&')
-           out << "&amp;";
-        else if (c<32)
-           out << "&#" << int(c) << ";";
+        if (c == '<')
+            out << "&lt;";
+        else if (c == '>')
+            out << "&gt;";
+        else if (c == '"')
+            out << "&quot;";
+        else if (c == '&')
+            out << "&amp;";
+        else if (c < 32)
+            out << "&#" << int(c) << ";";
         else
-           out << c;
+            out << c;
     }
 }
 
@@ -108,34 +108,32 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
 
     // indent + opening tag
     int i;
-    for (i=0; i<level; i++)
+    for (i = 0; i < level; i++)
         out << indent;
     out << "<" << node->getTagName();
 
     // location info
-    if (printSrcLoc && node->getSourceLocation())
-    {
+    if (printSrcLoc && node->getSourceLocation()) {
         out << " src-loc=\"";
         printAttrValue(out, node->getSourceLocation());
         out << "\"";
 
         const NEDSourceRegion& r = node->getSourceRegion();
-        if (r.startLine>0) // filled in
-        {
+        if (r.startLine > 0) {  // filled in
             out << " src-region=\"" << r.startLine << ":" << r.startColumn << "-"
                 << r.endLine << ":" << r.endColumn << "\"";
         }
     }
 
     // output attributes, but only if they differ from their default values
-    for (i=0; i<node->getNumAttributes(); i++)
-    {
+    for (i = 0; i < node->getNumAttributes(); i++) {
         const char *attrval = node->getAttribute(i);
         const char *defaultval = node->getAttributeDefault(i);
-        if (!attrval) attrval = "";
-        if (!defaultval) defaultval= "";
-        if (strcmp(attrval,defaultval))
-        {
+        if (!attrval)
+            attrval = "";
+        if (!defaultval)
+            defaultval = "";
+        if (strcmp(attrval, defaultval)) {
             out << " " << node->getAttributeName(i);
             out << "=\"";
             printAttrValue(out, attrval);
@@ -144,24 +142,23 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
     }
 
     // if no children, merge closing tag using "<../>"
-    if (!node->getFirstChild())
-    {
-       out << "/>" << endl;
-       return;
+    if (!node->getFirstChild()) {
+        out << "/>" << endl;
+        return;
     }
     out << ">" << endl;
 
     // children
-    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-    {
+    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         doGenerate(out, child, level+1);
     }
 
     // indent + closing tag
-    for (i=0; i<level; i++)
+    for (i = 0; i < level; i++)
         out << indent;
     out << "</" << node->getTagName() << ">" << endl;
 }
 
-} // namespace nedxml
+}  // namespace nedxml
 NAMESPACE_END
+
