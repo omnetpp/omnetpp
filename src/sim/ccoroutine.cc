@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
 
 LPVOID cCoroutine::lpMainFiber;
 
-void cCoroutine::init(unsigned total_stack, unsigned main_stack)
+void cCoroutine::init(unsigned totalStack, unsigned mainStack)
 {
     lpMainFiber = ConvertThreadToFiber(0);
     if (!lpMainFiber) {
@@ -64,17 +64,17 @@ cCoroutine::~cCoroutine()
         DeleteFiber(lpFiber);
 }
 
-bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
+bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stkSize)
 {
     // stack_size sets the *committed* stack size; *reserved* (=available)
     // stack size is 1MB by default; this allows ~2048 coroutines in a
     // 2GB address space
-    stackSize = stack_size;
+    stackSize = stkSize;
 
     // XXX: CreateFiberEx() does not seem to work any better than CreateFiber(),
     // it appears to have the same limit for the number of fibers that can be created.
     // lpFiber = CreateFiberEx(stackSize, stackSize, 0, (LPFIBER_START_ROUTINE)fnp, arg);
-    lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);
+    lpFiber = CreateFiber(stkSize, (LPFIBER_START_ROUTINE)fnp, arg);
     return lpFiber != nullptr;
 }
 
@@ -102,11 +102,11 @@ ucontext_t *cCoroutine::curContextPtr;
 unsigned cCoroutine::totalStackUsage;
 unsigned cCoroutine::totalStackLimit;
 
-void cCoroutine::init(unsigned total_stack, unsigned main_stack)
+void cCoroutine::init(unsigned totalStack, unsigned mainStack)
 {
     curContextPtr = &mainContext;
     totalStackUsage = 0;
-    totalStackLimit = total_stack;
+    totalStackLimit = totalStack;
 }
 
 void cCoroutine::switchTo(cCoroutine *cor)
@@ -137,14 +137,14 @@ cCoroutine::~cCoroutine()
     delete[] stackPtr;
 }
 
-bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
+bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stkSize)
 {
-    if (totalStackLimit != 0 && totalStackUsage + stack_size >= totalStackLimit)
+    if (totalStackLimit != 0 && totalStackUsage + stkSize >= totalStackLimit)
         return false;
 
     try {
-        stackPtr = new char[stack_size];
-        stackSize = stack_size;
+        stackPtr = new char[stkSize];
+        stackSize = stkSize;
     }
     catch (std::bad_alloc& e) {
         return false;
@@ -180,9 +180,9 @@ unsigned cCoroutine::getStackUsage() const
 
 #include "task.h"  // Stig Kofoed's "Portable Multitasking" coroutine library
 
-void cCoroutine::init(unsigned total_stack, unsigned main_stack)
+void cCoroutine::init(unsigned totalStack, unsigned mainStack)
 {
-    task_init(total_stack, main_stack);
+    task_init(totalStack, mainStack);
 }
 
 void cCoroutine::switchTo(cCoroutine *cor)
@@ -206,9 +206,9 @@ cCoroutine::~cCoroutine()
         task_free(task);
 }
 
-bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
+bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stackSize)
 {
-    task = task_create(fnp, arg, stack_size);
+    task = task_create(fnp, arg, stackSize);
     return task != nullptr;
 }
 

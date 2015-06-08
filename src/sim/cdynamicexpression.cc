@@ -351,29 +351,29 @@ cNEDValue cDynamicExpression::evaluate(cComponent *context) const
                 break;
 
             case Elem::NEDFUNC: {
-                int numargs = e.nf.argc;
-                int argpos = tos-numargs+1;  // stk[] index of 1st arg to pass
-                if (argpos < 0)
+                int numArgs = e.nf.argc;
+                int argPos = tos-numArgs+1;  // stk[] index of 1st arg to pass
+                if (argPos < 0)
                     throw cRuntimeError(E_ESTKUFLOW);
                 // note: args checking is left to the function itself
-                stk[argpos] = e.nf.f->invoke(context, stk+argpos, numargs);
-                tos = argpos;
+                stk[argPos] = e.nf.f->invoke(context, stk+argPos, numArgs);
+                tos = argPos;
                 break;
             }
 
             case Elem::FUNCTOR: {
-                int numargs = e.fu->getNumArgs();
-                int argpos = tos-numargs+1;  // stk[] index of 1st arg to pass
-                if (argpos < 0)
+                int numArgs = e.fu->getNumArgs();
+                int argPos = tos-numArgs+1;  // stk[] index of 1st arg to pass
+                if (argPos < 0)
                     throw cRuntimeError(E_ESTKUFLOW);
                 const char *argtypes = e.fu->getArgTypes();
-                for (int i = 0; i < numargs; i++)
-                    if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i] == 'L' ? 'D' : argtypes[i]))
+                for (int i = 0; i < numArgs; i++)
+                    if (argtypes[i] != '*' && stk[argPos+i].type != (argtypes[i] == 'L' ? 'D' : argtypes[i]))
                         throw cRuntimeError(E_EBADARGS, e.fu->getFullName());
 
                 // note: unit checking is left to the function itself
-                stk[argpos] = e.fu->evaluate(context, stk+argpos, numargs);
-                tos = argpos;
+                stk[argPos] = e.fu->evaluate(context, stk+argPos, numArgs);
+                tos = argPos;
                 break;
             }
 

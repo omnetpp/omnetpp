@@ -1091,8 +1091,8 @@ cModule *cModule::getModuleByPath(const char *path)
         return nullptr;
 
     // determine starting point
-    bool isrelative = (path[0] == '.' || path[0] == '^');
-    cModule *modp = isrelative ? this : getSimulation()->getSystemModule();
+    bool isRelative = (path[0] == '.' || path[0] == '^');
+    cModule *module = isRelative ? this : getSimulation()->getSystemModule();
     if (path[0] == '.')
         path++;  // skip initial dot
 
@@ -1100,41 +1100,41 @@ cModule *cModule::getModuleByPath(const char *path)
     opp_string pathbuf(path);
     char *rest = pathbuf.buffer();
     char *token = nextToken(rest);
-    bool isfirst = true;
-    while (token && modp) {
+    bool isFirst = true;
+    while (token && module) {
         char *lbracket;
         if (!token[0])
             ;  /*skip empty path component*/
-        else if (!isrelative && isfirst && modp->isName(token))
+        else if (!isRelative && isFirst && module->isName(token))
             /*ignore network name*/;
         else if (token[0] == '^' && token[1] == '\0')
-            modp = modp->getParentModule();  // if modp is the root, return nullptr
+            module = module->getParentModule();  // if modp is the root, return nullptr
         else if ((lbracket = strchr(token, '[')) == nullptr)
-            modp = modp->getSubmodule(token);
+            module = module->getSubmodule(token);
         else {
             if (token[strlen(token)-1] != ']')
                 throw cRuntimeError(this, "getModuleByPath(): syntax error (unmatched bracket?) in path `%s'", path);
             int index = atoi(lbracket+1);
             *lbracket = '\0';  // cut off [index]
-            modp = modp->getSubmodule(token, index);
+            module = module->getSubmodule(token, index);
         }
         token = nextToken(rest);
-        isfirst = false;
+        isFirst = false;
     }
 
-    return modp;  // nullptr if not found
+    return module;  // nullptr if not found
 }
 
 cPar& cModule::getAncestorPar(const char *name)
 {
     // search parameter in parent modules
-    cModule *pmod = this;
+    cModule *module = this;
     int k;
-    while (pmod && (k = pmod->findPar(name)) < 0)
-        pmod = pmod->getParentModule();
-    if (!pmod)
+    while (module && (k = module->findPar(name)) < 0)
+        module = module->getParentModule();
+    if (!module)
         throw cRuntimeError(this, "has no ancestor parameter called `%s'", name);
-    return pmod->par(k);
+    return module->par(k);
 }
 
 void cModule::finalizeParameters()
@@ -1186,8 +1186,8 @@ void cModule::doBuildInside()
 void cModule::deleteModule()
 {
     // check this module doesn't contain the executing module somehow
-    for (cModule *mod = getSimulation()->getContextModule(); mod; mod = mod->getParentModule())
-        if (mod == this)
+    for (cModule *module = getSimulation()->getContextModule(); module; module = module->getParentModule())
+        if (module == this)
             throw cRuntimeError(this, "it is not supported to delete a module that contains "
                                       "the currently executing simple module");
 
@@ -1222,21 +1222,21 @@ void cModule::deleteModule()
     }
 }
 
-void cModule::changeParentTo(cModule *mod)
+void cModule::changeParentTo(cModule *module)
 {
-    if (!mod)
+    if (!module)
         throw cRuntimeError(this, "changeParentTo(): got nullptr");
 
     // gates must be unconnected to avoid connections breaking module hierarchy rules
     cGate *g;
-    for (GateIterator i(this); !i.end(); i++)
-        if (g = i(), g->isConnectedOutside())
+    for (GateIterator it(this); !it.end(); it++)
+        if (g = it(), g->isConnectedOutside())
             throw cRuntimeError(this, "changeParentTo(): gates of the module must not be "
                                       "connected (%s is connected now)", g->getFullName());
 
 
     // cannot insert module under one of its own submodules
-    for (cModule *m = mod; m; m = m->getParentModule())
+    for (cModule *m = module; m; m = m->getParentModule())
         if (m == this)
             throw cRuntimeError(this, "changeParentTo(): cannot move module under one of its own submodules");
 
@@ -1245,14 +1245,14 @@ void cModule::changeParentTo(cModule *mod)
     if (hasListeners(PRE_MODEL_CHANGE)) {
         cPreModuleReparentNotification tmp;
         tmp.module = this;
-        tmp.newParentModule = mod;
-        mod->emit(PRE_MODEL_CHANGE, &tmp);
+        tmp.newParentModule = module;
+        module->emit(PRE_MODEL_CHANGE, &tmp);
     }
 
     // do it
     cModule *oldparent = getParentModule();
     oldparent->removeSubmodule(this);
-    mod->insertSubmodule(this);
+    module->insertSubmodule(this);
     int oldId = getId();
     reassignModuleIdRec();
     if (cacheFullPath)
@@ -1269,7 +1269,7 @@ void cModule::changeParentTo(cModule *mod)
         cPostModuleReparentNotification tmp;
         tmp.module = this;
         tmp.oldParentModule = oldparent;
-        mod->emit(POST_MODEL_CHANGE, &tmp);
+        module->emit(POST_MODEL_CHANGE, &tmp);
     }
 }
 
@@ -1499,7 +1499,7 @@ cGate *cModule::GateIterator::operator++(int)
 
 cGate *cModule::GateIterator::operator+=(int k)
 {
-    //FIXME this is the primitive solution. We could do better, like skip gate vectors at once, etc
+    // Note: this is the straightforward solution. We could do better, like skip gate vectors at once, etc
     for (int i = 0; i < k; i++)
         (*this)++;
     return (*this)();
@@ -1507,17 +1507,17 @@ cGate *cModule::GateIterator::operator+=(int k)
 
 //----
 
-void cModule::ChannelIterator::init(const cModule *parentmodule)
+void cModule::ChannelIterator::init(const cModule *parentModule)
 {
-    // loop through the gates of parentmodule and its submodules
+    // loop through the gates of parentModule and its submodules
     // to fill in the channels[] vector
     bool parent = false;
     channels.clear();
-    for (SubmoduleIterator it(parentmodule); !parent; it++) {
-        const cModule *mod = !it.end() ? it() : (parent = true, parentmodule);
+    for (SubmoduleIterator it(parentModule); !parent; it++) {
+        const cModule *mod = !it.end() ? it() : (parent = true, parentModule);
 
-        for (GateIterator i(mod); !i.end(); i++) {
-            const cGate *gate = i();
+        for (GateIterator gateIt(mod); !gateIt.end(); gateIt++) {
+            const cGate *gate = gateIt();
             cGate::Type wantedGateType = parent ? cGate::INPUT : cGate::OUTPUT;
             if (gate && gate->getChannel() && gate->getType() == wantedGateType)
                 channels.push_back(gate->getChannel());

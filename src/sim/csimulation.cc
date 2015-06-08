@@ -162,7 +162,7 @@ std::string cSimulation::getFullPath() const
     return getFullName();
 }
 
-static std::string xmlquote(const std::string& str)
+static std::string xmlQuote(const std::string& str)
 {
     if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>'))
         return str;
@@ -184,24 +184,25 @@ class cSnapshotWriterVisitor : public cVisitor
 {
   protected:
     ostream& os;
-    int indentlevel;
+    int indentLevel;
 
   public:
-    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) { indentlevel = 0; }
+    cSnapshotWriterVisitor(ostream& ostr) : os(ostr), indentLevel(0) {}
 
     virtual void visit(cObject *obj) override {
-        std::string indent(2 * indentlevel, ' ');
-        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << xmlquote(obj->getFullPath()) << "\">\n";
-        os << indent << "  <info>" << xmlquote(obj->info()) << "</info>\n";
+        std::string indent(2 * indentLevel, ' ');
+        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << xmlQuote(obj->getFullPath()) << "\">\n";
+        os << indent << "  <info>" << xmlQuote(obj->info()) << "</info>\n";
         std::string details = obj->detailedInfo();
         if (!details.empty())
-            os << indent << "  <detailedinfo>" << xmlquote(details) << "</detailedinfo>\n";
-        indentlevel++;
+            os << indent << "  <detailedinfo>" << xmlQuote(details) << "</detailedinfo>\n";
+        indentLevel++;
         obj->forEachChild(this);
-        indentlevel--;
+        indentLevel--;
         os << indent << "</object>\n\n";
 
-        if (os.fail()) throw EndTraversalException();
+        if (os.fail())
+            throw EndTraversalException();
     }
 };
 
@@ -218,10 +219,10 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
     os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     os << "<snapshot\n";
-    os << "    object=\"" << xmlquote(object->getFullPath()) << "\"\n";
-    os << "    label=\"" << xmlquote(label ? label : "") << "\"\n";
-    os << "    simtime=\"" << xmlquote(SIMTIME_STR(simTime())) << "\"\n";
-    os << "    network=\"" << xmlquote(networkType ? networkType->getName() : "") << "\"\n";
+    os << "    object=\"" << xmlQuote(object->getFullPath()) << "\"\n";
+    os << "    label=\"" << xmlQuote(label ? label : "") << "\"\n";
+    os << "    simtime=\"" << xmlQuote(SIMTIME_STR(simTime())) << "\"\n";
+    os << "    network=\"" << xmlQuote(networkType ? networkType->getName() : "") << "\"\n";
     os << "    >\n";
 
     cSnapshotWriterVisitor v(os);
@@ -373,10 +374,10 @@ void cSimulation::setSystemModule(cModule *module)
 
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
-    cModule *modp = getSystemModule();
-    if (!modp || !path || !path[0] || path[0] == '.' || path[0] == '^')
+    cModule *module = getSystemModule();
+    if (!module || !path || !path[0] || path[0] == '.' || path[0] == '^')
         return nullptr;
-    return modp->getModuleByPath(path);
+    return module->getModuleByPath(path);
 }
 
 void cSimulation::setupNetwork(cModuleType *network)
@@ -405,9 +406,9 @@ void cSimulation::setupNetwork(cModuleType *network)
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
-        cModule *mod = networkType->create(networkType->getName(), nullptr);
-        mod->finalizeParameters();
-        mod->buildInside();
+        cModule *module = networkType->create(networkType->getName(), nullptr);
+        module->finalizeParameters();
+        module->buildInside();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
     catch (std::exception& e) {
@@ -417,13 +418,6 @@ void cSimulation::setupNetwork(cModuleType *network)
         // and not in the constructor.)
         throw;
     }
-    //catch (...) -- this is not a good idea because it would make debugging more difficult
-    //{
-    //    deleteNetwork();
-    //    throw cRuntimeError("unknown exception occurred");
-    //}
-
-    //printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::getLiveParImplObjectCount());
 }
 
 void cSimulation::callInitialize()
@@ -677,7 +671,7 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
     // switch to the module's context
     setContext(module);
 
-    // give msg to mod (set ownership)
+    // give msg to module (set ownership)
     module->take(msg);
 
     if (getHasher()) {

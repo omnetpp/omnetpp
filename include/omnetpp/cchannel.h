@@ -38,12 +38,12 @@ class cGate;
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
-    cGate *srcgatep; // gate the channel is attached to
+    cGate *srcGate; // gate the channel is attached to
     int nedConnectionElementId;  // for cChannel::getProperties(); usually the NED connection element's id
 
   public:
     // internal: called from cGate
-    void setSourceGate(cGate *g) {srcgatep=g;}
+    void setSourceGate(cGate *g) {srcGate=g;}
 
     // internal: sets/gets nedConnectionElementId
     void setNedConnectionElementId(int id) {nedConnectionElementId = id;}
@@ -206,7 +206,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Returns the gate this channel is attached to.
      */
-    cGate *getSourceGate() const  {return srcgatep;}
+    cGate *getSourceGate() const  {return srcGate;}
 
     /**
      * Returns true if the channel models a nonzero-duration transmission,

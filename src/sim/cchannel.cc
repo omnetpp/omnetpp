@@ -44,7 +44,7 @@ void cChannel::MessageSentSignalValue::error() const
 
 cChannel::cChannel(const char *name) : cComponent(name)
 {
-    srcgatep = nullptr;
+    srcGate = nullptr;
     nedConnectionElementId = -1;
 }
 
@@ -81,7 +81,7 @@ void cChannel::parsimUnpack(cCommBuffer *buffer)
 
 void cChannel::finalizeParameters()
 {
-    if (!srcgatep)
+    if (!srcGate)
         throw cRuntimeError(this, "finalizeParameters() may only be called when the channel is already installed on a connection");
     cComponent::finalizeParameters();
 }
@@ -167,12 +167,12 @@ void cChannel::callFinish()
 cModule *cChannel::getParentModule() const
 {
     // find which (compound) module contains this connection
-    if (!srcgatep)
+    if (!srcGate)
         return nullptr;
-    cModule *ownerMod = srcgatep->getOwnerModule();
-    if (!ownerMod)
+    cModule *ownerModule = srcGate->getOwnerModule();
+    if (!ownerModule)
         return nullptr;
-    return srcgatep->getType() == cGate::INPUT ? ownerMod : ownerMod->getParentModule();
+    return srcGate->getType() == cGate::INPUT ? ownerModule : ownerModule->getParentModule();
 }
 
 cProperties *cChannel::getProperties() const

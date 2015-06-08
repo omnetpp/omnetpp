@@ -41,11 +41,11 @@ Register_Class(cArray);
 // 3) cOwnedObject objects with takeownership==false
 // 4) cOwnedObject objects with takeownership==true
 
-void cArray::Iterator::init(const cArray& a, bool athead)
+void cArray::Iterator::init(const cArray& a, bool atHead)
 {
     array = const_cast<cArray *>(&a);  // we don't want a separate Const_Iterator class
 
-    if (athead) {
+    if (atHead) {
         // fast-forward to first non-empty slot
         // (Note: we exploit that get(k) just returns nullptr when k is out of bounds)
         k = 0;
@@ -154,7 +154,6 @@ void cArray::forEachChild(cVisitor *v)
     for (int i = 0; i <= last; i++)
         if (vect[i])
             v->visit(vect[i]);
-
 }
 
 void cArray::parsimPack(cCommBuffer *buffer) const

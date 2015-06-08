@@ -159,9 +159,9 @@ static bool listContains(const char **list, const char *s)
 const char **cClassDescriptor::mergeLists(const char **list1, const char **list2)
 {
     // args may be nullptr
-    const char *emptylist[] = { nullptr };
-    if (!list1) list1 = emptylist;
-    if (!list2) list2 = emptylist;
+    const char *emptyList[] = { nullptr };
+    if (!list1) list1 = emptyList;
+    if (!list2) list2 = emptyList;
 
     // count all elements
     int n = 0;
@@ -279,7 +279,6 @@ int cClassDescriptor::findField(const char *fieldName) const
     for (int i = 0; i < n; i++)
         if (strcmp(fieldName, getFieldName(i)) == 0)
             return i;
-
     return -1;
 }
 

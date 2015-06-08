@@ -180,7 +180,6 @@ void cHistogramBase::setNumCells(int numcells)
 }
 
 //----
-// cHistogram - member functions
 
 cHistogram::cHistogram(const char *name, int numcells, HistogramMode mode) :
     cHistogramBase(name, numcells)
@@ -274,11 +273,11 @@ void cHistogram::setupRange()
 
 void cHistogram::setupRangeInteger()
 {
-    // set up the missing ones of: rangemin, rangemax, num_cells, cellsize;
+    // set up the missing ones of: rangeMin, rangeMax, numCells, cellSize;
     // throw error if not everything can be set up consistently
 
     // cellsize is double but we want to calculate with integers here
-    long cellsize = (long)this->cellSize;
+    long cellSize = (long)this->cellSize;
 
     // convert range limits to integers
     rangeMin = floor(rangeMin);
@@ -288,69 +287,69 @@ void cHistogram::setupRangeInteger()
 #define COMPLAINT    "Cannot set up cells to satisfy constraints"
         long range = (long)(rangeMax - rangeMin);
 
-        if (numCells > 0 && cellsize > 0) {
-            if (numCells * cellsize != range)
+        if (numCells > 0 && cellSize > 0) {
+            if (numCells * cellSize != range)
                 throw cRuntimeError(this, COMPLAINT ": numCells*cellSize != rangeMax-rangeMin");
         }
-        else if (cellsize > 0) {
-            if (range % cellsize != 0)
+        else if (cellSize > 0) {
+            if (range % cellSize != 0)
                 throw cRuntimeError(this, COMPLAINT ": specified range is not a multiple of cellSize");
-            numCells = range / cellsize;
+            numCells = range / cellSize;
         }
         else if (numCells > 0) {
             if (range % numCells != 0)
                 throw cRuntimeError(this, COMPLAINT ": specified range is not a multiple of numCells");
-            cellsize = range / numCells;
+            cellSize = range / numCells;
         }
         else {
-            int mincellsize = (int)ceil(range / 200.0);
-            int maxcellsize = (int)ceil(range / 10.0);
-            for (cellsize = mincellsize; cellsize <= maxcellsize; cellsize++)
-                if (range % cellsize == 0)
+            int minCellsize = (int)ceil(range / 200.0);
+            int maxCellsize = (int)ceil(range / 10.0);
+            for (cellSize = minCellsize; cellSize <= maxCellsize; cellSize++)
+                if (range % cellSize == 0)
                     break;
 
-            if (cellsize > maxcellsize)
+            if (cellSize > maxCellsize)
                 throw cRuntimeError(this, COMPLAINT ": specified range is too large, and cannot divide it to 10..200 equal-sized cells");
-            numCells = range / cellsize;
+            numCells = range / cellSize;
         }
 #undef COMPLAINT
     }
     else {
         // non-fixed range
-        if (numCells > 0 && cellsize > 0) {
-            // both given; num_cells*cellsize will determine the range
+        if (numCells > 0 && cellSize > 0) {
+            // both given; numCells*cellSize will determine the range
         }
         else if (numCells > 0) {
-            // num_cells given ==> choose cellsize
-            cellsize = (long)ceil((rangeMax - rangeMin) / numCells);
+            // numCells given ==> choose cellSize
+            cellSize = (long)ceil((rangeMax - rangeMin) / numCells);
         }
-        else if (cellsize > 0) {
-            // cellsize given ==> choose num_cells
-            numCells = (int)ceil((rangeMax - rangeMin) / cellsize);
+        else if (cellSize > 0) {
+            // cellSize given ==> choose numCells
+            numCells = (int)ceil((rangeMax - rangeMin) / cellSize);
         }
         else {
             // neither given, choose both
             double range = rangeMax - rangeMin;
-            cellsize = (long)ceil(range / 200.0);  // for range<=200, cellsize==1
-            numCells = (int)ceil(range / cellsize);
+            cellSize = (long)ceil(range / 200.0);  // for range<=200, cellSize==1
+            numCells = (int)ceil(range / cellSize);
         }
 
-        // adjust range to be cellsize*num_cells
-        double newrange = cellsize * numCells;
-        double rangediff = newrange - (rangeMax - rangeMin);
+        // adjust range to be cellSize*numCells
+        double newRange = cellSize * numCells;
+        double rangeDiff = newRange - (rangeMax - rangeMin);
 
         switch (rangeMode) {
             case RANGE_AUTO:
-                rangeMin -= floor(rangediff / 2);
-                rangeMax = rangeMin + newrange;
+                rangeMin -= floor(rangeDiff / 2);
+                rangeMax = rangeMin + newRange;
                 break;
 
             case RANGE_AUTOLOWER:
-                rangeMin = rangeMax - newrange;
+                rangeMin = rangeMax - newRange;
                 break;
 
             case RANGE_AUTOUPPER:
-                rangeMax = rangeMin + newrange;
+                rangeMax = rangeMin + newRange;
                 break;
 
             case RANGE_FIXED:
@@ -362,8 +361,8 @@ void cHistogram::setupRangeInteger()
         }
     }
 
-    // write back the integer cellsize into double
-    this->cellSize = cellsize;
+    // write back the integer cellSize into double
+    this->cellSize = cellSize;
 }
 
 void cHistogram::setupRangeDouble()
@@ -392,9 +391,9 @@ double cHistogram::draw() const
             m -= cellv[k];
 
         if (mode == MODE_INTEGERS) {
-            // min_vals, max_vals: integer-valued doubles (e.g.: -3.0, 5.0)
-            // rangemin, rangemax: doubles like -1.5, 4.5 (integer+0.5)
-            // cellsize: integer-valued double, >0
+            // minValues, maxValues: integer-valued doubles (e.g.: -3.0, 5.0)
+            // rangeMin, rangeMax: doubles like -1.5, 4.5 (integer+0.5)
+            // cellSize: integer-valued double, >0
             return ceil(rangeMin) + (k-1) * (long)cellSize + intrand(rng, (long)cellSize);
         }
         else {

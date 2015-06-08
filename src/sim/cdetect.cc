@@ -111,7 +111,6 @@ void cTDExpandingWindows::reset()
     size = 0;
 }
 
-// set transient detection parameters
 void cTDExpandingWindows::setParameters(int reps, int minw, double wind, double acc)
 {
     repeats = detreps = reps;
@@ -120,7 +119,6 @@ void cTDExpandingWindows::setParameters(int reps, int minw, double wind, double 
     accuracy = acc;
 }
 
-// collect value
 void cTDExpandingWindows::collect(double val)
 {
     if (go) {
@@ -150,7 +148,6 @@ void cTDExpandingWindows::collect(double val)
     }
 }
 
-// the actual algorithm
 void cTDExpandingWindows::detectTransient()
 {
     int ws1 = minwinds;
@@ -228,7 +225,6 @@ cADByStddev::cADByStddev(const char *name,
 
 void cADByStddev::copy(const cADByStddev& res)
 {
-    // setHostObject(res.getHostObject());
     go = res.go;
     resaccval = res.resaccval;
     accuracy = res.accuracy;
@@ -270,7 +266,6 @@ void cADByStddev::reset()
     resaccval = false;
 }
 
-// collect a value
 void cADByStddev::collect(double val)
 {
     if (go) {

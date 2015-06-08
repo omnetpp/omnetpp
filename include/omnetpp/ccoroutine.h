@@ -103,7 +103,7 @@ class SIM_API cCoroutine
      * Initializes the coroutine library. This function has to be called
      * exactly once in a program, possibly at the top of main().
      */
-    static void init(unsigned total_stack, unsigned main_stack);
+    static void init(unsigned totalStack, unsigned mainStack);
 
     /**
      * Switch to another coroutine. The execution of the current coroutine
@@ -126,7 +126,7 @@ class SIM_API cCoroutine
      * run in the coroutine, a pointer that is passed to the coroutine
      * function, and the stack size.
      */
-    bool setup(CoroutineFnp fnp, void *arg, unsigned stack_size);
+    bool setup(CoroutineFnp fnp, void *arg, unsigned stackSize);
 
     /**
      * Constructor.

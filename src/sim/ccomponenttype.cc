@@ -95,12 +95,12 @@ cComponentType *cComponentType::find(const char *qname)
 
 cComponentType *cComponentType::get(const char *qname)
 {
-    cComponentType *p = find(qname);
-    if (!p) {
+    cComponentType *componentType = find(qname);
+    if (!componentType) {
         const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
         throw cRuntimeError("NED type \"%s\" not found%s", qname, hint);
     }
-    return p;
+    return componentType;
 }
 
 cParImpl *cComponentType::getSharedParImpl(const char *key) const
@@ -252,130 +252,130 @@ cModuleType::cModuleType(const char *name) : cComponentType(name)
 {
 }
 
-cModule *cModuleType::create(const char *modname, cModule *parentmod)
+cModule *cModuleType::create(const char *moduleName, cModule *parentModule)
 {
-    return create(modname, parentmod, -1, 0);
+    return create(moduleName, parentModule, -1, 0);
 }
 
-cModule *cModuleType::create(const char *modname, cModule *parentmod, int vectorsize, int index)
+cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int vectorSize, int index)
 {
     // notify pre-change listeners
-    if (parentmod && parentmod->hasListeners(PRE_MODEL_CHANGE)) {
+    if (parentModule && parentModule->hasListeners(PRE_MODEL_CHANGE)) {
         cPreModuleAddNotification tmp;
         tmp.moduleType = this;
-        tmp.moduleName = modname;
-        tmp.parentModule = parentmod;
-        tmp.vectorSize = vectorsize;
+        tmp.moduleName = moduleName;
+        tmp.parentModule = parentModule;
+        tmp.vectorSize = vectorSize;
         tmp.index = index;
-        parentmod->emit(PRE_MODEL_CHANGE, &tmp);
+        parentModule->emit(PRE_MODEL_CHANGE, &tmp);
     }
 
     // set context type to "BUILD"
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new module class are collected to tmplist.
-    cDefaultList tmplist;
-    cDefaultList *oldlist = cOwnedObject::getDefaultOwner();
-    cOwnedObject::setDefaultOwner(&tmplist);
-    cModule *mod;
+    cDefaultList tmpList;
+    cDefaultList *oldList = cOwnedObject::getDefaultOwner();
+    cOwnedObject::setDefaultOwner(&tmpList);
+    cModule *module;
     try {
         // create the new module object
 #ifdef WITH_PARSIM
-        bool isLocal = getEnvir()->isModuleLocal(parentmod, modname, vectorsize < 0 ? -1 : index);
-        mod = isLocal ? createModuleObject() : new cPlaceholderModule();
+        bool isLocal = getEnvir()->isModuleLocal(parentModule, moduleName, vectorSize < 0 ? -1 : index);
+        module = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
-        mod = createModuleObject();
+        module = createModuleObject();
 #endif
     }
     catch (std::exception& e) {
         // restore defaultowner, otherwise it'll remain pointing to a dead object
-        cOwnedObject::setDefaultOwner(oldlist);
+        cOwnedObject::setDefaultOwner(oldList);
         throw;
     }
 
     // set up module: set parent, module type, name, vector size
-    if (parentmod)
-        parentmod->insertSubmodule(mod);
-    mod->setComponentType(this);
-    if (vectorsize < 0)
-        mod->setName(modname);
+    if (parentModule)
+        parentModule->insertSubmodule(module);
+    module->setComponentType(this);
+    if (vectorSize < 0)
+        module->setName(moduleName);
     else
-        mod->setNameAndIndex(modname, index, vectorsize);
+        module->setNameAndIndex(moduleName, index, vectorSize);
 
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==nullptr, mod itself is on tmplist)
-    if (!parentmod)
-        getSimulation()->setSystemModule(mod);
+    if (!parentModule)
+        getSimulation()->setSystemModule(module);
 
     // put the object members of the new module to their place
-    mod->takeAllObjectsFrom(tmplist);
+    module->takeAllObjectsFrom(tmpList);
 
     // restore defaultowner (must precede parameters)
-    cOwnedObject::setDefaultOwner(oldlist);
+    cOwnedObject::setDefaultOwner(oldList);
 
     // register with cSimulation
-    getSimulation()->registerComponent(mod);
+    getSimulation()->registerComponent(module);
 
     // set up RNG mapping
-    getEnvir()->getRNGMappingFor(mod);
+    getEnvir()->getRNGMappingFor(module);
 
     // should be called before any gateCreated calls on this module
-    EVCB.moduleCreated(mod);
+    EVCB.moduleCreated(module);
 
     // add parameters and gates to the new module;
     // note: setupGateVectors() will be called from finalizeParameters()
-    addParametersAndGatesTo(mod);
+    addParametersAndGatesTo(module);
 
     // initialize canvas
-    if (cCanvas::containsCanvasItems(mod->getProperties()))
-        mod->getCanvas()->addFiguresFrom(mod->getProperties());
+    if (cCanvas::containsCanvasItems(module->getProperties()))
+        module->getCanvas()->addFiguresFrom(module->getProperties());
 
     // notify envir
-    getEnvir()->configure(mod);
+    getEnvir()->configure(module);
 
     // notify post-change listeners
-    if (mod->hasListeners(POST_MODEL_CHANGE)) {
+    if (module->hasListeners(POST_MODEL_CHANGE)) {
         cPostModuleAddNotification tmp;
-        tmp.module = mod;
-        mod->emit(POST_MODEL_CHANGE, &tmp);
+        tmp.module = module;
+        module->emit(POST_MODEL_CHANGE, &tmp);
     }
 
     // done -- if it's a compound module, buildInside() will do the rest
-    return mod;
+    return module;
 }
 
-cModule *cModuleType::instantiateModuleClass(const char *classname)
+cModule *cModuleType::instantiateModuleClass(const char *className)
 {
-    cObject *obj = cObjectFactory::createOne(classname);  // this won't return nullptr
-    cModule *mod = dynamic_cast<cModule *>(obj);
-    if (!mod)
-        throw cRuntimeError("incorrect module class %s: not subclassed from cModule", classname);
+    cObject *obj = cObjectFactory::createOne(className);  // this won't return nullptr
+    cModule *module = dynamic_cast<cModule *>(obj);
+    if (!module)
+        throw cRuntimeError("incorrect module class %s: not subclassed from cModule", className);
 
     // check module object
-    if (!mod->isModule())
-        throw cRuntimeError("incorrect module class %s: isModule() returns false", classname);
+    if (!module->isModule())
+        throw cRuntimeError("incorrect module class %s: isModule() returns false", className);
 
     if (isSimple()) {
-        if (dynamic_cast<cSimpleModule *>(mod) == nullptr)
-            throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", classname);
-        if (mod->isSimple() == false)
-            throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", classname);
+        if (dynamic_cast<cSimpleModule *>(module) == nullptr)
+            throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", className);
+        if (module->isSimple() == false)
+            throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", className);
     }
 
-    return mod;
+    return module;
 }
 
-cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod)
+cModule *cModuleType::createScheduleInit(const char *moduleName, cModule *parentModule)
 {
-    if (!parentmod)
+    if (!parentModule)
         throw cRuntimeError("createScheduleInit(): parent module pointer cannot be nullptr "
-                            "when creating module named '%s' of type %s", modname, getFullName());
-    cModule *mod = create(modname, parentmod);
-    mod->finalizeParameters();
-    mod->buildInside();
-    mod->scheduleStart(getSimulation()->getSimTime());
-    mod->callInitialize();
-    return mod;
+                            "when creating module named '%s' of type %s", moduleName, getFullName());
+    cModule *module = create(moduleName, parentModule);
+    module->finalizeParameters();
+    module->buildInside();
+    module->scheduleStart(getSimulation()->getSimTime());
+    module->callInitialize();
+    return module;
 }
 
 cModuleType *cModuleType::find(const char *qname)

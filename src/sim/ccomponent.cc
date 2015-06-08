@@ -181,19 +181,19 @@ cPar& cComponent::par(int k)
     return parArray[k];
 }
 
-cPar& cComponent::par(const char *parname)
+cPar& cComponent::par(const char *parName)
 {
-    int k = findPar(parname);
+    int k = findPar(parName);
     if (k < 0)
-        throw cRuntimeError(this, "unknown parameter `%s'", parname);
+        throw cRuntimeError(this, "unknown parameter `%s'", parName);
     return parArray[k];
 }
 
-int cComponent::findPar(const char *parname) const
+int cComponent::findPar(const char *parName) const
 {
     int n = getNumParams();
     for (int i = 0; i < n; i++)
-        if (parArray[i].isName(parname))
+        if (parArray[i].isName(parName))
             return i;
     return -1;
 }

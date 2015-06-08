@@ -327,6 +327,7 @@ void cSimpleModule::deleteModule()
 }
 
 #define TRY(code, msgprefix)    try { code; } catch (cRuntimeError& e) { e.prependMessage(msgprefix); throw; }
+
 int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gateName, int gateIndex)
 {
     cGate *outGate;
@@ -394,9 +395,9 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
         ((cPacket *)msg)->setDuration(SIMTIME_ZERO);
 
     EVCB.beginSend(msg);
-    bool keepit = outGate->deliver(msg, delayEndTime);
+    bool keepMsg = outGate->deliver(msg, delayEndTime);
     EVCB.messageSent_OBSOLETE(msg);  // TODO: Tkenv currently takes animation input from this call; to be rewritten
-    if (!keepit) {
+    if (!keepMsg) {
         delete msg;  // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
     }
     else {
@@ -420,23 +421,23 @@ int cSimpleModule::sendDirect(cMessage *msg, cGate *toGate)
     return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, toGate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration,
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
         cModule *mod, const char *gateName, int gateIndex)
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): destination module pointer is nullptr");
     cGate *toGate;
     TRY(toGate = mod->gate(gateName, gateIndex), "sendDirect()");
-    return sendDirect(msg, propdelay, duration, toGate);
+    return sendDirect(msg, propagationDelay, duration, toGate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration, cModule *mod, int gateId)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int gateId)
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): destination module pointer is nullptr");
-    cGate *togate;
-    TRY(togate = mod->gate(gateId), "sendDirect()");
-    return sendDirect(msg, propdelay, duration, togate);
+    cGate *toGate;
+    TRY(toGate = mod->gate(gateId), "sendDirect()");
+    return sendDirect(msg, propagationDelay, duration, toGate);
 }
 
 int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *toGate)
@@ -611,12 +612,12 @@ void cSimpleModule::wait(simtime_t t)
     if (stackCleanupRequested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = getSimulation()->msgForActivity;
+    cMessage *newMsg = getSimulation()->msgForActivity;
 
-    if (newmsg != timeoutMessage)
+    if (newMsg != timeoutMessage)
         throw cRuntimeError("message arrived during wait() call ((%s)%s); if this "
                             "should be allowed, use waitAndEnqueue() instead of wait()",
-                newmsg->getClassName(), newmsg->getFullName());
+                newMsg->getClassName(), newMsg->getFullName());
 
     DEBUG_TRAP_IF_REQUESTED;  // MODULE IS ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP" IN YOUR DEBUGGER
 }

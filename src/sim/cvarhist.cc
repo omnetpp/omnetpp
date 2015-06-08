@@ -41,11 +41,8 @@ NAMESPACE_BEGIN
 
 Register_Class(cVarHistogram);
 
-//----
-// cVarHistogram - member functions
-
 cVarHistogram::cVarHistogram(const char *name, int maxnumcells, TransformType transformtype) :
-    cHistogramBase(name, -1)  //--LG
+    cHistogramBase(name, -1)
 {
     // num_cells==-1 means that no bin boundaries are defined (num_cells+1 is 0)
     rangeMode = RANGE_NOTSET;
@@ -92,7 +89,7 @@ void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-void cVarHistogram::addBinBound(double x)  //--LG
+void cVarHistogram::addBinBound(double x)
 {
     if (isTransformed())
         throw cRuntimeError(this, "cannot add bin bound after transform()");
@@ -144,7 +141,7 @@ void cVarHistogram::copy(const cVarHistogram& res)
     }
 }
 
-cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res)  //--LG
+cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res)
 {
     if (this == &res)
         return *this;
@@ -153,7 +150,7 @@ cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res)  //--LG
     return *this;
 }
 
-static int double_compare_function(const void *p1, const void *p2)  //--LG
+static int compareDoubles(const void *p1, const void *p2)
 {
     double x1 = *(double *)p1;
     double x2 = *(double *)p2;
@@ -184,32 +181,32 @@ void cVarHistogram::createEquiprobableCells()
     cellv = new unsigned[maxNumCells];
     cellLowerBounds = new double[maxNumCells+1];
 
-    qsort(precollectedValues, numValues, sizeof(double), double_compare_function);
+    qsort(precollectedValues, numValues, sizeof(double), compareDoubles);
 
     // expected sample number per cell
     double esnpc = numValues / (double)maxNumCells;
 
     int cell;  // index of cell being constructed
-    int prev_index;  // index of first observation in firstvals[] that will go into cellv[cell]
-    int index;  // index of first observation in firstvals[] that will be left for the next cell (cellv[cell+1])
+    int prevIndex;  // index of first observation in precollectedValues[] that will go into cellv[cell]
+    int index;  // index of first observation in precollectedValues[] that will be left for the next cell (cellv[cell+1])
 
-    double prev_boundary;  // previous value of boundary
-    double boundary;  // firstvals[index]
+    double prevBoundary;  // previous value of boundary
+    double boundary;  // precollectedValues[index]
 
     // construct cells; last cell will be handled separately
-    for (cell = 0, prev_index = 0, prev_boundary = precollectedValues[prev_index],
-         rangeMin = cellLowerBounds[0] = precollectedValues[0], index = prev_index + (int)esnpc;
+    for (cell = 0, prevIndex = 0, prevBoundary = precollectedValues[prevIndex],
+         rangeMin = cellLowerBounds[0] = precollectedValues[0], index = prevIndex + (int)esnpc;
 
          cell < maxNumCells-1 && index < numValues;
 
-         cell++, prev_index = index, prev_boundary = boundary,
-         index = (int)MAX(prev_index + esnpc, (cell+1) * esnpc))
+         cell++, prevIndex = index, prevBoundary = boundary,
+         index = (int)MAX(prevIndex + esnpc, (cell+1) * esnpc))
     {
         boundary = precollectedValues[index];
-        if (boundary == prev_boundary) {
+        if (boundary == prevBoundary) {
             // try to find a greater one
             int j;
-            for (j = index; j < numValues && precollectedValues[j] == prev_boundary; j++)
+            for (j = index; j < numValues && precollectedValues[j] == prevBoundary; j++)
                 ;
             // remark: either j == num_vals or
             //  prev_boundary == firstvals[j-1] < firstvals[j] holds
@@ -234,11 +231,11 @@ void cVarHistogram::createEquiprobableCells()
             index = j+1;  // unnecessary if cycle ran 0 times
         }
         cellLowerBounds[cell+1] = boundary;
-        cellv[cell] = index - prev_index;
+        cellv[cell] = index - prevIndex;
     }
 
     // the last cell/bin:
-    cellv[cell] = numValues - prev_index;
+    cellv[cell] = numValues - prevIndex;
 
     // the last boundary:
     rangeMax = cellLowerBounds[cell+1] = precollectedValues[numValues-1];
@@ -257,7 +254,7 @@ void cVarHistogram::createEquiprobableCells()
     numCells = cell+1;  // maybe num_cells < max_num_cells
 }
 
-void cVarHistogram::transform()  //--LG
+void cVarHistogram::transform()
 {
     if (isTransformed())
         throw cRuntimeError(this, "transform(): histogram already transformed");
@@ -299,38 +296,37 @@ void cVarHistogram::transform()  //--LG
 
 void cVarHistogram::collectTransformed(double val)
 {
-    if (val < rangeMin) {  // rangemin == bin_bounds[0]
+    if (val < rangeMin) {  // rangemin == cellLowerBounds[0]
         cellUnder++;
     }
-    else if (val >= rangeMax) {  // rangemax == bin_bounds[num_cells]
+    else if (val >= rangeMax) {  // rangemax == cellLowerBounds[num_cells]
         cellOver++;
     }
-    else {  // sample falls in the range of ordinary cells/bins
-            // rangemin <= val < rangemax
-            // binary search
-        int lower_index, upper_index, index;
-        for (lower_index = 0, upper_index = numCells,
-             index = (lower_index + upper_index) / 2;
+    else {
+        // sample falls in the range of ordinary cells/bins (rangeMin <= val < rangeMax),
+        // perform binary search
+        int lowerIndex, upperIndex, index;
+        for (lowerIndex = 0, upperIndex = numCells,
+             index = (lowerIndex + upperIndex) / 2;
 
-             lower_index < index;
+             lowerIndex < index;
 
-             index = (lower_index + upper_index) / 2)
+             index = (lowerIndex + upperIndex) / 2)
         {
-            // cycle invariant: bin_bound[lower_index]<=val<bin_bounds[upper_index]
+            // cycle invariant: cellLowerBounds[lowerIndex] <= val < cellLowerBounds[upperIndex]
             if (val < cellLowerBounds[index])
-                upper_index = index;
+                upperIndex = index;
             else
-                lower_index = index;
+                lowerIndex = index;
         }
-        // here, bin_bound[lower_index]<=val<bin_bounds[lower_index+1]
+        // here, cellLowerBounds[lowerIndex] <= val < cellLowerBounds[lower_index+1]
 
         // increment the appropriate counter
-        cellv[lower_index]++;
+        cellv[lowerIndex]++;
     }
 }
 
-// clear results
-void cVarHistogram::clearResult()  //--LG
+void cVarHistogram::clearResult()
 {
     cHistogramBase::clearResult();
 
@@ -338,7 +334,6 @@ void cVarHistogram::clearResult()  //--LG
     cellLowerBounds = nullptr;
 }
 
-// return kth basepoint
 double cVarHistogram::getBasepoint(int k) const
 {
     if (k < numCells+1)
@@ -384,7 +379,7 @@ double cVarHistogram::draw() const
     }
 }
 
-double cVarHistogram::getPDF(double x) const  // --LG
+double cVarHistogram::getPDF(double x) const
 {
     if (!numValues)
         return 0.0;
@@ -421,7 +416,7 @@ double cVarHistogram::getCDF(double) const
     throw cRuntimeError(this, "getCDF(x) not implemented");
 }
 
-void cVarHistogram::saveToFile(FILE *f) const  //--LG
+void cVarHistogram::saveToFile(FILE *f) const
 {
     cHistogramBase::saveToFile(f);
 
@@ -442,19 +437,19 @@ void cVarHistogram::loadFromFile(FILE *f)
     freadvarsf(f, "%d\t #= transform_type", &transformType);
     freadvarsf(f, "%u\t #= max_num_cells", &maxNumCells);
 
-    // increase allocated size of cellv[] to max_num_cells
+    // increase allocated size of cellv[] to maxNumCells
     if (cellv && maxNumCells > numCells) {
-        unsigned int *new_cellv = new unsigned[maxNumCells];
-        memcpy(new_cellv, cellv, numCells * sizeof(unsigned));
+        unsigned int *newCellv = new unsigned[maxNumCells];
+        memcpy(newCellv, cellv, numCells * sizeof(unsigned));
         delete[] cellv;
-        cellv = new_cellv;
+        cellv = newCellv;
     }
 
-    int binbounds_exists;
-    freadvarsf(f, "%d\t #= bin_bounds[] exists", &binbounds_exists);
+    int containsCellsLowerBounds;
+    freadvarsf(f, "%d\t #= bin_bounds[] exists", &containsCellsLowerBounds);
     delete[] cellLowerBounds;
     cellLowerBounds = nullptr;
-    if (binbounds_exists) {
+    if (containsCellsLowerBounds) {
         cellLowerBounds = new double[maxNumCells+1];
         for (int i = 0; i < maxNumCells+1; i++)
             freadvarsf(f, " %g", cellLowerBounds + i);

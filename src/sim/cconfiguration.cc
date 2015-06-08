@@ -124,6 +124,7 @@ std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const
 //---
 
 #define TRY(CODE)    try { CODE; } catch (std::exception& e) { throw cRuntimeError("Error getting option %s= from the configuration: %s", option->getName(), e.what()); }
+
 inline const char *fallback(const char *s, const char *defaultValue, const char *fallbackValue)
 {
     return s != nullptr ? s : defaultValue != nullptr ? defaultValue : fallbackValue;

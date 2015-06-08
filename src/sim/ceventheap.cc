@@ -69,30 +69,31 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 
 //----
 
-cEventHeap::cEventHeap(const char *name, int siz) : cFutureEventSet(name)
+cEventHeap::cEventHeap(const char *name, int intialCapacity) : cFutureEventSet(name)
 {
-    insertcntr = 0L;
-    n = 0;
-    size = siz;
-    h = new cEvent *[size+1];  // +1 is necessary because h[0] is not used
+    insertCount = 0L;
+
+    heapLength = 0;
+    heapCapacity = intialCapacity;
+    heap = new cEvent *[heapCapacity+1];  // +1 is necessary because h[0] is not used
 
     cbsize = 4;  // must be power of 2!
     cb = new cEvent *[cbsize];
     cbhead = cbtail = 0;
 }
 
-cEventHeap::cEventHeap(const cEventHeap& heap) : cFutureEventSet(heap)
+cEventHeap::cEventHeap(const cEventHeap& other) : cFutureEventSet(other)
 {
     cb = nullptr;
-    h = nullptr;
-    n = 0;
-    copy(heap);
+    heap = nullptr;
+    heapLength = 0;
+    copy(other);
 }
 
 cEventHeap::~cEventHeap()
 {
     clear();
-    delete[] h;
+    delete[] heap;
     delete[] cb;
 }
 
@@ -112,9 +113,9 @@ void cEventHeap::forEachChild(cVisitor *v)
     for (int i = cbhead; i != cbtail; CBINC(i))
         v->visit(cb[i]);
 
-    for (int i = 1; i <= n; i++)
-        if (h[i])
-            v->visit(h[i]);
+    for (int i = 1; i <= heapLength; i++)
+        if (heap[i])
+            v->visit(heap[i]);
 
 }
 
@@ -124,38 +125,38 @@ void cEventHeap::clear()
         dropAndDelete(cb[i]);
     cbhead = cbtail = 0;
 
-    for (int i = 1; i <= n; i++)
-        dropAndDelete(h[i]);
-    n = 0;
+    for (int i = 1; i <= heapLength; i++)
+        dropAndDelete(heap[i]);
+    heapLength = 0;
 }
 
-void cEventHeap::copy(const cEventHeap& heap)
+void cEventHeap::copy(const cEventHeap& other)
 {
     // copy heap
-    n = heap.n;
-    size = heap.size;
-    delete[] h;
-    h = new cEvent *[size+1];
-    for (int i = 1; i <= n; i++)
-        take(h[i] = heap.h[i]->dup());
+    heapLength = other.heapLength;
+    heapCapacity = other.heapCapacity;
+    delete[] heap;
+    heap = new cEvent *[heapCapacity+1];
+    for (int i = 1; i <= heapLength; i++)
+        take(heap[i] = other.heap[i]->dup());
 
     // copy circular buffer
-    cbhead = heap.cbhead;
-    cbtail = heap.cbtail;
-    cbsize = heap.cbsize;
+    cbhead = other.cbhead;
+    cbtail = other.cbtail;
+    cbsize = other.cbsize;
     delete[] cb;
     cb = new cEvent *[cbsize];
     for (int i = cbhead; i != cbtail; CBINC(i))
-        take(cb[i] = heap.cb[i]->dup());
+        take(cb[i] = other.cb[i]->dup());
 }
 
-cEventHeap& cEventHeap::operator=(const cEventHeap& heap)
+cEventHeap& cEventHeap::operator=(const cEventHeap& other)
 {
-    if (this == &heap)
+    if (this == &other)
         return *this;
+    cFutureEventSet::operator=(other);
     clear();
-    cFutureEventSet::operator=(heap);
-    copy(heap);
+    copy(other);
     return *this;
 }
 
@@ -171,23 +172,23 @@ cEvent *cEventHeap::get(int k)
     k -= cblen;
 
     // map the rest to h[1]..h[n] (h[] is 1-based)
-    if (k >= n)
+    if (k >= heapLength)
         return nullptr;
-    return h[k+1];
+    return heap[k+1];
 }
 
 void cEventHeap::sort()
 {
-    qsort(h+1, n, sizeof(cEvent *), qsort_cmp_msgs);
-    for (int i = 1; i <= n; i++)
-        h[i]->heapIndex = i;
+    qsort(heap+1, heapLength, sizeof(cEvent *), qsort_cmp_msgs);
+    for (int i = 1; i <= heapLength; i++)
+        heap[i]->heapIndex = i;
 }
 
 void cEventHeap::insert(cEvent *event)
 {
     take(event);
 
-    if (event->getArrivalTime() == simTime() && event->getSchedulingPriority() == 0 && (n == 0 || h[1]->getArrivalTime() != simTime())) {
+    if (event->getArrivalTime() == simTime() && event->getSchedulingPriority() == 0 && (heapLength == 0 || heap[1]->getArrivalTime() != simTime())) {
         // scheduled for *now* -- use circular buffer
         cb[cbtail] = event;
         event->heapIndex = CBHEAPINDEX(cbtail);
@@ -199,25 +200,25 @@ void cEventHeap::insert(cEvent *event)
         // use heap
         int i, j;
 
-        event->insertOrder = insertcntr++;
+        event->insertOrder = insertCount++;
 
-        if (++n > size) {
-            size *= 2;
-            cEvent **hnew = new cEvent *[size+1];
-            for (i = 1; i <= n-1; i++)
-                hnew[i] = h[i];
-            delete[] h;
-            h = hnew;
+        if (++heapLength > heapCapacity) {
+            heapCapacity *= 2;
+            cEvent **newHeap = new cEvent *[heapCapacity+1];
+            for (i = 1; i <= heapLength-1; i++)
+                newHeap[i] = heap[i];
+            delete[] heap;
+            heap = newHeap;
         }
 
-        for (j = n; j > 1; j = i) {
+        for (j = heapLength; j > 1; j = i) {
             i = j>>1;
-            if (*h[i] <= *event)  // direction
+            if (*heap[i] <= *event)  // direction
                 break;
 
-            (h[j] = h[i])->heapIndex = j;
+            (heap[j] = heap[i])->heapIndex = j;
         }
-        (h[j] = event)->heapIndex = j;
+        (heap[j] = event)->heapIndex = j;
     }
 }
 
@@ -242,13 +243,13 @@ void cEventHeap::shiftup(int from)
     cEvent *temp;
 
     i = from;
-    while ((j = i<<1) <= n) {
-        if (j < n && (*h[j] > *h[j+1]))  // direction
+    while ((j = i<<1) <= heapLength) {
+        if (j < heapLength && (*heap[j] > *heap[j+1]))  // direction
             j++;
-        if (*h[i] > *h[j]) {  // is change necessary?
-            temp = h[j];
-            (h[j] = h[i])->heapIndex = j;
-            (h[i] = temp)->heapIndex = i;
+        if (*heap[i] > *heap[j]) {  // is change necessary?
+            temp = heap[j];
+            (heap[j] = heap[i])->heapIndex = j;
+            (heap[i] = temp)->heapIndex = i;
             i = j;
         }
         else
@@ -258,7 +259,7 @@ void cEventHeap::shiftup(int from)
 
 cEvent *cEventHeap::peekFirst() const
 {
-    return cbhead != cbtail ? cb[cbhead] : n != 0 ? h[1] : nullptr;
+    return cbhead != cbtail ? cb[cbhead] : heapLength != 0 ? heap[1] : nullptr;
 }
 
 cEvent *cEventHeap::removeFirst()
@@ -271,10 +272,10 @@ cEvent *cEventHeap::removeFirst()
         event->heapIndex = -1;
         return event;
     }
-    else if (n > 0) {
+    else if (heapLength > 0) {
         // heap: first is taken out and replaced by the last one
-        cEvent *event = h[1];
-        (h[1] = h[n--])->heapIndex = 1;
+        cEvent *event = heap[1];
+        (heap[1] = heap[heapLength--])->heapIndex = 1;
         shiftup();
         drop(event);
         event->heapIndex = -1;
@@ -309,12 +310,12 @@ cEvent *cEventHeap::remove(cEvent *event)
 
         // last element will be used to fill the hole
         int father, out = event->heapIndex;
-        cEvent *fill = h[n--];
-        while ((father = out>>1) != 0 && *h[father] > *fill) {
-            (h[out] = h[father])->heapIndex = out;  // father is moved down
+        cEvent *fill = heap[heapLength--];
+        while ((father = out>>1) != 0 && *heap[father] > *fill) {
+            (heap[out] = heap[father])->heapIndex = out;  // father is moved down
             out = father;
         }
-        (h[out] = fill)->heapIndex = out;
+        (heap[out] = fill)->heapIndex = out;
         shiftup(out);
     }
 

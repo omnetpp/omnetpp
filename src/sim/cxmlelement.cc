@@ -34,9 +34,9 @@ NAMESPACE_BEGIN
 
 using std::ostream;
 
-cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLElement *parent)
+cXMLElement::cXMLElement(const char *tagName, const char *srclocation, cXMLElement *parent)
 {
-    ename = tagname;
+    ename = tagName;
     srcloc = srclocation;
 
     this->parent = nullptr;
@@ -179,22 +179,22 @@ const cXMLAttributeMap& cXMLElement::getAttributes() const
     return attrs;
 }
 
-cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagname) const
+cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagName) const
 {
     cXMLElement *node = this->getFirstChild();
     while (node) {
-        if (!strcasecmp(node->getTagName(), tagname))
+        if (!strcasecmp(node->getTagName(), tagName))
             return node;
         node = node->getNextSibling();
     }
     return nullptr;
 }
 
-cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagname) const
+cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagName) const
 {
     cXMLElement *node = this->getNextSibling();
     while (node) {
-        if (!strcasecmp(node->getTagName(), tagname))
+        if (!strcasecmp(node->getTagName(), tagName))
             return node;
         node = node->getNextSibling();
     }
@@ -209,77 +209,76 @@ cXMLElementList cXMLElement::getChildren() const
     return list;
 }
 
-cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
+cXMLElementList cXMLElement::getChildrenByTagName(const char *tagName) const
 {
     cXMLElementList list;
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
-        if (!strcasecmp(child->getTagName(), tagname))
+        if (!strcasecmp(child->getTagName(), tagName))
             list.push_back(child);
 
     return list;
 }
 
-cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) const
+cXMLElementList cXMLElement::getElementsByTagName(const char *tagName) const
 {
     cXMLElementList list;
-    if (!strcasecmp(getTagName(), tagname))
+    if (!strcasecmp(getTagName(), tagName))
         list.push_back(const_cast<cXMLElement *>(this));
-    doGetElementsByTagName(tagname, list);
+    doGetElementsByTagName(tagName, list);
     return list;
 }
 
-void cXMLElement::doGetElementsByTagName(const char *tagname, cXMLElementList& list) const
+void cXMLElement::doGetElementsByTagName(const char *tagName, cXMLElementList& list) const
 {
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (!strcasecmp(child->getTagName(), tagname))
+        if (!strcasecmp(child->getTagName(), tagName))
             list.push_back(child);
-        child->doGetElementsByTagName(tagname, list);
+        child->doGetElementsByTagName(tagName, list);
     }
 }
 
-cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue) const
+cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagName, const char *attr, const char *attrValue) const
 {
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (!tagname || !strcasecmp(child->getTagName(), tagname)) {
+        if (!tagName || !strcasecmp(child->getTagName(), tagName)) {
             const char *val = child->getAttribute(attr);
-            if (val && (!attrvalue || !strcmp(val, attrvalue)))
+            if (val && (!attrValue || !strcmp(val, attrValue)))
                 return child;
         }
     }
     return nullptr;
 }
 
-cXMLElement *cXMLElement::getElementById(const char *idattrvalue) const
+cXMLElement *cXMLElement::getElementById(const char *idAttrValue) const
 {
     const char *id = getAttribute("id");
-    if (id && !strcmp(id, idattrvalue))
+    if (id && !strcmp(id, idAttrValue))
         return const_cast<cXMLElement *>(this);
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling()) {
-        cXMLElement *res = child->getElementById(idattrvalue);
+        cXMLElement *res = child->getElementById(idAttrValue);
         if (res)
             return res;
     }
     return nullptr;
 }
 
-cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr,
-        cXMLElement::ParamResolver *resolver)
+cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentNode, const char *pathExpr, cXMLElement::ParamResolver *resolver)
 {
-    return MiniXPath(resolver).matchPathExpression(documentnode, pathexpr, documentnode);
+    return MiniXPath(resolver).matchPathExpression(documentNode, pathExpr, documentNode);
 }
 
-cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *root, cXMLElement::ParamResolver *resolver) const
+cXMLElement *cXMLElement::getElementByPath(const char *pathExpr, cXMLElement *root, cXMLElement::ParamResolver *resolver) const
 {
-    if (pathexpr[0] == '/' && !root)
+    if (pathExpr[0] == '/' && !root)
         throw cRuntimeError("cXMLElement::getElementByPath(): absolute path expression "
                             "(that begins with  '/') can only be used if root node is "
-                            "also specified (path expression: `%s')", pathexpr);
+                            "also specified (path expression: `%s')", pathExpr);
     if (root && !root->getParentNode())
         throw cRuntimeError("cXMLElement::getElementByPath(): root element must have a "
-                            "parent node, the \"document node\" (path expression: `%s')", pathexpr);
+                            "parent node, the \"document node\" (path expression: `%s')", pathExpr);
 
     return MiniXPath(resolver).matchPathExpression(const_cast<cXMLElement *>(this),
-                                                   pathexpr,
+                                                   pathExpr,
                                                    root ? root->getParentNode() : nullptr);
 }
 
@@ -331,56 +330,55 @@ static std::string my_itostr(int d)
     return std::string(buf);
 }
 
-bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
+bool ModNameParamResolver::resolve(const char *paramName, std::string& value)
 {
-    // printf("resolving $%s in context=%s\n", paramname, mod ? mod->getFullPath().c_str() : "nullptr");
     if (!mod)
         return false;
-    cModule *parentMod = mod->getParentModule();
-    cModule *grandparentMod = parentMod ? parentMod->getParentModule() : nullptr;
 
-    if (!strcmp(paramname, "MODULE_FULLPATH"))
+    cModule *parentModule = mod->getParentModule();
+    cModule *grandparentModule = parentModule ? parentModule->getParentModule() : nullptr;
+
+    if (!strcmp(paramName, "MODULE_FULLPATH"))
         value = mod->getFullPath();
-    else if (!strcmp(paramname, "MODULE_FULLNAME"))
+    else if (!strcmp(paramName, "MODULE_FULLNAME"))
         value = mod->getFullName();
-    else if (!strcmp(paramname, "MODULE_NAME"))
+    else if (!strcmp(paramName, "MODULE_NAME"))
         value = mod->getName();
-    else if (!strcmp(paramname, "MODULE_INDEX"))
+    else if (!strcmp(paramName, "MODULE_INDEX"))
         value = my_itostr(mod->getIndex());
-    else if (!strcmp(paramname, "MODULE_ID"))
+    else if (!strcmp(paramName, "MODULE_ID"))
         value = my_itostr(mod->getId());
 
-    else if (!strcmp(paramname, "PARENTMODULE_FULLPATH") && parentMod)
-        value = parentMod->getFullPath();
-    else if (!strcmp(paramname, "PARENTMODULE_FULLNAME") && parentMod)
-        value = parentMod->getFullName();
-    else if (!strcmp(paramname, "PARENTMODULE_NAME") && parentMod)
-        value = parentMod->getName();
-    else if (!strcmp(paramname, "PARENTMODULE_INDEX") && parentMod)
-        value = my_itostr(parentMod->getIndex());
-    else if (!strcmp(paramname, "PARENTMODULE_ID") && parentMod)
-        value = my_itostr(parentMod->getId());
+    else if (!strcmp(paramName, "PARENTMODULE_FULLPATH") && parentModule)
+        value = parentModule->getFullPath();
+    else if (!strcmp(paramName, "PARENTMODULE_FULLNAME") && parentModule)
+        value = parentModule->getFullName();
+    else if (!strcmp(paramName, "PARENTMODULE_NAME") && parentModule)
+        value = parentModule->getName();
+    else if (!strcmp(paramName, "PARENTMODULE_INDEX") && parentModule)
+        value = my_itostr(parentModule->getIndex());
+    else if (!strcmp(paramName, "PARENTMODULE_ID") && parentModule)
+        value = my_itostr(parentModule->getId());
 
-    else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLPATH") && grandparentMod)
-        value = grandparentMod->getFullPath();
-    else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLNAME") && grandparentMod)
-        value = grandparentMod->getFullName();
-    else if (!strcmp(paramname, "GRANDPARENTMODULE_NAME") && grandparentMod)
-        value = grandparentMod->getName();
-    else if (!strcmp(paramname, "GRANDPARENTMODULE_INDEX") && grandparentMod)
-        value = my_itostr(grandparentMod->getIndex());
-    else if (!strcmp(paramname, "GRANDPARENTMODULE_ID") && grandparentMod)
-        value = my_itostr(grandparentMod->getId());
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_FULLPATH") && grandparentModule)
+        value = grandparentModule->getFullPath();
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_FULLNAME") && grandparentModule)
+        value = grandparentModule->getFullName();
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_NAME") && grandparentModule)
+        value = grandparentModule->getName();
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_INDEX") && grandparentModule)
+        value = my_itostr(grandparentModule->getIndex());
+    else if (!strcmp(paramName, "GRANDPARENTMODULE_ID") && grandparentModule)
+        value = my_itostr(grandparentModule->getId());
     else
         return false;
 
-    // printf("  --> '%s'\n", value.c_str());
     return true;
 }
 
-bool StringMapParamResolver::resolve(const char *paramname, std::string& value)
+bool StringMapParamResolver::resolve(const char *paramName, std::string& value)
 {
-    StringMap::iterator it = params.find(paramname);
+    StringMap::iterator it = params.find(paramName);
     if (it == params.end())
         return false;
     value = it->second;

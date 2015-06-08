@@ -210,40 +210,40 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
     precollectedValues = new double[numPrecollected];
 }
 
-void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
+void cDensityEstBase::setRangeAutoLower(double upper, int numPrecoll, double rangeExtFact)
 {
     if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTOLOWER;
-    numPrecollected = num_fstvals;
+    numPrecollected = numPrecoll;
     rangeMax = upper;
-    rangeExtFactor = range_ext_fct;
+    rangeExtFactor = rangeExtFact;
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
 }
 
-void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
+void cDensityEstBase::setRangeAutoUpper(double lower, int numPrecoll, double rangeExtFact)
 {
     if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTOUPPER;
-    numPrecollected = num_fstvals;
+    numPrecollected = numPrecoll;
     rangeMin = lower;
-    rangeExtFactor = range_ext_fct;
+    rangeExtFactor = rangeExtFact;
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
 }
 
-void cDensityEstBase::setNumPrecollectedValues(int num_fstvals)
+void cDensityEstBase::setNumPrecollectedValues(int numPrecoll)
 {
     if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setNumPrecollectedValues() can only be called before collecting any values");
 
-    numPrecollected = num_fstvals;
+    numPrecollected = numPrecoll;
 
     // if already allocated, reallocate with the correct size
     if (precollectedValues) {
@@ -315,21 +315,21 @@ double cDensityEstBase::getCellPDF(int k) const
 {
     if (numValues == 0)
         return 0.0;
-    double cellsize = getBasepoint(k+1) - getBasepoint(k);
-    return cellsize == 0 ? 0.0 : getCellValue(k) / cellsize / getCount();
+    double cellSize = getBasepoint(k+1) - getBasepoint(k);
+    return cellSize == 0 ? 0.0 : getCellValue(k) / cellSize / getCount();
 }
 
 void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, double count, double a)
 {
-    const int picwidth = 54;  // width of picture
+    const int pictureWidth = 54;
     char buf[101];
     sprintf(buf, "   %s%12f %5g :", pref, xval, count);
     char *s = buf + strlen(buf);
     int x = (int)floor(a * count + .5);
-    int k = x <= picwidth ? x : picwidth;
+    int k = x <= pictureWidth ? x : pictureWidth;
     for (int m = 1; m <= k; m++)
         *s++ = '-';
-    strcpy(s, x <= picwidth ? "*\n" : ">\n");
+    strcpy(s, x <= pictureWidth ? "*\n" : ">\n");
     os << buf;
 }
 
@@ -347,16 +347,16 @@ std::string cDensityEstBase::detailedInfo() const
     }
     else {
         // transformed
-        const int picwidth = 55;  // width of picture
+        const int pictureWidth = 55;
         double max = 0;  // biggest cell value
-        int nc = getNumCells();  // number of cells
+        int nc = getNumCells();
         int k;
         double d;
         for (k = 0; k < nc; k++)
             if ((d = getCellValue(k)) > max)
                 max = d;
 
-        double a = (double)picwidth / max;
+        double a = (double)pictureWidth / max;
 
         os << "Distribution density function:\n";
         for (k = 0; k < nc; k++)

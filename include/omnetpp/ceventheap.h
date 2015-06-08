@@ -34,10 +34,10 @@ class SIM_API cEventHeap : public cFutureEventSet
 {
   private:
     // heap data structure
-    cEvent **h;               // pointer to the 'heap'  (h[0] always empty)
-    int n;                    // number of elements in the heap
-    int size;                 // size of allocated h array
-    unsigned long insertcntr; // counts insertions
+    cEvent **heap;            // heap array  (heap[0] always empty)
+    int heapLength;           // number of elements on the heap
+    int heapCapacity;         // allocated size of the heap[] array
+    unsigned long insertCount; // counts insertions
 
     // circular buffer for events scheduled for the current simtime (quite frequent)
     cEvent **cb;              // size of the circular buffer
@@ -66,7 +66,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     /**
      * Constructor.
      */
-    cEventHeap(const char *name=nullptr, int size=128);
+    cEventHeap(const char *name=nullptr, int initialCapacity=128);
 
     /**
      * Destructor.
@@ -137,7 +137,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     /**
      * Returns true if the FES is empty.
      */
-    virtual bool isEmpty() const override {return cbhead==cbtail && n==0;}
+    virtual bool isEmpty() const override {return cbhead==cbtail && heapLength==0;}
 
     /**
      * Deletes all events in the FES.
@@ -151,7 +151,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     /**
      * Returns the number of events in the FES.
      */
-    virtual int getLength() const override {return cblength() + n;}
+    virtual int getLength() const override {return cblength() + heapLength;}
 
     /**
      * Returns the kth event in the FES if 0 <= k < getLength(), and nullptr
