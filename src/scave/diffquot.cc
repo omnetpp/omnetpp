@@ -20,7 +20,6 @@
 NAMESPACE_BEGIN
 namespace scave {
 
-
 DifferenceQuotientNode::DifferenceQuotientNode()
 {
     firstRead = false;
@@ -35,8 +34,7 @@ void DifferenceQuotientNode::process()
 {
     Datum r, o;
 
-    if (!firstRead)
-    {
+    if (!firstRead) {
         in()->read(&l, 1);
         firstRead = true;
     }
@@ -44,15 +42,13 @@ void DifferenceQuotientNode::process()
     do {
         in()->read(&r, 1);
         // Make sure that the second values has a later time value
-        if (r.x > l.x)
-        {
+        if (r.x > l.x) {
             o.x = l.x;
             o.y = (r.y - l.y) / (r.x - l.x);
-            out()->write(&o,1);
+            out()->write(&o, 1);
             l = r;
         }
-    }
-    while (in()->length() > 0);
+    } while (in()->length() > 0);
 }
 
 //-----
@@ -81,11 +77,11 @@ Node *DifferenceQuotientNodeType::create(DataflowManager *mgr, StringMap& attrs)
     return node;
 }
 
-void DifferenceQuotientNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void DifferenceQuotientNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     attrs["type"] = "double";
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

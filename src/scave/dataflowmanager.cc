@@ -27,7 +27,6 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-
 DataflowManager::DataflowManager()
 {
     lastNode = 0;
@@ -37,9 +36,9 @@ DataflowManager::DataflowManager()
 DataflowManager::~DataflowManager()
 {
     unsigned int i;
-    for (i=0; i<nodes.size(); i++)
+    for (i = 0; i < nodes.size(); i++)
         delete nodes[i];
-    for (i=0; i<channels.size(); i++)
+    for (i = 0; i < channels.size(); i++)
         delete channels[i];
 }
 
@@ -92,29 +91,24 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     int64_t onePercentFileSize = 0;
     int64_t bytesRead = 0;
     int readPercentage = 0;
-    if (monitor)
-    {
+    if (monitor) {
         onePercentFileSize = getTotalBytesToBeRead() / 100;
         monitor->beginTask("Executing dataflow network", 100);
     }
 
-    while (true)
-    {
+    while (true) {
         ReaderNode *readerNode = nullptr;
         int64_t readBefore = 0;
         Node *node = selectNode();
         if (!node)
             break;
 
-        if (monitor)
-        {
-            if (monitor->isCanceled())
-            {
+        if (monitor) {
+            if (monitor->isCanceled()) {
                 monitor->done();
                 return;
             }
-            if (isReaderNode(node))
-            {
+            if (isReaderNode(node)) {
                 readerNode = dynamic_cast<ReaderNode *>(node);
                 readBefore = readerNode->getNumReadBytes();
             }
@@ -123,14 +117,11 @@ void DataflowManager::execute(IProgressMonitor *monitor)
         DBG(("execute: invoking %s\n", node->getNodeType()->getName()));
         node->process();
 
-        if (monitor)
-        {
-            if (onePercentFileSize > 0 && readerNode)
-            {
+        if (monitor) {
+            if (onePercentFileSize > 0 && readerNode) {
                 bytesRead += (readerNode->getNumReadBytes() - readBefore);
                 int currentPercentage = bytesRead / onePercentFileSize;
-                if (currentPercentage > readPercentage)
-                {
+                if (currentPercentage > readPercentage) {
                     monitor->worked(currentPercentage - readPercentage);
                     readPercentage = currentPercentage;
                 }
@@ -144,27 +135,28 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     DBG(("execute: processing finished\n"));
 
     // propagate finished state to all nodes (transitive closure)
-    unsigned int i=0;
-    while (i<nodes.size())
-    {
+    unsigned int i = 0;
+    while (i < nodes.size()) {
         if (nodes[i]->getAlreadyFinished())
             i++;
         else if (!updateNodeFinished(nodes[i]))
             i++;  // if not finished, skip it
         else
-            i=0;  // if one node finished, start over (to let it cascade)
+            i = 0;  // if one node finished, start over (to let it cascade)
     }
 
     // check all nodes have finished now
-    for (i=0; i<nodes.size(); i++)
+    for (i = 0; i < nodes.size(); i++)
         if (!nodes[i]->getAlreadyFinished())
             throw opp_runtime_error("execute: deadlock: no ready nodes but node %s not finished",
-                                nodes[i]->getNodeType()->getName());
+                    nodes[i]->getNodeType()->getName());
+
 
     // check all channel buffers are empty
-    for (i=0; i<channels.size(); i++)
+    for (i = 0; i < channels.size(); i++)
         if (!channels[i]->eof())
             throw opp_runtime_error("execute: all nodes finished but channel %d not at eof", i);
+
 }
 
 bool DataflowManager::updateNodeFinished(Node *node)
@@ -181,16 +173,13 @@ bool DataflowManager::updateNodeFinished(Node *node)
     DBG(("DBG: %s finished\n", node->getNodeType()->getName()));
     node->setAlreadyFinished();
     int nc = channels.size();
-    for (int i=0; i!=nc; i++)
-    {
+    for (int i = 0; i != nc; i++) {
         Channel *ch = channels[i];
-        if (ch->getConsumerNode()==node)
-        {
+        if (ch->getConsumerNode() == node) {
             DBG(("DBG:   one input closed\n"));
             ch->consumerClose();
         }
-        if (ch->getProducerNode()==node)
-        {
+        if (ch->getProducerNode() == node) {
             DBG(("DBG:   one output closed\n"));
             ch->close();
         }
@@ -202,11 +191,9 @@ Node *DataflowManager::selectNode()
 {
     // if a channel has buffered too much, try to schedule its consumer node
     int nc = channels.size();
-    for (int j=0; j!=nc; j++)
-    {
+    for (int j = 0; j != nc; j++) {
         Channel *ch = channels[j];
-        if (ch->length()>threshold && ch->getConsumerNode()->isReady())
-        {
+        if (ch->length() > threshold && ch->getConsumerNode()->isReady()) {
             Node *node = ch->getConsumerNode();
             Assert(!node->getAlreadyFinished());
             if (!updateNodeFinished(node))
@@ -217,31 +204,26 @@ Node *DataflowManager::selectNode()
     // round robin scheduling
     int n = nodes.size();
     int i = lastNode;
-    assert(n!=0);
-    do
-    {
-        CONTINUE:
-            i = (i+1)%n;
-            Node *node = nodes[i];
-            if (!node->getAlreadyFinished())
-            {
-                if (updateNodeFinished(node))
-                {
-                    // When a node finished, some node might get ready that was
-                    // not ready before (e.g. has some buffered data), so start over the loop.
-                    i = lastNode;
-                    goto CONTINUE;
-                }
-                else if (node->isReady())
-                {
-                    if (i==lastNode)
-                        DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->getNodeType()->getName()));
-                    lastNode = i;
-                    return node;
-                }
+    assert(n != 0);
+    do {
+      CONTINUE:
+        i = (i+1)%n;
+        Node *node = nodes[i];
+        if (!node->getAlreadyFinished()) {
+            if (updateNodeFinished(node)) {
+                // When a node finished, some node might get ready that was
+                // not ready before (e.g. has some buffered data), so start over the loop.
+                i = lastNode;
+                goto CONTINUE;
             }
-    }
-    while (i!=lastNode);
+            else if (node->isReady()) {
+                if (i == lastNode)
+                    DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->getNodeType()->getName()));
+                lastNode = i;
+                return node;
+            }
+        }
+    } while (i != lastNode);
 
     return nullptr;
 }
@@ -254,10 +236,8 @@ bool DataflowManager::isReaderNode(Node *node)
 int64_t DataflowManager::getTotalBytesToBeRead()
 {
     int64_t totalFileSize = 0;
-    for (int i = 0; i < (int)nodes.size(); ++i)
-    {
-        if (isReaderNode(nodes[i]))
-        {
+    for (int i = 0; i < (int)nodes.size(); ++i) {
+        if (isReaderNode(nodes[i])) {
             ReaderNode *readerNode = dynamic_cast<ReaderNode *>(nodes[i]);
             totalFileSize += readerNode->getFileSize();
         }
@@ -270,8 +250,7 @@ void DataflowManager::dump()
     printf("DATAFLOW NETWORK:\n");
     int n = nodes.size();
     printf("Nodes (%d):\n", n);
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Node *node = nodes[i];
         NodeType *nodeType = node->getNodeType();
         printf(" node[%d]: %p %s\n", i, node, nodeType->getName());
@@ -279,18 +258,17 @@ void DataflowManager::dump()
 
     int nc = channels.size();
     printf("Channels (%d):\n", nc);
-    for (int j=0; j<nc; j++)
-    {
+    for (int j = 0; j < nc; j++) {
         Channel *ch = channels[j];
         Node *prodNode = ch->getProducerNode();
         Node *consNode = ch->getConsumerNode();
         printf(" channel[%d]: node %p %s --> node %p %s\n", j,
-             prodNode, prodNode->getNodeType()->getName(),
-             consNode, consNode->getNodeType()->getName());
+                prodNode, prodNode->getNodeType()->getName(),
+                consNode, consNode->getNodeType()->getName());
     }
     fflush(stdout);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

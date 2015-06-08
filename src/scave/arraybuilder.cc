@@ -23,7 +23,6 @@
 NAMESPACE_BEGIN
 namespace scave {
 
-
 ArrayBuilderNode::ArrayBuilderNode()
 {
     vecCapacity = 0;
@@ -37,10 +36,10 @@ ArrayBuilderNode::ArrayBuilderNode()
 
 ArrayBuilderNode::~ArrayBuilderNode()
 {
-    delete [] xvec;
-    delete [] yvec;
-    delete [] xpvec;
-    delete [] evec;
+    delete[] xvec;
+    delete[] yvec;
+    delete[] xpvec;
+    delete[] evec;
 }
 
 void ArrayBuilderNode::resize()
@@ -52,12 +51,12 @@ void ArrayBuilderNode::resize()
 
     double *newxvec = new double[newsize];
     memcpy(newxvec, xvec, vecLength*sizeof(double));
-    delete [] xvec;
+    delete[] xvec;
     xvec = newxvec;
 
     double *newyvec = new double[newsize];
     memcpy(newyvec, yvec, vecLength*sizeof(double));
-    delete [] yvec;
+    delete[] yvec;
     yvec = newyvec;
 
     if (xpvec) {
@@ -70,7 +69,7 @@ void ArrayBuilderNode::resize()
     if (collectEvec) {
         eventnumber_t *newevec = new eventnumber_t[newsize];
         memcpy(newevec, evec, vecCapacity*sizeof(eventnumber_t));
-        delete [] evec;
+        delete[] evec;
         evec = newevec;
     }
 
@@ -79,17 +78,16 @@ void ArrayBuilderNode::resize()
 
 bool ArrayBuilderNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void ArrayBuilderNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum a;
-        in()->read(&a,1);
-        if (vecLength==vecCapacity)
+        in()->read(&a, 1);
+        if (vecLength == vecCapacity)
             resize();
         Assert(xvec && yvec);
         xvec[vecLength] = a.x;
@@ -112,15 +110,14 @@ bool ArrayBuilderNode::isFinished() const
     return in()->eof();
 }
 
-
 void ArrayBuilderNode::sort()
 {
     // FIXME sort both arrays by "x"
-    //std::sort();
+    // std::sort();
 }
 
 #ifndef min
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
+#define min(a, b)    (((a) < (b)) ? (a) : (b))
 #endif
 
 XYArray *ArrayBuilderNode::getArray()
@@ -163,6 +160,6 @@ Node *ArrayBuilderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

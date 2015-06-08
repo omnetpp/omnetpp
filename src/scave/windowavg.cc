@@ -23,11 +23,10 @@
 NAMESPACE_BEGIN
 namespace scave {
 
-
 WindowAverageNode::WindowAverageNode(int windowSize)
 {
     array = nullptr;
-    if (windowSize<1 || windowSize>100000)
+    if (windowSize < 1 || windowSize > 100000)
         throw opp_runtime_error("winavg: invalid window size %d", windowSize);
     winsize = windowSize;
     array = new Datum[winsize];
@@ -35,12 +34,12 @@ WindowAverageNode::WindowAverageNode(int windowSize)
 
 WindowAverageNode::~WindowAverageNode()
 {
-    delete [] array;
+    delete[] array;
 }
 
 bool WindowAverageNode::isReady() const
 {
-    return in()->length()>=winsize || in()->isClosing();
+    return in()->length() >= winsize || in()->isClosing();
 }
 
 void WindowAverageNode::process()
@@ -48,16 +47,15 @@ void WindowAverageNode::process()
     // do as many winsize-sized chunks as possible, but in the end
     // we'll have to do the remaining ones (n<winsize)
     do {
-        int n = in()->read(array,winsize);
+        int n = in()->read(array, winsize);
         double sumy = 0;
-        for (int i=0; i<n; i++)
+        for (int i = 0; i < n; i++)
             sumy += array[i].y;
         Datum o;
         o.x = array[0].x;
         o.y = sumy/n;
-        out()->write(&o,1);
-    }
-    while (in()->length()>=winsize || (in()->isClosing() && in()->length()>0));
+        out()->write(&o, 1);
+    } while (in()->length() >= winsize || (in()->isClosing() && in()->length() > 0));
 }
 
 //-----
@@ -91,13 +89,12 @@ Node *WindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
-void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void WindowAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
-
 
 //------------------------------
 
@@ -127,16 +124,13 @@ void TimeWindowAverageNode::process()
 {
     int n = in()->length();
 
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
-        if (inCurrentWindow(d))
-        {
+        in()->read(&d, 1);
+        if (inCurrentWindow(d)) {
             collect(d);
         }
-        else
-        {
+        else {
             outputWindowAverage();
             moveWindow(d);
             collect(d);
@@ -182,13 +176,13 @@ Node *TimeWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) 
     return node;
 }
 
-void TimeWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void TimeWindowAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

@@ -25,10 +25,10 @@ namespace scave {
 
 using namespace std;
 
-template <typename T> static void permute(T *&array, int size, const vector<int> &permutation)
+template<typename T> static void permute(T *& array, int size, const vector<int>& permutation)
 {
     // XXX could it be performed in place?
-    T* oldArray = array;
+    T *oldArray = array;
     array = new T[size];
     for (int i = 0; i < size; ++i)
         array[i] = oldArray[permutation[i]];
@@ -37,16 +37,14 @@ template <typename T> static void permute(T *&array, int size, const vector<int>
 
 void XYArray::sortByX()
 {
-    if (x)
-    {
-        vector<pair<double,int> > xCoords;
+    if (x) {
+        vector<pair<double, int> > xCoords;
         for (int i = 0; i < len; ++i)
-            xCoords.push_back(make_pair(x[i],i));
+            xCoords.push_back(make_pair(x[i], i));
 
         sort(xCoords.begin(), xCoords.end());
         vector<int> permutation;
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             x[i] = xCoords[i].first;
             permutation.push_back(xCoords[i].second);
         }
@@ -62,6 +60,6 @@ void XYArray::sortByX()
     }
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

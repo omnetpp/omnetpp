@@ -43,8 +43,7 @@ OctaveExport::~OctaveExport()
 
 void OctaveExport::openFileIfNeeded()
 {
-    if (!f)
-    {
+    if (!f) {
         // note: we have to open the file in binary mode, because on Windows,
         // cygwin-based Octave chokes on CR-LF...
         f = fopen(fileName.c_str(), "wb");
@@ -53,14 +52,13 @@ void OctaveExport::openFileIfNeeded()
 
         setlocale(LC_NUMERIC, "C");
         // print file header
-        CHECK(fprintf(f,"# Created by OMNeT++/OMNEST scavetool\n"));
+        CHECK(fprintf(f, "# Created by OMNeT++/OMNEST scavetool\n"));
     }
 }
 
 void OctaveExport::close()
 {
-    if (f)
-    {
+    if (f) {
         // close the file
         fclose(f);
         f = nullptr;
@@ -72,9 +70,10 @@ std::string OctaveExport::makeUniqueName(const char *nameHint)
     // first, process the name. Only alphanumeric chars are allowed, others
     // are replaced with underscore
     std::string name = nameHint;
-    for (int i=0; i<(int)name.length(); i++)
+    for (int i = 0; i < (int)name.length(); i++)
         if (!opp_isalnum(name[i]))
             name[i] = '_';
+
 
     // check if it's already unique
     std::set<std::string>::const_iterator it = savedVars.find(name);
@@ -82,10 +81,9 @@ std::string OctaveExport::makeUniqueName(const char *nameHint)
         return name;
 
     // try appending "_1", "_2", etc until it becomes unique
-    for (int i=1; i>0; i++)
-    {
+    for (int i = 1; i > 0; i++) {
         char suffix[32];
-        sprintf(suffix,"_%d", i);
+        sprintf(suffix, "_%d", i);
         std::string newName = name + suffix;
 
         std::set<std::string>::const_iterator it = savedVars.find(newName);
@@ -99,21 +97,21 @@ void OctaveExport::writeMatrixHeader(const char *name, int rows, int columns)
 {
     savedVars.insert(name);
 
-    CHECK(fprintf(f,"# name: %s\n"
-                    "# type: matrix\n"
-                    "# rows: %d\n"
-                    "# columns: %d\n",
+    CHECK(fprintf(f, "# name: %s\n"
+                     "# type: matrix\n"
+                     "# rows: %d\n"
+                     "# columns: %d\n",
                     name, rows, columns));
 }
 
 void OctaveExport::writeString(const char *name, const char *value)
 {
-    CHECK(fprintf(f,"# name: %s\n"
-                    "# type: string\n"
-                    "# elements: 1\n"
-                    "# length: %d\n",
+    CHECK(fprintf(f, "# name: %s\n"
+                     "# type: string\n"
+                     "# elements: 1\n"
+                     "# length: %d\n",
                     name, strlen(value)));
-    CHECK(fprintf(f,"%s\n", value));
+    CHECK(fprintf(f, "%s\n", value));
 }
 
 void OctaveExport::writeDescription(const char *name, const char *description)
@@ -122,53 +120,53 @@ void OctaveExport::writeDescription(const char *name, const char *description)
 }
 
 void OctaveExport::saveVector(const char *name, const char *description,
-                              const XYArray *vec, int startIndex, int endIndex)
+        const XYArray *vec, int startIndex, int endIndex)
 {
     // write header
     openFileIfNeeded();
     if (description)
         writeDescription(name, description);
-    if (endIndex==-1)
+    if (endIndex == -1)
         endIndex = vec->length();
     writeMatrixHeader(name, endIndex-startIndex, 2);
 
     // write data
-    for (int i=startIndex; i<endIndex; i++)
-        CHECK(fprintf(f," %.*g %.*g\n", prec, vec->getX(i), prec, vec->getY(i)));
+    for (int i = startIndex; i < endIndex; i++)
+        CHECK(fprintf(f, " %.*g %.*g\n", prec, vec->getX(i), prec, vec->getY(i)));
 }
 
 void OctaveExport::saveVectorX(const char *name, const char *description,
-                               const XYArray *vec, int startIndex, int endIndex)
+        const XYArray *vec, int startIndex, int endIndex)
 {
     // write header
     openFileIfNeeded();
     if (description)
         writeDescription(name, description);
-    if (endIndex==-1)
+    if (endIndex == -1)
         endIndex = vec->length();
     writeMatrixHeader(name, endIndex-startIndex, 1);
 
     // write data
-    for (int i=startIndex; i<endIndex; i++)
-        CHECK(fprintf(f," %.*g\n", prec, vec->getX(i)));
+    for (int i = startIndex; i < endIndex; i++)
+        CHECK(fprintf(f, " %.*g\n", prec, vec->getX(i)));
 }
 
 void OctaveExport::saveVectorY(const char *name, const char *description,
-                               const XYArray *vec, int startIndex, int endIndex)
+        const XYArray *vec, int startIndex, int endIndex)
 {
     // write header
     openFileIfNeeded();
     if (description)
         writeDescription(name, description);
-    if (endIndex==-1)
+    if (endIndex == -1)
         endIndex = vec->length();
     writeMatrixHeader(name, endIndex-startIndex, 1);
 
     // write data
-    for (int i=startIndex; i<endIndex; i++)
-        CHECK(fprintf(f," %.*g\n", prec, vec->getY(i)));
+    for (int i = startIndex; i < endIndex; i++)
+        CHECK(fprintf(f, " %.*g\n", prec, vec->getY(i)));
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

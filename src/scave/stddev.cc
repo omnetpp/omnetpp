@@ -35,16 +35,15 @@ StddevNode::~StddevNode()
 
 bool StddevNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void StddevNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum a;
-        in()->read(&a,1);
+        in()->read(&a, 1);
         collect(a.y);
     }
 }
@@ -62,27 +61,24 @@ void StddevNode::collect(double val)
     sumValues += val;
     sqrsumValues += val*val;
 
-    if (numValues>1)
-    {
-        if (val<minValue)
+    if (numValues > 1) {
+        if (val < minValue)
             minValue = val;
-        else if (val>maxValue)
+        else if (val > maxValue)
             maxValue = val;
     }
-    else
-    {
+    else {
         minValue = maxValue = val;
     }
 }
 
 double StddevNode::getVariance() const
 {
-    if (numValues<=1)
+    if (numValues <= 1)
         return 0.0;
-    else
-    {
+    else {
         double devsqr = (sqrsumValues - sumValues*sumValues/numValues)/(numValues-1);
-        if (devsqr<=0)
+        if (devsqr <= 0)
             return 0.0;
         else
             return devsqr;
@@ -91,9 +87,8 @@ double StddevNode::getVariance() const
 
 double StddevNode::getStddev() const
 {
-    return sqrt( getVariance() );
+    return sqrt(getVariance());
 }
-
 
 //------
 
@@ -116,6 +111,6 @@ Node *StddevNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

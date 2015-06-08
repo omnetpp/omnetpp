@@ -26,10 +26,9 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-
 EnumType::EnumType(const EnumType& list)
 {
-     copy(list);
+    copy(list);
 }
 
 EnumType::EnumType()
@@ -48,7 +47,8 @@ void EnumType::copy(const EnumType& other)
 
 EnumType& EnumType::operator=(const EnumType& other)
 {
-    if (this==&other) return *this;
+    if (this == &other)
+        return *this;
     copy(other);
     return *this;
 }
@@ -61,29 +61,29 @@ void EnumType::insert(int value, const char *name)
 
 const char *EnumType::nameOf(int value) const
 {
-    std::map<int,std::string>::const_iterator it = valueToNameMap.find(value);
-    return it==valueToNameMap.end() ? nullptr : it->second.c_str();
+    std::map<int, std::string>::const_iterator it = valueToNameMap.find(value);
+    return it == valueToNameMap.end() ? nullptr : it->second.c_str();
 }
 
 int EnumType::valueOf(const char *name, int fallback) const
 {
-    std::map<std::string,int>::const_iterator it = nameToValueMap.find(name);
-    return it==nameToValueMap.end() ? fallback : it->second;
+    std::map<std::string, int>::const_iterator it = nameToValueMap.find(name);
+    return it == nameToValueMap.end() ? fallback : it->second;
 }
 
-static bool less(const std::pair<int,std::string> &left, const std::pair<int,std::string> &right)
+static bool less(const std::pair<int, std::string>& left, const std::pair<int, std::string>& right)
 {
     return left.first < right.first;
 }
 
-static std::string second(std::pair<int,std::string> pair)
+static std::string second(std::pair<int, std::string> pair)
 {
     return pair.second;
 }
 
 std::vector<std::string> EnumType::getNames() const
 {
-    std::vector<std::pair<int,std::string> > pairs(valueToNameMap.begin(), valueToNameMap.end());
+    std::vector<std::pair<int, std::string> > pairs(valueToNameMap.begin(), valueToNameMap.end());
     std::sort(pairs.begin(), pairs.end(), less);
     std::vector<std::string> names(pairs.size());
     std::transform(pairs.begin(), pairs.end(), names.begin(), second);
@@ -93,9 +93,8 @@ std::vector<std::string> EnumType::getNames() const
 std::string EnumType::str() const
 {
     std::stringstream out;
-    for (std::map<std::string,int>::const_iterator it=nameToValueMap.begin(); it!=nameToValueMap.end(); ++it)
-    {
-        if (it!=nameToValueMap.begin())
+    for (std::map<std::string, int>::const_iterator it = nameToValueMap.begin(); it != nameToValueMap.end(); ++it) {
+        if (it != nameToValueMap.begin())
             out << ", ";
         out << it->first << "=" << it->second;
     }
@@ -109,16 +108,13 @@ void EnumType::parseFromString(const char *str)
 
     StringTokenizer tokenizer(str, ", ");
     int value = -1;
-    while (tokenizer.hasMoreTokens())
-    {
+    while (tokenizer.hasMoreTokens()) {
         std::string nameValue = tokenizer.nextToken();
         std::string::size_type pos = nameValue.find('=');
-        if (pos == std::string::npos)
-        {
+        if (pos == std::string::npos) {
             insert(++value, nameValue.c_str());
         }
-        else
-        {
+        else {
             std::string name = nameValue.substr(0, pos);
             std::string valueStr = nameValue.substr(pos+1);
             if (!parseInt(valueStr.c_str(), value))
@@ -128,6 +124,6 @@ void EnumType::parseFromString(const char *str)
     }
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

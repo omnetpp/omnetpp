@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <sys/stat.h>
-#include <stdint.h> // <cstdint> is C++11
+#include <stdint.h>  // <cstdint> is C++11
 #include <algorithm>
 #include <clocale>
 #include "common/exception.h"
@@ -26,19 +26,19 @@
 #include "scaveexception.h"
 #include "indexfile.h"
 
-#define LL INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
 namespace scave {
 
-static bool serialLess(const Block &first, const Block &second)
+static bool serialLess(const Block& first, const Block& second)
 {
     return first.endSerial() < second.endSerial();
 }
 
-const Block* VectorData::getBlockBySerial(long serial) const
+const Block *VectorData::getBlockBySerial(long serial) const
 {
     if (serial < 0 || serial >= getCount())
         return nullptr;
@@ -46,7 +46,7 @@ const Block* VectorData::getBlockBySerial(long serial) const
     Block blockToFind;
     blockToFind.startSerial = serial;
     Blocks::const_iterator first = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, serialLess);
-    assert(first == blocks.end() || first->endSerial() > serial); // first block ending after serial
+    assert(first == blocks.end() || first->endSerial() > serial);  // first block ending after serial
 
     if (first != blocks.end()) {
         assert(first->contains(serial));
@@ -57,17 +57,16 @@ const Block* VectorData::getBlockBySerial(long serial) const
 }
 
 // ordering of blocks
-static bool simtimeLess(const Block &first, const Block &second)
+static bool simtimeLess(const Block& first, const Block& second)
 {
     return first.endTime < second.startTime;
 }
 
 // ordering of reversed blocks
-static bool simtimeGreater(const Block &first, const Block &second)
+static bool simtimeGreater(const Block& first, const Block& second)
 {
     return first.startTime > second.endTime;
 }
-
 
 const Block *VectorData::getBlockBySimtime(simultime_t simtime, bool after) const
 {
@@ -75,19 +74,17 @@ const Block *VectorData::getBlockBySimtime(simultime_t simtime, bool after) cons
     blockToFind.startTime = simtime;
     blockToFind.endTime = simtime;
 
-    if (after)
-    {
+    if (after) {
         Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
         return first != blocks.end() ? &(*first) : nullptr;
     }
-    else
-    {
+    else {
         Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, simtimeGreater);
         return last != blocks.rend() ? &(*last) : nullptr;
     }
 }
 
-Blocks::size_type VectorData::getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
+Blocks::size_type VectorData::getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const
 {
     Block blockToFind;
     blockToFind.startTime = startTime;
@@ -106,13 +103,13 @@ Blocks::size_type VectorData::getBlocksInSimtimeInterval(simultime_t startTime, 
 }
 
 // ordering of blocks
-static bool eventnumLess(const Block &first, const Block &second)
+static bool eventnumLess(const Block& first, const Block& second)
 {
     return first.endEventNum < second.startEventNum;
 }
 
 // ordering of reversed blocks
-static bool eventnumGreater(const Block &first, const Block &second)
+static bool eventnumGreater(const Block& first, const Block& second)
 {
     return first.startEventNum > second.endEventNum;
 }
@@ -123,19 +120,17 @@ const Block *VectorData::getBlockByEventnum(eventnumber_t eventNum, bool after) 
     blockToFind.startEventNum = eventNum;
     blockToFind.endEventNum = eventNum;
 
-    if (after)
-    {
+    if (after) {
         Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
         return first != blocks.end() ? &(*first) : nullptr;
     }
-    else
-    {
+    else {
         Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, eventnumGreater);
         return last != blocks.rend() ? &(*last) : nullptr;
     }
 }
 
-Blocks::size_type VectorData::getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
+Blocks::size_type VectorData::getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const
 {
     Block blockToFind;
     blockToFind.startEventNum = startEventNum;
@@ -162,8 +157,7 @@ Blocks::size_type VectorData::getBlocksInEventnumInterval(eventnumber_t startEve
 
 bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int64_t lineNo)
 {
-    if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0)
-    {
+    if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0) {
         CHECK(numTokens >= 3, "'attr <name> <value>' expected");
         this->attributes[tokens[1]] = tokens[2];
         // the "runNumber" attribute is also stored separately
@@ -172,14 +166,12 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
         }
         return true;
     }
-    else if (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0)
-    {
+    else if (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0) {
         CHECK(numTokens >= 3, "'param <namePattern> <value>' expected");
         this->moduleParams[tokens[1]] = tokens[2];
         return true;
     }
-    else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0)
-    {
+    else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0) {
         CHECK(numTokens >= 2, "missing run name");
         this->runName = tokens[1];
         return true;
@@ -193,19 +185,17 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
 
 void RunData::writeToFile(FILE *file, const char *filename) const
 {
-    if (runName.size() > 0)
-    {
+    if (runName.size() > 0) {
         CHECK(fprintf(file, "run %s\n", runName.c_str()));
     }
-    for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-    {
+    for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it) {
         CHECK(fprintf(file, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
-    for (StringMap::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it)
-    {
+    for (StringMap::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it) {
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
 }
+
 //=========================================================================
 static bool isFileReadable(const char *filename)
 {
@@ -254,13 +244,11 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
 {
     std::string indexFileName, vectorFileName;
 
-    if (isIndexFile(filename))
-    {
+    if (isIndexFile(filename)) {
         indexFileName = std::string(filename);
         vectorFileName = getVectorFileName(filename);
     }
-    else
-    {
+    else {
         indexFileName = getIndexFileName(filename);
         vectorFileName = std::string(filename);
     }
@@ -294,8 +282,7 @@ FingerPrint::FingerPrint(const char *vectorFileName)
 bool FingerPrint::check(const char *vectorFileName)
 {
     struct opp_stat_t s;
-    if (opp_stat(vectorFileName, &s) == 0)
-    {
+    if (opp_stat(vectorFileName, &s) == 0) {
         return (this->lastModified == (int64_t)s.st_mtime) && (this->fileSize == (int64_t)s.st_size);
     }
     return false;
@@ -309,7 +296,7 @@ bool FingerPrint::check(const char *vectorFileName)
 #define CHECK(cond,msg,line) if (!(cond)) throw ResultFileFormatException(msg, filename.c_str(), line);
 
 // see ifilemgr.h
-#define MIN_BUFFER_SIZE 512
+#define MIN_BUFFER_SIZE           512
 
 IndexFileReader::IndexFileReader(const char *filename)
     : filename(filename)
@@ -325,13 +312,12 @@ VectorFileIndex *IndexFileReader::readAll()
     char *line, **tokens;
 
     VectorFileIndex *index = new VectorFileIndex();
-	reader.setCheckFileForChanges(false);
-    while ((line=reader.getNextLineBufferPointer())!=nullptr)
-    {
+    reader.setCheckFileForChanges(false);
+    while ((line = reader.getNextLineBufferPointer()) != nullptr) {
         int64_t lineNum = reader.getNumReadLines();
-        int len=reader.getCurrentLineLength();
-        numTokens=tokenizer.tokenize(line, len);
-        tokens=tokenizer.tokens();
+        int len = reader.getCurrentLineLength();
+        numTokens = tokenizer.tokenize(line, len);
+        tokens = tokenizer.tokens();
         parseLine(tokens, numTokens, index, lineNum);
     }
     return index;
@@ -345,18 +331,16 @@ VectorFileIndex *IndexFileReader::readFingerprint()
     char *line, **tokens;
 
     VectorFileIndex *index = nullptr;
-	reader.setCheckFileForChanges(false);
-    while ((line=reader.getNextLineBufferPointer())!=nullptr)
-    {
+    reader.setCheckFileForChanges(false);
+    while ((line = reader.getNextLineBufferPointer()) != nullptr) {
         int64_t lineNum = reader.getNumReadLines();
         int len = reader.getCurrentLineLength();
-        numTokens = tokenizer.tokenize(line,len);
+        numTokens = tokenizer.tokenize(line, len);
         tokens = tokenizer.tokens();
 
         if (numTokens == 0 || tokens[0][0] == '#')
             continue;
-        else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
-        {
+        else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0) {
             index = new VectorFileIndex();
             parseLine(tokens, numTokens, index, lineNum);
         }
@@ -370,7 +354,6 @@ VectorFileIndex *IndexFileReader::readFingerprint()
     return index;
 }
 
-
 void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, int64_t lineNum)
 {
     if (numTokens == 0 || tokens[0][0] == '#')
@@ -382,8 +365,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     double sum;
     double sumSqr;
 
-    if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
-    {
+    if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0) {
         CHECK(numTokens >= 5, "invalid vector declaration", lineNum);
 
         VectorData vector;
@@ -394,14 +376,12 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
         index->addVector(vector);
     }
-    else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 && index->getNumberOfVectors() > 0) // vector attr
-    {
+    else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 && index->getNumberOfVectors() > 0) {  // vector attr
         CHECK(numTokens == 3, "malformed vector attribute", lineNum);
         VectorData *lastVector = index->getVectorAt(index->getNumberOfVectors()-1);
         lastVector->attributes[tokens[1]] = tokens[2];
     }
-    else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
-    {
+    else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0) {
         int64_t fileSize;
         int64_t lastModified;
         CHECK(numTokens >= 3, "missing file attributes", lineNum);
@@ -410,19 +390,16 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         index->fingerprint.fileSize = fileSize;
         index->fingerprint.lastModified = lastModified;
     }
-    else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0)
-    {
+    else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0) {
         int version;
         CHECK(numTokens >= 2, "missing version number", lineNum);
         CHECK(parseInt(tokens[1], version), "version is not a number", lineNum);
         CHECK(version <= 2, "expects version 2 or lower", lineNum);
     }
-    else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum))
-    {
+    else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum)) {
         return;
     }
-    else // blocks
-    {
+    else {  // blocks
         CHECK(numTokens >= 10, "missing fields from block", lineNum);
 
         int id;
@@ -432,21 +409,18 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
         Block block;
         block.startSerial = !vector->blocks.empty() ? vector->blocks.back().endSerial() : 0;
-        int i = 1; // column index
+        int i = 1;  // column index
         CHECK(parseInt64(tokens[i++], block.startOffset), "invalid file offset", lineNum);
         CHECK(parseInt64(tokens[i++], block.size), "invalid block size", lineNum);
-        if (vector->hasColumn('E'))
-        {
+        if (vector->hasColumn('E')) {
             CHECK(parseInt64(tokens[i++], block.startEventNum) && parseInt64(tokens[i++], block.endEventNum),
-                "invalid event numbers", lineNum);
+                    "invalid event numbers", lineNum);
         }
-        if (vector->hasColumn('T'))
-        {
+        if (vector->hasColumn('T')) {
             CHECK(parseSimtime(tokens[i++], block.startTime) && parseSimtime(tokens[i++], block.endTime),
-                "invalid simulation time", lineNum);
+                    "invalid simulation time", lineNum);
         }
-        if (vector->hasColumn('V'))
-        {
+        if (vector->hasColumn('V')) {
             CHECK(parseLong(tokens[i++], count) && parseDouble(tokens[i++], min) && parseDouble(tokens[i++], max) &&
                     parseDouble(tokens[i++], sum) && parseDouble(tokens[i++], sumSqr), "invalid statistics data", lineNum);
             block.stat = Statistics(count, min, max, sum, sumSqr);
@@ -470,8 +444,7 @@ IndexFileWriter::IndexFileWriter(const char *filename, int precision)
 
 IndexFileWriter::~IndexFileWriter()
 {
-    if (file != nullptr)
-    {
+    if (file != nullptr) {
         closeFile();
     }
 }
@@ -483,8 +456,7 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
     writeRun(index.run);
 
     int numOfVectors = index.getNumberOfVectors();
-    for (int i = 0; i < numOfVectors; ++i)
-    {
+    for (int i = 0; i < numOfVectors; ++i) {
         const VectorData *vectorRef = index.getVectorAt(i);
         writeVector(*vectorRef);
     }
@@ -505,61 +477,62 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
     opp_fseek(file, saveOffset, SEEK_SET);
 }
 
-void IndexFileWriter::writeRun(const RunData &run)
+void IndexFileWriter::writeRun(const RunData& run)
 {
     if (file == nullptr)
         openFile();
     run.writeToFile(file, filename.c_str());
 }
 
-void IndexFileWriter::writeVector(const VectorData &vector)
+void IndexFileWriter::writeVector(const VectorData& vector)
 {
     if (file == nullptr)
         openFile();
 
     int numBlocks = vector.blocks.size();
-    if (numBlocks > 0)
-    {
+    if (numBlocks > 0) {
         writeVectorDeclaration(vector);
         writeVectorAttributes(vector);
 
-        for (int i=0; i<numBlocks; i++)
-        {
+        for (int i = 0; i < numBlocks; i++) {
             writeBlock(vector, vector.blocks[i]);
         }
     }
 }
 
-void IndexFileWriter::writeVectorDeclaration(const VectorData &vector)
+void IndexFileWriter::writeVectorDeclaration(const VectorData& vector)
 {
     CHECK(fprintf(file, "vector %d  %s  %s  %s\n",
-          vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
-
+                    vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
 }
 
-void IndexFileWriter::writeVectorAttributes(const VectorData &vector)
+void IndexFileWriter::writeVectorAttributes(const VectorData& vector)
 {
-    for (StringMap::const_iterator it=vector.attributes.begin(); it != vector.attributes.end(); ++it)
-    {
+    for (StringMap::const_iterator it = vector.attributes.begin(); it != vector.attributes.end(); ++it) {
         CHECK(fprintf(file, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
     }
 }
 
-void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
+void IndexFileWriter::writeBlock(const VectorData& vector, const Block& block)
 {
     static char buff1[64], buff2[64];
     char *e;
 
-    if (block.getCount() > 0)
-    {
+    if (block.getCount() > 0) {
         CHECK(fprintf(file, "%d\t%" LL "d %" LL "d", vector.vectorId, (int64_t)block.startOffset, (int64_t)block.size));
-        if (vector.hasColumn('E')) { CHECK(fprintf(file, " %" LL "d %" LL "d", block.startEventNum, block.endEventNum)); }
-        if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
-                                                BigDecimal::ttoa(buff1, block.startTime, e),
-                                                BigDecimal::ttoa(buff2, block.endTime, e))); }
-        if (vector.hasColumn('V')) { CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
-                                                block.getCount(), precision, block.getMin(), precision, block.getMax(),
-                                                precision, block.getSum(), precision, block.getSumSqr())); }
+        if (vector.hasColumn('E')) {
+            CHECK(fprintf(file, " %" LL "d %" LL "d", block.startEventNum, block.endEventNum));
+        }
+        if (vector.hasColumn('T')) {
+            CHECK(fprintf(file, " %s %s",
+                            BigDecimal::ttoa(buff1, block.startTime, e),
+                            BigDecimal::ttoa(buff2, block.endTime, e)));
+        }
+        if (vector.hasColumn('V')) {
+            CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
+                            block.getCount(), precision, block.getMin(), precision, block.getMax(),
+                            precision, block.getSum(), precision, block.getSumSqr()));
+        }
         CHECK(fprintf(file, "\n"));
     }
 }
@@ -580,13 +553,12 @@ void IndexFileWriter::openFile()
 
 void IndexFileWriter::closeFile()
 {
-    if (file != nullptr)
-    {
+    if (file != nullptr) {
         fclose(file);
         file = nullptr;
     }
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

@@ -34,6 +34,6 @@ ResultFileFormatException::ResultFileFormatException(const char *message, const 
     errormsg = msg.str();
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

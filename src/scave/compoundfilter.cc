@@ -26,12 +26,11 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-
 bool CompoundFilterType::Subfilter::operator==(const CompoundFilterType::Subfilter& other) const
 {
-    return _nodetype==other._nodetype &&
-           _comment==other._comment &&
-           _attrassignments==other._attrassignments;
+    return _nodetype == other._nodetype &&
+           _comment == other._comment &&
+           _attrassignments == other._attrassignments;
 }
 
 const char *CompoundFilterType::getName() const
@@ -69,10 +68,10 @@ bool CompoundFilterType::equals(const CompoundFilterType& other)
 {
     // ignore name (they're surely different)
     // ignore "hidden" flag too
-    return _description==other._description &&
-           _attrs==other._attrs &&
-           _defaults==other._defaults &&
-           _subfilters==other._subfilters;
+    return _description == other._description &&
+           _attrs == other._attrs &&
+           _defaults == other._defaults &&
+           _subfilters == other._subfilters;
 }
 
 void CompoundFilterType::getAttributes(StringMap& attrs) const
@@ -104,28 +103,28 @@ int CompoundFilterType::getNumSubfilters() const
 
 CompoundFilterType::Subfilter& CompoundFilterType::getSubfilter(int pos)
 {
-    if (pos<0 || pos>=(int)_subfilters.size())
+    if (pos < 0 || pos >= (int)_subfilters.size())
         throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
 const CompoundFilterType::Subfilter& CompoundFilterType::getSubfilter(int pos) const
 {
-    if (pos<0 || pos>=(int)_subfilters.size())
+    if (pos < 0 || pos >= (int)_subfilters.size())
         throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
 void CompoundFilterType::insertSubfilter(int pos, const Subfilter& f)
 {
-    if (pos<0 || pos>(int)_subfilters.size())
+    if (pos < 0 || pos > (int)_subfilters.size())
         throw opp_runtime_error("%s: invalid subfilter insert index %d", getName(), pos);
     _subfilters.insert(_subfilters.begin()+pos, f);
 }
 
 void CompoundFilterType::removeSubfilter(int pos)
 {
-    if (pos<0 || pos>=(int)_subfilters.size())
+    if (pos < 0 || pos >= (int)_subfilters.size())
         throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     _subfilters.erase(_subfilters.begin()+pos);
 }
@@ -138,15 +137,13 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
     node->attrValues = attrs;
 
     int n = getNumSubfilters();
-    if (n==0)
-    {
+    if (n == 0) {
         FilterNode *subnode = new NopNode();
         mgr->addNode(subnode);
         node->first = node->last = subnode;
     }
     Node *prevsubnode = nullptr;
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Subfilter& subfilt = const_cast<CompoundFilterType *>(this)->getSubfilter(i);
 
         // get type
@@ -159,30 +156,28 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         // pick needed attrs
         StringMap allowedattrs;
         subnodetype->getAttributes(allowedattrs);
-        for (StringMap::iterator aattr=allowedattrs.begin(); aattr!=allowedattrs.end();++aattr)
+        for (StringMap::iterator aattr = allowedattrs.begin(); aattr != allowedattrs.end(); ++aattr)
             subattrs[aattr->first] = subattrsall[aattr->first];
         // now perform param substitutions
-        for (StringMap::iterator subattr1=subattrs.begin(); subattr1!=subattrs.end(); ++subattr1)
-        {
+        for (StringMap::iterator subattr1 = subattrs.begin(); subattr1 != subattrs.end(); ++subattr1) {
             StringMap::iterator attrfound = attrs.find(subattr1->second);
-            if (attrfound!=attrs.end())
+            if (attrfound != attrs.end())
                 subattr1->second = attrfound->second;
         }
 
         // create and add instance
-        FilterNode *subnode = dynamic_cast<FilterNode *>(subnodetype->create(mgr,subattrs));
+        FilterNode *subnode = dynamic_cast<FilterNode *>(subnodetype->create(mgr, subattrs));
         if (!subnode)
             throw opp_runtime_error("%s: subfilter type %s is not subclassed from FilterNode", getName(), subnodetypename);
-        if (i==0)
+        if (i == 0)
             node->first = subnode;
-        if (i==n-1)
+        if (i == n-1)
             node->last = subnode;
 
         // connect to next one
-        if (prevsubnode)
-        {
-            Port *port1 = prevsubnode->getNodeType()->getPort(prevsubnode,"out");
-            Port *port2 = subnode->getNodeType()->getPort(subnode,"in");
+        if (prevsubnode) {
+            Port *port1 = prevsubnode->getNodeType()->getPort(prevsubnode, "out");
+            Port *port2 = subnode->getNodeType()->getPort(subnode, "in");
             mgr->connect(port1, port2);
         }
         prevsubnode = subnode;
@@ -194,25 +189,24 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
 Port *CompoundFilterType::getPort(Node *node, const char *name) const
 {
     CompoundFilter *compound = dynamic_cast<CompoundFilter *>(node);
-    Node *subnode = !strcmp(name,"in") ? compound->getFirstNode() :
-                    !strcmp(name,"out") ? compound->getLastNode() :
-                    nullptr;
+    Node *subnode = !strcmp(name, "in") ? compound->getFirstNode() :
+        !strcmp(name, "out") ? compound->getLastNode() :
+        nullptr;
     if (!subnode)
         throw opp_runtime_error("no such port `%s'", name);
     return subnode->getNodeType()->getPort(subnode, name);
 }
 
-void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void CompoundFilterType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     int n = getNumSubfilters();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         const char *nodetypename = getSubfilter(i).getNodeType();
         NodeType *nodeType = NodeTypeRegistry::getInstance()->getNodeType(nodetypename);
         nodeType->mapVectorAttributes(attrs, warnings);
     }
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

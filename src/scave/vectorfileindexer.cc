@@ -38,11 +38,10 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-
 static inline bool existsFile(const string fileName)
 {
     struct stat s;
-    return stat(fileName.c_str(), &s)==0;
+    return stat(fileName.c_str(), &s) == 0;
 }
 
 static string createTempFileName(const string baseFileName)
@@ -79,24 +78,17 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     if (monitor)
         monitor->beginTask(string("Indexing ")+vectorFileName, 110);
 
-    try
-    {
-
-        while ((line=reader.getNextLineBufferPointer())!=nullptr)
-        {
-            if (monitor)
-            {
-                if (monitor->isCanceled())
-                {
+    try {
+        while ((line = reader.getNextLineBufferPointer()) != nullptr) {
+            if (monitor) {
+                if (monitor->isCanceled()) {
                     monitor->done();
                     return;
                 }
-                if (onePercentFileSize > 0)
-                {
+                if (onePercentFileSize > 0) {
                     int64_t readBytes = reader.getNumReadBytes();
                     int currentPercentage = readBytes / onePercentFileSize;
-                    if (currentPercentage > readPercentage)
-                    {
+                    if (currentPercentage > readPercentage) {
                         monitor->worked(currentPercentage - readPercentage);
                         readPercentage = currentPercentage;
                     }
@@ -115,21 +107,17 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
             {
                 index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
             }
-            else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0)
-            {
-                if (lastVectorDecl == nullptr) // run attribute
-                {
+            else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0) {
+                if (lastVectorDecl == nullptr) {  // run attribute
                     index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
                 }
-                else // vector attribute
-                {
+                else {  // vector attribute
                     if (numTokens < 3)
                         throw ResultFileFormatException("vector file indexer: missing attribute name or value", vectorFileName, lineNo);
                     lastVectorDecl->attributes[tokens[1]] = tokens[2];
                 }
             }
-            else if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
-            {
+            else if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0) {
                 if (numTokens < 4)
                     throw ResultFileFormatException("vector file indexer: broken vector declaration", vectorFileName, lineNo);
 
@@ -145,33 +133,28 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
                 currentVectorRef = nullptr;
             }
-            else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0)
-            {
+            else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0) {
                 int version;
-                if(numTokens < 2)
+                if (numTokens < 2)
                     throw ResultFileFormatException("vector file indexer: missing version number", vectorFileName, lineNo);
-                if(!parseInt(tokens[1], version))
+                if (!parseInt(tokens[1], version))
                     throw ResultFileFormatException("vector file indexer: version is not a number", vectorFileName, lineNo);
-                if(version > 2)
+                if (version > 2)
                     throw ResultFileFormatException("vector file indexer: expects version 2 or lower", vectorFileName, lineNo);
             }
-            else // data line
-            {
+            else {  // data line
                 int vectorId;
                 simultime_t simTime;
                 double value;
                 eventnumber_t eventNum = -1;
 
-                if (!parseInt(tokens[0], vectorId))
-                {
+                if (!parseInt(tokens[0], vectorId)) {
                     numOfUnrecognizedLines++;
                     continue;
                 }
 
-                if (currentVectorRef == nullptr || vectorId != currentVectorRef->vectorId)
-                {
-                    if (currentVectorRef != nullptr)
-                    {
+                if (currentVectorRef == nullptr || vectorId != currentVectorRef->vectorId) {
+                    if (currentVectorRef != nullptr) {
                         currentBlock.size = (int64_t)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
                         if (currentBlock.size > currentVectorRef->blockSize)
                             currentVectorRef->blockSize = currentBlock.size;
@@ -185,27 +168,27 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                         throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);
                 }
 
-                for (int i = 0; i < (int)currentVectorRef->columns.size(); ++i)
-                {
+                for (int i = 0; i < (int)currentVectorRef->columns.size(); ++i) {
                     char column = currentVectorRef->columns[i];
                     if (i+1 >= numTokens)
                         throw ResultFileFormatException("vector file indexer: data line too short", vectorFileName, lineNo);
 
                     char *token = tokens[i+1];
-                    switch (column)
-                    {
-                    case 'T':
-                        if (!parseSimtime(token, simTime))
-                            throw ResultFileFormatException("vector file indexer: malformed simulation time", vectorFileName, lineNo);
-                        break;
-                    case 'V':
-                        if (!parseDouble(token, value))
-                            throw ResultFileFormatException("vector file indexer: malformed data value", vectorFileName, lineNo);
-                        break;
-                    case 'E':
-                        if (!parseInt64(token, eventNum))
-                            throw ResultFileFormatException("vector file indexer: malformed event number", vectorFileName, lineNo);
-                        break;
+                    switch (column) {
+                        case 'T':
+                            if (!parseSimtime(token, simTime))
+                                throw ResultFileFormatException("vector file indexer: malformed simulation time", vectorFileName, lineNo);
+                            break;
+
+                        case 'V':
+                            if (!parseDouble(token, value))
+                                throw ResultFileFormatException("vector file indexer: malformed data value", vectorFileName, lineNo);
+                            break;
+
+                        case 'E':
+                            if (!parseInt64(token, eventNum))
+                                throw ResultFileFormatException("vector file indexer: malformed event number", vectorFileName, lineNo);
+                            break;
                     }
                 }
 
@@ -214,8 +197,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         }
 
         // finish last block
-        if (currentBlock.getCount() > 0)
-        {
+        if (currentBlock.getCount() > 0) {
             assert(currentVectorRef != nullptr);
             currentBlock.size = (int64_t)(reader.getFileSize() - currentBlock.startOffset);
             if (currentBlock.size > currentVectorRef->blockSize)
@@ -223,23 +205,17 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
             currentVectorRef->addBlock(currentBlock);
         }
 
-        if (numOfUnrecognizedLines > 0)
-        {
+        if (numOfUnrecognizedLines > 0) {
             fprintf(stderr, "Found %d unrecognized lines in %s.\n", numOfUnrecognizedLines, vectorFileName);
         }
     }
-    catch (exception&)
-    {
+    catch (exception&) {
         if (monitor)
             monitor->done();
         throw;
     }
-
-
-    if (monitor)
-    {
-        if (monitor->isCanceled())
-        {
+    if (monitor) {
+        if (monitor->isCanceled()) {
             monitor->done();
             return;
         }
@@ -253,8 +229,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
     string indexFileName = IndexFile::getIndexFileName(vectorFileName);
     string tempIndexFileName = createTempFileName(indexFileName);
 
-    try
-    {
+    try {
         IndexFileWriter writer(tempIndexFileName.c_str());
         writer.writeAll(index);
 
@@ -262,13 +237,12 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
             monitor->worked(10);
 
         // rename generated index file
-        if (unlink(indexFileName.c_str())!=0 && errno!=ENOENT)
+        if (unlink(indexFileName.c_str()) != 0 && errno != ENOENT)
             throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName.c_str(), strerror(errno));
-        if (rename(tempIndexFileName.c_str(), indexFileName.c_str())!=0)
+        if (rename(tempIndexFileName.c_str(), indexFileName.c_str()) != 0)
             throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tempIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
     }
-    catch (exception&)
-    {
+    catch (exception&) {
         if (monitor)
             monitor->done();
 
@@ -277,7 +251,6 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         unlink(tempIndexFileName.c_str());
         throw;
     }
-
     if (monitor)
         monitor->done();
 }
@@ -288,14 +261,13 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
     string tempIndexFileName = createTempFileName(indexFileName);
     string tempVectorFileName = createTempFileName(vectorFileName);
 
-    try
-    {
+    try {
         // load file
         ResultFileManager resultFileManager;
         ResultFile *f = resultFileManager.loadFile(vectorFileName);
         if (!f)
             throw opp_runtime_error("Cannot load %s", vectorFileName);
-        else if (f->numUnrecognizedLines>0)
+        else if (f->numUnrecognizedLines > 0)
             fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", vectorFileName, f->numUnrecognizedLines, f->numLines);
 
         IDList vectorIDList = resultFileManager.getAllVectors();
@@ -304,7 +276,7 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
             return;
         }
 
-        const RunList &runList = resultFileManager.getRuns();
+        const RunList& runList = resultFileManager.getRuns();
         if (runList.size() != 1)
             throw opp_runtime_error("Multiple runs found in %s", vectorFileName);
         const Run *runPtr = runList[0];
@@ -331,18 +303,16 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
             StringMap writerAttrs;
             writerAttrs["filename"] = tempVectorFileName;
             writerAttrs["indexfilename"] = tempIndexFileName;
-            writerAttrs["blocksize"] = "65536"; // TODO
+            writerAttrs["blocksize"] = "65536";  // TODO
             writerAttrs["fileheader"] = "# generated by scavetool";
             IndexedVectorFileWriterNode *writerNode =
-                dynamic_cast<IndexedVectorFileWriterNode*>(writerNodeType->create(&dataflowManager, writerAttrs));
+                dynamic_cast<IndexedVectorFileWriterNode *>(writerNodeType->create(&dataflowManager, writerAttrs));
             if (!writerNode)
                 throw opp_runtime_error("Cannot create the indexedvectorfilewriternode.");
             writerNode->setRun(runPtr->runName.c_str(), runPtr->attributes, runPtr->moduleParams);
 
-
             // create a ports
-            for (int i=0; i<vectorIDList.size(); i++)
-            {
+            for (int i = 0; i < vectorIDList.size(); i++) {
                 char portName[30];
                 const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
                 sprintf(portName, "%d", vector.vectorId);
@@ -358,18 +328,17 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
         }
 
         // rename temp to orig
-        if (unlink(indexFileName.c_str())!=0 && errno!=ENOENT)
+        if (unlink(indexFileName.c_str()) != 0 && errno != ENOENT)
             throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName.c_str(), strerror(errno));
-        if (unlink(vectorFileName)!=0)
+        if (unlink(vectorFileName) != 0)
             throw opp_runtime_error("Cannot remove original vector file `%s': %s", vectorFileName, strerror(errno));
-        if (rename(tempVectorFileName.c_str(), vectorFileName)!=0)
+        if (rename(tempVectorFileName.c_str(), vectorFileName) != 0)
             throw opp_runtime_error("Cannot move generated vector file '%s' to the original '%s': %s",
                     tempVectorFileName.c_str(), vectorFileName, strerror(errno));
-        if (rename(tempIndexFileName.c_str(), indexFileName.c_str())!=0)
+        if (rename(tempIndexFileName.c_str(), indexFileName.c_str()) != 0)
             throw opp_runtime_error("Cannot move generated index file from '%s' to '%s': %s", tempIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
     }
-    catch (exception& e)
-    {
+    catch (exception& e) {
         // cleanup temp files
         unlink(tempIndexFileName.c_str());
         if (existsFile(vectorFileName))
@@ -379,6 +348,6 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
     }
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

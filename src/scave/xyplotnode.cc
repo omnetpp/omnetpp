@@ -23,13 +23,11 @@
 NAMESPACE_BEGIN
 namespace scave {
 
-
 Port *XYPlotNode::getPortY(int k)
 {
-    if (k<0 || yin.size()< (unsigned)k)
-        throw opp_runtime_error("XYPlotNode::getPortY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
-    if (yin.size()==(unsigned)k)
-    {
+    if (k < 0 || yin.size() < (unsigned)k)
+        throw opp_runtime_error("XYPlotNode::getPortY(k): k=%d out of range, size of yin[] is %d", k, yin.size());
+    if (yin.size() == (unsigned)k) {
         yin.push_back(Port(this));
         out.push_back(Port(this));
     }
@@ -38,20 +36,21 @@ Port *XYPlotNode::getPortY(int k)
 
 Port *XYPlotNode::getPortOut(int k)
 {
-    if (k<0 || out.size()<=(unsigned)k)
-        throw opp_runtime_error("XYPlotNode::getPortOut(k): k=%d out of range, size of out[] is %d",k,out.size());
+    if (k < 0 || out.size() <= (unsigned)k)
+        throw opp_runtime_error("XYPlotNode::getPortOut(k): k=%d out of range, size of out[] is %d", k, out.size());
     return &out[k];
 }
 
 bool XYPlotNode::isReady() const
 {
     // if no "x" data, we're not ready
-    if (xin()->length()==0)
+    if (xin()->length() == 0)
         return false;
     // otherwise, we're ready only if all "y" ports have something (except those at EOF)
-    for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
-        if ((*it)()->length()==0 && !(*it)()->isClosing())
+    for (PortVector::const_iterator it = yin.begin(); it != yin.end(); it++)
+        if ((*it)()->length() == 0 && !(*it)()->isClosing())
             return false;
+
     return true;
 }
 
@@ -61,29 +60,25 @@ void XYPlotNode::process()
     // return ty>tx values (where tx is timestamp of the "x" value). Meanwhile,
     // if we find ty==tx values, output the (x,y) pair. If a port has reached
     // EOF, skip it.
-    Assert(xin()->length()>0);
+    Assert(xin()->length() > 0);
     Datum xd;
-    xin()->read(&xd,1);
+    xin()->read(&xd, 1);
 
-    for (unsigned int i=0; i<yin.size(); i++)
-    {
+    for (unsigned int i = 0; i < yin.size(); i++) {
         Channel *ychan = yin[i]();
-        Assert(ychan->eof() || ychan->length()>0);
+        Assert(ychan->eof() || ychan->length() > 0);
         const Datum *yp;
         Datum d;
-        while ((yp=ychan->peek())!=nullptr && yp->x < xd.x)
-        {
-            ychan->read(&d,1);  // discard if timestamps not equal
+        while ((yp = ychan->peek()) != nullptr && yp->x < xd.x) {
+            ychan->read(&d, 1);  // discard if timestamps not equal
         }
-        while ((yp=ychan->peek())!=nullptr && yp->x == xd.x)
-        {
-            ychan->read(&d,1);
+        while ((yp = ychan->peek()) != nullptr && yp->x == xd.x) {
+            ychan->read(&d, 1);
             d.x = xd.y;
-            out[i]()->write(&d,1);
+            out[i]()->write(&d, 1);
         }
-        if (ychan->eof())
-        {
-            out[i]()->close(); // doesn't hurt
+        if (ychan->eof()) {
+            out[i]()->close();  // doesn't hurt
         }
     }
 }
@@ -94,9 +89,10 @@ bool XYPlotNode::isFinished() const
     if (xin()->eof())
         return true;
     // otherwise only if all "y" ports are at EOF
-    for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
+    for (PortVector::const_iterator it = yin.begin(); it != yin.end(); it++)
         if (!(*it)()->eof())
             return false;
+
     return true;
 }
 
@@ -126,15 +122,15 @@ Node *XYPlotNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
 {
     XYPlotNode *node1 = dynamic_cast<XYPlotNode *>(node);
-    if (!strcmp(portname,"x"))
+    if (!strcmp(portname, "x"))
         return &(node1->xin);
-    if (portname[0]=='y')
+    if (portname[0] == 'y')
         return node1->getPortY(atoi(portname+1));
-    else if (!strncmp(portname,"out",3))
+    else if (!strncmp(portname, "out", 3))
         return node1->getPortOut(atoi(portname+3));
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

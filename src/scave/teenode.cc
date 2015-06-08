@@ -30,7 +30,7 @@ Port *TeeNode::addPort()
 
 bool TeeNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void TeeNode::process()
@@ -38,13 +38,11 @@ void TeeNode::process()
     Datum d;
 
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
-        in()->read(&d,1);
-        for (PortVector::iterator it=outs.begin(); it!=outs.end(); it++)
-            (*it)()->write(&d,1);
+    for (int i = 0; i < n; i++) {
+        in()->read(&d, 1);
+        for (PortVector::iterator it = outs.begin(); it != outs.end(); it++)
+            (*it)()->write(&d, 1);
     }
-
 }
 
 bool TeeNode::isFinished() const
@@ -76,13 +74,13 @@ Node *TeeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 Port *TeeNodeType::getPort(Node *node, const char *portname) const
 {
     TeeNode *node1 = dynamic_cast<TeeNode *>(node);
-    if (!strcmp(portname,"next-out"))
+    if (!strcmp(portname, "next-out"))
         return node1->addPort();
-    else if (!strcmp(portname,"in"))
+    else if (!strcmp(portname, "in"))
         return &(node1->in);
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

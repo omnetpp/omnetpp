@@ -19,11 +19,11 @@
 #include <clocale>
 
 #include "common/stringutil.h"
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
 #include "channel.h"
 #include "vectorfilewriter.h"
 
-#define VECTOR_FILE_VERSION 2
+#define VECTOR_FILE_VERSION    2
 
 #define LL  INT64_PRINTF_FORMAT  /* abbreviation */
 
@@ -50,7 +50,7 @@ VectorFileWriterNode::~VectorFileWriterNode()
 {
 }
 
-Port *VectorFileWriterNode::addVector(const VectorResult &vector)
+Port *VectorFileWriterNode::addVector(const VectorResult& vector)
 {
     ports.push_back(Pair(vector.vectorId, vector.moduleNameRef->c_str(), vector.nameRef->c_str(), vector.columns.c_str(), this));
     return &(ports.back().port);
@@ -58,17 +58,17 @@ Port *VectorFileWriterNode::addVector(const VectorResult &vector)
 
 bool VectorFileWriterNode::isReady() const
 {
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if (it->port()->length()>0)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+        if (it->port()->length() > 0)
             return true;
+
     return false;
 }
 
 void VectorFileWriterNode::process()
 {
     // open file if needed
-    if (!f)
-    {
+    if (!f) {
         f = fopen(fileName.c_str(), "w");
         if (!f)
             throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
@@ -76,83 +76,75 @@ void VectorFileWriterNode::process()
         setlocale(LC_NUMERIC, "C");
 
         // print file header and vector declarations
-        CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
-        CHECK(fprintf(f,"version %d\n", VECTOR_FILE_VERSION));
+        CHECK(fprintf(f, "%s\n\n", fileHeader.c_str()));
+        CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
 
-        for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
+        for (PortVector::iterator it = ports.begin(); it != ports.end(); it++)
             CHECK(fprintf(f, "vector %d  %s  %s  %s\n", it->id,
-                             QUOTE(it->moduleName.c_str()),
-                             QUOTE(it->name.c_str()), it->columns.c_str()));
+                            QUOTE(it->moduleName.c_str()),
+                            QUOTE(it->name.c_str()), it->columns.c_str()));
     }
 
-    for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-    {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
         Channel *chan = it->port();
         int n = chan->length();
-        std::string &columns = it->columns;
+        std::string& columns = it->columns;
         int colno = columns.size();
         Datum a;
         char buf[64];
         char *endp;
 
-        if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
-        {
-            for (int i=0; i<n; i++)
-            {
-                chan->read(&a,1);
-                if (a.xp.isNil())
-                {
-                    CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
+        if (colno == 2 && columns[0] == 'T' && columns[1] == 'V') {
+            for (int i = 0; i < n; i++) {
+                chan->read(&a, 1);
+                if (a.xp.isNil()) {
+                    CHECK(fprintf(f, "%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
                 }
-                else
-                {
-                    CHECK(fprintf(f,"%d\t%s\t%.*g\n", it->id, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
+                else {
+                    CHECK(fprintf(f, "%d\t%s\t%.*g\n", it->id, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
                 }
             }
         }
-        else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
-        {
-            for (int i=0; i<n; i++)
-            {
-                chan->read(&a,1);
-                if (a.xp.isNil())
-                {
-                    CHECK(fprintf(f,"%d\t%" LL "d\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
+        else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V') {
+            for (int i = 0; i < n; i++) {
+                chan->read(&a, 1);
+                if (a.xp.isNil()) {
+                    CHECK(fprintf(f, "%d\t%" LL "d\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
                 }
-                else
-                {
-                    CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
+                else {
+                    CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
                 }
             }
         }
-        else
-        {
-            for (int i=0; i<n; i++)
-            {
-                chan->read(&a,1);
-                CHECK(fprintf(f,"%d",it->id));
-                for (int j=0; j<colno; ++j)
-                {
+        else {
+            for (int i = 0; i < n; i++) {
+                chan->read(&a, 1);
+                CHECK(fprintf(f, "%d", it->id));
+                for (int j = 0; j < colno; ++j) {
                     CHECK(fputc('\t', f));
-                    switch (columns[j])
-                    {
-                    case 'T':
-                        if (a.xp.isNil())
-                        {
-                            CHECK(fprintf(f,"%.*g", prec, a.x));
-                        }
-                        else
-                        {
-                            CHECK(fprintf(f, "%s", BigDecimal::ttoa(buf, a.xp, endp)));
-                        }
-                        break;
-                    case 'V': CHECK(fprintf(f,"%.*g", prec, a.y)); break;
-                    case 'E': CHECK(fprintf(f,"%" LL "d", a.eventNumber)); break;
-                    default: throw opp_runtime_error("unknown column type: '%c' while writing %s", columns[j], fileName.c_str());
+                    switch (columns[j]) {
+                        case 'T':
+                            if (a.xp.isNil()) {
+                                CHECK(fprintf(f, "%.*g", prec, a.x));
+                            }
+                            else {
+                                CHECK(fprintf(f, "%s", BigDecimal::ttoa(buf, a.xp, endp)));
+                            }
+                            break;
+
+                        case 'V':
+                            CHECK(fprintf(f, "%.*g", prec, a.y));
+                            break;
+
+                        case 'E':
+                            CHECK(fprintf(f, "%" LL "d", a.eventNumber));
+                            break;
+
+                        default:
+                            throw opp_runtime_error("unknown column type: '%c' while writing %s", columns[j], fileName.c_str());
                     }
                 }
                 CHECK(fputc('\n', f));
-
             }
         }
     }
@@ -160,9 +152,10 @@ void VectorFileWriterNode::process()
 
 bool VectorFileWriterNode::isFinished() const
 {
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if (!it->port()->isClosing() || it->port()->length()>0)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+        if (!it->port()->isClosing() || it->port()->length() > 0)
             return false;
+
     return true;
 }
 
@@ -199,10 +192,10 @@ Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
     vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
     vector.moduleNameRef = &moduleName;
     vector.nameRef = &name;
-    vector.columns = "TV";             // old vector file format
+    vector.columns = "TV";  // old vector file format
     return node1->addVector(vector);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

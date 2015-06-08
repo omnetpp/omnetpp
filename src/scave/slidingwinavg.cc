@@ -26,7 +26,7 @@ namespace scave {
 SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
 {
     array = nullptr;
-    if (windowSize<1 || windowSize>100000)
+    if (windowSize < 1 || windowSize > 100000)
         throw opp_runtime_error("slidingwinavg: invalid window size %d", windowSize);
     winsize = windowSize;
     array = new Datum[winsize];
@@ -36,31 +36,30 @@ SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
 
 SlidingWindowAverageNode::~SlidingWindowAverageNode()
 {
-    delete [] array;
+    delete[] array;
 }
 
 bool SlidingWindowAverageNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void SlidingWindowAverageNode::process()
 {
     do {
         Datum& arrayElem = array[pos];
-        if (count<winsize)
-            count++; // just starting up, filling window [0..pos]
+        if (count < winsize)
+            count++;  // just starting up, filling window [0..pos]
         else
             sum -= arrayElem.y;
-        in()->read(&arrayElem,1);
+        in()->read(&arrayElem, 1);
         sum += arrayElem.y;
         Datum o;
         o.x = arrayElem.x;
         o.y = sum/count;
-        out()->write(&o,1);
+        out()->write(&o, 1);
         pos = (pos+1) % winsize;
-    }
-    while (in()->length()>0);
+    } while (in()->length() > 0);
 }
 
 //-----
@@ -94,11 +93,11 @@ Node *SlidingWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attr
     return node;
 }
 
-void SlidingWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void SlidingWindowAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     attrs["type"] = "double";
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

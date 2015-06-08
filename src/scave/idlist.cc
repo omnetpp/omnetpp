@@ -29,7 +29,7 @@
 
 #ifdef THREADED
 #include "common/rwlock.h"
-#define READER_MUTEX Mutex __reader_mutex_(mgr->getReadLock());
+#define READER_MUTEX    Mutex __reader_mutex_(mgr->getReadLock());
 #else
 #define READER_MUTEX
 #endif
@@ -57,7 +57,7 @@ void IDList::set(const IDList& ids)
 void IDList::add(ID x)
 {
     checkV();
-    if (std::find(v->begin(), v->end(), x)==v->end())
+    if (std::find(v->begin(), v->end(), x) == v->end())
         v->push_back(x);
 }
 
@@ -94,7 +94,7 @@ void IDList::subtract(ID x)
 {
     checkV();
     V::iterator it = std::find(v->begin(), v->end(), x);
-    if (it!=v->end())
+    if (it != v->end())
         v->erase(it);
 }
 
@@ -162,7 +162,7 @@ IDList IDList::getSubsetByIndices(int *indices, int n) const
 {
     checkV();
     IDList newList;
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
         newList.v->push_back(v->at(indices[i]));
     return newList;
 }
@@ -177,8 +177,8 @@ IDList IDList::dup() const
 void IDList::checkIntegrity(ResultFileManager *mgr) const
 {
     checkV();
-    for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
-        mgr->getItem(*i); // this will thow exception if id is not valid
+    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
+        mgr->getItem(*i);  // this will thow exception if id is not valid
 }
 
 void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
@@ -286,62 +286,61 @@ CMP(HistogramMinLess, uncheckedGetHistogram(a).stat.getMin() < uncheckedGetHisto
 CMP(HistogramMaxLess, uncheckedGetHistogram(a).stat.getMax() < uncheckedGetHistogram(b).stat.getMax())
 CMP(HistogramVarianceLess, uncheckedGetHistogram(a).stat.getVariance() < uncheckedGetHistogram(b).stat.getVariance())
 
-template <class T>
+template<class T>
 void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
     READER_MUTEX
-    checkIntegrity(mgr);
+        checkIntegrity(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
+    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+        reverse();
     if (ascending)
         std::sort(v->begin(), v->end(), comparator);
     else
         std::sort(v->begin(), v->end(), flipArgs(comparator));
 }
 
-template <class T>
+template<class T>
 void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
     READER_MUTEX
-    checkIntegrityAllScalars(mgr);
+        checkIntegrityAllScalars(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
+    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+        reverse();
     if (ascending)
         std::sort(v->begin(), v->end(), comparator);
     else
         std::sort(v->begin(), v->end(), flipArgs(comparator));
 }
 
-template <class T>
+template<class T>
 void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
     READER_MUTEX
-    checkIntegrityAllVectors(mgr);
+        checkIntegrityAllVectors(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
+    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+        reverse();
     if (ascending)
         std::sort(v->begin(), v->end(), comparator);
     else
         std::sort(v->begin(), v->end(), flipArgs(comparator));
 }
 
-template <class T>
+template<class T>
 void IDList::sortHistogramsBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
     READER_MUTEX
-    checkIntegrityAllHistograms(mgr);
+        checkIntegrityAllHistograms(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
+    if (v->size() >= 2 && comparator(v->at(0), v->at(v->size()-1)) != ascending)
+        reverse();
     if (ascending)
         std::sort(v->begin(), v->end(), comparator);
     else
         std::sort(v->begin(), v->end(), flipArgs(comparator));
 }
-
 
 void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
 {
@@ -481,7 +480,8 @@ void IDList::sortHistogramsByVariance(ResultFileManager *mgr, bool ascending)
     sortHistogramsBy(mgr, ascending, compare);
 }
 
-void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute, bool ascending) {
+void IDList::sortByRunAttribute(ResultFileManager *mgr, const char *runAttribute, bool ascending)
+{
     RunAttributeLess compare(mgr, runAttribute);
     sortBy(mgr, ascending, compare);
 }
@@ -496,7 +496,7 @@ int IDList::getItemTypes() const
 {
     checkV();
     int types = 0;
-    for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
+    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
         types |= ResultFileManager::_type(*i);
     return types;
 }
@@ -504,27 +504,28 @@ int IDList::getItemTypes() const
 bool IDList::areAllScalars() const
 {
     int types = getItemTypes();
-    return !types || types==ResultFileManager::SCALAR;
+    return !types || types == ResultFileManager::SCALAR;
 }
 
 bool IDList::areAllVectors() const
 {
     int types = getItemTypes();
-    return !types || types==ResultFileManager::VECTOR;
+    return !types || types == ResultFileManager::VECTOR;
 }
 
 bool IDList::areAllHistograms() const
 {
     int types = getItemTypes();
-    return !types || types==ResultFileManager::HISTOGRAM;
+    return !types || types == ResultFileManager::HISTOGRAM;
 }
 
 IDList IDList::filterByTypes(int typeMask) const
 {
     IDList result;
-    for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
+    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
         if ((ResultFileManager::_type(*i) & typeMask) != 0)
             result.v->push_back(*i);
+
     return result;
 }
 
@@ -533,7 +534,7 @@ void IDList::toByteArray(char *array, int n) const
     checkV();
     if (n != (int)v->size()*8)
         throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
-    std::copy(v->begin(), v->end(), (ID*)array);  //XXX VC8.0: warning C4996: 'std::_Copy_opt' was declared deprecated
+    std::copy(v->begin(), v->end(), (ID *)array);  // XXX VC8.0: warning C4996: 'std::_Copy_opt' was declared deprecated
 }
 
 void IDList::fromByteArray(char *array, int n)
@@ -546,6 +547,6 @@ void IDList::fromByteArray(char *array, int n)
     std::copy(a, a+n/8, v->begin());
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

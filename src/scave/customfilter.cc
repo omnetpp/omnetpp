@@ -33,8 +33,9 @@ class Resolver : public Expression::Resolver
 {
   private:
     ExpressionFilterNode *hostnode;
+
   public:
-    Resolver(ExpressionFilterNode *node) {hostnode = node;}
+    Resolver(ExpressionFilterNode *node) { hostnode = node; }
     virtual ~Resolver() {};
     virtual Expression::Functor *resolveVariable(const char *varname) override;
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override;
@@ -42,7 +43,7 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    if (strcmp(varname, "t")==0 || strcmp(varname, "y")==0 || strcmp(varname, "tprev")==0 || strcmp(varname, "yprev")==0)
+    if (strcmp(varname, "t") == 0 || strcmp(varname, "y") == 0 || strcmp(varname, "tprev") == 0 || strcmp(varname, "yprev") == 0)
         return new ExpressionFilterNode::NodeVar(hostnode, varname);
     else
         throw opp_runtime_error("Unrecognized variable: %s", varname);
@@ -50,7 +51,7 @@ Expression::Functor *Resolver::resolveVariable(const char *varname)
 
 Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
 {
-    //FIXME check argcount!
+    // FIXME check argcount!
     if (MathFunction::supports(funcname))
         return new MathFunction(funcname);
     else
@@ -73,46 +74,45 @@ ExpressionFilterNode::~ExpressionFilterNode()
 
 bool ExpressionFilterNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void ExpressionFilterNode::process()
 {
     int n = in()->length();
     if (skipFirstDatum && n > 0) {
-        in()->read(&prevDatum,1);
+        in()->read(&prevDatum, 1);
         n--;
         skipFirstDatum = false;
     }
-    for (int i=0; i<n; i++)
-    {
-        in()->read(&currentDatum,1);
+    for (int i = 0; i < n; i++) {
+        in()->read(&currentDatum, 1);
         double value = expr->doubleValue();
         prevDatum = currentDatum;
         currentDatum.y = value;
-        out()->write(&currentDatum,1);
+        out()->write(&currentDatum, 1);
     }
 }
 
 double ExpressionFilterNode::getVariable(const char *varname)
 {
-    if (varname[0]=='t' && varname[1]==0)
+    if (varname[0] == 't' && varname[1] == 0)
         return currentDatum.x;
-    else if (varname[0]=='y' && varname[1]==0)
+    else if (varname[0] == 'y' && varname[1] == 0)
         return currentDatum.y;
-    else if (varname[0]=='t' && strcmp(varname, "tprev")==0)
+    else if (varname[0] == 't' && strcmp(varname, "tprev") == 0)
         return prevDatum.x;
-    else if (varname[0]=='y' && strcmp(varname, "yprev")==0)
+    else if (varname[0] == 'y' && strcmp(varname, "yprev") == 0)
         return prevDatum.y;
     else
         return 0.0;  // cannot happen, as validation has already taken place in Resolver
 }
 
-//--
+// --
 
 const char *ExpressionFilterNodeType::getDescription() const
 {
-    return "Evaluates an arbitrary expression. Use t for time, y for value, and tprev, yprev for the previous values."; //FIXME use "t" and "y" instead?
+    return "Evaluates an arbitrary expression. Use t for time, y for value, and tprev, yprev for the previous values.";  // FIXME use "t" and "y" instead?
 }
 
 void ExpressionFilterNodeType::getAttributes(StringMap& attrs) const
@@ -130,11 +130,11 @@ Node *ExpressionFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) c
     return node;
 }
 
-void ExpressionFilterNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void ExpressionFilterNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     attrs["type"] = "double";
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

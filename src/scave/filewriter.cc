@@ -43,14 +43,13 @@ FileWriterNode::~FileWriterNode()
 
 bool FileWriterNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void FileWriterNode::process()
 {
     // open file if needed
-    if (!f)
-    {
+    if (!f) {
         f = fopen(fileName.c_str(), "w");
         if (!f)
             throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
@@ -58,15 +57,14 @@ void FileWriterNode::process()
         setlocale(LC_NUMERIC, "C");
 
         // print file header
-        CHECK(fprintf(f,"%s\n\n", banner.c_str()));
+        CHECK(fprintf(f, "%s\n\n", banner.c_str()));
     }
 
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum a;
-        in()->read(&a,1);
-        CHECK(fprintf(f,"%.*g\t%.*g\n", prec, a.x, prec, a.y));
+        in()->read(&a, 1);
+        CHECK(fprintf(f, "%.*g\t%.*g\n", prec, a.x, prec, a.y));
     }
 
     if (in()->isClosing())
@@ -102,6 +100,6 @@ Node *FileWriterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

@@ -32,23 +32,20 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-
 ResultFileManager *DataSorter::tmpResultFileMgr;
 
 /*----------------------------------------
  *              XYDataset
  *----------------------------------------*/
-void XYDataset::add(const ScalarResult &d)
+void XYDataset::add(const ScalarResult& d)
 {
     int row, column;
 
     KeyToIndexMap::iterator rowRef = rowKeyToIndexMap.find(d);
-    if (rowRef != rowKeyToIndexMap.end())
-    {
+    if (rowRef != rowKeyToIndexMap.end()) {
         row = rowOrder[rowRef->second];
     }
-    else // add new row
-    {
+    else {  // add new row
         row = rowKeys.size();
         values.push_back(vector<Statistics>(columnKeys.size(), Statistics()));
         rowKeyToIndexMap[d] = row;
@@ -57,12 +54,10 @@ void XYDataset::add(const ScalarResult &d)
     }
 
     KeyToIndexMap::iterator columnRef = columnKeyToIndexMap.find(d);
-    if (columnRef != columnKeyToIndexMap.end())
-    {
+    if (columnRef != columnKeyToIndexMap.end()) {
         column = columnOrder[columnRef->second];
     }
-    else // add new column
-    {
+    else {  // add new column
         column = columnKeys.size();
         for (vector<Row>::iterator rowRef = values.begin(); rowRef != values.end(); ++rowRef)
             rowRef->push_back(Statistics());
@@ -108,12 +103,10 @@ struct ValueAndIndex
 
 void XYDataset::sortColumnsAccordingToFirstRowMean()
 {
-    if (!values.empty())
-    {
+    if (!values.empty()) {
         vector<ValueAndIndex> vals;
         int firstRow = rowOrder[0];
-        for (int i = 0; i < (int)values[firstRow].size(); ++i)
-        {
+        for (int i = 0; i < (int)values[firstRow].size(); ++i) {
             double mean = values[firstRow][i].getMean();
             if (!isNaN(mean))
                 vals.push_back(ValueAndIndex(mean, i));
@@ -132,17 +125,17 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
  */
 bool DataSorter::sameGroupFileRunScalar(const ResultItem& d1, const ResultItem& d2)
 {
-    return d1.fileRunRef==d2.fileRunRef && d1.nameRef==d2.nameRef;
+    return d1.fileRunRef == d2.fileRunRef && d1.nameRef == d2.nameRef;
 }
 
 bool DataSorter::sameGroupModuleScalar(const ResultItem& d1, const ResultItem& d2)
 {
-    return d1.moduleNameRef==d2.moduleNameRef && d1.nameRef==d2.nameRef;
+    return d1.moduleNameRef == d2.moduleNameRef && d1.nameRef == d2.nameRef;
 }
 
 bool DataSorter::sameGroupFileRunModule(const ResultItem& d1, const ResultItem& d2)
 {
-    return d1.fileRunRef==d2.fileRunRef && d1.moduleNameRef==d2.moduleNameRef;
+    return d1.fileRunRef == d2.fileRunRef && d1.moduleNameRef == d2.moduleNameRef;
 }
 
 /*
@@ -150,7 +143,8 @@ bool DataSorter::sameGroupFileRunModule(const ResultItem& d1, const ResultItem& 
  */
 bool DataSorter::lessByModuleRef(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    if (id1 == -1 || id2 == -1)
+        return id2 != -1;  // -1 is the smallest
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0;
@@ -158,7 +152,8 @@ bool DataSorter::lessByModuleRef(ID id1, ID id2)
 
 bool DataSorter::equalByModuleRef(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id1==id2;
+    if (id1 == -1 || id2 == -1)
+        return id1 == id2;
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return d1.moduleNameRef == d2.moduleNameRef;
@@ -166,13 +161,14 @@ bool DataSorter::equalByModuleRef(ID id1, ID id2)
 
 bool DataSorter::lessByFileAndRun(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    if (id1 == -1 || id2 == -1)
+        return id2 != -1;  // -1 is the smallest
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
 
     // compare first by file, then by run
     int cmpFile = strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str());
-    if (cmpFile!=0)
+    if (cmpFile != 0)
         return cmpFile < 0;
     int cmpRun = strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
     return cmpRun < 0;
@@ -180,7 +176,8 @@ bool DataSorter::lessByFileAndRun(ID id1, ID id2)
 
 bool DataSorter::equalByFileAndRun(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id1==id2;
+    if (id1 == -1 || id2 == -1)
+        return id1 == id2;
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return d1.fileRunRef == d2.fileRunRef;
@@ -188,7 +185,8 @@ bool DataSorter::equalByFileAndRun(ID id1, ID id2)
 
 bool DataSorter::lessByName(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    if (id1 == -1 || id2 == -1)
+        return id2 != -1;  // -1 is the smallest
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0;
@@ -196,7 +194,8 @@ bool DataSorter::lessByName(ID id1, ID id2)
 
 bool DataSorter::equalByName(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id1==id2;
+    if (id1 == -1 || id2 == -1)
+        return id1 == id2;
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return d1.nameRef == d2.nameRef;
@@ -204,7 +203,8 @@ bool DataSorter::equalByName(ID id1, ID id2)
 
 bool DataSorter::lessByValue(ID id1, ID id2)
 {
-    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    if (id1 == -1 || id2 == -1)
+        return id2 != -1;  // -1 is the smallest
     const ScalarResult& d1 = tmpResultFileMgr->getScalar(id1);
     const ScalarResult& d2 = tmpResultFileMgr->getScalar(id2);
     return d1.value < d2.value;
@@ -222,23 +222,20 @@ IDVectorVector DataSorter::doGrouping(const IDList& idlist, GroupingFn sameGroup
     // parse idlist and do grouping as well, on the fly
     IDVectorVector vv;
     int sz = idlist.size();
-    for (int ii = 0; ii < sz; ii++)
-    {
+    for (int ii = 0; ii < sz; ii++) {
         ID id = idlist.get(ii);
 
         // check of this id shares fileRef, runNumber & scalarName with one of the
         // IDVectors already in vv
         const ResultItem& d = resultFileMgr->getItem(id);
         IDVectorVector::iterator i;
-        for (i=vv.begin(); i!=vv.end(); ++i)
-        {
+        for (i = vv.begin(); i != vv.end(); ++i) {
             ID vvid = (*i)[0];  // first element in IDVector selected by i
             const ResultItem& vvd = resultFileMgr->getItem(vvid);
-            if (sameGroup(d,vvd))
+            if (sameGroup(d, vvd))
                 break;
         }
-        if (i==vv.end())
-        {
+        if (i == vv.end()) {
             // not found -- new one has to be added
             vv.push_back(IDVector());
             i = vv.end()-1;
@@ -250,34 +247,35 @@ IDVectorVector DataSorter::doGrouping(const IDList& idlist, GroupingFn sameGroup
     return vv;
 }
 
-template <class LessFn, class EqualFn>
+template<class LessFn, class EqualFn>
 void DataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equal)
 {
     tmpResultFileMgr = resultFileMgr;
 
     // order each group
-    for (IDVectorVector::iterator i=vv.begin(); i!=vv.end(); ++i)
+    for (IDVectorVector::iterator i = vv.begin(); i != vv.end(); ++i)
         std::sort(i->begin(), i->end(), less);
 
     // now insert "null" elements (id=-1) so that every group is of same length,
     // and same indices are "equal()"
-    for (int pos=0; ; pos++)
-    {
+    for (int pos = 0; ; pos++) {
         // determine "smallest" element in all vectors, on position "pos"
         ID minId = -1;
         IDVectorVector::iterator i;
-        for (i=vv.begin(); i!=vv.end(); ++i)
-            if ((int)i->size()>pos)
-                minId = (minId==-1) ? (*i)[pos] : less((*i)[pos],minId) ? (*i)[pos] : minId;
+        for (i = vv.begin(); i != vv.end(); ++i)
+            if ((int)i->size() > pos)
+                minId = (minId == -1) ? (*i)[pos] : less((*i)[pos], minId) ? (*i)[pos] : minId;
+
 
         // if pos is past the end of all vectors, we're done
-        if (minId==-1)
+        if (minId == -1)
             break;
 
         // if a vector has something different on this position, add a "null" element here
-        for (i=vv.begin(); i!=vv.end(); ++i)
-            if ((int)i->size()<=pos || !equal((*i)[pos],minId))
-                i->insert(i->begin()+pos,-1);
+        for (i = vv.begin(); i != vv.end(); ++i)
+            if ((int)i->size() <= pos || !equal((*i)[pos], minId))
+                i->insert(i->begin()+pos, -1);
+
     }
 }
 
@@ -286,14 +284,13 @@ IDVectorVector DataSorter::groupByFields(const IDList& idlist, ResultItemFields 
     return doGrouping(idlist, ResultItemFieldsEqual(fields));
 }
 
-
 IDVectorVector DataSorter::groupAndAlign(const IDList& idlist, ResultItemFields fields)
 {
     IDVectorVector vv = doGrouping(idlist, ResultItemFieldsEqual(fields));
 
     sortAndAlign(vv,
-        IDFieldsLess(fields.complement(), resultFileMgr),
-        IDFieldsEqual(fields.complement(), resultFileMgr));
+            IDFieldsLess(fields.complement(), resultFileMgr),
+            IDFieldsEqual(fields.complement(), resultFileMgr));
     return vv;
 }
 
@@ -301,14 +298,13 @@ IDVectorVector DataSorter::groupAndAlign(const IDList& idlist, ResultItemFields 
  * Returns true iff the jth column is missing
  * i.e. X value (i=0) is missing or each Y value (i>0) is missing.
  */
-static bool isMissing(const IDVectorVector &vv, int j)
+static bool isMissing(const IDVectorVector& vv, int j)
 {
-    if (vv[0][j]==-1)
+    if (vv[0][j] == -1)
         return true;
     bool foundY = false;
-    for (int i=1; i<(int)vv.size();++i)
-        if (vv[i][j]!=-1)
-        {
+    for (int i = 1; i < (int)vv.size(); ++i)
+        if (vv[i][j] != -1) {
             foundY = true;
             break;
         }
@@ -322,15 +318,13 @@ XYDataset DataSorter::groupAndAggregate(const IDList& scalars, ResultItemFields 
     XYDataset dataset(rowFields, columnFields);
 
     int sz = scalars.size();
-    for (int i = 0; i < sz; i++)
-    {
+    for (int i = 0; i < sz; i++) {
         ID id = scalars.get(i);
         const ScalarResult& d = resultFileMgr->getScalar(id);
         dataset.add(d);
     }
     return dataset;
 }
-
 
 IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char *moduleName, const char *scalarName)
 {
@@ -347,23 +341,26 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
 
     // find series for X axis (modulename, scalarname)...
     int xpos = -1;
-    for (IDVectorVector::iterator i=vv.begin(); i!=vv.end(); ++i)
-    {
+    for (IDVectorVector::iterator i = vv.begin(); i != vv.end(); ++i) {
         ID id = -1;
-        for (IDVector::iterator j=i->begin(); j!=i->end(); ++j)
-            if (*j!=-1)
-                {id = *j;break;}
-        if (id==-1)
+        for (IDVector::iterator j = i->begin(); j != i->end(); ++j)
+            if (*j != -1) {
+                id = *j;
+                break;
+            }
+        if (id == -1)
             continue;
         const ScalarResult& d = resultFileMgr->getScalar(id);
-        if (*d.moduleNameRef==moduleName && *d.nameRef==scalarName)
-            {xpos = i-vv.begin();break;}
+        if (*d.moduleNameRef == moduleName && *d.nameRef == scalarName) {
+            xpos = i-vv.begin();
+            break;
+        }
     }
-    if (xpos==-1)
+    if (xpos == -1)
         throw opp_runtime_error("data for X axis not found");
 
     // ... and bring X series to 1st place
-    if (xpos!=0)
+    if (xpos != 0)
         std::swap(vv[0], vv[xpos]);
 
     // sort x axis, moving elements in all other vectors as well.
@@ -378,9 +375,8 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
     // step one: remove values where X value is missing or each Y value is missing (id=-1)
     IDVector::iterator it = vv2[0].begin();
     int sz = vv[0].size();
-    for (int j=0; j<sz; ++j)
-    {
-        if(isMissing(vv,j))
+    for (int j = 0; j < sz; ++j) {
+        if (isMissing(vv, j))
             vv2[0].erase(it);
         else
             ++it;
@@ -391,18 +387,19 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
 
     // step three: allocate all other vectors in vv2 to be the same length
     // (necessary because we'll fill them in via assignment, NOT push_back() or insert())
-    for (int k=1; k<(int)vv2.size(); k++)
+    for (int k = 1; k < (int)vv2.size(); k++)
         vv2[k].resize(vv2[0].size());
 
     // step four: copy over elements
-    for (int pos=0; pos<(int)vv[0].size(); pos++)
-    {
+    for (int pos = 0; pos < (int)vv[0].size(); pos++) {
         ID id = vv[0][pos];
-        if (id==-1) continue;
-        IDVector::iterator dest = std::find(vv2[0].begin(),vv2[0].end(),id);
-        if (dest==vv2[0].end()) continue;
+        if (id == -1)
+            continue;
+        IDVector::iterator dest = std::find(vv2[0].begin(), vv2[0].end(), id);
+        if (dest == vv2[0].end())
+            continue;
         int destpos = dest - vv2[0].begin();
-        for (int k=1; k<(int)vv.size(); k++)
+        for (int k = 1; k < (int)vv.size(); k++)
             vv2[k][destpos] = vv[k][pos];
     }
 
@@ -410,7 +407,7 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
 }
 
 XYDataset DataSorter::prepareScatterPlot2(const IDList& scalars, const char *moduleName, const char *scalarName,
-            ResultItemFields rowFields, ResultItemFields columnFields)
+        ResultItemFields rowFields, ResultItemFields columnFields)
 {
     Assert(scalars.areAllScalars());
 
@@ -418,16 +415,14 @@ XYDataset DataSorter::prepareScatterPlot2(const IDList& scalars, const char *mod
 
     // find row of x values and move it to row 0
     int row;
-    for (row = 0; row < dataset.getRowCount(); ++row)
-    {
+    for (row = 0; row < dataset.getRowCount(); ++row) {
         std::string moduleName = dataset.getRowField(row, ResultItemField(ResultItemField::MODULE));
         std::string dataName = dataset.getRowField(row, ResultItemField(ResultItemField::NAME));
         if (dataset.getRowField(row, ResultItemField(ResultItemField::MODULE)) == moduleName &&
             dataset.getRowField(row, ResultItemField(ResultItemField::NAME)) == scalarName)
             break;
     }
-    if (row < dataset.getRowCount())
-    {
+    if (row < dataset.getRowCount()) {
         if (row > 0)
             dataset.swapRows(0, row);
     }
@@ -442,49 +437,45 @@ XYDataset DataSorter::prepareScatterPlot2(const IDList& scalars, const char *mod
 
 struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
 {
-    typedef map<Run*, vector<double> > RunIsoValueMap;
+    typedef map<Run *, vector<double> > RunIsoValueMap;
     typedef map<pair<string, string>, int> IsoAttrIndexMap;
     RunIsoValueMap isoMap;
     ResultItemFields fields;
 
     IsoGroupingFn() {}
-    IDList init(const IDList &idlist, const StringVector &moduleNames, const StringVector &scalarNames,
-                ResultItemFields fields, ResultFileManager *manager);
-    bool operator()(const ResultItem &d1, const ResultItem &d2) const;
+    IDList init(const IDList& idlist, const StringVector& moduleNames, const StringVector& scalarNames,
+            ResultItemFields fields, ResultFileManager *manager);
+    bool operator()(const ResultItem& d1, const ResultItem& d2) const;
 };
 
-IDList IsoGroupingFn::init(const IDList &idlist, const StringVector &moduleNames, const StringVector &scalarNames,
-                            ResultItemFields fields, ResultFileManager *manager)
+IDList IsoGroupingFn::init(const IDList& idlist, const StringVector& moduleNames, const StringVector& scalarNames,
+        ResultItemFields fields, ResultFileManager *manager)
 {
     this->fields = fields;
 
-    //assert(moduleNames.size() == scalarNames.size());
+    // assert(moduleNames.size() == scalarNames.size());
     int numOfIsoValues = scalarNames.size();
     IDList result;
 
     // build iso (module,scalar) -> index map
     IsoAttrIndexMap indexMap;
-    for (int i = 0; i < numOfIsoValues; ++i)
-    {
-        pair<string,string> key = make_pair(moduleNames[i], scalarNames[i]);
+    for (int i = 0; i < numOfIsoValues; ++i) {
+        pair<string, string> key = make_pair(moduleNames[i], scalarNames[i]);
         indexMap[key] = i;
     }
 
     // build run -> iso values map
     int sz = idlist.size();
-    for (int i = 0; i < sz; ++i)
-    {
+    for (int i = 0; i < sz; ++i) {
         ID id = idlist.get(i);
-        const ScalarResult &scalar = manager->getScalar(id);
-        pair<string,string> key = make_pair(*scalar.moduleNameRef, *scalar.nameRef);
+        const ScalarResult& scalar = manager->getScalar(id);
+        pair<string, string> key = make_pair(*scalar.moduleNameRef, *scalar.nameRef);
         IsoAttrIndexMap::iterator it = indexMap.find(key);
-        if (it != indexMap.end())
-        {
+        if (it != indexMap.end()) {
             int index = it->second;
             Run *run = scalar.fileRunRef->runRef;
             RunIsoValueMap::iterator it2 = isoMap.find(run);
-            if (it2 == isoMap.end())
-            {
+            if (it2 == isoMap.end()) {
                 it2 = isoMap.insert(make_pair(run, vector<double>(numOfIsoValues, NaN))).first;
             }
             it2->second[index] = scalar.value;
@@ -496,12 +487,12 @@ IDList IsoGroupingFn::init(const IDList &idlist, const StringVector &moduleNames
     return result;
 }
 
-bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
+bool IsoGroupingFn::operator()(const ResultItem& d1, const ResultItem& d2) const
 {
     if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
         return true;
 
-    if (!fields.equal(d1,d2))
+    if (!fields.equal(d1, d2))
         return false;
 
     if (isoMap.empty())
@@ -512,21 +503,22 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
     if (it1 == isoMap.end() || it2 == isoMap.end())
         return false;
 
-    const vector<double> &v1 = it1->second;
-    const vector<double> &v2 = it2->second;
+    const vector<double>& v1 = it1->second;
+    const vector<double>& v2 = it2->second;
 
     assert(v1.size() == v2.size());
 
     for (int i = 0; i < (int)v1.size(); ++i)
-        if(v1[i] != v2[i])
+        if (v1[i] != v2[i])
             return false;
+
 
     return true;
 }
 
 XYDatasetVector DataSorter::prepareScatterPlot3(const IDList& scalars, const char *moduleName, const char *scalarName,
         ResultItemFields rowFields, ResultItemFields columnFields,
-        const StringVector &isoModuleNames, const StringVector &isoScalarNames, ResultItemFields isoFields)
+        const StringVector& isoModuleNames, const StringVector& isoScalarNames, ResultItemFields isoFields)
 {
     Assert(scalars.areAllScalars());
 
@@ -536,18 +528,16 @@ XYDatasetVector DataSorter::prepareScatterPlot3(const IDList& scalars, const cha
     IDVectorVector groupedScalars = doGrouping(nonIsoScalars, grouping);
 
     XYDatasetVector datasets;
-    for (IDVectorVector::iterator group = groupedScalars.begin(); group != groupedScalars.end(); ++group)
-    {
+    for (IDVectorVector::iterator group = groupedScalars.begin(); group != groupedScalars.end(); ++group) {
         IDList groupAsIDList;
         for (IDVector::iterator id = group->begin(); id != group->end(); id++)
             groupAsIDList.add(*id);
 
-        try
-        {
+        try {
             XYDataset dataset = prepareScatterPlot2(groupAsIDList, moduleName, scalarName, rowFields, columnFields);
             datasets.push_back(dataset);
         }
-        catch (opp_runtime_error &e) {
+        catch (opp_runtime_error& e) {
             // no X data for some iso values -> omit from the result
         }
     }
@@ -560,27 +550,24 @@ IDList DataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)
     IDList out;
 
     // go through idlist and pick ids that represent a new (module, name pair)
-    for (int ii = 0; ii < (int)idlist.size(); ii++)
-    {
+    for (int ii = 0; ii < (int)idlist.size(); ii++) {
         ID id = idlist.get(ii);
 
         // check if module and name of this id is already in out[]
         const ResultItem& d = resultFileMgr->getItem(id);
         int i;
         int outSize = out.size();
-        for (i=0; i<outSize; i++)
-        {
+        for (i = 0; i < outSize; i++) {
             const ResultItem& vd = resultFileMgr->getItem(out.get(i));
-            if (d.moduleNameRef==vd.moduleNameRef && d.nameRef==vd.nameRef)
+            if (d.moduleNameRef == vd.moduleNameRef && d.nameRef == vd.nameRef)
                 break;
         }
 
         // not yet -- then add it
-        if (i==outSize)
-        {
+        if (i == outSize) {
             out.add(id);
-            if (outSize>maxcount)
-                break; // enough is enough
+            if (outSize > maxcount)
+                break;  // enough is enough
         }
     }
 
@@ -599,6 +586,6 @@ IDVectorVector DataSorter::prepareCopyToClipboard(const IDList& idlist)
     return vv;
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

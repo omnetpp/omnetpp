@@ -26,20 +26,18 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-
 bool NopNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void NopNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
-        out()->write(&d,1);
+        in()->read(&d, 1);
+        out()->write(&d, 1);
     }
 }
 
@@ -68,18 +66,17 @@ Node *NopNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 bool AdderNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void AdderNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y += c;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -107,29 +104,28 @@ Node *AdderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void AdderNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void AdderNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double"; // XXX int?
+    attrs["type"] = "double";  // XXX int?
 }
 
 //-----
 
 bool MultiplierNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void MultiplierNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y *= a;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -162,29 +158,28 @@ Node *MultiplierNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void MultiplierNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void MultiplierNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double"; // XXX int?
+    attrs["type"] = "double";  // XXX int?
 }
 
 //-----
 
 bool DividerNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void DividerNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y /= a;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -217,7 +212,7 @@ Node *DividerNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void DividerNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void DividerNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
@@ -228,19 +223,18 @@ void DividerNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/Stri
 
 bool ModuloNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void ModuloNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
-        //TODO: when floor(y/a)!=floor(prevy/a), insert a NaN! so they won't get connected on the line chart
+    for (int i = 0; i < n; i++) {
+        // TODO: when floor(y/a)!=floor(prevy/a), insert a NaN! so they won't get connected on the line chart
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y -= floor(d.y/a)*a;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -273,34 +267,32 @@ Node *ModuloNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void ModuloNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void ModuloNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double"; // XXX int?
+    attrs["type"] = "double";  // XXX int?
 }
-
 
 //-----
 
 bool DifferenceNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void DifferenceNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
         double tmp = d.y;
         d.y -= prevy;
         prevy = tmp;
 
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -329,7 +321,7 @@ Node *DifferenceNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void DifferenceNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void DifferenceNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
@@ -338,26 +330,24 @@ void DifferenceNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/S
     // TODO interpolation-mode
 }
 
-
 //-----
 
 bool TimeDiffNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void TimeDiffNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
         d.y = d.x - prevx;
         prevx = d.x;
 
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -386,45 +376,42 @@ Node *TimeDiffNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void TimeDiffNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void TimeDiffNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     attrs["type"] = "double";
     attrs["interpolationmode"] = "backward-sample-hold";
 }
-
 
 //-----
 
 MovingAverageNode::MovingAverageNode(double alph)
 {
     firstRead = true;
-    prevy=0;
+    prevy = 0;
     alpha = alph;
 }
 
 bool MovingAverageNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void MovingAverageNode::process()
 {
-    if (firstRead)
-    {
+    if (firstRead) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         prevy = d.y;
-        out()->write(&d,1);
+        out()->write(&d, 1);
         firstRead = false;
     }
 
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y = prevy = prevy + alpha*(d.y-prevy);
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -458,33 +445,31 @@ Node *MovingAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
-void MovingAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void MovingAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
-
 //-----
 
 bool SumNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void SumNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
         sum += d.y;
         d.y = sum;
 
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -513,7 +498,7 @@ Node *SumNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void SumNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void SumNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
@@ -521,24 +506,22 @@ void SumNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVe
         attrs["type"] = "double";
 }
 
-
 //------
 
 bool TimeShiftNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void TimeShiftNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.x += dt;
         d.xp = BigDecimal::Nil;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -570,18 +553,17 @@ Node *TimeShiftNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 bool LinearTrendNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void LinearTrendNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y += a * d.x;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -614,30 +596,28 @@ Node *LinearTrendNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void LinearTrendNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void LinearTrendNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
-
 //-----
 
 bool CropNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void CropNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         if (d.x >= from && d.x <= to)
-            out()->write(&d,1);
+            out()->write(&d, 1);
     }
 }
 
@@ -661,7 +641,7 @@ Node *CropNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     double t1 = atof(attrs["t1"].c_str());
     double t2 = atof(attrs["t2"].c_str());
 
-    Node *node = new CropNode(t1,t2);
+    Node *node = new CropNode(t1, t2);
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
@@ -671,30 +651,28 @@ Node *CropNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 bool MeanNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void MeanNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         sum += d.y;
         count++;
         d.y = sum/count;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
-void MeanNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void MeanNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
-
 
 //--
 
@@ -721,21 +699,20 @@ Node *MeanNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 bool RemoveRepeatsNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void RemoveRepeatsNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
         if (first || prevy != d.y) {
             first = false;
             prevy = d.y;
-            out()->write(&d,1);
+            out()->write(&d, 1);
         }
     }
 }
@@ -765,43 +742,38 @@ Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
-void RemoveRepeatsNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void RemoveRepeatsNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     // TODO interpolationmode
 }
-
 
 //-----
 
 bool CompareNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void CompareNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
-        if (d.y < threshold)
-        {
-             if (replaceIfLess)
-                 d.y = valueIfLess;
+        if (d.y < threshold) {
+            if (replaceIfLess)
+                d.y = valueIfLess;
         }
-        else if (d.y > threshold)
-        {
-             if (replaceIfGreater)
-                 d.y = valueIfGreater;
+        else if (d.y > threshold) {
+            if (replaceIfGreater)
+                d.y = valueIfGreater;
         }
-        else
-        {
-             if (replaceIfEqual)
-                 d.y = valueIfEqual;
+        else {
+            if (replaceIfEqual)
+                d.y = valueIfEqual;
         }
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -847,37 +819,44 @@ Node *CompareNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 bool IntegrateNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void IntegrateNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
-        if (!isPrevValid)
-        {
+        if (!isPrevValid) {
             prevx = d.x;
             prevy = d.y;
             isPrevValid = true;
             d.y = 0;
-            out()->write(&d,1);
+            out()->write(&d, 1);
         }
-        else
-        {
+        else {
             switch (interpolationmode) {
-                case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
-                case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
-                case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
-                default: Assert(false);
+                case SAMPLE_HOLD:
+                    integral += prevy * (d.x-prevx);
+                    break;
+
+                case BACKWARD_SAMPLE_HOLD:
+                    integral += d.y * (d.x-prevx);
+                    break;
+
+                case LINEAR:
+                    integral += (prevy+d.y)/2 * (d.x-prevx);
+                    break;
+
+                default:
+                    Assert(false);
             }
             prevx = d.x;
             prevy = d.y;
             d.y = integral;
-            out()->write(&d,1);
+            out()->write(&d, 1);
         }
     }
 }
@@ -903,7 +882,7 @@ Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    //TODO we should really support combobox selection on the UI for this...
+    // TODO we should really support combobox selection on the UI for this...
     InterpolationMode mode;
     const std::string modeString = attrs["interpolation-mode"];
     if (modeString == "" || modeString == "sample-hold")
@@ -921,49 +900,54 @@ Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void IntegrateNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void IntegrateNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
-
 //-----
 
 bool TimeAverageNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void TimeAverageNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
 
-        if (!isPrevValid)
-        {
+        if (!isPrevValid) {
             prevx = d.x;
             prevy = d.y;
             isPrevValid = true;
         }
-        else
-        {
+        else {
             switch (interpolationmode) {
-                case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
-                case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
-                case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
-                default: Assert(false);
+                case SAMPLE_HOLD:
+                    integral += prevy * (d.x-prevx);
+                    break;
+
+                case BACKWARD_SAMPLE_HOLD:
+                    integral += d.y * (d.x-prevx);
+                    break;
+
+                case LINEAR:
+                    integral += (prevy+d.y)/2 * (d.x-prevx);
+                    break;
+
+                default:
+                    Assert(false);
             }
             prevx = d.x;
             prevy = d.y;
-            if (d.x != startx)  // suppress 0/0 = NaN values
-            {
+            if (d.x != startx) {  // suppress 0/0 = NaN values
                 d.y = integral / (d.x - startx);
-                out()->write(&d,1);
+                out()->write(&d, 1);
             }
         }
     }
@@ -990,7 +974,7 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    //TODO we should really support combobox selection on the UI for this...
+    // TODO we should really support combobox selection on the UI for this...
     InterpolationMode mode;
     const std::string modeString = attrs["interpolation-mode"];
     if (modeString == "" || modeString == "sample-hold")
@@ -1008,7 +992,7 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void TimeAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void TimeAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
@@ -1019,18 +1003,17 @@ void TimeAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/
 
 bool DivideByTimeNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void DivideByTimeNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.y /= d.x;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -1055,31 +1038,30 @@ Node *DivideByTimeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void DivideByTimeNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void DivideByTimeNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
-// ---
+//---
 
 bool TimeToSerialNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void TimeToSerialNode::process()
 {
     int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Datum d;
-        in()->read(&d,1);
+        in()->read(&d, 1);
         d.x = serial;
         d.xp = BigDecimal(serial);
         serial++;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -1104,7 +1086,7 @@ Node *TimeToSerialNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void TimeToSerialNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void TimeToSerialNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
 }
 
@@ -1112,7 +1094,7 @@ void TimeToSerialNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*
 
 bool SubtractFirstValueNode::isReady() const
 {
-    return in()->length()>0;
+    return in()->length() > 0;
 }
 
 void SubtractFirstValueNode::process()
@@ -1121,23 +1103,20 @@ void SubtractFirstValueNode::process()
     Datum d;
 
     int i = 0;
-    for (; !firstValueSeen && i<n; i++)
-    {
-        in()->read(&d,1);
-        if (!isNaN(d.y) && !isPositiveInfinity(d.y) && !isNegativeInfinity(d.y))
-        {
+    for ( ; !firstValueSeen && i < n; i++) {
+        in()->read(&d, 1);
+        if (!isNaN(d.y) && !isPositiveInfinity(d.y) && !isNegativeInfinity(d.y)) {
             firstValue = d.y;
             d.y = 0.0;
             firstValueSeen = true;
         }
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 
-    for (; i<n; i++)
-    {
-        in()->read(&d,1);
+    for ( ; i < n; i++) {
+        in()->read(&d, 1);
         d.y -= firstValue;
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
@@ -1162,7 +1141,7 @@ Node *SubtractFirstValueNodeType::create(DataflowManager *mgr, StringMap& attrs)
     return node;
 }
 
-void SubtractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+void SubtractFirstValueNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*out*/ StringVector& warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
@@ -1170,6 +1149,6 @@ void SubtractFirstValueNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, 
         attrs["type"] = "double";
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

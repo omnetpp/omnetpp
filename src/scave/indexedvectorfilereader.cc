@@ -28,12 +28,11 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace scave {
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
-  ReaderNode(filename, bufferSize), index(nullptr), currentBlockIndex(0)
+    ReaderNode(filename, bufferSize), index(nullptr), currentBlockIndex(0)
 {
-
 }
 
 IndexedVectorFileReaderNode::~IndexedVectorFileReaderNode()
@@ -44,7 +43,7 @@ IndexedVectorFileReaderNode::~IndexedVectorFileReaderNode()
     }
 }
 
-Port *IndexedVectorFileReaderNode::addVector(const VectorResult &vector)
+Port *IndexedVectorFileReaderNode::addVector(const VectorResult& vector)
 {
     PortData& portdata = ports[vector.vectorId];
     portdata.ports.push_back(Port(this));
@@ -63,9 +62,8 @@ void IndexedVectorFileReaderNode::process()
         readIndexFile();
 
     long bytesRead = 0;
-    while (currentBlockIndex < blocksToRead.size() && bytesRead < 64 * 1024)
-    {
-        BlockAndPortData &blockAndPort = blocksToRead[currentBlockIndex++];
+    while (currentBlockIndex < blocksToRead.size() && bytesRead < 64 * 1024) {
+        BlockAndPortData& blockAndPort = blocksToRead[currentBlockIndex++];
         bytesRead += readBlock(blockAndPort.blockPtr, blockAndPort.portDataPtr);
     }
 }
@@ -88,25 +86,23 @@ void IndexedVectorFileReaderNode::readIndexFile()
     IndexFileReader reader(indexFileName.c_str());
     index = reader.readAll();
 
-    for (VectorIdToPortMap::iterator it = ports.begin(); it != ports.end(); ++it)
-    {
+    for (VectorIdToPortMap::iterator it = ports.begin(); it != ports.end(); ++it) {
         int vectorId = it->first;
-        PortData &portData = it->second;
+        PortData& portData = it->second;
 
         portData.vector = index->getVectorById(vectorId);
 
         if (!portData.vector)
             throw opp_runtime_error("indexed vector file reader: vector %d not found, file %s",
-                                        vectorId, indexFileName.c_str());
+                    vectorId, indexFileName.c_str());
 
-        Blocks &blocks = portData.vector->blocks;
+        Blocks& blocks = portData.vector->blocks;
         for (Blocks::iterator it = blocks.begin(); it != blocks.end(); ++it)
             blocksToRead.push_back(BlockAndPortData(&(*it), &portData));
     }
 
     sort(blocksToRead.begin(), blocksToRead.end());
 }
-
 
 long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortData *portDataPtr)
 {
@@ -123,19 +119,17 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
     reader.seekTo(startOffset);
 
-    long readTime=0;
+    long readTime = 0;
     long tokenizeTime = 0;
     long parseTime = 0;
 //  printf("readBlock ");
 
     char *line;
-    for (long k = 0; k < count /*&& (line=reader.getNextLineBufferPointer())!=nullptr*/; ++k)
-    {
-        TIME(readTime,line=reader.getNextLineBufferPointer());
+    for (long k = 0; k < count  /*&& (line=reader.getNextLineBufferPointer())!=nullptr*/; ++k) {
+        TIME(readTime, line = reader.getNextLineBufferPointer());
 
         if (!line)
             break;
-
 
         offset = reader.getCurrentLineStartOffset();
         int length = reader.getCurrentLineLength();
@@ -156,7 +150,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
         // write to port(s)
         for (PortVector::const_iterator port = portDataPtr->ports.begin(); port != portDataPtr->ports.end(); ++port)
-            port->getChannel()->write(&a,1);
+            port->getChannel()->write(&a, 1);
     }
 
 //    printf("read: %ldms tokenize: %ldms parse: %ldms\n",
@@ -199,6 +193,6 @@ Port *IndexedVectorFileReaderNodeType::getPort(Node *node, const char *portname)
     return node1->addVector(vector);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

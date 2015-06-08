@@ -20,7 +20,6 @@
 NAMESPACE_BEGIN
 namespace scave {
 
-
 Channel::Channel()
 {
     consumerNode = producerNode = nullptr;
@@ -34,15 +33,13 @@ const Datum *Channel::peek() const
     return &(buffer.front());
 }
 
-
 int Channel::read(Datum *a, int max)
 {
     Assert(!consumerFinished);
     int n = buffer.size();
-    if (n>max)
+    if (n > max)
         n = max;
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         a[i] = buffer.front();
         buffer.pop_front();
     }
@@ -54,10 +51,10 @@ void Channel::write(Datum *a, int n)
     Assert(!producerFinished);
     if (consumerFinished)
         return;  // discard data if consumer finished
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
         buffer.push_back(a[i]);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

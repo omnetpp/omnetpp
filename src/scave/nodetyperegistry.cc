@@ -57,7 +57,7 @@ void NodeTypeRegistry::add(NodeType *nodetype)
 void NodeTypeRegistry::remove(NodeType *nodetype)
 {
     NodeTypeMap::iterator it = nodeTypeMap.find(nodetype->getName());
-    if (it!=nodeTypeMap.end())
+    if (it != nodeTypeMap.end())
         nodeTypeMap.erase(it);
 }
 
@@ -107,19 +107,19 @@ NodeTypeRegistry::NodeTypeRegistry()
 
 NodeTypeRegistry::~NodeTypeRegistry()
 {
-    for (NodeTypeMap::iterator it=nodeTypeMap.begin(); it!=nodeTypeMap.end(); it++)
+    for (NodeTypeMap::iterator it = nodeTypeMap.begin(); it != nodeTypeMap.end(); it++)
         delete it->second;
 }
 
 bool NodeTypeRegistry::exists(const char *name)
 {
-    return nodeTypeMap.find(name)!=nodeTypeMap.end();
+    return nodeTypeMap.find(name) != nodeTypeMap.end();
 }
 
 NodeType *NodeTypeRegistry::getNodeType(const char *name)
 {
     NodeTypeMap::iterator it = nodeTypeMap.find(name);
-    if (it==nodeTypeMap.end())
+    if (it == nodeTypeMap.end())
         throw opp_runtime_error("unknown node type `%s'", name);
     return it->second;
 }
@@ -127,7 +127,7 @@ NodeType *NodeTypeRegistry::getNodeType(const char *name)
 NodeTypeVector NodeTypeRegistry::getNodeTypes()
 {
     NodeTypeVector vect;
-    for (NodeTypeMap::iterator it=nodeTypeMap.begin(); it!=nodeTypeMap.end(); it++)
+    for (NodeTypeMap::iterator it = nodeTypeMap.begin(); it != nodeTypeMap.end(); it++)
         vect.push_back(it->second);
     return vect;
 }
@@ -145,19 +145,20 @@ Node *NodeTypeRegistry::createNode(const char *filterSpec, DataflowManager *mgr)
     // check number of args match
     StringMap attrs;
     nodeType->getAttributes(attrs);
-    if (attrs.size()!=args.size())
+    if (attrs.size() != args.size())
         throw opp_runtime_error("error in filter spec `%s' -- %s expects %d parameters", filterSpec, name.c_str(), attrs.size());
 
     // fill in args map
-    //FIXME this is completely unsafe! it would be better to match them by name, since ordering in Map is undefined...
+    // FIXME this is completely unsafe! it would be better to match them by name, since ordering in Map is undefined...
     StringMap attrValues;
-    for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
-        attrValues[it->first] = ""; // initialize
+    for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it)
+        attrValues[it->first] = "";  // initialize
     nodeType->getAttrDefaults(attrValues);
-    int i=0;
-    for (StringMap::iterator it=attrValues.begin(); it!=attrValues.end(); ++it, ++i)
+    int i = 0;
+    for (StringMap::iterator it = attrValues.begin(); it != attrValues.end(); ++it, ++i)
         if (!args[i].empty())
             it->second = args[i];
+
 
     // create filter
     return nodeType->create(mgr, attrValues);
@@ -174,7 +175,7 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
     }
 
     // check that string ends in right paren
-    if (filterSpec[strlen(filterSpec)-1]!=')')
+    if (filterSpec[strlen(filterSpec)-1] != ')')
         throw opp_runtime_error("syntax error in filter spec `%s'", filterSpec);
 
     // filter name is the part before the left paren
@@ -184,10 +185,10 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
     std::string arglist(paren+1, strlen(paren)-2);
     StringTokenizer tokenizer(arglist.c_str(), ",");
     const char *token;
-    while ((token = tokenizer.nextToken())!=nullptr)
+    while ((token = tokenizer.nextToken()) != nullptr)
         args.push_back(token);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 

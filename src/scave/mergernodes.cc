@@ -24,7 +24,6 @@
 NAMESPACE_BEGIN
 namespace scave {
 
-
 Port *MergerNode::addPort()
 {
     ports.push_back(Port(this));
@@ -34,9 +33,10 @@ Port *MergerNode::addPort()
 bool MergerNode::isReady() const
 {
     // every input port must have data available (or already have reached EOF)
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if ((*it)()->length()==0 && !(*it)()->isClosing())
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+        if ((*it)()->length() == 0 && !(*it)()->isClosing())
             return false;
+
     return true;
 }
 
@@ -47,32 +47,30 @@ void MergerNode::process()
     // if port has reached EOF, skip it
     Port *minPort = nullptr;
     const Datum *minDatum;
-    for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-    {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
         Channel *chan = (*it)();
         const Datum *dp = chan->peek();
-        if (dp && (!minPort || dp->x < minDatum->x))
-        {
+        if (dp && (!minPort || dp->x < minDatum->x)) {
             minPort = &(*it);
             minDatum = dp;
         }
     }
 
     // if we couldn't get any data, all input ports must be at EOF (see isReady())
-    if (minPort)
-    {
+    if (minPort) {
         Datum d;
-        (*minPort)()->read(&d,1);
-        out()->write(&d,1);
+        (*minPort)()->read(&d, 1);
+        out()->write(&d, 1);
     }
 }
 
 bool MergerNode::isFinished() const
 {
     // only finished if all ports are at EOF
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
         if (!(*it)()->eof())
             return false;
+
     return true;
 }
 
@@ -101,14 +99,14 @@ Node *MergerNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 Port *MergerNodeType::getPort(Node *node, const char *portname) const
 {
     MergerNode *node1 = dynamic_cast<MergerNode *>(node);
-    if (!strcmp(portname,"next-in"))
+    if (!strcmp(portname, "next-in"))
         return node1->addPort();
-    else if (!strcmp(portname,"out"))
+    else if (!strcmp(portname, "out"))
         return &(node1->out);
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
-// ---- Aggregator ------
+//---- Aggregator ------
 
 AggregatorNode::AggregatorNode(const std::string &function)
     : out(this)
@@ -123,8 +121,7 @@ AggregatorNode::AggregatorNode(const std::string &function)
 
 void AggregatorNode::init()
 {
-    switch (fn)
-    {
+    switch (fn) {
         case Sum: acc = 0.0; break;
         case Average: acc = 0.0; count = 0; break;
         case Count:   count = 0; break;
@@ -136,8 +133,7 @@ void AggregatorNode::init()
 
 void AggregatorNode::collect(double value)
 {
-    switch (fn)
-    {
+    switch (fn) {
         case Sum: acc += value; break;
         case Average: acc += value; count++; break;
         case Count:   count++; break;
@@ -149,8 +145,7 @@ void AggregatorNode::collect(double value)
 
 double AggregatorNode::result()
 {
-    switch (fn)
-    {
+    switch (fn) {
         case Sum: return acc;
         case Average: return acc/count;
         case Count:   return count;
@@ -169,17 +164,17 @@ Port *AggregatorNode::addPort()
 bool AggregatorNode::isReady() const
 {
     // every input port must have data available (or already have reached EOF)
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if ((*it)()->length()==0 && !(*it)()->isClosing())
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+        if ((*it)()->length() == 0 && !(*it)()->isClosing())
             return false;
+
     return true;
 }
 
 void AggregatorNode::process()
 {
     const Datum *minDatum = nullptr;
-    for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-    {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
         Channel *chan = (*it)();
         const Datum *dp = chan->peek();
         if (dp && (!minDatum || dp->x < minDatum->x))
@@ -187,35 +182,33 @@ void AggregatorNode::process()
     }
 
     // if we couldn't get any data, all input ports must be at EOF (see isReady())
-    if (minDatum)
-    {
+    if (minDatum) {
         Datum d;
         d.x = minDatum->x;
 
         init();
-        for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-        {
+        for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
             Channel *chan = (*it)();
             const Datum *dp = chan->peek();
-            if (dp && dp->x == d.x)
-            {
+            if (dp && dp->x == d.x) {
                 Datum d2;
-                chan->read(&d2,1);
+                chan->read(&d2, 1);
                 collect(d2.y);
             }
         }
 
         d.y = result();
-        out()->write(&d,1);
+        out()->write(&d, 1);
     }
 }
 
 bool AggregatorNode::isFinished() const
 {
     // only finished if all ports are at EOF
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
         if (!(*it)()->eof())
             return false;
+
     return true;
 }
 
@@ -224,7 +217,7 @@ bool AggregatorNode::isFinished() const
 const char *AggregatorNodeType::getDescription() const
 {
     return "Aggregates several vectors into a single one, aggregating the\n"
-            "y values at the same time coordinate with the specified function.";
+           "y values at the same time coordinate with the specified function.";
 }
 
 void AggregatorNodeType::getAttributes(StringMap& attrs) const
@@ -240,8 +233,7 @@ void AggregatorNodeType::getAttrDefaults(StringMap& attrs) const
 void AggregatorNodeType::validateAttrValues(const StringMap& attrs) const
 {
     StringMap::const_iterator it = attrs.find("function");
-    if (it != attrs.end())
-    {
+    if (it != attrs.end()) {
         const std::string& fn = it->second;
         if (fn != "average" && fn != "count" && fn != "minimum" && fn != "maximum")
             throw opp_runtime_error("Unknown aggregator function: %s.", fn.c_str());
@@ -263,14 +255,14 @@ Node *AggregatorNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 
 Port *AggregatorNodeType::getPort(Node *node, const char *portname) const
 {
-    AggregatorNode *node1 = dynamic_cast<AggregatorNode*>(node);
-    if (!strcmp(portname,"next-in"))
+    AggregatorNode *node1 = dynamic_cast<AggregatorNode *>(node);
+    if (!strcmp(portname, "next-in"))
         return node1->addPort();
-    else if (!strcmp(portname,"out"))
+    else if (!strcmp(portname, "out"))
         return &(node1->out);
     throw opp_runtime_error("no such port `%s'", portname);
 }
 
-} // namespace scave
+}  // namespace scave
 NAMESPACE_END
 
