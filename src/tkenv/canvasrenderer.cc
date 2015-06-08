@@ -56,19 +56,16 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 
 void CanvasRenderer::refresh(FigureRenderingHints *hints)
 {
-    if (canvas)
-    {
+    if (canvas) {
         // if there is a structural change, we rebuild everything;
         // otherwise we only adjust subtree of that particular figure
         cFigure *rootFigure = canvas->getRootFigure();
         uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
-        if (changes & cFigure::CHANGE_STRUCTURAL)
-        {
+        if (changes & cFigure::CHANGE_STRUCTURAL) {
             redraw(hints);
             // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
         }
-        else if (changes != 0)
-        {
+        else if (changes != 0) {
             cFigure::Transform transform;
             transform.scale(hints->zoom);
             refreshFigureRec(rootFigure, transform, hints);
@@ -83,8 +80,7 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
     CHK(Tcl_VarEval(interp, canvasWidget.c_str(), " delete fig", nullptr));
 
     // draw
-    if (canvas)
-    {
+    if (canvas) {
         cFigure::Transform transform;
         transform.scale(hints->zoom);
         drawFigureRec(canvas->getRootFigure(), transform, hints);
@@ -99,13 +95,12 @@ FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure)
 bool CanvasRenderer::fulfillsTagFilter(cFigure *figure)
 {
     uint64_t figureTagBits = figure->getTagBits();
-    return figureTagBits==0 || ((figureTagBits & enabledTagBits) != 0 && (figureTagBits & exceptTagBits) == 0);
+    return figureTagBits == 0 || ((figureTagBits & enabledTagBits) != 0 && (figureTagBits & exceptTagBits) == 0);
 }
 
 void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints)
 {
-    if (figure->isVisible() && fulfillsTagFilter(figure))
-    {
+    if (figure->isVisible() && fulfillsTagFilter(figure)) {
         cFigure::Transform transform(parentTransform);
         figure->updateParentTransform(transform);
 
@@ -125,8 +120,7 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform&
     if (localChanges & cFigure::CHANGE_TRANSFORM)
         ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
 
-    if (localChanges || subtreeChanges || ancestorTransformChanged)
-    {
+    if (localChanges || subtreeChanges || ancestorTransformChanged) {
         cFigure::Transform transform(parentTransform);
         figure->updateParentTransform(transform);
 
@@ -167,7 +161,7 @@ std::string CanvasRenderer::getExceptTags()
     return canvas->getTags(exceptTagBits);
 }
 
-void CanvasRenderer::setEnabledTags(const char* tags)
+void CanvasRenderer::setEnabledTags(const char *tags)
 {
     assertCanvas();
     enabledTagBits = canvas->parseTags(tags);
@@ -175,12 +169,12 @@ void CanvasRenderer::setEnabledTags(const char* tags)
     enabledTagBits |= ~allTagBits;  // set extra bits to 1, so potential new tags will be enabled by default
 }
 
-void CanvasRenderer::setExceptTags(const char* tags)
+void CanvasRenderer::setExceptTags(const char *tags)
 {
     assertCanvas();
     exceptTagBits = canvas->parseTags(tags);
 }
 
-} // namespace tkenv
+}  // namespace tkenv
 NAMESPACE_END
 

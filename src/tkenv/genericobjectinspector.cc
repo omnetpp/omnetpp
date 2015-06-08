@@ -27,26 +27,23 @@
 #include "inspectorfactory.h"
 #include "genericobjectinspector.h"
 
-
 NAMESPACE_BEGIN
 namespace tkenv {
 
 void _dummy_for_genericobjectinspector() {}
-
 
 class GenericObjectInspectorFactory : public InspectorFactory
 {
   public:
     GenericObjectInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override {return true;}
-    int getInspectorType() override {return INSP_OBJECT;}
-    double getQualityAsDefault(cObject *object) override {return 1.0;}
-    Inspector *createInspector() override {return new GenericObjectInspector(this);}
+    bool supportsObject(cObject *obj) override { return true; }
+    int getInspectorType() override { return INSP_OBJECT; }
+    double getQualityAsDefault(cObject *object) override { return 1.0; }
+    Inspector *createInspector() override { return new GenericObjectInspector(this); }
 };
 
 Register_InspectorFactory(GenericObjectInspectorFactory);
-
 
 GenericObjectInspector::GenericObjectInspector(InspectorFactory *f) : Inspector(f)
 {
@@ -65,33 +62,33 @@ void GenericObjectInspector::doSetObject(cObject *obj)
 
 void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
-   Inspector::createWindow(window, geometry);
+    Inspector::createWindow(window, geometry);
 
-   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
 }
 
 void GenericObjectInspector::useWindow(const char *window)
 {
-   Inspector::useWindow(window);
+    Inspector::useWindow(window);
 }
 
 void GenericObjectInspector::refresh()
 {
-   Inspector::refresh();
+    Inspector::refresh();
 
-   CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, nullptr));
+    CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, nullptr));
 }
 
 void GenericObjectInspector::commit()
 {
-   Inspector::commit();
+    Inspector::commit();
 }
 
 int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
 {
-   return Inspector::inspectorCommand(argc, argv);
+    return Inspector::inspectorCommand(argc, argv);
 }
 
-} // namespace tkenv
+}  // namespace tkenv
 NAMESPACE_END
 

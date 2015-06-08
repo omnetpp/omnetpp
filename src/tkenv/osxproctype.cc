@@ -26,6 +26,7 @@
 void OSXTransformProcess()
 {
     ProcessSerialNumber psn;
-    GetCurrentProcess( &psn );
-    TransformProcessType( &psn, kProcessTransformToForegroundApplication);
+    GetCurrentProcess(&psn);
+    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 }
+

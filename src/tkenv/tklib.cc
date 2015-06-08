@@ -35,7 +35,7 @@ NAMESPACE_BEGIN
 namespace tkenv {
 
 int exitOmnetpp;
-#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION < 6
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
 #endif
 
@@ -44,9 +44,9 @@ static int XErrorProc(ClientData, XErrorEvent *errEventPtr)
 {
     fprintf(stderr, "X protocol error: ");
     fprintf(stderr, "error=%d request=%d minor=%d\n",
-                    errEventPtr->error_code,
-                    errEventPtr->request_code,
-                    errEventPtr->minor_code );
+            errEventPtr->error_code,
+            errEventPtr->request_code,
+            errEventPtr->minor_code);
     return 0;  // claim to have handled the error
 }
 
@@ -60,11 +60,11 @@ Tcl_Interp *initTk(int argc, char **argv)
     Tcl_FindExecutable(argv[0]);
 
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
-    //if (Tk_ParseArgv(interp, (Tk_Window)nullptr, &argc, argv, argTable, 0)!=TCL_OK)
-    //{
+    // if (Tk_ParseArgv(interp, (Tk_Window)nullptr, &argc, argv, argTable, 0)!=TCL_OK)
+    // {
     //    fprintf(stderr, "%s\n", Tcl_GetStringResult(interp));
     //    return TCL_ERROR;
-    //}
+    // }
 
     if (Tcl_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tcl_Init failed: %s\n", Tcl_GetStringResult(interp));
@@ -72,24 +72,23 @@ Tcl_Interp *initTk(int argc, char **argv)
     if (Tk_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
 
-    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) nullptr);
+    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *)nullptr);
 
-#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION < 6
     if (Tkpng_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
 #endif
 
-
     Tk_Window mainWindow = Tk_MainWindow(interp);
 
-    Tk_SetAppName( mainWindow, "omnetpp" );
-    Tk_SetClass( mainWindow, "Omnetpp" );
+    Tk_SetAppName(mainWindow, "omnetpp");
+    Tk_SetClass(mainWindow, "Omnetpp");
 
     // Register X error handler and ask for synchronous protocol to help debugging
-    Tk_CreateErrorHandler( Tk_Display(mainWindow), -1,-1,-1, XErrorProc, (ClientData)mainWindow );
+    Tk_CreateErrorHandler(Tk_Display(mainWindow), -1, -1, -1, XErrorProc, (ClientData)mainWindow);
 
     // Grab initial size and background
-    Tk_GeometryRequest(mainWindow,200,200);
+    Tk_GeometryRequest(mainWindow, 200, 200);
 
     return interp;
 }
@@ -97,12 +96,11 @@ Tcl_Interp *initTk(int argc, char **argv)
 // create custom commands (implemented in tkcmd.cc) in Tcl
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 {
-    for (; commands->namestr!=nullptr; commands++)
-    {
-        Tcl_CreateCommand( interp, TCLCONST(commands->namestr),
-                                   (Tcl_CmdProc *)commands->func,
-                                   (ClientData)nullptr,
-                                   (Tcl_CmdDeleteProc *)nullptr);
+    for ( ; commands->namestr != nullptr; commands++) {
+        Tcl_CreateCommand(interp, TCLCONST(commands->namestr),
+                (Tcl_CmdProc *)commands->func,
+                (ClientData)nullptr,
+                (Tcl_CmdDeleteProc *)nullptr);
     }
     return TCL_OK;
 }
@@ -112,13 +110,13 @@ int runTk(Tcl_Interp *)
 {
     // Custom event loop
     //  the C++ variable exitOmnetpp is used for exiting
-    while (!exitOmnetpp)
-    {
-       Tk_DoOneEvent(TK_ALL_EVENTS);
+    while (!exitOmnetpp) {
+        Tk_DoOneEvent(TK_ALL_EVENTS);
     }
 
     return TCL_OK;
 }
 
-} // namespace tkenv
+}  // namespace tkenv
 NAMESPACE_END
+

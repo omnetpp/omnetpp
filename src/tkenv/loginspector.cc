@@ -31,25 +31,22 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace tkenv {
 
-#define LL  INT64_PRINTF_FORMAT
-
+#define LL    INT64_PRINTF_FORMAT
 
 void _dummy_for_loginspector() {}
-
 
 class LogInspectorFactory : public InspectorFactory
 {
   public:
     LogInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override {return dynamic_cast<cModule *>(obj)!=nullptr;}
-    int getInspectorType() override {return INSP_MODULEOUTPUT;}
-    double getQualityAsDefault(cObject *object) override {return 0.5;}
-    Inspector *createInspector() override {return new LogInspector(this);}
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cModule *>(obj) != nullptr; }
+    int getInspectorType() override { return INSP_MODULEOUTPUT; }
+    double getQualityAsDefault(cObject *object) override { return 0.5; }
+    Inspector *createInspector() override { return new LogInspector(this); }
 };
 
 Register_InspectorFactory(LogInspectorFactory);
-
 
 LogInspector::LogInspector(InspectorFactory *f) : Inspector(f), mode(MESSAGES)
 {
@@ -69,7 +66,7 @@ void LogInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    strcpy(textWidget,windowName);
+    strcpy(textWidget, windowName);
     strcat(textWidget, ".main.text");
 
     CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
@@ -80,9 +77,9 @@ void LogInspector::createWindow(const char *window, const char *geometry)
 
 void LogInspector::useWindow(const char *window)
 {
-   Inspector::useWindow(window);
+    Inspector::useWindow(window);
 
-    strcpy(textWidget,windowName);
+    strcpy(textWidget, windowName);
     strcat(textWidget, ".main.text");
 
     int success = Tcl_GetCommandInfo(interp, textWidget, &textWidgetCmdInfo);
@@ -91,8 +88,7 @@ void LogInspector::useWindow(const char *window)
 
 void LogInspector::setMode(Mode m)
 {
-    if (mode != m)
-    {
+    if (mode != m) {
         mode = m;
         redisplay();
     }
@@ -106,7 +102,7 @@ void LogInspector::doSetObject(cObject *obj)
         redisplay();
     else {
         CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, nullptr));
-        textWidgetGotoBeginning(); // important, do not remove! (moves I from 2.0 to 1.0)
+        textWidgetGotoBeginning();  // important, do not remove! (moves I from 2.0 to 1.0)
     }
 }
 
@@ -128,7 +124,9 @@ void LogInspector::messageSendAdded()
 void LogInspector::textWidgetCommand(const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5, const char *arg6)
 {
     // Note: args do NOT need to be quoted, because they are directly passed to the text widget's cmd proc as (argc,argv)
-    const char *argv[] = {textWidget, arg1, arg2, arg3, arg4, arg5, arg6};
+    const char *argv[] = {
+        textWidget, arg1, arg2, arg3, arg4, arg5, arg6
+    };
     int argc = !arg1 ? 1 : !arg2 ? 2 : !arg3 ? 3 : !arg4 ? 4 : !arg5 ? 5 : 6;
 
     TclCmdProc cmdProc = (TclCmdProc)textWidgetCmdInfo.proc;  // Tcl versions differ in the type of the last arg: char *argv[] vs const char *argv[] -- the purpose of this temp var is to make the code compile with both variants
@@ -157,7 +155,7 @@ void LogInspector::textWidgetGotoEnd()
     //   $txt insert I "Hello" --> inserts text in line 1, while I is still 2.0
     //   $txt index "I linestart" --> 2.0, so not the start of the line we've been inserting text into!!!
     //
-    textWidgetCommand("mark", "set", "I", "end-1c"); // NOT "end" !
+    textWidgetCommand("mark", "set", "I", "end-1c");  // NOT "end" !
 }
 
 void LogInspector::textWidgetSeeEnd()
@@ -187,8 +185,7 @@ void LogInspector::printLastLogLine()
         return;
 
     const LogBuffer::Entry *entry = logBuffer->getEntries().back();
-    if (entry->lines.empty())
-    {
+    if (entry->lines.empty()) {
         // print banner
         if (entry->moduleId == 0) {
             textWidgetInsert(entry->banner, "info");
@@ -201,15 +198,13 @@ void LogInspector::printLastLogLine()
                 printBannerIfNeeded(entry);
         }
     }
-    else
-    {
+    else {
         // print last line
         const LogBuffer::Line& line = entry->lines.back();
         if (entry->moduleId == 0)
             printLogLine(entry, line);
         else {
-            if (entryMatches || isMatchingComponent(line.contextComponentId))
-            {
+            if (entryMatches || isMatchingComponent(line.contextComponentId)) {
                 printBannerIfNeeded(entry);
                 printLogLine(entry, line);
                 addBookmarkIfNeeded(entry);
@@ -243,8 +238,8 @@ void LogInspector::printLogLine(const LogBuffer::Entry *entry, const LogBuffer::
 {
     textWidgetInsert(line.prefix, "prefix");
     if (entry->moduleId != line.contextComponentId && line.contextComponentId != 0)
-        textWidgetInsert((componentHistory->getComponentFullPath(line.contextComponentId)+": ").c_str(), "prefix"); //XXX rather merge it into prefix somehow
-    textWidgetInsert(line.line, (entry->moduleId==0 || line.contextComponentId == 0) ? "info" : "");
+        textWidgetInsert((componentHistory->getComponentFullPath(line.contextComponentId)+": ").c_str(), "prefix");  // XXX rather merge it into prefix somehow
+    textWidgetInsert(line.line, (entry->moduleId == 0 || line.contextComponentId == 0) ? "info" : "");
 }
 
 void LogInspector::printLastMessageLine()
@@ -254,10 +249,10 @@ void LogInspector::printLastMessageLine()
 
     const LogBuffer::Entry *entry = logBuffer->getEntries().back();
     const LogBuffer::MessageSend& msgsend = entry->msgs.back();
-    int hopIndex = findFirstRelevantHop(msgsend, 0); // TODO check remaining hops too
-    int inspectedModuleId = ((cModule*)object)->getId();
-    if (hopIndex != -1 || msgsend.hopModuleIds.front()==inspectedModuleId || msgsend.hopModuleIds.back()==inspectedModuleId) {
-        printMessage(entry, entry->msgs.size()-1, hopIndex, entry->eventNumber==lastMsgEventNumber, entry->simtime==lastMsgTime);
+    int hopIndex = findFirstRelevantHop(msgsend, 0);  // TODO check remaining hops too
+    int inspectedModuleId = ((cModule *)object)->getId();
+    if (hopIndex != -1 || msgsend.hopModuleIds.front() == inspectedModuleId || msgsend.hopModuleIds.back() == inspectedModuleId) {
+        printMessage(entry, entry->msgs.size()-1, hopIndex, entry->eventNumber == lastMsgEventNumber, entry->simtime == lastMsgTime);
         textWidgetSeeEnd();
         lastMsgEventNumber = entry->eventNumber;
         lastMsgTime = entry->simtime;
@@ -272,21 +267,18 @@ void LogInspector::redisplay()
     if (!object)
         return;
 
-    const circular_buffer<LogBuffer::Entry*>& entries = logBuffer->getEntries();
+    const circular_buffer<LogBuffer::Entry *>& entries = logBuffer->getEntries();
     int scrollbackLimit = getTkenv()->opt->scrollbackLimit;
 
-    if (mode == LOG)
-    {
+    if (mode == LOG) {
         // display entries in reverse order, so we can stop when scrollback limit is reached
         // (within an entry we print normally, top-down)
         int numLinesPrinted = 0;
         bool printEventBanners = getTkenv()->opt->printEventBanners;
-        for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--)
-        {
+        for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--) {
             const LogBuffer::Entry *entry = entries[k];
             bool entryProducedOutput = false;
-            if (entry->moduleId == 0)
-            {
+            if (entry->moduleId == 0) {
                 textWidgetInsert(entry->banner, "info");
                 numLinesPrinted++;
                 for (int i = 0; i < (int)entry->lines.size(); i++) {
@@ -295,8 +287,7 @@ void LogInspector::redisplay()
                 }
                 entryProducedOutput = true;
             }
-            else
-            {
+            else {
                 // if this module is under the inspected module, and not excluded, display the log
                 bool entryMatches = isMatchingComponent(entry->moduleId);
                 bool bannerPrinted = false;
@@ -325,34 +316,31 @@ void LogInspector::redisplay()
                 sprintf(bookmark, "event-%" LL "d", entry->eventNumber);
                 textWidgetSetBookmark(bookmark, "1.0");
 
-                textWidgetGotoBeginning(); // for next entry
+                textWidgetGotoBeginning();  // for next entry
             }
         }
     }
-    else if (mode == MESSAGES)
-    {
+    else if (mode == MESSAGES) {
         // for incremental printing (printLastMessageLine()) we'll need to remember last msg's event# and time
         this->lastMsgEventNumber = 0;
         this->lastMsgTime = 0;
-        bool firstMsg = true; // first printed = last on on the screen
+        bool firstMsg = true;  // first printed = last on on the screen
 
         // display in reverse order, so we can stop when scrollback limit is reached
         int numLinesPrinted = 0;
         const LogBuffer::Entry *prevEntry = nullptr;
         int prevMsgsendIndex = 0, prevHopIndex = 0;
-        int inspectedModuleId = ((cModule*)object)->getId();
-        for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--)
-        {
+        int inspectedModuleId = ((cModule *)object)->getId();
+        for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--) {
             const LogBuffer::Entry *entry = entries[k];
             int numMsgs = entry->msgs.size();
-            for (int i = numMsgs-1; i >= 0; i--)
-            {
+            for (int i = numMsgs-1; i >= 0; i--) {
                 const LogBuffer::MessageSend& msgsend = entry->msgs[i];
-                int hopIndex = findFirstRelevantHop(msgsend, 0); //TODO check remaining hops too
-                if (hopIndex != -1 || msgsend.hopModuleIds.front()==inspectedModuleId || msgsend.hopModuleIds.back()==inspectedModuleId) {
+                int hopIndex = findFirstRelevantHop(msgsend, 0);  // TODO check remaining hops too
+                if (hopIndex != -1 || msgsend.hopModuleIds.front() == inspectedModuleId || msgsend.hopModuleIds.back() == inspectedModuleId) {
                     if (prevEntry) {
                         textWidgetGotoBeginning();
-                        printMessage(prevEntry, prevMsgsendIndex, prevHopIndex, entry==prevEntry, entry->simtime==prevEntry->simtime);
+                        printMessage(prevEntry, prevMsgsendIndex, prevHopIndex, entry == prevEntry, entry->simtime == prevEntry->simtime);
                         numLinesPrinted++;
                     }
 
@@ -375,9 +363,8 @@ void LogInspector::redisplay()
         }
     }
 
-    //TODO refine logged text: mention scrollback limit as well!!!!
-    if (logBuffer->getNumEntriesDiscarded() > 0)
-    {
+    // TODO refine logged text: mention scrollback limit as well!!!!
+    if (logBuffer->getNumEntriesDiscarded() > 0) {
         const LogBuffer::Entry *entry = entries.front();
         std::stringstream os;
         if (entry->eventNumber == 0)
@@ -395,15 +382,16 @@ void LogInspector::redisplay()
 
 bool LogInspector::isMatchingComponent(int componentId)
 {
-    if (componentId==0) return false; //TODO remove this for 5.0
+    if (componentId == 0)
+        return false;  // TODO remove this for 5.0
     int inspectedModuleId = static_cast<cModule *>(object)->getId();
-    return (componentId==inspectedModuleId || isAncestorModule(componentId, inspectedModuleId))
-            && excludedModuleIds.find(componentId)==excludedModuleIds.end();
+    return (componentId == inspectedModuleId || isAncestorModule(componentId, inspectedModuleId))
+           && excludedModuleIds.find(componentId) == excludedModuleIds.end();
 }
 
 bool LogInspector::isAncestorModule(int moduleId, int potentialAncestorModuleId)
 {
-    cModule *component = getSimulation()->getModule(moduleId);  //TODO use cModule and getComponent() in 5.0
+    cModule *component = getSimulation()->getModule(moduleId);  // TODO use cModule and getComponent() in 5.0
     if (component) {
         // more efficient version for live modules
         while (component) {
@@ -434,8 +422,7 @@ int LogInspector::findFirstRelevantHop(const LogBuffer::MessageSend& msgsend, in
     int srcModuleId = msgsend.hopModuleIds[fromHop];
     bool isSrcOk = srcModuleId == inspectedModuleId || componentHistory->getParentModuleId(srcModuleId) == inspectedModuleId;
     int n = msgsend.hopModuleIds.size();
-    for (int i = fromHop; i < n-1; i++)
-    {
+    for (int i = fromHop; i < n-1; i++) {
         int destModuleId = msgsend.hopModuleIds[i+1];
         bool isDestOk = destModuleId == inspectedModuleId || componentHistory->getParentModuleId(destModuleId) == inspectedModuleId;
         if (isSrcOk && isDestOk)
@@ -472,8 +459,7 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
     // add src/dest
     const LogBuffer::MessageSend& msgsend = entry->msgs[msgIndex];
     int inspectedModuleId = static_cast<cModule *>(object)->getId();
-    if (hopIndex != -1)
-    {
+    if (hopIndex != -1) {
         int srcModuleId = msgsend.hopModuleIds[hopIndex];
         int destModuleId = msgsend.hopModuleIds[hopIndex+1];
         bool hasSrc = srcModuleId != inspectedModuleId;
@@ -491,13 +477,11 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
         if (hasDest)
             textWidgetInsert(componentHistory->getComponentFullName(destModuleId), "srcdestcol hopdest");
     }
-    else if (msgsend.hopModuleIds.front() == inspectedModuleId)
-    {
+    else if (msgsend.hopModuleIds.front() == inspectedModuleId) {
         textWidgetInsert(componentHistory->getComponentFullName(inspectedModuleId), "srcdestcol hopsrc");
         textWidgetInsert(" --->", "srcdestcol hopdest");
     }
-    else if (msgsend.hopModuleIds.back() == inspectedModuleId)
-    {
+    else if (msgsend.hopModuleIds.back() == inspectedModuleId) {
         textWidgetInsert("---> ", "srcdestcol hopsrc");
         textWidgetInsert(componentHistory->getComponentFullName(inspectedModuleId), "srcdestcol hopdest");
     }
@@ -528,7 +512,7 @@ cMessagePrinter *LogInspector::chooseMessagePrinter(cMessage *msg)
     cRegistrationList *instance = messagePrinters.getInstance();
     cMessagePrinter *bestPrinter = nullptr;
     int bestScore = 0;
-    for (int i=0; i<(int)instance->size(); i++) {
+    for (int i = 0; i < (int)instance->size(); i++) {
         cMessagePrinter *printer = (cMessagePrinter *)instance->get(i);
         int score = printer->getScoreFor(msg);
         if (score > bestScore) {
@@ -541,66 +525,83 @@ cMessagePrinter *LogInspector::chooseMessagePrinter(cMessage *msg)
 
 int LogInspector::inspectorCommand(int argc, const char **argv)
 {
-    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    if (argc < 1) {
+        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        return TCL_ERROR;
+    }
 
-    if (strcmp(argv[0],"redisplay")==0)
-    {
-       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       TRY(redisplay());
-       return TCL_OK;
+    if (strcmp(argv[0], "redisplay") == 0) {
+        if (argc != 1) {
+            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        TRY(redisplay());
+        return TCL_OK;
     }
-    else if (strcmp(argv[0],"getexcludedmoduleids")==0)
-    {
-       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-       for (std::set<int>::iterator it=excludedModuleIds.begin(); it!=excludedModuleIds.end(); it++)
-           Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
-       Tcl_SetObjResult(interp, listobj);
-       return TCL_OK;
+    else if (strcmp(argv[0], "getexcludedmoduleids") == 0) {
+        if (argc != 1) {
+            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
+        for (std::set<int>::iterator it = excludedModuleIds.begin(); it != excludedModuleIds.end(); it++)
+            Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
+        Tcl_SetObjResult(interp, listobj);
+        return TCL_OK;
     }
-    else if (strcmp(argv[0],"setexcludedmoduleids")==0)
-    {
-       if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       excludedModuleIds.clear();
-       StringTokenizer tokenizer(argv[1]);
-       while (tokenizer.hasMoreTokens())
-           excludedModuleIds.insert(atoi(tokenizer.nextToken()));
-       return TCL_OK;
+    else if (strcmp(argv[0], "setexcludedmoduleids") == 0) {
+        if (argc != 2) {
+            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        excludedModuleIds.clear();
+        StringTokenizer tokenizer(argv[1]);
+        while (tokenizer.hasMoreTokens())
+            excludedModuleIds.insert(atoi(tokenizer.nextToken()));
+        return TCL_OK;
     }
-    else if (strcmp(argv[0],"getmode")==0)
-    {
-       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       Tcl_SetResult(interp, TCLCONST(getMode()==LOG?"log":getMode()==MESSAGES?"messages":"???"), TCL_STATIC);
-       return TCL_OK;
+    else if (strcmp(argv[0], "getmode") == 0) {
+        if (argc != 1) {
+            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        Tcl_SetResult(interp, TCLCONST(getMode() == LOG ? "log" : getMode() == MESSAGES ? "messages" : "???"), TCL_STATIC);
+        return TCL_OK;
     }
-    else if (strcmp(argv[0],"setmode")==0)
-    {
-       if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       const char *arg = argv[1];
-       if (strcmp(arg, "log")==0)
-           setMode(LOG);
-       else if (strcmp(arg, "messages")==0)
-           setMode(MESSAGES);
-       else
-           {Tcl_SetResult(interp, TCLCONST("wrong mode"), TCL_STATIC); return TCL_ERROR;}
-       return TCL_OK;
+    else if (strcmp(argv[0], "setmode") == 0) {
+        if (argc != 2) {
+            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        const char *arg = argv[1];
+        if (strcmp(arg, "log") == 0)
+            setMode(LOG);
+        else if (strcmp(arg, "messages") == 0)
+            setMode(MESSAGES);
+        else {
+            Tcl_SetResult(interp, TCLCONST("wrong mode"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        return TCL_OK;
     }
-    else if (strcmp(argv[0],"gethopmsg")==0)  // <eventNumber> <msgsendIndex> -> <msgptr>
-    {
-       if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-       eventnumber_t eventNumber = atol(argv[1]); //XXX atoi64?
-       int msgsendIndex = atoi(argv[2]);
-       LogBuffer::Entry *entry = logBuffer->getEntryByEventNumber(eventNumber);
-       cMessage *msg = nullptr;
-       if (entry != nullptr && msgsendIndex >=0 && msgsendIndex < (int)entry->msgs.size())
-           msg = entry->msgs[msgsendIndex].msg;
-       Tcl_SetResult(interp, ptrToStr(msg), TCL_VOLATILE);
-       return TCL_OK;
+    else if (strcmp(argv[0], "gethopmsg") == 0) {  // <eventNumber> <msgsendIndex> -> <msgptr>
+        if (argc != 3) {
+            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+            return TCL_ERROR;
+        }
+        eventnumber_t eventNumber = atol(argv[1]);  // XXX atoi64?
+        int msgsendIndex = atoi(argv[2]);
+        LogBuffer::Entry *entry = logBuffer->getEntryByEventNumber(eventNumber);
+        cMessage *msg = nullptr;
+        if (entry != nullptr && msgsendIndex >= 0 && msgsendIndex < (int)entry->msgs.size())
+            msg = entry->msgs[msgsendIndex].msg;
+        Tcl_SetResult(interp, ptrToStr(msg), TCL_VOLATILE);
+        return TCL_OK;
     }
 
     return Inspector::inspectorCommand(argc, argv);
 }
 
-} // namespace tkenv
+}  // namespace tkenv
 NAMESPACE_END
 

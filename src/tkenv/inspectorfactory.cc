@@ -26,27 +26,25 @@ namespace tkenv {
 
 cGlobalRegistrationList inspectorfactories;
 
-EXECUTE_ON_SHUTDOWN( inspectorfactories.clear() );
-
+EXECUTE_ON_SHUTDOWN(inspectorfactories.clear());
 
 InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
-    InspectorFactory *best=nullptr;
-    double bestweight=0;
+    InspectorFactory *best = nullptr;
+    double bestweight = 0;
     cRegistrationList *a = inspectorfactories.getInstance();
-    for (int i=0; i<a->size(); i++)
-    {
+    for (int i = 0; i < a->size(); i++) {
         InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));
         if (ifc->supportsObject(obj) &&
-            (type==INSP_DEFAULT || ifc->getInspectorType()==type) &&
-            ifc->getQualityAsDefault(obj)>bestweight
-           )
+            (type == INSP_DEFAULT || ifc->getInspectorType() == type) &&
+            ifc->getQualityAsDefault(obj) > bestweight
+            )
         {
             bestweight = ifc->getQualityAsDefault(obj);
             best = ifc;
         }
     }
-    return best; // may be nullptr too
+    return best;  // may be nullptr too
 }
 
 InspectorFactory *InspectorFactory::find(const char *className)
@@ -62,6 +60,6 @@ InspectorFactory *InspectorFactory::get(const char *className)
     return p;
 }
 
-
-} // namespace tkenv
+}  // namespace tkenv
 NAMESPACE_END
+
