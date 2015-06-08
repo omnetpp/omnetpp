@@ -52,10 +52,9 @@
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/platdep/timeutil.h"
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
 #include "cmddefs.h"
 #include "cmdenv.h"
-
 
 using namespace OPP::common;
 
@@ -64,8 +63,8 @@ namespace cmdenv {
 
 Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, nullptr, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
 Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, nullptr, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
-Register_GlobalConfigOptionU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B",  "8KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
-Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL,  "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
+Register_GlobalConfigOptionU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B", "8KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
+Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL, "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
 Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, nullptr, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
 Register_PerRunConfigOption(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
@@ -79,7 +78,6 @@ Register_PerRunConfigOption(CFGID_LOG_FORMAT, "cmdenv-log-format", CFG_STRING, "
 Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "cmdenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
 
 Register_PerObjectConfigOption(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print log messages (EV<<, EV_INFO, etc.) from the selected modules.")
-
 
 //
 // Register the Cmdenv user interface
@@ -102,23 +100,21 @@ static char buffer[1024];
 
 bool Cmdenv::sigintReceived;
 
-
 // utility function for printing elapsed time
-char *timeToStr(timeval t, char *buf=nullptr)
+char *timeToStr(timeval t, char *buf = nullptr)
 {
-   static char buf2[64];
-   char *b = buf ? buf : buf2;
+    static char buf2[64];
+    char *b = buf ? buf : buf2;
 
-   if (t.tv_sec<3600)
-       sprintf(b,"%ld.%.3ds (%dm %02ds)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/60L), int(t.tv_sec%60L));
-   else if (t.tv_sec<86400)
-       sprintf(b,"%ld.%.3ds (%dh %02dm)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/3600L), int((t.tv_sec%3600L)/60L));
-   else
-       sprintf(b,"%ld.%.3ds (%dd %02dh)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/86400L), int((t.tv_sec%86400L)/3600L));
+    if (t.tv_sec < 3600)
+        sprintf(b, "%ld.%.3ds (%dm %02ds)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/60L), int(t.tv_sec%60L));
+    else if (t.tv_sec < 86400)
+        sprintf(b, "%ld.%.3ds (%dh %02dm)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/3600L), int((t.tv_sec%3600L)/60L));
+    else
+        sprintf(b, "%ld.%.3ds (%dd %02dh)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/86400L), int((t.tv_sec%86400L)/3600L));
 
-   return b;
+    return b;
 }
-
 
 CmdenvOptions::CmdenvOptions()
 {
@@ -135,7 +131,6 @@ CmdenvOptions::CmdenvOptions()
     printPerformanceData = false;
 }
 
-
 Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
@@ -146,11 +141,12 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
     // requested in the ini file
     fout = stdout;
 
-    //XXX log settings should come from some configuration or commmand-line arg
+    // XXX log settings should come from some configuration or commmand-line arg
     logging = true;
     logStream = fopen(".cmdenv-log", "w");
-    if (!logStream) logStream = stdout;
-    //logStream = stdout;
+    if (!logStream)
+        logStream = stdout;
+    // logStream = stdout;
 }
 
 Cmdenv::~Cmdenv()
@@ -168,16 +164,15 @@ void Cmdenv::readOptions()
     opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
     opt->runsToExec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
-    opt->extraStack = (size_t) cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
+    opt->extraStack = (size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
     opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
-    if (!opt->outputFile.empty())
-    {
+    if (!opt->outputFile.empty()) {
         processFileName(opt->outputFile);
-        ::printf("Cmdenv: redirecting output to file `%s'...\n",opt->outputFile.c_str());
+        ::printf("Cmdenv: redirecting output to file `%s'...\n", opt->outputFile.c_str());
         FILE *out = fopen(opt->outputFile.c_str(), "w");
         if (!out)
-            throw cRuntimeError("Cannot open output redirection file `%s'",opt->outputFile.c_str());
+            throw cRuntimeError("Cannot open output redirection file `%s'", opt->outputFile.c_str());
         fout = out;
     }
 }
@@ -219,26 +214,22 @@ void Cmdenv::doRun()
             opt->runsToExec = runsToExec;
 
         // if the list of runs is not given explicitly, must execute all runs
-        if (opt->runsToExec.empty())
-        {
-            int n = cfg->getNumRunsInConfig(opt->configName.c_str());  //note: may throw exception
-            if (n==0)
-            {
+        if (opt->runsToExec.empty()) {
+            int n = cfg->getNumRunsInConfig(opt->configName.c_str());  // note: may throw exception
+            if (n == 0) {
                 printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
                 exitCode = 1;
                 return;
             }
-            else
-            {
+            else {
                 char buf[32];
-                sprintf(buf, (n==1 ? "%d" : "0..%d"), n-1);
+                sprintf(buf, (n == 1 ? "%d" : "0..%d"), n-1);
                 opt->runsToExec = buf;
             }
         }
 
         EnumStringIterator runiterator(opt->runsToExec.c_str());
-        if (runiterator.hasError())
-        {
+        if (runiterator.hasError()) {
             printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
             exitCode = 1;
             return;
@@ -247,24 +238,22 @@ void Cmdenv::doRun()
         // we'll return nonzero exitcode if any run was terminated with error
         bool hadError = false;
 
-        for (; runiterator()!=-1; runiterator++)
-        {
+        for ( ; runiterator() != -1; runiterator++) {
             int runNumber = runiterator();
             bool networkSetupDone = false;
             bool startrunDone = false;
-            try
-            {
+            try {
                 ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt->configName.c_str(), runNumber);
                 ::fflush(fout);
 
                 cfg->activateConfig(opt->configName.c_str(), runNumber);
 
                 const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
-                if (itervars && strlen(itervars)>0)
+                if (itervars && strlen(itervars) > 0)
                     ::fprintf(fout, "Scenario: %s\n", itervars);
                 ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
 
-                //cfg->dump();
+                // cfg->dump();
 
                 readPerRunOptions();
 
@@ -306,24 +295,19 @@ void Cmdenv::doRun()
 
                 notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
             }
-            catch (std::exception& e)
-            {
+            catch (std::exception& e) {
                 hadError = true;
                 disableTracing = false;
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
             }
-
             // call endRun()
-            if (startrunDone)
-            {
-                try
-                {
+            if (startrunDone) {
+                try {
                     endRun();
                 }
-                catch (std::exception& e)
-                {
+                catch (std::exception& e) {
                     hadError = true;
                     notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
@@ -331,14 +315,11 @@ void Cmdenv::doRun()
             }
 
             // delete network
-            if (networkSetupDone)
-            {
-                try
-                {
+            if (networkSetupDone) {
+                try {
                     getSimulation()->deleteNetwork();
                 }
-                catch (std::exception& e)
-                {
+                catch (std::exception& e) {
                     hadError = true;
                     notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
@@ -367,8 +348,7 @@ inline bool elapsed(long millis, struct timeval& since)
     return ret;
 }
 
-
-void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesting bits to other methods!
+void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interesting bits to other methods!
 {
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc
@@ -380,21 +360,19 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
 
     Speedometer speedometer;  // only used by Express mode, but we need it in catch blocks too
 
-    try
-    {
-        if (!opt->expressMode)
-        {
+    try {
+        if (!opt->expressMode) {
             disableTracing = false;
-            while (true)
-            {
+            while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
                 // print event banner if necessary
                 if (opt->printEventBanners)
-                    if (!event->isMessage() || static_cast<cMessage*>(event)->getArrivalModule()->isEvEnabled())
+                    if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->isEvEnabled())
                         printEventBanner(event);
+
 
                 // flush *between* printing event banner and event processing, so that
                 // if event processing crashes, it can be seen which event it was
@@ -412,8 +390,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
         }
-        else
-        {
+        else {
             disableTracing = true;
             speedometer.start(getSimulation()->getSimTime());
 
@@ -422,29 +399,27 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
 
             doStatusUpdate(speedometer);
 
-            while (true)
-            {
+            while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
-                speedometer.addEvent(getSimulation()->getSimTime()); //XXX potential performance hog
+                speedometer.addEvent(getSimulation()->getSimTime());  // XXX potential performance hog
 
                 // print event banner from time to time
-                if ((getSimulation()->getEventNumber()&0xff)==0 && elapsed(opt->statusFrequencyMs, last_update))
+                if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
                 // execute event
                 getSimulation()->executeEvent(event);
 
-                checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
+                checkTimeLimits();  // XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
                 if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
         }
     }
-    catch (cTerminationException& e)
-    {
+    catch (cTerminationException& e) {
         if (opt->expressMode)
             doStatusUpdate(speedometer);
         disableTracing = false;
@@ -455,8 +430,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
         displayException(e);
         return;
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         if (opt->expressMode)
             doStatusUpdate(speedometer);
         disableTracing = false;
@@ -464,7 +438,6 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
         deinstallSignalHandler();
         throw;
     }
-
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
     if (opt->expressMode)
         doStatusUpdate(speedometer);
@@ -478,27 +451,25 @@ void Cmdenv::printEventBanner(cEvent *event)
     ::fprintf(fout, "** Event #%" LL "d  T=%s%s   ",
             getSimulation()->getEventNumber(),
             SIMTIME_STR(getSimulation()->getSimTime()),
-            progressPercentage()); // note: IDE launcher uses this to track progress
+            progressPercentage());  // note: IDE launcher uses this to track progress
     if (event->isMessage()) {
-        cModule *mod = static_cast<cMessage*>(event)->getArrivalModule();
+        cModule *mod = static_cast<cMessage *>(event)->getArrivalModule();
         ::fprintf(fout, "%s (%s, id=%d)\n",
                 mod->getFullPath().c_str(),
                 mod->getComponentType()->getName(),
                 mod->getId());
     }
-    else if (event->getTargetObject())
-    {
+    else if (event->getTargetObject()) {
         cObject *target = event->getTargetObject();
         ::fprintf(fout, "%s (%s)\n",
                 target->getFullPath().c_str(),
                 target->getClassName());
     }
-//TODO:
+// TODO:
 //    ::fprintf(fout, "on %s (%s)\n",
 //            event->getName(),
 //            event->getClassName());
-    if (opt->detailedEventBanners)
-    {
+    if (opt->detailedEventBanners) {
         ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
                 timeToStr(totalElapsed()),
                 cMessage::getTotalMessageCount(),
@@ -511,13 +482,12 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 {
     speedometer.beginNewInterval();
 
-    if (opt->printPerformanceData)
-    {
+    if (opt->printPerformanceData) {
         ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s\n",
                 getSimulation()->getEventNumber(),
                 SIMTIME_STR(getSimulation()->getSimTime()),
                 timeToStr(totalElapsed()),
-                progressPercentage()); // note: IDE launcher uses this to track progress
+                progressPercentage());  // note: IDE launcher uses this to track progress
         ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
                 speedometer.getEventsPerSec(),
                 speedometer.getSimSecPerSec(),
@@ -528,13 +498,12 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
                 cMessage::getLiveMessageCount(),
                 getSimulation()->msgQueue.getLength());
     }
-    else
-    {
+    else {
         ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
                 getSimulation()->getEventNumber(),
                 SIMTIME_STR(getSimulation()->getSimTime()),
                 timeToStr(totalElapsed()),
-                progressPercentage(), // note: IDE launcher uses this to track progress
+                progressPercentage(),  // note: IDE launcher uses this to track progress
                 speedometer.getEventsPerSec());
     }
 
@@ -545,11 +514,11 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
-    if (opt->simtimeLimit!=0)
-         simtimeRatio = getSimulation()->getSimTime() / opt->simtimeLimit;
+    if (opt->simtimeLimit != 0)
+        simtimeRatio = getSimulation()->getSimTime() / opt->simtimeLimit;
 
     double cputimeRatio = -1;
-    if (opt->cpuTimeLimit!=0) {
+    if (opt->cpuTimeLimit != 0) {
         timeval now;
         gettimeofday(&now, nullptr);
         long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
@@ -570,7 +539,7 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::displayException(std::exception& ex)
 {
-    EnvirBase::displayException(ex); // will end up in putsmsg()
+    EnvirBase::displayException(ex);  // will end up in putsmsg()
 }
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
@@ -608,8 +577,7 @@ bool Cmdenv::isGUI() const
 void Cmdenv::askParameter(cPar *par, bool unassigned)
 {
     bool success = false;
-    while (!success)
-    {
+    while (!success) {
         cProperties *props = par->getProperties();
         cProperty *prop = props->get("prompt");
         std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
@@ -621,15 +589,13 @@ void Cmdenv::askParameter(cPar *par, bool unassigned)
         else
             // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
             // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"' ("+(unassigned?"unassigned":"ask")+"):").c_str(), par->str().c_str());
+            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"' ("+(unassigned ? "unassigned" : "ask")+"):").c_str(), par->str().c_str());
 
-        try
-        {
+        try {
             par->parse(reply.c_str());
             success = true;
         }
-        catch (std::exception& e)
-        {
+        catch (std::exception& e) {
             printfmsg("%s -- please try again.", e.what());
         }
     }
@@ -649,8 +615,7 @@ void Cmdenv::log(cLogEntry *entry)
         return;
 
     cComponent *ctx = getSimulation()->getContext();
-    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || getSimulation()->getContextType()==CTX_FINISH)
-    {
+    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || getSimulation()->getContextType() == CTX_FINISH) {
         std::string prefix = logFormatter.formatPrefix(entry);
         ::fputs(prefix.c_str(), fout);
         ::fwrite(entry->text, 1, entry->textLength, fout);
@@ -671,10 +636,10 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 
     {
         ::fgets(buffer, 512, stdin);
-        buffer[strlen(buffer)-1] = '\0'; // chop LF
+        buffer[strlen(buffer)-1] = '\0';  // chop LF
 
-        if (buffer[0]=='\x1b') // ESC?
-           throw cRuntimeError(E_CANCEL);
+        if (buffer[0] == '\x1b')  // ESC?
+            throw cRuntimeError(E_CANCEL);
 
         return std::string(buffer);
     }
@@ -686,17 +651,16 @@ bool Cmdenv::askyesno(const char *question)
         throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
 
     {
-        for(;;)
-        {
+        for (;;) {
             ::fprintf(fout, "%s (y/n) ", question);
             ::fflush(fout);
             ::fgets(buffer, 512, stdin);
-            buffer[strlen(buffer)-1] = '\0'; // chop LF
-            if (buffer[0]=='\x1b') // ESC?
-               throw cRuntimeError(E_CANCEL);
-            if (opp_toupper(buffer[0])=='Y' && !buffer[1])
+            buffer[strlen(buffer)-1] = '\0';  // chop LF
+            if (buffer[0] == '\x1b')  // ESC?
+                throw cRuntimeError(E_CANCEL);
+            if (opp_toupper(buffer[0]) == 'Y' && !buffer[1])
                 return true;
-            else if (opp_toupper(buffer[0])=='N' && !buffer[1])
+            else if (opp_toupper(buffer[0]) == 'N' && !buffer[1])
                 return false;
             else
                 putsmsg("Please type 'y' or 'n'!\n");
@@ -704,24 +668,24 @@ bool Cmdenv::askyesno(const char *question)
     }
 }
 
-void Cmdenv::debug(const char *fmt,...)
+void Cmdenv::debug(const char *fmt, ...)
 {
     if (!logging)
         return;
 
     struct timeval tv;
     gettimeofday(&tv, nullptr);
-    time_t t = (time_t) tv.tv_sec;
+    time_t t = (time_t)tv.tv_sec;
     struct tm tm = *localtime(&t);
 
     ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
-             tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
-             getSimulation()->getEventNumber(), "");
+            tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
+            getSimulation()->getEventNumber(), "");
     va_list va;
     va_start(va, fmt);
     ::vfprintf(logStream, fmt, va);
     va_end(va);
-    ::fflush(logStream); // needed for sensible output in the IDE console
+    ::fflush(logStream);  // needed for sensible output in the IDE console
 }
 
 bool Cmdenv::idle()
@@ -739,8 +703,7 @@ void Cmdenv::moduleCreated(cModule *mod)
 
 void Cmdenv::messageSent_OBSOLETE(cMessage *msg, cGate *)
 {
-    if (!opt->expressMode && opt->messageTrace)
-    {
+    if (!opt->expressMode && opt->messageTrace) {
         ::fprintf(fout, "SENT:   %s\n", msg->info().c_str());
         if (opt->autoflush)
             ::fflush(fout);
@@ -751,11 +714,9 @@ void Cmdenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (!disableTracing)
-    {
-        if (opt->messageTrace)
-        {
-            ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  //TODO can go out!
+    if (!disableTracing) {
+        if (opt->messageTrace) {
+            ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  // TODO can go out!
             if (opt->autoflush)
                 ::fflush(fout);
         }
@@ -772,8 +733,8 @@ void Cmdenv::printUISpecificHelp()
     std::cout << "                See also: -r.\n";
     std::cout << "  -r <runs>     Execute the specified runs in the configuration selected with the\n";
     std::cout << "                -c option. <runs> is a comma-separated list of run numbers or\n";
-    std::cout << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
-    std::cout << "                runs of that configuration will be executed.\n" ;
+    std::cout << "                run number ranges, for example 1,2,5-10. When not present, all\n";
+    std::cout << "                runs of that configuration will be executed.\n";
     std::cout << "  -a            Print all config names and number of runs it them, and exit.\n";
     std::cout << "  -x <configname>\n";
     std::cout << "                Print the number of runs in the given configuration, and exit.\n";
@@ -787,7 +748,6 @@ unsigned Cmdenv::getExtraStackForEnvir() const
 {
     return opt->extraStack;
 }
-
-} // namespace cmdenv
+}  // namespace cmdenv
 NAMESPACE_END
 
