@@ -24,7 +24,8 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace layout {
 
-ForceDirectedEmbedding::ForceDirectedEmbedding() {
+ForceDirectedEmbedding::ForceDirectedEmbedding()
+{
     debugLevel = 0;
     inspected = false;
     initialized = false;
@@ -33,18 +34,20 @@ ForceDirectedEmbedding::ForceDirectedEmbedding() {
     parameters = getParameters();
 }
 
-ForceDirectedEmbedding::~ForceDirectedEmbedding() {
-    for(std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
+ForceDirectedEmbedding::~ForceDirectedEmbedding()
+{
+    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
         delete *it;
 
-    for(std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
         delete *it;
 
-    for(std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
+    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
         delete *it;
 }
 
-ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32_t seed) {
+ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32_t seed)
+{
     LCGRandom lcgRandom(seed);
 
     ForceDirectedParameters parameters;
@@ -85,7 +88,8 @@ ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32_t seed) {
     return parameters;
 }
 
-void ForceDirectedEmbedding::reinitialize() {
+void ForceDirectedEmbedding::reinitialize()
+{
     initialized = true;
     finished = false;
 
@@ -112,11 +116,11 @@ void ForceDirectedEmbedding::reinitialize() {
     tvn = createPtArray();
 
     // reinitialize parts
-    for(std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
+    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
         (*it)->reinitialize();
-    for(std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
         (*it)->reinitialize();
-    for(std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
+    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
         (*it)->reinitialize();
 
     // reinitialize positions and velocities
@@ -125,7 +129,7 @@ void ForceDirectedEmbedding::reinitialize() {
         pn[i].assign(variable->getPosition());
         vn[i].assign(variable->getVelocity());
         double variableMass = 0;
-        for(std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++) {
+        for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++) {
             IBody *body = *it;
             if (body->getVariable() == variable) {
                 variableMass += body->getMass();
@@ -156,7 +160,8 @@ void ForceDirectedEmbedding::reinitialize() {
  *
  * This algorithm adaptively modifies timeStep and friction.
  */
-void ForceDirectedEmbedding::embed() {
+void ForceDirectedEmbedding::embed()
+{
     if (finished)
         return;
 
@@ -201,7 +206,7 @@ void ForceDirectedEmbedding::embed() {
             a(a4, tpn, tvn);
 
             // Adjust time step (h)
-            //lastAccelerationError = maximumDifference(a1, a2, a3, a4);
+            // lastAccelerationError = maximumDifference(a1, a2, a3, a4);
             lastAccelerationError = averageRelativeError(a1, a2, a3, a4);
 
             if (debugLevel >= 3) {
@@ -238,8 +243,8 @@ void ForceDirectedEmbedding::embed() {
         }
 
         Assert(elapsedCalculationTime > parameters.maxCalculationTime ||
-               lastAccelerationError <= parameters.maxAccelerationError ||
-               nextUpdatedTimeStep <= parameters.minTimeStep);
+                lastAccelerationError <= parameters.maxAccelerationError ||
+                nextUpdatedTimeStep <= parameters.minTimeStep);
 
         // pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
         add(dpn, a1, a2);
@@ -292,8 +297,7 @@ void ForceDirectedEmbedding::embed() {
             elapsedCalculationTime > parameters.maxCalculationTime ||
             (lastMaxVelocity <= parameters.velocityRelaxLimit && lastMaxAcceleration <= parameters.accelerationRelaxLimit))
             finished = true;
-    }
-    while (!inspected && !finished);
+    } while (!inspected && !finished);
 
     elapsedTicks += clock() - begin;
     elapsedCalculationTime = ticksToMilliseconds(elapsedTicks);

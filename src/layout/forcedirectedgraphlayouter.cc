@@ -32,7 +32,6 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace layout {
 
-
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 {
     hasFixedNode = false;
@@ -296,14 +295,14 @@ void ForceDirectedGraphLayouter::addBasePlaneSprings()
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
     for (int i = 0; i < (int)bodies.size(); i++) {
-          IBody *body = bodies[i];
+        IBody *body = bodies[i];
 
         if (!dynamic_cast<WallBody *>(body))
             embedding.addForceProvider(new BasePlaneSpring(body, threeDCoefficient, 0));
     }
 }
 
-Rc ForceDirectedGraphLayouter::getBoundingBox(Rs &rs)
+Rc ForceDirectedGraphLayouter::getBoundingBox(Rs& rs)
 {
     double top = DBL_MAX, bottom = DBL_MIN;
     double left = DBL_MAX, right = DBL_MIN;
@@ -393,7 +392,7 @@ void ForceDirectedGraphLayouter::addEdge(int srcNodeId, int destNodeId, double l
 
     // and also an edge in the graph
     graphComponent.addEdge(new Edge(graphComponent.findVertex(spring->getBody1()->getVariable()),
-                                    graphComponent.findVertex(spring->getBody2()->getVariable())));
+                    graphComponent.findVertex(spring->getBody2()->getVariable())));
 }
 
 void ForceDirectedGraphLayouter::addEdgeToBorder(int srcNodeId, double len)
@@ -412,7 +411,8 @@ void ForceDirectedGraphLayouter::addEdgeToBorder(int srcNodeId, double len)
     embedding.addForceProvider(new LeastExpandedSpring(springs));
 }
 
-void ForceDirectedGraphLayouter::executePreEmbedding() {
+void ForceDirectedGraphLayouter::executePreEmbedding()
+{
     GraphComponent childrenComponentsStar;
     Vertex *childrenComponentsStarRoot = nullptr;
 
@@ -462,10 +462,10 @@ void ForceDirectedGraphLayouter::executePreEmbedding() {
     }
 
     // ensure all vertices are within the bounding box if it is specified
-    Rs rs; // the size of the biggest right and bottom vertex
+    Rs rs;  // the size of the biggest right and bottom vertex
     Rc rc = getBoundingBox(rs);
     scale(Pt(width ? (width - border * 2 - rs.width) / (rc.rs.width - rs.width) : 1,
-             height ? (height - border * 2 - rs.height) / (rc.rs.height - rs.height) : 1, NaN));
+                    height ? (height - border * 2 - rs.height) / (rc.rs.height - rs.height) : 1, NaN));
     // ensure all vertices have positive coordinates
     rc = getBoundingBox(rs);
     translate(Pt(-rc.pt.x + border, -rc.pt.y + border, 0));
@@ -509,7 +509,7 @@ void ForceDirectedGraphLayouter::execute()
             if (topBorder || leftBorder)
                 setBorderPositions();
 
-            //embedding.debug = 3;
+            // embedding.debug = 3;
             embedding.inspected = true;
             embedding.reinitialize();
 
@@ -565,9 +565,9 @@ void ForceDirectedGraphLayouter::debugDraw()
             }
         }
 
-        environment->drawRectangle(pt.x , pt.y, pt.x + rs.width, pt.y + rs.height, "{node bbox}", "black");
+        environment->drawRectangle(pt.x, pt.y, pt.x + rs.width, pt.y + rs.height, "{node bbox}", "black");
         char text[100];
-        sprintf(text,"%g", pt.z);
+        sprintf(text, "%g", pt.z);
         environment->drawText(pt.x, pt.y, text, "{node bbox}", "black");
     }
 

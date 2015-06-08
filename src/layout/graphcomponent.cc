@@ -20,7 +20,8 @@
 NAMESPACE_BEGIN
 namespace layout {
 
-Vertex::Vertex(Pt pt, Rs rs, void *identity) {
+Vertex::Vertex(Pt pt, Rs rs, void *identity)
+{
     this->rc = Rc(pt, rs);
     this->identity = identity;
 
@@ -32,7 +33,8 @@ Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     starTreeRadius = -1;
 }
 
-Edge::Edge(Vertex *source, Vertex *target, void *identity) {
+Edge::Edge(Vertex *source, Vertex *target, void *identity)
+{
     this->source = source;
     this->target = target;
     this->identity = identity;
@@ -41,12 +43,14 @@ Edge::Edge(Vertex *source, Vertex *target, void *identity) {
     connectedSubComponent = nullptr;
 }
 
-GraphComponent::GraphComponent() {
+GraphComponent::GraphComponent()
+{
     owner = true;
     spanningTreeRoot = nullptr;
 }
 
-GraphComponent::~GraphComponent() {
+GraphComponent::~GraphComponent()
+{
     if (owner) {
         for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++)
             delete *it;
@@ -59,12 +63,14 @@ GraphComponent::~GraphComponent() {
     }
 }
 
-int GraphComponent::addVertex(Vertex *vertex) {
+int GraphComponent::addVertex(Vertex *vertex)
+{
     vertices.push_back(vertex);
     return vertices.size() - 1;
 }
 
-int GraphComponent::addEdge(Edge *edge) {
+int GraphComponent::addEdge(Edge *edge)
+{
     edges.push_back(edge);
     edge->source->edges.push_back(edge);
     edge->target->edges.push_back(edge);
@@ -73,7 +79,8 @@ int GraphComponent::addEdge(Edge *edge) {
     return edges.size() - 1;
 }
 
-int GraphComponent::indexOfVertex(Vertex *vertex) {
+int GraphComponent::indexOfVertex(Vertex *vertex)
+{
     std::vector<Vertex *>::iterator it = find(vertices.begin(), vertices.end(), vertex);
 
     if (it == vertices.end())
@@ -94,7 +101,8 @@ Vertex *GraphComponent::findVertex(void *identity)
     return nullptr;
 }
 
-Rc GraphComponent::getBoundingRectangle() {
+Rc GraphComponent::getBoundingRectangle()
+{
     double top = DBL_MAX, bottom = DBL_MIN;
     double left = DBL_MAX, right = DBL_MIN;
 
@@ -113,7 +121,8 @@ Rc GraphComponent::getBoundingRectangle() {
     return Rc(left, top, 0, right - left, bottom - top);
 }
 
-void GraphComponent::calculateSpanningTree() {
+void GraphComponent::calculateSpanningTree()
+{
     Vertex *rootVertex = nullptr;
     spanningTreeVertices.clear();
 
@@ -128,7 +137,8 @@ void GraphComponent::calculateSpanningTree() {
         calculateSpanningTree(rootVertex);
 }
 
-void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
+void GraphComponent::calculateSpanningTree(Vertex *rootVertex)
+{
     spanningTreeRoot = rootVertex;
 
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
@@ -161,7 +171,8 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
     }
 }
 
-void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex) {
+void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex)
+{
     vertex->color = 1;
     vertex->spanningTreeParent = parentVertex;
 
@@ -169,7 +180,8 @@ void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *verte
         parentVertex->spanningTreeChildren.push_back(vertex);
 }
 
-void GraphComponent::calculateConnectedSubComponents() {
+void GraphComponent::calculateConnectedSubComponents()
+{
     connectedSubComponents.clear();
 
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
@@ -197,7 +209,8 @@ void GraphComponent::calculateConnectedSubComponents() {
     }
 }
 
-void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color) {
+void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color)
+{
     vertex->color = color;
     vertex->connectedSubComponent = childComponent;
     childComponent->vertices.push_back(vertex);

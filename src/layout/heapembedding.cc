@@ -29,8 +29,8 @@ HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacin
 
 void HeapEmbedding::embed()
 {
-    std::vector<Rc> rcs; // rectangles of vertices already positioned
-    std::vector<Pt> pts; // candidate points where vertices may be positioned
+    std::vector<Rc> rcs;  // rectangles of vertices already positioned
+    std::vector<Pt> pts;  // candidate points where vertices may be positioned
     pts.push_back(Pt::getZero());
 
     // delete all vertex positions
@@ -113,8 +113,7 @@ void HeapEmbedding::embed()
                 }
 
                 // if better than the current best
-                if (distance < bestDistance)
-				{
+                if (distance < bestDistance) {
                     bestRc = candidateRc;
                     bestDistance = distance;
                 }
