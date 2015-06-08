@@ -45,14 +45,12 @@ EventLogEntry *EventLogEntry::parseEntry(EventLog *eventLog, Event *event, int e
         currentLine = line;
         currentLineLength = length;
 
-        if (*line == '-')
-        {
+        if (*line == '-') {
             EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event, entryIndex);
             eventLogMessage->parse(line, length);
             return eventLogMessage;
         }
-        else
-        {
+        else {
             EventLogEntryFactory factory;
             tokenizer.tokenize(line, length);
             Assert(entryIndex >= 0);
@@ -84,7 +82,7 @@ simtime_t EventLogEntry::parseSimulationTime(const char *str)
 
 char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char *sign, bool mandatory)
 {
-    for (int i = 1; i < numTokens; i+= 2)
+    for (int i = 1; i < numTokens; i += 2)
         if (!strcmp(tokens[i], sign))
             return tokens[i + 1];
 

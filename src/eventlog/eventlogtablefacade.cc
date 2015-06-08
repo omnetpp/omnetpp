@@ -23,7 +23,7 @@
 NAMESPACE_BEGIN
 namespace eventlog {
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
@@ -40,16 +40,16 @@ void EventLogTableFacade::clearInternalState()
 
 void EventLogTableFacade::synchronize(FileReader::FileChangedState change)
 {
-	if (change != FileReader::UNCHANGED) {
-	    EventLogFacade::synchronize(change);
-		clearInternalState();
-	}
+    if (change != FileReader::UNCHANGED) {
+        EventLogFacade::synchronize(change);
+        clearInternalState();
+    }
 }
 
 void EventLogTableFacade::setCustomFilter(const char *pattern)
 {
-	customFilter = pattern;
-	matchExpression.setPattern((std::string("E or (") + customFilter + ")").c_str(), false, true, false);
+    customFilter = pattern;
+    matchExpression.setPattern((std::string("E or (") + customFilter + ")").c_str(), false, true, false);
     clearInternalState();
 }
 
@@ -61,23 +61,25 @@ void EventLogTableFacade::setFilterMode(EventLogTableFilterMode filterMode)
 
 bool EventLogTableFacade::matchesFilter(EventLogEntry *eventLogEntry)
 {
-    switch (filterMode)
-    {
+    switch (filterMode) {
         case ALL_ENTRIES:
             return true;
+
         case EVENT_AND_SEND_AND_MESSAGE_ENTRIES:
-            return
-                dynamic_cast<EventEntry *>(eventLogEntry) ||
-                dynamic_cast<BeginSendEntry *>(eventLogEntry) ||
-                dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
+            return dynamic_cast<EventEntry *>(eventLogEntry) ||
+                   dynamic_cast<BeginSendEntry *>(eventLogEntry) ||
+                   dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
+
         case EVENT_AND_MESSAGE_ENTRIES:
-            return
-                dynamic_cast<EventEntry *>(eventLogEntry) ||
-                dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
+            return dynamic_cast<EventEntry *>(eventLogEntry) ||
+                   dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
+
         case EVENT_ENTRIES:
             return dynamic_cast<EventEntry *>(eventLogEntry);
+
         case CUSTOM_ENTRIES:
             return matchExpression.matches(eventLogEntry);
+
         default:
             throw opp_runtime_error("Unknown event log table filter");
     }
@@ -90,32 +92,36 @@ int EventLogTableFacade::getNumMatchingEventLogEntries(IEvent *event)
     else {
         lastMatchedEventNumber = event->getEventNumber();
 
-        switch (filterMode)
-        {
+        switch (filterMode) {
             case ALL_ENTRIES:
                 lastNumMatchingEventLogEntries = event->getNumEventLogEntries();
                 break;
+
             case EVENT_AND_SEND_AND_MESSAGE_ENTRIES:
                 lastNumMatchingEventLogEntries = event->getNumBeginSendEntries() + event->getNumEventLogMessages() + 1;
                 break;
+
             case EVENT_AND_MESSAGE_ENTRIES:
                 lastNumMatchingEventLogEntries = event->getNumEventLogMessages() + 1;
                 break;
+
             case EVENT_ENTRIES:
                 lastNumMatchingEventLogEntries = 1;
                 break;
-            case CUSTOM_ENTRIES:
-                {
-                    int count = 0;
-                    int num = event->getNumEventLogEntries();
 
-                    for (int i = 0; i < num; i++)
-                        if (matchesFilter(event->getEventLogEntry(i)))
-                            count++;
+            case CUSTOM_ENTRIES: {
+                int count = 0;
+                int num = event->getNumEventLogEntries();
 
-                    lastNumMatchingEventLogEntries = count;
-                    break;
-                }
+                for (int i = 0; i < num; i++)
+                    if (matchesFilter(event->getEventLogEntry(i)))
+                        count++;
+
+
+                lastNumMatchingEventLogEntries = count;
+                break;
+            }
+
             default:
                 throw opp_runtime_error("Unknown event log table filter");
         }
@@ -238,8 +244,7 @@ EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
     else {
         int num = event->getNumEventLogEntries();
 
-        for (int i = 0; i < num; i++)
-        {
+        for (int i = 0; i < num; i++) {
             EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
 
             if (matchesFilter(eventLogEntry)) {
@@ -260,8 +265,7 @@ int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
     int index = 0;
     int num = event->getNumEventLogEntries();
 
-    for (int i = 0; i < num; i++)
-    {
+    for (int i = 0; i < num; i++) {
         EventLogEntry *currentEventLogEntry = event->getEventLogEntry(i);
 
         if (matchesFilter(currentEventLogEntry)) {
@@ -317,7 +321,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percent
 {
     Assert(0.0 <= percentage && percentage <= 1.0);
     if (percentage == 1) {
-        IEvent* event = eventLog->getLastEvent();
+        IEvent *event = eventLog->getLastEvent();
 
         if (!event)
             return nullptr;
@@ -342,7 +346,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percent
             else {
                 double entryPercentage = (percentage - beforePercentage) / (afterPercentage - beforePercentage);
                 Assert(0.0 <= entryPercentage && entryPercentage <= 1.0);
-                int index = (int) floor((getNumMatchingEventLogEntries(beforeEvent) - 1) * entryPercentage);
+                int index = (int)floor((getNumMatchingEventLogEntries(beforeEvent) - 1) * entryPercentage);
                 return getEntryInEvent(beforeEvent, index);
             }
         }
@@ -351,21 +355,18 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percent
 
 eventnumber_t EventLogTableFacade::getApproximateNumberOfEntries()
 {
-    if (approximateNumberOfEntries == -1)
-    {
+    if (approximateNumberOfEntries == -1) {
         IEvent *firstEvent = eventLog->getFirstEvent();
         IEvent *lastEvent = eventLog->getLastEvent();
 
         if (!firstEvent)
             approximateNumberOfEntries = 0;
-        else
-        {
+        else {
             long sum = 0;
             long count = 0;
             int eventCount = 100;
 
-            for (int i = 0; i < eventCount; i++)
-            {
+            for (int i = 0; i < eventCount; i++) {
                 if (firstEvent) {
                     sum += getNumMatchingEventLogEntries(firstEvent);
                     count++;

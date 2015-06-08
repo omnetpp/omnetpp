@@ -104,14 +104,13 @@ Options::Options()
 IEventLog *Options::createEventLog(FileReader *fileReader)
 {
     if (eventNumbers.empty() &&
-        !moduleExpression && moduleNames.empty() && moduleClassNames.empty() && moduleNEDTypeNames.empty() &&  moduleIds.empty() &&
+        !moduleExpression && moduleNames.empty() && moduleClassNames.empty() && moduleNEDTypeNames.empty() && moduleIds.empty() &&
         !messageExpression && messageNames.empty() && messageClassNames.empty() &&
         messageIds.empty() && messageTreeIds.empty() && messageEncapsulationIds.empty() && messageEncapsulationTreeIds.empty())
     {
         return new EventLog(fileReader);
     }
-    else
-    {
+    else {
         FilteredEventLog *filteredEventLog = new FilteredEventLog(new EventLog(fileReader));
 
         if (!eventNumbers.empty())
@@ -328,7 +327,7 @@ void filter(Options options)
 
     if (options.verbose)
         fprintf(stdout, "# Filtering events from log file %s for traced event number #%" EVENTNUMBER_PRINTF_FORMAT "d from event number #%" EVENTNUMBER_PRINTF_FORMAT "d to event number #%" EVENTNUMBER_PRINTF_FORMAT "d\n",
-            options.inputFileName, tracedEventNumber, options.getFirstEventNumber(), options.getLastEventNumber());
+                options.inputFileName, tracedEventNumber, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
     IEventLog *eventLog = options.createEventLog(fileReader);
@@ -398,7 +397,7 @@ void usage(const char *message)
 "         prints performance information\n");
 }
 
-void parseIntTokens(std::vector<int> &parameter, char *str)
+void parseIntTokens(std::vector<int>& parameter, char *str)
 {
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));
@@ -408,7 +407,7 @@ void parseIntTokens(std::vector<int> &parameter, char *str)
         parameter.push_back(atoi(tokens[j]));
 }
 
-void parseLongTokens(std::vector<long> &parameter, char *str)
+void parseLongTokens(std::vector<long>& parameter, char *str)
 {
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));
@@ -418,7 +417,7 @@ void parseLongTokens(std::vector<long> &parameter, char *str)
         parameter.push_back(atol(tokens[j]));
 }
 
-void parseEventNumberTokens(std::vector<eventnumber_t> &parameter, char *str)
+void parseEventNumberTokens(std::vector<eventnumber_t>& parameter, char *str)
 {
     char *e;
     LineTokenizer tokenizer;
@@ -429,7 +428,7 @@ void parseEventNumberTokens(std::vector<eventnumber_t> &parameter, char *str)
         parameter.push_back(strtoll(tokens[j], &e, 10));
 }
 
-void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
+void parseFileOffsetTokens(std::vector<file_offset_t>& parameter, char *str)
 {
     char *e;
     LineTokenizer tokenizer;
@@ -440,7 +439,7 @@ void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
         parameter.push_back(strtoll(tokens[j], &e, 10));
 }
 
-void parseStringTokens(std::vector<std::string> &parameter, char *str)
+void parseStringTokens(std::vector<std::string>& parameter, char *str)
 {
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));
@@ -516,7 +515,7 @@ int main(int argc, char **argv)
                     else if (i == argc - 1)
                         options.inputFileName = argv[i];
                 }
-                catch (std::exception &e) {
+                catch (std::exception& e) {
                     fprintf(stderr, "Invalid argument '%s': %s\n", argv[i], e.what());
                     return 1;
                 }
@@ -552,8 +551,9 @@ int main(int argc, char **argv)
 
         return 0;
     }
-    catch (std::exception &e) {
+    catch (std::exception& e) {
         fprintf(stderr, "Error: %s\n", e.what());
         return 1;
     }
 }
+

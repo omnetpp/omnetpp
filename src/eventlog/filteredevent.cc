@@ -88,7 +88,7 @@ void FilteredEvent::synchronize(FileReader::FileChangedState change)
             case FileReader::APPENDED:
                 deleteConsequences();
                 break;
-            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
+            case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
                 break;
         }
     }
@@ -234,7 +234,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
                 IEvent *causeEvent = messageDependency->getCauseEvent();
 
                 if (causeEvent && (filteredEventLog->getCollectMessageReuses() || !dynamic_cast<MessageReuseDependency *>(messageDependency))) {
-                    //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
+                    // printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
                     FilteredMessageDependency::Kind effectiveKind = (FilteredMessageDependency::Kind)((int)currentKind | (int)getMessageDependencyKind(messageDependency));
                     if (filteredEventLog->matchesFilter(causeEvent) &&
                         (level == 0 || IMessageDependency::corresponds(messageDependency, endMessageDependency)))
@@ -288,7 +288,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
                 IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
                 if (consequenceEvent && (filteredEventLog->getCollectMessageReuses() || !dynamic_cast<MessageReuseDependency *>(messageDependency))) {
-                    //printf("*** Checking at level %d for consequence event number %ld\n", level, consequenceEvent->getEventNumber());
+                    // printf("*** Checking at level %d for consequence event number %ld\n", level, consequenceEvent->getEventNumber());
                     FilteredMessageDependency::Kind effectiveKind = (FilteredMessageDependency::Kind)((int)currentKind | (int)getMessageDependencyKind(messageDependency));
                     if (filteredEventLog->matchesFilter(consequenceEvent) &&
                         (level == 0 || IMessageDependency::corresponds(beginMessageDependency, messageDependency)))

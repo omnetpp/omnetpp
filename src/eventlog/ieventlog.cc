@@ -21,7 +21,6 @@
 NAMESPACE_BEGIN
 namespace eventlog {
 
-
 IEventLog::IEventLog()
 {
     clearInternalState();
@@ -47,8 +46,7 @@ IEvent *IEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
     if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs64(neighbourEventNumber - lastNeighbourEventNumber) < abs64(distance))
         return getNeighbourEvent(lastNeighbourEvent, neighbourEventNumber - lastNeighbourEventNumber);
 
-    while (event != nullptr && distance != 0)
-    {
+    while (event != nullptr && distance != 0) {
         if (distance > 0) {
             distance--;
             event = event->getNextEvent();

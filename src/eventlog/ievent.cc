@@ -42,8 +42,7 @@ void IEvent::synchronize(FileReader::FileChangedState change)
 int IEvent::findBeginSendEntryIndex(int messageId)
 {
     // find the "BS" or "SA" line in the cause event
-    for (int beginSendEntryNumber = 0; beginSendEntryNumber < getNumEventLogEntries(); beginSendEntryNumber++)
-    {
+    for (int beginSendEntryNumber = 0; beginSendEntryNumber < getNumEventLogEntries(); beginSendEntryNumber++) {
         BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(getEventLogEntry(beginSendEntryNumber));
 
         if (beginSendEntry && beginSendEntry->messageId == messageId)

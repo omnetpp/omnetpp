@@ -123,7 +123,8 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     beginOffset = offset;
     reader->seekTo(offset);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %" INT64_PRINTF_FORMAT "d\n", offset);
+    if (PRINT_DEBUG_MESSAGES)
+        printf("Parsing event at offset: %" INT64_PRINTF_FORMAT "d\n", offset);
 
     int index = 0;
     std::deque<int> contextModuleIds;

@@ -77,8 +77,8 @@ void FilteredEventLog::synchronize(FileReader::FileChangedState change)
     if (change != FileReader::UNCHANGED) {
         eventLog->synchronize(change);
         switch (change) {
-            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
-                 break;
+            case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
+                break;
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
                 clearInternalState();
@@ -119,8 +119,7 @@ void FilteredEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnum
         fprintf(file, "\n");
     }
 
-    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
-    {
+    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber)) {
         eventnumber_t eventNumber = event->getEventNumber();
         KeyframeEntry *keyframeEntry = event->getNumEventLogEntries() > 1 ? dynamic_cast<KeyframeEntry *>(event->getEventLogEntry(1)) : nullptr;
         if (keyframeEntry)
@@ -157,7 +156,7 @@ void FilteredEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnum
     }
 }
 
-void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath)
+void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher>& patternMatchers, std::vector<std::string>& patterns, bool dottedPath)
 {
     for (std::vector<std::string>::iterator it = patterns.begin(); it != patterns.end(); it++) {
         PatternMatcher matcher;
@@ -168,8 +167,7 @@ void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMa
 
 eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
 {
-    if (approximateNumberOfEvents == -1)
-    {
+    if (approximateNumberOfEvents == -1) {
         if (tracedEventNumber != -1) {
             // TODO: this is clearly not good and should return a much better approximation
             // TODO: maybe start from traced event number and go forward/backward and return approximation based on that?
@@ -185,8 +183,7 @@ eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
 
             if (firstEvent == nullptr)
                 approximateNumberOfEvents = 0;
-            else
-            {
+            else {
                 file_offset_t beginOffset = firstEvent->getBeginOffset();
                 file_offset_t endOffset = lastEvent->getEndOffset();
                 long sumMatching = 0;
@@ -195,8 +192,7 @@ eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
                 int eventCount = 100;
 
                 // TODO: perhaps it would be better to read in random events
-                for (int i = 0; i < eventCount; i++)
-                {
+                for (int i = 0; i < eventCount; i++) {
                     if (firstEvent) {
                         FilteredEvent *previousEvent = firstEvent;
                         sumMatching += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
@@ -274,7 +270,7 @@ bool FilteredEventLog::matchesFilter(IEvent *event)
     if (it != eventNumberToFilterMatchesFlagMap.end())
         return it->second;
 
-    //printf("*** Matching filter to event: %ld\n", event->getEventNumber());
+    // printf("*** Matching filter to event: %ld\n", event->getEventNumber());
 
     bool matches = matchesEvent(event) && matchesDependency(event);
     eventNumberToFilterMatchesFlagMap[event->getEventNumber()] = matches;
@@ -322,7 +318,7 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
         // no match
         return false;
         // match found
-        MATCHES:;
+      MATCHES:;
     }
 
     // event's message
@@ -369,32 +365,30 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
 
 bool FilteredEventLog::matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry)
 {
-    return
-        matchesExpression(moduleExpression, moduleCreatedEntry) ||
-        matchesPatterns(moduleNames, moduleCreatedEntry->fullName) ||
-        matchesPatterns(moduleClassNames, moduleCreatedEntry->moduleClassName) ||
-        matchesPatterns(moduleNEDTypeNames, moduleCreatedEntry->nedTypeName) ||
-        matchesList(moduleIds, moduleCreatedEntry->moduleId);
+    return matchesExpression(moduleExpression, moduleCreatedEntry) ||
+           matchesPatterns(moduleNames, moduleCreatedEntry->fullName) ||
+           matchesPatterns(moduleClassNames, moduleCreatedEntry->moduleClassName) ||
+           matchesPatterns(moduleNEDTypeNames, moduleCreatedEntry->nedTypeName) ||
+           matchesList(moduleIds, moduleCreatedEntry->moduleId);
 }
 
 bool FilteredEventLog::matchesBeginSendEntry(BeginSendEntry *beginSendEntry)
 {
-    return
-        matchesExpression(messageExpression, beginSendEntry) ||
-        matchesPatterns(messageNames, beginSendEntry->messageName) ||
-        matchesPatterns(messageClassNames, beginSendEntry->messageClassName) ||
-        matchesList(messageIds, beginSendEntry->messageId) ||
-        matchesList(messageTreeIds, beginSendEntry->messageTreeId) ||
-        matchesList(messageEncapsulationIds, beginSendEntry->messageEncapsulationId) ||
-        matchesList(messageEncapsulationTreeIds, beginSendEntry->messageEncapsulationTreeId);
+    return matchesExpression(messageExpression, beginSendEntry) ||
+           matchesPatterns(messageNames, beginSendEntry->messageName) ||
+           matchesPatterns(messageClassNames, beginSendEntry->messageClassName) ||
+           matchesList(messageIds, beginSendEntry->messageId) ||
+           matchesList(messageTreeIds, beginSendEntry->messageTreeId) ||
+           matchesList(messageEncapsulationIds, beginSendEntry->messageEncapsulationId) ||
+           matchesList(messageEncapsulationTreeIds, beginSendEntry->messageEncapsulationTreeId);
 }
 
-bool FilteredEventLog::matchesExpression(MatchExpression &matchExpression, EventLogEntry *eventLogEntry)
+bool FilteredEventLog::matchesExpression(MatchExpression& matchExpression, EventLogEntry *eventLogEntry)
 {
     return matchExpression.matches(eventLogEntry);
 }
 
-bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str)
+bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher>& patterns, const char *str)
 {
     if (patterns.empty())
         return false;
@@ -403,10 +397,11 @@ bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher> &patterns, co
         if ((*it).matches(str))
             return true;
 
+
     return false;
 }
 
-template <typename T> bool FilteredEventLog::matchesList(std::vector<T> &elements, T element)
+template<typename T> bool FilteredEventLog::matchesList(std::vector<T>& elements, T element)
 {
     if (elements.empty())
         return false;
@@ -428,8 +423,7 @@ bool FilteredEventLog::isEmpty()
 
 FilteredEvent *FilteredEventLog::getFirstEvent()
 {
-    if (!firstMatchingEvent && !eventLog->isEmpty())
-    {
+    if (!firstMatchingEvent && !eventLog->isEmpty()) {
         eventnumber_t startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstEventNumber);
         firstMatchingEvent = getMatchingEventInDirection(startEventNumber, true);
     }
@@ -439,8 +433,7 @@ FilteredEvent *FilteredEventLog::getFirstEvent()
 
 FilteredEvent *FilteredEventLog::getLastEvent()
 {
-    if (!lastMatchingEvent && !eventLog->isEmpty())
-    {
+    if (!lastMatchingEvent && !eventLog->isEmpty()) {
         eventnumber_t startEventNumber = lastEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastEventNumber);
         lastMatchingEvent = getMatchingEventInDirection(startEventNumber, false);
     }
@@ -461,20 +454,24 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumbe
                 if (matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
                 break;
+
             case FIRST_OR_PREVIOUS:
                 if (event->getEventNumber() == eventNumber && matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
                 else if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
                 break;
+
             case FIRST_OR_NEXT:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
                 break;
+
             case LAST_OR_PREVIOUS:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
                 break;
+
             case LAST_OR_NEXT:
                 if (event->getEventNumber() == eventNumber && matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
@@ -495,6 +492,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
                 if (matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
                 break;
+
             case FIRST_OR_PREVIOUS:
                 if (!useCacheOnly) {
                     if (event->getSimulationTime() == simulationTime) {
@@ -507,14 +505,17 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
                     return getMatchingEventInDirection(event, false);
                 }
                 break;
+
             case FIRST_OR_NEXT:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
                 break;
+
             case LAST_OR_PREVIOUS:
                 if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
                 break;
+
             case LAST_OR_NEXT:
                 if (!useCacheOnly) {
                     if (event->getSimulationTime() == simulationTime) {
@@ -539,8 +540,7 @@ EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const c
 
     do {
         eventLogEntry = eventLog->findEventLogEntry(eventLogEntry, search, forward, caseSensitive);
-    }
-    while (eventLogEntry && !matchesFilter(eventLogEntry->getEvent()));
+    } while (eventLogEntry && !matchesFilter(eventLogEntry->getEvent()));
 
     return eventLogEntry;
 }
@@ -584,16 +584,14 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 
     // TODO: LONG RUNNING OPERATION
     // if none of firstEventNumber, lastEventNumber, stopEventNumber is set this might take a while
-    while (event)
-    {
+    while (event) {
         eventLog->progress();
         int eventNumber = event->getEventNumber();
 
         if (matchesFilter(event))
             return cacheFilteredEvent(eventNumber);
 
-        if (forward)
-        {
+        if (forward) {
             eventNumber++;
             event = event->getNextEvent();
 
@@ -635,7 +633,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
     EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(causeEvent->getEventNumber());
     if (it != eventNumberToTraceableEventFlagMap.end())
         return it->second;
-    //printf("Checking if %ld is cause of %ld\n", causeEvent->getEventNumber(), tracedEventNumber);
+    // printf("Checking if %ld is cause of %ld\n", causeEvent->getEventNumber(), tracedEventNumber);
 
     eventnumber_t causeEventNumber = causeEvent->getEventNumber();
     while (!unseenTracedEventCauseEventNumbers.empty() && unseenTracedEventCauseEventNumbers.front() >= causeEventNumber) {
@@ -644,8 +642,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
         IEvent *unseenTracedEventCauseEvent = eventLog->getEventForEventNumber(unseenTracedEventCauseEventNumber);
         if (unseenTracedEventCauseEvent) {
             IMessageDependencyList *causes = unseenTracedEventCauseEvent->getCauses();
-            for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-            {
+            for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
                 IMessageDependency *messageDependency = *it;
                 IEvent *newUnseenTracedEventCauseEvent = messageDependency->getCauseEvent();
                 if (newUnseenTracedEventCauseEvent &&
@@ -676,7 +673,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequenceEvent)
     EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(consequenceEvent->getEventNumber());
     if (it != eventNumberToTraceableEventFlagMap.end())
         return it->second;
-    //printf("Checking if %ld is consequence of %ld\n", consequence->getEventNumber(), tracedEventNumber);
+    // printf("Checking if %ld is consequence of %ld\n", consequence->getEventNumber(), tracedEventNumber);
 
     // like isCauseOfTracedEvent(), but searching from the opposite direction
     eventnumber_t consequenceEventNumber = consequenceEvent->getEventNumber();
@@ -686,8 +683,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequenceEvent)
         IEvent *unseenTracedEventConsequenceEvent = eventLog->getEventForEventNumber(unseenTracedEventConsequenceEventNumber);
         if (unseenTracedEventConsequenceEvent) {
             IMessageDependencyList *consequences = unseenTracedEventConsequenceEvent->getConsequences();
-            for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
-            {
+            for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
                 IMessageDependency *messageDependency = *it;
                 IEvent *newUnseenTracedEventConsequenceEvent = messageDependency->getConsequenceEvent();
                 if (newUnseenTracedEventConsequenceEvent &&

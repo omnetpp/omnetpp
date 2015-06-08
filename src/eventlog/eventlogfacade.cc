@@ -38,16 +38,16 @@ void EventLogFacade::synchronize(FileReader::FileChangedState change)
         eventLog->synchronize(change);
 }
 
-IEvent* EventLogFacade::IEvent_getEvent(ptr_t ptr)
+IEvent *EventLogFacade::IEvent_getEvent(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return (IEvent*)ptr;
+    return (IEvent *)ptr;
 }
 
 ptr_t EventLogFacade::IEvent_getNonFilteredEvent(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    IEvent *ievent = (IEvent*)ptr;
+    IEvent *ievent = (IEvent *)ptr;
 
     Event *event = dynamic_cast<Event *>(ievent);
     if (event)
@@ -74,91 +74,91 @@ ptr_t EventLogFacade::IEvent_getNonFilteredEventForEventNumber(eventnumber_t eve
 ptr_t EventLogFacade::IEvent_getPreviousEvent(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return (ptr_t)((IEvent*)ptr)->getPreviousEvent();
+    return (ptr_t)((IEvent *)ptr)->getPreviousEvent();
 }
 
 ptr_t EventLogFacade::IEvent_getNextEvent(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return (ptr_t)((IEvent*)ptr)->getNextEvent();
+    return (ptr_t)((IEvent *)ptr)->getNextEvent();
 }
 
 eventnumber_t EventLogFacade::IEvent_getEventNumber(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->getEventNumber();
+    return ((IEvent *)ptr)->getEventNumber();
 }
 
 simtime_t EventLogFacade::IEvent_getSimulationTime(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->getSimulationTime();
+    return ((IEvent *)ptr)->getSimulationTime();
 }
 
 double EventLogFacade::IEvent_getSimulationTimeAsDouble(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->getSimulationTime().dbl();
+    return ((IEvent *)ptr)->getSimulationTime().dbl();
 }
 
 int EventLogFacade::IEvent_getModuleId(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->getModuleId();
+    return ((IEvent *)ptr)->getModuleId();
 }
 
 int EventLogFacade::IEvent_getNumCauses(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->getCauses()->size();
+    return ((IEvent *)ptr)->getCauses()->size();
 }
 
 int EventLogFacade::IEvent_getNumConsequences(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->getConsequences()->size();
+    return ((IEvent *)ptr)->getConsequences()->size();
 }
 
 ptr_t EventLogFacade::IEvent_getCause(ptr_t ptr, int index)
 {
     IEVENT_PTR(ptr);
-    return (ptr_t)((IEvent*)ptr)->getCauses()->at(index);
+    return (ptr_t)((IEvent *)ptr)->getCauses()->at(index);
 }
 
 ptr_t EventLogFacade::IEvent_getConsequence(ptr_t ptr, int index)
 {
     IEVENT_PTR(ptr);
-    return (ptr_t)((IEvent*)ptr)->getConsequences()->at(index);
+    return (ptr_t)((IEvent *)ptr)->getConsequences()->at(index);
 }
 
 bool EventLogFacade::IEvent_isSelfMessageProcessingEvent(ptr_t ptr)
 {
     IEVENT_PTR(ptr);
-    return ((IEvent*)ptr)->isSelfMessageProcessingEvent();
+    return ((IEvent *)ptr)->isSelfMessageProcessingEvent();
 }
 
 EventLogEntry *EventLogFacade::EventLogEntry_getEventLogEntry(ptr_t ptr)
 {
     EVENT_LOG_ENTRY_PTR(ptr);
-    return (EventLogEntry*)ptr;
+    return (EventLogEntry *)ptr;
 }
 
 ptr_t EventLogFacade::EventLogEntry_getEvent(ptr_t ptr)
 {
     EVENT_LOG_ENTRY_PTR(ptr);
-    return (ptr_t)((EventLogEntry*)ptr)->getEvent();
+    return (ptr_t)((EventLogEntry *)ptr)->getEvent();
 }
 
 int EventLogFacade::EventLogEntry_getContextModuleId(ptr_t ptr)
 {
     EVENT_LOG_ENTRY_PTR(ptr);
-    return ((EventLogEntry*)ptr)->contextModuleId;
+    return ((EventLogEntry *)ptr)->contextModuleId;
 }
 
 int EventLogFacade::EventLogEntry_getEntryIndex(ptr_t ptr)
 {
     EVENT_LOG_ENTRY_PTR(ptr);
-    return ((EventLogEntry*)ptr)->getEntryIndex();
+    return ((EventLogEntry *)ptr)->getEntryIndex();
 }
 
 bool EventLogFacade::BeginSendEntry_isSelfMessage(ptr_t ptr)
@@ -167,7 +167,6 @@ bool EventLogFacade::BeginSendEntry_isSelfMessage(ptr_t ptr)
     BeginSendEntry *beginSendEntry = (BeginSendEntry *)ptr;
     return beginSendEntry->getEvent()->isSelfMessage(beginSendEntry);
 }
-
 
 bool EventLogFacade::MessageEntry_isBeginSendEntry(ptr_t ptr)
 {
@@ -240,73 +239,73 @@ const char *EventLogFacade::ModuleMethodBeginEntry_getMethod(ptr_t ptr)
 IMessageDependency *EventLogFacade::IMessageDependency_getMessageDependency(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return (IMessageDependency*)ptr;
+    return (IMessageDependency *)ptr;
 }
 
 const char *EventLogFacade::IMessageDependency_getMessageName(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return ((IMessageDependency*)ptr)->getMessageEntry()->messageName;
+    return ((IMessageDependency *)ptr)->getMessageEntry()->messageName;
 }
 
 bool EventLogFacade::IMessageDependency_isReuse(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return dynamic_cast<MessageReuseDependency*>((IMessageDependency*)ptr);
+    return dynamic_cast<MessageReuseDependency *>((IMessageDependency *)ptr);
 }
 
 bool EventLogFacade::IMessageDependency_isFilteredMessageDependency(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return dynamic_cast<FilteredMessageDependency*>((IMessageDependency*)ptr);
+    return dynamic_cast<FilteredMessageDependency *>((IMessageDependency *)ptr);
 }
 
 ptr_t EventLogFacade::IMessageDependency_getCauseEvent(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return (ptr_t)((IMessageDependency*)ptr)->getCauseEvent();
+    return (ptr_t)((IMessageDependency *)ptr)->getCauseEvent();
 }
 
 ptr_t EventLogFacade::IMessageDependency_getConsequenceEvent(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return (ptr_t)((IMessageDependency*)ptr)->getConsequenceEvent();
+    return (ptr_t)((IMessageDependency *)ptr)->getConsequenceEvent();
 }
 
 ptr_t EventLogFacade::IMessageDependency_getMessageEntry(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return (ptr_t)((IMessageDependency*)ptr)->getMessageEntry();
+    return (ptr_t)((IMessageDependency *)ptr)->getMessageEntry();
 }
 
 simtime_t EventLogFacade::IMessageDependency_getCauseSimulationTime(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return ((IMessageDependency*)ptr)->getCauseSimulationTime();
+    return ((IMessageDependency *)ptr)->getCauseSimulationTime();
 }
 
 simtime_t EventLogFacade::IMessageDependency_getConsequenceSimulationTime(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return ((IMessageDependency*)ptr)->getConsequenceSimulationTime();
+    return ((IMessageDependency *)ptr)->getConsequenceSimulationTime();
 }
 
 const char *EventLogFacade::FilteredMessageDependency_getBeginMessageName(ptr_t ptr)
 {
     FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((FilteredMessageDependency*)ptr)->getBeginMessageDependency()->getMessageEntry()->messageName;
+    return ((FilteredMessageDependency *)ptr)->getBeginMessageDependency()->getMessageEntry()->messageName;
 }
 
 const char *EventLogFacade::FilteredMessageDependency_getEndMessageName(ptr_t ptr)
 {
     FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((FilteredMessageDependency*)ptr)->getEndMessageDependency()->getMessageEntry()->messageName;
+    return ((FilteredMessageDependency *)ptr)->getEndMessageDependency()->getMessageEntry()->messageName;
 }
 
 FilteredMessageDependency::Kind EventLogFacade::FilteredMessageDependency_getKind(ptr_t ptr)
 {
     FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((FilteredMessageDependency*)ptr)->getKind();
+    return ((FilteredMessageDependency *)ptr)->getKind();
 }
 
 } // namespace eventlog

@@ -32,7 +32,6 @@ IMessageDependency::IMessageDependency(IEventLog *eventLog)
     this->eventLog = eventLog;
 }
 
-
 bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDependency *dependency2)
 {
     if (!dependency1 || !dependency2)
@@ -43,11 +42,10 @@ bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDe
         if (!entry1 || !entry2)
             return false;
         else
-            return
-                (entry1->messageId != -1 && entry1->messageId == entry2->messageId) ||
-                (entry1->messageTreeId != -1 && entry1->messageTreeId == entry2->messageTreeId) ||
-                (entry1->messageEncapsulationId != -1 && entry1->messageEncapsulationId == entry2->messageEncapsulationId) ||
-                (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
+            return (entry1->messageId != -1 && entry1->messageId == entry2->messageId) ||
+                   (entry1->messageTreeId != -1 && entry1->messageTreeId == entry2->messageTreeId) ||
+                   (entry1->messageEncapsulationId != -1 && entry1->messageEncapsulationId == entry2->messageEncapsulationId) ||
+                   (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
     }
 }
 
@@ -80,8 +78,7 @@ simtime_t MessageSendDependency::getCauseSimulationTime()
 
 eventnumber_t MessageSendDependency::getConsequenceEventNumber()
 {
-    if (consequenceEventNumber == EVENT_NOT_YET_CALCULATED || consequenceEventNumber == EVENT_NOT_YET_REACHED)
-    {
+    if (consequenceEventNumber == EVENT_NOT_YET_CALCULATED || consequenceEventNumber == EVENT_NOT_YET_REACHED) {
         // only cause is present, calculate consequence from it.
         //
         // when a message is scheduled/sent, we don't know the arrival event number
@@ -97,8 +94,7 @@ eventnumber_t MessageSendDependency::getConsequenceEventNumber()
             MessageEntry *messageEntry = getMessageEntry();
 
             // TODO: LONG RUNNING OPERATION
-            while (event)
-            {
+            while (event) {
                 eventLog->progress();
 
                 if (event->getCauseEventNumber() == getCauseEventNumber() &&
@@ -108,8 +104,7 @@ eventnumber_t MessageSendDependency::getConsequenceEventNumber()
                     break;
                 }
 
-                if (event->getSimulationTime() > consequenceTime)
-                {
+                if (event->getSimulationTime() > consequenceTime) {
                     // no more event at that simulation time, and consequence event
                     // still not found. It must have been cancelled (self message),
                     // or it is not in the file (filtered out by the user, etc).
@@ -143,8 +138,7 @@ simtime_t MessageSendDependency::getConsequenceSimulationTime()
 {
     if (consequenceEventNumber >= 0)
         return getConsequenceEvent()->getSimulationTime();
-    else
-    {
+    else {
         // find the arrival time of the message
         IEvent *event = getCauseEvent();
         BeginSendEntry *beginSendEntry = (BeginSendEntry *)(event->getEventLogEntry(eventLogEntryIndex));
@@ -176,9 +170,9 @@ bool MessageSendDependency::equals(IMessageDependency *other)
 {
     MessageSendDependency *otherMessageSendDependency = dynamic_cast<MessageSendDependency *>(other);
     return IMessageDependency::equals(other) && otherMessageSendDependency &&
-        causeEventNumber == otherMessageSendDependency->causeEventNumber &&
-        consequenceEventNumber == otherMessageSendDependency->consequenceEventNumber &&
-        eventLogEntryIndex == otherMessageSendDependency->eventLogEntryIndex;
+           causeEventNumber == otherMessageSendDependency->causeEventNumber &&
+           consequenceEventNumber == otherMessageSendDependency->consequenceEventNumber &&
+           eventLogEntryIndex == otherMessageSendDependency->eventLogEntryIndex;
 }
 
 void MessageSendDependency::print(FILE *file)
@@ -200,8 +194,7 @@ MessageReuseDependency::MessageReuseDependency(IEventLog *eventLog, eventnumber_
 
 eventnumber_t MessageReuseDependency::getCauseEventNumber()
 {
-    if (causeEventNumber == EVENT_NOT_YET_CALCULATED)
-    {
+    if (causeEventNumber == EVENT_NOT_YET_CALCULATED) {
         // only consequence is present, calculate cause from it
         IEvent *consequenceEvent = getConsequenceEvent();
         Assert(consequenceEvent);
@@ -254,13 +247,14 @@ MessageReuseDependency *MessageReuseDependency::duplicate(IEventLog *eventLog)
     messageReuseDependency->eventLog = eventLog;
     return messageReuseDependency;
 }
+
 bool MessageReuseDependency::equals(IMessageDependency *other)
 {
     MessageReuseDependency *otherMessageReuseDependency = dynamic_cast<MessageReuseDependency *>(other);
     return IMessageDependency::equals(other) && otherMessageReuseDependency &&
-        causeEventNumber == otherMessageReuseDependency->causeEventNumber &&
-        consequenceEventNumber == otherMessageReuseDependency->consequenceEventNumber &&
-        eventLogEntryIndex == otherMessageReuseDependency->eventLogEntryIndex;
+           causeEventNumber == otherMessageReuseDependency->causeEventNumber &&
+           consequenceEventNumber == otherMessageReuseDependency->consequenceEventNumber &&
+           eventLogEntryIndex == otherMessageReuseDependency->eventLogEntryIndex;
 }
 
 void MessageReuseDependency::print(FILE *file)
@@ -314,8 +308,8 @@ bool FilteredMessageDependency::equals(IMessageDependency *other)
 {
     FilteredMessageDependency *otherFiltered = dynamic_cast<FilteredMessageDependency *>(other);
     return IMessageDependency::equals(other) && otherFiltered &&
-        beginMessageDependency->equals(otherFiltered->beginMessageDependency) &&
-        endMessageDependency->equals(otherFiltered->endMessageDependency);
+           beginMessageDependency->equals(otherFiltered->beginMessageDependency) &&
+           endMessageDependency->equals(otherFiltered->endMessageDependency);
 }
 
 void FilteredMessageDependency::print(FILE *file)

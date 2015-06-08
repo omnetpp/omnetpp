@@ -72,7 +72,7 @@ void EventLog::synchronize(FileReader::FileChangedState change)
         IEventLog::synchronize(change);
         EventLogIndex::synchronize(change);
         switch (change) {
-            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
+            case FileReader::UNCHANGED:  // just to avoid unused enumeration value warnings
                 break;
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
@@ -106,8 +106,7 @@ void EventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t to
 {
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
 
-    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
-    {
+    while (event != nullptr && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber)) {
         event->print(file, outputEventLogMessages);
         event = event->getNextEvent();
         if (event)
@@ -132,23 +131,20 @@ void EventLog::progress()
 
 eventnumber_t EventLog::getApproximateNumberOfEvents()
 {
-    if (approximateNumberOfEvents == -1)
-    {
+    if (approximateNumberOfEvents == -1) {
         Event *firstEvent = getFirstEvent();
         Event *lastEvent = getLastEvent();
 
         if (firstEvent == nullptr)
             approximateNumberOfEvents = 0;
-        else
-        {
+        else {
             file_offset_t beginOffset = firstEvent->getBeginOffset();
             file_offset_t endOffset = lastEvent->getEndOffset();
             long sum = 0;
             long count = 0;
             int eventCount = 100;
 
-            for (int i = 0; i < eventCount; i++)
-            {
+            for (int i = 0; i < eventCount; i++) {
                 if (firstEvent) {
                     sum += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
                     count++;
@@ -383,8 +379,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
                 return getEventForBeginOffset(reader->getCurrentLineStartOffset())->getEventLogEntry(index);
             else if (line[0] != '\r' && line[0] != '\n')
                 index++;
-        }
-        while ((line = reader->getPreviousLineBufferPointer()));
+        } while ((line = reader->getPreviousLineBufferPointer()));
     }
 
     return nullptr;
@@ -397,8 +392,7 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 
     if (it != beginOffsetToEventMap.end())
         return it->second;
-    else if (reader->getFileSize() != beginOffset)
-    {
+    else if (reader->getFileSize() != beginOffset) {
         Event *event = new Event(this);
         parseEvent(event, beginOffset);
         cacheEvent(event);
@@ -532,7 +526,7 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
                 for (int i = 0; i < (int)event->getNumEventLogEntries(); i++) {
                     MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(event->getEventLogEntry(i));
                     if (messageEntry) {
-                        eventnumber_t messageEntryPreviousEventNumber =  messageEntry->previousEventNumber;
+                        eventnumber_t messageEntryPreviousEventNumber = messageEntry->previousEventNumber;
                         if (beginEventNumber <= messageEntryPreviousEventNumber && messageEntryPreviousEventNumber < endEventNumber && messageEntryPreviousEventNumber != event->getEventNumber()) {
                             it = previousEventNumberToMessageEntriesMap.find(messageEntryPreviousEventNumber);
                             it->second.push_back(messageEntry);
@@ -553,3 +547,4 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
 
 } // namespace eventlog
 NAMESPACE_END
+
