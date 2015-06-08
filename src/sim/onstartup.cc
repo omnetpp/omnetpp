@@ -53,11 +53,9 @@ class StartupChecker
 
 StartupChecker startupChecker;
 
-
 CodeFragments *CodeFragments::head;
 
-
-CodeFragments::CodeFragments(void (*code)(), Type type) : type(type), code(code)
+CodeFragments::CodeFragments(void(*code)(), Type type) : type(type), code(code)
 {
     // add to list
     next = head;
@@ -71,10 +69,8 @@ CodeFragments::~CodeFragments()
 void CodeFragments::executeAll(Type type)
 {
     CodeFragments *p = CodeFragments::head;
-    while (p)
-    {
-        if (p->type == type && p->code != nullptr)
-        {
+    while (p) {
+        if (p->type == type && p->code != nullptr) {
             p->code();
             p->code = nullptr;  // do it only once (executeAll() may be called multiple times, e.g. after dlopen() / LoadLibrary() calls)
         }

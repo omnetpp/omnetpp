@@ -22,26 +22,26 @@
 
 NAMESPACE_BEGIN
 
-
-struct Subscription {cComponent *component; simsignal_t signalID;};
+struct Subscription
+{
+    cComponent *component;
+    simsignal_t signalID;
+};
 typedef std::vector<Subscription> SubscriptionList;
 
 static void findListenerOccurences(cComponent *component, cIListener *listener, SubscriptionList& result)
 {
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();
-    for (unsigned int i = 0; i < signals.size(); i++)
-    {
+    for (unsigned int i = 0; i < signals.size(); i++) {
         simsignal_t signalID = signals[i];
-        if (component->isSubscribed(signalID, listener))
-        {
+        if (component->isSubscribed(signalID, listener)) {
             result.push_back(Subscription());
             result.back().component = component;
             result.back().signalID = signalID;
         }
     }
 
-    if (component->isModule())
-    {
+    if (component->isModule()) {
         cModule *module = (cModule *)component;
         for (cModule::SubmoduleIterator submod(module); !submod.end(); submod++)
             findListenerOccurences(submod(), listener, result);
@@ -59,15 +59,13 @@ cIListener::cIListener()
 
 cIListener::~cIListener()
 {
-    if (subscribeCount)
-    {
+    if (subscribeCount) {
         // note: throwing an exception would is risky here: it would typically
         // cause other exceptions, and eventually crash
-        if (subscribeCount < 0)
-        {
+        if (subscribeCount < 0) {
             getEnvir()->printfmsg(
-                "cListener destructor: internal error: negative subscription "
-                "count (%d) in listener at address %p", subscribeCount, this);
+                    "cListener destructor: internal error: negative subscription "
+                    "count (%d) in listener at address %p", subscribeCount, this);
             return;
         }
 
@@ -83,7 +81,7 @@ cIListener::~cIListener()
         std::stringstream out;
         SubscriptionList list;
         findListenerOccurences(getSimulation()->getSystemModule(), this, list);
-        for (int i=0; i<(int)list.size(); i++) {
+        for (int i = 0; i < (int)list.size(); i++) {
             out << "- signal \"" << cComponent::getSignalName(list[i].signalID) << "\" (id=" << list[i].signalID << ") ";
             out << "at (" << list[i].component->getClassName() << ")" << list[i].component->getFullPath() << "\n";
         }
@@ -97,7 +95,7 @@ void cListener::unsupportedType(simsignal_t signalID, const char *dataType)
 {
     const char *signalName = cComponent::getSignalName(signalID);
     throw cRuntimeError("%s: Unsupported signal data type %s for signal %s (id=%d)",
-                        opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
+            opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
 }
 
 void cListener::receiveSignal(cComponent *, simsignal_t signalID, bool)

@@ -26,46 +26,40 @@
 
 NAMESPACE_BEGIN
 
-
 Register_Class(cMersenneTwister);
 
 Register_PerRunConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, nullptr, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
 Register_PerRunConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, nullptr, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
 
-
 void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
-                                  int parsimProcId, int parsimNumPartitions,
-                                  cConfiguration *cfg)
+        int parsimProcId, int parsimNumPartitions,
+        cConfiguration *cfg)
 {
     char key[40], key2[40];
     sprintf(key, "seed-%d-mt", rngId);
     sprintf(key2, "seed-%d-mt-p%d", rngId, parsimProcId);
 
     unsigned long seed;
-    if (parsimNumPartitions>1)
-    {
+    if (parsimNumPartitions > 1) {
         // with parallel simulation, every partition should get distinct streams
         const char *value = cfg->getConfigValue(key2);
-        if (value!=nullptr)
-        {
+        if (value != nullptr) {
             seed = cConfiguration::parseLong(value, nullptr);
         }
-        else
-        {
-            if (cfg->getConfigValue(key)!=nullptr)
+        else {
+            if (cfg->getConfigValue(key) != nullptr)
                 EV << "Warning: cMersenneTwister: ignoring config key " << key << "=<seed>"
                    << " for parallel simulation -- please use partition-specific variant "
                    << key2 << "=<seed>\n";
-            seed = (seedSet*numRngs + rngId)*MAX_PARSIM_PARTITIONS + parsimProcId;
+            seed = (seedSet * numRngs + rngId) * MAX_PARSIM_PARTITIONS + parsimProcId;
         }
     }
-    else
-    {
+    else {
         const char *value = cfg->getConfigValue(key);
-        if (value!=nullptr)
+        if (value != nullptr)
             seed = cConfiguration::parseLong(value, nullptr);
         else
-            seed = seedSet*numRngs + rngId;
+            seed = seedSet * numRngs + rngId;
     }
 
     // use the following number as seed, and hope that all seed values
@@ -77,9 +71,9 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
 void cMersenneTwister::selfTest()
 {
     rng.seed(1);
-    for (int i=0; i<10000; i++)
+    for (int i = 0; i < 10000; i++)
         intRand();
-    if (intRand()!=2915232614UL)
+    if (intRand() != 2915232614UL)
         throw cRuntimeError("cMersenneTwister: selfTest() failed, please report this problem!");
 }
 
@@ -91,7 +85,7 @@ unsigned long cMersenneTwister::intRand()
 
 unsigned long cMersenneTwister::intRandMax()
 {
-    return 0xffffffffUL; // 2^32-1
+    return 0xffffffffUL;  // 2^32-1
 }
 
 unsigned long cMersenneTwister::intRand(unsigned long n)

@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstdio>           // sprintf
-#include <cstring>          // strcpy, strlen etc.
+#include <cstdio>  // sprintf
+#include <cstring>  // strcpy, strlen etc.
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cenvir.h"
@@ -40,20 +40,18 @@ bool cStaticFlag::exitingFlag;
 
 Register_Class(cOwnedObject);
 
-
 #ifdef DEVELOPER_DEBUG
 #include <set>
 
-std::set<cOwnedObject*> objectlist;
+std::set<cOwnedObject *> objectlist;
 void printAllObjects()
 {
-    for (std::set<cOwnedObject*>::iterator it = objectlist.begin(); it != objectlist.end(); ++it)
-    {
+    for (std::set<cOwnedObject *>::iterator it = objectlist.begin(); it != objectlist.end(); ++it) {
         printf(" %p (%s)%s\n", (*it), (*it)->getClassName(), (*it)->getName());
     }
 }
-#endif
 
+#endif
 
 // static class members
 cDefaultList *cOwnedObject::defaultOwner = &defaultList;
@@ -61,7 +59,6 @@ long cOwnedObject::totalObjectCount = 0;
 long cOwnedObject::liveObjectCount = 0;
 
 cDefaultList defaultList;
-
 
 cOwnedObject::cOwnedObject()
 {
@@ -123,7 +120,7 @@ void cOwnedObject::removeFromOwnershipTree()
 
 void cOwnedObject::setDefaultOwner(cDefaultList *list)
 {
-    ASSERT(list!=nullptr);
+    ASSERT(list != nullptr);
     defaultOwner = list;
 }
 
@@ -152,7 +149,7 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
 void cOwnedObject::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cNamedObject::parsimPack(buffer);
 #endif
@@ -161,7 +158,7 @@ void cOwnedObject::parsimPack(cCommBuffer *buffer) const
 void cOwnedObject::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cNamedObject::parsimUnpack(buffer);
 #endif
@@ -189,14 +186,14 @@ void cNoncopyableOwnedObject::parsimUnpack(cCommBuffer *buffer)
 
 //-----
 
-ostream& operator<< (ostream& os, const cOwnedObject *p)
+ostream& operator<<(ostream& os, const cOwnedObject *p)
 {
     if (!p)
         return os << "(nullptr)";
     return os << "(" << p->getClassName() << ")" << p->getFullName();
 }
 
-ostream& operator<< (ostream& os, const cOwnedObject& o)
+ostream& operator<<(ostream& os, const cOwnedObject& o)
 {
     return os << "(" << o.getClassName() << ")" << o.getFullName();
 }
@@ -210,3 +207,4 @@ static struct X {
 */
 
 NAMESPACE_END
+

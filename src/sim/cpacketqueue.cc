@@ -31,11 +31,9 @@ NAMESPACE_BEGIN
 
 using std::ostream;
 
-
 Register_Class(cPacketQueue);
 
-
-cPacketQueue::cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name,cmp)
+cPacketQueue::cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name, cmp)
 {
     bitLength = 0;
 }
@@ -52,7 +50,8 @@ void cPacketQueue::copy(const cPacketQueue& queue)
 
 cPacketQueue& cPacketQueue::operator=(const cPacketQueue& queue)
 {
-    if (this==&queue) return *this;
+    if (this == &queue)
+        return *this;
     cQueue::operator=(queue);
     copy(queue);
     return *this;
@@ -70,7 +69,7 @@ std::string cPacketQueue::info() const
 void cPacketQueue::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cQueue::parsimPack(buffer);
     buffer->pack(bitLength);
@@ -80,7 +79,7 @@ void cPacketQueue::parsimPack(cCommBuffer *buffer) const
 void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cQueue::parsimUnpack(buffer);
     buffer->unpack(bitLength);

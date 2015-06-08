@@ -35,7 +35,6 @@ Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("stats", StatsRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
 
-
 VectorRecorder::~VectorRecorder()
 {
     if (handle != nullptr)
@@ -57,11 +56,10 @@ void VectorRecorder::subscribedTo(cResultFilter *prev)
 
 void VectorRecorder::collect(simtime_t_cref t, double value)
 {
-    if (t < lastTime)
-    {
+    if (t < lastTime) {
         throw cRuntimeError("%s: Cannot record data with an earlier timestamp (t=%s) "
                             "than the previously recorded value (t=%s)",
-                            getClassName(), SIMTIME_STR(t), SIMTIME_STR(lastTime));
+                getClassName(), SIMTIME_STR(t), SIMTIME_STR(lastTime));
     }
 
     lastTime = t;
@@ -97,7 +95,7 @@ void SumRecorder::finish(cResultFilter *prev)
 void MeanRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
-    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum/count, &attributes); // note: this is NaN if count==0
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum / count, &attributes);  // note: this is NaN if count==0
 }
 
 //---
@@ -120,7 +118,7 @@ void MaxRecorder::finish(cResultFilter *prev)
 
 void TimeAverageRecorder::collect(simtime_t_cref t, double value)
 {
-    if (startTime < SIMTIME_ZERO) // uninitialized
+    if (startTime < SIMTIME_ZERO)  // uninitialized
         startTime = t;
     else
         weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
@@ -132,7 +130,7 @@ void TimeAverageRecorder::finish(cResultFilter *prev)
 {
     bool empty = (startTime < SIMTIME_ZERO);
     simtime_t t = getSimulation()->getSimTime();
-    collect(t, NaN); // to get the last interval counted in; the value is just a dummy
+    collect(t, NaN);  // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
     opp_string_map attributes = getStatisticAttributes();
@@ -161,22 +159,23 @@ class RecValueVariable : public Expression::Variable
 {
   private:
     ExpressionRecorder *owner;
+
   public:
-    RecValueVariable(ExpressionRecorder *recorder) {owner = recorder;}
-    virtual Functor *dup() const override {return new RecValueVariable(owner);}
-    virtual const char *getName() const override {return "<lastsignalvalue>";}
-    virtual char getReturnType() const override {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return owner->lastValue;}
+    RecValueVariable(ExpressionRecorder *recorder) { owner = recorder; }
+    virtual Functor *dup() const override { return new RecValueVariable(owner); }
+    virtual const char *getName() const override { return "<lastsignalvalue>"; }
+    virtual char getReturnType() const override { return Expression::Value::DBL; }
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override { return owner->lastValue; }
 };
 
 //XXX currently unused
 class RecTimeVariable : public Expression::Variable
 {
   public:
-    virtual Functor *dup() const override {return new RecTimeVariable();}
-    virtual const char *getName() const override {return "<simtime>";}
-    virtual char getReturnType() const override {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return SIMTIME_DBL(getSimulation()->getSimTime());}
+    virtual Functor *dup() const override { return new RecTimeVariable(); }
+    virtual const char *getName() const override { return "<simtime>"; }
+    virtual char getReturnType() const override { return Expression::Value::DBL; }
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override { return SIMTIME_DBL(getSimulation()->getSimTime()); }
 };
 
 Expression::Functor *ExpressionRecorder::makeValueVariable()

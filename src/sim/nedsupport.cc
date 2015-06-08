@@ -38,11 +38,11 @@ ModuleIndex::ModuleIndex()
 
 cNEDValue ModuleIndex::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0 && context!=nullptr);
+    ASSERT(numargs == 0 && context != nullptr);
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module)
-        throw cRuntimeError(context,"cannot evaluate `index' operator in expression: context is not a module");
-    return (double) module->getIndex();
+        throw cRuntimeError(context, "cannot evaluate `index' operator in expression: context is not a module");
+    return (double)module->getIndex();
 }
 
 std::string ModuleIndex::str(std::string args[], int numargs)
@@ -61,10 +61,10 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool explicitKe
 
 cNEDValue ParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0 && context!=nullptr);
+    ASSERT(numargs == 0 && context != nullptr);
     cComponent *component = ofParent ? context->getParentModule() : context;
     if (!component)
-        throw cRuntimeError(context,E_ENOPARENT);
+        throw cRuntimeError(context, E_ENOPARENT);
 
     // In inner types, a "paramName" should be first tried as the enclosing type's
     // parameter, only then as local parameter.
@@ -74,6 +74,7 @@ cNEDValue ParameterRef::evaluate(cComponent *context, cNEDValue args[], int numa
         if (component->getParentModule() && component->getParentModule()->hasPar(paramName.c_str()))
             return component->getParentModule()->par(paramName.c_str());
 
+
     return component->par(paramName.c_str());
 }
 
@@ -82,16 +83,16 @@ std::string ParameterRef::str(std::string args[], int numargs)
     if (!explicitKeyword)
         return paramName;
     else if (ofParent)
-        return std::string("parent.")+paramName; // not a legal NED syntax
+        return std::string("parent.") + paramName;  // not a legal NED syntax
     else
-        return std::string("this.")+paramName;
+        return std::string("this.") + paramName;
 }
 
 //----
 
 SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex)
 {
-    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && OPP::opp_strcmp(moduleName,"this")!=0);
+    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && OPP::opp_strcmp(moduleName, "this") != 0);
     this->moduleName = moduleName;
     this->paramName = paramName;
     this->ofParent = ofParent;
@@ -100,16 +101,16 @@ SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, con
 
 cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(context!=nullptr);
-    ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==cNEDValue::DBL));
-    cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context); // this works for channels too
+    ASSERT(context != nullptr);
+    ASSERT(!withModuleIndex || (withModuleIndex && numargs == 1 && args[0].type == cNEDValue::DBL));
+    cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);  // this works for channels too
     if (!compoundModule)
-        throw cRuntimeError(context,E_ENOPARENT);
+        throw cRuntimeError(context, E_ENOPARENT);
     int moduleIndex = withModuleIndex ? (int)args[0] : -1;
     cModule *siblingModule = compoundModule->getSubmodule(moduleName.c_str(), moduleIndex);
     if (!siblingModule) {
-        std::string modName = moduleIndex==-1 ? moduleName : opp_stringf("%s[%d]", moduleName.c_str(), moduleIndex);
-        throw cRuntimeError(context,"cannot find submodule for parameter `%s.%s'", modName.c_str(), paramName.c_str());
+        std::string modName = moduleIndex == -1 ? moduleName : opp_stringf("%s[%d]", moduleName.c_str(), moduleIndex);
+        throw cRuntimeError(context, "cannot find submodule for parameter `%s.%s'", modName.c_str(), paramName.c_str());
     }
     return siblingModule->par(paramName.c_str());
 }
@@ -117,9 +118,9 @@ cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue arg
 std::string SiblingModuleParameterRef::str(std::string args[], int numargs)
 {
     if (withModuleIndex)
-        return moduleName+"["+args[0]+"]."+paramName;
+        return moduleName + "[" + args[0] + "]." + paramName;
     else
-        return moduleName+"."+paramName;
+        return moduleName + "." + paramName;
 }
 
 //----
@@ -130,14 +131,14 @@ int LoopVar::varCount = 0;
 
 long& LoopVar::pushVar(const char *varName)
 {
-    ASSERT(varCount<32);
+    ASSERT(varCount < 32);
     varNames[varCount] = varName;
     return vars[varCount++];
 }
 
 void LoopVar::popVar()
 {
-    ASSERT(varCount>0);
+    ASSERT(varCount > 0);
     varCount--;
 }
 
@@ -148,18 +149,19 @@ void LoopVar::reset()
 
 cNEDValue LoopVar::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0);
+    ASSERT(numargs == 0);
     const char *var = varName.c_str();
-    for (int i=0; i<varCount; i++)
-        if (strcmp(var, varNames[i])==0)
+    for (int i = 0; i < varCount; i++)
+        if (strcmp(var, varNames[i]) == 0)
             return vars[i];
+
     throw cRuntimeError(context, "loop variable %s not found", varName.c_str());
 }
 
 std::string LoopVar::str(std::string args[], int numargs)
 {
     // return varName;
-    return std::string("(loopvar)")+varName;  //XXX debugging only
+    return std::string("(loopvar)") + varName;  //XXX debugging only
 }
 
 //---
@@ -173,36 +175,33 @@ Sizeof::Sizeof(const char *ident, bool ofParent, bool explicitKeyword)
 
 cNEDValue Sizeof::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
-    ASSERT(numargs==0 && context!=nullptr);
+    ASSERT(numargs == 0 && context != nullptr);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);
     if (!module)
-        throw cRuntimeError(context,E_ENOPARENT);
+        throw cRuntimeError(context, E_ENOPARENT);
 
 //FIXME stuff already implemented at the bottom of this file????
 
 //FIXME decide it at buildtime, not now? (info is known then already!)
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
-    if (module->hasGate(ident.c_str()))
-    {
-        return (long) module->gateSize(ident.c_str()); // returns 1 if it's not a vector
+    if (module->hasGate(ident.c_str())) {
+        return (long)module->gateSize(ident.c_str());  // returns 1 if it's not a vector
     }
-    else
-    {
+    else {
         // Find ident among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0 (and cannot throw error).
-        cModule *siblingModule = module->getSubmodule(ident.c_str(), 0); // returns nullptr if submodule is not a vector
+        cModule *siblingModule = module->getSubmodule(ident.c_str(), 0);  // returns nullptr if submodule is not a vector
         if (!siblingModule && module->getSubmodule(ident.c_str()))
-            return 1L; // return 1 if submodule exists but not a vector
-        return (long) siblingModule ? siblingModule->size() : 0L;
+            return 1L;  // return 1 if submodule exists but not a vector
+        return (long)siblingModule ? siblingModule->size() : 0L;
     }
-
 }
 
 std::string Sizeof::str(std::string args[], int numargs)
 {
-    const char *prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this."; // "parent" is not a legal NED syntax though
+    const char *prefix = !explicitKeyword ? "" : ofParent ? "parent." : "this.";  // "parent" is not a legal NED syntax though
     return std::string("sizeof(") + prefix + ident + ")";
 }
 

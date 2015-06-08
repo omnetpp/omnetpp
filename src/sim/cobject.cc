@@ -50,11 +50,12 @@ bool cObject::hasChangedSince(int64_t lastRefreshSerial)
 {
     return true;  // as we don't have more info
 }
+
 #endif
 
 std::string cObject::getFullPath() const
 {
-    if (getOwner()==nullptr)
+    if (getOwner() == nullptr)
         return getFullName();
     else
         return getOwner()->getFullPath() + "." + getFullName();
@@ -84,20 +85,19 @@ void cObject::ownedObjectDeleted(cOwnedObject *obj)
                         "to call drop() before it can delete that object. "
                         "If this error occurs inside %s's destructor and %s is a class member, "
                         "%s needs to call drop() in the destructor",
-                        obj->getFullName(), getClassName(), getFullPath().c_str(),
-                        getClassName(),
-                        getClassName(), obj->getFullName(),
-                        getClassName());
+            obj->getFullName(), getClassName(), getFullPath().c_str(),
+            getClassName(),
+            getClassName(), obj->getFullName(),
+            getClassName());
 }
 
 void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 {
     throw cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
-                        obj->getClassName(), obj->getFullName(),
-                        getClassName(), getFullPath().c_str(),
-                        newowner->getClassName(), newowner->getFullPath().c_str());
+            obj->getClassName(), obj->getFullName(),
+            getClassName(), getFullPath().c_str(),
+            newowner->getClassName(), newowner->getFullPath().c_str());
 }
-
 
 void cObject::take(cOwnedObject *obj)
 {
@@ -107,9 +107,9 @@ void cObject::take(cOwnedObject *obj)
 
 void cObject::drop(cOwnedObject *obj)
 {
-    if (obj->owner!=this)
+    if (obj->owner != this)
         throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
-                                  obj->getClassName(), obj->getFullPath().c_str());
+                obj->getClassName(), obj->getFullPath().c_str());
     cOwnedObject::defaultOwner->doInsert(obj);
 }
 
@@ -117,9 +117,9 @@ void cObject::dropAndDelete(cOwnedObject *obj)
 {
     if (!obj)
         return;
-    if (obj->owner!=this)
+    if (obj->owner != this)
         throw cRuntimeError(this, "dropAndDelete(): not owner of object (%s)%s",
-                                  obj->getClassName(), obj->getFullPath().c_str());
+                obj->getClassName(), obj->getFullPath().c_str());
     obj->owner = nullptr;
     delete obj;
 }
@@ -134,7 +134,7 @@ void cObject::parsimUnpack(cCommBuffer *buffer)
 
 void cObject::copyNotSupported() const
 {
-    throw cRuntimeError(this,E_CANTCOPY);
+    throw cRuntimeError(this, E_CANTCOPY);
 }
 
 void cObject::forEachChild(cVisitor *v)
@@ -151,17 +151,21 @@ class cChildObjectFinderVisitor : public cVisitor
   protected:
     const char *name;
     cObject *result;
+
   public:
     cChildObjectFinderVisitor(const char *objname) {
-        name = objname; result = nullptr;
+        name = objname;
+        result = nullptr;
     }
+
     virtual void visit(cObject *obj) override {
         if (obj->isName(name)) {
             result = obj;
             throw EndTraversalException();
         }
     }
-    cObject *getResult() {return result;}
+
+    cObject *getResult() { return result; }
 };
 
 /**
@@ -172,10 +176,13 @@ class cRecursiveObjectFinderVisitor : public cVisitor
   protected:
     const char *name;
     cObject *result;
+
   public:
     cRecursiveObjectFinderVisitor(const char *objname) {
-        name = objname; result = nullptr;
+        name = objname;
+        result = nullptr;
     }
+
     virtual void visit(cObject *obj) override {
         if (obj->isName(name)) {
             result = obj;
@@ -183,20 +190,19 @@ class cRecursiveObjectFinderVisitor : public cVisitor
         }
         obj->forEachChild(this);
     }
-    cObject *getResult() {return result;}
+
+    cObject *getResult() { return result; }
 };
 
 cObject *cObject::findObject(const char *objname, bool deep)
 {
-    if (deep)
-    {
+    if (deep) {
         // recursively
         cRecursiveObjectFinderVisitor v(objname);
         v.processChildrenOf(this);
         return v.getResult();
     }
-    else
-    {
+    else {
         // among children
         cChildObjectFinderVisitor v(objname);
         v.processChildrenOf(this);

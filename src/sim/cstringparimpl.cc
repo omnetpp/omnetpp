@@ -24,7 +24,6 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-
 cStringParImpl::cStringParImpl()
 {
 }
@@ -44,7 +43,8 @@ void cStringParImpl::copy(const cStringParImpl& other)
 
 void cStringParImpl::operator=(const cStringParImpl& other)
 {
-    if (this==&other) return;
+    if (this == &other)
+        return;
     deleteOld();
     cParImpl::operator=(other);
     copy(other);
@@ -148,8 +148,7 @@ cExpression *cStringParImpl::getExpression() const
 
 void cStringParImpl::deleteOld()
 {
-    if (flags & FL_ISEXPR)
-    {
+    if (flags & FL_ISEXPR) {
         delete expr;
         flags &= ~FL_ISEXPR;
     }
@@ -182,12 +181,10 @@ void cStringParImpl::parse(const char *text)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    try
-    {
+    try {
         dynexpr->parse(text);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         delete dynexpr;
         throw;
     }
@@ -201,7 +198,7 @@ void cStringParImpl::parse(const char *text)
 int cStringParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
-    if (ret!=0)
+    if (ret != 0)
         return ret;
 
     const cStringParImpl *other2 = dynamic_cast<const cStringParImpl *>(other);

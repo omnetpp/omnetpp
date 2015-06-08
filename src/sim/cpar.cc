@@ -36,7 +36,6 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-
 cPar::~cPar()
 {
     if (p && !p->isShared())
@@ -100,17 +99,14 @@ void cPar::operator=(const cPar& other)
 {
     // this method is not used by the sim kernel, only (rarely) by some
     // simulation models to copy parameters
-    if (other.isExpression())
-    {
+    if (other.isExpression()) {
         cComponent *ctx = other.evalContext;
         if (ctx == other.ownerComponent)
             ctx = ownerComponent;  // best effort to fix up evaluation context
         setExpression(other.getExpression()->dup(), ctx);
     }
-    else
-    {
-        switch (getType())
-        {
+    else {
+        switch (getType()) {
             case BOOL:   setBoolValue(other.boolValue()); break;
             case DOUBLE: setDoubleValue(other.doubleValue()); break;
             case LONG:   setLongValue(other.longValue()); break;
@@ -132,8 +128,7 @@ cProperties *cPar::getProperties() const
 
 const char *cPar::getTypeName(Type t)
 {
-    switch (t)
-    {
+    switch (t) {
         case BOOL:   return "bool";
         case DOUBLE: return "double";
         case LONG:   return "long";
@@ -187,8 +182,7 @@ bool cPar::isExpression() const
 }
 
 #define TRY(x) \
-    try {x;} catch (std::exception& e) {throw cRuntimeError(E_PARAM, getFullName(), e.what());}
-
+    try { x; } catch (std::exception& e) { throw cRuntimeError(E_PARAM, getFullName(), e.what()); }
 bool cPar::boolValue() const
 {
     TRY(return p->boolValue(evalContext));
@@ -308,8 +302,7 @@ void cPar::afterChange()
 
     // call owner's component's handleParameterChange() method,
     // i.e. parameter change notification is allowed only on fully initialized components
-    if (ownerComponent->initialized())
-    {
+    if (ownerComponent->initialized()) {
         cContextSwitcher tmp(ownerComponent);
         ownerComponent->handleParameterChange(getFullName());
     }
@@ -320,7 +313,6 @@ void cPar::afterChange()
         tmp.par = this;
         ownerComponent->emit(POST_MODEL_CHANGE, &tmp);
     }
-
 }
 
 #ifdef SIMFRONTEND_SUPPORT
@@ -328,6 +320,7 @@ bool cPar::hasChangedSince(int64_t lastRefreshSerial)
 {
     return ownerComponent->hasChangedSince(lastRefreshSerial);
 }
+
 #endif
 
 void cPar::read()
@@ -344,11 +337,10 @@ void cPar::finalize()
         convertToConst();
 
     // convert CONST subexpressions into constants
-    if (p->isExpression() && p->containsConstSubexpressions())
-    {
+    if (p->isExpression() && p->containsConstSubexpressions()) {
         beforeChange();
         copyIfShared();
-        p->evaluateConstSubexpressions(evalContext); //XXX sharing?
+        p->evaluateConstSubexpressions(evalContext);  //XXX sharing?
         afterChange();
     }
 }
@@ -423,13 +415,11 @@ void cPar::parse(const char *text)
     cComponentType *componentType = ownerComponent->getComponentType();
     std::string key = std::string(componentType->getName()) + ":" + getName() + ":" + text;
     cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
-    if (cachedValue)
-    {
+    if (cachedValue) {
         // an identical value found in the map -- use it
         setImpl(cachedValue);
     }
-    else
-    {
+    else {
         // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
         cParImpl *tmp = p->dup();
         try {

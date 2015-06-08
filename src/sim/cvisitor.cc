@@ -24,15 +24,12 @@
 
 NAMESPACE_BEGIN
 
-
 bool cVisitor::process(cObject *obj)
 {
-    try
-    {
+    try {
         visit(obj);
     }
-    catch (EndTraversalException& e)
-    {
+    catch (EndTraversalException& e) {
         return false;
     }
     return true;
@@ -40,12 +37,10 @@ bool cVisitor::process(cObject *obj)
 
 bool cVisitor::processChildrenOf(cObject *obj)
 {
-    try
-    {
+    try {
         obj->forEachChild(this);
     }
-    catch (EndTraversalException& e)
-    {
+    catch (EndTraversalException& e) {
         return false;
     }
     return true;

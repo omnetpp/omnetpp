@@ -23,7 +23,6 @@
 
 NAMESPACE_BEGIN
 
-
 cXMLParImpl::cXMLParImpl()
 {
     val = nullptr;
@@ -44,7 +43,8 @@ void cXMLParImpl::copy(const cXMLParImpl& other)
 
 void cXMLParImpl::operator=(const cXMLParImpl& other)
 {
-    if (this==&other) return;
+    if (this == &other)
+        return;
     deleteOld();
     cParImpl::operator=(other);
     copy(other);
@@ -52,7 +52,7 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
 
 std::string cXMLParImpl::detailedInfo() const
 {
-    return (flags & FL_ISEXPR) ? "<expression>" : val==nullptr ? "nullptr" : val->detailedInfo();
+    return (flags & FL_ISEXPR) ? "<expression>" : val == nullptr ? "nullptr" : val->detailedInfo();
 }
 
 void cXMLParImpl::parsimPack(cCommBuffer *buffer) const
@@ -146,8 +146,7 @@ cExpression *cXMLParImpl::getExpression() const
 
 void cXMLParImpl::deleteOld()
 {
-    if (flags & FL_ISEXPR)
-    {
+    if (flags & FL_ISEXPR) {
         delete expr;
         flags &= ~FL_ISEXPR;
     }
@@ -174,7 +173,7 @@ std::string cXMLParImpl::str() const
         return expr->str();
 
     if (val)
-        return std::string("<")+val->getTagName()+"> from "+val->getSourceLocation();
+        return std::string("<") + val->getTagName() + "> from " + val->getSourceLocation();
     else
         return std::string("nullptr");
 }
@@ -183,12 +182,10 @@ void cXMLParImpl::parse(const char *text)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    try
-    {
+    try {
         dynexpr->parse(text);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         delete dynexpr;
         throw;
     }
@@ -202,7 +199,7 @@ void cXMLParImpl::parse(const char *text)
 int cXMLParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
-    if (ret!=0)
+    if (ret != 0)
         return ret;
 
     const cXMLParImpl *other2 = dynamic_cast<const cXMLParImpl *>(other);

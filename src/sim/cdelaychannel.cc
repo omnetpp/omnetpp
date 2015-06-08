@@ -55,7 +55,7 @@ void cDelayChannel::rereadPars()
     if (delay < 0)
         throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay));
     setFlag(FL_ISDISABLED, par("disabled"));
-    setFlag(FL_DELAY_NONZERO, delay!=0);
+    setFlag(FL_DELAY_NONZERO, delay != 0);
 }
 
 void cDelayChannel::handleParameterChange(const char *)
@@ -76,8 +76,7 @@ void cDelayChannel::setDisabled(bool d)
 void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    if (flags & FL_ISDISABLED)
-    {
+    if (flags & FL_ISDISABLED) {
         result.discard = true;
         cTimestampedValue tmp(t, msg);
         emit(messageDiscardedSignal, &tmp);
@@ -88,8 +87,7 @@ void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
     result.delay = delay;
 
     // emit signals
-    if (mayHaveListeners(messageSentSignal))
-    {
+    if (mayHaveListeners(messageSentSignal)) {
         MessageSentSignalValue tmp(t, msg, &result);
         emit(messageSentSignal, &tmp);
     }

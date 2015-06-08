@@ -45,7 +45,6 @@ NAMESPACE_BEGIN
 
 using std::ostream;
 
-
 cStatistic::cStatistic(const cStatistic& r) : cRandom(r)
 {
     td = nullptr;
@@ -68,13 +67,13 @@ cStatistic::~cStatistic()
 void cStatistic::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cRandom::parsimPack(buffer);
 
-    if (buffer->packFlag(td!=nullptr))
+    if (buffer->packFlag(td != nullptr))
         buffer->packObject(td);
-    if (buffer->packFlag(ra!=nullptr))
+    if (buffer->packFlag(ra != nullptr))
         buffer->packObject(ra);
 #endif
 }
@@ -82,14 +81,14 @@ void cStatistic::parsimPack(cCommBuffer *buffer) const
 void cStatistic::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cRandom::parsimUnpack(buffer);
 
     if (buffer->checkFlag())
-        take(td = (cTransientDetection *) buffer->unpackObject());
+        take(td = (cTransientDetection *)buffer->unpackObject());
     if (buffer->checkFlag())
-        take(ra = (cAccuracyDetection *) buffer->unpackObject());
+        take(ra = (cAccuracyDetection *)buffer->unpackObject());
 #endif
 }
 
@@ -115,18 +114,18 @@ cStatistic& cStatistic::operator=(const cStatistic& res)
 void cStatistic::setTransientDetectionObject(cTransientDetection *obj)
 {
     if (td)
-        throw cRuntimeError(this,"setTransientDetection(): object already has a transient detection algorithm");
-    td = obj;                       // create pointer to td object
-    td->setHostObject(this);        // and create one back
+        throw cRuntimeError(this, "setTransientDetection(): object already has a transient detection algorithm");
+    td = obj;  // create pointer to td object
+    td->setHostObject(this);  // and create one back
     take(td);
 }
 
 void cStatistic::setAccuracyDetectionObject(cAccuracyDetection *obj)
 {
     if (ra)
-        throw cRuntimeError(this,"setAccuracyDetection(): object already has an accuracy detection algorithm");
-    ra = obj;                       // create pointer to ra object
-    ra->setHostObject(this);        // and create one back
+        throw cRuntimeError(this, "setAccuracyDetection(): object already has an accuracy detection algorithm");
+    ra = obj;  // create pointer to ra object
+    ra->setHostObject(this);  // and create one back
     take(ra);
 }
 
@@ -139,7 +138,7 @@ void cStatistic::recordAs(const char *scalarname, const char *unit)
 {
     cSimpleModule *mod = dynamic_cast<cSimpleModule *>(getSimulation()->getContextModule());
     if (!mod)
-        throw cRuntimeError(this,"record() may only be invoked from within a simple module");
+        throw cRuntimeError(this, "record() may only be invoked from within a simple module");
     if (!scalarname)
         scalarname = getFullName();
 
@@ -155,20 +154,21 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     char line[101];
 
     // read line and chop CR/LF
-    fgets(line,101,f);
-    char *end = line+strlen(line)-1;
-    while (end>=line && (*end=='\n' || *end=='\r')) *end-- = '\0';
+    fgets(line, 101, f);
+    char *end = line + strlen(line) - 1;
+    while (end >= line && (*end == '\n' || *end == '\r'))
+        *end-- = '\0';
 
     // match '#=' tags
-    const char *fmt_comment = strstr(fmt,"#=");
-    const char *line_comment = strstr(line,"#=");
-    if (fmt_comment && line_comment && strcmp(fmt_comment,line_comment)!=0)
-        throw cRuntimeError(this, "bad file format in loadFromFile(): expected `%s' and got `%s'",fmt,line);
+    const char *fmt_comment = strstr(fmt, "#=");
+    const char *line_comment = strstr(line, "#=");
+    if (fmt_comment && line_comment && strcmp(fmt_comment, line_comment) != 0)
+        throw cRuntimeError(this, "bad file format in loadFromFile(): expected `%s' and got `%s'", fmt, line);
 
     // actual read
     va_list va;
-    va_start(va,fmt);
-    opp_vsscanf(line,fmt,va);
+    va_start(va, fmt);
+    opp_vsscanf(line, fmt, va);
     va_end(va);
 }
 

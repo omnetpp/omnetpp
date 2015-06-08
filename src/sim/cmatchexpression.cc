@@ -46,10 +46,11 @@ class Wrapper : public MatchExpression::Matchable
 {
   private:
     const cMatchExpression::Matchable *impl;
+
   public:
-    Wrapper(const cMatchExpression::Matchable *p) {impl = p;}
-    virtual const char *getAsString() const override {return impl->getAsString();}
-    virtual const char *getAsString(const char *attribute) const override {return impl->getAsString(attribute);}
+    Wrapper(const cMatchExpression::Matchable *p) { impl = p; }
+    virtual const char *getAsString() const override { return impl->getAsString(); }
+    virtual const char *getAsString(const char *attribute) const override { return impl->getAsString(attribute); }
 };
 
 bool cMatchExpression::matches(const Matchable *object)
@@ -59,3 +60,4 @@ bool cMatchExpression::matches(const Matchable *object)
 }
 
 NAMESPACE_END
+

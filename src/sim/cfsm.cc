@@ -19,8 +19,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstdio>       // sprintf
-#include <cstring>      // strlen
+#include <cstdio>  // sprintf
+#include <cstring>  // strlen
 #include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/cfsm.h"
@@ -29,26 +29,25 @@ NAMESPACE_BEGIN
 
 using std::ostream;
 
-
 Register_Class(cFSM);
 
-
 cFSM::cFSM(const char *name) :
-  cOwnedObject(name)
+    cOwnedObject(name)
 {
-  state=0;
-  stateName="INIT";
+    state = 0;
+    stateName = "INIT";
 }
 
 void cFSM::copy(const cFSM& vs)
 {
-    stateName=vs.stateName;
-    state=vs.state;
+    stateName = vs.stateName;
+    state = vs.state;
 }
 
 cFSM& cFSM::operator=(const cFSM& vs)
 {
-    if (this==&vs) return *this;
+    if (this == &vs)
+        return *this;
     cOwnedObject::operator=(vs);
     copy(vs);
     return *this;
@@ -66,12 +65,12 @@ std::string cFSM::info() const
 
 void cFSM::parsimPack(cCommBuffer *buffer) const
 {
-    throw cRuntimeError(this,"parsimPack() not implemented");
+    throw cRuntimeError(this, "parsimPack() not implemented");
 }
 
 void cFSM::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"parsimUnpack() not implemented");
+    throw cRuntimeError(this, "parsimUnpack() not implemented");
 }
 
 NAMESPACE_END

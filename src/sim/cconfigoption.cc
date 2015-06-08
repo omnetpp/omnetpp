@@ -74,8 +74,7 @@ std::string cConfigOption::info() const
 
 const char *cConfigOption::getTypeName(Type type)
 {
-    switch (type)
-    {
+    switch (type) {
         case CFG_BOOL:      return "bool";
         case CFG_INT:       return "int";
         case CFG_DOUBLE:    return "double";
@@ -90,8 +89,7 @@ const char *cConfigOption::getTypeName(Type type)
 
 const char *cConfigOption::getObjectKindName(ObjectKind kind)
 {
-    switch (kind)
-    {
+    switch (kind) {
         case KIND_MODULE:           return "module";
         case KIND_SIMPLE_MODULE:    return "simplemodule";
         case KIND_UNSPECIFIED_TYPE: return "unspecifiedtype";

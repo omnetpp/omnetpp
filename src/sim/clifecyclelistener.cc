@@ -22,7 +22,7 @@ NAMESPACE_BEGIN
 
 const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(SimulationLifecycleEventType eventType)
 {
-    switch(eventType) {
+    switch (eventType) {
 #define CASE(X) case LF_ ## X: return #X
         CASE(ON_STARTUP);
         CASE(PRE_NETWORK_SETUP);

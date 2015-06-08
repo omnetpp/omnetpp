@@ -30,12 +30,11 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT and DEBUG_TRAP
+#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT and DEBUG_TRAP
 
 using namespace OPP::common;
 
 NAMESPACE_BEGIN
-
 
 #define BUFLEN 1024
 static char buffer[BUFLEN];
@@ -101,26 +100,22 @@ void cException::storeContext()
 {
     cSimulation *sim = cSimulation::getActiveSimulation();
 
-    if (!sim)
-    {
+    if (!sim) {
         simulationStage = CTX_NONE;
         eventNumber = 0;
         simtime = SIMTIME_ZERO;
     }
-    else
-    {
+    else {
         simulationStage = sim->getSimulationStage();
         eventNumber = sim->getEventNumber();
         simtime = sim->getSimTime();
     }
 
-    if (!sim || !sim->getContext())
-    {
+    if (!sim || !sim->getContext()) {
         hasContext_ = false;
         contextComponentId = -1;
     }
-    else
-    {
+    else {
         hasContext_ = true;
         contextClassName = sim->getContext()->getClassName();
         contextFullPath = sim->getContext()->getFullPath().c_str();
@@ -131,8 +126,7 @@ void cException::storeContext()
 
 void cException::exitIfStartupError()
 {
-    if (!cStaticFlag::isSet())
-    {
+    if (!cStaticFlag::isSet()) {
         // note: ev may not be available at this time
         fprintf(stderr, "<!> Error during startup/shutdown: %s. Aborting.", what());
         abort();
@@ -151,15 +145,14 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     buffer[0] = '\0';
     cSimulation *sim = cSimulation::getActiveSimulation();
     cComponent *context = sim ? sim->getContext() : nullptr;
-    if (where && where!=context)
-    {
+    if (where && where != context) {
         // try: if context's fullpath is same as module fullpath + object fullname, no need to print path
         sprintf(buffer2, "%s.%s", (context ? context->getFullPath().c_str() : ""), where->getFullName());
-        bool needpath = strcmp(buffer2,where->getFullPath().c_str())!=0;
+        bool needpath = strcmp(buffer2, where->getFullPath().c_str()) != 0;
         sprintf(buffer, "(%s)%s: ", where->getClassName(), needpath ? where->getFullPath().c_str() : where->getFullName());
     }
 
-    vsnprintf(buffer+strlen(buffer), BUFLEN-strlen(buffer), fmt, va);
+    vsnprintf(buffer + strlen(buffer), BUFLEN - strlen(buffer), fmt, va);
     buffer[BUFLEN-1] = '\0';
     msg = buffer;
 
@@ -174,45 +167,42 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
 static const char *getKindStr(cComponent::ComponentKind kind, bool capitalized)
 {
     switch (kind) {
-    case cComponent::KIND_MODULE: return capitalized ? "Module" : "module";
-    case cComponent::KIND_CHANNEL: return capitalized ? "Channel" : "channel";
-    default: return capitalized ? "Component" : "component";
+        case cComponent::KIND_MODULE: return capitalized ? "Module" : "module";
+        case cComponent::KIND_CHANNEL: return capitalized ? "Channel" : "channel";
+        default: return capitalized ? "Component" : "component";
     }
 }
 
 std::string cException::getFormattedMessage() const
 {
     std::string when;
-    switch (getSimulationStage())
-    {
+    switch (getSimulationStage()) {
         case CTX_NONE: when = ""; break;
         case CTX_BUILD: when = " during network setup"; break; // note leading spaces
         case CTX_INITIALIZE: when = " during network initialization"; break;
-        case CTX_EVENT: when = opp_stringf(" at event #%" LL "d, t=%s",getEventNumber(), SIMTIME_STR(getSimtime())); break; // note we say "at" and not "in", because error may have occurred outside handleMessage()
+        case CTX_EVENT: when = opp_stringf(" at event #%" LL "d, t=%s", getEventNumber(), SIMTIME_STR(getSimtime())); break; // note we say "at" and not "in", because error may have occurred outside handleMessage()
         case CTX_FINISH: when = " during finalization"; break;
         case CTX_CLEANUP: when = " during network cleanup"; break;
     }
 
     std::string result;
-    if (isError())
-    {
+    if (isError()) {
         if (!hasContext())
             result = opp_stringf("Error%s: %s.", when.c_str(), what());
         else
             result = opp_stringf("Error in %s (%s) %s (id=%d)%s: %s.",
-                    getKindStr((cComponent::ComponentKind)getContextComponentKind(), false),
-                    getContextClassName(), getContextFullPath(), getContextComponentId(),
-                    when.c_str(), what());
+                        getKindStr((cComponent::ComponentKind)getContextComponentKind(), false),
+                        getContextClassName(), getContextFullPath(), getContextComponentId(),
+                        when.c_str(), what());
     }
-    else
-    {
+    else {
         if (!hasContext())
             result = opp_stringf("%s%s.", what(), when.c_str());
         else
             result = opp_stringf("%s (%s) %s (id=%d)%s: %s.",
-                    getKindStr((cComponent::ComponentKind)getContextComponentKind(), true),
-                    getContextClassName(), getContextFullPath(), getContextComponentId(),
-                    when.c_str(), what());
+                        getKindStr((cComponent::ComponentKind)getContextComponentKind(), true),
+                        getContextClassName(), getContextFullPath(), getContextComponentId(),
+                        when.c_str(), what());
     }
 
     return result;
@@ -277,12 +267,10 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
 
 void cRuntimeError::breakIntoDebuggerIfRequested()
 {
-    if (getEnvir()->attachDebuggerOnErrors)
-    {
+    if (getEnvir()->attachDebuggerOnErrors) {
         getEnvir()->attachDebugger();
     }
-    else if (getEnvir()->debugOnErrors)
-    {
+    else if (getEnvir()->debugOnErrors) {
 #ifdef NDEBUG
         printf("\n[Warning: Program was compiled without debug info, ignoring debug-on-error=true setting.]\n");
 #else
@@ -291,20 +279,20 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                "requested (by setting debug-on-errors=true in the ini file) that errors\n"
                "abort execution and break into the debugger.\n\n"
 #ifdef _MSC_VER
-               "If you see a [Debug] button on the Windows crash dialog and you have\n"
-               "just-in-time debugging enabled, select it to get into the Visual Studio\n"
-               "debugger. Otherwise, you should already have attached to this process from\n"
-               "Visual Studio. Once in the debugger, see you can browse to the context of\n"
-               "the error in the \"Call stack\" debug view.\n\n"
+                "If you see a [Debug] button on the Windows crash dialog and you have\n"
+                "just-in-time debugging enabled, select it to get into the Visual Studio\n"
+                "debugger. Otherwise, you should already have attached to this process from\n"
+                "Visual Studio. Once in the debugger, see you can browse to the context of\n"
+                "the error in the \"Call stack\" debug view.\n\n"
 #else
-               "You should now probably be running the simulation under gdb or another\n"
-               "debugger. The simulation kernel will now raise a SIGINT signal which will\n"
-               "get you into the debugger. If you are not running under a debugger, you can\n"
-               "still use the core dump for post-mortem debugging. Once in the debugger,\n"
-               "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
-               "runtime error.\n\n"
+                "You should now probably be running the simulation under gdb or another\n"
+                "debugger. The simulation kernel will now raise a SIGINT signal which will\n"
+                "get you into the debugger. If you are not running under a debugger, you can\n"
+                "still use the core dump for post-mortem debugging. Once in the debugger,\n"
+                "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
+                "runtime error.\n\n"
 #endif
-               );
+                );
 
         printf("<!> %s\n", getFormattedMessage().c_str());
         printf("\nTRAPPING on the exception above, due to a debug-on-errors=true configuration option. Is your debugger ready?\n");
@@ -317,3 +305,4 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
 }
 
 NAMESPACE_END
+

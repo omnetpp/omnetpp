@@ -173,7 +173,7 @@ DEF(nedf_substring,
 {
     int size = argv[0].stdstringValue().size();
     int index = (int)argv[1];
-    int length = argc==3 ? (int)argv[2] : size-index;
+    int length = argc == 3 ? (int)argv[2] : size - index;
 
     if (index < 0 || index > size)
         throw cRuntimeError("substring(): index out of bounds");
@@ -188,7 +188,7 @@ DEF(nedf_substringBefore,
     "Returns the substring of s before the first occurrence of substr, or the empty string if s does not contain substr.",
 {
     size_t pos = argv[0].stdstringValue().find(argv[1].stdstringValue());
-    return pos==std::string::npos ? "" : argv[0].stdstringValue().substr(0,pos);
+    return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(0, pos);
 })
 
 DEF(nedf_substringAfter,
@@ -197,7 +197,7 @@ DEF(nedf_substringAfter,
     "Returns the substring of s after the first occurrence of substr, or the empty string if s does not contain substr.",
 {
     size_t pos = argv[0].stdstringValue().find(argv[1].stdstringValue());
-    return pos==std::string::npos ? "" : argv[0].stdstringValue().substr(pos+argv[1].stdstringValue().size());
+    return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(pos + argv[1].stdstringValue().size());
 })
 
 DEF(nedf_substringBeforeLast,
@@ -206,7 +206,7 @@ DEF(nedf_substringBeforeLast,
     "Returns the substring of s before the last occurrence of substr, or the empty string if s does not contain substr.",
 {
     size_t pos = argv[0].stdstringValue().rfind(argv[1].stdstringValue());
-    return pos==std::string::npos ? "" : argv[0].stdstringValue().substr(0,pos);
+    return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(0, pos);
 })
 
 DEF(nedf_substringAfterLast,
@@ -215,7 +215,7 @@ DEF(nedf_substringAfterLast,
     "Returns the substring of s after the last occurrence of substr, or the empty string if s does not contain substr.",
 {
     size_t pos = argv[0].stdstringValue().rfind(argv[1].stdstringValue());
-    return pos==std::string::npos ? "" : argv[0].stdstringValue().substr(pos+argv[1].stdstringValue().size());
+    return pos == std::string::npos ? "" : argv[0].stdstringValue().substr(pos + argv[1].stdstringValue().size());
 })
 
 DEF(nedf_startsWith,
@@ -242,7 +242,7 @@ DEF(nedf_tail,
     int length = (int)argv[1];
     if (length < 0)
         throw cRuntimeError("tail(): length is negative");
-    int size = (int) argv[0].stdstringValue().size();
+    int size = (int)argv[0].stdstringValue().size();
     return argv[0].stdstringValue().substr(std::max(0, size - length), size);
 })
 
@@ -255,7 +255,7 @@ DEF(nedf_replace,
     const std::string& search = argv[1].stdstringValue();
     const std::string& replacement = argv[2].stdstringValue();
     int index = 0;
-    if (argc==4) {
+    if (argc == 4) {
         index = (int)argv[3];
         if (index < 0)
             throw cRuntimeError("replace(): start index is negative");
@@ -281,7 +281,7 @@ DEF(nedf_replaceFirst,
     const std::string& search = argv[1].stdstringValue();
     const std::string& replacement = argv[2].stdstringValue();
     int index = 0;
-    if (argc==4) {
+    if (argc == 4) {
         index = (int)argv[3];
         if (index < 0)
             throw cRuntimeError("replaceFirst(): start index is negative");
@@ -320,7 +320,7 @@ DEF(nedf_choose,
     if (index < 0)
         throw cRuntimeError("choose(): negative index");
     cStringTokenizer tokenizer(argv[1].stdstringValue().c_str());
-    for (int i=0; i<index && tokenizer.hasMoreTokens(); i++)
+    for (int i = 0; i < index && tokenizer.hasMoreTokens(); i++)
         tokenizer.nextToken();
     if (!tokenizer.hasMoreTokens())
         throw cRuntimeError("choose(): index out of bounds: %d", index);
@@ -334,7 +334,7 @@ DEF(nedf_toUpper,
 {
     std::string tmp = argv[0].stdstringValue();
     int length = tmp.length();
-    for (int i=0; i<length; i++)
+    for (int i = 0; i < length; i++)
         tmp[i] = opp_toupper(tmp[i]);
     return tmp;
 })
@@ -346,7 +346,7 @@ DEF(nedf_toLower,
 {
     std::string tmp = argv[0].stdstringValue();
     int length = tmp.length();
-    for (int i=0; i<length; i++)
+    for (int i = 0; i < length; i++)
         tmp[i] = opp_tolower(tmp[i]);
     return tmp;
 })
@@ -447,18 +447,18 @@ DEF(nedf_ancestorIndex,
     "Returns the index of the ancestor module numLevels levels above the module or channel in context.",
 {
     int levels = (int)argv[0];
-    if (levels<0)
+    if (levels < 0)
         throw cRuntimeError("ancestorIndex(): negative number of levels");
-    if (levels==0 && !contextComponent->isModule())
+    if (levels == 0 && !contextComponent->isModule())
         throw cRuntimeError("ancestorIndex(): numlevels==0 and this is not a module");
     cModule *mod = dynamic_cast<cModule *>(contextComponent);
-    for (int i=0; mod && i<levels; i++)
+    for (int i = 0; mod && i < levels; i++)
         mod = mod->getParentModule();
     if (!mod)
         throw cRuntimeError("ancestorIndex(): argument is larger than current nesting level");
     if (!mod->isVector())
         throw cRuntimeError("ancestorIndex(): module `%s' is not a vector", mod->getFullPath().c_str());
-    return (long) mod->getIndex();
+    return (long)mod->getIndex();
 })
 
 
@@ -472,7 +472,7 @@ DEF(nedf_uniform,
     "random/continuous",
     "Returns a random number from the Uniform distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cNEDValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
@@ -482,7 +482,7 @@ DEF(nedf_exponential,
     "random/continuous",
     "Returns a random number from the Exponential distribution",
 {
-    int rng = argc==2 ? (int)argv[1] : 0;
+    int rng = argc == 2 ? (int)argv[1] : 0;
     return cNEDValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
 })
 
@@ -491,7 +491,7 @@ DEF(nedf_normal,
     "random/continuous",
     "Returns a random number from the Normal distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cNEDValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
@@ -501,7 +501,7 @@ DEF(nedf_truncnormal,
     "random/continuous",
     "Returns a random number from the truncated Normal distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cNEDValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
@@ -511,7 +511,7 @@ DEF(nedf_gamma_d,
     "random/continuous",
     "Returns a random number from the Gamma distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     return cNEDValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
 })
 
@@ -520,7 +520,7 @@ DEF(nedf_beta,
     "random/continuous",
     "Returns a random number from the Beta distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     argv[0] = contextComponent->beta((double)argv[0], (double)argv[1], rng);
     return argv[0];
 })
@@ -533,7 +533,7 @@ DEF(nedf_erlang_k,
     int k = (int)argv[0];
     if (k < 0)
         throw cRuntimeError("erlang_k(): k parameter (number of phases) must be positive (k=%d)", k);
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     return cNEDValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
 })
 
@@ -545,7 +545,7 @@ DEF(nedf_chi_square,
     int k = (int)argv[0];
     if (k < 0)
         throw cRuntimeError("chi_square(): k parameter (degrees of freedom) must be positive (k=%d)", k);
-    int rng = argc==2 ? (int)argv[1] : 0;
+    int rng = argc == 2 ? (int)argv[1] : 0;
     return contextComponent->chi_square(k, rng);
 })
 
@@ -556,8 +556,8 @@ DEF(nedf_student_t,
 {
     int i = (int)argv[0];
     if (i < 0)
-       throw cRuntimeError("student_t(): i parameter (degrees of freedom) must be positive (i=%d)", i);
-    int rng = argc==2 ? (int)argv[1] : 0;
+        throw cRuntimeError("student_t(): i parameter (degrees of freedom) must be positive (i=%d)", i);
+    int rng = argc == 2 ? (int)argv[1] : 0;
     return contextComponent->student_t(i, rng);
 })
 
@@ -566,7 +566,7 @@ DEF(nedf_cauchy,
     "random/continuous",
     "Returns a random number from the Cauchy distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cNEDValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
@@ -576,7 +576,7 @@ DEF(nedf_triang,
     "random/continuous",
     "Returns a random number from the Triangular distribution",
 {
-    int rng = argc==4 ? (int)argv[3] : 0;
+    int rng = argc == 4 ? (int)argv[3] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double argv2converted = argv[2].doubleValueInUnit(argv[0].getUnit());
     return cNEDValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
@@ -587,7 +587,7 @@ DEF(nedf_lognormal,
     "random/continuous",
     "Returns a random number from the Lognormal distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     return contextComponent->lognormal((double)argv[0], (double)argv[1], rng);
 })
 
@@ -596,7 +596,7 @@ DEF(nedf_weibull,
     "random/continuous",
     "Returns a random number from the Weibull distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
+    int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     return cNEDValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
@@ -606,7 +606,7 @@ DEF(nedf_pareto_shifted,
     "random/continuous",
     "Returns a random number from the Pareto-shifted distribution",
 {
-    int rng = argc==4 ? (int)argv[3] : 0;
+    int rng = argc == 4 ? (int)argv[3] : 0;
     double argv2converted = argv[2].doubleValueInUnit(argv[1].getUnit());
     return cNEDValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
 })
@@ -618,8 +618,8 @@ DEF(nedf_intuniform,
     "random/discrete",
     "Returns a random number from the Intuniform distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
-    return (long) contextComponent->intuniform((int)argv[0], (int)argv[1], rng);
+    int rng = argc == 3 ? (int)argv[2] : 0;
+    return (long)contextComponent->intuniform((int)argv[0], (int)argv[1], rng);
 })
 
 DEF(nedf_bernoulli,
@@ -627,8 +627,8 @@ DEF(nedf_bernoulli,
     "random/discrete",
     "Returns a random number from the Bernoulli distribution",
 {
-    int rng = argc==2 ? (int)argv[1] : 0;
-    return (long) contextComponent->bernoulli((double)argv[0], rng);
+    int rng = argc == 2 ? (int)argv[1] : 0;
+    return (long)contextComponent->bernoulli((double)argv[0], rng);
 })
 
 DEF(nedf_binomial,
@@ -636,8 +636,8 @@ DEF(nedf_binomial,
     "random/discrete",
     "Returns a random number from the Binomial distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
-    return (long) contextComponent->binomial((int)argv[0], (double)argv[1], rng);
+    int rng = argc == 3 ? (int)argv[2] : 0;
+    return (long)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_geometric,
@@ -645,8 +645,8 @@ DEF(nedf_geometric,
     "random/discrete",
     "Returns a random number from the Geometric distribution",
 {
-    int rng = argc==2 ? (int)argv[1] : 0;
-    return (long) contextComponent->geometric((double)argv[0], rng);
+    int rng = argc == 2 ? (int)argv[1] : 0;
+    return (long)contextComponent->geometric((double)argv[0], rng);
 })
 
 DEF(nedf_negbinomial,
@@ -654,8 +654,8 @@ DEF(nedf_negbinomial,
     "random/discrete",
     "Returns a random number from the Negbinomial distribution",
 {
-    int rng = argc==3 ? (int)argv[2] : 0;
-    return (long) contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
+    int rng = argc == 3 ? (int)argv[2] : 0;
+    return (long)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_poisson,
@@ -663,8 +663,8 @@ DEF(nedf_poisson,
     "random/discrete",
     "Returns a random number from the Poisson distribution",
 {
-    int rng = argc==2 ? (int)argv[1] : 0;
-    return (long) contextComponent->poisson((double)argv[0], rng);
+    int rng = argc == 2 ? (int)argv[1] : 0;
+    return (long)contextComponent->poisson((double)argv[0], rng);
 })
 
 //
@@ -679,11 +679,10 @@ DEF(nedf_xmldoc,
     "matches the expression given in simplified XPath syntax.",
 {
     const char *filename = argv[0].stringValue();
-    const char *xpath = argc==1 ? nullptr : argv[1].stringValue();
+    const char *xpath = argc == 1 ? nullptr : argv[1].stringValue();
     cXMLElement *node = getEnvir()->getXMLDocument(filename, xpath);
-    if (!node)
-    {
-        if (argc==1)
+    if (!node) {
+        if (argc == 1)
             throw cRuntimeError("xmldoc(\"%s\"): element not found", filename);
         else
             throw cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", filename, xpath);
@@ -699,14 +698,12 @@ DEF(nedf_xml,
     "matches the expression given in simplified XPath syntax.",
 {
     cXMLElement *node;
-    if (argc==1)
-    {
+    if (argc == 1) {
         node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), nullptr);
         if (!node)
             throw cRuntimeError("xml(\"%s\"): element not found", argv[0].stdstringValue().c_str());
     }
-    else
-    {
+    else {
         node = getEnvir()->getParsedXMLString(argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
         if (!node)
             throw cRuntimeError("xml(\"%s\", \"%s\"): element not found", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str());
@@ -749,23 +746,22 @@ DEF(nedf_firstAvailable,
     "none of the types are available.",
 {
     cRegistrationList *types = componentTypes.getInstance();
-    for (int i=0; i<argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         if (argv[i].getType() != cNEDValue::STR)
             throw cRuntimeError("firstAvailable(): string arguments expected");
         const char *name = argv[i].stringValue();
         cComponentType *c;
-        c = dynamic_cast<cComponentType *>(types->lookup(name)); // by qualified name
+        c = dynamic_cast<cComponentType *>(types->lookup(name));  // by qualified name
         if (c && c->isAvailable())
             return argv[i];
-        c = dynamic_cast<cComponentType *>(types->find(name)); // by simple name
+        c = dynamic_cast<cComponentType *>(types->find(name));  // by simple name
         if (c && c->isAvailable())
             return argv[i];
     }
 
     std::string typelist;
-    for (int i=0; i<argc; i++)
-        typelist += std::string(i==0?"":", ") + argv[i].stdstringValue();
+    for (int i = 0; i < argc; i++)
+        typelist += std::string(i == 0 ? "" : ", ") + argv[i].stdstringValue();
     throw cRuntimeError("None of the following NED types are available: %s", typelist.c_str());
 })
 

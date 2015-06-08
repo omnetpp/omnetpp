@@ -22,7 +22,6 @@
 
 NAMESPACE_BEGIN
 
-
 cLongParImpl::cLongParImpl()
 {
     val = 0;
@@ -43,7 +42,8 @@ void cLongParImpl::copy(const cLongParImpl& other)
 
 void cLongParImpl::operator=(const cLongParImpl& other)
 {
-    if (this==&other) return;
+    if (this == &other)
+        return;
     deleteOld();
     cParImpl::operator=(other);
     copy(other);
@@ -117,7 +117,7 @@ long cLongParImpl::longValue(cComponent *context) const
 
 double cLongParImpl::doubleValue(cComponent *context) const
 {
-    return (double) longValue(context);
+    return (double)longValue(context);
 }
 
 const char *cLongParImpl::stringValue(cComponent *) const
@@ -142,8 +142,7 @@ cExpression *cLongParImpl::getExpression() const
 
 void cLongParImpl::deleteOld()
 {
-    if (flags & FL_ISEXPR)
-    {
+    if (flags & FL_ISEXPR) {
         delete expr;
         flags &= ~FL_ISEXPR;
     }
@@ -178,12 +177,10 @@ void cLongParImpl::parse(const char *text)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    try
-    {
+    try {
         dynexpr->parse(text);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         delete dynexpr;
         throw;
     }
@@ -197,7 +194,7 @@ void cLongParImpl::parse(const char *text)
 int cLongParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
-    if (ret!=0)
+    if (ret != 0)
         return ret;
 
     const cLongParImpl *other2 = dynamic_cast<const cLongParImpl *>(other);

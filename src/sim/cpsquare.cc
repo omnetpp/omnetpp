@@ -38,9 +38,7 @@ NAMESPACE_BEGIN
 using std::ostream;
 using std::endl;
 
-
 Register_Class(cPSquare);
-
 
 cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
 {
@@ -49,43 +47,40 @@ cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
     copy(r);
 }
 
-
-cPSquare::cPSquare (const char *name, int b) : cDensityEstBase(name)
+cPSquare::cPSquare(const char *name, int b) : cDensityEstBase(name)
 {
     transformed = true;
 
-    numCells=b;
-    numObs=0;
+    numCells = b;
+    numObs = 0;
     n = new int[numCells+2];
     q = new double[numCells+2];
 
-    for (int i=0; i<=numCells+1; i++)
-    {
-      n[i]=i;
-      q[i]=-1e50;       //this should be -(max(double))
+    for (int i = 0; i <= numCells+1; i++) {
+        n[i] = i;
+        q[i] = -1e50;  // this should be -(max(double))
     }
 }
 
 cPSquare::~cPSquare()
 {
-    delete [] q;
-    delete [] n;
+    delete[] q;
+    delete[] n;
 }
-
 
 void cPSquare::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cDensityEstBase::parsimPack(buffer);
 
     buffer->pack(numCells);
     buffer->pack(numObs);
 
-    if (buffer->packFlag(n!=nullptr))
+    if (buffer->packFlag(n != nullptr))
         buffer->pack(n, numCells + 2);
-    if (buffer->packFlag(q!=nullptr))
+    if (buffer->packFlag(q != nullptr))
         buffer->pack(q, numCells + 2);
 #endif
 }
@@ -93,21 +88,19 @@ void cPSquare::parsimPack(cCommBuffer *buffer) const
 void cPSquare::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cDensityEstBase::parsimUnpack(buffer);
 
     buffer->unpack(numCells);
     buffer->unpack(numObs);
 
-    if (buffer->checkFlag())
-    {
+    if (buffer->checkFlag()) {
         n = new int[numCells + 2];
         buffer->unpack(n, numCells + 2);
     }
 
-    if (buffer->checkFlag())
-    {
+    if (buffer->checkFlag()) {
         q = new double[numCells + 2];
         buffer->unpack(q, numCells + 2);
     }
@@ -116,25 +109,25 @@ void cPSquare::parsimUnpack(cCommBuffer *buffer)
 
 void cPSquare::copy(const cPSquare& res)
 {
-    numObs=res.numObs;
-    numCells=res.numCells;
-    delete [] n;
-    delete [] q;
-    n=new int[numCells+2];
-    q=new double[numCells+2];
-    for (int i=0; i<=numCells+1; i++)
-    {
-      n[i]=res.n[i];
-      q[i]=res.q[i];
+    numObs = res.numObs;
+    numCells = res.numCells;
+    delete[] n;
+    delete[] q;
+    n = new int[numCells+2];
+    q = new double[numCells+2];
+    for (int i = 0; i <= numCells+1; i++) {
+        n[i] = res.n[i];
+        q[i] = res.q[i];
     }
 }
 
 cPSquare& cPSquare::operator=(const cPSquare& res)
 {
-    if (this==&res) return *this;
+    if (this == &res)
+        return *this;
     cDensityEstBase::operator=(res);
     copy(res);
-    return (*this);
+    return *this;
 }
 
 void cPSquare::giveError()
@@ -149,150 +142,145 @@ void cPSquare::collectTransformed(double val)
 
     numObs++;
 
-    if (numObs <= numCells + 1)
-    {
-       q[numCells+2-numObs] = val;
+    if (numObs <= numCells+1) {
+        q[numCells+2-numObs] = val;
     }
-    else
-    {
-      // now numobs==b+1, number of observations is enough to produce 'b' cells,
-      // estimation has to be done
-      if (numObs == numCells+2) {
-         for (i=1; i<numCells+1; i++) {
-            for (j=i+1; j<numCells+2; j++) {
-               if (q[j] < q[i])
-               {
-                  double temp = q[i];
-                  q[i] = q[j];
-                  q[j] = temp;
-               }
+    else {
+        // now numobs==b+1, number of observations is enough to produce 'b' cells,
+        // estimation has to be done
+        if (numObs == numCells+2) {
+            for (i = 1; i < numCells+1; i++) {
+                for (j = i+1; j < numCells+2; j++) {
+                    if (q[j] < q[i]) {
+                        double temp = q[i];
+                        q[i] = q[j];
+                        q[j] = temp;
+                    }
+                }
             }
-         }
-      }
+        }
 
-      int k = 0;        //the cell number in which 'val' falls
+        int k = 0;  // the cell number in which 'val' falls
 
-      for (i=1; i<=numCells+1; i++)
-      {
-         if (val <= q[i]) {
-            if (i==1)
-            {
-               q[1] = val;
-               k = 1;
+        for (i = 1; i <= numCells+1; i++) {
+            if (val <= q[i]) {
+                if (i == 1) {
+                    q[1] = val;
+                    k = 1;
+                }
+                else {
+                    k = i-1;
+                }
+                break;
             }
-            else {
-               k = i-1;
+        }
+
+        if (k == 0) {  // the new value falls outside of the current cells
+            q[numCells+1] = val;
+            k = numCells;
+        }
+
+        for (i = k+1; i <= numCells+1; i++)
+            n[i] = n[i]+1;
+
+        double d, qd;
+        int e;
+        for (i = 2; i <= numCells; i++) {
+            d = 1 + (i-1) * (numObs-1) / ((double)numCells) - n[i];
+
+            if ((d >= 1 && n[i+1]-n[i] > 1) || (d <= -1 && n[i-1]-n[i] < -1)) {
+                // if it is possible to adjust the marker position
+                d < 0 ? e = -1 : e = 1;
+
+                // try the parabolic formula
+                qd = q[i] + e / ((double)(n[i+1] - n[i-1])) * ((n[i] - n[i-1] + e)
+                                                               * (q[i+1] - q[i]) / ((double)(n[i+1] - n[i])) + (n[i+1]
+                                                                                                                - n[i] - e) * (q[i] - q[i-1]) / ((double)(n[i] - n[i-1])));
+
+                if ((qd > q[i-1]) && (qd < q[i+1]))  // if it is possible to fit the new height
+                    q[i] = qd;  // then do so (in between the neigbouring heights)
+                else  // else use the linear formula
+                    q[i] += e * (q[i+e] - q[i]) / (double)(n[i+e] - n[i]);
+                n[i] += e;
             }
-            break;
-         }
-      }
-
-      if (k==0) //the new value falls outside of the current cells
-      {
-         q[numCells+1] = val;
-         k = numCells;
-      }
-
-      for (i=k+1; i<=numCells+1; i++)
-         n[i] = n[i]+1;
-
-      double d, qd;
-      int e;
-      for (i=2; i<=numCells; i++)
-      {
-         d = 1 + (i - 1) * (numObs - 1) / ((double)numCells) - n[i];
-
-         if ((d>=1 && n[i+1]-n[i]>1) || (d<=-1 && n[i-1]-n[i]<-1))
-         //if it is possible to adjust the marker position
-         {
-            d < 0 ? e = -1 : e = 1;
-
-            //try the parabolic formula
-            qd = q[i] + e / ((double)(n[i+1] - n[i-1])) * ((n[i] - n[i-1] + e)
-                 * (q[i+1] - q[i]) / ((double)(n[i+1] - n[i])) + (n[i+1]
-                 - n[i] - e) * (q[i] - q[i-1]) / ((double)(n[i] - n[i-1])));
-
-            if ((qd>q[i-1]) && (qd<q[i+1]))       // if it is possible to fit the new height
-               q[i] = qd;                         // then do so (in between the neigbouring heights)
-            else                                  // else use the linear formula
-               q[i] += e * (q[i+e] - q[i]) / (double)(n[i+e] - n[i]);
-            n[i] += e;
-         }
-      }
+        }
     }
 }
+
 #else /* OLDER_WORKING_CODE */
 void cPSquare::collectTransformed(double val)
 {
     int i;
 
-    numObs++;          //an extra observation is added
+    numObs++;  // an extra observation is added
 
-    if (numObs <= numCells + 1)
-    {
-      // old code:
-      //q[numcells+2-numobs] = val;
-      // places val in front, because qsort puts everything at the end,
-      // because initialized with q[i]=-max
-      //qsort(q, numcells+2, sizeof(*q), CompDouble);
+    if (numObs <= numCells+1) {
+        // old code:
+        // q[numcells+2-numobs] = val;
+        // places val in front, because qsort puts everything at the end,
+        // because initialized with q[i]=-max
+        // qsort(q, numcells+2, sizeof(*q), CompDouble);
 
-      // insert val into q[]; q[0] is not used!
-      for(i=numObs; i>=2 && val<=q[i-1]; i--)
-         q[i]=q[i-1];
-      q[i]=val;
+        // insert val into q[]; q[0] is not used!
+        for (i = numObs; i >= 2 && val <= q[i-1]; i--)
+            q[i] = q[i-1];
+        q[i] = val;
     }
-    else
-    // now numobs==b+1, number of observations is enough to produce 'b' cells,
-    // estimation has to be done
-    { int k = 0;        //the cell number in which 'val' falls
+    else {
+        // now numobs==b+1, number of observations is enough to produce 'b' cells,
+        // estimation has to be done
+        int k = 0;  // the cell number in which 'val' falls
 
-      for (i=1; i<=numCells+1; i++)
-      { if (val <= q[i])
-        { if (i==1)
-          {  q [1] = val;
-             k = 1;
-          }
-          else
-          { k = i - 1;}
-          break;
+        for (i = 1; i <= numCells+1; i++) {
+            if (val <= q[i]) {
+                if (i == 1) {
+                    q[1] = val;
+                    k = 1;
+                }
+                else {
+                    k = i-1;
+                }
+                break;
+            }
         }
-      }
-      if (k==0) //the new value falls outside of the current cells
-      { q[numCells+1]=val;
-        k = numCells;
-      }
-      for (i=k+1; i<=numCells+1; i++)
-      { n[i]=n[i]+1;}
-
-      double d, qd;
-      int e;
-      for (i=2; i<=numCells; i++)
-      { d = 1 + (i - 1) * (numObs - 1) / ((double)numCells) - n[i];
-
-        if ((d>=1 && n[i+1]-n[i]>1) || (d<=-1 && n[i-1]-n[i]<-1))
-        //if it is possible to adjust the marker position
-        { if (d < 0)
-          { e = - 1;}
-          else
-          { e = 1;}
-          //try the parabolic formula
-          qd = q[i] + e / ((double)(n [i + 1] - n [i - 1])) * ((n [i] - n [i - 1] + e)
-               * (q [i + 1] - q [i]) / ((double)(n [i + 1] - n [i])) + (n [i + 1]
-               - n [i] - e) * (q [i] - q [i - 1]) / ((double)(n [i] - n [i - 1])));
-
-          if ((qd>q[i-1]) && (qd<q[i+1]))       //if it is possible to fit the new height
-
-          { q [i] = qd;}                        //then do so (in between the neigbouring heights)
-          else                                  //else
-          { q [i] += e * (q [i + e] - q [i])    //use the linear formula
-                     / ((double)(n [i + e]
-                     - n [i]));
-          }
-          n [i] += e;
+        if (k == 0) {  // the new value falls outside of the current cells
+            q[numCells+1] = val;
+            k = numCells;
         }
-      }
+        for (i = k+1; i <= numCells+1; i++) {
+            n[i] = n[i]+1;
+        }
+
+        double d, qd;
+        int e;
+        for (i = 2; i <= numCells; i++) {
+            d = 1 + (i-1) * (numObs-1) / ((double)numCells) - n[i];
+
+            if ((d >= 1 && n[i+1]-n[i] > 1) || (d <= -1 && n[i-1]-n[i] < -1)) {
+                // if it is possible to adjust the marker position
+                if (d < 0) {
+                    e = -1;
+                }
+                else {
+                    e = 1;
+                }
+                // try the parabolic formula
+                qd = q[i] + e / ((double)(n[i+1] - n[i-1])) * ((n[i] - n[i-1] + e)
+                        * (q[i+1] - q[i]) / ((double)(n[i+1] - n[i])) + (n[i+1]
+                                - n[i] - e) * (q[i] - q[i-1]) / ((double)(n[i] - n[i-1])));
+
+                if ((qd > q[i-1]) && (qd < q[i+1])) {  // if it is possible to fit the new height
+                    q[i] = qd;   // then do so (in between the neigbouring heights)
+                }
+                else {  // else use the linear formula
+                    q[i] += e * (q[i + e] - q[i]) / ((double)(n[i + e] - n[i]));
+                }
+                n[i] += e;
+            }
+        }
     }
 }
+
 #endif
 
 void cPSquare::merge(const cStatistic *other)
@@ -302,37 +290,34 @@ void cPSquare::merge(const cStatistic *other)
 
 void cPSquare::doMergeCellValues(const cDensityEstBase *other)
 {
-    ASSERT(false); // never comes here, as merge() already throws an error
+    ASSERT(false);  // never comes here, as merge() already throws an error
 }
 
 double cPSquare::draw() const
 {
     double s;
-    int k=0, l;
+    int k = 0, l;
     cRNG *rng = getRNG();
 
-    if (numObs<numCells+1)
-        throw cRuntimeError(this,"must collect at least num_cells values before random() can be used");
+    if (numObs < numCells+1)
+        throw cRuntimeError(this, "must collect at least num_cells values before random() can be used");
 
     s = numObs * dblrand(rng);
 
-    for (int i=1; i<=numCells+1; i++)
-    {
-       if (s < n[i])
-       {
-          k=i;
-          l=k-1;
-          break;
-       }
+    for (int i = 1; i <= numCells+1; i++) {
+        if (s < n[i]) {
+            k = i;
+            l = k-1;
+            break;
+        }
     }
 
-    if (k==1)
-       l=k;
+    if (k == 1)
+        l = k;
 
-    if (numObs<numCells+1)
-    {
-       k += numCells-numObs+1;
-       l += numCells-numObs+1;
+    if (numObs < numCells+1) {
+        k += numCells-numObs+1;
+        l += numCells-numObs+1;
     }
 
     return dblrand(rng)*(q[k]-q[l])+q[l];
@@ -340,12 +325,12 @@ double cPSquare::draw() const
 
 int cPSquare::getNumCells() const
 {
-    if (numObs<2)
-       return 0;
-    else if (numObs<numCells)
-       return numObs-1;
+    if (numObs < 2)
+        return 0;
+    else if (numObs < numCells)
+        return numObs-1;
     else
-       return numCells;
+        return numCells;
 }
 
 double cPSquare::getBasepoint(int k) const
@@ -355,7 +340,7 @@ double cPSquare::getBasepoint(int k) const
 
 double cPSquare::getCellValue(int k) const
 {
-    return n[k+2] - n[k+1] + (k==0);
+    return n[k+2] - n[k+1] + (k == 0);
 }
 
 std::string cPSquare::detailedInfo() const
@@ -363,61 +348,67 @@ std::string cPSquare::detailedInfo() const
     std::stringstream os;
     os << cDensityEstBase::detailedInfo();
 
-    int nn = numObs<=numCells+1 ? numObs : numCells+1;
+    int nn = numObs <= numCells+1 ? numObs : numCells+1;
 
     os << "\n  The quantiles (#(observations: observation<=marker)):\n";
     os << "      #observations\t<=marker\n";
-    for (int i=1; i<=nn; i++)
-       os << "       " << n[i] << "\t " << q[i] << endl;
+    for (int i = 1; i <= nn; i++)
+        os << "       " << n[i] << "\t " << q[i] << endl;
     return os.str();
 }
 
 double cPSquare::getCDF(double x) const
 {
-   // returns 0..1; uses linear approximation between two markers
-   for (int i=1; i<numCells+2 ; i++)
-      if (q[i]>x)
-         return ((x-q[i-1]) / (q[i]-q[i-1]) * (n[i]-n[i-1] + (i==1)) + n[i-1] + (i==1)) / numObs;
-   return 1.0;
+    // returns 0..1; uses linear approximation between two markers
+    for (int i = 1; i < numCells+2; i++)
+        if (q[i] > x)
+            return ((x-q[i-1]) / (q[i]-q[i-1]) * (n[i]-n[i-1] + (i == 1)) + n[i-1] + (i == 1)) / numObs;
+
+    return 1.0;
 }
 
 double cPSquare::getPDF(double x) const
 {
-   // returns 0..1; assumes constant PDF within a cell
-   for (int i=1 ; i<numCells+2 ; i++)
-      if (q[i]>x)
-        return (n[i]-n[i-1] + (i==1))/(q[i]-q[i-1])/numObs;
-   return 0;
+    // returns 0..1; assumes constant PDF within a cell
+    for (int i = 1; i < numCells+2; i++)
+        if (q[i] > x)
+            return (n[i]-n[i-1] + (i == 1))/(q[i]-q[i-1])/numObs;
+
+    return 0;
 }
 
 void cPSquare::saveToFile(FILE *f) const
 {
-   cDensityEstBase::saveToFile(f);
+    cDensityEstBase::saveToFile(f);
 
-   fprintf(f,"%u\t #= numcells\n",numCells);
-   fprintf(f,"%ld\t #= numobs\n",numObs);
+    fprintf(f, "%u\t #= numcells\n", numCells);
+    fprintf(f, "%ld\t #= numobs\n", numObs);
 
-   int i;
-   fprintf(f,"#= n[]\n");
-   for (i=0; i<numCells+2; i++)  fprintf(f," %d\n",n[i]);
+    int i;
+    fprintf(f, "#= n[]\n");
+    for (i = 0; i < numCells+2; i++)
+        fprintf(f, " %d\n", n[i]);
 
-   fprintf(f,"#= q[]\n");
-   for (i=0; i<numCells+2; i++)  fprintf(f," %g\n",q[i]);
+    fprintf(f, "#= q[]\n");
+    for (i = 0; i < numCells+2; i++)
+        fprintf(f, " %g\n", q[i]);
 }
 
 void cPSquare::loadFromFile(FILE *f)
 {
-   cDensityEstBase::loadFromFile(f);
+    cDensityEstBase::loadFromFile(f);
 
-   freadvarsf(f,"%u\t #= numcells",&numCells);
-   freadvarsf(f,"%ld\t #= numobs",&numObs);
+    freadvarsf(f, "%u\t #= numcells", &numCells);
+    freadvarsf(f, "%ld\t #= numobs", &numObs);
 
-   int i;
-   freadvarsf(f,"#= n[]");
-   for (i=0; i<numCells+2; i++)  freadvarsf(f," %d",n+i);
+    int i;
+    freadvarsf(f, "#= n[]");
+    for (i = 0; i < numCells+2; i++)
+        freadvarsf(f, " %d", n+i);
 
-   freadvarsf(f,"#= q[]");
-   for (i=0; i<numCells+2; i++)  freadvarsf(f," %g",q+i);
+    freadvarsf(f, "#= q[]");
+    for (i = 0; i < numCells+2; i++)
+        freadvarsf(f, " %g", q+i);
 }
 
 NAMESPACE_END

@@ -28,7 +28,6 @@
 
 NAMESPACE_BEGIN
 
-
 void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
 {
     // Default implementation: send to everyone. Try to do as much of the job
@@ -38,15 +37,12 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
 
     int n = getNumPartitions();
     int myProcId = getProcId();
-    for (int i=0; i<n; i++)
-    {
-        try
-        {
+    for (int i = 0; i < n; i++) {
+        try {
             if (myProcId != i)
                 send(buffer, tag, i);
         }
-        catch (std::exception& e)
-        {
+        catch (std::exception& e) {
             hadException = true;
             exceptionText = e.what();
         }

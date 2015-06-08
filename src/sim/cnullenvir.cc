@@ -42,7 +42,7 @@ cNullEnvir::~cNullEnvir()
 
 void cNullEnvir::addLifecycleListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it == listeners.end()) {
         listeners.push_back(listener);
         listener->listenerAdded();
@@ -51,7 +51,7 @@ void cNullEnvir::addLifecycleListener(cISimulationLifecycleListener *listener)
 
 void cNullEnvir::removeLifecycleListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it != listeners.end()) {
         listeners.erase(it);
         listener->listenerRemoved();
@@ -62,8 +62,8 @@ void cNullEnvir::notifyLifecycleListeners(SimulationLifecycleEventType eventType
 {
     // make a copy of the listener list, to avoid problems from listeners
     // getting added/removed during notification
-    std::vector<cISimulationLifecycleListener*> copy = listeners;
-    for (int i=0; i<(int)copy.size(); i++) {
+    std::vector<cISimulationLifecycleListener *> copy = listeners;
+    for (int i = 0; i < (int)copy.size(); i++) {
         try {
             copy[i]->lifecycleEvent(eventType, details);
         }
@@ -73,5 +73,4 @@ void cNullEnvir::notifyLifecycleListeners(SimulationLifecycleEventType eventType
         }
     }
 }
-
 

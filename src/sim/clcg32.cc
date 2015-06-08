@@ -26,38 +26,34 @@
 
 NAMESPACE_BEGIN
 
-
 Register_Class(cLCG32);
 
 Register_PerRunConfigOption(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, nullptr, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
 
-
 void cLCG32::initialize(int seedSet, int rngId, int numRngs,
-                        int /*parsimProcId*/, int parsimNumPartitions,
-                        cConfiguration *cfg)
+        int  /*parsimProcId*/, int parsimNumPartitions,
+        cConfiguration *cfg)
 {
-    if (parsimNumPartitions>1)
+    if (parsimNumPartitions > 1)
         throw cRuntimeError("The cLCG32 RNG is not suitable for parallel simulation runs "
                             "because of its short cycle -- please select cMersenneTwister "
                             "in the configuration instead");
 
     char key[32];
-    sprintf(key,  "seed-%d-lcg32", rngId);
+    sprintf(key, "seed-%d-lcg32", rngId);
     const char *value = cfg->getConfigValue(key);
-    if (value==nullptr)
-    {
-        int autoSeedIndex = seedSet*numRngs + rngId;
-        if (autoSeedIndex>=256)
+    if (value == nullptr) {
+        int autoSeedIndex = seedSet * numRngs + rngId;
+        if (autoSeedIndex >= 256)
             EV << "Warning: LCG32: out of the 256 auto seed values, wrapping around "
                   "-- decrease num-rngs=" << numRngs << " value or run numbers, "
-                  "or use a different RNG class like Mersenne Twister\n";
+                                                        "or use a different RNG class like Mersenne Twister\n";
         autoSeedIndex = autoSeedIndex % 256;
         seed = autoSeeds[autoSeedIndex];
     }
-    else
-    {
+    else {
         seed = cConfiguration::parseLong(value, nullptr);
-        if (seed==0)
+        if (seed == 0)
             throw cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", key);
     }
 }
@@ -65,34 +61,35 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
 void cLCG32::selfTest()
 {
     seed = 1;
-    for (int i=0; i<10000; i++)
+    for (int i = 0; i < 10000; i++)
         intRand();
-    if (seed!=1043618065L)
+    if (seed != 1043618065L)
         throw cRuntimeError("cLCG32: selfTest() failed, please report this problem!");
 }
 
 unsigned long cLCG32::intRand()
 {
     numDrawn++;
-    const long int a=16807, q=127773, r=2836;
-    seed=a*(seed%q) - r*(seed/q);
-    if (seed<=0) seed+=LCG32_MAX+1;
-    return seed-1; // shift range [1..2^31-2] to [0..2^31-3]
+    const long int a = 16807, q = 127773, r = 2836;
+    seed = a * (seed % q) - r * (seed / q);
+    if (seed <= 0)
+        seed += LCG32_MAX + 1;
+    return seed - 1;  // shift range [1..2^31-2] to [0..2^31-3]
 }
 
 unsigned long cLCG32::intRandMax()
 {
-    return LCG32_MAX-1; // 2^31-3
+    return LCG32_MAX - 1;  // 2^31-3
 }
 
 unsigned long cLCG32::intRand(unsigned long n)
 {
-    if (n>LCG32_MAX)
+    if (n > LCG32_MAX)
         throw cRuntimeError("cLCG32: intRand(%d): argument out of range 1..2^31-2");
 
     // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
     // Find which bits are used in n
-    unsigned long used = n-1;
+    unsigned long used = n - 1;
     used |= used >> 1;
     used |= used >> 2;
     used |= used >> 4;
@@ -103,23 +100,23 @@ unsigned long cLCG32::intRand(unsigned long n)
     unsigned long i;
     do
         i = intRand() & used;  // toss unused bits to shorten search
-    while( i >= n );
+    while (i >= n);
     return i;
 }
 
 double cLCG32::doubleRand()
 {
-    return (double)intRand() * (1.0/LCG32_MAX);
+    return (double)intRand() * (1.0 / LCG32_MAX);
 }
 
 double cLCG32::doubleRandNonz()
 {
-    return (double)(intRand()+1) * (1.0/(LCG32_MAX+1));
+    return (double)(intRand() + 1) * (1.0 / (LCG32_MAX + 1));
 }
 
 double cLCG32::doubleRandIncl1()
 {
-    return (double)intRand() * (1.0/(LCG32_MAX-1));
+    return (double)intRand() * (1.0 / (LCG32_MAX - 1));
 }
 
 long cLCG32::autoSeeds[] = {

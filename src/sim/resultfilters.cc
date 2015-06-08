@@ -37,7 +37,6 @@ Register_ResultFilter("packetBytes", PacketBytesFilter);
 Register_ResultFilter("packetBits", PacketBitsFilter);
 Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
 
-
 void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
 {
     if (t >= getEndWarmupPeriod())
@@ -93,7 +92,7 @@ bool TimeAverageFilter::process(simtime_t& t, double& value)
     lastTime = t;
     lastValue = value;
 
-    if (isFirstValue || t==startTime)
+    if (isFirstValue || t == startTime)
         return false;  // suppress initial 0/0 = NaNs
 
     double interval = SIMTIME_DBL(t - startTime);
@@ -175,8 +174,7 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultF
 
 void PacketBytesFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object)
 {
-    if (dynamic_cast<cPacket *>(object))
-    {
+    if (dynamic_cast<cPacket *>(object)) {
         cPacket *pk = (cPacket *)object;
         fire(this, t, (double)pk->getByteLength());
     }
@@ -186,8 +184,7 @@ void PacketBytesFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cOb
 
 void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object)
 {
-    if (dynamic_cast<cPacket *>(object))
-    {
+    if (dynamic_cast<cPacket *>(object)) {
         cPacket *pk = (cPacket *)object;
         fire(this, t, (double)pk->getBitLength());
     }

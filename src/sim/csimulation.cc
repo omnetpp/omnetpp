@@ -58,14 +58,14 @@ using std::ostream;
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
-extern std::set<cOwnedObject*> objectlist;
+extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
 
 #ifdef NDEBUG
-#define DEBUG_TRAP_IF_REQUESTED   /*no-op*/
+#define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
 #else
-#define DEBUG_TRAP_IF_REQUESTED   {if (trapOnNextEvent) {trapOnNextEvent=false; DEBUG_TRAP;}}
+#define DEBUG_TRAP_IF_REQUESTED    { if (trapOnNextEvent) { trapOnNextEvent = false; DEBUG_TRAP; } }
 #endif
 
 /**
@@ -74,19 +74,19 @@ void printAllObjects();
  */
 class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
 {
-    public:
-        cEndSimulationEvent(const char *name, simtime_t simTimeLimit) : cEvent(name) {
-            setArrivalTime(simTimeLimit);
-            setSchedulingPriority(SHRT_MAX);  // lowest priority
-        }
-        virtual cEvent *dup() const override {copyNotSupported(); return nullptr;}
-        virtual cObject *getTargetObject() const override {return nullptr;}
-        virtual void execute() override {throw cTerminationException(E_SIMTIME);}
+  public:
+    cEndSimulationEvent(const char *name, simtime_t simTimeLimit) : cEvent(name) {
+        setArrivalTime(simTimeLimit);
+        setSchedulingPriority(SHRT_MAX);  // lowest priority
+    }
+    virtual cEvent *dup() const override { copyNotSupported(); return nullptr; }
+    virtual cObject *getTargetObject() const override { return nullptr; }
+    virtual void execute() override { throw cTerminationException(E_SIMTIME); }
 };
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
 {
-    ASSERT(cStaticFlag::isSet()); // cannot be instantiated as global variable
+    ASSERT(cStaticFlag::isSet());  // cannot be instantiated as global variable
 
     envir = env;
 
@@ -123,7 +123,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
 cSimulation::~cSimulation()
 {
-    if (this==activeSimulation)
+    if (this == activeSimulation)
         // NOTE: subclass destructors will not be called, but the simulation will stop anyway
         throw cRuntimeError(this, "cannot delete the active simulation manager object");
 
@@ -138,19 +138,19 @@ cSimulation::~cSimulation()
 void cSimulation::setActiveSimulation(cSimulation *sim)
 {
     activeSimulation = sim;
-    activeEnvir = sim==nullptr ? staticEnvir : sim->envir;
+    activeEnvir = sim == nullptr ? staticEnvir : sim->envir;
 }
 
 void cSimulation::setStaticEnvir(cEnvir *env)
 {
     if (!env)
-         throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be nullptr");
+        throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be nullptr");
     staticEnvir = env;
 }
 
 void cSimulation::forEachChild(cVisitor *v)
 {
-    if (systemModule!=nullptr)
+    if (systemModule != nullptr)
         v->visit(systemModule);
     v->visit(&msgQueue);
 }
@@ -166,15 +166,14 @@ static std::string xmlquote(const std::string& str)
         return str;
 
     std::stringstream out;
-    for (const char *s=str.c_str(); *s; s++)
-    {
+    for (const char *s = str.c_str(); *s; s++) {
         char c = *s;
-        if (c=='<')
-           out << "&lt;";
-        else if (c=='>')
-           out << "&gt;";
+        if (c == '<')
+            out << "&lt;";
+        else if (c == '>')
+            out << "&gt;";
         else
-           out << c;
+            out << c;
     }
     return out.str();
 }
@@ -184,12 +183,12 @@ class cSnapshotWriterVisitor : public cVisitor
   protected:
     ostream& os;
     int indentlevel;
+
   public:
-    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {
-        indentlevel = 0;
-    }
+    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) { indentlevel = 0; }
+
     virtual void visit(cObject *obj) override {
-        std::string indent(2*indentlevel, ' ');
+        std::string indent(2 * indentlevel, ' ');
         os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << xmlquote(obj->getFullPath()) << "\">\n";
         os << indent << "  <info>" << xmlquote(obj->info()) << "</info>\n";
         std::string details = obj->detailedInfo();
@@ -218,9 +217,9 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     os << "<snapshot\n";
     os << "    object=\"" << xmlquote(object->getFullPath()) << "\"\n";
-    os << "    label=\"" << xmlquote(label?label:"") << "\"\n";
+    os << "    label=\"" << xmlquote(label ? label : "") << "\"\n";
     os << "    simtime=\"" << xmlquote(SIMTIME_STR(simTime())) << "\"\n";
-    os << "    network=\"" << xmlquote(networkType?networkType->getName():"") << "\"\n";
+    os << "    network=\"" << xmlquote(networkType ? networkType->getName() : "") << "\"\n";
     os << "    >\n";
 
     cSnapshotWriterVisitor v(os);
@@ -312,13 +311,13 @@ int cSimulation::registerComponent(cComponent *component)
 {
     lastComponentId++;
 
-    if (lastComponentId>=size)
-    {
+    if (lastComponentId >= size) {
         // vector full, grow by delta
-        cComponent **v = new cComponent *[size+delta];
-        memcpy(v, componentv, sizeof(cComponent*)*size );
-        for (int i=size; i<size+delta; i++) v[i]=nullptr;
-        delete [] componentv;
+        cComponent **v = new cComponent *[size + delta];
+        memcpy(v, componentv, sizeof(cComponent *) * size);
+        for (int i = size; i < size + delta; i++)
+            v[i] = nullptr;
+        delete[] componentv;
         componentv = v;
         size += delta;
     }
@@ -339,8 +338,7 @@ void cSimulation::deregisterComponent(cComponent *component)
     component->componentId = -1;
     componentv[id] = nullptr;
 
-    if (component==systemModule)
-    {
+    if (component == systemModule) {
         drop(systemModule);
         systemModule = nullptr;
     }
@@ -382,8 +380,7 @@ void cSimulation::setupNetwork(cModuleType *network)
 
     simulationStage = CTX_BUILD;
 
-    try
-    {
+    try {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
@@ -392,8 +389,7 @@ void cSimulation::setupNetwork(cModuleType *network)
         mod->buildInside();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         // Note: no deleteNetwork() call here. We could call it here, but it's
         // dangerous: module destructors may try to delete uninitialized pointers
         // and crash. (Often pointers incorrectly get initialized in initialize()
@@ -415,7 +411,7 @@ void cSimulation::callInitialize()
 
     // reset counters. Note msgQueue.clear() was already called from setupNetwork()
     currentSimtime = 0;
-    currentEventNumber = 0; // initialize() has event number 0
+    currentEventNumber = 0;  // initialize() has event number 0
     trapOnNextEvent = false;
     cMessage::resetMessageCounters();
 
@@ -427,8 +423,7 @@ void cSimulation::callInitialize()
     //  This order is important because initialize() functions might contain
     //  send() calls which could otherwise insert msgs BEFORE starter messages
     //  for the destination module and cause trouble in cSimpleMod's activate().
-    if (systemModule)
-    {
+    if (systemModule) {
         cContextSwitcher tmp(systemModule);
         systemModule->scheduleStart(SIMTIME_ZERO);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_INITIALIZE);
@@ -436,7 +431,7 @@ void cSimulation::callInitialize()
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
-    currentEventNumber = 1; // events are numbered from 1
+    currentEventNumber = 1;  // events are numbered from 1
 
     simulationStage = CTX_EVENT;
 }
@@ -448,8 +443,7 @@ void cSimulation::callFinish()
     simulationStage = CTX_FINISH;
 
     // call user-defined finish() functions for all modules recursively
-    if (systemModule)
-    {
+    if (systemModule) {
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_FINISH);
         systemModule->callFinish();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_FINISH);
@@ -462,9 +456,9 @@ void cSimulation::deleteNetwork()
         return;  // network already deleted
 
     if (cSimulation::getActiveSimulation() != this)
-        throw cRuntimeError("cSimulation: cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())"); // because cModule::deleteModule() would crash
+        throw cRuntimeError("cSimulation: cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())");  // because cModule::deleteModule() would crash
 
-    if (getContextModule()!=nullptr)
+    if (getContextModule() != nullptr)
         throw cRuntimeError("Attempt to delete network during simulation");
 
     simulationStage = CTX_CLEANUP;
@@ -475,11 +469,11 @@ void cSimulation::deleteNetwork()
     systemModule->deleteModule();
 
     // make sure it was successful
-    for (int i=1; i<size; i++)
-        ASSERT(componentv[i]==nullptr);
+    for (int i = 1; i < size; i++)
+        ASSERT(componentv[i] == nullptr);
 
     // and clean up
-    delete [] componentv;
+    delete[] componentv;
     componentv = nullptr;
     size = 0;
     lastComponentId = 0;
@@ -503,7 +497,6 @@ void cSimulation::deleteNetwork()
     printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     printAllObjects();
 #endif
-
 }
 
 cEvent *cSimulation::takeNextEvent()
@@ -514,7 +507,7 @@ cEvent *cSimulation::takeNextEvent()
     if (!event)
         return nullptr;
 
-    ASSERT(!event->isStale()); // it's the scheduler's task to discard stale events
+    ASSERT(!event->isStale());  // it's the scheduler's task to discard stale events
 
     // advance simulation time
     currentSimtime = event->getArrivalTime();
@@ -535,7 +528,7 @@ cEvent *cSimulation::guessNextEvent()
 simtime_t cSimulation::guessNextSimtime()
 {
     cEvent *event = guessNextEvent();
-    return event==nullptr ? -1 : event->getArrivalTime();
+    return event == nullptr ? -1 : event->getArrivalTime();
 }
 
 cSimpleModule *cSimulation::guessNextModule()
@@ -546,7 +539,7 @@ cSimpleModule *cSimulation::guessNextModule()
         return nullptr;
 
     // check that destination module still exists and hasn't terminated yet
-    if (msg->getArrivalModuleId()==-1)
+    if (msg->getArrivalModuleId() == -1)
         return nullptr;
     cComponent *component = componentv[msg->getArrivalModuleId()];
     cSimpleModule *module = dynamic_cast<cSimpleModule *>(component);
@@ -568,37 +561,32 @@ void cSimulation::transferTo(cSimpleModule *module)
     if (module->hasStackOverflow())
         throw cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
                             "Try increasing it in the class' Module_Class_Members() or constructor",
-                            module->getClassName(), module->getFullPath().c_str());
+                module->getClassName(), module->getFullPath().c_str());
 
     // if exception occurred in activity(), re-throw it. This allows us to handle
     // handleMessage() and activity() in an uniform way in the upper layer.
-    if (exception)
-    {
+    if (exception) {
         cException *e = exception;
         exception = nullptr;
 
         // ok, so we have an exception *pointer*, but we have to throw further
         // by *value*, and possibly without leaking it. Hence the following magic...
-        if (dynamic_cast<cDeleteModuleException *>(e))
-        {
+        if (dynamic_cast<cDeleteModuleException *>(e)) {
             cDeleteModuleException e2(*(cDeleteModuleException *)e);
             delete e;
             throw e2;
         }
-        else if (dynamic_cast<cTerminationException *>(e))
-        {
+        else if (dynamic_cast<cTerminationException *>(e)) {
             cTerminationException e2(*(cTerminationException *)e);
             delete e;
             throw e2;
         }
-        else if (dynamic_cast<cRuntimeError *>(e))
-        {
+        else if (dynamic_cast<cRuntimeError *>(e)) {
             cRuntimeError e2(*(cRuntimeError *)e);
             delete e;
             throw e2;
         }
-        else
-        {
+        else {
             cException e2(*(cException *)e);
             delete e;
             throw e2;
@@ -623,40 +611,33 @@ void cSimulation::executeEvent(cEvent *event)
     event->setPreviousEventNumber(currentEventNumber);
 
     cSimpleModule *module = nullptr;
-    try
-    {
-        if (event->isMessage())
-        {
-            cMessage *msg = static_cast<cMessage*>(event);
+    try {
+        if (event->isMessage()) {
+            cMessage *msg = static_cast<cMessage *>(event);
             module = static_cast<cSimpleModule *>(msg->getArrivalModule());  // existence and simpleness is asserted in cMessage::isStale()
             doMessageEvent(msg, module);
         }
-        else
-        {
-            DEBUG_TRAP_IF_REQUESTED; // ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP INTO" IN YOUR DEBUGGER
+        else {
+            DEBUG_TRAP_IF_REQUESTED;  // ABOUT TO PROCESS THE EVENT YOU REQUESTED TO DEBUG -- SELECT "STEP INTO" IN YOUR DEBUGGER
             event->execute();
         }
     }
-    catch (cDeleteModuleException& e)
-    {
+    catch (cDeleteModuleException& e) {
         setGlobalContext();
         module->deleteModule();
     }
-    catch (cException&)
-    {
+    catch (cException&) {
         // restore global context before throwing the exception further
         setGlobalContext();
         throw;
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         // restore global context before throwing the exception further
         // but wrap into a cRuntimeError which captures the module before that
         cRuntimeError e2("%s: %s", opp_typename(typeid(e)), e.what());
         setGlobalContext();
         throw e2;
     }
-
     setGlobalContext();
 
     // increment event count
@@ -678,8 +659,7 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
     // give msg to mod (set ownership)
     module->take(msg);
 
-    if (getHasher())
-    {
+    if (getHasher()) {
         // note: there's no value in adding getEventNumber()
         cHasher *hasher = getHasher();
         hasher->add(SIMTIME_RAW(simTime()));
@@ -698,10 +678,9 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
 
     if (!module->initialized())
         throw cRuntimeError(module, "Module not initialized (did you forget to invoke "
-                "callInitialize() for a dynamically created module?)");
+                                    "callInitialize() for a dynamically created module?)");
 
-    if (module->usesActivity())
-    {
+    if (module->usesActivity()) {
         // switch to the coroutine of the module's activity(). We'll get back control
         // when the module executes a receive() or wait() call.
         // If there was an error during simulation, the call will throw an exception
@@ -709,19 +688,17 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
         msgForActivity = msg;
         transferTo(module);
     }
-    else
-    {
-        DEBUG_TRAP_IF_REQUESTED; // YOU ARE ABOUT TO ENTER THE handleMessage() CALL YOU REQUESTED -- SELECT "STEP INTO" IN YOUR DEBUGGER
+    else {
+        DEBUG_TRAP_IF_REQUESTED;  // YOU ARE ABOUT TO ENTER THE handleMessage() CALL YOU REQUESTED -- SELECT "STEP INTO" IN YOUR DEBUGGER
         module->handleMessage(msg);
     }
 }
 
 void cSimulation::transferToMain()
 {
-    if (currentActivityModule!=nullptr)
-    {
+    if (currentActivityModule != nullptr) {
         currentActivityModule = nullptr;
-        cCoroutine::switchToMain();     // stack switch
+        cCoroutine::switchToMain();  // stack switch
     }
 }
 
@@ -765,7 +742,6 @@ void cSimulation::insertEvent(cEvent *event)
     msgQueue.insert(event);
 }
 
-
 //----
 
 /**
@@ -793,9 +769,9 @@ void cSimulation::insertEvent(cEvent *event)
 class StaticEnv : public cEnvir
 {
   protected:
-    void unsupported() const {throw opp_runtime_error("StaticEnv: unsupported method called");}
-    virtual void putsmsg(const char *msg) override {::printf("\n<!> %s\n\n", msg);}
-    virtual bool askyesno(const char *msg) override  {unsupported(); return false;}
+    void unsupported() const { throw opp_runtime_error("StaticEnv: unsupported method called"); }
+    virtual void putsmsg(const char *msg) override { ::printf("\n<!> %s\n\n", msg); }
+    virtual bool askyesno(const char *msg) override  { unsupported(); return false; }
 
   public:
     // constructor, destructor
@@ -805,7 +781,7 @@ class StaticEnv : public cEnvir
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override {}
     virtual void simulationEvent(cEvent *event) override  {}
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr) override  {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate = nullptr) override  {}
     virtual void messageScheduled(cMessage *msg) override  {}
     virtual void messageCancelled(cMessage *msg) override  {}
     virtual void beginSend(cMessage *msg) override  {}
@@ -829,53 +805,53 @@ class StaticEnv : public cEnvir
     virtual void undisposedObject(cObject *obj) override;
     virtual void log(cLogEntry *entry) override {}
 
-     // configuration, model parameters
+    // configuration, model parameters
     virtual void configure(cComponent *component) override {}
-    virtual void readParameter(cPar *parameter) override  {unsupported();}
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  {return true;}
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=nullptr) override  {unsupported(); return nullptr;}
-    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=nullptr) override  {unsupported(); return nullptr;}
+    virtual void readParameter(cPar *parameter) override  { unsupported(); }
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  { return true; }
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath = nullptr) override  { unsupported(); return nullptr; }
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath = nullptr) override  { unsupported(); return nullptr; }
     virtual void forgetXMLDocument(const char *filename) override {}
     virtual void forgetParsedXMLString(const char *content) override {}
     virtual void flushXMLDocumentCache() override {}
     virtual void flushXMLParsedContentCache() override {}
-    virtual unsigned getExtraStackForEnvir() const override  {return 0;}
-    virtual cConfiguration *getConfig() override  {unsupported(); return nullptr;}
-    virtual bool isGUI() const override  {return false;}
+    virtual unsigned getExtraStackForEnvir() const override  { return 0; }
+    virtual cConfiguration *getConfig() override  { unsupported(); return nullptr; }
+    virtual bool isGUI() const override  { return false; }
 
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text) override  {}
-    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) override  {unsupported(); return "";}
-    virtual cEnvir& flush()  {::fflush(stdout); return *this;}
+    virtual std::string gets(const char *prompt, const char *defaultreply = nullptr) override  { unsupported(); return ""; }
+    virtual cEnvir& flush() { ::fflush(stdout); return *this; }
 
     // RNGs
-    virtual int getNumRNGs() const override {return 0;}
-    virtual cRNG *getRNG(int k) override  {unsupported(); return nullptr;}
-    virtual void getRNGMappingFor(cComponent *component) override  {component->setRNGMap(0,nullptr);}
+    virtual int getNumRNGs() const override { return 0; }
+    virtual cRNG *getRNG(int k) override  { unsupported(); return nullptr; }
+    virtual void getRNGMappingFor(cComponent *component) override  { component->setRNGMap(0, nullptr); }
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  {return nullptr;}
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  { return nullptr; }
     virtual void deregisterOutputVector(void *vechandle) override  {}
     virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override  {}
-    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override  {return false;}
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override  { return false; }
 
     // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override  {}
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override  {}
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes = nullptr) override  {}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes = nullptr) override  {}
 
     virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) override {}
 
     // snapshot file
-    virtual std::ostream *getStreamForSnapshot() override  {unsupported(); return nullptr;}
-    virtual void releaseStreamForSnapshot(std::ostream *os) override  {unsupported();}
+    virtual std::ostream *getStreamForSnapshot() override  { unsupported(); return nullptr; }
+    virtual void releaseStreamForSnapshot(std::ostream *os) override  { unsupported(); }
 
     // misc
-    virtual int getArgCount() const override  {unsupported(); return 0;}
-    virtual char **getArgVector() const override  {unsupported(); return nullptr;}
-    virtual int getParsimProcId() const override {return 0;}
-    virtual int getParsimNumPartitions() const override {return 1;}
-    virtual unsigned long getUniqueNumber() override  {unsupported(); return 0;}
-    virtual bool idle() override  {return false;}
+    virtual int getArgCount() const override  { unsupported(); return 0; }
+    virtual char **getArgVector() const override  { unsupported(); return nullptr; }
+    virtual int getParsimProcId() const override { return 0; }
+    virtual int getParsimNumPartitions() const override { return 1; }
+    virtual unsigned long getUniqueNumber() override  { unsupported(); return 0; }
+    virtual bool idle() override  { return false; }
     virtual void attachDebugger() override {}
 
     // lifecycle listeners
@@ -886,8 +862,7 @@ class StaticEnv : public cEnvir
 
 void StaticEnv::undisposedObject(cObject *obj)
 {
-    if (!cStaticFlag::isSet())
-    {
+    if (!cStaticFlag::isSet()) {
         ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: "
                  "(%s)`%s' at %p\n", obj->getClassName(), obj->getFullPath().c_str(), obj);
     }
@@ -902,3 +877,4 @@ cEnvir *cSimulation::staticEnvir = &staticEnv;
 cSimulation *cSimulation::activeSimulation = nullptr;
 
 NAMESPACE_END
+

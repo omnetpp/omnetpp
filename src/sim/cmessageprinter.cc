@@ -41,6 +41,5 @@ void cDefaultMessagePrinter::printMessage(std::ostream& os, cMessage *msg) const
     }
 }
 
-
 NAMESPACE_END
 

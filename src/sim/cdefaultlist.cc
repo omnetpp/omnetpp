@@ -44,7 +44,7 @@ cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
     // careful: if we are a global variable (ctor called before main()),
     // then insert() may get called before constructor and it invoked
     // construct() already.
-    if (cStaticFlag::isSet() || capacity==0)
+    if (cStaticFlag::isSet() || capacity == 0)
         construct();
 
     // if we're invoked before main, then we are a global variable (dynamic
@@ -60,7 +60,7 @@ void cDefaultList::construct()
     capacity = 2;
     numObjs = 0;
     objs = new cOwnedObject *[capacity];
-    for (int i=0; i<capacity; i++)
+    for (int i = 0; i < capacity; i++)
         objs[i] = nullptr;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = 0;
@@ -69,51 +69,45 @@ void cDefaultList::construct()
 
 cDefaultList::~cDefaultList()
 {
-    if (getPerformFinalGC())
-    {
+    if (getPerformFinalGC()) {
         // delete all owned objects. One place we make use of this is behavior is
         // when a simple module gets deleted -- there we have to delete all dynamically
         // allocated objects held by the module. But: deletion has dangers,
         // i.e. if we try to delete objects embedded in other objects/structs or
         // arrays, it will crash mysteriously to the user -- so consider not deleting.
-        while (numObjs>0)
+        while (numObjs > 0)
             delete objs[0];
-        delete [] objs;
+        delete[] objs;
     }
-    else
-    {
+    else {
         // experimental: do not delete objects (except cWatches), just print their names
-        for (int i=0; i<numObjs; i++)
-        {
+        for (int i = 0; i < numObjs; i++) {
             if (dynamic_cast<cWatchBase *>(objs[i]))
-                delete objs[i--]; // "i--" used because delete will move last item to position i
+                delete objs[i--];  // "i--" used because delete will move last item to position i
             else
                 getEnvir()->undisposedObject(objs[i]);
         }
 
         // we can free up the pointer array itself though
-        delete [] objs;
+        delete[] objs;
     }
 }
 
 void cDefaultList::doInsert(cOwnedObject *obj)
 {
-    ASSERT(obj!=this || this==&defaultList);
+    ASSERT(obj != this || this == &defaultList);
 
-    if (numObjs>=capacity)
-    {
-        if (capacity==0)
-        {
+    if (numObjs >= capacity) {
+        if (capacity == 0) {
             // this is if we're invoked before main, before our ctor run
             construct();
         }
-        else
-        {
+        else {
             // must allocate bigger vector (grow 25% but at least 2)
-            capacity += (capacity<8) ? 2 : (capacity>>2);
+            capacity += (capacity < 8) ? 2 : (capacity >> 2);
             cOwnedObject **v = new cOwnedObject *[capacity];
-            memcpy(v, objs, sizeof(cOwnedObject*)*numObjs);
-            delete [] objs;
+            memcpy(v, objs, sizeof(cOwnedObject *) * numObjs);
+            delete[] objs;
             objs = v;
         }
     }
@@ -127,7 +121,7 @@ void cDefaultList::doInsert(cOwnedObject *obj)
 
 void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
 {
-    ASSERT(obj && obj->owner==this);
+    ASSERT(obj && obj->owner == this);
 
     // move last object to obj's old position
     int pos = obj->pos;
@@ -139,7 +133,7 @@ void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
 
 void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 {
-    ASSERT(obj && obj->owner==this && numObjs>0);
+    ASSERT(obj && obj->owner == this && numObjs > 0);
 
     // give object to its new owner
     obj->owner = newowner;
@@ -154,7 +148,7 @@ void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 
 void cDefaultList::takeAllObjectsFrom(cDefaultList& other)
 {
-    while (other.defaultListSize()>0)
+    while (other.defaultListSize() > 0)
         take(other.defaultListGet(0));
 }
 
@@ -167,18 +161,18 @@ std::string cDefaultList::info() const
 
 void cDefaultList::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<numObjs; i++)
+    for (int i = 0; i < numObjs; i++)
         v->visit(objs[i]);
 }
 
 void cDefaultList::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cOwnedObject::parsimPack(buffer);
 
-    if (numObjs>0)
+    if (numObjs > 0)
         throw cRuntimeError(this, "parsimPack() not supported (makes no sense)");
 #endif
 }
@@ -186,10 +180,10 @@ void cDefaultList::parsimPack(cCommBuffer *buffer) const
 void cDefaultList::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cOwnedObject::parsimUnpack(buffer);
-    if (numObjs>0)
+    if (numObjs > 0)
         throw cRuntimeError(this, "parsimUnpack(): can only unpack into empty object");
 #endif
 }
@@ -203,9 +197,9 @@ void cDefaultList::take(cOwnedObject *obj)
 
 void cDefaultList::drop(cOwnedObject *obj)
 {
-    if (obj->owner!=this)
-        throw cRuntimeError(this,"drop(): not owner of object (%s)%s",
-                                obj->getClassName(), obj->getFullPath().c_str());
+    if (obj->owner != this)
+        throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
+                obj->getClassName(), obj->getFullPath().c_str());
     // the following 2 lines are actually the same as defaultOwner->take(obj);
     yieldOwnership(obj, defaultOwner);
     defaultOwner->doInsert(obj);
@@ -213,14 +207,14 @@ void cDefaultList::drop(cOwnedObject *obj)
 
 cOwnedObject *cDefaultList::defaultListGet(int k)
 {
-    if (k<0 || k>=numObjs)
+    if (k < 0 || k >= numObjs)
         return nullptr;
     return objs[k];
 }
 
 bool cDefaultList::defaultListContains(cOwnedObject *obj) const
 {
-    return obj && obj->getOwner()==const_cast<cDefaultList *>(this);
+    return obj && obj->getOwner() == const_cast<cDefaultList *>(this);
 }
 
 #ifdef SIMFRONTEND_SUPPORT
@@ -228,6 +222,8 @@ bool cDefaultList::hasChangedSince(int64_t lastRefreshSerial)
 {
     return lastChangeSerial > lastRefreshSerial;
 }
+
 #endif
 
 NAMESPACE_END
+

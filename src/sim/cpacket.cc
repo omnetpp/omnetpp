@@ -19,7 +19,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/csimplemodule.h"
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -112,8 +112,7 @@ void cPacket::forEachChild(cVisitor *v)
 {
     cMessage::forEachChild(v);
 
-    if (encapsulatedPacket)
-    {
+    if (encapsulatedPacket) {
 #ifdef REFCOUNTING
         _detachEncapMsg();  // see method comment why this is needed
 #endif
@@ -129,12 +128,12 @@ std::string cPacket::detailedInfo() const
 void cPacket::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cMessage::parsimPack(buffer);
     buffer->pack(bitLength);
     buffer->pack(duration);
-    if (buffer->packFlag(encapsulatedPacket!=nullptr))
+    if (buffer->packFlag(encapsulatedPacket != nullptr))
         buffer->packObject(encapsulatedPacket);
 #endif
 }
@@ -142,20 +141,21 @@ void cPacket::parsimPack(cCommBuffer *buffer) const
 void cPacket::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
-    ASSERT(shareCount==0);
+    ASSERT(shareCount == 0);
     cMessage::parsimUnpack(buffer);
     buffer->unpack(bitLength);
     buffer->unpack(duration);
     if (buffer->checkFlag())
-        take(encapsulatedPacket = (cPacket *) buffer->unpackObject());
+        take(encapsulatedPacket = (cPacket *)buffer->unpackObject());
 #endif
 }
 
 cPacket& cPacket::operator=(const cPacket& msg)
 {
-    if (this==&msg) return *this;
+    if (this == &msg)
+        return *this;
     cMessage::operator=(msg);
     copy(msg);
     return *this;
@@ -163,11 +163,10 @@ cPacket& cPacket::operator=(const cPacket& msg)
 
 void cPacket::copy(const cPacket& msg)
 {
-
 #ifdef REFCOUNTING
-    if (shareCount!=0)
-        throw cRuntimeError(this,"operator=(): this message is refcounted (shared between "
-                                 "several messages), it is forbidden to change it");
+    if (shareCount != 0)
+        throw cRuntimeError(this, "operator=(): this message is refcounted (shared between "
+                                  "several messages), it is forbidden to change it");
 #endif
 
     bitLength = msg.bitLength;
@@ -183,8 +182,7 @@ void cPacket::copy(const cPacket& msg)
     if (encapsulatedPacket)
         _deleteEncapMsg();
     encapsulatedPacket = msg.encapsulatedPacket;
-    if (encapsulatedPacket && ++encapsulatedPacket->shareCount==0)   // sharecount overflow
-    {
+    if (encapsulatedPacket && ++encapsulatedPacket->shareCount == 0) {  // sharecount overflow
         --encapsulatedPacket->shareCount;
         take(encapsulatedPacket = (cPacket *)encapsulatedPacket->dup());
     }
@@ -194,69 +192,66 @@ void cPacket::copy(const cPacket& msg)
 #ifdef REFCOUNTING
 void cPacket::_deleteEncapMsg()
 {
-    if (encapsulatedPacket->shareCount>0)
-    {
+    if (encapsulatedPacket->shareCount > 0) {
         encapsulatedPacket->shareCount--;
         if (encapsulatedPacket->owner == this)
             encapsulatedPacket->owner = nullptr;
     }
-    else
-    {
+    else {
         // note: dropAndDelete(encapmsg) cannot be used, because due to sharecounting
         // ownerp is not valid (may be any former owner, possibly deleted since then)
         encapsulatedPacket->owner = nullptr;
         delete encapsulatedPacket;
     }
 }
+
 #endif
 
 #ifdef REFCOUNTING
 void cPacket::_detachEncapMsg()
 {
-    if (encapsulatedPacket->shareCount>0)
-    {
+    if (encapsulatedPacket->shareCount > 0) {
         // "de-share" object - create our own copy
         encapsulatedPacket->shareCount--;
         if (encapsulatedPacket->owner == this)
             encapsulatedPacket->owner = nullptr;
         take(encapsulatedPacket = (cPacket *)encapsulatedPacket->dup());
     }
-    else
-    {
+    else {
         // note: due to sharecounting, ownerp may be pointing to a previous owner -- fix it
         encapsulatedPacket->owner = this;
     }
 }
+
 #endif
 
 void cPacket::setBitLength(int64_t l)
 {
-    if (l<0)
-        throw cRuntimeError(this,"setBitLength(): negative length %" INT64_PRINTF_FORMAT "d", l);
+    if (l < 0)
+        throw cRuntimeError(this, "setBitLength(): negative length %" INT64_PRINTF_FORMAT "d", l);
     bitLength = l;
 }
 
 void cPacket::addBitLength(int64_t l)
 {
     bitLength += l;
-    if (bitLength<0)
-        throw cRuntimeError(this,"addBitLength(): length became negative (%" INT64_PRINTF_FORMAT ") after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
+    if (bitLength < 0)
+        throw cRuntimeError(this, "addBitLength(): length became negative (%" INT64_PRINTF_FORMAT ") after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
 }
 
 void cPacket::encapsulate(cPacket *msg)
 {
     if (encapsulatedPacket)
-        throw cRuntimeError(this,"encapsulate(): another message already encapsulated");
+        throw cRuntimeError(this, "encapsulate(): another message already encapsulated");
 
-    if (msg)
-    {
-        if (msg->getOwner()!=getSimulation()->getContextSimpleModule())
-            throw cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
-                                msg->getClassName(), msg->getFullName(),
-                                msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
+    if (msg) {
+        if (msg->getOwner() != getSimulation()->getContextSimpleModule())
+            throw cRuntimeError(this, "encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
+                    msg->getClassName(), msg->getFullName(),
+                    msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
         take(encapsulatedPacket = msg);
 #ifdef REFCOUNTING
-        ASSERT(encapsulatedPacket->shareCount==0);
+        ASSERT(encapsulatedPacket->shareCount == 0);
 #endif
         bitLength += encapsulatedPacket->bitLength;
     }
@@ -266,14 +261,13 @@ cPacket *cPacket::decapsulate()
 {
     if (!encapsulatedPacket)
         return nullptr;
-    if (bitLength>0)
+    if (bitLength > 0)
         bitLength -= encapsulatedPacket->bitLength;
-    if (bitLength<0)
-        throw cRuntimeError(this,"decapsulate(): packet length is smaller than encapsulated packet");
+    if (bitLength < 0)
+        throw cRuntimeError(this, "decapsulate(): packet length is smaller than encapsulated packet");
 
 #ifdef REFCOUNTING
-    if (encapsulatedPacket->shareCount>0)
-    {
+    if (encapsulatedPacket->shareCount > 0) {
         encapsulatedPacket->shareCount--;
         if (encapsulatedPacket->owner == this)
             encapsulatedPacket->owner = nullptr;
@@ -285,7 +279,8 @@ cPacket *cPacket::decapsulate()
 #endif
     cPacket *msg = encapsulatedPacket;
     encapsulatedPacket = nullptr;
-    if (msg) drop(msg);
+    if (msg)
+        drop(msg);
     return msg;
 }
 
@@ -325,5 +320,4 @@ long cPacket::getEncapsulationTreeId() const
         msg = msg->encapsulatedPacket;
     return msg->getTreeId();
 }
-
 

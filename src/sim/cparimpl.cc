@@ -38,7 +38,6 @@ long cParImpl::totalParimplObjs;
 long cParImpl::liveParimplObjs;
 cStringPool cParImpl::unitStringPool("cParImpl::unitStringPool");
 
-
 cParImpl::cParImpl()
 {
     unitp = nullptr;
@@ -62,7 +61,7 @@ cParImpl& cParImpl::operator=(const cParImpl& other)
     bool shared = isShared();
     cNamedObject::operator=(other);
     copy(other);
-    setIsShared(shared); // preserve FL_ISSHARED flag
+    setIsShared(shared);  // preserve FL_ISSHARED flag
     return *this;
 }
 
@@ -85,16 +84,14 @@ std::string cParImpl::detailedInfo() const
 {
     std::stringstream out;
     out << cPar::getTypeName(getType()) << " " << getName();
-    if (containsValue())
-    {
+    if (containsValue()) {
         if (isSet())
             out << " = " << str();
         else
             out << " = default(" << str() << ")";
-        out << " isExpression=" << (isExpression()?"true":"false");
+        out << " isExpression=" << (isExpression() ? "true" : "false");
     }
-    else
-    {
+    else {
         out << " (unassigned)";
     }
     return out.str();
@@ -119,8 +116,7 @@ void cParImpl::setUnit(const char *s)
 cNEDValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
 {
     static int depth;
-    try
-    {
+    try {
         depth++;
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
@@ -128,8 +124,7 @@ cNEDValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
         depth--;
         return ret;
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         depth = 0;
         throw;
     }
@@ -138,7 +133,7 @@ cNEDValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
 bool cParImpl::containsConstSubexpressions() const
 {
     cExpression *expr = getExpression();
-    return expr==nullptr ? false : expr->containsConstSubexpressions();
+    return expr == nullptr ? false : expr->containsConstSubexpressions();
 }
 
 void cParImpl::evaluateConstSubexpressions(cComponent *context)
@@ -151,15 +146,15 @@ void cParImpl::evaluateConstSubexpressions(cComponent *context)
 int cParImpl::compare(const cParImpl *other) const
 {
     int res = strcmp(getName(), other->getName());
-    if (res!=0)
+    if (res != 0)
         return res;
 
-    unsigned short flags2 = flags & ~FL_ISSHARED; // ignore "isShared" flag
+    unsigned short flags2 = flags & ~FL_ISSHARED;  // ignore "isShared" flag
     unsigned short otherflags2 = other->flags & ~FL_ISSHARED;
-    if (flags2!=otherflags2)
+    if (flags2 != otherflags2)
         return flags2 < otherflags2 ? -1 : 1;
 
-    if (getType()!=other->getType())
+    if (getType() != other->getType())
         return getType() < other->getType() ? -1 : 1;
 
     return opp_strcmp(unitp, other->unitp);
@@ -167,8 +162,7 @@ int cParImpl::compare(const cParImpl *other) const
 
 cParImpl *cParImpl::createWithType(Type type)
 {
-    switch (type)
-    {
+    switch (type) {
         case cPar::BOOL:    return new cBoolParImpl();
         case cPar::DOUBLE:  return new cDoubleParImpl();
         case cPar::LONG:    return new cLongParImpl();

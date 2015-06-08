@@ -17,7 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstdio>   // sprintf
+#include <cstdio>  // sprintf
 #include <cstdlib>  // atol
 #include <cstring>
 #include "common/opp_ctype.h"
@@ -26,7 +26,7 @@
 #include "omnetpp/cenum.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cobjectfactory.h"  // createOne()
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
 
 using namespace OPP::common;
 
@@ -93,14 +93,12 @@ bool cClassDescriptor::string2bool(const char *s)
     return s[0]=='t' || s[0]=='T' || s[0]=='y' || s[0]=='Y' || s[0]=='1';
 }
 
-
 std::string cClassDescriptor::double2string(double d)
 {
     char buf[32];
     sprintf(buf, "%f", d);
     return buf;
 }
-
 
 double cClassDescriptor::string2double(const char *s)
 {
@@ -114,7 +112,7 @@ std::string cClassDescriptor::enum2string(int e, const char *enumname)
 
     cEnum *enump = cEnum::find(enumname);
     if (!enump)
-        return buf; // this enum type is not registered
+        return buf;  // this enum type is not registered
 
     const char *name = enump->getStringFor(e);
     if (!name)
@@ -133,14 +131,12 @@ int cClassDescriptor::string2enum(const char *s, const char *enumname)
     while (opp_isspace(*s))
         s++;
     // try to interpret it as numeric value
-    if (opp_isdigit(*s))
-    {
+    if (opp_isdigit(*s)) {
         val = atoi(s);
         if (!enump->getStringFor(val))
             throw cRuntimeError("Value '%s' invalid for enum '%s'", s, enumname);
     }
-    else
-    {
+    else {
         // try to recognize string
         if (!enump)
             throw cRuntimeError("Unknown enum '%s'", enumname);
@@ -182,15 +178,15 @@ const char **cClassDescriptor::mergeLists(const char **list1, const char **list2
     for (const char **p = list2; *p; p++)
         if (!listContains(list1, *p))
             *dest++ = *p;
+
     *dest = nullptr;
     return result;
 }
 
-
 //-----------------------------------------------------------
 
 cClassDescriptor::cClassDescriptor(const char *classname, const char *_baseclassname) :
-cNoncopyableOwnedObject(classname, false)
+    cNoncopyableOwnedObject(classname, false)
 {
     baseClassName = _baseclassname ? _baseclassname : "";
     baseClassDesc = nullptr;
@@ -204,9 +200,8 @@ cClassDescriptor::~cClassDescriptor()
 
 cClassDescriptor *cClassDescriptor::getBaseClassDescriptor() const
 {
-    if (!baseClassDesc && !baseClassName.empty())
-    {
-        cClassDescriptor *this_ = const_cast<cClassDescriptor*>(this);
+    if (!baseClassDesc && !baseClassName.empty()) {
+        cClassDescriptor *this_ = const_cast<cClassDescriptor *>(this);
         this_->baseClassDesc = getDescriptorFor(baseClassName.c_str());
         if (baseClassDesc)
             this_->inheritanceChainLength = 1 + baseClassDesc->getInheritanceChainLength();
@@ -217,7 +212,7 @@ cClassDescriptor *cClassDescriptor::getBaseClassDescriptor() const
 bool cClassDescriptor::extendsCObject() const
 {
     if (extendscObject == -1) {
-        cClassDescriptor *this_ = const_cast<cClassDescriptor*>(this);
+        cClassDescriptor *this_ = const_cast<cClassDescriptor *>(this);
         this_->extendscObject = false;
         const cClassDescriptor *current = this;
 
@@ -236,7 +231,7 @@ bool cClassDescriptor::extendsCObject() const
 
 int cClassDescriptor::getInheritanceChainLength() const
 {
-    getBaseClassDescriptor(); // force resolution of inheritance
+    getBaseClassDescriptor();  // force resolution of inheritance
     return inheritanceChainLength;
 }
 
@@ -265,14 +260,12 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
     cClassDescriptor *bestDesc = nullptr;
     int bestInheritanceChainLength = -1;
     cRegistrationList *array = classDescriptors.getInstance();
-    for (int i=0; i<array->size(); i++)
-    {
+    for (int i = 0; i < array->size(); i++) {
         cClassDescriptor *desc = dynamic_cast<cClassDescriptor *>(array->get(i));
         if (!desc || !desc->doesSupport(object))
-            continue; // skip holes
+            continue;  // skip holes
         int inheritanceChainLength = desc->getInheritanceChainLength();
-        if (inheritanceChainLength > bestInheritanceChainLength)
-        {
+        if (inheritanceChainLength > bestInheritanceChainLength) {
             bestDesc = desc;
             bestInheritanceChainLength = inheritanceChainLength;
         }
@@ -292,9 +285,10 @@ bool cClassDescriptor::getFieldAsString(void *object, int field, int i, char *bu
 int cClassDescriptor::findField(const char *fieldName) const
 {
     int n = getFieldCount();
-    for (int i=0; i<n; i++)
-        if (strcmp(fieldName, getFieldName(i))==0)
+    for (int i = 0; i < n; i++)
+        if (strcmp(fieldName, getFieldName(i)) == 0)
             return i;
+
     return -1;
 }
 

@@ -38,7 +38,6 @@ long cMessage::nextMessageId = 0;
 long cMessage::totalMsgCount = 0;
 long cMessage::liveMsgCount = 0;
 
-
 cMessage::cMessage(const cMessage& msg) : cEvent(msg)
 {
     parList = nullptr;
@@ -50,7 +49,7 @@ cMessage::cMessage(const cMessage& msg) : cEvent(msg)
     totalMsgCount++;
     liveMsgCount++;
 
-    cMessage *nonConstMsg = const_cast<cMessage*>(&msg);
+    cMessage *nonConstMsg = const_cast<cMessage *>(&msg);
     EVCB.messageCloned(nonConstMsg, this);
 
     // after envir notification
@@ -102,37 +101,32 @@ cMessage::~cMessage()
 
 std::string cMessage::info() const
 {
-    if (targetModuleId<0)
+    if (targetModuleId < 0)
         return std::string("(new msg)");
 
     std::stringstream out;
     const char *deletedstr = "<deleted module>";
 
     simtime_t t = getArrivalTime();
-    if (t > getSimulation()->getSimTime())
-    {
+    if (t > getSimulation()->getSimTime()) {
         // if it arrived in the past, dt is usually unimportant, don't print it
         out << "at T=" << t << ", in dt=" << (t - getSimulation()->getSimTime()) << "; ";
     }
 
-#define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
-    if (getKind()==MK_STARTER)
-    {
+#define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
+    if (getKind() == MK_STARTER) {
         cModule *tomodp = getSimulation()->getModule(targetModuleId);
         out << "starter for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
-    else if (getKind()==MK_TIMEOUT)
-    {
+    else if (getKind() == MK_TIMEOUT) {
         cModule *tomodp = getSimulation()->getModule(targetModuleId);
         out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
-    else if (senderModuleId==targetModuleId)
-    {
+    else if (senderModuleId == targetModuleId) {
         cModule *tomodp = getSimulation()->getModule(targetModuleId);
         out << "selfmsg for " << MODNAME(tomodp) << " (id=" << targetModuleId << ") ";
     }
-    else
-    {
+    else {
         cModule *frommodp = getSimulation()->getModule(senderModuleId);
         cModule *tomodp = getSimulation()->getModule(targetModuleId);
         out << "src=" << MODNAME(frommodp) << " (id=" << senderModuleId << ") ";
@@ -162,12 +156,12 @@ std::string cMessage::detailedInfo() const
 void cMessage::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cEvent::parsimPack(buffer);
 
     if (contextPointer || controlInfo)
-        throw cRuntimeError(this,"parsimPack(): cannot pack object with contextPointer or controlInfo set");
+        throw cRuntimeError(this, "parsimPack(): cannot pack object with contextPointer or controlInfo set");
 
     buffer->pack(messageKind);
     buffer->pack(timestamp);
@@ -181,7 +175,7 @@ void cMessage::parsimPack(cCommBuffer *buffer) const
     // note: do not pack msgid and treeid, because they'd conflict
     // with ids assigned at the destination partition
 
-    if (buffer->packFlag(parList!=nullptr))
+    if (buffer->packFlag(parList != nullptr))
         buffer->packObject(parList);
 #endif
 }
@@ -189,7 +183,7 @@ void cMessage::parsimPack(cCommBuffer *buffer) const
 void cMessage::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cEvent::parsimUnpack(buffer);
 
@@ -203,13 +197,14 @@ void cMessage::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(sendTime);
 
     if (buffer->checkFlag())
-        take(parList = (cArray *) buffer->unpackObject());
+        take(parList = (cArray *)buffer->unpackObject());
 #endif
 }
 
 cMessage& cMessage::operator=(const cMessage& msg)
 {
-    if (this==&msg) return *this;
+    if (this == &msg)
+        return *this;
     cEvent::operator=(msg);
     copy(msg);
     return *this;
@@ -261,9 +256,9 @@ cMessage *cMessage::privateDup() const
 void cMessage::setControlInfo(cObject *p)
 {
     if (!p)
-        throw cRuntimeError(this,"setControlInfo(): pointer is nullptr");
+        throw cRuntimeError(this, "setControlInfo(): pointer is nullptr");
     if (controlInfo)
-        throw cRuntimeError(this,"setControlInfo(): message already has control info attached");
+        throw cRuntimeError(this, "setControlInfo(): message already has control info attached");
     if (p->isOwnedObject())
         take((cOwnedObject *)p);
     controlInfo = p;
@@ -288,9 +283,9 @@ cMsgPar& cMessage::par(int index)
     cArray& parlist = getParList();
     cObject *p = parlist.get(index);
     if (!p)
-        throw cRuntimeError(this,"par(int): has no parameter #%d", index);
+        throw cRuntimeError(this, "par(int): has no parameter #%d", index);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar", index, p->getClassName());
+        throw cRuntimeError(this, "par(int): parameter #%d is of type %s, not cMsgPar", index, p->getClassName());
     return *(cMsgPar *)p;
 }
 
@@ -299,9 +294,9 @@ cMsgPar& cMessage::par(const char *name)
     cArray& parlist = getParList();
     cObject *p = parlist.get(name);
     if (!p)
-        throw cRuntimeError(this,"par(const char *): has no parameter called `%s'", name);
+        throw cRuntimeError(this, "par(const char *): has no parameter called `%s'", name);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar", name, p->getClassName());
+        throw cRuntimeError(this, "par(const char *): parameter `%s' is of type %s, not cMsgPar", name, p->getClassName());
     return *(cMsgPar *)p;
 }
 
@@ -312,14 +307,16 @@ int cMessage::findPar(const char *name) const
 
 cGate *cMessage::getSenderGate() const
 {
-    if (senderModuleId<0 || senderGateId<0)  return nullptr;
+    if (senderModuleId < 0 || senderGateId < 0)
+        return nullptr;
     cModule *mod = getSimulation()->getModule(senderModuleId);
     return !mod ? nullptr : mod->gate(senderGateId);
 }
 
 cGate *cMessage::getArrivalGate() const
 {
-    if (targetModuleId<0 || targetGateId<0)  return nullptr;
+    if (targetModuleId < 0 || targetGateId < 0)
+        return nullptr;
     cModule *mod = getSimulation()->getModule(targetModuleId);
     return !mod ? nullptr : mod->gate(targetGateId);
 }
@@ -333,12 +330,12 @@ bool cMessage::arrivedOn(const char *gateName) const
 bool cMessage::arrivedOn(const char *gateName, int gateIndex) const
 {
     cGate *arrgate = getArrivalGate();
-    return arrgate && arrgate->isName(gateName) && arrgate->getIndex()==gateIndex;
+    return arrgate && arrgate->isName(gateName) && arrgate->getIndex() == gateIndex;
 }
 
 const char *cMessage::getDisplayString() const
 {
-    return ""; // clients may redefine this method to get messages with custom appearance
+    return "";  // clients may redefine this method to get messages with custom appearance
 }
 
 void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)

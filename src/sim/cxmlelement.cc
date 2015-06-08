@@ -24,7 +24,7 @@
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
-#include "omnetpp/cmodule.h" // for ModNameParamResolver
+#include "omnetpp/cmodule.h"  // for ModNameParamResolver
 #include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
 
@@ -32,9 +32,7 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-
 using std::ostream;
-
 
 cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLElement *parent)
 {
@@ -53,12 +51,10 @@ cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLEleme
 
 cXMLElement::~cXMLElement()
 {
-    if (parent)
-    {
+    if (parent) {
         parent->removeChild(this);
     }
-    while (firstChild)
-    {
+    while (firstChild) {
         delete removeChild(firstChild);
     }
 }
@@ -91,7 +87,7 @@ void cXMLElement::appendNodeValue(const char *s, int len)
 const char *cXMLElement::getAttribute(const char *attr) const
 {
     cXMLAttributeMap::const_iterator it = attrs.find(std::string(attr));
-    if (it==attrs.end())
+    if (it == attrs.end())
         return nullptr;
     return it->second.c_str();
 }
@@ -108,7 +104,7 @@ cXMLElement *cXMLElement::getParentNode() const
 
 cXMLElement *cXMLElement::getFirstChild() const
 {
-   return firstChild;
+    return firstChild;
 }
 
 cXMLElement *cXMLElement::getLastChild() const
@@ -170,7 +166,7 @@ cXMLElement *cXMLElement::removeChild(cXMLElement *node)
 
 bool cXMLElement::hasChildren() const
 {
-    return firstChild!=nullptr;
+    return firstChild != nullptr;
 }
 
 bool cXMLElement::hasAttributes() const
@@ -186,9 +182,8 @@ const cXMLAttributeMap& cXMLElement::getAttributes() const
 cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagname) const
 {
     cXMLElement *node = this->getFirstChild();
-    while (node)
-    {
-        if (!strcasecmp(node->getTagName(),tagname))
+    while (node) {
+        if (!strcasecmp(node->getTagName(), tagname))
             return node;
         node = node->getNextSibling();
     }
@@ -198,9 +193,8 @@ cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagname) const
 cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagname) const
 {
     cXMLElement *node = this->getNextSibling();
-    while (node)
-    {
-        if (!strcasecmp(node->getTagName(),tagname))
+    while (node) {
+        if (!strcasecmp(node->getTagName(), tagname))
             return node;
         node = node->getNextSibling();
     }
@@ -210,7 +204,7 @@ cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagname) const
 cXMLElementList cXMLElement::getChildren() const
 {
     cXMLElementList list;
-    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
         list.push_back(child);
     return list;
 }
@@ -218,39 +212,37 @@ cXMLElementList cXMLElement::getChildren() const
 cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
 {
     cXMLElementList list;
-    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-        if (!strcasecmp(child->getTagName(),tagname))
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
+        if (!strcasecmp(child->getTagName(), tagname))
             list.push_back(child);
+
     return list;
 }
 
 cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) const
 {
     cXMLElementList list;
-    if (!strcasecmp(getTagName(),tagname))
+    if (!strcasecmp(getTagName(), tagname))
         list.push_back(const_cast<cXMLElement *>(this));
-    doGetElementsByTagName(tagname,list);
+    doGetElementsByTagName(tagname, list);
     return list;
 }
 
 void cXMLElement::doGetElementsByTagName(const char *tagname, cXMLElementList& list) const
 {
-    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-    {
-        if (!strcasecmp(child->getTagName(),tagname))
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (!strcasecmp(child->getTagName(), tagname))
             list.push_back(child);
-        child->doGetElementsByTagName(tagname,list);
+        child->doGetElementsByTagName(tagname, list);
     }
 }
 
 cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue) const
 {
-    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-    {
-        if (!tagname || !strcasecmp(child->getTagName(),tagname))
-        {
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (!tagname || !strcasecmp(child->getTagName(), tagname)) {
             const char *val = child->getAttribute(attr);
-            if (val && (!attrvalue || !strcmp(val,attrvalue)))
+            if (val && (!attrvalue || !strcmp(val, attrvalue)))
                 return child;
         }
     }
@@ -260,10 +252,9 @@ cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const 
 cXMLElement *cXMLElement::getElementById(const char *idattrvalue) const
 {
     const char *id = getAttribute("id");
-    if (id && !strcmp(id,idattrvalue))
+    if (id && !strcmp(id, idattrvalue))
         return const_cast<cXMLElement *>(this);
-    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-    {
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling()) {
         cXMLElement *res = child->getElementById(idattrvalue);
         if (res)
             return res;
@@ -272,14 +263,14 @@ cXMLElement *cXMLElement::getElementById(const char *idattrvalue) const
 }
 
 cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr,
-                                                   cXMLElement::ParamResolver *resolver)
+        cXMLElement::ParamResolver *resolver)
 {
     return MiniXPath(resolver).matchPathExpression(documentnode, pathexpr, documentnode);
 }
 
 cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *root, cXMLElement::ParamResolver *resolver) const
 {
-    if (pathexpr[0]=='/' && !root)
+    if (pathexpr[0] == '/' && !root)
         throw cRuntimeError("cXMLElement::getElementByPath(): absolute path expression "
                             "(that begins with  '/') can only be used if root node is "
                             "also specified (path expression: `%s')", pathexpr);
@@ -296,21 +287,27 @@ std::string cXMLElement::tostr(int depth) const
 {
     std::stringstream os;
     int i;
-    for (i=0; i<depth; i++) os << "  ";
+    for (i = 0; i < depth; i++)
+        os << "  ";
     os << "<" << getTagName();
     cXMLAttributeMap map = getAttributes();
-    for (cXMLAttributeMap::iterator it=map.begin(); it!=map.end(); it++)
+    for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); it++)
         os << " " << it->first << "=\"" << it->second << "\"";
-    if (!*getNodeValue() && !getFirstChild())
-        {os << "/>\n"; return os.str();}
+    if (!*getNodeValue() && !getFirstChild()) {
+        os << "/>\n";
+        return os.str();
+    }
     os << ">";
     os << getNodeValue();
-    if (!getFirstChild())
-        {os << "</" << getTagName() << ">\n"; return os.str();}
+    if (!getFirstChild()) {
+        os << "</" << getTagName() << ">\n";
+        return os.str();
+    }
     os << "\n";
-    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-        os << child->tostr(depth+1);
-    for (i=0; i<depth; i++) os << "  ";
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
+        os << child->tostr(depth + 1);
+    for (i = 0; i < depth; i++)
+        os << "  ";
     os << "</" << getTagName() << ">\n";
     return os.str();
 }
@@ -336,7 +333,7 @@ static std::string my_itostr(int d)
 
 bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
 {
-    //printf("resolving $%s in context=%s\n", paramname, mod ? mod->getFullPath().c_str() : "nullptr");
+    // printf("resolving $%s in context=%s\n", paramname, mod ? mod->getFullPath().c_str() : "nullptr");
     if (!mod)
         return false;
     cModule *parentMod = mod->getParentModule();
@@ -377,14 +374,14 @@ bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
     else
         return false;
 
-    //printf("  --> '%s'\n", value.c_str());
+    // printf("  --> '%s'\n", value.c_str());
     return true;
 }
 
 bool StringMapParamResolver::resolve(const char *paramname, std::string& value)
 {
     StringMap::iterator it = params.find(paramname);
-    if (it==params.end())
+    if (it == params.end())
         return false;
     value = it->second;
     return true;

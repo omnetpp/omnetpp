@@ -35,7 +35,6 @@ NAMESPACE_BEGIN
 
 using std::ostream;
 
-
 cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
 {
     rangeMode = RANGE_AUTO;
@@ -49,7 +48,7 @@ cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
 
 cDensityEstBase::~cDensityEstBase()
 {
-    delete [] precollectedValues;
+    delete[] precollectedValues;
 }
 
 void cDensityEstBase::parsimPack(cCommBuffer *buffer) const
@@ -68,8 +67,8 @@ void cDensityEstBase::parsimPack(cCommBuffer *buffer) const
     buffer->pack(rangeMode);
     buffer->pack(transformed);
 
-    if (buffer->packFlag(precollectedValues!=nullptr))
-        buffer->pack(precollectedValues, numValues); // pack the used positions only
+    if (buffer->packFlag(precollectedValues != nullptr))
+        buffer->pack(precollectedValues, numValues);  // pack the used positions only
 #endif
 }
 
@@ -93,8 +92,7 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
 
     delete[] precollectedValues;
     precollectedValues = nullptr;
-    if (buffer->checkFlag())
-    {
+    if (buffer->checkFlag()) {
         precollectedValues = new double[numPrecollected];
         buffer->unpack(precollectedValues, numValues);
     }
@@ -114,12 +112,11 @@ void cDensityEstBase::copy(const cDensityEstBase& res)
 
     transformed = res.transformed;
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = nullptr;
-    if (res.precollectedValues)
-    {
+    if (res.precollectedValues) {
         precollectedValues = new double[numPrecollected];
-        memcpy(precollectedValues, res.precollectedValues, numPrecollected*sizeof(double));
+        memcpy(precollectedValues, res.precollectedValues, numPrecollected * sizeof(double));
     }
 }
 
@@ -134,19 +131,17 @@ void cDensityEstBase::merge(const cStatistic *other)
 {
     if (dynamic_cast<const cDensityEstBase *>(other) == nullptr)
         throw cRuntimeError(this, "Cannot merge non-histogram (non-cDensityEstBase) statistics (%s)%s into a histogram type",
-                                  other->getClassName(), other->getFullPath().c_str());
+                other->getClassName(), other->getFullPath().c_str());
 
     const cDensityEstBase *otherd = (const cDensityEstBase *)other;
 
-    if (!otherd->isTransformed())
-    {
+    if (!otherd->isTransformed()) {
         // easiest and exact solution: simply recollect the observations
         // the other object has collected
-        for (int i=0; i<otherd->numValues; i++)
+        for (int i = 0; i < otherd->numValues; i++)
             collect(precollectedValues[i]);
     }
-    else
-    {
+    else {
         // merge the base class
         cStdDev::merge(otherd);
 
@@ -157,15 +152,16 @@ void cDensityEstBase::merge(const cStatistic *other)
         // make sure that cells are aligned
         if (getNumCells() != otherd->getNumCells())
             throw cRuntimeError(this, "Cannot merge (%s)%s: different number of histogram cells (%d vs %d)",
-                                      otherd->getClassName(), otherd->getFullPath().c_str(), getNumCells(), otherd->getNumCells());
+                    otherd->getClassName(), otherd->getFullPath().c_str(), getNumCells(), otherd->getNumCells());
         int n = getNumCells();
-        for (int i=0; i<=n; i++)
+        for (int i = 0; i <= n; i++)
             if (getBasepoint(i) != otherd->getBasepoint(i))
                 throw cRuntimeError(this, "Cannot merge (%s)%s: histogram cells are not aligned",
-                                          otherd->getClassName(), otherd->getFullPath().c_str());
+                        otherd->getClassName(), otherd->getFullPath().c_str());
+
 
         // merge underflow/overflow cells
-        cellUnder += otherd->getUnderflowCell(); //FIXME check overflow!! but this is unsigned long....
+        cellUnder += otherd->getUnderflowCell();  //FIXME check overflow!! but this is unsigned long....
         cellOver += otherd->getOverflowCell();
 
         // then merge cell counters
@@ -184,39 +180,39 @@ void cDensityEstBase::clearResult()
     rangeMin = rangeMax = 0;
     cellUnder = cellOver = 0;
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
 }
 
 void cDensityEstBase::setRange(double lower, double upper)
 {
-    if (numValues>0 || isTransformed())
+    if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setRange() can only be called before collecting any values");
 
     rangeMode = RANGE_FIXED;
     rangeMin = lower;
     rangeMax = upper;
 
-    delete [] precollectedValues;
-    precollectedValues = nullptr;    // not needed with RANGE_FIXED
+    delete[] precollectedValues;
+    precollectedValues = nullptr;  // not needed with RANGE_FIXED
 }
 
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
-    if (numValues>0 || isTransformed())
+    if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTO;
     numPrecollected = num_fstvals;
     rangeExtFactor = range_ext_fct;
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
 }
 
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
-    if (numValues>0 || isTransformed())
+    if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTOLOWER;
@@ -224,13 +220,13 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
     rangeMax = upper;
     rangeExtFactor = range_ext_fct;
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
 }
 
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
-    if (numValues>0 || isTransformed())
+    if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTOUPPER;
@@ -238,21 +234,20 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
     rangeMin = lower;
     rangeExtFactor = range_ext_fct;
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
 }
 
 void cDensityEstBase::setNumPrecollectedValues(int num_fstvals)
 {
-    if (numValues>0 || isTransformed())
+    if (numValues > 0 || isTransformed())
         throw cRuntimeError(this, "setNumPrecollectedValues() can only be called before collecting any values");
 
     numPrecollected = num_fstvals;
 
     // if already allocated, reallocate with the correct size
-    if (precollectedValues)
-    {
-        delete [] precollectedValues;
+    if (precollectedValues) {
+        delete[] precollectedValues;
         precollectedValues = new double[numPrecollected];
     }
 }
@@ -264,32 +259,36 @@ void cDensityEstBase::setupRange()
     //   Attempts not to make zero width range (makes it 1.0 wide).
     //
     double c, r;
-    switch (rangeMode)
-    {
-      case RANGE_AUTO:
-         c = (minValue+maxValue)/2;
-         r = (maxValue-minValue)*rangeExtFactor;
-         if (r == 0) r = 1.0; // warning?
-         rangeMin = c-r/2;
-         rangeMax = c+r/2;
-         break;
-      case RANGE_AUTOLOWER:
-         if (rangeMax <= minValue)
-             rangeMin = rangeMax-1.0; // warning?
-         else
-             rangeMin = rangeMax-(rangeMax-minValue)*rangeExtFactor;
-         break;
-      case RANGE_AUTOUPPER:
-         if (rangeMin >= maxValue)
-             rangeMax = rangeMin+1.0; // warning?
-         else
-             rangeMax = rangeMin+(maxValue-rangeMin)*rangeExtFactor;
-         break;
-      case RANGE_FIXED:
-         // no-op: rangemin, rangemax already set
-         break;
-      case RANGE_NOTSET:
-         break; //TODO: throw cRuntimeError(this, "Histogram range mode is unset");
+    switch (rangeMode) {
+        case RANGE_AUTO:
+            c = (minValue + maxValue) / 2;
+            r = (maxValue - minValue) * rangeExtFactor;
+            if (r == 0)
+                r = 1.0;  // warning?
+            rangeMin = c - r / 2;
+            rangeMax = c + r / 2;
+            break;
+
+        case RANGE_AUTOLOWER:
+            if (rangeMax <= minValue)
+                rangeMin = rangeMax - 1.0;  // warning?
+            else
+                rangeMin = rangeMax - (rangeMax - minValue) * rangeExtFactor;
+            break;
+
+        case RANGE_AUTOUPPER:
+            if (rangeMin >= maxValue)
+                rangeMax = rangeMin + 1.0;  // warning?
+            else
+                rangeMax = rangeMin + (maxValue - rangeMin) * rangeExtFactor;
+            break;
+
+        case RANGE_FIXED:
+            // no-op: rangemin, rangemax already set
+            break;
+
+        case RANGE_NOTSET:
+            break;  //TODO: throw cRuntimeError(this, "Histogram range mode is unset");
     }
 }
 
@@ -298,27 +297,26 @@ void cDensityEstBase::collect(double val)
     if (!isTransformed() && rangeMode == RANGE_FIXED)
         transform();
 
-    cStdDev::collect(val); // this also increments num_vals
+    cStdDev::collect(val);  // this also increments num_vals
 
-    if (!isTransformed())
-    {
+    if (!isTransformed()) {
         ASSERT(precollectedValues);
         precollectedValues[numValues-1] = val;
 
         if (numValues == numPrecollected)
             transform();
     }
-    else
-    {
+    else {
         collectTransformed(val);  // must maintain underflow/overflow cells
     }
 }
 
 double cDensityEstBase::getCellPDF(int k) const
 {
-    if (numValues == 0) return 0.0;
+    if (numValues == 0)
+        return 0.0;
     double cellsize = getBasepoint(k+1) - getBasepoint(k);
-    return cellsize == 0 ? 0.0 : getCellValue(k)/cellsize/getCount();
+    return cellsize == 0 ? 0.0 : getCellValue(k) / cellsize / getCount();
 }
 
 void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, double count, double a)
@@ -326,12 +324,12 @@ void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, doubl
     const int picwidth = 54;  // width of picture
     char buf[101];
     sprintf(buf, "   %s%12f %5g :", pref, xval, count);
-    char *s = buf+strlen(buf);
-    int x = (int) floor(a*count+.5);
-    int k = x<=picwidth ? x : picwidth;
-    for (int m = 1;  m<=k;  m++)
+    char *s = buf + strlen(buf);
+    int x = (int)floor(a * count + .5);
+    int k = x <= picwidth ? x : picwidth;
+    for (int m = 1; m <= k; m++)
         *s++ = '-';
-    strcpy(s, x<=picwidth ? "*\n" : ">\n");
+    strcpy(s, x <= picwidth ? "*\n" : ">\n");
     os << buf;
 }
 
@@ -340,30 +338,29 @@ std::string cDensityEstBase::detailedInfo() const
     std::stringstream os;
     os << cStdDev::detailedInfo();
 
-    if (!isTransformed())
-    {
-        ASSERT(precollectedValues || numValues==0);
+    if (!isTransformed()) {
+        ASSERT(precollectedValues || numValues == 0);
         os << "Values collected so far: ";
-        for (int i=0; i<numValues; i++)
-            os << (i==0?"":", ") << precollectedValues[i];
+        for (int i = 0; i < numValues; i++)
+            os << (i == 0 ? "" : ", ") << precollectedValues[i];
         os << "\n";
     }
-    else
-    {
+    else {
         // transformed
-        const int picwidth = 55;   // width of picture
-        double max = 0;            // biggest cell value
-        int nc = getNumCells();    // number of cells
+        const int picwidth = 55;  // width of picture
+        double max = 0;  // biggest cell value
+        int nc = getNumCells();  // number of cells
         int k;
         double d;
-        for (k = 0; k<nc; k++)
+        for (k = 0; k < nc; k++)
             if ((d = getCellValue(k)) > max)
                 max = d;
-        double a = (double)picwidth/max;
+
+        double a = (double)picwidth / max;
 
         os << "Distribution density function:\n";
-        for (k = 0; k<nc; k++)
-            plotline(os, "< ", getBasepoint(k), (k==0 ? cellUnder : getCellValue(k-1)), a);
+        for (k = 0; k < nc; k++)
+            plotline(os, "< ", getBasepoint(k), (k == 0 ? cellUnder : getCellValue(k-1)), a);
         plotline(os, ">=", getBasepoint(nc), cellOver, a);
         os << "\n";
     }
@@ -381,10 +378,11 @@ void cDensityEstBase::saveToFile(FILE *f) const
     fprintf(f, "%lu %lu\t #= cell_under, cell_over\n", cellUnder, cellOver);
     fprintf(f, "%d\t #= num_firstvals\n", numPrecollected);
 
-    fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues!=nullptr);
+    fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues != nullptr);
     if (precollectedValues)
-        for (int i=0; i<numValues; i++)
+        for (int i = 0; i < numValues; i++)
             fprintf(f, " %g\n", precollectedValues[i]);
+
 }
 
 void cDensityEstBase::loadFromFile(FILE *f)
@@ -401,19 +399,18 @@ void cDensityEstBase::loadFromFile(FILE *f)
     int firstvals_exists;
     freadvarsf(f, "%d\t #= firstvals[] exists", &firstvals_exists);
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = nullptr;
-    if (firstvals_exists)
-    {
+    if (firstvals_exists) {
         precollectedValues = new double[numPrecollected];
-        for (int i=0; i<numValues; i++)
-            freadvarsf(f, " %g", precollectedValues+i);
+        for (int i = 0; i < numValues; i++)
+            freadvarsf(f, " %g", precollectedValues + i);
     }
 }
 
 cDensityEstBase::Cell cDensityEstBase::getCellInfo(int k) const
 {
-    if (k<0 || k>=getNumCells())
+    if (k < 0 || k >= getNumCells())
         return Cell();
     Cell c;
     c.lower = getBasepoint(k);

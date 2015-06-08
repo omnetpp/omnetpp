@@ -40,16 +40,14 @@
 
 NAMESPACE_BEGIN
 
-#define MIN(a,b) ((a)<(b) ? (a) : (b))
-#define MAX(a,b) ((a)>(b) ? (a) : (b))
-
+#define MIN(a, b)    ((a) < (b) ? (a) : (b))
+#define MAX(a, b)    ((a) > (b) ? (a) : (b))
 
 Register_Class(cLongHistogram);
 Register_Class(cDoubleHistogram);
 
-
 cHistogramBase::cHistogramBase(const char *name, int numcells) :
-cDensityEstBase(name)
+    cDensityEstBase(name)
 {
     cellv = nullptr;
     numCells = numcells;
@@ -57,7 +55,7 @@ cDensityEstBase(name)
 
 cHistogramBase::~cHistogramBase()
 {
-    delete [] cellv;
+    delete[] cellv;
 }
 
 void cHistogramBase::parsimPack(cCommBuffer *buffer) const
@@ -68,7 +66,7 @@ void cHistogramBase::parsimPack(cCommBuffer *buffer) const
     cDensityEstBase::parsimPack(buffer);
     buffer->pack(numCells);
 
-    if (buffer->packFlag(cellv!=nullptr))
+    if (buffer->packFlag(cellv != nullptr))
         buffer->pack(cellv, numCells);
 #endif
 }
@@ -81,8 +79,7 @@ void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
     cDensityEstBase::parsimUnpack(buffer);
     buffer->pack(numCells);
 
-    if (buffer->checkFlag())
-    {
+    if (buffer->checkFlag()) {
         cellv = new unsigned int[numCells];
         buffer->unpack(cellv, numCells);
     }
@@ -92,12 +89,11 @@ void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
 void cHistogramBase::copy(const cHistogramBase& res)
 {
     numCells = res.numCells;
-    delete [] cellv;
+    delete[] cellv;
     cellv = nullptr;
-    if (res.cellv)
-    {
+    if (res.cellv) {
         cellv = new unsigned[numCells];
-        memcpy(cellv, res.cellv, numCells*sizeof(unsigned));
+        memcpy(cellv, res.cellv, numCells * sizeof(unsigned));
     }
 }
 
@@ -110,15 +106,15 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 
 void cHistogramBase::doMergeCellValues(const cDensityEstBase *other)
 {
-    for (int i=0; i<numCells; i++)
-        cellv[i] += (unsigned int) other->getCellValue(i);  //TODO overflow check
+    for (int i = 0; i < numCells; i++)
+        cellv[i] += (unsigned int)other->getCellValue(i);  //TODO overflow check
 }
 
 void cHistogramBase::clearResult()
 {
     cDensityEstBase::clearResult();
 
-    delete [] cellv;
+    delete[] cellv;
     cellv = nullptr;
 }
 
@@ -127,17 +123,17 @@ void cHistogramBase::transform()
     if (isTransformed())
         throw cRuntimeError(this, "transform(): histogram already transformed");
 
-    setupRange(); // this will set num_cells if it was unspecified (-1)
+    setupRange();  // this will set num_cells if it was unspecified (-1)
 
     int i;
-    cellv = new unsigned [numCells];
-    for (i=0; i<numCells; i++)
+    cellv = new unsigned[numCells];
+    for (i = 0; i < numCells; i++)
         cellv[i] = 0;
 
-    for (i=0; i<numValues; i++)
+    for (i = 0; i < numValues; i++)
         collectTransformed(precollectedValues[i]);
 
-    delete [] precollectedValues;
+    delete[] precollectedValues;
     precollectedValues = nullptr;
 
     transformed = true;
@@ -154,8 +150,10 @@ void cHistogramBase::saveToFile(FILE *f) const
 {
     cDensityEstBase::saveToFile(f);
     fprintf(f, "%d\t #= num_cells\n", numCells);
-    fprintf(f, "%d\t #= cellv[] exists\n", cellv!=nullptr);
-    if (cellv) for (int i=0; i<numCells; i++) fprintf(f, " %u\n", cellv[i]);
+    fprintf(f, "%d\t #= cellv[] exists\n", cellv != nullptr);
+    if (cellv)
+        for (int i = 0; i < numCells; i++)
+            fprintf(f, " %u\n", cellv[i]);
 }
 
 void cHistogramBase::loadFromFile(FILE *f)
@@ -165,11 +163,12 @@ void cHistogramBase::loadFromFile(FILE *f)
 
     int cellv_exists;
     freadvarsf(f, "%d\t #= cellv[] exists", &cellv_exists);
-    delete [] cellv; cellv = nullptr;
-    if (cellv_exists)
-    {
+    delete[] cellv;
+    cellv = nullptr;
+    if (cellv_exists) {
         cellv = new unsigned[numCells];
-        for (int i=0; i<numCells; i++) freadvarsf(f, " %u", cellv+i);
+        for (int i = 0; i < numCells; i++)
+            freadvarsf(f, " %u", cellv + i);
     }
 }
 
@@ -180,12 +179,11 @@ void cHistogramBase::setNumCells(int numcells)
     numCells = numcells;
 }
 
-
 //----
 // cHistogram - member functions
 
 cHistogram::cHistogram(const char *name, int numcells, HistogramMode mode) :
-cHistogramBase(name, numcells)
+    cHistogramBase(name, numcells)
 {
     cellSize = 0;
     this->mode = mode;
@@ -219,7 +217,8 @@ void cHistogram::copy(const cHistogram& res)
 
 cHistogram& cHistogram::operator=(const cHistogram& res)
 {
-    if (this==&res) return *this;
+    if (this == &res)
+        return *this;
     cHistogramBase::operator=(res);
     copy(res);
     return *this;
@@ -253,13 +252,11 @@ void cHistogram::setupRange()
 
     // the following code sets num_cells, and cellsize as (rangemax - rangemin) / num_cells
 
-    if (mode == MODE_AUTO)
-    {
+    if (mode == MODE_AUTO) {
         // if all precollected numbers are integers (and they are not all zeroes), go for integer mode
         bool allzeroes = true;
         bool allints = true;
-        for (int i=0; i < numValues; i++)
-        {
+        for (int i = 0; i < numValues; i++) {
             if (precollectedValues[i] != 0)
                 allzeroes = false;
             if (precollectedValues[i] != floor(precollectedValues[i]))
@@ -281,85 +278,87 @@ void cHistogram::setupRangeInteger()
     // throw error if not everything can be set up consistently
 
     // cellsize is double but we want to calculate with integers here
-    long cellsize = (long) this->cellSize;
+    long cellsize = (long)this->cellSize;
 
     // convert range limits to integers
     rangeMin = floor(rangeMin);
     rangeMax = ceil(rangeMax);
 
-    if (rangeMode == RANGE_FIXED)
-    {
-#define COMPLAINT "Cannot set up cells to satisfy constraints"
-        long range = (long)(rangeMax-rangeMin);
+    if (rangeMode == RANGE_FIXED) {
+#define COMPLAINT    "Cannot set up cells to satisfy constraints"
+        long range = (long)(rangeMax - rangeMin);
 
-        if (numCells>0 && cellsize>0) {
-            if (numCells*cellsize != range)
-                throw cRuntimeError(this, COMPLAINT": numCells*cellSize != rangeMax-rangeMin");
+        if (numCells > 0 && cellsize > 0) {
+            if (numCells * cellsize != range)
+                throw cRuntimeError(this, COMPLAINT ": numCells*cellSize != rangeMax-rangeMin");
         }
-        else if (cellsize>0) {
+        else if (cellsize > 0) {
             if (range % cellsize != 0)
-                throw cRuntimeError(this, COMPLAINT": specified range is not a multiple of cellSize");
+                throw cRuntimeError(this, COMPLAINT ": specified range is not a multiple of cellSize");
             numCells = range / cellsize;
         }
-        else if (numCells>0) {
+        else if (numCells > 0) {
             if (range % numCells != 0)
-                throw cRuntimeError(this, COMPLAINT": specified range is not a multiple of numCells");
+                throw cRuntimeError(this, COMPLAINT ": specified range is not a multiple of numCells");
             cellsize = range / numCells;
         }
         else {
-            int mincellsize = (int) ceil(range/200.0);
-            int maxcellsize = (int) ceil(range/10.0);
+            int mincellsize = (int)ceil(range / 200.0);
+            int maxcellsize = (int)ceil(range / 10.0);
             for (cellsize = mincellsize; cellsize <= maxcellsize; cellsize++)
                 if (range % cellsize == 0)
                     break;
+
             if (cellsize > maxcellsize)
-                throw cRuntimeError(this, COMPLAINT": specified range is too large, and cannot divide it to 10..200 equal-sized cells");
+                throw cRuntimeError(this, COMPLAINT ": specified range is too large, and cannot divide it to 10..200 equal-sized cells");
             numCells = range / cellsize;
         }
 #undef COMPLAINT
     }
-    else
-    {
+    else {
         // non-fixed range
-        if (numCells>0 && cellsize>0) {
+        if (numCells > 0 && cellsize > 0) {
             // both given; num_cells*cellsize will determine the range
         }
-        else if (numCells>0) {
+        else if (numCells > 0) {
             // num_cells given ==> choose cellsize
-            cellsize = (long) ceil((rangeMax-rangeMin)/numCells);
+            cellsize = (long)ceil((rangeMax - rangeMin) / numCells);
         }
-        else if (cellsize>0) {
+        else if (cellsize > 0) {
             // cellsize given ==> choose num_cells
-            numCells = (int) ceil((rangeMax-rangeMin)/cellsize);
+            numCells = (int)ceil((rangeMax - rangeMin) / cellsize);
         }
         else {
             // neither given, choose both
             double range = rangeMax - rangeMin;
-            cellsize = (long) ceil(range / 200.0);  // for range<=200, cellsize==1
-            numCells = (int) ceil(range/cellsize);
+            cellsize = (long)ceil(range / 200.0);  // for range<=200, cellsize==1
+            numCells = (int)ceil(range / cellsize);
         }
 
         // adjust range to be cellsize*num_cells
-        double newrange = cellsize*numCells;
-        double rangediff = newrange - (rangeMax-rangeMin);
+        double newrange = cellsize * numCells;
+        double rangediff = newrange - (rangeMax - rangeMin);
 
-        switch (rangeMode)
-        {
-           case RANGE_AUTO:
-             rangeMin -= floor(rangediff/2);
-             rangeMax = rangeMin + newrange;
-             break;
-           case RANGE_AUTOLOWER:
-             rangeMin = rangeMax - newrange;
-             break;
-           case RANGE_AUTOUPPER:
-             rangeMax = rangeMin + newrange;
-             break;
-           case RANGE_FIXED:
-             // no-op: rangemin, rangemax already set
-             break;
-           case RANGE_NOTSET:
-             break; //TODO: throw cRuntimeError(this, "Histogram range mode is unset");
+        switch (rangeMode) {
+            case RANGE_AUTO:
+                rangeMin -= floor(rangediff / 2);
+                rangeMax = rangeMin + newrange;
+                break;
+
+            case RANGE_AUTOLOWER:
+                rangeMin = rangeMax - newrange;
+                break;
+
+            case RANGE_AUTOUPPER:
+                rangeMax = rangeMin + newrange;
+                break;
+
+            case RANGE_FIXED:
+                // no-op: rangemin, rangemax already set
+                break;
+
+            case RANGE_NOTSET:
+                break;  //TODO: throw cRuntimeError(this, "Histogram range mode is unset");
         }
     }
 
@@ -370,49 +369,44 @@ void cHistogram::setupRangeInteger()
 void cHistogram::setupRangeDouble()
 {
     if (numCells == -1)
-        numCells = 30; // to allow merging every 2, 3, 5, 6 adjacent cells in post-processing
+        numCells = 30;  // to allow merging every 2, 3, 5, 6 adjacent cells in post-processing
     cellSize = (rangeMax - rangeMin) / numCells;
 }
 
 double cHistogram::draw() const
 {
     cRNG *rng = getRNG();
-    if (numValues == 0)
-    {
+    if (numValues == 0) {
         return 0L;
     }
-    else if (numValues < numPrecollected)
-    {
+    else if (numValues < numPrecollected) {
         // randomly select a sample from the stored ones
         return precollectedValues[intrand(rng, numValues)];
     }
-    else
-    {
+    else {
         long m = intrand(rng, numValues - cellUnder - cellOver);
 
         // select a random cell (k-1) and return a random number from it
         int k;
         for (k = 0; m >= 0; k++)
-           m -= cellv[k];
+            m -= cellv[k];
 
-        if (mode == MODE_INTEGERS)
-        {
+        if (mode == MODE_INTEGERS) {
             // min_vals, max_vals: integer-valued doubles (e.g.: -3.0, 5.0)
             // rangemin, rangemax: doubles like -1.5, 4.5 (integer+0.5)
             // cellsize: integer-valued double, >0
-            return ceil(rangeMin) + (k-1)*(long)cellSize + intrand(rng, (long)cellSize);
+            return ceil(rangeMin) + (k-1) * (long)cellSize + intrand(rng, (long)cellSize);
         }
-        else
-        {
+        else {
             // return an uniform double from the given cell
-            return rangeMin + (k-1)*cellSize + dblrand(rng)*cellSize;
+            return rangeMin + (k-1) * cellSize + dblrand(rng) * cellSize;
         }
     }
 }
 
-void cHistogram::collectTransformed (double val)
+void cHistogram::collectTransformed(double val)
 {
-    int k = (int)floor((val-rangeMin)/cellSize);
+    int k = (int)floor((val - rangeMin) / cellSize);
     if (k < 0 || val < rangeMin)
         cellUnder++;
     else if (k >= numCells || val >= rangeMax)
@@ -426,7 +420,7 @@ double cHistogram::getPDF(double x) const
     if (!isTransformed())
         throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
 
-    int k = (int)floor((x-rangeMin)/cellSize);
+    int k = (int)floor((x - rangeMin) / cellSize);
     if (k < 0 || x < rangeMin || k >= numCells || x >= rangeMax)
         return 0.0;
 
@@ -445,18 +439,18 @@ double cHistogram::getBasepoint(int k) const
     //   k=1,2,...     : rangemin + k*cellsize
     //   k=num_cells   : rangemax
 
-    if (k<0 || k>numCells)
+    if (k < 0 || k > numCells)
         throw cRuntimeError(this, "invalid basepoint index %u", k);
 
     if (k == numCells)
         return rangeMax;
     else
-        return rangeMin + k*cellSize;
+        return rangeMin + k * cellSize;
 }
 
 double cHistogram::getCellValue(int k) const
 {
-    if (k<0 || k>numCells)
+    if (k < 0 || k > numCells)
         throw cRuntimeError(this, "invalid cell index %u", k);
     return cellv[k];
 }
@@ -475,7 +469,8 @@ void cHistogram::loadFromFile(FILE *f)
 
 cLongHistogram& cLongHistogram::operator=(const cLongHistogram& res)
 {
-    if (this==&res) return *this;
+    if (this == &res)
+        return *this;
     cHistogram::operator=(res);
     copy(res);
     return *this;
@@ -483,7 +478,8 @@ cLongHistogram& cLongHistogram::operator=(const cLongHistogram& res)
 
 cDoubleHistogram& cDoubleHistogram::operator=(const cDoubleHistogram& res)
 {
-    if (this==&res) return *this;
+    if (this == &res)
+        return *this;
     cHistogram::operator=(res);
     copy(res);
     return *this;

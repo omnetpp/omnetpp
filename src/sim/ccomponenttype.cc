@@ -71,7 +71,7 @@ static SimsignalType getSignalType(const char *name, SimsignalType fallback=SIMS
 
 //----
 
-cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qname,false)
+cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qname, false)
 {
     // store fully qualified name, and set name to simple (unqualified) name
     qualifiedName = qname;
@@ -82,9 +82,9 @@ cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qnam
 
 cComponentType::~cComponentType()
 {
-    for (StringToParMap::iterator it = sharedParMap.begin(); it!=sharedParMap.end(); ++it)
+    for (StringToParMap::iterator it = sharedParMap.begin(); it != sharedParMap.end(); ++it)
         delete it->second;
-    for (ParImplSet::iterator it = sharedParSet.begin(); it!=sharedParSet.end(); ++it)
+    for (ParImplSet::iterator it = sharedParSet.begin(); it != sharedParSet.end(); ++it)
         delete *it;
 }
 
@@ -97,7 +97,7 @@ cComponentType *cComponentType::get(const char *qname)
 {
     cComponentType *p = find(qname);
     if (!p) {
-        const char *hint = (!qname || !strchr(qname,'.')) ? " (fully qualified type name expected)" : "";
+        const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
         throw cRuntimeError("NED type \"%s\" not found%s", qname, hint);
     }
     return p;
@@ -106,12 +106,12 @@ cComponentType *cComponentType::get(const char *qname)
 cParImpl *cComponentType::getSharedParImpl(const char *key) const
 {
     StringToParMap::const_iterator it = sharedParMap.find(key);
-    return it==sharedParMap.end() ? nullptr : it->second;
+    return it == sharedParMap.end() ? nullptr : it->second;
 }
 
 void cComponentType::putSharedParImpl(const char *key, cParImpl *value)
 {
-    ASSERT(sharedParMap.find(key)==sharedParMap.end()); // not yet in there
+    ASSERT(sharedParMap.find(key) == sharedParMap.end());  // not yet in there
     value->setIsShared(true);
     sharedParMap[key] = value;
 }
@@ -125,20 +125,19 @@ bool cComponentType::Less::operator()(cParImpl *a, cParImpl *b) const
 cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
 {
     ParImplSet::const_iterator it = sharedParSet.find(value);
-    return it==sharedParSet.end() ? nullptr : *it;
+    return it == sharedParSet.end() ? nullptr : *it;
 }
 
 void cComponentType::putSharedParImpl(cParImpl *value)
 {
-    ASSERT(sharedParSet.find(value)==sharedParSet.end()); // not yet in there
+    ASSERT(sharedParSet.find(value) == sharedParSet.end());  // not yet in there
     value->setIsShared(true);
     sharedParSet.insert(value);
 }
 
 bool cComponentType::isAvailable()
 {
-    if (!availabilityTested)
-    {
+    if (!availabilityTested) {
         const char *className = getImplementationClassName();
         available = classes.getInstance()->lookup(className) != nullptr;
         availabilityTested = true;
@@ -149,9 +148,8 @@ bool cComponentType::isAvailable()
 void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj)
 {
     // check that this signal is allowed
-    std::map<simsignal_t,SignalDesc>::const_iterator it = signalsSeen.find(signalID);
-    if (it == signalsSeen.end())
-    {
+    std::map<simsignal_t, SignalDesc>::const_iterator it = signalsSeen.find(signalID);
+    if (it == signalsSeen.end()) {
         // ignore built-in signals
         if (signalID == PRE_MODEL_CHANGE || signalID == POST_MODEL_CHANGE)
             return;
@@ -164,7 +162,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             if (strcmp(signalName, declaredSignalNames[i]) == 0)
                 break;
             if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&
-                    PatternMatcher(declaredSignalNames[i], false, true, true).matches(signalName))
+                PatternMatcher(declaredSignalNames[i], false, true, true).matches(signalName))
                 break;
         }
         if (i == declaredSignalNames.size())
@@ -180,8 +178,8 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         desc.isNullable = false;
         if (desc.type == SIMSIGNAL_OBJECT) {
             // if declaredType ends in a question mark, the signal allows nullptr to be emitted as well
-            if (declaredType[strlen(declaredType)-1] == '?') {
-                std::string netDeclaredType = std::string(declaredType, strlen(declaredType)-1);
+            if (declaredType[strlen(declaredType) - 1] == '?') {
+                std::string netDeclaredType = std::string(declaredType, strlen(declaredType) - 1);
                 desc.objectType = lookupClass(netDeclaredType.c_str());
                 desc.isNullable = true;
             }
@@ -190,8 +188,8 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
             }
             if (!desc.objectType)
                 throw cRuntimeError("Wrong type \"%s\" in the @signal[%s] property in the \"%s\" NED type, "
-                        "should be one of: long, unsigned long, double, simtime_t, string, or a "
-                        "registered class name optionally followed by a question mark",
+                                    "should be one of: long, unsigned long, double, simtime_t, string, or a "
+                                    "registered class name optionally followed by a question mark",
                         declaredType, declaredSignalName, getFullName());
         }
         it = signalsSeen.find(signalID);
@@ -199,13 +197,10 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
 
     // check data type
     const SignalDesc& desc = it->second;
-    if (type == SIMSIGNAL_OBJECT)
-    {
-        if (desc.type == SIMSIGNAL_OBJECT)
-        {
-            if (desc.objectType && !desc.objectType->isInstance(obj))
-            {
-                cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
+    if (type == SIMSIGNAL_OBJECT) {
+        if (desc.type == SIMSIGNAL_OBJECT) {
+            if (desc.objectType && !desc.objectType->isInstance(obj)) {
+                cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue *>(obj);
                 cObject *innerObj;
                 if (!timestampedValue) {
                     if (obj)
@@ -228,10 +223,9 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                             cComponent::getSignalName(signalID), innerObj->getClassName(), desc.objectType->getFullName());
             }
         }
-        else if (desc.type != SIMSIGNAL_UNDEF)
-        {
+        else if (desc.type != SIMSIGNAL_UNDEF) {
             // additionally allow time-stamped value of the appropriate type
-            cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue*>(obj);
+            cITimestampedValue *timestampedValue = dynamic_cast<cITimestampedValue *>(obj);
             if (!timestampedValue)
                 throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
                         cComponent::getSignalName(signalID), getSignalTypeName(desc.type), obj ? obj->getClassName() : "nullptr");
@@ -241,8 +235,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                         cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(actualType));
         }
     }
-    else if (type != desc.type && desc.type != SIMSIGNAL_UNDEF)
-    {
+    else if (type != desc.type && desc.type != SIMSIGNAL_UNDEF) {
         throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
                 cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(type));
     }
@@ -288,7 +281,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     try {
         // create the new module object
 #ifdef WITH_PARSIM
-        bool isLocal = getEnvir()->isModuleLocal(parentmod, modname, vectorsize<0 ? -1 : index);
+        bool isLocal = getEnvir()->isModuleLocal(parentmod, modname, vectorsize < 0 ? -1 : index);
         mod = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
         mod = createModuleObject();
@@ -312,7 +305,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==nullptr, mod itself is on tmplist)
     if (!parentmod)
-         getSimulation()->setSystemModule(mod);
+        getSimulation()->setSystemModule(mod);
 
     // put the object members of the new module to their place
     mod->takeAllObjectsFrom(tmplist);
@@ -353,7 +346,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
 cModule *cModuleType::instantiateModuleClass(const char *classname)
 {
-    cObject *obj = cObjectFactory::createOne(classname); // this won't return nullptr
+    cObject *obj = cObjectFactory::createOne(classname);  // this won't return nullptr
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
         throw cRuntimeError("incorrect module class %s: not subclassed from cModule", classname);
@@ -363,9 +356,9 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
         throw cRuntimeError("incorrect module class %s: isModule() returns false", classname);
 
     if (isSimple()) {
-        if (dynamic_cast<cSimpleModule *>(mod)==nullptr)
+        if (dynamic_cast<cSimpleModule *>(mod) == nullptr)
             throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", classname);
-        if (mod->isSimple()==false)
+        if (mod->isSimple() == false)
             throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", classname);
     }
 
@@ -394,7 +387,7 @@ cModuleType *cModuleType::get(const char *qname)
 {
     cModuleType *p = find(qname);
     if (!p) {
-        const char *hint = (!qname || !strchr(qname,'.')) ? " (fully qualified type name expected)" : "";
+        const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
         throw cRuntimeError("NED module type \"%s\" not found%s", qname, hint);
     }
     return p;
@@ -412,10 +405,10 @@ cChannelType::cChannelType(const char *name) : cComponentType(name)
 
 cChannel *cChannelType::instantiateChannelClass(const char *classname)
 {
-    cObject *obj = cObjectFactory::createOne(classname); // this won't return nullptr
+    cObject *obj = cObjectFactory::createOne(classname);  // this won't return nullptr
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
-        throw cRuntimeError("class %s is not a channel type", classname); //FIXME better msg
+        throw cRuntimeError("class %s is not a channel type", classname);  //FIXME better msg
     return channel;
 }
 
@@ -480,7 +473,7 @@ cChannelType *cChannelType::get(const char *qname)
 {
     cChannelType *p = find(qname);
     if (!p) {
-        const char *hint = (!qname || !strchr(qname,'.')) ? " (fully qualified type name expected)" : "";
+        const char *hint = (!qname || !strchr(qname, '.')) ? " (fully qualified type name expected)" : "";
         throw cRuntimeError("NED channel type \"%s\" not found%s", qname, hint);
     }
     return p;

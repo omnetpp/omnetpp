@@ -18,14 +18,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/ccommbuffer.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cobject.h"
-#include "omnetpp/cobjectfactory.h"    // createOne()
+#include "omnetpp/cobjectfactory.h"  // createOne()
 
 NAMESPACE_BEGIN
-
 
 void cCommBuffer::packObject(cObject *obj)
 {
@@ -38,7 +36,7 @@ cObject *cCommBuffer::unpackObject()
     char *classname;
     unpack(classname);
     cObject *obj = createOne(classname);
-    delete [] classname;
+    delete[] classname;
 
     obj->parsimUnpack(this);
     return obj;

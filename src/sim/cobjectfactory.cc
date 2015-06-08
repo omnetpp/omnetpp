@@ -23,9 +23,8 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-
 cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(*castf)(cObject *), const char *description)
-  : cNoncopyableOwnedObject(name, false)
+    : cNoncopyableOwnedObject(name, false)
 {
     this->creatorFunc = creatorf;
     this->castFunc = castf;
@@ -47,7 +46,7 @@ cObjectFactory *cObjectFactory::doFind(const char *className)
 cObjectFactory *cObjectFactory::find(const char *className, const char *contextNamespace, bool fallbackToOmnetpp)
 {
     if (className[0] == ':' && className[1] == ':')
-        return doFind(className+2);
+        return doFind(className + 2);
 
     // try with contextNamespace
     if (!opp_isempty(contextNamespace)) {

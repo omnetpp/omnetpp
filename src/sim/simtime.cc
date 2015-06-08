@@ -25,7 +25,7 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64_t SimTime::dscale;
@@ -55,12 +55,12 @@ void SimTime::setScaleExp(int e)
     // calculate 10^-e
     scaleexp = e;
     int64_t scale = 1;
-    while(e++ < 0)
+    while (e++ < 0)
         scale *= 10;
 
     // store it in double too
     dscale = scale;
-    fscale = (double) scale;
+    fscale = (double)scale;
     invfscale = 1.0 / fscale;
 }
 
@@ -84,16 +84,16 @@ void SimTime::rangeError(double i64)
 
 void SimTime::overflowAdding(const SimTime& x)
 {
-    t -= x.t; // restore original value
+    t -= x.t;  // restore original value
     throw cRuntimeError("simtime_t overflow adding %s to %s: result is out of range %s, allowed by scale exponent %d",
-                        x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
+            x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
 void SimTime::overflowSubtracting(const SimTime& x)
 {
-    t += x.t; // restore original value
+    t += x.t;  // restore original value
     throw cRuntimeError("simtime_t overflow subtracting %s from %s: result is out of range %s, allowed by scale exponent %d",
-                        x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
+            x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
 #define MAX_POWER_OF_TEN  18
@@ -110,7 +110,7 @@ EXECUTE_ON_STARTUP(
 inline int64_t exp10(int exponent)
 {
     if (exponent < 0 || exponent > MAX_POWER_OF_TEN)
-        return -1; // error
+        return -1;  // error
     return powersOfTen[exponent];
 }
 
@@ -118,20 +118,18 @@ SimTime::SimTime(int64_t significand, int exponent)
 {
     t = significand;
     int expdiff = exponent - scaleexp;
-    if (expdiff < 0)
-    {
+    if (expdiff < 0) {
         int64_t mul = exp10(-expdiff);
         int64_t tmp = t / mul;
-        if (mul == -1 || tmp*mul != t)
+        if (mul == -1 || tmp * mul != t)
             throw cRuntimeError("simtime_t error: %" LL "d*10^%d cannot be represented precisely using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
                     significand, exponent, scaleexp);
         t = tmp;
     }
-    else if (expdiff > 0)
-    {
+    else if (expdiff > 0) {
         int64_t mul = exp10(expdiff);
-        if (mul == -1 || (t<0?-t:t) >= INT64_MAX / mul)
+        if (mul == -1 || (t < 0 ? -t : t) >= INT64_MAX / mul)
             throw cRuntimeError("simtime_t overflow: cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
                     significand, exponent, range().c_str(), scaleexp);
         t *= mul;
@@ -142,15 +140,13 @@ int64_t SimTime::inUnit(int exponent) const
 {
     int64_t x = t;
     int expdiff = exponent - scaleexp;
-    if (expdiff > 0)
-    {
+    if (expdiff > 0) {
         int64_t mul = exp10(expdiff);
         x = (mul == -1) ? 0 : x / mul;
     }
-    else if (expdiff < 0)
-    {
+    else if (expdiff < 0) {
         int64_t mul = exp10(-expdiff);
-        if (mul == -1 || (x<0?-x:x) >= INT64_MAX / mul)
+        if (mul == -1 || (x < 0 ? -x : x) >= INT64_MAX / mul)
             throw cRuntimeError("simtime: inUnits(): overflow: cannot represent %s in units of 10^%ds", str().c_str(), exponent);
         x *= mul;
     }
@@ -201,46 +197,49 @@ std::string SimTime::str() const
     return out.str();
 }
 
-char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *&endp)
+char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
 {
-    ASSERT(scaleexp<=0 && scaleexp>=-18);
+    ASSERT(scaleexp <= 0 && scaleexp >= -18);
 
     // prepare for conversion
-    endp = buf+63;  //19+19+5 should be enough, but play it safe
+    endp = buf + 63;  //19+19+5 should be enough, but play it safe
     *endp = '\0';
     char *s = endp;
-    if (t==0)
-        {*--s = '0'; return s;}
+    if (t == 0) {
+        *--s = '0';
+        return s;
+    }
 
     // convert digits
-    bool negative = t<0;
-    if (negative) t = -t;
+    bool negative = t < 0;
+    if (negative)
+        t = -t;
 
     bool skipzeros = true;
     int decimalplace = scaleexp;
     do {
         int64_t res = t / 10;
-        int digit = t - (10*res);
+        int digit = t - (10 * res);
 
-        if (skipzeros && (digit!=0 || decimalplace>=0))
+        if (skipzeros && (digit != 0 || decimalplace >= 0))
             skipzeros = false;
-        if (decimalplace++==0 && s!=endp)
+        if (decimalplace++ == 0 && s != endp)
             *--s = '.';
         if (!skipzeros)
-            *--s = '0'+digit;
+            *--s = '0' + digit;
         t = res;
     } while (t);
 
     // add leading zeros, decimal point, etc if needed
-    if (decimalplace<=0)
-    {
+    if (decimalplace <= 0) {
         while (decimalplace++ < 0)
             *--s = '0';
         *--s = '.';
         *--s = '0';
     }
 
-    if (negative) *--s = '-';
+    if (negative)
+        *--s = '-';
     return s;
 }
 
@@ -257,7 +256,7 @@ const SimTime SimTime::parse(const char *s)
     }
 }
 
-const SimTime SimTime::parse(const char *s, const char *&endp)
+const SimTime SimTime::parse(const char *s, const char *& endp)
 {
     // find end of the simtime literal in the string
     endp = s;
@@ -266,11 +265,11 @@ const SimTime SimTime::parse(const char *s, const char *&endp)
     if (!*endp)
         {endp = s; return 0;} // it was just space
 
-    while (opp_isalnum(*endp) || opp_isspace(*endp) || *endp=='+' || *endp=='-' || *endp=='.')
+    while (opp_isalnum(*endp) || opp_isspace(*endp) || *endp == '+' || *endp == '-' || *endp == '.')
         endp++;
 
     // delegate to the other parse() method
-    return parse(std::string(s, endp-s).c_str());
+    return parse(std::string(s, endp - s).c_str());
 }
 
 NAMESPACE_END

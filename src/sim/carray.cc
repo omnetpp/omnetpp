@@ -43,45 +43,42 @@ Register_Class(cArray);
 
 void cArray::Iterator::init(const cArray& a, bool athead)
 {
-    array = const_cast<cArray *>(&a); // we don't want a separate Const_Iterator class
+    array = const_cast<cArray *>(&a);  // we don't want a separate Const_Iterator class
 
-    if (athead)
-    {
+    if (athead) {
         // fast-forward to first non-empty slot
         // (Note: we exploit that get(k) just returns nullptr when k is out of bounds)
         k = 0;
-        while (!array->get(k) && k<array->size())
+        while (!array->get(k) && k < array->size())
             k++;
-
     }
-    else
-    {
+    else {
         // rewind to first non-empty slot
-        k = array->size()-1;
-        while (!array->get(k) && k>=0)
+        k = array->size() - 1;
+        while (!array->get(k) && k >= 0)
             k--;
     }
 }
 
 cObject *cArray::Iterator::operator++(int)
 {
-    if (k<0 || k>=array->size())
+    if (k < 0 || k >= array->size())
         return nullptr;
     cObject *obj = array->get(k);
 
     k++;
-    while (!array->get(k) && k<array->size())
+    while (!array->get(k) && k < array->size())
         k++;
     return obj;
 }
 
 cObject *cArray::Iterator::operator--(int)
 {
-    if (k<0 || k>=array->size())
+    if (k < 0 || k >= array->size())
         return nullptr;
     cObject *obj = array->get(k);
     k--;
-    while (!array->get(k) && k>=0)
+    while (!array->get(k) && k >= 0)
         k--;
     return obj;
 }
@@ -97,20 +94,20 @@ cArray::cArray(const cArray& other) : cOwnedObject(other)
 
 cArray::cArray(const char *name, int cap, int dt) : cOwnedObject(name)
 {
-    setFlag(FL_TKOWNERSHIP,true);
-    delta = std::max(1,dt);
-    capacity = std::max(cap,0);
+    setFlag(FL_TKOWNERSHIP, true);
+    delta = std::max(1, dt);
+    capacity = std::max(cap, 0);
     firstfree = 0;
     last = -1;
     vect = new cObject *[capacity];
-    for (int i=0; i<capacity; i++)
+    for (int i = 0; i < capacity; i++)
         vect[i] = nullptr;
 }
 
 cArray::~cArray()
 {
     clear();
-    delete [] vect;
+    delete[] vect;
 }
 
 void cArray::copy(const cArray& other)
@@ -119,25 +116,24 @@ void cArray::copy(const cArray& other)
     delta = other.delta;
     firstfree = other.firstfree;
     last = other.last;
-    delete [] vect;
+    delete[] vect;
     vect = new cObject *[capacity];
     memcpy(vect, other.vect, capacity * sizeof(cObject *));
 
-    for (int i=0; i<=last; i++)
-    {
-        if (vect[i])
-        {
+    for (int i = 0; i <= last; i++) {
+        if (vect[i]) {
             if (!vect[i]->isOwnedObject())
                 vect[i] = vect[i]->dup();
-            else if (vect[i]->getOwner()==const_cast<cArray*>(&other))
-                take(static_cast<cOwnedObject*>(vect[i] = vect[i]->dup()));
+            else if (vect[i]->getOwner() == const_cast<cArray *>(&other))
+                take(static_cast<cOwnedObject *>(vect[i] = vect[i]->dup()));
         }
     }
 }
 
 cArray& cArray::operator=(const cArray& other)
 {
-    if (this == &other) return *this;
+    if (this == &other)
+        return *this;
     clear();
     cOwnedObject::operator=(other);
     copy(other);
@@ -146,24 +142,25 @@ cArray& cArray::operator=(const cArray& other)
 
 std::string cArray::info() const
 {
-    if (last==-1)
+    if (last == -1)
         return std::string("empty");
     std::stringstream out;
-    out << "size=" << last+1;
+    out << "size=" << last + 1;
     return out.str();
 }
 
 void cArray::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<=last; i++)
+    for (int i = 0; i <= last; i++)
         if (vect[i])
             v->visit(vect[i]);
+
 }
 
 void cArray::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cOwnedObject::parsimPack(buffer);
 
@@ -172,12 +169,10 @@ void cArray::parsimPack(cCommBuffer *buffer) const
     buffer->pack(firstfree);
     buffer->pack(last);
 
-    for (int i = 0; i <= last; i++)
-    {
-        if (buffer->packFlag(vect[i]!=nullptr))
-        {
+    for (int i = 0; i <= last; i++) {
+        if (buffer->packFlag(vect[i] != nullptr)) {
             if (vect[i]->isOwnedObject() && vect[i]->getOwner() != this)
-                throw cRuntimeError(this,"parsimPack(): refusing to transmit an object not owned by the container");
+                throw cRuntimeError(this, "parsimPack(): refusing to transmit an object not owned by the container");
             buffer->packObject(vect[i]);
         }
     }
@@ -187,11 +182,11 @@ void cArray::parsimPack(cCommBuffer *buffer) const
 void cArray::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cOwnedObject::parsimUnpack(buffer);
 
-    delete [] vect;
+    delete[] vect;
 
     buffer->unpack(capacity);
     buffer->unpack(delta);
@@ -199,8 +194,7 @@ void cArray::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(last);
 
     vect = new cObject *[capacity];
-    for (int i = 0; i <= last; i++)
-    {
+    for (int i = 0; i <= last; i++) {
         if (!buffer->checkFlag())
             vect[i] = nullptr;
         else {
@@ -214,14 +208,12 @@ void cArray::parsimUnpack(cCommBuffer *buffer)
 
 void cArray::clear()
 {
-    for (int i=0; i<=last; i++)
-    {
+    for (int i = 0; i <= last; i++) {
         cObject *obj = vect[i];
-        if (obj)
-        {
+        if (obj) {
             if (!obj->isOwnedObject())
                 delete obj;
-            else if (obj->getOwner()==this)
+            else if (obj->getOwner() == this)
                 dropAndDelete(static_cast<cOwnedObject *>(obj));
             vect[i] = nullptr;  // this is not strictly necessary
         }
@@ -233,14 +225,14 @@ void cArray::clear()
 void cArray::setCapacity(int newCapacity)
 {
     if (newCapacity < size())
-        throw cRuntimeError(this,"setCapacity: new capacity %d cannot be less than current size %d", newCapacity,size());
+        throw cRuntimeError(this, "setCapacity: new capacity %d cannot be less than current size %d", newCapacity, size());
 
     cObject **newVect = new cObject *[newCapacity];
-    for (int i=0; i<=last; i++)
+    for (int i = 0; i <= last; i++)
         newVect[i] = vect[i];
-    for (int i=last+1; i<capacity; i++)
+    for (int i = last + 1; i < capacity; i++)
         newVect[i] = nullptr;
-    delete [] vect;
+    delete[] vect;
     vect = newVect;
     capacity = newCapacity;
 }
@@ -248,31 +240,29 @@ void cArray::setCapacity(int newCapacity)
 int cArray::add(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert nullptr");
+        throw cRuntimeError(this, "cannot insert nullptr");
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
 
     int retval;
-    if (firstfree < capacity)  // fits in current vector
-    {
+    if (firstfree < capacity) {  // fits in current vector
         vect[firstfree] = obj;
         retval = firstfree;
-        last = std::max(last,firstfree);
+        last = std::max(last, firstfree);
         do {
             firstfree++;
-        } while (firstfree<=last && vect[firstfree]!=nullptr);
+        } while (firstfree <= last && vect[firstfree] != nullptr);
     }
-    else // must allocate bigger vector
-    {
-        cObject **v = new cObject *[capacity+delta];
-        memcpy(v, vect, sizeof(cObject*)*capacity );
-        memset(v+capacity, 0, sizeof(cObject*)*delta);
-        delete [] vect;
+    else {  // must allocate bigger vector
+        cObject **v = new cObject *[capacity + delta];
+        memcpy(v, vect, sizeof(cObject *) * capacity);
+        memset(v + capacity, 0, sizeof(cObject *) * delta);
+        delete[] vect;
         vect = v;
         vect[capacity] = obj;
         retval = last = capacity;
-        firstfree = capacity+1;
+        firstfree = capacity + 1;
         capacity += delta;
     }
     return retval;
@@ -281,36 +271,34 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert nullptr");
+        throw cRuntimeError(this, "cannot insert nullptr");
 
-    if (m<capacity)  // fits in current vector
-    {
-        if (m<0)
-            throw cRuntimeError(this,"addAt(): negative position %d",m);
-        if (vect[m]!=nullptr)
-            throw cRuntimeError(this,"addAt(): position %d already used",m);
+    if (m < capacity) {  // fits in current vector
+        if (m < 0)
+            throw cRuntimeError(this, "addAt(): negative position %d", m);
+        if (vect[m] != nullptr)
+            throw cRuntimeError(this, "addAt(): position %d already used", m);
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
             take(static_cast<cOwnedObject *>(obj));
-        last = std::max(m,last);
-        if (firstfree==m)
+        last = std::max(m, last);
+        if (firstfree == m)
             do {
                 firstfree++;
-            } while (firstfree<=last && vect[firstfree]!=nullptr);
+            } while (firstfree <= last && vect[firstfree] != nullptr);
     }
-    else // must allocate bigger vector
-    {
-        cObject **v = new cObject *[m+delta];
-        memcpy(v, vect, sizeof(cObject*)*capacity);
-        memset(v+capacity, 0, sizeof(cObject*)*(m+delta-capacity));
-        delete [] vect;
+    else {  // must allocate bigger vector
+        cObject **v = new cObject *[m + delta];
+        memcpy(v, vect, sizeof(cObject *) * capacity);
+        memset(v + capacity, 0, sizeof(cObject *) * (m + delta - capacity));
+        delete[] vect;
         vect = v;
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
             take(static_cast<cOwnedObject *>(obj));
-        capacity = m+delta;
+        capacity = m + delta;
         last = m;
-        if (firstfree==m)
+        if (firstfree == m)
             firstfree++;
     }
     return m;
@@ -319,18 +307,16 @@ int cArray::addAt(int m, cObject *obj)
 int cArray::set(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert nullptr");
+        throw cRuntimeError(this, "cannot insert nullptr");
 
     int i = find(obj->getName());
-    if (i<0)
-    {
+    if (i < 0) {
         return add(obj);
     }
-    else
-    {
+    else {
         if (!vect[i]->isOwnedObject())
             delete vect[i];
-        else if (vect[i]->getOwner()==this)
+        else if (vect[i]->getOwner() == this)
             dropAndDelete(static_cast<cOwnedObject *>(vect[i]));
         vect[i] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
@@ -342,24 +328,26 @@ int cArray::set(cObject *obj)
 int cArray::find(cObject *obj) const
 {
     int i;
-    for (i=0; i<=last; i++)
-        if (vect[i]==obj)
+    for (i = 0; i <= last; i++)
+        if (vect[i] == obj)
             return i;
+
     return -1;
 }
 
 int cArray::find(const char *objname) const
 {
     int i;
-    for (i=0; i<=last; i++)
+    for (i = 0; i <= last; i++)
         if (vect[i] && vect[i]->isName(objname))
             return i;
+
     return -1;
 }
 
 cObject *cArray::get(int m)
 {
-    if (m>=0 && m<=last)
+    if (m >= 0 && m <= last)
         return vect[m];
     else
         return nullptr;
@@ -367,7 +355,7 @@ cObject *cArray::get(int m)
 
 const cObject *cArray::get(int m) const
 {
-    if (m>=0 && m<=last)
+    if (m >= 0 && m <= last)
         return vect[m];
     else
         return nullptr;
@@ -375,16 +363,16 @@ const cObject *cArray::get(int m) const
 
 cObject *cArray::get(const char *objname)
 {
-    int m = find( objname );
-    if (m==-1)
+    int m = find(objname);
+    if (m == -1)
         return nullptr;
     return get(m);
 }
 
 const cObject *cArray::get(const char *objname) const
 {
-    int m = find( objname );
-    if (m==-1)
+    int m = find(objname);
+    if (m == -1)
         return nullptr;
     return get(m);
 }
@@ -392,33 +380,35 @@ const cObject *cArray::get(const char *objname) const
 cObject *cArray::remove(const char *objname)
 {
     int m = find(objname);
-    if (m==-1)
+    if (m == -1)
         return nullptr;
     return remove(m);
 }
 
 cObject *cArray::remove(cObject *obj)
 {
-    if (!obj) return nullptr;
+    if (!obj)
+        return nullptr;
 
-    int m = find( obj );
-    if (m==-1)
+    int m = find(obj);
+    if (m == -1)
         return nullptr;
     return remove(m);
 }
 
 cObject *cArray::remove(int m)
 {
-    if (m<0 || m>last || vect[m]==nullptr)
+    if (m < 0 || m > last || vect[m] == nullptr)
         return nullptr;
 
-    cObject *obj = vect[m]; vect[m] = nullptr;
+    cObject *obj = vect[m];
+    vect[m] = nullptr;
     firstfree = std::min(firstfree, m);
-    if (m==last)
+    if (m == last)
         do {
             last--;
-        } while (last>=0 && vect[last]==nullptr);
-    if (obj->isOwnedObject() && obj->getOwner()==this)
+        } while (last >= 0 && vect[last] == nullptr);
+    if (obj->isOwnedObject() && obj->getOwner() == this)
         drop(static_cast<cOwnedObject *>(obj));
     return obj;
 }

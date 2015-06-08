@@ -19,7 +19,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstring>   // strlen
+#include <cstring>  // strlen
 #include "omnetpp/globals.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cmodule.h"
@@ -36,10 +36,8 @@ NAMESPACE_BEGIN
 
 Register_Class(cOutVector);
 
-
-Register_Enum(cOutVector::Type, (cOutVector::TYPE_INT, cOutVector::TYPE_DOUBLE, cOutVector::TYPE_ENUM) );
+Register_Enum(cOutVector::Type, (cOutVector::TYPE_INT, cOutVector::TYPE_DOUBLE, cOutVector::TYPE_ENUM));
 Register_Enum(cOutVector::InterpolationMode, (cOutVector::NONE, cOutVector::SAMPLE_HOLD, cOutVector::BACKWARD_SAMPLE_HOLD, cOutVector::LINEAR));
-
 
 cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
@@ -53,7 +51,7 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
     // register early if possible (only required by Akaroa)
     if (name) {
         handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), name);
-        ASSERT(handle!=nullptr);
+        ASSERT(handle != nullptr);
     }
 }
 
@@ -66,14 +64,14 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *nam)
 {
     if (handle)
-        throw cRuntimeError(this,"setName(): changing name of an output vector after record() calls is not allowed");
+        throw cRuntimeError(this, "setName(): changing name of an output vector after record() calls is not allowed");
 
     cOwnedObject::setName(nam);
 
     // register early (only needed for Akaroa...)
     if (nam) {
         handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName());
-        ASSERT(handle!=nullptr);
+        ASSERT(handle != nullptr);
     }
 }
 
@@ -99,7 +97,7 @@ void cOutVector::parsimUnpack(cCommBuffer *buffer)
 void cOutVector::setUnit(const char *unit)
 {
     if (!handle)
-        throw cRuntimeError(this,"setUnit(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setUnit(): set the object name first, using setName()");
     getEnvir()->setVectorAttribute(handle, "unit", unit);
 }
 
@@ -114,7 +112,7 @@ void cOutVector::setEnum(const char *registeredEnumName)
 void cOutVector::setEnum(cEnum *enumDecl)
 {
     if (!handle)
-        throw cRuntimeError(this,"setEnum(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setEnum(): set the object name first, using setName()");
     getEnvir()->setVectorAttribute(handle, "enumname", enumDecl->getName());
     getEnvir()->setVectorAttribute(handle, "enum", enumDecl->str().c_str());
 }
@@ -124,9 +122,8 @@ void cOutVector::setType(Type type)
     if (!handle)
         throw cRuntimeError(this,"setType(): set the object name first, using setName()");
 
-    const char *typeString=nullptr;
-    switch (type)
-    {
+    const char *typeString = nullptr;
+    switch (type) {
         case TYPE_INT:    typeString = "int"; break;
         case TYPE_DOUBLE: typeString = "double"; break;
         case TYPE_ENUM:   typeString = "enum"; break;
@@ -142,9 +139,8 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
     if (!handle)
         throw cRuntimeError(this,"setInterpolationMode(): set the object name first, using setName()");
 
-    const char *modeString=nullptr;
-    switch (mode)
-    {
+    const char *modeString = nullptr;
+    switch (mode) {
         case NONE:                 modeString = "none"; break;
         case SAMPLE_HOLD:          modeString = "sample-hold"; break;
         case BACKWARD_SAMPLE_HOLD: modeString = "backward-sample-hold"; break;
@@ -159,7 +155,7 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
 void cOutVector::setMin(double minValue)
 {
     if (!handle)
-        throw cRuntimeError(this,"setMin(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setMin(): set the object name first, using setName()");
 
     char buf[32];
     sprintf(buf, "%g", minValue);
@@ -169,13 +165,12 @@ void cOutVector::setMin(double minValue)
 void cOutVector::setMax(double maxValue)
 {
     if (!handle)
-        throw cRuntimeError(this,"setMax(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setMax(): set the object name first, using setName()");
 
     char buf[32];
     sprintf(buf, "%g", maxValue);
     getEnvir()->setVectorAttribute(handle, "max", buf);
 }
-
 
 bool cOutVector::record(double value)
 {
@@ -185,16 +180,16 @@ bool cOutVector::record(double value)
 bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 {
     // check timestamp
-    if (t<lastTimestamp)
-        throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
-                                 "than the previously recorded value", SIMTIME_STR(t));
+    if (t < lastTimestamp)
+        throw cRuntimeError(this, "Cannot record data with an earlier timestamp (t=%s) "
+                                  "than the previously recorded value", SIMTIME_STR(t));
     lastTimestamp = t;
 
     numReceived++;
 
     // pass data to inspector
     if (recordInInspector)
-        recordInInspector(dataForInspector,t,value,0.0);
+        recordInInspector(dataForInspector, t, value, 0.0);
 
     if (!isEnabled())
         return false;

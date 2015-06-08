@@ -22,23 +22,22 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-
 cResultFilter::cResultFilter()
 {
-    delegates = new cResultListener*[1];
+    delegates = new cResultListener *[1];
     delegates[0] = nullptr;
 }
 
 void cResultFilter::addDelegate(cResultListener *delegate)
 {
     // reallocate each time
-    Assert(delegates!=nullptr);
+    Assert(delegates != nullptr);
     int n = getNumDelegates();
-    cResultListener **v = new cResultListener*[n+2];
-    memcpy(v, delegates, n*sizeof(cResultListener*));
+    cResultListener **v = new cResultListener *[n + 2];
+    memcpy(v, delegates, n * sizeof(cResultListener *));
     v[n] = delegate;
     v[n+1] = nullptr;
-    delete [] delegates;
+    delete[] delegates;
     delegates = v;
     delegate->subscribeCount++;
     delegate->subscribedTo(this);
@@ -52,9 +51,9 @@ int cResultFilter::getNumDelegates() const
     return k;
 }
 
-std::vector<cResultListener*> cResultFilter::getDelegates() const
+std::vector<cResultListener *> cResultFilter::getDelegates() const
 {
-    std::vector<cResultListener*> result;
+    std::vector<cResultListener *> result;
     for (int i = 0; delegates[i]; i++)
         result.push_back(delegates[i]);
     return result;
@@ -62,59 +61,59 @@ std::vector<cResultListener*> cResultFilter::getDelegates() const
 
 cResultFilter::~cResultFilter()
 {
-    for (int i=0; delegates[i]; i++) {
+    for (int i = 0; delegates[i]; i++) {
         delegates[i]->subscribeCount--;
         delegates[i]->unsubscribedFrom(this);
     }
-    delete [] delegates;
+    delete[] delegates;
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, bool b)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, b);
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, long l)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, l);
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, l);
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, double d)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, d);
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, v);
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const char *s)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, s);
 }
 
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, obj);
 }
 
 void cResultFilter::callFinish(cResultFilter *prev)
 {
     finish(prev);
-    for (int i=0; delegates[i]; i++)
+    for (int i = 0; delegates[i]; i++)
         delegates[i]->callFinish(this);
 }
 
@@ -172,7 +171,7 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 
 //---
 
-#define THROW(t)  throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
+#define THROW(t)    throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
 
 void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
 {
@@ -209,7 +208,7 @@ void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, c
 //---
 
 cResultFilterDescriptor::cResultFilterDescriptor(const char *name, cResultFilter *(*f)())
-  : cNoncopyableOwnedObject(name, false)
+    : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
 }

@@ -50,7 +50,7 @@ double uniform(cRNG *rng, double a, double b)
 
 double exponential(cRNG *rng, double p)
 {
-    return -p * log(1.0 - rng->doubleRand());
+    return -p *log(1.0 - rng->doubleRand());
 }
 
 double unit_normal(cRNG *rng)
@@ -71,8 +71,8 @@ double truncnormal(cRNG *rng, double m, double d)
 {
     double res;
     do {
-         res = normal(rng, m, d);
-    } while(res<0);
+        res = normal(rng, m, d);
+    } while (res < 0);
 
     return res;
 }
@@ -167,18 +167,21 @@ static double gamma_ChengFeast79(cRNG *rng, double alpha)
  */
 static double gamma_Marsaglia2000(cRNG *rng, double a)
 {
-    ASSERT(a>1);
+    ASSERT(a > 1);
 
-    double d,c,x,v,u;
+    double d, c, x, v, u;
     d = a - 1.0/3.0;
     c = 1.0/sqrt(9.0*d);
-    for(;;)
-    {
-        do {x = unit_normal(rng); v = 1.0 + c*x;} while (v<=0);
-        v = v*v*v; u = rng->doubleRand();
+    for (;;) {
+        do {
+            x = unit_normal(rng);
+            v = 1.0 + c*x;
+        } while (v <= 0);
+        v = v*v*v;
+        u = rng->doubleRand();
         if (u < 1.0 - 0.0331*(x*x)*(x*x))
             return d*v;
-        if (log(u)<0.5*x*x + d*(1.0-v+log(v)))
+        if (log(u) < 0.5*x*x + d*(1.0-v+log(v)))
             return d*v;
     }
 }
@@ -191,38 +194,34 @@ static double gamma_Marsaglia2000(cRNG *rng, double a)
  */
 static double gamma_MarsagliaTransf(cRNG *rng, double alpha)
 {
-    ASSERT(alpha<1);
+    ASSERT(alpha < 1);
 
-    //return gamma_ChengFeast79(rng, 1+alpha) * pow(rng->doubleRand(), 1/alpha);
-    return gamma_Marsaglia2000(rng, 1+alpha) * pow(rng->doubleRand(), 1/alpha); // faster
+    // return gamma_ChengFeast79(rng, 1+alpha) * pow(rng->doubleRand(), 1/alpha);
+    return gamma_Marsaglia2000(rng, 1+alpha) * pow(rng->doubleRand(), 1/alpha);  // faster
 }
 
 double gamma_d(cRNG *rng, double alpha, double theta)
 {
-    if (alpha<=0 || theta<=0)
+    if (alpha <= 0 || theta <= 0)
         throw cRuntimeError("gamma(): alpha and theta params must be positive "
                             "(alpha=%g, theta=%g)", alpha, theta);
 
-    if (fabs(alpha - 1.0) <= DBL_EPSILON)
-    {
+    if (fabs(alpha - 1.0) <= DBL_EPSILON) {
         return exponential(rng, theta);
     }
-    else if (alpha < 1.0)
-    {
-        //return theta * gamma_AhrensDieter74(rng, alpha); // implementation is bogus, see above
+    else if (alpha < 1.0) {
+        // return theta * gamma_AhrensDieter74(rng, alpha); // implementation is bogus, see above
         return theta * gamma_MarsagliaTransf(rng, alpha);
     }
-    else // if (alpha > 1.0)
-    {
-        //return theta * gamma_ChengFeast79(rng, alpha);
+    else {  // if (alpha > 1.0)
+            // return theta * gamma_ChengFeast79(rng, alpha);
         return theta * gamma_Marsaglia2000(rng, alpha);  // faster
     }
 }
 
-
 double beta(cRNG *rng, double alpha1, double alpha2)
 {
-    if (alpha1<=0 || alpha2<=0)
+    if (alpha1 <= 0 || alpha2 <= 0)
         throw cRuntimeError("beta(): alpha1 and alpha2 parameters must be positive "
                             "(alpha1=%g, alpha2=%g)", alpha1, alpha2);
 
@@ -232,46 +231,41 @@ double beta(cRNG *rng, double alpha1, double alpha2)
     return Y1 / (Y1 + Y2);
 }
 
-
 double erlang_k(cRNG *rng, unsigned int k, double m)
 {
     double U = 1.0;
     for (unsigned int i = 0; i < k; i++)
         U *= (1.0 - rng->doubleRand());
 
-    return -(m / (double) k) * log(U);
+    return -(m / (double)k) * log(U);
 }
-
 
 double chi_square(cRNG *rng, unsigned int k)
 {
     if (!(k % 2))
         return erlang_k(rng, k >> 1, k);
     else
-        return gamma_d(rng, (double) k / 2.0, 2.0);
+        return gamma_d(rng, (double)k / 2.0, 2.0);
 }
-
 
 double student_t(cRNG *rng, unsigned int i)
 {
     double Z = normal(rng, 0, 1);
-    double W = sqrt(chi_square(rng, i) / (double) i);
+    double W = sqrt(chi_square(rng, i) / (double)i);
     return Z / W;
 }
 
-
 double cauchy(cRNG *rng, double a, double b)
 {
-    if (b<=0)
+    if (b <= 0)
         throw cRuntimeError("cauchy(): parameters must be b>0 (a=%g, b=%g)", a, b);
 
     return a + b * tan(M_PI * rng->doubleRand());
 }
 
-
 double triang(cRNG *rng, double a, double b, double c)
 {
-    if (b<a || c<b || a==c)
+    if (b < a || c < b || a == c)
         throw cRuntimeError("triang(): parameters must be a<=b<=c, a<c (a=%g, b=%g, c=%g)", a, b, c);
 
     double U, beta, T;
@@ -287,28 +281,24 @@ double triang(cRNG *rng, double a, double b, double c)
     return a + (c - a) * T;
 }
 
-
 // lognormal() is inline
-
 
 double weibull(cRNG *rng, double a, double b)
 {
-    if (a<=0 || b<=0)
+    if (a <= 0 || b <= 0)
         throw cRuntimeError("weibull(): a,b parameters must be positive (a=%g, b=%g)", a, b);
 
     return a * pow(-log(1.0 - rng->doubleRand()), 1.0 / b);
 }
 
-
 double pareto_shifted(cRNG *rng, double a, double b, double c)
 {
-    if (a==0)
+    if (a == 0)
         throw cRuntimeError("pareto_shifted(): parameter a cannot be zero)");
 
     double u_pow = pow(1.0 - rng->doubleRand(), 1.0 / a);
     return b / u_pow - c;
 }
-
 
 //----------------------------------------------------------------------------
 //
@@ -336,16 +326,13 @@ int intuniform(cRNG *rng, int a, int b)
     return a + rng->intRand(b-a+1);
 }
 
-
 // bernoulli() is inline
-
 
 int binomial(cRNG *rng, int n, double p)
 {
     int X = 0;
     // sum up n bernoulli trials
-    for (int i = 0; i < n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         double U = rng->doubleRand();
         if (p > U)
             X++;
@@ -353,27 +340,23 @@ int binomial(cRNG *rng, int n, double p)
     return X;
 }
 
-
 int geometric(cRNG *rng, double p)
 {
-    if (p<0 || p>=1)
+    if (p < 0 || p >= 1)
         throw cRuntimeError("geometric(): parameter p=%g out of range [0,1)", p);
 
     double a = 1.0 / (log(1.0 - p));
     return (int)floor(a * log(1.0 - rng->doubleRand()));
 }
 
-
 int negbinomial(cRNG *rng, int n, double p)
 {
     int X = 0;
-    for (int i = 0; i < n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         X += geometric(rng, p);
     }
     return X;
 }
-
 
 /*
  * TBD: hypergeometric() doesn't work yet
@@ -405,36 +388,29 @@ int hypergeometric(cRNG *rng, int a, int b, int n)
 int poisson(cRNG *rng, double lambda)
 {
     int X;
-    if (lambda > 30.0)
-    {
+    if (lambda > 30.0) {
         double a = M_PI * sqrt(lambda / 3.0);
         double b = a / lambda;
         double c = 0.767 - 3.36 / lambda;
         double d = log(c) - log(b) - lambda;
         double U, V, Y;
 
-        do
-        {
-            do
-            {
+        do {
+            do {
                 U = rng->doubleRand();
                 Y = (a - log((1.0 - U) / U)) / b;
-            }
-            while (Y <= -0.5);
+            } while (Y <= -0.5);
 
             X = (int)floor(Y + 0.5);
             V = rng->doubleRand();
-        }
-        while (a - b * Y + log(V / 1.0 + pow(exp(a - b * Y), 2.0)) > d + X * log(lambda) - log(double(X)));
+        } while (a - b * Y + log(V / 1.0 + pow(exp(a - b * Y), 2.0)) > d + X * log(lambda) - log(double(X)));
     }
-    else
-    {
+    else {
         double a = exp(-lambda);
         double p = 1.0;
         X = -1;
 
-        while (p > a)
-        {
+        while (p > a) {
             p *= rng->doubleRand();
             X++;
         }
@@ -443,3 +419,4 @@ int poisson(cRNG *rng, double lambda)
 }
 
 NAMESPACE_END
+

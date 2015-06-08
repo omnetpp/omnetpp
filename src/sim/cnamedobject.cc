@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstdio>           // sprintf
-#include <cstring>          // strcpy, strlen etc.
+#include <cstdio>  // sprintf
+#include <cstring>  // strcpy, strlen etc.
 #include "omnetpp/cnamedobject.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/globals.h"
@@ -31,7 +31,6 @@ NAMESPACE_BEGIN
 using std::ostream;
 
 Register_Class(cNamedObject);
-
 
 // static class members
 cStringPool cNamedObject::stringPool("cNamedObject::stringPool");
@@ -50,7 +49,7 @@ cNamedObject::cNamedObject(const char *s, bool namepooling)
     else if (namepooling)
         name = stringPool.get(s);
     else
-        name  = opp_strdup(s);
+        name = opp_strdup(s);
 }
 
 cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
@@ -63,12 +62,11 @@ cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
 
 cNamedObject::~cNamedObject()
 {
-    if (name)
-    {
+    if (name) {
         if (flags & FL_NAMEPOOLING)
             stringPool.release(name);
         else
-            delete [] name;
+            delete[] name;
     }
 }
 
@@ -91,12 +89,11 @@ cNamedObject& cNamedObject::operator=(const cNamedObject& obj)
 void cNamedObject::setName(const char *s)
 {
     // release name string
-    if (name)
-    {
+    if (name) {
         if (flags & FL_NAMEPOOLING)
             stringPool.release(name);
         else
-            delete [] name;
+            delete[] name;
     }
 
     // set new string
@@ -112,23 +109,19 @@ void cNamedObject::setNamePooling(bool pooling)
 {
     if ((flags & FL_NAMEPOOLING) == pooling)
         return;
-    if (pooling)
-    {
+    if (pooling) {
         // turn on
         flags |= FL_NAMEPOOLING;
-        if (name)
-        {
+        if (name) {
             const char *oldname = name;
             name = stringPool.get(oldname);
-            delete [] oldname;
+            delete[] oldname;
         }
     }
-    else
-    {
+    else {
         // turn off
         flags &= ~FL_NAMEPOOLING;
-        if (name)
-        {
+        if (name) {
             const char *oldname = name;
             name = opp_strdup(oldname);
             stringPool.release(oldname);
@@ -139,7 +132,7 @@ void cNamedObject::setNamePooling(bool pooling)
 void cNamedObject::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     buffer->pack(getName());
     buffer->pack(flags);
@@ -149,7 +142,7 @@ void cNamedObject::parsimPack(cCommBuffer *buffer) const
 void cNamedObject::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     opp_string tmp;
     buffer->unpack(tmp);

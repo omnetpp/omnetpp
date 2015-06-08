@@ -34,12 +34,10 @@ std::string cWatch_stdstring::info() const
 
 void cWatch_stdstring::assign(const char *s)
 {
-    if (s[0]=='"' && s[strlen(s)-1]=='"')
-    {
+    if (s[0] == '"' && s[strlen(s)-1] == '"') {
         r = opp_parsequotedstr(s);
     }
-    else
-    {
+    else {
         r = s;
     }
 }

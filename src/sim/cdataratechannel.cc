@@ -88,10 +88,10 @@ void cDatarateChannel::rereadPars()
         throw cRuntimeError(this, "wrong packet error rate %g", per);
 
     setFlag(FL_ISDISABLED, par("disabled"));
-    setFlag(FL_DELAY_NONZERO, delay!=SIMTIME_ZERO);
-    setFlag(FL_DATARATE_NONZERO, datarate!=0);
-    setFlag(FL_BER_NONZERO, ber!=0);
-    setFlag(FL_PER_NONZERO, per!=0);
+    setFlag(FL_DELAY_NONZERO, delay != SIMTIME_ZERO);
+    setFlag(FL_DATARATE_NONZERO, datarate != 0);
+    setFlag(FL_BER_NONZERO, ber != 0);
+    setFlag(FL_PER_NONZERO, per != 0);
 }
 
 void cDatarateChannel::handleParameterChange(const char *)
@@ -135,8 +135,7 @@ simtime_t cDatarateChannel::calculateDuration(cMessage *msg) const
 void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
 {
     // if channel is disabled, signal that message should be deleted
-    if (flags & FL_ISDISABLED)
-    {
+    if (flags & FL_ISDISABLED) {
         result.discard = true;
         cTimestampedValue tmp(t, msg);
         emit(messageDiscardedSignal, &tmp);
@@ -144,8 +143,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     }
 
     // datarate modeling
-    if ((flags & FL_DATARATE_NONZERO) && msg->isPacket())
-    {
+    if ((flags & FL_DATARATE_NONZERO) && msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
         simtime_t duration = pkt->getBitLength() / datarate;
         result.duration = duration;
@@ -159,29 +157,29 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     result.delay = delay;
 
     // bit error modeling
-    if ((flags & (FL_BER_NONZERO | FL_PER_NONZERO)) && msg->isPacket())
-    {
+    if ((flags & (FL_BER_NONZERO | FL_PER_NONZERO)) && msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
         if (flags & FL_BER_NONZERO)
-            if (dblrand() < 1.0 - pow(1.0-ber, (double)pkt->getBitLength()))
+            if (dblrand() < 1.0 - pow(1.0 - ber, (double)pkt->getBitLength()))
                 pkt->setBitError(true);
+
         if (flags & FL_PER_NONZERO)
             if (dblrand() < per)
                 pkt->setBitError(true);
+
     }
 
     // emit signals
-    if (mayHaveListeners(messageSentSignal))
-    {
+    if (mayHaveListeners(messageSentSignal)) {
         MessageSentSignalValue tmp(t, msg, &result);
         emit(messageSentSignal, &tmp);
     }
-    if (mayHaveListeners(channelBusySignal))
-    {
+    if (mayHaveListeners(channelBusySignal)) {
         cTimestampedValue tmp(t, 1L);
         emit(channelBusySignal, &tmp);
 
-        tmp.timestamp = txFinishTime; tmp.l = 0L;
+        tmp.timestamp = txFinishTime;
+        tmp.l = 0L;
         emit(channelBusySignal, &tmp);
     }
 }

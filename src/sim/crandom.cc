@@ -15,7 +15,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "omnetpp/crandom.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/crng.h"
@@ -45,7 +44,6 @@ Register_Class(cGeometric);
 Register_Class(cNegBinomial);
 Register_Class(cPoisson);
 
-
 cRandom::cRandom(cRNG *rng) : cOwnedObject(nullptr), rng(rng)
 {
     if (!rng)
@@ -66,12 +64,12 @@ void cUniform::copy(const cUniform& other)
     b = other.b;
 }
 
-cUniform& cUniform::operator =(const cUniform& other)
+cUniform& cUniform::operator=(const cUniform& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -95,12 +93,12 @@ void cExponential::copy(const cExponential& other)
     mean = other.mean;
 }
 
-const cExponential& cExponential::operator =(const cExponential& other)
+const cExponential& cExponential::operator=(const cExponential& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -125,12 +123,12 @@ void cNormal::copy(const cNormal& other)
     stddev = other.stddev;
 }
 
-cNormal& cNormal::operator =(const cNormal& other)
+cNormal& cNormal::operator=(const cNormal& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -155,12 +153,12 @@ void cTruncNormal::copy(const cTruncNormal& other)
     stddev = other.stddev;
 }
 
-cTruncNormal& cTruncNormal::operator =(const cTruncNormal& other)
+cTruncNormal& cTruncNormal::operator=(const cTruncNormal& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -185,12 +183,12 @@ void cGamma::copy(const cGamma& other)
     theta = other.theta;
 }
 
-cGamma& cGamma::operator =(const cGamma& other)
+cGamma& cGamma::operator=(const cGamma& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -215,12 +213,12 @@ void cBeta::copy(const cBeta& other)
     alpha2 = other.alpha2;
 }
 
-cBeta& cBeta::operator =(const cBeta& other)
+cBeta& cBeta::operator=(const cBeta& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -245,12 +243,12 @@ void cErlang::copy(const cErlang& other)
     mean = other.mean;
 }
 
-cErlang& cErlang::operator =(const cErlang& other)
+cErlang& cErlang::operator=(const cErlang& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -274,12 +272,12 @@ void cChiSquare::copy(const cChiSquare& other)
     k = other.k;
 }
 
-cChiSquare& cChiSquare::operator =(const cChiSquare& other)
+cChiSquare& cChiSquare::operator=(const cChiSquare& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -303,12 +301,12 @@ void cStudentT::copy(const cStudentT& other)
     i = other.i;
 }
 
-cStudentT& cStudentT::operator =(const cStudentT& other)
+cStudentT& cStudentT::operator=(const cStudentT& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -333,12 +331,12 @@ void cCauchy::copy(const cCauchy& other)
     b = other.b;
 }
 
-cCauchy& cCauchy::operator =(const cCauchy& other)
+cCauchy& cCauchy::operator=(const cCauchy& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -364,12 +362,12 @@ void cTriang::copy(const cTriang& other)
     c = other.c;
 }
 
-cTriang& cTriang::operator =(const cTriang& other)
+cTriang& cTriang::operator=(const cTriang& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -394,12 +392,12 @@ void cWeibull::copy(const cWeibull& other)
     b = other.b;
 }
 
-cWeibull& cWeibull::operator =(const cWeibull& other)
+cWeibull& cWeibull::operator=(const cWeibull& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -425,12 +423,12 @@ void cParetoShifted::copy(const cParetoShifted& other)
     c = other.c;
 }
 
-cParetoShifted& cParetoShifted::operator =(const cParetoShifted& other)
+cParetoShifted& cParetoShifted::operator=(const cParetoShifted& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -455,12 +453,12 @@ void cIntUniform::copy(const cIntUniform& other)
     b = other.b;
 }
 
-cIntUniform& cIntUniform::operator =(const cIntUniform& other)
+cIntUniform& cIntUniform::operator=(const cIntUniform& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -474,7 +472,7 @@ std::string cIntUniform::info() const
 
 double cIntUniform::draw() const
 {
-    return (double) OPP::intuniform(rng, a, b);
+    return (double)OPP::intuniform(rng, a, b);
 }
 
 //----
@@ -484,12 +482,12 @@ void cBernoulli::copy(const cBernoulli& other)
     p = other.p;
 }
 
-cBernoulli& cBernoulli::operator =(const cBernoulli& other)
+cBernoulli& cBernoulli::operator=(const cBernoulli& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -503,7 +501,7 @@ std::string cBernoulli::info() const
 
 double cBernoulli::draw() const
 {
-    return (double) OPP::bernoulli(rng, p);
+    return (double)OPP::bernoulli(rng, p);
 }
 
 //----
@@ -514,12 +512,12 @@ void cBinomial::copy(const cBinomial& other)
     p = other.p;
 }
 
-cBinomial& cBinomial::operator =(const cBinomial& other)
+cBinomial& cBinomial::operator=(const cBinomial& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -533,7 +531,7 @@ std::string cBinomial::info() const
 
 double cBinomial::draw() const
 {
-    return (double) OPP::binomial(rng, n, p);
+    return (double)OPP::binomial(rng, n, p);
 }
 
 //----
@@ -543,12 +541,12 @@ void cGeometric::copy(const cGeometric& other)
     p = other.p;
 }
 
-cGeometric& cGeometric::operator =(const cGeometric& other)
+cGeometric& cGeometric::operator=(const cGeometric& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -562,7 +560,7 @@ std::string cGeometric::info() const
 
 double cGeometric::draw() const
 {
-    return (double) OPP::geometric(rng, p);
+    return (double)OPP::geometric(rng, p);
 }
 
 //----
@@ -573,12 +571,12 @@ void cNegBinomial::copy(const cNegBinomial& other)
     p = other.p;
 }
 
-cNegBinomial& cNegBinomial::operator =(const cNegBinomial& other)
+cNegBinomial& cNegBinomial::operator=(const cNegBinomial& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -592,7 +590,7 @@ std::string cNegBinomial::info() const
 
 double cNegBinomial::draw() const
 {
-    return (double) OPP::negbinomial(rng, n, p);
+    return (double)OPP::negbinomial(rng, n, p);
 }
 
 //----
@@ -602,12 +600,12 @@ void cPoisson::copy(const cPoisson& other)
     lambda = other.lambda;
 }
 
-cPoisson& cPoisson::operator =(const cPoisson& other)
+cPoisson& cPoisson::operator=(const cPoisson& other)
 {
     if (this == &other)
         return *this;
 
-    cRandom::operator =(other);
+    cRandom::operator=(other);
     copy(other);
     return *this;
 }
@@ -621,9 +619,8 @@ std::string cPoisson::info() const
 
 double cPoisson::draw() const
 {
-    return (double) OPP::poisson(rng, lambda);
+    return (double)OPP::poisson(rng, lambda);
 }
-
 
 NAMESPACE_END
 

@@ -37,7 +37,6 @@ using std::ostream;
 
 Register_Class(cIdealChannel);
 
-
 void cChannel::MessageSentSignalValue::error() const
 {
     throw cRuntimeError("cChannel::MessageSentSignalValue: getter for unsupported value type called");
@@ -58,8 +57,7 @@ std::string cChannel::info() const
 {
     // print all parameters
     std::stringstream out;
-    for (int i=0; i<getNumParams(); i++)
-    {
+    for (int i = 0; i < getNumParams(); i++) {
         cPar& p = const_cast<cChannel *>(this)->par(i);
         out << p.getFullName() << "=" << p.info() << " ";
     }
@@ -73,18 +71,18 @@ void cChannel::forEachChild(cVisitor *v)
 
 void cChannel::parsimPack(cCommBuffer *buffer) const
 {
-    throw cRuntimeError(this,"parsimPack() not implemented");
+    throw cRuntimeError(this, "parsimPack() not implemented");
 }
 
 void cChannel::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"parsimUnpack() not implemented");
+    throw cRuntimeError(this, "parsimUnpack() not implemented");
 }
 
 void cChannel::finalizeParameters()
 {
     if (!srcgatep)
-        throw cRuntimeError(this,"finalizeParameters() may only be called when the channel is already installed on a connection");
+        throw cRuntimeError(this, "finalizeParameters() may only be called when the channel is already installed on a connection");
     cComponent::finalizeParameters();
 }
 
@@ -107,11 +105,10 @@ bool cChannel::initializeChannel(int stage)
 {
     // channels don't contain further subcomponents, so just we just invoke
     // initialize(stage) in the right context here.
-    if (getSimulation()->getContextType()!=CTX_INITIALIZE)
+    if (getSimulation()->getContextType() != CTX_INITIALIZE)
         throw cRuntimeError("Internal function initializeChannel() may only be called via callInitialize()");
 
-    if (stage==0)
-    {
+    if (stage == 0) {
         if (initialized())
             throw cRuntimeError(this, "Channel already initialized");
 
@@ -122,26 +119,26 @@ bool cChannel::initializeChannel(int stage)
     }
 
     int numStages = numInitStages();
-    if (stage < numStages)
-    {
+    if (stage < numStages) {
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
         getEnvir()->componentInitBegin(this, stage);
         try {
             initialize(stage);
-        } catch (cException&) {
+        }
+        catch (cException&) {
             throw;
-        } catch (std::exception& e) {
+        }
+        catch (std::exception& e) {
             throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
         }
     }
 
-    bool moreStages = stage < numStages-1;
+    bool moreStages = stage < numStages - 1;
 
     // as a last step, call handleParameterChange() to notify the component about
     // parameter changes that occurred during initialization phase
-    if (!moreStages)
-    {
+    if (!moreStages) {
         setFlag(FL_INITIALIZED, true);
         handleParameterChange(nullptr);
     }
@@ -158,9 +155,11 @@ void cChannel::callFinish()
         recordParametersAsScalars();
         finish();
         fireFinish();
-    } catch (cException&) {
+    }
+    catch (cException&) {
         throw;
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
     }
 }
@@ -173,7 +172,7 @@ cModule *cChannel::getParentModule() const
     cModule *ownerMod = srcgatep->getOwnerModule();
     if (!ownerMod)
         return nullptr;
-    return srcgatep->getType()==cGate::INPUT ? ownerMod : ownerMod->getParentModule();
+    return srcgatep->getType() == cGate::INPUT ? ownerMod : ownerMod->getParentModule();
 }
 
 cProperties *cChannel::getProperties() const

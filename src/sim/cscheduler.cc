@@ -26,7 +26,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/platdep/platmisc.h" // usleep
+#include "omnetpp/platdep/platmisc.h"  // usleep
 
 NAMESPACE_BEGIN
 
@@ -99,9 +99,9 @@ cRealTimeScheduler::~cRealTimeScheduler()
 void cRealTimeScheduler::startRun()
 {
     factor = getEnvir()->getConfig()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
-    if (factor!=0)
-        factor = 1/factor;
-    doScaling = (factor!=0);
+    if (factor != 0)
+        factor = 1 / factor;
+    doScaling = (factor != 0);
 
     gettimeofday(&baseTime, nullptr);
 }
@@ -109,7 +109,7 @@ void cRealTimeScheduler::startRun()
 void cRealTimeScheduler::executionResumed()
 {
     gettimeofday(&baseTime, nullptr);
-    baseTime = timeval_subtract(baseTime, SIMTIME_DBL(doScaling ? factor*sim->getSimTime() : sim->getSimTime()));
+    baseTime = timeval_subtract(baseTime, SIMTIME_DBL(doScaling ? factor * sim->getSimTime() : sim->getSimTime()));
 }
 
 bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
@@ -118,10 +118,10 @@ bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
     // in order to keep UI responsiveness by invoking getEnvir()->idle()
     timeval curTime;
     gettimeofday(&curTime, nullptr);
-    while (targetTime.tv_sec-curTime.tv_sec >=2 ||
+    while (targetTime.tv_sec - curTime.tv_sec >= 2 ||
            timeval_diff_usec(targetTime, curTime) >= 200000)
     {
-        usleep(100000); // 100ms
+        usleep(100000);  // 100ms
         if (getEnvir()->idle())
             return false;
         gettimeofday(&curTime, nullptr);
@@ -129,7 +129,7 @@ bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
 
     // difference is now at most 100ms, do it at once
     long usec = timeval_diff_usec(targetTime, curTime);
-    if (usec>0)
+    if (usec > 0)
         usleep(usec);
     return true;
 }
@@ -147,25 +147,23 @@ cEvent *cRealTimeScheduler::takeNextEvent()
 
     // calculate target time
     simtime_t eventSimtime = event->getArrivalTime();
-    timeval targetTime = timeval_add(baseTime, SIMTIME_DBL(doScaling ? factor*eventSimtime : eventSimtime));
+    timeval targetTime = timeval_add(baseTime, SIMTIME_DBL(doScaling ? factor * eventSimtime : eventSimtime));
 
     // if needed, wait until that time arrives
     timeval curTime;
     gettimeofday(&curTime, nullptr);
-    if (timeval_greater(targetTime, curTime))
-    {
+    if (timeval_greater(targetTime, curTime)) {
         if (!waitUntil(targetTime))
-            return nullptr; // user break
+            return nullptr;  // user break
     }
-    else
-    {
+    else {
         // we're behind -- customized versions of this class may alert
         // if we're too much behind, or modify basetime to accept the skew
     }
 
     // remove event from FES and return it
     cEvent *tmp = sim->msgQueue.removeFirst();
-    ASSERT(tmp==event);
+    ASSERT(tmp == event);
     return event;
 }
 
@@ -175,5 +173,4 @@ void cRealTimeScheduler::putBackEvent(cEvent *event)
 }
 
 NAMESPACE_END
-
 

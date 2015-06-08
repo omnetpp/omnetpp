@@ -32,7 +32,6 @@ USING_NAMESPACE
 
 using std::ostream;
 
-
 cEvent::cEvent(const cEvent& event) : cOwnedObject(event)
 {
     heapIndex = -1;
@@ -79,7 +78,7 @@ std::string cEvent::detailedInfo() const
 void cEvent::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cOwnedObject::parsimPack(buffer);
 
@@ -93,7 +92,7 @@ void cEvent::parsimPack(cCommBuffer *buffer) const
 void cEvent::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw cRuntimeError(this,E_NOPARSIM);
+    throw cRuntimeError(this, E_NOPARSIM);
 #else
     cOwnedObject::parsimUnpack(buffer);
 
@@ -106,7 +105,8 @@ void cEvent::parsimUnpack(cCommBuffer *buffer)
 
 cEvent& cEvent::operator=(const cEvent& event)
 {
-    if (this==&event) return *this;
+    if (this == &event)
+        return *this;
 
     cOwnedObject::operator=(event);
 
@@ -115,5 +115,4 @@ cEvent& cEvent::operator=(const cEvent& event)
 
     return *this;
 }
-
 

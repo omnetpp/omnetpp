@@ -37,25 +37,16 @@ cLogProxy::nullstream cLogProxy::dummyStream;
 
 const char *cLogLevel::getName(LogLevel loglevel)
 {
-    switch (loglevel)
-    {
-        case LOGLEVEL_FATAL:
-            return "FATAL";
-        case LOGLEVEL_ERROR:
-            return "ERROR";
-        case LOGLEVEL_WARN:
-            return "WARN";
-        case LOGLEVEL_INFO:
-            return "INFO";
-        case LOGLEVEL_DETAIL:
-            return "DETAIL";
-        case LOGLEVEL_DEBUG:
-            return "DEBUG";
-        case LOGLEVEL_TRACE:
-            return "TRACE";
-        default:
-            throw cRuntimeError("Unknown log level '%d'", loglevel);
-     }
+    switch (loglevel) {
+        case LOGLEVEL_FATAL: return "FATAL";
+        case LOGLEVEL_ERROR: return "ERROR";
+        case LOGLEVEL_WARN:  return "WARN";
+        case LOGLEVEL_INFO:  return "INFO";
+        case LOGLEVEL_DETAIL:return "DETAIL";
+        case LOGLEVEL_DEBUG: return "DEBUG";
+        case LOGLEVEL_TRACE: return "TRACE";
+        default: throw cRuntimeError("Unknown log level '%d'", loglevel);
+    }
 }
 
 LogLevel cLogLevel::getLevel(const char *name)
@@ -84,8 +75,7 @@ int cLogProxy::LogBuffer::sync()
 {
     char *text = pbase();
     int size = pptr() - pbase();
-    if (size != 0)
-    {
+    if (size != 0) {
         char *end = text + size;
         for (char *s = text; s != end; s++) {
             if (*s == '\n') {
@@ -104,11 +94,9 @@ int cLogProxy::LogBuffer::sync()
     return 0;
 }
 
-
 void cLogProxy::flushLastLine()
 {
-    if (!buffer.isEmpty())
-    {
+    if (!buffer.isEmpty()) {
         globalStream.put('\n');
         globalStream.flush();
     }
@@ -157,8 +145,7 @@ bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *categor
 bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel)
 {
     LogLevel componentLoglevel = component->getLoglevel();
-    if ((int)componentLoglevel == -1)
-    {
+    if ((int)componentLoglevel == -1) {
         componentLoglevel = cLogLevel::getLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_COMPONENT_LOGLEVEL).c_str());
         // NOTE: this is just a cache
         const_cast<cComponent *>(component)->setLoglevel(componentLoglevel);
@@ -180,3 +167,4 @@ void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *s
 }
 
 NAMESPACE_END
+

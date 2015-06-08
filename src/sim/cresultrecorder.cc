@@ -26,7 +26,6 @@ using namespace OPP::common;
 
 NAMESPACE_BEGIN
 
-
 void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
 {
     component = comp;
@@ -60,11 +59,10 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
 
     // fill result[] from the properties
     const std::vector<const char *>& keys = property->getKeys();
-    for (int i = 0; i < (int)keys.size(); i++)
-    {
+    for (int i = 0; i < (int)keys.size(); i++) {
         const char *key = keys[i];
         if (!strcmp(key, "record"))
-            continue; // no need to save record= key
+            continue;  // no need to save record= key
         int numValues = property->getNumValues(key);
         if (numValues == 0)
             result[key] = "";
@@ -73,13 +71,14 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
         else {
             std::string buf;
             for (int j = 0; j < numValues; j++) {
-                if (j > 0) buf += ",";
+                if (j > 0)
+                    buf += ",";
                 buf += property->getValue(key, j);
             }
             result[key] = buf;
         }
 
-        if (strcmp(key,"title")==0)
+        if (strcmp(key, "title") == 0)
             tweakTitle(result[key]);
     }
     return result;
@@ -101,10 +100,13 @@ struct Resolver : public opp_substitutevariables_resolver
 {
     cResultRecorder *self;
     Resolver(cResultRecorder *self) : self(self) {}
-    virtual bool isVariableNameChar(char c) override {
-        return opp_isalnum(c) || c=='_';
+    virtual bool isVariableNameChar(char c) override
+    {
+        return opp_isalnum(c) || c == '_';
     }
-    virtual std::string operator()(const std::string& name) override {
+
+    virtual std::string operator()(const std::string& name) override
+    {
         if (name == "name")
             return self->getStatisticName();
         else if (name == "mode")
@@ -112,7 +114,7 @@ struct Resolver : public opp_substitutevariables_resolver
         else if (name == "component")
             return self->getComponent()->getFullPath();
         else if (opp_stringbeginswith(name.c_str(), "namePart") && opp_isdigit(name.c_str()[8]))
-            return getPart(self->getStatisticName(), strtol(name.c_str()+8, nullptr, 10) - 1);
+            return getPart(self->getStatisticName(), strtol(name.c_str() + 8, nullptr, 10) - 1);
         else
             throw cRuntimeError("unknown variable $%s", name.c_str());
     }
@@ -172,7 +174,7 @@ void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t
 //----
 
 cResultRecorderDescriptor::cResultRecorderDescriptor(const char *name, cResultRecorder *(*f)())
-  : cNoncopyableOwnedObject(name, false)
+    : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
 }

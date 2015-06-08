@@ -22,7 +22,6 @@
 
 NAMESPACE_BEGIN
 
-
 cDoubleParImpl::cDoubleParImpl()
 {
     val = 0;
@@ -43,7 +42,8 @@ void cDoubleParImpl::copy(const cDoubleParImpl& other)
 
 void cDoubleParImpl::operator=(const cDoubleParImpl& other)
 {
-    if (this==&other) return;
+    if (this == &other)
+        return;
     deleteOld();
     cParImpl::operator=(other);
     copy(other);
@@ -142,8 +142,7 @@ cExpression *cDoubleParImpl::getExpression() const
 
 void cDoubleParImpl::deleteOld()
 {
-    if (flags & FL_ISEXPR)
-    {
+    if (flags & FL_ISEXPR) {
         delete expr;
         flags &= ~FL_ISEXPR;
     }
@@ -178,12 +177,10 @@ void cDoubleParImpl::parse(const char *text)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    try
-    {
+    try {
         dynexpr->parse(text);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         delete dynexpr;
         throw;
     }
@@ -197,7 +194,7 @@ void cDoubleParImpl::parse(const char *text)
 int cDoubleParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
-    if (ret!=0)
+    if (ret != 0)
         return ret;
 
     const cDoubleParImpl *other2 = dynamic_cast<const cDoubleParImpl *>(other);

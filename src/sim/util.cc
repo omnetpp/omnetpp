@@ -32,8 +32,8 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cnedmathfunction.h"
-#include "omnetpp/cscheduler.h" // dummy()
-#include "omnetpp/distrib.h" // dummy()
+#include "omnetpp/cscheduler.h"  // dummy()
+#include "omnetpp/distrib.h"  // dummy()
 
 using namespace OPP::common;
 
@@ -57,7 +57,7 @@ char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
 //----
 
 #ifdef __GNUC__
-typedef std::map<std::string,std::string> StringMap;
+typedef std::map<std::string, std::string> StringMap;
 static StringMap demangledNames;
 #endif
 
@@ -86,21 +86,23 @@ const char *opp_demangle_typename(const char *mangledName)
 
     // if we've already seen this name, return cached result
     StringMap::const_iterator it = demangledNames.find(mangledName);
-    if (it == demangledNames.end())
-    {
+    if (it == demangledNames.end()) {
         // not found -- demangle it and cache the result
         std::string result;
         std::string prefix, suffix;
-        if (*s=='P' && *(s+1)=='K') {
+        if (*s == 'P' && *(s+1) == 'K') {
             // PKx -> "const x *"
             prefix = "const ";
             suffix = " *";
             s += 2;
         }
         while (true) {
-            if (*s=='P') suffix += " *";
-            else if (*s=='K') suffix += " const";
-            else break;
+            if (*s == 'P')
+                suffix += " *";
+            else if (*s == 'K')
+                suffix += " const";
+            else
+                break;
             s++;
         }
 
@@ -189,7 +191,7 @@ const char *opp_demangle_typename(const char *mangledName)
 const char *opp_typename(const std::type_info& t)
 {
     if (t == typeid(std::string))
-        return "std::string"; // otherwise we'd get "std::basic_string<........>"
+        return "std::string";  // otherwise we'd get "std::basic_string<........>"
     return opp_demangle_typename(t.name());
 }
 
@@ -218,16 +220,15 @@ static va_list dummy_va;
 int cMethodCallContextSwitcher::depth = 0;
 
 cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newContext) :
-  cContextSwitcher(newContext)
+    cContextSwitcher(newContext)
 {
     depth++;
 }
 
-void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
+void cMethodCallContextSwitcher::methodCall(const char *methodFmt, ...)
 {
     cComponent *newContext = getSimulation()->getContext();
-    if (newContext!=callerContext)
-    {
+    if (newContext != callerContext) {
         va_list va;
         va_start(va, methodFmt);
         EVCB.componentMethodBegin(callerContext, newContext, methodFmt, va, false);
@@ -235,11 +236,10 @@ void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)
     }
 }
 
-void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt,...)
+void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt, ...)
 {
     cComponent *newContext = getSimulation()->getContext();
-    if (newContext!=callerContext)
-    {
+    if (newContext != callerContext) {
         va_list va;
         va_start(va, methodFmt);
         EVCB.componentMethodBegin(callerContext, newContext, methodFmt, va, true);
@@ -250,7 +250,7 @@ void cMethodCallContextSwitcher::methodCallSilent(const char *methodFmt,...)
 void cMethodCallContextSwitcher::methodCallSilent()
 {
     cComponent *newContext = getSimulation()->getContext();
-    if (newContext!=callerContext)
+    if (newContext != callerContext)
         EVCB.componentMethodBegin(callerContext, newContext, nullptr, dummy_va, true);
 }
 
@@ -258,7 +258,7 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 {
     depth--;
     cComponent *methodContext = getSimulation()->getContext();
-    if (methodContext!=callerContext)
+    if (methodContext != callerContext)
         EVCB.componentMethodEnd();
 }
 
@@ -310,43 +310,43 @@ void std_sim_descriptor_dummy();
 void nedfunctions_dummy();
 void _sim_dummy_func()
 {
-      bool bb = false;
-      cRNG *rng = nullptr;
-      cWatch_bool w(nullptr,bb);
-      std::vector<int> v;
-      WATCH_VECTOR(v);
-      w.supportsAssignment();
-      exponential(rng, 1.0);
-      cSequentialScheduler sch;
-      (void)sch;
-      cLCG32 lcg;
-      lcg.intRand();
-      cMersenneTwister mt;
-      mt.intRand();
-      cKSplit ks;
-      ks.info();
-      cPSquare ps;
-      ps.info();
-      cStringTokenizer tok("");
-      tok.nextToken();
-      std_sim_descriptor_dummy();
-      cXMLElement a(nullptr,nullptr,nullptr);
-      (void)a;
-      cDelayChannel dc(nullptr);
-      (void)dc;
-      cDatarateChannel c(nullptr);
-      (void)c;
-      cPacketQueue pq;
-      (void)pq;
-      cFSM fsm;
-      fsm.info();
-      cOutVector ov;
-      ov.info();
-      cVarHistogram vh;
-      vh.draw();
+    bool bb = false;
+    cRNG *rng = nullptr;
+    cWatch_bool w(nullptr, bb);
+    std::vector<int> v;
+    WATCH_VECTOR(v);
+    w.supportsAssignment();
+    exponential(rng, 1.0);
+    cSequentialScheduler sch;
+    (void)sch;
+    cLCG32 lcg;
+    lcg.intRand();
+    cMersenneTwister mt;
+    mt.intRand();
+    cKSplit ks;
+    ks.info();
+    cPSquare ps;
+    ps.info();
+    cStringTokenizer tok("");
+    tok.nextToken();
+    std_sim_descriptor_dummy();
+    cXMLElement a(nullptr, nullptr, nullptr);
+    (void)a;
+    cDelayChannel dc(nullptr);
+    (void)dc;
+    cDatarateChannel c(nullptr);
+    (void)c;
+    cPacketQueue pq;
+    (void)pq;
+    cFSM fsm;
+    fsm.info();
+    cOutVector ov;
+    ov.info();
+    cVarHistogram vh;
+    vh.draw();
 
-      nedfunctions_dummy();
-      //_dummy_for_env();
+    nedfunctions_dummy();
+    //_dummy_for_env();
 }
 
 NAMESPACE_END

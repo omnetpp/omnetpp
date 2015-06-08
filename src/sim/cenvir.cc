@@ -30,7 +30,7 @@ cEnvir::cEnvir()
     disableTracing = false;
     debugOnErrors = false;
     attachDebuggerOnErrors = false;
-    suppressNotifications = false; //FIXME set to true when not needed!
+    suppressNotifications = false;  //FIXME set to true when not needed!
 }
 
 cEnvir::~cEnvir()
@@ -51,19 +51,20 @@ cConfigurationEx *cEnvir::getConfigEx()
 // it also makes the following functions non-reentrant, but we don't need
 // them to be reentrant anyway.
 //
-#define BUFLEN 1024
+#define BUFLEN    1024
 static char staticbuf[BUFLEN];
 
-void cEnvir::printfmsg(const char *fmt,...)
+void cEnvir::printfmsg(const char *fmt, ...)
 {
     VSNPRINTF(staticbuf, BUFLEN, fmt);
     putsmsg(staticbuf);
 }
 
-bool cEnvir::askYesNo(const char *fmt,...)
+bool cEnvir::askYesNo(const char *fmt, ...)
 {
     VSNPRINTF(staticbuf, BUFLEN, fmt);
     return askyesno(staticbuf);
 }
 
 NAMESPACE_END
+

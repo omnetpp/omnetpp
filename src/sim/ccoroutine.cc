@@ -21,12 +21,11 @@
 
 #include <cstring>
 #include <cstdio>
-#include <new>  //bad::alloc
+#include <new>  // bad::alloc
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cexception.h"
 
 NAMESPACE_BEGIN
-
 
 #ifdef USE_WIN32_FIBERS
 
@@ -35,8 +34,7 @@ LPVOID cCoroutine::lpMainFiber;
 void cCoroutine::init(unsigned total_stack, unsigned main_stack)
 {
     lpMainFiber = ConvertThreadToFiber(0);
-    if (!lpMainFiber)
-    {
+    if (!lpMainFiber) {
         DWORD err = GetLastError();
         if (err == ERROR_ALREADY_FIBER)
             lpMainFiber = GetCurrentFiber();
@@ -62,7 +60,7 @@ cCoroutine::cCoroutine()
 
 cCoroutine::~cCoroutine()
 {
-    if (lpFiber!=0)
+    if (lpFiber != 0)
         DeleteFiber(lpFiber);
 }
 
@@ -77,7 +75,7 @@ bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
     // it appears to have the same limit for the number of fibers that can be created.
     // lpFiber = CreateFiberEx(stackSize, stackSize, 0, (LPFIBER_START_ROUTINE)fnp, arg);
     lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);
-    return lpFiber!=nullptr;
+    return lpFiber != nullptr;
 }
 
 bool cCoroutine::hasStackOverflow() const
@@ -136,7 +134,7 @@ cCoroutine::cCoroutine()
 cCoroutine::~cCoroutine()
 {
     totalStackUsage -= stackSize;
-    delete [] stackPtr;
+    delete[] stackPtr;
 }
 
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
@@ -147,17 +145,17 @@ bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
     try {
         stackPtr = new char[stack_size];
         stackSize = stack_size;
-    } catch (std::bad_alloc& e) {
+    }
+    catch (std::bad_alloc& e) {
         return false;
     }
-
     context.uc_stack.ss_sp = stackPtr;
     context.uc_stack.ss_size = stackSize;
     context.uc_link = &mainContext;
     totalStackUsage += stackSize;
     if (getcontext(&context) != 0)
         return false;
-    makecontext(&context, (void (*)(void)) fnp, 1, arg);
+    makecontext(&context, (void (*)(void))fnp, 1, arg);
     return true;
 }
 
@@ -182,19 +180,19 @@ unsigned cCoroutine::getStackUsage() const
 
 #include "task.h"  // Stig Kofoed's "Portable Multitasking" coroutine library
 
-void cCoroutine::init( unsigned total_stack, unsigned main_stack)
+void cCoroutine::init(unsigned total_stack, unsigned main_stack)
 {
-    task_init( total_stack, main_stack );
+    task_init(total_stack, main_stack);
 }
 
 void cCoroutine::switchTo(cCoroutine *cor)
 {
-    task_switchto( ((cCoroutine *)cor)->task );
+    task_switchto(((cCoroutine *)cor)->task);
 }
 
 void cCoroutine::switchToMain()
 {
-    task_switchto( &main_task );
+    task_switchto(&main_task);
 }
 
 cCoroutine::cCoroutine()
@@ -204,28 +202,29 @@ cCoroutine::cCoroutine()
 
 cCoroutine::~cCoroutine()
 {
-    if (task) task_free( task );
+    if (task)
+        task_free(task);
 }
 
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
 {
-    task = task_create( fnp, arg, stack_size );
-    return task!=nullptr;
+    task = task_create(fnp, arg, stack_size);
+    return task != nullptr;
 }
 
 bool cCoroutine::hasStackOverflow() const
 {
-    return task==nullptr ? false : task_testoverflow( task );
+    return task == nullptr ? false : task_testoverflow(task);
 }
 
 unsigned cCoroutine::getStackSize() const
 {
-    return task==nullptr ? 0 : task->size;
+    return task == nullptr ? 0 : task->size;
 }
 
 unsigned cCoroutine::getStackUsage() const
 {
-    return task==nullptr ? 0 : task_stackusage( task );
+    return task == nullptr ? 0 : task_stackusage(task);
 }
 
 #endif

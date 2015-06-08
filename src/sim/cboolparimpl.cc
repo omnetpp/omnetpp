@@ -22,7 +22,6 @@
 
 NAMESPACE_BEGIN
 
-
 cBoolParImpl::cBoolParImpl()
 {
     val = false;
@@ -43,7 +42,8 @@ void cBoolParImpl::copy(const cBoolParImpl& other)
 
 void cBoolParImpl::operator=(const cBoolParImpl& other)
 {
-    if (this==&other) return;
+    if (this == &other)
+        return;
     deleteOld();
     cParImpl::operator=(other);
     copy(other);
@@ -140,8 +140,7 @@ cExpression *cBoolParImpl::getExpression() const
 
 void cBoolParImpl::deleteOld()
 {
-    if (flags & FL_ISEXPR)
-    {
+    if (flags & FL_ISEXPR) {
         delete expr;
         flags &= ~FL_ISEXPR;
     }
@@ -172,20 +171,17 @@ std::string cBoolParImpl::str() const
 void cBoolParImpl::parse(const char *text)
 {
     // shortcut: recognize "true" and "false"
-    if (strcmp(text, "true")==0 || strcmp(text, "false")==0)
-    {
-        setBoolValue(text[0]=='t');
+    if (strcmp(text, "true") == 0 || strcmp(text, "false") == 0) {
+        setBoolValue(text[0] == 't');
         return;
     }
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    try
-    {
+    try {
         dynexpr->parse(text);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         delete dynexpr;
         throw;
     }
@@ -199,7 +195,7 @@ void cBoolParImpl::parse(const char *text)
 int cBoolParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
-    if (ret!=0)
+    if (ret != 0)
         return ret;
 
     const cBoolParImpl *other2 = dynamic_cast<const cBoolParImpl *>(other);

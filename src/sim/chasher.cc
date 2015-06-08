@@ -8,33 +8,31 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2015 Andras Varga
-  Copyright (C) 2006-2015 OpenSim Ltd.
+   Copyright (C) 1992-2015 Andras Varga
+   Copyright (C) 2006-2015 OpenSim Ltd.
 
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
+   This file is distributed WITHOUT ANY WARRANTY. See the file
+   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 #include "omnetpp/chasher.h"
 
 NAMESPACE_BEGIN
 
-
 void cHasher::add(const char *p, size_t length)
 {
     // add the bulk in 4-byte chunks
-    size_t lengthmod4 = length&~3U;
+    size_t lengthmod4 = length & ~3U;
     size_t i;
-    for (i=0; i<lengthmod4; i+=4)
-        merge((uint32_t)(p[i] | (p[i+1]<<8) | (p[i+2]<<16) | (p[i+3]<<24)));
+    for (i = 0; i < lengthmod4; i += 4)
+        merge((uint32_t)(p[i] | (p[i+1] << 8) | (p[i+2] << 16) | (p[i+3] << 24)));
 
     // add the 1, 2 or 3 bytes left
-    switch (length-i)
-    {
+    switch (length - i) {
         case 0: break;
         case 1: merge((uint32_t)(p[i])); break;
-        case 2: merge((uint32_t)(p[i] | (p[i+1]<<8))); break;
-        case 3: merge((uint32_t)(p[i] | (p[i+1]<<8) | (p[i+2]<<16))); break;
+        case 2: merge((uint32_t)(p[i] | (p[i+1] << 8))); break;
+        case 3: merge((uint32_t)(p[i] | (p[i+1] << 8) | (p[i+2] << 16))); break;
         default: ASSERT(false);
     }
 }
@@ -44,14 +42,14 @@ uint32_t cHasher::parse(const char *fingerprint) const
     // remove spaces, hyphens and colons before parsing
     std::string s;
     for (const char *p = fingerprint; *p; p++)
-        if (*p!=' ' && *p!='-' && *p!=':')
+        if (*p != ' ' && *p != '-' && *p != ':')
             s += *p;
 
     // parse
     char *e;
     unsigned long d = strtoul(s.c_str(), &e, 16);
     uint32_t hash = (uint32_t)d;
-    if (*e || hash!=d)
+    if (*e || hash != d)
         throw cRuntimeError("Error verifying fingerprint: invalid fingerprint text \"%s\"", fingerprint);
     return hash;
 }
@@ -59,7 +57,7 @@ uint32_t cHasher::parse(const char *fingerprint) const
 bool cHasher::equals(const char *fingerprint) const
 {
     uint32_t hash = parse(fingerprint);
-    return getHash()==hash;
+    return getHash() == hash;
 }
 
 std::string cHasher::str() const
@@ -67,10 +65,9 @@ std::string cHasher::str() const
     char buf[32];
     sprintf(buf, "%08x", getHash());
     std::string str = buf;
-    str.insert(str.length()-4, "-");
+    str.insert(str.length() - 4, "-");
     return str;
 }
-
 
 /* XXX to test case
 

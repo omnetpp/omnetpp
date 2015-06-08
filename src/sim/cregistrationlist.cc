@@ -25,10 +25,9 @@
 
 NAMESPACE_BEGIN
 
-
 cRegistrationList::~cRegistrationList()
 {
-    for (int i=0; i<(int)vec.size(); i++)
+    for (int i = 0; i < (int)vec.size(); i++)
         dropAndDelete(vec[i]);
 }
 
@@ -43,7 +42,7 @@ std::string cRegistrationList::info() const
 
 void cRegistrationList::forEachChild(cVisitor *visitor)
 {
-    for (int i=0; i<(int)vec.size(); i++)
+    for (int i = 0; i < (int)vec.size(); i++)
         visitor->visit(vec[i]);
 }
 
@@ -57,7 +56,7 @@ void cRegistrationList::add(cOwnedObject *obj)
 
 cOwnedObject *cRegistrationList::get(int i) const
 {
-    if (i<0 || i>=(int)vec.size())
+    if (i < 0 || i >= (int)vec.size())
         return nullptr;
     return vec[i];
 }
@@ -65,13 +64,13 @@ cOwnedObject *cRegistrationList::get(int i) const
 cOwnedObject *cRegistrationList::find(const char *name) const
 {
     StringObjectMap::const_iterator it = nameMap.find(name);
-    return it==nameMap.end() ? nullptr : it->second;
+    return it == nameMap.end() ? nullptr : it->second;
 }
 
 cOwnedObject *cRegistrationList::lookup(const char *qname) const
 {
     StringObjectMap::const_iterator it = fullnameMap.find(qname);
-    return it==fullnameMap.end() ? nullptr : it->second;
+    return it == fullnameMap.end() ? nullptr : it->second;
 }
 
 inline bool less(cObject *a, cObject *b)
