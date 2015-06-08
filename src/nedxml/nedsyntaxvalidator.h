@@ -18,8 +18,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_NEDSYNTAXVALIDATOR_H
-#define __OMNETPP_NEDSYNTAXVALIDATOR_H
+#ifndef __OMNETPP_NEDXML_NEDSYNTAXVALIDATOR_H
+#define __OMNETPP_NEDXML_NEDSYNTAXVALIDATOR_H
 
 #include "nedvalidator.h"
 

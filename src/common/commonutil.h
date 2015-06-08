@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_COMMONUTIL_H
-#define __OMNETPP_COMMONUTIL_H
+#ifndef __OMNETPP_COMMON_COMMONUTIL_H
+#define __OMNETPP_COMMON_COMMONUTIL_H
 
 #include <cassert>
 #include <stdint.h> // <cstdint> is C++11

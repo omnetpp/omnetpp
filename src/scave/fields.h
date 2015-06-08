@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_FIELDS_H
-#define __OMNETPP_FIELDS_H
+#ifndef __OMNETPP_SCAVE_FIELDS_H
+#define __OMNETPP_SCAVE_FIELDS_H
 
 #include <functional>
 #include <cstdio>

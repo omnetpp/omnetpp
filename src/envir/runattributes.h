@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_RUNATTRIBUTES_H
-#define __OMNETPP_RUNATTRIBUTES_H
+#ifndef __OMNETPP_ENVIR_RUNATTRIBUTES_H
+#define __OMNETPP_ENVIR_RUNATTRIBUTES_H
 
 #include <cstdio>
 #include "envirdefs.h"

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_EXPRESSIONYYDEFS_H
-#define __OMNETPP_EXPRESSIONYYDEFS_H
+#ifndef __OMNETPP_COMMON_EXPRESSIONYYDEFS_H
+#define __OMNETPP_COMMON_EXPRESSIONYYDEFS_H
 
 #include "expression.h"
 

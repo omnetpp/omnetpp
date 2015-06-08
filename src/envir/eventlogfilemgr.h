@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_EVENTLOGFILEMGR_H
-#define __OMNETPP_EVENTLOGFILEMGR_H
+#ifndef __OMNETPP_ENVIR_EVENTLOGFILEMGR_H
+#define __OMNETPP_ENVIR_EVENTLOGFILEMGR_H
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/opp_string.h"

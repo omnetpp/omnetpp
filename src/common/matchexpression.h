@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_MATCHEXPRESSION_H
-#define __OMNETPP_MATCHEXPRESSION_H
+#ifndef __OMNETPP_COMMON_MATCHEXPRESSION_H
+#define __OMNETPP_COMMON_MATCHEXPRESSION_H
 
 #include <string>
 #include <vector>

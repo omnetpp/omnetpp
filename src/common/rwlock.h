@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_RWLOCK_H
-#define __OMNETPP_RWLOCK_H
+#ifndef __OMNETPP_COMMON_RWLOCK_H
+#define __OMNETPP_COMMON_RWLOCK_H
 
 #include <pthread.h>
 

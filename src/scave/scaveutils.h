@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_SCAVEUTILS_H
-#define __OMNETPP_SCAVEUTILS_H
+#ifndef __OMNETPP_SCAVE_SCAVEUTILS_H
+#define __OMNETPP_SCAVE_SCAVEUTILS_H
 
 #include <string>
 #include <set>

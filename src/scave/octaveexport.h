@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_OCTAVEEXPORT_H
-#define __OMNETPP_OCTAVEEXPORT_H
+#ifndef __OMNETPP_SCAVE_OCTAVEEXPORT_H
+#define __OMNETPP_SCAVE_OCTAVEEXPORT_H
 
 #include <cstdio>
 #include <string>

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_TKLIB_H
-#define __OMNETPP_TKLIB_H
+#ifndef __OMNETPP_TKENV_TKLIB_H
+#define __OMNETPP_TKENV_TKLIB_H
 
 #include "tkdefs.h"
 

@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_NEDDTDVALIDATORBASE_H
-#define __OMNETPP_NEDDTDVALIDATORBASE_H
+#ifndef __OMNETPP_NEDXML_NEDDTDVALIDATORBASE_H
+#define __OMNETPP_NEDXML_NEDDTDVALIDATORBASE_H
 
 #include "nedvalidator.h"
 

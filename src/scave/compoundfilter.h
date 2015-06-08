@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_COMPOUNDFILTER_H
-#define __OMNETPP_COMPOUNDFILTER_H
+#ifndef __OMNETPP_SCAVE_COMPOUNDFILTER_H
+#define __OMNETPP_SCAVE_COMPOUNDFILTER_H
 
 #include <string>
 #include <vector>

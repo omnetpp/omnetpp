@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_FORCEDIRECTEDPARAMETERS_H
-#define __OMNETPP_FORCEDIRECTEDPARAMETERS_H
+#ifndef __OMNETPP_LAYOUT_FORCEDIRECTEDPARAMETERS_H
+#define __OMNETPP_LAYOUT_FORCEDIRECTEDPARAMETERS_H
 
 #include <cmath>
 #include "geometry.h"

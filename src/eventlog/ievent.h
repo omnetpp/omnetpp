@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_IEVENT_H
-#define __OMNETPP_IEVENT_H
+#ifndef __OMNETPP_EVENTLOG_IEVENT_H
+#define __OMNETPP_EVENTLOG_IEVENT_H
 
 #include <sstream>
 #include "enums.h"

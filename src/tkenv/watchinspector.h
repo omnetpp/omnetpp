@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_WATCHINSPECTOR_H
-#define __OMNETPP_WATCHINSPECTOR_H
+#ifndef __OMNETPP_TKENV_WATCHINSPECTOR_H
+#define __OMNETPP_TKENV_WATCHINSPECTOR_H
 
 #include "inspector.h"
 

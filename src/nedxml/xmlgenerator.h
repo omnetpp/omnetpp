@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_XMLGENERATOR_H
-#define __OMNETPP_XMLGENERATOR_H
+#ifndef __OMNETPP_NEDXML_XMLGENERATOR_H
+#define __OMNETPP_NEDXML_XMLGENERATOR_H
 
 
 #include <iostream>

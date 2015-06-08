@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_BASICSPRINGEMBEDDERLAYOUT_H
-#define __OMNETPP_BASICSPRINGEMBEDDERLAYOUT_H
+#ifndef __OMNETPP_LAYOUT_BASICSPRINGEMBEDDERLAYOUT_H
+#define __OMNETPP_LAYOUT_BASICSPRINGEMBEDDERLAYOUT_H
 
 #include <vector>
 #include <string>

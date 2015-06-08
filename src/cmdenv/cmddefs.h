@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CMDDEFS_H
-#define __OMNETPP_CMDDEFS_H
+#ifndef __OMNETPP_CMDENV_CMDDEFS_H
+#define __OMNETPP_CMDENV_CMDDEFS_H
 
 #include "omnetpp/platdep/platdefs.h"
 

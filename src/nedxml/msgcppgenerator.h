@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_MSGCPPGENERATOR_H
-#define __OMNETPP_MSGCPPGENERATOR_H
+#ifndef __OMNETPP_NEDXML_MSGCPPGENERATOR_H
+#define __OMNETPP_NEDXML_MSGCPPGENERATOR_H
 
 #include <iostream>
 #include <sstream>

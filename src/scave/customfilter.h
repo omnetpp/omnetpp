@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CUSTOMFILTER_H
-#define __OMNETPP_CUSTOMFILTER_H
+#ifndef __OMNETPP_SCAVE_CUSTOMFILTER_H
+#define __OMNETPP_SCAVE_CUSTOMFILTER_H
 
 #include "common/expression.h"
 #include "commonnodes.h"

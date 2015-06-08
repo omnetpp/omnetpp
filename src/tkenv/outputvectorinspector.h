@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_OUTPUTVECTORINSPECTOR_H
-#define __OMNETPP_OUTPUTVECTORINSPECTOR_H
+#ifndef __OMNETPP_TKENV_OUTPUTVECTORINSPECTOR_H
+#define __OMNETPP_TKENV_OUTPUTVECTORINSPECTOR_H
 
 #include "inspector.h"
 

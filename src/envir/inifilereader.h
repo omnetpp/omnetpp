@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_INIFILEREADER_H
-#define __OMNETPP_INIFILEREADER_H
+#ifndef __OMNETPP_ENVIR_INIFILEREADER_H
+#define __OMNETPP_ENVIR_INIFILEREADER_H
 
 #include <string>
 #include <set>

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_IVECTORFILEINDEXER_H
-#define __OMNETPP_IVECTORFILEINDEXER_H
+#ifndef __OMNETPP_SCAVE_IVECTORFILEINDEXER_H
+#define __OMNETPP_SCAVE_IVECTORFILEINDEXER_H
 
 #include <string>
 #include "common/progressmonitor.h"

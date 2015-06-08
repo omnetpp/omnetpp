@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NED1GENERATOR_H
-#define __OMNETPP_NED1GENERATOR_H
+#ifndef __OMNETPP_NEDXML_NED1GENERATOR_H
+#define __OMNETPP_NEDXML_NED1GENERATOR_H
 
 #include <iostream>
 #include "nedelements.h"

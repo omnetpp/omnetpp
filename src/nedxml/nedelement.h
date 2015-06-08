@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDELEMENT_H
-#define __OMNETPP_NEDELEMENT_H
+#ifndef __OMNETPP_NEDXML_NEDELEMENT_H
+#define __OMNETPP_NEDXML_NEDELEMENT_H
 
 #ifdef _MSC_VER
 // disable 4996: VC8.0 warnings on Unix syscalls

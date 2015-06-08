@@ -15,8 +15,8 @@
 
 
 
-#ifndef __OMNETPP_SAXPARSER_H
-#define __OMNETPP_SAXPARSER_H
+#ifndef __OMNETPP_NEDXML_SAXPARSER_H
+#define __OMNETPP_NEDXML_SAXPARSER_H
 
 #include <cstdio>
 #include "nedxmldefs.h"

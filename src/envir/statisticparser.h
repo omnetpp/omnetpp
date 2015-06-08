@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_STATISTICPARSER_H
-#define __OMNETPP_ENVIR_STATISTICPARSER_H
+#ifndef __OMNETPP_ENVIR_ENVIR_STATISTICPARSER_H
+#define __OMNETPP_ENVIR_ENVIR_STATISTICPARSER_H
 
 #include "common/expression.h"
 #include "sim/resultrecorders.h"

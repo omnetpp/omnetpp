@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_NEDTOOLS_H
-#define __OMNETPP_NEDTOOLS_H
+#ifndef __OMNETPP_NEDXML_NEDTOOLS_H
+#define __OMNETPP_NEDXML_NEDTOOLS_H
 
 #include "nedelements.h"
 

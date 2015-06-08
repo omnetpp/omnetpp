@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_OBJECTPRINTER_H
-#define __OMNETPP_OBJECTPRINTER_H
+#ifndef __OMNETPP_ENVIR_OBJECTPRINTER_H
+#define __OMNETPP_ENVIR_OBJECTPRINTER_H
 
 #include <vector>
 #include <iostream>

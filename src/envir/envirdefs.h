@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIRDEFS_H
-#define __OMNETPP_ENVIRDEFS_H
+#ifndef __OMNETPP_ENVIR_ENVIRDEFS_H
+#define __OMNETPP_ENVIR_ENVIRDEFS_H
 
 #include "omnetpp/platdep/platdefs.h"
 #include "common/exception.h"

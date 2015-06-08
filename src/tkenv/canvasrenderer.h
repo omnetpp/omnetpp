@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
  *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CANVASRENDERER_H
-#define __OMNETPP_CANVASRENDERER_H
+#ifndef __OMNETPP_TKENV_CANVASRENDERER_H
+#define __OMNETPP_TKENV_CANVASRENDERER_H
 
 #include "omnetpp/ccanvas.h"
 #include "tkdefs.h"

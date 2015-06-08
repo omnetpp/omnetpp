@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_FSUTILS_H
-#define __OMNETPP_FSUTILS_H
+#ifndef __OMNETPP_ENVIR_FSUTILS_H
+#define __OMNETPP_ENVIR_FSUTILS_H
 
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"

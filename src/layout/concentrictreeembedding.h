@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CONCENTRICTREEEMBEDDING_H
-#define __OMNETPP_CONCENTRICTREEEMBEDDING_H
+#ifndef __OMNETPP_LAYOUT_CONCENTRICTREEEMBEDDING_H
+#define __OMNETPP_LAYOUT_CONCENTRICTREEEMBEDDING_H
 
 #include "vector"
 #include "geometry.h"

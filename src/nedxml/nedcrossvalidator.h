@@ -18,8 +18,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_NEDCROSSVALIDATOR_H
-#define __OMNETPP_NEDCROSSVALIDATOR_H
+#ifndef __OMNETPP_NEDXML_NEDCROSSVALIDATOR_H
+#define __OMNETPP_NEDXML_NEDCROSSVALIDATOR_H
 
 #include <cstring>
 #include "nedvalidator.h"

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_INSPECTORFACTORY_H
-#define __OMNETPP_INSPECTORFACTORY_H
+#ifndef __OMNETPP_TKENV_INSPECTORFACTORY_H
+#define __OMNETPP_TKENV_INSPECTORFACTORY_H
 
 #include "omnetpp/onstartup.h"
 #include "omnetpp/cregistrationlist.h"

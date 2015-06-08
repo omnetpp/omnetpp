@@ -16,8 +16,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_SPEEDOMETER_H
-#define __OMNETPP_SPEEDOMETER_H
+#ifndef __OMNETPP_ENVIR_SPEEDOMETER_H
+#define __OMNETPP_ENVIR_SPEEDOMETER_H
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/simtime_t.h"

@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_APPREG_H
-#define __OMNETPP_APPREG_H
+#ifndef __OMNETPP_ENVIR_APPREG_H
+#define __OMNETPP_ENVIR_APPREG_H
 
 #include "omnetpp/cenvir.h"
 #include "omnetpp/globals.h"

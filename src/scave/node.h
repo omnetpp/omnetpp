@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NODE_H
-#define __OMNETPP_NODE_H
+#ifndef __OMNETPP_SCAVE_NODE_H
+#define __OMNETPP_SCAVE_NODE_H
 
 #include "common/commonutil.h"
 #include "scavedefs.h"

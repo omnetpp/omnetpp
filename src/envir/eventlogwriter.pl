@@ -139,8 +139,8 @@ open(H, ">eventlogwriter.h");
 
 print H makeFileBanner("eventlogwriter.h");
 print H
-"#ifndef __OMNETPP_EVENTLOGWRITER_H
-#define __OMNETPP_EVENTLOGWRITER_H
+"#ifndef __OMNETPP_ENVIR_EVENTLOGWRITER_H
+#define __OMNETPP_ENVIR_EVENTLOGWRITER_H
 
 #include <cstdio>
 #include \"envirdefs.h\"

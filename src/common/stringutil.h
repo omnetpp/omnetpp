@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_STRINGUTIL_H
-#define __OMNETPP_STRINGUTIL_H
+#ifndef __OMNETPP_COMMON_STRINGUTIL_H
+#define __OMNETPP_COMMON_STRINGUTIL_H
 
 #include <cstdarg>
 #include <cstring>

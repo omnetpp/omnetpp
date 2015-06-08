@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CMDENV_H
-#define __OMNETPP_CMDENV_H
+#ifndef __OMNETPP_CMDENV_CMDENV_H
+#define __OMNETPP_CMDENV_CMDENV_H
 
 #include <map>
 #include "envir/envirbase.h"

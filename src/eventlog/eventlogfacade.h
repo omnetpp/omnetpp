@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_EVENTLOGFACADE_H
-#define __OMNETPP_EVENTLOGFACADE_H
+#ifndef __OMNETPP_EVENTLOG_EVENTLOGFACADE_H
+#define __OMNETPP_EVENTLOG_EVENTLOGFACADE_H
 
 #include "ievent.h"
 #include "ieventlog.h"

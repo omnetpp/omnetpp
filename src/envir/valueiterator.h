@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_VALUEITERATOR_H
-#define __OMNETPP_VALUEITERATOR_H
+#ifndef __OMNETPP_ENVIR_VALUEITERATOR_H
+#define __OMNETPP_ENVIR_VALUEITERATOR_H
 
 #include <string>
 #include <vector>

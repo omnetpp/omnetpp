@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDYYLIB_H
-#define __OMNETPP_NEDYYLIB_H
+#ifndef __OMNETPP_NEDXML_NEDYYLIB_H
+#define __OMNETPP_NEDXML_NEDYYLIB_H
 
 #include <string>
 #include "nedelements.h"

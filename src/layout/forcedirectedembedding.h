@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_FORCEDIRECTEDEMBEDDING_H
-#define __OMNETPP_FORCEDIRECTEDEMBEDDING_H
+#ifndef __OMNETPP_LAYOUT_FORCEDIRECTEDEMBEDDING_H
+#define __OMNETPP_LAYOUT_FORCEDIRECTEDEMBEDDING_H
 
 #include <stdint.h> // <cstdint> is C++11
 #include <algorithm>

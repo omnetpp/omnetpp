@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_GRAPHCOMPONENT_H
-#define __OMNETPP_GRAPHCOMPONENT_H
+#ifndef __OMNETPP_LAYOUT_GRAPHCOMPONENT_H
+#define __OMNETPP_LAYOUT_GRAPHCOMPONENT_H
 
 #include <algorithm>
 #include <vector>

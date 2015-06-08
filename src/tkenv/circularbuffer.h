@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CIRCULARBUFFER_H
-#define __OMNETPP_CIRCULARBUFFER_H
+#ifndef __OMNETPP_TKENV_CIRCULARBUFFER_H
+#define __OMNETPP_TKENV_CIRCULARBUFFER_H
 
 #include "tkdefs.h"
 #include "omnetpp/simkerneldefs.h" // for ASSERT

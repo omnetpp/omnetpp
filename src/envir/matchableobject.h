@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_MATCHABLEOBJECT_H
-#define __OMNETPP_MATCHABLEOBJECT_H
+#ifndef __OMNETPP_ENVIR_MATCHABLEOBJECT_H
+#define __OMNETPP_ENVIR_MATCHABLEOBJECT_H
 
 #include "common/matchexpression.h"
 #include "omnetpp/cobject.h"

@@ -223,8 +223,8 @@ open(H,">$hfile") || die "*** cannot open output file $hfile";
 open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
 
 print H "$copyright\n";
-print H "#ifndef __OMNETPP_NEDELEMENTS_H\n";
-print H "#define __OMNETPP_NEDELEMENTS_H\n\n";
+print H "#ifndef __OMNETPP_NEDXML_NEDELEMENTS_H\n";
+print H "#define __OMNETPP_NEDXML_NEDELEMENTS_H\n\n";
 print H "#include \"nedelement.h\"\n\n";
 print H "NAMESPACE_BEGIN\n";
 print H "namespace nedxml {\n\n";
@@ -570,8 +570,8 @@ open(VAL_H,">$validatorhfile") || die "*** cannot open output file $validatorhfi
 open(VAL_CC,">$validatorccfile") || die "*** cannot open output file $validatorccfile";
 
 print VAL_H "$copyright\n";
-print VAL_H "#ifndef __OMNETPP_NEDVALIDATOR_H\n";
-print VAL_H "#define __OMNETPP_NEDVALIDATOR_H\n\n";
+print VAL_H "#ifndef __OMNETPP_NEDXML_NEDVALIDATOR_H\n";
+print VAL_H "#define __OMNETPP_NEDXML_NEDVALIDATOR_H\n\n";
 print VAL_H "#include \"nederror.h\"\n";
 print VAL_H "#include \"nedexception.h\"\n";
 print VAL_H "#include \"nedelements.h\"\n\n";
@@ -654,8 +654,8 @@ open(DTDVAL_H,">$dtdvalidatorhfile") || die "*** cannot open output file $dtdval
 open(DTDVAL_CC,">$dtdvalidatorccfile") || die "*** cannot open output file $dtdvalidatorccfile";
 
 print DTDVAL_H "$copyright\n";
-print DTDVAL_H "#ifndef __OMNETPP_DTDVALIDATOR_H\n";
-print DTDVAL_H "#define __OMNETPP_DTDVALIDATOR_H\n\n";
+print DTDVAL_H "#ifndef __OMNETPP_NEDXML_DTDVALIDATOR_H\n";
+print DTDVAL_H "#define __OMNETPP_NEDXML_DTDVALIDATOR_H\n\n";
 print DTDVAL_H "#include \"nedelements.h\"\n";
 print DTDVAL_H "#include \"$dtdvalidatorbasehfile\"\n\n";
 print DTDVAL_H "NAMESPACE_BEGIN\n";

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_IDLIST_H
-#define __OMNETPP_IDLIST_H
+#ifndef __OMNETPP_SCAVE_IDLIST_H
+#define __OMNETPP_SCAVE_IDLIST_H
 
 #include <vector>
 #include <exception>

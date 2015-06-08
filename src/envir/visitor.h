@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_VISITOR_H
-#define __OMNETPP_VISITOR_H
+#ifndef __OMNETPP_ENVIR_VISITOR_H
+#define __OMNETPP_ENVIR_VISITOR_H
 
 #include "common/patternmatcher.h"
 #include "common/matchexpression.h"

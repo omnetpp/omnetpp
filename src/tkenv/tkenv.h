@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_TKENV_H
-#define __OMNETPP_TKENV_H
+#ifndef __OMNETPP_TKENV_TKENV_H
+#define __OMNETPP_TKENV_TKENV_H
 
 #include <vector>
 #include <list>

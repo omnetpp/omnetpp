@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_FILESNAPSHOTMGR_H
-#define __OMNETPP_FILESNAPSHOTMGR_H
+#ifndef __OMNETPP_ENVIR_FILESNAPSHOTMGR_H
+#define __OMNETPP_ENVIR_FILESNAPSHOTMGR_H
 
 #include <cstdio>
 #include "omnetpp/envirext.h"

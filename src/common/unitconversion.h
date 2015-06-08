@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_UNITCONVERSION_H
-#define __OMNETPP_UNITCONVERSION_H
+#ifndef __OMNETPP_COMMON_UNITCONVERSION_H
+#define __OMNETPP_COMMON_UNITCONVERSION_H
 
 #include <vector>
 #include "commondefs.h"

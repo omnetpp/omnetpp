@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_PROGRESSMONITOR_H
-#define __OMNETPP_PROGRESSMONITOR_H
+#ifndef __OMNETPP_COMMON_PROGRESSMONITOR_H
+#define __OMNETPP_COMMON_PROGRESSMONITOR_H
 
 #include <string>
 #include "omnetpp/platdep/platdefs.h"

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_DIFFQUOT_H
-#define __OMNETPP_DIFFQUOT_H
+#ifndef __OMNETPP_SCAVE_DIFFQUOT_H
+#define __OMNETPP_SCAVE_DIFFQUOT_H
 
 #include "commonnodes.h"
 

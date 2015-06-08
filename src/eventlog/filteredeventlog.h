@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_FILTEREDEVENTLOG_H
-#define __OMNETPP_FILTEREDEVENTLOG_H
+#ifndef __OMNETPP_EVENTLOG_FILTEREDEVENTLOG_H
+#define __OMNETPP_EVENTLOG_FILTEREDEVENTLOG_H
 
 #include <sstream>
 #include <deque>

@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_STDDEV_H
-#define __OMNETPP_STDDEV_H
+#ifndef __OMNETPP_SCAVE_STDDEV_H
+#define __OMNETPP_SCAVE_STDDEV_H
 
 #include "commonnodes.h"
 #include "xyarray.h"

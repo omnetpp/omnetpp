@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_RESULTFILEMANAGER_H
-#define __OMNETPP_RESULTFILEMANAGER_H
+#ifndef __OMNETPP_SCAVE_RESULTFILEMANAGER_H
+#define __OMNETPP_SCAVE_RESULTFILEMANAGER_H
 
 #include <cassert>
 #include <cmath>
