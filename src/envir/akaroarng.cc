@@ -32,16 +32,14 @@
 NAMESPACE_BEGIN
 namespace envir {
 
-
 Register_Class(cAkaroaRNG);
-
 
 void cAkaroaRNG::initialize(int runNumber, int rngId, int numRngs,
                             int parsimProcId, int parsimNumPartitions,
                             cConfiguration *cfg)
 {
     // no manual seeding, and only one RNG stream
-    if (numRngs!=1 || rngId!=0 || parsimNumPartitions>1)
+    if (numRngs != 1 || rngId != 0 || parsimNumPartitions > 1)
         throw cRuntimeError("cAkaroaRNG: Akaroa supports only one RNG stream, use num-rngs=1 setting");
 }
 
@@ -58,7 +56,7 @@ unsigned long cAkaroaRNG::intRand()
 
 unsigned long cAkaroaRNG::intRandMax()
 {
-    return 0x7ffffffeUL; // 2^31-2
+    return 0x7ffffffeUL;  // 2^31-2
 }
 
 unsigned long cAkaroaRNG::intRand(unsigned long n)
@@ -88,7 +86,8 @@ double cAkaroaRNG::doubleRandIncl1()
     return AkRandomReal();
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 
 #endif
+

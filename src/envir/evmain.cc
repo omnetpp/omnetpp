@@ -44,6 +44,6 @@ extern "C" ENVIR_API int evMain(int argc, char *argv[])
     return exitcode;
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

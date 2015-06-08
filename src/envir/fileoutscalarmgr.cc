@@ -39,8 +39,8 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace envir {
 
-#define SCALAR_FILE_VERSION 2
-#define DEFAULT_PRECISION  "14"
+#define SCALAR_FILE_VERSION    2
+#define DEFAULT_PRECISION      "14"
 
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sca", "Name for the output scalar file.");
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
@@ -70,15 +70,14 @@ cFileOutputScalarManager::~cFileOutputScalarManager()
 void cFileOutputScalarManager::openFile()
 {
     mkPath(directoryOf(fname.c_str()).c_str());
-    f = fopen(fname.c_str(),"a");
-    if (f==nullptr)
+    f = fopen(fname.c_str(), "a");
+    if (f == nullptr)
         throw cRuntimeError("Cannot open output scalar file `%s'", fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()
 {
-    if (f)
-    {
+    if (f) {
         fclose(f);
         f = nullptr;
     }
@@ -90,7 +89,7 @@ void cFileOutputScalarManager::startRun()
     closeFile();
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
+    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old output scalar file");
     run.reset();
 }
@@ -102,16 +101,15 @@ void cFileOutputScalarManager::endRun()
 
 void cFileOutputScalarManager::init()
 {
-    if (!f)
-    {
+    if (!f) {
         openFile();
-        if (!f) return;
+        if (!f)
+            return;
 
         CHECK(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
     }
 
-    if (!run.initialized)
-    {
+    if (!run.initialized) {
         run.initRun();
 
         // this is the first scalar written in this run, write out run attributes
@@ -119,8 +117,7 @@ void cFileOutputScalarManager::init()
 
         // save iteration variables
         std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
-        for (int i=0; i<(int)v.size(); i++)
-        {
+        for (int i = 0; i < (int)v.size(); i++) {
             const char *name = v[i];
             const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
             recordNumericIterationVariable(name, value);
@@ -132,15 +129,13 @@ void cFileOutputScalarManager::recordNumericIterationVariable(const char *name, 
 {
     char *e;
     setlocale(LC_NUMERIC, "C");
-    (void) strtod(value, &e);
-    if (*e=='\0')
-    {
+    (void)strtod(value, &e);
+    if (*e == '\0') {
         // plain number - just record as it is
-        //XXX write with using an "itervar" keyword not "scalar" (needs to be understood by IDE as well)
+        // XXX write with using an "itervar" keyword not "scalar" (needs to be understood by IDE as well)
         CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
     }
-    else if (e!=value)
-    {
+    else if (e != value) {
         // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
         double d;
         std::string unit;
@@ -148,13 +143,13 @@ void cFileOutputScalarManager::recordNumericIterationVariable(const char *name, 
         try {
             d = UnitConversion::parseQuantity(value, unit);
             parsedOK = true;
-        } catch (std::exception& e) { }
-
-        if (parsedOK)
-        {
+        }
+        catch (std::exception& e) {
+        }
+        if (parsedOK) {
             CHECK(fprintf(f, "scalar . \t%s \t%.*g\n", name, prec, d));
             if (!unit.empty())
-                CHECK(fprintf(f,"attr unit  %s\n", QUOTE(unit.c_str())));
+                CHECK(fprintf(f, "attr unit  %s\n", QUOTE(unit.c_str())));
         }
     }
 }
@@ -170,12 +165,12 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
         name = "(unnamed)";
 
     bool enabled = getEnvir()->getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
-    if (enabled)
-    {
+    if (enabled) {
         CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
         if (attributes)
-            for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
-                CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+            for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); it++)
+                CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+
     }
 }
 
@@ -217,8 +212,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     writeStatisticField("sqrsum", statistic->getSqrSum());
     writeStatisticField("min", statistic->getMin());
     writeStatisticField("max", statistic->getMax());
-    if (statistic->isWeighted())
-    {
+    if (statistic->isWeighted()) {
         writeStatisticField("weights", statistic->getWeights());
         writeStatisticField("weightedSum", statistic->getWeightedSum());
         writeStatisticField("sqrSumWeights", statistic->getSqrSumWeights());
@@ -226,24 +220,22 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     }
 
     if (attributes)
-        for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
-            CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+        for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); it++)
+            CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
-    if (dynamic_cast<cDensityEstBase *>(statistic))
-    {
+
+    if (dynamic_cast<cDensityEstBase *>(statistic)) {
         // check that recording the histogram is enabled
         bool enabled = getEnvir()->getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
-        if (enabled)
-        {
+        if (enabled) {
             cDensityEstBase *hist = (cDensityEstBase *)statistic;
             if (!hist->isTransformed())
                 hist->transform();
 
             int n = hist->getNumCells();
-            if (n>0)
-            {
+            if (n > 0) {
                 CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->getUnderflowCell()));
-                for (int i=0; i<n; i++)
+                for (int i = 0; i < n; i++)
                     CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->getBasepoint(i), prec, hist->getCellValue(i)));
                 CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->getBasepoint(n), hist->getOverflowCell()));
             }
@@ -274,7 +266,6 @@ void cFileOutputScalarManager::flush()
         fflush(f);
 }
 
-
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

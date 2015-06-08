@@ -24,7 +24,7 @@
 #include <cassert>
 #include <cstring>
 #include <fstream>
-#include <cerrno> // SGI
+#include <cerrno>  // SGI
 #include <algorithm>
 #include "common/stringutil.h"
 #include "common/fileutil.h"
@@ -55,7 +55,6 @@ using std::ios;
 Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
 Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", KIND_VECTOR, CFG_INT, nullptr, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect)");
 
-
 #ifdef CHECK
 #undef CHECK
 #endif
@@ -65,23 +64,22 @@ Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buf
 
 Register_Class(cIndexedFileOutputVectorManager);
 
-
 cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
-  : cFileOutputVectorManager()
+    : cFileOutputVectorManager()
 {
     fi = nullptr;
     memoryUsed = 0;
 
-    long d = (long) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
-    maxMemoryUsed = (size_t) std::max(d, (long)MIN_BUFFER_MEMORY);
+    long d = (long)getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
+    maxMemoryUsed = (size_t)std::max(d, (long)MIN_BUFFER_MEMORY);
 }
 
 void cIndexedFileOutputVectorManager::openIndexFile()
 {
     mkPath(directoryOf(ifname.c_str()).c_str());
-    fi = fopen(ifname.c_str(),"w");
-    if (fi==nullptr)
-        throw cRuntimeError("Cannot open index file `%s'",ifname.c_str());
+    fi = fopen(ifname.c_str(), "w");
+    if (fi == nullptr)
+        throw cRuntimeError("Cannot open index file `%s'", ifname.c_str());
 
     // leave blank space for fingerprint
     fprintf(fi, "%64s\n", "");
@@ -89,12 +87,10 @@ void cIndexedFileOutputVectorManager::openIndexFile()
 
 void cIndexedFileOutputVectorManager::closeIndexFile()
 {
-    if (fi)
-    {
+    if (fi) {
         // write out fingerprint (size and modification date of the vector file)
         struct opp_stat_t s;
-        if (opp_stat(fname.c_str(), &s) == 0)
-        {
+        if (opp_stat(fname.c_str(), &s) == 0) {
             opp_fseek(fi, 0, SEEK_SET);
             fprintf(fi, "file %" LL "d %" LL "d", (int64_t)s.st_size, (int64_t)s.st_mtime);
         }
@@ -129,8 +125,8 @@ void cIndexedFileOutputVectorManager::startRun()
 
 void cIndexedFileOutputVectorManager::endRun()
 {
-    if (f!=nullptr) {
-        for (std::vector<Vector*>::iterator it=vectors.begin(); it!=vectors.end(); ++it)
+    if (f != nullptr) {
+        for (std::vector<Vector *>::iterator it = vectors.begin(); it != vectors.end(); ++it)
             finalizeVector(*it);
     }
 
@@ -169,19 +165,17 @@ void cIndexedFileOutputVectorManager::initVector(VectorData *vp)
     cFileOutputVectorManager::initVector(vp);
 
     // write vector declaration and vector attributes to the index file too
-    CHECK(fprintf(fi,"vector %d  %s  %s  %s\n",
-                  vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()),
-          ifname);
-    for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
-        CHECK(fprintf(fi,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())),
-              ifname);
+    CHECK(fprintf(fi, "vector %d  %s  %s  %s\n",
+                    vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()),
+            ifname);
+    for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); it++)
+        CHECK(fprintf(fi, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())),
+                ifname);
 }
-
 
 void cIndexedFileOutputVectorManager::finalizeVector(Vector *vp)
 {
-    if (f)
-    {
+    if (f) {
         if (!vp->buffer.empty())
             writeBlock(vp);
     }
@@ -194,15 +188,13 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
     if (!vp->enabled)
         return false;
 
-    if (vp->intervals.contains(t))
-    {
+    if (vp->intervals.contains(t)) {
         if (!vp->initialized)
             initVector(vp);
 
-        Block &currentBlock = vp->currentBlock;
+        Block& currentBlock = vp->currentBlock;
         eventnumber_t eventNumber = getSimulation()->getEventNumber();
-        if (currentBlock.count == 0)
-        {
+        if (currentBlock.count == 0) {
             currentBlock.startTime = t;
             currentBlock.startEventNum = eventNumber;
         }
@@ -233,8 +225,7 @@ void cIndexedFileOutputVectorManager::writeRunData()
     cFileOutputVectorManager::writeRunData();
 
     // and to the index file
-    if (!fi)
-    {
+    if (!fi) {
         openIndexFile();
         CHECK(fprintf(fi, "version %d\n", INDEX_FILE_VERSION), ifname);
     }
@@ -245,33 +236,30 @@ void cIndexedFileOutputVectorManager::writeRunData()
 // empties all buffer
 void cIndexedFileOutputVectorManager::writeRecords()
 {
-    for (Vectors::iterator it = vectors.begin(); it != vectors.end(); ++it)
-    {
-        if (!(*it)->buffer.empty()) // TODO: size() > configured limit
+    for (Vectors::iterator it = vectors.begin(); it != vectors.end(); ++it) {
+        if (!(*it)->buffer.empty())  // TODO: size() > configured limit
             writeBlock(*it);
     }
 }
 
 void cIndexedFileOutputVectorManager::writeBlock(Vector *vp)
 {
-    assert(f!=nullptr);
-    assert(vp!=nullptr);
+    assert(f != nullptr);
+    assert(vp != nullptr);
     assert(!vp->buffer.empty());
 
     static char buff[64];
 
-    Block &currentBlock = vp->currentBlock;
+    Block& currentBlock = vp->currentBlock;
     currentBlock.offset = opp_ftell(f);
 
-    if (vp->recordEventNumbers)
-    {
+    if (vp->recordEventNumbers) {
         for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+            CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
     }
-    else
-    {
+    else {
         for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            CHECK(fprintf(f,"%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+            CHECK(fprintf(f, "%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
     }
 
     currentBlock.size = opp_ftell(f) - currentBlock.offset;
@@ -283,34 +271,31 @@ void cIndexedFileOutputVectorManager::writeBlock(Vector *vp)
 
 void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
 {
-    assert(f!=nullptr);
-    assert(fi!=nullptr);
+    assert(f != nullptr);
+    assert(fi != nullptr);
 
     static char buff1[64], buff2[64];
-    Block &block = vp->currentBlock;
+    Block& block = vp->currentBlock;
 
-    if (block.count > 0)
-    {
+    if (block.count > 0) {
         // make sure that the offsets refered by the index file are exists in the vector file
         // so the index can be used to access the vector file while it is being written
         fflush(f);
 
-        if (vp->recordEventNumbers)
-        {
+        if (vp->recordEventNumbers) {
             CHECK(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
-                        vp->id, block.offset, block.size,
-                        block.startEventNum, block.endEventNum,
-                        SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
-                        block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)
-                  , ifname);
+                            vp->id, block.offset, block.size,
+                            block.startEventNum, block.endEventNum,
+                            SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
+                            block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)
+                    , ifname);
         }
-        else
-        {
+        else {
             CHECK(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
-                        vp->id, block.offset, block.size,
-                        SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
-                        block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)
-                  , ifname);
+                            vp->id, block.offset, block.size,
+                            SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
+                            block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)
+                    , ifname);
         }
 
         fflush(fi);
@@ -318,6 +303,6 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
     }
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

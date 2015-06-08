@@ -67,6 +67,6 @@ const char *MatchableFieldAdapter::getAsString(const char *attribute) const
         return nullptr;
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

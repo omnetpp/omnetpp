@@ -28,7 +28,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/platdep/timeutil.h"
-#include "omnetpp/platdep/platmisc.h"   //getpid()
+#include "omnetpp/platdep/platmisc.h"  // getpid()
 #include "sectionbasedconfig.h"
 #include "valueiterator.h"
 #include "scenario.h"
@@ -38,10 +38,9 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace envir {
 
-//XXX error messages (exceptions) should contain file/line info!
-//XXX make sure quoting "$\{" works!
-//TODO optimize storage (now keys with wildcard suffix are stored multiple times, in several suffix groups)
-
+// XXX error messages (exceptions) should contain file/line info!
+// XXX make sure quoting "$\{" works!
+// TODO optimize storage (now keys with wildcard suffix are stored multiple times, in several suffix groups)
 
 Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectionbasedconfig-configreader-class", CFG_STRING, "", "When configuration-class=SectionBasedConfiguration: selects the configuration reader C++ class, which must subclass from cConfigurationReader.");
 Register_PerRunConfigOption(CFGID_DESCRIPTION, "description", CFG_STRING, nullptr, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
@@ -79,7 +78,7 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
     { nullptr,                    nullptr }
 };
 
-#define VARPOS_PREFIX  std::string("&")
+#define VARPOS_PREFIX    std::string("&")
 
 std::string SectionBasedConfiguration::KeyValue1::nullBasedir;
 
@@ -120,25 +119,24 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
     sectionChains.assign(ini->getNumSections(), std::vector<int>());
 }
 
-void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string,std::string>& options, const char *baseDir)
+void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string, std::string>& options, const char *baseDir)
 {
     commandLineOptions.clear();
     const std::string *basedirRef = getPooledBaseDir(baseDir);
-    for (StringMap::const_iterator it=options.begin(); it!=options.end(); it++)
-    {
+    for (StringMap::const_iterator it = options.begin(); it != options.end(); it++) {
         // validate the key, then store the option
-        //XXX we should better use the code in the validate() method...
+        // XXX we should better use the code in the validate() method...
         const char *key = it->first.c_str();
         const char *value = it->second.c_str();
-        const char *option = strchr(key,'.') ? strrchr(key,'.')+1 : key; // check only the part after the last dot, i.e. recognize per-object keys as well
+        const char *option = strchr(key, '.') ? strrchr(key, '.')+1 : key;  // check only the part after the last dot, i.e. recognize per-object keys as well
         cConfigOption *e = lookupConfigOption(option);
         if (!e)
             throw cRuntimeError("Unknown command-line configuration option --%s", key);
-        if (!e->isPerObject() && key!=option)
+        if (!e->isPerObject() && key != option)
             throw cRuntimeError("Wrong command-line configuration option --%s: %s is not a per-object option", key, e->getName());
         std::string tmp;
-        if (e->isPerObject() && key==option)
-            key = (tmp=std::string("**.")+key).c_str(); // prepend with "**." (XXX this should be done in inifile contents too)
+        if (e->isPerObject() && key == option)
+            key = (tmp = std::string("**.")+key).c_str();  // prepend with "**." (XXX this should be done in inifile contents too)
         if (!value[0])
             throw cRuntimeError("Missing value for command-line configuration option --%s", key);
         commandLineOptions.push_back(KeyValue1(basedirRef, key, value));
@@ -161,7 +159,7 @@ void SectionBasedConfiguration::initializeFrom(cConfiguration *bootConfig)
     std::string classname = bootConfig->getAsString(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS);
     if (classname.empty())
         throw cRuntimeError("SectionBasedConfiguration: no configuration reader class specified (missing %s option)",
-                             CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS->getName());
+                CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS->getName());
     cConfigurationReader *reader = dynamic_cast<cConfigurationReader *>(createOne(classname.c_str()));
     if (!reader)
         throw cRuntimeError("Class \"%s\" is not subclassed from cConfigurationReader", classname.c_str());
@@ -171,7 +169,7 @@ void SectionBasedConfiguration::initializeFrom(cConfiguration *bootConfig)
 
 const char *SectionBasedConfiguration::getFileName() const
 {
-    return ini==nullptr ? nullptr : ini->getFileName();
+    return ini == nullptr ? nullptr : ini->getFileName();
 }
 
 const char *SectionBasedConfiguration::getActiveConfigName() const
@@ -187,15 +185,14 @@ int SectionBasedConfiguration::getActiveRunNumber() const
 std::vector<std::string> SectionBasedConfiguration::getConfigNames()
 {
     std::vector<std::string> result;
-    for (int i=0; i<ini->getNumSections(); i++)
-    {
+    for (int i = 0; i < ini->getNumSections(); i++) {
         const char *section = ini->getSectionName(i);
-        if (strcmp(section, "General")==0)
+        if (strcmp(section, "General") == 0)
             result.push_back(section);
-        else if (strncmp(section, "Config ", 7)==0)
+        else if (strncmp(section, "Config ", 7) == 0)
             result.push_back(section+7);
         else
-            ; // nothing - leave out bogus section names
+            ;  // nothing - leave out bogus section names
     }
     return result;
 }
@@ -213,7 +210,7 @@ std::vector<std::string> SectionBasedConfiguration::getBaseConfigs(const char *c
     if (sectionId == -1)
         throw cRuntimeError("No such config: %s", configName);
     int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
-    std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
+    std::string extends = entryId == -1 ? "" : ini->getEntry(sectionId, entryId).getValue();
     if (extends.empty())
         extends = "General";
 
@@ -232,21 +229,18 @@ std::vector<int> SectionBasedConfiguration::getBaseConfigIds(int sectionId) cons
 {
     int generalSectionId = internalFindSection("General");
     int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
-    std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
+    std::string extends = entryId == -1 ? "" : ini->getEntry(sectionId, entryId).getValue();
 
     std::vector<int> result;
-    if (sectionId == generalSectionId && generalSectionId != -1)
-    {
+    if (sectionId == generalSectionId && generalSectionId != -1) {
         // 'General' can not have base config
     }
-    else if (extends.empty())
-    {
+    else if (extends.empty()) {
         // implicitly inherit form 'General'
         if (generalSectionId != -1)
             result.push_back(generalSectionId);
     }
-    else
-    {
+    else {
         StringTokenizer tokenizer(extends.c_str(), ", \t");
         while (tokenizer.hasMoreTokens()) {
             const char *configName = tokenizer.nextToken();
@@ -264,19 +258,17 @@ std::vector<std::string> SectionBasedConfiguration::getConfigChain(const char *c
 {
     std::vector<std::string> result;
     std::vector<int> sectionIds = resolveSectionChain(configName);
-    for (std::vector<int>::iterator it = sectionIds.begin(); it != sectionIds.end(); ++it)
-    {
+    for (std::vector<int>::iterator it = sectionIds.begin(); it != sectionIds.end(); ++it) {
         const char *section = ini->getSectionName(*it);
-        if (strcmp(section, "General")==0)
+        if (strcmp(section, "General") == 0)
             result.push_back(section);
-        else if (strncmp(section, "Config ", 7)==0)
+        else if (strncmp(section, "Config ", 7) == 0)
             result.push_back(section+7);
         else
-            ; // nothing - leave out bogus section names
+            ;  // nothing - leave out bogus section names
     }
     return result;
 }
-
 
 int SectionBasedConfiguration::resolveConfigName(const char *configName) const
 {
@@ -294,7 +286,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
 {
     clear();
 
-    activeConfig = configName==nullptr ? "" : configName;
+    activeConfig = configName == nullptr ? "" : configName;
     activeRunNumber = runNumber;
 
     // determine the list of sections, from this one up to [General]
@@ -307,36 +299,30 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
 
     // determine the values to substitute into the iteration vars (${...})
-    try
-    {
+    try {
         Scenario scenario(itervars, constraint);
         int numRuns = scenario.getNumRuns();
-        if (runNumber<0 || runNumber>=numRuns)
+        if (runNumber < 0 || runNumber >= numRuns)
             throw cRuntimeError("Run number %d is out of range for configuration `%s': it contains %d run(s)", runNumber, configName, numRuns);
 
         scenario.gotoRun(runNumber);
         setupVariables(getActiveConfigName(), getActiveRunNumber(), &scenario, sectionChain);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
-
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
-    for (int i=0; i < (int)commandLineOptions.size(); i++)
-    {
+    for (int i = 0; i < (int)commandLineOptions.size(); i++) {
         KeyValue1& e = commandLineOptions[i];
         std::string value = substituteVariables(e.getValue());
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
         addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
     }
-    for (int i=0; i < (int)sectionChain.size(); i++)
-    {
+    for (int i = 0; i < (int)sectionChain.size(); i++) {
         int sectionId = sectionChain[i];
-        for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
-        {
+        for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
             const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
             std::string value = substituteVariables(e.getValue(), sectionId, entryId);
@@ -349,32 +335,30 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
 void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)
 {
     // create variables
-    int runnumberWidth = std::max(0,atoi(opp_nulltoempty(internalGetValue(sectionChain, CFGID_RUNNUMBER_WIDTH->getName()))));
+    int runnumberWidth = std::max(0, atoi(opp_nulltoempty(internalGetValue(sectionChain, CFGID_RUNNUMBER_WIDTH->getName()))));
     variables[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
     variables[CFGVAR_CONFIGNAME] = configName;
     variables[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
     variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->getName()));
-    variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int) getpid());
+    variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int)getpid());
     variables[CFGVAR_DATETIME] = opp_makedatetimestring();
     variables[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue()));
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
     // store iteration variables, and also their "positions" (iteration count) as "&varid"
     const std::vector<IterationVariable>& itervars = scenario->getIterationVariables();
-    for (int i=0; i<(int)itervars.size(); i++)
-    {
+    for (int i = 0; i < (int)itervars.size(); i++) {
         const char *varid = itervars[i].varId.c_str();
         variables[varid] = scenario->getVariable(varid);
     }
 
     // assemble ${iterationvars}
     std::string iterationvars, iterationvars2;
-    for (int i=0; i<(int)itervars.size(); i++)
-    {
+    for (int i = 0; i < (int)itervars.size(); i++) {
         std::string txt = "$" + itervars[i].varName + "=" + scenario->getVariable(itervars[i].varId.c_str());
         if (itervars[i].varName != CFGVAR_REPETITION)
-            iterationvars += std::string(i>0?", ":"") + txt;
-        iterationvars2 += std::string(i>0?", ":"") + txt;
+            iterationvars += std::string(i > 0 ? ", " : "") + txt;
+        iterationvars2 += std::string(i > 0 ? ", " : "") + txt;
     }
     variables[CFGVAR_ITERATIONVARS] = iterationvars;
     variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
@@ -427,30 +411,23 @@ std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *con
     try {
         Scenario scenario(itervars, constraint);
         std::vector<std::string> result;
-        if (scenario.restart())
-        {
-            for (;;)
-            {
+        if (scenario.restart()) {
+            for (;;) {
                 // generate a string for the current run
                 std::string runstring;
-                if (!detailed)
-                {
+                if (!detailed) {
                     runstring = scenario.str();
                 }
-                else
-                {
+                else {
                     // itervars, plus all entries that contain ${..}
                     runstring += std::string("\t# ") + scenario.str() + "\n";
                     (const_cast<SectionBasedConfiguration *>(this))->setupVariables(configName, result.size(), &scenario, sectionChain);
-                    for (int i=0; i<(int)sectionChain.size(); i++)
-                    {
+                    for (int i = 0; i < (int)sectionChain.size(); i++) {
                         int sectionId = sectionChain[i];
-                        for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
-                        {
+                        for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
                             // add entry to our tables
                             const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
-                            if (strstr(entry.getValue(), "${")!=nullptr)
-                            {
+                            if (strstr(entry.getValue(), "${") != nullptr) {
                                 std::string actualValue = substituteVariables(entry.getValue(), sectionId, entryId);
                                 runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
                             }
@@ -467,8 +444,7 @@ std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *con
         (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
         return result;
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
@@ -478,39 +454,34 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
 {
     std::vector<IterationVariable> v;
     int unnamedCount = 0;
-    for (int i=0; i<(int)sectionChain.size(); i++)
-    {
+    for (int i = 0; i < (int)sectionChain.size(); i++) {
         int sectionId = sectionChain[i];
-        for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
-        {
+        for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
             const char *pos = entry.getValue();
             int k = 0;
-            while ((pos = strstr(pos, "${")) != nullptr)
-            {
+            while ((pos = strstr(pos, "${")) != nullptr) {
                 IterationVariable loc;
                 try {
                     parseVariable(pos, loc.varName, loc.value, loc.parvar, pos);
-                } catch (std::exception& e) {
+                }
+                catch (std::exception& e) {
                     throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
                 }
-
-                if (!loc.value.empty())
-                {
+                if (!loc.value.empty()) {
                     // store variable
-                    if (!loc.varName.empty())
-                    {
+                    if (!loc.varName.empty()) {
                         // check it does not conflict with other iteration variables or predefined variables
-                        for (int j=0; j<(int)v.size(); j++)
-                            if (v[j].varName==loc.varName)
+                        for (int j = 0; j < (int)v.size(); j++)
+                            if (v[j].varName == loc.varName)
                                 throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varName.c_str());
+
                         if (isPredefinedVariable(loc.varName.c_str()))
                             throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varName.c_str());
                         // use name for id
                         loc.varId = loc.varName;
                     }
-                    else
-                    {
+                    else {
                         // unnamed variable: generate id (identifies location) and name ($0,$1,$2,etc)
                         loc.varId = opp_stringf("%d-%d-%d", sectionId, entryId, k);
                         loc.varName = opp_stringf("%d", unnamedCount++);
@@ -524,7 +495,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
 
     // register ${repetition}, based on the repeat= config entry
     const char *repeat = internalGetValue(sectionChain, CFGID_REPEAT->getName());
-    int repeatCount = (int) parseLong(repeat, nullptr, 1);
+    int repeatCount = (int)parseLong(repeat, nullptr, 1);
     IterationVariable repetition;
     repetition.varId = repetition.varName = CFGVAR_REPETITION;
     repetition.value = opp_stringf("0..%d", repeatCount-1);
@@ -533,12 +504,12 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     return v;
 }
 
-void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParvar, const char *&outEndPos)
+void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParvar, const char *& outEndPos)
 {
-    Assert(pos[0]=='$' && pos[1]=='{'); // this is the way we've got to be invoked
+    Assert(pos[0] == '$' && pos[1] == '{');  // this is the way we've got to be invoked
 
     StringTokenizer2 tokenizer(pos+1, "}", "{}", "\"");
-    const char *token = tokenizer.nextToken(); // ends at matching '}'
+    const char *token = tokenizer.nextToken();  // ends at matching '}'
     if (!token)
         throw cRuntimeError("missing '}' for '${'");
     outEndPos = pos + 1 + tokenizer.getTokenLength();
@@ -552,22 +523,24 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
     const char *parvarend = nullptr;
 
     const char *s = pos+2;
-    while (opp_isspace(*s)) s++;
-    if (opp_isalphaext(*s))
-    {
+    while (opp_isspace(*s))
+        s++;
+    if (opp_isalphaext(*s)) {
         // must be a variable or a variable reference
         varbegin = varend = s;
-        while (opp_isalnumext(*varend)) varend++;
+        while (opp_isalnumext(*varend))
+            varend++;
         s = varend;
-        while (opp_isspace(*s)) s++;
-        if (*s=='}') {
+        while (opp_isspace(*s))
+            s++;
+        if (*s == '}') {
             // ${x} syntax -- OK
         }
-        else if (*s=='=' && *(s+1)!='=') {
+        else if (*s == '=' && *(s+1) != '=') {
             // ${x=...} syntax -- OK
             valuebegin = s+1;
         }
-        else if (strchr(s,',')) {
+        else if (strchr(s, ',')) {
             // part of a valuelist -- OK
             valuebegin = varbegin;
             varbegin = varend = nullptr;
@@ -575,31 +548,31 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         else {
             throw cRuntimeError("missing '=' after '${varname'");
         }
-    } else {
+    }
+    else {
         valuebegin = s;
     }
     valueend = outEndPos;
 
-    if (valuebegin)
-    {
+    if (valuebegin) {
         // try to parse parvar, present when value ends in "! variable"
         const char *exclamationMark = strrchr(valuebegin, '!');
-        if (exclamationMark)
-        {
+        if (exclamationMark) {
             const char *s = exclamationMark+1;
-            while (opp_isspace(*s)) s++;
-            if (opp_isalphaext(*s))
-            {
+            while (opp_isspace(*s))
+                s++;
+            if (opp_isalphaext(*s)) {
                 parvarbegin = s;
-                while (opp_isalnumext(*s)) s++;
+                while (opp_isalnumext(*s))
+                    s++;
                 parvarend = s;
-                while (opp_isspace(*s)) s++;
-                if (s!=valueend)
-                {
-                    parvarbegin = parvarend = nullptr; // no parvar after all
+                while (opp_isspace(*s))
+                    s++;
+                if (s != valueend) {
+                    parvarbegin = parvarend = nullptr;  // no parvar after all
                 }
             }
-            if (parvarbegin)  {
+            if (parvarbegin) {
                 valueend = exclamationMark;  // chop off "!parvarname"
             }
         }
@@ -612,7 +585,7 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         outValue.assign(valuebegin, valueend-valuebegin);
     if (parvarbegin)
         outParvar.assign(parvarbegin, parvarend-parvarbegin);
-    //printf("DBG: var=`%s', value=`%s', parvar=`%s'\n", outVarname.c_str(), outValue.c_str(), outParvar.c_str());
+    // printf("DBG: var=`%s', value=`%s', parvar=`%s'\n", outVarname.c_str(), outValue.c_str(), outParvar.c_str());
 }
 
 std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId) const
@@ -620,8 +593,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
     std::string result = opp_nulltoempty(text);
     int k = 0;  // counts "${" occurrences
     const char *pos, *endPos;
-    while ((pos = strstr(result.c_str(), "${")) != nullptr)
-    {
+    while ((pos = strstr(result.c_str(), "${")) != nullptr) {
         std::string varname, iterationstring, parvar;
         parseVariable(pos, varname, iterationstring, parvar, endPos);
         std::string value;
@@ -629,7 +601,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
         // handle named and unnamed iteration variable references
         std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
         StringMap::const_iterator it = variables.find(varid.c_str());
-        if (it==variables.end())
+        if (it == variables.end())
             throw cRuntimeError("no such variable: ${%s}", varid.c_str());
         value = it->second;
 
@@ -641,7 +613,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
 
 const char *SectionBasedConfiguration::substituteVariables(const char *value)
 {
-    if (value==nullptr || strstr(value, "${")==nullptr)
+    if (value == nullptr || strstr(value, "${") == nullptr)
         return value;
 
     // returned string needs to be stringpooled
@@ -652,31 +624,33 @@ const char *SectionBasedConfiguration::substituteVariables(const char *value)
 const char *SectionBasedConfiguration::getVariable(const char *varname) const
 {
     StringMap::const_iterator it = variables.find(varname);
-    return it==variables.end() ? nullptr : it->second.c_str();
+    return it == variables.end() ? nullptr : it->second.c_str();
 }
 
 std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames() const
 {
     std::vector<const char *> result;
-    for (StringMap::const_iterator it = variables.begin(); it!=variables.end(); ++it)
+    for (StringMap::const_iterator it = variables.begin(); it != variables.end(); ++it)
         if (opp_isalphaext(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
             result.push_back(it->first.c_str());
+
     return result;
 }
 
 std::vector<const char *> SectionBasedConfiguration::getPredefinedVariableNames() const
 {
     std::vector<const char *> result;
-    for (int i=0; configVarDescriptions[i].name; i++)
+    for (int i = 0; configVarDescriptions[i].name; i++)
         result.push_back(configVarDescriptions[i].name);
     return result;
 }
 
 const char *SectionBasedConfiguration::getVariableDescription(const char *varname) const
 {
-    for (int i=0; configVarDescriptions[i].name; i++)
-        if (strcmp(varname, configVarDescriptions[i].name)==0)
+    for (int i = 0; configVarDescriptions[i].name; i++)
+        if (strcmp(varname, configVarDescriptions[i].name) == 0)
             return configVarDescriptions[i].description;
+
     if (!opp_isempty(getVariable(varname)))
         return "User-defined iteration variable";
     return nullptr;
@@ -684,9 +658,10 @@ const char *SectionBasedConfiguration::getVariableDescription(const char *varnam
 
 bool SectionBasedConfiguration::isPredefinedVariable(const char *varname) const
 {
-    for (int i=0; configVarDescriptions[i].name; i++)
-        if (strcmp(varname, configVarDescriptions[i].name)==0)
+    for (int i = 0; configVarDescriptions[i].name; i++)
+        if (strcmp(varname, configVarDescriptions[i].name) == 0)
             return true;
+
     return false;
 }
 
@@ -696,7 +671,7 @@ typedef std::vector<SectionChain> SectionChainList;
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const
 {
     if (sectionId == -1)
-        return std::vector<int>(); // assume implicit [General] section
+        return std::vector<int>();  // assume implicit [General] section
     if (sectionChains.at(sectionId).empty())
         sectionChains[sectionId] = computeSectionChain(sectionId);
     return sectionChains[sectionId];
@@ -710,7 +685,7 @@ std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *conf
     return resolveSectionChain(sectionId);
 }
 
-static bool mergeSectionChains(SectionChainList &remainingInputs, std::vector<int> &result);
+static bool mergeSectionChains(SectionChainList& remainingInputs, std::vector<int>& result);
 
 /*
  * Computes the linearization of given section and all of its base sections.
@@ -720,8 +695,7 @@ std::vector<int> SectionBasedConfiguration::computeSectionChain(int sectionId) c
 {
     std::vector<int> baseConfigs = getBaseConfigIds(sectionId);
     SectionChainList chainsToBeMerged;
-    for (std::vector<int>::const_iterator it = baseConfigs.begin(); it != baseConfigs.end(); ++it)
-    {
+    for (std::vector<int>::const_iterator it = baseConfigs.begin(); it != baseConfigs.end(); ++it) {
         SectionChain chain = resolveSectionChain(*it);
         chainsToBeMerged.push_back(chain);
     }
@@ -732,10 +706,10 @@ std::vector<int> SectionBasedConfiguration::computeSectionChain(int sectionId) c
     if (mergeSectionChains(chainsToBeMerged, result))
         return result;
     else
-        throw cRuntimeError("Detected section fallback chain inconsistency at: [%s]", ini->getSectionName(sectionId)); // TODO more details?
+        throw cRuntimeError("Detected section fallback chain inconsistency at: [%s]", ini->getSectionName(sectionId));  // TODO more details?
 }
 
-static int selectNext(const SectionChainList &remainingInputs);
+static int selectNext(const SectionChainList& remainingInputs);
 
 /*
  * Merges the the section chains given as 'sectionChains' and collects the result in 'result'.
@@ -747,24 +721,21 @@ static int selectNext(const SectionChainList &remainingInputs);
  * the function returns 'true' and all chain within 'sectionChains' is empty,
  * otherwise it returns false and the 'sectionChains' contains conflicting chains.
  */
-static bool mergeSectionChains(SectionChainList &sectionChains, std::vector<int> &result)
+static bool mergeSectionChains(SectionChainList& sectionChains, std::vector<int>& result)
 {
     SectionChainList::iterator begin = sectionChains.begin();
     SectionChainList::iterator end = sectionChains.end();
 
     // reverse the chains, so they are accessed at the end instead of the begin (more efficient to remove from the end of a vector)
     bool allChainsAreEmpty = true;
-    for (SectionChainList::iterator chain = begin; chain != end; ++chain)
-    {
-        if (!chain->empty())
-        {
+    for (SectionChainList::iterator chain = begin; chain != end; ++chain) {
+        if (!chain->empty()) {
             reverse(chain->begin(), chain->end());
             allChainsAreEmpty = false;
         }
     }
 
-    while (!allChainsAreEmpty)
-    {
+    while (!allChainsAreEmpty) {
         // select next
         int nextId = selectNext(sectionChains);
         if (nextId == -1)
@@ -772,10 +743,8 @@ static bool mergeSectionChains(SectionChainList &sectionChains, std::vector<int>
         // add it to the output and remove from the inputs
         result.push_back(nextId);
         allChainsAreEmpty = true;
-        for (SectionChainList::iterator chain = begin; chain != end; ++chain)
-        {
-            if (!chain->empty())
-            {
+        for (SectionChainList::iterator chain = begin; chain != end; ++chain) {
+            if (!chain->empty()) {
                 if (chain->back() == nextId)
                     chain->pop_back();
                 if (!chain->empty())
@@ -795,15 +764,13 @@ static bool mergeSectionChains(SectionChainList &sectionChains, std::vector<int>
  *   choose the section that appears in the linearization of the earliest
  *   direct base section in the local precedence order (i.e. as enumerated in the 'extends' entry).
  */
-static int selectNext(const SectionChainList &sectionChains)
+static int selectNext(const SectionChainList& sectionChains)
 {
     SectionChainList::const_iterator begin = sectionChains.begin();
     SectionChainList::const_iterator end = sectionChains.end();
 
-    for (SectionChainList::const_iterator chain = begin; chain != end; ++chain)
-    {
-        if (!chain->empty())
-        {
+    for (SectionChainList::const_iterator chain = begin; chain != end; ++chain) {
+        if (!chain->empty()) {
             int candidate = chain->back();
 
             // check if candidate is not contained any tail of input chains
@@ -814,6 +781,7 @@ static int selectNext(const SectionChainList &sectionChains)
                     for (SectionChain::const_reverse_iterator idPtr = chainPtr->rbegin()+1; !found && idPtr != chainPtr->rend(); ++idPtr)
                         if (*idPtr == candidate)
                             found = true;
+
             if (!found)
                 return candidate;
         }
@@ -823,8 +791,8 @@ static int selectNext(const SectionChainList &sectionChains)
 }
 
 /*
-std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
-{
+   std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
+   {
     // determine the list of sections, from this one following the "extends" chain up to [General]
     std::vector<int> sectionChain;
     int generalSectionId = internalFindSection("General");
@@ -853,14 +821,12 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
 {
     const std::string& key = entry.key;
     const char *lastDot = strrchr(key.c_str(), '.');
-    if (!lastDot && !PatternMatcher::containsWildcards(key.c_str()))
-    {
+    if (!lastDot && !PatternMatcher::containsWildcards(key.c_str())) {
         // config: add if not already in there
-        if (config.find(key)==config.end())
+        if (config.find(key) == config.end())
             config[key] = entry;
     }
-    else
-    {
+    else {
         // key contains wildcard or dot: parameter or per-object configuration
         // (example: "**", "**.param", "**.partition-id")
         // Note: since the last part of they key might contain wildcards, it is not really possible
@@ -875,34 +841,32 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
         KeyValue2 entry2(entry);
         if (!ownerName.empty())
             entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
-         else
+        else
             entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
         entry2.suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
 
         // find which group it should go into
-        if (!suffixContainsWildcards)
-        {
+        if (!suffixContainsWildcards) {
             // no wildcard in suffix (=group name)
-            if (suffixGroups.find(suffix)==suffixGroups.end()) {
+            if (suffixGroups.find(suffix) == suffixGroups.end()) {
                 // suffix group not yet exists, create it
                 SuffixGroup& group = suffixGroups[suffix];
 
                 // initialize group with matching wildcard keys seen so far
-                for (int k=0; k<(int)wildcardSuffixGroup.entries.size(); k++)
+                for (int k = 0; k < (int)wildcardSuffixGroup.entries.size(); k++)
                     if (wildcardSuffixGroup.entries[k].suffixPattern->matches(suffix.c_str()))
                         group.entries.push_back(wildcardSuffixGroup.entries[k]);
             }
             suffixGroups[suffix].entries.push_back(entry2);
         }
-        else
-        {
+        else {
             // suffix contains wildcards: we need to add it to all existing suffix groups it matches
             // Note: if suffix also contains a hyphen, that's actually illegal (per-object
             // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
             // wildcard group
             wildcardSuffixGroup.entries.push_back(entry2);
-            for (std::map<std::string,SuffixGroup>::iterator it = suffixGroups.begin(); it!=suffixGroups.end(); it++)
+            for (std::map<std::string, SuffixGroup>::iterator it = suffixGroups.begin(); it != suffixGroups.end(); it++)
                 if (entry2.suffixPattern->matches(it->first.c_str()))
                     (it->second).entries.push_back(entry2);
         }
@@ -916,8 +880,7 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
     const char *lastDotPos = strrchr(key, '.');
     const char *doubleAsterisk = !lastDotPos ? nullptr : strstr(lastDotPos, "**");
 
-    if (!lastDotPos || doubleAsterisk)
-    {
+    if (!lastDotPos || doubleAsterisk) {
         // complicated special case: there's a "**" after the last dot
         // (or there's no dot at all). Examples: "**baz", "net.**.foo**",
         // "net.**.foo**bar**baz"
@@ -931,11 +894,10 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
         // find last "**"
         while (doubleAsterisk && strstr(doubleAsterisk+1, "**"))
             doubleAsterisk = strstr(doubleAsterisk+1, "**");
-        outOwnerName = ""; // empty owner means "do fullPath match"
+        outOwnerName = "";  // empty owner means "do fullPath match"
         outGroupName = !doubleAsterisk ? "*" : doubleAsterisk+1;
     }
-    else
-    {
+    else {
         // normal case: group is the part after the last dot
         outOwnerName.assign(key, lastDotPos - key);
         outGroupName.assign(lastDotPos+1);
@@ -956,9 +918,10 @@ const std::string *SectionBasedConfiguration::getPooledBaseDir(const char *based
 int SectionBasedConfiguration::internalFindSection(const char *section) const
 {
     // not very efficient (linear search), but we only invoke it a few times during activateConfig()
-    for (int i=0; i<ini->getNumSections(); i++)
-        if (strcmp(section, ini->getSectionName(i))==0)
+    for (int i = 0; i < ini->getNumSections(); i++)
+        if (strcmp(section, ini->getSectionName(i)) == 0)
             return i;
+
     return -1;
 }
 
@@ -974,28 +937,33 @@ int SectionBasedConfiguration::internalFindEntry(int sectionId, const char *key)
 {
     // not very efficient (linear search), but we only invoke from activateConfig(),
     // and only once per section
-    for (int i=0; i<ini->getNumEntries(sectionId); i++)
-        if (strcmp(key, ini->getEntry(sectionId, i).getKey())==0)
+    for (int i = 0; i < ini->getNumEntries(sectionId); i++)
+        if (strcmp(key, ini->getEntry(sectionId, i).getKey()) == 0)
             return i;
+
     return -1;
 }
 
 const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue, int *outSectionIdPtr, int *outEntryIdPtr) const
 {
-    if (outSectionIdPtr) *outSectionIdPtr = -1;
-    if (outEntryIdPtr) *outEntryIdPtr = -1;
+    if (outSectionIdPtr)
+        *outSectionIdPtr = -1;
+    if (outEntryIdPtr)
+        *outEntryIdPtr = -1;
 
-    for (int i=0; i<(int)commandLineOptions.size(); i++)
-        if (strcmp(key, commandLineOptions[i].getKey())==0)
+    for (int i = 0; i < (int)commandLineOptions.size(); i++)
+        if (strcmp(key, commandLineOptions[i].getKey()) == 0)
             return commandLineOptions[i].getValue();
 
-    for (int i=0; i<(int)sectionChain.size(); i++)
-    {
+
+    for (int i = 0; i < (int)sectionChain.size(); i++) {
         int sectionId = sectionChain[i];
         int entryId = internalFindEntry(sectionId, key);
         if (entryId != -1) {
-            if (outSectionIdPtr) *outSectionIdPtr = sectionId;
-            if (outEntryIdPtr) *outEntryIdPtr = entryId;
+            if (outSectionIdPtr)
+                *outSectionIdPtr = sectionId;
+            if (outEntryIdPtr)
+                *outEntryIdPtr = entryId;
             return ini->getEntry(sectionId, entryId).getValue();
         }
     }
@@ -1004,7 +972,7 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
 
 static int findInArray(const char *s, const char **array)
 {
-    for (int i=0; array[i]!=nullptr; i++)
+    for (int i = 0; array[i] != nullptr; i++)
         if (!strcmp(s, array[i]))
             return i;
     return -1;
@@ -1014,7 +982,7 @@ enum { WHITE, GREY, BLACK };
 
 class SectionGraphNode
 {
-public:
+  public:
     int id;
     std::vector<int> nextNodes;
     int color;
@@ -1024,9 +992,9 @@ public:
 
 typedef std::vector<SectionGraphNode> SectionGraph;
 
-static bool visit(SectionGraph &graph, SectionGraphNode& node);
+static bool visit(SectionGraph& graph, SectionGraphNode& node);
 
-static int findCycle(SectionGraph &graph)
+static int findCycle(SectionGraph& graph)
 {
     for (SectionGraph::iterator node = graph.begin(); node != graph.end(); ++node)
         if (node->color == WHITE && visit(graph, *node))
@@ -1034,12 +1002,11 @@ static int findCycle(SectionGraph &graph)
     return -1;
 }
 
-static bool visit(SectionGraph &graph, SectionGraphNode& node)
+static bool visit(SectionGraph& graph, SectionGraphNode& node)
 {
     node.color = GREY;
-    for (std::vector<int>::iterator nodeId = node.nextNodes.begin(); nodeId != node.nextNodes.end(); ++nodeId)
-    {
-        SectionGraphNode &node2 = graph[*nodeId];
+    for (std::vector<int>::iterator nodeId = node.nextNodes.begin(); nodeId != node.nextNodes.end(); ++nodeId) {
+        SectionGraphNode& node2 = graph[*nodeId];
         if (node2.color == GREY || (node2.color == WHITE && visit(graph, node2)))
             return true;
     }
@@ -1068,15 +1035,13 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
     };
 
     // warn for obsolete section names and config keys
-    for (int i=0; i<ini->getNumSections(); i++)
-    {
+    for (int i = 0; i < ini->getNumSections(); i++) {
         const char *section = ini->getSectionName(i);
         if (findInArray(section, obsoleteSections) != -1)
             throw cRuntimeError("Obsolete section name [%s] found, please convert the ini file to 4.x format", section);
 
         int numEntries = ini->getNumEntries(i);
-        for (int j=0; j<numEntries; j++)
-        {
+        for (int j = 0; j < numEntries; j++) {
             const char *key = ini->getEntry(i, j).getKey();
             if (findInArray(key, cmdenvNames) != -1 || findInArray(key, tkenvNames) != -1)
                 throw cRuntimeError("Obsolete configuration option %s= found, please convert the ini file to 4.x format", key);
@@ -1085,47 +1050,42 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 
     // check section names
     std::set<std::string> configNames;
-    for (int i=0; i<ini->getNumSections(); i++)
-    {
+    for (int i = 0; i < ini->getNumSections(); i++) {
         const char *section = ini->getSectionName(i);
         const char *configName = nullptr;
-        if (strcmp(section, "General")==0)
-            ; // OK
-        else if (strncmp(section, "Config ", 7)==0)
-            configName  = section+7;
+        if (strcmp(section, "General") == 0)
+            ;  // OK
+        else if (strncmp(section, "Config ", 7) == 0)
+            configName = section+7;
         else
             throw cRuntimeError("Invalid section name [%s], should be [General] or [Config <name>]", section);
-        if (configName)
-        {
+        if (configName) {
             if (*configName == ' ')
                 throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
-            if (!opp_isalphaext(*configName) && *configName!='_')
+            if (!opp_isalphaext(*configName) && *configName != '_')
                 throw cRuntimeError("Invalid section name [%s]: config name must begin with a letter or underscore", section);
-            for (const char *s=configName; *s; s++)
-                if (!opp_isalnumext(*s) && strchr("-_@", *s)==nullptr)
+            for (const char *s = configName; *s; s++)
+                if (!opp_isalnumext(*s) && strchr("-_@", *s) == nullptr)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
-            if (configNames.find(configName)!=configNames.end())
+
+            if (configNames.find(configName) != configNames.end())
                 throw cRuntimeError("Configuration name '%s' not unique", configName);
             configNames.insert(configName);
         }
-
     }
 
     // check keys, build inheritance graph
     SectionGraph graph;
-    for (int i=0; i<ini->getNumSections(); i++)
-    {
+    for (int i = 0; i < ini->getNumSections(); i++) {
         graph.push_back(SectionGraphNode(i));
 
         const char *section = ini->getSectionName(i);
         int numEntries = ini->getNumEntries(i);
-        for (int j=0; j<numEntries; j++)
-        {
+        for (int j = 0; j < numEntries; j++) {
             const char *key = ini->getEntry(i, j).getKey();
-            bool containsDot = strchr(key, '.')!=nullptr;
+            bool containsDot = strchr(key, '.') != nullptr;
 
-            if (!containsDot && !PatternMatcher::containsWildcards(key))
-            {
+            if (!containsDot && !PatternMatcher::containsWildcards(key)) {
                 // warn for unrecognized (or misplaced) config keys
                 // NOTE: values don't need to be validated here, that will be
                 // done when the config gets actually used
@@ -1136,41 +1096,37 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     throw cRuntimeError("Unknown configuration option: %s", key);
                 if (e->isPerObject())
                     throw cRuntimeError("Configuration option %s should be specified per object, try **.%s=", key, key);
-                if (e->isGlobal() && strcmp(section, "General")!=0)
+                if (e->isGlobal() && strcmp(section, "General") != 0)
                     throw cRuntimeError("Configuration option %s may only occur in the [General] section", key);
 
                 // check section hierarchy
-                if (strcmp(key, CFGID_EXTENDS->getName())==0)
-                {
-                    if (strcmp(section, "General")==0)
+                if (strcmp(key, CFGID_EXTENDS->getName()) == 0) {
+                    if (strcmp(section, "General") == 0)
                         throw cRuntimeError("The [General] section cannot extend other sections");
 
                     // warn for invalid "extends" names
                     const char *value = ini->getEntry(i, j).getValue();
                     StringTokenizer tokenizer(value, ", \t");
-                    while (tokenizer.hasMoreTokens())
-                    {
+                    while (tokenizer.hasMoreTokens()) {
                         const char *configName = tokenizer.nextToken();
                         std::string sectionName = std::string("Config ") + configName;
                         int configId = internalFindSection(sectionName.c_str());
-                        if (strcmp(configName,"General")!=0 && configId == -1)
+                        if (strcmp(configName, "General") != 0 && configId == -1)
                             throw cRuntimeError("No such config: %s", configName);
                         if (configId != -1)
                             graph.back().nextNodes.push_back(configId);
                     }
                 }
             }
-            else
-            {
+            else {
                 // check for per-object configuration subkeys (".ev-enabled", ".record-interval")
                 std::string ownerName;
                 std::string suffix;
                 splitKey(key, ownerName, suffix);
-                bool containsHyphen = strchr(suffix.c_str(), '-')!=nullptr;
-                if (containsHyphen)
-                {
+                bool containsHyphen = strchr(suffix.c_str(), '-') != nullptr;
+                if (containsHyphen) {
                     // this is a per-object config
-                    //XXX suffix (probably) should not contain wildcard; but surely not "**" !!!!
+                    // XXX suffix (probably) should not contain wildcard; but surely not "**" !!!!
                     cConfigOption *e = lookupConfigOption(suffix.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, suffix.c_str()))
                         continue;
@@ -1190,13 +1146,13 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
         throw cRuntimeError("Cycle detected in section fallback chain at: [%s]", ini->getSectionName(sectionId));
 
     // check for inconsistent hierarchy
-    for (int i=0; i<ini->getNumSections(); i++)
+    for (int i = 0; i < ini->getNumSections(); i++)
         resolveSectionChain(i);
 }
 
 cConfigOption *SectionBasedConfiguration::lookupConfigOption(const char *key)
 {
-    cConfigOption *e = (cConfigOption *) configOptions.getInstance()->lookup(key);
+    cConfigOption *e = (cConfigOption *)configOptions.getInstance()->lookup(key);
     if (e)
         return e;  // found it, great
 
@@ -1205,11 +1161,9 @@ cConfigOption *SectionBasedConfiguration::lookupConfigOption(const char *key)
     // We have to iterate over all cConfigOptions to verify this.
     // "%" means "any number" in config keys.
     int n = configOptions.getInstance()->size();
-    for (int i=0; i<n; i++)
-    {
-        cConfigOption *e = (cConfigOption *) configOptions.getInstance()->get(i);
-        if (PatternMatcher::containsWildcards(e->getName()) || strchr(e->getName(),'%')!=nullptr)
-        {
+    for (int i = 0; i < n; i++) {
+        cConfigOption *e = (cConfigOption *)configOptions.getInstance()->get(i);
+        if (PatternMatcher::containsWildcards(e->getName()) || strchr(e->getName(), '%') != nullptr) {
             std::string pattern = opp_replacesubstring(e->getName(), "%", "{..}", true);
             if (PatternMatcher(pattern.c_str(), false, true, true).matches(key))
                 return e;
@@ -1225,19 +1179,20 @@ bool SectionBasedConfiguration::isIgnorableConfigKey(const char *ignoredKeyPatte
     while (tokenizer.hasMoreTokens())
         if (PatternMatcher(tokenizer.nextToken(), true, true, true).matches(key))
             return true;
+
     return false;
 }
 
 const char *SectionBasedConfiguration::getConfigValue(const char *key) const
 {
-    std::map<std::string,KeyValue1>::const_iterator it = config.find(key);
-    return it==config.end() ? nullptr : it->second.value.c_str();
+    std::map<std::string, KeyValue1>::const_iterator it = config.find(key);
+    return it == config.end() ? nullptr : it->second.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getConfigEntry(const char *key) const
 {
-    std::map<std::string,KeyValue1>::const_iterator it = config.find(key);
-    return it==config.end() ? (KeyValue&)nullEntry : (KeyValue&)it->second;
+    std::map<std::string, KeyValue1>::const_iterator it = config.find(key);
+    return it == config.end() ? (KeyValue&)nullEntry : (KeyValue&)it->second;
 }
 
 std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const char *pattern) const
@@ -1246,7 +1201,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
     PatternMatcher matcher(pattern, true, true, true);
 
     // iterate over the map -- this is going to be sloooow...
-    for (std::map<std::string,KeyValue1>::const_iterator it = config.begin(); it != config.end(); ++it)
+    for (std::map<std::string, KeyValue1>::const_iterator it = config.begin(); it != config.end(); ++it)
         if (matcher.matches(it->first.c_str()))
             result.push_back(it->first.c_str());
     return result;
@@ -1254,36 +1209,33 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
 
 const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
-    const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&) getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
-    return entry.getKey()==nullptr ? nullptr : entry.value.c_str();
+    const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&)getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
+    return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
     // look up which group; paramName serves as suffix (ie. group name)
-    std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.find(paramName);
-    const SuffixGroup *group = it==suffixGroups.end() ? &wildcardSuffixGroup : &it->second;
+    std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.find(paramName);
+    const SuffixGroup *group = it == suffixGroups.end() ? &wildcardSuffixGroup : &it->second;
 
     // find first match in the group
-    for (int i=0; i<(int)group->entries.size(); i++)
-    {
+    for (int i = 0; i < (int)group->entries.size(); i++) {
         const KeyValue2& entry = group->entries[i];
         if (entryMatches(entry, moduleFullPath, paramName))
             if (hasDefaultValue || entry.value != "default")
                 return entry;
     }
-    return nullEntry; // not found
+    return nullEntry;  // not found
 }
 
 bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName)
 {
-    if (!entry.fullPathPattern)
-    {
+    if (!entry.fullPathPattern) {
         // typical
-        return entry.ownerPattern->matches(moduleFullPath) && (entry.suffixPattern==nullptr || entry.suffixPattern->matches(paramName));
+        return entry.ownerPattern->matches(moduleFullPath) && (entry.suffixPattern == nullptr || entry.suffixPattern->matches(paramName));
     }
-    else
-    {
+    else {
         // less efficient, but very rare
         std::string paramFullPath = std::string(moduleFullPath) + "." + paramName;
         return entry.fullPathPattern->matches(paramFullPath.c_str());
@@ -1293,14 +1245,14 @@ bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char 
 std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs() const
 {
     std::vector<const char *> result;
-    //FIXME TBD
+    // FIXME TBD
     return result;
 }
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const
 {
-    const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&) getPerObjectConfigEntry(objectFullPath, keySuffix);
-    return entry.getKey()==nullptr ? nullptr : entry.value.c_str();
+    const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&)getPerObjectConfigEntry(objectFullPath, keySuffix);
+    return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const
@@ -1308,26 +1260,25 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
     // look up which group; keySuffix serves as group name
     // Note: we do not accept wildcards in the config key's name (ie. "**.record-*" is invalid),
     // so we ignore the wildcard group.
-    std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.find(keySuffix);
-    if (it==suffixGroups.end())
-        return nullEntry; // no such group
+    std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.find(keySuffix);
+    if (it == suffixGroups.end())
+        return nullEntry;  // no such group
 
     const SuffixGroup *suffixGroup = &it->second;
 
     // find first match in the group
-    for (int i=0; i<(int)suffixGroup->entries.size(); i++)
-    {
+    for (int i = 0; i < (int)suffixGroup->entries.size(); i++) {
         const KeyValue2& entry = suffixGroup->entries[i];
         if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
-    return nullEntry; // not found
+    return nullEntry;  // not found
 }
 
 static const char *partAfterLastDot(const char *s)
 {
     const char *lastDotPos = strrchr(s, '.');
-    return lastDotPos==nullptr ? nullptr : lastDotPos+1;
+    return lastDotPos == nullptr ? nullptr : lastDotPos+1;
 }
 
 std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeys(const char *objectFullPathPattern, const char *keySuffixPattern) const
@@ -1336,28 +1287,25 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 
     // only concrete objects or "**" is accepted, because we are not prepared
     // to handle the "pattern matches pattern" case (see below as well).
-    bool anyObject = strcmp(objectFullPathPattern, "**")==0;
+    bool anyObject = strcmp(objectFullPathPattern, "**") == 0;
     if (!anyObject && PatternMatcher::containsWildcards(objectFullPathPattern))
         throw cRuntimeError("getMatchingPerObjectConfigKeys: invalid objectFullPath parameter: the only wildcard pattern accepted is '**'");
 
     // check all suffix groups whose name matches the pattern
     PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);
-    for (std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it)
-    {
+    for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it) {
         const char *suffix = it->first.c_str();
-        if (suffixMatcher.matches(suffix))
-        {
+        if (suffixMatcher.matches(suffix)) {
             // find all matching entries from this suffix group.
             // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=nullptr);
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matches the other one as string, and vica versa.
             const SuffixGroup& group = it->second;
-            for (int i=0; i<(int)group.entries.size(); i++)
-            {
+            for (int i = 0; i < (int)group.entries.size(); i++) {
                 const KeyValue2& entry = group.entries[i];
                 if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
                     &&
-                    (entry.suffixPattern==nullptr ||
+                    (entry.suffixPattern == nullptr ||
                      suffixMatcher.matches(partAfterLastDot(entry.key.c_str())) ||
                      entry.suffixPattern->matches(keySuffixPattern)))
                     result.push_back(entry.key.c_str());
@@ -1370,7 +1318,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const
 {
     std::vector<const char *> result = getMatchingPerObjectConfigKeys(objectFullPath, keySuffixPattern);
-    for (int i=0; i<(int)result.size(); i++)
+    for (int i = 0; i < (int)result.size(); i++)
         result[i] = partAfterLastDot(result[i]);
     return result;
 }
@@ -1378,22 +1326,21 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 void SectionBasedConfiguration::dump() const
 {
     printf("Config:\n");
-    for (std::map<std::string,KeyValue1>::const_iterator it = config.begin(); it!=config.end(); it++)
+    for (std::map<std::string, KeyValue1>::const_iterator it = config.begin(); it != config.end(); it++)
         printf("  %s = %s\n", it->first.c_str(), it->second.value.c_str());
 
-    for (std::map<std::string,SuffixGroup>::const_iterator it = suffixGroups.begin(); it!=suffixGroups.end(); it++)
-    {
+    for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); it++) {
         const std::string& suffix = it->first;
         const SuffixGroup& group = it->second;
         printf("Suffix Group %s:\n", suffix.c_str());
-        for (int i=0; i<(int)group.entries.size(); i++)
+        for (int i = 0; i < (int)group.entries.size(); i++)
             printf("  %s = %s\n", group.entries[i].key.c_str(), group.entries[i].value.c_str());
     }
     printf("Wildcard Suffix Group:\n");
-    for (int i=0; i<(int)wildcardSuffixGroup.entries.size(); i++)
+    for (int i = 0; i < (int)wildcardSuffixGroup.entries.size(); i++)
         printf("  %s = %s\n", wildcardSuffixGroup.entries[i].key.c_str(), wildcardSuffixGroup.entries[i].value.c_str());
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

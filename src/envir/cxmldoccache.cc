@@ -28,7 +28,6 @@ using namespace OPP::nedxml;
 NAMESPACE_BEGIN
 namespace envir {
 
-
 // We depend on WITH_NETBUILDER because it brings the nedxml library which
 // contains the XML parser. TBD XML parser should be an independent library
 #ifdef WITH_NETBUILDER
@@ -74,7 +73,7 @@ class cXMLSAXHandler : public SAXHandler
 
 cXMLSAXHandler::cXMLSAXHandler(const char *fname)
 {
-    root = current = new cXMLElement("/", "", nullptr); // "Document node" (used as sort of a sentry)
+    root = current = new cXMLElement("/", "", nullptr);  // "Document node" (used as sort of a sentry)
     sourcefilename = fname;
 }
 
@@ -94,14 +93,14 @@ void cXMLSAXHandler::startElement(const char *name, const char **atts)
 {
     // source location
     char srcloc[500];
-    sprintf(srcloc,"%s:%d", sourcefilename, parser->getCurrentLineNumber());
+    sprintf(srcloc, "%s:%d", sourcefilename, parser->getCurrentLineNumber());
 
     // create element
     cXMLElement *node = new cXMLElement(name, srcloc, current);
     current = node;
 
     // set attributes
-    for (int i=0; atts && atts[i]; i+=2)
+    for (int i = 0; atts && atts[i]; i += 2)
         node->setAttribute(atts[i], atts[i+1]);
 }
 
@@ -135,7 +134,7 @@ void cXMLSAXHandler::endCdataSection()
     // ignore
 }
 
-#endif  //WITH_NETBUILDER
+#endif  // WITH_NETBUILDER
 
 //=========================================================
 
@@ -145,9 +144,9 @@ cXMLDocCache::cXMLDocCache()
 
 cXMLDocCache::~cXMLDocCache()
 {
-    for (XMLDocMap::iterator i=documentCache.begin(); i!=documentCache.end(); ++i)
+    for (XMLDocMap::iterator i = documentCache.begin(); i != documentCache.end(); ++i)
         delete i->second;
-    for (XMLDocMap::iterator i=contentCache.begin(); i!=contentCache.end(); ++i)
+    for (XMLDocMap::iterator i = contentCache.begin(); i != contentCache.end(); ++i)
         delete i->second;
 }
 
@@ -220,8 +219,7 @@ void cXMLDocCache::forgetDocument(const char *filename)
 {
     std::string key = tidyFilename(toAbsolutePath(filename).c_str());
     XMLDocMap::iterator it = documentCache.find(key);
-    if (it != documentCache.end())
-    {
+    if (it != documentCache.end()) {
         cXMLElement *node = it->second;
         documentCache.erase(it);
         delete node;
@@ -231,8 +229,7 @@ void cXMLDocCache::forgetDocument(const char *filename)
 void cXMLDocCache::forgetParsed(const char *content)
 {
     XMLDocMap::iterator it = contentCache.find(content);
-    if (it != contentCache.end())
-    {
+    if (it != contentCache.end()) {
         cXMLElement *node = it->second;
         contentCache.erase(it);
         delete node;
@@ -241,18 +238,18 @@ void cXMLDocCache::forgetParsed(const char *content)
 
 void cXMLDocCache::flushDocumentCache()
 {
-    for (XMLDocMap::iterator i=documentCache.begin(); i!=documentCache.end(); ++i)
+    for (XMLDocMap::iterator i = documentCache.begin(); i != documentCache.end(); ++i)
         delete i->second;
     documentCache.clear();
 }
 
 void cXMLDocCache::flushParsedContentCache()
 {
-    for (XMLDocMap::iterator i=contentCache.begin(); i!=contentCache.end(); ++i)
+    for (XMLDocMap::iterator i = contentCache.begin(); i != contentCache.end(); ++i)
         delete i->second;
     contentCache.clear();
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

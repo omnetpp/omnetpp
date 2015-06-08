@@ -39,8 +39,8 @@ namespace envir {
 
 Register_Class(cFileOutputVectorManager);
 
-#define VECTOR_FILE_VERSION 2
-#define DEFAULT_PRECISION  "14"
+#define VECTOR_FILE_VERSION    2
+#define DEFAULT_PRECISION      "14"
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -72,15 +72,14 @@ cFileOutputVectorManager::~cFileOutputVectorManager()
 void cFileOutputVectorManager::openFile()
 {
     mkPath(directoryOf(fname.c_str()).c_str());
-    f = fopen(fname.c_str(),"a");
-    if (f==nullptr)
-        throw cRuntimeError("Cannot open output vector file `%s'",fname.c_str());
+    f = fopen(fname.c_str(), "a");
+    if (f == nullptr)
+        throw cRuntimeError("Cannot open output vector file `%s'", fname.c_str());
 }
 
 void cFileOutputVectorManager::closeFile()
 {
-    if (f)
-    {
+    if (f) {
         fclose(f);
         f = nullptr;
     }
@@ -94,24 +93,23 @@ void cFileOutputVectorManager::writeRunData()
 
 void cFileOutputVectorManager::initVector(VectorData *vp)
 {
-    if (!f)
-    {
+    if (!f) {
         openFile();
-        if (!f) return;
+        if (!f)
+            return;
 
         CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
     }
 
-    if (!run.initialized)
-    {
+    if (!run.initialized) {
         // this is the first vector written in this run, write out run attributes
         writeRunData();
     }
 
-    CHECK(fprintf(f,"vector %d  %s  %s  %s\n",
-                  vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
-    for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
-        CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+    CHECK(fprintf(f, "vector %d  %s  %s  %s\n",
+                    vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
+    for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); it++)
+        CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     vp->initialized = true;
 }
@@ -133,9 +131,9 @@ void cFileOutputVectorManager::endRun()
     closeFile();
 }
 
-void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char *vecname,
-                                                  bool& outEnabled, bool& outRecordEventNumbers,
-                                                  Intervals& outIntervals)
+void cFileOutputVectorManager::getOutVectorConfig(const char *modname, const char *vecname,
+        bool& outEnabled, bool& outRecordEventNumbers,
+        Intervals& outIntervals)
 {
     std::string vectorfullpath = std::string(modname) + "." + vecname;
     outEnabled = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
@@ -165,14 +163,14 @@ cFileOutputVectorManager::VectorData *cFileOutputVectorManager::createVectorData
 
 void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
-    ASSERT(vectorhandle!=nullptr);
+    ASSERT(vectorhandle != nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
     delete vp;
 }
 
 void cFileOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
 {
-    ASSERT(vectorhandle!=nullptr);
+    ASSERT(vectorhandle != nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
     vp->attributes[name] = value;
 }
@@ -181,25 +179,22 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
 {
     static char buff[64];
 
-    ASSERT(vectorhandle!=nullptr);
+    ASSERT(vectorhandle != nullptr);
     VectorData *vp = (VectorData *)vectorhandle;
 
     if (!vp->enabled)
         return false;
 
-    if (vp->intervals.contains(t))
-    {
+    if (vp->intervals.contains(t)) {
         if (!vp->initialized)
             initVector(vp);
 
-        assert(f!=nullptr);
-        if (vp->recordEventNumbers)
-        {
-            CHECK(fprintf(f,"%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
+        assert(f != nullptr);
+        if (vp->recordEventNumbers) {
+            CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
         }
-        else
-        {
-            CHECK(fprintf(f,"%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, t), prec, value));
+        else {
+            CHECK(fprintf(f, "%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, t), prec, value));
         }
         return true;
     }
@@ -217,6 +212,6 @@ void cFileOutputVectorManager::flush()
         fflush(f);
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

@@ -83,44 +83,41 @@ typedef int (*intfunc_t)();
 
 NAMESPACE_BEGIN
 namespace envir {
+
 extern "C" int evMain(int argc, char *argv[]);
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 
 std::string lastLoadLibError;  // contains the error message after calling oppLoadLibrary()
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
-    if (!pathname || !*pathname)
-    {
-         dir = ".";
-         fnameonly = "";
-         return;
+    if (!pathname || !*pathname) {
+        dir = ".";
+        fnameonly = "";
+        return;
     }
 
     // find last "/" or "\"
     const char *s = pathname + strlen(pathname) - 1;
-    s--; // ignore potential trailing "/"
-    while (s>pathname && *s!='\\' && *s!='/') s--;
-    const char *sep = s<=pathname ? nullptr : s;
+    s--;  // ignore potential trailing "/"
+    while (s > pathname && *s != '\\' && *s != '/')
+        s--;
+    const char *sep = s <= pathname ? nullptr : s;
 
     // split along that
-    if (!sep)
-    {
+    if (!sep) {
         // no slash or colon
-        if (strchr(pathname,':') || strcmp(pathname,".")==0 || strcmp(pathname,"..")==0)
-        {
+        if (strchr(pathname, ':') || strcmp(pathname, ".") == 0 || strcmp(pathname, "..") == 0) {
             fnameonly = "";
             dir = pathname;
         }
-        else
-        {
+        else {
             fnameonly = pathname;
             dir = ".";
         }
     }
-    else
-    {
+    else {
         fnameonly = s+1;
         dir = std::string(pathname, s-pathname+1);
     }
@@ -128,19 +125,19 @@ static void splitFileName(const char *pathname, std::string& dir, std::string& f
 
 static std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
 {
-     bool hasDir = strchr(libname, '/')!=nullptr || strchr(libname, '\\')!=nullptr;
-     std::string dir, fileNameOnly;
-     splitFileName(libname, dir, fileNameOnly);
-     bool hasExt = strchr(fileNameOnly.c_str(), '.')!=nullptr;
+    bool hasDir = strchr(libname, '/') != nullptr || strchr(libname, '\\') != nullptr;
+    std::string dir, fileNameOnly;
+    splitFileName(libname, dir, fileNameOnly);
+    bool hasExt = strchr(fileNameOnly.c_str(), '.') != nullptr;
 
-     std::string libFileName;
-     if (hasExt)
-         libFileName = libname;  // when an exact file name is given, leave it unchanged
-     else if (hasDir)
-         libFileName = dir + "/" + prefix + fileNameOnly + suffix;
-     else
-         libFileName = std::string(prefix) + fileNameOnly + suffix;
-     return libFileName;
+    std::string libFileName;
+    if (hasExt)
+        libFileName = libname;  // when an exact file name is given, leave it unchanged
+    else if (hasDir)
+        libFileName = dir + "/" + prefix + fileNameOnly + suffix;
+    else
+        libFileName = std::string(prefix) + fileNameOnly + suffix;
+    return libFileName;
 }
 
 #ifdef _WIN32
@@ -154,9 +151,9 @@ typedef HMODULE libhandle_t;
 static libhandle_t oppLoadLibrary(const char *libname)
 {
 # ifdef __GNUC__
-     std::string libFileName = makeLibFileName(libname, "lib", ".dll"); // MinGW
+    std::string libFileName = makeLibFileName(libname, "lib", ".dll");  // MinGW
 # else
-     std::string libFileName = makeLibFileName(libname, "", ".dll"); // Visual C++
+    std::string libFileName = makeLibFileName(libname, "", ".dll");  // Visual C++
 # endif
     HMODULE handle = LoadLibrary((char *)libFileName.c_str());
     lastLoadLibError = "";
@@ -176,22 +173,19 @@ static void *getSymbol(libhandle_t handle, const char *symbol)
     // look up among all loaded modules
     HMODULE handles[1024];
     DWORD bytesNeeded = 0;
-    if (!EnumProcessModules(GetCurrentProcess(), handles, sizeof(handles), &bytesNeeded))
-    {
+    if (!EnumProcessModules(GetCurrentProcess(), handles, sizeof(handles), &bytesNeeded)) {
         fprintf(stderr, "<!> Error: opp_run: Could not enumerate currently loaded modules.\n");
         exit(1);
     }
     int numModules = bytesNeeded / sizeof(HMODULE);
 
-    if (numModules > 1024)
-    {
+    if (numModules > 1024) {
         fprintf(stderr, "<!> Warning: opp_run: Too many modules loaded, some of them will be ignored. "
-                        "opp_run may not detect correctly whether it requires release or debug libraries.\n\n"); // double "\n" to separate message from subsequent OMNeT++ startup banner
+                        "opp_run may not detect correctly whether it requires release or debug libraries.\n\n");  // double "\n" to separate message from subsequent OMNeT++ startup banner
         numModules = 1024;
     }
 
-    for (int i = 0; i < numModules; i++)
-    {
+    for (int i = 0; i < numModules; i++) {
         if ((result = (void *)GetProcAddress(handles[i], symbol)) != nullptr)
             return result;
     }
@@ -257,29 +251,25 @@ bool needsDebugSimkernel(int argc, char *argv[])
     // the release version of oppsim is loaded during the test
     putenv((char *)"__OPPSIM_LOADED__=no");
 
-    for (int i=1; i<argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         const char *arg = argv[i];
-        if (arg[0]=='-' && arg[1]=='l')
-        {
+        if (arg[0] == '-' && arg[1] == 'l') {
             const char *libname;
-            if (arg[2]!=0)        // accept both -llibname
-                libname =  arg+2;
-            else if (i+1<argc)    // and -l libname format
+            if (arg[2] != 0)  // accept both -llibname
+                libname = arg+2;
+            else if (i+1 < argc)  // and -l libname format
                 libname = argv[i+1];
-            else
-            {
+            else {
                 fprintf(stderr, "<!> Error: opp_run: Missing library name at the end of command line after the -l command line option.\n");
                 exit(1);
             }
 
             libhandle_t handle = oppLoadLibrary(libname);
-            if (!handle && lastLoadLibError!="")
-                fprintf(stderr, "<!> Warning: opp_run: Cannot check library %s: %s\n\n", libname, lastLoadLibError.c_str()); // double "\n" to separate message from subsequent OMNeT++ startup banner
+            if (!handle && lastLoadLibError != "")
+                fprintf(stderr, "<!> Warning: opp_run: Cannot check library %s: %s\n\n", libname, lastLoadLibError.c_str());  // double "\n" to separate message from subsequent OMNeT++ startup banner
 
             // Detect whether oppsim is release. If it was not loaded correctly, assume it is debug.
-            if (handle && getSymbol(handle, "__is_release_oppsim__"))
-            {
+            if (handle && getSymbol(handle, "__is_release_oppsim__")) {
                 // Release kernel. oppsim must be reloaded later by opp_run_release
                 putenv((char *)"__OPPSIM_LOADED__=no");
                 fflush(stderr);
@@ -298,11 +288,11 @@ int main(int argc, char *argv[])
 {
     if (needsDebugSimkernel(argc, argv))
         return OPP::envir::evMain(argc, argv);
-    else
-    {
+    else {
         // The libs specified on the command line were compiled with release-mode simulation libraries
         // but opp_run is by definition a debug executable; we must delegate to opp_run_release with the
         // current command line arguments.
         return oppExec("opp_run_release", argv);
     }
 }
+

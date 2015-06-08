@@ -39,11 +39,9 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace envir {
 
-
-
 cCollectObjectsVisitor::cCollectObjectsVisitor()
 {
-    sizeLimit = 0; // no limit by default
+    sizeLimit = 0;  // no limit by default
     capacity = 16;
     objs = new cObject *[capacity];
     numObjs = 0;
@@ -51,7 +49,7 @@ cCollectObjectsVisitor::cCollectObjectsVisitor()
 
 cCollectObjectsVisitor::~cCollectObjectsVisitor()
 {
-    delete [] objs;
+    delete[] objs;
 }
 
 void cCollectObjectsVisitor::setSizeLimit(int limit)
@@ -61,15 +59,15 @@ void cCollectObjectsVisitor::setSizeLimit(int limit)
 
 void cCollectObjectsVisitor::addPointer(cObject *obj)
 {
-    if (sizeLimit && numObjs==sizeLimit)
+    if (sizeLimit && numObjs == sizeLimit)
         throw EndTraversalException();
 
     // if array is full, reallocate
-    if (numObjs==capacity)
-    {
+    if (numObjs == capacity) {
         cObject **arr2 = new cObject *[2*capacity];
-        for (int i=0; i<numObjs; i++) arr2[i] = objs[i];
-        delete [] objs;
+        for (int i = 0; i < numObjs; i++)
+            arr2[i] = objs[i];
+        delete[] objs;
         objs = arr2;
         capacity = 2*capacity;
     }
@@ -102,8 +100,8 @@ cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
 }
 
 void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
-                                                   const char *classnamepatt,
-                                                   const char *objfullpathpatt)
+        const char *classnamepatt,
+        const char *objfullpathpatt)
 {
     // Note: pattern matcher will throw exception on pattern syntax error
     category = cat;
@@ -116,18 +114,18 @@ void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
 
 void cFilteredCollectObjectsVisitor::visit(cObject *obj)
 {
-    bool ok = (category==~0U) ||
+    bool ok = (category == ~0U) ||
         ((category&CATEGORY_MODULES) && dynamic_cast<cModule *>(obj)) ||
         ((category&CATEGORY_MESSAGES) && dynamic_cast<cMessage *>(obj)) ||
         ((category&CATEGORY_QUEUES) && dynamic_cast<cQueue *>(obj)) ||
         ((category&CATEGORY_VARIABLES) && (dynamic_cast<cWatchBase *>(obj) ||
                                            dynamic_cast<cFSM *>(obj))) ||
-        ((category&CATEGORY_STATISTICS) &&(dynamic_cast<cOutVector *>(obj) ||
-                                           dynamic_cast<cWatchBase *>(obj) ||
-                                           dynamic_cast<cStatistic *>(obj))) ||
-        ((category&CATEGORY_MODPARAMS) &&(dynamic_cast<cPar *>(obj))) ||
-        ((category&CATEGORY_CHANSGATES) &&(dynamic_cast<cChannel *>(obj) ||
-                                           dynamic_cast<cGate *>(obj))) ||
+        ((category&CATEGORY_STATISTICS) && (dynamic_cast<cOutVector *>(obj) ||
+                                            dynamic_cast<cWatchBase *>(obj) ||
+                                            dynamic_cast<cStatistic *>(obj))) ||
+        ((category&CATEGORY_MODPARAMS) && (dynamic_cast<cPar *>(obj))) ||
+        ((category&CATEGORY_CHANSGATES) && (dynamic_cast<cChannel *>(obj) ||
+                                            dynamic_cast<cGate *>(obj))) ||
         ((category&CATEGORY_OTHERS) && (!dynamic_cast<cModule *>(obj) &&
                                         !dynamic_cast<cMessage *>(obj) &&
                                         !dynamic_cast<cQueue *>(obj) &&
@@ -138,16 +136,14 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
                                         !dynamic_cast<cPar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
                                         !dynamic_cast<cGate *>(obj)));
-    if (objFullpathPattern || classnamePattern)
-    {
+    if (objFullpathPattern || classnamePattern) {
         MatchableObjectAdapter objAdapter(MatchableObjectAdapter::FULLPATH, obj);
         ok = ok && (!objFullpathPattern || objFullpathPattern->matches(&objAdapter));
         objAdapter.setDefaultAttribute(MatchableObjectAdapter::CLASSNAME);
         ok = ok && (!classnamePattern || classnamePattern->matches(&objAdapter));
     }
 
-    if (ok)
-    {
+    if (ok) {
         addPointer(obj);
     }
 
@@ -159,7 +155,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
 
 void cCollectChildrenVisitor::visit(cObject *obj)
 {
-    if (obj==parent)
+    if (obj == parent)
         obj->forEachChild(this);
     else
         addPointer(obj);
@@ -169,7 +165,7 @@ void cCollectChildrenVisitor::visit(cObject *obj)
 
 void cCountChildrenVisitor::visit(cObject *obj)
 {
-    if (obj==parent)
+    if (obj == parent)
         obj->forEachChild(this);
     else
         count++;
@@ -179,7 +175,7 @@ void cCountChildrenVisitor::visit(cObject *obj)
 
 void cHasChildrenVisitor::visit(cObject *obj)
 {
-    if (obj==parent)
+    if (obj == parent)
         obj->forEachChild(this);
     else {
         hasChildren = true;
@@ -192,41 +188,44 @@ void cHasChildrenVisitor::visit(cObject *obj)
 
 static const char *getObjectShortTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent*>(object))
-        return ((cComponent*)object)->getComponentType()->getName();
+    if (dynamic_cast<cComponent *>(object))
+        return ((cComponent *)object)->getComponentType()->getName();
     return object->getClassName();
 }
 
-#define OBJPTR(a) (*(cObject **)a)
+#define OBJPTR(a)    (*(cObject **)a)
 static int qsort_cmp_byname(const void *a, const void *b)
 {
     return opp_strcmp(OBJPTR(a)->getFullName(), OBJPTR(b)->getFullName());
 }
+
 static int qsort_cmp_byfullpath(const void *a, const void *b)
 {
     return opp_strcmp(OBJPTR(a)->getFullPath().c_str(), OBJPTR(b)->getFullPath().c_str());
 }
+
 static int qsort_cmp_by_shorttypename(const void *a, const void *b)
 {
     return opp_strcmp(getObjectShortTypeName(OBJPTR(a)), getObjectShortTypeName(OBJPTR(b)));
 }
+
 #undef OBJPTR
 
 void sortObjectsByName(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_byname);
+    qsort(objs, n, sizeof(cObject *), qsort_cmp_byname);
 }
 
 void sortObjectsByFullPath(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_byfullpath);
+    qsort(objs, n, sizeof(cObject *), qsort_cmp_byfullpath);
 }
 
 void sortObjectsByShortTypeName(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_by_shorttypename);
+    qsort(objs, n, sizeof(cObject *), qsort_cmp_by_shorttypename);
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

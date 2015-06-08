@@ -32,7 +32,7 @@
 #include "common/commonutil.h"
 #include "common/ver.h"
 #include "common/fileutil.h"  // splitFileName
-#include "nedxml/nedparser.h" // NEDParser::getBuiltInDeclarations()
+#include "nedxml/nedparser.h"  // NEDParser::getBuiltInDeclarations()
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cscheduler.h"
@@ -71,31 +71,30 @@
 #include "sim/parsim/creceivedexception.h"
 #endif
 
+#ifdef USE_PORTABLE_COROUTINES  /* coroutine stacks reside in main stack area */
 
-#ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
-
-# define TOTAL_STACK_SIZE   (2*1024*1024)
-# define MAIN_STACK_SIZE       (128*1024)  // Tkenv needs more than 64K
+# define TOTAL_STACK_SIZE    (2*1024*1024)
+# define MAIN_STACK_SIZE     (128*1024)  // Tkenv needs more than 64K
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
-# define TOTAL_STACK_SIZE        0  // dummy value
-# define MAIN_STACK_SIZE         0  // dummy value
+# define TOTAL_STACK_SIZE    0  // dummy value
+# define MAIN_STACK_SIZE     0  // dummy value
 
 #endif
 
 #if defined _WIN32
-#define DEFAULT_DEBUGGER_COMMAND "start gdb --pid=%u"
+#define DEFAULT_DEBUGGER_COMMAND    "start gdb --pid=%u"
 #elif defined __APPLE__
-#define DEFAULT_DEBUGGER_COMMAND "XTerm -e 'gdb --pid=%u' &"  // looks like we cannot launch XCode like that
+#define DEFAULT_DEBUGGER_COMMAND    "XTerm -e 'gdb --pid=%u' &"  // looks like we cannot launch XCode like that
 #else /* Linux, *BSD and other: assume Nemiver is available and installed */
-#define DEFAULT_DEBUGGER_COMMAND "nemiver --attach=%u &"
+#define DEFAULT_DEBUGGER_COMMAND    "nemiver --attach=%u &"
 #endif
 
 #ifdef NDEBUG
-#define CHECKSIGNALS_DEFAULT  "false"
+#define CHECKSIGNALS_DEFAULT        "false"
 #else
-#define CHECKSIGNALS_DEFAULT  "true"
+#define CHECKSIGNALS_DEFAULT        "true"
 #endif
 
 using namespace OPP::common;
@@ -104,14 +103,13 @@ using namespace OPP::nedxml;
 NAMESPACE_BEGIN
 namespace envir {
 
-
 using std::ostream;
 
-#define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
-     baseclass *var ## _tmp = (baseclass *) createOne(classname); \
-     var = dynamic_cast<baseclass *>(var ## _tmp); \
-     if (!var) \
-         throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
+#define CREATE_BY_CLASSNAME(var, classname, baseclass, description) \
+    baseclass *var ## _tmp = (baseclass *)createOne(classname); \
+    var = dynamic_cast<baseclass *>(var ## _tmp); \
+    if (!var) \
+        throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for activity() simple module stacks. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
@@ -153,9 +151,8 @@ Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-m
 extern cConfigOption *CFGID_SCALAR_RECORDING;
 extern cConfigOption *CFGID_VECTOR_RECORDING;
 
-
-#define STRINGIZE0(x) #x
-#define STRINGIZE(x) STRINGIZE0(x)
+#define STRINGIZE0(x)    #x
+#define STRINGIZE(x)     STRINGIZE0(x)
 
 static const char *compilerInfo =
     #if defined __GNUC__
@@ -262,8 +259,8 @@ EnvirBase::~EnvirBase()
     delete snapshotManager;
 
     for (int i = 0; i < numRNGs; i++)
-         delete rngs[i];
-    delete [] rngs;
+        delete rngs[i];
+    delete[] rngs;
 
 #ifdef WITH_PARSIM
     delete parsimComm;
@@ -275,17 +272,16 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:x:X:agGvw");  //TODO share spec with startup.cc!
+    args->parse(argc, argv, "h?f:u:l:c:r:n:x:X:agGvw");  // TODO share spec with startup.cc!
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
     if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP))
         attachDebugger();
 
-    if (simulationRequired())
-    {
+    if (simulationRequired()) {
         if (setup())
-            run();   // must not throw, because we want shutdown() always to be called
+            run();  // must not throw, because we want shutdown() always to be called
         shutdown();
     }
     return exitCode;
@@ -294,9 +290,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 bool EnvirBase::simulationRequired()
 {
     // handle -h and -v command-line options
-    if (args->optionGiven('h'))
-    {
-        const char *category = args->optionValue('h',0);
+    if (args->optionGiven('h')) {
+        const char *category = args->optionValue('h', 0);
         if (!category)
             printHelp();
         else
@@ -304,16 +299,15 @@ bool EnvirBase::simulationRequired()
         return false;
     }
 
-    if (args->optionGiven('v'))
-    {
+    if (args->optionGiven('v')) {
         struct opp_stat_t statbuf;
         std::cout << "\n";
         std::cout << "Build: " OMNETPP_RELEASE " " OMNETPP_BUILDID << "\n";
         std::cout << "Compiler: " << compilerInfo << "\n";
         std::cout << "Options: " << opp_stringf(buildInfoFormat,
-                                         8*sizeof(void*),
-                                         opp_typename(typeid(simtime_t)),
-                                         sizeof(statbuf.st_size)>=8 ? "yes" : "no");
+                8*sizeof(void *),
+                opp_typename(typeid(simtime_t)),
+                sizeof(statbuf.st_size) >= 8 ? "yes" : "no");
         std::cout << buildOptions << "\n";
         return false;
     }
@@ -321,19 +315,17 @@ bool EnvirBase::simulationRequired()
     cConfigurationEx *cfg = getConfigEx();
 
     // -a option: print all config names, and number of runs in them
-    if (args->optionGiven('a'))
-    {
+    if (args->optionGiven('a')) {
         std::cout << "\n";
         std::vector<std::string> configNames = cfg->getConfigNames();
-        for (int i=0; i<(int)configNames.size(); i++)
+        for (int i = 0; i < (int)configNames.size(); i++)
             std::cout << "Config " << configNames[i] << ": " << cfg->getNumRunsInConfig(configNames[i].c_str()) << "\n";
         return false;
     }
 
     // '-x' option: print number of runs in the given config, and exit (overrides configname)
     const char *configToPrint = args->optionValue('x');
-    if (configToPrint)
-    {
+    if (configToPrint) {
         //
         // IMPORTANT: the simulation launcher will parse the output of this
         // option, so it should be modified with care and the two kept in sync
@@ -354,11 +346,10 @@ bool EnvirBase::simulationRequired()
         std::cout <<"Config: " << configToPrint << "\n";
         std::cout <<"Number of runs: " << cfg->getNumRunsInConfig(configToPrint) << "\n";
 
-        if (unrollBrief || unrollDetailed)
-        {
+        if (unrollBrief || unrollDetailed) {
             std::vector<std::string> runs = cfg->unrollConfig(configToPrint, unrollDetailed);
             const char *fmt = unrollDetailed ? "Run %d:\n%s" : "Run %d: %s\n";
-            for (int i=0; i<(int)runs.size(); i++)
+            for (int i = 0; i < (int)runs.size(); i++)
                 std::cout << opp_stringf(fmt, i, runs[i].c_str());
         }
         return false;
@@ -366,11 +357,10 @@ bool EnvirBase::simulationRequired()
 
     // -X option: print fallback chain of the given config, and exit
     configToPrint = args->optionValue('X');
-    if (configToPrint)
-    {
+    if (configToPrint) {
         std::cout << "\n";
         std::vector<std::string> configNames = cfg->getConfigChain(configToPrint);
-        for (int i=0; i<(int)configNames.size(); i++) {
+        for (int i = 0; i < (int)configNames.size(); i++) {
             std::string configName = configNames[i];
             if (configName != "General")
                 std::cout << "Config ";
@@ -379,22 +369,19 @@ bool EnvirBase::simulationRequired()
         return false;
     }
 
-
     return true;
 }
 
 bool EnvirBase::setup()
 {
-    try
-    {
+    try {
         // ensure correct numeric format in output files
         setPosixLocale();
 
         // set opt->* variables from ini file(s)
         readOptions();
 
-        if (getConfig()->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR))
-        {
+        if (getConfig()->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR)) {
             signal(SIGSEGV, crashHandler);
             signal(SIGILL, crashHandler);
 #ifndef _WIN32
@@ -404,8 +391,7 @@ bool EnvirBase::setup()
         }
 
         // initialize coroutine library
-        if (TOTAL_STACK_SIZE!=0 && opt->totalStack<=MAIN_STACK_SIZE+4096)
-        {
+        if (TOTAL_STACK_SIZE != 0 && opt->totalStack <= MAIN_STACK_SIZE+4096) {
             std::cout << "Total stack size " << opt->totalStack << " increased to " << MAIN_STACK_SIZE << "\n";
             opt->totalStack = MAIN_STACK_SIZE+4096;
         }
@@ -431,15 +417,13 @@ bool EnvirBase::setup()
         addLifecycleListener(snapshotManager);
 
         // set up for sequential or distributed execution
-        if (!opt->parsim)
-        {
+        if (!opt->parsim) {
             // sequential
             cScheduler *scheduler;
             CREATE_BY_CLASSNAME(scheduler, opt->schedulerClass.c_str(), cScheduler, "event scheduler");
             getSimulation()->setScheduler(scheduler);
         }
-        else
-        {
+        else {
 #ifdef WITH_PARSIM
             // parsim: create components
             CREATE_BY_CLASSNAME(parsimComm, opt->parsimcommClass.c_str(), cParsimCommunications, "parallel simulation communications layer");
@@ -465,7 +449,7 @@ bool EnvirBase::setup()
         // precedence), and the "ned-path=" config entry gets appended to it.
         // If the result is still empty, we fall back to "." -- this is needed
         // for single-directory models to work
-        const char *nedpath1 = args->optionValue('n',0);
+        const char *nedpath1 = args->optionValue('n', 0);
         if (!nedpath1)
             nedpath1 = getenv("NEDPATH");
         std::string nedpath2 = getConfig()->getAsPath(CFGID_NED_PATH);
@@ -475,11 +459,9 @@ bool EnvirBase::setup()
 
         StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
         std::set<std::string> foldersloaded;
-        while (tokenizer.hasMoreTokens())
-        {
+        while (tokenizer.hasMoreTokens()) {
             const char *folder = tokenizer.nextToken();
-            if (foldersloaded.find(folder)==foldersloaded.end())
-            {
+            if (foldersloaded.find(folder) == foldersloaded.end()) {
                 std::cout << "Loading NED files from " << folder << ": ";
                 int count = getSimulation()->loadNedSourceFolder(folder);
                 std::cout << " " << count << endl;
@@ -491,11 +473,10 @@ bool EnvirBase::setup()
         // notify listeners when global setup is complete
         notifyLifecycleListeners(LF_ON_STARTUP);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         displayException(e);
         exitCode = 1;
-        return false; // don't run the app
+        return false;  // don't run the app
     }
     return true;
 }
@@ -555,8 +536,7 @@ void EnvirBase::printHelp()
     // print specific help for each user interface
     cRegistrationList *table = omnetapps.getInstance();
     table->sort();
-    for (int i=0; i<table->size(); i++)
-    {
+    for (int i = 0; i < table->size(); i++) {
         // instantiate the ui, call printUISpecificHelp(), then dispose.
         // note: their ctors are not supposed to do anything but trivial member initializations
         cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
@@ -573,20 +553,20 @@ void EnvirBase::dumpComponentList(const char *category)
     bool wantAll = !strcmp(category, "all");
     bool processed = false;
     std::cout << "\n";
-    if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
-    {
+    if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails")) {
         processed = true;
         std::cout << "Supported configuration options:\n";
-        bool printDescriptions = strcmp(category, "configdetails")==0;
+        bool printDescriptions = strcmp(category, "configdetails") == 0;
 
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(obj);
-            if (!printDescriptions) std::cout << "  ";
-            if (obj->isPerObject()) std::cout << "<object-full-path>.";
+            if (!printDescriptions)
+                std::cout << "  ";
+            if (obj->isPerObject())
+                std::cout << "<object-full-path>.";
             std::cout << obj->getName() << "=";
             std::cout << "<" << cConfigOption::getTypeName(obj->getType()) << ">";
             if (obj->getUnit())
@@ -596,38 +576,37 @@ void EnvirBase::dumpComponentList(const char *category)
             std::cout << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting";
             std::cout << "\n";
             if (printDescriptions && !opp_isempty(obj->getDescription()))
-                std::cout << opp_indentlines(opp_breaklines(obj->getDescription(),75).c_str(), "    ") << "\n";
-            if (printDescriptions) std::cout << "\n";
+                std::cout << opp_indentlines(opp_breaklines(obj->getDescription(), 75).c_str(), "    ") << "\n";
+            if (printDescriptions)
+                std::cout << "\n";
         }
         std::cout << "\n";
 
         std::cout << "Predefined variables that can be used in config values:\n";
         std::vector<const char *> v = getConfigEx()->getPredefinedVariableNames();
-        for (int i=0; i<(int)v.size(); i++)
-        {
-            if (!printDescriptions) std::cout << "  ";
+        for (int i = 0; i < (int)v.size(); i++) {
+            if (!printDescriptions)
+                std::cout << "  ";
             std::cout << "${" << v[i] << "}\n";
             const char *desc = getConfigEx()->getVariableDescription(v[i]);
             if (printDescriptions && !opp_isempty(desc))
-                std::cout << opp_indentlines(opp_breaklines(desc,75).c_str(), "    ") << "\n";
+                std::cout << opp_indentlines(opp_breaklines(desc, 75).c_str(), "    ") << "\n";
         }
         std::cout << "\n";
     }
-    if (!strcmp(category, "jconfig")) // internal undocumented option, for maintenance purposes
-    {
+    if (!strcmp(category, "jconfig")) {  // internal undocumented option, for maintenance purposes
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
         std::cout << "Supported configuration options (as Java code):\n";
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cConfigOption *key = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(key);
 
             std::string id = "CFGID_";
             for (const char *s = key->getName(); *s; s++)
-                id.append(1, opp_isalpha(*s) ? opp_toupper(*s) : *s=='-' ? '_' : *s=='%' ? 'n' : *s);
+                id.append(1, opp_isalpha(*s) ? opp_toupper(*s) : *s == '-' ? '_' : *s == '%' ? 'n' : *s);
             const char *method = key->isGlobal() ? "addGlobalOption" :
                                  !key->isPerObject() ? "addPerRunOption" :
                                  "addPerObjectOption";
@@ -676,11 +655,11 @@ void EnvirBase::dumpComponentList(const char *category)
             std::cout << ",\n";
 
             std::string desc = key->getDescription();
-            desc = opp_replacesubstring(desc.c_str(), "\n", "\\n\n", true); // keep explicit line breaks
+            desc = opp_replacesubstring(desc.c_str(), "\n", "\\n\n", true);  // keep explicit line breaks
             desc = opp_breaklines(desc.c_str(), 75);  // break long lines
             desc = opp_replacesubstring(desc.c_str(), "\"", "\\\"", true);
             desc = opp_replacesubstring(desc.c_str(), "\n", " \" +\n\"", true);
-            desc = opp_replacesubstring(desc.c_str(), "\\n \"", "\\n\"", true); // remove bogus space after explicit line breaks
+            desc = opp_replacesubstring(desc.c_str(), "\\n \"", "\\n\"", true);  // remove bogus space after explicit line breaks
             desc = "\"" + desc + "\"";
 
             std::cout << opp_indentlines(desc.c_str(), "        ") << ");\n";
@@ -688,8 +667,7 @@ void EnvirBase::dumpComponentList(const char *category)
         std::cout << "\n";
 
         std::vector<const char *> vars = getConfigEx()->getPredefinedVariableNames();
-        for (int i=0; i<(int)vars.size(); i++)
-        {
+        for (int i = 0; i < (int)vars.size(); i++) {
             opp_string id = vars[i];
             opp_strupr(id.buffer());
             const char *desc = getConfigEx()->getVariableDescription(vars[i]);
@@ -698,14 +676,12 @@ void EnvirBase::dumpComponentList(const char *category)
         }
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "classes"))
-    {
+    if (wantAll || !strcmp(category, "classes")) {
         processed = true;
         std::cout << "Registered C++ classes, including modules, channels and messages:\n";
         cRegistrationList *table = classes.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             std::cout << "  class " << obj->getFullName() << "\n";
         }
@@ -713,45 +689,38 @@ void EnvirBase::dumpComponentList(const char *category)
         std::cout << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "classdesc"))
-    {
+    if (wantAll || !strcmp(category, "classdesc")) {
         processed = true;
         std::cout << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
         cRegistrationList *table = classDescriptors.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             std::cout << "  class " << obj->getFullName() << "\n";
         }
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "nedfunctions"))
-    {
+    if (wantAll || !strcmp(category, "nedfunctions")) {
         processed = true;
         std::cout << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
         cRegistrationList *table = nedFunctions.getInstance();
         table->sort();
         std::set<std::string> categories;
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
             cNEDMathFunction *mf = dynamic_cast<cNEDMathFunction *>(table->get(i));
             categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "???");
         }
-        for (std::set<std::string>::iterator ci=categories.begin(); ci!=categories.end(); ++ci)
-        {
+        for (std::set<std::string>::iterator ci = categories.begin(); ci != categories.end(); ++ci) {
             std::string category = (*ci);
             std::cout << "\n Category \"" << category << "\":\n";
-            for (int i=0; i<table->size(); i++)
-            {
+            for (int i = 0; i < table->size(); i++) {
                 cObject *obj = table->get(i);
                 cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
                 cNEDMathFunction *mf = dynamic_cast<cNEDMathFunction *>(table->get(i));
                 const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "???";
                 const char *desc = nf ? nf->getDescription() : mf ? mf->getDescription() : "???";
-                if (fcat==category)
-                {
+                if (fcat == category) {
                     std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
                     if (desc)
                         std::cout << "    " << desc << "\n";
@@ -760,8 +729,7 @@ void EnvirBase::dumpComponentList(const char *category)
         }
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "neddecls"))
-    {
+    if (wantAll || !strcmp(category, "neddecls")) {
         processed = true;
         std::cout << "Built-in NED declarations:\n\n";
         std::cout << "---START---\n";
@@ -769,90 +737,78 @@ void EnvirBase::dumpComponentList(const char *category)
         std::cout << "---END---\n";
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "units"))
-    {
+    if (wantAll || !strcmp(category, "units")) {
         processed = true;
         std::cout << "Recognized physical units (note: other units can be used as well, only\n";
         std::cout << "no automatic conversion will be available for them):\n";
         std::vector<const char *> units = UnitConversion::getAllUnits();
-        for (int i=0; i<(int)units.size(); i++)
-        {
+        for (int i = 0; i < (int)units.size(); i++) {
             const char *u = units[i];
             const char *bu = UnitConversion::getBaseUnit(u);
             std::cout << "  " << u << "\t" << UnitConversion::getLongName(u);
-            if (OPP::opp_strcmp(u,bu)!=0)
-                std::cout << "\t" << UnitConversion::convertUnit(1,u,bu) << bu;
+            if (OPP::opp_strcmp(u, bu) != 0)
+                std::cout << "\t" << UnitConversion::convertUnit(1, u, bu) << bu;
             std::cout << "\n";
         }
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "enums"))
-    {
+    if (wantAll || !strcmp(category, "enums")) {
         processed = true;
         std::cout << "Enums defined in .msg files\n";
         cRegistrationList *table = enums.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
         std::cout << "\n";
     }
-    if (wantAll || !strcmp(category, "userinterfaces"))
-    {
+    if (wantAll || !strcmp(category, "userinterfaces")) {
         processed = true;
         std::cout << "User interfaces loaded:\n";
         cRegistrationList *table = omnetapps.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
     }
 
-    if (wantAll || !strcmp(category, "resultfilters"))
-    {
+    if (wantAll || !strcmp(category, "resultfilters")) {
         processed = true;
         std::cout << "Result filters that can be used in @statistic properties:\n";
         cRegistrationList *table = resultFilters.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
     }
 
-    if (wantAll || !strcmp(category, "resultrecorders"))
-    {
+    if (wantAll || !strcmp(category, "resultrecorders")) {
         processed = true;
         std::cout << "Result recorders that can be used in @statistic properties:\n";
         cRegistrationList *table = resultRecorders.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
+        for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
     }
 
-    if (wantAll || !strcmp(category, "figures"))
-    {
+    if (wantAll || !strcmp(category, "figures")) {
         processed = true;
         std::cout << "Figure types and their accepted @figure property keys:\n";
         cRegistrationList *table = classes.getInstance();
         table->sort();
-        for (int i=0; i<table->size(); i++)
-        {
-            cObjectFactory *factory = check_and_cast<cObjectFactory*>(table->get(i));
+        for (int i = 0; i < table->size(); i++) {
+            cObjectFactory *factory = check_and_cast<cObjectFactory *>(table->get(i));
             const char *className = factory->getFullName();
             if (opp_stringendswith(className, "Figure")) {
                 cObject *obj = factory->createOne();
                 cFigure *figure = dynamic_cast<cFigure *>(obj);
                 if (figure) {
-                    opp_string type = className[0]=='c' ? className+1 : className;
+                    opp_string type = className[0] == 'c' ? className+1 : className;
                     opp_strlwr(type.buffer());
                     type.buffer()[type.size()-6] = '\0';
                     std::cout << "  " << type.c_str() << " (" << className << "): " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
@@ -887,25 +843,21 @@ int EnvirBase::getParsimNumPartitions() const
 
 void EnvirBase::run()
 {
-    try
-    {
+    try {
         doRun();
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         displayException(e);
     }
 }
 
 void EnvirBase::shutdown()
 {
-    try
-    {
+    try {
         getSimulation()->deleteNetwork();
         notifyLifecycleListeners(LF_ON_SHUTDOWN);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         displayException(e);
     }
 }
@@ -929,7 +881,7 @@ void EnvirBase::startRun()
     cLogProxy::flushLastLine();
 }
 
-void EnvirBase::endRun()  //FIXME eliminate???
+void EnvirBase::endRun()  // FIXME eliminate???
 {
     notifyLifecycleListeners(LF_ON_RUN_END);
 }
@@ -943,21 +895,22 @@ void EnvirBase::configure(cComponent *component)
 
 static int search_(std::vector<std::string>& v, const char *s)
 {
-    for (int i=0; i<(int)v.size(); i++)
-        if (strcmp(v[i].c_str(), s)==0)
+    for (int i = 0; i < (int)v.size(); i++)
+        if (strcmp(v[i].c_str(), s) == 0)
             return i;
+
     return -1;
 }
 
 inline void addIfNotContains_(std::vector<std::string>& v, const char *s)
 {
-    if (search_(v,s)==-1)
+    if (search_(v, s) == -1)
         v.push_back(s);
 }
 
 inline void addIfNotContains_(std::vector<std::string>& v, const std::string& s)
 {
-    if (search_(v,s.c_str())==-1)
+    if (search_(v, s.c_str()) == -1)
         v.push_back(s);
 }
 
@@ -965,13 +918,12 @@ void EnvirBase::addResultRecorders(cComponent *component)
 {
     std::vector<const char *> statisticNames = component->getProperties()->getIndicesFor("statistic");
     std::string componentFullPath;
-    for (int i = 0; i < (int)statisticNames.size(); i++)
-    {
+    for (int i = 0; i < (int)statisticNames.size(); i++) {
         if (componentFullPath.empty())
             componentFullPath = component->getFullPath();
         const char *statisticName = statisticNames[i];
         cProperty *statisticProperty = component->getProperties()->get("statistic", statisticName);
-        ASSERT(statisticProperty!=nullptr);
+        ASSERT(statisticProperty != nullptr);
         doAddResultRecorders(component, componentFullPath, statisticName, statisticProperty, SIMSIGNAL_NULL);
     }
 
@@ -1001,14 +953,13 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
     std::vector<std::string> modes = extractRecorderList(modesOption.c_str(), statisticProperty);
 
     // if there are result recorders, add source filters and recorders
-    if (!modes.empty())
-    {
+    if (!modes.empty()) {
         // determine source: use either the signal from the argument list, or the source= key in the @statistic property
         SignalSource source;
         if (signal == SIMSIGNAL_NULL) {
             bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
-            const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source",0) : statisticName;
-            source = doStatisticSource(component, statisticName, sourceSpec, opt->warmupPeriod!=0);
+            const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source", 0) : statisticName;
+            source = doStatisticSource(component, statisticName, sourceSpec, opt->warmupPeriod != 0);
         }
         else {
             source = SignalSource(component, signal);
@@ -1026,14 +977,13 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
 std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption, cProperty *statisticProperty)
 {
     // "-" means "none"
-    if (!modesOption[0] || (modesOption[0]=='-' && !modesOption[1]))
+    if (!modesOption[0] || (modesOption[0] == '-' && !modesOption[1]))
         return std::vector<std::string>();
 
-    std::vector<std::string> modes; // the result
+    std::vector<std::string> modes;  // the result
 
     // if first configured mode starts with '+' or '-', assume "default" as base
-    if (modesOption[0]=='-' || modesOption[0]=='+')
-    {
+    if (modesOption[0] == '-' || modesOption[0] == '+') {
         // collect the mandatory record= items from @statistic (those not ending in '?')
         int n = statisticProperty->getNumValues("record");
         for (int i = 0; i < n; i++) {
@@ -1044,12 +994,10 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
     }
 
     // loop through all modes
-    StringTokenizer tokenizer(modesOption, ","); //XXX we should ignore commas within parens
-    while (tokenizer.hasMoreTokens())
-    {
+    StringTokenizer tokenizer(modesOption, ",");  // XXX we should ignore commas within parens
+    while (tokenizer.hasMoreTokens()) {
         const char *mode = tokenizer.nextToken();
-        if (!strcmp(mode, "default"))
-        {
+        if (!strcmp(mode, "default")) {
             // collect the mandatory record= items from @statistic (those not ending in '?')
             int n = statisticProperty->getNumValues("record");
             for (int i = 0; i < n; i++) {
@@ -1058,8 +1006,7 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
                     addIfNotContains_(modes, m);
             }
         }
-        else if (!strcmp(mode, "all"))
-        {
+        else if (!strcmp(mode, "all")) {
             // collect all record= items from @statistic (strip trailing '?' if present)
             int n = statisticProperty->getNumValues("record");
             for (int i = 0; i < n; i++) {
@@ -1070,8 +1017,7 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
                     addIfNotContains_(modes, std::string(m, strlen(m)-1));
             }
         }
-        else if (mode[0] == '-')
-        {
+        else if (mode[0] == '-') {
             // remove from modes
             int k = search_(modes, mode+1);
             if (k != -1)
@@ -1079,7 +1025,7 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
         }
         else {
             // add to modes
-            addIfNotContains_(modes, mode[0]=='+' ? mode+1 : mode);
+            addIfNotContains_(modes, mode[0] == '+' ? mode+1 : mode);
         }
     }
     return modes;
@@ -1087,70 +1033,62 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
 
 static bool opp_isidentifier(const char *s)
 {
-    if (!opp_isalphaext(s[0]) && s[0]!='_')
+    if (!opp_isalphaext(s[0]) && s[0] != '_')
         return false;
     while (*++s)
-        if (!opp_isalnumext(*s) && s[0]!='_')
+        if (!opp_isalnumext(*s) && s[0] != '_')
             return false;
+
     return true;
 }
 
 SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter)
 {
-    try
-    {
-        if (opp_isidentifier(sourceSpec))
-        {
+    try {
+        if (opp_isidentifier(sourceSpec)) {
             // simple case: just a signal name
             simsignal_t signalID = cComponent::registerSignal(sourceSpec);
             if (!needWarmupFilter)
                 return SignalSource(component, signalID);
-            else
-            {
+            else {
                 WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
                 component->subscribe(signalID, warmupFilter);
                 return SignalSource(warmupFilter);
             }
         }
-        else
-        {
+        else {
             StatisticSourceParser parser;
             return parser.parse(component, statisticName, sourceSpec, needWarmupFilter);
         }
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
-            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
+                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
     }
 }
 
 void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty)
 {
-    try
-    {
-        if (opp_isidentifier(recordingMode))
-        {
+    try {
+        if (opp_isidentifier(recordingMode)) {
             // simple case: just a plain recorder
             bool recordsVector = !strcmp(recordingMode, "vector");  // the only vector recorder is "vector"
             if (recordsVector ? !vectorsEnabled : !scalarsEnabled)
-                return; // no point in creating if recording is disabled
+                return;  // no point in creating if recording is disabled
 
             cResultRecorder *recorder = cResultRecorderDescriptor::get(recordingMode)->create();
             recorder->init(component, statisticName, recordingMode, attrsProperty);
             source.subscribe(recorder);
         }
-        else
-        {
+        else {
             // something more complicated: use parser
             StatisticRecorderParser parser;
             parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName, attrsProperty);
         }
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s': %s",
-            statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
+                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
     }
 }
 
@@ -1158,13 +1096,12 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
 {
     bool componentPathPrinted = false;
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();
-    for (unsigned int i = 0; i < signals.size(); i++)
-    {
+    for (unsigned int i = 0; i < signals.size(); i++) {
         bool signalNamePrinted = false;
         simsignal_t signalID = signals[i];
-        std::vector<cIListener*> listeners = component->getLocalSignalListeners(signalID);
+        std::vector<cIListener *> listeners = component->getLocalSignalListeners(signalID);
         for (unsigned int j = 0; j < listeners.size(); j++) {
-            if (dynamic_cast<cResultListener*>(listeners[j])) {
+            if (dynamic_cast<cResultListener *>(listeners[j])) {
                 if (!componentPathPrinted) {
                     std::cout << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
                     componentPathPrinted = true;
@@ -1183,14 +1120,13 @@ void EnvirBase::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     std::string indent(4*depth+8, ' ');
     std::cout << indent << listener->str();
-    if (dynamic_cast<cResultRecorder*>(listener))
-        std::cout << " ==> " << ((cResultRecorder*)listener)->getResultName();
+    if (dynamic_cast<cResultRecorder *>(listener))
+        std::cout << " ==> " << ((cResultRecorder *)listener)->getResultName();
     std::cout << "\n";
 
-    if (dynamic_cast<cResultFilter *>(listener))
-    {
-        std::vector<cResultListener *> delegates = ((cResultFilter*)listener)->getDelegates();
-        for (unsigned int i=0; i < delegates.size(); i++)
+    if (dynamic_cast<cResultFilter *>(listener)) {
+        std::vector<cResultListener *> delegates = ((cResultFilter *)listener)->getDelegates();
+        for (unsigned int i = 0; i < delegates.size(); i++)
             dumpResultRecorderChain(delegates[i], depth+1);
     }
 }
@@ -1226,21 +1162,17 @@ void EnvirBase::readParameter(cPar *par)
     }
 */
 
-    if (OPP::opp_strcmp(str, "default")==0)
-    {
+    if (OPP::opp_strcmp(str, "default") == 0) {
         ASSERT(par->containsValue());  // cConfiguration should not return "=default" lines for params that have no default value
         par->acceptDefault();
     }
-    else if (OPP::opp_strcmp(str, "ask")==0)
-    {
+    else if (OPP::opp_strcmp(str, "ask") == 0) {
         askParameter(par, false);
     }
-    else if (!opp_isempty(str))
-    {
+    else if (!opp_isempty(str)) {
         par->parse(str);
     }
-    else
-    {
+    else {
         // str empty: no value in the ini file
         if (par->containsValue())
             par->acceptDefault();
@@ -1255,34 +1187,31 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
 {
 #ifdef WITH_PARSIM
     if (!opt->parsim)
-       return true;
+        return true;
 
     // toplevel module is local everywhere
     if (!parentmod)
-       return true;
+        return true;
 
     // find out if this module is (or has any submodules that are) on this partition
     char parname[MAX_OBJECTFULLPATH];
-    if (index<0)
-        sprintf(parname,"%s.%s", parentmod->getFullPath().c_str(), modname);
+    if (index < 0)
+        sprintf(parname, "%s.%s", parentmod->getFullPath().c_str(), modname);
     else
-        sprintf(parname,"%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index); //FIXME this is incorrectly chosen for non-vector modules too!
+        sprintf(parname, "%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index);  // FIXME this is incorrectly chosen for non-vector modules too!
     std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
-    if (procIds.empty())
-    {
+    if (procIds.empty()) {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
         if (!parentmod->getParentModule())
-            throw cRuntimeError("incomplete partitioning: missing value for '%s'",parname);
+            throw cRuntimeError("incomplete partitioning: missing value for '%s'", parname);
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
         return true;
     }
-    else if (strcmp(procIds.c_str(), "*") == 0)
-    {
+    else if (strcmp(procIds.c_str(), "*") == 0) {
         // present on all partitions (provided that ancestors have "*" set as well)
         return true;
     }
-    else
-    {
+    else {
         // we expect a partition Id (or partition Ids, separated by commas) where this
         // module needs to be instantiated. So we return true if any of the numbers
         // is the Id of the local partition, otherwise false.
@@ -1290,14 +1219,13 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
         if (procIdIter.hasError())
             throw cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
                                 "(allowed syntax: '', '*', '1', '0,3,5-7')",
-                                procIds.c_str(), parname);
+                    procIds.c_str(), parname);
         int numPartitions = parsimComm->getNumPartitions();
         int myProcId = parsimComm->getProcId();
-        for (; procIdIter()!=-1; procIdIter++)
-        {
+        for ( ; procIdIter() != -1; procIdIter++) {
             if (procIdIter() >= numPartitions)
                 throw cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
-                                    procIdIter(), parname, numPartitions);
+                        procIdIter(), parname, numPartitions);
             if (procIdIter() == myProcId)
                 return true;
         }
@@ -1323,13 +1251,11 @@ cXMLElement *EnvirBase::getParsedXMLString(const char *content, const char *path
 cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *path)
 {
     assert(documentnode);
-    if (path)
-    {
-        ModNameParamResolver resolver(getSimulation()->getContextModule()); // resolves $MODULE_NAME etc in XPath expr.
+    if (path) {
+        ModNameParamResolver resolver(getSimulation()->getContextModule());  // resolves $MODULE_NAME etc in XPath expr.
         return cXMLElement::getDocumentElementByPath(documentnode, path, &resolver);
     }
-    else
-    {
+    else {
         // returns the root element (child of the document node)
         return documentnode->getFirstChild();
     }
@@ -1510,8 +1436,7 @@ void EnvirBase::displayStringChanged(cComponent *component)
 
 void EnvirBase::log(cLogEntry *entry)
 {
-    if (recordEventlog)
-    {
+    if (recordEventlog) {
         std::string prefix = logFormatter.formatPrefix(entry);
         eventlogManager->logLine(prefix.c_str(), entry->text, entry->textLength);
     }
@@ -1531,20 +1456,19 @@ void EnvirBase::processFileName(opp_string& fname)
 
     // insert ".<hostname>.<pid>" if requested before file extension
     // (note: parsimProcId cannot be appended because of initialization order)
-    if (opt->fnameAppendHost)
-    {
+    if (opt->fnameAppendHost) {
         std::string extension = "";
         std::string::size_type index = text.rfind('.');
         if (index != std::string::npos) {
-          extension = std::string(text, index);
-          text.erase(index);
+            extension = std::string(text, index);
+            text.erase(index);
         }
 
         const char *hostname = opp_gethostname();
         if (!hostname)
             throw cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
                                 "or COMPUTERNAME (Windows) environment variable",
-                                fname.c_str());
+                    fname.c_str());
         int pid = getpid();
 
         // append
@@ -1557,14 +1481,12 @@ void EnvirBase::readOptions()
 {
     cConfiguration *cfg = getConfig();
 
-    opt->totalStack = (size_t) cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
+    opt->totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt->parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
-    if (!opt->parsim)
-    {
+    if (!opt->parsim) {
         opt->schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
     }
-    else
-    {
+    else {
 #ifdef WITH_PARSIM
         opt->parsimcommClass = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
         opt->parsimsynchClass = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
@@ -1583,7 +1505,7 @@ void EnvirBase::readOptions()
     attachDebuggerOnErrors = cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_ERROR);
     opt->printUndisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
-    int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
+    int scaleexp = (int)cfg->getAsInt(CFGID_SIMTIME_SCALE);
     SimTime::setScaleExp(scaleexp);
 
     // note: this is read per run as well, but Tkenv needs its value on startup too
@@ -1601,7 +1523,7 @@ void EnvirBase::readPerRunOptions()
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
     opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
-    opt->cpuTimeLimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
+    opt->cpuTimeLimit = (long)cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     opt->expectedFingerprint = cfg->getAsString(CFGID_FINGERPRINT);
     opt->numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
@@ -1628,14 +1550,13 @@ void EnvirBase::readPerRunOptions()
 
     // set up RNGs
     int i;
-    for (i=0; i<numRNGs; i++)
-         delete rngs[i];
-    delete [] rngs;
+    for (i = 0; i < numRNGs; i++)
+        delete rngs[i];
+    delete[] rngs;
 
     numRNGs = opt->numRNGs;
     rngs = new cRNG *[numRNGs];
-    for (i=0; i<numRNGs; i++)
-    {
+    for (i = 0; i < numRNGs; i++) {
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt->rngClass.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
@@ -1658,7 +1579,7 @@ void EnvirBase::readPerRunOptions()
 void EnvirBase::setEventlogRecording(bool enabled)
 {
     // NOTE: eventlogmgr must be non-nullptr when record_eventlog is true
-    if (enabled && !recordEventlog) {   //FIXME not good!!!!
+    if (enabled && !recordEventlog) {  // FIXME not good!!!!
         eventlogManager->open();
         eventlogManager->recordSimulation();
     }
@@ -1697,7 +1618,7 @@ int EnvirBase::getNumRNGs() const
 
 cRNG *EnvirBase::getRNG(int k)
 {
-    if (k<0 || k>=numRNGs)
+    if (k < 0 || k >= numRNGs)
         throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, numRNGs);
     return rngs[k];
 }
@@ -1706,38 +1627,35 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
 {
     cConfigurationEx *cfg = getConfigEx();
     std::string componentFullPath = component->getFullPath();
-    std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*"); // CFGID_RNG_K
+    std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*");  // CFGID_RNG_K
     if (suffixes.empty())
         return;
 
     // extract into tmpmap[]
-    int mapsize=0;
+    int mapsize = 0;
     int tmpmap[100];
-    for (int i=0; i<(int)suffixes.size(); i++)
-    {
+    for (int i = 0; i < (int)suffixes.size(); i++) {
         const char *suffix = suffixes[i];  // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
         const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), suffix);
-        ASSERT(value!=nullptr);
+        ASSERT(value != nullptr);
         char *s1, *s2;
         int modRng = strtol(suffix+strlen("rng-"), &s1, 10);
         int physRng = strtol(value, &s2, 10);
-        if (*s1!='\0' || *s2!='\0')
+        if (*s1 != '\0' || *s2 != '\0')
             throw cRuntimeError("Configuration error: %s=%s for module/channel %s: "
                                 "numeric RNG indices expected",
-                                suffix, value, component->getFullPath().c_str());
+                    suffix, value, component->getFullPath().c_str());
 
-        if (physRng>getNumRNGs())
+        if (physRng > getNumRNGs())
             throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
                                 "RNG index out of range (num-rngs=%d)",
-                                modRng, physRng, component->getFullPath().c_str(), getNumRNGs());
-        if (modRng>=mapsize)
-        {
-            if (modRng>=100)
+                    modRng, physRng, component->getFullPath().c_str(), getNumRNGs());
+        if (modRng >= mapsize) {
+            if (modRng >= 100)
                 throw cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
                                     "local RNG index out of supported range 0..99",
-                                    modRng, component->getFullPath().c_str());
-            while (mapsize<=modRng)
-            {
+                        modRng, component->getFullPath().c_str());
+            while (mapsize <= modRng) {
                 tmpmap[mapsize] = mapsize;
                 mapsize++;
             }
@@ -1746,8 +1664,7 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
     }
 
     // install map into the module
-    if (mapsize>0)
-    {
+    if (mapsize > 0) {
         int *map = new int[mapsize];
         memcpy(map, tmpmap, mapsize*sizeof(int));
         component->setRNGMap(mapsize, map);
@@ -1826,14 +1743,12 @@ unsigned long EnvirBase::getUniqueNumber()
 std::string EnvirBase::makeDebuggerCommand()
 {
     std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND);
-    if (cmd == "")
-    {
+    if (cmd == "") {
         ::printf("Cannot start debugger: no debugger configured\n");
         return "";
     }
     size_t pos = cmd.find('%');
-    if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u')
-    {
+    if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
         ::printf("Cannot start debugger: debugger attach command must contain '%%u' "
                  "and no additional percent sign.\n");
         return "";
@@ -1847,7 +1762,7 @@ void EnvirBase::attachDebugger()
     // launch debugger
     std::string cmd = makeDebuggerCommand();
     if (cmd == "")
-        return; // no suitable debugger command
+        return;  // no suitable debugger command
 
     ::printf("Starting debugger: %s\n", cmd.c_str());
     fflush(stdout);
@@ -1896,7 +1811,7 @@ char **EnvirBase::getArgVector() const
 
 void EnvirBase::addLifecycleListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it == listeners.end()) {
         listeners.push_back(listener);
         listener->listenerAdded();
@@ -1905,7 +1820,7 @@ void EnvirBase::addLifecycleListener(cISimulationLifecycleListener *listener)
 
 void EnvirBase::removeLifecycleListener(cISimulationLifecycleListener *listener)
 {
-    std::vector<cISimulationLifecycleListener*>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
+    std::vector<cISimulationLifecycleListener *>::iterator it = std::find(listeners.begin(), listeners.end(), listener);
     if (it != listeners.end()) {
         listeners.erase(it);
         listener->listenerRemoved();
@@ -1916,19 +1831,18 @@ void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType,
 {
     // make a copy of the listener list, to avoid problems from listeners
     // getting added/removed during notification
-    std::vector<cISimulationLifecycleListener*> copy = listeners;
+    std::vector<cISimulationLifecycleListener *> copy = listeners;
     for (int i = 0; i < (int)copy.size(); i++) {
         try {
             copy[i]->lifecycleEvent(eventType, details);
         }
-        catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyLifecycleListeners() calls MUST be surrounded with try-catch!!!!
-            //XXX const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
-            //XXX printfmsg("Error in %s listener: %s", eventName, e.what());
+        catch (std::exception& e) {  // XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyLifecycleListeners() calls MUST be surrounded with try-catch!!!!
+            // XXX const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
+            // XXX printfmsg("Error in %s listener: %s", eventName, e.what());
             displayException(e);
         }
     }
 }
-
 
 //-------------------------------------------------------------
 
@@ -1962,18 +1876,18 @@ timeval EnvirBase::totalElapsed()
 void EnvirBase::checkTimeLimits()
 {
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-    if (opt->simtimeLimit!=SIMTIME_ZERO && getSimulation()->getSimTime()>=opt->simtimeLimit)
-         throw cTerminationException(E_SIMTIME);
+    if (opt->simtimeLimit != SIMTIME_ZERO && getSimulation()->getSimTime() >= opt->simtimeLimit)
+        throw cTerminationException(E_SIMTIME);
 #endif
-    if (opt->cpuTimeLimit==0) // no limit
-         return;
-    if (disableTracing && (getSimulation()->getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
-         return;
+    if (opt->cpuTimeLimit == 0)  // no limit
+        return;
+    if (disableTracing && (getSimulation()->getEventNumber()&0xFF) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
+        return;
     timeval now;
     gettimeofday(&now, nullptr);
     long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
-    if (elapsedsecs>=opt->cpuTimeLimit)
-         throw cTerminationException(E_REALTIME);
+    if (elapsedsecs >= opt->cpuTimeLimit)
+        throw cTerminationException(E_REALTIME);
 }
 
 void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
@@ -2008,11 +1922,9 @@ void EnvirBase::checkFingerprint()
 
     int k = 0;
     StringTokenizer tokenizer(opt->expectedFingerprint.c_str());
-    while (tokenizer.hasMoreTokens())
-    {
+    while (tokenizer.hasMoreTokens()) {
         const char *fingerprint = tokenizer.nextToken();
-        if (getSimulation()->getHasher()->equals(fingerprint))
-        {
+        if (getSimulation()->getHasher()->equals(fingerprint)) {
             printfmsg("Fingerprint successfully verified: %s", fingerprint);
             return;
         }
@@ -2020,8 +1932,8 @@ void EnvirBase::checkFingerprint()
     }
 
     printfmsg("Fingerprint mismatch! calculated: %s, expected: %s%s",
-              getSimulation()->getHasher()->str().c_str(),
-              (k>=2 ? "one of: " : ""), opt->expectedFingerprint.c_str());
+            getSimulation()->getHasher()->str().c_str(),
+            (k >= 2 ? "one of: " : ""), opt->expectedFingerprint.c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
@@ -2029,7 +1941,7 @@ cModuleType *EnvirBase::resolveNetwork(const char *networkname)
     cModuleType *network = nullptr;
     std::string inifilePackage = getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());
 
-    bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(),"-")!=0;
+    bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(), "-") != 0;
     if (hasInifilePackage)
         network = cModuleType::find((inifilePackage+"."+networkname).c_str());
     if (!network)
@@ -2037,7 +1949,7 @@ cModuleType *EnvirBase::resolveNetwork(const char *networkname)
     if (!network) {
         if (hasInifilePackage)
             throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files",
-                                networkname, (inifilePackage+"."+networkname).c_str());
+                    networkname, (inifilePackage+"."+networkname).c_str());
         else
             throw cRuntimeError("Network `%s' not found, check .ini and .ned files", networkname);
     }
@@ -2046,5 +1958,6 @@ cModuleType *EnvirBase::resolveNetwork(const char *networkname)
     return network;
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
+

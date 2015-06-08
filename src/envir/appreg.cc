@@ -22,15 +22,14 @@ namespace envir {
 
 cGlobalRegistrationList omnetapps("omnetapps");
 
-EXECUTE_ON_SHUTDOWN( omnetapps.clear() );
+EXECUTE_ON_SHUTDOWN(omnetapps.clear());
 
 cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
 {
     // choose the one with highest score
     cOmnetAppRegistration *best = nullptr;
     cRegistrationList *list = omnetapps.getInstance();
-    for (int i=0; i<list->size(); i++)
-    {
+    for (int i = 0; i < list->size(); i++) {
         cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(list->get(i));
         if (!best || appreg->getScore() > best->getScore())
             best = appreg;

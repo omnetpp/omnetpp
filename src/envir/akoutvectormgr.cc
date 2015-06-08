@@ -34,12 +34,9 @@
 NAMESPACE_BEGIN
 namespace envir {
 
-
 Register_Class(cAkOutputVectorManager);
 
-
 Register_PerObjectConfigOption(CFGID_WITH_AKAROA, "with-akaroa", KIND_VECTOR, CFG_BOOL, "false", "Whether the output vector should be under Akaroa control.");
-
 
 cAkOutputVectorManager::cAkOutputVectorManager()
 {
@@ -59,8 +56,7 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     std::string objectfullpath = std::string(modulename) + "." + vectorname;
     vp->ak_controlled = getEnvir()->getConfig()->getAsBool(objectfullpath.c_str(), CFGID_WITH_AKAROA);
 
-    if (vp->ak_controlled)
-    {
+    if (vp->ak_controlled) {
         // register vector with Akaroa
         if (ak_declared)
             throw cRuntimeError("cAkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
@@ -80,11 +76,9 @@ cFileOutputVectorManager::VectorData *cAkOutputVectorManager::createVectorData()
 bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
     AkVectorData *vp = (AkVectorData *)vectorhandle;
-    if (vp->ak_controlled)
-    {
+    if (vp->ak_controlled) {
         // 1. register the parameters to Akaroa
-        if (!ak_declared)
-        {
+        if (!ak_declared) {
             AkDeclareParameters(ak_count);
             AkMessage((char *)"Parameters declared:  %i", ak_count);
             ak_declared = true;
@@ -97,8 +91,8 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
     // 3. write the vector file too
     return cFileOutputVectorManager::record(vectorhandle, t, value);
 }
-
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 
 #endif
+

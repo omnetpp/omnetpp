@@ -36,8 +36,7 @@ void MatchableObjectAdapter::setObject(cObject *obj)
 
 const char *MatchableObjectAdapter::getAsString() const
 {
-    switch (attr)
-    {
+    switch (attr) {
         case FULLPATH:  tmp = obj->getFullPath(); return tmp.c_str();
         case FULLNAME:  return obj->getFullName();
         case CLASSNAME: return obj->getClassName();
@@ -49,8 +48,7 @@ void MatchableObjectAdapter::splitIndex(char *indexedName, int& index)
 {
     index = 0;
     char *startbracket = strchr(indexedName, '[');
-    if (startbracket)
-    {
+    if (startbracket) {
         char *lastcharp = indexedName + strlen(indexedName) - 1;
         if (*lastcharp != ']')
             throw opp_runtime_error("unmatched '['");
@@ -71,14 +69,13 @@ bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, const c
 
     // find field by name
     fieldId = desc->findField(fieldNameBuf);
-    delete [] fieldNameBuf;
+    delete[] fieldNameBuf;
     return fieldId != -1;
 }
 
 const char *MatchableObjectAdapter::getAsString(const char *attribute) const
 {
-    if (!desc)
-    {
+    if (!desc) {
         desc = obj->getDescriptor();
         if (!desc)
             return nullptr;
@@ -108,6 +105,6 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     return tmp.c_str();
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

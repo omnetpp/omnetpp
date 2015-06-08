@@ -34,12 +34,9 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-
 Register_PerRunConfigOption(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sna", "Name of the snapshot file.");
 
-
 Register_Class(cFileSnapshotManager);
-
 
 cFileSnapshotManager::cFileSnapshotManager()
 {
@@ -78,6 +75,6 @@ const char *cFileSnapshotManager::getFileName() const
     return fname.c_str();
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

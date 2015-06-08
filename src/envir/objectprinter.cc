@@ -32,17 +32,18 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace envir {
 
-#define MAXIMUM_OBJECT_PRINTER_LEVEL 20
+#define MAXIMUM_OBJECT_PRINTER_LEVEL    20
 
-static ObjectPrinterRecursionControl defaultRecurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
+static ObjectPrinterRecursionControl defaultRecurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level)
+{
     const char *fieldName = descriptor->getFieldName(fieldIndex);
     return strcmp(fieldName, "owner") ? RECURSE : SKIP;
 }
 
 ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
-                             const std::vector<MatchExpression*>& objectMatchExpressions,
-                             const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
-                             int indentSize)
+        const std::vector<MatchExpression *>& objectMatchExpressions,
+        const std::vector<std::vector<MatchExpression *> >& fieldNameMatchExpressionsList,
+        int indentSize)
 {
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
     this->recursionPredicate = recursionPredicate ? recursionPredicate : defaultRecurseIntoMessageFields;
@@ -53,10 +54,10 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
 
 ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate, const char *objectFieldMatcherPattern, int indentSize)
 {
-    std::vector<MatchExpression*> objectMatchExpressions;
-    std::vector<std::vector<MatchExpression*> > fieldNameMatchExpressionsList;
+    std::vector<MatchExpression *> objectMatchExpressions;
+    std::vector<std::vector<MatchExpression *> > fieldNameMatchExpressionsList;
 
-    StringTokenizer tokenizer(objectFieldMatcherPattern, "|"); // TODO: use ; when it does not mean comment anymore
+    StringTokenizer tokenizer(objectFieldMatcherPattern, "|");  // TODO: use ; when it does not mean comment anymore
     std::vector<std::string> patterns = tokenizer.asVector();
 
     for (int i = 0; i < (int)patterns.size(); i++) {
@@ -67,7 +68,7 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
             *fieldNamePattern = '\0';
             StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
             std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-            std::vector<MatchExpression*> fieldNameMatchExpressions;
+            std::vector<MatchExpression *> fieldNameMatchExpressions;
 
             for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
                 fieldNameMatchExpressions.push_back(new MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
@@ -75,7 +76,7 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
             fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
         }
         else {
-            std::vector<MatchExpression*> fieldNameMatchExpressions;
+            std::vector<MatchExpression *> fieldNameMatchExpressions;
             fieldNameMatchExpressions.push_back(new MatchExpression("*", false, true, true));
             fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
         }
@@ -94,11 +95,10 @@ ObjectPrinter::~ObjectPrinter()
 {
     for (int i = 0; i < (int)objectMatchExpressions.size(); i++) {
         delete objectMatchExpressions[i];
-        std::vector<MatchExpression*>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
+        std::vector<MatchExpression *>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
         for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++)
             delete fieldNameMatchExpressions[j];
     }
-
 }
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
@@ -174,7 +174,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                 if (isCompound) {
                     if (fieldValue) {
                         cClassDescriptor *fieldDescriptor = isCObject ? cClassDescriptor::getDescriptorFor((cObject *)fieldValue) :
-                                                                        cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(fieldIndex));
+                            cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(fieldIndex));
 
                         if (isCObject && result == FULL_NAME)
                             ostream << ((cObject *)fieldValue)->getFullName() << "\n";
@@ -223,7 +223,7 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
         MatchExpression *objectMatchExpression = objectMatchExpressions[i];
 
         if (objectMatchExpression->matches(&matchableObject)) {
-            std::vector<MatchExpression*>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
+            std::vector<MatchExpression *>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
 
             for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++) {
                 MatchExpression *fieldNameMatchExpression = fieldNameMatchExpressions[j];
@@ -238,6 +238,6 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
     return false;
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

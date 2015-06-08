@@ -21,7 +21,6 @@
 NAMESPACE_BEGIN
 namespace envir {
 
-
 Speedometer::Speedometer()
 {
     started = false;
@@ -68,22 +67,20 @@ void Speedometer::beginNewInterval()
     timeval now;
     gettimeofday(&now, nullptr);
     unsigned long elapsed_msecs = timeval_msec(now - intervalStartWalltime);
-    if (elapsed_msecs<10 || numEvents==0)
-    {
+    if (elapsed_msecs < 10 || numEvents == 0) {
         // if we're called too often, refuse to give readings as probably
         // they'd be very misleading
         lastIntervalEventsPerSec = 0;
         lastIntervalSimsecPerSec = 0;
         lastIntervalEventsPerSimsec = 0;
     }
-    else
-    {
+    else {
         double elapsed_sec = (double)elapsed_msecs/1000.0;
         simtime_t elapsed_simsec = currentSimtime-intervalStartSimtime;
 
         lastIntervalEventsPerSec = numEvents / elapsed_sec;
         lastIntervalSimsecPerSec = SIMTIME_DBL(elapsed_simsec) / elapsed_sec;
-        lastIntervalEventsPerSimsec = (elapsed_simsec==SIMTIME_ZERO) ? 0 : (numEvents / SIMTIME_DBL(elapsed_simsec));
+        lastIntervalEventsPerSimsec = (elapsed_simsec == SIMTIME_ZERO) ? 0 : (numEvents / SIMTIME_DBL(elapsed_simsec));
     }
     numEvents = 0;
     intervalStartWalltime = now;
@@ -92,22 +89,25 @@ void Speedometer::beginNewInterval()
 
 double Speedometer::getEventsPerSec()
 {
-    if (!started) return 0;
+    if (!started)
+        return 0;
     return lastIntervalEventsPerSec;
 }
 
 double Speedometer::getEventsPerSimSec()
 {
-    if (!started) return 0;
+    if (!started)
+        return 0;
     return lastIntervalEventsPerSimsec;
 }
 
 double Speedometer::getSimSecPerSec()
 {
-    if (!started) return 0;
+    if (!started)
+        return 0;
     return lastIntervalSimsecPerSec;
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

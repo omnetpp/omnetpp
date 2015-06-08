@@ -32,15 +32,14 @@ Intervals::Intervals()
 
 Intervals::~Intervals()
 {
-    delete [] intervals;
+    delete[] intervals;
 }
 
 void Intervals::parse(const char *text)
 {
     std::vector<Interval> parsedIntervals;
     StringTokenizer tokenizer(text, ",");
-    while (tokenizer.hasMoreTokens())
-    {
+    while (tokenizer.hasMoreTokens()) {
         // parse interval string
         const char *s = tokenizer.nextToken();
         const char *ellipsis = strstr(s, "..");
@@ -49,12 +48,14 @@ void Intervals::parse(const char *text)
 
         const char *startstr = s;
         const char *stopstr = ellipsis+2;
-        while (opp_isspace(*startstr)) startstr++;
-        while (opp_isspace(*stopstr)) stopstr++;
+        while (opp_isspace(*startstr))
+            startstr++;
+        while (opp_isspace(*stopstr))
+            stopstr++;
 
         // add to vector
         Interval interval;
-        if (startstr!=ellipsis)
+        if (startstr != ellipsis)
             interval.startTime = STR_SIMTIME(std::string(startstr, ellipsis-startstr).c_str());
         if (*stopstr)
             interval.stopTime = STR_SIMTIME(stopstr);
@@ -62,8 +63,8 @@ void Intervals::parse(const char *text)
     }
 
     // return as plain C++ array
-    intervals = new Interval[parsedIntervals.size()+1]; // +1: terminating (0,0)
-    for (int i=0; i<(int)parsedIntervals.size(); i++)
+    intervals = new Interval[parsedIntervals.size()+1];  // +1: terminating (0,0)
+    for (int i = 0; i < (int)parsedIntervals.size(); i++)
         intervals[i] = parsedIntervals[i];
 }
 
@@ -73,18 +74,19 @@ bool Intervals::contains(simtime_t t) const
     if (!intervals)
         return true;
 
-    for (Interval *i = intervals; i->startTime!=0 || i->stopTime!=0; i++)
+    for (Interval *i = intervals; i->startTime != 0 || i->stopTime != 0; i++)
         if (i->startTime <= t && (i->stopTime == 0 || t <= i->stopTime))
             return true;
+
 
     return false;
 }
 
 bool Intervals::empty() const
 {
-    return !intervals || (intervals[0].startTime==0 && intervals[0].stopTime==0);
+    return !intervals || (intervals[0].startTime == 0 && intervals[0].stopTime == 0);
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

@@ -32,25 +32,23 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace envir {
 
-inline const char* getTypeName(char type)
+inline const char *getTypeName(char type)
 {
-    switch(type)
-    {
-    case 'B': return "boolean";
-    case 'D': return "number";
-    case 'S': return "string";
-    default: return "<undefined>";
+    switch (type) {
+        case 'B': return "boolean";
+        case 'D': return "number";
+        case 'S': return "string";
+        default: return "<undefined>";
     }
 }
 
 void ValueIterator::Expr::checkType(char expected) const
 {
-    if (value.type != expected)
-    {
+    if (value.type != expected) {
         if (value.type)
             throw opp_runtime_error("%s expected, but %s (%s) found in the expression '%s'",
                     getTypeName(expected), getTypeName(value.type),
-                    const_cast<Expression::Value*>(&value)->str().c_str(),
+                    const_cast<Expression::Value *>(&value)->str().c_str(),
                     raw.c_str());
         else
             throw opp_runtime_error("%s expected, but nothing found in the expression '%s'",
@@ -60,20 +58,19 @@ void ValueIterator::Expr::checkType(char expected) const
 
 inline bool isVariableNameChar(char c)
 {
-    return isalnum(c) || c == '_' || c == '@'; // Note: Expression parser also allows '$' inside names.
-                                               //       Not allowed here, because '$x$y' would refer to a variable named 'x$y'
+    return isalnum(c) || c == '_' || c == '@';  // Note: Expression parser also allows '$' inside names.
+                                                //       Not allowed here, because '$x$y' would refer to a variable named 'x$y'
 }
 
 void ValueIterator::Expr::collectVariablesInto(set<string>& result) const
 {
     string::size_type start = 0, dollarPos;
-    while (start < raw.size() && (dollarPos = raw.find('$', start)) != string::npos)
-    {
-        start = (dollarPos+1 < raw.size() && raw[dollarPos+1]=='{') ? dollarPos+2 : dollarPos+1; // support both "$x" and "${x}"
+    while (start < raw.size() && (dollarPos = raw.find('$', start)) != string::npos) {
+        start = (dollarPos+1 < raw.size() && raw[dollarPos+1] == '{') ? dollarPos+2 : dollarPos+1;  // support both "$x" and "${x}"
         size_t end = start;
         while (end < raw.size() && isVariableNameChar(raw[end]))
             ++end;
-        if (end > start && (start!=dollarPos+2 || (end+1 < raw.size() && raw[end+1]=='}')))
+        if (end > start && (start != dollarPos+2 || (end+1 < raw.size() && raw[end+1] == '}')))
             result.insert(raw.substr(start, end-start));
         start = end;
     }
@@ -97,17 +94,20 @@ struct Resolver : public opp_substitutevariables_resolver
 {
     const ValueIterator::VariableMap& map;
     Resolver(const ValueIterator::VariableMap& map) : map(map) {}
-    virtual bool isVariableNameChar(char c) override {
+    virtual bool isVariableNameChar(char c) override
+    {
         return OPP::envir::isVariableNameChar(c);
     }
-    virtual std::string operator()(const std::string& name) override {
+
+    virtual std::string operator()(const std::string& name) override
+    {
         ValueIterator::VariableMap::const_iterator it = map.find(name);
         if (it == map.end())
             throw opp_runtime_error("unknown iteration variable: $%s", name.c_str());
         return it->second->get();
     }
 };
-}
+} // namespace {
 
 void ValueIterator::Expr::substituteVariables(const VariableMap& map)
 {
@@ -121,21 +121,16 @@ void ValueIterator::Expr::evaluate()
 
     FunctionResolver resolver;
     Expression expr;
-    try
-    {
+    try {
         expr.parse(value.s.c_str(), &resolver);
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         throw opp_runtime_error("Parse error in expression: %s", value.s.c_str(), e.what());
     }
-
-    try
-    {
+    try {
         value = expr.evaluate();
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         throw opp_runtime_error("Cannot evaluate expression: %s (%s)", value.s.c_str(), e.what());
     }
 }
@@ -153,13 +148,11 @@ void ValueIterator::Item::parse(const char *s)
     std::string toStr = toPtr ? (stepPtr ? std::string(toPtr+2, stepPtr - toPtr - 2) : std::string(toPtr+2)) : "";
     std::string stepStr = stepPtr ? std::string(stepPtr+4) : "1";
 
-    if (!toPtr)
-    {
+    if (!toPtr) {
         type = TEXT;
         text = s;
     }
-    else
-    {
+    else {
         type = FROM_TO_STEP;
         from = fromStr.c_str();
         to = toStr.c_str();
@@ -169,51 +162,48 @@ void ValueIterator::Item::parse(const char *s)
 
 void ValueIterator::Item::collectVariablesInto(std::set<std::string>& result) const
 {
-    switch (type)
-    {
-    case TEXT:
-        text.collectVariablesInto(result);
-        break;
-    case FROM_TO_STEP:
-        from.collectVariablesInto(result);
-        to.collectVariablesInto(result);
-        step.collectVariablesInto(result);
-        break;
+    switch (type) {
+        case TEXT:
+            text.collectVariablesInto(result);
+            break;
+
+        case FROM_TO_STEP:
+            from.collectVariablesInto(result);
+            to.collectVariablesInto(result);
+            step.collectVariablesInto(result);
+            break;
     }
 }
 
 void ValueIterator::Item::restart(const VariableMap& map)
 {
-    switch (type)
-    {
-    case TEXT:
-        text.substituteVariables(map);
-        // note: no evaluate()! only from-to-step are evaluated, evaluation of other
-        // iteration items are left to NED parameter evaluation
-        break;
-    case FROM_TO_STEP:
-        from.substituteVariables(map);
-        from.evaluate();
-        to.substituteVariables(map);
-        to.evaluate();
-        step.substituteVariables(map);
-        step.evaluate();
-        break;
+    switch (type) {
+        case TEXT:
+            text.substituteVariables(map);
+            // note: no evaluate()! only from-to-step are evaluated, evaluation of other
+            // iteration items are left to NED parameter evaluation
+            break;
+
+        case FROM_TO_STEP:
+            from.substituteVariables(map);
+            from.evaluate();
+            to.substituteVariables(map);
+            to.evaluate();
+            step.substituteVariables(map);
+            step.evaluate();
+            break;
     }
 }
 
-
 int ValueIterator::Item::getNumValues() const
 {
-    if (type == FROM_TO_STEP)
-    {
+    if (type == FROM_TO_STEP) {
         double s = step.dblValue();
         // note 1.000001 below: without it, "1..9 step 0.1" would only go up to 8.9,
         // because floor(8/0.1) = floor(79.9999999999) = 79 not 80!
         return std::max(0, (int)floor((to.dblValue() - from.dblValue() + 1.000001 * s) / s));
     }
-    else
-    {
+    else {
         return 1;
     }
 }
@@ -221,10 +211,10 @@ int ValueIterator::Item::getNumValues() const
 std::string ValueIterator::Item::getValueAsString(int k) const
 {
     char buf[32];
-    switch (type)
-    {
+    switch (type) {
         case TEXT:
             return text.strValue();
+
         case FROM_TO_STEP:
             sprintf(buf, "%g", from.dblValue() + step.dblValue()*k);
             return buf;
@@ -232,7 +222,6 @@ std::string ValueIterator::Item::getValueAsString(int k) const
     Assert(false);
     return "";
 }
-
 
 ValueIterator::ValueIterator()
 {
@@ -255,8 +244,7 @@ void ValueIterator::parse(const char *s)
     items.clear();
     referredVariables.clear();
     StringTokenizer2 tokenizer(s, ",", "()[]{}", "\"");
-    while (tokenizer.hasMoreTokens())
-    {
+    while (tokenizer.hasMoreTokens()) {
         Item item;
         std::string token = opp_trim(tokenizer.nextToken());
         item.parse(token.c_str());
@@ -268,24 +256,23 @@ void ValueIterator::parse(const char *s)
 int ValueIterator::length() const
 {
     int n = 0;
-    for (int i=0; i<(int)items.size(); i++)
+    for (int i = 0; i < (int)items.size(); i++)
         n += items[i].getNumValues();
     return n;
 }
 
 std::string ValueIterator::get(int index) const
 {
-    if (index<0 || index>=length())
+    if (index < 0 || index >= length())
         throw cRuntimeError("ValueIterator: index %d out of bounds", index);
 
     int k = 0;
-    for (int i=0; i<(int)items.size(); i++)
-    {
+    for (int i = 0; i < (int)items.size(); i++) {
         const Item& item = items[i];
         int n = item.getNumValues();
         if (k <= index && index < k+n)
             return item.getValueAsString(index-k);
-        k+=n;
+        k += n;
     }
     Assert(false);
     return "";
@@ -313,7 +300,8 @@ void ValueIterator::operator++(int)
     }
     else {
         k = 0;
-        while (++itemIndex < (int)items.size() && items[itemIndex].getNumValues() == 0);
+        while (++itemIndex < (int)items.size() && items[itemIndex].getNumValues() == 0)
+            ;
     }
 }
 
@@ -340,10 +328,10 @@ bool ValueIterator::end() const
 void ValueIterator::dump() const
 {
     printf("parsed form: ");
-    for (int i=0; i<(int)items.size(); i++)
-    {
+    for (int i = 0; i < (int)items.size(); i++) {
         const Item& item = items[i];
-        if (i>0) printf(", ");
+        if (i > 0)
+            printf(", ");
         if (item.type == Item::TEXT)
             printf("\"%s\"", item.text.strValue().c_str());
         else
@@ -351,14 +339,14 @@ void ValueIterator::dump() const
     }
     printf("; enumeration: ");
     int n = length();
-    for (int i=0; i<n; i++)
-    {
-        if (i>0) printf(", ");
+    for (int i = 0; i < n; i++) {
+        if (i > 0)
+            printf(", ");
         printf("%s", get(i).c_str());
     }
     printf(".\n");
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 

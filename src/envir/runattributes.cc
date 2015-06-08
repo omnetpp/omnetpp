@@ -30,7 +30,6 @@ using namespace OPP::common;
 NAMESPACE_BEGIN
 namespace envir {
 
-
 #ifdef CHECK
 #undef CHECK
 #endif
@@ -39,20 +38,20 @@ namespace envir {
 
 void RunData::initRun()
 {
-    if (!initialized)
-    {
+    if (!initialized) {
         // Collect the attributes and module parameters of the current run
         // from the configuration.
         cConfigurationEx *cfg = getEnvir()->getConfigEx();
         runId = cfg->getVariable(CFGVAR_RUNID);
 
         std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
-        for (int i=0; i<(int)keys1.size(); i++)
-            if (OPP::opp_strcmp(keys1[i], CFGVAR_RUNID)!=0) // skip runId
+        for (int i = 0; i < (int)keys1.size(); i++)
+            if (OPP::opp_strcmp(keys1[i], CFGVAR_RUNID) != 0)  // skip runId
                 attributes[keys1[i]] = cfg->getVariable(keys1[i]);
 
+
         std::vector<const char *> keys2 = cfg->getIterationVariableNames();
-        for (int i=0; i<(int)keys2.size(); i++)
+        for (int i = 0; i < (int)keys2.size(); i++)
             attributes[keys2[i]] = cfg->getVariable(keys2[i]);
 
 /*XXX
@@ -65,7 +64,7 @@ void RunData::initRun()
 */
         // fill in moduleParams[]
         std::vector<const char *> params = cfg->getParameterKeyValuePairs();
-        for (int i=0; i<(int)params.size(); i+=2)
+        for (int i = 0; i < (int)params.size(); i += 2)
             moduleParams[params[i]] = params[i+1];
 
         initialized = true;
@@ -79,21 +78,18 @@ void RunData::reset()
     moduleParams.clear();
 }
 
-
 void RunData::writeRunData(FILE *f, opp_string fname)
 {
     CHECK(fprintf(f, "run %s\n", QUOTE(runId.c_str())));
-    for (opp_string_map::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-    {
+    for (opp_string_map::const_iterator it = attributes.begin(); it != attributes.end(); ++it) {
         CHECK(fprintf(f, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
-    for (opp_string_map::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it)
-    {
+    for (opp_string_map::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it) {
         CHECK(fprintf(f, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
     CHECK(fprintf(f, "\n"));
 }
 
-} // namespace envir
+}  // namespace envir
 NAMESPACE_END
 
