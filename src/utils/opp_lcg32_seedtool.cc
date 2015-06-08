@@ -25,37 +25,43 @@
 #include <cstdlib>
 #include "common/ver.h"
 
-#define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
+#define INTRAND_MAX    0x7ffffffeL  /* = 2**31-2 */
 
-#define TABLESIZE   4096
-struct hashelem {long index; long seed;};
+#define TABLESIZE      4096
+struct hashelem
+{
+    long index;
+    long seed;
+};
 extern struct hashelem hashtable[TABLESIZE];
 
 /*------- long int pseudorandom number generator -------------
-*    Range:          1 ... 2**31-2
-*    Period length:  2**31-2
-*    Global variable used:   long int theSeed : seed
-*    Method:  x=(x * 7**5) mod (2**31-1)
-*    To check:  if  x[0]=1  then  x[10000]=1,043,618,065
-*    Required hardware:  exactly 32-bit integer aritmetics
-*    Source:  Raj Jain: The Art of Computer Systems Performance Analysis
-*                (John Wiley & Sons, 1991)   Pages 441-444, 455
-*---------------------------------------------------------*/
+ *    Range:          1 ... 2**31-2
+ *    Period length:  2**31-2
+ *    Global variable used:   long int theSeed : seed
+ *    Method:  x=(x * 7**5) mod (2**31-1)
+ *    To check:  if  x[0]=1  then  x[10000]=1,043,618,065
+ *    Required hardware:  exactly 32-bit integer aritmetics
+ *    Source:  Raj Jain: The Art of Computer Systems Performance Analysis
+ *                (John Wiley & Sons, 1991)   Pages 441-444, 455
+ *---------------------------------------------------------*/
 
 long nextrand(long seed)
 {
-     const long int a=16807, q=127773, r=2836;
-     seed=a*(seed%q) - r*(seed/q);
-     if (seed<=0) seed+=INTRAND_MAX+1;
-     return seed;
+    const long int a = 16807, q = 127773, r = 2836;
+    seed = a*(seed%q) - r*(seed/q);
+    if (seed <= 0)
+        seed += INTRAND_MAX+1;
+    return seed;
 }
 
 int testrand()
 {
-     long seed = 1;
-     for(int i=0; i<10000; i++) seed=nextrand(seed);
-     int good = (seed==1043618065L);
-     return good;
+    long seed = 1;
+    for (int i = 0; i < 10000; i++)
+        seed = nextrand(seed);
+    int good = (seed == 1043618065L);
+    return good;
 }
 
 void filltable()
@@ -66,25 +72,26 @@ void filltable()
     long i, seed, nextstop, k;
 
     // init the table
-    for(i=0; i<TABLESIZE; i++)
+    for (i = 0; i < TABLESIZE; i++)
         hashtable[i].index = hashtable[i].seed = -1;
 
     // fill out the table
-    i=0; seed=1; nextstop=0; k=0;
+    i = 0;
+    seed = 1;
+    nextstop = 0;
+    k = 0;
     do {
-        if (i>=nextstop)
-        {
+        if (i >= nextstop) {
             // generate hash value out of seed
             int hashvalue = seed%TABLESIZE;
 
             // insert it into the table if its slot is unused
-            if (hashtable[hashvalue].index==-1)
-            {
+            if (hashtable[hashvalue].index == -1) {
                 hashtable[hashvalue].index = i;
                 hashtable[hashvalue].seed = seed;
                 nextstop += gap;
 
-                fprintf(stderr,"\r%ld",++k);
+                fprintf(stderr, "\r%ld", ++k);
                 fflush(stderr);
             }
         }
@@ -92,20 +99,20 @@ void filltable()
         // next seed value
         seed = nextrand(seed);
         i++;
-    } while (seed!=1);
+    } while (seed != 1);
     printf("\n");
 }
 
 void printtable()
 {
     printf("struct hashelem  hashtable[TABLESIZE] = {\n");
-    for(int i=0;i<TABLESIZE;i++)
-    {
-        printf( "{%ld,%ld},",
+    for (int i = 0; i < TABLESIZE; i++) {
+        printf("{%ld,%ld},",
                 hashtable[i].index,
                 hashtable[i].seed
-              );
-        if (i%4==3) printf("\n");
+                );
+        if (i%4 == 3)
+            printf("\n");
     }
     printf("\n};");
 }
@@ -113,21 +120,19 @@ void printtable()
 long indexofseed(long seed)
 {
     // check seed passed
-    if (seed<=0 || seed>INTRAND_MAX)
-    {
-         fprintf(stderr,"Invalid seed %ld\n",seed);
-         exit(1);
+    if (seed <= 0 || seed > INTRAND_MAX) {
+        fprintf(stderr, "Invalid seed %ld\n", seed);
+        exit(1);
     }
 
     // find closest match in the table
-    long i=0;
-    for(;;)
-    {
+    long i = 0;
+    for (;;) {
         // generate hash value out of seed
         int hashvalue = seed%TABLESIZE;
 
         // is it in the table?
-        if (hashtable[hashvalue].seed==seed)
+        if (hashtable[hashvalue].seed == seed)
             return hashtable[hashvalue].index - i;
 
         // next seed value
@@ -141,13 +146,14 @@ long seedatindex(long index)
     // find closest index in hashtable
     int closest = -1;
     long i;
-    for (i=0; i<TABLESIZE; i++)
-        if (hashtable[i].index<=index && (closest<0 || hashtable[i].index>hashtable[closest].index))
+    for (i = 0; i < TABLESIZE; i++)
+        if (hashtable[i].index <= index && (closest<0 || hashtable[i].index> hashtable[closest].index))
             closest = i;
+
 
     // cycle to desired index "on foot"
     long seed = hashtable[closest].seed;
-    for(i = hashtable[closest].index; i<index; i++)
+    for (i = hashtable[closest].index; i < index; i++)
         seed = nextrand(seed);
     return seed;
 }
@@ -178,33 +184,34 @@ int main(int argc, char *argv[])
          exit(0);
     }
 
-    if (!testrand())
-    {
-         fprintf(stderr,"Random number generator does not work correctly!\n");
-         exit(1);
+    if (!testrand()) {
+        fprintf(stderr, "Random number generator does not work correctly!\n");
+        exit(1);
     }
 
     long arg[5];
-    for (int i=2; i<5; i++)
-        arg[i] = argc>i ? atol(argv[i]) : 0;
+    for (int i = 2; i < 5; i++)
+        arg[i] = argc > i ? atol(argv[i]) : 0;
 
-    switch (argv[1][0])
-    {
-      case 'i':
-        printf("%ld\n", indexofseed( arg[2] ));
-        break;
-      case 's':
-        printf("%ld\n", seedatindex( arg[2] ));
-        break;
-      case 'd':
-        printf("%ld\n", indexofseed( arg[3] ) - indexofseed( arg[2] ));
-        break;
-      case 'g':
-        {
-            long index = indexofseed( arg[2] ),
+    switch (argv[1][0]) {
+        case 'i':
+            printf("%ld\n", indexofseed(arg[2]));
+            break;
+
+        case 's':
+            printf("%ld\n", seedatindex(arg[2]));
+            break;
+
+        case 'd':
+            printf("%ld\n", indexofseed(arg[3]) - indexofseed(arg[2]));
+            break;
+
+        case 'g': {
+            long index = indexofseed(arg[2]),
                  dist = arg[3],
                  count = arg[4];
-            if (count==0) count=1;
+            if (count == 0)
+                count = 1;
 
             /*
              * 20020806, N. Reijers
@@ -219,24 +226,26 @@ int main(int argc, char *argv[])
              * depending on dist, the period will be somewhere between 2^31/dist and
              * 2^31.
              */
-            for (; count>0; count--)
-            {
-                 index += dist;
-                 index &= 0x7fffffffL; /* Fix. */
-                 printf("%ld\n", seedatindex( index ));
+            for ( ; count > 0; count--) {
+                index += dist;
+                index &= 0x7fffffffL;  /* Fix. */
+                printf("%ld\n", seedatindex(index));
             }
         }
         break;
-      case 't':
-        filltable();
-        printtable();
-        break;
-      case 'p':
-        printtable();
-        break;
-      default:
-        fprintf(stderr,"Invalid switch %s\n",argv[1]);
-        return 1;
+
+        case 't':
+            filltable();
+            printtable();
+            break;
+
+        case 'p':
+            printtable();
+            break;
+
+        default:
+            fprintf(stderr, "Invalid switch %s\n", argv[1]);
+            return 1;
     }
     return 0;
 }

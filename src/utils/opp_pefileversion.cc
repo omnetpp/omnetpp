@@ -5,41 +5,37 @@
 #pragma once
 
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT    0x0501
 #endif
 
 #include <cstdio>
 #include <tchar.h>
 #include <windows.h>
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int argc, _TCHAR *argv[])
 {
-    if (argc < 2)
-    {
+    if (argc < 2) {
         printf("error: missing argument\n");
         return 0;
     }
 
     DWORD dwHandle = 0;
-    DWORD dwSize = GetFileVersionInfoSize(argv[1], /*out*/ &dwHandle);
-    if (dwSize == 0)
-    {
+    DWORD dwSize = GetFileVersionInfoSize(argv[1],  /*out*/ &dwHandle);
+    if (dwSize == 0) {
         printf("error: file not found or no version info in file\n");
         return 0;
     }
-    void* pData = malloc(dwSize);
+    void *pData = malloc(dwSize);
     BOOL result = GetFileVersionInfo(argv[1], dwHandle, dwSize, pData);
-    if (!result)
-    {
+    if (!result) {
         printf("error: cannot get version info from file\n");
         free(pData);
         return 0;
     }
-    VS_FIXEDFILEINFO* pVerInfo = nullptr;
+    VS_FIXEDFILEINFO *pVerInfo = nullptr;
     UINT nLen = 0;
-    result = VerQueryValue(pData, _T("\\"), /*out*/ (void**)&pVerInfo, /*out*/ &nLen);
-    if (!result)
-    {
+    result = VerQueryValue(pData, _T("\\"),  /*out*/ (void **)&pVerInfo,  /*out*/ &nLen);
+    if (!result) {
         printf("error: cannot query version info\n");
         free(pData);
         return 0;
@@ -49,3 +45,4 @@ int _tmain(int argc, _TCHAR* argv[])
     printf("%d\n", version);
     return version;
 }
+
