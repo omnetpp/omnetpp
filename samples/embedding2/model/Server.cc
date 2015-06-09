@@ -66,7 +66,7 @@ void Server::initialize()
     collisionLengthHistogram.setRangeAutoUpper(0.0);
 
     if (hasGUI())
-        getDisplayString().setTagArg("i2",0,"x_off");
+        getDisplayString().setTagArg("i2",0,"status/off");
 }
 
 
@@ -99,7 +99,7 @@ void Server::handleMessage(cMessage *msg)
         // update network graphics
         if (hasGUI())
         {
-            getDisplayString().setTagArg("i2",0,"x_off");
+            getDisplayString().setTagArg("i2",0,"status/off");
             getDisplayString().setTagArg("t",0,"");
         }
     }
@@ -118,7 +118,7 @@ void Server::handleMessage(cMessage *msg)
             scheduleAt(endReceptionTime, endRxEvent);
             if (hasGUI())
             {
-                getDisplayString().setTagArg("i2",0,"x_yellow");
+                getDisplayString().setTagArg("i2",0,"status/yellow");
                 getDisplayString().setTagArg("t",0,"RECEIVE");
                 getDisplayString().setTagArg("t",2,"#808000");
             }
@@ -142,7 +142,7 @@ void Server::handleMessage(cMessage *msg)
             // update network graphics
             if (hasGUI())
             {
-                getDisplayString().setTagArg("i2",0,"x_red");
+                getDisplayString().setTagArg("i2",0,"status/red");
                 getDisplayString().setTagArg("t",0,"COLLISION");
                 getDisplayString().setTagArg("t",2,"#800000");
                 char buf[32];

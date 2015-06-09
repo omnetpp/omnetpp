@@ -503,9 +503,7 @@ proc CanvasInspectors:layersDialog:refreshExceptList {} {
 #     global bitmaps icons
 #
 #     if {[catch {set img $bitmaps($imgname,$imgsize)}] && \
-#         [catch {set img $bitmaps($imgname)}] && \
-#         [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
-#         [catch {set img $bitmaps(old/$imgname)}]} {
+#         [catch {set img $bitmaps($imgname)}]} {
 #        set img $icons(unknown)
 #     }
 #
