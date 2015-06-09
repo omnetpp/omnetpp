@@ -231,6 +231,12 @@ OMNeT++ 4.3
         variables, i.e. the signal registration table is no longer cleared
         between simulation runs.
 
+(+)     cModule: added getModuleByPath(), that understands both relative
+        and absolute module paths, and also navigate up in the hierarchy (^).
+
+(-)     cModule: deprecated getModuleByRelativePath(), due to the availability
+        of a better variant, getModuleByPath()
+
 (+)     cTopology: added calculateWeightedSingleShortestPathsTo()
 
 (+)     cPacket: added hasEncapsulatedPacket()

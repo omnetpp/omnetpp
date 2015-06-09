@@ -1071,32 +1071,6 @@ cModule *cModule::getSubmodule(const char *submodname, int idx)
     return nullptr;
 }
 
-// Note: this is a less powerful version of getModuleByPath(), deprecated and waiting to be removed
-cModule *cModule::getModuleByRelativePath(const char *path)
-{
-    // search starts from this module
-    cModule *modp = this;
-
-    // match components of the path
-    opp_string pathbuf(path);
-    char *token = strtok(pathbuf.buffer(), ".");
-    while (token && modp) {
-        char *lbracket;
-        if ((lbracket = strchr(token, '[')) == nullptr)
-            modp = modp->getSubmodule(token);  // no index given
-        else {
-            if (token[strlen(token)-1] != ']')
-                throw cRuntimeError(this, "getModuleByRelativePath(): syntax error (unmatched bracket?) in path `%s'", path);
-            int index = atoi(lbracket+1);
-            *lbracket = '\0';  // cut off [index]
-            modp = modp->getSubmodule(token, index);
-        }
-        token = strtok(nullptr, ".");
-    }
-
-    return modp;  // nullptr if not found
-}
-
 inline char *nextToken(char *& rest)
 {
     if (!rest)

@@ -540,15 +540,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule *getSubmodule(const char *submodname, int idx=-1);
 
     /**
-     * Finds a module in this module's subtree, given with its relative path.
-     * The path is a string of module names separated by dots. Returns nullptr
-     * if the module was not found.
-     *
-     * Deprecated: please use the more powerful getModuleByPath() instead.
-     */
-    _OPPDEPRECATED cModule *getModuleByRelativePath(const char *path);
-
-    /**
      * Finds a module in the module tree, given by its absolute or relative path.
      * The path is a string of module names separated by dots; the special
      * module name ^ (caret) stands for the parent module. If the path starts
