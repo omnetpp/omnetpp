@@ -209,7 +209,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual const char *getFieldTypeString(int field) const = 0;
 
     /**
-     * Returns a NUL-terminated string array with the names of the given
+     * Returns a nullptr-terminated string array with the names of the given
      * field's properties.
      */
     virtual const char **getFieldPropertyNames(int field) const = 0;
