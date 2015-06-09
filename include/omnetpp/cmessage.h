@@ -148,9 +148,6 @@ class SIM_API cMessage : public cEvent
     // getSenderModuleId(), getSenderGate(), getSendingTime() methods.
     void setSentFrom(cModule *module, int gateId, simtime_t_cref t);
 
-    // internal: use the public, documented setArrival(int,int,simtime_t_cref) instead
-    _OPPDEPRECATED void setArrival(cModule *module, int gateId, simtime_t_cref t);
-
     // internal: used by the parallel simulation kernel.
     void setSrcProcId(int procId) {srcProcId = (short)procId;}
 
@@ -366,11 +363,6 @@ class SIM_API cMessage : public cEvent
      * @see getParList()
      */
     virtual cMsgPar& addPar(cMsgPar *par)  {getParList().add(par); return *par;}
-
-    /**
-     * DEPRECATED! Use addPar(cMsgPar *p) instead.
-     */
-    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& par)  {return addPar(&par);}
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.

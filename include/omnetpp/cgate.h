@@ -240,11 +240,6 @@ class SIM_API cGate : public cObject, noncopyable
      * @see connectTo()
      */
     cChannel *reconnectWith(cChannel *channel, bool leaveUninitialized=false);
-
-    /**
-     * DEPRECATED: Use reconnectWith() instead.
-     */
-    _OPPDEPRECATED void setChannel(cChannel *channel) {reconnectWith(channel);}
     //@}
 
     /** @name Information about the gate. */

@@ -790,19 +790,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     //@}
 };
 
-
-/**
- * DEPRECATED -- use cModule::SubmoduleIterator instead.
- */
-class SIM_API _OPPDEPRECATED cSubModIterator : public cModule::SubmoduleIterator
-{
-  public:
-    cSubModIterator(const cModule& m) : cModule::SubmoduleIterator(&m) {}
-    void init(const cModule& m) {cModule::SubmoduleIterator::init(&m);}
-};
-
 NAMESPACE_END
-
 
 #endif
 

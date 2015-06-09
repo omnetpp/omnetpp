@@ -32,13 +32,6 @@ int64_t SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
 
-const int SimTime::SCALEEXP_S  = SIMTIME_S;
-const int SimTime::SCALEEXP_MS = SIMTIME_MS;
-const int SimTime::SCALEEXP_US = SIMTIME_US;
-const int SimTime::SCALEEXP_NS = SIMTIME_NS;
-const int SimTime::SCALEEXP_PS = SIMTIME_PS;
-const int SimTime::SCALEEXP_FS = SIMTIME_FS;
-
 const SimTime SimTime::ZERO;
 
 void SimTime::setScaleExp(int e)

@@ -110,14 +110,6 @@ class SIM_API SimTime
     void overflowSubtracting(const SimTime& x);
 
   public:
-    // renamed constants (use SIMTIME_x instead)
-    _OPPDEPRECATED static const int SCALEEXP_S;
-    _OPPDEPRECATED static const int SCALEEXP_MS;
-    _OPPDEPRECATED static const int SCALEEXP_US;
-    _OPPDEPRECATED static const int SCALEEXP_NS;
-    _OPPDEPRECATED static const int SCALEEXP_PS;
-    _OPPDEPRECATED static const int SCALEEXP_FS;
-
     static const int SCALEEXP_UNINITIALIZED = 0xffff;
 
     /** @name Constructors */

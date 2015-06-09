@@ -3,10 +3,10 @@ Test that getControlInfo() gets deleted when message gets deleted
 
 %global:
 
-class Ctrl : public cPolymorphic
+class Ctrl : public cObject
 {
   public:
-    Ctrl() : cPolymorphic() { }
+    Ctrl() : cObject() { }
     ~Ctrl() {EV << "control info deleted\n";}
 };
 

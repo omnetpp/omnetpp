@@ -23,9 +23,7 @@
 // This header needs to be included *last* in omnetpp.h.
 //
 
-// renamed classes:
-typedef _OPPDEPRECATED OPP::cDatarateChannel cSimpleChannel;
-typedef /*_OPPDEPRECATED*/ OPP::cObject cPolymorphic;
+/* place backwards compatibility typedefs here */
 
 #endif
 

@@ -270,12 +270,6 @@ class SIM_API cPacket : public cMessage
     virtual cPacket *getEncapsulatedPacket() const;
 
     /**
-     * DEPRECATED. getEncapsulatedMsg() was renamed to getEncapsulatedPacket(),
-     * this method was left for backward compatibility.
-     */
-    _OPPDEPRECATED cPacket *getEncapsulatedMsg() const {return getEncapsulatedPacket();}
-
-    /**
      * Returns true if the packet contains an encapsulated packet, and false
      * otherwise. This method is potentially more efficient than
      * <tt>getEncapsulatedPacket()!=nullptr</tt>, because it does not need to

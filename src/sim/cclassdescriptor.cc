@@ -273,15 +273,6 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
     return bestDesc;
 }
 
-// for backward compatibility with 4.0
-bool cClassDescriptor::getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const
-{
-    std::string result = getFieldValueAsString(object, field, i);
-    strncpy(buf, result.c_str(), bufsize);
-    buf[bufsize-1] = 0;
-    return true;
-}
-
 int cClassDescriptor::findField(const char *fieldName) const
 {
     int n = getFieldCount();
