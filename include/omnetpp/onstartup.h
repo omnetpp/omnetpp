@@ -3,9 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  EXECUTE_ON_STARTUP macro and supporting class
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

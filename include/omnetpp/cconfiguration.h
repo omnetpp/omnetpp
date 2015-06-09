@@ -1,12 +1,7 @@
 //==========================================================================
 //  CCONFIGURATION.H - part of
-//
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
-//
-//
-//  Declaration of the following classes:
-//    cConfiguration
 //
 //==========================================================================
 

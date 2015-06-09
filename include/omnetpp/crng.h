@@ -3,9 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  cRNG: interface for random number generator classes
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

@@ -1,12 +1,7 @@
 //=========================================================================
 //  CSCHEDULER.H - part of
-//
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
-//
-//  Author: Andras Varga, 2003
-//          Dept. of Electrical and Computer Systems Engineering,
-//          Monash University, Melbourne, Australia
 //
 //=========================================================================
 

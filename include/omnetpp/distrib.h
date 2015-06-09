@@ -1,20 +1,12 @@
 //==========================================================================
 // DISTRIB.H
-//
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-// Random variate generation
-//
-// Authors: Werner Sandmann (ws), Kay Michael Masslow (kmm), Kyeong Soo (Joseph) Kim (jk)
-// Documentation, maintenance: Andras Varga
-//
-// @date 11/26/2002 "doxygenification" (kmm)
-// @date 11/20/2002 some final comments (ws)
-// @date 10/22/2002 implemented various discrete distributions (kmm)
-//
 //==========================================================================
 
+// Authors: Werner Sandmann (ws), Kay Michael Masslow (kmm), Kyeong Soo (Joseph) Kim (jk)
+// Documentation, maintenance: Andras Varga
 
 #ifndef __OMNETPP_DISTRIB_H
 #define __OMNETPP_DISTRIB_H

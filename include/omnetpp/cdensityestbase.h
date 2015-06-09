@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cDensityEstBase : common base class for density estimation classes
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

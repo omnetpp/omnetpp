@@ -3,9 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Declaration of the following classes:
-//    cVisitor:  enables traversing the object tree
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

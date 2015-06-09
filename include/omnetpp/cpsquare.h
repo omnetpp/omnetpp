@@ -3,12 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cPSquare : calculates quantile values without storing the observations
-//
-//  Author: Babak Fakhamzadeh, TU Delft, Dec 1996
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -18,6 +12,8 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+//  Author: Babak Fakhamzadeh, TU Delft, Dec 1996
 
 #ifndef __OMNETPP_CPSQUARE_H
 #define __OMNETPP_CPSQUARE_H

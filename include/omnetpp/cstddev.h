@@ -3,11 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cStdDev: basic statistics (mean, stddev, min, max, etc)
-//    cWeightedStdDev: weighted version
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

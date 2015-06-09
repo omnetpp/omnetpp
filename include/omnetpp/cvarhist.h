@@ -1,12 +1,7 @@
 //==========================================================================
 //  CVARHIST.H - part of
-//
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
-//
-//
-//  Declaration of the following classes:
-//    cVarHistogram : Variable bin size histogram
 //
 //==========================================================================
 

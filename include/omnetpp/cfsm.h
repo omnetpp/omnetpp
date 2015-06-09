@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Contents:
-//    FSM building macros
-//    class cFSM: stores the state of an FSM
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

@@ -3,9 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Defines modules for documentation generation. Nothing useful for the
-//  C++ compiler.
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -16,6 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+// This file defines modules for documentation generation.
+// Nothing useful for the C++ compiler.
 
 /**
  * @mainpage  \opp API Reference

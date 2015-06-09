@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cDelayChannel : channel class
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

@@ -1,15 +1,7 @@
 //==========================================================================
 //  CHISTOGRAM.H - part of
-//
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
-//
-//
-//  Declaration of the following classes:
-//    cHistogramBase        : common base class for histogram classes
-//      cHistogram          : equi-distant histogram
-//        cLongHistogram    : long int distribution
-//        cDoubleHistogram  : double distribution
 //
 //==========================================================================
 

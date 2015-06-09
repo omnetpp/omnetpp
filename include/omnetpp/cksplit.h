@@ -3,13 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cKSplit : implements the k-split algorithm in 1 dimension
-//
-//  Author: Babak Fakhamzadeh, TU Delft, Mar-Jun 1996;
-//  Rewritten by Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -19,6 +12,9 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+//  Author: Babak Fakhamzadeh, TU Delft, Mar-Jun 1996;
+//  Rewritten by Andras Varga
 
 #ifndef __OMNETPP_CKSPLIT_H
 #define __OMNETPP_CKSPLIT_H

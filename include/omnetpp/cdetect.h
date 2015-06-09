@@ -1,19 +1,8 @@
 //=========================================================================
 //  CDETECT.H - part of
-//
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//         File designed and written by the Hollandiaba Team
-//
-//   Class declarations:
-//     cTransientDetection :  virtual base class for transient detection
-//     cAccuracyDetection  :  virtual base class for result accuracy detection
-//
-//     cTDExpandingWindows :  an algorithm for transient detection
-//     cADByStddev         :  an algorithm for result accuracy detection
-//
-//   Bugfixes: Andras Varga, Oct.1996
 //=========================================================================
 
 /*--------------------------------------------------------------*
