@@ -377,19 +377,19 @@ class SIM_API cChannelType : public cComponentType
     static cChannelType *getDatarateChannelType();
 
     /**
-     * DEPRECATED. Use <tt>cIdealChannel::create(name)</tt> instead.
+     * Creates an IdealChannel via <tt>getIdealChannelType()->create(name)</tt>.
      */
-    static _OPPDEPRECATED cIdealChannel *createIdealChannel(const char *name);
+    static cIdealChannel *createIdealChannel(const char *name);
 
     /**
-     * DEPRECATED. Use <tt>cDelayChannel::create(name)</tt> instead.
+     * Creates a DelayChannel via <tt>getDelayChannelType()->create(name)</tt>.
      */
-    static _OPPDEPRECATED cDelayChannel *createDelayChannel(const char *name);
+    static cDelayChannel *createDelayChannel(const char *name);
 
     /**
-     * DEPRECATED. Use <tt>cDatarateChannel::create(name)</tt> instead.
+     * Creates a DatarateChannel via <tt>getDatarateChannelType()->create(name)</tt>.
      */
-    static _OPPDEPRECATED cDatarateChannel *createDatarateChannel(const char *name);
+    static cDatarateChannel *createDatarateChannel(const char *name);
 };
 
 NAMESPACE_END
