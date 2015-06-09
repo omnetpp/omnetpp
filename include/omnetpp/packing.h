@@ -24,10 +24,10 @@ NAMESPACE_BEGIN
 // pack/unpack functions for primitive types
 //
 #define DOPACKING(T,R) \
-          inline void doPacking(OPP::cCommBuffer *b, const T R a) {b->pack(a);}  \
-          inline void doPacking(OPP::cCommBuffer *b, const T *a, int n) {b->pack(a,n);}  \
-          inline void doUnpacking(OPP::cCommBuffer *b, T& a) {b->unpack(a);}  \
-          inline void doUnpacking(OPP::cCommBuffer *b, T *a, int n) {b->unpack(a,n);}
+          inline void doParsimPacking(OPP::cCommBuffer *b, const T R a) {b->pack(a);}  \
+          inline void doParsimPacking(OPP::cCommBuffer *b, const T *a, int n) {b->pack(a,n);}  \
+          inline void doParsimUnpacking(OPP::cCommBuffer *b, T& a) {b->unpack(a);}  \
+          inline void doParsimUnpacking(OPP::cCommBuffer *b, T *a, int n) {b->unpack(a,n);}
 #define _
 DOPACKING(char,_)
 DOPACKING(unsigned char,_)

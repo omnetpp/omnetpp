@@ -294,115 +294,115 @@ const char *PARSIMPACK_BOILERPLATE =
     "\n"
     "// Packing/unpacking an std::vector\n"
     "template<typename T, typename A>\n"
-    "void doPacking(OPP::cCommBuffer *buffer, const std::vector<T,A>& v)\n"
+    "void doParsimPacking(OPP::cCommBuffer *buffer, const std::vector<T,A>& v)\n"
     "{\n"
     "    int n = v.size();\n"
-    "    doPacking(buffer, n);\n"
+    "    doParsimPacking(buffer, n);\n"
     "    for (int i = 0; i < n; i++)\n"
-    "        doPacking(buffer, v[i]);\n"
+    "        doParsimPacking(buffer, v[i]);\n"
     "}\n"
     "\n"
     "template<typename T, typename A>\n"
-    "void doUnpacking(OPP::cCommBuffer *buffer, std::vector<T,A>& v)\n"
+    "void doParsimUnpacking(OPP::cCommBuffer *buffer, std::vector<T,A>& v)\n"
     "{\n"
     "    int n;\n"
-    "    doUnpacking(buffer, n);\n"
+    "    doParsimUnpacking(buffer, n);\n"
     "    v.resize(n);\n"
     "    for (int i = 0; i < n; i++)\n"
-    "        doUnpacking(buffer, v[i]);\n"
+    "        doParsimUnpacking(buffer, v[i]);\n"
     "}\n"
     "\n"
     "// Packing/unpacking an std::list\n"
     "template<typename T, typename A>\n"
-    "void doPacking(OPP::cCommBuffer *buffer, const std::list<T,A>& l)\n"
+    "void doParsimPacking(OPP::cCommBuffer *buffer, const std::list<T,A>& l)\n"
     "{\n"
-    "    doPacking(buffer, (int)l.size());\n"
+    "    doParsimPacking(buffer, (int)l.size());\n"
     "    for (typename std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)\n"
-    "        doPacking(buffer, (T&)*it);\n"
+    "        doParsimPacking(buffer, (T&)*it);\n"
     "}\n"
     "\n"
     "template<typename T, typename A>\n"
-    "void doUnpacking(OPP::cCommBuffer *buffer, std::list<T,A>& l)\n"
+    "void doParsimUnpacking(OPP::cCommBuffer *buffer, std::list<T,A>& l)\n"
     "{\n"
     "    int n;\n"
-    "    doUnpacking(buffer, n);\n"
+    "    doParsimUnpacking(buffer, n);\n"
     "    for (int i=0; i<n; i++) {\n"
     "        l.push_back(T());\n"
-    "        doUnpacking(buffer, l.back());\n"
+    "        doParsimUnpacking(buffer, l.back());\n"
     "    }\n"
     "}\n"
     "\n"
     "// Packing/unpacking an std::set\n"
     "template<typename T, typename Tr, typename A>\n"
-    "void doPacking(OPP::cCommBuffer *buffer, const std::set<T,Tr,A>& s)\n"
+    "void doParsimPacking(OPP::cCommBuffer *buffer, const std::set<T,Tr,A>& s)\n"
     "{\n"
-    "    doPacking(buffer, (int)s.size());\n"
+    "    doParsimPacking(buffer, (int)s.size());\n"
     "    for (typename std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)\n"
-    "        doPacking(buffer, *it);\n"
+    "        doParsimPacking(buffer, *it);\n"
     "}\n"
     "\n"
     "template<typename T, typename Tr, typename A>\n"
-    "void doUnpacking(OPP::cCommBuffer *buffer, std::set<T,Tr,A>& s)\n"
+    "void doParsimUnpacking(OPP::cCommBuffer *buffer, std::set<T,Tr,A>& s)\n"
     "{\n"
     "    int n;\n"
-    "    doUnpacking(buffer, n);\n"
+    "    doParsimUnpacking(buffer, n);\n"
     "    for (int i=0; i<n; i++) {\n"
     "        T x;\n"
-    "        doUnpacking(buffer, x);\n"
+    "        doParsimUnpacking(buffer, x);\n"
     "        s.insert(x);\n"
     "    }\n"
     "}\n"
     "\n"
     "// Packing/unpacking an std::map\n"
     "template<typename K, typename V, typename Tr, typename A>\n"
-    "void doPacking(OPP::cCommBuffer *buffer, const std::map<K,V,Tr,A>& m)\n"
+    "void doParsimPacking(OPP::cCommBuffer *buffer, const std::map<K,V,Tr,A>& m)\n"
     "{\n"
-    "    doPacking(buffer, (int)m.size());\n"
+    "    doParsimPacking(buffer, (int)m.size());\n"
     "    for (typename std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {\n"
-    "        doPacking(buffer, it->first);\n"
-    "        doPacking(buffer, it->second);\n"
+    "        doParsimPacking(buffer, it->first);\n"
+    "        doParsimPacking(buffer, it->second);\n"
     "    }\n"
     "}\n"
     "\n"
     "template<typename K, typename V, typename Tr, typename A>\n"
-    "void doUnpacking(OPP::cCommBuffer *buffer, std::map<K,V,Tr,A>& m)\n"
+    "void doParsimUnpacking(OPP::cCommBuffer *buffer, std::map<K,V,Tr,A>& m)\n"
     "{\n"
     "    int n;\n"
-    "    doUnpacking(buffer, n);\n"
+    "    doParsimUnpacking(buffer, n);\n"
     "    for (int i=0; i<n; i++) {\n"
     "        K k; V v;\n"
-    "        doUnpacking(buffer, k);\n"
-    "        doUnpacking(buffer, v);\n"
+    "        doParsimUnpacking(buffer, k);\n"
+    "        doParsimUnpacking(buffer, v);\n"
     "        m[k] = v;\n"
     "    }\n"
     "}\n"
     "\n"
     "// Default pack/unpack function for arrays\n"
     "template<typename T>\n"
-    "void doArrayPacking(OPP::cCommBuffer *b, const T *t, int n)\n"
+    "void doParsimArrayPacking(OPP::cCommBuffer *b, const T *t, int n)\n"
     "{\n"
     "    for (int i = 0; i < n; i++)\n"
-    "        doPacking(b, t[i]);\n"
+    "        doParsimPacking(b, t[i]);\n"
     "}\n"
     "\n"
     "template<typename T>\n"
-    "void doArrayUnpacking(OPP::cCommBuffer *b, T *t, int n)\n"
+    "void doParsimArrayUnpacking(OPP::cCommBuffer *b, T *t, int n)\n"
     "{\n"
     "    for (int i = 0; i < n; i++)\n"
-    "        doUnpacking(b, t[i]);\n"
+    "        doParsimUnpacking(b, t[i]);\n"
     "}\n"
     "\n"
-    "// Default rule to prevent compiler from choosing base class' doPacking() function\n"
+    "// Default rule to prevent compiler from choosing base class' doParsimPacking() function\n"
     "template<typename T>\n"
-    "void doPacking(OPP::cCommBuffer *, const T& t)\n"
+    "void doParsimPacking(OPP::cCommBuffer *, const T& t)\n"
     "{\n"
-    "    throw OPP::cRuntimeError(\"Parsim error: no doPacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
+    "    throw OPP::cRuntimeError(\"Parsim error: no doParsimPacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
     "}\n"
     "\n"
     "template<typename T>\n"
-    "void doUnpacking(OPP::cCommBuffer *, T& t)\n"
+    "void doParsimUnpacking(OPP::cCommBuffer *, T& t)\n"
     "{\n"
-    "    throw OPP::cRuntimeError(\"Parsim error: no doUnpacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
+    "    throw OPP::cRuntimeError(\"Parsim error: no doParsimUnpacking() function for type %s\", OPP::opp_typename(typeid(t)));\n"
     "}\n"
     "\n"
     "NAMESPACE_END\n"
@@ -1121,8 +1121,8 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "Register_Class(" << info.msgclass << ");\n\n";
         }
 
-        H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
-        H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
+        H << "inline void doParsimPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
+        H << "inline void doParsimUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
@@ -1290,7 +1290,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     //
     // Note: This class may not be derived from cOwnedObject, and then this parsimPack()/
     // parsimUnpack() is NOT that of cOwnedObject. However it's still needed because a
-    // "friend" doPacking() function could not access protected members otherwise.
+    // "friend" doParsimPacking() function could not access protected members otherwise.
     //
     CC << "void " << info.msgclass << "::parsimPack(" OPP_PREFIX "cCommBuffer *b) const\n";
     CC << "{\n";
@@ -1300,7 +1300,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    ::" << info.msgbaseclass << "::parsimPack(b);\n";
         }
         else {
-            CC << "    doPacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
+            CC << "    doParsimPacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
@@ -1312,14 +1312,14 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         }
         else {
             if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    doArrayPacking(b,this->" << it->var << "," << it->farraysize << ");\n";
+                CC << "    doParsimArrayPacking(b,this->" << it->var << "," << it->farraysize << ");\n";
             }
             else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    b->pack(" << it->varsize << ");\n";
-                CC << "    doArrayPacking(b,this->" << it->var << "," << it->varsize << ");\n";
+                CC << "    doParsimArrayPacking(b,this->" << it->var << "," << it->varsize << ");\n";
             }
             else {
-                CC << "    doPacking(b,this->" << it->var << ");\n";
+                CC << "    doParsimPacking(b,this->" << it->var << ");\n";
             }
         }
     }
@@ -1333,7 +1333,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    ::" << info.msgbaseclass << "::parsimUnpack(b);\n";
         }
         else {
-            CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
+            CC << "    doParsimUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
@@ -1345,7 +1345,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         }
         else {
             if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    doArrayUnpacking(b,this->" << it->var << "," << it->farraysize << ");\n";
+                CC << "    doParsimArrayUnpacking(b,this->" << it->var << "," << it->farraysize << ");\n";
             }
             else if (it->fisarray && it->farraysize.empty()) {
                 CC << "    delete [] this->" << it->var << ";\n";
@@ -1354,11 +1354,11 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "        this->" << it->var << " = 0;\n";
                 CC << "    } else {\n";
                 CC << "        this->" << it->var << " = new " << it->datatype << "[" << it->varsize << "];\n";
-                CC << "        doArrayUnpacking(b,this->" << it->var << "," << it->varsize << ");\n";
+                CC << "        doParsimArrayUnpacking(b,this->" << it->var << "," << it->varsize << ");\n";
                 CC << "    }\n";
             }
             else {
-                CC << "    doUnpacking(b,this->" << it->var << ");\n";
+                CC << "    doParsimUnpacking(b,this->" << it->var << ");\n";
             }
         }
     }
@@ -1459,8 +1459,8 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     H << "void " << TS(opts.exportDef) << "__doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.msgclass << "& a);\n";
     H << "void " << TS(opts.exportDef) << "__doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a);\n\n";
 
-    H << "inline void doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
-    H << "inline void doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
+    H << "inline void doParsimPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
+    H << "inline void doParsimUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
 
     // Constructor:
     CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
@@ -1497,15 +1497,15 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     CC << "void __doPacking(" OPP_PREFIX "cCommBuffer *b, const " << info.msgclass << "& a)\n";
     CC << "{\n";
     if (!info.msgbaseclass.empty()) {
-        CC << "    doPacking(b,(::" << info.msgbaseclass << "&)a);\n";
+        CC << "    doParsimPacking(b,(::" << info.msgbaseclass << "&)a);\n";
     }
 
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisarray) {
-            CC << "    doArrayPacking(b,a." << it->var << "," << it->farraysize << ");\n";
+            CC << "    doParsimArrayPacking(b,a." << it->var << "," << it->farraysize << ");\n";
         }
         else {
-            CC << "    doPacking(b,a." << it->var << ");\n";
+            CC << "    doParsimPacking(b,a." << it->var << ");\n";
         }
     }
     CC << "}\n\n";
@@ -1513,15 +1513,15 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     CC << "void __doUnpacking(" OPP_PREFIX "cCommBuffer *b, " << info.msgclass << "& a)\n";
     CC << "{\n";
     if (!info.msgbaseclass.empty()) {
-        CC << "    doUnpacking(b,(::" << info.msgbaseclass << "&)a);\n";
+        CC << "    doParsimUnpacking(b,(::" << info.msgbaseclass << "&)a);\n";
     }
 
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisarray) {
-            CC << "    doArrayUnpacking(b,a." << it->var << "," << it->farraysize << ");\n";
+            CC << "    doParsimArrayUnpacking(b,a." << it->var << "," << it->farraysize << ");\n";
         }
         else {
-            CC << "    doUnpacking(b,a." << it->var << ");\n";
+            CC << "    doParsimUnpacking(b,a." << it->var << ");\n";
         }
     }
     CC << "}\n\n";
