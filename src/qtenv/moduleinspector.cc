@@ -19,7 +19,7 @@
 #include <math.h>
 #include <assert.h>
 #include <QMessageBox>
-#include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -563,9 +563,15 @@ void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
 {
     QGraphicsScene *scene = static_cast<MainWindow*>(window)->getScene();
     printf("drawSubmodule %s %g %g %p \n", submod->getFullName(), x, y, scene);
-    submoduleGraphicsItems[submod->getId()] = scene->addRect(x, y, 11, 11);
+    const char *iconName = submod->getDisplayString().getTagArg("i", 0);
+    if(iconName == nullptr)
+        iconName = "block/process";
+
+    QPixmap icon = getTkenv()->icons.getImage(iconName);
+    submoduleGraphicsItems[submod->getId()] = scene->addPixmap(icon);
+    submoduleGraphicsItems[submod->getId()]->setPos(x, y);
+
     char coords[64];
-    sprintf(coords,"%g %g ", x, y);
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
 
     CHK(Tcl_VarEval(interp, "ModuleInspector:drawSubmodule ",
@@ -589,9 +595,13 @@ void ModuleInspector::drawEnclosingModule(cModule *parentModule)
                        NULL ));
 }
 
-QRectF ModuleInspector::getSubmodCoords(cModule *mod)
+QPointF ModuleInspector::getSubmodCoords(cModule *mod)
 {
-    return submoduleGraphicsItems[mod->getId()]->boundingRect();
+    QPixmap icon = submoduleGraphicsItems[mod->getId()]->pixmap();
+    QPointF pos = submoduleGraphicsItems[mod->getId()]->pos();
+    pos.setX(pos.x() + icon.width() / 2);
+    pos.setY(pos.y() + icon.height() / 2);
+    return pos;
 }
 
 void ModuleInspector::drawConnection(cGate *gate)
@@ -620,12 +630,12 @@ void ModuleInspector::drawConnection(cGate *gate)
       }
     }
 
-    QRectF src_rect = getSubmodCoords(mod);
-    QRectF dest_rect = getSubmodCoords(destGate->getOwnerModule());
+    QPointF src_rect = getSubmodCoords(mod);
+    QPointF dest_rect = getSubmodCoords(destGate->getOwnerModule());
 
     QGraphicsScene *scene = static_cast<MainWindow*>(window)->getScene();
-
-    scene->addLine(src_rect.center().x(), src_rect.center().y(), dest_rect.center().x(), dest_rect.center().y());
+    printf("drawwConnection");
+    scene->addLine(src_rect.x(), src_rect.y(), dest_rect.x(), dest_rect.y());
 
 //    ptrToStr(gate, gateptr);
 //    ptrToStr(mod, srcptr);

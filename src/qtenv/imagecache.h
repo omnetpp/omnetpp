@@ -1,5 +1,5 @@
 //==========================================================================
-//  RUNSELECTIONDIALOG.H - part of
+//  IMAGECACHE.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,36 +14,32 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef RUNSELECTIONDIALOG_H
-#define RUNSELECTIONDIALOG_H
+#ifndef IMAGECACHE_H
+#define IMAGECACHE_H
 
-#include <QDialog>
+#include <string>
 #include <map>
 
-namespace qtenv {
-class Qtenv;
-}
+class QImage;
+class QPixmap;
+class QString;
 
-namespace Ui {
-class RunSelectionDialog;
-}
+enum IconSize { EXTRA_SMALL, VERY_SMALL, SMALL, NORMAL, LARGE, VERY_LARGE, EXTRA_LARGE };
 
-class RunSelectionDialog : public QDialog
+class ImageCache
 {
-    Q_OBJECT
+private:
+    std::map<QString, QImage*> imagesWithSize;
+    std::map<QString, std::map<IconSize, QImage*>> images;
+
+    void doLoadImages(const char *dir, const char *prefix = "");
 
 public:
-    explicit RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent = 0);
-    ~RunSelectionDialog();
+    ImageCache();
 
-    std::string getConfigName();
-    int getRunNumber();
-
-private:
-    Ui::RunSelectionDialog *ui;
-    qtenv::Qtenv *env;
-
-    std::vector<std::string> groupAndSortConfigNames();
+    void loadImages(const char *path);
+    QPixmap getImage(const char *name, IconSize size);
+    QPixmap getImage(const char *nameWithSize);
 };
 
-#endif // RUNSELECTIONDIALOG_H
+#endif // IMAGECACHE_H

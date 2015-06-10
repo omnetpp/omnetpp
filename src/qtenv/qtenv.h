@@ -26,6 +26,7 @@
 #include "qtenvdefs.h"
 #include "logbuffer.h"
 #include "componenthistory.h"
+#include "imagecache.h"
 
 NAMESPACE_BEGIN
 
@@ -131,6 +132,7 @@ class TKENV_API Qtenv : public EnvirBase
 
       // state variables
       bool animating;              // while execution, do message animation or not
+      ImageCache icons;
 
    protected:
       MainWindow *mainwindow;

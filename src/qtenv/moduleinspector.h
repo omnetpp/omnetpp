@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 class cModule;
 class cGate;
 class cFigure;
-class QGraphicsItem;
+class QGraphicsPixmapItem;
 
 namespace qtenv {
 
@@ -53,7 +53,7 @@ class TKENV_API ModuleInspector : public Inspector
       typedef std::map<cModule*,Point> PositionMap;
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
-      std::map<int, QGraphicsItem*> submoduleGraphicsItems;
+      std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
 
    protected:
       cCanvas *getCanvas();
@@ -64,7 +64,7 @@ class TKENV_API ModuleInspector : public Inspector
       void updateBackgroundColor();
       static const char *animModeToStr(SendAnimMode mode);
 
-      QRectF getSubmodCoords(cModule *mod);
+      QPointF getSubmodCoords(cModule *mod);
 
    public:
       ModuleInspector(InspectorFactory *f);
