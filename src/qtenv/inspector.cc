@@ -17,6 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "mainwindow.h"
 #include <string.h>
 #include <math.h>
 #include <assert.h>
@@ -62,6 +63,7 @@ Inspector::Inspector(InspectorFactory *f)
 {
    factory = f;
    interp = getTkenv()->getInterp();
+   window = getTkenv()->getWindow();
    object = NULL;
    type = f->getInspectorType();
    isToplevelWindow = false;

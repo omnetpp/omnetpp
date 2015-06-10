@@ -3,6 +3,7 @@
 #include <QGraphicsItem>
 #include <QMessageBox>
 #include <QClipboard>
+#include <QCloseEvent>
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
@@ -23,6 +24,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->setupUi(this);
 
     scene = new QGraphicsScene(this);
+    printf("%p \n", scene);
     ui->moduleGraphicsView->setScene(scene);
     ui->moduleGraphicsView->setRenderHints(QPainter::Antialiasing);
 
@@ -158,46 +160,52 @@ void MainWindow::on_actionOneStep_triggered()
 }
 
 //exitOmnetpp
-void MainWindow::on_actionQuit_triggered()
+bool MainWindow::on_actionQuit_triggered()
 {
     //TODO
 //    global config
-
-//    set isrunning [isRunning]
-//    set state [opp_getsimulationstate]
-
 //    if {$config(confirm-exit)} {
-//        if [opp_isnotnull [opp_object_systemmodule]] {
-//            if {$isrunning} {
-//                set ans [messagebox {Warning} {The simulation is currently running. Do you really want to quit?} warning yesno]
-//                if {$ans == "no"} {
-//                    return
-//                }
-//            } elseif {$state == "SIM_READY"} {
-//                set ans [messagebox {Warning} {Do you want to conclude the simulation by invoking finish() before exiting?} warning yesnocancel]
-//                if {$ans == "yes"} {
-//                    # no catch{}: exceptions are handled inside
-//                    opp_finish_simulation
-//                } elseif {$ans == "no"} {
-//                    # nothing to do
-//                } elseif {$ans == "cancel"} {
-//                    return
-//                }
-//            } else {
-//                #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
-//            }
-//        }
+        if(getSimulation()->getSystemModule() != nullptr)
+        {
+            if(isRunning())
+            {
+                int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
+                                               QMessageBox::Yes | QMessageBox::No);
+                if(ans == QMessageBox::No)
+                    return false;
+
+            }
+            else if(env->getSimulationState() == Qtenv::SIM_READY)
+            {
+                int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
+                                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+                if(ans == QMessageBox::Yes)
+                    env->finishSimulation();
+                else if(ans == QMessageBox::Cancel)
+                    return false;
+            }
+            else
+            {
+                //#set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
+            }
+        }
 //    }
 
-//    if {$isrunning} {
-//       opp_stopsimulation
-//    }
+    if(isRunning())
+        env->setStopSimulationFlag();
 
 //    # save settings (fonts etc) globally, and inspector list locally
 //    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
 //    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
 
     close();
+    return true;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(!on_actionQuit_triggered())
+        event->ignore();
 }
 
 void MainWindow::runSimulation(Mode mode)
@@ -291,9 +299,8 @@ void MainWindow::on_actionRunUntil_triggered()
 {
     // implements Simulate|Run until...
 //TODO
-//    if {[networkReady] == 0} {
-//       return
-//    }
+    if(!networkReady())
+        return;
 
 //    set time ""
 //    set event ""
@@ -922,25 +929,4 @@ QGraphicsView *MainWindow::getModuleGraphicsView()
 QGraphicsScene *MainWindow::getScene()
 {
     return ui->moduleGraphicsView->scene();
-}
-
-void MainWindow::onSetObject(Inspector *insp)
-{
-//TODO
-//proc ModuleInspector:onSetObject {insp} {
-//    #update idletasks
-//    update
-
-//    ModuleInspector:recallPreferences $insp
-
-//    if [catch {
-//       opp_inspectorcommand $insp relayout
-//    } errmsg] {
-//       tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
-//                     -message "Error displaying network graphics: $errmsg"
-//    }
-
-//    ModuleInspector:updateZoomLabel $insp
-//    ModuleInspector:adjustWindowSizeAndZoom $insp
-//}
 }

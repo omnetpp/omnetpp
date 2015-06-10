@@ -46,13 +46,12 @@ public:
 
     QGraphicsView *getModuleGraphicsView();
     QGraphicsScene *getScene();
-    void onSetObject(qtenv::Inspector *insp);
 
     ~MainWindow();
 
 private slots:
     void on_actionOneStep_triggered();
-    void on_actionQuit_triggered();
+    bool on_actionQuit_triggered();
     void on_actionRun_triggered();
     void on_actionSetUpConfiguration_triggered();
     void on_actionStop_triggered();
@@ -62,6 +61,7 @@ private slots:
     void inspectObject(QModelIndex index);
     void onTreeViewContextMenu(QPoint point);
     void on_actionRebuildNetwork_triggered();
+    void closeEvent(QCloseEvent *event);
 
 public slots:
     void onClickOpenInspector();

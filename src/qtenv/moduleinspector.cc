@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <QMessageBox>
+#include <QGraphicsItem>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -93,8 +95,22 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     if (object)
     {
-        layoutSeed = 0; // we'll read the "bgl" display string tag from Tcl
-        CHK(Tcl_VarEval(interp, "ModuleInspector:onSetObject ", windowName, NULL ));
+        layoutSeed = 1; // we'll read the "bgl" display string tag from Tcl
+        //TODO
+        //    ModuleInspector:recallPreferences $insp
+
+        try
+        {
+            relayoutAndRedrawAll();
+        }
+        catch(std::exception &e)
+        {
+            QMessageBox::warning(window, QString("Error"), QString("Error displaying network graphics: ") + e.what());
+        }
+
+        //    ModuleInspector:updateZoomLabel $insp
+        //    ModuleInspector:adjustWindowSizeAndZoom $insp
+        //}
     }
 }
 
@@ -117,7 +133,6 @@ void ModuleInspector::useWindow(const char *window)
     strcpy(canvas,windowName);
     strcat(canvas,".c");
 
-    this->window = getTkenv()->getWindow();
     canvasRenderer->setQtCanvas(static_cast<MainWindow*>(this->window)->getScene(), getCanvas());
 }
 
@@ -200,8 +215,8 @@ void ModuleInspector::relayoutAndRedrawAll()
    }
 
    recalculateLayout();
-   redrawModules();
    redrawFigures();
+   redrawModules();
    redrawNextEventMarker();
    redrawMessages();
    refreshSubmodules();
@@ -275,6 +290,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
         else
         {
             CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, NULL));
+            iconsx = iconsy = 30;    //TODO
 /*Qt!
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
@@ -399,6 +415,7 @@ void ModuleInspector::refreshLayout()
     if (sy!=0 && sy < 2*border)
         border = sy/2;
     layouter->setSize(sx, sy, border);
+    printf("Layout->setSize %d %d \n", sx, sy);
     // TODO support "bgp" tag ("background position")
 
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
@@ -415,22 +432,26 @@ void ModuleInspector::refreshLayout()
         {
             // e.g. "p=120,70" or "p=140,30,ring"
             layouter->addFixedNode(submod->getId(), x, y, sx, sy);
+            printf("explicitCoords\n");
         }
         else if (submodPosMap.find(submod)!=submodPosMap.end())
         {
             // reuse coordinates from previous layout
             Point pos = submodPosMap[submod];
             layouter->addFixedNode(submod->getId(), pos.x, pos.y, sx, sy);
+            printf("reuse coords\n");
         }
         else if (obeysLayout)
         {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
             layouter->addAnchoredNode(submod->getId(), submod->getName(), x, y, sx, sy);
+            printf("addAnchoredNode\n");
         }
         else
         {
             layouter->addMovableNode(submod->getId(), sx, sy);
+            printf("addMovableNode %g %g \n", sx, sy);
         }
     }
 
@@ -465,21 +486,23 @@ void ModuleInspector::refreshLayout()
     }
 
     // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
-    TkenvGraphLayouterEnvironment environment(interp, parentModule, ds);
+    //TODO TkenvGraphLayouterEnvironment
+    BasicGraphLayouterEnvironment environment;
 
-    std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
-    bool isExpressMode = getTkenv()->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS;
-    if (!isExpressMode)
-        environment.setWidgetToGrab(stopButton.c_str());
+    //TODO
+//    std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
+//    bool isExpressMode = getTkenv()->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS;
+//    if (!isExpressMode)
+//        environment.setWidgetToGrab(stopButton.c_str());
 
-    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
-    // if (getTkenv()->opt->showlayouting)  // for debugging
-    if (submodPosMap.empty() && getTkenv()->opt->showLayouting)
-        environment.setCanvas(canvas);
+//    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
+//    // if (getTkenv()->opt->showlayouting)  // for debugging
+//    if (submodPosMap.empty() && getTkenv()->opt->showLayouting)
+//        environment.setCanvas(canvas);
 
     layouter->setEnvironment(&environment);
     layouter->execute();
-    environment.cleanup();
+    //environment.cleanup();
 
     // fill the map with the results
     submodPosMap.clear();
@@ -489,6 +512,7 @@ void ModuleInspector::refreshLayout()
 
         Point pos;
         layouter->getNodePosition(submod->getId(), pos.x, pos.y);
+        printf("Position: %g %g\n", pos.x, pos.y);
         submodPosMap[submod] = pos;
     }
 
@@ -537,6 +561,9 @@ void ModuleInspector::redrawModules()
 
 void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
 {
+    QGraphicsScene *scene = static_cast<MainWindow*>(window)->getScene();
+    printf("drawSubmodule %s %g %g %p \n", submod->getFullName(), x, y, scene);
+    submoduleGraphicsItems[submod->getId()] = scene->addRect(x, y, 11, 11);
     char coords[64];
     sprintf(coords,"%g %g ", x, y);
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
@@ -560,6 +587,11 @@ void ModuleInspector::drawEnclosingModule(cModule *parentModule)
                        "{", parentModule->getFullPath().c_str(), "} ",
                        TclQuotedString(displayString).get(),
                        NULL ));
+}
+
+QRectF ModuleInspector::getSubmodCoords(cModule *mod)
+{
+    return submoduleGraphicsItems[mod->getId()]->boundingRect();
 }
 
 void ModuleInspector::drawConnection(cGate *gate)
@@ -588,28 +620,146 @@ void ModuleInspector::drawConnection(cGate *gate)
       }
     }
 
+    QRectF src_rect = getSubmodCoords(mod);
+    QRectF dest_rect = getSubmodCoords(destGate->getOwnerModule());
 
-    ptrToStr(gate, gateptr);
-    ptrToStr(mod, srcptr);
-    ptrToStr(destGate->getOwnerModule(), destptr);
-    sprintf(indices, "%d %d %d %d",
-            gate->getIndex(), gate->size(),
-            destGate->getIndex(), destGate->size());
-    cChannel *chan = gate->getChannel();
-    ptrToStr(chan, chanptr);
-    const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
+    QGraphicsScene *scene = static_cast<MainWindow*>(window)->getScene();
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:drawConnection ",
-            canvas, " ",
-            gateptr, " ",
-            TclQuotedString(dispstr).get(), " ",
-            srcptr, " ",
-            destptr, " ",
-            chanptr, " ",
-            indices, " ",
-            twoWayConnection ? "1" : "0",
-            NULL
-             ));
+    scene->addLine(src_rect.center().x(), src_rect.center().y(), dest_rect.center().x(), dest_rect.center().y());
+
+//    ptrToStr(gate, gateptr);
+//    ptrToStr(mod, srcptr);
+//    ptrToStr(destGate->getOwnerModule(), destptr);
+//    sprintf(indices, "%d %d %d %d",
+//            gate->getIndex(), gate->size(),
+//            destGate->getIndex(), destGate->size());
+//    cChannel *chan = gate->getChannel();
+//    ptrToStr(chan, chanptr);
+//    const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
+
+//    CHK(Tcl_VarEval(interp, "ModuleInspector:drawConnection ",
+//            canvas, " ",
+//            gateptr, " ",
+//            TclQuotedString(dispstr).get(), " ",
+//            srcptr, " ",
+//            destptr, " ",
+//            chanptr, " ",
+//            indices, " ",
+//            twoWayConnection ? "1" : "0",
+//            NULL
+//             ));
+
+
+//    proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
+//        global inspectordata tkpFont canvasTextOptions
+
+//        # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
+
+//        if [catch {
+//           set src_rect [ModuleInspector:getSubmodCoords $c $srcptr]
+//           set dest_rect [ModuleInspector:getSubmodCoords $c $destptr]
+//        } errmsg] {
+//           # skip this connection if source or destination of the arrow cannot be found
+//           return
+//        }
+
+//        if [catch {
+
+//           opp_displaystring $dispstr parse tags $chanptr 1
+
+//           if {![info exists tags(m)]} {set tags(m) {a}}
+
+//           set mode [lindex $tags(m) 0]
+//           if {$mode==""} {set mode "a"}
+//           set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
+//           set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
+
+//           # puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
+//           # puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
+
+//           regexp -- {^.[^.]*} $c win
+
+//           # switch off the connection arrangement if the option is not enabled
+//           # all connection are treated as the first one in an array with size 1
+//           if {![opp_getsimoption arrangevectorconnections]} {
+//               set src_n "1"
+//               set dest_n "1"
+//               set src_i "0"
+//               set dest_i "0"
+//           }
+
+//           set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
+//                      $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
+//                      $mode $src_anch $dest_anch]]
+
+//           # puts "DEBUG: arrow=($arrow_coords)"
+
+//           if {![info exists tags(ls)]} {set tags(ls) {}}
+//           set fill [lindex $tags(ls) 0]
+//           if {$fill == ""} {set fill black}
+//           if {$fill == "-"} {set fill ""}
+//           set width [lindex $tags(ls) 1]
+//           if {$width == ""} {set width 1}
+//           if {$width == "0"} {set fill ""}
+//           set style [lindex $tags(ls) 2]
+//           switch -glob $style {
+//               "da*"   {set pattern "2 2"}
+//               "d*"    {set pattern "1 1"}
+//               default {set pattern ""}
+//           }
+
+//           set state "normal"
+//           if {$inspectordata($c:showarrowheads) && !$two_way} {
+//               set arrow {-endarrow 1}
+//           } else {
+//               set arrow {}
+//           }
+
+//           $c create pline $arrow_coords {*}$arrow -stroke $fill -strokedasharray $pattern -strokewidth $width -tags "dx tooltip conn submodext $gateptr"
+
+//           # if we have a two way connection we should draw only in one direction
+//           # the other line will be hidden (lowered under anything else)
+//           if {[string compare $srcptr $destptr] >=0 && $two_way} {
+//               $c lower $gateptr "dx"
+//           }
+
+//           if {[info exists tags(t)]} {
+//               set txt [lindex $tags(t) 0]
+//               set pos [lindex $tags(t) 1]
+//               if {$pos == ""} {set pos "t"}
+//               set color [lindex $tags(t) 2]
+//               if {$color == ""} {set color "#005030"}
+//               if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
+//               set x1 [lindex $arrow_coords 0]
+//               set y1 [lindex $arrow_coords 1]
+//               set x2 [lindex $arrow_coords 2]
+//               set y2 [lindex $arrow_coords 3]
+//               set anch "c"
+//               set just "center"
+//               if {$pos=="l"} {
+//                   # "beginning"
+//                   set x [expr (3*$x1+$x2)/4]
+//                   set y [expr (3*$y1+$y2)/4]
+//               } elseif {$pos=="r"} {
+//                   # "end"
+//                   set x [expr ($x1+3*$x2)/4]
+//                   set y [expr ($y1+3*$y2)/4]
+//               } elseif {$pos=="t"} {
+//                   # "middle"
+//                   set x [expr ($x1+$x2)/2]
+//                   set y [expr ($y1+$y2)/2]
+//                   if {($x1==$x2)?($y1<$y2):($x1<$x2)} {set anch "n"} else {set anch "s"}
+//               } else {
+//                   error "wrong position \"$pos\" in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
+//               }
+//               $c create ptext $x $y -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
+//           }
+
+//        } errmsg] {
+//           tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
+//                         -message "Error in display string of a connection: $errmsg"
+//        }
+//    }
 }
 
 void ModuleInspector::redrawMessages()

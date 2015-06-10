@@ -18,6 +18,7 @@
 #define __OMNETPP_MODULEINSPECTOR_H
 
 #include <map>
+#include <QRect>
 #include "omnetpp/ccanvas.h"
 #include "inspector.h"
 
@@ -26,6 +27,7 @@ NAMESPACE_BEGIN
 class cModule;
 class cGate;
 class cFigure;
+class QGraphicsItem;
 
 namespace qtenv {
 
@@ -51,6 +53,8 @@ class TKENV_API ModuleInspector : public Inspector
       typedef std::map<cModule*,Point> PositionMap;
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
+      std::map<int, QGraphicsItem*> submoduleGraphicsItems;
+
    protected:
       cCanvas *getCanvas();
       void drawSubmodule(cModule *submod, double x, double y);
@@ -59,6 +63,8 @@ class TKENV_API ModuleInspector : public Inspector
       void fillFigureRenderingHints(FigureRenderingHints *hints);
       void updateBackgroundColor();
       static const char *animModeToStr(SendAnimMode mode);
+
+      QRectF getSubmodCoords(cModule *mod);
 
    public:
       ModuleInspector(InspectorFactory *f);
