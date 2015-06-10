@@ -31,4 +31,6 @@
 #  define TKENV_API
 #endif
 
+#define TCL_NULL  (void*)nullptr  // workaround: gcc 4.8.2 on a 64-bit architecture pushed a 32-bit 0 on the stack as last arg for Tcl_VarEval(), causing it to crash
+
 #endif

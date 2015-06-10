@@ -64,10 +64,10 @@ void CanvasInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     if (object)
-        CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, nullptr));
+        CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, TCL_NULL));
 }
 
 void CanvasInspector::createWindow(const char *window, const char *geometry)
@@ -77,7 +77,7 @@ void CanvasInspector::createWindow(const char *window, const char *geometry)
     strcpy(canvas, windowName);
     strcat(canvas, ".c");
 
-    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 
     canvasRenderer->setTkCanvas(interp, canvas);
 }
@@ -97,7 +97,7 @@ void CanvasInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -163,7 +163,7 @@ void CanvasInspector::updateBackgroundColor()
         char buf[16];
         cFigure::Color color = canvas->getBackgroundColor();
         sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", nullptr));
+        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
     }
 }
 

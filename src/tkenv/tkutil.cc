@@ -277,13 +277,13 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 {
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, listbox, " insert {} end "
-                                     "-image ", getObjectIcon(interp, obj).c_str(), " "
-                                                                                    "-text {", "  "  /*padding*/, getObjectShortTypeName(obj), "} ",
+                    "-image ", getObjectIcon(interp, obj).c_str(), " "
+                    "-text {", "  "  /*padding*/, getObjectShortTypeName(obj), "} ",
                     "-values {",
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
                     TclQuotedString(obj->info().c_str()).get(), " ", ptr,
                     "}",
-                    nullptr));
+                    TCL_NULL));
 }
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)

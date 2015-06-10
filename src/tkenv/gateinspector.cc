@@ -58,7 +58,7 @@ void GateInspector::createWindow(const char *window, const char *geometry)
     strcpy(canvas, windowName);
     strcat(canvas, ".c");
 
-    CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 }
 
 void GateInspector::useWindow(const char *window)
@@ -83,7 +83,7 @@ void GateInspector::redraw()
 {
     cGate *gate = (cGate *)object;
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     // draw modules
     int k = 0;
@@ -113,7 +113,7 @@ void GateInspector::redraw()
                         xstr, " ",
                         dir, " ",
                         g == gate ? "1" : "0",
-                        nullptr));
+                        TCL_NULL));
     }
 
     // draw connections
@@ -131,7 +131,7 @@ void GateInspector::redraw()
                         chanptr, " ",
                         TclQuotedString(chan ? chan->info().c_str() : "").get(), " ",
                         TclQuotedString(dispstr).get(), " ",
-                        nullptr));
+                        TCL_NULL));
     }
 
     // loop through all messages in the event queue
@@ -143,7 +143,7 @@ void GateInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -152,7 +152,7 @@ void GateInspector::refresh()
     // redraw modules only on explicit request
 
     // loop through all messages in the event queue
-    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
     cGate *destGate = gate->getPathEndGate();
 
     for (cMessageHeap::Iterator it(getSimulation()->msgQueue); !it.end(); it++) {
@@ -173,7 +173,7 @@ void GateInspector::refresh()
                                 canvas, " ",
                                 gateptr, " ",
                                 msgptr,
-                                nullptr));
+                                TCL_NULL));
             }
         }
     }

@@ -869,10 +869,10 @@ void Tkenv::refreshInspectors()
         (*it)->clearObjectChangeFlags();
 
     // update object tree
-    CHK(Tcl_VarEval(interp, "treeManager:update", nullptr));
+    CHK(Tcl_VarEval(interp, "treeManager:update", TCL_NULL));
 
     // try opening "pending" inspectors
-    CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", nullptr));
+    CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
 }
 
 void Tkenv::redrawInspectors()
@@ -934,13 +934,13 @@ std::string Tkenv::getWindowTitle()
 
 void Tkenv::updateNetworkRunDisplay()
 {
-    CHK(Tcl_VarEval(interp, "mainWindow:updateNetworkRunDisplay", nullptr));
-    CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "mainWindow:updateNetworkRunDisplay", TCL_NULL));
+    CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), TCL_NULL));
 }
 
 void Tkenv::updateStatusDisplay()
 {
-    CHK(Tcl_VarEval(interp, "mainWindow:updateStatusDisplay", nullptr));
+    CHK(Tcl_VarEval(interp, "mainWindow:updateStatusDisplay", TCL_NULL));
     CHK(Tcl_Eval(interp, "redrawTimeline"));
 }
 
@@ -1713,7 +1713,7 @@ void Tkenv::confirm(const char *msg)
     if (!interp)
         ::printf("\n<!> %s\n\n", msg);  // fallback in case Tkenv didn't fire up correctly
     else
-        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ", TclQuotedString(msg).get(), " info ok", nullptr));
+        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ", TclQuotedString(msg).get(), " info ok", TCL_NULL));
 }
 
 void Tkenv::putsmsg(const char *msg)
@@ -1765,12 +1765,12 @@ bool Tkenv::inputDialog(const char *title, const char *prompt,
     if (checkboxLabel == nullptr)
         CHK(Tcl_VarEval(interp, "inputbox ",
                         TclQuotedString(title).get(), " ",
-                        TclQuotedString(prompt).get(), " opp(result) ", nullptr));
+                        TclQuotedString(prompt).get(), " opp(result) ", TCL_NULL));
     else
         CHK(Tcl_VarEval(interp, "inputbox ",
                         TclQuotedString(title).get(), " ",
                         TclQuotedString(prompt).get(), " opp(result) ",
-                        TclQuotedString(checkboxLabel).get(), " opp(check)", nullptr));
+                        TclQuotedString(checkboxLabel).get(), " opp(check)", TCL_NULL));
 
     if (Tcl_GetStringResult(interp)[0] == '0') {
         return false;  // cancel
@@ -1797,7 +1797,7 @@ std::string Tkenv::gets(const char *promt, const char *defaultReply)
 bool Tkenv::askyesno(const char *question)
 {
     // should return -1 when CANCEL is pressed
-    CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ", TclQuotedString(question).get(), " question yesno", nullptr));
+    CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ", TclQuotedString(question).get(), " question yesno", TCL_NULL));
     return Tcl_GetStringResult(interp)[0] == 'y';
 }
 

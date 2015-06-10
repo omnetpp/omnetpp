@@ -77,7 +77,7 @@ void CanvasRenderer::refresh(FigureRenderingHints *hints)
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
     // remove existing figures
-    CHK(Tcl_VarEval(interp, canvasWidget.c_str(), " delete fig", nullptr));
+    CHK(Tcl_VarEval(interp, canvasWidget.c_str(), " delete fig", TCL_NULL));
 
     // draw
     if (canvas) {

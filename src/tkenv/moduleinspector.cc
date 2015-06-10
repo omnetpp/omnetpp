@@ -91,11 +91,11 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     if (object) {
         layoutSeed = 0;  // we'll read the "bgl" display string tag from Tcl
-        CHK(Tcl_VarEval(interp, "ModuleInspector:onSetObject ", windowName, nullptr));
+        CHK(Tcl_VarEval(interp, "ModuleInspector:onSetObject ", windowName, TCL_NULL));
     }
 }
 
@@ -106,7 +106,7 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
     strcpy(canvas, windowName);
     strcat(canvas, ".c");
 
-    CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 
     canvasRenderer->setTkCanvas(interp, canvas);
 }
@@ -133,7 +133,7 @@ void ModuleInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -181,13 +181,13 @@ void ModuleInspector::relayoutAndRedrawAll()
         else
             sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
         CHK(Tcl_VarEval(interp, "tk_messageBox -parent ", windowName, " -type yesno -title Warning -icon question "
-                                                                      "-message {Module '", object->getFullName(), "' ", problem,
-                        ", it may take a long time to display the graphics. "
-                        "Do you want to proceed with drawing?}", nullptr));
+                                "-message {Module '", object->getFullName(), "' ", problem,
+                                ", it may take a long time to display the graphics. "
+                                "Do you want to proceed with drawing?}", TCL_NULL));
         bool answer = (Tcl_GetStringResult(interp)[0] == 'y');
         if (answer == false) {
             notDrawn = true;
-            CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));  // this must be done, still
+            CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));  // this must be done, still
             return;
         }
     }
@@ -204,7 +204,7 @@ void ModuleInspector::relayoutAndRedrawAll()
 void ModuleInspector::redraw()
 {
     if (object == nullptr) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", nullptr));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -227,8 +227,8 @@ void ModuleInspector::adjustSubmodulesZOrder()
         if (submodulesLayer) {
             char tag[32];
             sprintf(tag, "f%d", submodulesLayer->getId());
-            CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, nullptr));
-            CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, nullptr));
+            CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, TCL_NULL));
+            CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, TCL_NULL));
         }
     }
 }
@@ -261,7 +261,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
             iconsy = UNKNOWNICON_HEIGHT;
         }
         else {
-            CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, nullptr));
+            CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, TCL_NULL));
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), nullptr, nullptr);
             if (!img) {
                 iconsx = UNKNOWNICON_WIDTH;
@@ -330,7 +330,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     else {
         CHK(Tcl_VarEval(interp, "messagebox {Error} "
                                 "{Error: invalid layout `", layout, "' in `p' tag "
-                                                                    "of display string \"", ds.str(), "\"} error ok", nullptr));
+                                "of display string \"", ds.str(), "\"} error ok", TCL_NULL));
     }
 }
 
@@ -476,7 +476,7 @@ void ModuleInspector::redrawModules()
     cModule *parentModule = static_cast<cModule *>(object);
 
     // then display all submodules
-    CHK(Tcl_VarEval(interp, canvas, " delete dx", nullptr));  // NOT "delete all" because that'd remove "bubbles" too!
+    CHK(Tcl_VarEval(interp, canvas, " delete dx", TCL_NULL));  // NOT "delete all" because that'd remove "bubbles" too!
 
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++) {
         cModule *submod = it();
@@ -500,8 +500,8 @@ void ModuleInspector::redrawModules()
             }
         }
     }
-    CHK(Tcl_VarEval(interp, canvas, " raise bubble", nullptr));
-    CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " raise bubble", TCL_NULL));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0", TCL_NULL));
 }
 
 void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
@@ -517,7 +517,7 @@ void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
                     "{", submod->getFullName(), "} ",
                     TclQuotedString(dispstr).get(), " ",
                     (submod->isPlaceholder() ? "1" : "0"),
-                    nullptr));
+                    TCL_NULL));
 }
 
 void ModuleInspector::drawEnclosingModule(cModule *parentModule)
@@ -528,7 +528,7 @@ void ModuleInspector::drawEnclosingModule(cModule *parentModule)
                     ptrToStr(parentModule), " ",
                     "{", parentModule->getFullPath().c_str(), "} ",
                     TclQuotedString(displayString).get(),
-                    nullptr));
+                    TCL_NULL));
 }
 
 void ModuleInspector::drawConnection(cGate *gate)
@@ -576,14 +576,13 @@ void ModuleInspector::drawConnection(cGate *gate)
                     chanptr, " ",
                     indices, " ",
                     twoWayConnection ? "1" : "0",
-                    nullptr
-                    ));
+                    TCL_NULL));
 }
 
 void ModuleInspector::redrawMessages()
 {
     // refresh & cleanup from prev. events
-    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
 
     // this thingy is only needed if animation is going on
     if (!getTkenv()->animating)
@@ -612,18 +611,18 @@ void ModuleInspector::redrawMessages()
                                 canvas, " ",
                                 ptrToStr(gate), " ",
                                 msgptr,
-                                nullptr));
+                                TCL_NULL));
             }
             else {
                 CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnModule ",
                                 canvas, " ",
                                 ptrToStr(arrivalMod), " ",
                                 msgptr,
-                                nullptr));
+                                TCL_NULL));
             }
         }
     }
-    CHK(Tcl_VarEval(interp, canvas, " raise bubble", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " raise bubble", TCL_NULL));
 }
 
 void ModuleInspector::redrawNextEventMarker()
@@ -631,7 +630,7 @@ void ModuleInspector::redrawNextEventMarker()
     cModule *mod = static_cast<cModule *>(object);
 
     // removing marker from previous event
-    CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", nullptr));
+    CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", TCL_NULL));
 
     // this thingy is only needed if animation is going on
     if (!getTkenv()->animating || !getTkenv()->opt->showNextEventMarkers)
@@ -647,7 +646,7 @@ void ModuleInspector::redrawNextEventMarker()
                         canvas, " ",
                         ptrToStr(nextModParent), " ",
                         (nextMod == nextModParent ? "2" : "1"),
-                        nullptr));
+                        TCL_NULL));
     }
 }
 
@@ -699,7 +698,7 @@ void ModuleInspector::refreshSubmodules()
         CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
                         windowName, " ",
                         ptrToStr(submod()),
-                        nullptr));
+                        TCL_NULL));
     }
 }
 
@@ -754,7 +753,7 @@ void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
     char coords[64];
     Point& pos = submodPosMap[submod];
     sprintf(coords, " %g %g ", pos.x, pos.y);
-    CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(text).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(text).get(), TCL_NULL));
 }
 
 const char *ModuleInspector::animModeToStr(SendAnimMode mode)
@@ -768,7 +767,7 @@ void ModuleInspector::animateMethodcallAscent(cModule *srcSubmod, const char *me
     ptrToStr(object, parentPtr);
     ptrToStr(srcSubmod, modPtr);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ", getWindowName(), " ", parentPtr, " ", modPtr, " ", TclQuotedString(methodText).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ", getWindowName(), " ", parentPtr, " ", modPtr, " ", TclQuotedString(methodText).get(), TCL_NULL));
 }
 
 void ModuleInspector::animateMethodcallDescent(cModule *destSubmod, const char *methodText)
@@ -777,7 +776,7 @@ void ModuleInspector::animateMethodcallDescent(cModule *destSubmod, const char *
     ptrToStr(object, parentPtr);
     ptrToStr(destSubmod, modPtr);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ", getWindowName(), " ", parentPtr, " ", modPtr, " ", TclQuotedString(methodText).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ", getWindowName(), " ", parentPtr, " ", modPtr, " ", TclQuotedString(methodText).get(), TCL_NULL));
 }
 
 void ModuleInspector::animateMethodcallHoriz(cModule *srcSubmod, cModule *destSubmod, const char *methodText)
@@ -786,7 +785,7 @@ void ModuleInspector::animateMethodcallHoriz(cModule *srcSubmod, cModule *destSu
     ptrToStr(srcSubmod, srcPtr);
     ptrToStr(destSubmod, destPtr);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ", getWindowName(), " ", srcPtr, " ", destPtr, " ", TclQuotedString(methodText).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ", getWindowName(), " ", srcPtr, " ", destPtr, " ", TclQuotedString(methodText).get(), TCL_NULL));
 }
 
 void ModuleInspector::animateMethodcallDelay(Tcl_Interp *interp)
@@ -796,7 +795,7 @@ void ModuleInspector::animateMethodcallDelay(Tcl_Interp *interp)
 
 void ModuleInspector::animateMethodcallCleanup()
 {
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ", getWindowName(), nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ", getWindowName(), TCL_NULL));
 }
 
 void ModuleInspector::animateSendOnConn(cGate *srcGate, cMessage *msg, SendAnimMode mode)
@@ -806,7 +805,7 @@ void ModuleInspector::animateSendOnConn(cGate *srcGate, cMessage *msg, SendAnimM
     ptrToStr(msg, msgPtr);
     const char *modeStr = animModeToStr(mode);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ", getWindowName(), " ", msgPtr, " ", gatePtr, " ", modeStr, nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ", getWindowName(), " ", msgPtr, " ", gatePtr, " ", modeStr, TCL_NULL));
 }
 
 void ModuleInspector::animateSenddirectAscent(cModule *srcSubmod, cMessage *msg)
@@ -816,7 +815,7 @@ void ModuleInspector::animateSenddirectAscent(cModule *srcSubmod, cMessage *msg)
     ptrToStr(srcSubmod, modPtr);
     ptrToStr(msg, msgPtr);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ", getWindowName(), " ", msgPtr, " ", parentPtr, " ", modPtr, " ", "thru", nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ", getWindowName(), " ", msgPtr, " ", parentPtr, " ", modPtr, " ", "thru", TCL_NULL));
 }
 
 void ModuleInspector::animateSenddirectDescent(cModule *destSubmod, cMessage *msg, SendAnimMode mode)
@@ -827,7 +826,7 @@ void ModuleInspector::animateSenddirectDescent(cModule *destSubmod, cMessage *ms
     ptrToStr(msg, msgPtr);
     const char *modeStr = animModeToStr(mode);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ", getWindowName(), " ", msgPtr, " ", parentPtr, " ", modPtr, " ", modeStr, nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ", getWindowName(), " ", msgPtr, " ", parentPtr, " ", modPtr, " ", modeStr, TCL_NULL));
 }
 
 void ModuleInspector::animateSenddirectHoriz(cModule *srcSubmod, cModule *destSubmod, cMessage *msg, SendAnimMode mode)
@@ -838,12 +837,12 @@ void ModuleInspector::animateSenddirectHoriz(cModule *srcSubmod, cModule *destSu
     ptrToStr(msg, msgPtr);
     const char *modeStr = animModeToStr(mode);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ", getWindowName(), " ", msgPtr, " ", srcPtr, " ", destPtr, " ", modeStr, nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ", getWindowName(), " ", msgPtr, " ", srcPtr, " ", destPtr, " ", modeStr, TCL_NULL));
 }
 
 void ModuleInspector::animateSenddirectCleanup()
 {
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ", getWindowName(), nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ", getWindowName(), TCL_NULL));
 }
 
 void ModuleInspector::animateSenddirectDelivery(cModule *destSubmod, cMessage *msg)
@@ -852,12 +851,12 @@ void ModuleInspector::animateSenddirectDelivery(cModule *destSubmod, cMessage *m
     ptrToStr(destSubmod, destPtr);
     ptrToStr(msg, msgPtr);
 
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ", getWindowName(), " ", msgPtr, " ", destPtr, nullptr));
+    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ", getWindowName(), " ", msgPtr, " ", destPtr, TCL_NULL));
 }
 
 void ModuleInspector::performAnimations(Tcl_Interp *interp)
 {
-    CHK(Tcl_VarEval(interp, "performAnimations", nullptr));
+    CHK(Tcl_VarEval(interp, "performAnimations", TCL_NULL));
 }
 
 void ModuleInspector::updateBackgroundColor()
@@ -867,7 +866,7 @@ void ModuleInspector::updateBackgroundColor()
         char buf[16];
         cFigure::Color color = canvas->getBackgroundColor();
         sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", nullptr));
+        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
     }
 }
 

@@ -69,7 +69,7 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     strcpy(textWidget, windowName);
     strcat(textWidget, ".main.text");
 
-    CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " ", TclQuotedString(geometry).get(), nullptr));
+    CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 
     int success = Tcl_GetCommandInfo(interp, textWidget, &textWidgetCmdInfo);
     ASSERT(success);
@@ -101,7 +101,7 @@ void LogInspector::doSetObject(cObject *obj)
     if (object)
         redisplay();
     else {
-        CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, nullptr));
+        CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, TCL_NULL));
         textWidgetGotoBeginning();  // important, do not remove! (moves I from 2.0 to 1.0)
     }
 }
@@ -170,13 +170,13 @@ void LogInspector::textWidgetSetBookmark(const char *bookmark, const char *pos)
 
 void LogInspector::textWidgetDumpBookmarks(const char *label)
 {
-    CHK(Tcl_VarEval(interp, "LogInspector:dump ", windowName, " {", label, "}", nullptr));
+    CHK(Tcl_VarEval(interp, "LogInspector:dump ", windowName, " {", label, "}", TCL_NULL));
 }
 
 void LogInspector::refresh()
 {
     Inspector::refresh();
-    CHK(Tcl_VarEval(interp, "LogInspector:trimlines ", windowName, nullptr));
+    CHK(Tcl_VarEval(interp, "LogInspector:trimlines ", windowName, TCL_NULL));
 }
 
 void LogInspector::printLastLogLine()
@@ -261,7 +261,7 @@ void LogInspector::printLastMessageLine()
 
 void LogInspector::redisplay()
 {
-    CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, nullptr));
+    CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, TCL_NULL));
     textWidgetGotoBeginning();
 
     if (!object)
