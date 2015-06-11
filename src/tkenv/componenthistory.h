@@ -49,7 +49,7 @@ class TKENV_API ComponentHistory
         ComponentHistory() {}
         ~ComponentHistory() {}
         void componentDeleted(cComponent *component);
-        //void componentReparented(cComponent *component, cModule *oldParent, int oldId);
+        void componentReparented(cComponent *component, cModule *oldParent, int oldId);
         int getParentModuleId(int componentId) const;
         const char *getComponentFullName(int componentId) const;
         std::string getComponentFullPath(int componentId) const;

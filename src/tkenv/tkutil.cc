@@ -131,9 +131,11 @@ void cFindByPathVisitor::visit(cObject *obj)
 
 bool cFindByPathVisitor::idMatches(cObject *obj)
 {
-    // for now we only take ID into account for messages; TODO for OMNeT++ 5.0: check cComponent id!
-    if (dynamic_cast<cMessage *>(obj))
-        return ((cMessage *)obj)->getId() == objectId;
+    // only messages and components have IDs
+    if (cMessage *msg = dynamic_cast<cMessage *>(obj))
+        return msg->getId() == objectId;
+    if (cComponent *component = dynamic_cast<cComponent*>(obj))
+        return component->getId() == objectId;
     return true;
 }
 

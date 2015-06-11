@@ -191,7 +191,7 @@ class TKENV_API Tkenv : public OPP::envir::EnvirBase
       virtual void componentMethodEnd() override;
       virtual void moduleCreated(cModule *newmodule) override;
       virtual void moduleDeleted(cModule *module) override;
-      virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) override;
+      virtual void moduleReparented(cModule *module, cModule *oldParent, int oldId) override;
       virtual void connectionCreated(cGate *srcgate) override;
       virtual void connectionDeleted(cGate *srcgate) override;
       virtual void displayStringChanged(cComponent *component) override;

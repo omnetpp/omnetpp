@@ -50,6 +50,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       bool bookmarkAdded;
 
    protected:
+      cComponent *getInspectedObject();
       void textWidgetCommand(const char *arg1, const char *arg2=nullptr, const char *arg3=nullptr, const char *arg4=nullptr, const char *arg5=nullptr, const char *arg6=nullptr);
       void textWidgetInsert(const char *text, const char *tags);
       void textWidgetSeeEnd();
@@ -63,7 +64,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       virtual void messageSendAdded() override;
 
       bool isMatchingComponent(int componentId);
-      bool isAncestorModule(int moduleId, int potentialAncestorModuleId);
+      bool isAncestorModule(int componentId, int potentialAncestorModuleId);
 
       virtual void printLastLogLine();
       virtual void printLastMessageLine();

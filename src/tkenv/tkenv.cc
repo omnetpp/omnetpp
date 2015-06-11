@@ -1396,15 +1396,15 @@ void Tkenv::moduleDeleted(cModule *module)
     }
 }
 
-void Tkenv::moduleReparented(cModule *module, cModule *oldparent, int oldId)
+void Tkenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
 {
-    EnvirBase::moduleReparented(module, oldparent, oldId);
+    EnvirBase::moduleReparented(module, oldParent, oldId);
 
-    // TODO in 5.0: componentHistory.componentReparented(module, oldparent, oldId);
+    componentHistory.componentReparented(module, oldParent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(oldparent, *it);
+        ModuleInspector *insp = isModuleInspectorFor(oldParent, *it);
         if (insp)
             insp->submoduleDeleted(module);
     }

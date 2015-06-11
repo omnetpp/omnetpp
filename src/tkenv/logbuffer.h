@@ -62,13 +62,13 @@ class TKENV_API LogBuffer
     struct Entry {
         eventnumber_t eventNumber; // 0 for initialization, >0 afterwards
         simtime_t simtime;
-        int moduleId;  // 0 for info log lines, -1 for channels (TODO only until 5.0)
+        int componentId;  // 0 for info log lines
         //TODO msg name, class, kind, previousEventNumber
         const char *banner;
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        Entry() {eventNumber=0; simtime=0; moduleId=0; banner=nullptr;}
+        Entry() {eventNumber=0; simtime=0; componentId=0; banner=nullptr;}
         ~Entry();
     };
 

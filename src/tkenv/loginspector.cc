@@ -40,7 +40,7 @@ class LogInspectorFactory : public InspectorFactory
   public:
     LogInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override { return dynamic_cast<cModule *>(obj) != nullptr; }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cComponent*>(obj) != nullptr; }
     int getInspectorType() override { return INSP_MODULEOUTPUT; }
     double getQualityAsDefault(cObject *object) override { return 0.5; }
     Inspector *createInspector() override { return new LogInspector(this); }
@@ -104,6 +104,11 @@ void LogInspector::doSetObject(cObject *obj)
         CHK(Tcl_VarEval(interp, "LogInspector:clear ", windowName, TCL_NULL));
         textWidgetGotoBeginning();  // important, do not remove! (moves I from 2.0 to 1.0)
     }
+}
+
+cComponent *LogInspector::getInspectedObject()
+{
+    return static_cast<cComponent*>(object);
 }
 
 void LogInspector::logEntryAdded()
@@ -187,11 +192,11 @@ void LogInspector::printLastLogLine()
     const LogBuffer::Entry *entry = logBuffer->getEntries().back();
     if (entry->lines.empty()) {
         // print banner
-        if (entry->moduleId == 0) {
+        if (entry->componentId == 0) {
             textWidgetInsert(entry->banner, "info");
         }
         else {
-            entryMatches = isMatchingComponent(entry->moduleId);
+            entryMatches = isMatchingComponent(entry->componentId);
             bannerPrinted = false;
             bookmarkAdded = false;
             if (entryMatches)
@@ -201,7 +206,7 @@ void LogInspector::printLastLogLine()
     else {
         // print last line
         const LogBuffer::Line& line = entry->lines.back();
-        if (entry->moduleId == 0)
+        if (entry->componentId == 0)
             printLogLine(entry, line);
         else {
             if (entryMatches || isMatchingComponent(line.contextComponentId)) {
@@ -237,9 +242,9 @@ void LogInspector::addBookmarkIfNeeded(const LogBuffer::Entry *entry)
 void LogInspector::printLogLine(const LogBuffer::Entry *entry, const LogBuffer::Line& line)
 {
     textWidgetInsert(line.prefix, "prefix");
-    if (entry->moduleId != line.contextComponentId && line.contextComponentId != 0)
+    if (entry->componentId != line.contextComponentId && line.contextComponentId != 0)
         textWidgetInsert((componentHistory->getComponentFullPath(line.contextComponentId)+": ").c_str(), "prefix");  // XXX rather merge it into prefix somehow
-    textWidgetInsert(line.line, (entry->moduleId == 0 || line.contextComponentId == 0) ? "info" : "");
+    textWidgetInsert(line.line, (entry->componentId == 0 || line.contextComponentId == 0) ? "info" : "");
 }
 
 void LogInspector::printLastMessageLine()
@@ -278,7 +283,7 @@ void LogInspector::redisplay()
         for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--) {
             const LogBuffer::Entry *entry = entries[k];
             bool entryProducedOutput = false;
-            if (entry->moduleId == 0) {
+            if (entry->componentId == 0) {
                 textWidgetInsert(entry->banner, "info");
                 numLinesPrinted++;
                 for (int i = 0; i < (int)entry->lines.size(); i++) {
@@ -289,7 +294,7 @@ void LogInspector::redisplay()
             }
             else {
                 // if this module is under the inspected module, and not excluded, display the log
-                bool entryMatches = isMatchingComponent(entry->moduleId);
+                bool entryMatches = isMatchingComponent(entry->componentId);
                 bool bannerPrinted = false;
                 if (entryMatches && printEventBanners) {
                     textWidgetInsert(entry->banner, "banner");
@@ -383,15 +388,15 @@ void LogInspector::redisplay()
 bool LogInspector::isMatchingComponent(int componentId)
 {
     if (componentId == 0)
-        return false;  // TODO remove this for 5.0
-    int inspectedModuleId = static_cast<cModule *>(object)->getId();
-    return (componentId == inspectedModuleId || isAncestorModule(componentId, inspectedModuleId))
+        return false;
+    int inspectedComponentId = getInspectedObject()->getId();
+    return (componentId == inspectedComponentId || isAncestorModule(componentId, inspectedComponentId))
            && excludedModuleIds.find(componentId) == excludedModuleIds.end();
 }
 
-bool LogInspector::isAncestorModule(int moduleId, int potentialAncestorModuleId)
+bool LogInspector::isAncestorModule(int componentId, int potentialAncestorModuleId)
 {
-    cModule *component = getSimulation()->getModule(moduleId);  // TODO use cModule and getComponent() in 5.0
+    cComponent *component = getSimulation()->getComponent(componentId);
     if (component) {
         // more efficient version for live modules
         while (component) {
@@ -401,10 +406,10 @@ bool LogInspector::isAncestorModule(int moduleId, int potentialAncestorModuleId)
         }
     }
     else {
-        while (moduleId != -1) {
-            if (moduleId == potentialAncestorModuleId)
+        while (componentId != -1) {
+            if (componentId == potentialAncestorModuleId)
                 return true;
-            moduleId = componentHistory->getParentModuleId(moduleId);
+            componentId = componentHistory->getParentModuleId(componentId);
         }
     }
     return false;
@@ -417,14 +422,13 @@ int LogInspector::findFirstRelevantHop(const LogBuffer::MessageSend& msgsend, in
     // Normally there is only one relevant hop in a msgsend, although degenerate modules
     // (such as a compound module wired inside like this: in-->out) may result in several hops.
 
-    cModule *mod = static_cast<cModule *>(object);
-    int inspectedModuleId = mod->getId();
+    int inspectedComponentId = getInspectedObject()->getId();
     int srcModuleId = msgsend.hopModuleIds[fromHop];
-    bool isSrcOk = srcModuleId == inspectedModuleId || componentHistory->getParentModuleId(srcModuleId) == inspectedModuleId;
+    bool isSrcOk = srcModuleId == inspectedComponentId || componentHistory->getParentModuleId(srcModuleId) == inspectedComponentId;
     int n = msgsend.hopModuleIds.size();
     for (int i = fromHop; i < n-1; i++) {
         int destModuleId = msgsend.hopModuleIds[i+1];
-        bool isDestOk = destModuleId == inspectedModuleId || componentHistory->getParentModuleId(destModuleId) == inspectedModuleId;
+        bool isDestOk = destModuleId == inspectedComponentId || componentHistory->getParentModuleId(destModuleId) == inspectedComponentId;
         if (isSrcOk && isDestOk)
             return i;
         isSrcOk = isDestOk;
@@ -458,12 +462,12 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
 
     // add src/dest
     const LogBuffer::MessageSend& msgsend = entry->msgs[msgIndex];
-    int inspectedModuleId = static_cast<cModule *>(object)->getId();
+    int inspectedComponentId = getInspectedObject()->getId();
     if (hopIndex != -1) {
         int srcModuleId = msgsend.hopModuleIds[hopIndex];
         int destModuleId = msgsend.hopModuleIds[hopIndex+1];
-        bool hasSrc = srcModuleId != inspectedModuleId;
-        bool hasDest = destModuleId != inspectedModuleId;
+        bool hasSrc = srcModuleId != inspectedComponentId;
+        bool hasDest = destModuleId != inspectedComponentId;
         if (hasSrc)
             textWidgetInsert(componentHistory->getComponentFullName(srcModuleId), "srcdestcol hopsrc");
         if (hasSrc && hasDest)
@@ -477,13 +481,13 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
         if (hasDest)
             textWidgetInsert(componentHistory->getComponentFullName(destModuleId), "srcdestcol hopdest");
     }
-    else if (msgsend.hopModuleIds.front() == inspectedModuleId) {
-        textWidgetInsert(componentHistory->getComponentFullName(inspectedModuleId), "srcdestcol hopsrc");
+    else if (msgsend.hopModuleIds.front() == inspectedComponentId) {
+        textWidgetInsert(componentHistory->getComponentFullName(inspectedComponentId), "srcdestcol hopsrc");
         textWidgetInsert(" --->", "srcdestcol hopdest");
     }
-    else if (msgsend.hopModuleIds.back() == inspectedModuleId) {
+    else if (msgsend.hopModuleIds.back() == inspectedComponentId) {
         textWidgetInsert("---> ", "srcdestcol hopsrc");
-        textWidgetInsert(componentHistory->getComponentFullName(inspectedModuleId), "srcdestcol hopdest");
+        textWidgetInsert(componentHistory->getComponentFullName(inspectedComponentId), "srcdestcol hopdest");
     }
     else {
         ASSERT(false);
