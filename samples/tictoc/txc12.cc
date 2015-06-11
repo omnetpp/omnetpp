@@ -14,7 +14,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Let's make it more interesting by using several (n) `tic' modules,
  * and connecting every module to every other. For now, let's keep it
@@ -34,8 +33,7 @@ Define_Module(Txc12);
 
 void Txc12::initialize()
 {
-    if (getIndex()==0)
-    {
+    if (getIndex() == 0) {
         // Boot the process scheduling the initial message as a self-message.
         char msgname[20];
         sprintf(msgname, "tic-%d", getIndex());
@@ -46,14 +44,12 @@ void Txc12::initialize()
 
 void Txc12::handleMessage(cMessage *msg)
 {
-    if (getIndex()==3)
-    {
+    if (getIndex() == 3) {
         // Message arrived.
         EV << "Message " << msg << " arrived.\n";
         delete msg;
     }
-    else
-    {
+    else {
         // We need to forward the message.
         forwardMessage(msg);
     }
@@ -64,7 +60,7 @@ void Txc12::forwardMessage(cMessage *msg)
     // In this example, we just pick a random gate to send it on.
     // We draw a random number between 0 and the size of gate `gate[]'.
     int n = gateSize("gate");
-    int k = intuniform(0,n-1);
+    int k = intuniform(0, n-1);
 
     EV << "Forwarding message " << msg << " on gate[" << k << "]\n";
     // $o and $i suffix is used to identify the input/output part of a two way gate

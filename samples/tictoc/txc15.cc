@@ -15,7 +15,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * This model is exciting enough so that we can collect some statistics.
  * We'll record in output vectors the hop count of every message upon arrival.
@@ -58,8 +57,7 @@ void Txc15::initialize()
     hopCountVector.setName("HopCount");
 
     // Module 0 sends the first message
-    if (getIndex()==0)
-    {
+    if (getIndex() == 0) {
         // Boot the process scheduling the initial message as a self-message.
         TicTocMsg15 *msg = generateMessage();
         scheduleAt(0.0, msg);
@@ -70,8 +68,7 @@ void Txc15::handleMessage(cMessage *msg)
 {
     TicTocMsg15 *ttmsg = check_and_cast<TicTocMsg15 *>(msg);
 
-    if (ttmsg->getDestination()==getIndex())
-    {
+    if (ttmsg->getDestination() == getIndex()) {
         // Message arrived
         int hopcount = ttmsg->getHopCount();
         EV << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
@@ -91,8 +88,7 @@ void Txc15::handleMessage(cMessage *msg)
         forwardMessage(newmsg);
         numSent++;
     }
-    else
-    {
+    else {
         // We need to forward the message.
         forwardMessage(ttmsg);
     }
@@ -103,8 +99,9 @@ TicTocMsg15 *Txc15::generateMessage()
     // Produce source and destination addresses.
     int src = getIndex();
     int n = size();
-    int dest = intuniform(0,n-2);
-    if (dest>=src) dest++;
+    int dest = intuniform(0, n-2);
+    if (dest >= src)
+        dest++;
 
     char msgname[20];
     sprintf(msgname, "tic-%d-to-%d", src, dest);
@@ -123,7 +120,7 @@ void Txc15::forwardMessage(TicTocMsg15 *msg)
 
     // Same routing as before: random gate.
     int n = gateSize("gate");
-    int k = intuniform(0,n-1);
+    int k = intuniform(0, n-1);
 
     EV << "Forwarding message " << msg << " on gate[" << k << "]\n";
     send(msg, "gate$o", k);
@@ -144,5 +141,4 @@ void Txc15::finish()
 
     hopCountStats.recordAs("hop count");
 }
-
 

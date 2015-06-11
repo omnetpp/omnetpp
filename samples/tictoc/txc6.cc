@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * In the previous models, `tic' and `toc' immediately sent back the
  * received message. Here we'll add some timing: tic and toc will hold the
@@ -29,8 +28,8 @@ USING_NAMESPACE
 class Txc6 : public cSimpleModule
 {
   private:
-    cMessage *event; // pointer to the event object which we'll use for timing
-    cMessage *tictocMsg; // variable to remember the message until we send it back
+    cMessage *event;  // pointer to the event object which we'll use for timing
+    cMessage *tictocMsg;  // variable to remember the message until we send it back
 
   public:
     Txc6();
@@ -66,8 +65,7 @@ void Txc6::initialize()
     // No tictoc message yet.
     tictocMsg = nullptr;
 
-    if (strcmp("tic", getName()) == 0)
-    {
+    if (strcmp("tic", getName()) == 0) {
         // We don't start right away, but instead send an message to ourselves
         // (a "self-message") -- we'll do the first sending when it arrives
         // back to us, at t=5.0s simulated time.
@@ -84,16 +82,14 @@ void Txc6::handleMessage(cMessage *msg)
     // (provided you subclass from cMessage). In this code we just check if we
     // recognize the pointer, which (if feasible) is the easiest and fastest
     // method.
-    if (msg==event)
-    {
+    if (msg == event) {
         // The self-message arrived, so we can send out tictocMsg and nullptr out
         // its pointer so that it doesn't confuse us later.
         EV << "Wait period is over, sending back message\n";
         send(tictocMsg, "out");
         tictocMsg = nullptr;
     }
-    else
-    {
+    else {
         // If the message we received is not our self-message, then it must
         // be the tic-toc message arriving from our partner. We remember its
         // pointer in the tictocMsg variable, then schedule our self-message

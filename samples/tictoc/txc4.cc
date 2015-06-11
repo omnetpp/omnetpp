@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * In this step you'll learn how to add input parameters to the simulation:
  * we'll turn the "magic number" 10 into a parameter.
@@ -38,8 +37,7 @@ void Txc4::initialize()
 
     // we no longer depend on the name of the module to decide
     // whether to send an initial message
-    if (par("sendMsgOnInit").boolValue() == true)
-    {
+    if (par("sendMsgOnInit").boolValue() == true) {
         EV << "Sending initial message\n";
         cMessage *msg = new cMessage("tictocMsg");
         send(msg, "out");
@@ -49,16 +47,13 @@ void Txc4::initialize()
 void Txc4::handleMessage(cMessage *msg)
 {
     counter--;
-    if (counter==0)
-    {
+    if (counter == 0) {
         EV << getName() << "'s counter reached zero, deleting message\n";
         delete msg;
     }
-    else
-    {
+    else {
         EV << getName() << "'s counter is " << counter << ", sending back message\n";
         send(msg, "out");
     }
 }
-
 

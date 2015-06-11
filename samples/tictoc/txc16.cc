@@ -15,7 +15,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * The main problem with the previous step is that we must modify the model's
  * code if we want to change what statistics are gathered. Statistic calculation
@@ -37,7 +36,7 @@ USING_NAMESPACE
 class Txc16 : public cSimpleModule
 {
   private:
-	simsignal_t arrivalSignal;
+    simsignal_t arrivalSignal;
 
   protected:
     virtual TicTocMsg16 *generateMessage();
@@ -52,8 +51,7 @@ void Txc16::initialize()
 {
     arrivalSignal = registerSignal("arrival");
     // Module 0 sends the first message
-    if (getIndex()==0)
-    {
+    if (getIndex() == 0) {
         // Boot the process scheduling the initial message as a self-message.
         TicTocMsg16 *msg = generateMessage();
         scheduleAt(0.0, msg);
@@ -64,8 +62,7 @@ void Txc16::handleMessage(cMessage *msg)
 {
     TicTocMsg16 *ttmsg = check_and_cast<TicTocMsg16 *>(msg);
 
-    if (ttmsg->getDestination()==getIndex())
-    {
+    if (ttmsg->getDestination() == getIndex()) {
         // Message arrived
         int hopcount = ttmsg->getHopCount();
         // send a signal
@@ -82,8 +79,7 @@ void Txc16::handleMessage(cMessage *msg)
         EV << newmsg << endl;
         forwardMessage(newmsg);
     }
-    else
-    {
+    else {
         // We need to forward the message.
         forwardMessage(ttmsg);
     }
@@ -94,8 +90,9 @@ TicTocMsg16 *Txc16::generateMessage()
     // Produce source and destination addresses.
     int src = getIndex();
     int n = size();
-    int dest = intuniform(0,n-2);
-    if (dest>=src) dest++;
+    int dest = intuniform(0, n-2);
+    if (dest >= src)
+        dest++;
 
     char msgname[20];
     sprintf(msgname, "tic-%d-to-%d", src, dest);
@@ -114,8 +111,9 @@ void Txc16::forwardMessage(TicTocMsg16 *msg)
 
     // Same routing as before: random gate.
     int n = gateSize("gate");
-    int k = intuniform(0,n-1);
+    int k = intuniform(0, n-1);
 
     EV << "Forwarding message " << msg << " on gate[" << k << "]\n";
     send(msg, "gate$o", k);
 }
+

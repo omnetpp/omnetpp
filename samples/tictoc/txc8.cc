@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Let us take a step back, and remove random delaying from the code.
  * We'll leave in, however, losing the packet with a small probability.
@@ -64,8 +63,7 @@ void Tic8::initialize()
 
 void Tic8::handleMessage(cMessage *msg)
 {
-    if (msg==timeoutEvent)
-    {
+    if (msg == timeoutEvent) {
         // If we receive the timeout event, that means the packet hasn't
         // arrived in time and we have to re-send it.
         EV << "Timeout expired, resending message and restarting timer\n";
@@ -73,10 +71,9 @@ void Tic8::handleMessage(cMessage *msg)
         send(newMsg, "out");
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
-    else // message arrived
-    {
-        // Acknowledgement received -- delete the received message and cancel
-        // the timeout event.
+    else {  // message arrived
+            // Acknowledgement received -- delete the received message and cancel
+            // the timeout event.
         EV << "Timer cancelled.\n";
         cancelEvent(timeoutEvent);
         delete msg;
@@ -87,7 +84,6 @@ void Tic8::handleMessage(cMessage *msg)
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
 }
-
 
 /**
  * Sends back an acknowledgement -- or not.
@@ -102,14 +98,12 @@ Define_Module(Toc8);
 
 void Toc8::handleMessage(cMessage *msg)
 {
-    if (uniform(0,1) < 0.1)
-    {
+    if (uniform(0, 1) < 0.1) {
         EV << "\"Losing\" message.\n";
         bubble("message lost");  // making animation more informative...
         delete msg;
     }
-    else
-    {
+    else {
         EV << "Sending back same message as acknowledgement.\n";
         send(msg, "out");
     }

@@ -412,7 +412,7 @@ has arrived via the input gate or the self-message came back
 (timer expired). Here we are using
 
 @dontinclude txc6.cc
-@skipline msg==
+@skipline msg ==
 
 but we could have written
 

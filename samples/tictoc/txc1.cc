@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Derive the Txc1 class from cSimpleModule. In the Tictoc1 network,
  * both the `tic' and `toc' modules are Txc1 objects, created by OMNeT++
@@ -37,8 +36,7 @@ void Txc1::initialize()
     // to send the first message. Let this be `tic'.
 
     // Am I Tic or Toc?
-    if (strcmp("tic", getName()) == 0)
-    {
+    if (strcmp("tic", getName()) == 0) {
         // create and send first message on gate "out". "tictocMsg" is an
         // arbitrary string which will be the name of the message object.
         cMessage *msg = new cMessage("tictocMsg");

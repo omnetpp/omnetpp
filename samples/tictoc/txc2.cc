@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * In this class we add some debug messages to Txc1. When you run the
  * simulation in the OMNeT++ GUI Tkenv, the output will appear in
@@ -31,8 +30,7 @@ Define_Module(Txc2);
 
 void Txc2::initialize()
 {
-    if (strcmp("tic", getName()) == 0)
-    {
+    if (strcmp("tic", getName()) == 0) {
         // The `ev' object works like `cout' in C++.
         EV << "Sending initial message\n";
         cMessage *msg = new cMessage("tictocMsg");

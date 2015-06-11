@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * In this step we'll introduce random numbers. We change the delay from 1s
  * to a random value which can be set from the NED file or from omnetpp.ini.
@@ -52,8 +51,7 @@ void Txc7::initialize()
     event = new cMessage("event");
     tictocMsg = nullptr;
 
-    if (strcmp("tic", getName()) == 0)
-    {
+    if (strcmp("tic", getName()) == 0) {
         EV << "Scheduling first send to t=5.0s\n";
         scheduleAt(5.0, event);
         tictocMsg = new cMessage("tictocMsg");
@@ -62,22 +60,18 @@ void Txc7::initialize()
 
 void Txc7::handleMessage(cMessage *msg)
 {
-    if (msg==event)
-    {
+    if (msg == event) {
         EV << "Wait period is over, sending back message\n";
         send(tictocMsg, "out");
         tictocMsg = nullptr;
     }
-    else
-    {
+    else {
         // "Lose" the message with 0.1 probability:
-        if (uniform(0,1) < 0.1)
-        {
+        if (uniform(0, 1) < 0.1) {
             EV << "\"Losing\" message\n";
             delete msg;
         }
-        else
-        {
+        else {
             // The "delayTime" module parameter can be set to values like
             // "exponential(5)" (tictoc7.ned, omnetpp.ini), and then here
             // we'll get a different delay every time.
