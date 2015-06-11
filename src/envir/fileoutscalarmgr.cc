@@ -224,20 +224,19 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
             CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
 
-    if (dynamic_cast<cDensityEstBase *>(statistic)) {
+    if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
         // check that recording the histogram is enabled
         bool enabled = getEnvir()->getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
         if (enabled) {
-            cDensityEstBase *hist = (cDensityEstBase *)statistic;
-            if (!hist->isTransformed())
-                hist->transform();
+            if (!histogram->isTransformed())
+                histogram->transform();
 
-            int n = hist->getNumCells();
+            int n = histogram->getNumCells();
             if (n > 0) {
-                CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->getUnderflowCell()));
+                CHECK(fprintf(f, "bin\t-INF\t%lu\n", histogram->getUnderflowCell()));
                 for (int i = 0; i < n; i++)
-                    CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->getBasepoint(i), prec, hist->getCellValue(i)));
-                CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->getBasepoint(n), hist->getOverflowCell()));
+                    CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBasepoint(i), prec, histogram->getCellValue(i)));
+                CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));
             }
         }
     }

@@ -624,11 +624,11 @@ void cComponent::signalListenerAdded(simsignal_t signalID, uint64_t mask)
     // set as well
     if ((signalHasAncestorListeners & mask) == 0) {
         signalHasAncestorListeners |= mask;
-        if (dynamic_cast<cModule *>(this)) {
+        if (cModule *thisModule = dynamic_cast<cModule *>(this)) {
             // Note: because of the dynamic_cast, this part could be moved to cModule
-            for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+            for (cModule::SubmoduleIterator submod(thisModule); !submod.end(); submod++)
                 submod()->signalListenerAdded(signalID, mask);
-            for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+            for (cModule::ChannelIterator chan(thisModule); !chan.end(); chan++)
                 chan()->signalListenerAdded(signalID, mask);
         }
     }
@@ -672,11 +672,11 @@ void cComponent::signalListenerRemoved(simsignal_t signalID, uint64_t mask)
     signalHasAncestorListeners &= ~mask;
     SignalData *data = findSignalData(signalID);
     if (!data || !data->hasListener()) {
-        if (dynamic_cast<cModule *>(this)) {
+        if (cModule *thisModule = dynamic_cast<cModule *>(this)) {
             // Note: because of the dynamic_cast, this part could be moved to cModule
-            for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+            for (cModule::SubmoduleIterator submod(thisModule); !submod.end(); submod++)
                 submod()->signalListenerRemoved(signalID, mask);
-            for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+            for (cModule::ChannelIterator chan(thisModule); !chan.end(); chan++)
                 chan()->signalListenerRemoved(signalID, mask);
         }
     }
@@ -695,11 +695,11 @@ void cComponent::repairSignalFlags()
     cModule *p = getParentModule();
     signalHasAncestorListeners = p ? (p->signalHasAncestorListeners | p->signalHasLocalListeners) : 0;
 
-    if (dynamic_cast<cModule *>(this)) {
+    if (cModule *thisModule = dynamic_cast<cModule *>(this)) {
         // Note: because of the dynamic_cast, this part could be moved to cModule
-        for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+        for (cModule::SubmoduleIterator submod(thisModule); !submod.end(); submod++)
             submod()->repairSignalFlags();
-        for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+        for (cModule::ChannelIterator chan(thisModule); !chan.end(); chan++)
             chan()->repairSignalFlags();
     }
 }
@@ -773,10 +773,10 @@ void cComponent::checkLocalSignalConsistency() const
 void cComponent::checkSignalConsistency() const
 {
     checkLocalSignalConsistency();
-    if (dynamic_cast<const cModule *>(this)) {
-        for (cModule::SubmoduleIterator submod((cModule *)this); !submod.end(); submod++)
+    if (const cModule *thisModule = dynamic_cast<const cModule *>(this)) {
+        for (cModule::SubmoduleIterator submod(thisModule); !submod.end(); submod++)
             submod()->checkSignalConsistency();
-        for (cModule::ChannelIterator chan((cModule *)this); !chan.end(); chan++)
+        for (cModule::ChannelIterator chan(thisModule); !chan.end(); chan++)
             chan()->checkSignalConsistency();
     }
 }

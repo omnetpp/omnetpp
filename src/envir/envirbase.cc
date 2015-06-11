@@ -549,8 +549,8 @@ void EnvirBase::printHelp()
         cOmnetAppRegistration *appreg = dynamic_cast<cOmnetAppRegistration *>(table->get(i));
         ASSERT(appreg != nullptr);
         cEnvir *app = appreg->createOne();
-        if (dynamic_cast<EnvirBase *>(app))
-            ((EnvirBase *)app)->printUISpecificHelp();
+        if (EnvirBase *app2 = dynamic_cast<EnvirBase *>(app))
+            app2->printUISpecificHelp();
         delete app;
     }
 }
@@ -1127,12 +1127,12 @@ void EnvirBase::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     std::string indent(4*depth+8, ' ');
     std::cout << indent << listener->str();
-    if (dynamic_cast<cResultRecorder *>(listener))
-        std::cout << " ==> " << ((cResultRecorder *)listener)->getResultName();
+    if (cResultRecorder *resultRecorder = dynamic_cast<cResultRecorder *>(listener))
+        std::cout << " ==> " << resultRecorder->getResultName();
     std::cout << "\n";
 
-    if (dynamic_cast<cResultFilter *>(listener)) {
-        std::vector<cResultListener *> delegates = ((cResultFilter *)listener)->getDelegates();
+    if (cResultFilter *resultFilter = dynamic_cast<cResultFilter *>(listener)) {
+        std::vector<cResultListener *> delegates = resultFilter->getDelegates();
         for (unsigned int i = 0; i < delegates.size(); i++)
             dumpResultRecorderChain(delegates[i], depth+1);
     }

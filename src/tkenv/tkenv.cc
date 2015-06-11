@@ -1461,10 +1461,10 @@ void Tkenv::displayStringChanged(cComponent *component)
 {
     EnvirBase::displayStringChanged(component);
 
-    if (dynamic_cast<cModule *>(component))
-        moduleDisplayStringChanged((cModule *)component);
-    else if (dynamic_cast<cChannel *>(component))
-        channelDisplayStringChanged((cChannel *)component);
+    if (cModule *module = dynamic_cast<cModule *>(component))
+        moduleDisplayStringChanged(module);
+    else if (cChannel *channel = dynamic_cast<cChannel *>(component))
+        channelDisplayStringChanged(channel);
 }
 
 void Tkenv::channelDisplayStringChanged(cChannel *channel)

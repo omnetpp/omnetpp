@@ -157,10 +157,7 @@ BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
     IMessageDependency *cause = getCause();
     if (cause) {
         MessageEntry *messageEntry = cause->getMessageEntry();
-        if (dynamic_cast<BeginSendEntry *>(messageEntry))
-            return (BeginSendEntry *)messageEntry;
-        else
-            return nullptr;
+        return dynamic_cast<BeginSendEntry *>(messageEntry);
     }
     else
         return nullptr;

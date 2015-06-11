@@ -382,13 +382,13 @@ void EventlogFileManager::simulationEvent(cEvent *event)
 void EventlogFileManager::bubble(cComponent *component, const char *text)
 {
     if (isEventLogRecordingEnabled) {
-        if (dynamic_cast<cModule *>(component)) {
-            cModule *mod = (cModule *)component;
-            EventLogWriter::recordBubbleEntry_id_txt(feventlog, mod->getId(), text);
+        if (cModule *module = dynamic_cast<cModule *>(component)) {
+            EventLogWriter::recordBubbleEntry_id_txt(feventlog, module->getId(), text);
             entryIndex++;
         }
-        else if (dynamic_cast<cChannel *>(component)) {
-            // TODO:
+        else if (cChannel *channel = dynamic_cast<cChannel *>(component)) {
+            // TODO
+            (void)channel;
         }
     }
 }
@@ -657,8 +657,7 @@ void EventlogFileManager::connectionDeleted(cGate *srcgate)
 void EventlogFileManager::displayStringChanged(cComponent *component)
 {
     if (isEventLogRecordingEnabled) {
-        if (dynamic_cast<cModule *>(component)) {
-            cModule *module = (cModule *)component;
+        if (cModule *module = dynamic_cast<cModule *>(component)) {
             EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog, module->getId(), module->getDisplayString().str());
             entryIndex++;
             addSimulationStateEventLogEntry(eventNumber, entryIndex);
@@ -667,8 +666,7 @@ void EventlogFileManager::displayStringChanged(cComponent *component)
                 removeSimulationStateEventLogEntry((*it).second);
             moduleToModuleDisplayStringChangedEntryReferenceMap[module] = EventLogEntryReference(eventNumber, entryIndex);
         }
-        else if (dynamic_cast<cChannel *>(component)) {
-            cChannel *channel = (cChannel *)component;
+        else if (cChannel *channel = dynamic_cast<cChannel *>(component)) {
             cGate *gate = channel->getSourceGate();
             EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog, gate->getOwnerModule()->getId(), gate->getId(), channel->getDisplayString().str());
             entryIndex++;

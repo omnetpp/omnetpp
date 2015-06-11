@@ -207,8 +207,7 @@ void EventLog::parseKeyframes()
         reader->seekTo(reader->getFileSize());
         while ((line = reader->getPreviousLineBufferPointer())) {
             EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, nullptr, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
-            if (dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
-                KeyframeEntry *keyframeEntry = (KeyframeEntry *)eventLogEntry;
+            if (KeyframeEntry *keyframeEntry = dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
                 // store consequenceLookaheadLimits from the keyframe
                 char *s = const_cast<char *>(keyframeEntry->consequenceLookaheadLimits);
                 while (*s != '\0') {
@@ -224,8 +223,7 @@ void EventLog::parseKeyframes()
                 reader->seekTo(keyframeEntry->previousKeyframeFileOffset + 1);
                 reader->getNextLineBufferPointer();
             }
-            else if (dynamic_cast<MessageEntry *>(eventLogEntry)) {
-                MessageEntry *messageEntry = (MessageEntry *)eventLogEntry;
+            else if (MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(eventLogEntry)) {
                 if (messageEntry->previousEventNumber != -1) {
                     int blockIndex = messageEntry->previousEventNumber / keyframeBlockSize;
                     // NOTE: the last event number is a reasonable approximation here

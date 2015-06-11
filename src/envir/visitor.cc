@@ -188,8 +188,8 @@ void cHasChildrenVisitor::visit(cObject *obj)
 
 static const char *getObjectShortTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent *>(object))
-        return ((cComponent *)object)->getComponentType()->getName();
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        return component->getComponentType()->getName();
     return object->getClassName();
 }
 

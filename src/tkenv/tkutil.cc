@@ -165,15 +165,15 @@ const char *stripNamespace(const char *className)
 
 const char *getObjectShortTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent *>(object))
-        TRY2(return ((cComponent *)object)->getComponentType()->getName());
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        TRY2(return component->getComponentType()->getName());
     return stripNamespace(object->getClassName());
 }
 
 const char *getObjectFullTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent *>(object))
-        TRY2(return ((cComponent *)object)->getComponentType()->getFullName());
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        TRY2(return component->getComponentType()->getFullName());
     return object->getClassName();
 }
 

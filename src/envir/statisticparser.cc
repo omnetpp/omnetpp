@@ -209,9 +209,9 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     for (int i = stackSize-len; i < stackSize; i++) {
         const Expression::Elem& e = stack[i];
         if (e.getType() == Expression::Elem::FUNCTOR)
-            if (dynamic_cast<SignalSourceReference *>(e.getFunctor())) {
+            if (SignalSourceReference *ref = dynamic_cast<SignalSourceReference *>(e.getFunctor())) {
                 numSignalRefs++;
-                signalSourceReference = (SignalSourceReference *)e.getFunctor();
+                signalSourceReference = ref;
             }
     }
 
@@ -397,9 +397,9 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         for (int i = stackSize-len; i < stackSize; i++) {
             const Expression::Elem& e = stack[i];
             if (e.getType() == Expression::Elem::FUNCTOR)
-                if (dynamic_cast<SignalSourceReference *>(e.getFunctor())) {
+                if (SignalSourceReference *ref = dynamic_cast<SignalSourceReference *>(e.getFunctor())) {
                     numSignalRefs++;
-                    signalSourceReference = (SignalSourceReference *)e.getFunctor();
+                    signalSourceReference = ref;
                 }
         }
 
@@ -480,8 +480,8 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         const SignalSource& signalSource = signalSourceReference->getSignalSource();
         signalSource.subscribe(exprListener);
         if (!filterOrRecorder) {
-            if (dynamic_cast<UnaryExpressionFilter *>(exprListener))
-                result = SignalSource((UnaryExpressionFilter *)exprListener);
+            if (UnaryExpressionFilter *unaryExpressionFilter = dynamic_cast<UnaryExpressionFilter *>(exprListener))
+                result = SignalSource(unaryExpressionFilter);
         }
         else {
             Assert(dynamic_cast<UnaryExpressionFilter *>(exprListener));

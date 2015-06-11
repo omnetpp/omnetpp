@@ -1018,16 +1018,14 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         Tcl_SetResult(interp, TCLCONST(object->detailedInfo().c_str()), TCL_VOLATILE);
     }
     else if (!strcmp(field, "displayString")) {
-        if (dynamic_cast<cModule *>(object)) {
-            cModule *mod = dynamic_cast<cModule *>(object);
-            const char *str = mod->hasDisplayString() && mod->parametersFinalized() ? mod->getDisplayString().str() : "";
+        if (cModule *module = dynamic_cast<cModule *>(object)) {
+            const char *str = module->hasDisplayString() && module->parametersFinalized() ? module->getDisplayString().str() : "";
             Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
         }
-        else if (dynamic_cast<cMessage *>(object)) {
-            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->getDisplayString()), TCL_VOLATILE);
+        else if (cMessage *msg = dynamic_cast<cMessage *>(object)) {
+            Tcl_SetResult(interp, TCLCONST(msg->getDisplayString()), TCL_VOLATILE);
         }
-        else if (dynamic_cast<cGate *>(object)) {
-            cGate *gate = dynamic_cast<cGate *>(object);
+        else if (cGate *gate = dynamic_cast<cGate *>(object)) {
             cChannel *chan = gate->getChannel();
             const char *str = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
             Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
@@ -1038,8 +1036,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "nextGate")) {
-        if (dynamic_cast<cGate *>(object)) {
-            cGate *gate = dynamic_cast<cGate *>(object);
+        if (cGate *gate = dynamic_cast<cGate *>(object)) {
             Tcl_SetResult(interp, TCLCONST(ptrToStr(gate->getNextGate())), TCL_VOLATILE);
         }
         else {
@@ -1048,8 +1045,8 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "kind")) {
-        if (dynamic_cast<cMessage *>(object)) {
-            Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cMessage *>(object)->getKind()));
+        if (cMessage *msg = dynamic_cast<cMessage *>(object)) {
+            Tcl_SetObjResult(interp, Tcl_NewIntObj(msg->getKind()));
         }
         else {
             Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC);
@@ -1057,13 +1054,13 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "length")) {
-        if (dynamic_cast<cMessage *>(object)) {
+        if (cPacket *packet = dynamic_cast<cPacket *>(object)) {
             char buf[20];
-            sprintf(buf, "%" INT64_PRINTF_FORMAT "d", dynamic_cast<cPacket *>(object)->getBitLength());
+            sprintf(buf, "%" INT64_PRINTF_FORMAT "d", packet->getBitLength());
             Tcl_SetResult(interp, buf, TCL_VOLATILE);
         }
-        else if (dynamic_cast<cQueue *>(object)) {
-            Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cQueue *>(object)->getLength()));
+        else if (cQueue *queue = dynamic_cast<cQueue *>(object)) {
+            Tcl_SetObjResult(interp, Tcl_NewIntObj(queue->getLength()));
         }
         else {
             Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC);
@@ -1071,8 +1068,8 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "lcprop")) {
-        if (dynamic_cast<cComponentType *>(object)) {
-            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cComponentType *>(object)->getPackageProperty("l" "i" "c" "e" "n" "s" "e").c_str()), TCL_VOLATILE);
+        if (cComponentType *componentType = dynamic_cast<cComponentType *>(object)) {
+            Tcl_SetResult(interp, TCLCONST(componentType->getPackageProperty("l" "i" "c" "e" "n" "s" "e").c_str()), TCL_VOLATILE);
         }
         else {
             Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC);
@@ -1172,10 +1169,10 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         return TCL_ERROR;
     }
 
-    if (dynamic_cast<cModule *>(object))
-        Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cModule *>(object)->getId()));
-    else if (dynamic_cast<cMessage *>(object))
-        Tcl_SetObjResult(interp, Tcl_NewLongObj(dynamic_cast<cMessage *>(object)->getId()));
+    if (cModule *module = dynamic_cast<cModule *>(object))
+        Tcl_SetObjResult(interp, Tcl_NewIntObj(module->getId()));
+    else if (cMessage *msg = dynamic_cast<cMessage *>(object))
+        Tcl_SetObjResult(interp, Tcl_NewLongObj(msg->getId()));
     else
         Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
     return TCL_OK;

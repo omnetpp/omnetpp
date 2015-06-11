@@ -262,10 +262,10 @@ simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
     // there is at most one entry which specifies a transmission delay
     while (index < (int)eventLogEntries.size()) {
         EventLogEntry *eventLogEntry = eventLogEntries[index];
-        if (dynamic_cast<SendDirectEntry *>(eventLogEntry))
-            transmissionDelay = ((SendDirectEntry *)eventLogEntry)->transmissionDelay;
-        else if (dynamic_cast<SendHopEntry *>(eventLogEntry))
-            transmissionDelay = ((SendHopEntry *)eventLogEntry)->transmissionDelay;
+        if (SendDirectEntry *sendDirectEntry = dynamic_cast<SendDirectEntry *>(eventLogEntry))
+            transmissionDelay = sendDirectEntry->transmissionDelay;
+        else if (SendHopEntry *sendHopEntry = dynamic_cast<SendHopEntry *>(eventLogEntry))
+            transmissionDelay = sendHopEntry->transmissionDelay;
         else if (eventLogEntry == endSendEntry || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             break;
         if (transmissionDelay != 0)
