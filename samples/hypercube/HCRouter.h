@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __HCROUTER_H_
 #define __HCROUTER_H_
 
@@ -15,7 +14,7 @@
 
 USING_NAMESPACE
 
-#define STACKSIZE 16384
+#define STACKSIZE    16384
 
 /**
  * A router node that implements deflection routing; see NED file for more info.

@@ -13,7 +13,7 @@ namespace queueing {
 
 Define_Module(ResourcePool);
 
-std::ostream& operator << (std::ostream& out, const ResourcePool::AllocationRequest& req)
+std::ostream& operator<<(std::ostream& out, const ResourcePool::AllocationRequest& req)
 {
     out << req.allocator->getFullPath() << " amount: " << req.amountToAllocate << " priority: " << req.priority;
     return out;
@@ -77,7 +77,6 @@ void ResourcePool::release(long amountToRelease)
         updateDisplayString();
 }
 
-
 void ResourcePool::add(AllocationRequest& request)
 {
     // insert request into list, observing priority.
@@ -98,7 +97,7 @@ void ResourcePool::updateDisplayString()
 {
     char buf[80];
     sprintf(buf, "amount: %ld\nrequests: %d", amount, (int)allocatorList.size());
-    getDisplayString().setTagArg("t",0, buf);
+    getDisplayString().setTagArg("t", 0, buf);
 }
 
 }; // namespace

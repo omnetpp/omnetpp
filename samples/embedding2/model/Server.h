@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __ALOHA_SERVER_H_
 #define __ALOHA_SERVER_H_
 

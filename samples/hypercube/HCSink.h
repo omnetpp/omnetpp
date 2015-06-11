@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __HCSINK_H_
 #define __HCSINK_H_
 
@@ -24,6 +23,7 @@ class HCSink : public cSimpleModule
     simsignal_t endToEndDelaySignal;
     simsignal_t hopCountSignal;
     simsignal_t hopRatioSignal;
+
   public:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;

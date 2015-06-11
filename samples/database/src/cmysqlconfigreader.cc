@@ -23,7 +23,6 @@
 
 #include "oppmysqlutils.h"
 
-
 Register_Class(cMySQLConfigReader);
 
 Register_GlobalConfigOption(CFGID_MYSQLCONFIG_DUMPBOOTCFG,    "mysqlconfig-dumpbootcfg", CFG_BOOL, "false", "Prints the current configuration as a series of SQL INSERT statements.");
@@ -80,17 +79,17 @@ int cMySQLConfigReader::findSection(const char *sectionName) const
 void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
 {
     // query sections from the database
-    if (strchr(configName,'"'))
+    if (strchr(configName, '"'))
         throw cRuntimeError("cMySQLConfigReader: configname cannot contain quotes");
     std::string selectSectionsStmt = "SELECT s.id, s.name FROM configsection s, config c "
                                      "WHERE s.configid=c.id AND c.name='@configname@' "
                                      "ORDER BY s.id";
-    opp_mysql_substitute(selectSectionsStmt, "@configname@",  configName, mysql);
+    opp_mysql_substitute(selectSectionsStmt, "@configname@", configName, mysql);
     if (mysql_query(mysql, selectSectionsStmt.c_str()))
         throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
 
     // and add them to the config
-    std::map<long,int> dbSectionId2index;
+    std::map<long, int> dbSectionId2index;
     MYSQL_RES *res = mysql_store_result(mysql);
     if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
@@ -98,12 +97,11 @@ void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
         throw cRuntimeError("cMySQLConfigReader: configname='%s': no such config in the database, or it is empty", configName);
     ASSERT(mysql_num_fields(res) == 2);
     MYSQL_ROW row;
-    while ((row = mysql_fetch_row(res)) != nullptr)
-    {
+    while ((row = mysql_fetch_row(res)) != nullptr) {
         long dbSectionId = atol(row[0]);
         const char *sectionName = row[1];
         int sectionnum = findSection(sectionName);
-        if (sectionnum==-1) {
+        if (sectionnum == -1) {
             Section section;
             section.name = sectionName;
             sections.push_back(section);
@@ -121,7 +119,7 @@ void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
                                     "FROM configentry e, configsection s, config c "
                                     "WHERE e.sectionid=s.id AND s.configid=c.id AND c.name='@configname@' "
                                     "ORDER BY s.id,entryorder";
-    opp_mysql_substitute(selectEntriesStmt, "@configname@",  configName, mysql);
+    opp_mysql_substitute(selectEntriesStmt, "@configname@", configName, mysql);
     if (mysql_query(mysql, selectEntriesStmt.c_str()))
         throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
 
@@ -130,13 +128,12 @@ void cMySQLConfigReader::readDB(MYSQL *mysql, const char *configName)
     if (res == nullptr)
         throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     ASSERT(mysql_num_fields(res) == 4);
-    while ((row = mysql_fetch_row(res)) != nullptr)
-    {
+    while ((row = mysql_fetch_row(res)) != nullptr) {
         long dbSectionId = atol(row[0]);
         const char *entryName = row[1];
         const char *value = row[2];
         long linenumber = atol(row[3]);
-        ASSERT(dbSectionId2index.find(dbSectionId)!=dbSectionId2index.end());
+        ASSERT(dbSectionId2index.find(dbSectionId) != dbSectionId2index.end());
         int sectionIndex = dbSectionId2index[dbSectionId];
 
         KeyValue1 e(&defaultbasedir, &rootfilename, linenumber, entryName, value);
@@ -162,24 +159,24 @@ int cMySQLConfigReader::getNumSections() const
 
 const char *cMySQLConfigReader::getSectionName(int sectionId) const
 {
-    if (sectionId<0 || sectionId>=(int)sections.size())
+    if (sectionId < 0 || sectionId >= (int)sections.size())
         throw cRuntimeError("Invalid sectionId (%d)", sectionId);
     return sections[sectionId].name.c_str();
 }
 
 int cMySQLConfigReader::getNumEntries(int sectionId) const
 {
-    if (sectionId<0 || sectionId>=(int)sections.size())
+    if (sectionId < 0 || sectionId >= (int)sections.size())
         throw cRuntimeError("Invalid sectionId (%d)", sectionId);
     return sections[sectionId].entries.size();
 }
 
 const cConfigurationReader::KeyValue& cMySQLConfigReader::getEntry(int sectionId, int entryId) const
 {
-    if (sectionId<0 || sectionId>=(int)sections.size())
+    if (sectionId < 0 || sectionId >= (int)sections.size())
         throw cRuntimeError("Invalid sectionId (%d)", sectionId);
-    const Section &curSect = sections[sectionId];
-    if (entryId<0 || entryId>=(int)curSect.entries.size())
+    const Section& curSect = sections[sectionId];
+    if (entryId < 0 || entryId >= (int)curSect.entries.size())
         throw cRuntimeError("Invalid entryId (%d)", entryId);
     return curSect.entries[entryId];
 }
@@ -191,15 +188,13 @@ void cMySQLConfigReader::dump() const
     const int base = 1000;
     int k = 0;
 
-    for (int i=0; i < getNumSections(); i++)
-    {
+    for (int i = 0; i < getNumSections(); i++) {
         ::printf("INSERT INTO configsection (configid,id,name) VALUES (10,%d,'%s');\n",
-                 base+i, escape(getSectionName(i)).c_str());
-        for (int j=0; j < getNumEntries(i); j++)
-        {
+                base+i, escape(getSectionName(i)).c_str());
+        for (int j = 0; j < getNumEntries(i); j++) {
             const KeyValue& entry = getEntry(i, j);
             ::printf("INSERT INTO configentry (sectionid,name,value,entryorder) VALUES (%d,'%s','%s',%d);\n",
-                     base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
+                    base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
         }
     }
 }
@@ -211,16 +206,14 @@ void cMySQLConfigReader::dumpConfig(cConfigurationReader *cfg) const
     const int base = 1000;
     int k = 0;
 
-    for (int i=0; i < cfg->getNumSections(); i++)
-    {
+    for (int i = 0; i < cfg->getNumSections(); i++) {
         ::printf("INSERT INTO configsection (configid,id,name) VALUES (10,%d,'%s');\n",
-                 base+i, escape(cfg->getSectionName(i)).c_str());
-        for (int j=0; j < cfg->getNumEntries(i); j++)
-        {
+                base+i, escape(cfg->getSectionName(i)).c_str());
+        for (int j = 0; j < cfg->getNumEntries(i); j++) {
             const KeyValue& entry = cfg->getEntry(i, j);
 
             ::printf("INSERT INTO configentry (sectionid,name,value,entryorder) VALUES (%d,'%s','%s',%d);\n",
-                     base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
+                    base+i, escape(entry.getKey()).c_str(), escape(entry.getValue()).c_str(), k++);
         }
     }
 }
@@ -229,17 +222,15 @@ void cMySQLConfigReader::copyExistingConfig(cConfigurationReader *cfg)
 {
     ASSERT(sections.empty());
 
-    std::map<int,int> sectionold2new;
+    std::map<int, int> sectionold2new;
 
-    for (int i=0; i<cfg->getNumSections(); i++)
-    {
+    for (int i = 0; i < cfg->getNumSections(); i++) {
         Section section;
         section.name = cfg->getSectionName(i);
         sections.push_back(section);
         sectionold2new[i] = sections.size()-1;
-        for (int j=0; j < cfg->getNumEntries(i); j++)
-        {
-            const KeyValue &e = cfg->getEntry(i, j);
+        for (int j = 0; j < cfg->getNumEntries(i); j++) {
+            const KeyValue& e = cfg->getEntry(i, j);
             // get a reference to the string instance in filenames[], we'll refer to it in KeyValue
             StringSet::iterator basedirIt, filenameIt;
             basedirIt = basedirs.insert(e.getBaseDirectory()).first;

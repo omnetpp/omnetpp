@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __ALOHA_SERVER_H_
 #define __ALOHA_SERVER_H_
 
@@ -30,7 +29,7 @@ class Server : public cSimpleModule
     long currentCollisionNumFrames;
     long receiveCounter;
     simtime_t recvStartTime;
-    enum {IDLE=0, TRANSMISSION=1, COLLISION=2};
+    enum { IDLE = 0, TRANSMISSION = 1, COLLISION = 2 };
     simsignal_t channelStateSignal;
 
     // statistics

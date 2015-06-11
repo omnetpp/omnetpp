@@ -7,29 +7,26 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "HCGenerator.h"
 #include "HCPacket_m.h"
 
-
 Define_Module(HCGenerator);
-
 
 void HCGenerator::activity()
 {
     int numStations = par("numStations");
     int my_address = par("address");
-    cPar& iaTime = par("iaTime"); // take by ref since it can be random
+    cPar& iaTime = par("iaTime");  // take by ref since it can be random
 
-    for (int i=0;;i++)
-    {
+    for (int i = 0; ; i++) {
         // select destination randomly (but not the local station)
         int dest = intrand(numStations-1);
-        if (dest>=my_address) dest++;
+        if (dest >= my_address)
+            dest++;
 
         // create packet
         char pktname[30];
-        sprintf(pktname, "%d-->%d", my_address,dest);
+        sprintf(pktname, "%d-->%d", my_address, dest);
         HCPacket *pkt = new HCPacket(pktname);
         pkt->setSrcAddress(my_address);
         pkt->setDestAddress(dest);

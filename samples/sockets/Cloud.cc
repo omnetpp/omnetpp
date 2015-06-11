@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 #include "NetPkt_m.h"
 
@@ -44,5 +43,4 @@ void Cloud::handleMessage(cMessage *msg)
     // send msg to destination after the delay
     sendDelayed(pkt, propDelay, "g$o", dest);
 }
-
 

@@ -7,13 +7,11 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 
 USING_NAMESPACE
 
-#define STACKSIZE 16384
-
+#define STACKSIZE    16384
 
 /**
  * Demonstrates histogram classes; see NED file for more info.
@@ -25,7 +23,7 @@ class HistogramDemo : public cSimpleModule
     virtual void activity() override;
 };
 
-Define_Module( HistogramDemo );
+Define_Module(HistogramDemo);
 
 void HistogramDemo::activity()
 {
@@ -35,7 +33,7 @@ void HistogramDemo::activity()
     int numFirstVals = par("numFirstVals");
     double rangeExtFactor = par("rangeExtFactor");
 
-    int i=0;
+    int i = 0;
     WATCH(i);
 
     EV << "Creating 5 distribution approximation objects, of types:\n";
@@ -43,8 +41,7 @@ void HistogramDemo::activity()
     EV << "Parameters:\n";
     EV << " number of cells: " << numCells << endl;
     EV << (useFixedRange ? " range: [0,100)" : "automatic range estimation") << endl;
-    if (!useFixedRange)
-    {
+    if (!useFixedRange) {
         EV << " observations used for range estimation: " << numFirstVals << endl;
         EV << " range will be extended by " << rangeExtFactor << " times" << endl;
     }
@@ -56,14 +53,12 @@ void HistogramDemo::activity()
     cPSquare psquare("PSquare", numCells);
     cKSplit ksplit("K-Split");
 
-    if (useFixedRange)
-    {
-        dblhist.setRange(0,100);
-        longhist.setRange(0,100);
-        ksplit.setRange(0,100);
+    if (useFixedRange) {
+        dblhist.setRange(0, 100);
+        longhist.setRange(0, 100);
+        ksplit.setRange(0, 100);
     }
-    else
-    {
+    else {
         // 0.0 is lower limit
         dblhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
         longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
@@ -71,9 +66,9 @@ void HistogramDemo::activity()
     }
     varhist.setNumPrecollectedValues(numFirstVals);
 
-    FILE *f = fopen("hist.dat","r");
+    FILE *f = fopen("hist.dat", "r");
     if (f && getEnvir()->askYesNo("HIST: Saved histogram file `hist.dat' found,"
-                         " load it and continue collecting from there?"))
+                                  " load it and continue collecting from there?"))
     {
         longhist.loadFromFile(f);
         dblhist.loadFromFile(f);
@@ -94,24 +89,22 @@ void HistogramDemo::activity()
 
     EV << "Filling objects with " << numObs << " random observations...\n";
     EV << "(exponential(30) with P=0.5 and normal(80, 10) with P=0.5)\n";
-    for (i=0; i<numObs; i++)
-    {
-        double d = (intrand(2)==0) ? exponential(30) : normal(80, 10);
+    for (i = 0; i < numObs; i++) {
+        double d = (intrand(2) == 0) ? exponential(30) : normal(80, 10);
         EV << " adding " << d << endl;
 
-        longhist.collect( d );
-        dblhist.collect( d );
-        psquare.collect( d );
-        ksplit.collect( d );
-        varhist.collect( d );
+        longhist.collect(d);
+        dblhist.collect(d);
+        psquare.collect(d);
+        ksplit.collect(d);
+        varhist.collect(d);
 
         wait(1);
     }
 
     EV << endl;
     EV << "Cells in ksplit:\n";
-    for (i=0; i<ksplit.getNumCells(); i++)
-    {
+    for (i = 0; i < ksplit.getNumCells(); i++) {
         EV << " cell " << i << ":";
         EV << " [" << ksplit.getBasepoint(i) << "," << ksplit.getBasepoint(i+1) << "]";
         EV << "  n=" << ksplit.getCellValue(i);
@@ -123,7 +116,7 @@ void HistogramDemo::activity()
     snapshot(this);
 
     EV << "Saving all four objects to `hist.dat'...\n";
-    f = fopen("hist.dat","w");
+    f = fopen("hist.dat", "w");
     longhist.saveToFile(f);
     dblhist.saveToFile(f);
     psquare.saveToFile(f);

@@ -40,8 +40,7 @@ void Allocate::initialize()
     cModule *mod = getParentModule()->getModuleByPath(resourceName);
     if (!mod)
         throw cRuntimeError("Cannot find resource pool module `%s'", resourceName);
-    resourcePool = check_and_cast<IResourcePool*>(mod);
-
+    resourcePool = check_and_cast<IResourcePool *>(mod);
 }
 
 void Allocate::handleMessage(cMessage *msg)
@@ -73,8 +72,7 @@ void Allocate::resourceGranted(IResourcePool *provider)
     send(job, "out");
 
     // try to handle other waiting jobs as well
-    while (!queue.isEmpty() && allocateResource(peek()))
-    {
+    while (!queue.isEmpty() && allocateResource(peek())) {
         Job *job = dequeue();
         send(job, "out");
     }
@@ -88,12 +86,10 @@ Job *Allocate::peek()
 Job *Allocate::dequeue()
 {
     Job *job;
-    if (fifo)
-    {
+    if (fifo) {
         job = (Job *)queue.pop();
     }
-    else
-    {
+    else {
         job = (Job *)queue.back();
         queue.remove(job);
     }
@@ -109,16 +105,15 @@ Job *Allocate::dequeue()
 void Allocate::enqueueOrDrop(Job *job)
 {
     // check for container capacity
-    if (capacity >=0 && queue.length() >= capacity)
-    {
+    if (capacity >= 0 && queue.length() >= capacity) {
         EV << "Capacity full! Job dropped.\n";
-        if (hasGUI()) bubble("Dropped!");
+        if (hasGUI())
+            bubble("Dropped!");
         emit(droppedSignal, 1);
         delete job;
         return;
     }
-    else
-    {
+    else {
         EV << "Job enqueued.\n";
         job->setTimestamp();
         queue.insert(job);

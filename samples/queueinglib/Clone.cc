@@ -28,17 +28,14 @@ void Clone::handleMessage(cMessage *msg)
     job->setGeneration(job->getGeneration()+1);
 
     int n = gateSize("out");
-    if (n == 0)
-    {
+    if (n == 0) {
         // no output gate: drop
         delete job;
     }
-    else
-    {
+    else {
         // send a copy on each gate but the last, and the original on the last gate
-        for (int i=0; i<n; i++)
-        {
-            Job *job2 = (i==n-1) ? job : job->dup();
+        for (int i = 0; i < n; i++) {
+            Job *job2 = (i == n-1) ? job : job->dup();
             if (changeMsgNames)
                 updateJobName(job2, i);
             send(job2, "out", i);

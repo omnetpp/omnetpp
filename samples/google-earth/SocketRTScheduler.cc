@@ -7,13 +7,11 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "SocketRTScheduler.h"
 
 #ifndef _WIN32
-#define closesocket(x) ::close(x)
+#define closesocket(x)    ::close(x)
 #endif
-
 
 Register_Class(cSocketRTScheduler);
 
@@ -38,7 +36,7 @@ cSocketRTScheduler::~cSocketRTScheduler()
 
 void cSocketRTScheduler::startRun()
 {
-    if (initsocketlibonce()!=0)
+    if (initsocketlibonce() != 0)
         throw cRuntimeError("cSocketRTScheduler: Cannot initialize socket library");
 
     gettimeofday(&baseTime, nullptr);
@@ -56,14 +54,14 @@ void cSocketRTScheduler::startRun()
 void cSocketRTScheduler::setupListener()
 {
     listenerSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenerSocket==INVALID_SOCKET)
+    if (listenerSocket == INVALID_SOCKET)
         throw cRuntimeError("cSocketRTScheduler: cannot create socket");
 
     sockaddr_in sinInterface;
     sinInterface.sin_family = AF_INET;
     sinInterface.sin_addr.s_addr = INADDR_ANY;
     sinInterface.sin_port = htons(port);
-    if (bind(listenerSocket, (sockaddr*)&sinInterface, sizeof(sockaddr_in))==SOCKET_ERROR)
+    if (bind(listenerSocket, (sockaddr *)&sinInterface, sizeof(sockaddr_in)) == SOCKET_ERROR)
         throw cRuntimeError("cSocketRTScheduler: socket bind() failed");
 
     listen(listenerSocket, SOMAXCONN);
@@ -103,7 +101,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
     FD_ZERO(&exceptFDs);
 
     // if we're connected, watch connSocket, otherwise accept new connections
-    if (connSocket!=INVALID_SOCKET)
+    if (connSocket != INVALID_SOCKET)
         FD_SET(connSocket, &readFDs);
     else
         FD_SET(listenerSocket, &readFDs);
@@ -112,31 +110,26 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
     timeout.tv_sec = 0;
     timeout.tv_usec = usec;
 
-    if (select(FD_SETSIZE, &readFDs, &writeFDs, &exceptFDs, &timeout) > 0)
-    {
+    if (select(FD_SETSIZE, &readFDs, &writeFDs, &exceptFDs, &timeout) > 0) {
         // Something happened on one of the sockets -- handle them
-        if (connSocket!=INVALID_SOCKET && FD_ISSET(connSocket, &readFDs))
-        {
+        if (connSocket != INVALID_SOCKET && FD_ISSET(connSocket, &readFDs)) {
             // receive from connSocket
             char *bufPtr = recvBuffer + (*numBytesPtr);
             int bufLeft = recvBufferSize - (*numBytesPtr);
-            if (bufLeft<=0)
+            if (bufLeft <= 0)
                 throw cRuntimeError("cSocketRTScheduler: interface module's recvBuffer is full");
             int nBytes = recv(connSocket, bufPtr, bufLeft, 0);
-            if (nBytes==SOCKET_ERROR)
-            {
+            if (nBytes == SOCKET_ERROR) {
                 EV << "cSocketRTScheduler: socket error " << sock_errno() << "\n";
                 closesocket(connSocket);
                 connSocket = INVALID_SOCKET;
             }
-            else if (nBytes == 0)
-            {
+            else if (nBytes == 0) {
                 EV << "cSocketRTScheduler: socket closed by the client\n";
                 closesocket(connSocket);
                 connSocket = INVALID_SOCKET;
             }
-            else
-            {
+            else {
                 // schedule notificationMsg for the interface module
                 EV << "cSocketRTScheduler: received " << nBytes << " bytes\n";
                 (*numBytesPtr) += nBytes;
@@ -151,13 +144,12 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 return true;
             }
         }
-        else if (FD_ISSET(listenerSocket, &readFDs))
-        {
+        else if (FD_ISSET(listenerSocket, &readFDs)) {
             // accept connection, and store FD in connSocket
             sockaddr_in sinRemote;
             int addrSize = sizeof(sinRemote);
-            connSocket = accept(listenerSocket, (sockaddr*)&sinRemote, (socklen_t*)&addrSize);
-            if (connSocket==INVALID_SOCKET)
+            connSocket = accept(listenerSocket, (sockaddr *)&sinRemote, (socklen_t *)&addrSize);
+            if (connSocket == INVALID_SOCKET)
                 throw cRuntimeError("cSocketRTScheduler: accept() failed");
             EV << "cSocketRTScheduler: connected!\n";
         }
@@ -171,10 +163,10 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
     // in order to keep UI responsiveness by invoking getEnvir()->idle()
     timeval curTime;
     gettimeofday(&curTime, nullptr);
-    while (targetTime.tv_sec-curTime.tv_sec >=2 ||
+    while (targetTime.tv_sec-curTime.tv_sec >= 2 ||
            timeval_diff_usec(targetTime, curTime) >= 200000)
     {
-        if (receiveWithTimeout(100000)) // 100ms
+        if (receiveWithTimeout(100000))  // 100ms
             return 1;
         if (getEnvir()->idle())
             return -1;
@@ -183,9 +175,10 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
 
     // difference is now at most 100ms, do it at once
     long usec = timeval_diff_usec(targetTime, curTime);
-    if (usec>0)
+    if (usec > 0)
         if (receiveWithTimeout(usec))
             return 1;
+
     return 0;
 }
 
@@ -203,15 +196,13 @@ cEvent *cSocketRTScheduler::takeNextEvent()
     // calculate target time
     timeval targetTime;
     cEvent *event = sim->msgQueue.peekFirst();
-    if (!event)
-    {
+    if (!event) {
         // if there are no events, wait until something comes from outside
         // TBD: obey simtimelimit, cpu-time-limit
         targetTime.tv_sec = LONG_MAX;
         targetTime.tv_usec = 0;
     }
-    else
-    {
+    else {
         // use time of next event
         simtime_t eventSimtime = event->getArrivalTime();
         targetTime = timeval_add(baseTime, SIMTIME_DBL(eventSimtime));
@@ -220,23 +211,21 @@ cEvent *cSocketRTScheduler::takeNextEvent()
     // if needed, wait until that time arrives
     timeval curTime;
     gettimeofday(&curTime, nullptr);
-    if (timeval_greater(targetTime, curTime))
-    {
+    if (timeval_greater(targetTime, curTime)) {
         int status = receiveUntil(targetTime);
         if (status == -1)
-            return nullptr; // interrupted by user
+            return nullptr;  // interrupted by user
         if (status == 1)
-            event = sim->msgQueue.peekFirst(); // received something
+            event = sim->msgQueue.peekFirst();  // received something
     }
-    else
-    {
+    else {
         // we're behind -- customized versions of this class may
         // alert if we're too much behind, whatever that means
     }
 
     // remove event from FES and return it
     cEvent *tmp = sim->msgQueue.removeFirst();
-    ASSERT(tmp==event);
+    ASSERT(tmp == event);
     return event;
 }
 
@@ -247,7 +236,7 @@ void cSocketRTScheduler::putBackEvent(cEvent *event)
 
 void cSocketRTScheduler::sendBytes(const char *buf, size_t numBytes)
 {
-    if (connSocket==INVALID_SOCKET)
+    if (connSocket == INVALID_SOCKET)
         throw cRuntimeError("cSocketRTScheduler: sendBytes(): no connection");
 
     send(connSocket, buf, numBytes, 0);
@@ -256,9 +245,9 @@ void cSocketRTScheduler::sendBytes(const char *buf, size_t numBytes)
 
 void cSocketRTScheduler::close()
 {
-    if (connSocket!=INVALID_SOCKET)
-    {
+    if (connSocket != INVALID_SOCKET) {
         closesocket(connSocket);
         connSocket = INVALID_SOCKET;
     }
 }
+

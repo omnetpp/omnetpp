@@ -26,15 +26,13 @@ void Delay::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
 
-    if (!job->isSelfMessage())
-    {
+    if (!job->isSelfMessage()) {
         // if it is not a self-message, send it to ourselves with a delay
         currentlyStored++;
         double delay = par("delay");
         scheduleAt(simTime() + delay, job);
     }
-    else
-    {
+    else {
         job->setDelayCount(job->getDelayCount()+1);
         simtime_t d = simTime() - job->getSendingTime();
         job->setTotalDelayTime(job->getTotalDelayTime() + d);
@@ -46,7 +44,7 @@ void Delay::handleMessage(cMessage *msg)
     emit(delayedJobsSignal, currentlyStored);
 
     if (hasGUI())
-        getDisplayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");
+        getDisplayString().setTagArg("i", 1, currentlyStored == 0 ? "" : "cyan4");
 }
 
 }; //namespace

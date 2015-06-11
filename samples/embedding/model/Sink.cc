@@ -28,7 +28,7 @@ class Sink : public cSimpleModule
     virtual void finish() override;
 };
 
-Define_Module( Sink );
+Define_Module(Sink);
 
 void Sink::initialize()
 {
@@ -40,8 +40,8 @@ void Sink::handleMessage(cMessage *msg)
 {
     simtime_t d = simTime()-msg->getCreationTime();
     EV << "Received " << msg->getName() << ", queueing time: " << d << "sec" << endl;
-    qstats.collect( d );
-    qtime.record( d );
+    qstats.collect(d);
+    qtime.record(d);
     delete msg;
 }
 

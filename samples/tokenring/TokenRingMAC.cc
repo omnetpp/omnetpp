@@ -16,17 +16,15 @@
 
 USING_NAMESPACE
 
-
 // Frame header and trailer are 21 octets (168 bits), with the following
 // frame layout (lengths in parens):
 //   SD(1), AC(1), FC(1), DEST(6), SOURCE(6), DATA(n), CS(4), ED(1), FS(1)
-#define TR_FRAME_HEADER_BITS    120
-#define TR_FRAME_TRAILER_BITS    48
-#define TR_FRAME_OVERHEAD_BITS  168
+#define TR_FRAME_HEADER_BITS      120
+#define TR_FRAME_TRAILER_BITS     48
+#define TR_FRAME_OVERHEAD_BITS    168
 
 // Token length is 3 octets (24 bits)
-#define TR_TOKEN_BITS  24
-
+#define TR_TOKEN_BITS             24
 
 /**
  * Token Ring MAC layer; see NED file for more info.
@@ -40,12 +38,12 @@ class TokenRingMAC : public cSimpleModule
     int queueMaxLen;
 
     // state variables
-    cMessage *transmEnd;     // self-message to signal end of transmission
-    cMessage *headerRecvEnd; // self-message to signal when header was fully received
-    cMessage *recvEnd;       // self-message to signal end of reception
+    cMessage *transmEnd;  // self-message to signal end of transmission
+    cMessage *headerRecvEnd;  // self-message to signal when header was fully received
+    cMessage *recvEnd;  // self-message to signal end of reception
     TRFrame *frameBeingReceived;  // the frame being received, or nullptr
-    TRToken *token;          // non-nullptr while we're holding the token
-    simtime_t thtExpiryTime; // if token!=nullptr: when tokenHoldingTime expires
+    TRToken *token;  // non-nullptr while we're holding the token
+    simtime_t thtExpiryTime;  // if token!=nullptr: when tokenHoldingTime expires
     cPacketQueue sendQueue;  // send buffer; holds TRDataFrames
 
     // statistics
@@ -64,7 +62,7 @@ class TokenRingMAC : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
-#if 0  //work in progress
+#if 0  // work in progress
     virtual void enqueueAppData(TRApplicationData *data);
     virtual void tokenCaptured(TRToken *receivedToken);
     virtual void releaseToken();
@@ -75,9 +73,7 @@ class TokenRingMAC : public cSimpleModule
 #endif
 };
 
-
 Define_Module(TokenRingMAC);
-
 
 TokenRingMAC::TokenRingMAC()
 {
@@ -99,7 +95,7 @@ void TokenRingMAC::initialize()
 {
     gate("phyIn")->setDeliverOnReceptionStart(true);
 
-    tokenHoldingTime = par("tokenHoldingTime");   // typically 10ms
+    tokenHoldingTime = par("tokenHoldingTime");  // typically 10ms
     myAddress = par("address");
     queueMaxLen = par("queueMaxLen");
 
@@ -109,9 +105,9 @@ void TokenRingMAC::initialize()
     queueingTime.setName("Queueing time (sec)");
 
     numPacketsToSend = 0;
-    WATCH (numPacketsToSend);
+    WATCH(numPacketsToSend);
     numPacketsToSendDropped = 0;
-    WATCH (numPacketsToSendDropped);
+    WATCH(numPacketsToSendDropped);
     queueDrops.setName("App data packets dropped");
 
     transmEnd = new cMessage("transmEnd");
@@ -119,8 +115,7 @@ void TokenRingMAC::initialize()
     headerRecvEnd = new cMessage("headerRecvEnd");
 
     // station 0 issues the token
-    if (myAddress == 0)
-    {
+    if (myAddress == 0) {
         TRToken *token = new TRToken("token", TR_TOKEN);
         token->setBitLength(TR_TOKEN_BITS);
         send(token, "phyOut");
@@ -129,50 +124,46 @@ void TokenRingMAC::initialize()
 
 void TokenRingMAC::handleMessage(cMessage *msg)
 {
-#if 0  //work in progress
-    if (dynamic_cast<TRToken *>(msg)!=nullptr) {
+#if 0  // work in progress
+    if (dynamic_cast<TRToken *>(msg) != nullptr) {
         startReceivingToken((TRToken *)msg);
     }
-    else if (dynamic_cast<TRDataFrame *>(msg)!=nullptr) {
+    else if (dynamic_cast<TRDataFrame *>(msg) != nullptr) {
         startReceivingDataFrame((TRDataFrame *)msg);
     }
-    else if (msg==recvEnd && token!=nullptr) {
+    else if (msg == recvEnd && token != nullptr) {
         tokenFullyReceived();
     }
-    else if (msg==headerRecvEnd) {
+    else if (msg == headerRecvEnd) {
         dataFrameHeaderReceived();
     }
-    else if (msg==recvEnd && frameBeingReceived!=nullptr)
-    {
-        cMessage *data = (cMessage *) recvEnd->getContextPointer();
+    else if (msg == recvEnd && frameBeingReceived != nullptr) {
+        cMessage *data = (cMessage *)recvEnd->getContextPointer();
         endReceiveFrame(data);
         // end receiving a data frame
         frameBeingReceived = nullptr;
         // TODO if we have the token, we can start transmitting another frame if there's time
     }
-    if (dynamic_cast<TRApplicationData *>(msg)!=nullptr)
-    {
+    if (dynamic_cast<TRApplicationData *>(msg) != nullptr) {
         // data from higher layer: store packet in transmit queue
         enqueueAppData((TRApplicationData *)msg);
     }
-    else if (msg==transmEnd)
-    {
+    else if (msg == transmEnd) {
         // end transmission of token or data frame
         EV << "End transmission\n";
 
-        //FIXME
+        // FIXME
         startTransmittingIfPossible();
         if (!transmEnd->isScheduled())
             releaseToken();
     }
-    else
-    {
+    else {
         throw cRuntimeError("unexpected message arrived: (%s)%s", msg->getClassName(), msg->getName());
     }
 #endif
 }
 
-#if 0  //work in progress
+#if 0  // work in progress
 void TokenRingMAC::enqueueAppData(TRApplicationData *data)
 {
     EV << "Data received from higher layer: \"" << data->getName() << "\", "
@@ -182,8 +173,7 @@ void TokenRingMAC::enqueueAppData(TRApplicationData *data)
     numPacketsToSend++;
 
     // if queue is full, we have to drop it
-    if (sendQueue.length() >= queueMaxLen)
-    {
+    if (sendQueue.length() >= queueMaxLen) {
         EV << "Queue full, DROPPED!" << endl;
         delete data;
         numPacketsToSendDropped++;
@@ -214,8 +204,8 @@ void TokenRingMAC::startReceivingToken(TRToken *msg)
 {
     // beginning of token arrived
     ASSERT(token->isReceptionStart());
-    ASSERT(!transmEnd->isScheduled()); // only the station holding the token can be transmitting
-    ASSERT(!recvEnd->isScheduled() && !headerRecvEnd->isScheduled()); // we're not already receiving
+    ASSERT(!transmEnd->isScheduled());  // only the station holding the token can be transmitting
+    ASSERT(!recvEnd->isScheduled() && !headerRecvEnd->isScheduled());  // we're not already receiving
 
     token = msg;
 
@@ -226,7 +216,7 @@ void TokenRingMAC::startReceivingDataFrame(TRDataFrame *msg)
 {
     // beginning of data frame arrived
     ASSERT(frameBeingReceived->isReceptionStart());
-    ASSERT(!recvEnd->isScheduled() && !headerRecvEnd->isScheduled()); // we're not already receiving
+    ASSERT(!recvEnd->isScheduled() && !headerRecvEnd->isScheduled());  // we're not already receiving
 
     frameBeingReceived = msg;
 
@@ -240,11 +230,10 @@ void TokenRingMAC::tokenFullyReceived()
     EV << "Token arrived (we can keep it for THT=" << tokenHoldingTime << ")" << endl;
     thtExpiryTime = simTime() + tokenHoldingTime;
 
-    if (isGUI())
-    {
-        getParentModule()->getDisplayString().setTagArg("i",1,"gold");
-        getParentModule()->getDisplayString().setTagArg("t",0,"ACTIVE");
-        getParentModule()->getDisplayString().setTagArg("t",2,"#707000");
+    if (isGUI()) {
+        getParentModule()->getDisplayString().setTagArg("i", 1, "gold");
+        getParentModule()->getDisplayString().setTagArg("t", 0, "ACTIVE");
+        getParentModule()->getDisplayString().setTagArg("t", 2, "#707000");
         getParentModule()->bubble(sendQueue.empty() ? "Nothing to send!" : "Captured token.");
     }
 
@@ -257,8 +246,8 @@ void TokenRingMAC::tokenFullyReceived()
 void TokenRingMAC::dataFrameHeaderReceived()
 {
     // header of data frame fully arrived
-    ASSERT(frameBeingReceived!=nullptr);
-    TRDataFrame frame = frameBeingReceived; // abbreviation
+    ASSERT(frameBeingReceived != nullptr);
+    TRDataFrame frame = frameBeingReceived;  // abbreviation
     EV << "Received header of frame \"" << frame->getName() << "\"" << endl;
 
     // extract source and destination
@@ -269,34 +258,29 @@ void TokenRingMAC::dataFrameHeaderReceived()
     // by the source of the frame when the frame arrives back to its
     // originating station. The addressee just repeats the frame, like
     // any other station in the ring.
-    if (source == myAddress)
-    {
+    if (source == myAddress) {
         EV << "Arrived back to sender, stripping it out of the ring" << endl;
         delete frame;
     }
-    else
-    {
+    else {
         EV << "Forwarding to next station" << endl;
         send(frame, "phyOut");
     }
 }
 
-
-
-    //TODO extract or repeat; or send up
-    //FIXME
-    startTransmittingIfPossible();
-    if (!transmEnd->isScheduled())
-        releaseToken();
+// TODO extract or repeat; or send up
+// FIXME
+startTransmittingIfPossible();
+if (!transmEnd->isScheduled())
+    releaseToken();
 }
 
 void TokenRingMAC::releaseToken()
 {
     EV << "Releasing token." << endl;
-    if (isGUI())
-    {
-        getParentModule()->getDisplayString().setTagArg("i",1,"");
-        getParentModule()->getDisplayString().setTagArg("t",0,"");
+    if (isGUI()) {
+        getParentModule()->getDisplayString().setTagArg("i", 1, "");
+        getParentModule()->getDisplayString().setTagArg("t", 0, "");
     }
 
     send(token, "phyOut");
@@ -308,17 +292,15 @@ bool TokenRingMAC::startTransmittingIfPossible()
 {
     // if we have messages to send, send them now, within the tokenHoldingTime
     thtExpiryTime = simTime()+tokenHoldingTime;
-    if (sendQueue.empty())
-    {
+    if (sendQueue.empty()) {
         EV << "Transmit queue empty\n";
         return false;
     }
 
     // check if next frame fits into this THT window
-    TRDataFrame *frame = (TRDataFrame *) sendQueue.front();
+    TRDataFrame *frame = (TRDataFrame *)sendQueue.front();
     simtime_t transmissionDuration = frame->getBitLength() / dataRate;
-    if (simTime()+transmissionDuration > thtExpiryTime)
-    {
+    if (simTime()+transmissionDuration > thtExpiryTime) {
         EV << "Frame \"" << data->getName() << "\" cannot be sent within THT\n";
         return false;
     }
@@ -341,8 +323,7 @@ bool TokenRingMAC::startTransmittingIfPossible()
 void TokenRingMAC::endReceiveFrame(cMessage *data)
 {
     // is this station the addressee?
-    if (dest == myAddress)
-    {
+    if (dest == myAddress) {
         EV << "We are the destination: as soon as we fully received the frame," << endl;
         EV << "we'll pass up a copy of the payload \"" << frame->getEncapsulatedMsg()->getName() << "\" to the higher layer." << endl;
         EV << "Frame will be extracted from the ring by the sender." << endl;
@@ -362,7 +343,8 @@ void TokenRingMAC::endReceiveFrame(cMessage *data)
     EV << "End receiving frame containing \"" << data->getName() << "\", passing up to higher layer." << endl;
     send(data, "toHL");
 }
-#endif  //work in progress
+
+#endif  // work in progress
 
 void TokenRingMAC::finish()
 {
@@ -370,9 +352,8 @@ void TokenRingMAC::finish()
     EV << "Total packets received from higher layer: " << numPacketsToSend << endl;
     EV << "Higher layer still in queue: " << sendQueue.length() << endl;
     EV << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;
-    if (numPacketsToSend>sendQueue.length())
+    if (numPacketsToSend > sendQueue.length())
         EV << "Percentage dropped: " << (100*numPacketsToSendDropped/(numPacketsToSend-sendQueue.length())) << "%" << endl;
     EV << endl;
 }
-
 

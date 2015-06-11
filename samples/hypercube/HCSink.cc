@@ -7,22 +7,20 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "HCSink.h"
 #include "HCPacket_m.h"
 
-
 Define_Module(HCSink);
-
 
 int hammingDistance(unsigned long a, unsigned long b)
 {
-     unsigned long d = a^b;
-     int k=0;
-     for (; d; d=d>>1)
-         if (d&1)
-             k++;
-     return k;
+    unsigned long d = a^b;
+    int k = 0;
+    for ( ; d; d = d>>1)
+        if (d&1)
+            k++;
+
+    return k;
 }
 
 void HCSink::initialize()
@@ -43,7 +41,7 @@ void HCSink::handleMessage(cMessage *msg)
 
     emit(endToEndDelaySignal, eed);
     emit(hopCountSignal, actualHops);
-    emit(hopRatioSignal, actualHops / (double)minHops );
+    emit(hopRatioSignal, actualHops / (double)minHops);
 
     EV << "Received: " << pkt->getName() << endl;
     EV << "  - end-to-end delay=" << eed << endl;

@@ -7,10 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "SocketRTScheduler.h"
 #include "KmlHttpServer.h"
-
 
 Define_Module(KmlHttpServer);
 
@@ -44,21 +42,22 @@ KmlHttpServer *KmlHttpServer::getInstance()
     return instance;
 }
 
-int KmlHttpServer::findKmlFragmentProvider(IKmlFragmentProvider* p)
+int KmlHttpServer::findKmlFragmentProvider(IKmlFragmentProvider *p)
 {
-    for (int i=0; i<(int)providerList.size(); i++)
+    for (int i = 0; i < (int)providerList.size(); i++)
         if (providerList[i] == p)
             return i;
+
     return -1;
 }
 
-void KmlHttpServer::addKmlFragmentProvider(IKmlFragmentProvider* p)
+void KmlHttpServer::addKmlFragmentProvider(IKmlFragmentProvider *p)
 {
     if (findKmlFragmentProvider(p) == -1)
         providerList.push_back(p);
 }
 
-void KmlHttpServer::removeKmlFragmentProvider(IKmlFragmentProvider* p)
+void KmlHttpServer::removeKmlFragmentProvider(IKmlFragmentProvider *p)
 {
     int k = findKmlFragmentProvider(p);
     if (k != -1)
@@ -68,7 +67,7 @@ void KmlHttpServer::removeKmlFragmentProvider(IKmlFragmentProvider* p)
 void KmlHttpServer::handleMessage(cMessage *msg)
 {
     if (msg != rtEvent)
-        throw cRuntimeError("This module does not handle messages"); // only those from the SocketRTScheduler
+        throw cRuntimeError("This module does not handle messages");  // only those from the SocketRTScheduler
 
     handleSocketEvent();
 }
@@ -77,15 +76,17 @@ void KmlHttpServer::handleSocketEvent()
 {
     // try to find a double line feed in the input -- that's the end of the HTTP header.
     char *endHeader = nullptr;
-    for (char *s=recvBuffer; s<=recvBuffer+numRecvBytes-4; s++)
-        if (*s=='\r' && *(s+1)=='\n' && *(s+2)=='\r' && *(s+3)=='\n')
-            {endHeader = s+4; break;}
+    for (char *s = recvBuffer; s <= recvBuffer+numRecvBytes-4; s++)
+        if (*s == '\r' && *(s+1) == '\n' && *(s+2) == '\r' && *(s+3) == '\n') {
+            endHeader = s+4;
+            break;
+        }
 
     // we don't have a complete header yet -- keep on waiting
     if (!endHeader)
         return;
     std::string header = std::string(recvBuffer, endHeader-recvBuffer);
-    //EV << header;
+    // EV << header;
 
     // remove HTTP header from buffer
     if (endHeader == recvBuffer+numRecvBytes)
@@ -109,25 +110,23 @@ std::string KmlHttpServer::processHttpRequest(const char *httpReqHeader)
     // parse header. first line should be: GET uri HTTP/1.1
     std::string header(httpReqHeader);
     std::string::size_type pos = header.find("\r\n");
-    if (pos==std::string::npos)
-    {
+    if (pos == std::string::npos) {
         EV << "Bad HTTP request\n";
         return std::string("HTTP/1.0 400 Bad Request\r\n");
     }
 
-    std::string cmd(header,0,pos);
+    std::string cmd(header, 0, pos);
     EV << "Received: " << cmd << "\n";
 
     // we only accept GET
-    if (cmd.length()<4 || cmd.compare(0,4,"GET "))
-    {
+    if (cmd.length() < 4 || cmd.compare(0, 4, "GET ")) {
         EV << "Wrong HTTP verb, only GET is supported\n";
         return std::string("HTTP/1.0 501 Not Implemented\r\n");
     }
 
     // parse URI and get corresponding content
-    pos = cmd.find(" ",4);
-    std::string uri(cmd,4,pos-4);
+    pos = cmd.find(" ", 4);
+    std::string uri(cmd, 4, pos-4);
 
     // create and return reply
     std::string reply = getReplyFor(uri.c_str());
@@ -138,7 +137,7 @@ const char *INDEX_HTML =
     "<html>\n"
     "<head>\n"
     "   <title>OMNeT++ Google Earth Demo</title>\n"
-    "   <script src=\"http://www.google.com/jsapi?key=ABQIAAAAhaIVVNK7shon8s61HoJP3hTWQ61sd-CgFDCq8tRqXSWpKVHs8RQiqzV8RfPWPm7pTTJyU_gk6LVxAg\"></script>\n" // ID registered for omnetpp.org
+    "   <script src=\"http://www.google.com/jsapi?key=ABQIAAAAhaIVVNK7shon8s61HoJP3hTWQ61sd-CgFDCq8tRqXSWpKVHs8RQiqzV8RfPWPm7pTTJyU_gk6LVxAg\"></script>\n"  // ID registered for omnetpp.org
     "   <script type=\"text/javascript\">\n"
     "      var ge;\n"
     "      var networkLink;  // for setTimeout()\n"
@@ -191,17 +190,15 @@ const char *INDEX_HTML =
 
 std::string KmlHttpServer::getReplyFor(const char *uri)
 {
-    if (strcmp(uri, "/")==0 || strcmp(uri, "/index.html")==0)
-    {
+    if (strcmp(uri, "/") == 0 || strcmp(uri, "/index.html") == 0) {
         return addHttpHeader(INDEX_HTML, "text/html");
     }
-    if (strcmp(uri, "/snapshot.kml")==0)
-    {
+    if (strcmp(uri, "/snapshot.kml") == 0) {
         std::stringstream out;
         out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         out << "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n";
         out << "<Document>\n";
-        for (int i=0; i<(int)providerList.size(); i++)
+        for (int i = 0; i < (int)providerList.size(); i++)
             out << providerList[i]->getKmlFragment();
         out << "</Document>\n";
         out << "</kml>\n";
@@ -217,7 +214,7 @@ std::string KmlHttpServer::addHttpHeader(const char *content, const char *mimety
     std::stringstream out;
     out << "HTTP/1.0 200 OK\r\n";
     out << "Content-Type: " << mimetype << "\r\n";
-    //out << "Content-Length: " << strlen(content) << "\r\n";
+    // out << "Content-Length: " << strlen(content) << "\r\n";
     out << "\r\n";
     out << content;
     return out.str();

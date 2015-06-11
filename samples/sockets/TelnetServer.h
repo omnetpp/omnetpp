@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __TELNETSERVER_H
 #define __TELNETSERVER_H
 
@@ -25,6 +24,4 @@ class TelnetServer : public QueueBase
 };
 
 #endif
-
-
 

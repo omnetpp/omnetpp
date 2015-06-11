@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 //
 // Authors: Gabor Lencse, Andras Varga
 // Based on the code by:
@@ -19,7 +18,6 @@
 #include "TokenRing_m.h"
 
 USING_NAMESPACE
-
 
 /**
  * Consumes packets; see NED file for more info.
@@ -41,7 +39,6 @@ class Sink : public cSimpleModule
 };
 
 Define_Module(Sink);
-
 
 void Sink::initialize()
 {

@@ -11,7 +11,7 @@
 
 USING_NAMESPACE
 
-#define STACKSIZE 16384
+#define STACKSIZE    16384
 
 /**
  * Dynamically launched process in the server; see NED file for more info
@@ -23,7 +23,7 @@ class ServerProcess : public cSimpleModule
     virtual void activity() override;
 };
 
-Define_Module( ServerProcess );
+Define_Module(ServerProcess);
 
 void ServerProcess::activity()
 {
@@ -32,15 +32,16 @@ void ServerProcess::activity()
 
     cGate *serverOutGate = getParentModule()->gate("port$o");
 
-    int clientAddr=0, ownAddr=0;
-    WATCH(clientAddr); WATCH(ownAddr);
+    int clientAddr = 0, ownAddr = 0;
+    WATCH(clientAddr);
+    WATCH(ownAddr);
 
     DynaPacket *pk;
     DynaDataPacket *datapk;
 
     // receive the CONN_REQ we were created to handle
     EV << "Started, waiting for DYNA_CONN_REQ\n";
-    pk = (DynaPacket *) receive();
+    pk = (DynaPacket *)receive();
     clientAddr = pk->getSrcAddress();
     ownAddr = pk->getDestAddress();
 
@@ -59,22 +60,21 @@ void ServerProcess::activity()
     sendDirect(pk, serverOutGate);
 
     // process data packets until DISC_REQ comes
-    for(;;)
-    {
+    for ( ; ; ) {
         EV << "waiting for DATA(query) (or DYNA_DISC_REQ)\n";
-        pk = (DynaPacket *) receive();
+        pk = (DynaPacket *)receive();
         int type = pk->getKind();
 
-        if (type==DYNA_DISC_REQ)
+        if (type == DYNA_DISC_REQ)
             break;
 
-        if (type!=DYNA_DATA)
+        if (type != DYNA_DATA)
             throw cRuntimeError("protocol error!");
 
-        datapk = (DynaDataPacket *) pk;
+        datapk = (DynaDataPacket *)pk;
 
         EV << "got DATA(query), processing...\n";
-        wait( (double)processingTime );
+        wait((double)processingTime);
 
         EV << "sending DATA(result)\n";
         datapk->setName("DATA(result)");

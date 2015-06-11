@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __QUEUEBASE_H
 #define __QUEUEBASE_H
 

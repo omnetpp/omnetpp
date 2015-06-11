@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 
 USING_NAMESPACE
@@ -61,37 +60,34 @@ void AbstractQueue::initialize()
 
 void AbstractQueue::handleMessage(cMessage *msg)
 {
-    if (msg==endServiceMsg)
-    {
-        endService( msgServiced );
-        if (queue.empty())
-        {
+    if (msg == endServiceMsg) {
+        endService(msgServiced);
+        if (queue.empty()) {
             msgServiced = nullptr;
-            if (hasGUI()) getDisplayString().setTagArg("i",1,"");
+            if (hasGUI())
+                getDisplayString().setTagArg("i", 1, "");
         }
-        else
-        {
-            msgServiced = (cMessage *) queue.pop();
+        else {
+            msgServiced = (cMessage *)queue.pop();
             queueLength.record(queue.length());
-            simtime_t serviceTime = startService( msgServiced );
+            simtime_t serviceTime = startService(msgServiced);
             endServiceMsg->setSchedulingPriority(priority);
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
     }
-    else if (!msgServiced)
-    {
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"gold3");
+    else if (!msgServiced) {
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "gold3");
 
-        arrival( msg );
+        arrival(msg);
         msgServiced = msg;
-        simtime_t serviceTime = startService( msgServiced );
+        simtime_t serviceTime = startService(msgServiced);
         endServiceMsg->setSchedulingPriority(priority);
-        scheduleAt( simTime()+serviceTime, endServiceMsg );
+        scheduleAt(simTime()+serviceTime, endServiceMsg);
     }
-    else
-    {
-        arrival( msg );
-        queue.insert( msg );
+    else {
+        arrival(msg);
+        queue.insert(msg);
         queueLength.record(queue.length());
     }
 }
@@ -101,7 +97,7 @@ void AbstractQueue::handleMessage(cMessage *msg)
 /**
  * Queue model, with service time as parameter; see NED file for more info.
  */
-class Queue: public AbstractQueue
+class Queue : public AbstractQueue
 {
   public:
     virtual void initialize() override;
@@ -117,21 +113,20 @@ void Queue::initialize()
     AbstractQueue::initialize();
 
     long numInitialJobs = par("numInitialJobs");
-    for (long i=0; i<numInitialJobs; i++)
-    {
+    for (long i = 0; i < numInitialJobs; i++) {
         cMessage *job = new cMessage("job");
         queue.insert(job);
         queueLength.record(queue.length());
     }
 
-    if (!queue.empty())
-    {
-        msgServiced = (cMessage *) queue.pop();
+    if (!queue.empty()) {
+        msgServiced = (cMessage *)queue.pop();
         queueLength.record(queue.length());
-        simtime_t serviceTime = startService( msgServiced );
-        scheduleAt( simTime()+serviceTime, endServiceMsg );
+        simtime_t serviceTime = startService(msgServiced);
+        scheduleAt(simTime()+serviceTime, endServiceMsg);
 
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"gold3");
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "gold3");
     }
 }
 
@@ -145,7 +140,6 @@ void Queue::endService(cMessage *msg)
 {
     EV << "Completed service of " << msg->getName() << endl;
     msg->setSchedulingPriority(priority);
-    send( msg, "out" );
+    send(msg, "out");
 }
-
 

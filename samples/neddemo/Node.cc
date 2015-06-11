@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 
 USING_NAMESPACE
@@ -20,3 +19,4 @@ class Node : public cSimpleModule
 };
 
 Define_Module(Node);
+

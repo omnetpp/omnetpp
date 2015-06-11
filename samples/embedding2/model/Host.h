@@ -33,7 +33,7 @@ class Host : public cSimpleModule
     // state variables, event pointers etc
     cModule *server;
     cMessage *endTxEvent;
-    enum {IDLE=0, TRANSMIT=1} state;
+    enum { IDLE = 0, TRANSMIT = 1 } state;
     int pkCounter;
 
   public:

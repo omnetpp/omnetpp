@@ -7,13 +7,11 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #define FSM_DEBUG
 #include <omnetpp.h>
 #include "Packet_m.h"
 
 USING_NAMESPACE
-
 
 /**
  * A bursty packet generator; see NED file for more info.
@@ -32,10 +30,10 @@ class BurstyApp : public cSimpleModule
     // state
     cFSM fsm;
     enum {
-       INIT = 0,
-       SLEEP = FSM_Steady(1),
-       ACTIVE = FSM_Steady(2),
-       SEND = FSM_Transient(1),
+        INIT = 0,
+        SLEEP = FSM_Steady(1),
+        ACTIVE = FSM_Steady(2),
+        SEND = FSM_Transient(1),
     };
 
     int pkCounter;
@@ -94,11 +92,11 @@ void BurstyApp::initialize()
     packetLengthBytes = &par("packetLength");
 
     endToEndDelaySignal = registerSignal("endToEndDelay");
-    hopCountSignal =  registerSignal("hopCount");
+    hopCountSignal = registerSignal("hopCount");
     sourceAddressSignal = registerSignal("sourceAddress");
 
     pkCounter = 0;
-    WATCH(pkCounter); // always put watches in initialize(), NEVER in handleMessage()
+    WATCH(pkCounter);  // always put watches in initialize(), NEVER in handleMessage()
     startStopBurst = new cMessage("startStopBurst");
     sendMessage = new cMessage("sendMessage");
 
@@ -121,11 +119,10 @@ void BurstyApp::handleMessage(cMessage *msg)
 void BurstyApp::processTimer(cMessage *msg)
 {
     simtime_t d;
-    FSM_Switch(fsm)
-    {
+    FSM_Switch(fsm) {
         case FSM_Exit(INIT):
             // transition to SLEEP state
-            FSM_Goto(fsm,SLEEP);
+            FSM_Goto(fsm, SLEEP);
             break;
 
         case FSM_Enter(SLEEP):
@@ -136,7 +133,7 @@ void BurstyApp::processTimer(cMessage *msg)
             // display message, restore normal icon color
             EV << "sleeping for " << d << "s\n";
             bubble("burst ended, sleeping");
-            getDisplayString().setTagArg("i",1,"");
+            getDisplayString().setTagArg("i", 1, "");
             break;
 
         case FSM_Exit(SLEEP):
@@ -147,12 +144,12 @@ void BurstyApp::processTimer(cMessage *msg)
             // display message, turn icon yellow
             EV << "starting burst of duration " << d << "s\n";
             bubble("burst started");
-            getDisplayString().setTagArg("i",1,"yellow");
+            getDisplayString().setTagArg("i", 1, "yellow");
 
             // transition to ACTIVE state:
-            if (msg!=startStopBurst)
+            if (msg != startStopBurst)
                 throw cRuntimeError("invalid event in state ACTIVE");
-            FSM_Goto(fsm,ACTIVE);
+            FSM_Goto(fsm, ACTIVE);
             break;
 
         case FSM_Enter(ACTIVE):
@@ -164,22 +161,23 @@ void BurstyApp::processTimer(cMessage *msg)
 
         case FSM_Exit(ACTIVE):
             // transition to either SEND or SLEEP
-            if (msg==sendMessage) {
-                FSM_Goto(fsm,SEND);
-            } else if (msg==startStopBurst) {
+            if (msg == sendMessage) {
+                FSM_Goto(fsm, SEND);
+            }
+            else if (msg == startStopBurst) {
                 cancelEvent(sendMessage);
-                FSM_Goto(fsm,SLEEP);
-            } else
+                FSM_Goto(fsm, SLEEP);
+            }
+            else
                 throw cRuntimeError("invalid event in state ACTIVE");
             break;
 
-        case FSM_Exit(SEND):
-        {
+        case FSM_Exit(SEND): {
             // send out a packet
             generatePacket();
 
             // return to ACTIVE
-            FSM_Goto(fsm,ACTIVE);
+            FSM_Goto(fsm, ACTIVE);
             break;
         }
     }
@@ -191,14 +189,14 @@ void BurstyApp::generatePacket()
     int destAddress = destAddresses[intuniform(0, destAddresses.size()-1)];
 
     char pkname[40];
-    sprintf(pkname,"pk-%d-to-%d-#%d", myAddress, destAddress, pkCounter++);
+    sprintf(pkname, "pk-%d-to-%d-#%d", myAddress, destAddress, pkCounter++);
     EV << "generating packet " << pkname << endl;
 
     Packet *pk = new Packet(pkname);
     pk->setByteLength(packetLengthBytes->longValue());
     pk->setSrcAddr(myAddress);
     pk->setDestAddr(destAddress);
-    send(pk,"out");
+    send(pk, "out");
 }
 
 void BurstyApp::processPacket(Packet *pk)

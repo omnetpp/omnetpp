@@ -17,7 +17,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Generates traffic for the network.
  */
@@ -50,7 +49,6 @@ class App : public cSimpleModule
 
 Define_Module(App);
 
-
 App::App()
 {
     generatePacket = nullptr;
@@ -74,7 +72,7 @@ void App::initialize()
     const char *destAddressesPar = par("destAddresses");
     cStringTokenizer tokenizer(destAddressesPar);
     const char *token;
-    while ((token = tokenizer.nextToken())!=nullptr)
+    while ((token = tokenizer.nextToken()) != nullptr)
         destAddresses.push_back(atoi(token));
 
     if (destAddresses.size() == 0)
@@ -84,32 +82,31 @@ void App::initialize()
     scheduleAt(sendIATime->doubleValue(), generatePacket);
 
     endToEndDelaySignal = registerSignal("endToEndDelay");
-    hopCountSignal =  registerSignal("hopCount");
+    hopCountSignal = registerSignal("hopCount");
     sourceAddressSignal = registerSignal("sourceAddress");
 }
 
 void App::handleMessage(cMessage *msg)
 {
-    if (msg == generatePacket)
-    {
+    if (msg == generatePacket) {
         // Sending packet
         int destAddress = destAddresses[intuniform(0, destAddresses.size()-1)];
 
         char pkname[40];
-        sprintf(pkname,"pk-%d-to-%d-#%ld", myAddress, destAddress, pkCounter++);
+        sprintf(pkname, "pk-%d-to-%d-#%ld", myAddress, destAddress, pkCounter++);
         EV << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
         pk->setByteLength(packetLengthBytes->longValue());
         pk->setSrcAddr(myAddress);
         pk->setDestAddr(destAddress);
-        send(pk,"out");
+        send(pk, "out");
 
         scheduleAt(simTime() + sendIATime->doubleValue(), generatePacket);
-        if (hasGUI()) getParentModule()->bubble("Generating packet...");
+        if (hasGUI())
+            getParentModule()->bubble("Generating packet...");
     }
-    else
-    {
+    else {
         // Handle incoming packet
         Packet *pk = check_and_cast<Packet *>(msg);
         EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
@@ -118,9 +115,8 @@ void App::handleMessage(cMessage *msg)
         emit(sourceAddressSignal, pk->getSrcAddr());
         delete pk;
 
-        if (hasGUI())
-        {
-            getParentModule()->getDisplayString().setTagArg("i",1,"green");
+        if (hasGUI()) {
+            getParentModule()->getDisplayString().setTagArg("i", 1, "green");
             getParentModule()->bubble("Arrived!");
         }
     }

@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 #include "KmlHttpServer.h"
 #include "KmlUtil.h"
@@ -22,8 +21,8 @@ class MobileNode : public cSimpleModule, public IKmlFragmentProvider, public IMo
 {
   protected:
     // configuration
-    double playgroundLat,playgroundLon;  // NW corner of playground, in degrees
-    double playgroundHeight,playgroundWidth;  // in meters
+    double playgroundLat, playgroundLon;  // NW corner of playground, in degrees
+    double playgroundHeight, playgroundWidth;  // in meters
     double timeStep;
     unsigned int trailLength;
     std::string color;
@@ -34,10 +33,10 @@ class MobileNode : public cSimpleModule, public IKmlFragmentProvider, public IMo
     double speed;
 
     // node position and heading (speed is constant in this model)
-    double heading; // in degrees
-    double x, y; // in meters, relative to playground origin
+    double heading;  // in degrees
+    double x, y;  // in meters, relative to playground origin
 
-    std::vector<KmlUtil::Pt2D> path; // for visualization
+    std::vector<KmlUtil::Pt2D> path;  // for visualization
 
     // utility function: converts playground-relative y coordinate (meters) to latitude
     double y2lat(double y) { return KmlUtil::y2lat(playgroundLat, y); }
@@ -46,12 +45,12 @@ class MobileNode : public cSimpleModule, public IKmlFragmentProvider, public IMo
     double x2lon(double x) { return KmlUtil::x2lon(playgroundLat, playgroundLon, x); }
 
   public:
-     MobileNode();
-     virtual ~MobileNode();
+    MobileNode();
+    virtual ~MobileNode();
 
-     double getX() override { return x; }
-     double getY() override { return y; }
-     double getTxRange() override { return txRange; }
+    double getX() override { return x; }
+    double getY() override { return y; }
+    double getTxRange() override { return txRange; }
 
   protected:
     virtual void initialize() override;
@@ -92,11 +91,10 @@ void MobileNode::initialize()
     txRange = par("txRange");
 
     color = par("color").stringValue();
-    if (color.empty())
-    {
+    if (color.empty()) {
         // pick a color with a random hue
         char buf[16];
-        double red,green,blue;
+        double red, green, blue;
         KmlUtil::hsbToRgb(dblrand(), 1.0, 1.0, red, green, blue);
         sprintf(buf, "%2.2x%2.2x%2.2x", int(blue*255), int(green*255), int(red*255));
         color = buf;
@@ -130,11 +128,11 @@ void MobileNode::handleMessage(cMessage *msg)
 
     // store the position to be able to create a trail
     if (trailLength > 0)
-        path.push_back(KmlUtil::Pt2D(x2lon(x),y2lat(y)));
+        path.push_back(KmlUtil::Pt2D(x2lon(x), y2lat(y)));
 
     // Trail is at max length. Remove the oldest point to keep it at "trailLength"
     // note: this is not very efficient because entire vector is shifted down; should use circular buffer
-    if (path.size () > trailLength)
+    if (path.size() > trailLength)
         path.erase(path.begin());
 
     getDisplayString().setTagArg("p", 0, x);

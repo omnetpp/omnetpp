@@ -15,8 +15,7 @@
 #include "HttpServer.h"
 #include "HttpMsg_m.h"
 
-
-Define_Module( HTTPServer );
+Define_Module(HTTPServer);
 
 void HTTPServer::initialize()
 {
@@ -46,31 +45,28 @@ void HTTPServer::endService(cMessage *msg)
     send(msg, "g$o");
 }
 
-
 std::string HTTPServer::processHTTPCommand(const char *httpReqHeader)
 {
     // parse header. first line should be: GET uri HTTP/1.1
     std::string header(httpReqHeader);
     std::string::size_type pos = header.find("\r\n");
-    if (pos==std::string::npos)
-    {
+    if (pos == std::string::npos) {
         EV << "Bad HTTP request\n";
         return std::string("Bad request 400\r\n");
     }
 
-    std::string cmd(header,0,pos);
+    std::string cmd(header, 0, pos);
     EV << "Received: " << cmd << "\n";
 
     // we only accept GET
-    if (cmd.length()<4 || cmd.compare(0,4,"GET "))
-    {
+    if (cmd.length() < 4 || cmd.compare(0, 4, "GET ")) {
         EV << "Wrong HTTP verb, only GET is supported\n";
         return std::string("501 Not Implemented\r\n");
     }
 
     // parse URI and get corresponding content
-    pos = cmd.find(" ",4);
-    std::string uri(cmd,4,pos-4);
+    pos = cmd.find(" ", 4);
+    std::string uri(cmd, 4, pos-4);
 
     std::string content = getContentFor(uri.c_str());
 
@@ -89,34 +85,35 @@ std::string HTTPServer::getContentFor(const char *uri)
 {
     // try to find in cache
     StringMap::iterator it = htdocs.find(uri);
-    if (it!=htdocs.end())
+    if (it != htdocs.end())
         return it->second;
 
     // not in cache -- load and cache it
-    std::string fname = std::string("htdocs/")+(strcmp(uri,"/")==0 ? "index.html" : uri);
+    std::string fname = std::string("htdocs/")+(strcmp(uri, "/") == 0 ? "index.html" : uri);
 #ifdef _MSC_VER
-    for (unsigned int i=0; i<fname.length(); i++)
-        if (fname.at(i)=='/')
+    for (unsigned int i = 0; i < fname.length(); i++)
+        if (fname.at(i) == '/')
             fname.at(i) = '\\';
+
 #endif
 
     std::ifstream file(fname.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
-    if (file.fail())
-    {
+    if (file.fail()) {
         std::string content = "<html><body><h3>404 Not found</h3></body></html>";
         htdocs[uri] = content;
         return content;
     }
 
     long size = file.tellg();
-    file.seekg (0, std::ios::beg);
-    char *buffer = new char [size];
-    file.read (buffer, size);
+    file.seekg(0, std::ios::beg);
+    char *buffer = new char[size];
+    file.read(buffer, size);
     file.close();
     std::string content(buffer, size);
-    delete [] buffer;
+    delete[] buffer;
 
     EV << "URI=" << uri << " ---> " << content << "\n";
     htdocs[uri] = content;
     return content;
 }
+

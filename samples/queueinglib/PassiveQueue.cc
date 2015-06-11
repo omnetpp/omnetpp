@@ -47,25 +47,23 @@ void PassiveQueue::handleMessage(cMessage *msg)
     job->setTimestamp();
 
     // check for container capacity
-    if (capacity >=0 && queue.length() >= capacity)
-    {
+    if (capacity >= 0 && queue.length() >= capacity) {
         EV << "Queue full! Job dropped.\n";
-        if (hasGUI()) bubble("Dropped!");
+        if (hasGUI())
+            bubble("Dropped!");
         emit(droppedSignal, 1);
         delete msg;
         return;
     }
 
     int k = selectionStrategy->select();
-    if (k < 0)
-    {
+    if (k < 0) {
         // enqueue if no idle server found
         queue.insert(job);
         emit(queueLengthSignal, length());
         job->setQueueCount(job->getQueueCount() + 1);
     }
-    else if (length() == 0)
-    {
+    else if (length() == 0) {
         // send through without queueing
         send(job, "out", k);
     }
@@ -74,7 +72,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
 
     // change the icon color
     if (hasGUI())
-        getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
+        getDisplayString().setTagArg("i", 1, queue.empty() ? "" : "cyan3");
 }
 
 int PassiveQueue::length()
@@ -89,12 +87,10 @@ void PassiveQueue::request(int gateIndex)
     ASSERT(!queue.empty());
 
     Job *job;
-    if (fifo)
-    {
+    if (fifo) {
         job = (Job *)queue.pop();
     }
-    else
-    {
+    else {
         job = (Job *)queue.back();
         // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);
@@ -109,7 +105,7 @@ void PassiveQueue::request(int gateIndex)
     send(job, "out", gateIndex);
 
     if (hasGUI())
-        getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
+        getDisplayString().setTagArg("i", 1, queue.empty() ? "" : "cyan");
 }
 
 }; //namespace

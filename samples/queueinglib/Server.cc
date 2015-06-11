@@ -44,28 +44,26 @@ void Server::initialize()
 
 void Server::handleMessage(cMessage *msg)
 {
-    if (msg==endServiceMsg)
-    {
-        ASSERT(jobServiced!=nullptr);
+    if (msg == endServiceMsg) {
+        ASSERT(jobServiced != nullptr);
         simtime_t d = simTime() - endServiceMsg->getSendingTime();
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = nullptr;
         emit(busySignal, false);
 
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"");
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "");
 
         // examine all input queues, and request a new job from a non empty queue
         int k = selectionStrategy->select();
-        if (k >= 0)
-        {
+        if (k >= 0) {
             EV << "requesting job from queue " << k << endl;
             cGate *gate = selectionStrategy->selectableGate(k);
             check_and_cast<IPassiveQueue *>(gate->getOwnerModule())->request(gate->getIndex());
         }
     }
-    else
-    {
+    else {
         if (jobServiced)
             throw cRuntimeError("job arrived while already servicing one");
 
@@ -74,7 +72,8 @@ void Server::handleMessage(cMessage *msg)
         scheduleAt(simTime()+serviceTime, endServiceMsg);
         emit(busySignal, true);
 
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"cyan");
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "cyan");
     }
 }
 

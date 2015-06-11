@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "AbstractFifo.h"
 
 namespace fifo {
@@ -37,36 +36,31 @@ void AbstractFifo::initialize()
 
 void AbstractFifo::handleMessage(cMessage *msg)
 {
-    if (msg==endServiceMsg)
-    {
-        endService( msgServiced );
-        if (queue.empty())
-        {
+    if (msg == endServiceMsg) {
+        endService(msgServiced);
+        if (queue.empty()) {
             msgServiced = nullptr;
             emit(busySignal, false);
         }
-        else
-        {
-            msgServiced = (cMessage *) queue.pop();
+        else {
+            msgServiced = (cMessage *)queue.pop();
             emit(qlenSignal, queue.length());
             emit(queueingTimeSignal, simTime() - msgServiced->getTimestamp());
-            simtime_t serviceTime = startService( msgServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+            simtime_t serviceTime = startService(msgServiced);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
     }
-    else if (!msgServiced)
-    {
-        arrival( msg );
+    else if (!msgServiced) {
+        arrival(msg);
         msgServiced = msg;
         emit(queueingTimeSignal, SIMTIME_ZERO);
-        simtime_t serviceTime = startService( msgServiced );
-        scheduleAt( simTime()+serviceTime, endServiceMsg );
+        simtime_t serviceTime = startService(msgServiced);
+        scheduleAt(simTime()+serviceTime, endServiceMsg);
         emit(busySignal, true);
     }
-    else
-    {
-        arrival( msg );
-        queue.insert( msg );
+    else {
+        arrival(msg);
+        queue.insert(msg);
         msg->setTimestamp();
         emit(qlenSignal, queue.length());
     }

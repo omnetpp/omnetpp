@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "AbstractFifo.h"
 
 namespace fifo {
@@ -31,32 +30,26 @@ void AbstractFifo::initialize()
 
 void AbstractFifo::handleMessage(cMessage *msg)
 {
-    if (msg==endServiceMsg)
-    {
-        endService( msgServiced );
-        if (queue.empty())
-        {
+    if (msg == endServiceMsg) {
+        endService(msgServiced);
+        if (queue.empty()) {
             msgServiced = nullptr;
         }
-        else
-        {
-            msgServiced = (cMessage *) queue.pop();
-            simtime_t serviceTime = startService( msgServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+        else {
+            msgServiced = (cMessage *)queue.pop();
+            simtime_t serviceTime = startService(msgServiced);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
     }
-    else if (!msgServiced)
-    {
-        arrival( msg );
+    else if (!msgServiced) {
+        arrival(msg);
         msgServiced = msg;
-        simtime_t serviceTime = startService( msgServiced );
-        scheduleAt( simTime()+serviceTime, endServiceMsg );
-
+        simtime_t serviceTime = startService(msgServiced);
+        scheduleAt(simTime()+serviceTime, endServiceMsg);
     }
-    else
-    {
-        arrival( msg );
-        queue.insert( msg );
+    else {
+        arrival(msg);
+        queue.insert(msg);
     }
 }
 

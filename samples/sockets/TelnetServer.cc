@@ -7,11 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <ctype.h>
 #include "TelnetServer.h"
 #include "TelnetPkt_m.h"
-
 
 Define_Module(TelnetServer);
 

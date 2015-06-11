@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "Fifo.h"
 
 namespace fifo {
@@ -23,7 +22,7 @@ simtime_t Fifo::startService(cMessage *msg)
 void Fifo::endService(cMessage *msg)
 {
     EV << "Completed service of " << msg->getName() << endl;
-    send( msg, "out" );
+    send(msg, "out");
 }
 
 }; //namespace

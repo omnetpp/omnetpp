@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 
 USING_NAMESPACE
@@ -23,8 +22,8 @@ class Source : public cSimpleModule
     cMessage *sendMessageEvent;
 
   public:
-     Source();
-     virtual ~Source();
+    Source();
+    virtual ~Source();
 
   protected:
     virtual void initialize() override;
@@ -51,7 +50,7 @@ void Source::initialize()
 
 void Source::handleMessage(cMessage *msg)
 {
-    ASSERT(msg==sendMessageEvent);
+    ASSERT(msg == sendMessageEvent);
 
     cMessage *job = new cMessage("job");
     send(job, "out");

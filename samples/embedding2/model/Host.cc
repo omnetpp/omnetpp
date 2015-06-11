@@ -7,25 +7,20 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include "Host.h"
 
 namespace aloha {
-
 Define_Module(Host);
-
 
 Host::Host()
 {
     endTxEvent = nullptr;
 }
 
-
 Host::~Host()
 {
     cancelAndDelete(endTxEvent);
 }
-
 
 void Host::initialize()
 {
@@ -39,7 +34,7 @@ void Host::initialize()
     pkLenBits = &par("pkLenBits");
 
     slotTime = par("slotTime");
-    isSlotted = slotTime>0;
+    isSlotted = slotTime > 0;
     WATCH(slotTime);
     WATCH(isSlotted);
 
@@ -50,30 +45,27 @@ void Host::initialize()
     WATCH(pkCounter);
 
     if (hasGUI())
-        getDisplayString().setTagArg("t",2,"#808000");
+        getDisplayString().setTagArg("t", 2, "#808000");
 
     scheduleAt(getNextTransmissionTime(), endTxEvent);
 }
 
-
 void Host::handleMessage(cMessage *msg)
 {
-    ASSERT(msg==endTxEvent);
+    ASSERT(msg == endTxEvent);
 
-    if (state==IDLE)
-    {
+    if (state == IDLE) {
         // generate packet and schedule timer when it ends
         char pkname[40];
-        sprintf(pkname,"pk-%d-#%d", getId(), pkCounter++);
+        sprintf(pkname, "pk-%d-#%d", getId(), pkCounter++);
         EV << "generating packet " << pkname << endl;
 
         state = TRANSMIT;
 
         // update network graphics
-        if (hasGUI())
-        {
-            getDisplayString().setTagArg("i",1,"yellow");
-            getDisplayString().setTagArg("t",0,"TRANSMIT");
+        if (hasGUI()) {
+            getDisplayString().setTagArg("i", 1, "yellow");
+            getDisplayString().setTagArg("t", 0, "TRANSMIT");
         }
 
         cPacket *pk = new cPacket(pkname);
@@ -83,8 +75,7 @@ void Host::handleMessage(cMessage *msg)
 
         scheduleAt(simTime()+duration, endTxEvent);
     }
-    else if (state==TRANSMIT)
-    {
+    else if (state == TRANSMIT) {
         // endTxEvent indicates end of transmission
         state = IDLE;
 
@@ -92,14 +83,12 @@ void Host::handleMessage(cMessage *msg)
         scheduleAt(getNextTransmissionTime(), endTxEvent);
 
         // update network graphics
-        if (hasGUI())
-        {
-            getDisplayString().setTagArg("i",1,"");
-            getDisplayString().setTagArg("t",0,"");
+        if (hasGUI()) {
+            getDisplayString().setTagArg("i", 1, "");
+            getDisplayString().setTagArg("t", 0, "");
         }
     }
-    else
-    {
+    else {
         throw cRuntimeError("invalid state");
     }
 }

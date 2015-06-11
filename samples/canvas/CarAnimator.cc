@@ -12,7 +12,7 @@
 USING_NAMESPACE
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI    3.14159265358979323846
 #endif
 
 typedef cFigure::Point Point;
@@ -52,12 +52,12 @@ void CarAnimator::initialize()
 
     cCanvas *canvas = getParentModule()->getCanvas();
 
-    road = check_and_cast<cPolygonFigure*>(canvas->getFigure("road"));
-    trail = check_and_cast<cPolylineFigure*>(canvas->getFigure("trail"));
-    car = check_and_cast<cImageFigure*>(canvas->getFigure("car"));
-    antenna = check_and_cast<cFigure*>(canvas->getFigureByPath("car.antenna"));
-    distanceDisplay = check_and_cast<cTextFigure*>(canvas->getFigureByPath("status.distance"));
-    headingDisplay = check_and_cast<cTextFigure*>(canvas->getFigureByPath("status.heading"));
+    road = check_and_cast<cPolygonFigure *>(canvas->getFigure("road"));
+    trail = check_and_cast<cPolylineFigure *>(canvas->getFigure("trail"));
+    car = check_and_cast<cImageFigure *>(canvas->getFigure("car"));
+    antenna = check_and_cast<cFigure *>(canvas->getFigureByPath("car.antenna"));
+    distanceDisplay = check_and_cast<cTextFigure *>(canvas->getFigureByPath("status.distance"));
+    headingDisplay = check_and_cast<cTextFigure *>(canvas->getFigureByPath("status.heading"));
 
     loc = road->getPoint(targetPointIndex);
 
@@ -106,8 +106,10 @@ void CarAnimator::handleMessage(cMessage *msg)
 
     double targetDirection = atan2(vectorToTarget.y, vectorToTarget.x);
     double diff = targetDirection - heading;
-    while (diff < -M_PI)  diff += 2*M_PI;
-    while (diff > M_PI)  diff -= 2*M_PI;
+    while (diff < -M_PI)
+        diff += 2*M_PI;
+    while (diff > M_PI)
+        diff -= 2*M_PI;
 
     angularSpeed = diff / 30;
 
@@ -122,5 +124,4 @@ void CarAnimator::handleMessage(cMessage *msg)
 
     scheduleAt(simTime() + timeStep, msg);
 }
-
 

@@ -48,70 +48,63 @@ void ResourceBasedQueue::initialize()
     const char *resourceName = par("resourceModuleName");
     cModule *tmpModule = getParentModule()->getModuleByPath(resourceName);
     if (strlen(resourceName) > 0)
-        resourcePool = check_and_cast<IResourcePool*>(tmpModule);
+        resourcePool = check_and_cast<IResourcePool *>(tmpModule);
 }
 
 void ResourceBasedQueue::handleMessage(cMessage *msg)
 {
-    if (msg==endServiceMsg)
-    {
-        endService( jobServiced );
-        if (!queue.empty() && allocateResource(peek()))
-        {
+    if (msg == endServiceMsg) {
+        endService(jobServiced);
+        if (!queue.empty() && allocateResource(peek())) {
             jobServiced = getFromQueue();
             emit(queueLengthSignal, length());
-            simtime_t serviceTime = startService( jobServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+            simtime_t serviceTime = startService(jobServiced);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
-        else
-        {
+        else {
             jobServiced = nullptr;
             emit(busySignal, false);
         }
     }
-    else
-    {
+    else {
         Job *job = check_and_cast<Job *>(msg);
 
-        arrival( job );
+        arrival(job);
 
-        if (!jobServiced && queue.isEmpty() && allocateResource(job))
-        {
+        if (!jobServiced && queue.isEmpty() && allocateResource(job)) {
             // processor was idle and the allocation is successful
             jobServiced = job;
             emit(busySignal, true);
-            simtime_t serviceTime = startService( jobServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+            simtime_t serviceTime = startService(jobServiced);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
-        else
-        {
+        else {
             // check for container capacity
-            if (capacity >=0 && queue.length() >= capacity)
-            {
+            if (capacity >= 0 && queue.length() >= capacity) {
                 EV << "Capacity full! Job dropped.\n";
-                if (hasGUI()) bubble("Dropped!");
+                if (hasGUI())
+                    bubble("Dropped!");
                 emit(droppedSignal, 1);
                 delete job;
                 return;
             }
-            queue.insert( job );
+            queue.insert(job);
             emit(queueLengthSignal, length());
             job->setQueueCount(job->getQueueCount() + 1);
         }
     }
 
-    if (hasGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
+    if (hasGUI())
+        getDisplayString().setTagArg("i", 1, !jobServiced ? "" : "cyan3");
 }
 
 Job *ResourceBasedQueue::getFromQueue()
 {
     Job *job;
-    if (fifo)
-    {
+    if (fifo) {
         job = (Job *)queue.pop();
     }
-    else
-    {
+    else {
         job = (Job *)queue.back();
         // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);
@@ -171,7 +164,8 @@ void ResourceBasedQueue::releaseResource()
     }
 }
 
-bool ResourceBasedQueue::isResourceAllocated() {
+bool ResourceBasedQueue::isResourceAllocated()
+{
     return resourceAllocated || resourcePool == nullptr;
 }
 
@@ -186,13 +180,12 @@ void ResourceBasedQueue::resourceGranted(IResourcePool *provider)
     ASSERT2(!jobServiced && !queue.empty(), "Resource granted while the node is busy or the queue is empty");
     resourceAllocated = true;
     // start servicing if the processor is idle and the queue is not empty
-    if (!jobServiced && !queue.empty())
-    {
+    if (!jobServiced && !queue.empty()) {
         jobServiced = getFromQueue();
         emit(queueLengthSignal, length());
         emit(busySignal, true);
-        simtime_t serviceTime = startService( jobServiced );
-        scheduleAt( simTime()+serviceTime, endServiceMsg );
+        simtime_t serviceTime = startService(jobServiced);
+        scheduleAt(simTime()+serviceTime, endServiceMsg);
     }
 }
 

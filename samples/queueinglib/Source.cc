@@ -12,7 +12,6 @@
 
 namespace queueing {
 
-
 void SourceBase::initialize()
 {
     createdSignal = registerSignal("created");
@@ -57,16 +56,14 @@ void Source::handleMessage(cMessage *msg)
 {
     ASSERT(msg->isSelfMessage());
 
-    if ((numJobs < 0 || numJobs > jobCounter) && (stopTime < 0 || stopTime > simTime()))
-    {
+    if ((numJobs < 0 || numJobs > jobCounter) && (stopTime < 0 || stopTime > simTime())) {
         // reschedule the timer for the next message
         scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg);
 
         Job *job = createJob();
         send(job, "out");
     }
-    else
-    {
+    else {
         // finished
         delete msg;
     }
@@ -89,8 +86,7 @@ void SourceOnce::handleMessage(cMessage *msg)
     delete msg;
 
     int n = par("numJobs");
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         Job *job = createJob();
         send(job, "out");
     }

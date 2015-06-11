@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __HTTPSERVER_H
 #define __HTTPSERVER_H
 
@@ -33,6 +32,4 @@ class HTTPServer : public QueueBase
 };
 
 #endif
-
-
 

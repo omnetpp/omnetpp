@@ -15,7 +15,7 @@
 
 USING_NAMESPACE
 
-#define STACKSIZE 16384
+#define STACKSIZE    16384
 
 /**
  * Packet generator; see NED file for more info.

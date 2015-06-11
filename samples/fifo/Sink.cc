@@ -26,7 +26,7 @@ class Sink : public cSimpleModule
     virtual void handleMessage(cMessage *msg) override;
 };
 
-Define_Module( Sink );
+Define_Module(Sink);
 
 void Sink::initialize()
 {

@@ -26,7 +26,6 @@ class IKmlFragmentProvider
     virtual std::string getKmlFragment() = 0;
 };
 
-
 /**
  * Answers HTTP GET requests that arrive to the built-in web server
  * of the simulation, and returns KML or HTML documents.
@@ -44,18 +43,18 @@ class KmlHttpServer : public cSimpleModule
     char recvBuffer[4000];
     int numRecvBytes;
 
-    std::vector<IKmlFragmentProvider*> providerList;
+    std::vector<IKmlFragmentProvider *> providerList;
 
   protected:
-    int findKmlFragmentProvider(IKmlFragmentProvider* p);
+    int findKmlFragmentProvider(IKmlFragmentProvider *p);
 
   public:
     KmlHttpServer();
     virtual ~KmlHttpServer();
 
     static KmlHttpServer *getInstance();
-    virtual void addKmlFragmentProvider(IKmlFragmentProvider* p);
-    virtual void removeKmlFragmentProvider(IKmlFragmentProvider* p);
+    virtual void addKmlFragmentProvider(IKmlFragmentProvider *p);
+    virtual void removeKmlFragmentProvider(IKmlFragmentProvider *p);
 
   protected:
     virtual void initialize() override;

@@ -13,7 +13,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Point-to-point interface module. While one frame is transmitted,
  * additional frames get queued up; see NED file for more info.
@@ -78,7 +77,8 @@ void L2Queue::initialize()
 
 void L2Queue::startTransmitting(cMessage *msg)
 {
-    if (hasGUI()) displayStatus(true);
+    if (hasGUI())
+        displayStatus(true);
 
     EV << "Starting transmission of " << msg << endl;
     int64_t numBytes = check_and_cast<cPacket *>(msg)->getByteLength();
@@ -93,50 +93,42 @@ void L2Queue::startTransmitting(cMessage *msg)
 
 void L2Queue::handleMessage(cMessage *msg)
 {
-    if (msg==endTransmissionEvent)
-    {
+    if (msg == endTransmissionEvent) {
         // Transmission finished, we can start next one.
         EV << "Transmission finished.\n";
-        if (hasGUI()) displayStatus(false);
-        if (queue.empty())
-        {
+        if (hasGUI())
+            displayStatus(false);
+        if (queue.empty()) {
             emit(busySignal, false);
         }
-        else
-        {
-            msg = (cMessage *) queue.pop();
+        else {
+            msg = (cMessage *)queue.pop();
             emit(queueingTimeSignal, simTime() - msg->getTimestamp());
             emit(qlenSignal, queue.length());
             startTransmitting(msg);
         }
     }
-    else if (msg->arrivedOn("line$i"))
-    {
+    else if (msg->arrivedOn("line$i")) {
         // pass up
         emit(rxBytesSignal, (long)check_and_cast<cPacket *>(msg)->getByteLength());
-        send(msg,"out");
+        send(msg, "out");
     }
-    else // arrived on gate "in"
-    {
-        if (endTransmissionEvent->isScheduled())
-        {
+    else {  // arrived on gate "in"
+        if (endTransmissionEvent->isScheduled()) {
             // We are currently busy, so just queue up the packet.
-            if (frameCapacity && queue.length()>=frameCapacity)
-            {
+            if (frameCapacity && queue.length() >= frameCapacity) {
                 EV << "Received " << msg << " but transmitter busy and queue full: discarding\n";
                 emit(dropSignal, (long)check_and_cast<cPacket *>(msg)->getByteLength());
                 delete msg;
             }
-            else
-            {
+            else {
                 EV << "Received " << msg << " but transmitter busy: queueing up\n";
                 msg->setTimestamp();
                 queue.insert(msg);
                 emit(qlenSignal, queue.length());
             }
         }
-        else
-        {
+        else {
             // We are idle, so we can start transmitting right away.
             EV << "Received " << msg << endl;
             emit(queueingTimeSignal, SIMTIME_ZERO);
@@ -148,7 +140,7 @@ void L2Queue::handleMessage(cMessage *msg)
 
 void L2Queue::displayStatus(bool isBusy)
 {
-    getDisplayString().setTagArg("t",0, isBusy ? "transmitting" : "idle");
-    getDisplayString().setTagArg("i",1, isBusy ? (queue.length()>=3 ? "red" : "yellow") : "");
+    getDisplayString().setTagArg("t", 0, isBusy ? "transmitting" : "idle");
+    getDisplayString().setTagArg("i", 1, isBusy ? (queue.length() >= 3 ? "red" : "yellow") : "");
 }
 

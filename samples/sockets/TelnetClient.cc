@@ -12,7 +12,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Simple model of a Telnet client.
  */
@@ -42,13 +41,11 @@ void TelnetClient::initialize()
 
 void TelnetClient::handleMessage(cMessage *msg)
 {
-    if (msg->isSelfMessage())
-    {
+    if (msg->isSelfMessage()) {
         simulateUserTyping();
         scheduleAt(simTime()+par("sendIaTime").doubleValue(), msg);
     }
-    else
-    {
+    else {
         processEcho(check_and_cast<TelnetPkt *>(msg));
     }
 }
@@ -61,7 +58,7 @@ void TelnetClient::simulateUserTyping()
     telnetPkt->setDestAddress(srvAddr);
     telnetPkt->setSrcAddress(addr);
 
-    send(telnetPkt,"g$o");
+    send(telnetPkt, "g$o");
 }
 
 void TelnetClient::processEcho(TelnetPkt *telnetPkt)

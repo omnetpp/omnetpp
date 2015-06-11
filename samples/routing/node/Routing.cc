@@ -17,7 +17,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Demonstrates static routing, utilizing the cTopology class.
  */
@@ -26,7 +25,7 @@ class Routing : public cSimpleModule
   private:
     int myAddress;
 
-    typedef std::map<int,int> RoutingTable; // destaddr -> gateindex
+    typedef std::map<int, int> RoutingTable;  // destaddr -> gateindex
     RoutingTable rtable;
 
     simsignal_t dropSignal;
@@ -38,7 +37,6 @@ class Routing : public cSimpleModule
 };
 
 Define_Module(Routing);
-
 
 void Routing::initialize()
 {
@@ -63,12 +61,13 @@ void Routing::initialize()
     cTopology::Node *thisNode = topo->getNodeFor(getParentModule());
 
     // find and store next hops
-    for (int i=0; i<topo->getNumNodes(); i++)
-    {
-        if (topo->getNode(i)==thisNode) continue; // skip ourselves
+    for (int i = 0; i < topo->getNumNodes(); i++) {
+        if (topo->getNode(i) == thisNode)
+            continue;  // skip ourselves
         topo->calculateUnweightedSingleShortestPathsTo(topo->getNode(i));
 
-        if (thisNode->getNumPaths()==0) continue; // not connected
+        if (thisNode->getNumPaths() == 0)
+            continue;  // not connected
 
         cGate *parentModuleGate = thisNode->getPath(0)->getLocalGate();
         int gateIndex = parentModuleGate->getIndex();
@@ -84,17 +83,15 @@ void Routing::handleMessage(cMessage *msg)
     Packet *pk = check_and_cast<Packet *>(msg);
     int destAddr = pk->getDestAddr();
 
-    if (destAddr == myAddress)
-    {
+    if (destAddr == myAddress) {
         EV << "local delivery of packet " << pk->getName() << endl;
         send(pk, "localOut");
-        emit(outputIfSignal, -1); // -1: local
+        emit(outputIfSignal, -1);  // -1: local
         return;
     }
 
     RoutingTable::iterator it = rtable.find(destAddr);
-    if (it==rtable.end())
-    {
+    if (it == rtable.end()) {
         EV << "address " << destAddr << " unreachable, discarding packet " << pk->getName() << endl;
         emit(dropSignal, (long)pk->getByteLength());
         delete pk;

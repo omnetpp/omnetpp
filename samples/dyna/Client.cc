@@ -11,7 +11,7 @@
 
 USING_NAMESPACE
 
-#define STACKSIZE 16384
+#define STACKSIZE    16384
 
 /**
  * Client computer; see NED file for more info
@@ -23,7 +23,7 @@ class Client : public cSimpleModule
     virtual void activity() override;
 };
 
-Define_Module( Client );
+Define_Module(Client);
 
 void Client::activity()
 {
@@ -35,50 +35,52 @@ void Client::activity()
 
     DynaPacket *connReq, *connAck, *discReq, *discAck;
     DynaDataPacket *query, *answer;
-    int actNumQuery=0, i=0;
-    WATCH(actNumQuery); WATCH(i);
+    int actNumQuery = 0, i = 0;
+    WATCH(actNumQuery);
+    WATCH(i);
 
     // assign address: index of Switch's gate to which we are connected
     int ownAddr = gate("port$o")->getNextGate()->getIndex();
     int serverAddr = gate("port$o")->getNextGate()->size()-1;
     int serverprocId = 0;
-    WATCH(ownAddr); WATCH(serverAddr); WATCH(serverprocId);
+    WATCH(ownAddr);
+    WATCH(serverAddr);
+    WATCH(serverprocId);
 
-    for(;;)
-    {
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"");
+    for ( ; ; ) {
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "");
 
         // keep an interval between subsequent connections
-        wait( (double)connectionIaTime );
+        wait((double)connectionIaTime);
 
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"green");
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "green");
 
         // connection setup
         EV << "sending DYNA_CONN_REQ\n";
         connReq = new DynaPacket("DYNA_CONN_REQ", DYNA_CONN_REQ);
         connReq->setSrcAddress(ownAddr);
         connReq->setDestAddress(serverAddr);
-        send( connReq, "port$o" );
+        send(connReq, "port$o");
 
         EV << "waiting for DYNA_CONN_ACK\n";
-        connAck = (DynaPacket *) receive( timeout );
-        if (connAck==nullptr)
+        connAck = (DynaPacket *)receive(timeout);
+        if (connAck == nullptr)
             goto broken;
         serverprocId = connAck->getServerProcId();
         EV << "got DYNA_CONN_ACK, my server process is ID="
            << serverprocId << endl;
         delete connAck;
 
-        if (hasGUI())
-        {
-            getDisplayString().setTagArg("i",1,"gold");
+        if (hasGUI()) {
+            getDisplayString().setTagArg("i", 1, "gold");
             bubble("Connected!");
         }
 
         // communication
         actNumQuery = (long)numQuery;
-        for (i=0; i<actNumQuery; i++)
-        {
+        for (i = 0; i < actNumQuery; i++) {
             EV << "sending DATA(query)\n";
             query = new DynaDataPacket("DATA(query)", DYNA_DATA);
             query->setSrcAddress(ownAddr);
@@ -88,16 +90,17 @@ void Client::activity()
             send(query, "port$o");
 
             EV << "waiting for DATA(result)\n";
-            answer = (DynaDataPacket *) receive( timeout );
-            if (answer==nullptr)
-                 goto broken;
+            answer = (DynaDataPacket *)receive(timeout);
+            if (answer == nullptr)
+                goto broken;
             EV << "got DATA(result)\n";
             delete answer;
 
-            wait( (double)queryIaTime );
+            wait((double)queryIaTime);
         }
 
-        if (hasGUI()) getDisplayString().setTagArg("i",1,"blue");
+        if (hasGUI())
+            getDisplayString().setTagArg("i", 1, "blue");
 
         // connection teardown
         EV << "sending DYNA_DISC_REQ\n";
@@ -108,20 +111,22 @@ void Client::activity()
         send(discReq, "port$o");
 
         EV << "waiting for DYNA_DISC_ACK\n";
-        discAck = (DynaPacket *) receive( timeout );
-        if (discAck==nullptr)
+        discAck = (DynaPacket *)receive(timeout);
+        if (discAck == nullptr)
             goto broken;
         EV << "got DYNA_DISC_ACK\n";
         delete discAck;
 
-        if (hasGUI()) bubble("Disconnected!");
+        if (hasGUI())
+            bubble("Disconnected!");
 
         continue;
 
         // error handling
-    broken:
+      broken:
         EV << "Timeout, connection broken!\n";
-        if (hasGUI()) bubble("Connection broken!");
+        if (hasGUI())
+            bubble("Connection broken!");
     }
 }
 

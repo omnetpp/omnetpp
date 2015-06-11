@@ -43,64 +43,57 @@ void Queue::initialize()
 
 void Queue::handleMessage(cMessage *msg)
 {
-    if (msg==endServiceMsg)
-    {
-        endService( jobServiced );
-        if (queue.empty())
-        {
+    if (msg == endServiceMsg) {
+        endService(jobServiced);
+        if (queue.empty()) {
             jobServiced = nullptr;
             emit(busySignal, false);
         }
-        else
-        {
+        else {
             jobServiced = getFromQueue();
             emit(queueLengthSignal, length());
-            simtime_t serviceTime = startService( jobServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+            simtime_t serviceTime = startService(jobServiced);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
     }
-    else
-    {
+    else {
         Job *job = check_and_cast<Job *>(msg);
         arrival(job);
 
-        if (!jobServiced)
-        {
-        // processor was idle
+        if (!jobServiced) {
+            // processor was idle
             jobServiced = job;
             emit(busySignal, true);
-            simtime_t serviceTime = startService( jobServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
+            simtime_t serviceTime = startService(jobServiced);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
         }
-        else
-        {
+        else {
             // check for container capacity
-            if (capacity >=0 && queue.length() >= capacity)
-            {
+            if (capacity >= 0 && queue.length() >= capacity) {
                 EV << "Capacity full! Job dropped.\n";
-                if (hasGUI()) bubble("Dropped!");
+                if (hasGUI())
+                    bubble("Dropped!");
                 emit(droppedSignal, 1);
                 delete job;
                 return;
             }
-            queue.insert( job );
+            queue.insert(job);
             emit(queueLengthSignal, length());
             job->setQueueCount(job->getQueueCount() + 1);
         }
     }
 
-    if (hasGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
+    if (hasGUI())
+        getDisplayString().setTagArg("i", 1, !jobServiced ? "" : "cyan3");
 }
 
 Job *Queue::getFromQueue()
 {
     Job *job;
-    if (fifo)
-    {
+    if (fifo) {
         job = (Job *)queue.pop();
     }
-    else
-    {
+    else {
         job = (Job *)queue.back();
         // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);

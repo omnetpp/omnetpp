@@ -13,11 +13,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include <assert.h>
 
 #include "oppmysqlutils.h"
-
 
 Register_PerObjectConfigOption(CFGID_MYSQL_HOST,       "mysql-host",         KIND_NONE, CFG_STRING,   "\"\"",  "Hostname of mysql server");
 Register_PerObjectConfigOption(CFGID_MYSQL_USER,       "mysql-user",         KIND_NONE, CFG_STRING,   "\"\"",  "User name for mysql server");
@@ -39,9 +37,9 @@ void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *cfgobj
     std::string user = cfg->getAsString(cfgobj, CFGID_MYSQL_USER, nullptr);
     std::string passwd = cfg->getAsString(cfgobj, CFGID_MYSQL_PASSWD, nullptr);
     std::string db = cfg->getAsString(cfgobj, CFGID_MYSQL_DB, nullptr);
-    unsigned int port = (unsigned int) cfg->getAsInt(cfgobj, CFGID_MYSQL_PORT, 0);
+    unsigned int port = (unsigned int)cfg->getAsInt(cfgobj, CFGID_MYSQL_PORT, 0);
     std::string socket = cfg->getAsString(cfgobj, CFGID_MYSQL_SOCKET, nullptr);
-    unsigned int clientflag = (unsigned int) cfg->getAsInt(cfgobj, CFGID_MYSQL_CLIENTFLAG, 0);
+    unsigned int clientflag = (unsigned int)cfg->getAsInt(cfgobj, CFGID_MYSQL_CLIENTFLAG, 0);
     bool usepipe = cfg->getAsBool(cfgobj, CFGID_MYSQL_USE_PIPE, false);
     std::string optionsfile = cfg->getAsFilename(cfgobj, CFGID_MYSQL_OPT_FILE);
 
@@ -106,13 +104,12 @@ int opp_mysql_substitute(std::string& query, const char *substring, const char *
 
     int count = 0;
     int pos = 0;
-    while ((pos = query.find(substring,pos)) != -1)
-    {
+    while ((pos = query.find(substring, pos)) != -1) {
         query.replace(pos, strlen(substring), quotedvalue);
         pos += strlen(quotedvalue);
         count++;
     }
-    delete [] quotedvalue;
+    delete[] quotedvalue;
 
     if (count == 0)
         throw cRuntimeError("opp_mysql_substitute(): substring '%s' not found in '%s'", substring, query.c_str());
@@ -134,6 +131,7 @@ std::string opp_mysql_escape(MYSQL *mysql, const char *str)
     buf[0] = '\0';
     mysql_real_escape_string(mysql, buf, str, len);
     std::string ret = std::string(buf);
-    delete [] buf;
+    delete[] buf;
     return ret;
 }
+

@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #ifndef __ABSTRACTFIFO_H
 #define __ABSTRACTFIFO_H
 

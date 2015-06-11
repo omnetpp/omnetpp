@@ -22,15 +22,13 @@
 // NOTE: INSERT DELAYED is not supported on all engines, notably InnoDB.
 // It is best to create the tables with the ENGINE = MYISAM option.
 //
-#define SQL_INSERT_RUN     "INSERT INTO run(runnumber,network) VALUES(@runnumber@,'@network@')"
-#define SQL_INSERT_SCALAR  "INSERT DELAYED INTO scalar(runid,module,name,value) VALUES(?,?,?,?)"
-
+#define SQL_INSERT_RUN       "INSERT INTO run(runnumber,network) VALUES(@runnumber@,'@network@')"
+#define SQL_INSERT_SCALAR    "INSERT DELAYED INTO scalar(runid,module,name,value) VALUES(?,?,?,?)"
 
 Register_Class(cMySQLOutputScalarManager);
 
 Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME, "mysqloutputscalarmanager-connectionname", CFG_STRING, "\"mysql\"", "Object name of database connection parameters");
-Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", CFG_INT,  "10", "COMMIT every n INSERTs, default=10");
-
+Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", CFG_INT, "10", "COMMIT every n INSERTs, default=10");
 
 cMySQLOutputScalarManager::cMySQLOutputScalarManager()
 {
@@ -66,10 +64,10 @@ void cMySQLOutputScalarManager::openDB()
         throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
     ASSERT(mysql_stmt_param_count(insertScalarStmt) == sizeof(insScalarBind)/sizeof(MYSQL_BIND));
 
-    opp_mysql_bindLONG(  insScalarBind[0], runidBuf); // scalar.runid
-    opp_mysql_bindSTRING(insScalarBind[1], moduleBuf, sizeof(moduleBuf), moduleLength); // scalar.module
-    opp_mysql_bindSTRING(insScalarBind[2], nameBuf, sizeof(nameBuf), nameLength); // scalar.name
-    opp_mysql_bindDOUBLE(insScalarBind[3], valueBuf); // scalar.value
+    opp_mysql_bindLONG(insScalarBind[0], runidBuf);  // scalar.runid
+    opp_mysql_bindSTRING(insScalarBind[1], moduleBuf, sizeof(moduleBuf), moduleLength);  // scalar.module
+    opp_mysql_bindSTRING(insScalarBind[2], nameBuf, sizeof(nameBuf), nameLength);  // scalar.name
+    opp_mysql_bindDOUBLE(insScalarBind[3], valueBuf);  // scalar.value
 
     if (mysql_stmt_bind_param(insertScalarStmt, insScalarBind))
         throw cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
@@ -77,10 +75,12 @@ void cMySQLOutputScalarManager::openDB()
 
 void cMySQLOutputScalarManager::closeDB()
 {
-    if (insertScalarStmt) mysql_stmt_close(insertScalarStmt);
+    if (insertScalarStmt)
+        mysql_stmt_close(insertScalarStmt);
     insertScalarStmt = nullptr;
 
-    if (mysql) mysql_close(mysql);
+    if (mysql)
+        mysql_close(mysql);
     mysql = nullptr;
 }
 
@@ -102,8 +102,7 @@ void cMySQLOutputScalarManager::startRun()
 
 void cMySQLOutputScalarManager::endRun()
 {
-    if (mysql)
-    {
+    if (mysql) {
         commitDB();
         closeDB();
     }
@@ -111,8 +110,7 @@ void cMySQLOutputScalarManager::endRun()
 
 void cMySQLOutputScalarManager::insertRunIntoDB()
 {
-    if (!initialized)
-    {
+    if (!initialized) {
         // insert run into the database
         std::string insertRunStmt = SQL_INSERT_RUN;
         opp_mysql_substitute(insertRunStmt, "@runnumber@", getEnvir()->getConfigEx()->getActiveRunNumber(), mysql);
@@ -121,7 +119,7 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
             throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
         // query the automatic runid from the newly inserted row
-        runId = (long) mysql_insert_id(mysql);
+        runId = (long)mysql_insert_id(mysql);
 
         initialized = true;
     }
@@ -142,8 +140,7 @@ void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *
         throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
     // commit every once in a while
-    if (++insertCount == commitFreq)
-    {
+    if (++insertCount == commitFreq) {
         insertCount = 0;
         commitDB();
     }
@@ -158,5 +155,4 @@ void cMySQLOutputScalarManager::flush()
 {
     commitDB();
 }
-
 

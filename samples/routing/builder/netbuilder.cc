@@ -21,7 +21,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Builds a network dynamically, with the topology coming from a
  * text file.
@@ -36,7 +35,6 @@ class NetBuilder : public cSimpleModule
 };
 
 Define_Module(NetBuilder);
-
 
 void NetBuilder::initialize()
 {
@@ -58,14 +56,13 @@ void NetBuilder::handleMessage(cMessage *msg)
 void NetBuilder::connect(cGate *src, cGate *dest, double delay, double ber, double datarate)
 {
     cDatarateChannel *channel = nullptr;
-    if (delay>0 || ber>0 || datarate>0)
-    {
+    if (delay > 0 || ber > 0 || datarate > 0) {
         channel = cDatarateChannel::create("channel");
-        if (delay>0)
+        if (delay > 0)
             channel->setDelay(delay);
-        if (ber>0)
+        if (ber > 0)
             channel->setBitErrorRate(ber);
-        if (datarate>0)
+        if (datarate > 0)
             channel->setDatarate(datarate);
     }
     src->connectTo(dest, channel);
@@ -73,12 +70,11 @@ void NetBuilder::connect(cGate *src, cGate *dest, double delay, double ber, doub
 
 void NetBuilder::buildNetwork(cModule *parent)
 {
-    std::map<long,cModule *> nodeid2mod;
+    std::map<long, cModule *> nodeid2mod;
     std::string line;
 
     std::fstream nodesFile(par("nodesFile").stringValue(), std::ios::in);
-    while(getline(nodesFile, line, '\n'))
-    {
+    while (getline(nodesFile, line, '\n')) {
         if (line.empty() || line[0] == '#')
             continue;
 
@@ -105,8 +101,7 @@ void NetBuilder::buildNetwork(cModule *parent)
 
     // read and create connections
     std::fstream connectionsFile(par("connectionsFile").stringValue(), std::ios::in);
-    while(getline(connectionsFile, line, '\n'))
-    {
+    while (getline(connectionsFile, line, '\n')) {
         if (line.empty() || line[0] == '#')
             continue;
         std::vector<std::string> tokens = cStringTokenizer(line.c_str()).asVector();
@@ -116,9 +111,9 @@ void NetBuilder::buildNetwork(cModule *parent)
         // get fields from tokens
         long srcnodeid = atol(tokens[0].c_str());
         long destnodeid = atol(tokens[1].c_str());
-        double delay = tokens[2]!="-" ? atof(tokens[2].c_str()) : -1;
-        double error = tokens[3]!="-" ? atof(tokens[3].c_str()) : -1;
-        double datarate = tokens[4]!="-" ? atof(tokens[4].c_str()) : -1;
+        double delay = tokens[2] != "-" ? atof(tokens[2].c_str()) : -1;
+        double error = tokens[3] != "-" ? atof(tokens[3].c_str()) : -1;
+        double datarate = tokens[4] != "-" ? atof(tokens[4].c_str()) : -1;
 
         if (nodeid2mod.find(srcnodeid) == nodeid2mod.end())
             throw cRuntimeError("wrong line in connections file: node with id=%ld not found", srcnodeid);
@@ -137,25 +132,23 @@ void NetBuilder::buildNetwork(cModule *parent)
         connect(destOut, srcIn, delay, error, datarate);
     }
 
-    std::map<long,cModule *>::iterator it;
+    std::map<long, cModule *>::iterator it;
 
     // final touches: buildinside, initialize()
-    for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it)
-    {
+    for (it = nodeid2mod.begin(); it != nodeid2mod.end(); ++it) {
         cModule *mod = it->second;
         mod->buildInside();
     }
 
     // multi-stage init
     bool more = true;
-    for (int stage=0; more; stage++) {
+    for (int stage = 0; more; stage++) {
         more = false;
-        for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it) {
+        for (it = nodeid2mod.begin(); it != nodeid2mod.end(); ++it) {
             cModule *mod = it->second;
             if (mod->callInitialize(stage))
                 more = true;
         }
     }
 }
-
 

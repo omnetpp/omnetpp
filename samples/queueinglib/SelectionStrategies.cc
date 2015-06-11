@@ -30,13 +30,17 @@ SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule 
 
     if (strcmp(algName, "priority") == 0) {
         strategy = new PrioritySelectionStrategy(module, selectOnInGate);
-    } else if (strcmp(algName, "random") == 0) {
+    }
+    else if (strcmp(algName, "random") == 0) {
         strategy = new RandomSelectionStrategy(module, selectOnInGate);
-    } else if (strcmp(algName, "roundRobin") == 0) {
+    }
+    else if (strcmp(algName, "roundRobin") == 0) {
         strategy = new RoundRobinSelectionStrategy(module, selectOnInGate);
-    } else if (strcmp(algName, "shortestQueue") == 0) {
+    }
+    else if (strcmp(algName, "shortestQueue") == 0) {
         strategy = new ShortestQueueSelectionStrategy(module, selectOnInGate);
-    } else if (strcmp(algName, "longestQueue") == 0) {
+    }
+    else if (strcmp(algName, "longestQueue") == 0) {
         strategy = new LongestQueueSelectionStrategy(module, selectOnInGate);
     }
 
@@ -74,7 +78,7 @@ PrioritySelectionStrategy::PrioritySelectionStrategy(cSimpleModule *module, bool
 int PrioritySelectionStrategy::select()
 {
     // return the smallest selectable index
-    for (int i=0; i<gateSize; i++)
+    for (int i = 0; i < gateSize; i++)
         if (isSelectable(selectableGate(i)->getOwnerModule()))
             return i;
 
@@ -93,15 +97,16 @@ int RandomSelectionStrategy::select()
 {
     // return the smallest selectable index
     int noOfSelectables = 0;
-    for (int i=0; i<gateSize; i++)
+    for (int i = 0; i < gateSize; i++)
         if (isSelectable(selectableGate(i)->getOwnerModule()))
             noOfSelectables++;
 
     int rnd = hostModule->intuniform(1, noOfSelectables);
 
-    for (int i=0; i<gateSize; i++)
+    for (int i = 0; i < gateSize; i++)
         if (isSelectable(selectableGate(i)->getOwnerModule()) && (--rnd == 0))
             return i;
+
     return -1;
 }
 
@@ -116,8 +121,7 @@ RoundRobinSelectionStrategy::RoundRobinSelectionStrategy(cSimpleModule *module, 
 int RoundRobinSelectionStrategy::select()
 {
     // return the smallest selectable index
-    for (int i = 0; i<gateSize; ++i)
-    {
+    for (int i = 0; i < gateSize; ++i) {
         lastIndex = (lastIndex+1) % gateSize;
         if (isSelectable(selectableGate(lastIndex)->getOwnerModule()))
             return lastIndex;
@@ -137,14 +141,12 @@ ShortestQueueSelectionStrategy::ShortestQueueSelectionStrategy(cSimpleModule *mo
 int ShortestQueueSelectionStrategy::select()
 {
     // return the smallest selectable index
-    int result = -1;            // by default none of them is selectable
+    int result = -1;  // by default none of them is selectable
     int sizeMin = INT_MAX;
-    for (int i = 0; i<gateSize; ++i)
-    {
+    for (int i = 0; i < gateSize; ++i) {
         cModule *module = selectableGate(i)->getOwnerModule();
-        int length = (check_and_cast<IPassiveQueue *>(module))->length();;
-        if (isSelectable(module) && (length<sizeMin))
-        {
+        int length = (check_and_cast<IPassiveQueue *>(module))->length();
+        if (isSelectable(module) && (length < sizeMin)) {
             sizeMin = length;
             result = i;
         }
@@ -162,14 +164,12 @@ LongestQueueSelectionStrategy::LongestQueueSelectionStrategy(cSimpleModule *modu
 int LongestQueueSelectionStrategy::select()
 {
     // return the longest selectable queue
-    int result = -1;            // by default none of them is selectable
+    int result = -1;  // by default none of them is selectable
     int sizeMax = -1;
-    for (int i = 0; i<gateSize; ++i)
-    {
+    for (int i = 0; i < gateSize; ++i) {
         cModule *module = selectableGate(i)->getOwnerModule();
-        int length = (check_and_cast<IPassiveQueue *>(module))->length();;
-        if (isSelectable(module) && length>sizeMax)
-        {
+        int length = (check_and_cast<IPassiveQueue *>(module))->length();
+        if (isSelectable(module) && length > sizeMax) {
             sizeMax = length;
             result = i;
         }

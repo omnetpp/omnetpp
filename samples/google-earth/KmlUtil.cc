@@ -9,7 +9,6 @@
 
 #include "KmlUtil.h"
 
-
 std::string KmlUtil::folderHeader(const char *id, const char *name, const char *description)
 {
     std::stringstream out;
@@ -26,7 +25,7 @@ std::string KmlUtil::folderHeader(const char *id, const char *name, const char *
     return out.str();
 }
 
-std::string KmlUtil::placemark(const char *id, float lon, float lat,float alt, const char *name, const char *description)
+std::string KmlUtil::placemark(const char *id, float lon, float lat, float alt, const char *name, const char *description)
 {
     std::stringstream out;
     out.precision(8);
@@ -74,8 +73,7 @@ std::string KmlUtil::lines(const char *id, const std::vector<KmlUtil::Pt2D>& pts
     if (description)
         out << "  <description>" << description << "</description>\n";
     out << "  <MultiGeometry>\n";
-    for (int i=0; i<(int)pts.size()-1; i+=2)
-    {
+    for (int i = 0; i < (int)pts.size()-1; i += 2) {
         out << "    <LineString>\n";
         out << "      <extrude>false</extrude>\n";
         out << "      <tesselate>true</tesselate>\n";
@@ -112,7 +110,7 @@ std::string KmlUtil::lineString(const char *id, const std::vector<KmlUtil::Pt2D>
     out << "    <extrude>false</extrude>\n";
     out << "    <tesselate>true</tesselate>\n";
     out << "    <coordinates>";
-    for (int i=0; i<(int)pts.size(); i++)
+    for (int i = 0; i < (int)pts.size(); i++)
         out << pts[i].lon << "," << pts[i].lat << " ";
     out << "</coordinates>\n";
     out << "  </LineString>\n";
@@ -126,7 +124,7 @@ std::string KmlUtil::disk(const char *id, float lon, float lat, float r, const c
     static float x[N], y[N];
     static bool initialized = false;
     if (!initialized) {
-        for (int i=0; i<N; i++) {
+        for (int i = 0; i < N; i++) {
             x[i] = cos(i*M_PI*2/N);
             y[i] = sin(i*M_PI*2/N);
         }
@@ -158,7 +156,7 @@ std::string KmlUtil::disk(const char *id, float lon, float lat, float r, const c
     out << "    <outerBoundaryIs>\n";
     out << "      <LinearRing>\n";
     out << "        <coordinates>\n";
-    for (int i=0; i<N; i++) {
+    for (int i = 0; i < N; i++) {
         double lati = y2lat(lat, y[i]*r);
         double loni = x2lon(lati, lon, x[i]*r);
         out << loni << "," << lati << " ";
@@ -189,12 +187,12 @@ std::string KmlUtil::model(const char *id, float lon, float lat, float heading, 
     out << "    <Location>\n";
     out << "      <longitude>" << lon << "</longitude>\n";
     out << "      <latitude>" << lat << "</latitude>\n";
-    //out << "      <altitude>0</altitude>\n";
+    // out << "      <altitude>0</altitude>\n";
     out << "    </Location>\n";
     out << "    <Orientation>\n";
     out << "      <heading>" << heading << "</heading>\n";
-    //out << "      <tilt>0</tilt>\n";
-    //out << "      <roll>0</roll>\n";
+    // out << "      <tilt>0</tilt>\n";
+    // out << "      <roll>0</roll>\n";
     out << "    </Orientation>\n";
     out << "    <Scale>\n";
     out << "      <x>" << scale << "</x>\n";
@@ -234,22 +232,26 @@ std::string KmlUtil::track(const char *id, const std::vector<Pt2D>& pts, float t
 
     out << "  <gx:Track>\n";
     double t = SIMTIME_DBL(simTime() - (pts.size()-1)*timeStep);
-    for (int i=0; i<(int)pts.size(); i++, t+= timeStep) {
-        int x = (int)t; //NOTE: timeStep < 1 will result in multiple timestamps with the same value!!!
-        int ss = x % 60; x-= ss; x/=60;
-        int mm = x % 60; x-= mm; x/=60;
+    for (int i = 0; i < (int)pts.size(); i++, t += timeStep) {
+        int x = (int)t;  // NOTE: timeStep < 1 will result in multiple timestamps with the same value!!!
+        int ss = x % 60;
+        x -= ss;
+        x /= 60;
+        int mm = x % 60;
+        x -= mm;
+        x /= 60;
         int hh = x;
         char when[100];
-        sprintf(when, "2010-05-28T%2.2d:%2.2d:%2.2dZ", hh, mm, ss); //TODO better conversion! (localtime()+sprintf()?)
+        sprintf(when, "2010-05-28T%2.2d:%2.2d:%2.2dZ", hh, mm, ss);  // TODO better conversion! (localtime()+sprintf()?)
         out << "    <when>" << when << "</when>\n";
     }
-    for (int i=0; i<(int)pts.size(); i++)
+    for (int i = 0; i < (int)pts.size(); i++)
         out << "    <gx:coord>" << pts[i].lon << " " << pts[i].lat << "</gx:coord>\n";
 
     if (modelLink) {
         out << "    <Model>\n";
         out << "    <Orientation>\n";
-        out << "      <heading>" << 0 << "</heading>\n"; //TODO compute from first two points
+        out << "      <heading>" << 0 << "</heading>\n";  // TODO compute from first two points
         out << "    </Orientation>\n";
         out << "    <Scale>\n";
         out << "      <x>" << modelScale << "</x>\n";
@@ -268,68 +270,59 @@ std::string KmlUtil::track(const char *id, const std::vector<Pt2D>& pts, float t
     return out.str();
 }
 
-
 void KmlUtil::hsbToRgb(double hue, double saturation, double brightness,
-                       double& red, double& green, double &blue)
+        double& red, double& green, double& blue)
 {
-   if (brightness == 0.0)
-   {   // safety short circuit again
-       red   = 0.0;
-       green = 0.0;
-       blue  = 0.0;
-       return;
-   }
+    if (brightness == 0.0) {  // safety short circuit again
+        red = 0.0;
+        green = 0.0;
+        blue = 0.0;
+        return;
+    }
 
-   if (saturation == 0.0)
-   {   // grey
-       red   = brightness;
-       green = brightness;
-       blue  = brightness;
-       return;
-   }
+    if (saturation == 0.0) {  // grey
+        red = brightness;
+        green = brightness;
+        blue = brightness;
+        return;
+    }
 
-   float domainOffset;         // hue mod 1/6
-   if (hue < 1.0/6)
-   {   // red domain; green ascends
-       domainOffset = hue;
-       red   = brightness;
-       blue  = brightness * (1.0 - saturation);
-       green = blue + (brightness - blue) * domainOffset * 6;
-   }
-     else if (hue < 2.0/6)
-     { // yellow domain; red descends
-       domainOffset = hue - 1.0/6;
-       green = brightness;
-       blue  = brightness * (1.0 - saturation);
-       red   = green - (brightness - blue) * domainOffset * 6;
-     }
-     else if (hue < 3.0/6)
-     { // green domain; blue ascends
-       domainOffset = hue - 2.0/6;
-       green = brightness;
-       red   = brightness * (1.0 - saturation);
-       blue  = red + (brightness - red) * domainOffset * 6;
-     }
-     else if (hue < 4.0/6)
-     { // cyan domain; green descends
-       domainOffset = hue - 3.0/6;
-       blue  = brightness;
-       red   = brightness * (1.0 - saturation);
-       green = blue - (brightness - red) * domainOffset * 6;
-     }
-     else if (hue < 5.0/6)
-     { // blue domain; red ascends
-       domainOffset = hue - 4.0/6;
-       blue  = brightness;
-       green = brightness * (1.0 - saturation);
-       red   = green + (brightness - green) * domainOffset * 6;
-     }
-     else
-     { // magenta domain; blue descends
-       domainOffset = hue - 5.0/6;
-       red   = brightness;
-       green = brightness * (1.0 - saturation);
-       blue  = red - (brightness - green) * domainOffset * 6;
-     }
+    float domainOffset;  // hue mod 1/6
+    if (hue < 1.0/6) {  // red domain; green ascends
+        domainOffset = hue;
+        red = brightness;
+        blue = brightness * (1.0 - saturation);
+        green = blue + (brightness - blue) * domainOffset * 6;
+    }
+    else if (hue < 2.0/6) {  // yellow domain; red descends
+        domainOffset = hue - 1.0/6;
+        green = brightness;
+        blue = brightness * (1.0 - saturation);
+        red = green - (brightness - blue) * domainOffset * 6;
+    }
+    else if (hue < 3.0/6) {  // green domain; blue ascends
+        domainOffset = hue - 2.0/6;
+        green = brightness;
+        red = brightness * (1.0 - saturation);
+        blue = red + (brightness - red) * domainOffset * 6;
+    }
+    else if (hue < 4.0/6) {  // cyan domain; green descends
+        domainOffset = hue - 3.0/6;
+        blue = brightness;
+        red = brightness * (1.0 - saturation);
+        green = blue - (brightness - red) * domainOffset * 6;
+    }
+    else if (hue < 5.0/6) {  // blue domain; red ascends
+        domainOffset = hue - 4.0/6;
+        blue = brightness;
+        green = brightness * (1.0 - saturation);
+        red = green + (brightness - green) * domainOffset * 6;
+    }
+    else {  // magenta domain; blue descends
+        domainOffset = hue - 5.0/6;
+        red = brightness;
+        green = brightness * (1.0 - saturation);
+        blue = red - (brightness - green) * domainOffset * 6;
+    }
 }
 

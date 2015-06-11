@@ -36,22 +36,22 @@ class ChannelController : public cSimpleModule, public IKmlFragmentProvider
 {
   protected:
     static ChannelController *instance;
-    std::vector<IMobileNode*> nodeList;
+    std::vector<IMobileNode *> nodeList;
     double playgroundLat;
     double playgroundLon;
 
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
     virtual std::string getKmlFragment() override;
-    int findMobileNode(IMobileNode* p);
+    int findMobileNode(IMobileNode *p);
 
   public:
     ChannelController();
     virtual ~ChannelController();
     static ChannelController *getInstance();
-    virtual void addMobileNode(IMobileNode* p);
-    virtual void removeMobileNode(IMobileNode* p);
-
+    virtual void addMobileNode(IMobileNode *p);
+    virtual void removeMobileNode(IMobileNode *p);
 };
 
 #endif
+

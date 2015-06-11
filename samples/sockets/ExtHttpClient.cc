@@ -7,14 +7,12 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp/platdep/sockets.h>
 #include <omnetpp.h>
 #include "HttpMsg_m.h"
 #include "SocketRTScheduler.h"
 
 USING_NAMESPACE
-
 
 /**
  * Model of a web browser.
@@ -66,7 +64,7 @@ void ExtHTTPClient::initialize()
 
 void ExtHTTPClient::handleMessage(cMessage *msg)
 {
-    if (msg==rtEvent)
+    if (msg == rtEvent)
         handleSocketEvent();
     else
         handleReply(check_and_cast<HTTPMsg *>(msg));
@@ -76,15 +74,17 @@ void ExtHTTPClient::handleSocketEvent()
 {
     // try to find a double line feed in the input -- that's the end of the HTTP header.
     char *endHeader = nullptr;
-    for (char *s=recvBuffer; s<=recvBuffer+numRecvBytes-4; s++)
-        if (*s=='\r' && *(s+1)=='\n' && *(s+2)=='\r' && *(s+3)=='\n')
-            {endHeader = s+4; break;}
+    for (char *s = recvBuffer; s <= recvBuffer+numRecvBytes-4; s++)
+        if (*s == '\r' && *(s+1) == '\n' && *(s+2) == '\r' && *(s+3) == '\n') {
+            endHeader = s+4;
+            break;
+        }
 
     // we don't have a complete header yet -- keep on waiting
     if (!endHeader)
         return;
     std::string header = std::string(recvBuffer, endHeader-recvBuffer);
-    //EV << header;
+    // EV << header;
 
     // remove HTTP header from buffer
     if (endHeader == recvBuffer+numRecvBytes)
@@ -101,7 +101,7 @@ void ExtHTTPClient::handleSocketEvent()
     httpMsg->setDestAddress(srvAddr);
     httpMsg->setSrcAddress(addr);
 
-    send(httpMsg,"g$o");
+    send(httpMsg, "g$o");
 }
 
 void ExtHTTPClient::handleReply(HTTPMsg *httpReply)
@@ -110,5 +110,4 @@ void ExtHTTPClient::handleReply(HTTPMsg *httpReply)
     rtScheduler->sendBytes(reply, strlen(reply));
     delete httpReply;
 }
-
 

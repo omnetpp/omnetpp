@@ -25,8 +25,7 @@ void Fork::handleMessage(cMessage *msg)
     int n = gateSize("out");
 
     // for each output gate
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         // generate a child job
         Job *child = job->dup();
         child->makeChildOf(job);

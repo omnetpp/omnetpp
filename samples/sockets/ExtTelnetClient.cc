@@ -7,14 +7,12 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp/platdep/sockets.h>
 #include <omnetpp.h>
 #include "TelnetPkt_m.h"
 #include "SocketRTScheduler.h"
 
 USING_NAMESPACE
-
 
 /**
  * Simple model of a Telnet client.
@@ -66,7 +64,7 @@ void ExtTelnetClient::initialize()
 
 void ExtTelnetClient::handleMessage(cMessage *msg)
 {
-    if (msg==rtEvent)
+    if (msg == rtEvent)
         handleSocketEvent();
     else
         handleReply(check_and_cast<TelnetPkt *>(msg));
@@ -85,7 +83,7 @@ void ExtTelnetClient::handleSocketEvent()
     telnetPkt->setDestAddress(srvAddr);
     telnetPkt->setSrcAddress(addr);
 
-    send(telnetPkt,"g$o");
+    send(telnetPkt, "g$o");
 }
 
 void ExtTelnetClient::handleReply(TelnetPkt *telnetReply)
@@ -94,5 +92,4 @@ void ExtTelnetClient::handleReply(TelnetPkt *telnetReply)
     rtScheduler->sendBytes(reply, strlen(reply));
     delete telnetReply;
 }
-
 

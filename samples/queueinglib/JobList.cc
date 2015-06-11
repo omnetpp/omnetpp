@@ -16,7 +16,6 @@ Define_Module(JobList);
 
 JobList *JobList::defaultInstance = nullptr;
 
-
 JobList::JobList()
 {
     if (defaultInstance == nullptr)
@@ -27,7 +26,7 @@ JobList::~JobList()
 {
     if (defaultInstance == this)
         defaultInstance = nullptr;
-    for (std::set<Job*>::iterator it=jobs.begin(); it!=jobs.end(); ++it)
+    for (std::set<Job *>::iterator it = jobs.begin(); it != jobs.end(); ++it)
         (*it)->jobList = nullptr;
 }
 
@@ -48,7 +47,7 @@ void JobList::registerJob(Job *job)
 
 void JobList::deregisterJob(Job *job)
 {
-    std::set<Job*>::iterator it = jobs.find(job);
+    std::set<Job *>::iterator it = jobs.find(job);
     ASSERT(it != jobs.end());
     jobs.erase(it);
 }
@@ -58,7 +57,7 @@ JobList *JobList::getDefaultInstance()
     return defaultInstance;
 }
 
-const std::set<Job*> JobList::getJobs()
+const std::set<Job *> JobList::getJobs()
 {
     return jobs;
 }

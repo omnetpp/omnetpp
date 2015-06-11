@@ -16,7 +16,6 @@
 
 USING_NAMESPACE
 
-
 /**
  * Real-time scheduler with socket-based external communication.
  *
@@ -98,7 +97,7 @@ class cSocketRTScheduler : public cScheduler
      * function.
      */
     virtual void setInterfaceModule(cModule *module, cMessage *notificationMsg,
-                                    char *recvBuffer, int recvBufferSize, int *numBytesPtr);
+            char *recvBuffer, int recvBufferSize, int *numBytesPtr);
 
     /**
      * Returns the first event in the Future Event Set.

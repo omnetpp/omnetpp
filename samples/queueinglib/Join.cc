@@ -37,22 +37,23 @@ void Join::handleMessage(cMessage *msg)
     jobsHeld.push_back(job);
 
     Job *parent = job->getParent();
-    ASSERT(parent != nullptr); // still exists
+    ASSERT(parent != nullptr);  // still exists
 
     // count all sub-jobs with this parent
     int subJobsHeld = 0;
-    for (std::list<Job*>::iterator it=jobsHeld.begin(); it!=jobsHeld.end(); it++)
+    for (std::list<Job *>::iterator it = jobsHeld.begin(); it != jobsHeld.end(); it++)
         if ((*it)->getParent() == parent)
             subJobsHeld++;
+
 
     // if we have all, destroy them, then obtain the parent and send it out
     if (subJobsHeld == parent->getNumChildren()) {
         take(parent);
-        for (std::list<Job*>::iterator it=jobsHeld.begin(); it!=jobsHeld.end(); /*nop*/) {
+        for (std::list<Job *>::iterator it = jobsHeld.begin(); it != jobsHeld.end();  /*nop*/) {
             if ((*it)->getParent() != parent)
                 ++it;
             else {
-                std::list<Job*>::iterator tmp = it++;
+                std::list<Job *>::iterator tmp = it++;
                 delete (*tmp);
                 jobsHeld.erase(tmp);
             }

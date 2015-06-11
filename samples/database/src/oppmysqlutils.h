@@ -102,6 +102,5 @@ int opp_mysql_substitute(std::string& query, const char *substring, long value, 
  */
 std::string opp_mysql_escape(MYSQL *mysql, const char *str);
 
-
 #endif
 

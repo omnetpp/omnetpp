@@ -7,12 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 #include "HttpMsg_m.h"
 
 USING_NAMESPACE
-
 
 class HTTPClient : public cSimpleModule
 {
@@ -40,13 +38,11 @@ void HTTPClient::initialize()
 
 void HTTPClient::handleMessage(cMessage *msg)
 {
-    if (msg->isSelfMessage())
-    {
+    if (msg->isSelfMessage()) {
         sendHTTPRequest();
         scheduleAt(simTime()+par("sendIaTime").doubleValue(), msg);
     }
-    else
-    {
+    else {
         processHTTPReply(check_and_cast<HTTPMsg *>(msg));
     }
 }
@@ -61,7 +57,7 @@ void HTTPClient::sendHTTPRequest()
     httpMsg->setDestAddress(srvAddr);
     httpMsg->setSrcAddress(addr);
 
-    send(httpMsg,"g$o");
+    send(httpMsg, "g$o");
 }
 
 void HTTPClient::processHTTPReply(HTTPMsg *httpMsg)

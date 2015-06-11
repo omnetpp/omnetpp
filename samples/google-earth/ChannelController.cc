@@ -32,21 +32,22 @@ ChannelController *ChannelController::getInstance()
     return instance;
 }
 
-int ChannelController::findMobileNode(IMobileNode* p)
+int ChannelController::findMobileNode(IMobileNode *p)
 {
-    for (int i=0; i<(int)nodeList.size(); i++)
+    for (int i = 0; i < (int)nodeList.size(); i++)
         if (nodeList[i] == p)
             return i;
+
     return -1;
 }
 
-void ChannelController::addMobileNode(IMobileNode* p)
+void ChannelController::addMobileNode(IMobileNode *p)
 {
     if (findMobileNode(p) == -1)
         nodeList.push_back(p);
 }
 
-void ChannelController::removeMobileNode(IMobileNode* p)
+void ChannelController::removeMobileNode(IMobileNode *p)
 {
     int k = findMobileNode(p);
     if (k != -1)
@@ -71,10 +72,8 @@ std::string ChannelController::getKmlFragment()
 
     std::string fragment;
 
-    for (int i=0; i<(int)nodeList.size(); ++i)
-    {
-        for (int j=i+1; j<(int)nodeList.size(); ++j)
-        {
+    for (int i = 0; i < (int)nodeList.size(); ++i) {
+        for (int j = i+1; j < (int)nodeList.size(); ++j) {
             IMobileNode *pi = nodeList[i];
             IMobileNode *pj = nodeList[j];
             double ix = pi->getX(), iy = pi->getY(), jx = pj->getX(), jy = pj->getY();
@@ -93,5 +92,4 @@ std::string ChannelController::getKmlFragment()
 
     return fragment;
 }
-
 

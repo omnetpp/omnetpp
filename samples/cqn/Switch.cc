@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 #include <omnetpp.h>
 
 USING_NAMESPACE
@@ -36,10 +35,8 @@ void Switch::initialize()
 
 void Switch::handleMessage(cMessage *msg)
 {
-    int gate = intuniform(0,numGates-1);
+    int gate = intuniform(0, numGates-1);
     msg->setSchedulingPriority(priority);
-    send(msg,"out",gate);
+    send(msg, "out", gate);
 }
-
-
 

@@ -41,7 +41,6 @@ class EmptyConfig : public cConfiguration
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override {return nullKeyValue;}
 };
 
-
 class MinimalEnv : public cNullEnvir
 {
   public:
@@ -77,19 +76,18 @@ class MinimalEnv : public cNullEnvir
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
 
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes = nullptr) override
     {
-       // store all reported scalar results into a map for later use
-       scalarResults[component->getFullPath()+"."+name] = value;
+        // store all reported scalar results into a map for later use
+        scalarResults[component->getFullPath()+"."+name] = value;
     }
 
     // dump any scalar result gathered by the simulation model
     void dumpResults()
     {
-        if (!scalarResults.empty())
-        {
+        if (!scalarResults.empty()) {
             ::printf("Scalar statistics:\n");
-            for (StringDoubleMap::const_iterator it = scalarResults.begin(); it!=scalarResults.end(); ++it)
+            for (StringDoubleMap::const_iterator it = scalarResults.begin(); it != scalarResults.end(); ++it)
                 ::printf("  %s: %lf\n", it->first.c_str(), it->second);
         }
     }
@@ -112,7 +110,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     cModuleType *networkType = cModuleType::find("Aloha");
     if (!networkType)
         throw cRuntimeError("Aloha network not found");
-    sim->setupNetwork(networkType); //XXX may throw exception
+    sim->setupNetwork(networkType);  // XXX may throw exception
     sim->setSimulationTimeLimit(limit);
 
     // prepare for running it
@@ -124,7 +122,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
         while (true) {
             cEvent *event = sim->takeNextEvent();
             if (!event)
-                break;  //XXX
+                break;  // XXX
             sim->executeEvent(event);
         }
         printf("Finished.\n");
@@ -136,9 +134,8 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
         ok = false;
         printf("ERROR: %s\n", e.what());
     }
-
     if (ok)
-        sim->callFinish();  //XXX may throw exception
+        sim->callFinish();  // XXX may throw exception
 
     // finish the simulation and clean up the network
     sim->deleteNetwork();
@@ -166,7 +163,7 @@ int main(int argc, char *argv[])
     cSimulation::loadNedText("aloha", ALOHA_NED);
     cSimulation::loadNedText("server", SERVER_NED);
     cSimulation::loadNedText("host", HOST_NED);
-    //cSimulation::loadNedSourceFolder("./model");
+    // cSimulation::loadNedSourceFolder("./model");
     cSimulation::doneLoadingNedFiles();
 
     // run simulations until user tells us to exit
@@ -193,10 +190,10 @@ int main(int argc, char *argv[])
 
         std::cout << "Do you want to run a simulation again? (y/n): ";
         std::cin >> againQuestion;
-    }
-    while (againQuestion == "y");
+    } while (againQuestion == "y");
 
     // deallocate registration lists, loaded NED files, etc.
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
     return 0;
 }
+
