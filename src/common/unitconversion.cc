@@ -48,12 +48,10 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "MiB",   K*K, "B",    "mebibyte" },
     { "GiB", K*K*K, "B",    "gibibyte" },
     { "TiB",K*K*K*K,"B",    "tebibyte" },
-/* TODO Decimal units to be added in 5.0; also update convertUnit() then:
-    { "kB"     1e3, "B",    "kilobyte" },
+    { "kB",    1e3, "B",    "kilobyte" },
     { "MB",    1e6, "B",    "megabyte" },
     { "GB",    1e9, "B",    "gigabyte" },
     { "TB",   1e12, "B",    "terabyte" },
-*/
     { "b",       1, "b",    "bit" },
     { "m",       1, "m",    "meter" },
     { "km",    1e3, "m",    "kilometer" },
@@ -232,21 +230,9 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
 
     double factor = getConversionFactor(unit, targetUnit);
     if (factor == 0) {
-        // could not convert: issue appropriate message
-        const char *explanation = "";
-
-        // Kbps -> kbps (renamed in OMNeT++ 4.2)
-        if (unit && strcmp(unit, "Kbps") == 0)
-            explanation = ": please use kbps instead of Kbps";
-
-        // KB -> KiB, MB -> MiB, GB -> GiB, TB -> TiB (renamed in OMNeT++ 4.2)
-        if (unit && strlen(unit) == 2 && unit[1] == 'B' && strstr("kB KB MB GB TB", unit) != nullptr)
-            explanation = ": please use IEC binary prefixes for byte multiples: KiB, MiB, GiB, TiB";
-
-        throw opp_runtime_error("Cannot convert unit %s to %s%s",
+        throw opp_runtime_error("Cannot convert unit %s to %s",
                 (opp_isempty(unit) ? "none" : getUnitDescription(unit).c_str()),
-                (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()),
-                explanation);
+                (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()));
     }
     return factor * d;
 }
