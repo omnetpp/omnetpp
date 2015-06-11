@@ -23,8 +23,7 @@ Define_Module(Tic);
 
 void Tic::initialize()
 {
-    if (par("initialSend").boolValue())
-    {
+    if (par("initialSend").boolValue()) {
         cPacket *pkt = new cPacket(getFullName());
         send(pkt, par("outputGate").stringValue());
     }
@@ -32,13 +31,12 @@ void Tic::initialize()
 
 void Tic::handleMessage(cMessage *msg)
 {
-    cPacket *pkt = check_and_cast<cPacket*>(msg);
+    cPacket *pkt = check_and_cast<cPacket *>(msg);
 
-    if (par("delete").boolValue())
-    {
+    if (par("delete").boolValue()) {
         if (par("allowPointerAliasing").boolValue()) {
             delete pkt;
-            pkt = new cPacket(getFullName()); // may get the same address as deleted pkt
+            pkt = new cPacket(getFullName());  // may get the same address as deleted pkt
         }
         else {
             pkt = new cPacket(getFullName());

@@ -11,13 +11,11 @@ class TestNode : public cSimpleModule
 
 Define_Module(TestNode);
 
-
 void TestNode::activity()
 {
     int beepSignal = registerSignal("beep");
     int crunchSignal = registerSignal("crunch");
-    while (true)
-    {
+    while (true) {
         EV << "beep...\n";
         emit(beepSignal, 1L);
         wait(exponential(1.0));

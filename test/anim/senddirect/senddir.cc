@@ -18,6 +18,7 @@ class Gen : public cSimpleModule
 {
   private:
     int ctr;
+
   public:
     Gen() : cSimpleModule(16384) {}
     virtual void activity() override;
@@ -57,5 +58,4 @@ void Gen::sendTo(const char *modname, const char *gatename)
     sendDirect(msg, target->gate(gatename));
     wait(1);
 }
-
 

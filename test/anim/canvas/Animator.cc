@@ -21,15 +21,15 @@ void Animator::handleMessage(cMessage *msg)
     figure->rotate(0.01, 200, 200);
     figure->scale(0.997, 0.997);
 
-    cOvalFigure *oval = check_and_cast<cOvalFigure*>(getParentModule()->getCanvas()->findFigureRecursively("oval1"));
+    cOvalFigure *oval = check_and_cast<cOvalFigure *>(getParentModule()->getCanvas()->findFigureRecursively("oval1"));
     int w = (int)(simTime().dbl())%20;
     oval->setLineWidth(w);
 
     oval->rotate(-0.005, 500, 150);
-	
-    cPathFigure *path = check_and_cast<cPathFigure*>(getParentModule()->getCanvas()->findFigureRecursively("path1"));
+
+    cPathFigure *path = check_and_cast<cPathFigure *>(getParentModule()->getCanvas()->findFigureRecursively("path1"));
     path->move(10 * sin(simTime().dbl() / 10.0), 0);
-	
+
     scheduleAt(simTime()+1, msg);
 }
 

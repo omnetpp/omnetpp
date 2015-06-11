@@ -21,8 +21,9 @@ void StressNode::handleMessage(cMessage *msg)
         delete msg;
     }
     else {
-        EV << "Sending out message: "  << msg << "\n";;
+        EV << "Sending out message: "  << msg << "\n";
         msg->setName("Forwarded");
         send(msg, outGate);
     }
 }
+

@@ -20,7 +20,7 @@ void PixmapAnimator::initialize()
 {
     // sine/cosine pattern
     cCanvas *canvas = getParentModule()->getCanvas();
-    pixmapFigure = check_and_cast<cPixmapFigure*>(canvas->getFigure("pixmap"));
+    pixmapFigure = check_and_cast<cPixmapFigure *>(canvas->getFigure("pixmap"));
 
     cFigure::Pixmap pixmap = pixmapFigure->getPixmap();
     fillPixmap(pixmap);
@@ -36,7 +36,7 @@ void PixmapAnimator::fillPixmap(cFigure::Pixmap& pixmap)
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            cFigure::RGBA& px = pixmap.pixel(x,y);
+            cFigure::RGBA& px = pixmap.pixel(x, y);
             px.red = 127 + 127 * sin(20 * (double)x / width);
             px.green = 127 + 127 * cos(20 * (double)y / height);
             px.blue = 0;
@@ -55,7 +55,7 @@ void PixmapAnimator::changePixmap(cFigure::Pixmap& pixmap)
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            cFigure::RGBA& px = pixmap.pixel(x,y);
+            cFigure::RGBA& px = pixmap.pixel(x, y);
             int red = 127 + 127 * sin(20 * ((double)x + xoff) / width);
             int green = 127 + 127 * cos(20 * ((double)y + yoff)/ height);
             px.alpha = (red + green) / 2;
@@ -71,3 +71,4 @@ void PixmapAnimator::handleMessage(cMessage *msg)
 
     scheduleAt(simTime()+1, msg);
 }
+

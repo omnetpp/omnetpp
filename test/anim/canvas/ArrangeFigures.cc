@@ -18,13 +18,12 @@ void ArrangeFigures::initialize()
     double dy = 0;
     cCanvas *canvas = getCanvas();
     cProperties *properties = getProperties();
-    for (int i=0; i<properties->getNumProperties(); i++)
-    {
+    for (int i = 0; i < properties->getNumProperties(); i++) {
         cProperty *property = properties->get(i);
         if (property->isName("figure")) {
             const char *name = property->getIndex();
             cFigure *figure = canvas->getFigure(name);
-            ASSERT(figure!=nullptr);
+            ASSERT(figure != nullptr);
             figure->move(0.0, dy);
             cLabelFigure *label = new cLabelFigure();
             label->setText(property->info().c_str());
@@ -34,3 +33,4 @@ void ArrangeFigures::initialize()
         }
     }
 }
+

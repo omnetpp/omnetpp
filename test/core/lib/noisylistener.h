@@ -11,6 +11,7 @@ class NoisyListener : public cListener
 {
   protected:
     void printFrom(cComponent *source, simsignal_t signalID);
+
   public:
     NoisyListener();
     virtual ~NoisyListener();

@@ -11,7 +11,6 @@ class Controller : public cSimpleModule
 
 Define_Module(Controller);
 
-
 void Controller::activity()
 {
     // create two modules, and connect them
@@ -44,7 +43,7 @@ void Controller::activity()
     // that spans hierarchy levels (illegal, but Tkenv should behave nicely)
     cModuleType *compoundType = cModuleType::find("Compound");
     cModule *compound = compoundType->createScheduleInit("compound1", getParentModule());
-    getDisplayString().setTagArg("t",0, "OPEN THE NEW COMPOUND MODULE BEFORE PROCEEDING!");
+    getDisplayString().setTagArg("t", 0, "OPEN THE NEW COMPOUND MODULE BEFORE PROCEEDING!");
     bubble("OPEN THE NEW COMPOUND MODULE BEFORE PROCEEDING!");
     wait(1);
 
@@ -53,6 +52,5 @@ void Controller::activity()
     getParentModule()->addGate("o3", cGate::OUTPUT);
     node3->gate("o3")->connectTo(getParentModule()->gate("o3"));
     wait(1);
-
 }
 

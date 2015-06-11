@@ -19,7 +19,7 @@ class Dist : public cSimpleModule
       virtual void activity();
 };
 
-Define_Module( Dist );
+Define_Module(Dist);
 
 void Dist::activity()
 {
@@ -45,22 +45,21 @@ void Dist::activity()
     else
         h = new cDoubleHistogram;
     h->setNumCells(numcells);
-    h->setRangeAuto(firstvals,1);
+    h->setRangeAuto(firstvals, 1);
 
-    for (long i=0; i<n; i++)
-    {
+    for (long i = 0; i < n; i++) {
         double d = variate.doubleValue();
         h->collect(d);
     }
 
     // automatic filename
     char buf[500];
-    if (filename[0]=='\0')
-    {
+    if (filename[0] == '\0') {
         strcpy(buf, distname.c_str());
-        for (char *s=buf; *s; s++)
-           if (!isalnum(*s) && *s!='(' && *s!=')' && *s!=',' && *s!='-' && *s!='+')
-               *s='_';
+        for (char *s = buf; *s; s++)
+            if (!isalnum(*s) && *s != '(' && *s != ')' && *s != ',' && *s != '-' && *s != '+')
+                *s = '_';
+
         strcat(buf, ".csv");
         filename = buf;
     }
@@ -69,14 +68,13 @@ void Dist::activity()
 
     // write file
     FILE *f = fopen(filename, "w");
-    fprintf(f,"\"x\",\"theoretical %s pdf\",\"measured %s pdf\",measured mean,measured std dev\n",distname.c_str(), distname.c_str());
-    fprintf(f,",,,%lg,%lg\n",h->getMean(),h->getStddev());
-    const int off=3;  // data begin on line 3 in the Excel sheet
-    for (int k=0; k<h->getNumCells(); k++)
-    {
-        fprintf(f,"%lg,\"=",(h->getBasepoint(k)+h->getBasepoint(k+1))/2);
-        fprintf(f,excel,k+off,k+off,k+off,k+off,k+off,k+off,k+off,k+off,k+off,k+off);
-        fprintf(f,"\",%lg\n",h->getCellPDF(k));
+    fprintf(f, "\"x\",\"theoretical %s pdf\",\"measured %s pdf\",measured mean,measured std dev\n", distname.c_str(), distname.c_str());
+    fprintf(f, ",,,%lg,%lg\n", h->getMean(), h->getStddev());
+    const int off = 3;  // data begin on line 3 in the Excel sheet
+    for (int k = 0; k < h->getNumCells(); k++) {
+        fprintf(f, "%lg,\"=", (h->getBasepoint(k)+h->getBasepoint(k+1))/2);
+        fprintf(f, excel, k+off, k+off, k+off, k+off, k+off, k+off, k+off, k+off, k+off, k+off);
+        fprintf(f, "\",%lg\n", h->getCellPDF(k));
     }
     fclose(f);
 
@@ -85,6 +83,4 @@ void Dist::activity()
 
     delete h;
 }
-
-
 

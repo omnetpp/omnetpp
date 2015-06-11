@@ -18,21 +18,22 @@
 #include <common/filereader.h>
 #include <eventlog/eventlogindex.h>
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 USING_NAMESPACE
 
 bool getReadForward(MatchKind matchKind)
 {
-    switch (matchKind)
-    {
+    switch (matchKind) {
         case FIRST_OR_NEXT:
         case LAST_OR_NEXT:
             return false;
+
         case EXACT:
         case FIRST_OR_PREVIOUS:
         case LAST_OR_PREVIOUS:
             return true;
+
         default:
             throw opp_runtime_error("*** Invalid match kind\n");
     }
@@ -174,9 +175,9 @@ void usage(char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"Usage:\n"
-"   eventlogindextest <input-file-name> <number-of-offset-lookups>\n"
-);
+                    "Usage:\n"
+                    "   eventlogindextest <input-file-name> <number-of-offset-lookups>\n"
+            );
 }
 
 int main(int argc, char **argv)
@@ -200,3 +201,4 @@ int main(int argc, char **argv)
         return -2;
     }
 }
+

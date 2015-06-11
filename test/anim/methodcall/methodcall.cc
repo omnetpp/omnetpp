@@ -6,6 +6,7 @@ class Target : public cSimpleModule
 {
   protected:
     virtual void handleMessage(cMessage *msg) override;
+
   public:
     virtual void doWhatever(int x);
 };
@@ -17,7 +18,7 @@ void Target::handleMessage(cMessage *msg)
 
 void Target::doWhatever(int x)
 {
-    Enter_Method("doWhatever(%d)",x);
+    Enter_Method("doWhatever(%d)", x);
     EV << "x = " << x << endl;
 }
 
@@ -27,8 +28,9 @@ class Mod : public cSimpleModule
 {
   protected:
     int ctr;
+
   public:
-    Mod() : cSimpleModule(16384) { }
+    Mod() : cSimpleModule(16384) {}
     virtual void activity() override;
     void callPrintX(const char *modname);
 };
@@ -46,14 +48,15 @@ void Mod::activity()
     callPrintX("target");
     callPrintX("boxedTarget.target");
 
-    //for(;;) {new cMessage("heyho"); wait(1);}
+    // for(;;) {new cMessage("heyho"); wait(1);}
 }
 
 void Mod::callPrintX(const char *modname)
 {
     EV << "Calling doWhatever() of module " << modname << endl;
     Target *target = dynamic_cast<Target *>(getSimulation()->getModuleByPath(modname));
-    if (!target) error("target module not found");
+    if (!target)
+        error("target module not found");
 
     wait(0);
 
@@ -63,5 +66,4 @@ void Mod::callPrintX(const char *modname)
 
     wait(1);
 }
-
 

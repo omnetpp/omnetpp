@@ -8,6 +8,7 @@ class TestChannel : public cIdealChannel
 {
   private:
     int numPackets;
+
   protected:
     virtual void initialize() override;
     virtual void processMessage(cMessage *msg, simtime_t at, result_t& result) override;
@@ -15,7 +16,6 @@ class TestChannel : public cIdealChannel
 };
 
 Define_Channel(TestChannel);
-
 
 void TestChannel::initialize()
 {

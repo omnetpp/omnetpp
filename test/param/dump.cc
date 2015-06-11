@@ -31,10 +31,10 @@ void Dump::handleMessage(cMessage *msg)
 
 void Dump::dump(cModule *mod)
 {
-    if (mod==this)
+    if (mod == this)
         return;
 
-    for (int i=0; i<mod->getNumParams(); i++)
+    for (int i = 0; i < mod->getNumParams(); i++)
         printf("%s = %s\n", mod->par(i).getFullPath().c_str(), mod->par(i).info().c_str());
 
     for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++)

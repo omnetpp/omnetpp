@@ -56,10 +56,9 @@ void testReaderWriter(const char *inputfile, const char *outputfile)
     resultfilemanager.loadFile(inputfile);
     IDList vectors = resultfilemanager.getAllVectors();
     size_t size = vectors.size();
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         ID id = vectors.get(i);
-        const VectorResult &vector = resultfilemanager.getVector(id);
+        const VectorResult& vector = resultfilemanager.getVector(id);
         Port *src = reader->addVector(vector);
         Port *dest = writer->addVector(vector);
         manager.connect(src, dest);
@@ -89,12 +88,11 @@ void testReaderBuilder(const char *inputfile, const char *outputfile)
     IDList vectors = resultfilemanager.getAllVectors();
     size_t size = vectors.size();
     attrs.clear();
-    vector<ArrayBuilderNode*> builders;
+    vector<ArrayBuilderNode *> builders;
 
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         ID id = vectors.get(i);
-        const VectorResult &vector = resultfilemanager.getVector(id);
+        const VectorResult& vector = resultfilemanager.getVector(id);
         ArrayBuilderNode *builder = (ArrayBuilderNode *)builderType->create(&manager, attrs);
         builders.push_back(builder);
         Port *src = reader->addVector(vector);
@@ -107,15 +105,13 @@ void testReaderBuilder(const char *inputfile, const char *outputfile)
     ofstream out;
     out.open(outputfile);
     out.precision(15);
-    for (size_t i = 0; i < size; ++i)
-    {
+    for (size_t i = 0; i < size; ++i) {
         ID id = vectors.get(i);
-        const VectorResult &vector = resultfilemanager.getVector(id);
+        const VectorResult& vector = resultfilemanager.getVector(id);
         ArrayBuilderNode *builder = builders[i];
         XYArray *array = builder->getArray();
         int s = array->length();
-        for (int i = 0; i < s; ++i)
-        {
+        for (int i = 0; i < s; ++i) {
             BigDecimal xp = array->getPreciseX(i);
             double x = array->getX(i);
             double y = array->getY(i);
@@ -128,12 +124,12 @@ void testReaderBuilder(const char *inputfile, const char *outputfile)
     out.close();
 }
 
-void testReader(const char* readerNodeType, const char *inputFile, int *vectorIds, int count)
+void testReader(const char *readerNodeType, const char *inputFile, int *vectorIds, int count)
 {
-	if ((strcmp(readerNodeType, "indexedvectorfilereader") == 0 ||
-			strcmp(readerNodeType, "indexedvectorfilereader2") == 0) &&
-			!IndexFile::isIndexFileUpToDate(inputFile))
-		throw exception("Index file is not up to date");
+    if ((strcmp(readerNodeType, "indexedvectorfilereader") == 0 ||
+         strcmp(readerNodeType, "indexedvectorfilereader2") == 0) &&
+        !IndexFile::isIndexFileUpToDate(inputFile))
+        throw exception("Index file is not up to date");
 
     NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
     NodeType *readerType = registry->getNodeType(readerNodeType);
@@ -147,8 +143,7 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
     attrs.clear();
     char vectorIdStr[12];
 
-    for (size_t i = 0; i < count; ++i)
-    {
+    for (size_t i = 0; i < count; ++i) {
         sprintf(vectorIdStr, "%d", vectorIds[i]);
         Node *builder = builderType->create(&manager, attrs);
         Port *src = readerType->getPort(reader, vectorIdStr);
@@ -157,9 +152,8 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
     }
 
     {
-    	MeasureTime m;
-    	manager.execute();
+        MeasureTime m;
+        manager.execute();
     }
 }
-
 

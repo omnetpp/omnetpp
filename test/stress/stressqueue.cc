@@ -20,7 +20,7 @@ StressQueue::StressQueue()
 
 StressQueue::~StressQueue()
 {
-    EV << "Cancelling and deleting self message: "  << timer << "\n";;
+    EV << "Cancelling and deleting self message: "  << timer << "\n";
     cancelAndDelete(timer);
 }
 
@@ -30,18 +30,18 @@ void StressQueue::handleMessage(cMessage *msg)
 
     if (msg == timer) {
         if (!queue.empty()) {
-            sendOutMsg = (cMessage*)queue.pop();
+            sendOutMsg = (cMessage *)queue.pop();
 
-            EV << "Sending out queued message: "  << sendOutMsg << "\n";;
+            EV << "Sending out queued message: "  << sendOutMsg << "\n";
         }
-     }
+    }
     else {
         if (!timer->isScheduled()) {
             sendOutMsg = msg;
-            EV << "Immediately sending out message: "  << sendOutMsg << "\n";;
+            EV << "Immediately sending out message: "  << sendOutMsg << "\n";
         }
         else {
-            EV << "Queuing message: "  << msg << "\n";;
+            EV << "Queuing message: "  << msg << "\n";
             queue.insert(msg);
         }
     }
@@ -61,3 +61,4 @@ void StressQueue::handleMessage(cMessage *msg)
     else
         getDisplayString().setTagArg("i", 1, "yellow");
 }
+

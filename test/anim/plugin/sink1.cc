@@ -6,20 +6,18 @@
 
 #include "sink1.h"
 
-
-Define_Module( FF1Sink );
+Define_Module(FF1Sink);
 
 void FF1Sink::activity()
 {
     qstats.setName("queuing time stats");
     cOutVector qtime("queueing time vector");
-    for(;;)
-    {
+    for ( ; ; ) {
         cMessage *msg = receive();
         simtime_t d = simTime() - msg->getTimestamp();
         EV << "Received " << msg->getName() << ", queueing time: " << d << "sec" << endl;
-        qtime.record( d );
-        qstats.collect( d );
+        qtime.record(d);
+        qstats.collect(d);
         delete msg;
     }
 }
@@ -32,3 +30,4 @@ void FF1Sink::finish()
     EV << "Max queueing time:    " << qstats.getMax() << endl;
     EV << "Standard deviation:   " << qstats.getStddev() << endl;
 }
+

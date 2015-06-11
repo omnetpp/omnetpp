@@ -88,27 +88,27 @@ void WatchTest::activity()
     //
     // Structs/classes via op<<
     //
-    Point point(100,200);
+    Point point(100, 200);
     WATCH(point);
 
-    Point point_rw(100,200);
+    Point point_rw(100, 200);
     WATCH_RW(point_rw);
 
     //
     // Structs/classes via cObject and info(); no structdesc.
     //
-    APolygon poly_WATCH(5,100);
+    APolygon poly_WATCH(5, 100);
     WATCH(poly_WATCH);
 
-    APolygon poly_WATCH_OBJ(5,100);
+    APolygon poly_WATCH_OBJ(5, 100);
     WATCH_OBJ(poly_WATCH_OBJ);
 
     //
     // Generated structs/classes (with structdesc.)
     //
 
-    //GeneratedStruct gs;
-    //WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cObject
+    // GeneratedStruct gs;
+    // WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cObject
 
     GeneratedClass gc;
     GeneratedMessage gm("gm-obj");
@@ -121,7 +121,7 @@ void WatchTest::activity()
     WATCH_PTR(gmp);
 
     int *wrongp = (int *)gcp;
-    //WATCH_PTR(wrongp); -- this has to give a compile error
+    // WATCH_PTR(wrongp); -- this has to give a compile error
 
     //
     // Vectors, lists and maps
@@ -140,7 +140,7 @@ void WatchTest::activity()
     ls.push_back("seven");
     WATCH_LIST(ls);
 
-    std::map<int,std::string> m;
+    std::map<int, std::string> m;
     m[1] = "one";
     m[2] = "two";
     m[3] = "three";
@@ -157,12 +157,13 @@ void WatchTest::activity()
     WATCH_SET(ss);
 
     // TBD: PTRVECTOR, PTRMAP etc.
-    for(;;) wait(1);
+    for ( ; ; )
+        wait(1);
 }
 
 void WatchTest::handleParameterChange(const char *parname)
 {
     EV << "handleParameterChange(): " << parname << "\n";
-    new cMessage("dummymsg"); // test that this module will be the owner
+    new cMessage("dummymsg");  // test that this module will be the owner
 }
 

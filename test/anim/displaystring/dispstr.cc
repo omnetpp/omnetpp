@@ -28,17 +28,17 @@ void Gen::activity()
 
     wait(startTime);
 
-    if (!strcmp(what,"icons"))
+    if (!strcmp(what, "icons"))
         icons();
-    else if (!strcmp(what,"boxes"))
+    else if (!strcmp(what, "boxes"))
         boxes();
-    else if (!strcmp(what,"options"))
+    else if (!strcmp(what, "options"))
         options();
-    else if (!strcmp(what,"hue"))
+    else if (!strcmp(what, "hue"))
         hue();
-    else if (!strcmp(what,"saturation"))
+    else if (!strcmp(what, "saturation"))
         saturation();
-    else if (!strcmp(what,"brightness"))
+    else if (!strcmp(what, "brightness"))
         brightness();
     else
         error("wrong value '%s'", what);
@@ -112,8 +112,7 @@ void Gen::options()
 void Gen::hue()
 {
     EV << "HSB hue -- valid values only:\n";
-    for (int i=0; i<255; i+=8)
-    {
+    for (int i = 0; i < 255; i += 8) {
         char buf[10];
         sprintf(buf, "@%2.2xffff", i);
         getDisplayString().setTagArg("b", 3, buf);
@@ -124,8 +123,7 @@ void Gen::hue()
 void Gen::saturation()
 {
     EV << "HSB saturation -- valid values only:\n";
-    for (int i=0; i<255; i+=8)
-    {
+    for (int i = 0; i < 255; i += 8) {
         char buf[10];
         sprintf(buf, "@40%2.2xff", i);
         getDisplayString().setTagArg("b", 3, buf);
@@ -136,8 +134,7 @@ void Gen::saturation()
 void Gen::brightness()
 {
     EV << "HSB brightness -- valid values only:\n";
-    for (int i=0; i<255; i+=8)
-    {
+    for (int i = 0; i < 255; i += 8) {
         char buf[10];
         sprintf(buf, "@4080%2.2x", i);
         getDisplayString().setTagArg("b", 3, buf);

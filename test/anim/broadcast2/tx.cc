@@ -19,11 +19,9 @@ void Tx::initialize()
 void Tx::handleMessage(cMessage *msg)
 {
     int n = gateSize("out");
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
         send(new cMessage("msg"), "out", i);
 
     scheduleAt(simTime()+exponential(1.0), msg);
 }
-
-
 

@@ -11,15 +11,12 @@ class Node : public cSimpleModule
 
 Define_Module(Node);
 
-
 void Node::activity()
 {
     cQueue q;
-    while (true)
-    {
+    while (true) {
         EV << "sending messages on all gates...\n";
-        for (GateIterator i(this); !i.end(); i++)
-        {
+        for (GateIterator i(this); !i.end(); i++) {
             cGate *g = i();
             if (g->getType() == cGate::OUTPUT && g->isConnected() && g->getPathEndGate()->getOwnerModule()->isSimple())
                 send(new cMessage("msg"), g);

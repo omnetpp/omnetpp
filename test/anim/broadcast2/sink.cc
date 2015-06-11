@@ -15,4 +15,3 @@ void Sink::handleMessage(cMessage *msg)
     delete msg;
 }
 
-

@@ -20,7 +20,7 @@ void StressDuplicate::handleMessage(cMessage *msg)
         if (outGate->getTransmissionChannel()->isBusy())
             EV << "Output channel is busy, dropping message: " << msg << "\n";
         else {
-            EV << "Sending out duplicated message: "  << msg << "\n";;
+            EV << "Sending out duplicated message: "  << msg << "\n";
             cMessage *dupMsg = msg->dup();
             dupMsg->setName("Duplicate");
             send(dupMsg, outGate);
@@ -33,8 +33,9 @@ void StressDuplicate::handleMessage(cMessage *msg)
         delete msg;
     }
     else {
-        EV << "Sending out original message: "  << msg << "\n";;
+        EV << "Sending out original message: "  << msg << "\n";
         msg->setName("Original");
         send(msg, outGate);
     }
 }
+

@@ -23,16 +23,17 @@ using namespace std;
 
 void testIndexer(const char *inputFile)
 {
-	if (IndexFile::isIndexFileUpToDate(inputFile))
-		throw exception("Already up to date");
+    if (IndexFile::isIndexFileUpToDate(inputFile))
+        throw exception("Already up to date");
 
     VectorFileIndexer indexer;
 
     {
-    	MeasureTime m;
-    	indexer.generateIndex(inputFile);
+        MeasureTime m;
+        indexer.generateIndex(inputFile);
     }
 
-	if (!IndexFile::isIndexFileUpToDate(inputFile))
-		throw exception("Indexing failed");
+    if (!IndexFile::isIndexFileUpToDate(inputFile))
+        throw exception("Indexing failed");
 }
+

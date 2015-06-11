@@ -21,18 +21,15 @@ void SignalSource::initialize()
 {
     count = numErrors = 0;
     cXMLElement *script = par("script");
-    for (cXMLElement *elem=script->getFirstChild(); elem; elem = elem->getNextSibling())
-    {
+    for (cXMLElement *elem = script->getFirstChild(); elem; elem = elem->getNextSibling()) {
         const char *atAttr = elem->getAttribute("at");
         if (!atAttr)
             error("attribute 'at' missing at %s", elem->getSourceLocation());
 
-        if (strcmp(atAttr, "init")==0)
-        {
+        if (strcmp(atAttr, "init") == 0) {
             emitSignal(elem);
         }
-        else
-        {
+        else {
             // schedule self-message
             simtime_t t = STR_SIMTIME(atAttr);
             cMessage *msg = new cMessage();
@@ -52,10 +49,9 @@ void SignalSource::handleMessage(cMessage *msg)
 void SignalSource::finish()
 {
     cXMLElement *script = par("script");
-    for (cXMLElement *elem=script->getFirstChild(); elem; elem = elem->getNextSibling())
-    {
+    for (cXMLElement *elem = script->getFirstChild(); elem; elem = elem->getNextSibling()) {
         const char *atAttr = elem->getAttribute("at");
-        if (strcmp(atAttr, "finish")==0)
+        if (strcmp(atAttr, "finish") == 0)
             emitSignal(elem);
     }
     EV << "emitted " << count << " signals with " << numErrors << " errors\n";
@@ -68,9 +64,9 @@ void SignalSource::emitSignal(cXMLElement *elem)
     const char *type = elem->getAttribute("type");
     const char *value = elem->getAttribute("value");
     const char *timestamp = elem->getAttribute("timestamp");
-    ASSERT(name!=nullptr);
-    ASSERT(type!=nullptr);
-    ASSERT(value!=nullptr);
+    ASSERT(name != nullptr);
+    ASSERT(type != nullptr);
+    ASSERT(value != nullptr);
 
     EV << "t=" << simTime() << "s: emit \"" << name << "\" type=" << type << " value=" << value;
     if (timestamp)
@@ -81,50 +77,47 @@ void SignalSource::emitSignal(cXMLElement *elem)
     cObject *obj = nullptr;
 
     try {
-        if (!timestamp)
-        {
-            if (strcmp(type, "bool")==0)
-                emit(signalID, value[0]=='t');
-            else if (strcmp(type, "long")==0)
+        if (!timestamp) {
+            if (strcmp(type, "bool") == 0)
+                emit(signalID, value[0] == 't');
+            else if (strcmp(type, "long") == 0)
                 emit(signalID, strtol(value, nullptr, 10));
-            else if (strcmp(type, "unsigned long")==0)
+            else if (strcmp(type, "unsigned long") == 0)
                 emit(signalID, strtoul(value, nullptr, 10));
-            else if (strcmp(type, "double")==0)
+            else if (strcmp(type, "double") == 0)
                 emit(signalID, strtod(value, nullptr));
-            else if (strcmp(type, "simtime_t")==0)
+            else if (strcmp(type, "simtime_t") == 0)
                 emit(signalID, STR_SIMTIME(value));
-            else if (strcmp(type, "string")==0)
+            else if (strcmp(type, "string") == 0)
                 emit(signalID, value);
-            else if (strcmp(type, "nullptr")==0)
-                emit(signalID, (cObject*)0);
-            else // interpret as class name
+            else if (strcmp(type, "nullptr") == 0)
+                emit(signalID, (cObject *)0);
+            else  // interpret as class name
                 emit(signalID, obj = createOne(type));
         }
-        else
-        {
+        else {
             simtime_t t = STR_SIMTIME(timestamp);
             cTimestampedValue tsval;
-            if (strcmp(type, "bool")==0)
-                tsval.set(t, value[0]=='t');
-            else if (strcmp(type, "long")==0)
+            if (strcmp(type, "bool") == 0)
+                tsval.set(t, value[0] == 't');
+            else if (strcmp(type, "long") == 0)
                 tsval.set(t, strtol(value, nullptr, 10));
-            else if (strcmp(type, "unsigned long")==0)
+            else if (strcmp(type, "unsigned long") == 0)
                 tsval.set(t, strtoul(value, nullptr, 10));
-            else if (strcmp(type, "double")==0)
+            else if (strcmp(type, "double") == 0)
                 tsval.set(t, strtod(value, nullptr));
-            else if (strcmp(type, "simtime_t")==0)
+            else if (strcmp(type, "simtime_t") == 0)
                 tsval.set(t, STR_SIMTIME(value));
-            else if (strcmp(type, "string")==0)
+            else if (strcmp(type, "string") == 0)
                 tsval.set(t, value);
-            else if (strcmp(type, "nullptr")==0)
-                tsval.set(t, (cObject*)nullptr);
-            else // interpret as class name
+            else if (strcmp(type, "nullptr") == 0)
+                tsval.set(t, (cObject *)nullptr);
+            else  // interpret as class name
                 tsval.set(t, obj = createOne(type));
             emit(signalID, &tsval);
         }
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         numErrors++;
         EV << "ERROR: " << e.what() << "\n";
     }

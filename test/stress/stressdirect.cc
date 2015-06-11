@@ -34,7 +34,7 @@ void RandomModuleSelector::visit(cObject *object)
         module->forEachChild(this);
 }
 
-cModule* StressDirect::getRandomModule()
+cModule *StressDirect::getRandomModule()
 {
     RandomModuleSelector selector;
     getSimulation()->getSystemModule()->forEachChild(&selector);
@@ -43,12 +43,14 @@ cModule* StressDirect::getRandomModule()
 
 void StressDirect::handleMessage(cMessage *msg)
 {
-    EV << "Sending direct message: "  << msg << "\n";;
+    EV << "Sending direct message: "  << msg << "\n";
+    ;
     cModule *randomModule = getRandomModule();
     msg->setName("Direct");
     sendDirect(msg,
-               par("propagationDelay").doubleValue(),
-               par("transmissionDelay").doubleValue(),
-               randomModule,
-               "directIn");
+            par("propagationDelay").doubleValue(),
+            par("transmissionDelay").doubleValue(),
+            randomModule,
+            "directIn");
 }
+

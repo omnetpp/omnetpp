@@ -22,7 +22,7 @@ class MeasureTime
 {
     timeval start, end;
 
-public:
+  public:
     MeasureTime() { gettimeofday(&start, nullptr); }
     ~MeasureTime()
     {

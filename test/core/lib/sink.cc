@@ -8,6 +8,7 @@ class Sink : public cSimpleModule
 {
   protected:
     int numPackets;
+
   protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;

@@ -21,7 +21,7 @@
 #ifdef _WIN32
 #include <io.h>
 #else
-#define _setmode(a,b)
+#define _setmode(a, b)
 #endif
 
 USING_NAMESPACE
@@ -48,9 +48,9 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"Usage:\n"
-"   filereadertest <input-file-name> (forward|backward)\n"
-);
+                    "Usage:\n"
+                    "   filereadertest <input-file-name> (forward|backward)\n"
+            );
 }
 
 int main(int argc, char **argv)
@@ -70,3 +70,4 @@ int main(int argc, char **argv)
         return -2;
     }
 }
+

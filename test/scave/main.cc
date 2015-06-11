@@ -1,15 +1,15 @@
-//=========================================================================
+// =========================================================================
 //  VECTORFILEREADERTEST.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//=========================================================================
+// =========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2015 Andras Varga
+   Copyright (C) 1992-2015 Andras Varga
 
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
+   This file is distributed WITHOUT ANY WARRANTY. See the file
+   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 #include <iostream>
@@ -44,7 +44,7 @@ static void usage(char *message)
     cerr << "indexedreader <input-file> <vector-id-list>\n\n";
 }
 
-static void parseIntList(const char *str, int *&result, int &len)
+static void parseIntList(const char *str, int *& result, int& len)
 {
     result = nullptr;
     len = 0;
@@ -55,38 +55,33 @@ static void parseIntList(const char *str, int *&result, int &len)
     int num = 0;
     const char *ptr = str;
 
-    while (*ptr)
-    {
+    while (*ptr) {
         if (!isdigit(*ptr))
             throw exception("Malformed interval start");
 
         start = 0;
-        while(isdigit(*ptr))
+        while (isdigit(*ptr))
             start = 10 * start + (*(ptr++) - '0');
 
-        if (*ptr == ',' || *ptr == '\0')
-        {
+        if (*ptr == ',' || *ptr == '\0') {
             end = start;
         }
-        else if (*ptr == '-')
-        {
+        else if (*ptr == '-') {
             if (!isdigit(*(++ptr)))
                 throw exception("Missing interval end");
 
             end = 0;
-            while(isdigit(*ptr))
+            while (isdigit(*ptr))
                 end = 10 * end + (*(ptr++) - '0');
         }
         else if (*ptr)
             throw exception("Unexpected char in int list");
 
-        if (start <= end)
-        {
+        if (start <= end) {
             for (int id = start; id <= end; ++id)
                 ids.push_back(id);
         }
-        else
-        {
+        else {
             for (int id = start; id >= end; --id)
                 ids.push_back(id);
         }
@@ -109,32 +104,28 @@ int main(int argc, char **argv)
             return -1;
         }
         else {
-            if (strcmp(argv[1], "reader-writer") == 0)
-            {
+            if (strcmp(argv[1], "reader-writer") == 0) {
                 if (argc < 4) {
                     usage("Not enough arguments specified");
                     return -1;
                 }
                 testReaderWriter(argv[2], argv[3]);
             }
-            else if (strcmp(argv[1], "reader-builder") == 0)
-            {
+            else if (strcmp(argv[1], "reader-builder") == 0) {
                 if (argc < 4) {
                     usage("Not enough arguments specified");
                     return -1;
                 }
                 testReaderBuilder(argv[2], argv[3]);
             }
-            else if (strcmp(argv[1], "resultfilemanager") == 0)
-            {
+            else if (strcmp(argv[1], "resultfilemanager") == 0) {
                 if (argc < 3) {
                     usage("Not enough arguments specified");
                     return -1;
                 }
                 testResultFileManager(argv[2]);
             }
-            else if (strcmp(argv[1], "indexer") == 0)
-            {
+            else if (strcmp(argv[1], "indexer") == 0) {
                 if (argc < 3) {
                     usage("Not enough arguments specified");
                     return -1;
@@ -142,8 +133,8 @@ int main(int argc, char **argv)
                 testIndexer(argv[2]);
             }
             else if (strcmp(argv[1], "indexedvectorfilereader") == 0 ||
-                        strcmp(argv[1], "indexedvectorfilereader2") == 0 ||
-                        strcmp(argv[1], "vectorfilereader") == 0)
+                     strcmp(argv[1], "indexedvectorfilereader2") == 0 ||
+                     strcmp(argv[1], "vectorfilereader") == 0)
             {
                 if (argc < 4) {
                     usage("Not enough arguments specified");
@@ -157,7 +148,7 @@ int main(int argc, char **argv)
                     return -1;
                 }
 
-                   testReader(argv[1], argv[2], vectorIds, count);
+                testReader(argv[1], argv[2], vectorIds, count);
             }
 
             cout << "PASS\n";
@@ -169,3 +160,4 @@ int main(int argc, char **argv)
         return -2;
     }
 }
+

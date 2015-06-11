@@ -22,10 +22,10 @@
 #ifdef _WIN32
 #include <io.h>
 #else
-#define _setmode(a,b)
+#define _setmode(a, b)
 #endif
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 USING_NAMESPACE
 
@@ -121,9 +121,9 @@ void usage(char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"Usage:\n"
-"   filereadertest <input-file-name> <number-of-lines> <number-of-seeks> <number-of-read-lines-per-seek>\n"
-);
+                    "Usage:\n"
+                    "   filereadertest <input-file-name> <number-of-lines> <number-of-seeks> <number-of-read-lines-per-seek>\n"
+            );
 }
 
 int main(int argc, char **argv)
@@ -147,3 +147,4 @@ int main(int argc, char **argv)
         return -2;
     }
 }
+

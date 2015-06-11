@@ -20,3 +20,4 @@ class FF1Generator : public cSimpleModule
 };
 
 #endif
+

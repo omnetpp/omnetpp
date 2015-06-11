@@ -14,7 +14,8 @@ USING_NAMESPACE
 class FF1Sink : public cSimpleModule
 {
   private:
-    cStdDev qstats; // needs to be accessed from finish() too
+    cStdDev qstats;  // needs to be accessed from finish() too
+
   public:
     FF1Sink() : cSimpleModule(16384) {}
     virtual void activity() override;
@@ -22,3 +23,4 @@ class FF1Sink : public cSimpleModule
 };
 
 #endif
+

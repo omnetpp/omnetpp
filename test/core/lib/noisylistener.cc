@@ -78,7 +78,7 @@ void NoisyListener::finish(cComponent *component, simsignal_t signalID)
     EV << "FINISH on "; printFrom(component, signalID); EV << "\n";
 
     getSimulation()->getSystemModule()->checkSignalConsistency();
-    ASSERT(component->isSubscribed(signalID,this));
+    ASSERT(component->isSubscribed(signalID, this));
 }
 
 void NoisyListener::subscribedTo(cComponent *component, simsignal_t signalID)
@@ -87,7 +87,7 @@ void NoisyListener::subscribedTo(cComponent *component, simsignal_t signalID)
     EV << "SUBSCRIBED at "; printFrom(component, signalID); EV << "\n";
 
     getSimulation()->getSystemModule()->checkSignalConsistency();
-    ASSERT(component->isSubscribed(signalID,this));
+    ASSERT(component->isSubscribed(signalID, this));
 }
 
 void NoisyListener::unsubscribedFrom(cComponent *component, simsignal_t signalID)

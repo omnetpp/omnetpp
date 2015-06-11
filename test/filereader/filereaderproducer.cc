@@ -29,11 +29,10 @@ void runProducer(const char *filename, double duration, int numberOfLines)
         sleep_usec = 999999;
 
     std::ofstream outfile(filename, std::ios::out);
-    for (int i = 0; i < numberOfLines; ++i)
-    {
+    for (int i = 0; i < numberOfLines; ++i) {
         outfile << i << std::endl;
         if (sleep_usec > 1000)
-        	usleep(sleep_usec);
+            usleep(sleep_usec);
     }
     outfile.close();
 }
@@ -44,9 +43,9 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"Usage:\n"
-"   filereaderproducer <output-file-name> <duration> [<number-of-lines>]\n"
-);
+                    "Usage:\n"
+                    "   filereaderproducer <output-file-name> <duration> [<number-of-lines>]\n"
+            );
 }
 
 int main(int argc, char **argv)
@@ -83,3 +82,4 @@ int main(int argc, char **argv)
         return -2;
     }
 }
+

@@ -6,6 +6,7 @@ class Controller : public cSimpleModule
 {
   private:
     int k;
+
   public:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
@@ -23,9 +24,9 @@ void Controller::handleMessage(cMessage *msg)
 {
     // delete some modules
     double p = par("deleteProbability");
-    for (cModule::SubmoduleIterator it(getSystemModule()); !it.end(); /**/) {
+    for (cModule::SubmoduleIterator it(getSystemModule()); !it.end();  /**/) {
         cModule *mod = it++;
-        if (strncmp(mod->getName(), "node-", 5)==0 && dblrand() < p)
+        if (strncmp(mod->getName(), "node-", 5) == 0 && dblrand() < p)
             mod->deleteModule();
     }
 

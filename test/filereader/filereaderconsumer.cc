@@ -23,12 +23,11 @@ USING_NAMESPACE
 
 void runConsumer(const char *filename, double duration)
 {
-    timeval start,end, now;
-    gettimeofday(&start,nullptr);
+    timeval start, end, now;
+    gettimeofday(&start, nullptr);
     end = timeval_add(start, duration);
 
-    while (true)
-    {
+    while (true) {
         if (duration > 0) {
             gettimeofday(&now, nullptr);
             if (timeval_greater(now, end))
@@ -37,14 +36,12 @@ void runConsumer(const char *filename, double duration)
 
         FileReader reader(filename);
         char *line;
-        while ((line=reader.getNextLineBufferPointer())!=nullptr)
-        {
-            //usleep(1);
-            int len=reader.getCurrentLineLength();
+        while ((line = reader.getNextLineBufferPointer()) != nullptr) {
+            // usleep(1);
+            int len = reader.getCurrentLineLength();
             if (len < 0)
                 throw opp_runtime_error("Line length is negative: %s\n", len);
         }
-
     }
 }
 
@@ -54,9 +51,9 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"Usage:\n"
-"   filereaderconsumer <input-file-name> <duration>\n"
-);
+                    "Usage:\n"
+                    "   filereaderconsumer <input-file-name> <duration>\n"
+            );
 }
 
 int main(int argc, char **argv)
@@ -70,7 +67,7 @@ int main(int argc, char **argv)
         else {
             const char *filename = argv[1];
             char *e;
-            double duration = strtod(argv[2],&e);
+            double duration = strtod(argv[2], &e);
             if (*e || duration < 0) {
                 usage("<duration> should be a non-negative number");
                 return -1;
@@ -89,3 +86,4 @@ int main(int argc, char **argv)
         return -2;
     }
 }
+
