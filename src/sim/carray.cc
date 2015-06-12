@@ -35,12 +35,6 @@ NAMESPACE_BEGIN
 Register_Class(cArray);
 
 
-//XXX this needs to be tested (test suite!) with:
-// 1) non-cOwnedObject objects, where getOwner() returns nullptr
-// 2) non-cOwnedObject objects, where getOwner()!=nullptr (and possible the array)
-// 3) cOwnedObject objects with takeownership==false
-// 4) cOwnedObject objects with takeownership==true
-
 void cArray::Iterator::init(const cArray& a, bool atHead)
 {
     array = const_cast<cArray *>(&a);  // we don't want a separate Const_Iterator class
@@ -60,27 +54,18 @@ void cArray::Iterator::init(const cArray& a, bool atHead)
     }
 }
 
-cObject *cArray::Iterator::operator++(int)
+void cArray::Iterator::advance()
 {
-    if (k < 0 || k >= array->size())
-        return nullptr;
-    cObject *obj = array->get(k);
-
     k++;
-    while (!array->get(k) && k < array->size())
+    while (!array->get(k) && k < array->size())  // skip holes
         k++;
-    return obj;
 }
 
-cObject *cArray::Iterator::operator--(int)
+void cArray::Iterator::retreat()
 {
-    if (k < 0 || k >= array->size())
-        return nullptr;
-    cObject *obj = array->get(k);
     k--;
-    while (!array->get(k) && k >= 0)
+    while (!array->get(k) && k >= 0)  // skip holes
         k--;
-    return obj;
 }
 
 //----

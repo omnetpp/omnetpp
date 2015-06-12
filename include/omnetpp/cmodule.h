@@ -56,11 +56,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Iterates through the gates of a module.
      *
-     * Example:
+     * Usage:
      * \code
-     * for (cModule::GateIterator i(modp); !i.end(); i++)
-     * {
-     *     cGate *gate = i();
+     * for (cModule::GateIterator it(module); !it.end(); ++it) {
+     *     cGate *gate = *it;
      *     ...
      * }
      * \endcode
@@ -74,6 +73,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         int index;
 
       private:
+        void bump();
         void advance();
         cGate *current() const;
 
@@ -89,7 +89,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         void init(const cModule *m);
 
         /**
-         * Returns the current object, or nullptr if the iterator is not
+         * Returns the current gate, or nullptr if the iterator is not
          * at a valid position.
          */
         cGate *operator*() const {cGate *result=current(); ASSERT(result||end()); return result;}
@@ -105,27 +105,27 @@ class SIM_API cModule : public cComponent //implies noncopyable
         bool end() const;
 
         /**
-         * Returns the current gate, then moves the iterator to the next gate.
-         * Only returns nullptr if the iterator has already reached the end of
-         * the list.
+         * Prefix increment operator (++it). Moves the iterator to the next
+         * gate. It has no effect if the iterator has reached either
+         * end of the list.
          */
-        cGate *operator++(int);
+        GateIterator& operator++() {if (!end()) advance(); return *this;}
 
         /**
-         * Advances the iterator by k gates. Equivalent to calling "++" k times,
-         * but more efficient.
+         * Postfix increment operator (it++). Moves the iterator to the next
+         * gate, and returns the iterator's previous state. It has no effect
+         * if the iterator has reached either end of the list.
          */
-        cGate *operator+=(int k);
+        GateIterator operator++(int) {GateIterator tmp(*this); if (!end()) advance(); return tmp;}
     };
 
     /**
-     * Iterates through submodules of a compound module.
+     * Iterates through the submodules of a compound module.
      *
-     * Example:
+     * Usage:
      * \code
-     * for (cModule::SubmoduleIterator i(modp); !i.end(); i++)
-     * {
-     *     cModule *submodp = i();
+     * for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
+     *     cModule *submodule = *it;
      *     ...
      * }
      * \endcode
@@ -134,6 +134,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
     {
       private:
         cModule *p;
+
+      private:
+        void advance() {p = p->nextSibling;}
+        void retreat() {p = p->prevSibling;}
 
       public:
         /**
@@ -160,20 +164,58 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Returns true if the iterator reached the end of the list.
          */
-        bool end() const  {return (bool)(p==nullptr);}
+        bool end() const  {return p==nullptr;}
 
         /**
-         * Returns the current module, then moves the iterator to the
-         * next module. Returns nullptr if the iterator has already reached
-         * the end of the list.
+         * Prefix increment operator (++it). Moves the iterator to the next
+         * submodule. It has no effect if the iterator has reached either
+         * end of the list.
          */
-        void operator++(int)  {if (p) p=p->nextSibling;}  //XXX
+        SubmoduleIterator& operator++() {if (!end()) advance(); return *this;}
+
+        /**
+         * Postfix increment operator (it++). Moves the iterator to the next
+         * submodule, and returns the iterator's previous state. It has no effect
+         * if the iterator has reached either end of the list.
+         */
+        SubmoduleIterator operator++(int) {SubmoduleIterator tmp(*this); if (!end()) advance(); return tmp;}
+
+        /**
+         * Prefix decrement operator (--it). Moves the iterator to the previous
+         * submodule. It has no effect if the iterator has reached either end
+         * of the list.
+         */
+        SubmoduleIterator& operator--() {if (!end()) retreat(); return *this;}
+
+        /**
+         * Postfix decrement operator (it--). Moves the iterator to the previous
+         * submodule, and returns the iterator's previous state. It has no effect
+         * if the iterator has reached either end of the list.
+         */
+        SubmoduleIterator operator--(int) {SubmoduleIterator tmp(*this); if (!end()) retreat(); return tmp;}
     };
 
     /**
      * Walks along the channels inside a module, that is, the channels
      * among the module and its submodules. This is the same set of channels
      * whose getParentModule() would return the iterated module.
+     *
+     * Implementation note:
+     *
+     * This iterator precollects the channels into an internal std::vector, then
+     * iterates over that. This means that (1) changes made during the iterator's
+     * lifetime will not be reflected in the iterator, and (2) copying the iterator
+     * is expensive. As a result of (2), no postfix increment/decrement iterators
+     * are provided to prevent their accidental use instead of the prefix operators.
+     * (Their lack can be trivially circumvented where needed.)
+     *
+     * Usage:
+     * \code
+     * for (cModule::ChannelIterator it(module); !it.end(); ++it) {
+     *     cChannel *channel = *it;
+     *     ...
+     * }
+     * \endcode
      */
     class SIM_API ChannelIterator
     {
@@ -185,18 +227,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Constructor. The iterator will walk on the module passed as argument.
          */
-        ChannelIterator(const cModule *parentmodule) {init(parentmodule);}
+        ChannelIterator(const cModule *parentModule);
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cModule *parentmodule);
+        void init(const cModule *parentModule);
 
         /**
          * Returns a pointer to the current channel. Returns nullptr if the iterator
          * has reached the end of the list.
          */
-        cChannel *operator*() const {return k < (int)channels.size() ? channels[k] : nullptr;}
+        cChannel *operator*() const {return end() ? nullptr : channels[k];}
 
         /**
          * DEPRECATED. Use the * operator to access the object the iterator is at.
@@ -206,15 +248,27 @@ class SIM_API cModule : public cComponent //implies noncopyable
         /**
          * Returns true if the iterator has reached the end.
          */
-        bool end() const {return k == (int)channels.size();}
+        bool end() const {return k < 0 || k >= (int)channels.size();}
 
         /**
-         * Returns the current object, then moves the iterator to the next item.
-         * If the iterator has reached end, nothing happens; you have to call
-         * init() again to restart iterating. If modules, gates or channels
-         * are added or removed during iteration, the behaviour is undefined.
+         * Prefix increment operator (++it). Moves the iterator to the next
+         * channel in the list. It has no effect if the iterator has
+         * reached either end of the list.
+         *
+         * Note: postfix increment/decrement operators are not provided, to avoid
+         * large unnecessary copying overhead resulting from accidental use.
          */
-        cChannel *operator++(int) {return end() ? nullptr : channels[k++];} //XXX wrong semantics -- should return cChannel** for consistency! *it++ should be a cChannel* ptr
+        ChannelIterator& operator++() {if (!end()) k++; return *this;}
+
+        /**
+         * Prefix decrement operator (--it). Moves the iterator to the previous
+         * channel in the list. It has no effect if the iterator has
+         * reached either end of the list.
+         *
+         * Note: postfix increment/decrement operators are not provided, to avoid
+         * large unnecessary copying overhead resulting from accidental use.
+         */
+        ChannelIterator& operator--() {if (!end()) k--; return *this;}
     };
 
   private:

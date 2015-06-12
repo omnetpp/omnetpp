@@ -1017,7 +1017,8 @@ int cModule::gateCount() const
 cGate *cModule::gateByOrdinal(int k) const
 {
     GateIterator it(this);
-    it += k;
+    for (int i = 0; i < k; i++)
+        ++it;  //TODO make more efficient
     return it.end() ? nullptr : *it;
 }
 
@@ -1431,10 +1432,10 @@ void cModule::GateIterator::init(const cModule *module)
     index = 0;
 
     while (!end() && current() == nullptr)
-        advance();
+        bump();
 }
 
-void cModule::GateIterator::advance()
+void cModule::GateIterator::bump()
 {
     cGate::Desc *desc = module->gateDescArray + descIndex;
 
@@ -1485,39 +1486,32 @@ cGate *cModule::GateIterator::current() const
         return isOutput ? desc->output.gatev[index] : desc->input.gatev[index];
 }
 
-cGate *cModule::GateIterator::operator++(int)
+void cModule::GateIterator::advance()
 {
-    if (end())
-        return nullptr;
-    cGate *gate = nullptr;
     do {
-        advance();
-    } while (!end() && (gate = current()) == nullptr);
-    return gate;
-}
-
-cGate *cModule::GateIterator::operator+=(int k)
-{
-    // Note: this is the straightforward solution. We could do better, like skip gate vectors at once, etc
-    for (int i = 0; i < k; i++)
-        (*this)++;
-    return *(*this);
+        bump();
+    } while (!end() && current() == nullptr);
 }
 
 //----
+
+cModule::ChannelIterator::ChannelIterator(const cModule *parentModule)
+{
+    init(parentModule);
+}
 
 void cModule::ChannelIterator::init(const cModule *parentModule)
 {
     // loop through the gates of parentModule and its submodules
     // to fill in the channels[] vector
-    bool parent = false;
+    bool atParent = false;
     channels.clear();
     for (SubmoduleIterator it(parentModule); !parent; it++) {
-        const cModule *mod = !it.end() ? *it : (parent = true, parentModule);
+        const cModule *module = !it.end() ? *it : (parent = true, parentModule);
 
-        for (GateIterator gateIt(mod); !gateIt.end(); gateIt++) {
+        for (GateIterator gateIt(module); !gateIt.end(); gateIt++) {
             const cGate *gate = *gateIt;
-            cGate::Type wantedGateType = parent ? cGate::INPUT : cGate::OUTPUT;
+            cGate::Type wantedGateType = atParent ? cGate::INPUT : cGate::OUTPUT;
             if (gate && gate->getChannel() && gate->getType() == wantedGateType)
                 channels.push_back(gate->getChannel());
         }

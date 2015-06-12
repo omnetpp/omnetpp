@@ -43,7 +43,16 @@ class SIM_API cArray : public cOwnedObject
 {
   public:
     /**
-     * Walks along a cArray.
+     * Iterates through elements in a cArray, skipping holes (slots containing
+     * nullptr).
+     *
+     * Usage:
+     * \code
+     * for (cArray::Iterator it(array); !it.end(); ++it) {
+     *     cObject *item = *it;
+     *     ...
+     * }
+     * \endcode
      */
     class Iterator
     {
@@ -51,18 +60,22 @@ class SIM_API cArray : public cOwnedObject
         cArray *array;
         int k;
 
+     private:
+        void advance();
+        void retreat();
+
       public:
         /**
          * Constructor. Iterator will walk on the array passed as argument.
-         * The starting object will be the first (if athead==true) or
-         * the last (athead==false) object in the array, not counting empty slots.
+         * The starting object will be the first (if atHead==true) or
+         * the last (atHead==false) object in the array, not counting empty slots.
          */
-        Iterator(const cArray& a, bool athead=true)  {init(a, athead);}
+        Iterator(const cArray& a, bool atHead=true)  {init(a, atHead);}
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cArray& a, bool athead=true);
+        void init(const cArray& a, bool atHead=true);
 
         /**
          * Returns a pointer to the current object, or nullptr if
@@ -81,24 +94,32 @@ class SIM_API cArray : public cOwnedObject
         bool end() const   {return k<0 || k>=array->size();}
 
         /**
-         * Returns the current object, then moves the iterator to the next item.
-         * Empty slots in the array are skipped.
-         * If the iterator has reached either end of the array, nothing happens;
-         * you have to call init() again to restart iterating.
-         * If elements are added or removed during interation, the behaviour
-         * is undefined.
+         * Prefix increment operator (++it). Moves the iterator to the next
+         * non-empty slot in the array. It has no effect if the iterator has
+         * reached either end of the array.
          */
-        cObject *operator++(int);
+        Iterator& operator++() {if (!end()) advance(); return *this;}
 
         /**
-         * Returns the current object, then moves the iterator to the previous item.
-         * Empty slots in the array are skipped.
-         * If the iterator has reached either end of the array, nothing happens;
-         * you have to call init() again to restart iterating.
-         * If elements are added or removed during interation, the behaviour
-         * is undefined.
+         * Postfix increment operator (it++). Moves the iterator to the next
+         * non-empty slot in the array, and returns the iterator's previous state.
+         * It has no effect if the iterator has reached either end of the array.
          */
-        cObject *operator--(int);
+        Iterator operator++(int) {Iterator tmp(*this); if (!end()) advance(); return tmp;}
+
+        /**
+         * Prefix decrement operator (--it). Moves the iterator to the previous
+         * non-empty slot in the array. It has no effect if the iterator has
+         * reached either end of the array.
+         */
+        Iterator& operator--() {if (!end()) retreat(); return *this;}
+
+        /**
+         * Postfix decrement operator (it--). Moves the iterator to the previous
+         * non-empty slot in the array, and returns the iterator's previous state.
+         * It has no effect if the iterator has reached either end of the array.
+         */
+        Iterator operator--(int) {Iterator tmp(*this); if (!end()) retreat(); return tmp;}
     };
 
   private:

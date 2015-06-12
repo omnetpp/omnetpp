@@ -78,40 +78,55 @@ class SIM_API cQueue : public cOwnedObject
          * The iterator can be initialized for forward (front-to-back, using
          * <tt>++</tt>) or reverse (back-to-front, using <tt>--</tt>) iteration.
          */
-        Iterator(const cQueue& q, bool reverse=false)
-                {p = reverse ? q.backp : q.frontp;}
+        Iterator(const cQueue& q, bool reverse=false) { init(q, reverse);}
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cQueue& q, bool reverse=false)
-                {p = reverse ? q.backp : q.frontp;}
+        void init(const cQueue& q, bool reverse=false) {p = reverse ? q.backp : q.frontp;}
 
         /**
          * Returns the current object.
          */
-        cObject *operator()()  {return p ? p->obj : nullptr;}
+        cObject *operator*() const {return p ? p->obj : nullptr;}
+
+        /**
+         * DEPRECATED. Use the * operator to access the object the iterator is at.
+         */
+        _OPPDEPRECATED cObject *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator has reached either end of the queue.
          */
-        bool end() const   {return (bool)(p==nullptr);}
+        bool end() const {return p == nullptr;}
 
         /**
-         * Returns the current object, then moves the iterator to the next item
-         * (towards the back of the queue). If the iterator has previously
-         * reached either end of the queue, nothing happens, and one has to
-         * call init() to restart iterating.
+         * Prefix increment operator (++it). Moves the iterator to the next object
+         * in the queue. It has no effect if the iterator has reached either
+         * end of the queue.
          */
-        cObject *operator++(int)  {if (!p) return nullptr; cObject *r=p->obj; p=p->next; return r;}
+        Iterator& operator++() {if (!end()) p = p->next; return *this;}
 
         /**
-         * Returns the current object, then moves the iterator to the previous item
-         * (towards the front of the queue). If the iterator has previously
-         * reached either end of the queue, nothing happens, and one has to
-         * call init() to restart iterating.
+         * Postfix increment operator (it++). Moves the iterator to the next object
+         * in the queue, and returns the iterator's previous state. It has
+         * no effect if the iterator has reached either end of the queue.
          */
-        cObject *operator--(int)  {if (!p) return nullptr; cObject *r=p->obj; p=p->prev; return r;}
+        Iterator operator++(int) {Iterator tmp(*this); if (!end()) p = p->next; return tmp;}
+
+        /**
+         * Prefix decrement operator (--it). Moves the iterator to the previous object
+         * in the queue. It has no effect if the iterator has reached either
+         * end of the queue.
+         */
+        Iterator& operator--() {if (!end()) p = p->prev; return *this;}
+
+        /**
+         * Postfix decrement operator (it--). Moves the iterator to the previous object
+         * in the queue, and returns the iterator's previous state. It has
+         * no effect if the iterator has reached either end of the queue.
+         */
+        Iterator operator--(int) {Iterator tmp(*this); if (!end()) p = p->prev; return tmp;}
     };
 
     friend class Iterator;
