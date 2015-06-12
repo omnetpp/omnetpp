@@ -715,7 +715,7 @@ void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
 
     std::vector<cFigure::Point> points = polyFigure->getPoints();
     if (points.size() < 2)
-        {}//throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
+        return;//throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
 
     QPainterPath painter;
 

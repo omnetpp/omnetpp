@@ -561,12 +561,14 @@ void ModuleInspector::redrawModules()
 
 void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
 {
-    QGraphicsScene *scene = static_cast<MainWindow*>(window)->getScene();
+    MainWindow* mainWindow = static_cast<MainWindow*>(window);
+    QGraphicsScene *scene = mainWindow->getScene();
     printf("drawSubmodule %s %g %g %p \n", submod->getFullName(), x, y, scene);
     const char *iconName = submod->getDisplayString().getTagArg("i", 0);
     if(iconName == nullptr)
         iconName = "block/process";
 
+    //TODO context menu + doubleclick
     QPixmap icon = getTkenv()->icons.getImage(iconName);
     submoduleGraphicsItems[submod->getId()] = scene->addPixmap(icon);
     submoduleGraphicsItems[submod->getId()]->setPos(x, y);

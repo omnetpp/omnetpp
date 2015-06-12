@@ -27,8 +27,8 @@
 #include "inspector.h"
 #include "common/stringutil.h"
 #include "stopdialog.h"
+#include "graphicsscene.h"
 
-#include "imagecache.h"
 #include "qdebug.h"
 
 using namespace qtenv;
@@ -40,9 +40,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    scene = new QGraphicsScene(this);
-    printf("%p \n", scene);
-    ui->moduleGraphicsView->setScene(scene);
+    ui->moduleGraphicsView->setScene(new GraphicsScene(this));
     ui->moduleGraphicsView->setRenderHints(QPainter::Antialiasing);
 
     TreeItemModel *model = new TreeItemModel();
@@ -260,20 +258,22 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
         return;
 
     RunSelectionDialog *dialog = new RunSelectionDialog(env, this);
-    dialog->exec();
-    //TODO debug "selected $configname $runnumber"
-    busy("Setting up network...");
-    //TODO inspectorList:addAll 1
-    env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
-    //TODO reflectRecordEventlog
-    busy();
-
-    if(getSimulation()->getSystemModule() != nullptr)
+    if(dialog->exec())
     {
-        // tell plugins about it
-        busy("Notifying Tcl plugins...");
-        //TODO notifyPlugins newNetwork
+        //TODO debug "selected $configname $runnumber"
+        busy("Setting up network...");
+        //TODO inspectorList:addAll 1
+        env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
+        //TODO reflectRecordEventlog
         busy();
+
+        if(getSimulation()->getSystemModule() != nullptr)
+        {
+            // tell plugins about it
+            busy("Notifying Tcl plugins...");
+            //TODO notifyPlugins newNetwork
+            busy();
+        }
     }
 
     delete dialog;

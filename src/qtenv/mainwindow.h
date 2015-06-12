@@ -27,6 +27,7 @@ class QGraphicsScene;
 class QStandardItem;
 class QTreeView;
 class QGraphicsView;
+class QGraphicsSceneMouseEvent;
 class cObject;
 class cEvent;
 class StopDialog;
@@ -90,7 +91,6 @@ private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     qtenv::Qtenv *env;
-    QGraphicsScene *scene;
     StopDialog *stopDialog;
 
     bool isRunning();
