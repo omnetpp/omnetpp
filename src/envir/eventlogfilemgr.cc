@@ -288,19 +288,17 @@ void EventlogFileManager::recordMessages()
 void EventlogFileManager::recordModules(cModule *module)
 {
     moduleCreated(module);
-    for (cModule::GateIterator it(module); !it.end(); it++) {
-        cGate *gate = it();
-        gateCreated(gate);
-    }
+    for (cModule::GateIterator it(module); !it.end(); it++)
+        gateCreated(*it);
     displayStringChanged(module);
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
-        recordModules(it());
+        recordModules(*it);
 }
 
 void EventlogFileManager::recordConnections(cModule *module)
 {
     for (cModule::GateIterator it(module); !it.end(); it++) {
-        cGate *gate = it();
+        cGate *gate = *it;
         if (gate->getNextGate())
             connectionCreated(gate);
         cChannel *channel = gate->getChannel();
@@ -308,7 +306,7 @@ void EventlogFileManager::recordConnections(cModule *module)
             displayStringChanged(channel);
     }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
-        recordConnections(it());
+        recordConnections(*it);
 }
 
 void EventlogFileManager::startRun()

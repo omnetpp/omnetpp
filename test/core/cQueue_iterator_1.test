@@ -20,18 +20,18 @@ for (i=0; i<5; i++)
 
 i=0;
 EV << "forward:\n";
-for (cQueue::Iterator iter(q); !iter.end(); iter++, i++)
+for (cQueue::Iterator it(q); !it.end(); it++, i++)
 {
-    EV << " msg[" << i << "]=" << msgs[i]->getName() << ", iter()=" << iter()->getName() << endl;
-    CHECK(iter()==msgs[i]);
+    EV << " msg[" << i << "]=" << msgs[i]->getName() << ", *it=" << (*it)->getName() << endl;
+    CHECK(*it==msgs[i]);
 }
 
 i=4;
 EV << "backward:\n";
-for (cQueue::Iterator iter2(q,true); !iter2.end(); iter2--, i--)
+for (cQueue::Iterator it(q,true); !it.end(); it--, i--)
 {
-    EV << " msg[" << i << "]=" << msgs[i]->getName() << ", iter()=" << iter2()->getName() << endl;
-    CHECK(iter2()==msgs[i]);
+    EV << " msg[" << i << "]=" << msgs[i]->getName() << ", (*it)=" << (*it)->getName() << endl;
+    CHECK((*it)==msgs[i]);
 }
 
 EV << "OK!\n";

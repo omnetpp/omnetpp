@@ -103,8 +103,8 @@ void cParsimPartition::connectRemoteGates()
     for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cModule *mod = sim->getModule(modId);
         if (mod && !mod->isPlaceholder()) {
-            for (cModule::GateIterator i(mod); !i.end(); i++) {
-                cGate *g = i();
+            for (cModule::GateIterator it(mod); !it.end(); it++) {
+                cGate *g = *it;
                 if (g->getType() == cGate::INPUT) {
                     // if gate is connected to a placeholder module, in another partition that will
                     // be a local module and our module will be a placeholder with proxy gates
@@ -188,8 +188,8 @@ void cParsimPartition::connectRemoteGates()
     for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cModule *mod = sim->getModule(modId);
         if (mod && mod->isPlaceholder()) {
-            for (cModule::GateIterator i(mod); !i.end(); i++) {
-                cProxyGate *pg = dynamic_cast<cProxyGate *>(i());
+            for (cModule::GateIterator it(mod); !it.end(); it++) {
+                cProxyGate *pg = dynamic_cast<cProxyGate *>(*it);
                 if (pg && pg->getRemoteProcId() == -1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
                     throw cRuntimeError("parallel simulation error: dangling proxy gate '%s' "
                                         "(module '%s' or some of its submodules not instantiated in any partition?)",

@@ -8,7 +8,7 @@ int compareByName(cObject *a, cObject *b) {
 
 void dump(cQueue& q) {
     for (cQueue::Iterator it(q); !it.end(); it++)
-        EV << " " << it()->getName();
+        EV << " " << (*it)->getName();
     EV << "\n";
 }
 

@@ -1216,8 +1216,7 @@ int hasSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         return TCL_ERROR;
     }
 
-    cModule::SubmoduleIterator i(mod);
-    Tcl_SetResult(interp, i.end() ? TCLCONST("0") : TCLCONST("1"), TCL_STATIC);
+    Tcl_SetResult(interp, mod->hasSubmodules() ? TCLCONST("1") : TCLCONST("0"), TCL_STATIC);
     return TCL_OK;
 }
 
@@ -1239,8 +1238,8 @@ int getSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     }
 
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-    for (cModule::SubmoduleIterator i(mod); !i.end(); i++)
-        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(i()), -1));
+    for (cModule::SubmoduleIterator it(mod); !it.end(); it++)
+        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*it), -1));
     Tcl_SetObjResult(interp, listobj);
     return TCL_OK;
 }
@@ -1408,8 +1407,8 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 static void collectTypes(cModule *mod, std::set<cComponentType *>& types)
 {
     types.insert(mod->getComponentType());
-    for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++)
-        collectTypes(submod(), types);
+    for (cModule::SubmoduleIterator it(mod); !it.end(); it++)
+        collectTypes(*it, types);
 }
 
 int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

@@ -76,8 +76,8 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     }
 
     bool gateheadingprinted = false;
-    for (cModule::GateIterator i(mod); !i.end(); i++) {
-        cGate *gate = i();
+    for (cModule::GateIterator it(mod); !it.end(); it++) {
+        cGate *gate = *it;
         if (!gateheadingprinted) {
             printf("%s    gates:\n", indent);
             gateheadingprinted = true;
@@ -89,12 +89,12 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     }
 
     bool submodheadingprinted = false;
-    for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++) {
+    for (cModule::SubmoduleIterator it(mod); !it.end(); it++) {
         if (!submodheadingprinted) {
             printf("%s    submodules:\n", indent);
             submodheadingprinted = true;
         }
-        dump(submod(), currentIndent+"        ");
+        dump(*it, currentIndent+"        ");
     }
     printf("%s}\n", indent);
 }

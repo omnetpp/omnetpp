@@ -168,10 +168,10 @@ void ModuleInspector::relayoutAndRedrawAll()
     cModule *mod = (cModule *)object;
     int submoduleCount = 0;
     int estimatedGateCount = mod->gateCount();
-    for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++) {
+    for (cModule::SubmoduleIterator it(mod); !it.end(); it++) {
         submoduleCount++;
         // note: estimatedGateCount will count unconnected gates in the gate array as well
-        estimatedGateCount += submod()->gateCount();
+        estimatedGateCount += (*it)->gateCount();
     }
 
     notDrawn = false;
@@ -359,7 +359,7 @@ void ModuleInspector::refreshLayout()
     if (choice == LAYOUTER_AUTO) {
         const int LIMIT = 20;  // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
         int submodCountLimited = 0;
-        for (cModule::SubmoduleIterator submod(parentModule); !submod.end() && submodCountLimited < LIMIT; submod++)
+        for (cModule::SubmoduleIterator it(parentModule); !it.end() && submodCountLimited < LIMIT; it++)
             submodCountLimited++;
         choice = submodCountLimited >= LIMIT ? LAYOUTER_FAST : LAYOUTER_ADVANCED;
     }
@@ -382,7 +382,7 @@ void ModuleInspector::refreshLayout()
 
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++) {
-        cModule *submod = it();
+        cModule *submod = *it;
 
         bool explicitCoords, obeysLayout;
         double x, y, sx, sy;
@@ -411,10 +411,10 @@ void ModuleInspector::refreshLayout()
     // add connections into the layouter, too
     bool atParent = false;
     for (cModule::SubmoduleIterator it(parentModule); !atParent; it++) {
-        cModule *mod = !it.end() ? it() : (atParent = true, parentModule);
+        cModule *mod = !it.end() ? *it : (atParent = true, parentModule);
 
-        for (cModule::GateIterator i(mod); !i.end(); i++) {
-            cGate *gate = i();
+        for (cModule::GateIterator git(mod); !git.end(); git++) {
+            cGate *gate = *git;
             cGate *destGate = gate->getNextGate();
             if (gate->getType() == (atParent ? cGate::INPUT : cGate::OUTPUT) && destGate) {
                 cModule *destMod = destGate->getOwnerModule();
@@ -459,7 +459,7 @@ void ModuleInspector::refreshLayout()
     // fill the map with the results
     submodPosMap.clear();
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++) {
-        cModule *submod = it();
+        cModule *submod = *it;
 
         Point pos;
         layouter->getNodePosition(submod->getId(), pos.x, pos.y);
@@ -480,7 +480,7 @@ void ModuleInspector::redrawModules()
     CHK(Tcl_VarEval(interp, canvas, " delete dx", TCL_NULL));  // NOT "delete all" because that'd remove "bubbles" too!
 
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); it++) {
-        cModule *submod = it();
+        cModule *submod = *it;
         assert(submodPosMap.find(submod) != submodPosMap.end());
         Point& pos = submodPosMap[submod];
         drawSubmodule(submod, pos.x, pos.y);
@@ -492,10 +492,10 @@ void ModuleInspector::redrawModules()
     // loop through all submodules and enclosing module & draw their connections
     bool atParent = false;
     for (cModule::SubmoduleIterator it(parentModule); !atParent; it++) {
-        cModule *mod = !it.end() ? it() : (atParent = true, parentModule);
+        cModule *mod = !it.end() ? *it : (atParent = true, parentModule);
 
-        for (cModule::GateIterator i(mod); !i.end(); i++) {
-            cGate *gate = i();
+        for (cModule::GateIterator git(mod); !git.end(); git++) {
+            cGate *gate = *git;
             if (gate->getType() == (atParent ? cGate::INPUT : cGate::OUTPUT) && gate->getNextGate() != nullptr) {
                 drawConnection(gate);
             }
@@ -697,10 +697,10 @@ void ModuleInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
 
 void ModuleInspector::refreshSubmodules()
 {
-    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++) {
+    for (cModule::SubmoduleIterator it(static_cast<cModule *>(object)); !it.end(); it++) {
         CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
                         windowName, " ",
-                        ptrToStr(submod()),
+                        ptrToStr(*it),
                         TCL_NULL));
     }
 }
@@ -988,7 +988,7 @@ int ModuleInspector::getSubmoduleCount(int argc, const char **argv)
         return TCL_ERROR;
     }
     int count = 0;
-    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
+    for (cModule::SubmoduleIterator it(static_cast<cModule *>(object)); !it.end(); it++)
         count++;
     Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
     return TCL_OK;

@@ -89,10 +89,15 @@ class SIM_API cModule : public cComponent //implies noncopyable
         void init(const cModule *m);
 
         /**
-         * Returns a pointer to the current gate. Only returns nullptr if the
-         * iterator has reached the end of the list.
+         * Returns the current object, or nullptr if the iterator is not
+         * at a valid position.
          */
-        cGate *operator()() const {cGate *result=current(); ASSERT(result||end()); return result;}
+        cGate *operator*() const {cGate *result=current(); ASSERT(result||end()); return result;}
+
+        /**
+         * DEPRECATED. Use the * operator to access the object the iterator is at.
+         */
+        _OPPDEPRECATED cGate *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator reached the end of the list.
@@ -142,11 +147,15 @@ class SIM_API cModule : public cComponent //implies noncopyable
         void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstSubmodule) : nullptr;}
 
         /**
-         * Returns pointer to the current module. The pointer then
-         * may be cast to the appropriate cModule subclass.
-         * Returns nullptr if the iterator has reached the end of the list.
+         * Returns a pointer to the current module. Returns nullptr if the iterator
+         * has reached the end of the list.
          */
-        cModule *operator()() const {return p;}
+        cModule *operator*() const {return p;}
+
+        /**
+         * DEPRECATED. Use the * operator to access the object the iterator is at.
+         */
+        _OPPDEPRECATED cModule *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator reached the end of the list.
@@ -158,7 +167,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * next module. Returns nullptr if the iterator has already reached
          * the end of the list.
          */
-        cModule *operator++(int)  {if (!p) return nullptr; cModule *t=p; p=p->nextSibling; return t;}
+        void operator++(int)  {if (p) p=p->nextSibling;}  //XXX
     };
 
     /**
@@ -184,10 +193,15 @@ class SIM_API cModule : public cComponent //implies noncopyable
         void init(const cModule *parentmodule);
 
         /**
-         * Returns the current object, or nullptr if the iterator is not
-         * at a valid position.
+         * Returns a pointer to the current channel. Returns nullptr if the iterator
+         * has reached the end of the list.
          */
-        cChannel *operator()() const {return k < (int)channels.size() ? channels[k] : nullptr;}
+        cChannel *operator*() const {return k < (int)channels.size() ? channels[k] : nullptr;}
+
+        /**
+         * DEPRECATED. Use the * operator to access the object the iterator is at.
+         */
+        _OPPDEPRECATED cChannel *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator has reached the end.
@@ -200,7 +214,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * init() again to restart iterating. If modules, gates or channels
          * are added or removed during iteration, the behaviour is undefined.
          */
-        cChannel *operator++(int) {return end() ? nullptr : channels[k++];}
+        cChannel *operator++(int) {return end() ? nullptr : channels[k++];} //XXX wrong semantics -- should return cChannel** for consistency! *it++ should be a cChannel* ptr
     };
 
   private:
@@ -530,14 +544,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * its module ID. If the submodule was not found, returns -1. Index
      * must be specified exactly if the module is member of a module vector.
      */
-    int findSubmodule(const char *submodname, int idx=-1);
+    int findSubmodule(const char *name, int index=-1);
 
     /**
      * Finds a direct submodule with the given name and index, and returns
      * its pointer. If the submodule was not found, returns nullptr.
      * Index must be specified exactly if the module is member of a module vector.
      */
-    cModule *getSubmodule(const char *submodname, int idx=-1);
+    cModule *getSubmodule(const char *name, int index=-1);
 
     /**
      * Finds a module in the module tree, given by its absolute or relative path.

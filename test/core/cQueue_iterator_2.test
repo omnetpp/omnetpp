@@ -1,6 +1,6 @@
 %description:
 test cQueue::Iterator with empty queue
-test iter++, iter-- and iter() behaves good after reaching end()
+test iter++, iter-- and *iter behaves good after reaching end()
 
 %activity:
 
@@ -10,36 +10,36 @@ cQueue q("queue");
 
 cQueue::Iterator iter(q);
 CHECK(iter.end());
-CHECK(iter()==nullptr);
+CHECK(*iter==nullptr);
 
 iter++;
 CHECK(iter.end());
-CHECK(iter()==nullptr);
+CHECK(*iter==nullptr);
 
 iter++;
 CHECK(iter.end());
-CHECK(iter()==nullptr);
+CHECK(*iter==nullptr);
 
 iter--;
 CHECK(iter.end());
-CHECK(iter()==nullptr);
+CHECK(*iter==nullptr);
 
 iter--;
 CHECK(iter.end());
-CHECK(iter()==nullptr);
+CHECK(*iter==nullptr);
 
 // now with reverse==true
 cQueue::Iterator iter2(q,true);
 CHECK(iter2.end());
-CHECK(iter2()==nullptr);
+CHECK(*iter2==nullptr);
 
 iter2++;
 CHECK(iter2.end());
-CHECK(iter2()==nullptr);
+CHECK(*iter2==nullptr);
 
 iter2--;
 CHECK(iter2.end());
-CHECK(iter2()==nullptr);
+CHECK(*iter2==nullptr);
 
 EV << "OK!\n";
 

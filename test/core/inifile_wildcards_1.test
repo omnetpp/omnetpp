@@ -68,10 +68,8 @@ void Simple::printParametersOf(cModule *mod)
     EV << mod->par("par").getFullPath() << "=" << mod->par("par").str() << endl;
     EV << mod->par("param").getFullPath() << "=" << mod->par("param").str() << endl;
 
-    for (cModule::SubmoduleIterator i(mod); !i.end(); i++)
-    {
-        printParametersOf(i());
-    }
+    for (cModule::SubmoduleIterator it(mod); !it.end(); it++)
+        printParametersOf(*it);
 }
 
 }; //namespace

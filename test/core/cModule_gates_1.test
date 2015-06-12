@@ -195,8 +195,8 @@ void Node::testGateIterator()
 
     int n = 0;
     std::set<cGate *> visited;
-    for (GateIterator i(this); !i.end(); i++) {
-        cGate *g = i();
+    for (GateIterator it(this); !it.end(); it++) {
+        cGate *g = *it;
         ASSERT(g!=nullptr);
         ASSERT(gate(g->getId()) == g);
         ASSERT(visited.count(g)==0);

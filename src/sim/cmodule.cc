@@ -84,8 +84,10 @@ cModule::~cModule()
     EVCB.moduleDeleted(this);
 
     // delete submodules
-    for (SubmoduleIterator submod(this); !submod.end(); ) {
-        if (submod() == (cModule *)getSimulation()->getContextModule()) {
+    for (SubmoduleIterator it(this); !it.end(); ) {
+        cModule *submodule = *it;
+        it++;
+        if (submodule == (cModule *)getSimulation()->getContextModule()) {
             // NOTE: subclass destructors will not be called, but the simulation will stop anyway
             throw cRuntimeError("Cannot delete a compound module from one of its submodules!");
             // The reason is that deleteModule() of the currently executing
@@ -97,14 +99,12 @@ cModule::~cModule()
             // However, this would be clumsy and ugly to implement so
             // I'd rather wait until the real need for it emerges... --VA
         }
-
-        cModule *mod = submod++;
-        mod->deleteModule();
+        submodule->deleteModule();
     }
 
     // adjust gates that were directed here
-    for (GateIterator i(this); !i.end(); i++) {
-        cGate *gate = i();
+    for (GateIterator it(this); !it.end(); it++) {
+        cGate *gate = *it;
         if (gate->getNextGate() && gate->getNextGate()->getPreviousGate() == gate)
             gate->disconnect();
         if (gate->getPreviousGate() && gate->getPreviousGate()->getNextGate() == gate)
@@ -127,10 +127,10 @@ cModule::~cModule()
 void cModule::releaseListeners()
 {
     releaseLocalListeners();
-    for (ChannelIterator chan(this); !chan.end(); chan++)
-        chan()->releaseLocalListeners();
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        submod()->releaseListeners();
+    for (ChannelIterator it(this); !it.end(); it++)
+        (*it)->releaseLocalListeners();
+    for (SubmoduleIterator it(this); !it.end(); it++)
+        (*it)->releaseListeners();
 }
 
 void cModule::forEachChild(cVisitor *v)
@@ -138,8 +138,8 @@ void cModule::forEachChild(cVisitor *v)
     for (int i = 0; i < numPars; i++)
         v->visit(&parArray[i]);
 
-    for (GateIterator i(this); !i.end(); i++)
-        v->visit(i());
+    for (GateIterator it(this); !it.end(); it++)
+        v->visit(*it);
 
     cDefaultList::forEachChild(v);
 }
@@ -1018,7 +1018,7 @@ cGate *cModule::gateByOrdinal(int k) const
 {
     GateIterator it(this);
     it += k;
-    return it.end() ? nullptr : it();
+    return it.end() ? nullptr : *it;
 }
 
 bool cModule::checkInternalConnections() const
@@ -1031,45 +1031,45 @@ bool cModule::checkInternalConnections() const
     // Note: checking of the inner side of compound module gates
     // cannot be turned off with @loose
     if (!isSimple()) {
-        for (GateIterator i(this); !i.end(); i++) {
-            cGate *g = i();
-            if (g->size() != 0 && !g->isConnectedInside())
-                throw cRuntimeError(this, "Gate `%s' is not connected to a submodule (or internally to another gate of the same module)", g->getFullPath().c_str());
+        for (GateIterator it(this); !it.end(); it++) {
+            cGate *gate = *it;
+            if (gate->size() != 0 && !gate->isConnectedInside())
+                throw cRuntimeError(this, "Gate `%s' is not connected to a submodule (or internally to another gate of the same module)", gate->getFullPath().c_str());
         }
     }
 
     // check submodules
-    for (SubmoduleIterator submod(this); !submod.end(); submod++) {
-        cModule *m = submod();
-        for (GateIterator i(m); !i.end(); i++) {
-            cGate *g = i();
-            if (g->size() != 0 && !g->isConnectedOutside() &&
-                g->getProperties()->getAsBool("loose") == false &&
-                g->getProperties()->getAsBool("directIn") == false)
-                throw cRuntimeError(this, "Gate `%s' is not connected to sibling or parent module", g->getFullPath().c_str());
+    for (SubmoduleIterator it(this); !it.end(); it++) {
+        cModule *submodule = *it;
+        for (GateIterator git(submodule); !git.end(); git++) {
+            cGate *gate = *git;
+            if (gate->size() != 0 && !gate->isConnectedOutside() &&
+                gate->getProperties()->getAsBool("loose") == false &&
+                gate->getProperties()->getAsBool("directIn") == false)
+                throw cRuntimeError(this, "Gate `%s' is not connected to sibling or parent module", gate->getFullPath().c_str());
         }
     }
     return true;
 }
 
-int cModule::findSubmodule(const char *submodname, int idx)
+int cModule::findSubmodule(const char *name, int index)
 {
-    for (SubmoduleIterator i(this); !i.end(); i++)
-        if (i()->isName(submodname) &&
-            ((idx == -1 && !i()->isVector()) || i()->getIndex() == idx)
-            )
-            return i()->getId();
+    for (SubmoduleIterator it(this); !it.end(); it++) {
+        cModule *submodule = *it;
+        if (submodule->isName(name) && ((index == -1 && !submodule->isVector()) || submodule->getIndex() == index))
+            return submodule->getId();
+    }
 
     return -1;
 }
 
-cModule *cModule::getSubmodule(const char *submodname, int idx)
+cModule *cModule::getSubmodule(const char *name, int index)
 {
-    for (SubmoduleIterator i(this); !i.end(); i++)
-        if (i()->isName(submodname) &&
-            ((idx == -1 && !i()->isVector()) || i()->getIndex() == idx)
-            )
-            return i();
+    for (SubmoduleIterator it(this); !it.end(); it++) {
+        cModule *submodule = *it;
+        if (submodule->isName(name) && ((index == -1 && !submodule->isVector()) || submodule->getIndex() == index))
+            return submodule;
+    }
 
     return nullptr;
 }
@@ -1151,8 +1151,8 @@ void cModule::finalizeParameters()
 
 void cModule::scheduleStart(simtime_t t)
 {
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        submod()->scheduleStart(t);
+    for (SubmoduleIterator it(this); !it.end(); it++)
+        (*it)->scheduleStart(t);
 }
 
 int cModule::buildInside()
@@ -1228,11 +1228,10 @@ void cModule::changeParentTo(cModule *module)
         throw cRuntimeError(this, "changeParentTo(): got nullptr");
 
     // gates must be unconnected to avoid connections breaking module hierarchy rules
-    cGate *g;
     for (GateIterator it(this); !it.end(); it++)
-        if (g = it(), g->isConnectedOutside())
+        if ((*it)->isConnectedOutside())
             throw cRuntimeError(this, "changeParentTo(): gates of the module must not be "
-                                      "connected (%s is connected now)", g->getFullName());
+                                      "connected (%s is connected now)", (*it)->getFullName());
 
 
     // cannot insert module under one of its own submodules
@@ -1319,14 +1318,14 @@ bool cModule::initializeChannels(int stage)
 
     // initialize channels directly under this module
     bool moreStages = false;
-    for (ChannelIterator chan(this); !chan.end(); chan++)
-        if (chan()->initializeChannel(stage))
+    for (ChannelIterator it(this); !it.end(); it++)
+        if ((*it)->initializeChannel(stage))
             moreStages = true;
 
 
     // then recursively initialize channels within our submodules too
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        if (submod()->initializeChannels(stage))
+    for (SubmoduleIterator it(this); !it.end(); it++)
+        if ((*it)->initializeChannels(stage))
             moreStages = true;
 
 
@@ -1367,8 +1366,8 @@ bool cModule::initializeModules(int stage)
 
     // then recursively initialize submodules
     bool moreStages = stage < numStages-1;
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        if (submod()->initializeModules(stage))
+    for (SubmoduleIterator it(this); !it.end(); it++)
+        if ((*it)->initializeModules(stage))
             moreStages = true;
 
 
@@ -1389,10 +1388,10 @@ void cModule::callFinish()
     // This is the interface for calling finish().
 
     // first call it for submodules and channels...
-    for (ChannelIterator chan(this); !chan.end(); chan++)
-        chan()->callFinish();
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        submod()->callFinish();
+    for (ChannelIterator it(this); !it.end(); it++)
+        (*it)->callFinish();
+    for (SubmoduleIterator it(this); !it.end(); it++)
+        (*it)->callFinish();
 
     // ...then for this module, in our context: save parameters, then finish()
     cContextSwitcher tmp(this);
@@ -1502,7 +1501,7 @@ cGate *cModule::GateIterator::operator+=(int k)
     // Note: this is the straightforward solution. We could do better, like skip gate vectors at once, etc
     for (int i = 0; i < k; i++)
         (*this)++;
-    return (*this)();
+    return *(*this);
 }
 
 //----
@@ -1514,10 +1513,10 @@ void cModule::ChannelIterator::init(const cModule *parentModule)
     bool parent = false;
     channels.clear();
     for (SubmoduleIterator it(parentModule); !parent; it++) {
-        const cModule *mod = !it.end() ? it() : (parent = true, parentModule);
+        const cModule *mod = !it.end() ? *it : (parent = true, parentModule);
 
         for (GateIterator gateIt(mod); !gateIt.end(); gateIt++) {
-            const cGate *gate = gateIt();
+            const cGate *gate = *gateIt;
             cGate::Type wantedGateType = parent ? cGate::INPUT : cGate::OUTPUT;
             if (gate && gate->getChannel() && gate->getType() == wantedGateType)
                 channels.push_back(gate->getChannel());

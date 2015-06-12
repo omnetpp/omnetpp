@@ -107,12 +107,12 @@ void Simple::activity()
 {
     for (int i=0; i<getNumParams(); i++)
         EV << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
-    for (cModule::GateIterator i(this); !i.end(); i++)
-        if (i()->getIndex()==0)
-            EV << i()->getName() << " size=" << i()->size() << endl;
-    for (cModule::SubmoduleIterator j(getParentModule()); !j.end(); j++)
-        if (j()->getIndex()==0)
-            EV << j()->getName() << " size=" << j()->size() << endl;
+    for (cModule::GateIterator it(this); !it.end(); it++)
+        if ((*it)->getIndex()==0)
+            EV << (*it)->getName() << " size=" << (*it)->size() << endl;
+    for (cModule::SubmoduleIterator it(getParentModule()); !it.end(); it++)
+        if ((*it)->getIndex()==0)
+            EV << (*it)->getName() << " size=" << (*it)->size() << endl;
 }
 
 }; //namespace

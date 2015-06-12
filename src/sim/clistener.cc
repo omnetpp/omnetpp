@@ -43,10 +43,10 @@ static void findListenerOccurences(cComponent *component, cIListener *listener, 
 
     if (component->isModule()) {
         cModule *module = (cModule *)component;
-        for (cModule::SubmoduleIterator submod(module); !submod.end(); submod++)
-            findListenerOccurences(submod(), listener, result);
-        for (cModule::ChannelIterator chan(module); !chan.end(); chan++)
-            findListenerOccurences(chan(), listener, result);
+        for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+            findListenerOccurences(*it, listener, result);
+        for (cModule::ChannelIterator it(module); !it.end(); it++)
+            findListenerOccurences(*it, listener, result);
     }
 }
 

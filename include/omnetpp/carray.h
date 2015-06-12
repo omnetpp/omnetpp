@@ -65,10 +65,15 @@ class SIM_API cArray : public cOwnedObject
         void init(const cArray& a, bool athead=true);
 
         /**
-         * Returns the current object, or nullptr if the iterator is not
-         * at a valid position.
+         * Returns a pointer to the current object, or nullptr if
+         * the iterator is not at a valid position.
          */
-        cObject *operator()()  {return array->get(k);}
+        cObject *operator*() const {return array->get(k);}
+
+        /**
+         * DEPRECATED. Use the * operator to access the object the iterator is at.
+         */
+        _OPPDEPRECATED cObject *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator has reached either end of the array.
