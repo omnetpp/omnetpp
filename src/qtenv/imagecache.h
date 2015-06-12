@@ -38,8 +38,8 @@ public:
     ImageCache();
 
     void loadImages(const char *path);
-    QPixmap getImage(const char *name, IconSize size);
-    QPixmap getImage(const char *nameWithSize);
+    QImage *getImage(const char *name, IconSize size);
+    QImage *getImage(const char *nameWithSize);
 };
 
 #endif // IMAGECACHE_H

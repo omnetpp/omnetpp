@@ -17,11 +17,14 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include "graphicsscene.h"
+#include "qtenv.h"
+#include "moduleinspector.h"
 
 #include <QDebug>
 
-ModuleInspectorScene::ModuleInspectorScene(QObject *parent) :
-    QGraphicsScene(parent)
+ModuleInspectorScene::ModuleInspectorScene(qtenv::ModuleInspector *inspector, QObject *parent) :
+    QGraphicsScene(parent),
+    insp(inspector)
 {
 }
 
@@ -34,18 +37,18 @@ void ModuleInspectorScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouse
         qDebug() << "mouseDoubleClickEvent: item is null";
         return;
     }
-//    proc ModuleInspector:dblClick insp {
-//       set c $insp.c
-//       set item [$c find withtag current]
-//       set tags [$c gettags $item]
 
-//       set ptr ""
-//       if {[lsearch $tags "ptr*"] != -1} {
-//          regexp "ptr.*" $tags ptr
-//       }
+    //Modules
+    QVariant variant = item->data(1);
+    cObject *object = nullptr;
+    if(variant.isValid())
+         object = variant.value<cObject*>();
 
-//       if {$ptr!=""} {
-//          inspector:dblClick $insp $ptr
-//       }
-//    }
+    if(object == nullptr)
+        return; //TODO error
+
+    if(insp->supportsObject(object))    //TODO && $config(reuse-inspectors)
+        insp->setObject(object);
+    else
+    {}  //TODO opp_inspect $ptr
 }

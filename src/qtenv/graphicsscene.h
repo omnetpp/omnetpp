@@ -19,11 +19,20 @@
 
 #include <QGraphicsScene>
 
+namespace qtenv {
+    class ModuleInspector;
+}
+
+
 class ModuleInspectorScene : public QGraphicsScene
 {
     Q_OBJECT
+
+private:
+    qtenv::ModuleInspector *insp;
+
 public:
-    ModuleInspectorScene(QObject *parent = 0);
+    ModuleInspectorScene(qtenv::ModuleInspector *inspector, QObject *parent = 0);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent);

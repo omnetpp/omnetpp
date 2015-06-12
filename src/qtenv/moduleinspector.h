@@ -19,6 +19,7 @@
 
 #include <map>
 #include <QRect>
+#include <QMetaType>
 #include "omnetpp/ccanvas.h"
 #include "inspector.h"
 
@@ -29,6 +30,9 @@ class cGate;
 class cFigure;
 class QGraphicsPixmapItem;
 class QGraphicsScene;
+class QGraphicsItem;
+
+Q_DECLARE_METATYPE(cObject*)
 
 namespace qtenv {
 

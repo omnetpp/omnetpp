@@ -96,6 +96,8 @@ void ModuleInspector::doSetObject(cObject *obj)
     canvasRenderer->setCanvas(getCanvas());
 
     scene->clear();
+    submoduleGraphicsItems.clear();
+    needs_redraw = true;
 
     if (object)
     {
@@ -139,7 +141,7 @@ void ModuleInspector::useWindow(QWidget *parent)
     QGraphicsView *view = new QGraphicsView();
     layout->addWidget(view);
     layout->setMargin(0);
-    scene = new ModuleInspectorScene();
+    scene = new ModuleInspectorScene(this);
     view->setRenderHints(QPainter::Antialiasing);
     view->setScene(scene);
 
@@ -576,9 +578,11 @@ void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
         iconName = "block/process";
 
     //TODO context menu + doubleclick
-    QPixmap icon = getTkenv()->icons.getImage(iconName);
+    QPixmap icon = QPixmap::fromImage(*getTkenv()->icons.getImage(iconName));
     submoduleGraphicsItems[submod->getId()] = scene->addPixmap(icon);
     submoduleGraphicsItems[submod->getId()]->setPos(x, y);
+    //TODO key
+    submoduleGraphicsItems[submod->getId()]->setData(1, QVariant::fromValue(static_cast<cObject*>(submod)));
 
     char coords[64];
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
@@ -606,6 +610,8 @@ void ModuleInspector::drawEnclosingModule(cModule *parentModule)
 
 QPointF ModuleInspector::getSubmodCoords(cModule *mod)
 {
+    if(submoduleGraphicsItems[mod->getId()] == nullptr)
+        return QPointF(0,0);
     QPixmap icon = submoduleGraphicsItems[mod->getId()]->pixmap();
     QPointF pos = submoduleGraphicsItems[mod->getId()]->pos();
     pos.setX(pos.x() + icon.width() / 2);
@@ -1210,7 +1216,6 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
    Tcl_SetObjResult(interp, Tcl_NewIntObj(q->length()));
    return TCL_OK;
 }
-
 
 } //namespace
 NAMESPACE_END

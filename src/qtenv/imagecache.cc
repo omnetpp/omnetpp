@@ -114,14 +114,17 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     }
 }
 
-QPixmap ImageCache::getImage(const char *name, IconSize size)
+QImage *ImageCache::getImage(const char *name, IconSize size)
 {
-    //TODO isExist
-    return QPixmap::fromImage(*images[QString(name)][size]);
+    auto it = images.find(name);
+    if(it != images.end() && it->second.find(size) != it->second.end())
+        return images[QString(name)][size];
+    return nullptr;
 }
 
-QPixmap ImageCache::getImage(const char *nameWithSize)
+QImage *ImageCache::getImage(const char *nameWithSize)
 {
-    //TODO isExist
-    return QPixmap::fromImage(*imagesWithSize[nameWithSize]);
+    if(imagesWithSize.find(nameWithSize) != imagesWithSize.end())
+        return imagesWithSize[nameWithSize];
+    return nullptr;
 }
