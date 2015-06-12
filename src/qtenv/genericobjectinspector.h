@@ -30,7 +30,7 @@ class TKENV_API GenericObjectInspector : public Inspector
       ~GenericObjectInspector();
       virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void refresh();
       virtual void commit();
       virtual int inspectorCommand(int argc, const char **argv);

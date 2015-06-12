@@ -111,7 +111,7 @@ void OutputVectorInspector::createWindow(const char *window, const char *geometr
    CHK(Tcl_VarEval(interp, "createOutputVectorInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
-void OutputVectorInspector::useWindow(const char *window)
+void OutputVectorInspector::useWindow(QWidget *parent)
 {
    Inspector::useWindow(window);
 

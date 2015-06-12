@@ -56,7 +56,7 @@ void HistogramInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createHistogramInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
-void HistogramInspector::useWindow(const char *window)
+void HistogramInspector::useWindow(QWidget *parent)
 {
    Inspector::useWindow(window);
 

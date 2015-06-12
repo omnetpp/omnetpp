@@ -40,9 +40,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->moduleGraphicsView->setScene(new GraphicsScene(this));
-    ui->moduleGraphicsView->setRenderHints(QPainter::Antialiasing);
-
     TreeItemModel *model = new TreeItemModel();
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
@@ -938,12 +935,7 @@ void MainWindow::busy(QString msg)
     }
 }
 
-QGraphicsView *MainWindow::getModuleGraphicsView()
+QWidget *MainWindow::getMainArea()
 {
-    return ui->moduleGraphicsView;
-}
-
-QGraphicsScene *MainWindow::getScene()
-{
-    return ui->moduleGraphicsView->scene();
+    return ui->mainArea;
 }

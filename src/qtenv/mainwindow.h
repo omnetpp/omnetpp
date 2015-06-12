@@ -27,7 +27,7 @@ class QGraphicsScene;
 class QStandardItem;
 class QTreeView;
 class QGraphicsView;
-class QGraphicsSceneMouseEvent;
+class QWidget;
 class cObject;
 class cEvent;
 class StopDialog;
@@ -61,8 +61,7 @@ public:
     void updateNetworkRunDisplay();
     void redrawTimeline();
 
-    QGraphicsView *getModuleGraphicsView();
-    QGraphicsScene *getScene();
+    QWidget *getMainArea();
 
     ~MainWindow();
 

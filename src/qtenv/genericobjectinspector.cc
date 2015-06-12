@@ -70,7 +70,7 @@ void GenericObjectInspector::createWindow(const char *window, const char *geomet
    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
 }
 
-void GenericObjectInspector::useWindow(const char *window)
+void GenericObjectInspector::useWindow(QWidget *parent)
 {
    Inspector::useWindow(window);
 }

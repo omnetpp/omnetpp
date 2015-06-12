@@ -15,25 +15,37 @@
 *--------------------------------------------------------------*/
 
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsItem>
 #include "graphicsscene.h"
 
 #include <QDebug>
 
-GraphicsScene::GraphicsScene(QObject *parent) :
+ModuleInspectorScene::ModuleInspectorScene(QObject *parent) :
     QGraphicsScene(parent)
 {
 }
 
-void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void ModuleInspectorScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    QGraphicsScene::mousePressEvent(mouseEvent);
-    switch(mouseEvent->button())
+    QGraphicsItem *item = itemAt(mouseEvent->scenePos().x(), mouseEvent->scenePos().y(), QTransform());
+    //TODO click to connection
+    if(item == nullptr)
     {
-        case Qt::MouseButton::LeftButton:
-            qDebug() << "Left";
-            break;
-        case Qt::MouseButton::RightButton:
-            qDebug() << "Right";
-            break;
+        qDebug() << "mouseDoubleClickEvent: item is null";
+        return;
     }
+//    proc ModuleInspector:dblClick insp {
+//       set c $insp.c
+//       set item [$c find withtag current]
+//       set tags [$c gettags $item]
+
+//       set ptr ""
+//       if {[lsearch $tags "ptr*"] != -1} {
+//          regexp "ptr.*" $tags ptr
+//       }
+
+//       if {$ptr!=""} {
+//          inspector:dblClick $insp $ptr
+//       }
+//    }
 }

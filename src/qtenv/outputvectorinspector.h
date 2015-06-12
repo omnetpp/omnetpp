@@ -66,7 +66,7 @@ class TKENV_API OutputVectorInspector : public Inspector
       ~OutputVectorInspector();
       virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void refresh();
       virtual int inspectorCommand(int argc, const char **argv);
 

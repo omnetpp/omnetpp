@@ -80,7 +80,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       LogInspector(InspectorFactory *f);
       virtual ~LogInspector();
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void doSetObject(cObject *obj);
       virtual void refresh();
 

@@ -88,7 +88,7 @@ void CanvasInspector::createWindow(const char *window, const char *geometry)
     this->window->show();
 }
 
-void CanvasInspector::useWindow(const char *window)
+void CanvasInspector::useWindow(QWidget *parent)
 {
     Inspector::useWindow(window);
 

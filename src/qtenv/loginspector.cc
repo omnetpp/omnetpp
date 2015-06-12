@@ -76,7 +76,7 @@ void LogInspector::createWindow(const char *window, const char *geometry)
     //ASSERT(success);
 }
 
-void LogInspector::useWindow(const char *window)
+void LogInspector::useWindow(QWidget *parent)
 {
    Inspector::useWindow(window);
 

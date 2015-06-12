@@ -103,16 +103,15 @@ void Inspector::createWindow(const char *window, const char *geometry)
     isToplevelWindow = true;
 }
 
-void Inspector::useWindow(const char *window)
+void Inspector::useWindow(QWidget *parent)
 {
-    strcpy(windowName, window);
     windowTitle = "";
     isToplevelWindow = false;
 }
 
 void Inspector::doSetObject(cObject *obj)
 {
-    ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
+    //TODO ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
 
     if (obj != object)
     {

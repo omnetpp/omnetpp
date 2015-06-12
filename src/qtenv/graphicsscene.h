@@ -19,14 +19,14 @@
 
 #include <QGraphicsScene>
 
-class GraphicsScene : public QGraphicsScene
+class ModuleInspectorScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    GraphicsScene(QObject *parent = 0);
+    ModuleInspectorScene(QObject *parent = 0);
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent);
 };
 
 #endif // GRAPHICSSCENE_H

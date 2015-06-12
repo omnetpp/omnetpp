@@ -20,6 +20,8 @@
 #include <assert.h>
 #include <QMessageBox>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsView>
+#include <QGridLayout>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -41,6 +43,7 @@
 #include "arrow.h"
 #include "layouterenv.h"
 #include "canvasrenderer.h"
+#include "graphicsscene.h"
 #include "mainwindow.h"
 
 NAMESPACE_BEGIN
@@ -75,6 +78,7 @@ ModuleInspector::ModuleInspector(InspectorFactory *f) : Inspector(f)
    notDrawn = false;
    layoutSeed = 0;
    canvasRenderer = new CanvasRenderer();
+   scene = nullptr;
 }
 
 ModuleInspector::~ModuleInspector()
@@ -91,7 +95,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    static_cast<MainWindow*>(window)->getScene()->clear();
+    scene->clear();
 
     if (object)
     {
@@ -126,14 +130,20 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
    //TODO canvasRenderer->setTkCanvas(interp, canvas);
 }
 
-void ModuleInspector::useWindow(const char *window)
+void ModuleInspector::useWindow(QWidget *parent)
 {
-    Inspector::useWindow(window);
+    Inspector::useWindow(parent);
 
-    strcpy(canvas,windowName);
-    strcat(canvas,".c");
+    QLayout *layout = new QGridLayout();
+    parent->setLayout(layout);
+    QGraphicsView *view = new QGraphicsView();
+    layout->addWidget(view);
+    layout->setMargin(0);
+    scene = new ModuleInspectorScene();
+    view->setRenderHints(QPainter::Antialiasing);
+    view->setScene(scene);
 
-    canvasRenderer->setQtCanvas(static_cast<MainWindow*>(this->window)->getScene(), getCanvas());
+    canvasRenderer->setQtCanvas(scene, getCanvas());
 }
 
 cCanvas *ModuleInspector::getCanvas()
@@ -561,9 +571,6 @@ void ModuleInspector::redrawModules()
 
 void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
 {
-    MainWindow* mainWindow = static_cast<MainWindow*>(window);
-    QGraphicsScene *scene = mainWindow->getScene();
-    printf("drawSubmodule %s %g %g %p \n", submod->getFullName(), x, y, scene);
     const char *iconName = submod->getDisplayString().getTagArg("i", 0);
     if(iconName == nullptr)
         iconName = "block/process";
@@ -635,8 +642,6 @@ void ModuleInspector::drawConnection(cGate *gate)
     QPointF src_rect = getSubmodCoords(mod);
     QPointF dest_rect = getSubmodCoords(destGate->getOwnerModule());
 
-    QGraphicsScene *scene = static_cast<MainWindow*>(window)->getScene();
-    printf("drawwConnection");
     scene->addLine(src_rect.x(), src_rect.y(), dest_rect.x(), dest_rect.y());
 
 //    ptrToStr(gate, gateptr);

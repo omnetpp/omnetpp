@@ -47,7 +47,7 @@ class TKENV_API CanvasInspector : public Inspector
       ~CanvasInspector();
       virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void refresh();
       virtual void redraw();
       virtual void clearObjectChangeFlags();

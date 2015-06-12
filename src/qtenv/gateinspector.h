@@ -34,7 +34,7 @@ class TKENV_API GateInspector : public Inspector
    public:
       GateInspector(InspectorFactory *f);
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void refresh();
       virtual void redraw();
       virtual int inspectorCommand(int argc, const char **argv);

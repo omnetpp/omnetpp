@@ -28,6 +28,7 @@ class cModule;
 class cGate;
 class cFigure;
 class QGraphicsPixmapItem;
+class QGraphicsScene;
 
 namespace qtenv {
 
@@ -39,8 +40,6 @@ enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
 class TKENV_API ModuleInspector : public Inspector
 {
-   public:
-
    protected:
       char canvas[128];
       CanvasRenderer *canvasRenderer;
@@ -54,6 +53,7 @@ class TKENV_API ModuleInspector : public Inspector
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
       std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
+      QGraphicsScene *scene;
 
    protected:
       cCanvas *getCanvas();
@@ -71,7 +71,7 @@ class TKENV_API ModuleInspector : public Inspector
       ~ModuleInspector();
       virtual void doSetObject(cObject *obj);
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void refresh();
       virtual void clearObjectChangeFlags();
       virtual int inspectorCommand(int argc, const char **argv);

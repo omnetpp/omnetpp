@@ -281,13 +281,15 @@ void Qtenv::doRun()
         }
 
         mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
-        addEmbeddedInspector(".inspector", mainInspector);
+        //TODO
+        addEmbeddedInspector(nullptr, mainInspector);
 
         mainNetworkView = (ModuleInspector *)InspectorFactory::get("ModuleInspectorFactory")->createInspector();
-        addEmbeddedInspector(".network", mainNetworkView);
+        addEmbeddedInspector(mainwindow->getMainArea(), mainNetworkView);
 
         mainLogView = (LogInspector *)InspectorFactory::get("LogInspectorFactory")->createInspector();
-        addEmbeddedInspector(".log", mainLogView);
+        //TODO
+        addEmbeddedInspector(nullptr, mainLogView);
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -870,10 +872,10 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
     return insp;
 }
 
-void Qtenv::addEmbeddedInspector(const char *widget, Inspector *insp)
+void Qtenv::addEmbeddedInspector(QWidget *parent, Inspector *insp)
 {
     inspectors.push_back(insp);
-    insp->useWindow(widget);
+    insp->useWindow(parent);
     insp->refresh();
 }
 

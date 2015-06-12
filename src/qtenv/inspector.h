@@ -95,7 +95,7 @@ class TKENV_API Inspector
       virtual bool isMarkedForDeletion() {return closeRequested;}
 
       virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(const char *window);
+      virtual void useWindow(QWidget *parent);
       virtual void showWindow();
 
       virtual void refresh();

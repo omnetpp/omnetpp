@@ -64,7 +64,7 @@ void GateInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
-void GateInspector::useWindow(const char *window)
+void GateInspector::useWindow(QWidget *parent)
 {
    Inspector::useWindow(window);
 

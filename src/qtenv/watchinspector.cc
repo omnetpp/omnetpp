@@ -63,7 +63,7 @@ void WatchInspector::createWindow(const char *window, const char *geometry)
    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
 }
 
-void WatchInspector::useWindow(const char *window)
+void WatchInspector::useWindow(QWidget *parent)
 {
    Inspector::useWindow(window);
 }
