@@ -33,7 +33,7 @@ void Switch::activity()
     for ( ; ; ) {
         // receive msg
         cMessage *msg;
-        if (!queue.empty())
+        if (!queue.isEmpty())
             msg = (cMessage *)queue.pop();
         else
             msg = receive();
@@ -48,12 +48,12 @@ void Switch::activity()
         send(msg, "port$o", dest);
 
         // display status: normal=queue empty, yellow=queued packets; red=queue overflow
-        int qLen = queue.length();
+        int qLen = queue.getLength();
         if (hasGUI())
             getDisplayString().setTagArg("i", 1, qLen == 0 ? "" : qLen < queueMaxLen ? "gold" : "red");
 
         // model finite queue size
-        while (queue.length() > queueMaxLen) {
+        while (queue.getLength() > queueMaxLen) {
             EV << "Buffer overflow, discarding " << queue.front()->getName() << endl;
             delete queue.pop();
         }

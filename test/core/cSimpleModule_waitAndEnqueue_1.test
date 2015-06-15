@@ -19,7 +19,7 @@ waitAndEnqueue(3, &queue);
 // dump queue
 EV << "queue contents after waitAndEnqueue:\n";
 cMessage *msg;
-while (!queue.empty())
+while (!queue.isEmpty())
 {
     msg = (cMessage *) queue.pop();
     EV << "  " << msg->getName() << endl;

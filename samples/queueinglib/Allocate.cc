@@ -67,7 +67,7 @@ void Allocate::resourceGranted(IResourcePool *provider)
     Enter_Method("resourceGranted");
 
     // send out job for which resource was granted
-    ASSERT2(!queue.empty(), "Resource granted while no jobs are waiting");
+    ASSERT2(!queue.isEmpty(), "Resource granted while no jobs are waiting");
     Job *job = dequeue();
     send(job, "out");
 
@@ -93,7 +93,7 @@ Job *Allocate::dequeue()
         job = (Job *)queue.back();
         queue.remove(job);
     }
-    emit(queueLengthSignal, queue.length());
+    emit(queueLengthSignal, queue.getLength());
 
     simtime_t dt = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + dt);
@@ -105,7 +105,7 @@ Job *Allocate::dequeue()
 void Allocate::enqueueOrDrop(Job *job)
 {
     // check for container capacity
-    if (capacity >= 0 && queue.length() >= capacity) {
+    if (capacity >= 0 && queue.getLength() >= capacity) {
         EV << "Capacity full! Job dropped.\n";
         if (hasGUI())
             bubble("Dropped!");
@@ -117,7 +117,7 @@ void Allocate::enqueueOrDrop(Job *job)
         EV << "Job enqueued.\n";
         job->setTimestamp();
         queue.insert(job);
-        emit(queueLengthSignal, queue.length());
+        emit(queueLengthSignal, queue.getLength());
     }
 }
 

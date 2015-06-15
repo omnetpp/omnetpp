@@ -32,7 +32,7 @@ void AbstractFifo::handleMessage(cMessage *msg)
 {
     if (msg == endServiceMsg) {
         endService(msgServiced);
-        if (queue.empty()) {
+        if (queue.isEmpty()) {
             msgServiced = nullptr;
         }
         else {

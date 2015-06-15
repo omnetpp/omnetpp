@@ -55,7 +55,7 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
 {
     if (msg == endServiceMsg) {
         endService(jobServiced);
-        if (!queue.empty() && allocateResource(peek())) {
+        if (!queue.isEmpty() && allocateResource(peek())) {
             jobServiced = getFromQueue();
             emit(queueLengthSignal, length());
             simtime_t serviceTime = startService(jobServiced);
@@ -80,7 +80,7 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
         }
         else {
             // check for container capacity
-            if (capacity >= 0 && queue.length() >= capacity) {
+            if (capacity >= 0 && queue.getLength() >= capacity) {
                 EV << "Capacity full! Job dropped.\n";
                 if (hasGUI())
                     bubble("Dropped!");
@@ -120,7 +120,7 @@ Job *ResourceBasedQueue::peek()
 
 int ResourceBasedQueue::length()
 {
-    return queue.length();
+    return queue.getLength();
 }
 
 void ResourceBasedQueue::arrival(Job *job)
@@ -177,10 +177,10 @@ std::string ResourceBasedQueue::getFullPath() const
 void ResourceBasedQueue::resourceGranted(IResourcePool *provider)
 {
     Enter_Method("resourceGranted");
-    ASSERT2(!jobServiced && !queue.empty(), "Resource granted while the node is busy or the queue is empty");
+    ASSERT2(!jobServiced && !queue.isEmpty(), "Resource granted while the node is busy or the queue is empty");
     resourceAllocated = true;
     // start servicing if the processor is idle and the queue is not empty
-    if (!jobServiced && !queue.empty()) {
+    if (!jobServiced && !queue.isEmpty()) {
         jobServiced = getFromQueue();
         emit(queueLengthSignal, length());
         emit(busySignal, true);

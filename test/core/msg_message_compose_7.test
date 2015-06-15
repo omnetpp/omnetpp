@@ -21,7 +21,7 @@ message MyMessage
 #define PRINT(X) EV << #X << ":" << X << endl
 #define PRINTOBJ(X)  EV << #X << ":" << X.getClassName() << ":" << X.getName() << ":" \
                         << (X.getOwner()==&x ? "owned" : "not owned") << ":" \
-                        << X.length() << endl;
+                        << X.getLength() << endl;
 
 MyMessage x;
 

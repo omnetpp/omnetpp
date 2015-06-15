@@ -45,7 +45,7 @@ void Queue::handleMessage(cMessage *msg)
 {
     if (msg == endServiceMsg) {
         endService(jobServiced);
-        if (queue.empty()) {
+        if (queue.isEmpty()) {
             jobServiced = nullptr;
             emit(busySignal, false);
         }
@@ -69,7 +69,7 @@ void Queue::handleMessage(cMessage *msg)
         }
         else {
             // check for container capacity
-            if (capacity >= 0 && queue.length() >= capacity) {
+            if (capacity >= 0 && queue.getLength() >= capacity) {
                 EV << "Capacity full! Job dropped.\n";
                 if (hasGUI())
                     bubble("Dropped!");
@@ -103,7 +103,7 @@ Job *Queue::getFromQueue()
 
 int Queue::length()
 {
-    return queue.length();
+    return queue.getLength();
 }
 
 void Queue::arrival(Job *job)

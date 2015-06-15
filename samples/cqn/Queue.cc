@@ -62,14 +62,14 @@ void AbstractQueue::handleMessage(cMessage *msg)
 {
     if (msg == endServiceMsg) {
         endService(msgServiced);
-        if (queue.empty()) {
+        if (queue.isEmpty()) {
             msgServiced = nullptr;
             if (hasGUI())
                 getDisplayString().setTagArg("i", 1, "");
         }
         else {
             msgServiced = (cMessage *)queue.pop();
-            queueLength.record(queue.length());
+            queueLength.record(queue.getLength());
             simtime_t serviceTime = startService(msgServiced);
             endServiceMsg->setSchedulingPriority(priority);
             scheduleAt(simTime()+serviceTime, endServiceMsg);
@@ -88,7 +88,7 @@ void AbstractQueue::handleMessage(cMessage *msg)
     else {
         arrival(msg);
         queue.insert(msg);
-        queueLength.record(queue.length());
+        queueLength.record(queue.getLength());
     }
 }
 
@@ -116,12 +116,12 @@ void Queue::initialize()
     for (long i = 0; i < numInitialJobs; i++) {
         cMessage *job = new cMessage("job");
         queue.insert(job);
-        queueLength.record(queue.length());
+        queueLength.record(queue.getLength());
     }
 
-    if (!queue.empty()) {
+    if (!queue.isEmpty()) {
         msgServiced = (cMessage *)queue.pop();
-        queueLength.record(queue.length());
+        queueLength.record(queue.getLength());
         simtime_t serviceTime = startService(msgServiced);
         scheduleAt(simTime()+serviceTime, endServiceMsg);
 

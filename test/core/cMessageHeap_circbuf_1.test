@@ -22,11 +22,11 @@ namespace @TESTNAME@ {
 class Test : public cSimpleModule
 {
   protected:
-    cEventHeap& fes;
+    cFutureEventSet *fes;
     std::vector<cMessage*> shadow;  // t==simTime() events
     std::vector<cMessage*> future;  // future events
   public:
-    Test() : fes(getSimulation()->getMessageQueue()) {}
+    Test() : fes(getSimulation()->getFES()) {}
     virtual void initialize() override;
     void verifyFES();
     void insertMessages(int n);
@@ -46,24 +46,20 @@ void Test::verifyFES()
     ASSERT(expected.size()==shadow.size()+future.size());
 
     // verify
-    ASSERT(fes.length()==(int)expected.size());
-    ASSERT(fes.isEmpty()==expected.empty());
-    ASSERT(fes.peekFirst()==(expected.empty() ? nullptr : expected[0]));
+    ASSERT(fes->getLength()==(int)expected.size());
+    ASSERT(fes->isEmpty()==expected.empty());
+    ASSERT(fes->peekFirst()==(expected.empty() ? nullptr : expected[0]));
 
-    for (i=0; i<fes.length(); i++)
+    for (i=0; i<fes->getLength(); i++)
     {
-        ASSERT(fes.get(i)==expected[i]);
-        ASSERT(expected[i]->getOwner()==&fes);
+        ASSERT(fes->get(i)==expected[i]);
+        ASSERT(expected[i]->getOwner()==fes);
     }
-
-    i=0;
-    for (cEventHeap::Iterator it(fes); !it.end(); i++,it++)
-        ASSERT(it()==expected[i]);
 }
 
 void Test::insertMessages(int n)
 {
-    EV << "len=" << fes.length() << "; adding " << n << " events\n";
+    EV << "len=" << fes->getLength() << "; adding " << n << " events\n";
     verifyFES();
     for (int i=0; i<n; i++)
     {
@@ -76,17 +72,17 @@ void Test::insertMessages(int n)
 
 void Test::removeRandomMessages(int n)
 {
-    EV << "len=" << fes.length() << "; randomly removing max " << n << " events\n";
+    EV << "len=" << fes->getLength() << "; randomly removing max " << n << " events\n";
     verifyFES();
     for (int i=0; i<n && !shadow.empty(); i++)
     {
         int k = intuniform(0, shadow.size()-1);
         cMessage *msg = shadow[k];
         if (k==0 && intuniform(0,1)==0) {
-            cEvent *first = fes.removeFirst();
+            cEvent *first = fes->removeFirst();
             ASSERT(first==msg);
         } else {
-            fes.remove(msg);
+            fes->remove(msg);
         }
         shadow.erase(shadow.begin()+k);
         delete msg;

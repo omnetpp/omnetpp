@@ -71,7 +71,7 @@ void L2Queue::initialize()
     txBytesSignal = registerSignal("txBytes");
     rxBytesSignal = registerSignal("rxBytes");
 
-    emit(qlenSignal, queue.length());
+    emit(qlenSignal, queue.getLength());
     emit(busySignal, false);
 }
 
@@ -98,13 +98,13 @@ void L2Queue::handleMessage(cMessage *msg)
         EV << "Transmission finished.\n";
         if (hasGUI())
             displayStatus(false);
-        if (queue.empty()) {
+        if (queue.isEmpty()) {
             emit(busySignal, false);
         }
         else {
             msg = (cMessage *)queue.pop();
             emit(queueingTimeSignal, simTime() - msg->getTimestamp());
-            emit(qlenSignal, queue.length());
+            emit(qlenSignal, queue.getLength());
             startTransmitting(msg);
         }
     }
@@ -116,7 +116,7 @@ void L2Queue::handleMessage(cMessage *msg)
     else {  // arrived on gate "in"
         if (endTransmissionEvent->isScheduled()) {
             // We are currently busy, so just queue up the packet.
-            if (frameCapacity && queue.length() >= frameCapacity) {
+            if (frameCapacity && queue.getLength() >= frameCapacity) {
                 EV << "Received " << msg << " but transmitter busy and queue full: discarding\n";
                 emit(dropSignal, (long)check_and_cast<cPacket *>(msg)->getByteLength());
                 delete msg;
@@ -125,7 +125,7 @@ void L2Queue::handleMessage(cMessage *msg)
                 EV << "Received " << msg << " but transmitter busy: queueing up\n";
                 msg->setTimestamp();
                 queue.insert(msg);
-                emit(qlenSignal, queue.length());
+                emit(qlenSignal, queue.getLength());
             }
         }
         else {
@@ -141,6 +141,6 @@ void L2Queue::handleMessage(cMessage *msg)
 void L2Queue::displayStatus(bool isBusy)
 {
     getDisplayString().setTagArg("t", 0, isBusy ? "transmitting" : "idle");
-    getDisplayString().setTagArg("i", 1, isBusy ? (queue.length() >= 3 ? "red" : "yellow") : "");
+    getDisplayString().setTagArg("i", 1, isBusy ? (queue.getLength() >= 3 ? "red" : "yellow") : "");
 }
 

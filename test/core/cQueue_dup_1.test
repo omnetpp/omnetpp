@@ -27,8 +27,8 @@ void Queues::fillQueue(cQueue& q)
 
 void Queues::output(cQueue& q, const char *label)
 {
-    EV << label << q.getName() << ": len=" << q.length() << ", contents:";
-    while (!q.empty())
+    EV << label << q.getName() << ": len=" << q.getLength() << ", contents:";
+    while (!q.isEmpty())
         EV << " " << q.pop()->getName();
     EV << endl;
 }
