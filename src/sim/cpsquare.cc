@@ -135,83 +135,8 @@ void cPSquare::giveError()
     throw cRuntimeError(this, "setRange..() and setNumFirstVals() makes no sense with cPSquare");
 }
 
-#ifdef NEW_CODE_FROM_PUPPIS_WITH_FLOATING_POINT_EXCEPTION
 void cPSquare::collectTransformed(double val)
 {
-    int i, j;
-
-    numObs++;
-
-    if (numObs <= numCells+1) {
-        q[numCells+2-numObs] = val;
-    }
-    else {
-        // now numobs==b+1, number of observations is enough to produce 'b' cells,
-        // estimation has to be done
-        if (numObs == numCells+2) {
-            for (i = 1; i < numCells+1; i++) {
-                for (j = i+1; j < numCells+2; j++) {
-                    if (q[j] < q[i]) {
-                        double temp = q[i];
-                        q[i] = q[j];
-                        q[j] = temp;
-                    }
-                }
-            }
-        }
-
-        int k = 0;  // the cell number in which 'val' falls
-
-        for (i = 1; i <= numCells+1; i++) {
-            if (val <= q[i]) {
-                if (i == 1) {
-                    q[1] = val;
-                    k = 1;
-                }
-                else {
-                    k = i-1;
-                }
-                break;
-            }
-        }
-
-        if (k == 0) {  // the new value falls outside of the current cells
-            q[numCells+1] = val;
-            k = numCells;
-        }
-
-        for (i = k+1; i <= numCells+1; i++)
-            n[i] = n[i]+1;
-
-        double d, qd;
-        int e;
-        for (i = 2; i <= numCells; i++) {
-            d = 1 + (i-1) * (numObs-1) / ((double)numCells) - n[i];
-
-            if ((d >= 1 && n[i+1]-n[i] > 1) || (d <= -1 && n[i-1]-n[i] < -1)) {
-                // if it is possible to adjust the marker position
-                d < 0 ? e = -1 : e = 1;
-
-                // try the parabolic formula
-                qd = q[i] + e / ((double)(n[i+1] - n[i-1])) * ((n[i] - n[i-1] + e)
-                                                               * (q[i+1] - q[i]) / ((double)(n[i+1] - n[i])) + (n[i+1]
-                                                                                                                - n[i] - e) * (q[i] - q[i-1]) / ((double)(n[i] - n[i-1])));
-
-                if ((qd > q[i-1]) && (qd < q[i+1]))  // if it is possible to fit the new height
-                    q[i] = qd;  // then do so (in between the neigbouring heights)
-                else  // else use the linear formula
-                    q[i] += e * (q[i+e] - q[i]) / (double)(n[i+e] - n[i]);
-                n[i] += e;
-            }
-        }
-    }
-}
-
-#else /* OLDER_WORKING_CODE */
-void cPSquare::collectTransformed(double val)
-{
-    int i;
-
     numObs++;  // an extra observation is added
 
     if (numObs <= numCells+1) {
@@ -222,16 +147,18 @@ void cPSquare::collectTransformed(double val)
         // qsort(q, numcells+2, sizeof(*q), CompDouble);
 
         // insert val into q[]; q[0] is not used!
+        int i;
         for (i = numObs; i >= 2 && val <= q[i-1]; i--)
             q[i] = q[i-1];
         q[i] = val;
     }
     else {
-        // now numobs==b+1, number of observations is enough to produce 'b' cells,
+        // now numObs==b+1, number of observations is enough to produce 'b' cells,
         // estimation has to be done
+
         int k = 0;  // the cell number in which 'val' falls
 
-        for (i = 1; i <= numCells+1; i++) {
+        for (int i = 1; i <= numCells+1; i++) {
             if (val <= q[i]) {
                 if (i == 1) {
                     q[1] = val;
@@ -247,41 +174,32 @@ void cPSquare::collectTransformed(double val)
             q[numCells+1] = val;
             k = numCells;
         }
-        for (i = k+1; i <= numCells+1; i++) {
+        for (int i = k+1; i <= numCells+1; i++) {
             n[i] = n[i]+1;
         }
 
         double d, qd;
-        int e;
-        for (i = 2; i <= numCells; i++) {
-            d = 1 + (i-1) * (numObs-1) / ((double)numCells) - n[i];
+        for (int i = 2; i <= numCells; i++) {
+            d = 1 + (i-1) * (numObs-1) / (double)numCells - n[i];
 
             if ((d >= 1 && n[i+1]-n[i] > 1) || (d <= -1 && n[i-1]-n[i] < -1)) {
                 // if it is possible to adjust the marker position
-                if (d < 0) {
-                    e = -1;
-                }
-                else {
-                    e = 1;
-                }
+                int e = (d < 0) ? -1 : 1;
+
                 // try the parabolic formula
                 qd = q[i] + e / ((double)(n[i+1] - n[i-1])) * ((n[i] - n[i-1] + e)
                         * (q[i+1] - q[i]) / ((double)(n[i+1] - n[i])) + (n[i+1]
                                 - n[i] - e) * (q[i] - q[i-1]) / ((double)(n[i] - n[i-1])));
 
-                if ((qd > q[i-1]) && (qd < q[i+1])) {  // if it is possible to fit the new height
-                    q[i] = qd;   // then do so (in between the neigbouring heights)
-                }
-                else {  // else use the linear formula
+                if ((qd > q[i-1]) && (qd < q[i+1]))  // if it is possible to fit the new height
+                    q[i] = qd;   // then do so (in between the neighboring heights)
+                else   // else use the linear formula
                     q[i] += e * (q[i + e] - q[i]) / ((double)(n[i + e] - n[i]));
-                }
                 n[i] += e;
             }
         }
     }
 }
-
-#endif
 
 void cPSquare::merge(const cStatistic *other)
 {
