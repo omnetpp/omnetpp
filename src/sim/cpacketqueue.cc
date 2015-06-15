@@ -59,7 +59,7 @@ cPacketQueue& cPacketQueue::operator=(const cPacketQueue& queue)
 
 std::string cPacketQueue::info() const
 {
-    if (empty())
+    if (isEmpty())
         return std::string("empty");
     std::stringstream out;
     out << "len=" << getLength() << ", " << getBitLength() << " bits (" << getByteLength() << " bytes)";

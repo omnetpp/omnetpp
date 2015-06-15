@@ -1023,7 +1023,7 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
         return TCL_OK;
     }
-    Tcl_SetObjResult(interp, Tcl_NewIntObj(q->length()));
+    Tcl_SetObjResult(interp, Tcl_NewIntObj(q->getLength()));
     return TCL_OK;
 }
 
