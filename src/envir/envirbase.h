@@ -80,6 +80,7 @@ struct ENVIR_API EnvirOptions
     opp_string outputVectorManagerClass;
     opp_string outputScalarManagerClass;
     opp_string snapshotmanagerClass;
+    opp_string futureeventsetClass;
 #ifdef WITH_PARSIM
     opp_string parsimcommClass; // if parsim: cParsimCommunications class to use
     opp_string parsimsynchClass; // if parsim: cParsimSynchronizer class to use

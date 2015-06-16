@@ -95,13 +95,13 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/checkandcast.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \

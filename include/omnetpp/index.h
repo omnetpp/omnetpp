@@ -287,7 +287,7 @@
  *     manages simulation runs.
  *   - cScheduler is a base class for schedulers (see in @ref EnvirExtensions
  *     as well)
- *   - cMessageHeap is used internally by cSimulation as FES (Future Event Set)
+ *   - cFutureEventSet is a base class for FES (Future Event Set) data structures
  *   - cCoroutine is the engine behind activity()-based simple modules
  *   - cWatch is the class behind the WATCH() and LWATCH() macros
  *

@@ -36,6 +36,7 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cstatistic.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cdisplaystring.h"
@@ -801,7 +802,7 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
     else if (0 == strcmp(argv[1], "eventspersimsec"))
         Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getEventsPerSimSec()), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "feslength"))
-        Tcl_SetResult(interp, opp_itoa(buf, getSimulation()->msgQueue.getLength()), TCL_VOLATILE);
+        Tcl_SetResult(interp, opp_itoa(buf, getSimulation()->getFES()->getLength()), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "livemsgcount"))
         Tcl_SetResult(interp, opp_ltoa(buf, cMessage::getLiveMessageCount()), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "totalmsgcount"))
@@ -1119,8 +1120,8 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("cOutVector"), TCL_STATIC);
     else if (dynamic_cast<cStatistic *>(object))
         Tcl_SetResult(interp, TCLCONST("cStatistic"), TCL_STATIC);
-    else if (dynamic_cast<cMessageHeap *>(object))
-        Tcl_SetResult(interp, TCLCONST("cMessageHeap"), TCL_STATIC);
+    else if (dynamic_cast<cFutureEventSet *>(object))
+        Tcl_SetResult(interp, TCLCONST("cFutureEventSet"), TCL_STATIC);
     else if (dynamic_cast<cWatchBase *>(object))
         Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
     else if (dynamic_cast<cCanvas *>(object))
@@ -2006,8 +2007,10 @@ int fesEvents_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
     Tkenv *app = getTkenv();
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-    for (cMessageHeap::Iterator it(getSimulation()->msgQueue); maxNum > 0 && !it.end(); it++, maxNum--) {
-        cEvent *event = it();
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; maxNum > 0 && i < fesLen; i++, maxNum--) {
+        cEvent *event = fes->get(i);
         if (!event->isMessage()) {
             if (!wantEvents)
                 continue;
@@ -2035,8 +2038,8 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     }
 
     // find smallest t!=simTime() element, and greatest element.
-    getSimulation()->msgQueue.sort();
-    int len = getSimulation()->msgQueue.getLength();
+    getSimulation()->getFES()->sort();
+    int len = getSimulation()->getFES()->getLength();
     if (len == 0) {
         Tcl_SetResult(interp, TCLCONST("0 0"), TCL_STATIC);
         return TCL_OK;
@@ -2044,11 +2047,11 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     simtime_t now = getSimulation()->getSimTime();
     simtime_t tmin = now;
     for (int i = 0; i < len; i++)
-        if (getSimulation()->msgQueue.peek(i)->getArrivalTime() != now) {
-            tmin = getSimulation()->msgQueue.peek(i)->getArrivalTime();
+        if (getSimulation()->getFES()->get(i)->getArrivalTime() != now) {
+            tmin = getSimulation()->getFES()->get(i)->getArrivalTime();
             break;
         }
-    simtime_t tmax = getSimulation()->msgQueue.peek(len-1)->getArrivalTime();
+    simtime_t tmax = getSimulation()->getFES()->get(len-1)->getArrivalTime();
 
     // return result
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
@@ -2542,7 +2545,7 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Tcl_SetResult(interp, ptrToStr(&getSimulation()->msgQueue), TCL_VOLATILE);
+    Tcl_SetResult(interp, ptrToStr(getSimulation()->getFES()), TCL_VOLATILE);
     return TCL_OK;
 }
 

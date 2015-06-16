@@ -28,6 +28,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "omnetpp/cfutureeventset.h"
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
 #include "envirbase.h"
@@ -233,10 +234,11 @@ void EventlogFileManager::recordInitialize()
 void EventlogFileManager::recordMessages()
 {
     std::vector<cMessage *> messages;
-    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(getSimulation()->getMessageQueue()); !it.end(); it++) {
-        cEvent *event = it();
-        cMessage *msg = dynamic_cast<cMessage *>(event);
-        if (msg)
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; i < fesLen; i++) {
+        cEvent *event = fes->get(i);
+        if (cMessage *msg = dynamic_cast<cMessage *>(event))
             messages.push_back(msg);  // TODO record non-message cEvents too!
     }
     std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);

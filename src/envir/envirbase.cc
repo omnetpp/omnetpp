@@ -36,6 +36,7 @@
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cscheduler.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cpar.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
@@ -119,6 +120,7 @@ Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchron
 Register_GlobalConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, OPP_PREFIX "envir::cIndexedFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
 Register_GlobalConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, OPP_PREFIX "envir::cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
 Register_GlobalConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, OPP_PREFIX "envir::cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
+Register_GlobalConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, OPP_PREFIX "cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the cFutureEventSet interface.");
 Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
@@ -415,6 +417,11 @@ bool EnvirBase::setup()
         // install snapshot manager
         CREATE_BY_CLASSNAME(snapshotManager, opt->snapshotmanagerClass.c_str(), cISnapshotManager, "snapshot manager");
         addLifecycleListener(snapshotManager);
+
+        // install FES
+        cFutureEventSet *fes;
+        CREATE_BY_CLASSNAME(fes, opt->futureeventsetClass.c_str(), cFutureEventSet, "FES");
+        getSimulation()->setFES(fes);
 
         // set up for sequential or distributed execution
         if (!opt->parsim) {
@@ -1494,6 +1501,8 @@ void EnvirBase::readOptions()
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
+
+    opt->futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
 
     opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
     opt->outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);

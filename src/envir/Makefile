@@ -195,7 +195,6 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -314,6 +313,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chasher.h \
   ../../include/omnetpp/checkandcast.h \
@@ -322,7 +322,6 @@ $O/envirbase.o: envirbase.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -413,12 +412,12 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -477,7 +476,6 @@ $O/eventlogwriter.o: eventlogwriter.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -547,7 +545,6 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -611,7 +608,6 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -669,7 +665,6 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -746,7 +741,6 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -825,7 +819,6 @@ $O/intervals.o: intervals.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -878,7 +871,6 @@ $O/logformatter.o: logformatter.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -974,7 +966,6 @@ $O/objectprinter.o: objectprinter.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -1026,7 +1017,6 @@ $O/runattributes.o: runattributes.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -1157,7 +1147,6 @@ $O/startup.o: startup.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -1220,7 +1209,6 @@ $O/statisticparser.o: statisticparser.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
@@ -1298,7 +1286,6 @@ $O/visitor.o: visitor.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \

@@ -20,7 +20,7 @@ PRINT_CLASSNAME( cLongHistogram )
 PRINT_CLASSNAME( cDoubleHistogram )
 PRINT_CLASSNAME( cKSplit )
 PRINT_CLASSNAME( cMessage )
-PRINT_CLASSNAME( cMessageHeap )
+PRINT_CLASSNAME( cEventHeap )
 PRINT_CLASSNAME( cObject )
 PRINT_CLASSNAME( cOutVector )
 PRINT_CLASSNAME( cPSquare )
@@ -40,7 +40,7 @@ cLongHistogram: cLongHistogram
 cDoubleHistogram: cDoubleHistogram
 cKSplit: cKSplit
 cMessage: cMessage
-cMessageHeap: cMessageHeap
+cEventHeap: cEventHeap
 cObject: cObject
 cOutVector: cOutVector
 cPSquare: cPSquare

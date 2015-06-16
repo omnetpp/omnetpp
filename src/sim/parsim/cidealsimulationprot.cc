@@ -25,6 +25,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/ccommbuffer.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
@@ -84,11 +85,11 @@ void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, int destMod
 cEvent *cIdealSimulationProtocol::takeNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
-    while (sim->msgQueue.isEmpty())
+    while (sim->getFES()->isEmpty())
         if (!receiveBlocking())
             return nullptr;
 
-    cEvent *event = sim->msgQueue.peekFirst();
+    cEvent *event = sim->getFES()->peekFirst();
     simtime_t eventTime = event->getArrivalTime();
 
     // if we aren't at the next external even yet --> nothing special to do
@@ -106,7 +107,7 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
         event->setSchedulingPriority(0);
 
         // remove event from FES and return it
-        cEvent *tmp = sim->msgQueue.removeFirst();
+        cEvent *tmp = sim->getFES()->removeFirst();
         ASSERT(tmp == event);
         return event;
     }
@@ -121,7 +122,7 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
     do {
         if (!receiveBlocking())
             return nullptr;
-        event = sim->msgQueue.peekFirst();
+        event = sim->getFES()->peekFirst();
         eventTime = event->getArrivalTime();
     } while (event->getSrcProcId() != nextExternalEvent.srcProcId || eventTime > nextExternalEvent.t);
 
@@ -137,7 +138,7 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
     event->setSchedulingPriority(0);
 
     // remove event from FES and return it
-    cEvent *tmp = sim->msgQueue.removeFirst();
+    cEvent *tmp = sim->getFES()->removeFirst();
     ASSERT(tmp == event);
     return event;
 }

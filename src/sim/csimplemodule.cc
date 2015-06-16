@@ -29,6 +29,7 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cmsgpar.h"
 #include "omnetpp/cqueue.h"
@@ -235,16 +236,9 @@ cSimpleModule::~cSimpleModule()
         delete coroutine;
     }
 
-    // deletion of pending messages for this module: not done since 3.1 because it
-    // made it very long to clean up large models. Instead, such messages are
-    // discarded in cSimulation::selectNextModule() when they're met.
-
-    //for (cMessageHeap::Iterator iter(simulation.msgQueue); !iter.end(); iter++)
-    //{
-    //    cMessage *msg = iter();
-    //    if (msg->getArrivalModuleId() == getId())
-    //        delete simulation.msgQueue.get( msg );
-    //}
+    // Note: deletion of pending events for this module is not done since version 3.1,
+    // because it made it very long to clean up large models. Instead, such messages
+    // are discarded in the scheduler when they're met.
 }
 
 std::string cSimpleModule::info() const
@@ -362,6 +356,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
     if (msg == nullptr)
         throw cRuntimeError("send()/sendDelayed(): message pointer is nullptr");
     if (msg->getOwner() != this) {
+        bool inFES = msg->getOwner() == getSimulation()->getFES();
         if (this != getSimulation()->getContextModule() && getSimulation()->getContextModule() != nullptr)
             throw cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
@@ -371,15 +366,15 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
                                 getClassName(), getFullPath().c_str(),
                                 getSimulation()->getContextModule()->getClassName(),
                                 getSimulation()->getContextModule()->getFullPath().c_str());
-        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+        else if (inFES && msg->isSelfMessage() && msg->getArrivalModuleId() == getId())
             throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for this module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage())
+        else if (inFES && msg->isSelfMessage())
             throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for ANOTHER module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&getSimulation()->msgQueue)
+        else if (inFES)
             throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                 "currently in scheduled-events, being underway between two modules",
                                 msg->getClassName(), msg->getName());
@@ -459,6 +454,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
         throw cRuntimeError("sendDirect(): message pointer is nullptr");
     if (msg->getOwner() != this) {
         // try to give a meaningful error message
+        bool inFES = msg->getOwner() == getSimulation()->getFES();
         if (this != getSimulation()->getContextModule() && getSimulation()->getContextModule() != nullptr)
             throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
@@ -468,15 +464,15 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
                                 getClassName(), getFullPath().c_str(),
                                 getSimulation()->getContextModule()->getClassName(),
                                 getSimulation()->getContextModule()->getFullPath().c_str());
-        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+        else if (inFES && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
             throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for this module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage())
+        else if (inFES && msg->isSelfMessage())
             throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                 "currently scheduled as a self-message for ANOTHER module",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&getSimulation()->msgQueue)
+        else if (inFES)
             throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                 "currently in scheduled-events, being underway between two modules",
                                 msg->getClassName(), msg->getName());
@@ -515,6 +511,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     if (t < simTime())
         throw cRuntimeError(E_BACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
     if (msg->getOwner() != this) {
+        bool inFES = msg->getOwner() == getSimulation()->getFES();
         if (this != getSimulation()->getContextModule() && getSimulation()->getContextModule() != nullptr)
             throw cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
@@ -522,16 +519,16 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
                                 getClassName(), getFullPath().c_str(),
                                 getSimulation()->getContextModule()->getClassName(),
                                 getSimulation()->getContextModule()->getFullPath().c_str());
-        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage() && msg->getArrivalModuleId()==getId())
+        else if (inFES && msg->isSelfMessage() && msg->getArrivalModuleId() == getId())
             throw cRuntimeError("scheduleAt(): message (%s)%s is currently scheduled, "
                                 "use cancelEvent() before rescheduling",
                                 msg->getClassName(), msg->getName());
-        else if (msg->getOwner()==&getSimulation()->msgQueue && msg->isSelfMessage())
+        else if (inFES && msg->isSelfMessage())
             throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
                                 "currently scheduled as self-message for ANOTHER module",
                                 msg->getClassName(), msg->getName());
 
-         else if (msg->getOwner()==&getSimulation()->msgQueue)
+         else if (inFES)
             throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
                                 "currently in scheduled-events, being underway between two modules",
                                 msg->getClassName(), msg->getName());
@@ -564,7 +561,7 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
         if (msg->getArrivalModuleId() != getId())
             throw cRuntimeError("cancelEvent(): cannot cancel another module's self-message");
 
-        getSimulation()->msgQueue.remove(msg);
+        getSimulation()->getFES()->remove(msg);
         EVCB.messageCancelled(msg);
         msg->setPreviousEventNumber(getSimulation()->getEventNumber());
     }

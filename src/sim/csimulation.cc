@@ -31,6 +31,7 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cscheduler.h"
+#include "omnetpp/ceventheap.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cstatistic.h"
@@ -98,10 +99,11 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
     systemModule = nullptr;
     scheduler = nullptr;
+    fes = nullptr;
 
     delta = 32;
     size = 0;
-    lastComponentId = 0;  // vect[0] is not used for historical reasons
+    lastComponentId = 0;  // componentv[0] is not used for historical reasons
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     lastVersion4ModuleId = 0;
 #endif
@@ -114,10 +116,10 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     currentEventNumber = 0;
     trapOnNextEvent = false;
 
-    msgQueue.setName("scheduled-events");
-    take(&msgQueue);
+    // install default FES
+    setFES(new cEventHeap("fes"));
 
-    // install a default scheduler
+    // install default scheduler
     setScheduler(new cSequentialScheduler());
 }
 
@@ -132,7 +134,7 @@ cSimulation::~cSimulation()
     delete envir;
     delete hasher;
     delete scheduler;
-    drop(&msgQueue);
+    dropAndDelete(fes);
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -152,7 +154,7 @@ void cSimulation::forEachChild(cVisitor *v)
 {
     if (systemModule != nullptr)
         v->visit(systemModule);
-    v->visit(&msgQueue);
+    v->visit(fes);
 }
 
 std::string cSimulation::getFullPath() const
@@ -240,7 +242,7 @@ void cSimulation::setScheduler(cScheduler *sch)
     if (systemModule)
         throw cRuntimeError(this, "setScheduler(): cannot switch schedulers when a network is already set up");
     if (!sch)
-        throw cRuntimeError(this, "setScheduler(): scheduler pointer is nullptr");
+        throw cRuntimeError(this, "setScheduler(): new scheduler cannot be nullptr");
 
     if (scheduler) {
         getEnvir()->removeLifecycleListener(scheduler);
@@ -252,10 +254,29 @@ void cSimulation::setScheduler(cScheduler *sch)
     getEnvir()->addLifecycleListener(scheduler);
 }
 
+void cSimulation::setFES(cFutureEventSet *f)
+{
+    if (systemModule)
+        throw cRuntimeError(this, "setFES(): cannot switch FES when a network is already set up");
+    if (fes && !fes->isEmpty())
+        throw cRuntimeError(this, "setFES(): existing FES is not empty");
+    if (!f)
+        throw cRuntimeError(this, "setFES(): new FES cannot be nullptr");
+
+    if (fes) {
+        drop(fes);
+        delete fes;
+    }
+
+    fes = f;
+    fes->setName("scheduled-events");
+    take(fes);
+}
+
 void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 {
 #ifndef USE_OMNETPP4x_FINGERPRINTS
-    getMessageQueue().insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
+    getFES()->insert(new cEndSimulationEvent("endsimulation", simTimeLimit));
 #else
     // In 4.x fingerprints mode, we check simTimeLimit manually in EnvirBase::checkTimeLimits()
 #endif
@@ -375,7 +396,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     networkType = network;
 
     // just to be sure
-    msgQueue.clear();
+    fes->clear();
     cComponent::clearSignalState();
 
     simulationStage = CTX_BUILD;
@@ -409,7 +430,7 @@ void cSimulation::callInitialize()
 {
     checkActive();
 
-    // reset counters. Note msgQueue.clear() was already called from setupNetwork()
+    // reset counters. Note fes->clear() was already called from setupNetwork()
     currentSimtime = 0;
     currentEventNumber = 0;  // initialize() has event number 0
     trapOnNextEvent = false;
@@ -489,7 +510,7 @@ void cSimulation::deleteNetwork()
     getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_DELETE);
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
-    msgQueue.clear();
+    fes->clear();
 
     simulationStage = CTX_NONE;
 
@@ -502,7 +523,7 @@ void cSimulation::deleteNetwork()
 cEvent *cSimulation::takeNextEvent()
 {
     // determine next event. Normally (with sequential simulation),
-    // the scheduler just returns msgQueue->peekFirst().
+    // the scheduler just returns fes->peekFirst().
     cEvent *event = scheduler->takeNextEvent();
     if (!event)
         return nullptr;
@@ -739,7 +760,7 @@ void cSimulation::setHasher(cHasher *h)
 void cSimulation::insertEvent(cEvent *event)
 {
     event->setPreviousEventNumber(currentEventNumber);
-    msgQueue.insert(event);
+    fes->insert(event);
 }
 
 //----

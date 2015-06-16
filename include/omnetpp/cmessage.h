@@ -31,7 +31,6 @@ class cChannel;
 class cModule;
 class cSimpleModule;
 class cSimulation;
-class cMessageHeap;
 class LogBuffer;
 
 

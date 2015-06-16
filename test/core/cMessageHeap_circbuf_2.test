@@ -1,5 +1,5 @@
 %description:
-Test the cMessageHeap optimization using the circular buffer.
+Test the cEventHeap optimization using the circular buffer.
 
 Messages scheduled for the same simulation time with same prio
 should be delivered in the order they were scheduled.

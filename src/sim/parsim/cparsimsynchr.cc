@@ -17,12 +17,13 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cfutureeventset.h"
 #include "cparsimsynchr.h"
 
 USING_NAMESPACE
 
 cEvent *cParsimSynchronizer::guessNextEvent()
 {
-    return sim->msgQueue.peekFirst();
+    return sim->getFES()->peekFirst();
 }
 

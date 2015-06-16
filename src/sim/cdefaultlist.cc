@@ -21,11 +21,9 @@
 
 #include <cstring>  // memcpy
 #include "omnetpp/globals.h"
-#include "omnetpp/carray.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cdefaultlist.h"
 #include "omnetpp/csimulation.h"
-#include "omnetpp/cmessageheap.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cwatch.h"
 

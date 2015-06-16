@@ -30,6 +30,7 @@
 #include "omnetpp/cgate.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/csimplemodule.h"
+#include "omnetpp/cfutureeventset.h"
 #include "moduleinspector.h"
 #include "figurerenderers.h"
 #include "tkenv.h"
@@ -589,8 +590,10 @@ void ModuleInspector::redrawMessages()
         return;
 
     // loop through all messages in the event queue and display them
-    for (cMessageHeap::Iterator it(getSimulation()->msgQueue); !it.end(); it++) {
-        cEvent *event = it();
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; i < fesLen; i++) {
+        cEvent *event = fes->get(i);
         if (!event->isMessage())
             continue;
         cMessage *msg = (cMessage *)event;

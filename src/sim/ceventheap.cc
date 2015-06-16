@@ -1,11 +1,11 @@
 //=========================================================================
-//  CMESSAGEHEAP.CC - part of
+//  CEVENTHEAP.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cMessageHeap : future event set, implemented as heap
+//    cEventHeap : future event set, implemented as heap
 //
 //  Author: Andras Varga, based on the code from Gabor Lencse
 //          (the original is taken from G. H. Gonnet's book pp. 273-274)
@@ -26,11 +26,11 @@
 #include <sstream>
 #include "omnetpp/globals.h"
 #include "omnetpp/cmessage.h"
-#include "omnetpp/cmessageheap.h"
+#include "omnetpp/ceventheap.h"
 
 NAMESPACE_BEGIN
 
-Register_Class(cMessageHeap);
+Register_Class(cEventHeap);
 
 #define CBHEAPINDEX(i)    (-2-(i))
 #define CBINC(i)          ((i) = ((i)+1)&(cbsize-1))
@@ -69,7 +69,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 
 //----
 
-cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false)
+cEventHeap::cEventHeap(const char *name, int siz) : cFutureEventSet(name)
 {
     insertcntr = 0L;
     n = 0;
@@ -81,7 +81,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false
     cbhead = cbtail = 0;
 }
 
-cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject(heap)
+cEventHeap::cEventHeap(const cEventHeap& heap) : cFutureEventSet(heap)
 {
     cb = nullptr;
     h = nullptr;
@@ -89,14 +89,14 @@ cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject(heap)
     copy(heap);
 }
 
-cMessageHeap::~cMessageHeap()
+cEventHeap::~cEventHeap()
 {
     clear();
     delete[] h;
     delete[] cb;
 }
 
-std::string cMessageHeap::info() const
+std::string cEventHeap::info() const
 {
     if (isEmpty())
         return std::string("empty");
@@ -105,7 +105,7 @@ std::string cMessageHeap::info() const
     return out.str();
 }
 
-void cMessageHeap::forEachChild(cVisitor *v)
+void cEventHeap::forEachChild(cVisitor *v)
 {
     sort();
 
@@ -118,7 +118,7 @@ void cMessageHeap::forEachChild(cVisitor *v)
 
 }
 
-void cMessageHeap::clear()
+void cEventHeap::clear()
 {
     for (int i = cbhead; i != cbtail; CBINC(i))
         dropAndDelete(cb[i]);
@@ -129,7 +129,7 @@ void cMessageHeap::clear()
     n = 0;
 }
 
-void cMessageHeap::copy(const cMessageHeap& heap)
+void cEventHeap::copy(const cEventHeap& heap)
 {
     // copy heap
     n = heap.n;
@@ -149,41 +149,41 @@ void cMessageHeap::copy(const cMessageHeap& heap)
         take(cb[i] = heap.cb[i]->dup());
 }
 
-cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
+cEventHeap& cEventHeap::operator=(const cEventHeap& heap)
 {
     if (this == &heap)
         return *this;
     clear();
-    cOwnedObject::operator=(heap);
+    cFutureEventSet::operator=(heap);
     copy(heap);
     return *this;
 }
 
-cEvent *cMessageHeap::peek(int m)
+cEvent *cEventHeap::get(int k)
 {
-    if (m < 0)
+    if (k < 0)
         return nullptr;
 
     // first few elements map into the circular buffer
     int cblen = cblength();
-    if (m < cblen)
-        return cbget(m);
-    m -= cblen;
+    if (k < cblen)
+        return cbget(k);
+    k -= cblen;
 
     // map the rest to h[1]..h[n] (h[] is 1-based)
-    if (m >= n)
+    if (k >= n)
         return nullptr;
-    return h[m+1];
+    return h[k+1];
 }
 
-void cMessageHeap::sort()
+void cEventHeap::sort()
 {
     qsort(h+1, n, sizeof(cEvent *), qsort_cmp_msgs);
     for (int i = 1; i <= n; i++)
         h[i]->heapIndex = i;
 }
 
-void cMessageHeap::insert(cEvent *event)
+void cEventHeap::insert(cEvent *event)
 {
     take(event);
 
@@ -221,7 +221,7 @@ void cMessageHeap::insert(cEvent *event)
     }
 }
 
-void cMessageHeap::cbgrow()
+void cEventHeap::cbgrow()
 {
     int newsize = 2*cbsize;  // cbsize MUST be power of 2
     cEvent **newcb = new cEvent *[newsize];
@@ -235,7 +235,7 @@ void cMessageHeap::cbgrow()
     cbsize = newsize;
 }
 
-void cMessageHeap::shiftup(int from)
+void cEventHeap::shiftup(int from)
 {
     // restores heap structure (in a sub-heap)
     int i, j;
@@ -256,12 +256,12 @@ void cMessageHeap::shiftup(int from)
     }
 }
 
-cEvent *cMessageHeap::peekFirst() const
+cEvent *cEventHeap::peekFirst() const
 {
     return cbhead != cbtail ? cb[cbhead] : n != 0 ? h[1] : nullptr;
 }
 
-cEvent *cMessageHeap::removeFirst()
+cEvent *cEventHeap::removeFirst()
 {
     if (cbhead != cbtail) {
         // remove head element from circular buffer
@@ -283,7 +283,7 @@ cEvent *cMessageHeap::removeFirst()
     return nullptr;
 }
 
-cEvent *cMessageHeap::remove(cEvent *event)
+cEvent *cEventHeap::remove(cEvent *event)
 {
     // make sure it is really on the heap
     if (event->heapIndex == -1)
@@ -323,7 +323,7 @@ cEvent *cMessageHeap::remove(cEvent *event)
     return event;
 }
 
-void cMessageHeap::putBackFirst(cEvent *event)
+void cEventHeap::putBackFirst(cEvent *event)
 {
     take(event);
 

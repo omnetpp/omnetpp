@@ -1,0 +1,175 @@
+//==========================================================================
+//  CEVENTHEAP.H - part of
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __OMNETPP_CEVENTHEAP_H
+#define __OMNETPP_CEVENTHEAP_H
+
+#include "cfutureeventset.h"
+
+NAMESPACE_BEGIN
+
+/**
+ * Default implementation for the future event set. The underlying data structure
+ * is (binary) heap, which provides reliable performance for most workloads.
+ * A worst case for heap is insertion at the front (i.e. for the current simulation
+ * time); it is actually quite common, due to the abundance of zero-delay links in models.
+ * This case is optimized by employing an additional circular buffer specifically
+ * for storing events inserted scheduled for the current simulation time.
+ *
+ * @ingroup Internals
+ */
+class SIM_API cEventHeap : public cFutureEventSet
+{
+  private:
+    // heap data structure
+    cEvent **h;               // pointer to the 'heap'  (h[0] always empty)
+    int n;                    // number of elements in the heap
+    int size;                 // size of allocated h array
+    unsigned long insertcntr; // counts insertions
+
+    // circular buffer for events scheduled for the current simtime (quite frequent)
+    cEvent **cb;              // size of the circular buffer
+    int cbsize;               // always power of 2
+    int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
+
+  private:
+    void copy(const cEventHeap& other);
+
+    // internal: restore heap
+    void shiftup(int from=1);
+
+    int cblength() const  {return (cbtail-cbhead) & (cbsize-1);}
+    cEvent *cbget(int k)  {return cb[(cbhead+k) & (cbsize-1)];}
+    void cbgrow();
+
+  public:
+    /** @name Constructors, destructor, assignment */
+    //@{
+
+    /**
+     * Copy constructor.
+     */
+    cEventHeap(const cEventHeap& msgq);
+
+    /**
+     * Constructor.
+     */
+    cEventHeap(const char *name=nullptr, int size=128);
+
+    /**
+     * Destructor.
+     */
+    virtual ~cEventHeap();
+
+    /**
+     * Assignment operator. The name member is not copied;
+     * see cOwnedObject's operator=() for more details.
+     */
+    cEventHeap& operator=(const cEventHeap& other);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cEventHeap *dup() const override  {return new cEventHeap(*this);}
+
+    /**
+     * Produces a one-line description of the object's contents.
+     * See cObject for more details.
+     */
+    virtual std::string info() const override;
+
+    /**
+     * Calls v->visit(this) for each contained object.
+     * See cObject for more details.
+     */
+    virtual void forEachChild(cVisitor *v) override;
+
+    // no parsimPack() and parsimUnpack()
+    //@}
+
+    /** @name Simulation-related operations. */
+    //@{
+    /**
+     * Insert an event into the FES.
+     */
+    virtual void insert(cEvent *event) override;
+
+    /**
+     * Peek the first event in the FES (the one with the smallest timestamp.)
+     * If the FES is empty, it returns nullptr.
+     */
+    virtual cEvent *peekFirst() const override;
+
+    /**
+     * Removes and return the first event in the FES (the one with the
+     * smallest timestamp.) If the FES is empty, it returns nullptr.
+     */
+    virtual cEvent *removeFirst() override;
+
+    /**
+     * Undo for removeFirst(): it puts back an event to the front of the FES.
+     */
+    virtual void putBackFirst(cEvent *event) override;
+
+    /**
+     * Removes and returns the given event in the FES. If the event is
+     * not in the FES, returns nullptr.
+     */
+    virtual cEvent *remove(cEvent *event) override;
+
+    /**
+     * Returns true if the FES is empty.
+     */
+    virtual bool isEmpty() const override {return cbhead==cbtail && n==0;}
+
+    /**
+     * Deletes all events in the FES.
+     */
+    virtual void clear() override;
+    //@}
+
+    /** @name Random access. */
+    //@{
+
+    /**
+     * Returns the number of events in the FES.
+     */
+    virtual int getLength() const override {return cblength() + n;}
+
+    /**
+     * Returns the kth event in the FES if 0 <= k < getLength(), and nullptr
+     * otherwise. Note that iteration does not necessarily return events
+     * in increasing timestamp (getArrivalTime()) order unless you called
+     * sort() before.
+     */
+    virtual cEvent *get(int k) override;
+
+    /**
+     * Sorts the contents of the FES. This is only necessary if one wants
+     * to iterate through in the FES in strict timestamp order.
+     */
+    virtual void sort() override;
+};
+
+NAMESPACE_END
+
+
+#endif
+

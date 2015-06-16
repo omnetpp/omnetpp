@@ -23,6 +23,7 @@
 #include "omnetpp/cgate.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cchannel.h"
+#include "omnetpp/cfutureeventset.h"
 #include "gateinspector.h"
 #include "tkenv.h"
 #include "tklib.h"
@@ -155,8 +156,10 @@ void GateInspector::refresh()
     CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
     cGate *destGate = gate->getPathEndGate();
 
-    for (cMessageHeap::Iterator it(getSimulation()->msgQueue); !it.end(); it++) {
-        cEvent *event = it();
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; i < fesLen; i++) {
+        cEvent *event = fes->get(i);
         if (!event->isMessage())
             continue;
         cMessage *msg = (cMessage *)event;

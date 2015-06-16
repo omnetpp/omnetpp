@@ -140,7 +140,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 simtime_t t = curTime.tv_sec + curTime.tv_usec*1e-6;
                 // TBD assert that it's somehow not smaller than previous event's time
                 notificationMsg->setArrival(module->getId(), -1, t);
-                getSimulation()->msgQueue.insert(notificationMsg);
+                getSimulation()->getFES()->insert(notificationMsg);
                 return true;
             }
         }
@@ -184,7 +184,7 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
 
 cEvent *cSocketRTScheduler::guessNextEvent()
 {
-    return sim->msgQueue.peekFirst();
+    return sim->getFES()->peekFirst();
 }
 
 cEvent *cSocketRTScheduler::takeNextEvent()
@@ -195,7 +195,7 @@ cEvent *cSocketRTScheduler::takeNextEvent()
 
     // calculate target time
     timeval targetTime;
-    cEvent *event = sim->msgQueue.peekFirst();
+    cEvent *event = sim->getFES()->peekFirst();
     if (!event) {
         // if there are no events, wait until something comes from outside
         // TBD: obey simtimelimit, cpu-time-limit
@@ -216,7 +216,7 @@ cEvent *cSocketRTScheduler::takeNextEvent()
         if (status == -1)
             return nullptr;  // interrupted by user
         if (status == 1)
-            event = sim->msgQueue.peekFirst();  // received something
+            event = sim->getFES()->peekFirst();  // received something
     }
     else {
         // we're behind -- customized versions of this class may
@@ -224,14 +224,14 @@ cEvent *cSocketRTScheduler::takeNextEvent()
     }
 
     // remove event from FES and return it
-    cEvent *tmp = sim->msgQueue.removeFirst();
+    cEvent *tmp = sim->getFES()->removeFirst();
     ASSERT(tmp == event);
     return event;
 }
 
 void cSocketRTScheduler::putBackEvent(cEvent *event)
 {
-    sim->msgQueue.putBackFirst(event);
+    sim->getFES()->putBackFirst(event);
 }
 
 void cSocketRTScheduler::sendBytes(const char *buf, size_t numBytes)

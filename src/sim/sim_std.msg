@@ -342,22 +342,27 @@ class cArray extends cOwnedObject
     cOwnedObject *contents[] @getter(get) @sizeGetter(size) @hint("Objects contained in the array");
 }
 
-class cMessage extends cOwnedObject
+class cEvent extends cOwnedObject
+{
+    short schedulingPriority @group(event) @editable @hint("Controls order of messages with equal timestamps in FES");
+    cObject *targetObject @group(event) @hint("The object this message will be delivered to");
+    bool isScheduled @getter(isScheduled) @group(sending) @hint("Whether event or message is currently scheduled (or in transit)");
+    simtime_t arrivalTime @group(sending) @hint("Simulation time the event or message will be (or was) delivered");
+}
+
+class cMessage extends cEvent
 {
     @icon("message");
     long id @group("message") @hint("Automatically assigned unique identifier");
     long treeId @group("message") @hint("Identifier shared between the message and its copies");
     short kind @group("message") @editable @hint("Generic user-settable attribute, usually carries \"type\" or \"role\" or \"category\" of message");
-    short schedulingPriority @group("message") @editable @hint("Controls order of messages with equal timestamps in FES");
     string displayString @group("message") @hint("Controls appearance of the message in GUI");
     cObject *controlInfo @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");
     cArray *parList @getter(getParListPtr) @group("message") @hint("OBSOLETE: use of \"parList\" should be replaced with message subclassing in the few models that still use it");
 
-    bool isScheduled @getter(isScheduled) @group(sending) @hint("Whether message is currently scheduled/in transit or not");
     bool isSelfMessage @getter(isSelfMessage) @group(sending) @hint("Whether message is a self-message, scheduled to be delivered back to the same module at a later time");
     simtime_t creationTime @group(sending) @hint("Simulation time the message was created");
     simtime_t sendingTime @group(sending) @hint("Simulation time of the current or last sending/scheduling of the message");
-    simtime_t arrivalTime @group(sending) @hint("Simulation time the message will be/was delivered to the destination module");
     simtime_t timestamp @group(sending) @editable @hint("User-settable timestamp for generic use");
 
     int senderModuleId @group(sending) @hint("ID of the module performing the current or last send/schedule operation");
@@ -642,11 +647,15 @@ class cMsgPar extends cOwnedObject
     bool isConstant @getter(isConstant) @group(flags) @hint("Whether the parameter has a constant value");
 }
 
-class cMessageHeap extends cOwnedObject
+class cFutureEventSet extends cOwnedObject
 {
     @icon(container);
     int length @hint("Number of items contained");
-    cMessage *messages[] @getter(peek) @sizeGetter(getLength) @hint("Self-messages currently scheduled and messages currently in transit");
+    cEvent *events[] @getter(get) @sizeGetter(getLength) @hint("Events and self-messages and currently scheduled, and messages currently in transit");
+}
+
+class cEventHeap extends cFutureEventSet
+{
 }
 
 class cQueue extends cOwnedObject
@@ -673,7 +682,7 @@ class cSimulation extends cNoncopyableOwnedObject
     @icon(container);
     simtime_t simTime @hint("The current simulation time in seconds");
     int64_t eventNumber @hint("The current event number -- counts from 0 up");
-    cMessageHeap messageQueue @label(futureEvents) @hint("Self-messages scheduled, and messages in transit");
+    cFutureEventSet *fes @getter(getFES) @label(futureEvents) @hint("Self-messages scheduled, and messages in transit");
     int lastComponentId @group(components) @hint("The largest component ID issued so far");
     cModule *systemModule @group(components) @hint("The top-level module");
     cComponent *component[] @sizeGetter(getLastComponentId) @group(components) @label(components) @hint("List of components indexed by component ID");

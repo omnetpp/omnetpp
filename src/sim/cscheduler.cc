@@ -21,7 +21,7 @@
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/cevent.h"
 #include "omnetpp/csimulation.h"
-#include "omnetpp/cmessageheap.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
@@ -62,14 +62,14 @@ Register_Class(cSequentialScheduler);
 
 cEvent *cSequentialScheduler::guessNextEvent()
 {
-    return sim->msgQueue.peekFirst();
+    return sim->getFES()->peekFirst();
 }
 
 cEvent *cSequentialScheduler::takeNextEvent()
 {
     for (;;)
     {
-        cEvent *event = sim->msgQueue.removeFirst();
+        cEvent *event = sim->getFES()->removeFirst();
         if (!event)
             throw cTerminationException(E_ENDEDOK);
         if (event->isStale())
@@ -81,7 +81,7 @@ cEvent *cSequentialScheduler::takeNextEvent()
 
 void cSequentialScheduler::putBackEvent(cEvent *event)
 {
-    sim->msgQueue.putBackFirst(event);
+    sim->getFES()->putBackFirst(event);
 }
 
 //-----
@@ -136,12 +136,12 @@ bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
 
 cEvent *cRealTimeScheduler::guessNextEvent()
 {
-    return sim->msgQueue.peekFirst();
+    return sim->getFES()->peekFirst();
 }
 
 cEvent *cRealTimeScheduler::takeNextEvent()
 {
-    cEvent *event = sim->msgQueue.peekFirst();
+    cEvent *event = sim->getFES()->peekFirst();
     if (!event)
         throw cTerminationException(E_ENDEDOK);
 
@@ -162,14 +162,14 @@ cEvent *cRealTimeScheduler::takeNextEvent()
     }
 
     // remove event from FES and return it
-    cEvent *tmp = sim->msgQueue.removeFirst();
+    cEvent *tmp = sim->getFES()->removeFirst();
     ASSERT(tmp == event);
     return event;
 }
 
 void cRealTimeScheduler::putBackEvent(cEvent *event)
 {
-    sim->msgQueue.putBackFirst(event);
+    sim->getFES()->putBackFirst(event);
 }
 
 NAMESPACE_END

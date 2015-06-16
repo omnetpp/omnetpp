@@ -22,7 +22,6 @@
 
 #include "simkerneldefs.h"
 #include "simtime_t.h"
-#include "cmessageheap.h"
 #include "ccomponent.h"
 #include "cexception.h"
 
@@ -37,6 +36,7 @@ class cChannel;
 class cSimpleModule;
 class cSimulation;
 class cException;
+class cFutureEventSet;
 class cScheduler;
 class cParsimPartition;
 class cNEDFileLoader;
@@ -88,6 +88,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cComponent *contextComponent;  // component in context (or nullptr)
     int contextType;          // the innermost context type (one of CTX_BUILD, CTX_EVENT, CTX_INITIALIZE, CTX_FINISH)
     cModuleType *networkType; // network type
+    cFutureEventSet *fes;     // stores future events
     cScheduler *scheduler;    // event scheduler
     simtime_t warmupPeriod;   // warm-up period
 
@@ -107,11 +108,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     // helper for executeEvent()
     void doMessageEvent(cMessage *msg, cSimpleModule *mod);
-
-  public:
-    // internal: FES
-    cMessageHeap msgQueue;    // future messages (FES)
-    cMessageHeap& getMessageQueue() {return msgQueue;}  // accessor for sim_std.msg
 
   public:
     /** @name Constructor, destructor. */
@@ -308,6 +304,16 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the scheduler object.
      */
     cScheduler *getScheduler() const  {return scheduler;}
+
+    /**
+     * TODO document
+     */
+    void setFES(cFutureEventSet *fes);
+
+    /**
+     * TODO document
+     */
+    cFutureEventSet *getFES() const  {return fes;}
 
     /**
      * Sets the simulation stop time be scheduling an appropriate

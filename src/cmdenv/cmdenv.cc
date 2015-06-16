@@ -41,6 +41,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cenum.h"
 #include "omnetpp/cscheduler.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cresultfilter.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cclassdescriptor.h"
@@ -474,7 +475,7 @@ void Cmdenv::printEventBanner(cEvent *event)
                 timeToStr(totalElapsed()),
                 cMessage::getTotalMessageCount(),
                 cMessage::getLiveMessageCount(),
-                getSimulation()->msgQueue.getLength());
+                getSimulation()->getFES()->getLength());
     }
 }
 
@@ -496,7 +497,7 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
         ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
                 cMessage::getTotalMessageCount(),
                 cMessage::getLiveMessageCount(),
-                getSimulation()->msgQueue.getLength());
+                getSimulation()->getFES()->getLength());
     }
     else {
         ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s   ev/sec=%g\n",

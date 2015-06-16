@@ -163,6 +163,7 @@ $O/compoundfilter.obj: compoundfilter.cc \
   commonnodes.h \
   compoundfilter.h \
   dataflowmanager.h \
+  enums.h \
   filternodes.h \
   node.h \
   nodetype.h \
@@ -218,6 +219,7 @@ $O/datasorter.obj: datasorter.cc \
   ../common/rwlock.h \
   ../common/stringutil.h \
   datasorter.h \
+  enums.h \
   enumtype.h \
   fields.h \
   idlist.h \
@@ -267,6 +269,7 @@ $O/export.obj: export.cc \
   ../common/rwlock.h \
   ../common/stringutil.h \
   datasorter.h \
+  enums.h \
   enumtype.h \
   export.h \
   fields.h \
@@ -287,6 +290,7 @@ $O/fields.obj: fields.cc \
   ../common/patternmatcher.h \
   ../common/rwlock.h \
   ../common/stringutil.h \
+  enums.h \
   enumtype.h \
   fields.h \
   idlist.h \
@@ -325,6 +329,7 @@ $O/filternodes.obj: filternodes.cc \
   channel.h \
   commonnodes.h \
   dataflowmanager.h \
+  enums.h \
   filternodes.h \
   node.h \
   nodetype.h \
@@ -339,6 +344,7 @@ $O/idlist.obj: idlist.cc \
   ../common/exception.h \
   ../common/rwlock.h \
   ../common/stringutil.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   resultfilemanager.h \
@@ -361,6 +367,7 @@ $O/indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/stringutil.h \
   channel.h \
   dataflowmanager.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   indexedvectorfile.h \
@@ -388,6 +395,7 @@ $O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   channel.h \
   commonnodes.h \
   dataflowmanager.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   indexedvectorfilereader.h \
@@ -416,6 +424,7 @@ $O/indexedvectorfilereader2.obj: indexedvectorfilereader2.cc \
   channel.h \
   commonnodes.h \
   dataflowmanager.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   indexedvectorfilereader2.h \
@@ -499,6 +508,7 @@ $O/nodetyperegistry.obj: nodetyperegistry.cc \
   customfilter.h \
   dataflowmanager.h \
   diffquot.h \
+  enums.h \
   enumtype.h \
   filewriter.h \
   filternodes.h \
@@ -552,6 +562,7 @@ $O/resultfilemanager.obj: resultfilemanager.cc \
   ../common/rwlock.h \
   ../common/stringtokenizer.h \
   ../common/stringutil.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   indexfile.h \
@@ -592,6 +603,7 @@ $O/scavetool.obj: scavetool.cc \
   commonnodes.h \
   dataflowmanager.h \
   datasorter.h \
+  enums.h \
   enumtype.h \
   export.h \
   fields.h \
@@ -691,6 +703,7 @@ $O/vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/stringutil.h \
   channel.h \
   dataflowmanager.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   indexedvectorfile.h \
@@ -721,6 +734,7 @@ $O/vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   commonnodes.h \
   dataflowmanager.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   node.h \
@@ -745,6 +759,7 @@ $O/vectorfilewriter.obj: vectorfilewriter.cc \
   ../common/stringutil.h \
   channel.h \
   dataflowmanager.h \
+  enums.h \
   enumtype.h \
   idlist.h \
   node.h \

@@ -28,7 +28,7 @@
 #include "common/patternmatcher.h"
 #include "common/ver.h"
 #include "omnetpp/csimulation.h"
-#include "omnetpp/cmessageheap.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cregistrationlist.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
@@ -104,9 +104,9 @@ void cFindByPathVisitor::visit(cObject *obj)
     std::string objPath = obj->getFullPath();
 
     // however, a module's name and the future event set's name is not hidden,
-    // so if this obj is a module (or cMessageHeap) and its name does not match
+    // so if this object is a module or the FES and its name does not match
     // the beginning of fullpath, we can prune the search here.
-    if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
+    if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cFutureEventSet *>(obj))
         && !opp_stringbeginswith(fullPath, objPath.c_str()))
     {
         // skip (do not search) this subtree
@@ -259,7 +259,7 @@ std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
         iconName = "canvas_vs";
     else if (dynamic_cast<cSimulation *>(object))
         iconName = "container_vs";
-    else if (dynamic_cast<cMessageHeap *>(object))
+    else if (dynamic_cast<cFutureEventSet *>(object))
         iconName = "container_vs";
     else if (dynamic_cast<cRegistrationList *>(object))
         iconName = "container_vs";

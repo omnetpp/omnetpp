@@ -42,13 +42,13 @@ NAMESPACE_BEGIN
  */
 class SIM_API cEvent : public cOwnedObject
 {
-    friend class cMessage;  //getArrivalTime()
-    friend class cMessageHeap;
+    friend class cMessage;     // getArrivalTime()
+    friend class cEventHeap; // heapIndex
   private:
     simtime_t arrivalTime;     // time of delivery -- set internally
     short priority;            // priority -- used for scheduling events with equal arrival times
-    int heapIndex;             // used by cMessageHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
-    unsigned long insertOrder; // used by cMessageHeap to keep order of events with equal time and priority
+    int heapIndex;             // used by cEventHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
+    unsigned long insertOrder; // used by the FES to keep order of events with equal time and priority
     eventnumber_t previousEventNumber; // most recent event number when envir was notified about this event object (e.g. creating/cloning/sending/scheduling/deleting of this event object)
 
   public:
@@ -60,7 +60,7 @@ class SIM_API cEvent : public cOwnedObject
     // internal: sets previousEventNumber.
     void setPreviousEventNumber(eventnumber_t num) {previousEventNumber = num;}
 
-    // internal: used by cMessageHeap.
+    // internal: used by cEventHeap.
     unsigned long getInsertOrder() const {return insertOrder;}
 
     // internal: called by the simulation kernel to set the value returned

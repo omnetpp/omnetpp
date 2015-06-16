@@ -1,5 +1,5 @@
 %description:
-Test the cMessageHeap optimization using the circular buffer,
+Test the cEventHeap optimization using the circular buffer,
 introduced at 20090725.
 
 Note: this test only schedules events for the current simTime()!
@@ -22,7 +22,7 @@ namespace @TESTNAME@ {
 class Test : public cSimpleModule
 {
   protected:
-    cMessageHeap& fes;
+    cEventHeap& fes;
     std::vector<cMessage*> shadow;  // t==simTime() events
     std::vector<cMessage*> future;  // future events
   public:
@@ -52,12 +52,12 @@ void Test::verifyFES()
 
     for (i=0; i<fes.length(); i++)
     {
-        ASSERT(fes.peek(i)==expected[i]);
+        ASSERT(fes.get(i)==expected[i]);
         ASSERT(expected[i]->getOwner()==&fes);
     }
 
     i=0;
-    for (cMessageHeap::Iterator it(fes); !it.end(); i++,it++)
+    for (cEventHeap::Iterator it(fes); !it.end(); i++,it++)
         ASSERT(it()==expected[i]);
 }
 
@@ -100,7 +100,7 @@ void Test::initialize()
     // simulation models are NOT supposed to do...)
 
     // fill up FES to a varying degree (n=1..20 events), and empty them;
-    // this will exercise the circbuf reallocation code in cMessageHeap
+    // this will exercise the circbuf reallocation code in cEventHeap
     for (int n=1; n<20; n++)
     {
         for (int rep=0; rep<3; rep++)

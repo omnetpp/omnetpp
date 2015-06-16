@@ -22,6 +22,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/ccommbuffer.h"
 #include "omnetpp/globals.h"
@@ -53,7 +54,7 @@ void cNoSynchronization::endRun()
 cEvent *cNoSynchronization::takeNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
-    if (sim->msgQueue.isEmpty()) {
+    if (sim->getFES()->isEmpty()) {
         EV << "no local events, waiting for something to arrive from other partitions\n";
         if (!receiveBlocking())
             return nullptr;
@@ -62,13 +63,13 @@ cEvent *cNoSynchronization::takeNextEvent()
         receiveNonblocking();
     }
 
-    cEvent *event = sim->msgQueue.removeFirst();
+    cEvent *event = sim->getFES()->removeFirst();
     return event;
 }
 
 void cNoSynchronization::putBackEvent(cEvent *event)
 {
-    sim->msgQueue.putBackFirst(event);
+    sim->getFES()->putBackFirst(event);
 }
 
 NAMESPACE_END

@@ -26,6 +26,7 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/carray.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
@@ -247,11 +248,13 @@ void cModule::reassignModuleIdRec()
     getSimulation()->registerComponent(this);
     int newId = getId();
 
-    for (cMessageHeap::Iterator it = cMessageHeap::Iterator(getSimulation()->getMessageQueue()); !it.end(); it++) {
-        cEvent *event = it();
-        cMessage *msg = dynamic_cast<cMessage *>(event);
-        if (msg && msg->getArrivalModuleId() == oldId)
-            msg->setArrival(newId, msg->getArrivalGateId());
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; i < fesLen; i++) {
+        cEvent *event = fes->get(i);
+        if (cMessage *msg = dynamic_cast<cMessage *>(event))
+            if (msg->getArrivalModuleId() == oldId)
+                msg->setArrival(newId, msg->getArrivalGateId());
     }
 
     for (cModule *child = firstSubmodule; child; child = child->nextSibling)

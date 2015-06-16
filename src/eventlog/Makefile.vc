@@ -107,6 +107,7 @@ $O/event.obj: event.cc \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
   ../common/stringpool.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -128,6 +129,7 @@ $O/eventlog.obj: eventlog.cc \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
   ../common/stringpool.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -149,6 +151,7 @@ $O/eventlogentries.obj: eventlogentries.cc \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
   ../common/stringutil.h \
+  enums.h \
   event.h \
   eventlogdefs.h \
   eventlogentries.h \
@@ -167,6 +170,7 @@ $O/eventlogentry.obj: eventlogentry.cc \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
   ../common/stringpool.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -188,6 +192,7 @@ $O/eventlogentryfactory.obj: eventlogentryfactory.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   event.h \
   eventlogdefs.h \
   eventlogentries.h \
@@ -208,6 +213,7 @@ $O/eventlogfacade.obj: eventlogfacade.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   ../common/stringpool.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -231,6 +237,7 @@ $O/eventlogindex.obj: eventlogindex.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   eventlogdefs.h \
   eventlogentry.h \
   eventlogindex.h
@@ -245,6 +252,7 @@ $O/eventlogtablefacade.obj: eventlogtablefacade.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   event.h \
   eventlogdefs.h \
   eventlogentries.h \
@@ -268,6 +276,7 @@ $O/eventlogtool.obj: eventlogtool.cc \
   ../common/patternmatcher.h \
   ../common/stringpool.h \
   ../common/ver.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -292,6 +301,7 @@ $O/filteredevent.obj: filteredevent.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   ../common/stringpool.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -316,6 +326,7 @@ $O/filteredeventlog.obj: filteredeventlog.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   ../common/stringpool.h \
+  enums.h \
   event.h \
   eventlog.h \
   eventlogdefs.h \
@@ -338,6 +349,7 @@ $O/ievent.obj: ievent.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   eventlogdefs.h \
   eventlogentries.h \
   eventlogentry.h \
@@ -354,6 +366,7 @@ $O/ieventlog.obj: ieventlog.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   eventlogdefs.h \
   eventlogentries.h \
   eventlogentry.h \
@@ -371,6 +384,7 @@ $O/messagedependency.obj: messagedependency.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   event.h \
   eventlogdefs.h \
   eventlogentries.h \
@@ -390,6 +404,7 @@ $O/sequencechartfacade.obj: sequencechartfacade.cc \
   ../common/lcgrandom.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h \
+  enums.h \
   event.h \
   eventlogdefs.h \
   eventlogentries.h \

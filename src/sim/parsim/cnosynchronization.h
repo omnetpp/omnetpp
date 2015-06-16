@@ -21,6 +21,7 @@
 #ifndef __OMNETPP_NOSYNCHRONIZATION_H
 #define __OMNETPP_NOSYNCHRONIZATION_H
 
+#include "omnetpp/cfutureeventset.h"
 #include "cparsimprotocolbase.h"
 
 NAMESPACE_BEGIN
@@ -61,7 +62,7 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
 
     /**
      * Scheduler function. It processes whatever comes from other partitions,
-     * then returns msgQueue.peekFirst(). Performs no synchronization
+     * then returns getFES()->peekFirst(). Performs no synchronization
      * with other partitions, so incausalities may occur which stop the
      * simulation with an error (see also class comment).
      */

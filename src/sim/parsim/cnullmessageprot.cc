@@ -29,6 +29,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cchannel.h"
+#include "omnetpp/cfutureeventset.h"
 #include "cnullmessageprot.h"
 #include "clinkdelaylookahead.h"
 #include "cparsimpartition.h"
@@ -61,7 +62,7 @@ cNullMessageProtocol::~cNullMessageProtocol()
 {
     delete lookaheadcalc;
 
-    // segInfo[*].eitEvent/eotEvent messages already deleted with msgQueue.clear()
+    // segInfo[*].eitEvent/eotEvent messages already deleted with getFES()->clear()
     delete[] segInfo;
 }
 
@@ -224,7 +225,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
     // our EIT and resendEOT messages are always scheduled, so the FES can
     // only be empty if there are no other partitions at all -- "no events" then
     // means we're finished.
-    if (sim->msgQueue.isEmpty())
+    if (sim->getFES()->isEmpty())
         return nullptr;
 
     // we could do a receiveNonblocking() call here to look at our mailbox,
@@ -236,7 +237,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
 
     cEvent *event;
     while (true) {
-        event = sim->msgQueue.peekFirst();
+        event = sim->getFES()->peekFirst();
         cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : nullptr;
         if (msg && msg->getKind() == MK_PARSIM_RESENDEOT) {
             // send null messages if window closed for a partition
@@ -256,7 +257,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
     }
 
     // remove event from FES and return it
-    cEvent *tmp = sim->msgQueue.removeFirst();
+    cEvent *tmp = sim->getFES()->removeFirst();
     ASSERT(tmp == event);
     return event;
 }
@@ -296,9 +297,9 @@ void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
 
 void cNullMessageProtocol::rescheduleEvent(cMessage *msg, simtime_t t)
 {
-    sim->msgQueue.remove(msg);  // also works if the event is not currently scheduled
+    sim->getFES()->remove(msg);  // also works if the event is not currently scheduled
     msg->setArrivalTime(t);
-    sim->msgQueue.insert(msg);
+    sim->getFES()->insert(msg);
 }
 
 NAMESPACE_END

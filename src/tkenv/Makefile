@@ -158,35 +158,18 @@ $O/arrow.o: arrow.cc \
   tkdefs.h \
   tkutil.h
 $O/canvasinspector.o: canvasinspector.cc \
-  ../../include/omnetpp/carray.h \
   ../../include/omnetpp/ccanvas.h \
-  ../../include/omnetpp/ccomponent.h \
-  ../../include/omnetpp/cconfiguration.h \
-  ../../include/omnetpp/cdefaultlist.h \
   ../../include/omnetpp/cenvir.h \
-  ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
-  ../../include/omnetpp/cexpression.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
-  ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cnamedobject.h \
-  ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
-  ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
-  ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cregistrationlist.h \
-  ../../include/omnetpp/cresultlistener.h \
-  ../../include/omnetpp/crng.h \
-  ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
-  ../../include/omnetpp/distrib.h \
-  ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -204,14 +187,8 @@ $O/canvasinspector.o: canvasinspector.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   ../common/stringutil.h \
-  ../envir/args.h \
-  ../envir/envirbase.h \
   ../envir/envirdefs.h \
-  ../envir/eventlogfilemgr.h \
-  ../envir/intervals.h \
-  ../envir/logformatter.h \
   ../envir/matchableobject.h \
-  ../envir/objectprinter.h \
   ../envir/visitor.h \
   canvasinspector.h \
   canvasrenderer.h \
@@ -272,7 +249,6 @@ $O/componenthistory.o: componenthistory.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -323,7 +299,6 @@ $O/figurerenderers.o: figurerenderers.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -390,12 +365,12 @@ $O/gateinspector.o: gateinspector.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -452,43 +427,17 @@ $O/gateinspector.o: gateinspector.cc \
   tklib.h \
   tkutil.h
 $O/genericobjectinspector.o: genericobjectinspector.cc \
-  ../../include/omnetpp/carray.h \
-  ../../include/omnetpp/cchannel.h \
-  ../../include/omnetpp/ccomponent.h \
-  ../../include/omnetpp/ccomponenttype.h \
-  ../../include/omnetpp/cconfiguration.h \
-  ../../include/omnetpp/cdefaultlist.h \
   ../../include/omnetpp/cenvir.h \
-  ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
-  ../../include/omnetpp/cexpression.h \
-  ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
-  ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
-  ../../include/omnetpp/cmodule.h \
-  ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
-  ../../include/omnetpp/cnedmathfunction.h \
-  ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
-  ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cownedobject.h \
-  ../../include/omnetpp/cpar.h \
-  ../../include/omnetpp/cqueue.h \
   ../../include/omnetpp/cregistrationlist.h \
-  ../../include/omnetpp/cresultlistener.h \
-  ../../include/omnetpp/crng.h \
-  ../../include/omnetpp/csimulation.h \
   ../../include/omnetpp/cstringpool.h \
-  ../../include/omnetpp/ctimestampedvalue.h \
   ../../include/omnetpp/cvisitor.h \
-  ../../include/omnetpp/distrib.h \
-  ../../include/omnetpp/envirext.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
   ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
@@ -504,24 +453,13 @@ $O/genericobjectinspector.o: genericobjectinspector.cc \
   ../common/exception.h \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
-  ../envir/args.h \
-  ../envir/envirbase.h \
   ../envir/envirdefs.h \
-  ../envir/eventlogfilemgr.h \
-  ../envir/intervals.h \
-  ../envir/logformatter.h \
   ../envir/matchableobject.h \
-  ../envir/objectprinter.h \
-  ../envir/speedometer.h \
   ../envir/visitor.h \
-  circularbuffer.h \
-  componenthistory.h \
   genericobjectinspector.h \
   inspector.h \
   inspectorfactory.h \
-  logbuffer.h \
   tkdefs.h \
-  tkenv.h \
   tklib.h \
   tkutil.h
 $O/histograminspector.o: histograminspector.cc \
@@ -541,7 +479,6 @@ $O/histograminspector.o: histograminspector.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -616,7 +553,6 @@ $O/inspector.o: inspector.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -689,7 +625,6 @@ $O/inspectorfactory.o: inspectorfactory.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -755,7 +690,6 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cnedvalue.h \
@@ -810,7 +744,6 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -867,7 +800,6 @@ $O/loginspector.o: loginspector.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmessageprinter.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -938,12 +870,12 @@ $O/moduleinspector.o: moduleinspector.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -1035,7 +967,6 @@ $O/outputvectorinspector.o: outputvectorinspector.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -1107,12 +1038,12 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -1198,7 +1129,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmessageprinter.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -1285,7 +1215,6 @@ $O/tklib.o: tklib.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -1350,12 +1279,12 @@ $O/tkutil.o: tkutil.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
@@ -1433,7 +1362,6 @@ $O/watchinspector.o: watchinspector.cc \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
   ../../include/omnetpp/cmessage.h \
-  ../../include/omnetpp/cmessageheap.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
