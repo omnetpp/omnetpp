@@ -54,7 +54,7 @@ void Event::clearInternalState()
 void Event::deleteConsequences()
 {
     if (consequences) {
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it)
             delete *it;
         delete consequences;
         consequences = nullptr;
@@ -68,13 +68,13 @@ void Event::deleteAllocatedObjects()
         cause = nullptr;
     }
     if (causes) {
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it)
             delete *it;
         delete causes;
         causes = nullptr;
     }
     deleteConsequences();
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); ++it)
         delete *it;
     eventLogEntries.clear();
 }
@@ -191,7 +191,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
 void Event::print(FILE *file, bool outputEventLogMessages)
 {
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); ++it) {
         EventLogEntry *eventLogEntry = *it;
         if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             eventLogEntry->print(file);
@@ -202,7 +202,7 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
 {
     Assert(index >= 0);
 
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); ++it) {
         EventLogMessageEntry *eventLogMessage = dynamic_cast<EventLogMessageEntry *>(*it);
 
         if (eventLogMessage) {

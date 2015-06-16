@@ -50,13 +50,13 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
     else {
         vertex->starTreeCenter = Pt::getZero();
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++)
+        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it)
             calculateCenterRecursive(*it);
 
         std::vector<Pt> pts;
         std::vector<Cc> circles;
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
+        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
             Vertex *vertexChild = *it;
             pts.clear();
             circles.clear();
@@ -80,7 +80,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 
                     std::vector<Pt> intersectingPts = circle1.basePlaneProjectionIntersect(circle2);
 
-                    for (std::vector<Pt>::iterator it = intersectingPts.begin(); it != intersectingPts.end(); it++)
+                    for (std::vector<Pt>::iterator it = intersectingPts.begin(); it != intersectingPts.end(); ++it)
                         pts.push_back(*it);
                 }
 
@@ -123,7 +123,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
         circles.clear();
         circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2));
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
+        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
             Vertex *vertexChild = *it;
             circles.push_back(Cc(vertexChild->starTreeCenter.copy().add(vertexChild->starTreeCircleCenter), vertexChild->starTreeRadius));
         }
@@ -151,7 +151,7 @@ void StarTreeEmbedding::rotateCenterRecursive(Vertex *vertex)
             Pt weightPoint = Pt::getZero();
             double area = 0;
 
-            for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
+            for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
                 Vertex *vertexChild = *it;
                 area += vertexChild->rc.rs.getArea();
                 weightPoint.add(vertexChild->starTreeCenter.copy().add(vertex->starTreeCircleCenter).multiply(vertexChild->rc.rs.getArea()));
@@ -163,7 +163,7 @@ void StarTreeEmbedding::rotateCenterRecursive(Vertex *vertex)
 
             if (!isNaN(angleRotate)) {
                 // Rotate children around circle center
-                for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
+                for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
                     Vertex *vertexChild = *it;
                     pt.assign(vertexChild->starTreeCenter).add(vertexChild->starTreeCircleCenter).add(vertex->starTreeCircleCenter);
                     pt.basePlaneRotate(angleRotate);
@@ -177,14 +177,14 @@ void StarTreeEmbedding::rotateCenterRecursive(Vertex *vertex)
                 vertex->starTreeCircleCenter.assign(pt).reverse();
 
                 // Correct children position
-                for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
+                for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
                     Vertex *vertexChild = *it;
                     vertexChild->starTreeCenter.subtract(vertex->starTreeCircleCenter);
                 }
             }
         }
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++)
+        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it)
             rotateCenterRecursive(*it);
     }
 }
@@ -201,7 +201,7 @@ void StarTreeEmbedding::calculatePositionRecursive(Vertex *vertex, Pt pt)
     if (vertex->spanningTreeParent)
         vertex->starTreeCircleCenter.add(pt);
 
-    for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
         Vertex *child = *it;
         calculatePositionRecursive(child, pt.copy().add(child->starTreeCenter));
     }

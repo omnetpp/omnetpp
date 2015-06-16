@@ -548,7 +548,7 @@ int LogInspector::inspectorCommand(int argc, const char **argv)
             return TCL_ERROR;
         }
         Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-        for (std::set<int>::iterator it = excludedModuleIds.begin(); it != excludedModuleIds.end(); it++)
+        for (std::set<int>::iterator it = excludedModuleIds.begin(); it != excludedModuleIds.end(); ++it)
             Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
         Tcl_SetObjResult(interp, listobj);
         return TCL_OK;

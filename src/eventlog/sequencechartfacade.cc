@@ -539,7 +539,7 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
         eventLog->progress();
         IMessageDependencyList *causes = event->getCauses();
 
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it) {
             IMessageDependency *messageDependency = *it;
 
             if (messageDependency->getCauseEventNumber() < startEventNumber)
@@ -548,7 +548,7 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
 
         IMessageDependencyList *consequences = event->getConsequences();
 
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it)
             messageDependencies.insert((ptr_t)*it);
 
         if (event == endEvent)
@@ -569,7 +569,7 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
     std::set<int> axisIndexSet;
     std::map<eventnumber_t, IEvent *> eventNumberToEventMap;
 
-    for (std::map<int, int>::iterator it = moduleIdToAxisIndexMap->begin(); it != moduleIdToAxisIndexMap->end(); it++)
+    for (std::map<int, int>::iterator it = moduleIdToAxisIndexMap->begin(); it != moduleIdToAxisIndexMap->end(); ++it)
         axisIndexSet.insert(it->second);
 
     int numberOfAxes = axisIndexSet.size();
@@ -596,11 +596,11 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
         }
     }
 
-    for (std::map<eventnumber_t, IEvent *>::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++) {
+    for (std::map<eventnumber_t, IEvent *>::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); ++it) {
         IEvent *event = it->second;
         IMessageDependencyList *causes = event->getCauses();
 
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it) {
             IMessageDependency *messageDependency = *it;
             IEvent *causeEvent = messageDependency->getCauseEvent();
             IEvent *consequenceEvent = messageDependency->getConsequenceEvent();

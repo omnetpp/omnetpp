@@ -33,7 +33,7 @@ Port *MergerNode::addPort()
 bool MergerNode::isReady() const
 {
     // every input port must have data available (or already have reached EOF)
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it)
         if ((*it)()->length() == 0 && !(*it)()->isClosing())
             return false;
 
@@ -47,7 +47,7 @@ void MergerNode::process()
     // if port has reached EOF, skip it
     Port *minPort = nullptr;
     const Datum *minDatum;
-    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
         Channel *chan = (*it)();
         const Datum *dp = chan->peek();
         if (dp && (!minPort || dp->x < minDatum->x)) {
@@ -67,7 +67,7 @@ void MergerNode::process()
 bool MergerNode::isFinished() const
 {
     // only finished if all ports are at EOF
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it)
         if (!(*it)()->eof())
             return false;
 
@@ -164,7 +164,7 @@ Port *AggregatorNode::addPort()
 bool AggregatorNode::isReady() const
 {
     // every input port must have data available (or already have reached EOF)
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it)
         if ((*it)()->length() == 0 && !(*it)()->isClosing())
             return false;
 
@@ -174,7 +174,7 @@ bool AggregatorNode::isReady() const
 void AggregatorNode::process()
 {
     const Datum *minDatum = nullptr;
-    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
         Channel *chan = (*it)();
         const Datum *dp = chan->peek();
         if (dp && (!minDatum || dp->x < minDatum->x))
@@ -187,7 +187,7 @@ void AggregatorNode::process()
         d.x = minDatum->x;
 
         init();
-        for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
+        for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
             Channel *chan = (*it)();
             const Datum *dp = chan->peek();
             if (dp && dp->x == d.x) {
@@ -205,7 +205,7 @@ void AggregatorNode::process()
 bool AggregatorNode::isFinished() const
 {
     // only finished if all ports are at EOF
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it)
         if (!(*it)()->eof())
             return false;
 

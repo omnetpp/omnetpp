@@ -250,7 +250,7 @@ IndexedVectorFileWriterNode::IndexedVectorFileWriterNode(const char *fileName, c
 
 IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
 {
-    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it)
         delete *it;
 }
 
@@ -272,7 +272,7 @@ Port *IndexedVectorFileWriterNode::addVector(const VectorResult& vector)
 
 bool IndexedVectorFileWriterNode::isReady() const
 {
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++) {
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it) {
         VectorInputPort *port = *it;
         if (port->getChannel()->length() > 0 || (port->getChannel()->isClosing() && port->hasBufferedData()))
             return true;
@@ -293,7 +293,7 @@ void IndexedVectorFileWriterNode::process()
         run.writeToFile(f, fileName.c_str());
 
         // print vector declarations and attributes
-        for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
+        for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
             const VectorData& vector = (*it)->vector;
             CHECK(fprintf(f, "vector %d  %s  %s  %s\n",
                             vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
@@ -302,7 +302,7 @@ void IndexedVectorFileWriterNode::process()
         }
     }
 
-    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
         VectorInputPort *port = *it;
         if (!port->finished) {
             if (port->getChannel()->length() > 0)
@@ -319,7 +319,7 @@ void IndexedVectorFileWriterNode::process()
 
 bool IndexedVectorFileWriterNode::isFinished() const
 {
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++) {
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it) {
         VectorInputPort *port = *it;
         if (!port->finished)
             return false;

@@ -43,9 +43,9 @@ static void findListenerOccurences(cComponent *component, cIListener *listener, 
 
     if (component->isModule()) {
         cModule *module = (cModule *)component;
-        for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+        for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
             findListenerOccurences(*it, listener, result);
-        for (cModule::ChannelIterator it(module); !it.end(); it++)
+        for (cModule::ChannelIterator it(module); !it.end(); ++it)
             findListenerOccurences(*it, listener, result);
     }
 }

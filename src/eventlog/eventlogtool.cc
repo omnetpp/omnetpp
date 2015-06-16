@@ -208,7 +208,7 @@ void offsets(Options options)
     long begin = clock();
 
     if (!options.eventNumbers.empty()) {
-        for (std::vector<eventnumber_t>::iterator it = options.eventNumbers.begin(); it != options.eventNumbers.end(); it++) {
+        for (std::vector<eventnumber_t>::iterator it = options.eventNumbers.begin(); it != options.eventNumbers.end(); ++it) {
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
@@ -240,7 +240,7 @@ void events(Options options)
     long begin = clock();
 
     if (!options.fileOffsets.empty()) {
-        for (std::vector<file_offset_t>::iterator it = options.fileOffsets.begin(); it != options.fileOffsets.end(); it++) {
+        for (std::vector<file_offset_t>::iterator it = options.fileOffsets.begin(); it != options.fileOffsets.end(); ++it) {
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)

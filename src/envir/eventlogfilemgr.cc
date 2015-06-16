@@ -243,7 +243,7 @@ void EventlogFileManager::recordMessages()
     }
     std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
     eventnumber_t oldEventNumber = eventNumber;
-    for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
+    for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); ++it) {
         cMessage *msg = *it;
         if (eventNumber != msg->getPreviousEventNumber()) {
             fprintf(feventlog, "\n");
@@ -288,16 +288,16 @@ void EventlogFileManager::recordMessages()
 void EventlogFileManager::recordModules(cModule *module)
 {
     moduleCreated(module);
-    for (cModule::GateIterator it(module); !it.end(); it++)
+    for (cModule::GateIterator it(module); !it.end(); ++it)
         gateCreated(*it);
     displayStringChanged(module);
-    for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
         recordModules(*it);
 }
 
 void EventlogFileManager::recordConnections(cModule *module)
 {
-    for (cModule::GateIterator it(module); !it.end(); it++) {
+    for (cModule::GateIterator it(module); !it.end(); ++it) {
         cGate *gate = *it;
         if (gate->getNextGate())
             connectionCreated(gate);
@@ -305,7 +305,7 @@ void EventlogFileManager::recordConnections(cModule *module)
         if (channel)
             displayStringChanged(channel);
     }
-    for (cModule::SubmoduleIterator it(module); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
         recordConnections(*it);
 }
 
@@ -761,7 +761,7 @@ void EventlogFileManager::recordKeyframe()
         fprintf(feventlog, " c ");
         int i = 0;
         bool empty = true;
-        for (std::vector<eventnumber_t>::iterator it = consequenceLookaheadLimits.begin(); it != consequenceLookaheadLimits.end(); it++) {
+        for (std::vector<eventnumber_t>::iterator it = consequenceLookaheadLimits.begin(); it != consequenceLookaheadLimits.end(); ++it) {
             eventnumber_t consequenceLookaheadLimit = *it;
             if (consequenceLookaheadLimit) {
                 fprintf(feventlog, "%" INT64_PRINTF_FORMAT "d:%" INT64_PRINTF_FORMAT "d,", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
@@ -775,7 +775,7 @@ void EventlogFileManager::recordKeyframe()
         // simulationStateEntries
         empty = true;
         fprintf(feventlog, " s ");
-        for (std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.begin(); it != eventNumberToSimulationStateEventLogEntryRanges.end(); it++) {
+        for (std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.begin(); it != eventNumberToSimulationStateEventLogEntryRanges.end(); ++it) {
             std::vector<EventLogEntryRange>& ranges = it->second;
             for (std::vector<EventLogEntryRange>::iterator jt = ranges.begin(); jt != ranges.end(); jt++) {
                 (*jt).print(feventlog);

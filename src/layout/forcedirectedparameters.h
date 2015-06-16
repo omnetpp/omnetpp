@@ -578,19 +578,19 @@ class LeastExpandedSpring : public AbstractForceProvider {
         }
 
         ~LeastExpandedSpring() {
-            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); ++it)
                 delete *it;
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) override {
             AbstractForceProvider::setForceDirectedEmbedding(embedding);
-            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); ++it)
                 (*it)->setForceDirectedEmbedding(embedding);
          }
 
         virtual void reinitialize() override {
             AbstractForceProvider::reinitialize();
-            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); ++it)
                 (*it)->reinitialize();
         }
 
@@ -598,7 +598,7 @@ class LeastExpandedSpring : public AbstractForceProvider {
             AbstractSpring *leastExpandedSpring;
             double leastExpansion = POSITIVE_INFINITY;
 
-            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); ++it) {
                 AbstractSpring *spring = *it;
                 double distance;
                 spring->getDistanceAndVector(distance);
@@ -666,7 +666,7 @@ class AbstractVelocityBasedForceProvider : public AbstractForceProvider {
         virtual void applyForces() override {
             const std::vector<Variable *>& variables = embedding->getVariables();
 
-            for (std::vector<Variable *>::const_iterator it = variables.begin(); it != variables.end(); it++) {
+            for (std::vector<Variable *>::const_iterator it = variables.begin(); it != variables.end(); ++it) {
                 Variable *variable = *it;
                 Pt vector(variable->getVelocity());
                 vector.multiply(-getPower(variable, vector.getLength()));

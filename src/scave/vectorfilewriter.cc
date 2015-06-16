@@ -58,7 +58,7 @@ Port *VectorFileWriterNode::addVector(const VectorResult& vector)
 
 bool VectorFileWriterNode::isReady() const
 {
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it)
         if (it->port()->length() > 0)
             return true;
 
@@ -79,13 +79,13 @@ void VectorFileWriterNode::process()
         CHECK(fprintf(f, "%s\n\n", fileHeader.c_str()));
         CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
 
-        for (PortVector::iterator it = ports.begin(); it != ports.end(); it++)
+        for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it)
             CHECK(fprintf(f, "vector %d  %s  %s  %s\n", it->id,
                             QUOTE(it->moduleName.c_str()),
                             QUOTE(it->name.c_str()), it->columns.c_str()));
     }
 
-    for (PortVector::iterator it = ports.begin(); it != ports.end(); it++) {
+    for (PortVector::iterator it = ports.begin(); it != ports.end(); ++it) {
         Channel *chan = it->port();
         int n = chan->length();
         std::string& columns = it->columns;
@@ -152,7 +152,7 @@ void VectorFileWriterNode::process()
 
 bool VectorFileWriterNode::isFinished() const
 {
-    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); it++)
+    for (PortVector::const_iterator it = ports.begin(); it != ports.end(); ++it)
         if (!it->port()->isClosing() || it->port()->length() > 0)
             return false;
 

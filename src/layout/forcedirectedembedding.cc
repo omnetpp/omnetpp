@@ -36,13 +36,13 @@ ForceDirectedEmbedding::ForceDirectedEmbedding()
 
 ForceDirectedEmbedding::~ForceDirectedEmbedding()
 {
-    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
+    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); ++it)
         delete *it;
 
-    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); ++it)
         delete *it;
 
-    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
+    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); ++it)
         delete *it;
 }
 
@@ -116,11 +116,11 @@ void ForceDirectedEmbedding::reinitialize()
     tvn = createPtArray();
 
     // reinitialize parts
-    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
+    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); ++it)
         (*it)->reinitialize();
-    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); ++it)
         (*it)->reinitialize();
-    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
+    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); ++it)
         (*it)->reinitialize();
 
     // reinitialize positions and velocities
@@ -129,7 +129,7 @@ void ForceDirectedEmbedding::reinitialize()
         pn[i].assign(variable->getPosition());
         vn[i].assign(variable->getVelocity());
         double variableMass = 0;
-        for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++) {
+        for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); ++it) {
             IBody *body = *it;
             if (body->getVariable() == variable) {
                 variableMass += body->getMass();
@@ -337,7 +337,7 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
     }
 
     // calculate forces
-    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); ++it)
         (*it)->applyForces();
 
     // return accelerations

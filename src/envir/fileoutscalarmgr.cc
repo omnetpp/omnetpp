@@ -168,7 +168,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (enabled) {
         CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
         if (attributes)
-            for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); it++)
+            for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
                 CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     }
@@ -220,7 +220,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     }
 
     if (attributes)
-        for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); it++)
+        for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
             CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
 

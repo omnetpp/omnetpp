@@ -40,7 +40,7 @@ void TeeNode::process()
     int n = in()->length();
     for (int i = 0; i < n; i++) {
         in()->read(&d, 1);
-        for (PortVector::iterator it = outs.begin(); it != outs.end(); it++)
+        for (PortVector::iterator it = outs.begin(); it != outs.end(); ++it)
             (*it)()->write(&d, 1);
     }
 }

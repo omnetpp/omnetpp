@@ -168,7 +168,7 @@ void cIndexedFileOutputVectorManager::initVector(VectorData *vp)
     CHECK(fprintf(fi, "vector %d  %s  %s  %s\n",
                     vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()),
             ifname);
-    for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); it++)
+    for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); ++it)
         CHECK(fprintf(fi, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())),
                 ifname);
 }

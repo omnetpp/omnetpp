@@ -1302,7 +1302,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
         ID id = it->first.second;
         if (_fileid(id) == file->id) {
             ComputedIDCache::iterator oldIt = it;
-            it++;
+            ++it;
             computedIDCache.erase(oldIt);
         }
         else

@@ -417,7 +417,7 @@ void ForceDirectedGraphLayouter::executePreEmbedding()
     Vertex *childrenComponentsStarRoot = nullptr;
 
     // first pre embed all connected components, one by one
-    for (std::vector<GraphComponent *>::iterator it = graphComponent.connectedSubComponents.begin(); it != graphComponent.connectedSubComponents.end(); it++) {
+    for (std::vector<GraphComponent *>::iterator it = graphComponent.connectedSubComponents.begin(); it != graphComponent.connectedSubComponents.end(); ++it) {
         GraphComponent *childComponent = *it;
         childComponent->calculateSpanningTree();
 

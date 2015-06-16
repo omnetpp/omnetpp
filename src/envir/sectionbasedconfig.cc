@@ -123,7 +123,7 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
 {
     commandLineOptions.clear();
     const std::string *basedirRef = getPooledBaseDir(baseDir);
-    for (StringMap::const_iterator it = options.begin(); it != options.end(); it++) {
+    for (StringMap::const_iterator it = options.begin(); it != options.end(); ++it) {
         // validate the key, then store the option
         // XXX we should better use the code in the validate() method...
         const char *key = it->first.c_str();
@@ -866,7 +866,7 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
             // wildcard group
             wildcardSuffixGroup.entries.push_back(entry2);
-            for (std::map<std::string, SuffixGroup>::iterator it = suffixGroups.begin(); it != suffixGroups.end(); it++)
+            for (std::map<std::string, SuffixGroup>::iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it)
                 if (entry2.suffixPattern->matches(it->first.c_str()))
                     (it->second).entries.push_back(entry2);
         }
@@ -1326,10 +1326,10 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 void SectionBasedConfiguration::dump() const
 {
     printf("Config:\n");
-    for (std::map<std::string, KeyValue1>::const_iterator it = config.begin(); it != config.end(); it++)
+    for (std::map<std::string, KeyValue1>::const_iterator it = config.begin(); it != config.end(); ++it)
         printf("  %s = %s\n", it->first.c_str(), it->second.value.c_str());
 
-    for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); it++) {
+    for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it) {
         const std::string& suffix = it->first;
         const SuffixGroup& group = it->second;
         printf("Suffix Group %s:\n", suffix.c_str());

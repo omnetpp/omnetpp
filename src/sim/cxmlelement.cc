@@ -290,7 +290,7 @@ std::string cXMLElement::tostr(int depth) const
         os << "  ";
     os << "<" << getTagName();
     cXMLAttributeMap map = getAttributes();
-    for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); it++)
+    for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); ++it)
         os << " " << it->first << "=\"" << it->second << "\"";
     if (!*getNodeValue() && !getFirstChild()) {
         os << "/>\n";

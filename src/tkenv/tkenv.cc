@@ -881,7 +881,7 @@ void Tkenv::redrawInspectors()
     refreshInspectors();
 
     // redraw them
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); it++)
+    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
         (*it)->redraw();
 }
 

@@ -55,7 +55,7 @@ FilteredEvent::~FilteredEvent()
 void FilteredEvent::deleteConsequences()
 {
     if (consequences) {
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it)
             delete *it;
         delete consequences;
         consequences = nullptr;
@@ -69,7 +69,7 @@ void FilteredEvent::deleteAllocatedObjects()
         cause = nullptr;
     }
     if (causes) {
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it)
             delete *it;
         delete causes;
         causes = nullptr;
@@ -226,7 +226,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
             int level = searchItem.level;
 
             IMessageDependencyList *eventCauses = currentEvent->getCauses();
-            for (IMessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++) {
+            for (IMessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); ++it) {
                 IMessageDependency *messageDependency = *it;
                 IEvent *causeEvent = messageDependency->getCauseEvent();
 
@@ -280,7 +280,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
             int level = searchItem.level;
 
             IMessageDependencyList *eventConsequences = currentEvent->getConsequences();
-            for (IMessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++) {
+            for (IMessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); ++it) {
                 IMessageDependency *messageDependency = *it;
                 IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
@@ -311,7 +311,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
 int FilteredEvent::countFilteredMessageDependencies(IMessageDependencyList *messageDependencies)
 {
     int count = 0;
-    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
+    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); ++it)
         if (dynamic_cast<FilteredMessageDependency *>(*it))
             count++;
 
@@ -324,7 +324,7 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
             beginMessageDependency->duplicate(filteredEventLog->getEventLog()),
             endMessageDependency->duplicate(filteredEventLog->getEventLog()));
 
-    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++) {
+    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); ++it) {
         if ((*it)->equals(newMessageDependency)) {
             delete newMessageDependency;
             return;

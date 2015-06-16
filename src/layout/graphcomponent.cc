@@ -52,13 +52,13 @@ GraphComponent::GraphComponent()
 GraphComponent::~GraphComponent()
 {
     if (owner) {
-        for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++)
+        for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it)
             delete *it;
 
-        for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++)
+        for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); ++it)
             delete *it;
 
-        for (std::vector<GraphComponent *>::iterator it = connectedSubComponents.begin(); it != connectedSubComponents.end(); it++)
+        for (std::vector<GraphComponent *>::iterator it = connectedSubComponents.begin(); it != connectedSubComponents.end(); ++it)
             delete *it;
     }
 }
@@ -91,7 +91,7 @@ int GraphComponent::indexOfVertex(Vertex *vertex)
 
 Vertex *GraphComponent::findVertex(void *identity)
 {
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
         Vertex *vertex = *it;
 
         if (vertex->identity == identity)
@@ -106,7 +106,7 @@ Rc GraphComponent::getBoundingRectangle()
     double top = DBL_MAX, bottom = DBL_MIN;
     double left = DBL_MAX, right = DBL_MIN;
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
         Vertex *vertex = *it;
 
         Pt pt = vertex->rc.pt;
@@ -126,7 +126,7 @@ void GraphComponent::calculateSpanningTree()
     Vertex *rootVertex = nullptr;
     spanningTreeVertices.clear();
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
         Vertex *vertex = *it;
 
         if (rootVertex == nullptr || rootVertex->neighbours.size() < vertex->neighbours.size())
@@ -141,7 +141,7 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex)
 {
     spanningTreeRoot = rootVertex;
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
         Vertex *vertex = *it;
         vertex->spanningTreeChildren.clear();
         vertex->spanningTreeParent = nullptr;
@@ -157,7 +157,7 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex)
         Vertex *vertex = vertices[0];
         vertices.pop_front();
 
-        for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); it++) {
+        for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); ++it) {
             Vertex *neighbour = *it;
 
             if (!neighbour->color) {
@@ -184,19 +184,19 @@ void GraphComponent::calculateConnectedSubComponents()
 {
     connectedSubComponents.clear();
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
         Vertex *vertex = *it;
         vertex->color = 0;
     }
 
-    for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++) {
+    for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); ++it) {
         Edge *edge = *it;
         edge->color = 0;
     }
 
     int color = 1;
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
         Vertex *vertex = *it;
 
         if (!vertex->color) {
@@ -215,7 +215,7 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
     vertex->connectedSubComponent = childComponent;
     childComponent->vertices.push_back(vertex);
 
-    for (std::vector<Edge *>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
+    for (std::vector<Edge *>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); ++it) {
         Edge *edge = *it;
 
         if (!edge->color) {
@@ -225,7 +225,7 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
         }
     }
 
-    for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); it++) {
+    for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); ++it) {
         Vertex *neighbour = *it;
 
         if (!neighbour->color)

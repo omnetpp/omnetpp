@@ -615,7 +615,7 @@ class Cc {
         static Cc getBasePlaneProjectionEnclosingCircle(const std::vector<Cc>& circles) {
             Cc cc = circles[0];
 
-            for (std::vector<Cc>::const_iterator it = circles.begin(); it != circles.end(); it++)
+            for (std::vector<Cc>::const_iterator it = circles.begin(); it != circles.end(); ++it)
                 cc = cc.getBasePlaneProjectionEnclosingCircle(*it);
 
             return cc;

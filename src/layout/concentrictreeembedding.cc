@@ -39,7 +39,7 @@ void ConcentricTreeEmbedding::calculateCenterRecursive(Vertex *vertex, int level
     vertex->rc.pt.x = levelPosition;
     vertex->rc.pt.y = level * 100;
     levelPositions[level] += vertex->rc.rs.width + vertexSpacing;
-    for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++)
+    for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it)
         calculateCenterRecursive(*it, level + 1);
 }
 

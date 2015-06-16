@@ -66,7 +66,7 @@ void cLinkDelayLookahead::startRun()
     for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod) {
-            for (cModule::GateIterator it(mod); !it.end(); it++) {
+            for (cModule::GateIterator it(mod); !it.end(); ++it) {
                 // if this is a properly connected proxygate, process it
                 cGate *g = *it;
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(g);

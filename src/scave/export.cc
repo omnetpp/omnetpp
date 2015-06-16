@@ -555,7 +555,7 @@ void ScaveExport::saveScalars(const string& name, const string& description,
                 ResultItemFields(rowFields), columnFields,
                 isoModuleNames, isoScalarNames, isoFields);
     vector<DataTable *> tables;
-    for (XYDatasetVector::const_iterator it = xyDatasets.begin(); it != xyDatasets.end(); it++) {
+    for (XYDatasetVector::const_iterator it = xyDatasets.begin(); it != xyDatasets.end(); ++it) {
         string name = "";  // TODO iso attr values
         string description = "";
         tables.push_back(new ScatterDataTable(name, description, *it));

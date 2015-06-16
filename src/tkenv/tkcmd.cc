@@ -1238,7 +1238,7 @@ int getSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     }
 
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-    for (cModule::SubmoduleIterator it(mod); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it)
         Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*it), -1));
     Tcl_SetObjResult(interp, listobj);
     return TCL_OK;
@@ -1407,7 +1407,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 static void collectTypes(cModule *mod, std::set<cComponentType *>& types)
 {
     types.insert(mod->getComponentType());
-    for (cModule::SubmoduleIterator it(mod); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it)
         collectTypes(*it, types);
 }
 

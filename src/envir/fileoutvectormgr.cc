@@ -108,7 +108,7 @@ void cFileOutputVectorManager::initVector(VectorData *vp)
 
     CHECK(fprintf(f, "vector %d  %s  %s  %s\n",
                     vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
-    for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); it++)
+    for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); ++it)
         CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     vp->initialized = true;

@@ -107,7 +107,7 @@ NodeTypeRegistry::NodeTypeRegistry()
 
 NodeTypeRegistry::~NodeTypeRegistry()
 {
-    for (NodeTypeMap::iterator it = nodeTypeMap.begin(); it != nodeTypeMap.end(); it++)
+    for (NodeTypeMap::iterator it = nodeTypeMap.begin(); it != nodeTypeMap.end(); ++it)
         delete it->second;
 }
 
@@ -127,7 +127,7 @@ NodeType *NodeTypeRegistry::getNodeType(const char *name)
 NodeTypeVector NodeTypeRegistry::getNodeTypes()
 {
     NodeTypeVector vect;
-    for (NodeTypeMap::iterator it = nodeTypeMap.begin(); it != nodeTypeMap.end(); it++)
+    for (NodeTypeMap::iterator it = nodeTypeMap.begin(); it != nodeTypeMap.end(); ++it)
         vect.push_back(it->second);
     return vect;
 }

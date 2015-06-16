@@ -47,7 +47,7 @@ bool XYPlotNode::isReady() const
     if (xin()->length() == 0)
         return false;
     // otherwise, we're ready only if all "y" ports have something (except those at EOF)
-    for (PortVector::const_iterator it = yin.begin(); it != yin.end(); it++)
+    for (PortVector::const_iterator it = yin.begin(); it != yin.end(); ++it)
         if ((*it)()->length() == 0 && !(*it)()->isClosing())
             return false;
 
@@ -89,7 +89,7 @@ bool XYPlotNode::isFinished() const
     if (xin()->eof())
         return true;
     // otherwise only if all "y" ports are at EOF
-    for (PortVector::const_iterator it = yin.begin(); it != yin.end(); it++)
+    for (PortVector::const_iterator it = yin.begin(); it != yin.end(); ++it)
         if (!(*it)()->eof())
             return false;
 

@@ -51,7 +51,7 @@ cNEDDeclaration::~cNEDDeclaration()
     for (int i = 0; i < (int)patterns.size(); i++)
         delete patterns[i].matcher;
 
-    for (StringPatternDataMap::iterator it = submodulePatterns.begin(); it != submodulePatterns.end(); it++) {
+    for (StringPatternDataMap::iterator it = submodulePatterns.begin(); it != submodulePatterns.end(); ++it) {
         std::vector<PatternData>& vec = it->second;
         for (int i = 0; i < (int)vec.size(); i++)
             delete vec[i].matcher;

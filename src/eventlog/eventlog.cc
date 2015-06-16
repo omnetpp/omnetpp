@@ -62,7 +62,7 @@ void EventLog::clearInternalState()
 
 void EventLog::deleteAllocatedObjects()
 {
-    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); ++it)
         delete it->second;
 }
 
@@ -80,7 +80,7 @@ void EventLog::synchronize(FileReader::FileChangedState change)
                 parseKeyframes();
                 break;
             case FileReader::APPENDED:
-                for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+                for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); ++it)
                     it->second->synchronize(change);
                 if (lastEvent) {
                     IEvent::unlinkNeighbourEvents(lastEvent);
@@ -240,7 +240,7 @@ std::vector<ModuleCreatedEntry *> EventLog::getModuleCreatedEntries()
 {
     std::vector<ModuleCreatedEntry *> moduleCreatedEntries;
 
-    for (ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.begin(); it != moduleIdToModuleCreatedEntryMap.end(); it++) {
+    for (ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.begin(); it != moduleIdToModuleCreatedEntryMap.end(); ++it) {
         Assert(it->second);
         moduleCreatedEntries.push_back(it->second);
     }
