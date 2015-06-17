@@ -457,9 +457,9 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
             // find registered class named "<type>Renderer"
             std::string rendererClassName = className + "Renderer";
             if (rendererClassName[0] == 'c')
-                rendererClassName.erase(0, 1);
+                rendererClassName.replace(0, 1, "tkenv::");
             if (opp_stringbeginswith(rendererClassName.c_str(), "omnetpp::c"))
-                rendererClassName.erase(sizeof("omnetpp::c")-2, 1);  // remove the "c"
+                rendererClassName.replace(sizeof("omnetpp::c")-2, 1, "tkenv::");  // remove the "c"
             cObjectFactory *factory = cObjectFactory::find(rendererClassName.c_str());
             if (!factory)
                 throw cRuntimeError("No renderer class '%s' for figure class '%s'", rendererClassName.c_str(), figure->getClassName());
