@@ -52,9 +52,15 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     stopDialog = new StopDialog();
 
-    // TODO
-    // if($config(display-statusdetails)
-    // {
+    //TODO
+    slider = new QSlider();
+    slider->setOrientation(Qt::Orientation::Horizontal);
+    slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    ui->toolBar->addWidget(slider);
+
+    //TODO
+    //if($config(display-statusdetails)
+    //{
 //        ui->labelDisplay1->hide();
 //        ui->labelDisplay2->hide();
 //        ui->labelDisplay3->hide();

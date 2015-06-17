@@ -21,7 +21,8 @@
 #include <QMessageBox>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsView>
-#include <QGridLayout>
+#include <QBoxLayout>
+#include <QToolBar>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -135,8 +136,13 @@ void ModuleInspector::createWindow(const char *window, const char *geometry)
 void ModuleInspector::useWindow(QWidget *parent)
 {
     Inspector::useWindow(parent);
+    createView(parent);
+    canvasRenderer->setQtCanvas(scene, getCanvas());
+}
 
-    QLayout *layout = new QGridLayout();
+void ModuleInspector::createView(QWidget *parent)
+{
+    QVBoxLayout *layout = new QVBoxLayout();
     parent->setLayout(layout);
     QGraphicsView *view = new QGraphicsView();
     layout->addWidget(view);
@@ -145,7 +151,34 @@ void ModuleInspector::useWindow(QWidget *parent)
     view->setRenderHints(QPainter::Antialiasing);
     view->setScene(scene);
 
-    canvasRenderer->setQtCanvas(scene, getCanvas());
+    QHBoxLayout *horizontalLayout = new QHBoxLayout();
+    QVBoxLayout *verticalLayout = new QVBoxLayout();
+    horizontalLayout->addLayout(verticalLayout);
+    horizontalLayout->insertStretch(0);
+    view->setLayout(horizontalLayout);
+
+    addToolBar(verticalLayout);
+}
+
+void ModuleInspector::addToolBar(QBoxLayout *layout)
+{
+    QToolBar *toolBar = new QToolBar();
+    layout->addWidget(toolBar);
+    layout->insertStretch(1);
+
+    toolBar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back");
+    toolBar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward");
+    toolBar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module");
+    toolBar->addSeparator();
+    toolBar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module");
+    toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl + F4)");
+    toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)");
+    toolBar->addSeparator();
+    toolBar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl + R)");
+    toolBar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl + M)");
+    toolBar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl + N)");
+
+    toolBar->setAutoFillBackground(true);
 }
 
 cCanvas *ModuleInspector::getCanvas()

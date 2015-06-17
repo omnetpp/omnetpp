@@ -26,6 +26,7 @@
 class QGraphicsPixmapItem;
 class QGraphicsScene;
 class QGraphicsItem;
+class QBoxLayout;
 
 namespace omnetpp {
 class cObject;
@@ -74,6 +75,8 @@ class QTENV_API ModuleInspector : public Inspector
       static const char *animModeToStr(SendAnimMode mode);
 
       QPointF getSubmodCoords(cModule *mod);
+      void addToolBar(QBoxLayout *layout);
+      void createView(QWidget *parent);
 
    public:
       ModuleInspector(InspectorFactory *f);

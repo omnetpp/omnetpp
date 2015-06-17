@@ -28,6 +28,7 @@ class QStandardItem;
 class QTreeView;
 class QGraphicsView;
 class QWidget;
+class QSlider;
 
 namespace Ui {
 class MainWindow;
@@ -91,6 +92,7 @@ private:
     Ui::MainWindow *ui;
     Qtenv *env;
     StopDialog *stopDialog;
+    QSlider *slider;
 
     bool isRunning();
     bool checkRunning();
