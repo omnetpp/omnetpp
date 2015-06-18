@@ -451,24 +451,11 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
             // append its value
             cPar *par = displayStringPar(name.c_str(), component, searchparent);
             switch (par->getType()) {
-                case cPar::BOOL:
-                    buffer += (par->boolValue() ? "1" : "0");
-                    break;
-
-                case cPar::STRING:
-                    buffer += par->stdstringValue();
-                    break;
-
-                case cPar::LONG:
-                    buffer += opp_stringf("%ld", par->longValue());
-                    break;
-
-                case cPar::DOUBLE:
-                    buffer += opp_stringf("%g", par->doubleValue());
-                    break;
-
-                default:
-                    throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
+              case cPar::BOOL: buffer += (par->boolValue() ? "1" : "0"); break;
+              case cPar::STRING: buffer += par->stdstringValue(); break;
+              case cPar::LONG: buffer += opp_stringf("%ld", par->longValue()); break;
+              case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
+              default: throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
             }
         }
     }

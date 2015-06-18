@@ -31,8 +31,6 @@ class cModule;
 
 namespace tkenv {
 
-class LogBuffer;
-
 class ILogBufferListener
 {
   public:
