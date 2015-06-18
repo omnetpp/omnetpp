@@ -37,7 +37,7 @@ SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbu
     treeitemmodel.cc \
     graphicsscene.cc
 
-HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h qtdefs.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h tkutil.h \
+HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h tkutil.h \
     runselectiondialog.h \
     treeitemmodel.h \
     canvasinspectorform.h \

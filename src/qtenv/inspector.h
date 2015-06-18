@@ -14,15 +14,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_INSPECTOR_H
-#define __OMNETPP_INSPECTOR_H
+#ifndef __OMNETPP_QTENV_INSPECTOR_H
+#define __OMNETPP_QTENV_INSPECTOR_H
 
 #include "envir/envirbase.h"
 #include "tkutil.h"
 
 class QWidget;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 class InspectorFactory;
@@ -47,12 +47,12 @@ int insptypeCodeFromName(const char *namestr);
 /**
  * Base class for inspectors.
  */
-class TKENV_API Inspector
+class QTENV_API Inspector
 {
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
       Tcl_Interp *interp;     // Tcl interpreter
-      cObject *object;        // the inspected object or NULL if inspector is empty
+      cObject *object;        // the inspected object or nullptr if inspector is empty
       int type;               // INSP_OBJECT, etc.
       char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
       QWidget *window;
@@ -109,8 +109,8 @@ class TKENV_API Inspector
       virtual void objectDeleted(cObject *);
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 
 #endif

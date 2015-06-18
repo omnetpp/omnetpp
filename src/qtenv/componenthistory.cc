@@ -19,20 +19,18 @@
 #include "omnetpp/csimplemodule.h"
 #include "componenthistory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 void ComponentHistory::componentDeleted(cComponent *component)
 {
-    if (!component->isModule()) return;  // TODO remove this in 5.0
-    Data& data = components[((cModule*)component)->getId()]; //TODO remove cast in 5.0
+    Data& data = components[component->getId()];
     cModule *parent = component->getParentModule();
     data.parentModuleId = parent ? parent->getId() : -1;
     data.fullName = component->getFullName();
     data.componentType = component->getComponentType();
 }
 
-/*TODO add back in 5.0
 void ComponentHistory::componentReparented(cComponent *component, cModule *oldParent, int oldId)
 {
     // see cModule::changeParentTo() for explanation
@@ -41,11 +39,10 @@ void ComponentHistory::componentReparented(cComponent *component, cModule *oldPa
     data.fullName = component->getFullName();
     data.componentType = component->getComponentType();
 }
-*/
 
 int ComponentHistory::getParentModuleId(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getComponent(componentId);
     if (component) {
         cModule *parent = component->getParentModule();
         return parent ? parent->getId() : -1;
@@ -58,7 +55,7 @@ int ComponentHistory::getParentModuleId(int componentId) const
 
 const char *ComponentHistory::getComponentFullName(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getComponent(componentId);
     if (component) {
         return component->getFullName();
     }
@@ -70,7 +67,7 @@ const char *ComponentHistory::getComponentFullName(int componentId) const
 
 std::string ComponentHistory::getComponentFullPath(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getComponent(componentId);
     if (component) {
         return component->getFullPath();
     }
@@ -86,10 +83,10 @@ std::string ComponentHistory::getComponentRelativePath(int componentId, int root
     if (componentId == rootComponentId)
         return "<parent>";
 
-    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getComponent(componentId);
     if (component) {
         cModule *parent = component->getParentModule();
-        return (parent == NULL || parent->getId() == rootComponentId) ? component->getFullName() :
+        return (parent == nullptr || parent->getId() == rootComponentId) ? component->getFullName() :
                getComponentRelativePath(parent->getId(), rootComponentId) + "." + component->getFullName();
     }
     else {
@@ -101,7 +98,7 @@ std::string ComponentHistory::getComponentRelativePath(int componentId, int root
 
 cComponentType *ComponentHistory::getComponentType(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getComponent(componentId);
     if (component) {
         return component->getComponentType();
     }
@@ -116,6 +113,6 @@ std::string ComponentHistory::getComponentTypeName(int componentId) const
     return getComponentType(componentId)->getFullPath();
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

@@ -14,26 +14,26 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_WATCHINSPECTOR_H
-#define __OMNETPP_WATCHINSPECTOR_H
+#ifndef __OMNETPP_QTENV_WATCHINSPECTOR_H
+#define __OMNETPP_QTENV_WATCHINSPECTOR_H
 
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
-class TKENV_API WatchInspector: public Inspector
+class QTENV_API WatchInspector: public Inspector
 {
    public:
       WatchInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
-      virtual void refresh();
-      virtual void commit();
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(QWidget *parent) override;
+      virtual void refresh() override;
+      virtual void commit() override;
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv qtenv
+} // namespace omnetpp
 
 #endif
 

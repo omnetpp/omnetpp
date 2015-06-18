@@ -14,13 +14,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
 #include "tklib.h"
 #include "logbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 LogBuffer::Entry::~Entry()
@@ -67,7 +67,7 @@ void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *m
     entry->eventNumber = e;
     entry->simtime = t;
     entry->banner = banner;
-    entry->moduleId = mod ? mod->getId() : 0;
+    entry->componentId = mod ? mod->getId() : 0;
 }
 
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
@@ -92,7 +92,7 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     Entry *entry = entries.back();
     cComponent *contextComponent = getSimulation()->getContext();
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
-    entry->lines.push_back(Line(contextComponentId, NULL, opp_strdup(banner)));
+    entry->lines.push_back(Line(contextComponentId, nullptr, opp_strdup(banner)));
 
     for (unsigned int i = 0; i < listeners.size(); i++)
         listeners[i]->logLineAdded();
@@ -108,7 +108,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     if (entries.empty()) {
         Entry *entry = new Entry();
         entries.push_back(entry);
-        fillEntry(entry, 0, simTime(), NULL, NULL);
+        fillEntry(entry, 0, simTime(), nullptr, nullptr);
     }
 
     // FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -129,10 +129,10 @@ void LogBuffer::addInfo(const char *text)
 
 void LogBuffer::addInfo(const char *text, int len)
 {
-    // TODO ha inline info (contextmodule!=NULL), sima logline-kent adjuk hozza!!!!
+    // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry();
     entries.push_back(entry);
-    fillEntry(entry, 0, simTime(), NULL, opp_strdup(text, len));
+    fillEntry(entry, 0, simTime(), nullptr, opp_strdup(text, len));
     discardEventsIfLimitExceeded();
 
     for (unsigned int i = 0; i < listeners.size(); i++)
@@ -143,9 +143,9 @@ void LogBuffer::beginSend(cMessage *msg)
 {
     if (entries.empty()) {
         // this is likely the initialize() phase -- hence no banner
-        addEvent(0, SIMTIME_ZERO, NULL, "{}");
+        addEvent(0, SIMTIME_ZERO, nullptr, "{}");
         Entry *entry = entries.back();
-        entry->moduleId = -1;
+        entry->componentId = -1;
     }
 
     // FIXME if last line is "info" then we cannot append to it! create new entry with empty banner?
@@ -235,7 +235,7 @@ int LogBuffer::findEntryByEventNumber(eventnumber_t eventNumber)
 LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
 {
     int i = findEntryByEventNumber(eventNumber);
-    return i == -1 ? NULL : entries[i];
+    return i == -1 ? nullptr : entries[i];
 }
 
 #define LL    INT64_PRINTF_FORMAT
@@ -246,12 +246,12 @@ void LogBuffer::dump() const
 
     for (int i = 0; i < entries.size(); i++) {
         const Entry *entry = entries[i];
-        printf("[%d] #%" LL "d t=%s moduleId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->moduleId, entry->banner);
+        printf("[%d] #%" LL "d t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
         for (int j = 0; j < (int)entry->lines.size(); j++)
             printf("\t[l%d]:%s%s", i, entry->lines[j].prefix, entry->lines[j].line);
     }
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

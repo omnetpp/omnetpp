@@ -14,36 +14,35 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_GATEINSPECTOR_H
-#define __OMNETPP_GATEINSPECTOR_H
+#ifndef __OMNETPP_QTENV_GATEINSPECTOR_H
+#define __OMNETPP_QTENV_GATEINSPECTOR_H
 
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
-
-class TKENV_API GateInspector : public Inspector
+class QTENV_API GateInspector : public Inspector
 {
    protected:
       char canvas[128];
 
    protected:
-      virtual void doSetObject(cObject *obj);
+      virtual void doSetObject(cObject *obj) override;
 
    public:
       GateInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
-      virtual void refresh();
-      virtual void redraw();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(QWidget *parent) override;
+      virtual void refresh() override;
+      virtual void redraw() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 
       // notifications from envir:
       virtual void displayStringChanged(cGate *gate);
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif

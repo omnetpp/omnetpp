@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_MODULEINSPECTOR_H
-#define __OMNETPP_MODULEINSPECTOR_H
+#ifndef __OMNETPP_QTENV_MODULEINSPECTOR_H
+#define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
 #include <map>
 #include <QRect>
@@ -23,16 +23,21 @@
 #include "omnetpp/ccanvas.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
-
-class cModule;
-class cGate;
-class cFigure;
 class QGraphicsPixmapItem;
 class QGraphicsScene;
 class QGraphicsItem;
 
-Q_DECLARE_METATYPE(cObject*)
+namespace omnetpp {
+class cObject;
+} // namespace omnetpp
+
+Q_DECLARE_METATYPE(OPP::cObject*)
+
+namespace omnetpp {
+
+class cModule;
+class cGate;
+class cFigure;
 
 namespace qtenv {
 
@@ -42,7 +47,7 @@ class CanvasRenderer;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
-class TKENV_API ModuleInspector : public Inspector
+class QTENV_API ModuleInspector : public Inspector
 {
    protected:
       char canvas[128];
@@ -73,12 +78,12 @@ class TKENV_API ModuleInspector : public Inspector
    public:
       ModuleInspector(InspectorFactory *f);
       ~ModuleInspector();
-      virtual void doSetObject(cObject *obj);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
-      virtual void refresh();
-      virtual void clearObjectChangeFlags();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void doSetObject(cObject *obj) override;
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(QWidget *parent) override;
+      virtual void refresh() override;
+      virtual void clearObjectChangeFlags() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 
       bool needsRedraw() {return needs_redraw;}
 
@@ -102,7 +107,7 @@ class TKENV_API ModuleInspector : public Inspector
 
       // drawing methods:
       virtual void relayoutAndRedrawAll();
-      virtual void redraw();
+      virtual void redraw() override;
 
       virtual void redrawModules();
       virtual void redrawMessages();
@@ -136,7 +141,7 @@ class TKENV_API ModuleInspector : public Inspector
       static void performAnimations(Tcl_Interp *interp);
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef __OMNETPP_QTENV_MAINWINDOW_H
+#define __OMNETPP_QTENV_MAINWINDOW_H
 
 #include "qtenvdefs.h"
 #include <QMainWindow>
@@ -28,23 +28,23 @@ class QStandardItem;
 class QTreeView;
 class QGraphicsView;
 class QWidget;
-class cObject;
-class cEvent;
-class StopDialog;
-
-NAMESPACE_BEGIN
-class cCanvas;
-class cMessage;
-namespace qtenv {
-class Qtenv;
-class Inspector;
-}
-
-NAMESPACE_END
 
 namespace Ui {
 class MainWindow;
 }
+
+namespace omnetpp {
+
+class cObject;
+class cEvent;
+class cCanvas;
+class cMessage;
+
+namespace qtenv {
+
+class Qtenv;
+class Inspector;
+class StopDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -53,7 +53,7 @@ class MainWindow : public QMainWindow
 public:
     enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
 
-    explicit MainWindow(qtenv::Qtenv *env, QWidget *parent = 0);
+    explicit MainWindow(Qtenv *env, QWidget *parent = 0);
 
     void displayText(const char* t);
     QTreeView *getObjectTree();
@@ -89,12 +89,12 @@ public slots:
 private:
     enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
-    qtenv::Qtenv *env;
+    Qtenv *env;
     StopDialog *stopDialog;
 
     bool isRunning();
     bool checkRunning();
-    void setGuiForRunmode(Mode mode, qtenv::Inspector *insp = nullptr, bool untilMode = false);
+    void setGuiForRunmode(Mode mode, Inspector *insp = nullptr, bool untilMode = false);
     void runSimulation(Mode mode);
 
     void updateSimtimeDisplay();
@@ -105,8 +105,8 @@ private:
     const char *stripNamespace(const char *className);
 
     void inspectObject(cObject *object, int type = 0, const char *geometry = "");
-    void runSimulationLocal(qtenv::Inspector *insp, int runMode, cObject *object = nullptr);
-    void setRunUntilModule(qtenv::Inspector *insp = nullptr);
+    void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
+    void setRunUntilModule(Inspector *insp = nullptr);
     int modeToRunMode(Mode mode);
     Mode runModeToMode(int runMode);
 
@@ -121,5 +121,8 @@ private:
     void copyToClipboard(cObject *object, int what);
     void setClipboard(QString str);
 };
+
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif // MAINWINDOW_H

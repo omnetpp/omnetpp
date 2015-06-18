@@ -15,14 +15,14 @@
 
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_TKUTIL_H
-#define __OMNETPP_TKUTIL_H
+#ifndef __OMNETPP_QTENV_TKUTIL_H
+#define __OMNETPP_QTENV_TKUTIL_H
 
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cPar;
 class cComponent;
@@ -68,7 +68,7 @@ namespace qtenv {
 /**
  * Quoting strings for Tcl_Eval
  */
-class TKENV_API TclQuotedString
+class QTENV_API TclQuotedString
 {
   private:
     char buf[80];  // used only if string is short, to spare alloc/dealloc
@@ -89,17 +89,17 @@ class TKENV_API TclQuotedString
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
-class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
+class QTENV_API cFindByPathVisitor : public OPP::envir::cCollectObjectsVisitor
 {
   private:
     const char *fullPath;
     const char *className; // optional
     long objectId; // optional message or component Id; use -1 for none
   protected:
-    virtual void visit(cObject *obj);
+    virtual void visit(cObject *obj) override;
     bool idMatches(cObject *obj);
   public:
-    cFindByPathVisitor(const char *fullPath, const char *className=NULL, long objectId=-1) :
+    cFindByPathVisitor(const char *fullPath, const char *className=nullptr, long objectId=-1) :
         fullPath(fullPath), className(className), objectId(objectId) {}
     ~cFindByPathVisitor() {}
 };
@@ -110,10 +110,10 @@ class TKENV_API cFindByPathVisitor : public cCollectObjectsVisitor
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 
-char *voidPtrToStr(void *ptr, char *buffer=NULL);
+char *voidPtrToStr(void *ptr, char *buffer=nullptr);
 void *strToVoidPtr(const char *s);
 
-inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
+inline char *ptrToStr(cObject *ptr, char *buffer=nullptr) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
 cModule *findCommonAncestor(cModule *src, cModule *dest);
@@ -124,11 +124,11 @@ bool isAPL();
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
 
-void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
+void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
 
-void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
+void feedCollectionIntoInspectorListbox(OPP::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
@@ -145,7 +145,7 @@ bool displayStringContainsParamRefs(const char *dispstr);
 
 /**
  * If the given string is a single parameter reference in the syntax "$name" or
- * "${name}", returns the parameter, otherwise returns NULL.
+ * "${name}", returns the parameter, otherwise returns nullptr.
  */
 cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent);
 
@@ -167,8 +167,8 @@ typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, c
 
 void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[]);
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 
 #endif

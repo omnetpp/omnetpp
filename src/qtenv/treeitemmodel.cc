@@ -26,6 +26,7 @@
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/ccanvas.h"
+#include "omnetpp/cfutureeventset.h"
 #include "inspectorfactory.h"
 #include "qtenv.h"
 #include "tkutil.h"
@@ -34,6 +35,9 @@
 #include <QMainWindow>
 
 #include <QDebug>
+
+namespace omnetpp {
+namespace qtenv {
 
 TreeItemModel::TreeItemModel(QObject *parent) :
     QAbstractItemModel(parent),
@@ -132,7 +136,7 @@ QVariant TreeItemModel::data(const QModelIndex& index, int role) const
         else if (dynamic_cast<cMessage *>(node))
             id = dynamic_cast<cMessage *>(node)->getId();
 
-        QString text = node->getFullName() + QString(" (") + qtenv::getObjectShortTypeName(node) + ")"
+        QString text = node->getFullName() + QString(" (") + getObjectShortTypeName(node) + ")"
             +(id >= 0 ? "(id=" + QString::number(id) + QString(")") : "");
         return QVariant(text);
     }
@@ -156,7 +160,7 @@ bool TreeItemModel::hasChildren(const QModelIndex& parent) const
 QString TreeItemModel::getObjectIcon(cObject *object) const
 {
     QString iconName;
-    if (object == NULL)
+    if (object == nullptr)
         iconName = "none_vs.png";
     else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
         iconName = "placeholder_vs.png";
@@ -188,7 +192,7 @@ QString TreeItemModel::getObjectIcon(cObject *object) const
         iconName = "canvas_vs.png";
     else if (dynamic_cast<cSimulation *>(object))
         iconName = "container_vs.png";
-    else if (dynamic_cast<cMessageHeap *>(object))
+    else if (dynamic_cast<cFutureEventSet *>(object))
         iconName = "container_vs.png";
     else if (dynamic_cast<cRegistrationList *>(object))
         iconName = "container_vs.png";
@@ -211,19 +215,19 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex& index, QMainWindow *mainWindow
     for (int type : supportedInspTypes(object)) {
         QString label;
         switch (type) {
-            case qtenv::INSP_DEFAULT:
+            case INSP_DEFAULT:
                 label = "Open Best View";
                 break;
 
-            case qtenv::INSP_OBJECT:
+            case INSP_OBJECT:
                 label = "Open Details";
                 break;
 
-            case qtenv::INSP_GRAPHICAL:
+            case INSP_GRAPHICAL:
                 label = "Open Graphical View";
                 break;
 
-            case qtenv::INSP_MODULEOUTPUT:
+            case INSP_MODULEOUTPUT:
                 label = "Open Component Log";
                 break;
         }
@@ -236,17 +240,17 @@ QMenu *TreeItemModel::getContextMenu(QModelIndex& index, QMainWindow *mainWindow
     if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
         menu->addSeparator();
         QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", mainWindow, SLOT(onClickRun()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_NORMAL)));
+        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
         action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", mainWindow, SLOT(onClickRun()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_FAST)));
+        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
     }
 
     if (dynamic_cast<cMessage *>(object)) {
         menu->addSeparator();
         QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_NORMAL)));
+        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
         action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, qtenv::Qtenv::RUNMODE_FAST)));
+        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
         action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
         menu->addSeparator();
         action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", mainWindow, SLOT(onClickExcludeMessage()));
@@ -291,4 +295,7 @@ QVector<int> TreeItemModel::supportedInspTypes(cObject *object)
 
     return insp_types;
 }
+
+} // namespace qtenv
+} // namespace omnetpp
 

@@ -14,28 +14,32 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef GRAPHICSSCENE_H
-#define GRAPHICSSCENE_H
+#ifndef __OMNETPP_QTENV_GRAPHICSSCENE_H
+#define __OMNETPP_QTENV_GRAPHICSSCENE_H
 
 #include <QGraphicsScene>
+#include "qtenvdefs.h"
 
+namespace omnetpp {
 namespace qtenv {
-    class ModuleInspector;
-}
 
+class ModuleInspector;
 
 class ModuleInspectorScene : public QGraphicsScene
 {
     Q_OBJECT
 
 private:
-    qtenv::ModuleInspector *insp;
+    ModuleInspector *insp;
 
 public:
-    ModuleInspectorScene(qtenv::ModuleInspector *inspector, QObject *parent = 0);
+    ModuleInspectorScene(ModuleInspector *inspector, QObject *parent = 0);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent);
 };
+
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif // GRAPHICSSCENE_H

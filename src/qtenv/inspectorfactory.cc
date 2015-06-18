@@ -14,14 +14,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdarg.h>
+#include <cstdarg>
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
 #include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 cGlobalRegistrationList inspectorfactories;
@@ -30,7 +30,7 @@ EXECUTE_ON_SHUTDOWN(inspectorfactories.clear());
 
 InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
-    InspectorFactory *best = NULL;
+    InspectorFactory *best = nullptr;
     double bestweight = 0;
     cRegistrationList *a = inspectorfactories.getInstance();
     for (int i = 0; i < a->size(); i++) {
@@ -44,7 +44,7 @@ InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
             best = ifc;
         }
     }
-    return best;  // may be NULL too
+    return best;  // may be nullptr too
 }
 
 InspectorFactory *InspectorFactory::find(const char *className)
@@ -60,6 +60,6 @@ InspectorFactory *InspectorFactory::get(const char *className)
     return p;
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

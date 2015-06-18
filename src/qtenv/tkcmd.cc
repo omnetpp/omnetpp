@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstring>
+#include <cassert>
 #include <algorithm>
-#include <locale.h>
+#include <clocale>
 
 #include "common/patternmatcher.h"
 #include "common/opp_ctype.h"
@@ -36,6 +36,7 @@
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cstatistic.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cdisplaystring.h"
@@ -49,7 +50,10 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 
-NAMESPACE_BEGIN
+using namespace OPP::common;
+using namespace OPP::envir;
+
+namespace omnetpp {
 namespace qtenv {
 
 using std::string;
@@ -300,11 +304,10 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_reducealpha",         imageReduceAlpha_cmd   },   // args: <image> <alphathreshold>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
-   { NULL, },
+   { nullptr, },
 };
 
-
-//=================================================================
+// =================================================================
 
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
@@ -367,7 +370,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     cConfigurationEx *cfg = app->getConfigEx();
     std::vector<std::string> confignames = cfg->getConfigNames();
 
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     for (int i = 0; i < (int)confignames.size(); i++)
         Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
     Tcl_SetObjResult(interp, listobj);
@@ -404,7 +407,7 @@ int getBaseConfigs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     cConfigurationEx *cfg = app->getConfigEx();
     std::vector<std::string> confignames = cfg->getBaseConfigs(configname);
 
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     for (int i = 0; i < (int)confignames.size(); i++)
         Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
     Tcl_SetObjResult(interp, listobj);
@@ -480,7 +483,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
     simtime_t until_time = SIMTIME_ZERO;
     eventnumber_t until_eventnum = 0;
-    cMessage *until_msg = NULL;
+    cMessage *until_msg = nullptr;
     if (argc == 5) {
         if (!opp_isblank(argv[2]))
             TRY(until_time = STR_SIMTIME(argv[2]));  // simtime overflow
@@ -491,7 +494,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         if (!opp_isblank(argv[4])) {
             until_msg = dynamic_cast<cMessage *>(strToPtr(argv[4]));
             if (!until_msg) {
-                Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC);
+                Tcl_SetResult(interp, TCLCONST("until_msg object is nullptr or not a cMessage"), TCL_STATIC);
                 return TCL_ERROR;
             }
         }
@@ -528,7 +531,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     Qtenv *app = getTkenv();
 
     if (argc == 1) {
-        app->setSimulationRunUntil(0, 0, NULL);
+        app->setSimulationRunUntil(0, 0, nullptr);
     }
     else {
         simtime_t until_time = 0;
@@ -538,11 +541,11 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         char *e;
         eventnumber_t until_eventnum = strtoll(argv[2], &e, 10);
 
-        cMessage *until_msg = NULL;
+        cMessage *until_msg = nullptr;
         if (!opp_isblank(argv[3])) {
             until_msg = dynamic_cast<cMessage *>(strToPtr(argv[3]));
             if (!until_msg) {
-                Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC);
+                Tcl_SetResult(interp, TCLCONST("until_msg object is nullptr or not a cMessage"), TCL_STATIC);
                 return TCL_ERROR;
             }
         }
@@ -561,7 +564,7 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     Qtenv *app = getTkenv();
 
     if (argc == 1) {
-        app->setSimulationRunUntilModule(NULL);
+        app->setSimulationRunUntilModule(nullptr);
     }
     else {
         Inspector *insp = app->findInspector(argv[1]);
@@ -613,7 +616,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
     }
 
     // fast run until we get to that module
-    app->runSimulation(mode, 0, 0, NULL, mod);
+    app->runSimulation(mode, 0, 0, nullptr, mod);
 
     return TCL_OK;
 }
@@ -681,7 +684,7 @@ int requestTrapOnNextEvent_cmd(ClientData, Tcl_Interp *interp, int argc, const c
     return TCL_OK;
 }
 
-//--------------
+// --------------
 
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
@@ -738,7 +741,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     }
     Qtenv *app = getTkenv();
 
-    const char *s = NULL;
+    const char *s = nullptr;
     if (0 == strcmp(argv[1], "ini"))
         s = app->getIniFileName();
     else if (0 == strcmp(argv[1], "outvector"))
@@ -760,7 +763,7 @@ int findObjectByFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
         return TCL_ERROR;
     }
     const char *fullPath = argv[1];
-    const char *className = argc >= 3 ? argv[2] : NULL;
+    const char *className = argc >= 3 ? argv[2] : nullptr;
     long objectId = argc >= 4 ? atol(argv[3]) : -1;
 
     cFindByPathVisitor visitor(fullPath, className, objectId);
@@ -798,7 +801,7 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
     else if (0 == strcmp(argv[1], "eventspersimsec"))
         Tcl_SetResult(interp, opp_dtoa(buf, "%g", app->getSpeedometer().getEventsPerSimSec()), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "feslength"))
-        Tcl_SetResult(interp, opp_itoa(buf, getSimulation()->msgQueue.getLength()), TCL_VOLATILE);
+        Tcl_SetResult(interp, opp_itoa(buf, getSimulation()->getFES()->getLength()), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "livemsgcount"))
         Tcl_SetResult(interp, opp_ltoa(buf, cMessage::getLiveMessageCount()), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "totalmsgcount"))
@@ -1014,16 +1017,14 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         Tcl_SetResult(interp, TCLCONST(object->detailedInfo().c_str()), TCL_VOLATILE);
     }
     else if (!strcmp(field, "displayString")) {
-        if (dynamic_cast<cModule *>(object)) {
-            cModule *mod = dynamic_cast<cModule *>(object);
-            const char *str = mod->hasDisplayString() && mod->parametersFinalized() ? mod->getDisplayString().str() : "";
+        if (cModule *module = dynamic_cast<cModule *>(object)) {
+            const char *str = module->hasDisplayString() && module->parametersFinalized() ? module->getDisplayString().str() : "";
             Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
         }
-        else if (dynamic_cast<cMessage *>(object)) {
-            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->getDisplayString()), TCL_VOLATILE);
+        else if (cMessage *msg = dynamic_cast<cMessage *>(object)) {
+            Tcl_SetResult(interp, TCLCONST(msg->getDisplayString()), TCL_VOLATILE);
         }
-        else if (dynamic_cast<cGate *>(object)) {
-            cGate *gate = dynamic_cast<cGate *>(object);
+        else if (cGate *gate = dynamic_cast<cGate *>(object)) {
             cChannel *chan = gate->getChannel();
             const char *str = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
             Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
@@ -1034,8 +1035,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "nextGate")) {
-        if (dynamic_cast<cGate *>(object)) {
-            cGate *gate = dynamic_cast<cGate *>(object);
+        if (cGate *gate = dynamic_cast<cGate *>(object)) {
             Tcl_SetResult(interp, TCLCONST(ptrToStr(gate->getNextGate())), TCL_VOLATILE);
         }
         else {
@@ -1044,8 +1044,8 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "kind")) {
-        if (dynamic_cast<cMessage *>(object)) {
-            Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cMessage *>(object)->getKind()));
+        if (cMessage *msg = dynamic_cast<cMessage *>(object)) {
+            Tcl_SetObjResult(interp, Tcl_NewIntObj(msg->getKind()));
         }
         else {
             Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC);
@@ -1053,13 +1053,13 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "length")) {
-        if (dynamic_cast<cMessage *>(object)) {
+        if (cPacket *packet = dynamic_cast<cPacket *>(object)) {
             char buf[20];
-            sprintf(buf, "%" INT64_PRINTF_FORMAT "d", dynamic_cast<cPacket *>(object)->getBitLength());
+            sprintf(buf, "%" INT64_PRINTF_FORMAT "d", packet->getBitLength());
             Tcl_SetResult(interp, buf, TCL_VOLATILE);
         }
-        else if (dynamic_cast<cQueue *>(object)) {
-            Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cQueue *>(object)->getLength()));
+        else if (cQueue *queue = dynamic_cast<cQueue *>(object)) {
+            Tcl_SetObjResult(interp, Tcl_NewIntObj(queue->getLength()));
         }
         else {
             Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC);
@@ -1067,8 +1067,8 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         }
     }
     else if (!strcmp(field, "lcprop")) {
-        if (dynamic_cast<cComponentType *>(object)) {
-            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cComponentType *>(object)->getPackageProperty("l" "i" "c" "e" "n" "s" "e").c_str()), TCL_VOLATILE);
+        if (cComponentType *componentType = dynamic_cast<cComponentType *>(object)) {
+            Tcl_SetResult(interp, TCLCONST(componentType->getPackageProperty("l" "i" "c" "e" "n" "s" "e").c_str()), TCL_VOLATILE);
         }
         else {
             Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC);
@@ -1116,8 +1116,8 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("cOutVector"), TCL_STATIC);
     else if (dynamic_cast<cStatistic *>(object))
         Tcl_SetResult(interp, TCLCONST("cStatistic"), TCL_STATIC);
-    else if (dynamic_cast<cMessageHeap *>(object))
-        Tcl_SetResult(interp, TCLCONST("cMessageHeap"), TCL_STATIC);
+    else if (dynamic_cast<cFutureEventSet *>(object))
+        Tcl_SetResult(interp, TCLCONST("cFutureEventSet"), TCL_STATIC);
     else if (dynamic_cast<cWatchBase *>(object))
         Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
     else if (dynamic_cast<cCanvas *>(object))
@@ -1143,11 +1143,11 @@ int instanceof_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     const char *classname = argv[2];
     bool result;
     if (!strcmp(classname, "cMessage"))
-        result = dynamic_cast<cMessage *>(object) != NULL;
+        result = dynamic_cast<cMessage *>(object) != nullptr;
     else if (!strcmp(classname, "cEvent"))
-        result = dynamic_cast<cEvent *>(object) != NULL;
+        result = dynamic_cast<cEvent *>(object) != nullptr;
     else if (!strcmp(classname, "cPacket"))
-        result = dynamic_cast<cPacket *>(object) != NULL;
+        result = dynamic_cast<cPacket *>(object) != nullptr;
     else {
         Tcl_SetResult(interp, TCLCONST("class unsupported by this function"), TCL_STATIC);
         return TCL_ERROR;
@@ -1168,10 +1168,10 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         return TCL_ERROR;
     }
 
-    if (dynamic_cast<cModule *>(object))
-        Tcl_SetObjResult(interp, Tcl_NewIntObj(dynamic_cast<cModule *>(object)->getId()));
-    else if (dynamic_cast<cMessage *>(object))
-        Tcl_SetObjResult(interp, Tcl_NewLongObj(dynamic_cast<cMessage *>(object)->getId()));
+    if (cModule *module = dynamic_cast<cModule *>(object))
+        Tcl_SetObjResult(interp, Tcl_NewIntObj(module->getId()));
+    else if (cMessage *msg = dynamic_cast<cMessage *>(object))
+        Tcl_SetObjResult(interp, Tcl_NewLongObj(msg->getId()));
     else
         Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
     return TCL_OK;
@@ -1215,8 +1215,7 @@ int hasSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         return TCL_ERROR;
     }
 
-    cModule::SubmoduleIterator i(mod);
-    Tcl_SetResult(interp, i.end() ? TCLCONST("0") : TCLCONST("1"), TCL_STATIC);
+    Tcl_SetResult(interp, mod->hasSubmodules() ? TCLCONST("1") : TCLCONST("0"), TCL_STATIC);
     return TCL_OK;
 }
 
@@ -1237,9 +1236,9 @@ int getSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         return TCL_ERROR;
     }
 
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-    for (cModule::SubmoduleIterator i(mod); !i.end(); i++)
-        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(i()), -1));
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
+    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it)
+        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*it), -1));
     Tcl_SetObjResult(interp, listobj);
     return TCL_OK;
 }
@@ -1407,8 +1406,8 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 static void collectTypes(cModule *mod, std::set<cComponentType *>& types)
 {
     types.insert(mod->getComponentType());
-    for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++)
-        collectTypes(submod(), types);
+    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it)
+        collectTypes(*it, types);
 }
 
 int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
@@ -1427,7 +1426,7 @@ int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     std::set<cComponentType *> types;
     collectTypes(mod, types);
 
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     for (std::set<cComponentType *>::iterator i = types.begin(); i != types.end(); i++)
         Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*i), -1));
     Tcl_SetObjResult(interp, listobj);
@@ -1436,15 +1435,11 @@ int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-    if (argc != 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-        return TCL_ERROR;
-    }
+    if (argc != 1) { Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;   }
     Qtenv *app = getTkenv();
 
-   const char *statename;
-   switch (app->getSimulationState())
-   {
+    const char *statename;
+    switch (app->getSimulationState()) {
        case Qtenv::SIM_NONET:       statename = "SIM_NONET"; break;
        case Qtenv::SIM_NEW:         statename = "SIM_NEW"; break;
        case Qtenv::SIM_RUNNING:     statename = "SIM_RUNNING"; break;
@@ -1454,9 +1449,9 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        case Qtenv::SIM_FINISHCALLED:statename = "SIM_FINISHCALLED"; break;
        case Qtenv::SIM_BUSY:        statename = "SIM_BUSY"; break;
        default: Tcl_SetResult(interp, TCLCONST("invalid simulation state"), TCL_STATIC); return TCL_ERROR;
-   }
-   Tcl_SetResult(interp, TCLCONST(statename), TCL_STATIC);
-   return TCL_OK;
+    }
+    Tcl_SetResult(interp, TCLCONST(statename), TCL_STATIC);
+    return TCL_OK;
 }
 
 int getRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
@@ -1467,16 +1462,15 @@ int getRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
     }
     Qtenv *app = getTkenv();
 
-   const char *modename;
-   switch (app->getSimulationRunMode())
-   {
-       case Qtenv::RUNMODE_NORMAL:  modename = "normal"; break;
-       case Qtenv::RUNMODE_FAST:    modename = "fast"; break;
-       case Qtenv::RUNMODE_EXPRESS: modename = "express"; break;
-       default: modename = "?"; break;
-   }
-   Tcl_SetResult(interp, TCLCONST(modename), TCL_STATIC);
-   return TCL_OK;
+    const char *modename;
+    switch (app->getSimulationRunMode()) {
+        case Qtenv::RUNMODE_NORMAL:  modename = "normal"; break;
+        case Qtenv::RUNMODE_FAST:    modename = "fast"; break;
+        case Qtenv::RUNMODE_EXPRESS: modename = "express"; break;
+        default: modename = "?"; break;
+    }
+    Tcl_SetResult(interp, TCLCONST(modename), TCL_STATIC);
+    return TCL_OK;
 }
 
 int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
@@ -1577,25 +1571,15 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         sprintf(buf, "%d", opt->stopOnMsgCancel);
     else if (0 == strcmp(argv[1], "stripnamespace"))
         switch (opt->stripNamespace) {
-            case STRIPNAMESPACE_ALL:
-                strcpy(buf, "all");
-                break;
-
-            case STRIPNAMESPACE_OMNETPP:
-                strcpy(buf, "omnetpp");
-                break;
-
-            case STRIPNAMESPACE_NONE:
-                strcpy(buf, "none");
-                break;
-
-            default:
-                strcpy(buf, "???");
+            case STRIPNAMESPACE_ALL:     strcpy(buf, "all"); break;
+            case STRIPNAMESPACE_OMNETPP: strcpy(buf, "omnetpp"); break;
+            case STRIPNAMESPACE_NONE:    strcpy(buf, "none"); break;
+            default: strcpy(buf, "???");
         }
     else if (0 == strcmp(argv[1], "scrollbacklimit"))
         sprintf(buf, "%d", opt->scrollbackLimit);
     else if (0 == strcmp(argv[1], "record_eventlog"))
-        sprintf(buf, "%d", app->record_eventlog);
+        sprintf(buf, "%d", app->recordEventlog);
     else if (0 == strcmp(argv[1], "logformat"))
         strcpy(buf, opt->logFormat.c_str());
     else if (0 == strcmp(argv[1], "loglevel"))
@@ -1704,7 +1688,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int getNetworkTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     cRegistrationList *types = componentTypes.getInstance();
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     for (int i = 0; i < types->size(); i++) {
         cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
         if (t && t->isNetwork())
@@ -1753,7 +1737,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         bool searchparent = atoi(argv[5]) != 0;
 
         for (int k = 0; k < dp->getNumTags(); k++) {
-            Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
+            Tcl_Obj *arglist = Tcl_NewListObj(0, nullptr);
             for (int i = 0; i < dp->getNumArgs(k); i++) {
                 const char *s = dp->getTagArg(k, i);
                 TRY(s = substituteDisplayStringParamRefs(s, buffer, component, searchparent))
@@ -1773,7 +1757,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
         cDisplayString dp(dispstr);
         for (int k = 0; k < dp.getNumTags(); k++) {
-            Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
+            Tcl_Obj *arglist = Tcl_NewListObj(0, nullptr);
             for (int i = 0; i < dp.getNumArgs(k); i++) {
                 const char *s = dp.getTagArg(k, i);
                 TRY(s = substituteDisplayStringParamRefs(s, buffer, component, searchparent))
@@ -2017,9 +2001,11 @@ int fesEvents_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     bool wantSilentMsgs = atoi(argv[5]) != 0;
 
     Qtenv *app = getTkenv();
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-    for (cMessageHeap::Iterator it(getSimulation()->msgQueue); maxNum > 0 && !it.end(); it++, maxNum--) {
-        cEvent *event = it();
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; maxNum > 0 && i < fesLen; i++, maxNum--) {
+        cEvent *event = fes->get(i);
         if (!event->isMessage()) {
             if (!wantEvents)
                 continue;
@@ -2047,8 +2033,8 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     }
 
     // find smallest t!=simTime() element, and greatest element.
-    getSimulation()->msgQueue.sort();
-    int len = getSimulation()->msgQueue.getLength();
+    getSimulation()->getFES()->sort();
+    int len = getSimulation()->getFES()->getLength();
     if (len == 0) {
         Tcl_SetResult(interp, TCLCONST("0 0"), TCL_STATIC);
         return TCL_OK;
@@ -2056,14 +2042,14 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     simtime_t now = getSimulation()->getSimTime();
     simtime_t tmin = now;
     for (int i = 0; i < len; i++)
-        if (getSimulation()->msgQueue.peek(i)->getArrivalTime() != now) {
-            tmin = getSimulation()->msgQueue.peek(i)->getArrivalTime();
+        if (getSimulation()->getFES()->get(i)->getArrivalTime() != now) {
+            tmin = getSimulation()->getFES()->get(i)->getArrivalTime();
             break;
         }
-    simtime_t tmax = getSimulation()->msgQueue.peek(len-1)->getArrivalTime();
+    simtime_t tmax = getSimulation()->getFES()->get(len-1)->getArrivalTime();
 
     // return result
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(SIMTIME_DBL(tmin-now)));
     Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(SIMTIME_DBL(tmax-now)));
     Tcl_SetObjResult(interp, listobj);
@@ -2137,7 +2123,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         return TCL_ERROR;
     }
 
-    const char *typestr = (argc >= 3) ? argv[2] : NULL;
+    const char *typestr = (argc >= 3) ? argv[2] : nullptr;
     int type;
     if (!typestr)
         type = INSP_DEFAULT;
@@ -2385,7 +2371,7 @@ int getInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     }
     bool toplevelsOnly = atoi(argv[1]) != 0;
     Qtenv *app = getTkenv();
-    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+    Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     const std::list<Inspector *>& inspectors = app->getInspectors();
     for (std::list<Inspector *>::const_iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
         Inspector *insp = *it;
@@ -2438,7 +2424,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     else if (argv[1][0] >= '0' && argv[1][0] <= '9') {
         int type = atoi(argv[1]);
         const char *namestr = insptypeNameFromCode(type);
-        if (namestr == NULL) {
+        if (namestr == nullptr) {
             Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);
             return TCL_ERROR;
         }
@@ -2482,7 +2468,7 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
     }
 
     cObject *object = strToPtr(argv[1]);
-    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+    cClassDescriptor *sd = object ? object->getDescriptor() : nullptr;
     Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -2494,7 +2480,7 @@ int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Tcl_SetResult(interp, ptrToStr(NULL), TCL_VOLATILE);
+    Tcl_SetResult(interp, ptrToStr(nullptr), TCL_VOLATILE);
     return TCL_OK;
 }
 
@@ -2504,7 +2490,7 @@ int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1]) == NULL ? "1" : "0"), TCL_STATIC);
+    Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1]) == nullptr ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
 }
 
@@ -2514,7 +2500,7 @@ int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1]) != NULL ? "1" : "0"), TCL_STATIC);
+    Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1]) != nullptr ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
 }
 
@@ -2554,7 +2540,7 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Tcl_SetResult(interp, ptrToStr(&getSimulation()->msgQueue), TCL_VOLATILE);
+    Tcl_SetResult(interp, ptrToStr(getSimulation()->getFES()), TCL_VOLATILE);
     return TCL_OK;
 }
 
@@ -2649,11 +2635,11 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    const char *weightstr = argv[3]; // 0-100
 
    Tk_PhotoImageBlock imgblock;
-   if (getTkPhotoImageBlock(interp, imgname, &imgblock)!=TCL_OK) return TCL_ERROR;
+    if (getTkPhotoImageBlock(interp, imgname, &imgblock) != TCL_OK)
+        return TCL_ERROR;
 
    XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), TCLCONST(targetcolorname));
-   if (!targetcolor)
-   {
+    if (!targetcolor) {
        Tcl_SetResult(interp, TCLCONST("invalid color"), TCL_STATIC);
        return TCL_ERROR;
    }
@@ -2663,8 +2649,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    Tk_FreeColor(targetcolor);
 
    double weight = atol(weightstr)/100.0;
-   if (weight<0 || weight>1.0)
-   {
+    if (weight < 0 || weight > 1.0) {
        Tcl_SetResult(interp, TCLCONST("colorizing weight is out of range, should be between 0 and 100"), TCL_STATIC);
        return TCL_ERROR;
    }
@@ -2672,11 +2657,9 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    int redoffset = imgblock.offset[0];
    int greenoffset = imgblock.offset[1];
    int blueoffset = imgblock.offset[2];
-   for (int y=0; y<imgblock.height; y++)
-   {
+    for (int y = 0; y < imgblock.height; y++) {
        unsigned char *pixel = imgblock.pixelPtr + y*imgblock.pitch;
-       for (int x=0; x<imgblock.width; x++, pixel+=imgblock.pixelSize)
-       {
+        for (int x = 0; x < imgblock.width; x++, pixel += imgblock.pixelSize) {
            // extract
            int r = pixel[redoffset];
            int g = pixel[greenoffset];
@@ -2709,12 +2692,16 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("2 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *destImageName = argv[1];
    const char *srcImageName = argv[2];
-   unsigned char transparentPixel[] = {0, 0, 0, 0};
+    unsigned char transparentPixel[] = {
+        0, 0, 0, 0
+    };
 
    Tk_PhotoImageBlock srcImage;
    Tk_PhotoImageBlock destImage;
-   if (getTkPhotoImageBlock(interp, srcImageName, &srcImage)!=TCL_OK) return TCL_ERROR;
-   if (getTkPhotoImageBlock(interp, destImageName, &destImage)!=TCL_OK) return TCL_ERROR;
+    if (getTkPhotoImageBlock(interp, srcImageName, &srcImage) != TCL_OK)
+        return TCL_ERROR;
+    if (getTkPhotoImageBlock(interp, destImageName, &destImage) != TCL_OK)
+        return TCL_ERROR;
 
    int srcRedOffset = srcImage.offset[0];
    int srcGreenOffset = srcImage.offset[1];
@@ -2754,10 +2741,8 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    #define srcPixel(xIndex, yIndex) (0 <= xIndex && xIndex < srcWidth && 0 <= yIndex && yIndex < srcHeight ? (srcImage.pixelPtr + yIndex * srcImage.pitch + xIndex * srcImage.pixelSize) : &transparentPixel[0])
    #define destPixel(xIndex, yIndex) (destImage.pixelPtr + yIndex * destImage.pitch + xIndex * destImage.pixelSize)
 
-   for (int destXIndex = 0; destXIndex < destWidth; destXIndex++)
-   {
-       for (int destYIndex = 0; destYIndex < destHeight; destYIndex++)
-       {
+    for (int destXIndex = 0; destXIndex < destWidth; destXIndex++) {
+        for (int destYIndex = 0; destYIndex < destHeight; destYIndex++) {
            double destX = destXIndex + 0.5;
            double destY = destYIndex + 0.5;
            double srcX = destX * dest2SrcXRatio + dest2SrcXOffset;
@@ -2789,8 +2774,8 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
            unsigned char *srcBottomRightPixel = srcPixel(srcRightIndex, srcBottomIndex);
 
    #define INTERPOLATE(channelOffset) \
-                   ((srcTopLeftPixel[channelOffset] * weightLeft + srcTopRightPixel[channelOffset] * weightRight) / weightHorizontal * weightTop + \
-                    (srcBottomLeftPixel[channelOffset] * weightLeft + srcBottomRightPixel[channelOffset] * weightRight) / weightHorizontal * weightBottom) / weightVertical
+    ((srcTopLeftPixel[channelOffset] * weightLeft + srcTopRightPixel[channelOffset] * weightRight) / weightHorizontal * weightTop \
+     +(srcBottomLeftPixel[channelOffset] * weightLeft + srcBottomRightPixel[channelOffset] * weightRight) / weightHorizontal * weightBottom) / weightVertical
 
            int red = INTERPOLATE(srcRedOffset);
            int green = INTERPOLATE(srcGreenOffset);
@@ -2830,19 +2815,21 @@ int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    // bug in Tk 8.4, see #1467997 "[wm iconphoto] issues on Win XP".
    // http://sourceforge.net/tracker/index.php?func=detail&aid=1467997&group_id=12997&atid=112997
 
-   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC); return TCL_ERROR;}
+    if (argc != 2) {
+        Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC);
+        return TCL_ERROR;
+    }
    const char *imgname = argv[1];
 
    Tk_PhotoImageBlock img;
-   if (getTkPhotoImageBlock(interp, imgname, &img)!=TCL_OK) return TCL_ERROR;
+    if (getTkPhotoImageBlock(interp, imgname, &img) != TCL_OK)
+        return TCL_ERROR;
 
    int redoffset = img.offset[0];
    int blueoffset = img.offset[2];
 
-   for (int y=0; y<img.height; y++)
-   {
-       for (int x=0; x<img.width; x++)
-       {
+    for (int y = 0; y < img.height; y++) {
+        for (int x = 0; x < img.width; x++) {
            unsigned char *pixel = img.pixelPtr + y*img.pitch + x*img.pixelSize;
            int r = pixel[redoffset];
            int b = pixel[blueoffset];
@@ -2866,21 +2853,23 @@ int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 /*Qt!
    // multiplies the alpha channel by a floating point value.
 
-   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC); return TCL_ERROR;}
+    if (argc != 3) {
+        Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC);
+        return TCL_ERROR;
+    }
    const char *imgname = argv[1];
    double c = 1.0;
    setlocale(LC_NUMERIC, "C");
    sscanf(argv[2],"%lg",&c);
 
    Tk_PhotoImageBlock img;
-   if (getTkPhotoImageBlock(interp, imgname, &img)!=TCL_OK) return TCL_ERROR;
+    if (getTkPhotoImageBlock(interp, imgname, &img) != TCL_OK)
+        return TCL_ERROR;
 
    int alphaOffset = img.offset[3];
 
-   for (int y=0; y<img.height; y++)
-   {
-       for (int x=0; x<img.width; x++)
-       {
+    for (int y = 0; y < img.height; y++) {
+        for (int x = 0; x < img.width; x++) {
            unsigned char *pixel = img.pixelPtr + y*img.pitch + x*img.pixelSize;
            int alpha = pixel[alphaOffset];
            alpha = (int)floor(c * alpha + 0.5);
@@ -2908,14 +2897,13 @@ int imageReduceAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    int threshold = atoi(argv[2]);
 
    Tk_PhotoImageBlock img;
-   if (getTkPhotoImageBlock(interp, imgname, &img)!=TCL_OK) return TCL_ERROR;
+    if (getTkPhotoImageBlock(interp, imgname, &img) != TCL_OK)
+        return TCL_ERROR;
 
    int alphaOffset = img.offset[3];
 
-   for (int y=0; y<img.height; y++)
-   {
-       for (int x=0; x<img.width; x++)
-       {
+    for (int y = 0; y < img.height; y++) {
+        for (int x = 0; x < img.width; x++) {
            unsigned char *pixel = img.pixelPtr + y*img.pitch + x*img.pixelSize;
            int alpha = pixel[alphaOffset];
            alpha = alpha < threshold ? 0 : 255;
@@ -2940,7 +2928,7 @@ int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
         return TCL_ERROR;
     }
     cObject *object = strToPtr(argv[1]);
-    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+    cClassDescriptor *sd = object ? object->getDescriptor() : nullptr;
     Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -3261,7 +3249,7 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
         return TCL_ERROR;
     }
     if (!Tk_IsTopLevel(winPtr)) {
-        Tcl_AppendResult(interp, "window \"", winPtr->pathName, "\" isn't a top-level window", (char *)NULL);
+        Tcl_AppendResult(interp, "window \"", winPtr->pathName, "\" isn't a top-level window", (char *)nullptr);
         return TCL_ERROR;
     }
 
@@ -3270,7 +3258,7 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
     Atom XA_UTF8_STRING = Tk_InternAtom((Tk_Window)winPtr, "UTF8_STRING");
     Tcl_DString ds;
 
-    Tcl_UtfToExternalDString(NULL, value, -1, &ds);
+    Tcl_UtfToExternalDString(nullptr, value, -1, &ds);
     XStoreName(winPtr->display, wmPtr->wrapperPtr->window, Tcl_DStringValue(&ds));
     Tcl_DStringFree(&ds);
 
@@ -3282,6 +3270,6 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
     return TCL_OK;
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

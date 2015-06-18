@@ -19,6 +19,8 @@
 
 #include <QDebug>
 
+namespace omnetpp {
+
 namespace qtenv {
 
 FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure)
@@ -65,8 +67,8 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
 // TODO: delete comment when cRuntimeError class is available
 void CanvasRenderer::assertCanvas()
 {
-    if (!canvas)
-        {}//throw cRuntimeError("CanvasRenderer: no canvas object");
+    if (!canvas) {
+    }  // throw cRuntimeError("CanvasRenderer: no canvas object");
 }
 
 std::string CanvasRenderer::getAllTags()
@@ -160,5 +162,6 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform&
         }
     }
 }
-} // namespace qtenv
 
+} // namespace qtenv
+} // namespace omnetpp

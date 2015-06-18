@@ -19,6 +19,9 @@
 #include "qtenv.h"
 #include <QKeyEvent>
 
+namespace omnetpp {
+namespace qtenv {
+
 StopDialog::StopDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StopDialog)
@@ -35,7 +38,7 @@ StopDialog::~StopDialog()
 
 void StopDialog::onClickStop()
 {
-    qtenv::getTkenv()->setStopSimulationFlag();
+    getTkenv()->setStopSimulationFlag();
     close();
 }
 
@@ -43,14 +46,14 @@ void StopDialog::stopDialogAutoupdate()
 {
     ui->updateButton->setDisabled(ui->checkBox->isChecked());
     if (ui->checkBox->isChecked())
-        qtenv::getTkenv()->opt->autoupdateInExpress = true;
+        getTkenv()->opt->autoupdateInExpress = true;
     else
-        qtenv::getTkenv()->opt->autoupdateInExpress = false;
+        getTkenv()->opt->autoupdateInExpress = false;
 }
 
 void StopDialog::onClickUpdate()
 {
-    qtenv::getTkenv()->refreshInspectors();
+    getTkenv()->refreshInspectors();
 }
 
 void StopDialog::keyPressEvent(QKeyEvent *e)
@@ -59,7 +62,7 @@ void StopDialog::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Enter:
         case Qt::Key_Escape:
         case Qt::Key_F8:
-            qtenv::getTkenv()->setStopSimulationFlag();
+            getTkenv()->setStopSimulationFlag();
             break;
 
         default:
@@ -67,3 +70,5 @@ void StopDialog::keyPressEvent(QKeyEvent *e)
     }
 }
 
+} // namespace qtenv
+} // namespace omnetpp

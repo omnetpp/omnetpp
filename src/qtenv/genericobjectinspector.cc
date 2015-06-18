@@ -14,20 +14,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <math.h>
-#include "omnetpp/carray.h"
-#include "omnetpp/cqueue.h"
-#include "omnetpp/cmessageheap.h"
-#include "omnetpp/cdefaultlist.h"
-#include "omnetpp/csimulation.h"
+#include <cstring>
+#include <cmath>
 #include "omnetpp/cregistrationlist.h"
 #include "qtenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "genericobjectinspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 void _dummy_for_genericobjectinspector() {}
@@ -37,10 +32,10 @@ class GenericObjectInspectorFactory : public InspectorFactory
   public:
     GenericObjectInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) { return true; }
-    int getInspectorType() { return INSP_OBJECT; }
-    double getQualityAsDefault(cObject *object) { return 1.0; }
-    Inspector *createInspector() { return new GenericObjectInspector(this); }
+    bool supportsObject(cObject *obj) override { return true; }
+    int getInspectorType() override { return INSP_OBJECT; }
+    double getQualityAsDefault(cObject *object) override { return 1.0; }
+    Inspector *createInspector() override { return new GenericObjectInspector(this); }
 };
 
 Register_InspectorFactory(GenericObjectInspectorFactory);
@@ -57,14 +52,14 @@ void GenericObjectInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
 
-    CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, TCL_NULL));
 }
 
 void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
+    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 }
 
 void GenericObjectInspector::useWindow(QWidget *parent)
@@ -76,7 +71,7 @@ void GenericObjectInspector::refresh()
 {
     Inspector::refresh();
 
-    CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, TCL_NULL));
 }
 
 void GenericObjectInspector::commit()
@@ -89,6 +84,6 @@ int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

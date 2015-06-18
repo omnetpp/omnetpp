@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef FIGURERENDERERS_H
-#define FIGURERENDERERS_H
+#ifndef __OMNETPP_QTENV_FIGURERENDERERS_H
+#define __OMNETPP_QTENV_FIGURERENDERERS_H
 
 #include <string>
 #include <map>
@@ -31,6 +31,7 @@ class QBrush;
 class QPainterPath;
 class QPointF;
 
+namespace omnetpp {
 namespace qtenv {
 
 struct FigureRenderingHints
@@ -230,6 +231,7 @@ protected:
     virtual QGraphicsItem *newItem();
 };
 
-}
+} // namespace qtenv
+} // namespace omnetpp
 
-#endif // FIGURERENDERERS_H
+#endif

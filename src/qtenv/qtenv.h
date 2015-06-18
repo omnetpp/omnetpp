@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_H
-#define __OMNETPP_QTENV_H
+#ifndef __OMNETPP_QTENV_QTENV_H
+#define __OMNETPP_QTENV_QTENV_H
 
 #include <vector>
 #include <list>
@@ -28,17 +28,20 @@
 #include "componenthistory.h"
 #include "imagecache.h"
 
-NAMESPACE_BEGIN
-
-class MainWindow;
 class QWidget;
 
+namespace omnetpp {
 namespace qtenv {
 
+class MainWindow;
 class Inspector;
 class GenericObjectInspector;
 class LogInspector;
 class ModuleInspector;
+
+using namespace envir;
+
+namespace common { class MatchExpression; };
 
 #define MAX_CLASSNAME  100
 
@@ -56,7 +59,7 @@ enum StripNamespace
 	STRIPNAMESPACE_ALL
 };
 
-struct QtenvOptions : public EnvirOptions
+struct QtenvOptions : public OPP::envir::EnvirOptions
 {
     QtenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
@@ -95,7 +98,7 @@ struct QtenvOptions : public EnvirOptions
 /**
  * A Qt-based user interface.
  */
-class TKENV_API Qtenv : public EnvirBase
+class QTENV_API Qtenv : public OPP::envir::EnvirBase
 {
    public:
       //
@@ -122,8 +125,8 @@ class TKENV_API Qtenv : public EnvirBase
       };
 
       struct sPathEntry {
-         cModule *from; // NULL if descent
-         cModule *to;   // NULL if ascent
+         cModule *from; // nullptr if descent
+         cModule *to;   // nullptr if ascent
          sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
       };
       typedef std::vector<sPathEntry> PathVec;
@@ -167,49 +170,50 @@ class TKENV_API Qtenv : public EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
+      typedef OPP::common::MatchExpression MatchExpression;
       typedef std::vector<MatchExpression*> MatchExpressions;
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
 
-      FILE *ferrorlog;             // .tkenvlog file; NULL if not yet open
+      FILE *ferrorlog;             // .tkenvlog file; nullptr if not yet open
 
    public:
       Qtenv();
       virtual ~Qtenv();
 
-      virtual void objectDeleted(cObject *object); // notify environment
-      virtual void componentInitBegin(cComponent *component, int stage);
-      virtual void simulationEvent(cEvent *event);
-      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
-      virtual void messageScheduled(cMessage *msg);
-      virtual void messageCancelled(cMessage *msg);
-      virtual void beginSend(cMessage *msg);
-      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-      virtual void endSend(cMessage *msg);
-      virtual void messageDeleted(cMessage *msg);
-      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent);
-      virtual void componentMethodEnd();
-      virtual void moduleCreated(cModule *newmodule);
-      virtual void moduleDeleted(cModule *module);
-      virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId);
-      virtual void connectionCreated(cGate *srcgate);
-      virtual void connectionDeleted(cGate *srcgate);
-      virtual void displayStringChanged(cComponent *component);
+      virtual void objectDeleted(cObject *object) override; // notify environment
+      virtual void componentInitBegin(cComponent *component, int stage) override;
+      virtual void simulationEvent(cEvent *event) override;
+      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) override;
+      virtual void messageScheduled(cMessage *msg) override;
+      virtual void messageCancelled(cMessage *msg) override;
+      virtual void beginSend(cMessage *msg) override;
+      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+      virtual void endSend(cMessage *msg) override;
+      virtual void messageDeleted(cMessage *msg) override;
+      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override;
+      virtual void componentMethodEnd() override;
+      virtual void moduleCreated(cModule *newmodule) override;
+      virtual void moduleDeleted(cModule *module) override;
+      virtual void moduleReparented(cModule *module, cModule *oldParent, int oldId) override;
+      virtual void connectionCreated(cGate *srcgate) override;
+      virtual void connectionDeleted(cGate *srcgate) override;
+      virtual void displayStringChanged(cComponent *component) override;
 
-      virtual bool isGUI() const {return true;}
-      virtual void bubble(cComponent *component, const char *text);
+      virtual bool isGUI() const override {return true;}
+      virtual void bubble(cComponent *component, const char *text) override;
 
-      virtual void log(cLogEntry *entry);
-      virtual void putsmsg(const char *s);
-      virtual std::string gets(const char *promt, const char *defaultReply);
-      virtual bool askyesno(const char *question);
+      virtual void log(cLogEntry *entry) override;
+      virtual void putsmsg(const char *s) override;
+      virtual std::string gets(const char *promt, const char *defaultReply) override;
+      virtual bool askyesno(const char *question) override;
 
-      virtual bool idle();
+      virtual bool idle() override;
 
       // with Tkenv, activity() modules need extra stack
-      virtual unsigned getExtraStackForEnvir() const;
+      virtual unsigned getExtraStackForEnvir() const override;
 
       virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
       virtual void logTclError(const char *file, int line, const char *text);
@@ -217,15 +221,15 @@ class TKENV_API Qtenv : public EnvirBase
 
   protected:
       // redefined virtual functions from EnvirBase
-      virtual void doRun();
-      virtual void printUISpecificHelp();
+      virtual void doRun() override;
+      virtual void printUISpecificHelp() override;
 
-      virtual EnvirOptions *createOptions() {return new QtenvOptions();}
-      virtual void readOptions();
-      virtual void readPerRunOptions();
-      virtual void setupNetwork(cModuleType *network);
-      virtual void askParameter(cPar *par, bool unassigned);
-      virtual void displayException(std::exception& e);
+      virtual EnvirOptions *createOptions() override {return new QtenvOptions();}
+      virtual void readOptions() override;
+      virtual void readPerRunOptions() override;
+      virtual void setupNetwork(cModuleType *network) override;
+      virtual void askParameter(cPar *par, bool unassigned) override;
+      virtual void displayException(std::exception& e) override;
       virtual std::string getWindowTitle();
 
   public:
@@ -236,7 +240,7 @@ class TKENV_API Qtenv : public EnvirBase
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=NULL, cModule *until_module=NULL);
+      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr);
       void setSimulationRunMode(int runmode);
       int getSimulationRunMode() const {return runmode;}
       void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
@@ -247,7 +251,7 @@ class TKENV_API Qtenv : public EnvirBase
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
-      void loadNedFile(const char *fname, const char *expectedPackage=NULL, bool isXML=false);
+      void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 
       void refreshInspectors();
       void redrawInspectors();
@@ -294,9 +298,9 @@ class TKENV_API Qtenv : public EnvirBase
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
-      const char *getOutVectorFileName() {return outvectormgr->getFileName();}
-      const char *getOutScalarFileName() {return outscalarmgr->getFileName();}
-      const char *getSnapshotFileName()  {return snapshotmgr->getFileName();}
+      const char *getOutVectorFileName() {return outvectorManager->getFileName();}
+      const char *getOutScalarFileName() {return outScalarManager->getFileName();}
+      const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
       const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
       MainWindow *getWindow() {return mainwindow;}
 };
@@ -310,7 +314,7 @@ inline Qtenv *getTkenv()
     return (Qtenv *)cSimulation::getActiveEnvir();
 }
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif

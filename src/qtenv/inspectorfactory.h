@@ -14,15 +14,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_INSPECTORFACTORY_H
-#define __OMNETPP_INSPECTORFACTORY_H
+#ifndef __OMNETPP_QTENV_INSPECTORFACTORY_H
+#define __OMNETPP_QTENV_INSPECTORFACTORY_H
 
-#include "envir/envirbase.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/cregistrationlist.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 #define Register_InspectorFactory(FACTORYNAME) \
@@ -32,7 +31,7 @@ namespace qtenv {
 /**
  * Serves as a base class for inspector factories of specific classes.
  */
-class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
+class QTENV_API InspectorFactory : public cNoncopyableOwnedObject
 {
   public:
     /** @name Constructors, destructor, assignment. */
@@ -74,7 +73,7 @@ class TKENV_API InspectorFactory : public cNoncopyableOwnedObject
     //@}
 
     /**
-     * Finds an inspector factory by name. Returns NULL if not found.
+     * Finds an inspector factory by name. Returns nullptr if not found.
      */
     static InspectorFactory *find(const char *className);
 
@@ -93,9 +92,8 @@ extern cGlobalRegistrationList inspectorfactories;
  */
 InspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
 
-} //namespace
-NAMESPACE_END
-
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif
 

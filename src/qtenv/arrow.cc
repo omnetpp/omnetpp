@@ -16,16 +16,16 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
 #include <algorithm>
 
 #include "arrow.h"
 #include "tkutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 static void clip_line_to_rect(double& x1, double& y1, double x2, double y2,
@@ -391,6 +391,6 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
     return TCL_OK;
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

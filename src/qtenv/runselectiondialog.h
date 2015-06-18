@@ -14,26 +14,28 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef RUNSELECTIONDIALOG_H
-#define RUNSELECTIONDIALOG_H
+#ifndef __OMNETPP_QTENV_RUNSELECTIONDIALOG_H
+#define __OMNETPP_QTENV_RUNSELECTIONDIALOG_H
 
 #include <QDialog>
 #include <map>
-
-namespace qtenv {
-class Qtenv;
-}
+#include "qtenvdefs.h"
 
 namespace Ui {
 class RunSelectionDialog;
 }
+
+namespace omnetpp {
+namespace qtenv {
+
+class Qtenv;
 
 class RunSelectionDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent = 0);
+    explicit RunSelectionDialog(Qtenv *env, QWidget *parent = 0);
     ~RunSelectionDialog();
 
     std::string getConfigName();
@@ -41,9 +43,12 @@ public:
 
 private:
     Ui::RunSelectionDialog *ui;
-    qtenv::Qtenv *env;
+    Qtenv *env;
 
     std::vector<std::string> groupAndSortConfigNames();
 };
 
-#endif // RUNSELECTIONDIALOG_H
+} // namespace qtenv
+} // namespace omnetpp
+
+#endif

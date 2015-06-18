@@ -24,6 +24,7 @@
 #include <QFontMetrics>
 #include <QGraphicsColorizeEffect>
 
+namespace omnetpp {
 namespace qtenv {
 
 std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
@@ -1275,5 +1276,7 @@ QGraphicsItem *ImageFigureRenderer::newItem()
 {
     return new QGraphicsPixmapItem();
 }
+
 } // namespace qtenv
+} // namespace omnetpp
 

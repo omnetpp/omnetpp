@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_LOGINSPECTOR_H
-#define __OMNETPP_LOGINSPECTOR_H
+#ifndef __OMNETPP_QTENV_LOGINSPECTOR_H
+#define __OMNETPP_QTENV_LOGINSPECTOR_H
 
 #include <map>
 #include "omnetpp/cmessageprinter.h"
@@ -23,11 +23,11 @@
 #include "componenthistory.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 
-class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
+class QTENV_API LogInspector : public Inspector, protected ILogBufferListener
 {
    public:
       enum Mode {LOG, MESSAGES};
@@ -50,7 +50,8 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       bool bookmarkAdded;
 
    protected:
-      void textWidgetCommand(const char *arg1, const char *arg2=NULL, const char *arg3=NULL, const char *arg4=NULL, const char *arg5=NULL, const char *arg6=NULL);
+      cComponent *getInspectedObject();
+      void textWidgetCommand(const char *arg1, const char *arg2=nullptr, const char *arg3=nullptr, const char *arg4=nullptr, const char *arg5=nullptr, const char *arg6=nullptr);
       void textWidgetInsert(const char *text, const char *tags);
       void textWidgetSeeEnd();
       void textWidgetGotoBeginning();
@@ -58,12 +59,12 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
       void textWidgetSetBookmark(const char *bookmark, const char *pos);
       void textWidgetDumpBookmarks(const char *label);
 
-      virtual void logEntryAdded();
-      virtual void logLineAdded();
-      virtual void messageSendAdded();
+      virtual void logEntryAdded() override;
+      virtual void logLineAdded() override;
+      virtual void messageSendAdded() override;
 
       bool isMatchingComponent(int componentId);
-      bool isAncestorModule(int moduleId, int potentialAncestorModuleId);
+      bool isAncestorModule(int componentId, int potentialAncestorModuleId);
 
       virtual void printLastLogLine();
       virtual void printLastMessageLine();
@@ -79,21 +80,20 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
    public:
       LogInspector(InspectorFactory *f);
       virtual ~LogInspector();
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
-      virtual void doSetObject(cObject *obj);
-      virtual void refresh();
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(QWidget *parent) override;
+      virtual void doSetObject(cObject *obj) override;
+      virtual void refresh() override;
 
       virtual void redisplay();
 
       virtual Mode getMode() const {return mode;}
       virtual void setMode(Mode mode);
 
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
-} //namespace
-NAMESPACE_END
-
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif

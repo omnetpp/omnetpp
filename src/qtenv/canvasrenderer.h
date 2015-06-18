@@ -14,22 +14,23 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef CANVASRENDERER_H
-#define CANVASRENDERER_H
+#ifndef __OMNETPP_QTENV_CANVASRENDERER_H
+#define __OMNETPP_QTENV_CANVASRENDERER_H
 
 #include "omnetpp/ccanvas.h"
 #include <QGraphicsScene>
 
+namespace omnetpp {
 namespace qtenv {
 
-class FigureRenderingHints;
 class FigureRenderer;
+struct FigureRenderingHints;
 
 class CanvasRenderer
 {
 protected:
     QGraphicsScene *scene;
-    cCanvas *canvas;    // NULL is allowed
+    cCanvas *canvas;    // nullptr is allowed
     uint64_t enabledTagBits, exceptTagBits;
 
 protected:
@@ -41,14 +42,14 @@ protected:
 
 public:
     CanvasRenderer() :
-        canvas(NULL), enabledTagBits(0), exceptTagBits(0) {}
+        canvas(nullptr), enabledTagBits(0), exceptTagBits(0) {}
     virtual ~CanvasRenderer() {}
 
     virtual void setQtCanvas(QGraphicsScene *scene, cCanvas *canvas);
     virtual void setCanvas(cCanvas *canvas);
-    virtual bool hasCanvas() {return canvas != NULL;}
-    virtual void redraw(FigureRenderingHints *hints);
+    virtual bool hasCanvas() {return canvas != nullptr;}
     virtual void refresh(FigureRenderingHints *hints);
+    virtual void redraw(FigureRenderingHints *hints);
 
     // tag-based filtering
     virtual std::string getAllTags();
@@ -58,6 +59,7 @@ public:
     virtual void setExceptTags(const char* tags);
 };
 
-}
+} // namespace qtenv
+} // namespace omnetpp
 
-#endif // CANVASRENDERER_H
+#endif

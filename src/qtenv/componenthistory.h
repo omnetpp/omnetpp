@@ -14,21 +14,21 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_COMPONENTHISTORY_H
-#define __OMNETPP_COMPONENTHISTORY_H
+#ifndef __OMNETPP_QTENV_COMPONENTHISTORY_H
+#define __OMNETPP_QTENV_COMPONENTHISTORY_H
 
 #include <string>
 #include <map>
 #include "omnetpp/simutil.h"
 #include "qtenvdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cComponentType;
 
 namespace qtenv {
 
-class TKENV_API ComponentHistory
+class QTENV_API ComponentHistory
 {
     private:
         struct Data {
@@ -49,7 +49,7 @@ class TKENV_API ComponentHistory
         ComponentHistory() {}
         ~ComponentHistory() {}
         void componentDeleted(cComponent *component);
-        //void componentReparented(cComponent *component, cModule *oldParent, int oldId);
+        void componentReparented(cComponent *component, cModule *oldParent, int oldId);
         int getParentModuleId(int componentId) const;
         const char *getComponentFullName(int componentId) const;
         std::string getComponentFullPath(int componentId) const;
@@ -59,8 +59,8 @@ class TKENV_API ComponentHistory
         void clear();
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif
 

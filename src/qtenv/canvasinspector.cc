@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <assert.h>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
 
 #include "common/stringutil.h"
 #include "canvasinspector.h"
@@ -31,7 +31,9 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 
-NAMESPACE_BEGIN
+using namespace OPP::common;
+
+namespace omnetpp {
 namespace qtenv {
 
 class CanvasInspectorFactory : public InspectorFactory
@@ -39,10 +41,10 @@ class CanvasInspectorFactory : public InspectorFactory
   public:
     CanvasInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) { return dynamic_cast<cCanvas *>(obj) != NULL; }
-    int getInspectorType() { return INSP_GRAPHICAL; }
-    double getQualityAsDefault(cObject *object) { return 3.0; }
-    Inspector *createInspector() { return new CanvasInspector(this); }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cCanvas *>(obj) != nullptr; }
+    int getInspectorType() override { return INSP_GRAPHICAL; }
+    double getQualityAsDefault(cObject *object) override { return 3.0; }
+    Inspector *createInspector() override { return new CanvasInspector(this); }
 };
 
 Register_InspectorFactory(CanvasInspectorFactory);
@@ -67,11 +69,11 @@ void CanvasInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
+    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     if (object) {
         FigureRenderingHints hint;
-        canvasRenderer->redraw(&hint);  // TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, NULL ));
+        canvasRenderer->redraw(&hint);  // TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, nullptr ));
     }
 }
 
@@ -79,7 +81,7 @@ void CanvasInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
+    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 
     canvasRenderer->setQtCanvas(static_cast<CanvasInspectorForm *>(this->window)->getScene(), getCanvas());
     this->window->show();
@@ -98,7 +100,7 @@ void CanvasInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -164,7 +166,7 @@ void CanvasInspector::updateBackgroundColor()
         char buf[16];
         cFigure::Color color = canvas->getBackgroundColor();
         sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", NULL));
+        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
     }
 }
 
@@ -213,6 +215,6 @@ int CanvasInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace omnetpp
+} // namespace omnetpp
 

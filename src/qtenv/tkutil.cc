@@ -17,19 +17,18 @@
 // being pulled in (we don't need the SmartCard API here anyway ;-)
 #define _WINSCARD_H_
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+#include <cassert>
 #include <sstream>
 
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
 #include "common/patternmatcher.h"
 #include "common/ver.h"
-#include "envir/visitor.h"
 #include "omnetpp/csimulation.h"
-#include "omnetpp/cmessageheap.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cregistrationlist.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
@@ -45,14 +44,16 @@
 #include "qtenv.h"
 #include "tkutil.h"
 
-NAMESPACE_BEGIN
+using namespace OPP::common;
+
+namespace omnetpp {
 namespace qtenv {
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
 
 TclQuotedString::TclQuotedString()
 {
-    quotedstr = NULL;
+    quotedstr = nullptr;
     buf[0] = '\0';
 }
 
@@ -63,7 +64,7 @@ TclQuotedString::TclQuotedString(const char *s)
     int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
- */
+*/
 }
 
 TclQuotedString::TclQuotedString(const char *s, int n)
@@ -73,7 +74,7 @@ TclQuotedString::TclQuotedString(const char *s, int n)
     int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
- */
+*/
 }
 
 void TclQuotedString::set(const char *s)
@@ -83,7 +84,7 @@ void TclQuotedString::set(const char *s)
     int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
- */
+*/
 }
 
 void TclQuotedString::set(const char *s, int n)
@@ -93,7 +94,7 @@ void TclQuotedString::set(const char *s, int n)
     int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
- */
+*/
 }
 
 TclQuotedString::~TclQuotedString()
@@ -101,10 +102,10 @@ TclQuotedString::~TclQuotedString()
 /*Qt!
     if (quotedstr!=buf)
         Tcl_Free(quotedstr);
- */
+*/
 }
 
-// ----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 void cFindByPathVisitor::visit(cObject *obj)
 {
@@ -113,9 +114,9 @@ void cFindByPathVisitor::visit(cObject *obj)
     std::string objPath = obj->getFullPath();
 
     // however, a module's name and the future event set's name is not hidden,
-    // so if this obj is a module (or cMessageHeap) and its name does not match
+    // so if this object is a module or the FES and its name does not match
     // the beginning of fullpath, we can prune the search here.
-    if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
+    if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cFutureEventSet *>(obj))
         && !opp_stringbeginswith(fullPath, objPath.c_str()))
     {
         // skip (do not search) this subtree
@@ -140,15 +141,18 @@ void cFindByPathVisitor::visit(cObject *obj)
 
 bool cFindByPathVisitor::idMatches(cObject *obj)
 {
-    // for now we only take ID into account for messages; TODO for OMNeT++ 5.0: check cComponent id!
-    if (dynamic_cast<cMessage *>(obj))
-        return ((cMessage *)obj)->getId() == objectId;
+    // only messages and components have IDs
+    if (cMessage *msg = dynamic_cast<cMessage *>(obj))
+        return msg->getId() == objectId;
+    if (cComponent *component = dynamic_cast<cComponent*>(obj))
+        return component->getId() == objectId;
     return true;
 }
 
 // =======================================================================
 
 #define TRY2(CODE)    try { CODE; } catch (std::exception& e) { printf("<!> Warning: %s\n", e.what()); }
+
 const char *stripNamespace(const char *className)
 {
     switch (getTkenv()->opt->stripNamespace) {
@@ -173,25 +177,25 @@ const char *stripNamespace(const char *className)
 
 const char *getObjectShortTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent *>(object))
-        TRY2(return ((cComponent *)object)->getComponentType()->getName());
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        TRY2(return component->getComponentType()->getName());
     return stripNamespace(object->getClassName());
 }
 
 const char *getObjectFullTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent *>(object))
-        TRY2(return ((cComponent *)object)->getComponentType()->getFullName());
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        TRY2(return component->getComponentType()->getFullName());
     return object->getClassName();
 }
 
 char *voidPtrToStr(void *ptr, char *buffer)
 {
     static char staticbuf[20];
-    if (buffer == NULL)
+    if (buffer == nullptr)
         buffer = staticbuf;
 
-    if (ptr == 0)
+    if (ptr == nullptr)
         strcpy(buffer, "ptr0");  // GNU C++'s sprintf() says "nil"
     else
         sprintf(buffer, "ptr%p", ptr);
@@ -200,13 +204,13 @@ char *voidPtrToStr(void *ptr, char *buffer)
 
 void *strToVoidPtr(const char *s)
 {
-    // accept "" and malformed strings too, and return them as NULL
+    // accept "" and malformed strings too, and return them as nullptr
     if (s[0] == 'p' && s[1] == 't' && s[2] == 'r')
         s += 3;
     else if (s[0] == '0' && s[1] == 'x')
         s += 2;
     else
-        return NULL;
+        return nullptr;
 
     void *ptr;
     sscanf(s, "%p", &ptr);
@@ -235,7 +239,7 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
 {
     const char *iconName;
-    if (object == NULL)
+    if (object == nullptr)
         iconName = "none_vs";
     else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
         iconName = "placeholder_vs";
@@ -267,7 +271,7 @@ std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
         iconName = "canvas_vs";
     else if (dynamic_cast<cSimulation *>(object))
         iconName = "container_vs";
-    else if (dynamic_cast<cMessageHeap *>(object))
+    else if (dynamic_cast<cFutureEventSet *>(object))
         iconName = "container_vs";
     else if (dynamic_cast<cRegistrationList *>(object))
         iconName = "container_vs";
@@ -285,13 +289,13 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 {
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, listbox, " insert {} end "
-                                     "-image ", getObjectIcon(interp, obj).c_str(), " "
-                                                                                    "-text {", "  "  /*padding*/, getObjectShortTypeName(obj), "} ",
+                    "-image ", getObjectIcon(interp, obj).c_str(), " "
+                    "-text {", "  " /*padding*/, getObjectShortTypeName(obj), "} ",
                     "-values {",
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
                     TclQuotedString(obj->info().c_str()).get(), " ", ptr,
                     "}",
-                    NULL));
+                    TCL_NULL));
 }
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
@@ -355,7 +359,7 @@ void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule *>& 
         hops.push_back(ancestor);
         ancestor = ancestor->getParentModule();
     }
-    ASSERT(ancestor != NULL);
+    ASSERT(ancestor != nullptr);
 
     if (src == ancestor)
         hops.push_back(src);
@@ -384,7 +388,7 @@ bool isAPL()
 cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
 {
     // look up locally
-    cPar *par = NULL;
+    cPar *par = nullptr;
     int k = component->findPar(parname);
     if (k >= 0)
         par = &(component->par(k));
@@ -418,11 +422,11 @@ bool displayStringContainsParamRefs(const char *dispstr)
 cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, bool searchparent)
 {
     if (dispstr[0] != '$')
-        return NULL;
+        return nullptr;
     if (dispstr[1] != '{')
         return displayStringPar(dispstr+1, component, searchparent);  // rest of string is assumed to be the param name
     else if (dispstr[strlen(dispstr)-1] != '}')
-        return NULL;  // unterminated brace (or close brace not the last char)
+        return nullptr;  // unterminated brace (or close brace not the last char)
     else
         // starts with "${" and ends with "}" -- everything in between is taken to be the parameter name
         return displayStringPar(std::string(dispstr+2, strlen(dispstr)-3).c_str(), component, searchparent);
@@ -430,7 +434,7 @@ cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, b
 
 const char *substituteDisplayStringParamRefs(const char *src, std::string& buffer, cComponent *component, bool searchparent)
 {
-    if (!strchr(src, '$') || !component)  // cannot resolve args if component==NULL
+    if (!strchr(src, '$') || !component)  // cannot resolve args if component==nullptr
         return src;
 
     // recognize "$param" and "${param}" syntax inside the string
@@ -457,24 +461,11 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
             // append its value
             cPar *par = displayStringPar(name.c_str(), component, searchparent);
             switch (par->getType()) {
-                case cPar::BOOL:
-                    buffer += (par->boolValue() ? "1" : "0");
-                    break;
-
-                case cPar::STRING:
-                    buffer += par->stdstringValue();
-                    break;
-
-                case cPar::LONG:
-                    buffer += opp_stringf("%ld", par->longValue());
-                    break;
-
-                case cPar::DOUBLE:
-                    buffer += opp_stringf("%g", par->doubleValue());
-                    break;
-
-                default:
-                    throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
+              case cPar::BOOL: buffer += (par->boolValue() ? "1" : "0"); break;
+              case cPar::STRING: buffer += par->stdstringValue(); break;
+              case cPar::LONG: buffer += opp_stringf("%ld", par->longValue()); break;
+              case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
+              default: throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
             }
         }
     }
@@ -543,9 +534,9 @@ void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char
         os << "\n";
         getTkenv()->logTclError(__FILE__, __LINE__, os.str().c_str());
     }
- */
+*/
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

@@ -546,9 +546,7 @@ proc lookupImage {imgname {imgsize ""}} {
     global bitmaps icons
 
     if {[catch {set img $bitmaps($imgname,$imgsize)}] && \
-        [catch {set img $bitmaps($imgname)}] && \
-        [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
-        [catch {set img $bitmaps(old/$imgname)}]} {
+        [catch {set img $bitmaps($imgname)}]} {
        set img $icons(unknown)
     }
 
@@ -580,10 +578,7 @@ proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1} {defaultimage
             }
         } else {
             if {[catch {set img $bitmaps($imgname,$imgsize)}] && \
-                [catch {set img $bitmaps($imgname)}] && \
-                [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
-                [catch {set img $bitmaps(old/$imgname)}]} \
-            {
+                [catch {set img $bitmaps($imgname)}]} {
                 set img $icons(unknown)
             }
         }
@@ -936,8 +931,7 @@ proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
        set imgname [lindex $tags(bgi) 0]
        set imgmode [lindex $tags(bgi) 1]
        if {$imgname!=""} {
-          if {[catch {set img $bitmaps($imgname)}] && \
-              [catch {set img $bitmaps(old/$imgname)}]} {
+          if {[catch {set img $bitmaps($imgname)}]} {
               set img $icons(unknown)
           }
           set iwidth [image width $img]

@@ -18,9 +18,9 @@
 *--------------------------------------------------------------*/
 
 #include "mainwindow.h"
-#include <string.h>
-#include <math.h>
-#include <assert.h>
+#include <cstring>
+#include <cmath>
+#include <cassert>
 #include <algorithm>
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"
@@ -29,7 +29,9 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 
-NAMESPACE_BEGIN
+using namespace OPP::common;
+
+namespace omnetpp {
 namespace qtenv {
 
 const char *insptypeNameFromCode(int code)
@@ -56,14 +58,14 @@ int insptypeCodeFromName(const char *name)
 #undef CASE
 }
 
-//----
+// ----
 
 Inspector::Inspector(InspectorFactory *f)
 {
     factory = f;
     interp = getTkenv()->getInterp();
-    window = getTkenv()->getWindow();
-    object = NULL;
+    //FIXME put back:   window = getTkenv()->getWindow();
+    object = nullptr;
     type = f->getInspectorType();
     isToplevelWindow = false;
     closeRequested = false;
@@ -74,7 +76,7 @@ Inspector::Inspector(InspectorFactory *f)
 Inspector::~Inspector()
 {
     if (isToplevelWindow && windowName[0]) {
-        CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL));
+        CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, TCL_NULL));
     }
 }
 
@@ -114,7 +116,7 @@ void Inspector::doSetObject(cObject *obj)
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
-        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, NULL));
+        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, TCL_NULL));
         refresh();
     }
 }
@@ -122,14 +124,14 @@ void Inspector::doSetObject(cObject *obj)
 void Inspector::showWindow()
 {
     if (isToplevelWindow)
-        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL));
+        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, TCL_NULL));
 }
 
 void Inspector::refresh()
 {
     if (isToplevelWindow)
         refreshTitle();
-    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, TCL_NULL));
 }
 
 void Inspector::refreshTitle()
@@ -151,21 +153,21 @@ void Inspector::refreshTitle()
 
     if (windowTitle != newTitle) {
         windowTitle = newTitle;
-        CHK(Tcl_VarEval(interp, "wm title ", windowName, " {", windowTitle.c_str(), "}", NULL));
+        CHK(Tcl_VarEval(interp, "wm title ", windowName, " {", windowTitle.c_str(), "}", TCL_NULL));
     }
 }
 
 void Inspector::objectDeleted(cObject *obj)
 {
     if (obj == object)
-        doSetObject(NULL);
+        doSetObject(nullptr);
     removeFromToHistory(obj);
 }
 
 void Inspector::setObject(cObject *obj)
 {
     if (obj != object) {
-        if (object != NULL) {
+        if (object != nullptr) {
             historyBack.push_back(object);
             historyForward.clear();
         }
@@ -200,7 +202,7 @@ void Inspector::goForward()
     if (!historyForward.empty()) {
         cObject *newObj = historyForward.back();
         historyForward.pop_back();
-        if (object != NULL)
+        if (object != nullptr)
             historyBack.push_back(object);
         doSetObject(newObj);
     }
@@ -211,7 +213,7 @@ void Inspector::goBack()
     if (!historyBack.empty()) {
         cObject *newObj = historyBack.back();
         historyBack.pop_back();
-        if (object != NULL)
+        if (object != nullptr)
             historyForward.push_back(object);
         doSetObject(newObj);
     }
@@ -244,22 +246,22 @@ void Inspector::setEntry(const char *entry, const char *val)
     if (!val)
         val = "";
     CHK(Tcl_VarEval(interp, windowName, entry, " delete 0 end;",
-                    windowName, entry, " insert 0 {", val, "}", NULL));
+                    windowName, entry, " insert 0 {", val, "}", TCL_NULL));
 }
 
 void Inspector::setLabel(const char *label, const char *val)
 {
     if (!val)
         val = "";
-    CHK(Tcl_VarEval(interp, windowName, label, " config -text {", val, "}", NULL));
+    CHK(Tcl_VarEval(interp, windowName, label, " config -text {", val, "}", TCL_NULL));
 }
 
 const char *Inspector::getEntry(const char *entry)
 {
-    CHK(Tcl_VarEval(interp, windowName, entry, " get", NULL));
+    CHK(Tcl_VarEval(interp, windowName, entry, " get", TCL_NULL));
     return Tcl_GetStringResult(interp);
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

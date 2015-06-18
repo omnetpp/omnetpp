@@ -5,7 +5,10 @@
 
 #include <QDebug>
 
-CanvasInspectorForm::CanvasInspectorForm(qtenv::CanvasInspector *inspector, QWidget *parent) :
+namespace omnetpp {
+namespace qtenv {
+
+CanvasInspectorForm::CanvasInspectorForm(CanvasInspector *inspector, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::CanvasInspectorForm),
     insp(inspector)
@@ -24,10 +27,12 @@ QGraphicsScene *CanvasInspectorForm::getScene()
     return ui->graphicsView->scene();
 }
 
-void CanvasInspectorForm::closeEvent(QCloseEvent *)
+void CanvasInspectorForm::closeEvent(QCloseEvent*)
 {
     qDebug() << "Close";
-    qtenv::getTkenv()->deleteInspector(insp);
+    getTkenv()->deleteInspector(insp);
     QWidget::close();
 }
 
+} // namespace qtenv
+} // namespace omnetpp

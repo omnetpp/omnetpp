@@ -14,12 +14,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_TKLIB_H
-#define __OMNETPP_TKLIB_H
+#ifndef __OMNETPP_QTENV_TKLIB_H
+#define __OMNETPP_QTENV_TKLIB_H
 
 #include "qtenvdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 struct OmnetTclCommand {
@@ -34,8 +34,8 @@ Tcl_Interp *initTk(int argc, char **argv);
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *tcl_commands);
 int runTk(Tcl_Interp *interp);
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 
 #endif

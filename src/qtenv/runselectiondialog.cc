@@ -22,7 +22,10 @@
 #include <vector>
 #include <set>
 
-RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
+namespace omnetpp {
+namespace qtenv {
+
+RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RunSelectionDialog),
     env(env)
@@ -107,3 +110,5 @@ int RunSelectionDialog::getRunNumber()
     return ui->runNumber->itemData(index).toInt();
 }
 
+} // namespace qtenv
+} // namespace omnetpp

@@ -17,10 +17,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <assert.h>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
 #include <QCoreApplication>
 
 #include "omnetpp/cmodule.h"
@@ -29,7 +29,7 @@
 #include "tklib.h"
 #include "tkutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
@@ -37,12 +37,12 @@ TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp,
 {
     this->interp = interp;
     this->parentModule = parentModule;
-    widgetToGrab = NULL;
-    canvas = NULL;
-    interp = NULL;
+    widgetToGrab = nullptr;
+    canvas = nullptr;
+    interp = nullptr;
 
-    gettimeofday(&beginTime, NULL);
-    gettimeofday(&lastCheck, NULL);
+    gettimeofday(&beginTime, nullptr);
+    gettimeofday(&lastCheck, nullptr);
     grabActive = false;
 }
 
@@ -64,15 +64,15 @@ double TkenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, in
 void TkenvGraphLayouterEnvironment::clearGraphics()
 {
     if (inspected()) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
     }
 }
 
 void TkenvGraphLayouterEnvironment::showGraphics(const char *text)
 {
     if (inspected()) {
-        CHK(Tcl_VarEval(interp, canvas, " raise node", NULL));
-        CHK(Tcl_VarEval(interp, "layouter:debugDrawFinish ", canvas, " {", text, "}", NULL));
+        CHK(Tcl_VarEval(interp, canvas, " raise node", TCL_NULL));
+        CHK(Tcl_VarEval(interp, "layouter:debugDrawFinish ", canvas, " {", text, "}", TCL_NULL));
     }
 }
 
@@ -81,7 +81,7 @@ void TkenvGraphLayouterEnvironment::drawText(double x, double y, const char *tex
     if (inspected()) {
         char coords[100];
         sprintf(coords, "%d %d", (int)x, (int)y);
-        CHK(Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, NULL));
+        CHK(Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, TCL_NULL));
     }
 }
 
@@ -90,7 +90,7 @@ void TkenvGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, do
     if (inspected()) {
         char coords[100];
         sprintf(coords, "%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
-        CHK(Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, NULL));
+        CHK(Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, TCL_NULL));
     }
 }
 
@@ -99,7 +99,7 @@ void TkenvGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x
     if (inspected()) {
         char coords[100];
         sprintf(coords, "%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
-        CHK(Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, NULL));
+        CHK(Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, TCL_NULL));
     }
 }
 
@@ -109,11 +109,11 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
     // Strategy: do not interact with UI for up to 3 seconds. At the end of the
     // 3rd second, start grab on the "STOP" button, and read its state
     // occasionally (5 times per second). At the end (in cleanup()) we have to
-    // release the grab. Do not set a grab in Express mode (i.e. if widgetToGrab==NULL),
+    // release the grab. Do not set a grab in Express mode (i.e. if widgetToGrab==nullptr),
     // because Express mode's large STOP button already has one.
     //
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     if (timeval_msec(now - beginTime) < 3000)
         return true;  // no UI interaction for up to 3 sec
 
@@ -121,7 +121,7 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
         // start grab
         grabActive = true;
         Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
-        CHK(Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, NULL));
+        CHK(Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, TCL_NULL));
     }
 
     // only check the UI once a while
@@ -131,7 +131,7 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
 
     // process UI events; we assume that a "grab" is in effect to the Stop button
     // (i.e. the user can only interact with the Stop button, but nothing else)
-    // Qt: CHK(Tcl_VarEval(interp, "update\n", NULL));
+    // Qt: CHK(Tcl_VarEval(interp, "update\n", TCL_NULL));
     QCoreApplication::processEvents();
     const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
     bool stopNow = var && var[0] && var[0] != '0';
@@ -146,13 +146,13 @@ void TkenvGraphLayouterEnvironment::cleanup()
                         canvas, " config -scrollregion {0 0 1 1}\n",
                         canvas, " xview moveto 0\n",
                         canvas, " yview moveto 0\n",
-                        NULL));
+                        TCL_NULL));
     }
     if (grabActive) {
-        CHK(Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, NULL));
+        CHK(Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, TCL_NULL));
     }
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

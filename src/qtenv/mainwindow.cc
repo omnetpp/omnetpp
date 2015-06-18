@@ -24,6 +24,8 @@
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
 #include "omnetpp/csimplemodule.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/cfutureeventset.h"
 #include "inspector.h"
 #include "common/stringutil.h"
 #include "stopdialog.h"
@@ -31,7 +33,10 @@
 
 #include "qdebug.h"
 
-using namespace qtenv;
+using namespace OPP::common;
+
+namespace omnetpp {
+namespace qtenv {
 
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
@@ -390,7 +395,7 @@ void MainWindow::updateSimtimeDisplay()
 {
     ui->labelEvent->setText("Event #" + QString::number(getSimulation()->getEventNumber()));
     ui->labelTime->setText("t=" + QString(getSimulation()->guessNextSimtime().str().c_str()) + "s");
-    ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->msgQueue.getLength())
+    ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->getFES()->getLength())
             +" scheduled / " + QString::number(cMessage::getLiveMessageCount())
             +" existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");
 }
@@ -768,7 +773,7 @@ void MainWindow::runUntilMsg(cMessage *msg, int runMode)
 void MainWindow::setRunUntilModule(Inspector *insp)
 {
     if (insp == nullptr) {
-        env->setSimulationRunUntilModule(NULL);
+        env->setSimulationRunUntilModule(nullptr);
         return;
     }
 
@@ -915,3 +920,5 @@ QWidget *MainWindow::getMainArea()
     return ui->mainArea;
 }
 
+} // namespace qtenv
+} // namespace omnetpp

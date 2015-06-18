@@ -14,15 +14,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 #include "omnetpp/cdensityestbase.h"
 #include "qtenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "histograminspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 void _dummy_for_histograminspector() {}
@@ -32,10 +32,10 @@ class HistogramInspectorFactory : public InspectorFactory
   public:
     HistogramInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) { return dynamic_cast<cDensityEstBase *>(obj) != NULL; }
-    int getInspectorType() { return INSP_GRAPHICAL; }
-    double getQualityAsDefault(cObject *object) { return 3.0; }
-    Inspector *createInspector() { return new HistogramInspector(this); }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cDensityEstBase *>(obj) != nullptr; }
+    int getInspectorType() override { return INSP_GRAPHICAL; }
+    double getQualityAsDefault(cObject *object) override { return 3.0; }
+    Inspector *createInspector() override { return new HistogramInspector(this); }
 };
 
 Register_InspectorFactory(HistogramInspectorFactory);
@@ -51,7 +51,7 @@ void HistogramInspector::createWindow(const char *window, const char *geometry)
     strcpy(canvas, windowName);
     strcat(canvas, ".main.canvas");
 
-    CHK(Tcl_VarEval(interp, "createHistogramInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
+    CHK(Tcl_VarEval(interp, "createHistogramInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 }
 
 void HistogramInspector::useWindow(QWidget *parent)
@@ -67,7 +67,7 @@ void HistogramInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
+        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -75,7 +75,7 @@ void HistogramInspector::refresh()
 
     char buf[80];
     generalInfo(buf);
-    CHK(Tcl_VarEval(interp, windowName, ".bot.info config -text {", buf, "}", NULL));
+    CHK(Tcl_VarEval(interp, windowName, ".bot.info config -text {", buf, "}", TCL_NULL));
 
     // can we draw anything at all?
     if (!distr->isTransformed() || distr->getNumCells() == 0)
@@ -103,9 +103,9 @@ void HistogramInspector::refresh()
     }
 
     // get canvas size
-    CHK(Tcl_VarEval(interp, "winfo width ", canvas, NULL));
+    CHK(Tcl_VarEval(interp, "winfo width ", canvas, TCL_NULL));
     int canvaswidth = atoi(Tcl_GetStringResult(interp));
-    CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
+    CHK(Tcl_VarEval(interp, "winfo height ", canvas, TCL_NULL));
     int canvasheight = atoi(Tcl_GetStringResult(interp));
 
     // temporarily define X() and Y() coordinate translation macros
@@ -113,7 +113,7 @@ void HistogramInspector::refresh()
 #define Y(y)    (int)(canvasheight-10-(y)*((long)canvasheight-20)/ymax)
 
     // delete previous drawing
-    CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
+    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     // draw the histogram
     cell_upper = distr->getBasepoint(0);
@@ -132,7 +132,7 @@ void HistogramInspector::refresh()
         // draw rectangle
         CHK(Tcl_VarEval(interp, canvas,
                         " create rect ", coords, " -tag ", tag,
-                        " -fill black -outline black", NULL));
+                        " -fill black -outline black", TCL_NULL));
     }
 #undef X
 #undef Y
@@ -190,6 +190,6 @@ int HistogramInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

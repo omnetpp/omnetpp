@@ -14,14 +14,17 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef STOPDIALOG_H
-#define STOPDIALOG_H
+#ifndef __OMNETPP_QTENV_STOPDIALOG_H
+#define __OMNETPP_QTENV_STOPDIALOG_H
 
 #include <QDialog>
 
 namespace Ui {
 class StopDialog;
 }
+
+namespace omnetpp {
+namespace qtenv {
 
 class StopDialog : public QDialog
 {
@@ -42,4 +45,7 @@ private:
     Ui::StopDialog *ui;
 };
 
-#endif // STOPDIALOG_H
+} // namespace qtenv
+} // namespace omnetpp
+
+#endif

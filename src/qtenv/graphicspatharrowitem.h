@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef GRAPHICSPATHARROWITEM_H
-#define GRAPHICSPATHARROWITEM_H
+#ifndef __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H
+#define __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H
 
 #include <QGraphicsPathItem>
 

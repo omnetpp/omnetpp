@@ -19,17 +19,17 @@
 // being pulled in (we don't need the SmartCard API here anyway ;-)
 #define _WINSCARD_H_
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+#include <cassert>
 
 #include "common/exception.h"
 #include "tklib.h"
 #include "tkutil.h"
 #include "qtenv.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 int exitOmnetpp;
@@ -46,7 +46,7 @@ static int XErrorProc(ClientData, XErrorEvent *errEventPtr)
                     errEventPtr->error_code,
                     errEventPtr->request_code,
                     errEventPtr->minor_code );
- */
+*/
     return 0;  // claim to have handled the error
 }
 
@@ -60,7 +60,7 @@ Tcl_Interp *initTk(int argc, char **argv)
     Tcl_FindExecutable(argv[0]);
 
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
-    // if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
+    // if (Tk_ParseArgv(interp, (Tk_Window)nullptr, &argc, argv, argTable, 0)!=TCL_OK)
     // {
     //    fprintf(stderr, "%s\n", Tcl_GetStringResult(interp));
     //    return TCL_ERROR;
@@ -72,7 +72,7 @@ Tcl_Interp *initTk(int argc, char **argv)
     if (Tk_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
 
-// Qt!    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
+//Qt!    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) nullptr);
 
 #if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION < 6
     if (Tkpng_Init(interp) != TCL_OK)
@@ -90,18 +90,18 @@ Tcl_Interp *initTk(int argc, char **argv)
 
     // Grab initial size and background
     Tk_GeometryRequest(mainWindow,200,200);
- */
+*/
     return interp;
 }
 
 // create custom commands (implemented in tkcmd.cc) in Tcl
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 {
-    for ( ; commands->namestr != NULL; commands++) {
+    for ( ; commands->namestr != nullptr; commands++) {
         Tcl_CreateCommand(interp, TCLCONST(commands->namestr),
                 (Tcl_CmdProc *)commands->func,
-                (ClientData)NULL,
-                (Tcl_CmdDeleteProc *)NULL);
+                (ClientData)nullptr,
+                (Tcl_CmdDeleteProc *)nullptr);
     }
     return TCL_OK;
 }
@@ -120,6 +120,6 @@ int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 //    return TCL_OK;
 // }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

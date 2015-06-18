@@ -14,14 +14,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CANVASINSPECTOR_H
-#define __OMNETPP_CANVASINSPECTOR_H
+#ifndef __OMNETPP_QTENV_CANVASINSPECTOR_H
+#define __OMNETPP_QTENV_CANVASINSPECTOR_H
 
 #include "omnetpp/ccanvas.h"
 #include "inspector.h"
 #include "canvasrenderer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cFigure;
 
@@ -31,7 +31,7 @@ class FigureRenderer;
 struct FigureRenderingHints;
 class CanvasRenderer;
 
-class TKENV_API CanvasInspector : public Inspector
+class QTENV_API CanvasInspector : public Inspector
 {
    protected:
       char canvas[128];
@@ -45,16 +45,16 @@ class TKENV_API CanvasInspector : public Inspector
    public:
       CanvasInspector(InspectorFactory *f);
       ~CanvasInspector();
-      virtual void doSetObject(cObject *obj);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
-      virtual void refresh();
-      virtual void redraw();
-      virtual void clearObjectChangeFlags();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void doSetObject(cObject *obj) override;
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(QWidget *parent) override;
+      virtual void refresh() override;
+      virtual void redraw() override;
+      virtual void clearObjectChangeFlags() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif

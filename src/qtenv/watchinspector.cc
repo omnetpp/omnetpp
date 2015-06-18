@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cstlwatch.h"
 #include "qtenv.h"
@@ -26,7 +26,7 @@
 #include "inspectorfactory.h"
 #include "watchinspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 void _dummy_for_watchinspector() {}
@@ -36,7 +36,7 @@ class WatchInspectorFactory : public InspectorFactory
   public:
     WatchInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj)
+    bool supportsObject(cObject *obj) override
     {
         // Return true if it's a watch for a simple type (int, double, string etc).
         // For structures, we prefer the normal GenericObjectInspector.
@@ -44,9 +44,9 @@ class WatchInspectorFactory : public InspectorFactory
         return dynamic_cast<cWatchBase *>(obj) && !dynamic_cast<cStdVectorWatcherBase *>(obj);
     }
 
-    int getInspectorType() { return INSP_OBJECT; }
-    double getQualityAsDefault(cObject *object) { return 2.0; }
-    Inspector *createInspector() { return new WatchInspector(this); }
+    int getInspectorType() override { return INSP_OBJECT; }
+    double getQualityAsDefault(cObject *object) override { return 2.0; }
+    Inspector *createInspector() override { return new WatchInspector(this); }
 };
 
 Register_InspectorFactory(WatchInspectorFactory);
@@ -59,7 +59,7 @@ void WatchInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
+    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 }
 
 void WatchInspector::useWindow(QWidget *parent)
@@ -83,10 +83,10 @@ void WatchInspector::commit()
     if (watch->supportsAssignment())
         watch->assign(s);
     else
-        CHK(Tcl_VarEval(interp, "messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", NULL));
+        CHK(Tcl_VarEval(interp, "messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", TCL_NULL));
     Inspector::commit();  // must be there after all changes
 }
 
-}  // namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 

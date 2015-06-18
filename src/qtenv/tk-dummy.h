@@ -15,10 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_TKDUMMY_H
-#define __OMNETPP_TKDUMMY_H
+#ifndef __OMNETPP_QTENV_TKDUMMY_H
+#define __OMNETPP_QTENV_TKDUMMY_H
 
-#include <cstdlib>  // NULL
+#include <cstdlib>  // nullptr
 
 struct Tcl_Interp {};
 typedef void *ClientData;
@@ -84,16 +84,16 @@ inline int Tcl_SetVar2(Tcl_Interp *,...) {return 0;}
 inline int Tcl_SetVar2Ex(Tcl_Interp *,...) {return 0;}
 
 
-inline Tcl_Obj *Tcl_NewListObj(int, ...) {return NULL;}
-inline Tcl_Obj *Tcl_NewIntObj(int) {return NULL;}
-inline Tcl_Obj *Tcl_NewLongObj(long) {return NULL;}
-inline Tcl_Obj *Tcl_NewDoubleObj(double) {return NULL;}
-inline Tcl_Obj *Tcl_NewStringObj(const char *, int) {return NULL;}
+inline Tcl_Obj *Tcl_NewListObj(int, ...) {return nullptr;}
+inline Tcl_Obj *Tcl_NewIntObj(int) {return nullptr;}
+inline Tcl_Obj *Tcl_NewLongObj(long) {return nullptr;}
+inline Tcl_Obj *Tcl_NewDoubleObj(double) {return nullptr;}
+inline Tcl_Obj *Tcl_NewStringObj(const char *, int) {return nullptr;}
 inline void Tcl_ListObjAppendElement(Tcl_Interp *, ...) {}
 inline void Tcl_SetObjResult(Tcl_Interp *, ...) {}
 
 
-inline Tcl_Interp *Tcl_CreateInterp() {return NULL;}
+inline Tcl_Interp *Tcl_CreateInterp() {return nullptr;}
 inline int Tcl_Init(Tcl_Interp *) {return 0;}
 inline int Tk_Init(Tcl_Interp *) {return 0;}
 inline int Tcl_StaticPackage(Tcl_Interp *,...) {return 0;}

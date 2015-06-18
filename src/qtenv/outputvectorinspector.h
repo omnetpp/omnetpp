@@ -14,13 +14,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_OUTPUTVECTORINSPECTOR_H
-#define __OMNETPP_OUTPUTVECTORINSPECTOR_H
+#ifndef __OMNETPP_QTENV_OUTPUTVECTORINSPECTOR_H
+#define __OMNETPP_QTENV_OUTPUTVECTORINSPECTOR_H
 
 #include "envir/envirbase.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 
@@ -45,7 +45,7 @@ class CircBuffer
       CBEntry& entry(int k) {return buf[k];}
 };
 
-class TKENV_API OutputVectorInspector : public Inspector
+class QTENV_API OutputVectorInspector : public Inspector
 {
    public:
       CircBuffer circbuf;
@@ -64,11 +64,11 @@ class TKENV_API OutputVectorInspector : public Inspector
    public:
       OutputVectorInspector(InspectorFactory *f);
       ~OutputVectorInspector();
-      virtual void doSetObject(cObject *obj);
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
-      virtual void refresh();
-      virtual int inspectorCommand(int argc, const char **argv);
+      virtual void doSetObject(cObject *obj) override;
+      virtual void createWindow(const char *window, const char *geometry) override;
+      virtual void useWindow(QWidget *parent) override;
+      virtual void refresh() override;
+      virtual int inspectorCommand(int argc, const char **argv) override;
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );
@@ -79,8 +79,8 @@ class TKENV_API OutputVectorInspector : public Inspector
       void setConfig( bool autoscale, double timef, double miny, double maxy, const char *mode);
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 
 #endif

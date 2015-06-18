@@ -14,15 +14,19 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef IMAGECACHE_H
-#define IMAGECACHE_H
+#ifndef __OMNETPP_QTENV_IMAGECACHE_H
+#define __OMNETPP_QTENV_IMAGECACHE_H
 
 #include <string>
 #include <map>
+#include "qtenvdefs.h"
 
 class QImage;
 class QPixmap;
 class QString;
+
+namespace omnetpp {
+namespace qtenv {
 
 enum IconSize { EXTRA_SMALL, VERY_SMALL, SMALL, NORMAL, LARGE, VERY_LARGE, EXTRA_LARGE };
 
@@ -30,7 +34,7 @@ class ImageCache
 {
 private:
     std::map<QString, QImage*> imagesWithSize;
-    std::map<QString, std::map<IconSize, QImage*>> images;
+    std::map<QString, std::map<IconSize, QImage*> > images;
 
     void doLoadImages(const char *dir, const char *prefix = "");
 
@@ -41,5 +45,8 @@ public:
     QImage *getImage(const char *name, IconSize size);
     QImage *getImage(const char *nameWithSize);
 };
+
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif // IMAGECACHE_H

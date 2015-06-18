@@ -14,13 +14,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CIRCULARBUFFER_H
-#define __OMNETPP_CIRCULARBUFFER_H
+#ifndef __OMNETPP_QTENV_CIRCULARBUFFER_H
+#define __OMNETPP_QTENV_CIRCULARBUFFER_H
 
-#include "envir/envirdefs.h"
+#include "qtenvdefs.h"
 #include "omnetpp/simkerneldefs.h" // for ASSERT
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 /**
@@ -89,8 +89,8 @@ class circular_buffer
         }
 };
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 #endif
 

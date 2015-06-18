@@ -19,14 +19,21 @@
 
 #include <QAbstractItemModel>
 #include <QMenu>
+#include "qtenvdefs.h"
 
 class QMainWindow;
+
+namespace omnetpp {
 class cObject;
+} // namespace omnetpp
 
-typedef QPair<cObject*, int> ActionDataPair;
+typedef QPair<OPP::cObject*, int> ActionDataPair;
 
-Q_DECLARE_METATYPE(cObject*)
+Q_DECLARE_METATYPE(OPP::cObject*)
 Q_DECLARE_METATYPE(ActionDataPair)
+
+namespace omnetpp {
+namespace qtenv {
 
 class TreeItemModel : public QAbstractItemModel
 {
@@ -53,4 +60,7 @@ public:
     QVector<int> supportedInspTypes(cObject *object);
 };
 
-#endif // TREEITEMMODEL_H
+} // namespace qtenv
+} // namespace omnetpp
+
+#endif

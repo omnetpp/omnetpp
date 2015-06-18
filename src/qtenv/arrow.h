@@ -16,18 +16,18 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ARROW_H
-#define __OMNETPP_ARROW_H
+#ifndef __OMNETPP_QTENV_ARROW_H
+#define __OMNETPP_QTENV_ARROW_H
 
 #include "qtenvdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace qtenv {
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv);
 
-} //namespace
-NAMESPACE_END
+} // namespace qtenv
+} // namespace omnetpp
 
 
 #endif
