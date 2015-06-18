@@ -31,8 +31,6 @@ class cChannel;
 class cModule;
 class cSimpleModule;
 class cSimulation;
-class LogBuffer;
-
 
 /**
  * Predefined message kind values (values for cMessage's getKind(),
@@ -100,8 +98,6 @@ enum eMessageKind
  */
 class SIM_API cMessage : public cEvent
 {
-    friend class LogBuffer;  // for setMessageId()
-
   private:
     enum {
         FL_ISPRIVATECOPY = 4,
@@ -140,7 +136,7 @@ class SIM_API cMessage : public cEvent
 
   public:
     // internal: create an exact clone (including msgid) that doesn't show up in the statistics
-    cMessage* privateDup() const;
+    cMessage *privateDup() const;
 
     // internal: called by the simulation kernel as part of the send(),
     // scheduleAt() calls to set the values returned by the
