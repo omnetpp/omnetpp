@@ -32,5 +32,6 @@ void GraphicsPathArrowItem::paint(QPainter *painter, const QStyleOptionGraphicsI
 //    }
 
     QGraphicsPathItem::paint(painter, option, widget);
-    painter->drawEllipse(QPoint(10,10), 13, 200);
+    painter->drawEllipse(QPoint(10, 10), 13, 200);
 }
+

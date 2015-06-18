@@ -31,10 +31,8 @@ RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
     adjustSize();
 
     bool isBase = false;
-    for(auto name : groupAndSortConfigNames())
-    {
-        if (name == "")
-        {
+    for (auto name : groupAndSortConfigNames()) {
+        if (name == "") {
             isBase = true;
             continue;
         }
@@ -43,36 +41,35 @@ RunSelectionDialog::RunSelectionDialog(qtenv::Qtenv *env, QWidget *parent) :
         int runs = env->getConfigEx()->getNumRunsInConfig(name.c_str());
 
         std::string displayName = name;
-        if(isBase)
+        if (isBase)
             displayName = "(" + name + ")";
-        if(desc != "")
+        if (desc != "")
             displayName += " -- " + desc;
-        if(runs == 0)
+        if (runs == 0)
             displayName += " (invalid config, generates 0 runs)";
-        if(runs > 1)
+        if (runs > 1)
             displayName += " (config with " + std::to_string(runs) + " runs)";
 
         ui->configName->addItem(displayName.c_str(), QVariant(name.c_str()));
     }
 
-    //TODO if last choice looks valid, use that as default
+    // TODO if last choice looks valid, use that as default
     std::string configName = "";
     int runNumber = 0;
-    if(configName == "" && ui->configName->size().rheight() != 0)
-    {
+    if (configName == "" && ui->configName->size().rheight() != 0) {
         configName = ui->configName->itemText(0).toStdString();
         runNumber = 0;
     }
 
     int index = ui->configName->findText(configName.c_str());
     ui->configName->setCurrentIndex(index);
-    for(int i = 0; i <= runNumber; ++i)
+    for (int i = 0; i <= runNumber; ++i)
         ui->runNumber->addItem(QString::number(i), QVariant(i));
 }
 
 RunSelectionDialog::~RunSelectionDialog()
 {
-    //TODO save selection item to config file
+    // TODO save selection item to config file
     delete ui;
 }
 
@@ -80,18 +77,20 @@ std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
 {
     std::set<std::string> hasderivedconfig;
 
-    for(auto c : env->getConfigEx()->getConfigNames())
-        for(auto base : env->getConfigEx()->getBaseConfigs(c.c_str()))
+    for (auto c : env->getConfigEx()->getConfigNames())
+        for (auto base : env->getConfigEx()->getBaseConfigs(c.c_str()))
             hasderivedconfig.insert(base);
 
+
     std::vector<std::string> leaves;
-    for(auto c : env->getConfigEx()->getConfigNames())
-        if(hasderivedconfig.end() == hasderivedconfig.find(c))
+    for (auto c : env->getConfigEx()->getConfigNames())
+        if (hasderivedconfig.end() == hasderivedconfig.find(c))
             leaves.push_back(c);
+
 
     leaves.push_back("");
     leaves.insert(leaves.end(), hasderivedconfig.begin(),
-                hasderivedconfig.end());
+            hasderivedconfig.end());
 
     return std::move(leaves);
 }
@@ -107,3 +106,4 @@ int RunSelectionDialog::getRunNumber()
     int index = ui->runNumber->currentIndex();
     return ui->runNumber->itemData(index).toInt();
 }
+

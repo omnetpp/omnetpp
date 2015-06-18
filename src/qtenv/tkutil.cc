@@ -48,8 +48,7 @@
 NAMESPACE_BEGIN
 namespace qtenv {
 
-#define INSPECTORLISTBOX_MAX_ITEMS   100000
-
+#define INSPECTORLISTBOX_MAX_ITEMS    100000
 
 TclQuotedString::TclQuotedString()
 {
@@ -64,7 +63,7 @@ TclQuotedString::TclQuotedString(const char *s)
     int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
-*/
+ */
 }
 
 TclQuotedString::TclQuotedString(const char *s, int n)
@@ -74,7 +73,7 @@ TclQuotedString::TclQuotedString(const char *s, int n)
     int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
-*/
+ */
 }
 
 void TclQuotedString::set(const char *s)
@@ -84,7 +83,7 @@ void TclQuotedString::set(const char *s)
     int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
-*/
+ */
 }
 
 void TclQuotedString::set(const char *s, int n)
@@ -94,7 +93,7 @@ void TclQuotedString::set(const char *s, int n)
     int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
-*/
+ */
 }
 
 TclQuotedString::~TclQuotedString()
@@ -102,10 +101,10 @@ TclQuotedString::~TclQuotedString()
 /*Qt!
     if (quotedstr!=buf)
         Tcl_Free(quotedstr);
-*/
+ */
 }
 
-//----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 void cFindByPathVisitor::visit(cObject *obj)
 {
@@ -117,16 +116,16 @@ void cFindByPathVisitor::visit(cObject *obj)
     // so if this obj is a module (or cMessageHeap) and its name does not match
     // the beginning of fullpath, we can prune the search here.
     if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
-            && !opp_stringbeginswith(fullPath, objPath.c_str()))
+        && !opp_stringbeginswith(fullPath, objPath.c_str()))
     {
         // skip (do not search) this subtree
         return;
     }
 
     // found it?
-    if (strcmp(fullPath, objPath.c_str())==0
-            && (!className || strcmp(className, getObjectShortTypeName(obj))==0)
-            && idMatches(obj))
+    if (strcmp(fullPath, objPath.c_str()) == 0
+        && (!className || strcmp(className, getObjectShortTypeName(obj)) == 0)
+        && idMatches(obj))
     {
         // found, collect it
         addPointer(obj);
@@ -147,10 +146,9 @@ bool cFindByPathVisitor::idMatches(cObject *obj)
     return true;
 }
 
-//=======================================================================
+// =======================================================================
 
-#define TRY2(CODE)  try { CODE; } catch (std::exception& e) {printf("<!> Warning: %s\n", e.what());}
-
+#define TRY2(CODE)    try { CODE; } catch (std::exception& e) { printf("<!> Warning: %s\n", e.what()); }
 const char *stripNamespace(const char *className)
 {
     switch (getTkenv()->opt->stripNamespace) {
@@ -160,11 +158,13 @@ const char *stripNamespace(const char *className)
                 className = lastColon+1;
             break;
         }
+
         case STRIPNAMESPACE_OMNETPP: {
-            if (className[0]=='o' && opp_stringbeginswith(className, "omnetpp::"))
+            if (className[0] == 'o' && opp_stringbeginswith(className, "omnetpp::"))
                 className += sizeof("omnetpp::")-1;
             break;
         }
+
         case STRIPNAMESPACE_NONE:
             break;
     }
@@ -173,37 +173,37 @@ const char *stripNamespace(const char *className)
 
 const char *getObjectShortTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent*>(object))
-        TRY2( return ((cComponent*)object)->getComponentType()->getName() );
+    if (dynamic_cast<cComponent *>(object))
+        TRY2(return ((cComponent *)object)->getComponentType()->getName());
     return stripNamespace(object->getClassName());
 }
 
 const char *getObjectFullTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent*>(object))
-        TRY2( return ((cComponent*)object)->getComponentType()->getFullName() );
+    if (dynamic_cast<cComponent *>(object))
+        TRY2(return ((cComponent *)object)->getComponentType()->getFullName());
     return object->getClassName();
 }
 
 char *voidPtrToStr(void *ptr, char *buffer)
 {
     static char staticbuf[20];
-    if (buffer==NULL)
-           buffer = staticbuf;
+    if (buffer == NULL)
+        buffer = staticbuf;
 
-    if (ptr==0)
-           strcpy(buffer,"ptr0");  // GNU C++'s sprintf() says "nil"
+    if (ptr == 0)
+        strcpy(buffer, "ptr0");  // GNU C++'s sprintf() says "nil"
     else
-           sprintf(buffer,"ptr%p", ptr );
+        sprintf(buffer, "ptr%p", ptr);
     return buffer;
 }
 
 void *strToVoidPtr(const char *s)
 {
     // accept "" and malformed strings too, and return them as NULL
-    if (s[0]=='p' && s[1]=='t' && s[2]=='r')
+    if (s[0] == 'p' && s[1] == 't' && s[2] == 'r')
         s += 3;
-    else if (s[0]=='0' && s[1]=='x')
+    else if (s[0] == '0' && s[1] == 'x')
         s += 2;
     else
         return NULL;
@@ -213,27 +213,24 @@ void *strToVoidPtr(const char *s)
     return ptr;
 }
 
-
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 {
-   int n = visitor->getArraySize();
-   cObject **objs = visitor->getArray();
-   const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
-   char *buf = Tcl_Alloc(ptrsize*n+1);
-   char *s=buf;
-   for (int i=0; i<n; i++)
-   {
-       ptrToStr(objs[i],s);
-       assert(strlen(s)<=20);
-       s+=strlen(s);
-       *s++ = ' ';
-   }
-   *s='\0';
-   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+    int n = visitor->getArraySize();
+    cObject **objs = visitor->getArray();
+    const int ptrsize = 21;  // one ptr should be max 20 chars (good for even 64bit-ptrs)
+    char *buf = Tcl_Alloc(ptrsize*n+1);
+    char *s = buf;
+    for (int i = 0; i < n; i++) {
+        ptrToStr(objs[i], s);
+        assert(strlen(s) <= 20);
+        s += strlen(s);
+        *s++ = ' ';
+    }
+    *s = '\0';
+    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
 }
 
-
-//-----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
 {
@@ -288,8 +285,8 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 {
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, listbox, " insert {} end "
-                    "-image ", getObjectIcon(interp, obj).c_str(), " "
-                    "-text {", "  " /*padding*/, getObjectShortTypeName(obj), "} ",
+                                     "-image ", getObjectIcon(interp, obj).c_str(), " "
+                                                                                    "-text {", "  "  /*padding*/, getObjectShortTypeName(obj), "} ",
                     "-values {",
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
                     TclQuotedString(obj->info().c_str()).get(), " ", ptr,
@@ -302,8 +299,7 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
     int n = visitor->getArraySize();
     cObject **objs = visitor->getArray();
 
-    for (int i=0; i<n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         // insert into listbox
         insertIntoInspectorListbox(interp, listbox, objs[i], fullpath);
     }
@@ -312,16 +308,14 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
 {
     int n;
-    if (deep)
-    {
+    if (deep) {
         cCollectObjectsVisitor visitor;
         visitor.setSizeLimit(INSPECTORLISTBOX_MAX_ITEMS);
         visitor.process(object);
         n = visitor.getArraySize();
         feedCollectionIntoInspectorListbox(&visitor, interp, listbox, true);
     }
-    else
-    {
+    else {
         cCollectChildrenVisitor visitor(object);
         visitor.setSizeLimit(INSPECTORLISTBOX_MAX_ITEMS);
         visitor.process(object);
@@ -334,8 +328,7 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
 cModule *findCommonAncestor(cModule *src, cModule *dest)
 {
     cModule *candidate = src;
-    while (candidate)
-    {
+    while (candidate) {
         // try to find common ancestor among ancestors of dest
         cModule *m = dest;
         while (m && candidate != m)
@@ -347,13 +340,12 @@ cModule *findCommonAncestor(cModule *src, cModule *dest)
     return candidate;
 }
 
-void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& hops)
+void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule *>& hops)
 {
     // find common ancestor, and record modules from src up to it;
     // the ancestor module itself is NOT recorded
     cModule *ancestor = src;
-    while (ancestor)
-    {
+    while (ancestor) {
         // is 'ancestor' also an ancestor of dest? if so, break!
         cModule *m = dest;
         while (m && ancestor != m)
@@ -363,20 +355,18 @@ void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& h
         hops.push_back(ancestor);
         ancestor = ancestor->getParentModule();
     }
-    ASSERT(ancestor!=NULL);
+    ASSERT(ancestor != NULL);
 
     if (src == ancestor)
         hops.push_back(src);
 
     if (dest == ancestor)
         hops.push_back(dest);
-    else
-    {
+    else {
         // ascend from dest up to the common ancestor, and record modules in reverse order
         cModule *m = dest;
         int pos = hops.size();
-        while (m && ancestor != m)
-        {
+        while (m && ancestor != m) {
             hops.insert(hops.begin()+pos, m);
             m = m->getParentModule();
         }
@@ -386,10 +376,10 @@ void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& h
 
 bool isAPL()
 {
-    return OMNETPP_EDITION[0]=='A';
+    return OMNETPP_EDITION[0] == 'A';
 }
 
-//----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
 {
@@ -400,14 +390,12 @@ cPar *displayStringPar(const char *parname, cComponent *component, bool searchpa
         par = &(component->par(k));
 
     // look up in parent
-    if (!par && searchparent && component->getParentModule())
-    {
-        k = component->getParentModule()->findPar( parname );
+    if (!par && searchparent && component->getParentModule()) {
+        k = component->getParentModule()->findPar(parname);
         if (k >= 0)
             par = &(component->getParentModule()->par(k));
     }
-    if (!par)
-    {
+    if (!par) {
         // not found -- generate suitable error message
         const char *what = component->isModule() ? "module" : "channel";
         if (!searchparent)
@@ -421,8 +409,9 @@ cPar *displayStringPar(const char *parname, cComponent *component, bool searchpa
 bool displayStringContainsParamRefs(const char *dispstr)
 {
     for (const char *s = dispstr; *s; s++)
-        if (*s=='$' && (*(s+1)=='{' || opp_isalphaext(*(s+1))))
+        if (*s == '$' && (*(s+1) == '{' || opp_isalphaext(*(s+1))))
             return true;
+
     return false;
 }
 
@@ -431,7 +420,7 @@ cPar *resolveDisplayStringParamRef(const char *dispstr, cComponent *component, b
     if (dispstr[0] != '$')
         return NULL;
     if (dispstr[1] != '{')
-        return displayStringPar(dispstr+1, component, searchparent); // rest of string is assumed to be the param name
+        return displayStringPar(dispstr+1, component, searchparent);  // rest of string is assumed to be the param name
     else if (dispstr[strlen(dispstr)-1] != '}')
         return NULL;  // unterminated brace (or close brace not the last char)
     else
@@ -446,25 +435,21 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
 
     // recognize "$param" and "${param}" syntax inside the string
     buffer = "";
-    for (const char *s = src; *s; )
-    {
+    for (const char *s = src; *s; ) {
         if (*s != '$')
             buffer += *s++;
-        else
-        {
+        else {
             // extract parameter name
-            s++; // skip '$'
+            s++;  // skip '$'
             std::string name;
-            if (*s == '{')
-            {
-                s++; // skip '{'
+            if (*s == '{') {
+                s++;  // skip '{'
                 while (*s && *s != '}')
                     name += *s++;
                 if (*s)
-                    s++; // skip '}'
+                    s++;  // skip '}'
             }
-            else
-            {
+            else {
                 while (opp_isalnumext(*s) || *s == '_')
                     name += *s++;
             }
@@ -472,11 +457,24 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
             // append its value
             cPar *par = displayStringPar(name.c_str(), component, searchparent);
             switch (par->getType()) {
-              case cPar::BOOL: buffer += (par->boolValue() ? "1" : "0"); break;
-              case cPar::STRING: buffer += par->stdstringValue(); break;
-              case cPar::LONG: buffer += opp_stringf("%ld", par->longValue()); break;
-              case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
-              default: throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
+                case cPar::BOOL:
+                    buffer += (par->boolValue() ? "1" : "0");
+                    break;
+
+                case cPar::STRING:
+                    buffer += par->stdstringValue();
+                    break;
+
+                case cPar::LONG:
+                    buffer += opp_stringf("%ld", par->longValue());
+                    break;
+
+                case cPar::DOUBLE:
+                    buffer += opp_stringf("%g", par->doubleValue());
+                    break;
+
+                default:
+                    throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
             }
         }
     }
@@ -489,13 +487,13 @@ bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultV
     if (!arg || !*arg)
         return defaultValue;
     if (!displayStringContainsParamRefs(arg))
-        return strcmp("0", arg)!=0 && strcmp("false", arg)!=0;  // not 0 and not false
+        return strcmp("0", arg) != 0 && strcmp("false", arg) != 0;  // not 0 and not false
     cPar *par = resolveDisplayStringParamRef(arg, component, true);
-    if (par && par->getType()==cPar::BOOL)
+    if (par && par->getType() == cPar::BOOL)
         return par->boolValue();
     std::string buffer;
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
-    return strcmp("0", arg2)!=0 && strcmp("false", arg2)!=0;  // not 0 and not false
+    return strcmp("0", arg2) != 0 && strcmp("false", arg2) != 0;  // not 0 and not false
 }
 
 long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue)
@@ -503,13 +501,13 @@ long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultVa
     if (!arg || !*arg)
         return defaultValue;
     if (!displayStringContainsParamRefs(arg))
-        return (long) atol(arg);
+        return (long)atol(arg);
     cPar *par = resolveDisplayStringParamRef(arg, component, true);
     if (par && par->isNumeric())
         return par->longValue();
     std::string buffer;
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
-    return (long) atol(arg2);
+    return (long)atol(arg2);
 }
 
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue)
@@ -545,9 +543,9 @@ void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char
         os << "\n";
         getTkenv()->logTclError(__FILE__, __LINE__, os.str().c_str());
     }
-*/
+ */
 }
 
-
-} //namespace
+}  // namespace
 NAMESPACE_END
+

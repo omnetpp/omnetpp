@@ -45,7 +45,7 @@ void ComponentHistory::componentReparented(cComponent *component, cModule *oldPa
 
 int ComponentHistory::getParentModuleId(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId); //TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
     if (component) {
         cModule *parent = component->getParentModule();
         return parent ? parent->getId() : -1;
@@ -58,7 +58,7 @@ int ComponentHistory::getParentModuleId(int componentId) const
 
 const char *ComponentHistory::getComponentFullName(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId); //TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
     if (component) {
         return component->getFullName();
     }
@@ -70,7 +70,7 @@ const char *ComponentHistory::getComponentFullName(int componentId) const
 
 std::string ComponentHistory::getComponentFullPath(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId); //TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
     if (component) {
         return component->getFullPath();
     }
@@ -86,22 +86,22 @@ std::string ComponentHistory::getComponentRelativePath(int componentId, int root
     if (componentId == rootComponentId)
         return "<parent>";
 
-    cComponent *component = getSimulation()->getModule(componentId); //TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
     if (component) {
         cModule *parent = component->getParentModule();
-        return (parent == NULL || parent->getId()==rootComponentId) ? component->getFullName() :
-                getComponentRelativePath(parent->getId(), rootComponentId) + "." + component->getFullName();
+        return (parent == NULL || parent->getId() == rootComponentId) ? component->getFullName() :
+               getComponentRelativePath(parent->getId(), rootComponentId) + "." + component->getFullName();
     }
     else {
         const Data& data = lookup(componentId);
         return (data.parentModuleId == -1 || data.parentModuleId == rootComponentId) ? data.fullName.c_str() :
-                getComponentRelativePath(data.parentModuleId, rootComponentId) + "." + data.fullName.c_str();
+               getComponentRelativePath(data.parentModuleId, rootComponentId) + "." + data.fullName.c_str();
     }
 }
 
 cComponentType *ComponentHistory::getComponentType(int componentId) const
 {
-    cComponent *component = getSimulation()->getModule(componentId); //TODO change to getComponent in 5.0
+    cComponent *component = getSimulation()->getModule(componentId);  // TODO change to getComponent in 5.0
     if (component) {
         return component->getComponentType();
     }
@@ -116,6 +116,6 @@ std::string ComponentHistory::getComponentTypeName(int componentId) const
     return getComponentType(componentId)->getFullPath();
 }
 
-} //namespace
+}  // namespace
 NAMESPACE_END
 

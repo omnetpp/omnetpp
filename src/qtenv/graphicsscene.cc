@@ -31,24 +31,23 @@ ModuleInspectorScene::ModuleInspectorScene(qtenv::ModuleInspector *inspector, QO
 void ModuleInspectorScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     QGraphicsItem *item = itemAt(mouseEvent->scenePos().x(), mouseEvent->scenePos().y(), QTransform());
-    //TODO click to connection
-    if(item == nullptr)
-    {
+    // TODO click to connection
+    if (item == nullptr) {
         qDebug() << "mouseDoubleClickEvent: item is null";
         return;
     }
 
-    //Modules
+    // Modules
     QVariant variant = item->data(1);
     cObject *object = nullptr;
-    if(variant.isValid())
-         object = variant.value<cObject*>();
+    if (variant.isValid())
+        object = variant.value<cObject *>();
 
-    if(object == nullptr)
-        return; //TODO error
+    if (object == nullptr)
+        return;  // TODO error
 
-    if(insp->supportsObject(object))    //TODO && $config(reuse-inspectors)
+    if (insp->supportsObject(object))  // TODO && $config(reuse-inspectors)
         insp->setObject(object);
-    else
-    {}  //TODO opp_inspect $ptr
+    else {}  // TODO opp_inspect $ptr
 }
+

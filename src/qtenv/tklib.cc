@@ -33,7 +33,7 @@ NAMESPACE_BEGIN
 namespace qtenv {
 
 int exitOmnetpp;
-#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION < 6
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
 #endif
 
@@ -46,7 +46,7 @@ static int XErrorProc(ClientData, XErrorEvent *errEventPtr)
                     errEventPtr->error_code,
                     errEventPtr->request_code,
                     errEventPtr->minor_code );
-*/
+ */
     return 0;  // claim to have handled the error
 }
 
@@ -60,11 +60,11 @@ Tcl_Interp *initTk(int argc, char **argv)
     Tcl_FindExecutable(argv[0]);
 
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
-    //if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
-    //{
+    // if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
+    // {
     //    fprintf(stderr, "%s\n", Tcl_GetStringResult(interp));
     //    return TCL_ERROR;
-    //}
+    // }
 
     if (Tcl_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tcl_Init failed: %s\n", Tcl_GetStringResult(interp));
@@ -72,9 +72,9 @@ Tcl_Interp *initTk(int argc, char **argv)
     if (Tk_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
 
-//Qt!    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
+// Qt!    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
 
-#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <6
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION < 6
     if (Tkpng_Init(interp) != TCL_OK)
         throw opp_runtime_error("Tkenv: Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
 #endif
@@ -90,26 +90,25 @@ Tcl_Interp *initTk(int argc, char **argv)
 
     // Grab initial size and background
     Tk_GeometryRequest(mainWindow,200,200);
-*/
+ */
     return interp;
 }
 
 // create custom commands (implemented in tkcmd.cc) in Tcl
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 {
-    for (; commands->namestr!=NULL; commands++)
-    {
-        Tcl_CreateCommand( interp, TCLCONST(commands->namestr),
-                                   (Tcl_CmdProc *)commands->func,
-                                   (ClientData)NULL,
-                                   (Tcl_CmdDeleteProc *)NULL);
+    for ( ; commands->namestr != NULL; commands++) {
+        Tcl_CreateCommand(interp, TCLCONST(commands->namestr),
+                (Tcl_CmdProc *)commands->func,
+                (ClientData)NULL,
+                (Tcl_CmdDeleteProc *)NULL);
     }
     return TCL_OK;
 }
 
 // run the Tk application
-//int runTk(Tcl_Interp *)
-//{
+// int runTk(Tcl_Interp *)
+// {
 //    // Custom event loop
 //    //  the C++ variable exitOmnetpp is used for exiting
 //    while (!exitOmnetpp)
@@ -119,7 +118,8 @@ int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 //    }
 
 //    return TCL_OK;
-//}
+// }
 
-} //namespace
+}  // namespace
 NAMESPACE_END
+

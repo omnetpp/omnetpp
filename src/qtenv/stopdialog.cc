@@ -42,7 +42,7 @@ void StopDialog::onClickStop()
 void StopDialog::stopDialogAutoupdate()
 {
     ui->updateButton->setDisabled(ui->checkBox->isChecked());
-    if(ui->checkBox->isChecked())
+    if (ui->checkBox->isChecked())
         qtenv::getTkenv()->opt->autoupdateInExpress = true;
     else
         qtenv::getTkenv()->opt->autoupdateInExpress = false;
@@ -55,14 +55,15 @@ void StopDialog::onClickUpdate()
 
 void StopDialog::keyPressEvent(QKeyEvent *e)
 {
-    switch (e->key())
-    {
+    switch (e->key()) {
         case Qt::Key_Enter:
         case Qt::Key_Escape:
         case Qt::Key_F8:
             qtenv::getTkenv()->setStopSimulationFlag();
             break;
-    default:
-        break;
+
+        default:
+            break;
     }
 }
+

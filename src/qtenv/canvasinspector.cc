@@ -34,20 +34,18 @@
 NAMESPACE_BEGIN
 namespace qtenv {
 
-
 class CanvasInspectorFactory : public InspectorFactory
 {
   public:
     CanvasInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cCanvas *>(obj)!=NULL;}
-    int getInspectorType() {return INSP_GRAPHICAL;}
-    double getQualityAsDefault(cObject *object) {return 3.0;}
-    Inspector *createInspector() {return new CanvasInspector(this);}
+    bool supportsObject(cObject *obj) { return dynamic_cast<cCanvas *>(obj) != NULL; }
+    int getInspectorType() { return INSP_GRAPHICAL; }
+    double getQualityAsDefault(cObject *object) { return 3.0; }
+    Inspector *createInspector() { return new CanvasInspector(this); }
 };
 
 Register_InspectorFactory(CanvasInspectorFactory);
-
 
 CanvasInspector::CanvasInspector(InspectorFactory *f) : Inspector(f)
 {
@@ -69,12 +67,11 @@ void CanvasInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
+    CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
 
-    if (object)
-    {
+    if (object) {
         FigureRenderingHints hint;
-        canvasRenderer->redraw(&hint);  //TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, NULL ));
+        canvasRenderer->redraw(&hint);  // TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, NULL ));
     }
 }
 
@@ -82,9 +79,9 @@ void CanvasInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
 
-    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL ));
+    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
 
-    canvasRenderer->setQtCanvas(static_cast<CanvasInspectorForm*>(this->window)->getScene(), getCanvas());
+    canvasRenderer->setQtCanvas(static_cast<CanvasInspectorForm *>(this->window)->getScene(), getCanvas());
     this->window->show();
 }
 
@@ -92,17 +89,16 @@ void CanvasInspector::useWindow(QWidget *parent)
 {
     Inspector::useWindow(window);
 
-    //TODO create window
-    canvasRenderer->setQtCanvas(static_cast<QGraphicsView*>(this->window)->scene(), getCanvas());
+    // TODO create window
+    canvasRenderer->setQtCanvas(static_cast<QGraphicsView *>(this->window)->scene(), getCanvas());
 }
 
 void CanvasInspector::refresh()
 {
     Inspector::refresh();
 
-    if (!object)
-    {
-        CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+    if (!object) {
+        CHK(Tcl_VarEval(interp, canvas, " delete all", NULL));
         return;
     }
 
@@ -158,7 +154,7 @@ void CanvasInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
 
     Tcl_Eval(interp, "font actual CanvasFont -size");
     s = Tcl_GetStringResult(interp);
-    hints->defaultFontSize = opp_atol(s) * 16 / 10;  //FIXME figure out conversion factor (point to pixel?)...
+    hints->defaultFontSize = opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
 }
 
 void CanvasInspector::updateBackgroundColor()
@@ -174,32 +170,41 @@ void CanvasInspector::updateBackgroundColor()
 
 int CanvasInspector::inspectorCommand(int argc, const char **argv)
 {
-    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    if (argc < 1) {
+        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        return TCL_ERROR;
+    }
 
     E_TRY
-    if (strcmp(argv[0],"redraw")==0) {
+    if (strcmp(argv[0], "redraw") == 0) {
         redraw();
         return TCL_OK;
     }
-    if (strcmp(argv[0],"getalltags")==0) {
+    if (strcmp(argv[0], "getalltags") == 0) {
         Tcl_SetResult(interp, TCLCONST(canvasRenderer->getAllTags().c_str()), TCL_VOLATILE);
         return TCL_OK;
     }
-    if (strcmp(argv[0],"getenabledtags")==0) {
+    if (strcmp(argv[0], "getenabledtags") == 0) {
         Tcl_SetResult(interp, TCLCONST(canvasRenderer->getEnabledTags().c_str()), TCL_VOLATILE);
         return TCL_OK;
     }
-    if (strcmp(argv[0],"getexcepttags")==0) {
+    if (strcmp(argv[0], "getexcepttags") == 0) {
         Tcl_SetResult(interp, TCLCONST(canvasRenderer->getExceptTags().c_str()), TCL_VOLATILE);
         return TCL_OK;
     }
-    if (strcmp(argv[0],"setenabledtags")==0) {
-        if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    if (strcmp(argv[0], "setenabledtags") == 0) {
+        if (argc != 2) {
+            Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+            return TCL_ERROR;
+        }
         canvasRenderer->setEnabledTags(argv[1]);
         return TCL_OK;
     }
-    if (strcmp(argv[0],"setexcepttags")==0) {
-        if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    if (strcmp(argv[0], "setexcepttags") == 0) {
+        if (argc != 2) {
+            Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+            return TCL_ERROR;
+        }
         canvasRenderer->setExceptTags(argv[1]);
         return TCL_OK;
     }
@@ -208,6 +213,6 @@ int CanvasInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
-} //namespace
+}  // namespace
 NAMESPACE_END
 

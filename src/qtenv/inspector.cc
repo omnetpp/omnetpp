@@ -32,7 +32,6 @@
 NAMESPACE_BEGIN
 namespace qtenv {
 
-
 const char *insptypeNameFromCode(int code)
 {
 #define CASE(x)  case x: return #x;
@@ -61,30 +60,28 @@ int insptypeCodeFromName(const char *name)
 
 Inspector::Inspector(InspectorFactory *f)
 {
-   factory = f;
-   interp = getTkenv()->getInterp();
-   window = getTkenv()->getWindow();
-   object = NULL;
-   type = f->getInspectorType();
-   isToplevelWindow = false;
-   closeRequested = false;
+    factory = f;
+    interp = getTkenv()->getInterp();
+    window = getTkenv()->getWindow();
+    object = NULL;
+    type = f->getInspectorType();
+    isToplevelWindow = false;
+    closeRequested = false;
 
-   windowName[0] = '\0'; // no window exists
+    windowName[0] = '\0';  // no window exists
 }
 
 Inspector::~Inspector()
 {
-   if (isToplevelWindow && windowName[0])
-   {
-      CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL ));
-   }
+    if (isToplevelWindow && windowName[0]) {
+        CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, NULL));
+    }
 }
 
 const char *Inspector::getClassName() const
 {
     return opp_typename(typeid(*this));
 }
-
 
 bool Inspector::supportsObject(cObject *object) const
 {
@@ -93,8 +90,8 @@ bool Inspector::supportsObject(cObject *object) const
 
 std::string Inspector::makeWindowName()
 {
-   static int counter = 0;
-   return opp_stringf(".inspector%d", counter++);
+    static int counter = 0;
+    return opp_stringf(".inspector%d", counter++);
 }
 
 void Inspector::createWindow(const char *window, const char *geometry)
@@ -111,10 +108,9 @@ void Inspector::useWindow(QWidget *parent)
 
 void Inspector::doSetObject(cObject *obj)
 {
-    //TODO ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
+    // TODO ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
 
-    if (obj != object)
-    {
+    if (obj != object) {
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
@@ -126,7 +122,7 @@ void Inspector::doSetObject(cObject *obj)
 void Inspector::showWindow()
 {
     if (isToplevelWindow)
-        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL ));
+        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, NULL));
 }
 
 void Inspector::refresh()
@@ -142,23 +138,20 @@ void Inspector::refreshTitle()
     // unnecessary redraws under some window managers
     char newTitle[256];
     const char *prefix = getTkenv()->getWindowTitlePrefix();
-    if (!object)
-    {
+    if (!object) {
         sprintf(newTitle, "%s N/A", prefix);
     }
-    else
-    {
+    else {
         std::string fullPath = object->getFullPath();
-        if (fullPath.length()<=60)
+        if (fullPath.length() <= 60)
             sprintf(newTitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullPath.c_str());
         else
             sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
     }
 
-    if (windowTitle != newTitle)
-    {
+    if (windowTitle != newTitle) {
         windowTitle = newTitle;
-        CHK(Tcl_VarEval(interp, "wm title ",windowName," {",windowTitle.c_str(),"}",NULL));
+        CHK(Tcl_VarEval(interp, "wm title ", windowName, " {", windowTitle.c_str(), "}", NULL));
     }
 }
 
@@ -180,7 +173,7 @@ void Inspector::setObject(cObject *obj)
     }
 }
 
-template <typename T>
+template<typename T>
 void removeFromVector(std::vector<T>& vec, T value)
 {
     vec.erase(std::remove(vec.begin(), vec.end(), value), vec.end());
@@ -226,15 +219,18 @@ void Inspector::goBack()
 
 int Inspector::inspectorCommand(int argc, const char **argv)
 {
-    if (argc != 1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+    if (argc != 1) {
+        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        return TCL_ERROR;
+    }
 
-    if (strcmp(argv[0], "cangoback")==0)
-       Tcl_SetResult(interp, TCLCONST(canGoBack() ? "1" : "0"), TCL_STATIC);
-    else if (strcmp(argv[0], "cangoforward")==0)
-       Tcl_SetResult(interp, TCLCONST(canGoForward() ? "1" : "0"), TCL_STATIC);
-    else if (strcmp(argv[0], "goback")==0)
+    if (strcmp(argv[0], "cangoback") == 0)
+        Tcl_SetResult(interp, TCLCONST(canGoBack() ? "1" : "0"), TCL_STATIC);
+    else if (strcmp(argv[0], "cangoforward") == 0)
+        Tcl_SetResult(interp, TCLCONST(canGoForward() ? "1" : "0"), TCL_STATIC);
+    else if (strcmp(argv[0], "goback") == 0)
         goBack();
-    else if (strcmp(argv[0], "goforward")==0)
+    else if (strcmp(argv[0], "goforward") == 0)
         goForward();
     else {
         Tcl_SetResult(interp, TCLCONST("unknown inspector command"), TCL_STATIC);
@@ -245,23 +241,25 @@ int Inspector::inspectorCommand(int argc, const char **argv)
 
 void Inspector::setEntry(const char *entry, const char *val)
 {
-    if (!val) val="";
-    CHK(Tcl_VarEval(interp, windowName,entry," delete 0 end;",
-            windowName,entry," insert 0 {",val,"}",NULL));
+    if (!val)
+        val = "";
+    CHK(Tcl_VarEval(interp, windowName, entry, " delete 0 end;",
+                    windowName, entry, " insert 0 {", val, "}", NULL));
 }
 
-void Inspector::setLabel( const char *label, const char *val )
+void Inspector::setLabel(const char *label, const char *val)
 {
-   if (!val) val="";
-   CHK(Tcl_VarEval(interp, windowName,label," config -text {",val,"}",NULL));
+    if (!val)
+        val = "";
+    CHK(Tcl_VarEval(interp, windowName, label, " config -text {", val, "}", NULL));
 }
 
-const char *Inspector::getEntry( const char *entry )
+const char *Inspector::getEntry(const char *entry)
 {
-   CHK(Tcl_VarEval(interp, windowName,entry," get",NULL));
-   return Tcl_GetStringResult(interp);
+    CHK(Tcl_VarEval(interp, windowName, entry, " get", NULL));
+    return Tcl_GetStringResult(interp);
 }
 
-} //namespace
+}  // namespace
 NAMESPACE_END
 

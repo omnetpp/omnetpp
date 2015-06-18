@@ -27,26 +27,23 @@
 #include "inspectorfactory.h"
 #include "genericobjectinspector.h"
 
-
 NAMESPACE_BEGIN
 namespace qtenv {
 
 void _dummy_for_genericobjectinspector() {}
-
 
 class GenericObjectInspectorFactory : public InspectorFactory
 {
   public:
     GenericObjectInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return true;}
-    int getInspectorType() {return INSP_OBJECT;}
-    double getQualityAsDefault(cObject *object) {return 1.0;}
-    Inspector *createInspector() {return new GenericObjectInspector(this);}
+    bool supportsObject(cObject *obj) { return true; }
+    int getInspectorType() { return INSP_OBJECT; }
+    double getQualityAsDefault(cObject *object) { return 1.0; }
+    Inspector *createInspector() { return new GenericObjectInspector(this); }
 };
 
 Register_InspectorFactory(GenericObjectInspectorFactory);
-
 
 GenericObjectInspector::GenericObjectInspector(InspectorFactory *f) : Inspector(f)
 {
@@ -65,33 +62,33 @@ void GenericObjectInspector::doSetObject(cObject *obj)
 
 void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
-   Inspector::createWindow(window, geometry);
+    Inspector::createWindow(window, geometry);
 
-   CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
+    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), NULL));
 }
 
 void GenericObjectInspector::useWindow(QWidget *parent)
 {
-   Inspector::useWindow(window);
+    Inspector::useWindow(window);
 }
 
 void GenericObjectInspector::refresh()
 {
-   Inspector::refresh();
+    Inspector::refresh();
 
-   CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, NULL));
+    CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, NULL));
 }
 
 void GenericObjectInspector::commit()
 {
-   Inspector::commit();
+    Inspector::commit();
 }
 
 int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
 {
-   return Inspector::inspectorCommand(argc, argv);
+    return Inspector::inspectorCommand(argc, argv);
 }
 
-} //namespace
+}  // namespace
 NAMESPACE_END
 

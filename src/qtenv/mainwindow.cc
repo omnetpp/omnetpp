@@ -47,13 +47,13 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     stopDialog = new StopDialog();
 
-    //TODO
-    //if($config(display-statusdetails)
-    //{
+    // TODO
+    // if($config(display-statusdetails)
+    // {
 //        ui->labelDisplay1->hide();
 //        ui->labelDisplay2->hide();
 //        ui->labelDisplay3->hide();
-    //}
+    // }
 }
 
 MainWindow::~MainWindow()
@@ -62,7 +62,8 @@ MainWindow::~MainWindow()
     delete stopDialog;
 }
 
-void MainWindow::displayText(const char *t) {
+void MainWindow::displayText(const char *t)
+{
     ui->textBrowser->append(QString(t));
 }
 
@@ -83,50 +84,56 @@ void MainWindow::setGuiForRunmode(Mode mode, Inspector *insp, bool untilMode)
     ui->actionRun->setChecked(false);
     ui->actionFastRun->setChecked(false);
     ui->actionExpressRun->setChecked(false);
-    //TODO
-    //catch {toolbutton:setsunken $opp(sunken-run-button) 0}
+    // TODO
+    // catch {toolbutton:setsunken $opp(sunken-run-button) 0}
 
-    if(insp == nullptr)
-        switch(mode)
-        {
+    if (insp == nullptr)
+        switch (mode) {
             case STEP:
                 ui->actionOneStep->setChecked(true);
                 break;
+
             case NORMAL:
                 ui->actionRun->setChecked(true);
                 break;
+
             case FAST:
                 ui->actionFastRun->setChecked(true);
                 break;
+
             case EXPRESS:
                 ui->actionExpressRun->setChecked(true);
-                //TODO disabled mainwindow
+                // TODO disabled mainwindow
                 stopDialog->show();
                 break;
+
             case NOT_RUNNING:
                 ui->actionRunUntil->setChecked(false);
                 break;
         }
     else
-        switch(mode)
-        {
+        switch (mode) {
             case NORMAL:
-                //TODO
-                //toolbutton:setsunken $insp.toolbar.mrun 1
-                //set opp(sunken-run-button) $insp.toolbar.mrun
+                // TODO
+                // toolbutton:setsunken $insp.toolbar.mrun 1
+                // set opp(sunken-run-button) $insp.toolbar.mrun
                 break;
+
             case FAST:
-                //TODO
-                //toolbutton:setsunken $insp.toolbar.mfast 1
-                //set opp(sunken-run-button) $insp.toolbar.mfast
+                // TODO
+                // toolbutton:setsunken $insp.toolbar.mfast 1
+                // set opp(sunken-run-button) $insp.toolbar.mfast
                 break;
+
             case EXPRESS:
-                //TODO disabled mainwindow
+                // TODO disabled mainwindow
                 stopDialog->show();
                 break;
+
             case NOT_RUNNING:
-                //TODO toolbutton:setsunken .toolbar.until 0
+                // TODO toolbutton:setsunken .toolbar.until 0
                 break;
+
             case STEP:
                 break;
         }
@@ -136,34 +143,30 @@ void MainWindow::setGuiForRunmode(Mode mode, Inspector *insp, bool untilMode)
 
 bool MainWindow::checkRunning()
 {
-    if(env->getSimulationState() == Qtenv::SIM_RUNNING)
-    {
+    if (env->getSimulationState() == Qtenv::SIM_RUNNING) {
         QMessageBox::warning(this, tr("Warning"), tr("Sorry, you cannot do this while the simulation is running. Please stop it first."),
-                             QMessageBox::Ok);
+                QMessageBox::Ok);
         return true;
     }
-    if(env->getSimulationState() == Qtenv::SIM_BUSY)
-    {
+    if (env->getSimulationState() == Qtenv::SIM_BUSY) {
         QMessageBox::warning(this, tr("Warning"), tr("The simulation is waiting for external synchronization -- press STOP to interrupt it."),
-                             QMessageBox::Ok);
+                QMessageBox::Ok);
         return true;
     }
     return false;
 }
 
-//oneStep
+// oneStep
 void MainWindow::on_actionOneStep_triggered()
 {
     // implements Simulate|One step
 
-    if(isRunning())
-    {
+    if (isRunning()) {
         setGuiForRunmode(STEP);
         env->setStopSimulationFlag();
     }
-    else
-    {
-        if(!networkReady())
+    else {
+        if (!networkReady())
             return;
         setGuiForRunmode(STEP);
         env->doOneStep();
@@ -171,39 +174,34 @@ void MainWindow::on_actionOneStep_triggered()
     }
 }
 
-//exitOmnetpp
+// exitOmnetpp
 bool MainWindow::on_actionQuit_triggered()
 {
-    //TODO
+    // TODO
 //    global config
 //    if {$config(confirm-exit)} {
-        if(getSimulation()->getSystemModule() != nullptr)
-        {
-            if(isRunning())
-            {
-                int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
-                                               QMessageBox::Yes | QMessageBox::No);
-                if(ans == QMessageBox::No)
-                    return false;
-
-            }
-            else if(env->getSimulationState() == Qtenv::SIM_READY)
-            {
-                int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
-                                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-                if(ans == QMessageBox::Yes)
-                    env->finishSimulation();
-                else if(ans == QMessageBox::Cancel)
-                    return false;
-            }
-            else
-            {
-                //#set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
-            }
+    if (getSimulation()->getSystemModule() != nullptr) {
+        if (isRunning()) {
+            int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
+                        QMessageBox::Yes | QMessageBox::No);
+            if (ans == QMessageBox::No)
+                return false;
         }
+        else if (env->getSimulationState() == Qtenv::SIM_READY) {
+            int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
+                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+            if (ans == QMessageBox::Yes)
+                env->finishSimulation();
+            else if (ans == QMessageBox::Cancel)
+                return false;
+        }
+        else {
+            // #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
+        }
+    }
 //    }
 
-    if(isRunning())
+    if (isRunning())
         env->setStopSimulationFlag();
 
 //    # save settings (fonts etc) globally, and inspector list locally
@@ -216,7 +214,7 @@ bool MainWindow::on_actionQuit_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(!on_actionQuit_triggered())
+    if (!on_actionQuit_triggered())
         event->ignore();
 }
 
@@ -224,15 +222,13 @@ void MainWindow::runSimulation(Mode mode)
 {
     Qtenv::eRunMode runMode = (Qtenv::eRunMode)modeToRunMode(mode);
 
-    if(isRunning())
-    {
+    if (isRunning()) {
         setGuiForRunmode(mode);
         env->setSimulationRunMode(runMode);
         setRunUntilModule();
     }
-    else
-    {
-        if(!networkReady())
+    else {
+        if (!networkReady())
             return;
         setGuiForRunmode(mode);
         env->runSimulation(mode);
@@ -240,35 +236,33 @@ void MainWindow::runSimulation(Mode mode)
     }
 }
 
-//runNormal
+// runNormal
 void MainWindow::on_actionRun_triggered()
 {
     // implements Simulate|Run
     runSimulation(NORMAL);
 }
 
-//newRun
+// newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
     // implements File|Set Up a Configuration...
-    if(checkRunning())
+    if (checkRunning())
         return;
 
     RunSelectionDialog *dialog = new RunSelectionDialog(env, this);
-    if(dialog->exec())
-    {
-        //TODO debug "selected $configname $runnumber"
+    if (dialog->exec()) {
+        // TODO debug "selected $configname $runnumber"
         busy("Setting up network...");
-        //TODO inspectorList:addAll 1
+        // TODO inspectorList:addAll 1
         env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
-        //TODO reflectRecordEventlog
+        // TODO reflectRecordEventlog
         busy();
 
-        if(getSimulation()->getSystemModule() != nullptr)
-        {
+        if (getSimulation()->getSystemModule() != nullptr) {
             // tell plugins about it
             busy("Notifying Tcl plugins...");
-            //TODO notifyPlugins newNetwork
+            // TODO notifyPlugins newNetwork
             busy();
         }
     }
@@ -276,12 +270,11 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     delete dialog;
 }
 
-//stopSimulation
+// stopSimulation
 void MainWindow::on_actionStop_triggered()
 {
     // implements Simulate|Stop
-    if(env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY)
-    {
+    if (env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY) {
         // "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
         // from the "opp_run" command.
         // "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
@@ -289,31 +282,31 @@ void MainWindow::on_actionStop_triggered()
     }
 
     // this proc doubles as "stop layouting", when in graphical module inspectors
-    //TODO
-    //global stoplayouting
-    //set stoplayouting 1
+    // TODO
+    // global stoplayouting
+    // set stoplayouting 1
 }
 
-//runFast
+// runFast
 void MainWindow::on_actionFastRun_triggered()
 {
     // implements Simulate|Fast Run
     runSimulation(FAST);
 }
 
-//runExpress
+// runExpress
 void MainWindow::on_actionExpressRun_triggered()
 {
     // implements Simulate|Express Run
     runSimulation(EXPRESS);
 }
 
-//runUntil
+// runUntil
 void MainWindow::on_actionRunUntil_triggered()
 {
     // implements Simulate|Run until...
-//TODO
-    if(!networkReady())
+// TODO
+    if (!networkReady())
         return;
 
 //    set time ""
@@ -360,14 +353,14 @@ void MainWindow::on_actionRunUntil_triggered()
 void MainWindow::inspectObject(QModelIndex index)
 {
     qDebug() << "Inspecting object.";
-    if(!index.isValid())
+    if (!index.isValid())
         return;
 
-    cObject *parent = static_cast<cObject*>(index.internalPointer());
+    cObject *parent = static_cast<cObject *>(index.internalPointer());
     cCollectChildrenVisitor visitor(parent);
     visitor.process(parent);
     cObject **objs = visitor.getArray();
-    if(visitor.getArraySize() > index.row())
+    if (visitor.getArraySize() > index.row())
         inspectObject(objs[index.row()]);
 }
 
@@ -383,11 +376,10 @@ void MainWindow::updateStatusDisplay()
 {
     updateSimtimeDisplay();
 
-    if(true)    //TODO $config(display-statusdetails)
-    {
+    if (true) {  // TODO $config(display-statusdetails)
         int runMode = env->getSimulationRunMode();
-        if(env->getSimulationState() == Qtenv::SIM_RUNNING &&
-                (runMode == Qtenv::RUNMODE_FAST || runMode == Qtenv::RUNMODE_EXPRESS))
+        if (env->getSimulationState() == Qtenv::SIM_RUNNING &&
+            (runMode == Qtenv::RUNMODE_FAST || runMode == Qtenv::RUNMODE_EXPRESS))
             updatePerformanceDisplay();
         else
             updateNextModuleDisplay();
@@ -398,9 +390,9 @@ void MainWindow::updateSimtimeDisplay()
 {
     ui->labelEvent->setText("Event #" + QString::number(getSimulation()->getEventNumber()));
     ui->labelTime->setText("t=" + QString(getSimulation()->guessNextSimtime().str().c_str()) + "s");
-    ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->msgQueue.getLength()) +
-                                " scheduled / " + QString::number(cMessage::getLiveMessageCount()) +
-                                " existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");
+    ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->msgQueue.getLength())
+            +" scheduled / " + QString::number(cMessage::getLiveMessageCount())
+            +" existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");
 }
 
 void MainWindow::updatePerformanceDisplay()
@@ -416,30 +408,28 @@ void MainWindow::updateNextModuleDisplay()
     cEvent *msgptr = nullptr;
 
     int state = env->getSimulationState();
-    if(state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING)
-    {
+    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING) {
         modptr = getSimulation()->guessNextModule();
         msgptr = getSimulation()->guessNextEvent();
     }
 
-    if(msgptr)
-    {
+    if (msgptr) {
         int objId = getObjectId(msgptr);
-        ui->labelDisplay1->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName() +
-                                   ", id=" + (objId == -1 ? "" : QString::number(objId)) + ")");
-        ui->labelDisplay3->setText(QString("At: last event + ") +
-                                   (getSimulation()->guessNextEvent()->getArrivalTime() - getSimulation()->getSimTime()).str().c_str() +
-                                   "s");
+        ui->labelDisplay1->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName()
+                +", id=" + (objId == -1 ? "" : QString::number(objId)) + ")");
+        ui->labelDisplay3->setText(QString("At: last event + ")
+                +(getSimulation()->guessNextEvent()->getArrivalTime() - getSimulation()->getSimTime()).str().c_str()
+                +"s");
     }
     else {
         ui->labelDisplay1->setText("Next: n/a");
         ui->labelDisplay3->setText("At: n/a");
     }
 
-    if(modptr)
-        ui->labelDisplay2->setText(QString("In: ") + modptr->getFullPath().c_str() +
-                                   " (" + getObjectShortTypeName(modptr) + ", id=" +
-                                   getObjectShortTypeName(modptr) + ")");
+    if (modptr)
+        ui->labelDisplay2->setText(QString("In: ") + modptr->getFullPath().c_str()
+                +" (" + getObjectShortTypeName(modptr) + ", id="
+                +getObjectShortTypeName(modptr) + ")");
     else
         ui->labelDisplay2->setText("In: n/a");
 }
@@ -451,19 +441,16 @@ int MainWindow::getObjectId(cEvent *object)
     if (dynamic_cast<cMessage *>(object))
         return dynamic_cast<cMessage *>(object)->getId();
 
-     return -1;
+    return -1;
 }
 
 const char *MainWindow::getObjectShortTypeName(cObject *object)
 {
-    if (dynamic_cast<cComponent*>(object))
-    {
-        try
-        {
-            return static_cast<cComponent*>(object)->getComponentType()->getName();
+    if (dynamic_cast<cComponent *>(object)) {
+        try {
+            return static_cast<cComponent *>(object)->getComponentType()->getName();
         }
-        catch(std::exception& e)
-        {
+        catch (std::exception& e) {
             printf("<!> Warning: %s\n", e.what());
         }
     }
@@ -479,11 +466,13 @@ const char *MainWindow::stripNamespace(const char *className)
                 className = lastColon+1;
             break;
         }
+
         case STRIPNAMESPACE_OMNETPP: {
-            if (className[0]=='o' && opp_stringbeginswith(className, "omnetpp::"))
+            if (className[0] == 'o' && opp_stringbeginswith(className, "omnetpp::"))
                 className += sizeof("omnetpp::")-1;
             break;
         }
+
         case STRIPNAMESPACE_NONE:
             break;
     }
@@ -495,7 +484,7 @@ void MainWindow::updateNetworkRunDisplay()
     const char *configname = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
     const char *network = !getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName();
 
-    //TODO
+    // TODO
 //    if {$configname==""} {set configName "n/a"}
 //    if {$network==""} {set network "(no network)"}
     ui->labelConfigName->setText(QString(configname) + " #" + QString::number(env->getConfigEx()->getActiveRunNumber()) + ": " + network);
@@ -503,7 +492,7 @@ void MainWindow::updateNetworkRunDisplay()
 
 void MainWindow::redrawTimeline()
 {
-    //TODO
+    // TODO
 //    global tkenv config widgets
 
 //    # spare work if we're not displayed
@@ -639,92 +628,88 @@ void MainWindow::redrawTimeline()
 void MainWindow::onTreeViewContextMenu(QPoint point)
 {
     QModelIndex index = ui->treeView->indexAt(point);
-    if (index.isValid())
-    {
-        QMenu *menu = static_cast<TreeItemModel*>(ui->treeView->model())->getContextMenu(index, this);
+    if (index.isValid()) {
+        QMenu *menu = static_cast<TreeItemModel *>(ui->treeView->model())->getContextMenu(index, this);
         menu->exec(ui->treeView->mapToGlobal(point));
         delete menu;
     }
 }
 
-//Handle object tree's context menu QAction's triggerd event.
+// Handle object tree's context menu QAction's triggerd event.
 void MainWindow::onClickOpenInspector()
 {
-    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
-    if(variant.isValid())
-    {
-        QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
         inspectObject(objTypePair.first, objTypePair.second);
     }
 }
 
-//Handle object tree's context menu QAction's triggerd event.
+// Handle object tree's context menu QAction's triggerd event.
 void MainWindow::onClickRun()
 {
-    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
-    if(variant.isValid())
-    {
-        QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
         runSimulationLocal(nullptr, objTypePair.second, objTypePair.first);
     }
 }
 
-//Handle object tree's context menu QAction's triggerd event.
+// Handle object tree's context menu QAction's triggerd event.
 void MainWindow::onClickRunMessage()
 {
-    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
-    if(variant.isValid())
-    {
-        QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
-        runUntilMsg(static_cast<cMessage*>(objTypePair.first), objTypePair.second);
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
     }
 }
 
-//Handle object tree's context menu QAction's triggerd event.
+// Handle object tree's context menu QAction's triggerd event.
 void MainWindow::onClickExcludeMessage()
 {
-    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
-    if(variant.isValid())
-        excludeMessageFromAnimation(variant.value<cObject*>());
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid())
+        excludeMessageFromAnimation(variant.value<cObject *>());
 }
 
-//Handle object tree's context menu QAction's triggerd event.
+// Handle object tree's context menu QAction's triggerd event.
 void MainWindow::onClickUtilitiesSubMenu()
 {
-    QVariant variant = static_cast<QAction*>(QObject::sender())->data();
-    if(variant.isValid())
-    {
-        QPair<cObject*, int> objTypePair = variant.value<QPair<cObject*, int>>();
-        copyToClipboard(static_cast<cMessage*>(objTypePair.first), objTypePair.second);
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
     }
 }
 
 void MainWindow::copyToClipboard(cObject *object, int what)
 {
-    switch(what)
-    {
-        case COPY_PTR:
-        {
-            void *address = static_cast<void*>(object);
+    switch (what) {
+        case COPY_PTR: {
+            void *address = static_cast<void *>(object);
             std::stringstream ss;
             ss << address;
             setClipboard(QString(ss.str().c_str()));
             break;
         }
-        case COPY_PTRWITHCAST:
-        {
-            void *address = static_cast<void*>(object);
+
+        case COPY_PTRWITHCAST: {
+            void *address = static_cast<void *>(object);
             std::stringstream ss;
             ss << address;
             setClipboard(QString("((") + object->getClassName() + " *)" + ss.str().c_str() + ")");
             break;
         }
+
         case COPY_FULLPATH:
             setClipboard(object->getFullPath().c_str());
             break;
+
         case COPY_FULLNAME:
             setClipboard(object->getFullName());
             break;
+
         case COPY_CLASSNAME:
             setClipboard(object->getClassName());
             break;
@@ -742,17 +727,17 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
 {
     const char *cl = getObjectShortTypeName(msg);
 
-    //TODO must be reviewed
+    // TODO must be reviewed
     QString namePattern = msg->getFullName();
     namePattern.replace(QRegExp("[0-9]+"), "*");
-    namePattern.replace(QRegExp("(?!\\c)"), "?");   // sanitize: replace nonprintable chars with '?'
-    namePattern.replace(QRegExp("[\"\\]"), "?");    // sanitize: replace quotes (") and backslashes with '?'
-    if(namePattern.contains(' '))                   // must be quoted if contains spaces
+    namePattern.replace(QRegExp("(?!\\c)"), "?");  // sanitize: replace nonprintable chars with '?'
+    namePattern.replace(QRegExp("[\"\\]"), "?");  // sanitize: replace quotes (") and backslashes with '?'
+    if (namePattern.contains(' '))  // must be quoted if contains spaces
         namePattern = "\"" + namePattern + "\"";
 
     QString filters = env->getSilentEventFilters();
     filters.trimmed();
-    if(!filters.isEmpty())
+    if (!filters.isEmpty())
         filters += "\n";
     filters += namePattern +" and className(" + cl +")\n";
     env->setSilentEventFilters(filters.toStdString().c_str());
@@ -763,44 +748,39 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
 
 void MainWindow::runUntilMsg(cMessage *msg, int runMode)
 {
-    if(!networkReady())
+    if (!networkReady())
         return;
 
-    //mode must be "normal", "fast" or "express"
-    if(isRunning())
-    {
+    // mode must be "normal", "fast" or "express"
+    if (isRunning()) {
         setGuiForRunmode(runModeToMode(runMode), nullptr, true);
         env->setSimulationRunMode(runMode);
         env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
     }
-    else
-    {
+    else {
         setGuiForRunmode(runModeToMode(runMode), nullptr, true);
         env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
         setGuiForRunmode(NOT_RUNNING);
     }
 }
 
-//opp_set_run_until_module
+// opp_set_run_until_module
 void MainWindow::setRunUntilModule(Inspector *insp)
 {
-    if (insp == nullptr)
-    {
+    if (insp == nullptr) {
         env->setSimulationRunUntilModule(NULL);
         return;
     }
 
     cObject *object = insp->getObject();
-    if (!object)
-    {
-        //TODO log "inspector has no object"
+    if (!object) {
+        // TODO log "inspector has no object"
         return;
     }
 
     cModule *mod = dynamic_cast<cModule *>(object);
-    if (!mod)
-    {
-        //TODO log "object is not a module"
+    if (!mod) {
+        // TODO log "object is not a module"
         return;
     }
 
@@ -809,17 +789,15 @@ void MainWindow::setRunUntilModule(Inspector *insp)
 
 bool MainWindow::networkReady()
 {
-    if(!networkPresent())
+    if (!networkPresent())
         return false;
 
-    if(isSimulationOk())
+    if (isSimulationOk())
         return true;
-    else
-    {
+    else {
         int ans = QMessageBox::warning(this, tr("Warning"), tr("Cannot continue this simulation. Rebuild network?"),
-                                       QMessageBox::Yes | QMessageBox::No);
-        if(ans == QMessageBox::Yes)
-        {
+                    QMessageBox::Yes | QMessageBox::No);
+        if (ans == QMessageBox::Yes) {
             on_actionRebuildNetwork_triggered();
             return isSimulationOk();
         }
@@ -838,8 +816,7 @@ bool MainWindow::isSimulationOk()
 
 bool MainWindow::networkPresent()
 {
-    if(!getSimulation()->getSystemModule())
-    {
+    if (!getSimulation()->getSystemModule()) {
         QMessageBox::warning(this, tr("Error"), tr("No network has been set up yet."), QMessageBox::Ok);
         return false;
     }
@@ -849,25 +826,22 @@ bool MainWindow::networkPresent()
 void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *object)
 {
     Mode mode = runModeToMode(runMode);
-    if(isRunning())
-    {
+    if (isRunning()) {
         setGuiForRunmode(mode);
         env->setSimulationRunMode(runMode);
         setRunUntilModule(insp);
     }
-    else
-    {
-        if(!networkReady())
+    else {
+        if (!networkReady())
             return;
         setGuiForRunmode(mode, insp);
-        if(object == nullptr)
+        if (object == nullptr)
             object = insp->getObject();
 
         cModule *mod = dynamic_cast<cModule *>(object);
-        if (!mod)
-        {
-            //TODO log "object is not a module"
-            return ;
+        if (!mod) {
+            // TODO log "object is not a module"
+            return;
         }
         env->runSimulation(runMode, 0, 0, nullptr, mod);
         setGuiForRunmode(NOT_RUNNING);
@@ -876,15 +850,17 @@ void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *objec
 
 int MainWindow::modeToRunMode(Mode mode)
 {
-    switch(mode)
-    {
+    switch (mode) {
         case NOT_RUNNING:
         case STEP:
             return -1;
+
         case NORMAL:
             return Qtenv::RUNMODE_NORMAL;
+
         case FAST:
             return Qtenv::RUNMODE_FAST;
+
         case EXPRESS:
             return Qtenv::RUNMODE_EXPRESS;
     }
@@ -892,44 +868,43 @@ int MainWindow::modeToRunMode(Mode mode)
 
 MainWindow::Mode MainWindow::runModeToMode(int runMode)
 {
-    switch(runMode)
-    {
+    switch (runMode) {
         case Qtenv::RUNMODE_NORMAL:
             return NORMAL;
+
         case Qtenv::RUNMODE_FAST:
             return FAST;
+
         case Qtenv::RUNMODE_EXPRESS:
             return EXPRESS;
     }
 }
 
-//rebuild
+// rebuild
 void MainWindow::on_actionRebuildNetwork_triggered()
 {
-    //implements Simulate|Rebuild
+    // implements Simulate|Rebuild
 
-    if(checkRunning())
+    if (checkRunning())
         return;
 
-    if(!networkPresent())
+    if (!networkPresent())
         return;
 
     busy("Rebuilding network...");
-    //TODO inspectorList:addAll 1
+    // TODO inspectorList:addAll 1
     env->rebuildSim();
-    //TODO reflectRecordEventlog
+    // TODO reflectRecordEventlog
     busy();
 }
 
 void MainWindow::busy(QString msg)
 {
-    if(!msg.isEmpty())
-    {
+    if (!msg.isEmpty()) {
         ui->statusBar->showMessage(msg);
         this->setCursor(QCursor(Qt::WaitCursor));
     }
-    else
-    {
+    else {
         ui->statusBar->showMessage("Ready");
         this->setCursor(QCursor(Qt::ArrowCursor));
     }
@@ -939,3 +914,4 @@ QWidget *MainWindow::getMainArea()
 {
     return ui->mainArea;
 }
+
