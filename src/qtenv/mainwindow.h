@@ -63,6 +63,7 @@ public:
     void redrawTimeline();
 
     QWidget *getMainArea();
+    void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
 
     ~MainWindow();
 
@@ -71,7 +72,6 @@ private slots:
     bool on_actionQuit_triggered();
     void on_actionRun_triggered();
     void on_actionSetUpConfiguration_triggered();
-    void on_actionStop_triggered();
     void on_actionFastRun_triggered();
     void on_actionExpressRun_triggered();
     void on_actionRunUntil_triggered();
@@ -81,6 +81,7 @@ private slots:
     void closeEvent(QCloseEvent *event);
 
 public slots:
+    void on_actionStop_triggered();
     void onClickOpenInspector();
     void onClickRun();
     void onClickRunMessage();
@@ -107,7 +108,6 @@ private:
     const char *stripNamespace(const char *className);
 
     void inspectObject(cObject *object, int type = 0, const char *geometry = "");
-    void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
     void setRunUntilModule(Inspector *insp = nullptr);
     int modeToRunMode(Mode mode);
     Mode runModeToMode(int runMode);

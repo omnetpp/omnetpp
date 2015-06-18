@@ -219,6 +219,8 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       virtual void logTclError(const char *file, int line, const char *text);
       virtual void openTkenvlogIfNeeded();
 
+      MainWindow *getMainWindow() { return mainwindow; }
+
   protected:
       // redefined virtual functions from EnvirBase
       virtual void doRun() override;

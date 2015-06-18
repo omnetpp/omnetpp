@@ -219,6 +219,19 @@ void Inspector::goBack()
     }
 }
 
+void Inspector::inspectParent()
+{
+    cObject *parentPtr = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+    if(parentPtr == nullptr)
+        return;
+
+    //inspect in current inspector if possible (and allowed), otherwise open a new one
+    if(supportsObject(parentPtr)) //TODO && $config(reuse-inspectors)
+        setObject(parentPtr);
+    else
+        {}  //TODO opp_inspect $parentptr
+}
+
 int Inspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc != 1) {

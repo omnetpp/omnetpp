@@ -19,6 +19,7 @@
 
 #include "envir/envirbase.h"
 #include "tkutil.h"
+#include <QObject>
 
 class QWidget;
 
@@ -47,8 +48,10 @@ int insptypeCodeFromName(const char *namestr);
 /**
  * Base class for inspectors.
  */
-class QTENV_API Inspector
+class QTENV_API Inspector : public QObject
 {
+   Q_OBJECT
+
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
       Tcl_Interp *interp;     // Tcl interpreter
@@ -72,6 +75,11 @@ class QTENV_API Inspector
       void setLabel(const char *label, const char *val);
       const char *getEntry(const char *entry);
 
+   public slots:
+      virtual void goBack();
+      virtual void goForward();
+      virtual void inspectParent();
+
    public:
       Inspector(InspectorFactory *factory);
       virtual ~Inspector();
@@ -88,8 +96,6 @@ class QTENV_API Inspector
       virtual void setObject(cObject *object);
       virtual bool canGoForward();
       virtual bool canGoBack();
-      virtual void goForward();
-      virtual void goBack();
 
       virtual void markForDeletion() {closeRequested=true;}
       virtual bool isMarkedForDeletion() {return closeRequested;}

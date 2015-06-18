@@ -23,6 +23,7 @@
 #include <QGraphicsView>
 #include <QBoxLayout>
 #include <QToolBar>
+#include <QAction>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -166,19 +167,144 @@ void ModuleInspector::addToolBar(QBoxLayout *layout)
     layout->addWidget(toolBar);
     layout->insertStretch(1);
 
-    toolBar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back");
-    toolBar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward");
-    toolBar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module");
+    toolBar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back",
+                       this, SLOT(goBack()));
+    toolBar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward",
+                       this, SLOT(goForward()));
+    toolBar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module",
+                       this, SLOT(inspectParent()));
     toolBar->addSeparator();
-    toolBar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module");
-    toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl + F4)");
-    toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)");
+    toolBar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module",
+                       this, SLOT(runUntil()));
+    QAction *action = toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl + F4)",
+                       this, SLOT(fastRunUntil()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
+
+    action = toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)",
+                       this, SLOT(stopSimulation()));
+    action->setShortcut(QKeySequence(Qt::Key_F8));
+
     toolBar->addSeparator();
-    toolBar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl + R)");
-    toolBar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl + M)");
-    toolBar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl + N)");
+    action = toolBar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl + R)",
+                                this, SLOT(relayout()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+
+    action = toolBar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl + M)",
+                                this, SLOT(zoomIn()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+
+    action = toolBar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl + N)",
+                                this, SLOT(zoomOut()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
 
     toolBar->setAutoFillBackground(true);
+}
+
+void ModuleInspector::runUntil()
+{
+    MainWindow *mainWindow = getTkenv()->getMainWindow();
+    mainWindow->runSimulationLocal(this, qtenv::Qtenv::eRunMode::RUNMODE_NORMAL);
+}
+
+void ModuleInspector::fastRunUntil()
+{
+    MainWindow *mainWindow = getTkenv()->getMainWindow();
+    mainWindow->runSimulationLocal(this, qtenv::Qtenv::eRunMode::RUNMODE_FAST);
+}
+
+void ModuleInspector::stopSimulation()
+{
+    MainWindow *mainWindow = getTkenv()->getMainWindow();
+    mainWindow->on_actionStop_triggered();
+}
+
+//Relayout the compound module, and resize the window accordingly.
+
+void ModuleInspector::relayout()
+{
+    //TODO
+//    global config inspectordata
+
+//    set c $insp.c
+    ++layoutSeed;
+
+    relayoutAndRedrawAll();
+
+//    if {[opp_inspector_istoplevel $insp] && $config(layout-may-resize-window)} {
+//        wm geometry $insp ""
+//    }
+
+//    ModuleInspector:adjustWindowSizeAndZoom $insp
+}
+
+void ModuleInspector::zoomIn()
+{
+    //TODO
+//    proc ModuleInspector:zoomIn {insp {x ""} {y ""}} {
+//        global config
+//        ModuleInspector:zoomBy $insp $config(zoomby-factor) 1 $x $y
+//    }
+}
+
+void ModuleInspector::zoomOut()
+{
+    //TODO
+//    proc ModuleInspector:zoomOut {insp {x ""} {y ""}} {
+//        global config
+//        ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1 $x $y
+//    }
+}
+
+void ModuleInspector::zoomBy()
+{
+    //TODO
+//    proc ModuleInspector:zoomBy {insp mult {snaptoone 0}  {x ""} {y ""}} {
+//        global inspectordata
+//        set c $insp.c
+//        if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
+//            # remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
+//            if {$x == ""} {set x [expr [winfo width $c] / 2]}
+//            if {$y == ""} {set y [expr [winfo height $c] / 2]}
+//            set origCanvasX [$c canvasx $x]
+//            set origCanvasY [$c canvasy $y]
+//            set origZoom $inspectordata($c:zoomfactor)
+
+//            # update zoom factor and redraw
+//            set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
+
+//            # snap to 1 (note: this is not desirable when zoom is set programmatically to fit network into window)
+//            if {$snaptoone} {
+//                set m [expr $mult < 1 ? 1.0/$mult : $mult]
+//                set a [expr  1 - 0.9*(1 - 1.0/$m)]
+//                set b [expr  1 + 0.9*($m - 1)]
+//                if {$inspectordata($c:zoomfactor) > $a && $inspectordata($c:zoomfactor) < $b} {
+//                    set inspectordata($c:zoomfactor) 1
+//                }
+//            }
+
+//            # clear scrollregion so that it will be set up afresh
+//            $c config -scrollregion ""
+
+//            # redraw
+//            opp_inspectorcommand $insp redraw
+//            ModuleInspector:setScrollRegion $insp 0
+
+//            ModuleInspector:updateZoomLabel $insp
+
+//            # pan the canvas so that we zoom in/out around ($x, $y)
+//            set actualMult [expr $inspectordata($c:zoomfactor) / $origZoom]
+//            set canvasX [expr $origCanvasX * $actualMult]
+//            set canvasY [expr $origCanvasY * $actualMult]
+//            set dx [expr int($canvasX - $origCanvasX)]
+//            set dy [expr int($canvasY - $origCanvasY)]
+//            $c scan mark 0 0
+//            $c scan dragto $dx $dy -1
+//        }
+
+//        ModuleInspector:updatePreferences $insp
+
+//        ModuleInspector:popOutToolbarButtons $insp
+//    }
 }
 
 cCanvas *ModuleInspector::getCanvas()
@@ -1103,9 +1229,9 @@ int ModuleInspector::inspectorCommand(int argc, const char **argv)
         TRY(redraw());
         return TCL_OK;
     }
-    else if (strcmp(argv[0], "getdefaultlayoutseed") == 0) {
-        return getDefaultLayoutSeed(argc, argv);
-    }
+//   else if (strcmp(argv[0], "getdefaultlayoutseed") == 0) {
+//       return getDefaultLayoutSeed(argc, argv);
+//   }
     else if (strcmp(argv[0], "getlayoutseed") == 0) {
         return getLayoutSeed(argc, argv);
     }
@@ -1158,18 +1284,13 @@ int ModuleInspector::inspectorCommand(int argc, const char **argv)
     return Inspector::inspectorCommand(argc, argv);
 }
 
-int ModuleInspector::getDefaultLayoutSeed(int argc, const char **argv)
+int ModuleInspector::getDefaultLayoutSeed()
 {
-    if (argc != 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
-    }
     const cDisplayString blank;
     cModule *parentModule = static_cast<cModule *>(object);
     const cDisplayString& ds = parentModule && parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-    long seed = resolveLongDispStrArg(ds.getTagArg("bgl", 4), parentModule, 1);
-    Tcl_SetObjResult(interp, Tcl_NewIntObj((int)seed));
-    return TCL_OK;
+    long seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
+    return seed;
 }
 
 int ModuleInspector::getLayoutSeed(int argc, const char **argv)

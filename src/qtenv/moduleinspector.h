@@ -50,6 +50,16 @@ enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
 class QTENV_API ModuleInspector : public Inspector
 {
+   Q_OBJECT
+
+   private slots:
+      void runUntil();
+      void fastRunUntil();
+      void stopSimulation();
+      void relayout();
+      void zoomIn();
+      void zoomOut();
+
    protected:
       char canvas[128];
       CanvasRenderer *canvasRenderer;
@@ -78,6 +88,8 @@ class QTENV_API ModuleInspector : public Inspector
       void addToolBar(QBoxLayout *layout);
       void createView(QWidget *parent);
 
+      void zoomBy();
+
    public:
       ModuleInspector(InspectorFactory *f);
       ~ModuleInspector();
@@ -91,7 +103,7 @@ class QTENV_API ModuleInspector : public Inspector
       bool needsRedraw() {return needs_redraw;}
 
       // implementations of inspector commands:
-      virtual int getDefaultLayoutSeed(int argc, const char **argv);
+      virtual int getDefaultLayoutSeed();
       virtual int getLayoutSeed(int argc, const char **argv);
       virtual int setLayoutSeed(int argc, const char **argv);
       virtual int getSubmoduleCount(int argc, const char **argv);
