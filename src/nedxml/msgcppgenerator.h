@@ -202,8 +202,9 @@ class NEDXML_API MsgCppGenerator
     std::string prefixWithNamespace(const std::string& s);
     StringVector lookupExistingClassName(const std::string& s);
     StringVector lookupExistingEnumName(const std::string& s);
-    bool isClassDeclared(const std::string& s) { return classType.find(s) != classType.end(); }
-    ClassType getClassType(const std::string& s);
+    bool isClassDeclared(const std::string& classqname) { return classType.find(classqname) != classType.end(); }
+    void addClassType(const std::string& classqname, ClassType type, NEDElement *context);
+    ClassType getClassType(const std::string& classqname);
     ClassInfo extractClassInfo(NEDElement *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void extractClassDecl(NEDElement *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
     Properties extractPropertiesOf(NEDElement *node);

@@ -275,15 +275,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
         errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
     }
 
-    if (classType.find(classqname) != classType.end()) {
-        if (classType[classqname] != type) {
-            errors->addError(child, "different declarations for '%s(=%s)' are inconsistent\n", myclass.c_str(), classqname.c_str());
-        }
-    }
-    else {
-        // print "DBG: classtype{$type0 myclass $baseclass} = $type\n";
-        classType[classqname] = type;
-    }
+    addClassType(classqname, type, child);
 }
 
 const char *PARSIMPACK_BOILERPLATE =
@@ -535,7 +527,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_STRUCT: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                classType[classInfo.msgname] = classInfo.classtype;
+                addClassType(classInfo.msgname, classInfo.classtype, child);
                 if (classInfo.generate_class)
                     generateStruct(classInfo);
                 if (classInfo.generate_descriptor)
@@ -548,7 +540,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                classType[classInfo.msgname] = classInfo.classtype;
+                addClassType(classInfo.msgname, classInfo.classtype, child);
                 if (classInfo.generate_class)
                     generateClass(classInfo);
                 if (classInfo.generate_descriptor)
@@ -857,17 +849,10 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
 
     // check earlier declarations and register this class
-    if (isClassDeclared(info.msgqname)) {
-        if (0) {  // XXX add condition
-            errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
-        }
-        else if (getClassType(info.msgqname) != info.classtype) {
-            errors->addError(info.nedElement, "definition of '%s' inconsistent with earlier declaration(s)\n", info.msgname.c_str());
-        }
-    }
-    else {
-        classType[info.msgqname] = info.classtype;
-    }
+    addClassType(info.msgqname, info.classtype, info.nedElement);
+    if (isClassDeclared(info.msgqname) && false) // XXX add condition
+        errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
+    addClassType(info.msgqname, info.classtype, info.nedElement);
 
     //
     // produce all sorts of derived names
@@ -2285,10 +2270,24 @@ void MsgCppGenerator::generateNamespaceEnd()
     namespaceNameVector.clear();
 }
 
-MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& s)
+void MsgCppGenerator::addClassType(const std::string& classqname, ClassType type, NEDElement *context)
 {
-    std::map<std::string, ClassType>::iterator it = classType.find(s);
-    return it != classType.end() ? it->second : UNKNOWN;
+    printf("addClassType(%s, %d)\n", classqname.c_str(), type);
+    if (classType.find(classqname) != classType.end()) {
+        if (classType[classqname] != type)
+            errors->addError(context, "different declarations for '%s' are inconsistent\n", classqname.c_str());
+    }
+    else {
+        classType[classqname] = type;
+    }
+}
+
+MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& classqname)
+{
+    std::map<std::string, ClassType>::iterator it = classType.find(classqname);
+    ClassType type = it != classType.end() ? it->second : UNKNOWN;
+    printf("getClassType(%s) --> %d\n", classqname.c_str(), type);
+    return type;
 }
 
 }  // namespace nedxml
