@@ -77,10 +77,10 @@ proc fillInspectorContextMenu {menu insp ptr} {
     # ptr should never be null, but check it anyway
     if [opp_isnull $ptr] {return $menu}
 
-    # add "Go Info" if applicable
+    # add "Go Into" if applicable
     set name [opp_getobjectfullname $ptr]
     if {$insp!="" && $ptr!=[opp_inspector_getobject $insp] && [opp_inspector_supportsobject $insp $ptr]} {
-        $menu add command -label "Go Into '$name'" -command "opp_inspector_setobject $insp $ptr"
+        $menu add command -label "Go Into '$name'" -command [list opp_inspector_setobject $insp $ptr]
         $menu add separator
     }
 
@@ -88,24 +88,24 @@ proc fillInspectorContextMenu {menu insp ptr} {
     set insptypes [opp_supported_insp_types $ptr]
     foreach type $insptypes {
        set label "[getInspectMenuLabel $type] for '$name'"
-       $menu add command -label $label -command "opp_inspect $ptr \{$type\}"
+       $menu add command -label $label -command [list opp_inspect $ptr \{$type\}]
     }
 
     # add "run until" menu items
     set baseclass [opp_getobjectbaseclass $ptr]
     if {$baseclass=="cSimpleModule" || $baseclass=="cModule"} {
         $menu add separator
-        $menu add command -label "Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp normal $ptr"
-        $menu add command -label "Fast Run Until Next Event in Module '$name'" -command "runSimulationLocal $insp fast $ptr"
+        $menu add command -label "Run Until Next Event in Module '$name'" -command [list runSimulationLocal $insp normal $ptr]
+        $menu add command -label "Fast Run Until Next Event in Module '$name'" -command [list runSimulationLocal $insp fast $ptr]
     }
 
     if {$baseclass=="cMessage"} {
         $menu add separator
-        $menu add command -label "Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr normal"
-        $menu add command -label "Fast Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr fast"
-        $menu add command -label "Express Run Until Delivery of Message '$name'" -command "runUntilMsg $ptr express"
+        $menu add command -label "Run Until Delivery of Message '$name'" -command [list runUntilMsg $ptr normal]
+        $menu add command -label "Fast Run Until Delivery of Message '$name'" -command [list runUntilMsg $ptr fast]
+        $menu add command -label "Express Run Until Delivery of Message '$name'" -command [list runUntilMsg $ptr express]
         $menu add separator
-        $menu add command -label "Exclude Messages Like '$name' From Animation" -command "excludeMessageFromAnimation $ptr"
+        $menu add command -label "Exclude Messages Like '$name' From Animation" -command [list excludeMessageFromAnimation $ptr]
     }
 
     # add utilities menu

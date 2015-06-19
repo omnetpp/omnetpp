@@ -194,7 +194,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <modptr>
    { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|express
    { "opp_set_run_until",    setRunUntil_cmd    }, // args: none, or <timelimit> <eventlimit> <message>
-   { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <inspectorwindow>
+   { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <moduleptr>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
    { "opp_start_all",        startAll_cmd       }, // args: -
    { "opp_finish_simulation",finishSimulation_cmd}, // args: -
@@ -568,14 +568,9 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
         app->setSimulationRunUntilModule(nullptr);
     }
     else {
-        Inspector *insp = app->findInspector(argv[1]);
-        if (!insp) {
-            Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-        cObject *object = insp->getObject();
+        cObject *object = strToPtr(argv[1]);
         if (!object) {
-            Tcl_SetResult(interp, TCLCONST("inspector has no object"), TCL_STATIC);
+            Tcl_SetResult(interp, TCLCONST("null or invalid pointer"), TCL_STATIC);
             return TCL_ERROR;
         }
         cModule *mod = dynamic_cast<cModule *>(object);
@@ -583,7 +578,6 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
             Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC);
             return TCL_ERROR;
         }
-
         app->setSimulationRunUntilModule(mod);
     }
     return TCL_OK;
