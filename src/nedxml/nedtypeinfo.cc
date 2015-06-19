@@ -60,7 +60,8 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
             // check the type
             NEDTypeInfo *decl = getResolver()->lookup(extendsqname.c_str());
             Assert(decl);
-            if (getType() != decl->getType())
+            bool moduleExtendsSimple = (getType() == COMPOUND_MODULE) && (decl->getType() == SIMPLE_MODULE);
+            if (getType() != decl->getType() && !moduleExtendsSimple)
                 throw NEDException(getTree(), "a %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
 
             // collect interfaces from our base types
