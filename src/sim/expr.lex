@@ -52,11 +52,9 @@ using OPP::opp_strdup;
 extern YYSTYPE yylval;
 
 // wrap symbols to allow several .lex files coexist
-#define comment     exprcomment
 #define countChars  exprcount
 #define extendCount exprextendCount
 
-void comment();
 void countChars();
 void extendCount();
 
@@ -70,8 +68,6 @@ static std::string extendbuf;
 %}
 
 %%
-"//"                     { comment(); }
-
 "double"                 { countChars(); return DOUBLETYPE; }
 "int"                    { countChars(); return INTTYPE; }
 "string"                 { countChars(); return STRINGTYPE; }
@@ -163,13 +159,6 @@ int yywrap()
 
 /* the following #define is needed for broken flex versions */
 #define yytext_ptr yytext
-
-void comment()
-{
-    int c;
-    while ((c = input())!='\n' && c!=0 && c!=EOF);
-    if (c=='\n') unput(c);
-}
 
 /*
  * - counts the line and column number of the current token in `pos'
