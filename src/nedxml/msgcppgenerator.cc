@@ -540,7 +540,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                addClassType(classInfo.msgname, classInfo.classtype, child);
+                addClassType(classInfo.msgqname, classInfo.classtype, child);
                 if (classInfo.generate_class)
                     generateClass(classInfo);
                 if (classInfo.generate_descriptor)
@@ -651,9 +651,38 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         errors->addError(it->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", info.msgname.c_str());
     }
 
+    // determine field data type
+    TypeDescMap::const_iterator tdIt = PRIMITIVE_TYPES.find(it->ftype);
+    if (tdIt != PRIMITIVE_TYPES.end()) {
+        it->fkind = "basic";
+        it->ftypeqname = "";  // unused
+        it->classtype = FOREIGN;
+    }
+    else {
+        it->fkind = "struct";
+
+        // $ftypeqname
+        StringVector found = lookupExistingClassName(it->ftype);
+        if (found.size() == 1) {
+            it->ftypeqname = found[0];
+        }
+        else if (found.empty()) {
+            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+            it->ftypeqname = OPP_PREFIX "cObject";
+        }
+        else {
+            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
+            it->ftypeqname = found[0];
+        }
+
+        it->classtype = getClassType(it->ftypeqname);
+
+        if (it->ftypeqname != OPP_PREFIX "cObject")
+            it->ftypeqname = std::string("::") + it->ftypeqname; //FIXME why, really?
+    }
+
     if (info.generate_class) {
-        ClassType classType = getClassType(it->ftype);
-        if (classType == COWNEDOBJECT && (info.classtype != COWNEDOBJECT)) {
+        if (it->classtype == COWNEDOBJECT && info.classtype != COWNEDOBJECT) {
             errors->addError(it->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cOwnedObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
         }
     }
@@ -732,30 +761,6 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
         if (getProperty(it->fprops, "sizeGetter") != "") {
             it->getsize = getProperty(it->fprops, "sizeGetter");
-        }
-    }
-
-    // determine field data type
-    TypeDescMap::const_iterator tdIt = PRIMITIVE_TYPES.find(it->ftype);
-    if (tdIt != PRIMITIVE_TYPES.end()) {
-        it->fkind = "basic";
-        it->ftypeqname = "";  // unused
-    }
-    else {
-        it->fkind = "struct";
-
-        // $ftypeqname
-        StringVector found = lookupExistingClassName(it->ftype);
-        if (found.size() == 1) {
-            it->ftypeqname = "::" + found[0];
-        }
-        else if (found.empty()) {
-            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
-            it->ftypeqname = OPP_PREFIX "cObject";
-        }
-        else {
-            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
-            it->ftypeqname = "::" + found[0];
         }
     }
 
@@ -1153,7 +1158,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
                 }
-                if (getClassType(it->ftype) == COWNEDOBJECT) {
+                if (it->classtype == COWNEDOBJECT) {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        take(&(this->" << it->var << "[i]));\n";
                 }
@@ -1166,7 +1171,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 if (!it->fval.empty()) {
                     CC << "    this->" << it->var << " = " << it->fval << ";\n";
                 }
-                if (getClassType(it->ftype) == COWNEDOBJECT) {
+                if (it->classtype == COWNEDOBJECT) {
                     CC << "    take(&(this->" << it->var << "));\n";
                 }
             }
@@ -1182,7 +1187,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
             if (it->fisarray && !it->farraysize.empty()) {
-                if (getClassType(it->ftype) == COWNEDOBJECT) {
+                if (it->classtype == COWNEDOBJECT) {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        take(&(this->" << it->var << "[i]));\n";
                 }
@@ -1191,7 +1196,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    " << it->varsize << " = 0;\n";
                 CC << "    this->" << it->var << " = 0;\n";
             }
-            else if (!it->fisarray && getClassType(it->ftype) == COWNEDOBJECT) {
+            else if (!it->fisarray && it->classtype == COWNEDOBJECT) {
                 CC << "    take(&(this->" << it->var << "));\n";
             }
         }
@@ -1203,7 +1208,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "{\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
-            if (getClassType(it->ftype) == COWNEDOBJECT) {
+            if (it->classtype == COWNEDOBJECT) {
                 if (!it->fisarray) {
                     CC << "    drop(&(this->" << it->var << "));\n";
                 }
@@ -1237,11 +1242,10 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "{\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
-            ClassType classType = getClassType(it->ftype);
             if (it->fisarray && !it->farraysize.empty()) {
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                 CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
-                if (classType == COWNEDOBJECT) {
+                if (it->classtype == COWNEDOBJECT) {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        this->" << it->var << "[i].setName(other." << it->var << "[i].getName());\n";
                 }
@@ -1251,7 +1255,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    this->" << it->var << " = (other." << it->varsize << "==0) ? nullptr : new " << it->datatype << "[other." << it->varsize << "];\n";
                 CC << "    " << it->varsize << " = other." << it->varsize << ";\n";
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->varsize << "; i++)\n";
-                if (classType == COWNEDOBJECT) {
+                if (it->classtype == COWNEDOBJECT) {
                     CC << "    {\n";
                     CC << "        take(&(this->" << it->var << "[i]));\n";
                     CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
@@ -1264,7 +1268,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             }
             else {
                 CC << "    this->" << it->var << " = other." << it->var << ";\n";
-                if (!it->fisarray && (classType == COWNEDOBJECT || classType == CNAMEDOBJECT)) {
+                if (!it->fisarray && (it->classtype == COWNEDOBJECT || it->classtype == CNAMEDOBJECT)) {
                     CC << "    this->" << it->var << ".setName(other." << it->var << ".getName());\n";
                 }
             }
@@ -1380,7 +1384,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        " << it->var << "2[i] = 0;\n";
                 }
-                if (getClassType(it->ftype) == COWNEDOBJECT) {
+                if (it->classtype == COWNEDOBJECT) {
                     CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        take(&(" << it->var << "2[i]));\n";
                 }
@@ -1460,7 +1464,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisabstract)
             throw NEDException("abstract fields are not supported in a struct");
-        if (getClassType(it->ftype) == COWNEDOBJECT)
+        if (it->classtype == COWNEDOBJECT)
             throw NEDException("cOwnedObject fields are not supported in a struct");
         if (it->fisarray && it->farraysize.empty())
             throw NEDException("dynamic arrays are not supported in a struct");
@@ -1618,16 +1622,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         CC << "    static unsigned int fieldTypeFlags[] = {\n";
         for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
             StringVector flags;
-            ClassType classType = getClassType(it->ftype);
             if (it->fisarray)
                 flags.push_back("FD_ISARRAY");
             if (it->fkind == "struct")
                 flags.push_back("FD_ISCOMPOUND");
             if (it->fispointer)
                 flags.push_back("FD_ISPOINTER");
-            if (classType == COBJECT || classType == CNAMEDOBJECT)
+            if (it->classtype == COBJECT || it->classtype == CNAMEDOBJECT)
                 flags.push_back("FD_ISCOBJECT");
-            if (classType == COWNEDOBJECT)
+            if (it->classtype == COWNEDOBJECT)
                 flags.push_back("FD_ISCOBJECT | FD_ISCOWNEDOBJECT");
 
             if (it->feditable || (info.generate_setters_in_descriptor && it->fkind == "basic" && it->editNotDisabled))
@@ -1996,9 +1999,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                     value = std::string("pp->") + field.getter + "()";
                 }
             }
-            ClassType fieldclasstype = getClassType(field.ftype);
             cast = "(void *)";
-            if (fieldclasstype == COBJECT || fieldclasstype == CNAMEDOBJECT || fieldclasstype == COWNEDOBJECT)
+            if (field.classtype == COBJECT || field.classtype == CNAMEDOBJECT || field.classtype == COWNEDOBJECT)
                 cast = cast + "static_cast<" OPP_PREFIX "cObject *>";
             if (field.fispointer) {
                 CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
@@ -2272,7 +2274,6 @@ void MsgCppGenerator::generateNamespaceEnd()
 
 void MsgCppGenerator::addClassType(const std::string& classqname, ClassType type, NEDElement *context)
 {
-    printf("addClassType(%s, %d)\n", classqname.c_str(), type);
     if (classType.find(classqname) != classType.end()) {
         if (classType[classqname] != type)
             errors->addError(context, "different declarations for '%s' are inconsistent\n", classqname.c_str());
@@ -2284,9 +2285,9 @@ void MsgCppGenerator::addClassType(const std::string& classqname, ClassType type
 
 MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& classqname)
 {
+    Assert(!classqname.empty() && classqname[0] != ':');  // must not start with "::"
     std::map<std::string, ClassType>::iterator it = classType.find(classqname);
     ClassType type = it != classType.end() ? it->second : UNKNOWN;
-    printf("getClassType(%s) --> %d\n", classqname.c_str(), type);
     return type;
 }
 

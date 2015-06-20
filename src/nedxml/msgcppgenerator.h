@@ -106,12 +106,12 @@ class NEDXML_API MsgCppGenerator
             Properties fprops;      // field properties (name, first value of default key)
 
             // data needed for code generation
-            std::string fkind;
-            ClassType classtype;  // cobject/cnamedobject/cownedobject/...
+            std::string fkind;      // XXX "basic" or "struct" -- TODO use enum or bool
+            ClassType classtype;    // cobject/cnamedobject/cownedobject/...
             std::string datatype;   // member C++ datatype
             std::string argtype;    // setter C++ argument type
             std::string rettype;    // getter C++ return type
-            std::string var;    // name of data member variable
+            std::string var;        // name of data member variable
             std::string argname;    // setter argument name
             std::string varsize;    // data member to store array size
             std::string fsizetype;  // type for storing array size
