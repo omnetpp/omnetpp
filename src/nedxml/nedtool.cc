@@ -180,155 +180,157 @@ bool processFile(const char *fname, NEDErrorStore *errors)
     if (opt_verbose)
         fprintf(stdout, "processing '%s'...\n", fname);
 
-    // determine file type
-    int ftype = opt_nextfiletype;
-    if (ftype == UNKNOWN_FILE) {
-        if (opp_stringendswith(fname, ".ned"))
-            ftype = NED_FILE;
-        else if (opp_stringendswith(fname, ".msg"))
-            ftype = MSG_FILE;
-        else if (opp_stringendswith(fname, ".xml"))
-            ftype = XML_FILE;
-        else
-            ftype = NED_FILE;
-    }
+    NEDElement *tree = nullptr;
 
-    // process input tree
-    NEDElement *tree = 0;
-    errors->clear();
-    if (ftype == XML_FILE) {
-        tree = parseXML(fname, errors);
-    }
-    else if (ftype == NED_FILE || ftype == MSG_FILE) {
-        NEDParser parser(errors);
-        parser.setParseExpressions(!opt_unparsedexpr);
-        parser.setStoreSource(opt_storesrc);
-        tree = (ftype == NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
-    }
-    if (errors->containsError()) {
-        delete tree;
-        return false;
-    }
-
-    // DTD validation and additional syntax validation
-    NEDDTDValidator dtdvalidator(errors);
     try {
+        // determine file type
+        int ftype = opt_nextfiletype;
+        if (ftype == UNKNOWN_FILE) {
+            if (opp_stringendswith(fname, ".ned"))
+                ftype = NED_FILE;
+            else if (opp_stringendswith(fname, ".msg"))
+                ftype = MSG_FILE;
+            else if (opp_stringendswith(fname, ".xml"))
+                ftype = XML_FILE;
+            else
+                ftype = NED_FILE;
+        }
+
+        // process input tree
+        errors->clear();
+        if (ftype == XML_FILE) {
+            tree = parseXML(fname, errors);
+        }
+        else if (ftype == NED_FILE || ftype == MSG_FILE) {
+            NEDParser parser(errors);
+            parser.setParseExpressions(!opt_unparsedexpr);
+            parser.setStoreSource(opt_storesrc);
+            tree = (ftype == NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
+        }
+        if (errors->containsError()) {
+            delete tree;
+            return false;
+        }
+
+        // DTD validation and additional syntax validation
+        NEDDTDValidator dtdvalidator(errors);
         dtdvalidator.validate(tree);
-    }
-    catch (NEDException& e) {
-        fprintf(stderr, "nedtool: NEDException: %s\n", e.what());
-        delete tree;
-        return false;
-    }
-    if (errors->containsError()) {
-        delete tree;
-        return false;
-    }
-
-    NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
-    syntaxvalidator.validate(tree);
-    if (errors->containsError()) {
-        delete tree;
-        return false;
-    }
-
-    if (opt_mergeoutput) {
-        outputtree->appendChild(tree);
-    }
-    else if (!opt_validateonly) {
-        char outfname[1024];
-        char outhdrfname[1024];
-
-        if (opt_inplace) {
-            // won't be used if we're to split a single XML to several NED files
-            strcpy(outfname, fname);
-            strcpy(outhdrfname, "");  // unused
+        if (errors->containsError()) {
+            delete tree;
+            return false;
         }
-        else if (opt_outputfile && (opt_genxml || opt_gensrc)) {
-            strcpy(outfname, opt_outputfile);
-            strcpy(outhdrfname, "");  // unused
+
+        NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
+        syntaxvalidator.validate(tree);
+        if (errors->containsError()) {
+            delete tree;
+            return false;
         }
-        else {
-            // generate output file name
-            const char *suffix = opt_suffix;
-            const char *hdrsuffix = opt_hdrsuffix;
-            if (!suffix) {
-                if (opt_genxml)
-                    suffix = (ftype == MSG_FILE) ? "_m.xml" : "_n.xml";
-                else if (opt_gensrc)
-                    suffix = (ftype == MSG_FILE) ? "_m.msg" : "_n.ned";
-                else
-                    suffix = (ftype == MSG_FILE) ? "_m.cc" : "_n.cc";
+
+        if (opt_mergeoutput) {
+            outputtree->appendChild(tree);
+        }
+        else if (!opt_validateonly) {
+            char outfname[1024];
+            char outhdrfname[1024];
+
+            if (opt_inplace) {
+                // won't be used if we're to split a single XML to several NED files
+                strcpy(outfname, fname);
+                strcpy(outhdrfname, "");  // unused
             }
-            if (!hdrsuffix) {
-                hdrsuffix = "_m.h";
+            else if (opt_outputfile && (opt_genxml || opt_gensrc)) {
+                strcpy(outfname, opt_outputfile);
+                strcpy(outhdrfname, "");  // unused
             }
-            createFileNameWithSuffix(outfname, fname, suffix);
-            createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
-        }
-
-        // TBD check output file for write errors!
-        if (opt_genxml) {
-            if (opt_inplace && !renameFileToBAK(outfname))
-                return false;
-            ofstream out(outfname);
-            generateXML(out, tree, opt_srcloc);
-            out.close();
-        }
-        else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES ||
-                                               tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == NED_MSG_FILE))
-        {
-            if (tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == NED_MSG_FILE) {
-                // wrap the tree into a FilesElement
-                NEDElement *file = tree;
-                tree = new FilesElement();
-                tree->appendChild(file);
+            else {
+                // generate output file name
+                const char *suffix = opt_suffix;
+                const char *hdrsuffix = opt_hdrsuffix;
+                if (!suffix) {
+                    if (opt_genxml)
+                        suffix = (ftype == MSG_FILE) ? "_m.xml" : "_n.xml";
+                    else if (opt_gensrc)
+                        suffix = (ftype == MSG_FILE) ? "_m.msg" : "_n.ned";
+                    else
+                        suffix = (ftype == MSG_FILE) ? "_m.cc" : "_n.cc";
+                }
+                if (!hdrsuffix) {
+                    hdrsuffix = "_m.h";
+                }
+                createFileNameWithSuffix(outfname, fname, suffix);
+                createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
             }
 
-            if (opt_splitnedfiles)
-                NEDTools::splitToFiles((FilesElement *)tree);
-
-            for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
-                // extract file name
-                if (child->getTagCode() == NED_NED_FILE)
-                    strcpy(outfname, ((NedFileElement *)child)->getFilename());
-                else if (child->getTagCode() == NED_MSG_FILE)
-                    strcpy(outfname, ((MsgFileElement *)child)->getFilename());
-                else
-                    continue;  // if there's anything else, ignore it
-
-                // generate the file
+            // TBD check output file for write errors!
+            if (opt_genxml) {
                 if (opt_inplace && !renameFileToBAK(outfname))
                     return false;
                 ofstream out(outfname);
-                generateNED(out, child, errors, opt_oldsyntax);
+                generateXML(out, tree, opt_srcloc);
                 out.close();
             }
-        }
-        else if (opt_gensrc) {
-            if (opt_inplace && !renameFileToBAK(outfname))
-                return false;
-            ofstream out(outfname);
-            generateNED(out, tree, errors, opt_oldsyntax);
-            out.close();
-        }
-        else {
-            assert(!opt_gensrc && !opt_genxml);  // already handled above
-            if (ftype == MSG_FILE) {
-                MsgCppGenerator generator(errors, msg_options);
-                generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+            else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES ||
+                                                   tree->getTagCode() == NED_NED_FILE ||
+                                                   tree->getTagCode() == NED_MSG_FILE))
+            {
+                if (tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == NED_MSG_FILE) {
+                    // wrap the tree into a FilesElement
+                    NEDElement *file = tree;
+                    tree = new FilesElement();
+                    tree->appendChild(file);
+                }
+
+                if (opt_splitnedfiles)
+                    NEDTools::splitToFiles((FilesElement *)tree);
+
+                for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
+                    // extract file name
+                    if (child->getTagCode() == NED_NED_FILE)
+                        strcpy(outfname, ((NedFileElement *)child)->getFilename());
+                    else if (child->getTagCode() == NED_MSG_FILE)
+                        strcpy(outfname, ((MsgFileElement *)child)->getFilename());
+                    else
+                        continue;  // if there's anything else, ignore it
+
+                    // generate the file
+                    if (opt_inplace && !renameFileToBAK(outfname))
+                        return false;
+                    ofstream out(outfname);
+                    generateNED(out, child, errors, opt_oldsyntax);
+                    out.close();
+                }
+            }
+            else if (opt_gensrc) {
+                if (opt_inplace && !renameFileToBAK(outfname))
+                    return false;
+                ofstream out(outfname);
+                generateNED(out, tree, errors, opt_oldsyntax);
+                out.close();
             }
             else {
-                fprintf(stderr, "nedtool: generating C++ source from %s files is not supported\n",
-                        (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
-                delete tree;
-                return false;
+                Assert(!opt_gensrc && !opt_genxml);  // already handled above
+                if (ftype == MSG_FILE) {
+                    MsgCppGenerator generator(errors, msg_options);
+                    generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+                }
+                else {
+                    fprintf(stderr, "nedtool: generating C++ source from %s files is not supported\n",
+                            (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
+                    delete tree;
+                    return false;
+                }
             }
-        }
-        delete tree;
+            delete tree;
 
-        if (errors->containsError())
-            return false;
+            if (errors->containsError())
+                return false;
+        }
+    }
+    catch (std::exception& e) {
+        fprintf(stderr, "nedtool: internal error: %s\n", e.what());
+        delete tree;
+        return false;
     }
     return true;
 }
