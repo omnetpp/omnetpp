@@ -16,21 +16,19 @@
 
 proc createWatchInspector {insp geom} {
     createInspectorToplevel $insp $geom
-
-    ttk::frame $insp.main
-    pack $insp.main -expand 0 -fill both -side top
-
-    createWatchViewer $insp.main
+    createWatchViewer $insp
 }
 
 proc createEmbeddedWatchInspector {insp} {
-    ttk::frame $insp.main
-    pack $insp.main -expand 0 -fill both -side top
-
-    createWatchViewer $insp.main
+    createWatchViewer $insp
 }
 
-proc createWatchViewer {f} {
+proc createWatchViewer {insp} {
+    set f $insp.main
+
+    ttk::frame $f
+    pack $f -expand 0 -fill both -side top
+
     label-entry $f.name ""
     $f.name.l config -width 20
     focus $f.name.e
