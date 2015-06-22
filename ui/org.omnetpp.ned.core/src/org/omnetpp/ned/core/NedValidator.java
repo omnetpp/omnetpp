@@ -219,8 +219,10 @@ public class NedValidator extends AbstractNedValidatorEx {
         }
         int thisType = componentNode.getTagCode();
         int extendsType = e.getNedElement().getTagCode();
-        if (thisType != extendsType) {
-            errors.addError(node, "'"+name+"' is not a "+componentNode.getReadableTagName());
+
+        boolean moduleExtendsSimple = (thisType == NED_COMPOUND_MODULE) && (extendsType == NED_SIMPLE_MODULE);
+        if (thisType != extendsType && !moduleExtendsSimple) {
+            errors.addError(node, "a "+componentNode.getReadableTagName()+" cannot extend a "+e.getNedElement().getReadableTagName()+" ('"+name+"')");
             return;
         }
 
