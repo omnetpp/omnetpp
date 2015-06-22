@@ -88,7 +88,7 @@ proc fillInspectorContextMenu {menu insp ptr} {
     set insptypes [opp_supported_insp_types $ptr]
     foreach type $insptypes {
        set label "[getInspectMenuLabel $type] for '$name'"
-       $menu add command -label $label -command [list opp_inspect $ptr \{$type\}]
+       $menu add command -label $label -command [list opp_inspect $ptr $type]
     }
 
     # add "run until" menu items
