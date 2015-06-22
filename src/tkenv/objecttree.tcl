@@ -117,7 +117,13 @@ proc treeManager:getNodeInfo {w op {key {}}} {
 
 proc treeManager:doubleClick {key} {
     # $key is the object pointer
-    opp_inspect $key
+    set ptr $key
+    set base [opp_getobjectbaseclass $ptr]
+    if {$base == "cModule" || $base == "cSimpleModule"} {
+        opp_inspector_setobject .network $ptr
+    } else {
+        opp_inspect $ptr
+    }
 }
 
 proc treeManager:popup {key x y} {
