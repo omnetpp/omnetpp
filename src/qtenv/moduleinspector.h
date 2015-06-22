@@ -30,12 +30,6 @@ class QBoxLayout;
 
 namespace omnetpp {
 class cObject;
-} // namespace omnetpp
-
-Q_DECLARE_METATYPE(OPP::cObject*)
-
-namespace omnetpp {
-
 class cModule;
 class cGate;
 class cFigure;

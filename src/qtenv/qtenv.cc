@@ -54,6 +54,7 @@
 #include "genericobjectinspector.h"
 #include "watchinspector.h"
 #include "mainwindow.h"
+#include "treeitemmodel.h"
 #include <QApplication>
 #include <QTreeView>
 
@@ -792,6 +793,12 @@ void Qtenv::setupNetwork(cModuleType *network)
     mainNetworkView->doSetObject(getSimulation()->getSystemModule());
     mainLogView->doSetObject(getSimulation()->getSystemModule());
     mainInspector->doSetObject(getSimulation()->getSystemModule());
+
+    // collapsing all nodes in the object tree, because even if a new network is
+    // loaded, there is a chance that some objects will be on the same place
+    // (have the same pointer) as some of the old ones, so random nodes may
+    // be expanded in the new tree depending on what was expanded before
+    mainwindow->getObjectTree()->collapseAll();
 }
 
 Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
@@ -884,7 +891,18 @@ void Qtenv::refreshInspectors()
 
     // update object tree
     qDebug() << "UPDATE";
-    mainwindow->getObjectTree()->reset();  // TODO keep nodes open
+
+    TreeItemModel *model = static_cast<TreeItemModel *>(mainwindow->getObjectTree()->model());
+
+    // this will hold the pointers to the expanded nodes in the view
+    QList<QVariant> expandedItems;
+
+    // getting the expanded nodes
+    model->getExpandedItems(mainwindow->getObjectTree(), expandedItems);
+    // updating the view to reflect the changed model
+    mainwindow->getObjectTree()->reset();
+    // restoring the expansion state
+    model->expandItems(mainwindow->getObjectTree(), expandedItems);
 
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
