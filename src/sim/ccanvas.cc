@@ -908,7 +908,7 @@ void cFigure::concatArrays(const char **dest, const char **first, const char **s
 
 cFigure *cFigure::dupTree() const
 {
-    cFigure *result = (cFigure *)dup();
+    cFigure *result = dup();
     for (int i = 0; i < (int)children.size(); i++)
         result->addFigure(children[i]->dupTree());
     return result;
@@ -1348,6 +1348,54 @@ const char **cAbstractLineFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
+void cAbstractLineFigure::setLineColor(const Color& lineColor)
+{
+    this->lineColor = lineColor;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setLineWidth(double lineWidth)
+{
+    this->lineWidth = lineWidth;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setLineOpacity(double lineOpacity)
+{
+    this->lineOpacity = lineOpacity;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setLineStyle(LineStyle lineStyle)
+{
+    this->lineStyle = lineStyle;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setCapStyle(CapStyle capStyle)
+{
+    this->capStyle = capStyle;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setStartArrowHead(ArrowHead startArrowHead)
+{
+    this->startArrowHead = startArrowHead;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setEndArrowHead(ArrowHead endArrowHead)
+{
+    this->endArrowHead = endArrowHead;
+    fireVisualChange();
+}
+
+void cAbstractLineFigure::setScaleLineWidth(bool scaleLineWidth)
+{
+    this->scaleLineWidth = scaleLineWidth;
+    fireVisualChange();
+}
+
 //----
 
 void cLineFigure::copy(const cLineFigure& other)
@@ -1396,6 +1444,18 @@ void cLineFigure::move(double x, double y)
     start.y += y;
     end.x += x;
     end.y += y;
+    fireGeometryChange();
+}
+
+void cLineFigure::setStart(const Point& start)
+{
+    this->start = start;
+    fireGeometryChange();
+}
+
+void cLineFigure::setEnd(const Point& end)
+{
+    this->end = end;
     fireGeometryChange();
 }
 
@@ -1451,6 +1511,24 @@ void cArcFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
+    fireGeometryChange();
+}
+
+void cArcFigure::setBounds(const Rectangle& bounds)
+{
+    this->bounds = bounds;
+    fireGeometryChange();
+}
+
+void cArcFigure::setStartAngle(double startAngle)
+{
+    this->startAngle = startAngle;
+    fireGeometryChange();
+}
+
+void cArcFigure::setEndAngle(double endAngle)
+{
+    this->endAngle = endAngle;
     fireGeometryChange();
 }
 
@@ -1523,6 +1601,51 @@ void cPolylineFigure::move(double x, double y)
     fireGeometryChange();
 }
 
+void cPolylineFigure::setPoints(const std::vector<Point>& points)
+{
+    this->points = points;
+    fireGeometryChange();
+}
+
+void cPolylineFigure::setPoint(int i, const Point& point)
+{
+    checkIndex(i);
+    this->points[i] = point;
+    fireGeometryChange();
+}
+
+void cPolylineFigure::addPoint(const Point& point)
+{
+    this->points.push_back(point);
+    fireGeometryChange();
+}
+
+void cPolylineFigure::removePoint(int i)
+{
+    checkIndex(i);
+    this->points.erase(this->points.begin() + i);
+    fireGeometryChange();
+}
+
+void cPolylineFigure::insertPoint(int i, const Point& point)
+{
+    checkInsIndex(i);
+    this->points.insert(this->points.begin() + i, point);
+    fireGeometryChange();
+}
+
+void cPolylineFigure::setSmooth(bool smooth)
+{
+    this->smooth = smooth;
+    fireVisualChange();
+}
+
+void cPolylineFigure::setJoinStyle(JoinStyle joinStyle)
+{
+    this->joinStyle = joinStyle;
+    fireVisualChange();
+}
+
 //----
 
 void cAbstractShapeFigure::copy(const cAbstractShapeFigure& other)
@@ -1588,6 +1711,60 @@ const char **cAbstractShapeFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
+void cAbstractShapeFigure::setFilled(bool filled)
+{
+    this->filled = filled;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setOutlined(bool outlined)
+{
+    this->outlined = outlined;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setLineColor(const Color& lineColor)
+{
+    this->lineColor = lineColor;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setFillColor(const Color& fillColor)
+{
+    this->fillColor = fillColor;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setLineStyle(LineStyle lineStyle)
+{
+    this->lineStyle = lineStyle;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setLineWidth(double lineWidth)
+{
+    this->lineWidth = lineWidth;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setLineOpacity(double lineOpacity)
+{
+    this->lineOpacity = lineOpacity;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setFillOpacity(double fillOpacity)
+{
+    this->fillOpacity = fillOpacity;
+    fireVisualChange();
+}
+
+void cAbstractShapeFigure::setScaleLineWidth(bool scaleLineWidth)
+{
+    this->scaleLineWidth = scaleLineWidth;
+    fireVisualChange();
+}
+
 //----
 
 void cRectangleFigure::copy(const cRectangleFigure& other)
@@ -1644,6 +1821,24 @@ void cRectangleFigure::move(double x, double y)
     fireGeometryChange();
 }
 
+void cRectangleFigure::setBounds(const Rectangle& bounds)
+{
+    this->bounds = bounds;
+    fireGeometryChange();
+}
+
+void cRectangleFigure::setCornerRx(double rx)
+{
+    this->cornerRx = rx;
+    fireGeometryChange();
+}
+
+void cRectangleFigure::setCornerRy(double ry)
+{
+    this->cornerRy = ry;
+    fireGeometryChange();
+}
+
 //----
 
 void cOvalFigure::copy(const cOvalFigure& other)
@@ -1688,6 +1883,12 @@ void cOvalFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
+    fireGeometryChange();
+}
+
+void cOvalFigure::setBounds(const Rectangle& bounds)
+{
+    this->bounds = bounds;
     fireGeometryChange();
 }
 
@@ -1747,6 +1948,24 @@ void cRingFigure::move(double x, double y)
     fireGeometryChange();
 }
 
+void cRingFigure::setBounds(const Rectangle& bounds)
+{
+    this->bounds = bounds;
+    fireGeometryChange();
+}
+
+void cRingFigure::setInnerRx(double rx)
+{
+    this->innerRx = rx;
+    fireGeometryChange();
+}
+
+void cRingFigure::setInnerRy(double ry)
+{
+    this->innerRy = ry;
+    fireGeometryChange();
+}
+
 //----
 
 void cPieSliceFigure::copy(const cPieSliceFigure& other)
@@ -1799,6 +2018,24 @@ void cPieSliceFigure::move(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
+    fireGeometryChange();
+}
+
+void cPieSliceFigure::setBounds(const Rectangle& bounds)
+{
+    this->bounds = bounds;
+    fireGeometryChange();
+}
+
+void cPieSliceFigure::setStartAngle(double startAngle)
+{
+    this->startAngle = startAngle;
+    fireGeometryChange();
+}
+
+void cPieSliceFigure::setEndAngle(double endAngle)
+{
+    this->endAngle = endAngle;
     fireGeometryChange();
 }
 
@@ -1871,6 +2108,57 @@ void cPolygonFigure::move(double x, double y)
         points[i].y += y;
     }
     fireGeometryChange();
+}
+
+void cPolygonFigure::setPoints(const std::vector<Point>& points)
+{
+    this->points = points;
+    fireGeometryChange();
+}
+
+void cPolygonFigure::setPoint(int i, const Point& point)
+{
+    checkIndex(i);
+    this->points[i] = point;
+    fireGeometryChange();
+}
+
+void cPolygonFigure::addPoint(const Point& point)
+{
+    this->points.push_back(point);
+    fireGeometryChange();
+}
+
+void cPolygonFigure::removePoint(int i)
+{
+    checkIndex(i);
+    this->points.erase(this->points.begin() + i);
+    fireGeometryChange();
+}
+
+void cPolygonFigure::insertPoint(int i, const Point& point)
+{
+    checkInsIndex(i);
+    this->points.insert(this->points.begin() + i, point);
+    fireGeometryChange();
+}
+
+void cPolygonFigure::setSmooth(bool smooth)
+{
+    this->smooth = smooth;
+    fireVisualChange();
+}
+
+void cPolygonFigure::setJoinStyle(JoinStyle joinStyle)
+{
+    this->joinStyle = joinStyle;
+    fireVisualChange();
+}
+
+void cPolygonFigure::setFillRule(FillRule fillRule)
+{
+    this->fillRule = fillRule;
+    fireVisualChange();
 }
 
 //----
@@ -2069,6 +2357,24 @@ void cPathFigure::move(double x, double y)
     setOffset(Point(getOffset()).translate(x, y));
 }
 
+void cPathFigure::setJoinStyle(JoinStyle joinStyle)
+{
+    this->joinStyle = joinStyle;
+    fireVisualChange();
+}
+
+void cPathFigure::setCapStyle(CapStyle capStyle)
+{
+    this->capStyle = capStyle;
+    fireVisualChange();
+}
+
+void cPathFigure::setFillRule(FillRule fillRule)
+{
+    this->fillRule = fillRule;
+    fireVisualChange();
+}
+
 //----
 
 void cAbstractTextFigure::copy(const cAbstractTextFigure& other)
@@ -2129,6 +2435,42 @@ void cAbstractTextFigure::move(double x, double y)
     position.x += x;
     position.y += y;
     fireGeometryChange();
+}
+
+void cAbstractTextFigure::setPosition(const Point& position)
+{
+    this->position = position;
+    fireGeometryChange();
+}
+
+void cAbstractTextFigure::setAnchor(Anchor anchor)
+{
+    this->anchor = anchor;
+    fireGeometryChange();
+}
+
+void cAbstractTextFigure::setColor(const Color& color)
+{
+    this->color = color;
+    fireVisualChange();
+}
+
+void cAbstractTextFigure::setOpacity(double opacity)
+{
+    this->opacity = opacity;
+    fireVisualChange();
+}
+
+void cAbstractTextFigure::setFont(Font font)
+{
+    this->font = font;
+    fireVisualChange();
+}
+
+void cAbstractTextFigure::setText(const char* text)
+{
+    this->text = text;
+    fireInputDataChange();
 }
 
 //----
@@ -2216,6 +2558,55 @@ void cAbstractImageFigure::move(double x, double y)
     fireGeometryChange();
 }
 
+
+void cAbstractImageFigure::setPosition(const Point& position)
+{
+    this->position = position;
+    fireGeometryChange();
+}
+
+void cAbstractImageFigure::setAnchor(Anchor anchor)
+{
+    this->anchor = anchor;
+    fireGeometryChange();
+}
+
+void cAbstractImageFigure::setWidth(double w)
+{
+    this->width = w;
+    fireGeometryChange();
+}
+
+void cAbstractImageFigure::setHeight(double h)
+{
+    this->height = h;
+    fireGeometryChange();
+}
+
+void cAbstractImageFigure::setInterpolation(Interpolation interpolation)
+{
+    this->interpolation = interpolation;
+    fireVisualChange();
+}
+
+void cAbstractImageFigure::setOpacity(double opacity)
+{
+    this->opacity = opacity;
+    fireVisualChange();
+}
+
+void cAbstractImageFigure::setTintColor(const Color& tintColor)
+{
+    this->tintColor = tintColor;
+    fireVisualChange();
+}
+
+void cAbstractImageFigure::setTintAmount(double tintAmount)
+{
+    this->tintAmount = tintAmount;
+    fireVisualChange();
+}
+
 //----
 
 std::string cImageFigure::info() const
@@ -2253,6 +2644,12 @@ const char **cImageFigure::getAllowedPropertyKeys() const
         concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
+}
+
+void cImageFigure::setImageName(const char* imageName)
+{
+    this->imageName = imageName;
+    fireInputDataChange();
 }
 
 //----
@@ -2310,6 +2707,63 @@ const char **cPixmapFigure::getAllowedPropertyKeys() const
         concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
+}
+
+void cPixmapFigure::setPixmap(const Pixmap& pixmap)
+{
+    this->pixmap = pixmap;
+    fireInputDataChange();
+}
+
+void cPixmapFigure::resize(int width, int height, const RGBA& fill)
+{
+    pixmap.resize(width, height, fill);
+    fireInputDataChange();
+}
+
+void cPixmapFigure::resize(int width, int height, const Color& color, double opacity)
+{
+    pixmap.resize(width, height, color, opacity);
+    fireInputDataChange();
+}
+
+void cPixmapFigure::fill(const RGBA& fill)
+{
+    pixmap.fill(fill);
+    fireInputDataChange();
+}
+
+void cPixmapFigure::fill(const Color& color, double opacity)
+{
+    pixmap.fill(color, opacity);
+    fireInputDataChange();
+}
+
+void cPixmapFigure::setPixel(int x, int y, const RGBA& argb)
+{
+    pixmap.pixel(x, y) = argb;
+    fireInputDataChange();
+}
+
+void cPixmapFigure::setPixel(int x, int y, const Color& color, double opacity)
+{
+    //TODO check if changed
+    pixmap.setPixel(x, y, color, opacity);
+    fireInputDataChange();
+}
+
+void cPixmapFigure::setPixelColor(int x, int y, const Color& color)
+{
+    //TODO check if changed
+    pixmap.setColor(x, y, color);
+    fireInputDataChange();
+}
+
+void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
+{
+    //TODO check if changed
+    pixmap.setOpacity(x, y, opacity);
+    fireInputDataChange();
 }
 
 //------

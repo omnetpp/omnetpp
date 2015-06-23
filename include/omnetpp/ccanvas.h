@@ -502,21 +502,21 @@ class SIM_API cAbstractLineFigure : public cFigure
         /** @name Figure attributes */
         //@{
         virtual const Color& getLineColor() const  {return lineColor;}
-        virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; fireVisualChange();}
+        virtual void setLineColor(const Color& lineColor);
         virtual double getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; fireVisualChange();} // note: rendering of zero-width lines is undefined
+        virtual void setLineWidth(double lineWidth);
         virtual double getLineOpacity() const  {return lineOpacity;}
-        virtual void setLineOpacity(double lineOpacity)  {this->lineOpacity = lineOpacity; fireVisualChange();}
+        virtual void setLineOpacity(double lineOpacity);
         virtual LineStyle getLineStyle() const  {return lineStyle;}
-        virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; fireVisualChange();}
+        virtual void setLineStyle(LineStyle lineStyle);
         virtual CapStyle getCapStyle() const {return capStyle;}
-        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; fireVisualChange();}
+        virtual void setCapStyle(CapStyle capStyle);
         virtual ArrowHead getStartArrowHead() const  {return startArrowHead;}
-        virtual void setStartArrowHead(ArrowHead startArrowHead)  {this->startArrowHead = startArrowHead; fireVisualChange();}
+        virtual void setStartArrowHead(ArrowHead startArrowHead);
         virtual ArrowHead getEndArrowHead() const  {return endArrowHead;}
-        virtual void setEndArrowHead(ArrowHead endArrowHead)  {this->endArrowHead = endArrowHead; fireVisualChange();}
-        virtual void setScaleLineWidth(bool scaleLineWidth) {this->scaleLineWidth = scaleLineWidth; fireVisualChange();}
+        virtual void setEndArrowHead(ArrowHead endArrowHead);
         virtual bool getScaleLineWidth() const {return scaleLineWidth;}
+        virtual void setScaleLineWidth(bool scaleLineWidth);
         //@}
 };
 
@@ -554,9 +554,9 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         /** @name Figure attributes */
         //@{
         virtual const Point& getStart() const  {return start;}
-        virtual void setStart(const Point& start)  {this->start = start; fireGeometryChange();}
+        virtual void setStart(const Point& start);
         virtual const Point& getEnd() const  {return end;}
-        virtual void setEnd(const Point& end)  {this->end = end; fireGeometryChange();}
+        virtual void setEnd(const Point& end);
         //@}
 };
 
@@ -596,11 +596,11 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         /** @name Figure attributes */
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
-        virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
+        virtual void setBounds(const Rectangle& bounds);
         virtual double getStartAngle() const {return startAngle;}
-        virtual void setStartAngle(double startAngle) {this->startAngle = startAngle; fireGeometryChange();}
+        virtual void setStartAngle(double startAngle);
         virtual double getEndAngle() const {return endAngle;}
-        virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; fireGeometryChange();}
+        virtual void setEndAngle(double endAngle);
         //@}
 };
 
@@ -649,18 +649,18 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 
         /** @name Figure attributes */
         //@{
-        virtual int getNumPoints() const {return points.size();}
         virtual const std::vector<Point>& getPoints() const  {return points;}
-        virtual void setPoints(const std::vector<Point>& points) {this->points = points; fireGeometryChange();}
+        virtual void setPoints(const std::vector<Point>& points);
+        virtual int getNumPoints() const {return points.size();}
         virtual const Point& getPoint(int i) const {checkIndex(i); return points[i];}
-        virtual void setPoint(int i, const Point& point)  {checkIndex(i); this->points[i] = point; fireGeometryChange();}
-        virtual void addPoint(const Point& point)  {this->points.push_back(point); fireGeometryChange();}
-        virtual void removePoint(int i)  {checkIndex(i); this->points.erase(this->points.begin()+i); fireGeometryChange();}
-        virtual void insertPoint(int i, const Point& point)  {checkInsIndex(i); this->points.insert(this->points.begin()+i, point); fireGeometryChange();}
+        virtual void setPoint(int i, const Point& point);
+        virtual void addPoint(const Point& point);
+        virtual void removePoint(int i);
+        virtual void insertPoint(int i, const Point& point);
         virtual bool getSmooth() const {return smooth;}
-        virtual void setSmooth(bool smooth) {this->smooth = smooth; fireVisualChange();}
+        virtual void setSmooth(bool smooth);
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
-        virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; fireVisualChange();}
+        virtual void setJoinStyle(JoinStyle joinStyle);
         //@}
 };
 
@@ -717,23 +717,23 @@ class SIM_API cAbstractShapeFigure : public cFigure
         /** @name Figure attributes */
         //@{
         virtual bool isFilled() const  {return filled;}
-        virtual void setFilled(bool filled)  {this->filled = filled; fireVisualChange();}
+        virtual void setFilled(bool filled);
         virtual bool isOutlined() const  {return outlined;}
-        virtual void setOutlined(bool outlined)  {this->outlined = outlined; fireVisualChange();}
+        virtual void setOutlined(bool outlined);
         virtual const Color& getLineColor() const  {return lineColor;}
-        virtual void setLineColor(const Color& lineColor)  {this->lineColor = lineColor; fireVisualChange();}
+        virtual void setLineColor(const Color& lineColor);
         virtual const Color& getFillColor() const  {return fillColor;}
-        virtual void setFillColor(const Color& fillColor)  {this->fillColor = fillColor; fireVisualChange();}
+        virtual void setFillColor(const Color& fillColor);
         virtual LineStyle getLineStyle() const  {return lineStyle;}
-        virtual void setLineStyle(LineStyle lineStyle)  {this->lineStyle = lineStyle; fireVisualChange();}
+        virtual void setLineStyle(LineStyle lineStyle);
         virtual double getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(double lineWidth)  {this->lineWidth = lineWidth; fireVisualChange();}  // note: rendering of zero-width lines undefined
+        virtual void setLineWidth(double lineWidth);   // note: rendering of zero-width lines undefined
         virtual double getLineOpacity() const  {return lineOpacity;}
-        virtual void setLineOpacity(double lineOpacity)  {this->lineOpacity = lineOpacity; fireVisualChange();}
+        virtual void setLineOpacity(double lineOpacity);
         virtual double getFillOpacity() const  {return fillOpacity;}
-        virtual void setFillOpacity(double fillOpacity)  {this->fillOpacity = fillOpacity; fireVisualChange();}
-        virtual void setScaleLineWidth(bool scaleLineWidth) {this->scaleLineWidth = scaleLineWidth; fireVisualChange();}
+        virtual void setFillOpacity(double fillOpacity);
         virtual bool getScaleLineWidth() const {return scaleLineWidth;}
+        virtual void setScaleLineWidth(bool scaleLineWidth);
         //@}
 };
 
@@ -776,11 +776,11 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         /** @name Figure attributes */
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
-        virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
+        virtual void setBounds(const Rectangle& bounds);
         virtual double getCornerRx() const  {return cornerRx;}
-        virtual void setCornerRx(double rx)  {this->cornerRx = rx; fireGeometryChange();}
+        virtual void setCornerRx(double rx);
         virtual double getCornerRy() const  {return cornerRy;}
-        virtual void setCornerRy(double ry)  {this->cornerRy = ry; fireGeometryChange();}
+        virtual void setCornerRy(double ry);
         //@}
 };
 
@@ -818,7 +818,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         /** @name Figure attributes */
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
-        virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
+        virtual void setBounds(const Rectangle& bounds);
         //@}
 };
 
@@ -859,11 +859,11 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         /** @name Figure attributes */
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
-        virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
+        virtual void setBounds(const Rectangle& bounds);
         virtual double getInnerRx() const  {return innerRx;}
-        virtual void setInnerRx(double rx)  {this->innerRx = rx; fireGeometryChange();}
+        virtual void setInnerRx(double rx);
         virtual double getInnerRy() const  {return innerRy;}
-        virtual void setInnerRy(double ry)  {this->innerRy = ry; fireGeometryChange();}
+        virtual void setInnerRy(double ry);
         //@}
 };
 
@@ -905,11 +905,11 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         /** @name Figure attributes */
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
-        virtual void setBounds(const Rectangle& bounds)  {this->bounds = bounds; fireGeometryChange();}
+        virtual void setBounds(const Rectangle& bounds);
         virtual double getStartAngle() const {return startAngle;}
-        virtual void setStartAngle(double startAngle) {this->startAngle = startAngle; fireGeometryChange();}
+        virtual void setStartAngle(double startAngle);
         virtual double getEndAngle() const {return endAngle;}
-        virtual void setEndAngle(double endAngle) {this->endAngle = endAngle; fireGeometryChange();}
+        virtual void setEndAngle(double endAngle);
         //@}
 };
 
@@ -956,20 +956,20 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 
         /** @name Figure attributes */
         //@{
-        virtual int getNumPoints() const {return points.size();}
         virtual const std::vector<Point>& getPoints() const  {return points;}
-        virtual void setPoints(const std::vector<Point>& points) {this->points = points; fireGeometryChange();}
+        virtual void setPoints(const std::vector<Point>& points);
+        virtual int getNumPoints() const {return points.size();}
         virtual const Point& getPoint(int i) const {checkIndex(i); return points[i];}
-        virtual void setPoint(int i, const Point& point)  {checkIndex(i); this->points[i] = point; fireGeometryChange();}
-        virtual void addPoint(const Point& point)  {this->points.push_back(point); fireGeometryChange();}
-        virtual void removePoint(int i)  {checkIndex(i); this->points.erase(this->points.begin()+i); fireGeometryChange();}
-        virtual void insertPoint(int i, const Point& point)  {checkInsIndex(i); this->points.insert(this->points.begin()+i, point); fireGeometryChange();}
+        virtual void setPoint(int i, const Point& point);
+        virtual void addPoint(const Point& point);
+        virtual void removePoint(int i);
+        virtual void insertPoint(int i, const Point& point);
         virtual bool getSmooth() const {return smooth;}
-        virtual void setSmooth(bool smooth) {this->smooth = smooth; fireVisualChange();}
+        virtual void setSmooth(bool smooth);
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
-        virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; fireVisualChange();}
+        virtual void setJoinStyle(JoinStyle joinStyle);
         virtual FillRule getFillRule() const {return fillRule;}
-        virtual void setFillRule(FillRule fillRule) {this->fillRule = fillRule; fireVisualChange();}
+        virtual void setFillRule(FillRule fillRule);
         //@}
 };
 
@@ -1045,11 +1045,11 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s x2 y2 x y
         virtual void addClosePath(); // Z
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
-        virtual void setJoinStyle(JoinStyle joinStyle) {this->joinStyle = joinStyle; fireVisualChange();}
+        virtual void setJoinStyle(JoinStyle joinStyle);
         virtual CapStyle getCapStyle() const {return capStyle;}
-        virtual void setCapStyle(CapStyle capStyle) {this->capStyle = capStyle; fireVisualChange();}
+        virtual void setCapStyle(CapStyle capStyle);
         virtual FillRule getFillRule() const {return fillRule;}
-        virtual void setFillRule(FillRule fillRule) {this->fillRule = fillRule; fireVisualChange();}
+        virtual void setFillRule(FillRule fillRule);
         //@}
 };
 
@@ -1094,17 +1094,17 @@ class SIM_API cAbstractTextFigure : public cFigure
         /** @name Figure attributes */
         //@{
         virtual const Point& getPosition() const  {return position;}
-        virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
+        virtual void setPosition(const Point& position);
         virtual Anchor getAnchor() const  {return anchor;}
-        virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; fireGeometryChange();}
+        virtual void setAnchor(Anchor anchor);
         virtual const Color& getColor() const  {return color;}
-        virtual void setColor(const Color& color)  {this->color = color; fireVisualChange();}
+        virtual void setColor(const Color& color);
         virtual double getOpacity() const  {return opacity;}
-        virtual void setOpacity(double opacity)  {this->opacity = opacity; fireVisualChange();}
+        virtual void setOpacity(double opacity);
         virtual const Font& getFont() const  {return font;}
-        virtual void setFont(Font font)  {this->font = font; fireVisualChange();}
+        virtual void setFont(Font font);
         virtual const char *getText() const  {return text.c_str();}
-        virtual void setText(const char *text)  {this->text = text; fireInputDataChange();}
+        virtual void setText(const char* text);
         //@}
 };
 
@@ -1219,21 +1219,21 @@ class SIM_API cAbstractImageFigure : public cFigure
         /** @name Figure attributes */
         //@{
         virtual const Point& getPosition() const  {return position;}
-        virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
+        virtual void setPosition(const Point& position);
         virtual Anchor getAnchor() const  {return anchor;}
-        virtual void setAnchor(Anchor anchor)  {this->anchor = anchor; fireGeometryChange();}
+        virtual void setAnchor(Anchor anchor);
         virtual double getWidth() const  {return width;}
-        virtual void setWidth(double w)  {this->width = w; fireGeometryChange();}
+        virtual void setWidth(double w);
         virtual double getHeight() const  {return height;}
-        virtual void setHeight(double h)  {this->height = h; fireGeometryChange();}
+        virtual void setHeight(double h);
         virtual Interpolation getInterpolation() const {return interpolation;}
-        virtual void setInterpolation(Interpolation interpolation) {this->interpolation = interpolation; fireVisualChange();}
+        virtual void setInterpolation(Interpolation interpolation);
         virtual double getOpacity() const  {return opacity;}
-        virtual void setOpacity(double opacity)  {this->opacity = opacity; fireVisualChange();}
+        virtual void setOpacity(double opacity);
         virtual const Color& getTintColor() const  {return tintColor;}
-        virtual void setTintColor(const Color& tintColor)  {this->tintColor = tintColor; fireVisualChange();}
+        virtual void setTintColor(const Color& tintColor);
         virtual double getTintAmount() const  {return tintAmount;}
-        virtual void setTintAmount(double tintAmount)  {this->tintAmount = tintAmount; fireVisualChange();}
+        virtual void setTintAmount(double tintAmount);
         //@}
 };
 
@@ -1271,7 +1271,7 @@ class SIM_API cImageFigure : public cAbstractImageFigure
         /** @name Figure attributes */
         //@{
         virtual const char *getImageName() const  {return imageName.c_str();}
-        virtual void setImageName(const char *imageName)  {this->imageName = imageName; fireInputDataChange();}
+        virtual void setImageName(const char* imageName);
         //@}
 };
 
@@ -1338,20 +1338,20 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         /** @name Figure attributes */
         //@{
         virtual const Pixmap& getPixmap() const {return pixmap;}
-        virtual void setPixmap(const Pixmap& pixmap) {this->pixmap = pixmap; fireInputDataChange();}
+        virtual void setPixmap(const Pixmap& pixmap);
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
         virtual int getPixmapWidth() const {return pixmap.getWidth();}
-        virtual void resize(int width, int height, const RGBA& fill) {pixmap.resize(width, height, fill); fireInputDataChange();} // set *newly added* pixels to this color
-        virtual void resize(int width, int height, const Color& color, double opacity) {pixmap.resize(width, height, color, opacity); fireInputDataChange();} // fills *newly added* pixels to this color
-        virtual void fill(const RGBA& fill) {pixmap.fill(fill); fireInputDataChange();}
-        virtual void fill(const Color& color, double opacity) {pixmap.fill(color, opacity); fireInputDataChange();}
+        virtual void resize(int width, int height, const RGBA& fill); // set *newly added* pixels with this color and opacity
+        virtual void resize(int width, int height, const Color& color, double opacity);  // fills *newly added* pixels with this color and opacity
+        virtual void fill(const RGBA& fill);
+        virtual void fill(const Color& color, double opacity);
         virtual const RGBA getPixel(int x, int y) const {return pixmap.pixel(x, y);}
-        virtual void setPixel(int x, int y, const RGBA& argb) {pixmap.pixel(x, y) = argb; fireInputDataChange();}
-        virtual void setPixel(int x, int y, const Color& color, double opacity=1.0) {pixmap.setPixel(x,y,color,opacity); fireInputDataChange();}
+        virtual void setPixel(int x, int y, const RGBA& argb);
+        virtual void setPixel(int x, int y, const Color& color, double opacity = 1.0);
         virtual const Color getPixelColor(int x, int y) const {return pixmap.getColor(x,y);}
-        virtual void setPixelColor(int x, int y, const Color& color) {pixmap.setColor(x,y,color); fireInputDataChange();}
+        virtual void setPixelColor(int x, int y, const Color& color);
         virtual double getPixelOpacity(int x, int y) const {return pixmap.getOpacity(x,y);}
-        virtual void setPixelOpacity(int x, int y, double opacity) {pixmap.setOpacity(x,y,opacity); fireInputDataChange();}
+        virtual void setPixelOpacity(int x, int y, double opacity);
         //@}
 };
 
