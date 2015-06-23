@@ -62,6 +62,7 @@ class SIM_API cFigure : public cOwnedObject
             double distanceTo(const Point& p) const;
             double getLength() const;
             Point& translate(double dx, double dy) {x += dx; y += dy; return *this;}
+            bool operator==(const Point& other) const {return x == other.x && y == other.y;}
             std::string str() const;
         };
 
@@ -76,6 +77,7 @@ class SIM_API cFigure : public cOwnedObject
             Point getCenter() const;
             Point getSize() const;
             Rectangle& translate(double dx, double dy) {x += dx; y += dy; return *this;}
+            bool operator==(const Rectangle& other) const {return x == other.x && y == other.y && width == other.width && height == other.height;}
             std::string str() const;
         };
 
@@ -94,6 +96,7 @@ class SIM_API cFigure : public cOwnedObject
             Color() : red(0), green(0), blue(0) {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
             Color(const char *color) {*this = parseColor(color);}
+            bool operator==(const Color& other) const {return red == other.red && green == other.green && blue == other.blue;}
             std::string str() const;
         };
 
@@ -120,6 +123,7 @@ class SIM_API cFigure : public cOwnedObject
             uint8_t style;  // binary OR of FontStyle constants
             Font() : pointSize(0), style(FONT_NONE) {}
             Font(std::string typeface, int pointSize, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
+            bool operator==(const Font& other) const {return typeface == other.typeface && pointSize == other.pointSize && style == other.style;}
             std::string str() const;
         };
 
@@ -163,6 +167,7 @@ class SIM_API cFigure : public cOwnedObject
                 Transform& multiply(const Transform& t);
                 Transform& leftMultiply(const Transform& t);
                 Point applyTo(const Point& p) const;
+                bool operator==(const Transform& o) const {return a == o.a && b == o.b && c == o.c && d == o.d && t1 == o.t1 && t2 == o.t2;}
                 std::string str() const;
         };
 
@@ -177,6 +182,7 @@ class SIM_API cFigure : public cOwnedObject
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
             void operator=(const Color& color) {red = color.red; green = color.green; blue = color.blue; alpha = 255;}
             operator Color() const {return Color(red, green, blue);}
+            bool operator==(const RGBA& o) const {return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;}
             std::string str() const;
         };
 
@@ -411,8 +417,8 @@ class SIM_API cGroupFigure : public cFigure
 };
 
 /**
- * Sets up an axis-aligned, unscaled coordinate system for children, cancelling the
- * effect of any transformation (scaling, rotation, etc.) set up in ancestor figures.
+ * Sets up an axis-aligned, unscaled coordinate system for children, canceling the
+ * effect of any transformation (scaling, rotation, etc.) inherited from ancestor figures.
  * This allows pixel-based positioning of children, and makes them immune to zooming.
  * The origin of the coordinate system is the position of the panel figure.
  * Setting a transformation on the panel figure itself allows rotation, scaling,
@@ -609,7 +615,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
  * line segments. The class stores geometry information as a sequence of
  * points. The line may be <i>smoothed</i>. A smoothed line is drawn
  * as a series of Bezier curves, which touch the start point of the first
- * line segment, the end point of the last line segment, and the mindpoints
+ * line segment, the end point of the last line segment, and the midpoints
  * of intermediate line segments, while intermediate points serve as control
  * points.
  *
@@ -1170,7 +1176,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
  * point is at the positioning point. Anchor defaults to ANCHOR_CENTER.
  *
  * Images may be drawn at their "natural" size, or may be scaled to a
- * specified size by settign the width and/or height properties. One can
+ * specified size by setting the width and/or height properties. One can
  * choose from several interpolation modes that control how the image is
  * rendered. Interpolation defaults to INTERPOLATION_FAST.
  *

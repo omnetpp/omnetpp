@@ -397,6 +397,8 @@ void cFigure::Pixmap::allocate(int newWidth, int newHeight)
 
 void cFigure::Pixmap::resize(int newWidth, int newHeight, const RGBA& fill_)
 {
+    if (newWidth == width && newHeight == height)
+        return; // no change
     if (newWidth < 0 || newWidth < 0)
         throw cRuntimeError("cFigure::Pixmap: width/height cannot be negative");
 
@@ -943,6 +945,8 @@ std::string cFigure::info() const
 
 void cFigure::setTags(const char *tags)
 {
+    if (OPP::opp_strcmp(this->tags, tags) == 0)
+        return;
     const char *oldTags = this->tags;
     this->tags = stringPool.get(tags);
     stringPool.release(oldTags);
@@ -1350,48 +1354,64 @@ const char **cAbstractLineFigure::getAllowedPropertyKeys() const
 
 void cAbstractLineFigure::setLineColor(const Color& lineColor)
 {
+    if (lineColor == this->lineColor)
+        return;
     this->lineColor = lineColor;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setLineWidth(double lineWidth)
 {
+    if (lineWidth == this->lineWidth)
+        return;
     this->lineWidth = lineWidth;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setLineOpacity(double lineOpacity)
 {
+    if (lineOpacity == this->lineOpacity)
+        return;
     this->lineOpacity = lineOpacity;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setLineStyle(LineStyle lineStyle)
 {
+    if (lineStyle == this->lineStyle)
+        return;
     this->lineStyle = lineStyle;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setCapStyle(CapStyle capStyle)
 {
+    if (capStyle == this->capStyle)
+        return;
     this->capStyle = capStyle;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setStartArrowHead(ArrowHead startArrowHead)
 {
+    if (startArrowHead == this->startArrowHead)
+        return;
     this->startArrowHead = startArrowHead;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setEndArrowHead(ArrowHead endArrowHead)
 {
+    if (endArrowHead == this->endArrowHead)
+        return;
     this->endArrowHead = endArrowHead;
     fireVisualChange();
 }
 
 void cAbstractLineFigure::setScaleLineWidth(bool scaleLineWidth)
 {
+    if (scaleLineWidth == this->scaleLineWidth)
+        return;
     this->scaleLineWidth = scaleLineWidth;
     fireVisualChange();
 }
@@ -1449,12 +1469,16 @@ void cLineFigure::move(double x, double y)
 
 void cLineFigure::setStart(const Point& start)
 {
+    if (start == this->start)
+        return;
     this->start = start;
     fireGeometryChange();
 }
 
 void cLineFigure::setEnd(const Point& end)
 {
+    if (end == this->end)
+        return;
     this->end = end;
     fireGeometryChange();
 }
@@ -1516,18 +1540,24 @@ void cArcFigure::move(double x, double y)
 
 void cArcFigure::setBounds(const Rectangle& bounds)
 {
+    if (bounds == this->bounds)
+        return;
     this->bounds = bounds;
     fireGeometryChange();
 }
 
 void cArcFigure::setStartAngle(double startAngle)
 {
+    if (startAngle == this->startAngle)
+        return;
     this->startAngle = startAngle;
     fireGeometryChange();
 }
 
 void cArcFigure::setEndAngle(double endAngle)
 {
+    if (endAngle == this->endAngle)
+        return;
     this->endAngle = endAngle;
     fireGeometryChange();
 }
@@ -1603,6 +1633,8 @@ void cPolylineFigure::move(double x, double y)
 
 void cPolylineFigure::setPoints(const std::vector<Point>& points)
 {
+    if (points == this->points)
+        return;
     this->points = points;
     fireGeometryChange();
 }
@@ -1610,6 +1642,8 @@ void cPolylineFigure::setPoints(const std::vector<Point>& points)
 void cPolylineFigure::setPoint(int i, const Point& point)
 {
     checkIndex(i);
+    if (point == this->points[i])
+        return;
     this->points[i] = point;
     fireGeometryChange();
 }
@@ -1636,12 +1670,16 @@ void cPolylineFigure::insertPoint(int i, const Point& point)
 
 void cPolylineFigure::setSmooth(bool smooth)
 {
+    if (smooth == this->smooth)
+        return;
     this->smooth = smooth;
     fireVisualChange();
 }
 
 void cPolylineFigure::setJoinStyle(JoinStyle joinStyle)
 {
+    if (joinStyle == this->joinStyle)
+        return;
     this->joinStyle = joinStyle;
     fireVisualChange();
 }
@@ -1713,54 +1751,72 @@ const char **cAbstractShapeFigure::getAllowedPropertyKeys() const
 
 void cAbstractShapeFigure::setFilled(bool filled)
 {
+    if (filled == this->filled)
+        return;
     this->filled = filled;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setOutlined(bool outlined)
 {
+    if (outlined == this->outlined)
+        return;
     this->outlined = outlined;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setLineColor(const Color& lineColor)
 {
+    if (lineColor == this->lineColor)
+        return;
     this->lineColor = lineColor;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setFillColor(const Color& fillColor)
 {
+    if (fillColor == this->fillColor)
+        return;
     this->fillColor = fillColor;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setLineStyle(LineStyle lineStyle)
 {
+    if (lineStyle == this->lineStyle)
+        return;
     this->lineStyle = lineStyle;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setLineWidth(double lineWidth)
 {
+    if (lineWidth == this->lineWidth)
+        return;
     this->lineWidth = lineWidth;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setLineOpacity(double lineOpacity)
 {
+    if (lineOpacity == this->lineOpacity)
+        return;
     this->lineOpacity = lineOpacity;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setFillOpacity(double fillOpacity)
 {
+    if (fillOpacity == this->fillOpacity)
+        return;
     this->fillOpacity = fillOpacity;
     fireVisualChange();
 }
 
 void cAbstractShapeFigure::setScaleLineWidth(bool scaleLineWidth)
 {
+    if (scaleLineWidth == this->scaleLineWidth)
+        return;
     this->scaleLineWidth = scaleLineWidth;
     fireVisualChange();
 }
@@ -1823,18 +1879,24 @@ void cRectangleFigure::move(double x, double y)
 
 void cRectangleFigure::setBounds(const Rectangle& bounds)
 {
+    if (bounds == this->bounds)
+        return;
     this->bounds = bounds;
     fireGeometryChange();
 }
 
 void cRectangleFigure::setCornerRx(double rx)
 {
+    if (rx == this->cornerRx)
+        return;
     this->cornerRx = rx;
     fireGeometryChange();
 }
 
 void cRectangleFigure::setCornerRy(double ry)
 {
+    if (ry == this->cornerRy)
+        return;
     this->cornerRy = ry;
     fireGeometryChange();
 }
@@ -1888,6 +1950,8 @@ void cOvalFigure::move(double x, double y)
 
 void cOvalFigure::setBounds(const Rectangle& bounds)
 {
+    if (bounds == this->bounds)
+        return;
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -1950,18 +2014,24 @@ void cRingFigure::move(double x, double y)
 
 void cRingFigure::setBounds(const Rectangle& bounds)
 {
+    if (bounds == this->bounds)
+        return;
     this->bounds = bounds;
     fireGeometryChange();
 }
 
 void cRingFigure::setInnerRx(double rx)
 {
+    if (rx == this->innerRx)
+        return;
     this->innerRx = rx;
     fireGeometryChange();
 }
 
 void cRingFigure::setInnerRy(double ry)
 {
+    if (ry == this->innerRy)
+        return;
     this->innerRy = ry;
     fireGeometryChange();
 }
@@ -2023,18 +2093,24 @@ void cPieSliceFigure::move(double x, double y)
 
 void cPieSliceFigure::setBounds(const Rectangle& bounds)
 {
+    if (bounds == this->bounds)
+        return;
     this->bounds = bounds;
     fireGeometryChange();
 }
 
 void cPieSliceFigure::setStartAngle(double startAngle)
 {
+    if (startAngle == this->startAngle)
+        return;
     this->startAngle = startAngle;
     fireGeometryChange();
 }
 
 void cPieSliceFigure::setEndAngle(double endAngle)
 {
+    if (endAngle == this->endAngle)
+        return;
     this->endAngle = endAngle;
     fireGeometryChange();
 }
@@ -2112,6 +2188,8 @@ void cPolygonFigure::move(double x, double y)
 
 void cPolygonFigure::setPoints(const std::vector<Point>& points)
 {
+    if (points == this->points)
+        return;
     this->points = points;
     fireGeometryChange();
 }
@@ -2119,6 +2197,8 @@ void cPolygonFigure::setPoints(const std::vector<Point>& points)
 void cPolygonFigure::setPoint(int i, const Point& point)
 {
     checkIndex(i);
+    if (point == this->points[i])
+        return;
     this->points[i] = point;
     fireGeometryChange();
 }
@@ -2145,18 +2225,24 @@ void cPolygonFigure::insertPoint(int i, const Point& point)
 
 void cPolygonFigure::setSmooth(bool smooth)
 {
+    if (smooth == this->smooth)
+        return;
     this->smooth = smooth;
     fireVisualChange();
 }
 
 void cPolygonFigure::setJoinStyle(JoinStyle joinStyle)
 {
+    if (joinStyle == this->joinStyle)
+        return;
     this->joinStyle = joinStyle;
     fireVisualChange();
 }
 
 void cPolygonFigure::setFillRule(FillRule fillRule)
 {
+    if (fillRule == this->fillRule)
+        return;
     this->fillRule = fillRule;
     fireVisualChange();
 }
@@ -2213,6 +2299,8 @@ const char **cPathFigure::getAllowedPropertyKeys() const
 
 void cPathFigure::setPath(const char *path)
 {
+    if (OPP::opp_strcmp(path, this->path.c_str()) == 0)
+        return;
     this->path = path;
     //TODO validate; add spaces around command letters if missing
     fireGeometryChange();
@@ -2359,18 +2447,24 @@ void cPathFigure::move(double x, double y)
 
 void cPathFigure::setJoinStyle(JoinStyle joinStyle)
 {
+    if (joinStyle == this->joinStyle)
+        return;
     this->joinStyle = joinStyle;
     fireVisualChange();
 }
 
 void cPathFigure::setCapStyle(CapStyle capStyle)
 {
+    if (capStyle == this->capStyle)
+        return;
     this->capStyle = capStyle;
     fireVisualChange();
 }
 
 void cPathFigure::setFillRule(FillRule fillRule)
 {
+    if (fillRule == this->fillRule)
+        return;
     this->fillRule = fillRule;
     fireVisualChange();
 }
@@ -2439,36 +2533,48 @@ void cAbstractTextFigure::move(double x, double y)
 
 void cAbstractTextFigure::setPosition(const Point& position)
 {
+    if (position == this->position)
+        return;
     this->position = position;
     fireGeometryChange();
 }
 
 void cAbstractTextFigure::setAnchor(Anchor anchor)
 {
+    if (anchor == this->anchor)
+        return;
     this->anchor = anchor;
     fireGeometryChange();
 }
 
 void cAbstractTextFigure::setColor(const Color& color)
 {
+    if (color == this->color)
+        return;
     this->color = color;
     fireVisualChange();
 }
 
 void cAbstractTextFigure::setOpacity(double opacity)
 {
+    if (opacity == this->opacity)
+        return;
     this->opacity = opacity;
     fireVisualChange();
 }
 
 void cAbstractTextFigure::setFont(Font font)
 {
+    if (font == this->font)
+        return;
     this->font = font;
     fireVisualChange();
 }
 
 void cAbstractTextFigure::setText(const char* text)
 {
+    if (text == this->text)
+        return;
     this->text = text;
     fireInputDataChange();
 }
@@ -2561,48 +2667,64 @@ void cAbstractImageFigure::move(double x, double y)
 
 void cAbstractImageFigure::setPosition(const Point& position)
 {
+    if (position == this->position)
+        return;
     this->position = position;
     fireGeometryChange();
 }
 
 void cAbstractImageFigure::setAnchor(Anchor anchor)
 {
+    if (anchor == this->anchor)
+        return;
     this->anchor = anchor;
     fireGeometryChange();
 }
 
-void cAbstractImageFigure::setWidth(double w)
+void cAbstractImageFigure::setWidth(double width)
 {
-    this->width = w;
+    if (width == this->width)
+        return;
+    this->width = width;
     fireGeometryChange();
 }
 
-void cAbstractImageFigure::setHeight(double h)
+void cAbstractImageFigure::setHeight(double height)
 {
-    this->height = h;
+    if (height == this->height)
+        return;
+    this->height = height;
     fireGeometryChange();
 }
 
 void cAbstractImageFigure::setInterpolation(Interpolation interpolation)
 {
+    if (interpolation == this->interpolation)
+        return;
     this->interpolation = interpolation;
     fireVisualChange();
 }
 
 void cAbstractImageFigure::setOpacity(double opacity)
 {
+    if (opacity == this->opacity)
+        return;
     this->opacity = opacity;
     fireVisualChange();
 }
 
 void cAbstractImageFigure::setTintColor(const Color& tintColor)
 {
+    if (tintColor == this->tintColor)
+        return;
     this->tintColor = tintColor;
     fireVisualChange();
 }
 
 void cAbstractImageFigure::setTintAmount(double tintAmount)
 {
+    if (tintAmount == this->tintAmount)
+        return;
     this->tintAmount = tintAmount;
     fireVisualChange();
 }
@@ -2648,6 +2770,8 @@ const char **cImageFigure::getAllowedPropertyKeys() const
 
 void cImageFigure::setImageName(const char* imageName)
 {
+    if (imageName == this->imageName)
+        return;
     this->imageName = imageName;
     fireInputDataChange();
 }
@@ -2711,8 +2835,9 @@ const char **cPixmapFigure::getAllowedPropertyKeys() const
 
 void cPixmapFigure::setPixmap(const Pixmap& pixmap)
 {
-    this->pixmap = pixmap;
-    fireInputDataChange();
+    if (&pixmap != &this->pixmap) // don't copy if it's the same object
+        this->pixmap = pixmap;
+    fireInputDataChange(); // always notify, as content may have changed
 }
 
 void cPixmapFigure::resize(int width, int height, const RGBA& fill)
@@ -2723,6 +2848,8 @@ void cPixmapFigure::resize(int width, int height, const RGBA& fill)
 
 void cPixmapFigure::resize(int width, int height, const Color& color, double opacity)
 {
+    if (pixmap.getWidth() == width && pixmap.getHeight() == height)
+        return;
     pixmap.resize(width, height, color, opacity);
     fireInputDataChange();
 }
@@ -2747,21 +2874,18 @@ void cPixmapFigure::setPixel(int x, int y, const RGBA& argb)
 
 void cPixmapFigure::setPixel(int x, int y, const Color& color, double opacity)
 {
-    //TODO check if changed
     pixmap.setPixel(x, y, color, opacity);
     fireInputDataChange();
 }
 
 void cPixmapFigure::setPixelColor(int x, int y, const Color& color)
 {
-    //TODO check if changed
     pixmap.setColor(x, y, color);
     fireInputDataChange();
 }
 
 void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
 {
-    //TODO check if changed
     pixmap.setOpacity(x, y, opacity);
     fireInputDataChange();
 }
