@@ -136,8 +136,9 @@ public class ComboFieldEditor extends FieldEditor {
     public void setComboContents(List<String> list) {
         String oldValue = combo.getText();
         combo.removeAll();
-        for (String i : list)
-            combo.add(i);
+        if (list != null)
+            for (String i : list)
+                combo.add(i);
         combo.setText(oldValue);
         reread();
     }

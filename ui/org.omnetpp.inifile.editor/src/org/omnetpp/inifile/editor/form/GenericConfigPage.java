@@ -16,6 +16,8 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EV_OU
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXTRA_STACK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_INTERACTIVE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_LOG_FORMAT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_LOG_LEVEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MESSAGE_TRACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MODULE_MESSAGES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_OUTPUT_FILE;
@@ -37,7 +39,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_REC
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FUTUREEVENTSET_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOG_LEVEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_MODULE_NESTING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENTLOG_RECORDING;
@@ -143,6 +147,10 @@ public class GenericConfigPage extends ScrolledFormPage {
         "0", "-3", "-6", "-9", "-12", "-15", "-18",  //TODO add (s),(ms),(us),(ns),(ps),(fs),(as) once combo supports it
     };
 
+    public static final String[] LOGLEVEL_CHOICES = new String[] {
+        "FATAL", "ERROR", "WARN", "INFO", "DETAILS", "DEBUG", "TRACE"
+    };
+
     public static final Image ICON_WARNING = UIUtils.ICON_WARNING;
 
     public static String[] getCategoryNames() {
@@ -201,6 +209,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group0 = createGroup(form, "Regression");
             addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify", c(null, "Fingerprint (Hex)"));
             addSpacer(form);
+            Group group01 = createGroup(form, "Logging");
+            addTextFieldEditor(group01, CFGID_LOG_LEVEL, "Per-module log level", c("Module", "Log level")); //TODO combo
+            addSpacer(form);
             Group group2 = createGroup(form, "Debugging");
             addCheckboxFieldEditor(group2, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
             addCheckboxFieldEditor(group2, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
@@ -213,6 +224,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group3, CFGID_DEBUGGER_ATTACH_ON_ERROR, "Attach debugger on errors");
             addCheckboxFieldEditor(group3, CFGID_DEBUGGER_ATTACH_ON_STARTUP, "Attach debugger on startup");
             addTextFieldEditor(group3, CFGID_DEBUGGER_ATTACH_WAIT_TIME, "Attach timeout");
+            addLabel(group3, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu.");
             addSpacer(form);
             Group group4 = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
@@ -297,6 +309,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group1, CFGID_CONFIGURATION_CLASS, "Configuration class");
             addTextFieldEditor(group1, CFGID_SCHEDULER_CLASS, "Scheduler class");
             addTextFieldEditor(group1, CFGID_REALTIMESCHEDULER_SCALING, "Real-Time scheduler scaling");
+            addTextFieldEditor(group1, CFGID_FUTUREEVENTSET_CLASS, "Future Event Set (FES) class");
             addTextFieldEditor(group1, CFGID_OUTPUTVECTORMANAGER_CLASS, "Output vector manager class");
             addTextFieldEditor(group1, CFGID_OUTPUTSCALARMANAGER_CLASS, "Output scalar manager class");
             addTextFieldEditor(group1, CFGID_SNAPSHOTMANAGER_CLASS, "Snapshot manager class");
@@ -319,7 +332,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
             addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
             addCheckboxFieldEditor(group2, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
-            addCheckboxFieldEditor(group2, CFGID_CMDENV_EV_OUTPUT, "Enable text output for modules");
+            addCheckboxFieldEditor(group2, CFGID_CMDENV_EV_OUTPUT, "Module log");
+            addComboboxFieldEditor(group2, CFGID_CMDENV_LOG_LEVEL, "Log level");
+            addTextFieldEditor(group2, CFGID_CMDENV_LOG_FORMAT, "Log prefix");
             addSpacer(form);
             Group group3 = createGroup(form, "Miscellaneus");
             addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Interactive mode");
@@ -370,10 +385,19 @@ public class GenericConfigPage extends ScrolledFormPage {
         FieldEditor simtimeScaleEditor = getFieldEditorFor(CFGID_SIMTIME_SCALE);
         if (simtimeScaleEditor != null)
             simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
+        FieldEditor cmdenvLoglevelEditor = getFieldEditorFor(CFGID_CMDENV_LOG_LEVEL);
+        if (cmdenvLoglevelEditor != null)
+            cmdenvLoglevelEditor.setComboContents(Arrays.asList(LOGLEVEL_CHOICES));
     }
 
     protected Label addSpacer(Composite parent) {
         return new Label(parent, SWT.NONE);
+    }
+
+    protected Label addLabel(Composite parent, String text) {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText(text);
+        return label;
     }
 
     protected Group createGroup(Composite parent, String groupLabel) {
@@ -425,7 +449,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
         FieldEditor editor = e.isGlobal() ?
                 new ComboFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
-                new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label, hints); //FIXME make it combo too
+                new ExpandableComboFieldEditor(parent, e, getInifileDocument(), this, label, hints);
         addFieldEditor(editor);
         return editor;
     }
