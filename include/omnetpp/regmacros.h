@@ -232,10 +232,9 @@ NAMESPACE_BEGIN
  * <pre>
  * enum State { IDLE, BUSY, SLEEPING };
  * Register_Enum(State, (
- *    "idle",     State::IDLE,
- *    "busy",     State::BUSY,
- *    "sleeping", State::SLEEPING,
- *    nullptr));
+ *    State::IDLE,
+ *    State::BUSY,
+ *    State::SLEEPING));
  * </pre>
  *
  * @see cEnum
@@ -245,7 +244,8 @@ NAMESPACE_BEGIN
   EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(OPP::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
 
 /**
- * Registers an enum, and makes it accessible via a global cEnum* pointer.
+ * Registers an enum, and makes it accessible via a global cEnum* pointer,
+ * using explicit strings for the enum type and it member names.
  *
  * Example:
  * <pre>
@@ -254,8 +254,13 @@ NAMESPACE_BEGIN
  *    "idle",     State::IDLE,
  *    "busy",     State::BUSY,
  *    "sleeping", State::SLEEPING,
- *    nullptr));
+ *    nullptr)); // see note below
  * </pre>
+ *
+ * Note: One may need to put (void*)nullptr as the last item, due to a bug in
+ * certain compilers (they push a 32-bit zero value instead a of a 64-bit one
+ * in the "..." arg list, causing the called function to be unable to determine
+ * the end of the argument list).
  *
  * @see cEnum
  * @hideinitializer
