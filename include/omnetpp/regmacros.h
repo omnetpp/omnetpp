@@ -242,7 +242,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_Enum(NAME, VALUES)  \
-  EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
+  EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(OPP::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
 
 /**
  * Registers an enum, and makes it accessible via a global cEnum* pointer.
