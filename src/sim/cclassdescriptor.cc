@@ -105,12 +105,12 @@ double cClassDescriptor::string2double(const char *s)
     return atof(s);
 }
 
-std::string cClassDescriptor::enum2string(int e, const char *enumname)
+std::string cClassDescriptor::enum2string(int e, const char *enumName)
 {
     char buf[32];
     sprintf(buf, "%d", e);
 
-    cEnum *enump = cEnum::find(enumname);
+    cEnum *enump = cEnum::find(enumName);
     if (!enump)
         return buf;  // this enum type is not registered
 
@@ -121,11 +121,11 @@ std::string cClassDescriptor::enum2string(int e, const char *enumname)
     return std::string(buf) + " (" + name + ")";
 }
 
-int cClassDescriptor::string2enum(const char *s, const char *enumname)
+int cClassDescriptor::string2enum(const char *s, const char *enumName)
 {
     // return zero if string cannot be parsed
     int val = 0;
-    cEnum *enump = cEnum::find(enumname);
+    cEnum *enump = cEnum::find(enumName);
 
     // skip spaces
     while (opp_isspace(*s))
@@ -134,12 +134,12 @@ int cClassDescriptor::string2enum(const char *s, const char *enumname)
     if (opp_isdigit(*s)) {
         val = atoi(s);
         if (enump && !enump->getStringFor(val))
-            throw cRuntimeError("Value '%s' invalid for enum '%s'", s, enumname);
+            throw cRuntimeError("Value '%s' invalid for enum '%s'", s, enumName);
     }
     else {
         // try to recognize string
         if (!enump)
-            throw cRuntimeError("Unknown enum '%s'", enumname);
+            throw cRuntimeError("Unknown enum '%s'", enumName);
 
         // TBD should strip possible spaces, parens etc.
         val = enump->resolve(s);
