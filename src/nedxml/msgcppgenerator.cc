@@ -232,7 +232,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     std::string type0 = child->getTagName();
     std::string myclass = name;
     std::string baseclass = ptr2str(child->getAttribute("extends-name"));
-    ClassType type;
+    ClassType type;     //FIXME not initialized in all cases
     bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
 
     std::string classqname = canonicalizeQName(namespaceName, myclass);
@@ -658,6 +658,11 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->ftypeqname = "";  // unused
         it->classtype = FOREIGN;
     }
+    else if (it->ftype.empty()) {
+        // base class field assignment
+        it->classtype = UNKNOWN;
+        it->fkind = "struct"; //FIXME we don't know
+    }
     else {
         it->fkind = "struct";
 
@@ -854,7 +859,6 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
 
     // check earlier declarations and register this class
-    addClassType(info.msgqname, info.classtype, info.nedElement);
     if (isClassDeclared(info.msgqname) && false) // XXX add condition
         errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
     addClassType(info.msgqname, info.classtype, info.nedElement);
