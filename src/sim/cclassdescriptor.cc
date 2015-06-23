@@ -133,7 +133,7 @@ int cClassDescriptor::string2enum(const char *s, const char *enumname)
     // try to interpret it as numeric value
     if (opp_isdigit(*s)) {
         val = atoi(s);
-        if (!enump->getStringFor(val))
+        if (enump && !enump->getStringFor(val))
             throw cRuntimeError("Value '%s' invalid for enum '%s'", s, enumname);
     }
     else {
