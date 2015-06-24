@@ -124,16 +124,17 @@ std::string cClassDescriptor::enum2string(int e, const char *enumName)
 int cClassDescriptor::string2enum(const char *s, const char *enumName)
 {
     // return zero if string cannot be parsed
-    int val = 0;
+    int value = 0;
     cEnum *enump = cEnum::find(enumName);
 
-    // skip spaces
+    // skip leading spaces
     while (opp_isspace(*s))
         s++;
+
     // try to interpret it as numeric value
     if (opp_isdigit(*s)) {
-        val = atoi(s);
-        if (enump && !enump->getStringFor(val))
+        value = atoi(s);
+        if (enump && !enump->getStringFor(value))
             throw cRuntimeError("Value '%s' invalid for enum '%s'", s, enumName);
     }
     else {
@@ -141,10 +142,24 @@ int cClassDescriptor::string2enum(const char *s, const char *enumName)
         if (!enump)
             throw cRuntimeError("Unknown enum '%s'", enumName);
 
-        // TBD should strip possible spaces, parens etc.
-        val = enump->resolve(s);
+        // try exact match
+        const int MISSING = INT_MIN;
+        value = enump->lookup(s, MISSING);
+
+        // if not found, try unique substring match
+        if (value == INT_MIN) {
+            std::map<std::string,int> members = enump->getNameValueMap();
+            for (std::map<std::string,int>::iterator it = members.begin(); it != members.end(); ++it) {
+                if (strstr(it->first.c_str(), s) != nullptr) {  //ODO case insensitive would be better
+                    if (value == MISSING)
+                        value = it->second;
+                    else
+                        throw cRuntimeError("Name '%s' is ambiguous in enum '%s' (substring search)", s, enumName);
+                }
+            }
+        }
     }
-    return val;
+    return value;
 }
 
 // helper for the next one
