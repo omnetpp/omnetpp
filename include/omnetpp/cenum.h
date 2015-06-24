@@ -138,6 +138,12 @@ class SIM_API cEnum : public cOwnedObject
      * Look up string and return numeric code. Throws an error if not found.
      */
     int resolve(const char *name);
+
+    /**
+     * Returns a map with the enum members (names as key, and numeric value map value).
+     */
+    std::map<std::string,int> getNameValueMap() const {return nameToValueMap;}
+
     //@}
 
     /**
