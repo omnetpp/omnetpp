@@ -14,11 +14,20 @@
 //  `license' for details on this and other legal matters.
 //--------------------------------------------------------------
 
-
 //
 // Property descriptors for the simkernel classes.
 // Usage: opp_msgc -Xnc -Xns sim_std.msg
 //
+
+enum omnetpp::cPar::Type;
+enum omnetpp::cGate::Type;
+enum omnetpp::cFigure::LineStyle;
+enum omnetpp::cFigure::CapStyle;
+enum omnetpp::cFigure::JoinStyle;
+enum omnetpp::cFigure::FillRule;
+enum omnetpp::cFigure::ArrowHead;
+enum omnetpp::cFigure::Anchor;
+enum omnetpp::cFigure::Interpolation;
 
 cplusplus
 {{
@@ -36,32 +45,17 @@ NAMESPACE_BEGIN
 //
 // Register enums from the sim. kernel
 //
-typedef cPar::Type   cPar_Type;
-typedef cGate::Type  cGate_Type;
-
-Register_Enum(cPar_Type,  (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
-Register_Enum(cGate_Type, (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
-
-typedef cFigure::LineStyle  cFigure_LineStyle;
-typedef cFigure::CapStyle   cFigure_CapStyle;
-typedef cFigure::JoinStyle  cFigure_JoinStyle;
-typedef cFigure::FillRule   cFigure_FillRule;
-typedef cFigure::ArrowHead  cFigure_ArrowHead;
-typedef cFigure::Anchor     cFigure_Anchor;
-typedef cFigure::Interpolation cFigure_Interpolation;
-
-
-namespace aux {
 #define cF cFigure
-Register_Enum(cFigure_LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DASHED));
-Register_Enum(cFigure_CapStyle,  (cF::CAP_BUTT, cF::CAP_SQUARE, cF::CAP_ROUND));
-Register_Enum(cFigure_JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUND));
-Register_Enum(cFigure_FillRule,  (cF::FILL_EVENODD, cF::FILL_NONZERO));
-Register_Enum(cFigure_ArrowHead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
-Register_Enum(cFigure_Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW));
-Register_Enum(cFigure_Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
+Register_Enum(cPar::Type,         (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
+Register_Enum(cGate::Type,        (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
+Register_Enum(cFigure::LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DASHED));
+Register_Enum(cFigure::CapStyle,  (cF::CAP_BUTT, cF::CAP_SQUARE, cF::CAP_ROUND));
+Register_Enum(cFigure::JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUND));
+Register_Enum(cFigure::FillRule,  (cF::FILL_EVENODD, cF::FILL_NONZERO));
+Register_Enum(cFigure::ArrowHead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
+Register_Enum(cFigure::Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW));
+Register_Enum(cFigure::Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
 #undef cF
-};
 
 //
 // Define operator<< for some classes
@@ -70,7 +64,6 @@ inline std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
     return os << "\"" << d.str() << "\"";
 }
 
-typedef cDensityEstBase::Cell cDensityEstBase_Cell;
 inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell) {
     return os << "[" << cell.lower << ", " << cell.upper << ")  ==>  " << cell.value << " (" << cell.relativeFreq << ")";
 }
@@ -154,6 +147,7 @@ using namespace canvas_stream_ops;
 // linker to include this file in executables
 //
 void std_sim_descriptor_dummy() {}
+
 NAMESPACE_END
 
 #ifndef USE_NAMESPACE
@@ -164,18 +158,7 @@ NAMESPACE_END
 
 namespace omnetpp;  //XXX this ought to be conditional on USE_NAMESPACE but cannot; see hack above!
 
-enum cPar_Type;
-enum cGate_Type;
-
-enum cFigure_LineStyle;
-enum cFigure_CapStyle;
-enum cFigure_JoinStyle;
-enum cFigure_FillRule;
-enum cFigure_ArrowHead;
-enum cFigure_Anchor;
-enum cFigure_Interpolation;
-
-struct cDensityEstBase_Cell;
+struct cDensityEstBase::Cell;
 
 struct Point;
 struct Rectangle;
@@ -316,7 +299,7 @@ class cRegistrationList extends cNamedObject
 class cGate extends cObject
 {
     @icon(gate);
-    char type @group(fields) @enum(cGate_Type) @hint("Gate type");
+    char type @group(fields) @enum(omnetpp::cGate::Type) @hint("Gate type");
     int id @group(fields) @hint("Gate id, unique within this module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this gate is part of a gate vector");
     int index @group(fields) @hint("If vector: index of this gate within its gate vector");
@@ -541,7 +524,7 @@ class cDensityEstBase extends cStdDev
     unsigned long underflowCell @group(histogram) @hint("Number of observations below the first histogram cell");
     unsigned long overflowCell @group(histogram) @hint("Number of observations above the last histogram cell");
     int numCells @group(histogram) @hint("Number of cells in the histogram");
-    cDensityEstBase_Cell cellInfo[] @getter(internalGetCellInfo) @sizeGetter(getNumCells) @group(histogram) @hint("Histogram cell bounds, observation count in the cell, and density estimate in the cell");
+    cDensityEstBase::Cell cellInfo[] @getter(internalGetCellInfo) @sizeGetter(getNumCells) @group(histogram) @hint("Histogram cell bounds, observation count in the cell, and density estimate in the cell");
 }
 
 class cHistogramBase extends cDensityEstBase
@@ -631,7 +614,7 @@ class cPar extends cObject
 {
     @icon(param);
     string value @getter(str) @setter(parse) @editable;
-    char type @enum(cPar_Type) @hint("Parameter type");
+    char type @enum(omnetpp::cPar::Type) @hint("Parameter type");
     string unit @hint("For long and double types only");
     bool isNumeric @getter(isNumeric) @group(flags) @hint("Whether parameter type is numeric, i.e. double or long");
     bool isVolatile @getter(isVolatile) @group(flags) @hint("Whether parameter was declared volatile in the NED file");
@@ -642,7 +625,7 @@ class cPar extends cObject
 class cMsgPar extends cOwnedObject
 {
     string value @getter(str) @setter(parse) @editable @hint("Parameter value");
-    char type @enum(cPar_Type) @hint("Parameter type");
+    char type @enum(omnetpp::cPar::Type) @hint("Parameter type");
     bool isNumeric @getter(isNumeric) @group(flags) @hint("Whether parameter is of numeric type");
     bool isConstant @getter(isConstant) @group(flags) @hint("Whether the parameter has a constant value");
 }
@@ -778,12 +761,12 @@ class cGroupFigure extends cFigure
 class cAbstractLineFigure extends cFigure
 {
     Color lineColor @editable @tostring(.str()) @fromstring(parseColor);
-    int lineStyle @editable @enum(cFigure_LineStyle);
+    int lineStyle @editable @enum(omnetpp::cFigure::LineStyle);
     double lineWidth @editable;
     double lineOpacity @editable;
-    int capStyle @editable @enum(cFigure_CapStyle);
-    int startArrowHead @editable @enum(cFigure_ArrowHead);
-    int endArrowHead @editable @enum(cFigure_ArrowHead);
+    int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
+    int startArrowHead @editable @enum(omnetpp::cFigure::ArrowHead);
+    int endArrowHead @editable @enum(omnetpp::cFigure::ArrowHead);
     bool scaleLineWidth @editable;
 }
 
@@ -804,7 +787,7 @@ class cPolylineFigure extends cAbstractLineFigure
 {
     Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(parsePoint);
     bool smooth @editable;
-    int joinStyle @editable @enum(cFigure_JoinStyle);
+    int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
 }
 
 class cAbstractShapeFigure extends cFigure
@@ -813,7 +796,7 @@ class cAbstractShapeFigure extends cFigure
     bool filled @getter(isFilled) @editable;
     Color lineColor @editable @tostring(.str()) @fromstring(parseColor);
     Color fillColor @editable @tostring(.str()) @fromstring(parseColor);
-    int lineStyle @editable @enum(cFigure_LineStyle);
+    int lineStyle @editable @enum(cFigure::LineStyle);
     double lineWidth @editable;
     double lineOpacity @editable;
     double fillOpacity @editable;
@@ -843,23 +826,23 @@ class cPolygonFigure extends cAbstractShapeFigure
 {
     Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(parsePoint);
     bool smooth @editable;
-    int joinStyle @editable @enum(cFigure_JoinStyle);
-    int fillRule @editable @enum(cFigure_FillRule);
+    int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
+    int fillRule @editable @enum(omnetpp::cFigure::FillRule);
 }
 
 class cPathFigure extends cAbstractShapeFigure
 {
     string path @editable;
     Point offset @editable @tostring(.str()) @fromstring(parsePoint);
-    int joinStyle @editable @enum(cFigure_JoinStyle);
-    int capStyle @editable @enum(cFigure_CapStyle);
-    int fillRule @editable @enum(cFigure_FillRule);
+    int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
+    int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
+    int fillRule @editable @enum(omnetpp::cFigure::FillRule);
 }
 
 class cAbstractTextFigure extends cFigure
 {
     Point position @editable @tostring(.str()) @fromstring(parsePoint);
-    int anchor @editable @enum(cFigure_Anchor);
+    int anchor @editable @enum(omnetpp::cFigure::Anchor);
     string text @editable;
     Font font @editable @tostring(.str()) @fromstring(parseFont);
     Color color @editable @tostring(.str()) @fromstring(parseColor);
@@ -877,10 +860,10 @@ class cLabelFigure extends cAbstractTextFigure
 class cAbstractImageFigure extends cFigure
 {
     Point position @editable @tostring(.str()) @fromstring(parsePoint);
-    int anchor @editable @enum(cFigure_Anchor);
+    int anchor @editable @enum(omnetpp::cFigure::Anchor);
     double width @editable;
     double height @editable;
-    int interpolation @editable @enum(cFigure_Interpolation);
+    int interpolation @editable @enum(omnetpp::cFigure::Interpolation);
     double opacity @editable;
     Color tintColor @editable @tostring(.str()) @fromstring(parseColor);
     double tintAmount @editable;
