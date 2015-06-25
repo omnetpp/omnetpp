@@ -131,7 +131,7 @@ void ModuleInspector::createView(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout();
     parent->setLayout(layout);
     view = new ModuleGraphicsView();
-    view->setEventListener(this);
+    connect(view, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
     layout->addWidget(view);
     layout->setMargin(0);
     scene = new QGraphicsScene();
@@ -1308,7 +1308,7 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
     return TCL_OK;
 }
 
-void ModuleInspector::mouseDoubleClick(QMouseEvent *event)
+void ModuleInspector::doubleClick(QMouseEvent *event)
 {
     qDebug() << "doubleclick";
     QGraphicsItem *item = view->getItemAt(event->pos().x(), event->pos().y());

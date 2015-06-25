@@ -1,3 +1,19 @@
+//==========================================================================
+//  MODULEGRAPHICSVIEW.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 #ifndef MODULEGRAPHICSVIEW_H
 #define MODULEGRAPHICSVIEW_H
 
@@ -14,10 +30,10 @@ class cGate;
 
 namespace qtenv {
 
-class ModuleInspector;
-
 class ModuleGraphicsView : public QGraphicsView
 {
+    Q_OBJECT
+
 private:
     cModule *object;
     int32_t layoutSeed;
@@ -28,7 +44,6 @@ private:
     PositionMap submodPosMap;  // recalculateLayout() fills this map
 
     std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
-    ModuleInspector *eventListener;
 
     void recalculateLayout();
     void redrawFigures();
@@ -48,14 +63,20 @@ private:
     QPointF getSubmodCoords(cModule *mod);
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent * event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent * event);
+
+signals:
+    void click(QMouseEvent*);
+    void doubleClick(QMouseEvent*);
+    void contextMenuRequested(QContextMenuEvent*);
 
 public:
     ModuleGraphicsView();
 
     void relayoutAndRedrawAll();
     void setObject(cModule *obj);
-    void setEventListener(ModuleInspector *insp);
     QGraphicsItem *getItemAt(qreal x, qreal y);
 
     void clear();

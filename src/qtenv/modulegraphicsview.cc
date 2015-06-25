@@ -1,3 +1,19 @@
+//==========================================================================
+//  MODULEGRAPHICSVIEW.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 #include "modulegraphicsview.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
@@ -5,11 +21,13 @@
 #include "layout/basicspringembedderlayout.h"
 #include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
-#include "qtenv/moduleinspector.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QMouseEvent>
 
 #include <QDebug>
+
+#define emit
 
 #define UNKNOWNICON_WIDTH     32
 #define UNKNOWNICON_HEIGHT    32
@@ -31,15 +49,21 @@ void ModuleGraphicsView::setObject(cModule *obj)
     object = obj;
 }
 
-void ModuleGraphicsView::setEventListener(ModuleInspector *insp)
-{
-    eventListener = insp;
-}
-
 void ModuleGraphicsView::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    if(eventListener)
-        eventListener->mouseDoubleClick(event);
+    if(event->button() == Qt::MouseButton::LeftButton)
+        emit doubleClick(event);
+}
+
+void ModuleGraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::MouseButton::LeftButton)
+        emit click(event);
+}
+
+void ModuleGraphicsView::contextMenuEvent(QContextMenuEvent * event)
+{
+    emit contextMenuRequested(event);
 }
 
 void ModuleGraphicsView::relayoutAndRedrawAll()

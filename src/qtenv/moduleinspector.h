@@ -151,7 +151,8 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void animateSenddirectDelivery(cModule *destSubmodule, cMessage *msg);
       static void performAnimations(Tcl_Interp *interp);
 
-      void mouseDoubleClick(QMouseEvent *event);
+private slots:
+      virtual void doubleClick(QMouseEvent *event);
 };
 
 } // namespace qtenv
