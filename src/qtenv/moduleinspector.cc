@@ -41,7 +41,7 @@
 #include "figurerenderers.h"
 #include "qtenv.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "inspectorfactory.h"
 #include "arrow.h"
 #include "layouterenv.h"
@@ -202,19 +202,19 @@ void ModuleInspector::addToolBar(QBoxLayout *layout)
 
 void ModuleInspector::runUntil()
 {
-    MainWindow *mainWindow = getTkenv()->getMainWindow();
+    MainWindow *mainWindow = getQtenv()->getMainWindow();
     mainWindow->runSimulationLocal(this, qtenv::Qtenv::eRunMode::RUNMODE_NORMAL);
 }
 
 void ModuleInspector::fastRunUntil()
 {
-    MainWindow *mainWindow = getTkenv()->getMainWindow();
+    MainWindow *mainWindow = getQtenv()->getMainWindow();
     mainWindow->runSimulationLocal(this, qtenv::Qtenv::eRunMode::RUNMODE_FAST);
 }
 
 void ModuleInspector::stopSimulation()
 {
-    MainWindow *mainWindow = getTkenv()->getMainWindow();
+    MainWindow *mainWindow = getQtenv()->getMainWindow();
     mainWindow->on_actionStop_triggered();
 }
 
@@ -546,7 +546,7 @@ void ModuleInspector::refreshLayout()
     const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
 
     // create and configure layouter object
-    LayouterChoice choice = getTkenv()->opt->layouterChoice;
+    LayouterChoice choice = getQtenv()->opt->layouterChoice;
     if (choice == LAYOUTER_AUTO) {
         const int LIMIT = 20;  // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
         int submodCountLimited = 0;
@@ -707,11 +707,12 @@ void ModuleInspector::redrawModules()
 void ModuleInspector::drawSubmodule(cModule *submod, double x, double y)
 {
     const char *iconName = submod->getDisplayString().getTagArg("i", 0);
-    if (iconName == nullptr)
+    if (!iconName || !iconName[0])
         iconName = "block/process";
 
     // TODO context menu + doubleclick
-    QPixmap icon = QPixmap::fromImage(*getTkenv()->icons.getImage(iconName));
+    QImage *img = getQtenv()->icons.getImage(iconName);
+    QPixmap icon = QPixmap::fromImage(*img);
     submoduleGraphicsItems[submod->getId()] = scene->addPixmap(icon);
     submoduleGraphicsItems[submod->getId()]->setPos(x, y);
     // TODO key
@@ -923,7 +924,7 @@ void ModuleInspector::redrawMessages()
     CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
 
     // this thingy is only needed if animation is going on
-    if (!getTkenv()->animating)
+    if (!getQtenv()->animating)
         return;
 
     // loop through all messages in the event queue and display them
@@ -973,7 +974,7 @@ void ModuleInspector::redrawNextEventMarker()
     CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", TCL_NULL));
 
     // this thingy is only needed if animation is going on
-    if (!getTkenv()->animating || !getTkenv()->opt->showNextEventMarkers)
+    if (!getQtenv()->animating || !getQtenv()->opt->showNextEventMarkers)
         return;
 
     // if any parent of the module containing the next event is on this canvas, draw marker

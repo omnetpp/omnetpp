@@ -1,5 +1,5 @@
 //==========================================================================
-//  TKUTIL.CC - part of
+//  QTUTIL.CC - part of
 //
 //                    OMNeT++/OMNEST
 //==========================================================================
@@ -42,7 +42,7 @@
 #include "omnetpp/carray.h"
 #include "omnetpp/cwatch.h"
 #include "qtenv.h"
-#include "tkutil.h"
+#include "qtutil.h"
 
 using namespace OPP::common;
 
@@ -155,7 +155,7 @@ bool cFindByPathVisitor::idMatches(cObject *obj)
 
 const char *stripNamespace(const char *className)
 {
-    switch (getTkenv()->opt->stripNamespace) {
+    switch (getQtenv()->opt->stripNamespace) {
         case STRIPNAMESPACE_ALL: {
             const char *lastColon = strrchr(className, ':');
             if (lastColon)
@@ -236,7 +236,7 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 
 // -----------------------------------------------------------------------
 
-std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
+QString getObjectIcon(cObject *object)
 {
     const char *iconName;
     if (object == nullptr)
@@ -278,18 +278,14 @@ std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
     else
         iconName = "cogwheel_vs";
 
-    // look up the image in the icons() array
-    const char *image = Tcl_GetVar2(interp, TCLCONST("icons"), TCLCONST(iconName), TCL_GLOBAL_ONLY);
-    if (!image)
-        throw cRuntimeError("getObjectIcon(): undefined variable $icons(%s)", iconName);
-    return image;
+    return iconName;
 }
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, listbox, " insert {} end "
-                    "-image ", getObjectIcon(interp, obj).c_str(), " "
+                    //"-image ", getObjectIcon(interp, obj).c_str(), " "
                     "-text {", "  " /*padding*/, getObjectShortTypeName(obj), "} ",
                     "-values {",
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
@@ -517,7 +513,7 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
 
 void logTclError(const char *file, int line, Tcl_Interp *interp)
 {
-    getTkenv()->logTclError(file, line, interp);
+    getQtenv()->logTclError(file, line, interp);
 }
 
 void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[])

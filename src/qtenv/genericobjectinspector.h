@@ -31,8 +31,6 @@ class QTENV_API GenericObjectInspector : public Inspector
       virtual void createWindow(const char *window, const char *geometry) override;
       virtual void useWindow(QWidget *parent) override;
       virtual void refresh() override;
-      virtual void commit() override;
-      virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
 } // namespace qtenv

@@ -27,7 +27,7 @@
 #include "omnetpp/cdisplaystring.h"
 #include "layouterenv.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {

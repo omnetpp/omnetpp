@@ -311,7 +311,7 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
 /**
  * Utility function
  */
-inline Qtenv *getTkenv()
+inline Qtenv *getQtenv()
 {
     return (Qtenv *)cSimulation::getActiveEnvir();
 }

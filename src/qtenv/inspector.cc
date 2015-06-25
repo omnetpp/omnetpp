@@ -63,7 +63,7 @@ int insptypeCodeFromName(const char *name)
 Inspector::Inspector(InspectorFactory *f)
 {
     factory = f;
-    interp = getTkenv()->getInterp();
+    interp = getQtenv()->getInterp();
     //FIXME put back:   window = getTkenv()->getWindow();
     object = nullptr;
     type = f->getInspectorType();
@@ -71,6 +71,7 @@ Inspector::Inspector(InspectorFactory *f)
     closeRequested = false;
 
     windowName[0] = '\0';  // no window exists
+    window = nullptr;
 }
 
 Inspector::~Inspector()
@@ -106,6 +107,7 @@ void Inspector::useWindow(QWidget *parent)
 {
     windowTitle = "";
     isToplevelWindow = false;
+    window = parent;
 }
 
 void Inspector::doSetObject(cObject *obj)
@@ -139,7 +141,7 @@ void Inspector::refreshTitle()
     // update window title (only if changed -- always updating the title produces
     // unnecessary redraws under some window managers
     char newTitle[256];
-    const char *prefix = getTkenv()->getWindowTitlePrefix();
+    const char *prefix = getQtenv()->getWindowTitlePrefix();
     if (!object) {
         sprintf(newTitle, "%s N/A", prefix);
     }

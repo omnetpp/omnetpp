@@ -30,7 +30,7 @@ QGraphicsScene *CanvasInspectorForm::getScene()
 void CanvasInspectorForm::closeEvent(QCloseEvent*)
 {
     qDebug() << "Close";
-    getTkenv()->deleteInspector(insp);
+    getQtenv()->deleteInspector(insp);
     QWidget::close();
 }
 

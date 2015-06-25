@@ -1,5 +1,5 @@
 //==========================================================================
-//  TKUTIL.H - part of
+//  QTUTIL.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -15,12 +15,13 @@
 
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_TKUTIL_H
-#define __OMNETPP_QTENV_TKUTIL_H
+#ifndef __OMNETPP_QTENV_QTUTIL_H
+#define __OMNETPP_QTENV_QTUTIL_H
 
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
+#include <QIcon>
 
 namespace omnetpp {
 
@@ -122,7 +123,7 @@ void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& h
 
 bool isAPL();
 
-std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
+QString getObjectIcon(cObject *object);
 
 void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
 

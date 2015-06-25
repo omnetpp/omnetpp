@@ -43,7 +43,6 @@ private:
 
     cObject *getObjectFromIndex(const QModelIndex &index) const;
     int findObjectInParent(cObject *obj, cObject *parent) const;
-    QString getObjectIcon(cObject *object) const;
 
 public:
     explicit TreeItemModel(QObject *parent = 0);
@@ -53,7 +52,7 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex&) const{ return 1; }
 
-    // if the role is Qt::UserRole, the internal cObject pointer is returned int the QVariant
+    // if the role is Qt::UserRole, the internal cObject pointer is returned in the QVariant
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual bool hasChildren(const QModelIndex &parent = QModelIndex()) const;
 

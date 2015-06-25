@@ -22,7 +22,7 @@
 #include <vector>
 #include <set>
 #include "omnetpp/simtime_t.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "circularbuffer.h"
 
 namespace omnetpp {

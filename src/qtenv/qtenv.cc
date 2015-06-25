@@ -277,8 +277,7 @@ void Qtenv::doRun()
         }
 
         mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
-        // TODO
-        addEmbeddedInspector(nullptr, mainInspector);
+        addEmbeddedInspector(mainwindow->getObjectInspectorTree(), mainInspector);
 
         mainNetworkView = (ModuleInspector *)InspectorFactory::get("ModuleInspectorFactory")->createInspector();
         addEmbeddedInspector(mainwindow->getMainArea(), mainNetworkView);

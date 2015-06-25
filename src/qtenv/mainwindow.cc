@@ -23,6 +23,7 @@
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
+#include "genericobjecttreemodel.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
@@ -30,6 +31,9 @@
 #include "common/stringutil.h"
 #include "stopdialog.h"
 #include "graphicsscene.h"
+#include <QStyledItemDelegate>
+#include <QTextLayout>
+#include <QTimer>
 
 #include "qdebug.h"
 
@@ -38,6 +42,75 @@ using namespace OPP::common;
 namespace omnetpp {
 namespace qtenv {
 
+// uses a QTextLayout to highlight a part of the displayed text
+// which is given by a HighlightRegion, returned by the tree model
+class HighlighterItemDelegate : public QStyledItemDelegate {
+public:
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
+
+void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    // drawing the selection background and focus rectangle, but no text
+    QStyledItemDelegate::paint(painter, option, QModelIndex());
+
+    // selecting the palette to use, depending on the item state
+    QPalette::ColorGroup group = option.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
+    if (group == QPalette::Normal && !(option.state & QStyle::State_Active))
+        group = QPalette::Inactive;
+
+    painter->save();
+
+    //Text from item
+    QString text = index.data(Qt::DisplayRole).toString();
+
+    QTextLayout layout;
+    layout.setText(text);
+
+    // this is the standard layout procedure in a single line case
+    layout.beginLayout();
+    QTextLine line = layout.createLine();
+    line.setLineWidth(option.rect.width());
+    layout.endLayout();
+
+    // the formatted regions
+    QList<QTextLayout::FormatRange> formats;
+
+    QTextLayout::FormatRange f;
+
+    // this sets the color of the whole text depending on whether the item is selected or not
+    f.format.setForeground(option.palette.brush(group,
+        (option.state & QStyle::State_Selected) ? QPalette::HighlightedText : QPalette::Text));
+    f.start = 0;
+    f.length = text.length();
+    formats.append(f);
+
+    // and then adding another format region to highlight the range specified by the model
+    HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
+    f.start = range.start;
+    f.length = range.length;
+    f.format.setForeground(QBrush(QColor(0, 0, 255)));
+    f.format.setFontWeight(QFont::Bold);
+    formats.append(f);
+
+    // applying the format ranges
+    layout.setAdditionalFormats(formats);
+
+    // getting the icon for the object, and if found, offsetting the text and drawing the icon
+    int textOffset = 0;
+    auto iconData = index.data(Qt::DecorationRole);
+    if (iconData.isValid()) {
+        textOffset += option.decorationSize.width();
+        QIcon icon = iconData.value<QIcon>();
+        painter->drawImage(option.rect.topLeft(), icon.pixmap(option.decorationSize).toImage());
+    }
+
+    // the layout is complete, now we just draw it on the appropriate position
+    layout.draw(painter, option.rect.translated(3 + textOffset, 1).topLeft());
+    painter->restore();
+
+}
+
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -45,10 +118,17 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // this should be deleted later
     TreeItemModel *model = new TreeItemModel();
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
+
+    // the model should be deleted later
+    ui->treeView_2->setModel(new GenericObjectTreeModel(nullptr));
+    ui->treeView_2->setHeaderHidden(true);
+    // TODO, to highlight the values in blue, etc
+    ui->treeView_2->setItemDelegate(new HighlighterItemDelegate());
 
     stopDialog = new StopDialog();
 
@@ -65,6 +145,11 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 //        ui->labelDisplay2->hide();
 //        ui->labelDisplay3->hide();
     // }
+
+    // if we trigger the action here directly, it will block the initialization
+    // this way the main window will be shown before the setup dialog
+    // because the timer event is processed in the event loop
+    QTimer::singleShot(0, this, SLOT(initialSetUpConfiguration()));
 }
 
 MainWindow::~MainWindow()
@@ -81,6 +166,11 @@ void MainWindow::displayText(const char *t)
 QTreeView *MainWindow::getObjectTree()
 {
     return ui->treeView;
+}
+
+QTreeView *MainWindow::getObjectInspectorTree()
+{
+    return ui->treeView_2;
 }
 
 bool MainWindow::isRunning()
@@ -227,6 +317,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (!on_actionQuit_triggered())
         event->ignore();
+}
+
+void MainWindow::initialSetUpConfiguration()
+{
+    ui->actionSetUpConfiguration->trigger();
 }
 
 void MainWindow::runSimulation(Mode mode)

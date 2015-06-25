@@ -23,7 +23,7 @@
 #include "canvasinspector.h"
 #include "figurerenderers.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
 #include "canvasinspectorform.h"

@@ -23,7 +23,7 @@
 #include <algorithm>
 
 #include "arrow.h"
-#include "tkutil.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {

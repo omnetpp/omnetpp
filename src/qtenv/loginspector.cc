@@ -23,7 +23,7 @@
 #include "loginspector.h"
 #include "qtenv.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "inspectorfactory.h"
 
 using namespace OPP::common;
@@ -50,9 +50,9 @@ Register_InspectorFactory(LogInspectorFactory);
 
 LogInspector::LogInspector(InspectorFactory *f) : Inspector(f), mode(MESSAGES)
 {
-    logBuffer = getTkenv()->getLogBuffer();
+    logBuffer = getQtenv()->getLogBuffer();
     logBuffer->addListener(this);
-    componentHistory = getTkenv()->getComponentHistory();
+    componentHistory = getQtenv()->getComponentHistory();
     lastMsgEventNumber = 0;
     lastMsgTime = 0;
 }
@@ -221,7 +221,7 @@ void LogInspector::printLastLogLine()
 
 void LogInspector::printBannerIfNeeded(const LogBuffer::Entry *entry)
 {
-    if (!bannerPrinted && getTkenv()->opt->printEventBanners) {
+    if (!bannerPrinted && getQtenv()->opt->printEventBanners) {
         textWidgetInsert(entry->banner, "banner");
         bannerPrinted = true;
         addBookmarkIfNeeded(entry);
@@ -272,13 +272,13 @@ void LogInspector::redisplay()
         return;
 
     const circular_buffer<LogBuffer::Entry *>& entries = logBuffer->getEntries();
-    int scrollbackLimit = getTkenv()->opt->scrollbackLimit;
+    int scrollbackLimit = getQtenv()->opt->scrollbackLimit;
 
     if (mode == LOG) {
         // display entries in reverse order, so we can stop when scrollback limit is reached
         // (within an entry we print normally, top-down)
         int numLinesPrinted = 0;
-        bool printEventBanners = getTkenv()->opt->printEventBanners;
+        bool printEventBanners = getQtenv()->opt->printEventBanners;
         for (int k = entries.size()-1; k >= 0 && numLinesPrinted <= scrollbackLimit; k--) {
             const LogBuffer::Entry *entry = entries[k];
             bool entryProducedOutput = false;

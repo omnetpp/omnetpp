@@ -46,7 +46,7 @@
 #include "omnetpp/ccanvas.h"
 #include "qtenv.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 
@@ -325,7 +325,7 @@ int logError_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    getTkenv()->logTclError(__FILE__, __LINE__, argv[1]);
+    getQtenv()->logTclError(__FILE__, __LINE__, argv[1]);
     return TCL_OK;
 }
 
@@ -336,7 +336,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->newNetwork(argv[1]);
     return TCL_OK;
     E_CATCH
@@ -349,7 +349,7 @@ int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     const char *configname = argv[1];
     int runnumber = atoi(argv[2]);
@@ -365,7 +365,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     cConfigurationEx *cfg = app->getConfigEx();
     std::vector<std::string> confignames = cfg->getConfigNames();
@@ -384,7 +384,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     const char *configname = argv[1];
 
     cConfigurationEx *cfg = app->getConfigEx();
@@ -401,7 +401,7 @@ int getBaseConfigs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     const char *configname = argv[1];
 
     cConfigurationEx *cfg = app->getConfigEx();
@@ -422,7 +422,7 @@ int getNumRunsInConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     const char *configname = argv[1];
 
     cConfigurationEx *cfg = app->getConfigEx();
@@ -438,7 +438,7 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     TRY(app->createSnapshot(argv[1]));
     return TCL_OK;
@@ -450,7 +450,7 @@ int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->doOneStep();
     return TCL_OK;
 }
@@ -473,7 +473,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     int mode = resolveRunMode(argv[1]);
     if (mode == -1) {
@@ -510,7 +510,7 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     int mode = resolveRunMode(argv[1]);
     if (mode == -1) {
@@ -528,7 +528,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     if (argc == 1) {
         app->setSimulationRunUntil(0, 0, nullptr);
@@ -561,7 +561,7 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     if (argc == 1) {
         app->setSimulationRunUntilModule(nullptr);
@@ -594,7 +594,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     cObject *object = strToPtr(argv[1]);
     if (!object) {
         Tcl_SetResult(interp, TCLCONST("null or invalid pointer"), TCL_STATIC);
@@ -627,7 +627,7 @@ int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->rebuildSim();
     return TCL_OK;
 }
@@ -638,7 +638,7 @@ int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->startAll();
     return TCL_OK;
 }
@@ -649,7 +649,7 @@ int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->finishSimulation();
     return TCL_OK;
 }
@@ -692,7 +692,7 @@ int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Tcl_SetResult(interp, TCLCONST(app->getConfigEx()->getActiveConfigName()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -704,7 +704,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         return TCL_ERROR;
     }
     char buf[16];
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Tcl_SetResult(interp, opp_itoa(buf, app->getConfigEx()->getActiveRunNumber()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -716,7 +716,7 @@ int getValueFromConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         return TCL_ERROR;
     }
     const char *key = argv[1];
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     const char *value = app->getConfig()->getConfigValue(key);
     Tcl_SetResult(interp, TCLCONST(value ? value : ""), TCL_VOLATILE);
     return TCL_OK;
@@ -739,7 +739,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     const char *s = nullptr;
     if (0 == strcmp(argv[1], "ini"))
@@ -779,7 +779,7 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     char buf[64];
     if (0 == strcmp(argv[1], "eventnumber"))
@@ -1436,7 +1436,7 @@ int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
     if (argc != 1) { Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;   }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     const char *statename;
     switch (app->getSimulationState()) {
@@ -1460,7 +1460,7 @@ int getRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     const char *modename;
     switch (app->getSimulationRunMode()) {
@@ -1479,7 +1479,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->setStopSimulationFlag();
     return TCL_OK;
 }
@@ -1490,7 +1490,7 @@ int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     bool stopping = app->getStopSimulationFlag();
     Tcl_SetResult(interp, TCLCONST(stopping ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
@@ -1502,8 +1502,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
-    QtenvOptions *opt = getTkenv()->opt;
+    Qtenv *app = getQtenv();
+    QtenvOptions *opt = getQtenv()->opt;
 
     char buffer[32];
     char *buf = buffer;
@@ -1587,7 +1587,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
     else if (0 == strcmp(argv[1], "silent_event_filters"))
         buf = const_cast<char *>(app->getSilentEventFilters());
     else if (0 == strcmp(argv[1], "logbuffer_maxnumevents"))
-        sprintf(buf, "%d", getTkenv()->getLogBuffer()->getMaxNumEntries());
+        sprintf(buf, "%d", getQtenv()->getLogBuffer()->getMaxNumEntries());
     else
         return TCL_ERROR;
     Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1600,8 +1600,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
-    QtenvOptions *opt = getTkenv()->opt;
+    Qtenv *app = getQtenv();
+    QtenvOptions *opt = getQtenv()->opt;
 
     if (0 == strcmp(argv[1], "animation_enabled"))
         opt->animationEnabled = (argv[2][0] != '0');
@@ -1679,7 +1679,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         TRY(app->setSilentEventFilters(argv[2]));
     }
     else if (0 == strcmp(argv[1], "logbuffer_maxnumevents"))
-        getTkenv()->getLogBuffer()->setMaxNumEntries(atoi(argv[2]));
+        getQtenv()->getLogBuffer()->setMaxNumEntries(atoi(argv[2]));
     else
         return TCL_ERROR;
     return TCL_OK;
@@ -2000,7 +2000,7 @@ int fesEvents_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     bool wantNonSelfMsgs = atoi(argv[4]) != 0;
     bool wantSilentMsgs = atoi(argv[5]) != 0;
 
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     cFutureEventSet *fes = getSimulation()->getFES();
     int fesLen = fes->getLength();
@@ -2092,7 +2092,7 @@ int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     if (strcmp(argv[1], "hasintervals") == 0) {
         bool result = app->hasEventlogRecordingIntervals();
         Tcl_SetResult(interp, TCLCONST(result ? "1" : "0"), TCL_STATIC);
@@ -2115,7 +2115,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
 
     cObject *object = strToPtr(argv[1]);
     if (!object) {
@@ -2189,7 +2189,7 @@ int isInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     Tcl_SetResult(interp, TCLCONST(insp ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
@@ -2201,7 +2201,7 @@ int inspectorSupportsObject_cmd(ClientData, Tcl_Interp *interp, int argc, const 
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2218,7 +2218,7 @@ int inspectorGetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2234,7 +2234,7 @@ int inspectorSetObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2251,7 +2251,7 @@ int inspectorGetType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2267,7 +2267,7 @@ int inspectorIsToplevel_cmd(ClientData, Tcl_Interp *interp, int argc, const char
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2284,7 +2284,7 @@ int refreshInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2301,7 +2301,7 @@ int commitInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2319,7 +2319,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2336,7 +2336,7 @@ int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2353,7 +2353,7 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2370,7 +2370,7 @@ int getInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         return TCL_ERROR;
     }
     bool toplevelsOnly = atoi(argv[1]) != 0;
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     const std::list<Inspector *>& inspectors = app->getInspectors();
     for (std::list<Inspector *>::const_iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
@@ -2388,7 +2388,7 @@ int refreshInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->refreshInspectors();
     return TCL_OK;
 }
@@ -2399,7 +2399,7 @@ int redrawInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->redrawInspectors();
     return TCL_OK;
 }
@@ -2447,7 +2447,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
         Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
         return TCL_ERROR;
     }
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     Inspector *insp = app->findInspector(argv[1]);
     if (!insp) {
         Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
@@ -2601,7 +2601,7 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         return TCL_ERROR;
     }
     const char *fname = argv[1];
-    Qtenv *app = getTkenv();
+    Qtenv *app = getQtenv();
     app->loadNedFile(fname);
     return TCL_OK;
 }
@@ -2975,7 +2975,7 @@ int getObjectIcon_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     }
     cObject *object = strToPtr(argv[1]);
     std::string image;
-    TRY(image = getObjectIcon(interp, object));
+    //TRY(image = getObjectIcon(interp, object));
     Tcl_SetResult(interp, TCLCONST(image.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }

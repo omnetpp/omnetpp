@@ -38,7 +38,7 @@ StopDialog::~StopDialog()
 
 void StopDialog::onClickStop()
 {
-    getTkenv()->setStopSimulationFlag();
+    getQtenv()->setStopSimulationFlag();
     close();
 }
 
@@ -46,14 +46,14 @@ void StopDialog::stopDialogAutoupdate()
 {
     ui->updateButton->setDisabled(ui->checkBox->isChecked());
     if (ui->checkBox->isChecked())
-        getTkenv()->opt->autoupdateInExpress = true;
+        getQtenv()->opt->autoupdateInExpress = true;
     else
-        getTkenv()->opt->autoupdateInExpress = false;
+        getQtenv()->opt->autoupdateInExpress = false;
 }
 
 void StopDialog::onClickUpdate()
 {
-    getTkenv()->refreshInspectors();
+    getQtenv()->refreshInspectors();
 }
 
 void StopDialog::keyPressEvent(QKeyEvent *e)
@@ -62,7 +62,7 @@ void StopDialog::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Enter:
         case Qt::Key_Escape:
         case Qt::Key_F8:
-            getTkenv()->setStopSimulationFlag();
+            getQtenv()->setStopSimulationFlag();
             break;
 
         default:

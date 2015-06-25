@@ -18,7 +18,7 @@
 #define __OMNETPP_QTENV_INSPECTOR_H
 
 #include "envir/envirbase.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include <QObject>
 
 class QWidget;

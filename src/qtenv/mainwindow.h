@@ -58,6 +58,7 @@ public:
 
     void displayText(const char* t);
     QTreeView *getObjectTree();
+    QTreeView *getObjectInspectorTree();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
     void redrawTimeline();
@@ -79,6 +80,7 @@ private slots:
     void onTreeViewContextMenu(QPoint point);
     void on_actionRebuildNetwork_triggered();
     void closeEvent(QCloseEvent *event);
+    void initialSetUpConfiguration();
 
 public slots:
     void on_actionStop_triggered();

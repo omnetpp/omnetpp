@@ -21,6 +21,10 @@
 #include "tklib.h"
 #include "inspectorfactory.h"
 #include "genericobjectinspector.h"
+#include "genericobjecttreemodel.h"
+#include "envir/objectprinter.h"
+#include <QTreeView>
+#include <QDebug>
 
 namespace omnetpp {
 namespace qtenv {
@@ -52,19 +56,31 @@ void GenericObjectInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
 
-    CHK(Tcl_VarEval(interp, "GenericObjectInspector:onSetObject ", windowName, TCL_NULL));
+    if (!window) {
+        return;
+    }
+
+    QTreeView *view = static_cast<QTreeView *>(window);
+
+    GenericObjectTreeModel *oldModel = dynamic_cast<GenericObjectTreeModel *>(view->model());
+    if (oldModel) {
+        delete oldModel;
+    }
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj);
+    view->setModel(newModel);
+    view->reset();
+    // expanding the top level item
+    view->expand(newModel->index(0, 0, QModelIndex()));
 }
 
 void GenericObjectInspector::createWindow(const char *window, const char *geometry)
 {
     Inspector::createWindow(window, geometry);
-
-    CHK(Tcl_VarEval(interp, "createGenericObjectInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
 }
 
 void GenericObjectInspector::useWindow(QWidget *parent)
 {
-    Inspector::useWindow(window);
+    Inspector::useWindow(parent);
 }
 
 void GenericObjectInspector::refresh()
@@ -72,16 +88,6 @@ void GenericObjectInspector::refresh()
     Inspector::refresh();
 
     CHK(Tcl_VarEval(interp, "GenericObjectInspector:refresh ", windowName, TCL_NULL));
-}
-
-void GenericObjectInspector::commit()
-{
-    Inspector::commit();
-}
-
-int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
-{
-    return Inspector::inspectorCommand(argc, argv);
 }
 
 } // namespace qtenv

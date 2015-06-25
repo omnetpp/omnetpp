@@ -29,7 +29,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "inspectorfactory.h"
 #include "qtenv.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "mainwindow.h"
 #include <QIcon>
 #include <QMainWindow>
@@ -158,51 +158,6 @@ bool TreeItemModel::hasChildren(const QModelIndex& parent) const
     cHasChildrenVisitor visitor(parentNode);
     visitor.process(parentNode);
     return visitor.getResult();
-}
-
-QString TreeItemModel::getObjectIcon(cObject *object) const
-{
-    QString iconName;
-    if (object == nullptr)
-        iconName = "none_vs.png";
-    else if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
-        iconName = "placeholder_vs.png";
-    else if (dynamic_cast<cSimpleModule *>(object))
-        iconName = "simple_vs.png";
-    else if (dynamic_cast<cModule *>(object))
-        iconName = "compound_vs.png";
-    else if (dynamic_cast<cWatchBase *>(object))
-        iconName = "cogwheel_vs.png";
-    else if (dynamic_cast<cMessage *>(object))
-        iconName = "message_vs.png";
-    else if (dynamic_cast<cArray *>(object))
-        iconName = "container_vs.png";
-    else if (dynamic_cast<cQueue *>(object))
-        iconName = "queue_vs.png";
-    else if (dynamic_cast<cGate *>(object))
-        iconName = "gate_vs.png";
-    else if (dynamic_cast<cPar *>(object))
-        iconName = "param_vs.png";
-    else if (dynamic_cast<cChannel *>(object))
-        iconName = "chan_vs.png";
-    else if (dynamic_cast<cOutVector *>(object))
-        iconName = "outvect_vs.png";
-    else if (dynamic_cast<cStatistic *>(object))
-        iconName = "stat_vs.png";
-    else if (dynamic_cast<cFigure *>(object))
-        iconName = "figure_vs.png";
-    else if (dynamic_cast<cCanvas *>(object))
-        iconName = "canvas_vs.png";
-    else if (dynamic_cast<cSimulation *>(object))
-        iconName = "container_vs.png";
-    else if (dynamic_cast<cFutureEventSet *>(object))
-        iconName = "container_vs.png";
-    else if (dynamic_cast<cRegistrationList *>(object))
-        iconName = "container_vs.png";
-    else
-        iconName = "cogwheel_vs.png";
-
-    return iconName;
 }
 
 void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant> &list, QModelIndex idx)

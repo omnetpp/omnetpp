@@ -27,7 +27,7 @@
 #include "gateinspector.h"
 #include "qtenv.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "inspectorfactory.h"
 
 namespace omnetpp {

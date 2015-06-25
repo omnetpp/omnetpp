@@ -26,7 +26,7 @@
 
 #include "common/exception.h"
 #include "tklib.h"
-#include "tkutil.h"
+#include "qtutil.h"
 #include "qtenv.h"
 
 namespace omnetpp {
