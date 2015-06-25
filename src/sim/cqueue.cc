@@ -84,10 +84,11 @@ void cQueue::parsimPack(cCommBuffer *buffer) const
 
     buffer->pack(n);
 
-    for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--) {
-        if (iter()->isOwnedObject() && iter()->getOwner() != this)
+    for (cQueue::Iterator it(*this); !it.end(); ++it) {
+        cObject *obj = *it;
+        if (obj->isOwnedObject() && obj->getOwner() != this)
             throw cRuntimeError(this, "parsimPack(): refusing to transmit an object not owned by the queue");
-        buffer->packObject(iter());
+        buffer->packObject(obj);
     }
 #endif
 }
@@ -130,8 +131,8 @@ void cQueue::clear()
 void cQueue::copy(const cQueue& queue)
 {
     compare = nullptr;  // temporarily, so that insert() keeps the original order
-    for (cQueue::Iterator iter(queue, false); !iter.end(); iter++) {
-        cObject *obj = iter();
+    for (cQueue::Iterator it(queue); !it.end(); ++it) {
+        cObject *obj = *it;
         if (!obj->isOwnedObject()) {
             insert(obj->dup());
         }
