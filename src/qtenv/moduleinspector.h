@@ -28,6 +28,7 @@ class QGraphicsScene;
 class QGraphicsView;
 class QGraphicsItem;
 class QBoxLayout;
+class QMouseEvent;
 
 namespace omnetpp {
 class cObject;
@@ -40,6 +41,7 @@ namespace qtenv {
 class FigureRenderer;
 struct FigureRenderingHints;
 class CanvasRenderer;
+class ModuleGraphicsView;
 
 enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 
@@ -69,6 +71,8 @@ class QTENV_API ModuleInspector : public Inspector
 
       std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
       QGraphicsScene *scene;
+
+      ModuleGraphicsView *view;
 
    protected:
       cCanvas *getCanvas();
@@ -114,7 +118,6 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void refreshLayout();
 
       // drawing methods:
-      virtual void relayoutAndRedrawAll();
       virtual void redraw() override;
 
       virtual void redrawModules();
@@ -147,6 +150,8 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void animateSenddirectCleanup();
       virtual void animateSenddirectDelivery(cModule *destSubmodule, cMessage *msg);
       static void performAnimations(Tcl_Interp *interp);
+
+      void mouseDoubleClick(QMouseEvent *event);
 };
 
 } // namespace qtenv

@@ -37,18 +37,18 @@ SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbu
     runselectiondialog.cc \
     imagecache.cc \
     treeitemmodel.cc \
-    graphicsscene.cc \
     genericobjecttreemodel.cc \
-    qtutil.cc
+    qtutil.cc \
+    modulegraphicsview.cc
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h \
     runselectiondialog.h \
     treeitemmodel.h \
     stopdialog.h \
     imagecache.h \
-    graphicsscene.h \
     genericobjecttreemodel.h \
-    qtutil.h
+    qtutil.h \
+    modulegraphicsview.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 

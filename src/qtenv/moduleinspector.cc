@@ -24,6 +24,7 @@
 #include <QBoxLayout>
 #include <QToolBar>
 #include <QAction>
+#include <QMouseEvent>
 #include <QGridLayout>
 
 #include "common/stringtokenizer.h"
@@ -47,8 +48,8 @@
 #include "arrow.h"
 #include "layouterenv.h"
 #include "canvasrenderer.h"
-#include "graphicsscene.h"
 #include "mainwindow.h"
+#include "modulegraphicsview.h"
 
 using namespace OPP::common;
 using namespace OPP::layout;
@@ -104,8 +105,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    scene->clear();
-    submoduleGraphicsItems.clear();
+    view->clear();
     needs_redraw = true;
 
     if (object) {
@@ -114,7 +114,8 @@ void ModuleInspector::doSetObject(cObject *obj)
         //    ModuleInspector:recallPreferences $insp
 
         try {
-            relayoutAndRedrawAll();
+            view->setObject(static_cast<cModule*>(object));
+            view->relayoutAndRedrawAll();
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -129,10 +130,11 @@ void ModuleInspector::createView(QWidget *parent)
 {
     QVBoxLayout *layout = new QVBoxLayout();
     parent->setLayout(layout);
-    QGraphicsView *view = new QGraphicsView();
+    view = new ModuleGraphicsView();
+    view->setEventListener(this);
     layout->addWidget(view);
     layout->setMargin(0);
-    scene = new ModuleInspectorScene(this);
+    scene = new QGraphicsScene();
     view->setRenderHints(QPainter::Antialiasing);
     view->setScene(scene);
 
@@ -212,7 +214,7 @@ void ModuleInspector::relayout()
 //    set c $insp.c
     ++layoutSeed;
 
-    relayoutAndRedrawAll();
+    view->relayoutAndRedrawAll();
 
 //    if {[opp_inspector_istoplevel $insp] && $config(layout-may-resize-window)} {
 //        wm geometry $insp ""
@@ -329,47 +331,6 @@ void ModuleInspector::refresh()
         refreshSubmodules();
         adjustSubmodulesZOrder();
     }
-}
-
-void ModuleInspector::relayoutAndRedrawAll()
-{
-    ASSERT(object != nullptr);
-
-    cModule *mod = (cModule *)object;
-    int submoduleCount = 0;
-    int estimatedGateCount = mod->gateCount();
-    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it) {
-        submoduleCount++;
-        // note: estimatedGateCount will count unconnected gates in the gate array as well
-        estimatedGateCount += (*it)->gateCount();
-    }
-
-    notDrawn = false;
-    if (submoduleCount > 1000 || estimatedGateCount > 4000) {
-        char problem[200];
-        if (submoduleCount > 1000)
-            sprintf(problem, "contains more than 1000 submodules (exactly %d)", submoduleCount);
-        else
-            sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
-        CHK(Tcl_VarEval(interp, "tk_messageBox -parent ", windowName, " -type yesno -title Warning -icon question "
-                                                                      "-message {Module '", object->getFullName(), "' ", problem,
-                        ", it may take a long time to display the graphics. "
-                        "Do you want to proceed with drawing?}", TCL_NULL));
-        bool answer = (Tcl_GetStringResult(interp)[0] == 'y');
-        if (answer == false) {
-            notDrawn = true;
-            CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));  // this must be done, still
-            return;
-        }
-    }
-
-    recalculateLayout();
-    redrawFigures();
-    redrawModules();
-    redrawNextEventMarker();
-    redrawMessages();
-    refreshSubmodules();
-    adjustSubmodulesZOrder();
 }
 
 void ModuleInspector::redraw()
@@ -1207,7 +1168,7 @@ int ModuleInspector::inspectorCommand(int argc, const char **argv)
         return arrowcoords(interp, argc, argv);
     }
     else if (strcmp(argv[0], "relayout") == 0) {
-        TRY(relayoutAndRedrawAll());
+        //TRY(relayoutAndRedrawAll());
         return TCL_OK;
     }
     else if (strcmp(argv[0], "redraw") == 0) {
@@ -1345,6 +1306,32 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
     }
     Tcl_SetObjResult(interp, Tcl_NewIntObj(q->getLength()));
     return TCL_OK;
+}
+
+void ModuleInspector::mouseDoubleClick(QMouseEvent *event)
+{
+    qDebug() << "doubleclick";
+    QGraphicsItem *item = view->getItemAt(event->pos().x(), event->pos().y());
+    //TODO click to connection
+    if(item == nullptr)
+    {
+        qDebug() << "mouseDoubleClickEvent: item is null";
+        return;
+    }
+
+    //Modules
+    QVariant variant = item->data(1);
+    cObject *object = nullptr;
+    if(variant.isValid())
+         object = variant.value<cObject*>();
+
+    if(object == nullptr)
+        return; //TODO error
+
+    if(supportsObject(object))    //TODO && $config(reuse-inspectors)
+        setObject(object);
+    else
+    {}  //TODO opp_inspect $ptr
 }
 
 } // namespace qtenv
