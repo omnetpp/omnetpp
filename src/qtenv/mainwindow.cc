@@ -34,6 +34,7 @@
 #include <QStyledItemDelegate>
 #include <QTextLayout>
 #include <QTimer>
+#include <QLineEdit>
 
 #include "qdebug.h"
 
@@ -47,6 +48,8 @@ namespace qtenv {
 class HighlighterItemDelegate : public QStyledItemDelegate {
 public:
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
 };
 
 void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -109,6 +112,59 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     layout.draw(painter, option.rect.translated(3 + textOffset, 1).topLeft());
     painter->restore();
 
+}
+
+void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    // setting the initial geometry which covers the entire line
+    QStyledItemDelegate::updateEditorGeometry(editor, option, index);
+
+    // extracting the value from the index
+    QString text = index.data().toString();
+    auto range = index.data(Qt::UserRole).value<HighlightRange>();
+
+    // the value is bold, so it is wider, we need to get that font too
+    auto boldFont = option.font;
+    boldFont.setWeight(QFont::Bold);
+    auto boldFontMetrics = QFontMetrics(boldFont);
+
+    // this is where the editor should start
+    auto beforeText = text.left(range.start);
+    int editorLeft = option.fontMetrics.width(beforeText);
+
+    // and this is how wide it should be
+    auto inText = text.left(range.start + range.length).right(range.length);
+    int editorWidth = boldFontMetrics.width(inText);
+
+    // moving the editor horizontally and setting its width as computed
+    auto geom = editor->geometry();
+    geom.translate(editorLeft + 3, 0);
+    geom.setWidth(qMax(20, editorWidth)); // so empty values can be edited too
+    editor->setGeometry(geom);
+}
+
+// XXX Currently the editor will get the initial string from the HighlightRange.
+// This is not really a good way to hand it over, but since at the moment
+// the highlighting matches the value perfectly (and includes single quotes...),
+// and the UserRole in the index is already used for the HighlightRange itself
+// (and adding more [e.g. UserRole + 1] would work, but would hurt clarity),
+// at the moment this should suffice
+void HighlighterItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+    // getting the right type of editor
+    auto lineEdit = dynamic_cast<QLineEdit *>(editor);
+    if (lineEdit) {
+        // extracting the value to be edited
+        QString text = index.data().toString();
+        auto range = index.data(Qt::UserRole).value<HighlightRange>();
+
+        // set it up in the editor
+        lineEdit->setText(text.left(range.start + range.length - 1).right(range.length - 2));
+
+        // match the cosmetics
+        auto font = lineEdit->font();
+        font.setWeight(QFont::Bold);
+        lineEdit->setFont(font);
+    }
 }
 
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
