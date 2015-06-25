@@ -185,8 +185,7 @@ void TreeNode::addObjectChildren() {
     addObjectChildren(object);
 }
 
-void TreeNode::addObjectChildren(cObject *of)
-{
+void TreeNode::addObjectChildren(cObject *of) {
     cClassDescriptor *desc = of ? of->getDescriptor() : nullptr;
     if (!desc) {
         return;
@@ -380,6 +379,8 @@ QVariant ArrayElementNode::data(int role) {
     switch (role) {
     case Qt::DisplayRole:
         return QString("[%1] %2").arg(arrayIndex).arg(object->info().c_str());
+    case Qt::DecorationRole:
+        return QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon((cObject*)desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex))));
     default:
         return QVariant();
     }
@@ -415,11 +416,20 @@ QVariant cObjectNode::data(int role) {
 
     QString fieldValue(desc->getFieldValueAsString(object, nameField, 0).c_str());
 
+    QString infoString;
+    std::string info = object->info();
+    if (!info.empty()) {
+        infoString += ": ";
+        infoString += info.c_str();
+    }
+
     switch (role) {
     case Qt::DisplayRole:
-        return fieldName + fieldValue + " (" + className + ")";
+        return fieldName + fieldValue + infoString + " (" + className + ")";
     case Qt::UserRole:
-        return parent ? QVariant::fromValue(HighlightRange {fieldName.length(), fieldValue.length()}) : QVariant();
+        return parent
+                ? QVariant::fromValue(HighlightRange{fieldName.length(), fieldValue.length() + infoString.length()})
+                : QVariant();
     case Qt::DecorationRole:
         return QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(object)));
     default:
