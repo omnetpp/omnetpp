@@ -33,8 +33,12 @@
 #define QT_NO_EMIT
 
 #include <QMetaType>
+#include <QPair>
+
+typedef QPair<OPP::cObject*, int> ActionDataPair;
 
 Q_DECLARE_METATYPE(OPP::cObject*)
+Q_DECLARE_METATYPE(ActionDataPair)
 
 
 #if defined(TKENV_EXPORT)

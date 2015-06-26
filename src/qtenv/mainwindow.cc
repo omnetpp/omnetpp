@@ -28,7 +28,11 @@
 #include "inspector.h"
 #include "common/stringutil.h"
 #include "stopdialog.h"
+#include "inspectorutil.h"
+#include <QStyledItemDelegate>
+#include <QTextLayout>
 #include <QTimer>
+#include <QLineEdit>
 #include <QDebug>
 
 using namespace OPP::common;
@@ -655,7 +659,7 @@ void MainWindow::onTreeViewContextMenu(QPoint point)
 {
     QModelIndex index = ui->treeView->indexAt(point);
     if (index.isValid()) {
-        QMenu *menu = static_cast<TreeItemModel *>(ui->treeView->model())->getContextMenu(index, this);
+        QMenu *menu = static_cast<TreeItemModel *>(ui->treeView->model())->getContextMenu(index);
         menu->exec(ui->treeView->mapToGlobal(point));
         delete menu;
     }
@@ -680,8 +684,8 @@ void MainWindow::onClickOpenInspector()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        inspectObject(objTypePair.first, objTypePair.second);
+        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        //inspectObject(objTypePair.first, objTypePair.second);
     }
 }
 
@@ -690,8 +694,8 @@ void MainWindow::onClickRun()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        runSimulationLocal(nullptr, objTypePair.second, objTypePair.first);
+        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        //runSimulationLocal(nullptr, objTypePair.second, objTypePair.first);
     }
 }
 
@@ -700,8 +704,8 @@ void MainWindow::onClickRunMessage()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        //runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
     }
 }
 
@@ -718,15 +722,15 @@ void MainWindow::onClickUtilitiesSubMenu()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        //copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
     }
 }
 
 void MainWindow::copyToClipboard(cObject *object, int what)
 {
     switch (what) {
-        case COPY_PTR: {
+        case InspectorUtil::COPY_PTR: {
             void *address = static_cast<void *>(object);
             std::stringstream ss;
             ss << address;
@@ -734,7 +738,7 @@ void MainWindow::copyToClipboard(cObject *object, int what)
             break;
         }
 
-        case COPY_PTRWITHCAST: {
+        case InspectorUtil::COPY_PTRWITHCAST: {
             void *address = static_cast<void *>(object);
             std::stringstream ss;
             ss << address;
@@ -742,15 +746,15 @@ void MainWindow::copyToClipboard(cObject *object, int what)
             break;
         }
 
-        case COPY_FULLPATH:
+        case InspectorUtil::COPY_FULLPATH:
             setClipboard(object->getFullPath().c_str());
             break;
 
-        case COPY_FULLNAME:
+        case InspectorUtil::COPY_FULLNAME:
             setClipboard(object->getFullName());
             break;
 
-        case COPY_CLASSNAME:
+        case InspectorUtil::COPY_CLASSNAME:
             setClipboard(object->getClassName());
             break;
     }

@@ -30,6 +30,7 @@
 #include "inspectorfactory.h"
 #include "qtenv.h"
 #include "qtutil.h"
+#include "inspectorutil.h"
 #include "mainwindow.h"
 #include <QIcon>
 #include <QMainWindow>
@@ -200,98 +201,9 @@ void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant> &list, QM
     }
 }
 
-// fillInspectorContextMenu without insp
-QMenu *TreeItemModel::getContextMenu(QModelIndex& index, QMainWindow *mainWindow)
+QMenu *TreeItemModel::getContextMenu(QModelIndex& index)
 {
-    // TODO global contextmenurules
-    QMenu *menu = new QMenu();
-
-    cObject *object = getObjectFromIndex(index);
-    const char *name = object->getFullName();
-
-    // add inspector types supported by the object
-    for (int type : supportedInspTypes(object)) {
-        QString label;
-        switch (type) {
-            case INSP_DEFAULT:
-                label = "Open Best View";
-                break;
-
-            case INSP_OBJECT:
-                label = "Open Details";
-                break;
-
-            case INSP_GRAPHICAL:
-                label = "Open Graphical View";
-                break;
-
-            case INSP_MODULEOUTPUT:
-                label = "Open Component Log";
-                break;
-        }
-        label += QString(" for '") + name + "'";
-        QAction *action = menu->addAction(label, mainWindow, SLOT(onClickOpenInspector()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, type)));
-    }
-
-    // add "run until" menu items
-    if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
-        menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", mainWindow, SLOT(onClickRun()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", mainWindow, SLOT(onClickRun()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
-    }
-
-    if (dynamic_cast<cMessage *>(object)) {
-        menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
-        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", mainWindow, SLOT(onClickRunMessage()));
-        menu->addSeparator();
-        action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", mainWindow, SLOT(onClickExcludeMessage()));
-        action->setData(QVariant::fromValue(object));
-    }
-
-    // add utilities menu
-    menu->addSeparator();
-    QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");
-    QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", mainWindow, SLOT(onClickUtilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_PTRWITHCAST)));
-    action = subMenu->addAction("Copy Pointer Value (for Debugger)", mainWindow, SLOT(onClickUtilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_PTR)));
-    subMenu->addSeparator();
-    action = subMenu->addAction("Copy Full Path", mainWindow, SLOT(onClickUtilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_FULLPATH)));
-    action = subMenu->addAction("Copy Name", mainWindow, SLOT(onClickUtilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_FULLNAME)));
-    action = subMenu->addAction("Copy Class Name", mainWindow, SLOT(onClickUtilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, MainWindow::COPY_CLASSNAME)));
-
-    return menu;
-}
-
-QVector<int> TreeItemModel::supportedInspTypes(cObject *object)
-{
-    using namespace qtenv;
-    QVector<int> insp_types;
-    cRegistrationList *a = inspectorfactories.getInstance();
-    for (int i = 0; i < a->size(); i++) {
-        InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));
-        if (ifc->supportsObject(object)) {
-            int k;
-            for (k = 0; k < insp_types.size(); k++)
-                if (insp_types[k] == ifc->getInspectorType())
-                    break;
-
-            if (k == insp_types.size())  // not yet in vector, insert
-                insp_types.push_front(ifc->getInspectorType());
-        }
-    }
-
-    return insp_types;
+    return InspectorUtil::fillInspectorContextMenu(getObjectFromIndex(index));
 }
 
 } // namespace qtenv

@@ -26,6 +26,7 @@
 #include <QAction>
 #include <QMouseEvent>
 #include <QGridLayout>
+#include <QContextMenuEvent>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -131,7 +132,10 @@ void ModuleInspector::createView(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout();
     parent->setLayout(layout);
     view = new ModuleGraphicsView();
+
     connect(view, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
+    connect(view, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
+
     layout->addWidget(view);
     layout->setMargin(0);
     scene = new QGraphicsScene();
@@ -1310,28 +1314,62 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 
 void ModuleInspector::doubleClick(QMouseEvent *event)
 {
-    qDebug() << "doubleclick";
-    QGraphicsItem *item = view->getItemAt(event->pos().x(), event->pos().y());
+    cObject *object = view->getObjectAt(event->pos().x(), event->pos().y());
+
     //TODO click to connection
-    if(item == nullptr)
+    if(object == nullptr)
     {
-        qDebug() << "mouseDoubleClickEvent: item is null";
+        qDebug() << "mouseDoubleClickEvent: object is null";
         return;
     }
-
-    //Modules
-    QVariant variant = item->data(1);
-    cObject *object = nullptr;
-    if(variant.isValid())
-         object = variant.value<cObject*>();
-
-    if(object == nullptr)
-        return; //TODO error
 
     if(supportsObject(object))    //TODO && $config(reuse-inspectors)
         setObject(object);
     else
     {}  //TODO opp_inspect $ptr
+}
+
+void ModuleInspector::createContextMenu(QContextMenuEvent *event)
+{
+    //TODO
+//proc ModuleInspector:rightClick {insp X Y x y} {
+//   global inspectordata tmp CTRL
+
+//   ModuleInspector:zoomMarqueeCancel $insp ;# just in case
+
+//   set c $insp.c
+    QList<cObject*> objects = view->getObjectsAt(event->x(), event->y());
+
+   if(objects.size())
+   {
+//      set popup [createInspectorContextMenu $insp $ptrs]
+
+//      set tmp($c:showlabels) $inspectordata($c:showlabels)
+//      set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
+
+//      $popup add separator
+//      $popup add command     -label "Show/Hide Canvas Layers..." -command "ModuleInspector:layers $insp"
+
+//      $popup add separator
+//      $popup add checkbutton -label "Show Module Names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
+//      $popup add checkbutton -label "Show Arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
+
+//      $popup add separator
+//      $popup add command -label "Increase Icon Size" -accel "$CTRL+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
+//      $popup add command -label "Decrease Icon Size" -accel "$CTRL+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
+
+//      $popup add separator
+//      $popup add command -label "Zoom In"  -accel "$CTRL+M" -command "ModuleInspector:zoomIn $insp"
+//      $popup add command -label "Zoom Out" -accel "$CTRL+N" -command "ModuleInspector:zoomOut $insp"
+//      $popup add command -label "Re-Layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
+
+//      $popup add separator
+//      $popup add command -label "Layouting Settings..." -command "preferencesDialog $insp l"
+//      $popup add command -label "Animation Settings..." -command "preferencesDialog $insp a"
+//      $popup add command -label "Animation Filter..." -command "preferencesDialog $insp t"
+
+//      tk_popup $popup $X $Y
+    }
 }
 
 } // namespace qtenv

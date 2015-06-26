@@ -50,8 +50,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
-
     explicit MainWindow(Qtenv *env, QWidget *parent = 0);
 
     void displayText(const char* t);

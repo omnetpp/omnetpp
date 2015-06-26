@@ -27,6 +27,7 @@ namespace omnetpp {
 
 class cModule;
 class cGate;
+class cObject;
 
 namespace qtenv {
 
@@ -77,7 +78,8 @@ public:
 
     void relayoutAndRedrawAll();
     void setObject(cModule *obj);
-    QGraphicsItem *getItemAt(qreal x, qreal y);
+    cObject *getObjectAt(qreal x, qreal y);
+    QList<cObject*> getObjectsAt(qreal x, qreal y);
 
     void clear();
 };

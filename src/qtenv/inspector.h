@@ -78,7 +78,13 @@ class QTENV_API Inspector : public QWidget
       virtual void goForward();
       virtual void inspectParent();
 
+   protected slots:
+      //Context menu's action's slots
+      virtual void goInto();
+
    public:
+      typedef QPair<OPP::cObject*, int> ActionDataPair;
+
       Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *factory);
       virtual ~Inspector();
       virtual const char *getClassName() const;
@@ -113,7 +119,6 @@ class QTENV_API Inspector : public QWidget
 
 } // namespace qtenv
 } // namespace omnetpp
-
 
 #endif
 

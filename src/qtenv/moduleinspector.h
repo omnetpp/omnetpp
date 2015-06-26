@@ -29,6 +29,7 @@ class QGraphicsView;
 class QGraphicsItem;
 class QBoxLayout;
 class QMouseEvent;
+class QContextMenuEvent;
 
 namespace omnetpp {
 class cObject;
@@ -152,7 +153,8 @@ class QTENV_API ModuleInspector : public Inspector
       static void performAnimations(Tcl_Interp *interp);
 
 private slots:
-      virtual void doubleClick(QMouseEvent *event);
+      void doubleClick(QMouseEvent *event);
+      void createContextMenu(QContextMenuEvent *event);
 };
 
 } // namespace qtenv

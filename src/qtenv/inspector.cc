@@ -22,6 +22,7 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
+#include <QMenu>
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
@@ -273,6 +274,15 @@ const char *Inspector::getEntry(const char *entry)
 {
     CHK(Tcl_VarEval(interp, windowName, entry, " get", TCL_NULL));
     return Tcl_GetStringResult(interp);
+}
+
+void Inspector::goInto()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        cObject *object = variant.value<cObject*>();
+        setObject(object);
+    }
 }
 
 } // namespace qtenv

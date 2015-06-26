@@ -28,9 +28,10 @@ namespace omnetpp {
 class cObject;
 } // namespace omnetpp
 
-typedef QPair<OPP::cObject*, int> ActionDataPair;
+//TODO clear
+//typedef QPair<OPP::cObject*, int> ActionDataPair;
 
-Q_DECLARE_METATYPE(ActionDataPair)
+//Q_DECLARE_METATYPE(ActionDataPair)
 
 namespace omnetpp {
 namespace qtenv {
@@ -65,8 +66,7 @@ public:
     void expandItems(QTreeView *view, const QList<QVariant> &list, QModelIndex idx = QModelIndex());
 
     void setRootObject(cObject *root);
-    QMenu *getContextMenu(QModelIndex &index, QMainWindow *mainWindow);
-    QVector<int> supportedInspTypes(cObject *object);
+    QMenu *getContextMenu(QModelIndex &index);
 };
 
 } // namespace qtenv

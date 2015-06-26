@@ -603,9 +603,42 @@ QPointF ModuleGraphicsView::getSubmodCoords(cModule *mod)
     return pos;
 }
 
-QGraphicsItem *ModuleGraphicsView::getItemAt(qreal x, qreal y)
+cObject *ModuleGraphicsView::getObjectAt(qreal x, qreal y)
 {
-    return scene()->itemAt(mapToScene(x, y), QTransform());
+    QGraphicsItem *item = scene()->itemAt(mapToScene(x, y), QTransform());
+    if(item == nullptr)
+        return nullptr;
+
+    QVariant variant = item->data(1);
+    cObject *object = nullptr;
+    if(variant.isValid())
+         object = variant.value<cObject*>();
+
+    return object;
+}
+
+QList<cObject*> ModuleGraphicsView::getObjectsAt(qreal x, qreal y)
+{
+    QList<QGraphicsItem*> items = scene()->items(mapToScene(x, y));
+    QList<cObject*> objects;
+    if(items.size() == 0)
+        return objects;
+
+    for(auto item : items)
+    {
+        QVariant variant = item->data(1);
+        if(!variant.isValid())
+        {
+            //TODO
+            qDebug() << "getObjectsAt: item has invalid data.";
+            continue;
+        }
+
+        objects.push_back(variant.value<cObject*>());
+
+    }
+
+    return objects;
 }
 
 void ModuleGraphicsView::clear()
