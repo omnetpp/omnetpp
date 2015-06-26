@@ -8,11 +8,11 @@ QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = qtenv-ui
+TARGET = qtenv
 TEMPLATE = lib
-CONFIG += static
+CONFIG += static warn_off
 DEFINES += "BUILDING_QTENV"
-DEFINES += "OMNETPP_IMAGE_PATH=\"\\\"$$[OMNETPP_IMAGE_PATH]\\\"\""
+QMAKE_CXXFLAGS += $(OPP_CFLAGS)
 
 SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbuffer.cc outputvectorinspector.cc tkutil.cc canvasinspector.cc gateinspector.cc inspector.cc loginspector.cc qtenv.cc watchinspector.cc canvasrenderer.cc genericobjectinspector.cc inspectorfactory.cc moduleinspector.cc tkcmd.cc componenthistory.cc graphicspatharrowitem.cc layouterenv.cc osxproctype.cc tklib.cc
 

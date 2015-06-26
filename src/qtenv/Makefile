@@ -34,9 +34,8 @@ qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 qmake:
-	@echo Creating static UI library from the sources in qtcreator...
-	$(Q)qmake -set OMNETPP_IMAGE_PATH "$(OMNETPP_IMAGE_PATH)"
-	$(Q)qmake -Wnone -o $O/Makefile && (cd $O && make)
+	@echo Invoking qmake and building qtenv sources...
+	$(Q)qmake -o $O/Makefile && (cd $O && OPP_CFLAGS="$(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" make)
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : qmake
 	@mkdir -p $L
