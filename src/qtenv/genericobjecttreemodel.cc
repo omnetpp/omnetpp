@@ -124,10 +124,8 @@ QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex
         return createIndex(0, 0, rootNode);
     } else {
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
-        if (parentNode) {
-            if (parentNode->getChildCount() > row) {
-                return createIndex(row, column, parentNode->getChild(row));
-            }
+        if (parentNode && (parentNode->getChildCount() > row)) {
+            return createIndex(row, column, parentNode->getChild(row));
         }
         return QModelIndex();
     }
@@ -140,14 +138,11 @@ QModelIndex GenericObjectTreeModel::parent(const QModelIndex &child) const {
 
 int GenericObjectTreeModel::rowCount(const QModelIndex &parent) const {
     if (!parent.isValid()) {
+        // it is the root, and we have one of it
         return 1;
     } else {
         TreeNode *parentNode = static_cast<TreeNode *>(parent.internalPointer());
-        if (parentNode) {
-            return parentNode->getChildCount();
-        } else {
-            return 0;
-        }
+        return parentNode ? parentNode->getChildCount() : 0;
     }
 }
 
@@ -185,6 +180,9 @@ void TreeNode::addObjectChildren() {
     addObjectChildren(object);
 }
 
+// the ArrayElementNode contains the children of the element itself
+// but the object pointer in those nodes point to the object that
+// contains the array itself, so we need this parameter
 void TreeNode::addObjectChildren(cObject *of) {
     cClassDescriptor *desc = of ? of->getDescriptor() : nullptr;
     if (!desc) {
@@ -268,9 +266,7 @@ void FieldNode::fill() {
     if (desc->getFieldIsArray(fieldIndex)) {
         int size = desc->getFieldArraySize(object, fieldIndex);
         for (int i = 0; i < size; ++i) {
-            if (desc->getFieldIsArray(fieldIndex)) {
-                children.push_back(new ArrayElementNode(this, i, object, fieldIndex, i));
-            }
+            children.push_back(new ArrayElementNode(this, i, object, fieldIndex, i));
         }
     }
 }
@@ -344,7 +340,6 @@ void FieldGroupNode::fill() {
             }
         }
     }
-    filled = true;
 }
 
 QVariant FieldGroupNode::data(int role) {
@@ -361,11 +356,7 @@ QVariant FieldGroupNode::data(int role) {
 
 
 void ArrayElementNode::fill() {
-    if (!desc) {
-        return;
-    }
-
-    if (desc->getFieldIsCompound(fieldIndex)) {
+    if (desc && desc->getFieldIsCompound(fieldIndex)) {
         addObjectChildren((cObject *)desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex));
     }
 }
@@ -376,14 +367,17 @@ ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, cObject 
 }
 
 QVariant ArrayElementNode::data(int role) {
-    switch (role) {
-    case Qt::DisplayRole:
-        return QString("[%1] %2").arg(arrayIndex).arg(object->info().c_str());
-    case Qt::DecorationRole:
-        return QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon((cObject*)desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex))));
-    default:
-        return QVariant();
+    if (desc->getFieldIsCObject(fieldIndex)) {
+        cObject *fieldPointer = static_cast<cObject *>(desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex));
+        switch (role) {
+        case Qt::DisplayRole:
+            return QString("[%1] %2").arg(arrayIndex).arg(fieldPointer ? fieldPointer->info().c_str() : "NULL");
+        case Qt::DecorationRole:
+            return fieldPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldPointer))) : QVariant();
+        }
     }
+
+    return QVariant();
 }
 
 

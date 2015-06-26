@@ -30,13 +30,11 @@
 #include "inspector.h"
 #include "common/stringutil.h"
 #include "stopdialog.h"
-#include "graphicsscene.h"
 #include <QStyledItemDelegate>
 #include <QTextLayout>
 #include <QTimer>
 #include <QLineEdit>
-
-#include "qdebug.h"
+#include <QDebug>
 
 using namespace OPP::common;
 
