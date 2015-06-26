@@ -16,7 +16,7 @@ void FF1AbstractFifo::activity()
         cMessage *msg = receive();
         if (msg == endServiceMsg) {
             endService(msgServiced);
-            if (queue.empty()) {
+            if (queue.isEmpty()) {
                 msgServiced = nullptr;
             }
             else {

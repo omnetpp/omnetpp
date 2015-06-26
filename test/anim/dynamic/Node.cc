@@ -16,8 +16,8 @@ void Node::activity()
     cQueue q;
     while (true) {
         EV << "sending messages on all gates...\n";
-        for (GateIterator i(this); !i.end(); i++) {
-            cGate *g = i();
+        for (GateIterator it(this); !it.end(); ++it) {
+            cGate *g = *it;
             if (g->getType() == cGate::OUTPUT && g->isConnected() && g->getPathEndGate()->getOwnerModule()->isSimple())
                 send(new cMessage("msg"), g);
         }

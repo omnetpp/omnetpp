@@ -25,7 +25,7 @@ void Controller::handleMessage(cMessage *msg)
     // delete some modules
     double p = par("deleteProbability");
     for (cModule::SubmoduleIterator it(getSystemModule()); !it.end();  /**/) {
-        cModule *mod = it++;
+        cModule *mod = *it++;
         if (strncmp(mod->getName(), "node-", 5) == 0 && dblrand() < p)
             mod->deleteModule();
     }
