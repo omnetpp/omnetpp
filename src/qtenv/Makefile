@@ -16,7 +16,7 @@ $(error OMNETPP_LIB_DIR must be correctly set)
 endif
 
 .PHONY: all qtenv qmake clean depend
-	
+
 #
 # Local definitions
 #
@@ -26,16 +26,15 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D $(QT_LIBS)
 
-QTENVUILIB= libqtenv-ui.a
-
 all: $(QTENV_IF_POSSIBLE)
 
 qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 qmake:
-	@echo Invoking qmake and building qtenv sources...
-	$(Q)qmake "QMAKE_CXX=$(CXX)" "QMAKE_CC=$(CC)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && OPP_CFLAGS="$(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" make)
+	@echo Invoking qmake and building qtenv...
+	@mkdir -p $O
+	OPP_CFLAGS="$(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" qmake "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : qmake
 	@mkdir -p $L
@@ -59,7 +58,6 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : qmake
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(O)/*.o $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
-
 
 #
 # Targets
