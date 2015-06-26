@@ -1686,7 +1686,7 @@ proc ModuleInspector:qlenDblclick insp {
    }
 }
 
-proc ModuleInspector:qlenRightClick {insp X Y} {
+proc ModuleInspector:qlenRightClick {insp X Y x y} {
    set qptr [ModuleInspector:qlenGetQptrCurrent $insp]
    if [opp_isnotnull $qptr] {
        set popup [createInspectorContextMenu $insp $qptr]
