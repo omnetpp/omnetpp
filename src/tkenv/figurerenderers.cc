@@ -724,8 +724,8 @@ void PolygonFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp 
 std::string PathFigureRenderer::getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     cPathFigure *pathFigure = check_and_cast<cPathFigure *>(figure);
-    const char *path = pathFigure->getPath();
-    return opp_isblank(path) ? "M 0 0" : path;  // empty path causes error (item will not be be created)
+    std::string path = pathFigure->getPath();
+    return path.empty() ? "M 0 0" : path;  // empty path causes error (item will not be be created)
 }
 
 void PathFigureRenderer::addMatrix(cFigure *figure, const cFigure::Transform& transform, int& argc, const char *argv[])

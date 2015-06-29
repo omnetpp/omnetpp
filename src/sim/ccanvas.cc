@@ -2251,7 +2251,7 @@ void cPolygonFigure::setFillRule(FillRule fillRule)
 
 void cPathFigure::copy(const cPathFigure& other)
 {
-    setPath(other.getPath());
+    setPath(other.getPath().c_str()); //FIXME do deep copy of structs instead!!!
     setJoinStyle(other.getJoinStyle());
     setCapStyle(other.getCapStyle());
 }
@@ -2267,7 +2267,7 @@ cPathFigure& cPathFigure::operator=(const cPathFigure& other)
 
 std::string cPathFigure::info() const
 {
-    return path;
+    return getPath();
 }
 
 void cPathFigure::parse(cProperty *property)
@@ -2297,147 +2297,380 @@ const char **cPathFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPathFigure::setPath(const char *path)
+inline double getNum(const char *&s)
 {
-    if (OPP::opp_strcmp(path, this->path.c_str()) == 0)
-        return;
-    this->path = path;
-    //TODO validate; add spaces around command letters if missing
+    char *end;
+    double d = opp_strtod(s, &end);
+    if (end == s)
+        throw cRuntimeError("number expected"); //TODO add offset to error message!
+    s = end;
+    return d;
+}
+
+inline bool getBool(const char *&s)
+{
+    return getNum(s) != 0;
+}
+
+void cPathFigure::setPath(const char *pathString)
+{
+    clearPath();
+    const char *s = pathString;
+    while (opp_isspace(*s))
+        s++;
+    while (*s) {
+        char code = *s++;
+        switch (code) {
+            case 'M': addMoveTo(getNum(s), getNum(s)); break;
+            case 'm': addMoveRel(getNum(s), getNum(s)); break;
+            case 'L': addLineTo(getNum(s), getNum(s)); break;
+            case 'l': addLineRel(getNum(s), getNum(s)); break;
+            case 'H': addHorizontalLineTo(getNum(s)); break;
+            case 'h': addHorizontalLineRel(getNum(s)); break;
+            case 'V': addVerticalLineTo(getNum(s)); break;
+            case 'v': addVerticalLineRel(getNum(s)); break;
+            case 'A': addArcTo(getNum(s), getNum(s), getNum(s), getBool(s), getBool(s), getNum(s), getNum(s)); break;
+            case 'a': addArcRel(getNum(s), getNum(s), getNum(s), getBool(s), getBool(s), getNum(s), getNum(s)); break;
+            case 'Q': addCurveTo(getNum(s), getNum(s), getNum(s), getNum(s)); break;
+            case 'q': addCurveRel(getNum(s), getNum(s), getNum(s), getNum(s)); break;
+            case 'T': addSmoothCurveTo(getNum(s), getNum(s)); break;
+            case 't': addSmoothCurveRel(getNum(s), getNum(s)); break;
+            case 'C': addCubicBezierCurveTo(getNum(s), getNum(s), getNum(s), getNum(s), getNum(s), getNum(s)); break;
+            case 'c': addCubicBezierCurveRel(getNum(s), getNum(s), getNum(s), getNum(s), getNum(s), getNum(s)); break;
+            case 'S': addSmoothCubicBezierCurveTo(getNum(s), getNum(s), getNum(s), getNum(s)); break;
+            case 's': addSmoothCubicBezierCurveRel(getNum(s), getNum(s), getNum(s), getNum(s)); break;
+            case 'z': case 'Z': addClosePath(); break;
+            default: throw cRuntimeError("unknown path code '%c'", code);
+        }
+        while (opp_isspace(*s))
+            s++;
+    }
+}
+
+std::string cPathFigure::getPath() const
+{
+    // return cached copy if exists
+    if (!cachedPathString.empty() || path.empty())
+        return cachedPathString;
+
+    // else produce string and cache it
+    std::stringstream os;
+    for (int i = 0; i < (int)path.size(); i++) {
+        PathItem *base = path[i];
+        os << (char)base->code << " ";
+        switch (base->code) {
+            case 'M': {
+                MoveTo *item = static_cast<MoveTo*>(base);
+                os << item->x << " " << item->y;
+                break;
+            }
+            case 'm': {
+                MoveRel *item = static_cast<MoveRel*>(base);
+                os << item->dx << " " << item->dy;
+                break;
+            }
+            case 'L': {
+                LineTo *item = static_cast<LineTo*>(base);
+                os << item->x << " " << item->y;
+                break;
+            }
+            case 'l': {
+                LineRel *item = static_cast<LineRel*>(base);
+                os << item->dx << " " << item->dy;
+                break;
+            }
+            case 'H': {
+                HorizLineTo *item = static_cast<HorizLineTo*>(base);
+                os << item->x;
+                break;
+            }
+            case 'h': {
+                HorizLineRel *item = static_cast<HorizLineRel*>(base);
+                os << item->dx;
+                break;
+            }
+            case 'V': {
+                VertLineTo *item = static_cast<VertLineTo*>(base);
+                os << item->y;
+                break;
+            }
+            case 'v': {
+                VertLineRel *item = static_cast<VertLineRel*>(base);
+                os << item->dy;
+                break;
+            }
+            case 'A': {
+                ArcTo *item = static_cast<ArcTo*>(base);
+                os << item->rx << " " << item->ry << " " << item->phi << " " << item->largeArc << " " << item->sweep << " " << item->x << " " << item->y;
+                break;
+            }
+            case 'a': {
+                ArcRel *item = static_cast<ArcRel*>(base);
+                os << item->rx << " " << item->ry << " " << item->phi << " " << item->largeArc << " " << item->sweep << " " << item->dx << " " << item->dy;
+                break;
+            }
+            case 'Q': {
+                CurveTo *item = static_cast<CurveTo*>(base);
+                os << item->x1 << " " << item->y1 << " " << item->x << " " << item->y;
+                break;
+            }
+            case 'q': {
+                CurveRel *item = static_cast<CurveRel*>(base);
+                os << " q " << item->dx1 << " " << item->dy1 << " " << item->dx << " " << item->dy;
+                break;
+            }
+            case 'T': {
+                SmoothCurveTo *item = static_cast<SmoothCurveTo*>(base);
+                os << item->x << " " << item->y;
+                break;
+            }
+            case 't': {
+                SmoothCurveRel *item = static_cast<SmoothCurveRel*>(base);
+                os << item->dx << " " << item->dy;
+                break;
+            }
+            case 'C': {
+                CubicBezierCurveTo *item = static_cast<CubicBezierCurveTo*>(base);
+                os << item->x1 << " " << item->y1 << " " << item->x2 << " " << item->y2 << " " << item->x << " " << item->y;
+                break;
+            }
+            case 'c': {
+                CubicBezierCurveRel *item = static_cast<CubicBezierCurveRel*>(base);
+                os << item->dx1 << " " << item->dy1 << " " << item->dx2 << " " << item->dy2 << " " << item->dx << " " << item->dy;
+                break;
+            }
+            case 'S': {
+                SmoothCubicBezierCurveTo *item = static_cast<SmoothCubicBezierCurveTo*>(base);
+                os << item->x2 << " " << item->y2 << " " << item->x << " " << item->y;
+                break;
+            }
+            case 's': {
+                SmoothCubicBezierCurveRel *item = static_cast<SmoothCubicBezierCurveRel*>(base);
+                os << item->dx2 << " " << item->dy2 << " " << item->dx << " " << item->dy;
+                break;
+            }
+            case 'Z': {
+                break;
+            }
+            default:
+                throw cRuntimeError(this, "unknown path item '%c'", base->code);
+        }
+    }
+    cachedPathString = os.str();
+    return cachedPathString;
+}
+
+void cPathFigure::addItem(PathItem *item)
+{
+    path.push_back(item);
+    if (!cachedPathString.empty())
+        cachedPathString.clear();
     fireGeometryChange();
 }
 
-void cPathFigure::appendPath(const std::string& s)
+void cPathFigure::doClearPath()
 {
-    path += s;
-    fireGeometryChange();
+    for (int i = 0; i < (int)path.size(); i++)
+        delete path[i];
+    path.clear();
+    cachedPathString.clear();
 }
 
 void cPathFigure::clearPath()
 {
-    path = "";
+    doClearPath();
     fireGeometryChange();
 }
 
 void cPathFigure::addMoveTo(double x, double y)
 {
-    std::stringstream os;
-    os << " M " << x << " " << y;
-    appendPath(os.str());
+    MoveTo *item = new MoveTo();
+    item->code = 'M';
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addMoveRel(double dx, double dy)
 {
-    std::stringstream os;
-    os << " m " << dx << " " << dy;
-    appendPath(os.str());
+    MoveRel *item = new MoveRel();
+    item->code = 'm';
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addLineTo(double x, double y)
 {
-    std::stringstream os;
-    os << " L " << x << " " << y;
-    appendPath(os.str());
-}
-
-void cPathFigure::addHorizontalLineTo(double x)
-{
-    std::stringstream os;
-    os << " H " << x;
-    appendPath(os.str());
-}
-
-void cPathFigure::addVerticalLineTo(double y)
-{
-    std::stringstream os;
-    os << " V " << y;
-    appendPath(os.str());
+    LineTo *item = new LineTo();
+    item->code = 'L';
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addLineRel(double dx, double dy)
 {
-    std::stringstream os;
-    if (dy == 0)
-        os << " h " << dx;
-    else if (dx == 0)
-        os << " v " << dy;
-    else
-        os << " l " << dx << " " << dy;
-    appendPath(os.str());
+    LineRel *item = new LineRel();
+    item->code = 'l';
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
+}
+
+void cPathFigure::addHorizontalLineTo(double x)
+{
+    HorizLineTo *item = new HorizLineTo();
+    item->code = 'H';
+    item->x = x;
+    addItem(item);
+}
+
+void cPathFigure::addHorizontalLineRel(double dx)
+{
+    HorizLineRel *item = new HorizLineRel();
+    item->code = 'h';
+    item->dx = dx;
+    addItem(item);
+}
+
+void cPathFigure::addVerticalLineTo(double y)
+{
+    VertLineTo *item = new VertLineTo();
+    item->code = 'V';
+    item->y = y;
+    addItem(item);
+}
+
+void cPathFigure::addVerticalLineRel(double dy)
+{
+    VertLineRel *item = new VertLineRel();
+    item->code = 'v';
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addArcTo(double rx, double ry, double phi, bool largeArc, bool sweep, double x, double y)
 {
-    std::stringstream os;
-    os << " A " << rx << " " << ry << " " << phi << " " << largeArc << " " << sweep << " " << x << " " << y;
-    appendPath(os.str());
+    ArcTo *item = new ArcTo();
+    item->code = 'A';
+    item->rx = rx;
+    item->ry = ry;
+    item->phi = phi;
+    item->largeArc = largeArc;
+    item->sweep = sweep;
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy)
 {
-    std::stringstream os;
-    os << " a " << rx << " " << ry << " " << phi << " " << largeArc << " " << sweep << " " << dx << " " << dy;
-    appendPath(os.str());
+    ArcRel *item = new ArcRel();
+    item->code = 'a';
+    item->rx = rx;
+    item->ry = ry;
+    item->phi = phi;
+    item->largeArc = largeArc;
+    item->sweep = sweep;
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addCurveTo(double x1, double y1, double x, double y)
 {
-    std::stringstream os;
-    os << " Q " << x1 << " " << y1 << " " << x << " " << y;
-    appendPath(os.str());
+    CurveTo *item = new CurveTo();
+    item->code = 'Q';
+    item->x1 = x1;
+    item->y1 = y1;
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addCurveRel(double dx1, double dy1, double dx, double dy)
 {
-    std::stringstream os;
-    os << " q " << dx1 << " " << dy1 << " " << dx << " " << dy;
-    appendPath(os.str());
+    CurveRel *item = new CurveRel();
+    item->code = 'q';
+    item->dx1 = dx1;
+    item->dy1 = dy1;
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addSmoothCurveTo(double x, double y)
 {
-    std::stringstream os;
-    os << " T " << x << " " << y;
-    appendPath(os.str());
+    SmoothCurveTo *item = new SmoothCurveTo();
+    item->code = 'T';
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addSmoothCurveRel(double dx, double dy)
 {
-    std::stringstream os;
-    os << " t " << dx << " " << dy;
-    appendPath(os.str());
+    SmoothCurveRel *item = new SmoothCurveRel();
+    item->code = 't';
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addCubicBezierCurveTo(double x1, double y1, double x2, double y2, double x, double y)
 {
-    std::stringstream os;
-    os << " C " << x1 << " " << y1 << " " << x2 << " " << y2 << " " << x << " " << y;
-    appendPath(os.str());
+    CubicBezierCurveTo *item = new CubicBezierCurveTo();
+    item->code = 'C';
+    item->x1 = x1;
+    item->y1 = y1;
+    item->x2 = x2;
+    item->y2 = y2;
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy)
 {
-    std::stringstream os;
-    os << " c " << dx1 << " " << dy1 << " " << dx2 << " " << dy2 << " " << dx << " " << dy;
-    appendPath(os.str());
+    CubicBezierCurveRel *item = new CubicBezierCurveRel();
+    item->code = 'c';
+    item->dx1 = dx1;
+    item->dy1 = dy1;
+    item->dx2 = dx2;
+    item->dy2 = dy2;
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y)
 {
-    std::stringstream os;
-    os << " S " << x2 << " " << y2 << " " << x << " " << y;
-    appendPath(os.str());
+    SmoothCubicBezierCurveTo *item = new SmoothCubicBezierCurveTo();
+    item->code = 's';
+    item->x2 = x2;
+    item->y2 = y2;
+    item->x = x;
+    item->y = y;
+    addItem(item);
 }
 
 void cPathFigure::addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy)
 {
-    std::stringstream os;
-    os << " s " << dx2 << " " << dy2 << " " << dx << " " << dy;
-    appendPath(os.str());
+    SmoothCubicBezierCurveRel *item = new SmoothCubicBezierCurveRel();
+    item->code = 's';
+    item->dx2 = dx2;
+    item->dy2 = dy2;
+    item->dx = dx;
+    item->dy = dy;
+    addItem(item);
 }
 
 void cPathFigure::addClosePath()
 {
-    appendPath(" Z");
+    ClosePath *item = new ClosePath();
+    item->code = 'Z';
+    addItem(item);
 }
 
 void cPathFigure::move(double x, double y)

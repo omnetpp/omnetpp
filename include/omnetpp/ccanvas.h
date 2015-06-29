@@ -995,17 +995,44 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
  */
 class SIM_API cPathFigure : public cAbstractShapeFigure
 {
+    public:
+        struct PathItem { char code; };
+        struct MoveTo : PathItem { double x; double y; };  // M
+        struct MoveRel : PathItem { double dx; double dy; };  // m
+        struct LineTo : PathItem { double x; double y; };  // L
+        struct LineRel : PathItem { double dx; double dy; };  // l
+        struct HorizLineTo : PathItem { double x; };  // H
+        struct HorizLineRel : PathItem { double dx; };  // h
+        struct VertLineTo : PathItem { double y; };  // V
+        struct VertLineRel : PathItem { double dy; };  // v
+        struct ArcTo : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double x; double y; }; // A
+        struct ArcRel : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double dx; double dy; }; // a
+        struct CurveTo : PathItem { double x1; double y1; double x; double y; }; // Q
+        struct CurveRel : PathItem { double dx1; double dy1; double dx; double dy; }; // q
+        struct SmoothCurveTo : PathItem { double x; double y; }; // T
+        struct SmoothCurveRel : PathItem { double dx; double dy; }; // t
+        struct CubicBezierCurveTo : PathItem { double x1; double y1; double x2; double y2; double x; double y; }; // C
+        struct CubicBezierCurveRel : PathItem { double dx1; double dy1; double dx2; double dy2; double dx; double dy; }; // c
+        struct SmoothCubicBezierCurveTo : PathItem { double x2; double y2; double x; double y; }; // S
+        struct SmoothCubicBezierCurveRel : PathItem { double dx2; double dy2; double dx; double dy; }; // s
+        struct ClosePath : PathItem { }; // Z
+
     private:
+        std::vector<PathItem*> path;
+        mutable std::string cachedPathString;
         JoinStyle joinStyle;
         CapStyle capStyle;
-        std::string path;
         Point offset;
         FillRule fillRule;
+
     private:
         void copy(const cPathFigure& other);
-        void appendPath(const std::string& s);
+        void addItem(PathItem *item);
+        void doClearPath();
+
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1020,25 +1047,43 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         /**
-         * The move operation modifies the offset field (see getOffset()), in order to avoid having
-         * to update potentially all path atoms in the string.
+         * The move operation modifies the offset field (see getOffset()).
          */
         virtual void move(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
         //@{
+        virtual JoinStyle getJoinStyle() const {return joinStyle;}
+        virtual void setJoinStyle(JoinStyle joinStyle);
+        virtual CapStyle getCapStyle() const {return capStyle;}
+        virtual void setCapStyle(CapStyle capStyle);
+        virtual FillRule getFillRule() const {return fillRule;}
+        virtual void setFillRule(FillRule fillRule);
+        /**
+         * TODO. This field exists to simplify the implementation and decrease
+         * the cost of the move() operation, which would otherwise have to update
+         * modify all path items.
+         */
         virtual const Point& getOffset() const {return offset;}
         virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange(); fireTransformChange();}
-        virtual const char *getPath() const {return path.c_str();}
-        virtual void setPath(const char *path);  // accepts SVG path string
+        //@}
+
+        /** @name Path manipulation */
+        //@{
+        virtual std::string getPath() const;
+        virtual void setPath(const char *path);
+        virtual int getNumPathItems() const {return path.size();}
+        virtual const PathItem *getPathItem(int k) const {return path[k];}
         virtual void clearPath();
         virtual void addMoveTo(double x, double y);  // M x y
         virtual void addMoveRel(double dx, double dy);  // m x y
         virtual void addLineTo(double x, double y);  // L x y
+        virtual void addLineRel(double dx, double dy);  // l x y
         virtual void addHorizontalLineTo(double x);  // H x
-        virtual void addVerticalLineTo(double x);  // V y
-        virtual void addLineRel(double dx, double dy);  // l x y, h x, v y
+        virtual void addHorizontalLineRel(double dx);  // h dx
+        virtual void addVerticalLineTo(double y);  // V y
+        virtual void addVerticalLineRel(double dy);  // v dy
         virtual void addArcTo(double rx, double ry, double phi, bool largeArc, bool sweep, double x, double y); // A rx ry phi largeArc sweep x y
         virtual void addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy); // a rx ry phi largeArc sweep x y
         virtual void addCurveTo(double x1, double y1, double x, double y); // Q x1 y1 x y
@@ -1050,12 +1095,6 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual void addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y); // S x2 y2 x y
         virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s x2 y2 x y
         virtual void addClosePath(); // Z
-        virtual JoinStyle getJoinStyle() const {return joinStyle;}
-        virtual void setJoinStyle(JoinStyle joinStyle);
-        virtual CapStyle getCapStyle() const {return capStyle;}
-        virtual void setCapStyle(CapStyle capStyle);
-        virtual FillRule getFillRule() const {return fillRule;}
-        virtual void setFillRule(FillRule fillRule);
         //@}
 };
 
