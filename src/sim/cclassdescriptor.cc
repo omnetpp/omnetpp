@@ -18,9 +18,10 @@
 *--------------------------------------------------------------*/
 
 #include <cstdio>  // sprintf
-#include <cstdlib>  // atol
+#include <cstdlib>
 #include <cstring>
 #include "common/opp_ctype.h"
+#include "common/stringutil.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cenum.h"
@@ -135,7 +136,7 @@ int cClassDescriptor::string2enum(const char *s, const char *enumName) const
     if (opp_isdigit(*s)) {
         value = atoi(s);
         if (enump && !enump->getStringFor(value))
-            throw cRuntimeError("Value '%s' invalid for enum '%s'", s, enumName);
+            throw cRuntimeError("%s is an invalid value for enum '%s'", s, enumName);
     }
     else {
         // try to recognize string
@@ -146,17 +147,19 @@ int cClassDescriptor::string2enum(const char *s, const char *enumName) const
         const int MISSING = INT_MIN;
         value = enump->lookup(s, MISSING);
 
-        // if not found, try unique substring match
-        if (value == INT_MIN) {
+        // if not found, try unique case insensitive substring match
+        if (value == MISSING) {
             std::map<std::string,int> members = enump->getNameValueMap();
             for (std::map<std::string,int>::iterator it = members.begin(); it != members.end(); ++it) {
-                if (strstr(it->first.c_str(), s) != nullptr) {  //ODO case insensitive would be better
+                if (opp_strnistr(it->first.c_str(), s, 0, false) != nullptr) {
                     if (value == MISSING)
                         value = it->second;
                     else
                         throw cRuntimeError("Name '%s' is ambiguous in enum '%s' (substring search)", s, enumName);
                 }
             }
+            if (value == MISSING)
+                throw cRuntimeError("Name '%s' not found in enum '%s' (substring search)", s, enumName);
         }
     }
     return value;
