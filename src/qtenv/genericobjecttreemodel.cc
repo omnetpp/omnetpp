@@ -33,24 +33,27 @@ namespace qtenv {
 // uses transparent lazy loading of children
 class TreeNode {
 protected:
-    TreeNode *parent;
-    int indexInParent;
-    bool filled = false;
+    // these make up the tree structure of the model
+    TreeNode *parent = nullptr;
+    int indexInParent = 0;
+    std::vector<TreeNode *> children;
 
+    bool filled = false;
     // subclasses should fill the children vector in this function
     // it is only called once per instance, in the first getChild or getChildCount call
     virtual void fill() = 0;
 
-    std::vector<TreeNode *> children;
+    // these are nullptrs only in the root node
+    void *containingObject = nullptr; // may or may not be a cObject, so we need the descriptor for it
+    cClassDescriptor *containingDesc = nullptr;
 
-    cObject *object = nullptr;
-    cClassDescriptor *desc;
+    void addObjectChildren(void *of, cClassDescriptor *desc);
 
-    void addObjectChildren(); // can't use default
-    void addObjectChildren(cObject *of);
+    static cClassDescriptor *getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
+    static TreeNode *makeNodeForField(TreeNode *parent, void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
 
 public:
-    TreeNode(TreeNode *parent, int indexInParent, cObject *object);
+    TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc);
     TreeNode *getParent();
     int getIndexInParent();
     int getChildCount(); // will fill the children vector if needed
@@ -71,10 +74,18 @@ public:
 
 class FieldNode : public TreeNode {
 protected:
-    int fieldIndex;
+    // which field are we in the container. for the root it is -1
+    int fieldIndex = -1;
+    int arrayIndex = 0;
+
+    void *object = nullptr;
+    cClassDescriptor *desc = nullptr;
+
     void fill() override;
 public:
-    FieldNode(TreeNode *parent, int indexInParent, cObject *object, int fieldIndex);
+    // only use this to create the root node for the model!
+    FieldNode(cObject *rootObject);
+    FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex = 0);
 
     QVariant data(int role) override;
 
@@ -87,7 +98,7 @@ protected:
     std::string groupName;
     void fill() override;
 public:
-    FieldGroupNode(TreeNode *parent, int indexInParent, cObject *object, const std::string &groupName);
+    FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName);
     QVariant data(int role) override;
 };
 
@@ -97,26 +108,18 @@ protected:
     int arrayIndex;
     void fill() override;
 public:
-    ArrayElementNode(TreeNode *parent, int indexInParent, cObject *object, int fieldIndex, int arrayIndex);
+    ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex);
     QVariant data(int role) override;
-};
 
-class cObjectNode : public TreeNode {
-protected:
-    // if this is a child object, this index is the field index in the parent
-    // otherwise it is -1
-    int fieldIndex;
-    void fill() override;
-public:
-    cObjectNode(TreeNode *parent, int indexInParent, cObject *object, int fieldIndex);
-    QVariant data(int role) override;
+    bool isEditable() override;
+    virtual bool setData(const QVariant &value, int role) override;
 };
 
 // ---- main model class implementation ----
 
 GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, QObject *parent) :
     QAbstractItemModel(parent),
-    rootNode(new cObjectNode(nullptr, 0, object, -1)) {
+    rootNode(new FieldNode(object)) {
 }
 
 QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex &parent) const {
@@ -152,7 +155,11 @@ int GenericObjectTreeModel::columnCount(const QModelIndex &parent) const {
 
 QVariant GenericObjectTreeModel::data(const QModelIndex &index, int role) const {
     // just delegating to the node pointed by the index
-    return static_cast<TreeNode *>(index.internalPointer())->data(role);
+    QVariant data = static_cast<TreeNode *>(index.internalPointer())->data(role);
+    if (role == Qt::DisplayRole) {
+        data = data.toString().replace("\n", "\\n");
+    }
+    return data;
 }
 
 bool GenericObjectTreeModel::setData(const QModelIndex &index, const QVariant &value, int role) {
@@ -176,16 +183,11 @@ GenericObjectTreeModel::~GenericObjectTreeModel() {
 
 // ---- helper class implementations ----
 
-void TreeNode::addObjectChildren() {
-    addObjectChildren(object);
-}
-
 // the ArrayElementNode contains the children of the element itself
 // but the object pointer in those nodes point to the object that
 // contains the array itself, so we need this parameter
-void TreeNode::addObjectChildren(cObject *of) {
-    cClassDescriptor *desc = of ? of->getDescriptor() : nullptr;
-    if (!desc) {
+void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc) {
+    if (!of || !desc) {
         return;
     }
 
@@ -197,21 +199,31 @@ void TreeNode::addObjectChildren(cObject *of) {
         if (groupName) {
             groupNames.insert(groupName);
         } else {
-            if (!desc->getFieldIsArray(i) && desc->getFieldIsCObject(i)) {
-                children.push_back(new cObjectNode(this, childIndex++, (cObject*)desc->getFieldStructValuePointer(of, i, 0), i));
-            } else {
-                children.push_back(new FieldNode(this, childIndex++, of, i));
-            }
+            children.push_back(new FieldNode(this, childIndex++, of, desc, i));
         }
     }
 
     for (auto &name : groupNames) {
-        children.push_back(new FieldGroupNode(this, childIndex++, of, name));
+        children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name));
     }
 }
 
-TreeNode::TreeNode(TreeNode *parent, int indexInParent, cObject *object)
-    : parent(parent), indexInParent(indexInParent), object(object), desc(object ? object->getDescriptor() : nullptr) {
+cClassDescriptor *TreeNode::getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex) {
+    cClassDescriptor *fieldDesc = cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
+
+    void *fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
+
+    // we can ask the field object itself for a better (more specialized) descriptor
+    if (fieldPtr && desc->getFieldIsCObject(fieldIndex)) {
+        fieldDesc = (static_cast<cObject *>(fieldPtr))->getDescriptor();
+    }
+
+    return fieldDesc;
+}
+
+
+TreeNode::TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc)
+    : parent(parent), indexInParent(indexInParent), containingObject(contObject), containingDesc(contDesc) {
 
 }
 
@@ -240,7 +252,7 @@ TreeNode *TreeNode::getChild(int index) {
 }
 
 QString TreeNode::getFieldName(int fieldIndex) {
-    return desc->getFieldName(fieldIndex);
+    return containingDesc->getFieldName(fieldIndex);
 }
 
 bool TreeNode::isEditable() {
@@ -258,86 +270,138 @@ TreeNode::~TreeNode() {
 }
 
 
-FieldNode::FieldNode(TreeNode *parent, int indexInParent, cObject *object, int fieldIndex)
-    : TreeNode(parent, indexInParent, object), fieldIndex(fieldIndex) {
+FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex)
+    : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
+    if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
+        object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, arrayIndex);
+        desc = getDescriptorForField(contObject, contDesc, fieldIndex, arrayIndex);
+    }
+}
+
+FieldNode::FieldNode(cObject *rootObject):
+    TreeNode(nullptr, 0, nullptr, nullptr) {
+    object = rootObject;
+    desc = rootObject ? rootObject->getDescriptor() : nullptr;
+    arrayIndex = 0;
 }
 
 void FieldNode::fill() {
-    if (desc->getFieldIsArray(fieldIndex)) {
-        int size = desc->getFieldArraySize(object, fieldIndex);
+    if (containingObject && containingDesc && containingDesc->getFieldIsArray(fieldIndex)) {
+        int size = containingDesc->getFieldArraySize(containingObject, fieldIndex);
         for (int i = 0; i < size; ++i) {
-            children.push_back(new ArrayElementNode(this, i, object, fieldIndex, i));
+            children.push_back(new ArrayElementNode(this, children.size(), containingObject, containingDesc, fieldIndex, i));
         }
+    } else {
+        addObjectChildren(object, desc);
     }
 }
 
 QVariant FieldNode::data(int role) {
-    const char *name = desc->getFieldName(fieldIndex);
-    const char *type = desc->getFieldTypeString(fieldIndex);
-
-    std::string value;
-
-    int size = desc->getFieldArraySize(object, fieldIndex);
-    if (!desc->getFieldIsCompound(fieldIndex)) {
-        value = desc->getFieldValueAsString(object, fieldIndex, 0);
+    if ((role == Qt::DecorationRole) && (!containingDesc || (containingDesc->getFieldIsCObject(fieldIndex)))) {
+        return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(static_cast<cObject *>(object)))) : QVariant();
     }
 
-    if (type && !strcmp(type, "string")) {
-        value = "'" + value + "'";
+    cObject *objectCasted = static_cast<cObject *>(object);
+
+    if (!containingDesc) {
+        // this is the root object, so it can't have "field name", and it must be a cObject
+        switch (role) {
+        case Qt::ToolTipRole:
+        case Qt::DisplayRole: {
+            QString value = object ? QString(objectCasted->getName()) + " (" + getObjectShortTypeName(objectCasted) + ")" : "no object selected";
+            return value;
+        }
+        default:
+            return QVariant();
+        }
     }
 
+    if (!containingDesc->getFieldIsCObject(fieldIndex)) {
+        objectCasted = nullptr;
+    }
+
+
+    QString fieldName = containingDesc->getFieldName(fieldIndex);
+    QString objectClassName = objectCasted ? (QString(" (") + objectCasted->getClassName() + ")") : "";
+    QString objectName = objectCasted ? QString(" ") + objectCasted->getName() : "";
     QString arraySize;
-    QString equals(" = ");
-    if (desc->getFieldIsArray(fieldIndex)) {
-        arraySize = QString("[") + QVariant(size).toString() + "]";
+    QString fieldValue;
+    QString objectInfo;
+    QString equals = " = ";
+    QString editable = isEditable() ? " [...] " : "";
+    QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
+
+    // the name can be overridden by a label property
+    const char *label = containingDesc->getFieldProperty(fieldIndex, "label");
+    if (label) {
+        fieldName = label;
+    }
+
+    if (!containingDesc->getFieldIsArray(fieldIndex) && !containingDesc->getFieldIsCompound(fieldIndex)) {
+        fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
+    }
+
+    if (!containingDesc->getFieldIsArray(fieldIndex) && containingDesc->getFieldIsCObject(fieldIndex)) {
+        if (objectCasted) {
+            objectInfo = objectCasted->info().c_str();
+            if (objectInfo.length() > 0) {
+                objectInfo = QString(": ") + objectInfo;
+            }
+        } else {
+            fieldValue = "NULL";
+        }
+    }
+
+    if (containingDesc->getFieldIsArray(fieldIndex)) {
+        arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
         equals = "";
     }
 
-    if (value.empty()) {
-        equals = "";
+    if ((role == Qt::DisplayRole || role == Qt::UserRole) && fieldType == "string") {
+        // the apostrophes have to be there when showing the value and when calculating the highlight range
+        // but not in the editor or the tooltip
+        fieldValue = "'" + fieldValue + "'";
     }
 
     switch (role) {
+    case Qt::EditRole:
+        return fieldValue;
+    case Qt::ToolTipRole:
+        return ((fieldValue.contains("\n") || fieldValue.length() > 50)) ? fieldValue : QVariant();
     case Qt::DisplayRole:
-        return name + arraySize + equals + value.c_str() + (isEditable() ? " [...] " : "") + QString(" (") + type + ")";
+        return fieldName + arraySize + equals + fieldValue + objectClassName + objectName + objectInfo + editable + " (" + fieldType + ")";
     case Qt::UserRole:
-        HighlightRange valueRange;
-        valueRange.start = strlen(name) + arraySize.length() + equals.length();
-        valueRange.length = value.length();
-        return QVariant::fromValue(valueRange);
+        return QVariant::fromValue(HighlightRange{fieldName.length() + equals.length(), objectClassName.length() + objectName.length() + fieldValue.length() + objectInfo.length()});
     default:
         return QVariant();
     }
 }
 
 bool FieldNode::isEditable() {
-    return desc->getFieldIsEditable(fieldIndex);
+    return containingDesc // editing of arrays is handled in the elements
+            ? (!containingDesc->getFieldIsArray(fieldIndex) && containingDesc->getFieldIsEditable(fieldIndex))
+            : false;
 }
 
 bool FieldNode::setData(const QVariant &value, int role) {
-    return desc->setFieldValueAsString(object, fieldIndex, 0, value.toString().toStdString().c_str());
+    return containingDesc ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str()) : false;
 }
 
 
 
-FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, cObject *object, const std::string &groupName)
-    : TreeNode(parent, indexInParent, object), groupName(groupName) {
+FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName)
+    : TreeNode(parent, indexInParent, contObject, contDesc), groupName(groupName) {
 
 }
 
 void FieldGroupNode::fill() {
-    if (!desc) {
+    if (!containingObject || !containingDesc) {
         return;
     }
-    int childIndex = 0;
-    for (int i = 0; i < desc->getFieldCount(); ++i) {
-        const char *thisFieldGroup = desc->getFieldProperty(i, "group");
+    for (int i = 0; i < containingDesc->getFieldCount(); ++i) {
+        const char *thisFieldGroup = containingDesc->getFieldProperty(i, "group");
         if (thisFieldGroup && (thisFieldGroup == groupName)) {
-            if (!desc->getFieldIsArray(i) && (desc->getFieldIsCObject(i))) {
-                children.push_back(new cObjectNode(this, childIndex++, (cObject*)desc->getFieldStructValuePointer(object, i, 0), i));
-            } else {
-                children.push_back(new FieldNode(this, childIndex++, object, i));
-            }
+            children.push_back(new FieldNode(this, children.size(), containingObject, containingDesc, i));
         }
     }
 }
@@ -356,79 +420,59 @@ QVariant FieldGroupNode::data(int role) {
 
 
 void ArrayElementNode::fill() {
-    if (desc && desc->getFieldIsCompound(fieldIndex)) {
-        addObjectChildren((cObject *)desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex));
+    if (containingDesc->getFieldIsCompound(fieldIndex)) {
+        cClassDescriptor *fieldDesc = getDescriptorForField(containingObject, containingDesc, fieldIndex, arrayIndex);
+        addObjectChildren(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex), fieldDesc);
     }
 }
 
-ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, cObject *object, int fieldIndex, int arrayIndex)
-    : TreeNode(parent, indexInParent, object), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
-
+ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex)
+    : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
 }
 
 QVariant ArrayElementNode::data(int role) {
-    if (desc->getFieldIsCObject(fieldIndex)) {
-        cObject *fieldPointer = static_cast<cObject *>(desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex));
-        switch (role) {
-        case Qt::DisplayRole:
-            return QString("[%1] %2").arg(arrayIndex).arg(fieldPointer ? fieldPointer->info().c_str() : "NULL");
-        case Qt::DecorationRole:
-            return fieldPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldPointer))) : QVariant();
+    QString indexEquals = QString("[%1] = ").arg(arrayIndex);
+    QString valueInfo = "";
+    cObject *fieldPointer = nullptr;
+
+    if (containingDesc->getFieldIsCObject(fieldIndex)) {
+        fieldPointer = static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
+
+        valueInfo += (fieldPointer
+                        ? QString("(%1) %2")
+                          .arg(fieldPointer->getClassName())
+                          .arg(fieldPointer->getName())
+                         : "NULL");
+
+        std::string info = fieldPointer ? fieldPointer->info() : "";
+        if (!info.empty()) {
+            valueInfo += ": ";
+            valueInfo += info.c_str();
         }
-    }
-
-    return QVariant();
-}
-
-
-cObjectNode::cObjectNode(TreeNode *parent, int indexInParent, cObject *object, int fieldIndex)
-    : TreeNode(parent, indexInParent, object), fieldIndex(fieldIndex) {
-}
-
-void cObjectNode::fill() {
-    addObjectChildren();
-}
-
-QVariant cObjectNode::data(int role) {
-    if (!desc) {
-        if (role == Qt::DisplayRole) {
-            return parent ? "NULL" : "no object selected";
-        } else {
-            return QVariant();
-        }
-    }
-
-    QString fieldName;
-    if (parent) {
-        fieldName = parent->getFieldName(fieldIndex);
-        if (fieldName.length() > 0)
-            fieldName += " = ";
-    }
-
-    int nameField = desc->findField("name");
-    const char *className = getObjectShortTypeName(object);
-
-    QString fieldValue(desc->getFieldValueAsString(object, nameField, 0).c_str());
-
-    QString infoString;
-    std::string info = object->info();
-    if (!info.empty()) {
-        infoString += ": ";
-        infoString += info.c_str();
+    } else {
+        valueInfo = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
     }
 
     switch (role) {
     case Qt::DisplayRole:
-        return fieldName + fieldValue + infoString + " (" + className + ")";
-    case Qt::UserRole:
-        return parent
-                ? QVariant::fromValue(HighlightRange{fieldName.length(), fieldValue.length() + infoString.length()})
-                : QVariant();
+        return indexEquals + valueInfo;
     case Qt::DecorationRole:
-        return QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(object)));
+        return fieldPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldPointer))) : QVariant();
+    case Qt::EditRole:
+        return valueInfo;
+    case Qt::UserRole:
+        return QVariant::fromValue(HighlightRange{indexEquals.length(), valueInfo.length()});
     default:
         return QVariant();
     }
+}
+
+bool ArrayElementNode::isEditable() {
+    return containingDesc->getFieldIsEditable(fieldIndex);
+}
+
+bool ArrayElementNode::setData(const QVariant &value, int role) {
+    return containingDesc->setFieldValueAsString(containingObject, fieldIndex, arrayIndex, value.toString().toStdString().c_str());
 }
 
 } // namespace qtenv

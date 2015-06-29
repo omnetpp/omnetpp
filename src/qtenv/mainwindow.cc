@@ -47,7 +47,6 @@ class HighlighterItemDelegate : public QStyledItemDelegate {
 public:
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
 };
 
 void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -62,12 +61,19 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     painter->save();
 
+    // getting the icon for the object, and if found, offsetting the text and drawing the icon
+    int textOffset = 0;
+    auto iconData = index.data(Qt::DecorationRole);
+    if (iconData.isValid()) {
+        textOffset += option.decorationSize.width();
+        QIcon icon = iconData.value<QIcon>();
+        painter->drawImage(option.rect.topLeft(), icon.pixmap(option.decorationSize).toImage());
+    }
+
     //Text from item
     QString text = index.data(Qt::DisplayRole).toString();
-
     QTextLayout layout;
-    layout.setText(text);
-
+    layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
     // this is the standard layout procedure in a single line case
     layout.beginLayout();
     QTextLine line = layout.createLine();
@@ -91,20 +97,11 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     f.start = range.start;
     f.length = range.length;
     f.format.setForeground(QBrush(QColor(0, 0, 255)));
-    f.format.setFontWeight(QFont::Bold);
+    //f.format.setFontWeight(QFont::Bold); // - just causes complications everywhere (elision, editor width, etc.)
     formats.append(f);
 
     // applying the format ranges
     layout.setAdditionalFormats(formats);
-
-    // getting the icon for the object, and if found, offsetting the text and drawing the icon
-    int textOffset = 0;
-    auto iconData = index.data(Qt::DecorationRole);
-    if (iconData.isValid()) {
-        textOffset += option.decorationSize.width();
-        QIcon icon = iconData.value<QIcon>();
-        painter->drawImage(option.rect.topLeft(), icon.pixmap(option.decorationSize).toImage());
-    }
 
     // the layout is complete, now we just draw it on the appropriate position
     layout.draw(painter, option.rect.translated(3 + textOffset, 1).topLeft());
@@ -118,52 +115,25 @@ void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     QStyledItemDelegate::updateEditorGeometry(editor, option, index);
 
     // extracting the value from the index
-    QString text = index.data().toString();
-    auto range = index.data(Qt::UserRole).value<HighlightRange>();
+    QString wholeText = index.data().toString();
+    QString editorText = index.data(Qt::EditRole).toString();
 
-    // the value is bold, so it is wider, we need to get that font too
-    auto boldFont = option.font;
-    boldFont.setWeight(QFont::Bold);
-    auto boldFontMetrics = QFontMetrics(boldFont);
+    // searching for the start of the value - if not found, it will be 2... which would still work
+    int startIndex = wholeText.indexOf(" = ") + 3;
 
     // this is where the editor should start
-    auto beforeText = text.left(range.start);
-    int editorLeft = option.fontMetrics.width(beforeText);
+    int editorLeft = option.fontMetrics.width(wholeText.left(startIndex));
 
     // and this is how wide it should be
-    auto inText = text.left(range.start + range.length).right(range.length);
-    int editorWidth = boldFontMetrics.width(inText);
+    int editorWidth = option.fontMetrics.width(editorText);
 
     // moving the editor horizontally and setting its width as computed
     auto geom = editor->geometry();
-    geom.translate(editorLeft + 3, 0);
+    geom.translate(editorLeft, 0);
     geom.setWidth(qMax(20, editorWidth)); // so empty values can be edited too
     editor->setGeometry(geom);
 }
 
-// XXX Currently the editor will get the initial string from the HighlightRange.
-// This is not really a good way to hand it over, but since at the moment
-// the highlighting matches the value perfectly (and includes single quotes...),
-// and the UserRole in the index is already used for the HighlightRange itself
-// (and adding more [e.g. UserRole + 1] would work, but would hurt clarity),
-// at the moment this should suffice
-void HighlighterItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-    // getting the right type of editor
-    auto lineEdit = dynamic_cast<QLineEdit *>(editor);
-    if (lineEdit) {
-        // extracting the value to be edited
-        QString text = index.data().toString();
-        auto range = index.data(Qt::UserRole).value<HighlightRange>();
-
-        // set it up in the editor
-        lineEdit->setText(text.left(range.start + range.length - 1).right(range.length - 2));
-
-        // match the cosmetics
-        auto font = lineEdit->font();
-        font.setWeight(QFont::Bold);
-        lineEdit->setFont(font);
-    }
-}
 
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
@@ -792,6 +762,21 @@ void MainWindow::onTreeViewContextMenu(QPoint point)
         QMenu *menu = static_cast<TreeItemModel *>(ui->treeView->model())->getContextMenu(index, this);
         menu->exec(ui->treeView->mapToGlobal(point));
         delete menu;
+    }
+}
+
+void MainWindow::onTreeViewPressed(QModelIndex index)
+{
+    auto oldModel = ui->treeView_2->model();
+    auto newModel = new GenericObjectTreeModel(
+        static_cast<cObject *>(index.child(index.row(), index.column()).internalPointer()));
+
+    ui->treeView_2->setModel(newModel);
+    ui->treeView_2->reset();
+    ui->treeView_2->expand(QModelIndex());
+
+    if (oldModel) {
+        delete oldModel;
     }
 }
 

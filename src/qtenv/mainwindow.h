@@ -78,6 +78,7 @@ private slots:
     void on_actionRunUntil_triggered();
     void inspectObject(QModelIndex index);
     void onTreeViewContextMenu(QPoint point);
+    void onTreeViewPressed(QModelIndex index);
     void on_actionRebuildNetwork_triggered();
     void closeEvent(QCloseEvent *event);
     void initialSetUpConfiguration();
