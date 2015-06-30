@@ -412,10 +412,11 @@ class SIM_API cGroupFigure : public cFigure
         virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
         virtual std::string info() const override;
         virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
-        virtual void move(double x, double y) override {}
+        virtual void move(double x, double y) override {} //TODO
         //@}
 };
 
+#if 0
 /**
  * Sets up an axis-aligned, unscaled coordinate system for children, canceling the
  * effect of any transformation (scaling, rotation, etc.) inherited from ancestor figures.
@@ -460,6 +461,7 @@ class SIM_API cPanelFigure : public cFigure
         virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
         //@}
 };
+#endif
 
 /**
  * Common base class for line figures. Provides line color, style, width,

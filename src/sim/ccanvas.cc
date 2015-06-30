@@ -34,7 +34,7 @@ NAMESPACE_BEGIN
 using namespace canvas_stream_ops;
 
 Register_Class(cGroupFigure);
-Register_Class(cPanelFigure);
+//Register_Class(cPanelFigure);
 Register_Class(cLineFigure);
 Register_Class(cArcFigure);
 Register_Class(cPolylineFigure);
@@ -1245,6 +1245,7 @@ std::string cGroupFigure::info() const
 
 //----
 
+#if 0
 void cPanelFigure::copy(const cPanelFigure& other)
 {
     setPosition(other.getPosition());
@@ -1292,6 +1293,7 @@ void cPanelFigure::updateParentTransform(Transform& transform)
     // then apply our own transform in the normal way (like all other figures do)
     transform.leftMultiply(getTransform());
 }
+#endif
 
 //----
 
@@ -3237,8 +3239,8 @@ cFigure *cCanvas::createFigure(const char *type) const
     cFigure *figure;
     if (!strcmp(type, "group"))
         figure = new cGroupFigure();
-    else if (!strcmp(type, "panel"))
-        figure = new cPanelFigure();
+//    else if (!strcmp(type, "panel"))
+//        figure = new cPanelFigure();
     else if (!strcmp(type, "line"))
         figure = new cLineFigure();
     else if (!strcmp(type, "arc"))
@@ -3287,7 +3289,7 @@ cFigure *cCanvas::createFigure(const char *type) const
 void cCanvas::dumpSupportedPropertyKeys(std::ostream& out) const
 {
     const char *types[] = {
-        "group", "line", "arc", "polyline", "rectangle", "oval", "ring", "pieslice",
+        "group", /*"panel",*/ "line", "arc", "polyline", "rectangle", "oval", "ring", "pieslice",
         "polygon", "path", "text", "label", "image", "pixmap", nullptr
     };
 
