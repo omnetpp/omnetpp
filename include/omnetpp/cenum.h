@@ -144,22 +144,27 @@ class SIM_API cEnum : public cOwnedObject
      */
     std::map<std::string,int> getNameValueMap() const {return nameToValueMap;}
 
-    //@}
-
     /**
      * Returns a textual representation of this enum.
      */
     std::string str() const;
+    //@}
+
+    /** @name cEnum lookup. */
+    //@{
+    /**
+     * Returns the cEnum for the given enum name, or nullptr if not found.
+     * The enum must have been registered previously with the Register_Enum()
+     * macro.
+     */
+    static cEnum *find(const char *enumName, const char *contextNamespace=nullptr);
 
     /**
-     * Finds a registered enum by name. Returns nullptr if not found.
+     * Like find(), but throws an error if the object was not found.
      */
-    static cEnum *find(const char *name);
+    static cEnum *get(const char *enumName, const char *contextNamespace=nullptr);
+    //@}
 
-    /**
-     * Returns the enum with the given name. Throws an error if not found.
-     */
-    static cEnum *get(const char *name);
 };
 
 NAMESPACE_END

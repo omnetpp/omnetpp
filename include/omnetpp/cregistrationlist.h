@@ -73,10 +73,16 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
     virtual cOwnedObject *find(const char *name) const;
 
     /**
-     * Returns the object with exactly the given qualified name (getFullName()).
+     * Returns the object with the exact given qualified name (getFullName()).
      * Returns nullptr if not found.
      */
     virtual cOwnedObject *lookup(const char *qualifiedName) const;
+
+    /**
+     * Returns the object with the given qualified name. If not found, it is
+     * also tried in the given context namespace(s). Returns nullptr if not found.
+     */
+    virtual cOwnedObject *lookup(const char *qualifiedName, const char *contextNamespace, bool fallbackToOmnetpp=false);
 
     /**
      * Sorts the elements by qualified name (getFullName()). This affects

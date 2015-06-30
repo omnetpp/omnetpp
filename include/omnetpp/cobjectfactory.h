@@ -38,9 +38,6 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
     void *(*castFunc)(cObject *);
     std::string description;
 
-  private:
-    static cObjectFactory *doFind(const char *className);
-
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -90,10 +87,9 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
     /** @name Static factory methods */
     //@{
     /**
-     * Finds the factory object for the class given in the classname parameter,
-     * or nullptr if not found. The class name string should be given with any
-     * potential namespace, enclosing class etc. The class must have been
-     * registered previously with the Register_Class() macro.
+     * Finds the factory object for the class given in the className parameter,
+     * or nullptr if not found. The class must have been registered previously
+     * with the Register_Class() macro.
      */
     static cObjectFactory *find(const char *className, const char *contextNamespace=nullptr, bool fallbackToOmnetpp=true);
 

@@ -38,38 +38,9 @@ std::string cObjectFactory::info() const
     return std::string("(") + description + ")";  //TODO isAbstract
 }
 
-cObjectFactory *cObjectFactory::doFind(const char *className)
-{
-    return dynamic_cast<cObjectFactory *>(classes.getInstance()->lookup(className));
-}
-
 cObjectFactory *cObjectFactory::find(const char *className, const char *contextNamespace, bool fallbackToOmnetpp)
 {
-    if (className[0] == ':' && className[1] == ':')
-        return doFind(className + 2);
-
-    // try with contextNamespace
-    if (!opp_isempty(contextNamespace)) {
-        std::string ns = contextNamespace;
-        while (!ns.empty()) {
-            cObjectFactory *result = doFind((ns + "::" + className).c_str());
-            if (result)
-                return result;
-            // remove last segment of namespace, and try again
-            int pos = ns.rfind("::");
-            if (pos == std::string::npos)
-                break;
-            ns = ns.substr(0, pos);
-        }
-    }
-
-    // try in the global namespace, then in the omnetpp namespace if requested
-    cObjectFactory *result = doFind(className);
-//XXX note: NO #if USE_NAMESPACE here!
-    if (!result && fallbackToOmnetpp)
-        result = doFind((std::string("omnetpp::") + className).c_str());
-//#endif
-    return result;
+    return dynamic_cast<cObjectFactory *>(classes.getInstance()->lookup(className, contextNamespace, fallbackToOmnetpp));
 }
 
 cObjectFactory *cObjectFactory::get(const char *className, const char *contextNamespace, bool fallbackToOmnetpp)

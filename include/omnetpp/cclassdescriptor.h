@@ -79,8 +79,8 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     static std::string double2string(double d);
     static std::string double2string(SimTime t) {return t.str();}
     static double string2double(const char *s);
-    static std::string enum2string(int e, const char *enumName);
-    static int string2enum(const char *s, const char *enumName);
+    std::string enum2string(int e, const char *enumName) const;
+    int string2enum(const char *s, const char *enumName) const;
     static std::string oppstring2string(const char *s) {return s?s:"";}
     static std::string oppstring2string(const opp_string& s) {return s.c_str();}
     static std::string oppstring2string(const std::string& s)  {return s;}
@@ -95,7 +95,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cClassDescriptor(const char *classname, const char *_baseclassname=nullptr);
+    cClassDescriptor(const char *className, const char *baseClassName=nullptr);
 
     /**
      * Destructor.
@@ -139,6 +139,11 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Returns true if cObject's class descriptor is present on the inheritance chain.
      */
     bool extendsCObject() const;
+
+    /**
+     * Returns the namespace of this object (getFullName() minus trailing "::" + getName()).
+     */
+    std::string getNamespace() const;
 
     /**
      * Returns the number of base classes up to the root, as reflected in the

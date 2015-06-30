@@ -125,17 +125,17 @@ int cEnum::resolve(const char *name)
     return it->second;
 }
 
-cEnum *cEnum::find(const char *name)
+cEnum *cEnum::find(const char *enumName, const char *contextNamespace)
 {
-    return dynamic_cast<cEnum *>(enums.getInstance()->lookup(name));
+    return dynamic_cast<cEnum *>(enums.getInstance()->lookup(enumName, contextNamespace));
 }
 
-cEnum *cEnum::get(const char *name)
+cEnum *cEnum::get(const char *enumName, const char *contextNamespace)
 {
-    cEnum *p = find(name);
+    cEnum *p = find(enumName, contextNamespace);
     if (!p)
         throw cRuntimeError("Enum \"%s\" not found -- its declaration may be missing "
-                            "from .msg files, or the code was not linked in", name);
+                            "from .msg files, or the code was not linked in", enumName);
     return p;
 }
 

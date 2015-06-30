@@ -105,12 +105,12 @@ double cClassDescriptor::string2double(const char *s)
     return atof(s);
 }
 
-std::string cClassDescriptor::enum2string(int e, const char *enumName)
+std::string cClassDescriptor::enum2string(int e, const char *enumName) const
 {
     char buf[32];
     sprintf(buf, "%d", e);
 
-    cEnum *enump = cEnum::find(enumName);
+    cEnum *enump = cEnum::find(enumName, getNamespace().c_str());
     if (!enump)
         return buf;  // this enum type is not registered
 
@@ -121,11 +121,11 @@ std::string cClassDescriptor::enum2string(int e, const char *enumName)
     return std::string(buf) + " (" + name + ")";
 }
 
-int cClassDescriptor::string2enum(const char *s, const char *enumName)
+int cClassDescriptor::string2enum(const char *s, const char *enumName) const
 {
     // return zero if string cannot be parsed
     int value = 0;
-    cEnum *enump = cEnum::find(enumName);
+    cEnum *enump = cEnum::find(enumName, getNamespace().c_str());
 
     // skip leading spaces
     while (opp_isspace(*s))
@@ -200,10 +200,10 @@ const char **cClassDescriptor::mergeLists(const char **list1, const char **list2
 
 //-----------------------------------------------------------
 
-cClassDescriptor::cClassDescriptor(const char *classname, const char *_baseclassname) :
-    cNoncopyableOwnedObject(classname, false)
+cClassDescriptor::cClassDescriptor(const char *className, const char *_baseClassName) :
+    cNoncopyableOwnedObject(className, false)
 {
-    baseClassName = _baseclassname ? _baseclassname : "";
+    baseClassName = _baseClassName ? _baseClassName : "";
     baseClassDesc = nullptr;
     inheritanceChainLength = 1;
     extendscObject = -1;
@@ -222,6 +222,18 @@ cClassDescriptor *cClassDescriptor::getBaseClassDescriptor() const
             this_->inheritanceChainLength = 1 + baseClassDesc->getInheritanceChainLength();
     }
     return baseClassDesc;
+}
+
+std::string cClassDescriptor::getNamespace() const
+{
+    std::string qname = getFullName();
+    int nameLen = strlen(getName());
+    if ((int)qname.length() >= nameLen + 2)  // +2 is for "::"
+        return qname.substr(0, qname.length() - nameLen - 2);
+    else {
+        ASSERT(nameLen == (int)qname.length()); // no namespace
+        return "";
+    }
 }
 
 bool cClassDescriptor::extendsCObject() const
