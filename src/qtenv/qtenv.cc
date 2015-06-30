@@ -157,15 +157,15 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
+
+    localPrefKeys.insert("default-configname");
+    localPrefKeys.insert("default-runnumber");
 }
 
 Qtenv::~Qtenv()
 {
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
-
-    delete mainwindow;
-    delete app;
 }
 
 static void signalHandler(int signum)
@@ -222,6 +222,9 @@ void Qtenv::doRun()
 
         mainwindow = new MainWindow(this);
         mainwindow->show();
+		
+        globalPrefs = new QSettings(QDir::homePath() + "/.qtenv.ini", QSettings::IniFormat);
+        localPrefs = new QSettings(".qtenv.ini", QSettings::IniFormat);
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
@@ -270,6 +273,17 @@ void Qtenv::doRun()
 
     // pull down inspector factories
     inspectorfactories.clear();
+
+    delete mainwindow;
+    mainwindow = nullptr;
+
+    delete globalPrefs;
+    globalPrefs = nullptr;
+    delete localPrefs;
+    localPrefs = nullptr;
+
+    delete app;
+    app = nullptr;
 }
 
 void Qtenv::printUISpecificHelp()
@@ -1811,6 +1825,14 @@ void Qtenv::openTkenvlogIfNeeded()
         }
         ::fprintf(ferrorlog, "---- %s ---------------------------------------------------------\n\n\n", opp_makedatetimestring().c_str());
     }
+}
+
+void Qtenv::setPref(const QString &key, const QVariant &value) {
+    (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->setValue(key, value);
+}
+
+QVariant Qtenv::getPref(const QString &key) {
+    return (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->value(key);
 }
 
 // ======================================================================

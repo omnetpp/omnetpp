@@ -27,6 +27,9 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "imagecache.h"
+#include <QSettings>
+#include <QSet>
+#include <QString>
 
 class QWidget;
 
@@ -140,8 +143,8 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       ImageCache icons;
 
    protected:
-      QApplication *app;
-      MainWindow *mainwindow;
+      QApplication *app = nullptr;
+      MainWindow *mainwindow = nullptr;
       Tcl_Interp *interp;          // Tcl interpreter
       opp_string windowtitleprefix;// contains "procId=.." when using parsim
 
@@ -178,6 +181,12 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
 
       FILE *ferrorlog;             // .tkenvlog file; nullptr if not yet open
+
+      // these only exist while doRun() runs
+      QSettings *globalPrefs = nullptr;
+      QSettings *localPrefs = nullptr;
+
+      QSet<QString> localPrefKeys;
 
    public:
       Qtenv();
@@ -222,6 +231,10 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       virtual void openTkenvlogIfNeeded();
 
       MainWindow *getMainWindow() { return mainwindow; }
+
+
+      void setPref(const QString &key, const QVariant &value);
+      QVariant getPref(const QString &key);
 
   protected:
       // redefined virtual functions from EnvirBase

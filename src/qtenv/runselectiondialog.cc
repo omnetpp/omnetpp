@@ -56,9 +56,9 @@ RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
         ui->configName->addItem(displayName.c_str(), QVariant(name.c_str()));
     }
 
-    // TODO if last choice looks valid, use that as default
-    std::string configName = "";
-    int runNumber = 0;
+    std::string configName = env->getPref("default-configname").toString().toStdString();
+    int runNumber = env->getPref("default-runnumber").toInt();
+
     if (configName == "" && ui->configName->size().rheight() != 0) {
         configName = ui->configName->itemText(0).toStdString();
         runNumber = 0;
@@ -72,7 +72,9 @@ RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
 
 RunSelectionDialog::~RunSelectionDialog()
 {
-    // TODO save selection item to config file
+    env->setPref("default-configname", getConfigName().c_str());
+    env->setPref("default-runnumber", getRunNumber());
+
     delete ui;
 }
 
