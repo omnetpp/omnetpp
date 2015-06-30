@@ -132,6 +132,10 @@ static const char *PKEY_TINT = "tint";
 int cFigure::lastId = 0;
 cStringPool cFigure::stringPool;
 
+#define ENSURE_RANGE01(var)  {if (var < 0 || var > 1) throw cRuntimeError(this, #var " must be in the range [0,1]");}
+#define ENSURE_NONNEGATIVE(var)  {if (var < 0) throw cRuntimeError(this, #var " cannot be negative");}
+#define ENSURE_POSITIVE(var)  {if (var <= 0) throw cRuntimeError(this, #var " cannot be negative or zero");}
+
 std::string cFigure::Point::str() const
 {
     std::stringstream os;
@@ -1366,6 +1370,7 @@ void cAbstractLineFigure::setLineWidth(double lineWidth)
 {
     if (lineWidth == this->lineWidth)
         return;
+    ENSURE_POSITIVE(lineWidth);
     this->lineWidth = lineWidth;
     fireVisualChange();
 }
@@ -1374,6 +1379,7 @@ void cAbstractLineFigure::setLineOpacity(double lineOpacity)
 {
     if (lineOpacity == this->lineOpacity)
         return;
+    ENSURE_RANGE01(lineOpacity);
     this->lineOpacity = lineOpacity;
     fireVisualChange();
 }
@@ -1544,6 +1550,8 @@ void cArcFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
+    ENSURE_POSITIVE(bounds.width);
+    ENSURE_POSITIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -1795,6 +1803,7 @@ void cAbstractShapeFigure::setLineWidth(double lineWidth)
 {
     if (lineWidth == this->lineWidth)
         return;
+    ENSURE_POSITIVE(lineWidth);
     this->lineWidth = lineWidth;
     fireVisualChange();
 }
@@ -1803,6 +1812,7 @@ void cAbstractShapeFigure::setLineOpacity(double lineOpacity)
 {
     if (lineOpacity == this->lineOpacity)
         return;
+    ENSURE_RANGE01(lineOpacity);
     this->lineOpacity = lineOpacity;
     fireVisualChange();
 }
@@ -1811,6 +1821,7 @@ void cAbstractShapeFigure::setFillOpacity(double fillOpacity)
 {
     if (fillOpacity == this->fillOpacity)
         return;
+    ENSURE_RANGE01(fillOpacity);
     this->fillOpacity = fillOpacity;
     fireVisualChange();
 }
@@ -1883,23 +1894,27 @@ void cRectangleFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
+    ENSURE_POSITIVE(bounds.width);
+    ENSURE_POSITIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
 
-void cRectangleFigure::setCornerRx(double rx)
+void cRectangleFigure::setCornerRx(double cornerRx)
 {
-    if (rx == this->cornerRx)
+    if (cornerRx == this->cornerRx)
         return;
-    this->cornerRx = rx;
+    ENSURE_NONNEGATIVE(cornerRx);
+    this->cornerRx = cornerRx;
     fireGeometryChange();
 }
 
-void cRectangleFigure::setCornerRy(double ry)
+void cRectangleFigure::setCornerRy(double cornerRy)
 {
-    if (ry == this->cornerRy)
+    if (cornerRy == this->cornerRy)
         return;
-    this->cornerRy = ry;
+    ENSURE_NONNEGATIVE(cornerRy);
+    this->cornerRy = cornerRy;
     fireGeometryChange();
 }
 
@@ -1954,6 +1969,8 @@ void cOvalFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
+    ENSURE_POSITIVE(bounds.width);
+    ENSURE_POSITIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -2018,23 +2035,27 @@ void cRingFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
+    ENSURE_POSITIVE(bounds.width);
+    ENSURE_POSITIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
 
-void cRingFigure::setInnerRx(double rx)
+void cRingFigure::setInnerRx(double innerRx)
 {
-    if (rx == this->innerRx)
+    if (innerRx == this->innerRx)
         return;
-    this->innerRx = rx;
+    ENSURE_NONNEGATIVE(innerRx);
+    this->innerRx = innerRx;
     fireGeometryChange();
 }
 
-void cRingFigure::setInnerRy(double ry)
+void cRingFigure::setInnerRy(double innerRy)
 {
-    if (ry == this->innerRy)
+    if (innerRy == this->innerRy)
         return;
-    this->innerRy = ry;
+    ENSURE_NONNEGATIVE(innerRy);
+    this->innerRy = innerRy;
     fireGeometryChange();
 }
 
@@ -2097,6 +2118,8 @@ void cPieSliceFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
+    ENSURE_POSITIVE(bounds.width);
+    ENSURE_POSITIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -2794,6 +2817,7 @@ void cAbstractTextFigure::setOpacity(double opacity)
 {
     if (opacity == this->opacity)
         return;
+    ENSURE_RANGE01(opacity);
     this->opacity = opacity;
     fireVisualChange();
 }
@@ -2920,6 +2944,7 @@ void cAbstractImageFigure::setWidth(double width)
 {
     if (width == this->width)
         return;
+    ENSURE_POSITIVE(width);
     this->width = width;
     fireGeometryChange();
 }
@@ -2928,6 +2953,7 @@ void cAbstractImageFigure::setHeight(double height)
 {
     if (height == this->height)
         return;
+    ENSURE_POSITIVE(height);
     this->height = height;
     fireGeometryChange();
 }
@@ -2944,6 +2970,7 @@ void cAbstractImageFigure::setOpacity(double opacity)
 {
     if (opacity == this->opacity)
         return;
+    ENSURE_RANGE01(opacity);
     this->opacity = opacity;
     fireVisualChange();
 }
@@ -2960,6 +2987,7 @@ void cAbstractImageFigure::setTintAmount(double tintAmount)
 {
     if (tintAmount == this->tintAmount)
         return;
+    ENSURE_RANGE01(tintAmount);
     this->tintAmount = tintAmount;
     fireVisualChange();
 }
@@ -3085,6 +3113,7 @@ void cPixmapFigure::resize(int width, int height, const Color& color, double opa
 {
     if (pixmap.getWidth() == width && pixmap.getHeight() == height)
         return;
+    ENSURE_RANGE01(opacity);
     pixmap.resize(width, height, color, opacity);
     fireInputDataChange();
 }
@@ -3097,6 +3126,7 @@ void cPixmapFigure::fill(const RGBA& fill)
 
 void cPixmapFigure::fill(const Color& color, double opacity)
 {
+    ENSURE_RANGE01(opacity);
     pixmap.fill(color, opacity);
     fireInputDataChange();
 }
@@ -3109,6 +3139,7 @@ void cPixmapFigure::setPixel(int x, int y, const RGBA& argb)
 
 void cPixmapFigure::setPixel(int x, int y, const Color& color, double opacity)
 {
+    ENSURE_RANGE01(opacity);
     pixmap.setPixel(x, y, color, opacity);
     fireInputDataChange();
 }
@@ -3121,6 +3152,7 @@ void cPixmapFigure::setPixelColor(int x, int y, const Color& color)
 
 void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
 {
+    ENSURE_RANGE01(opacity);
     pixmap.setOpacity(x, y, opacity);
     fireInputDataChange();
 }

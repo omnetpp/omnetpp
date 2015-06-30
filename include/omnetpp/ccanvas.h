@@ -1270,9 +1270,9 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor);
         virtual double getWidth() const  {return width;}
-        virtual void setWidth(double w);
+        virtual void setWidth(double width);
         virtual double getHeight() const  {return height;}
-        virtual void setHeight(double h);
+        virtual void setHeight(double height);
         virtual Interpolation getInterpolation() const {return interpolation;}
         virtual void setInterpolation(Interpolation interpolation);
         virtual double getOpacity() const  {return opacity;}
