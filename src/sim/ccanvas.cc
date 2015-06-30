@@ -114,7 +114,7 @@ static const char *PKEY_LINEWIDTH = "lineWidth";
 static const char *PKEY_LINEOPACITY = "lineOpacity";
 static const char *PKEY_CAPSTYLE = "capStyle";
 static const char *PKEY_JOINSTYLE = "joinStyle";
-static const char *PKEY_SCALELINEWIDTH = "scaleLineWidth";
+static const char *PKEY_ZOOMLINEWIDTH = "zoomLineWidth";
 static const char *PKEY_FILLCOLOR = "fillColor";
 static const char *PKEY_FILLOPACITY = "fillOpacity";
 static const char *PKEY_FILLRULE = "fillRule";
@@ -1338,15 +1338,15 @@ void cAbstractLineFigure::parse(cProperty *property)
         setStartArrowHead(parseArrowHead(s));
     if ((s = property->getValue(PKEY_ENDARROWHEAD)) != nullptr)
         setEndArrowHead(parseArrowHead(s));
-    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != nullptr)
-        setScaleLineWidth(parseBool(s));
+    if ((s = property->getValue(PKEY_ZOOMLINEWIDTH)) != nullptr)
+        setZoomLineWidth(parseBool(s));
 }
 
 const char **cAbstractLineFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_CAPSTYLE, PKEY_STARTARROWHEAD, PKEY_ENDARROWHEAD, PKEY_SCALELINEWIDTH, nullptr};
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_CAPSTYLE, PKEY_STARTARROWHEAD, PKEY_ENDARROWHEAD, PKEY_ZOOMLINEWIDTH, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1408,11 +1408,11 @@ void cAbstractLineFigure::setEndArrowHead(ArrowHead endArrowHead)
     fireVisualChange();
 }
 
-void cAbstractLineFigure::setScaleLineWidth(bool scaleLineWidth)
+void cAbstractLineFigure::setZoomLineWidth(bool zoomLineWidth)
 {
-    if (scaleLineWidth == this->scaleLineWidth)
+    if (zoomLineWidth == this->zoomLineWidth)
         return;
-    this->scaleLineWidth = scaleLineWidth;
+    this->zoomLineWidth = zoomLineWidth;
     fireVisualChange();
 }
 
@@ -1735,15 +1735,15 @@ void cAbstractShapeFigure::parse(cProperty *property)
         setLineOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_FILLOPACITY)) != nullptr)
         setFillOpacity(opp_atof(s));
-    if ((s = property->getValue(PKEY_SCALELINEWIDTH)) != nullptr)
-        setScaleLineWidth(parseBool(s));
+    if ((s = property->getValue(PKEY_ZOOMLINEWIDTH)) != nullptr)
+        setZoomLineWidth(parseBool(s));
 }
 
 const char **cAbstractShapeFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_SCALELINEWIDTH, nullptr};
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_ZOOMLINEWIDTH, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1813,11 +1813,11 @@ void cAbstractShapeFigure::setFillOpacity(double fillOpacity)
     fireVisualChange();
 }
 
-void cAbstractShapeFigure::setScaleLineWidth(bool scaleLineWidth)
+void cAbstractShapeFigure::setZoomLineWidth(bool zoomLineWidth)
 {
-    if (scaleLineWidth == this->scaleLineWidth)
+    if (zoomLineWidth == this->zoomLineWidth)
         return;
-    this->scaleLineWidth = scaleLineWidth;
+    this->zoomLineWidth = zoomLineWidth;
     fireVisualChange();
 }
 

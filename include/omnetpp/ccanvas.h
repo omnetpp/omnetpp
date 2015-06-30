@@ -24,7 +24,7 @@ class cCanvas;
 class cProperty;
 class cProperties;
 
-#define OMNETPP_CANVAS_VERSION  0x20150216  //XXX identifies canvas code version until API stabilizes
+#define OMNETPP_CANVAS_VERSION  0x20150217  //XXX identifies canvas code version until API stabilizes
 
 
 /**
@@ -468,7 +468,7 @@ class SIM_API cPanelFigure : public cFigure
  *
  * Transformations such as scaling or skew do affect the width of the line as it
  * is rendered on the canvas. Whether zooming (by the user) should also affect
- * it can be controlled by setting a flag (see setScaleLineWidth()).
+ * it can be controlled by setting a flag (see setZoomLineWidth()).
  *
  * The rendering of zero-width lines is currently undefined. It is attempted
  * to be rendered as a one pixel wide line, regardless of transforms and zoom
@@ -485,7 +485,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         double lineOpacity;
         CapStyle capStyle;
         ArrowHead startArrowHead, endArrowHead;
-        bool scaleLineWidth;
+        bool zoomLineWidth;
     private:
         void copy(const cAbstractLineFigure& other);
     protected:
@@ -493,7 +493,7 @@ class SIM_API cAbstractLineFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE), scaleLineWidth(true) {}
+        cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE), zoomLineWidth(false) {}
         cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
         cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
         //@}
@@ -521,8 +521,8 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setStartArrowHead(ArrowHead startArrowHead);
         virtual ArrowHead getEndArrowHead() const  {return endArrowHead;}
         virtual void setEndArrowHead(ArrowHead endArrowHead);
-        virtual bool getScaleLineWidth() const {return scaleLineWidth;}
-        virtual void setScaleLineWidth(bool scaleLineWidth);
+        virtual bool getZoomLineWidth() const {return zoomLineWidth;}
+        virtual void setZoomLineWidth(bool zoomLineWidth);
         //@}
 };
 
@@ -681,7 +681,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
  *
  * Transformations such as scaling or skew do affect the width of the line as it
  * is rendered on the canvas. Whether zooming (by the user) should also affect
- * it can be controlled by setting a flag (see setScaleLineWidth()).
+ * it can be controlled by setting a flag (see setZoomLineWidth()).
  *
  * The rendering of zero-width lines is currently undefined. It is attempted
  * to be rendered as a one pixel wide line, regardless of transforms and zoom
@@ -700,7 +700,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         double lineWidth;
         double lineOpacity;
         double fillOpacity;
-        bool scaleLineWidth;
+        bool zoomLineWidth;
     private:
         void copy(const cAbstractShapeFigure& other);
     protected:
@@ -708,7 +708,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cAbstractShapeFigure(const char *name=nullptr) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), fillOpacity(1), scaleLineWidth(true) {}
+        cAbstractShapeFigure(const char *name=nullptr) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), fillOpacity(1), zoomLineWidth(false) {}
         cAbstractShapeFigure(const cAbstractShapeFigure& other) : cFigure(other) {copy(other);}
         cAbstractShapeFigure& operator=(const cAbstractShapeFigure& other);
         //@}
@@ -738,8 +738,8 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void setLineOpacity(double lineOpacity);
         virtual double getFillOpacity() const  {return fillOpacity;}
         virtual void setFillOpacity(double fillOpacity);
-        virtual bool getScaleLineWidth() const {return scaleLineWidth;}
-        virtual void setScaleLineWidth(bool scaleLineWidth);
+        virtual bool getZoomLineWidth() const {return zoomLineWidth;}
+        virtual void setZoomLineWidth(bool zoomLineWidth);
         //@}
 };
 

@@ -48,6 +48,8 @@ Register_Class(PixmapFigureRenderer);
 #define M_PI    3.14159265358979323846
 #endif
 
+#define MAXARGC  40
+
 char *FigureRenderer::point(const cFigure::Point& p)
 {
     char *buf = getBuf(40);
@@ -133,7 +135,7 @@ void FigureRenderer::joinStyle(cFigure::JoinStyle style, int& argc, const char *
     }
 }
 
-void FigureRenderer::arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int& argc, const char *argv[])
+void FigureRenderer::arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int lineWidth, double zoom, int& argc, const char *argv[])
 {
     bool hasArrow = arrowHead != cFigure::ARROW_NONE;
     argv[argc++] = isStart ? "-startarrow" : "-endarrow";
@@ -142,13 +144,17 @@ void FigureRenderer::arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int& 
     if (hasArrow) {
         const char *fill;
         switch (arrowHead) {
-            case cFigure::ARROW_BARBED: fill = "0.6"; break;
+            case cFigure::ARROW_BARBED: fill = "0.7"; break;
             case cFigure::ARROW_SIMPLE: fill = "0"; break;
             case cFigure::ARROW_TRIANGLE: fill = "1"; break;
             default: throw cRuntimeError("Unexpected arrow type %d", arrowHead);
         }
         argv[argc++] = isStart ? "-startarrowfill" : "-endarrowfill";
         argv[argc++] = fill;
+        argv[argc++] = isStart ? "-startarrowlength" : "-endarrowlength";
+        argv[argc++] = dtoa(10.0 / zoom);
+        argv[argc++] = isStart ? "-startarrowwidth" : "-endarrowwidth";
+        argv[argc++] = dtoa(5.0 / zoom);
     }
 }
 
@@ -483,7 +489,7 @@ void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *inter
     ptrToStr(figure, tags + strlen(tags));
 
     int argc = 0;
-    const char *argv[32];
+    const char *argv[MAXARGC];
     argv[argc++] = "dummy";
     argv[argc++] = "create";
     argv[argc++] = getItemType();
@@ -493,6 +499,7 @@ void AbstractCanvasItemFigureRenderer::render(cFigure *figure, Tcl_Interp *inter
     addOptions(figure, ~0, interp, argc, argv, transform, hints);
     argv[argc++] = "-tags";
     argv[argc++] = tags;
+    Assert(argc <= MAXARGC);
     invokeTclCommand(interp, cmd, argc, argv);
 }
 
@@ -504,18 +511,19 @@ void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl
     if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_TRANSFORM)) {  // some getCoords() implementations use the transform as input
         initBufs();
         int argc = 0;
-        const char *argv[32];
+        const char *argv[MAXARGC];
         argv[argc++] = "dummy";
         argv[argc++] = "coords";
         argv[argc++] = tag;
         std::string coords = getCoords(figure, interp, transform, hints);
         argv[argc++] = coords.c_str();
+        Assert(argc <= MAXARGC);
         invokeTclCommand(interp, cmd, argc, argv);
     }
 
     initBufs();
     int argc = 0;
-    const char *argv[32];
+    const char *argv[MAXARGC];
     argv[argc++] = "dummy";
     argv[argc++] = "itemconfig";
     argv[argc++] = tag;
@@ -523,6 +531,7 @@ void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl
     if (what & cFigure::CHANGE_TRANSFORM)
         addMatrix(figure, transform, argc, argv);
     addOptions(figure, what, interp, argc, argv, transform, hints);
+    Assert(argc <= MAXARGC);
     if (argc > savedArgc)
         invokeTclCommand(interp, cmd, argc, argv);
 }
@@ -549,13 +558,13 @@ void AbstractLineFigureRenderer::addOptions(cFigure *figure, int8_t what, Tcl_In
         argv[argc++] = "-stroke";
         argv[argc++] = color(lineFigure->getLineColor());
         argv[argc++] = "-strokewidth";
-        argv[argc++] = lineFigure->getScaleLineWidth() ? dtoa(lineFigure->getLineWidth()) : dtoa(lineFigure->getLineWidth() / hints->zoom);
+        argv[argc++] = lineFigure->getZoomLineWidth() ? dtoa(lineFigure->getLineWidth()) : dtoa(lineFigure->getLineWidth() / hints->zoom);
         argv[argc++] = "-strokeopacity";
         argv[argc++] = dtoa(lineFigure->getLineOpacity());
         lineStyle(lineFigure->getLineStyle(), argc, argv);
         capStyle(lineFigure->getCapStyle(), argc, argv);
-        arrowHead(true, lineFigure->getStartArrowHead(), argc, argv);
-        arrowHead(false, lineFigure->getEndArrowHead(), argc, argv);
+        arrowHead(true, lineFigure->getStartArrowHead(), lineFigure->getLineWidth(), hints->zoom, argc, argv);
+        arrowHead(false, lineFigure->getEndArrowHead(), lineFigure->getLineWidth(), hints->zoom, argc, argv);
     }
 }
 
@@ -603,7 +612,7 @@ void AbstractShapeRenderer::addOptions(cFigure *figure, int8_t what, Tcl_Interp 
             argv[argc++] = "-stroke";
             argv[argc++] = color(shapeFigure->getLineColor());
             argv[argc++] = "-strokewidth";
-            argv[argc++] = shapeFigure->getScaleLineWidth() ? dtoa(shapeFigure->getLineWidth()) : dtoa(shapeFigure->getLineWidth() / hints->zoom);
+            argv[argc++] = shapeFigure->getZoomLineWidth() ? dtoa(shapeFigure->getLineWidth()) : dtoa(shapeFigure->getLineWidth() / hints->zoom);
             argv[argc++] = "-strokeopacity";
             argv[argc++] = dtoa(shapeFigure->getLineOpacity());
             lineStyle(shapeFigure->getLineStyle(), argc, argv);

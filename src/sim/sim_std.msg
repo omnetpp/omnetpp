@@ -767,7 +767,7 @@ class cAbstractLineFigure extends cFigure
     int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
     int startArrowHead @editable @enum(omnetpp::cFigure::ArrowHead);
     int endArrowHead @editable @enum(omnetpp::cFigure::ArrowHead);
-    bool scaleLineWidth @editable;
+    bool zoomLineWidth @editable;
 }
 
 class cLineFigure extends cAbstractLineFigure
@@ -800,7 +800,7 @@ class cAbstractShapeFigure extends cFigure
     double lineWidth @editable;
     double lineOpacity @editable;
     double fillOpacity @editable;
-    bool scaleLineWidth @editable;
+    bool zoomLineWidth @editable;
 }
 
 class cRectangleFigure extends cAbstractShapeFigure
