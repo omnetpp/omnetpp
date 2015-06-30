@@ -37,19 +37,6 @@ int exitOmnetpp;
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
 #endif
 
-// Procedure to handle X errors
-static int XErrorProc(ClientData, XErrorEvent *errEventPtr)
-{
-/*Qt!
-    fprintf(stderr, "X protocol error: ");
-    fprintf(stderr, "error=%d request=%d minor=%d\n",
-                    errEventPtr->error_code,
-                    errEventPtr->request_code,
-                    errEventPtr->minor_code );
-*/
-    return 0;  // claim to have handled the error
-}
-
 // initialize Tcl/Tk and return a pointer to the interpreter
 Tcl_Interp *initTk(int argc, char **argv)
 {

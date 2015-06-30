@@ -142,19 +142,17 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // this should be deleted later
-    TreeItemModel *model = new TreeItemModel();
+    TreeItemModel *model = new TreeItemModel(ui->treeView);
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
 
-    // the model should be deleted later
-    ui->treeView_2->setModel(new GenericObjectTreeModel(nullptr));
+    auto objectModel = new GenericObjectTreeModel(nullptr, ui->treeView_2);
+    ui->treeView_2->setModel(objectModel);
     ui->treeView_2->setHeaderHidden(true);
-    // TODO, to highlight the values in blue, etc
     ui->treeView_2->setItemDelegate(new HighlighterItemDelegate());
 
-    stopDialog = new StopDialog();
+    stopDialog = new StopDialog(this);
 
     //TODO
     slider = new QSlider();
@@ -174,12 +172,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // this way the main window will be shown before the setup dialog
     // because the timer event is processed in the event loop
     QTimer::singleShot(0, this, SLOT(initialSetUpConfiguration()));
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-    delete stopDialog;
 }
 
 void MainWindow::displayText(const char *t)
@@ -396,8 +388,6 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
             busy();
         }
     }
-
-    delete dialog;
 }
 
 // stopSimulation
@@ -767,17 +757,14 @@ void MainWindow::onTreeViewContextMenu(QPoint point)
 
 void MainWindow::onTreeViewPressed(QModelIndex index)
 {
-    auto oldModel = ui->treeView_2->model();
+    auto oldModel = dynamic_cast<GenericObjectTreeModel *>(ui->treeView_2->model());
     auto newModel = new GenericObjectTreeModel(
-        static_cast<cObject *>(index.child(index.row(), index.column()).internalPointer()));
+        static_cast<cObject *>(index.child(index.row(), index.column()).internalPointer()), ui->treeView_2);
 
     ui->treeView_2->setModel(newModel);
+    delete oldModel;
     ui->treeView_2->reset();
-    ui->treeView_2->expand(QModelIndex());
-
-    if (oldModel) {
-        delete oldModel;
-    }
+    ui->treeView_2->expand(newModel->index(0, 0, QModelIndex()));
 }
 
 // Handle object tree's context menu QAction's triggerd event.
@@ -881,7 +868,7 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
         namePattern = "\"" + namePattern + "\"";
 
     QString filters = env->getSilentEventFilters();
-    filters.trimmed();
+    filters = filters.trimmed();
     if (!filters.isEmpty())
         filters += "\n";
     filters += namePattern +" and className(" + cl +")\n";

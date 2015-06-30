@@ -758,7 +758,7 @@ void ModuleInspector::drawConnection(cGate *gate)
     cModule *mod = gate->getOwnerModule();
     cGate *destGate = gate->getNextGate();
 
-    char gateptr[32], srcptr[32], destptr[32], chanptr[32], indices[32];
+    // char gateptr[32], srcptr[32], destptr[32], chanptr[32], indices[32];
 
     // check if this is a two way connection (an other connection is pointing back
     // to the this gate's pair from the next gate's pair)

@@ -139,6 +139,7 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       ImageCache icons;
 
    protected:
+      QApplication *app;
       MainWindow *mainwindow;
       Tcl_Interp *interp;          // Tcl interpreter
       opp_string windowtitleprefix;// contains "procId=.." when using parsim

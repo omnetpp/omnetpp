@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>OMNeT++ Qtenv</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/logo/icons/logo/logo128m.png</normaloff>:/logo/icons/logo/logo128m.png</iconset>
+  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>

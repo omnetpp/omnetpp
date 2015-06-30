@@ -22,12 +22,15 @@ QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+WARNING_FLAGS += "-Wall -Wextra -Wno-unused-parameter"
+
 TARGET = qtenv
 TEMPLATE = lib
-CONFIG += static warn_off c++11
+CONFIG += static c++11
+CONFIG -= warn_on warn_off
 DEFINES += "BUILDING_QTENV"
-QMAKE_CXXFLAGS += $$(OPP_CFLAGS)
-QMAKE_CFLAGS += $$(OPP_CFLAGS)
+QMAKE_CXXFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
+QMAKE_CFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 
 SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbuffer.cc outputvectorinspector.cc canvasinspector.cc gateinspector.cc inspector.cc loginspector.cc qtenv.cc watchinspector.cc canvasrenderer.cc genericobjectinspector.cc inspectorfactory.cc moduleinspector.cc tkcmd.cc componenthistory.cc graphicspatharrowitem.cc layouterenv.cc osxproctype.cc tklib.cc \
     stopdialog.cc \

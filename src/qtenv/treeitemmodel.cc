@@ -102,7 +102,7 @@ int TreeItemModel::findObjectInParent(cObject *obj, cObject *parent) const
     visitor.process(parent);
     cObject **objs = visitor.getArray();
 
-    for (size_t i = 0; i < visitor.getArraySize(); ++i)
+    for (int i = 0; i < visitor.getArraySize(); ++i)
         if (objs[i] == obj)
             return i;
 

@@ -303,8 +303,9 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_multiplyalpha",       imageMultiplyAlpha_cmd },   // args: <image> <alphamultiplier>
    { "opp_reducealpha",         imageReduceAlpha_cmd   },   // args: <image> <alphathreshold>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
+
    // end of list
-   { nullptr, },
+   { nullptr,                   nullptr                },
 };
 
 // =================================================================
@@ -2606,9 +2607,9 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     return TCL_OK;
 }
 
+/*Qt!
 static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_PhotoImageBlock *destImgblockptr)
 {
-/*Qt!
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    if (!imghandle)
    {
@@ -2622,9 +2623,9 @@ static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_Phot
        Tcl_SetResult(interp, TCLCONST("unsupported pixelsize in photo image"), TCL_STATIC);
        return TCL_ERROR;
    }
- */
-    return TCL_OK;
+   return TCL_OK;
 }
+*/
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
@@ -2973,10 +2974,10 @@ int getObjectIcon_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC);
         return TCL_ERROR;
     }
-    cObject *object = strToPtr(argv[1]);
-    std::string image;
-    //TRY(image = getObjectIcon(interp, object));
-    Tcl_SetResult(interp, TCLCONST(image.c_str()), TCL_VOLATILE);
+    // cObject *object = strToPtr(argv[1]);
+    // std::string image;
+    // TRY(image = getObjectIcon(interp, object));
+    // Tcl_SetResult(interp, TCLCONST(image.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 

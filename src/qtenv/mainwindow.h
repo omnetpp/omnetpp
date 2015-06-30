@@ -66,8 +66,6 @@ public:
     QWidget *getMainArea();
     void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
 
-    ~MainWindow();
-
 private slots:
     void on_actionOneStep_triggered();
     bool on_actionQuit_triggered();

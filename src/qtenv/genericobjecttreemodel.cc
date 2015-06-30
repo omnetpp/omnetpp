@@ -50,7 +50,6 @@ protected:
     void addObjectChildren(void *of, cClassDescriptor *desc);
 
     static cClassDescriptor *getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
-    static TreeNode *makeNodeForField(TreeNode *parent, void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
 
 public:
     TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc);
@@ -84,7 +83,7 @@ protected:
     void fill() override;
 public:
     // only use this to create the root node for the model!
-    FieldNode(cObject *rootObject);
+    explicit FieldNode(cObject *rootObject);
     FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex = 0);
 
     QVariant data(int role) override;
@@ -297,18 +296,26 @@ void FieldNode::fill() {
 }
 
 QVariant FieldNode::data(int role) {
-    if ((role == Qt::DecorationRole) && (!containingDesc || (containingDesc->getFieldIsCObject(fieldIndex)))) {
-        return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(static_cast<cObject *>(object)))) : QVariant();
+    cObject *objectCasted = nullptr;
+	
+	// if no containingDesc, then this the root, which must be cObject
+    if (!containingDesc || containingDesc->getFieldIsCObject(fieldIndex)) {
+        objectCasted = static_cast<cObject *>(object);
     }
 
-    cObject *objectCasted = static_cast<cObject *>(object);
+    if ((role == Qt::DecorationRole) && objectCasted) {
+        return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(objectCasted))) : QVariant();
+    }
 
     if (!containingDesc) {
         // this is the root object, so it can't have "field name", and it must be a cObject
         switch (role) {
         case Qt::ToolTipRole:
         case Qt::DisplayRole: {
-            QString value = object ? QString(objectCasted->getName()) + " (" + getObjectShortTypeName(objectCasted) + ")" : "no object selected";
+            QString value = object
+                             ? QString(objectCasted->getName())
+                                + " (" + getObjectShortTypeName(objectCasted) + ")"
+                             : "no object selected";
             return value;
         }
         default:
@@ -316,9 +323,12 @@ QVariant FieldNode::data(int role) {
         }
     }
 
-    if (!containingDesc->getFieldIsCObject(fieldIndex)) {
-        objectCasted = nullptr;
-    }
+    // the rest is for the regular, non-root nodes
+
+    bool isCompound = containingDesc->getFieldIsCompound(fieldIndex);
+    bool isCObject = containingDesc->getFieldIsCObject(fieldIndex);
+    bool isArray = containingDesc->getFieldIsArray(fieldIndex);
+
 
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
@@ -337,11 +347,12 @@ QVariant FieldNode::data(int role) {
         fieldName = label;
     }
 
-    if (!containingDesc->getFieldIsArray(fieldIndex) && !containingDesc->getFieldIsCompound(fieldIndex)) {
+    // it is a primitive value
+    if (!isArray && !isCompound) {
         fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
     }
 
-    if (!containingDesc->getFieldIsArray(fieldIndex) && containingDesc->getFieldIsCObject(fieldIndex)) {
+    if (!isArray && isCObject) {
         if (objectCasted) {
             objectInfo = objectCasted->info().c_str();
             if (objectInfo.length() > 0) {
@@ -352,7 +363,7 @@ QVariant FieldNode::data(int role) {
         }
     }
 
-    if (containingDesc->getFieldIsArray(fieldIndex)) {
+    if (isArray) {
         arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
         equals = "";
     }
@@ -384,7 +395,10 @@ bool FieldNode::isEditable() {
 }
 
 bool FieldNode::setData(const QVariant &value, int role) {
-    return containingDesc ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str()) : false;
+    return containingDesc
+            ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0,
+                                                    value.toString().toStdString().c_str())
+            : false;
 }
 
 

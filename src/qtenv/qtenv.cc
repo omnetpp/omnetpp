@@ -161,6 +161,9 @@ Qtenv::~Qtenv()
 {
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
+
+    delete mainwindow;
+    delete app;
 }
 
 static void signalHandler(int signum)
@@ -259,8 +262,12 @@ void Qtenv::doRun()
         }
 #endif
 
-        int argc = 0;
-        QApplication a(argc, (char **)0);
+        // these three have to be available for the whole lifetime of the application
+        static int argc = 1;
+        static char arg[] = { 'a', 'p', 'p', 0 };
+        static char *argv[] = { arg, nullptr };
+        app = new QApplication(argc, argv);
+
         mainwindow = new MainWindow(this);
         mainwindow->show();
 
@@ -292,7 +299,8 @@ void Qtenv::doRun()
         // RUN
         //
         CHK(Tcl_Eval(interp, "startupCommands"));
-        a.exec();
+
+        QApplication::exec();
         // runTk(interp);
     }
     catch (std::exception& e) {

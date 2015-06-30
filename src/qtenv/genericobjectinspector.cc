@@ -63,11 +63,9 @@ void GenericObjectInspector::doSetObject(cObject *obj)
     QTreeView *view = static_cast<QTreeView *>(window);
 
     GenericObjectTreeModel *oldModel = dynamic_cast<GenericObjectTreeModel *>(view->model());
-    if (oldModel) {
-        delete oldModel;
-    }
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj);
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, view);
     view->setModel(newModel);
+    delete oldModel;
     view->reset();
     // expanding the top level item
     view->expand(newModel->index(0, 0, QModelIndex()));

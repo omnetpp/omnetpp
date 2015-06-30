@@ -70,7 +70,7 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     content.setFilter(QDir::Files);
 
     //# load bitmaps from this directory
-    for(int i = 0; i < content.count(); ++i)
+    for(size_t i = 0; i < content.count(); ++i)
     {
         QString fileName = content.absoluteFilePath(content[i]);
         //QPixmap: Cannot create a QPixmap when no GUI is being used
@@ -111,7 +111,7 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     //# recurse into subdirs
     content.setNameFilters(QStringList("*"));
     content.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-    for(int i = 0; i < content.count(); ++i)
+    for(size_t i = 0; i < content.count(); ++i)
     {
         QString subDir = content.absoluteFilePath(content[i]);
         QString subPrefix = prefix + content[i] + "/";
