@@ -722,7 +722,7 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
 
     int slen = n - needleLen;
 
-    for (const char *s = haystack; slen > 0 && *s; s++, slen--)
+    for (const char *s = haystack; slen >= 0 && *s; s++, slen--)
         if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
             return s;
 
