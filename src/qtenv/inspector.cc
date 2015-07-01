@@ -23,6 +23,7 @@
 #include <cassert>
 #include <algorithm>
 #include <QMenu>
+#include <QContextMenuEvent>
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
@@ -276,7 +277,7 @@ const char *Inspector::getEntry(const char *entry)
     return Tcl_GetStringResult(interp);
 }
 
-void Inspector::goInto()
+void Inspector::goUpInto()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {

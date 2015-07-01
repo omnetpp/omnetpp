@@ -37,9 +37,9 @@ public:
 
     InspectorUtil() {}
 
-    static QMenu *fillInspectorContextMenu(cObject *object, Inspector *insp = nullptr);
+    static void fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp);
     static QVector<int> supportedInspTypes(cObject *object);
-    static void createContextMenu(std::vector<cObject*> objects);
+    static QMenu *createInspectorContextMenu(QVector<cObject *> objects, Inspector *insp);
 
 };
 

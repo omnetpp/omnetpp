@@ -19,6 +19,7 @@
 #include <omnetpp/cobject.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/cmodule.h>
+#include <omnetpp/cmessage.h>
 #include <qtenv.h>
 #include <qtenv/inspector.h>
 #include <inspectorfactory.h>
@@ -47,18 +48,16 @@ QVector<int> InspectorUtil::supportedInspTypes(cObject *object)
     return insp_types;
 }
 
-QMenu *InspectorUtil::fillInspectorContextMenu(cObject *object, Inspector *insp)
+void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp)
 {
     //TODO
     //global contextmenurules
-
-    QMenu *menu = new QMenu();
 
     // add "Go Info" if applicable
     QString name = object->getFullName();
     if(insp && object != insp->getObject() && insp->supportsObject(object))
     {
-        QAction *action = menu->addAction("Go Into '" + name + "'", insp, SLOT(goInto()));
+        QAction *action = menu->addAction("Go Into '" + name + "'", insp, SLOT(goUpInto()));
         action->setData(QVariant::fromValue(object));
         menu->addSeparator();
     }
@@ -123,61 +122,78 @@ QMenu *InspectorUtil::fillInspectorContextMenu(cObject *object, Inspector *insp)
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLNAME)));
     action = subMenu->addAction("Copy Class Name", insp, SLOT(onClickUtilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
-
-    return menu;
 }
 
-void InspectorUtil::createContextMenu(std::vector<cObject*> objects)
+QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Inspector *insp)
 {
+    QMenu *menu = new QMenu();
+
+    //TODO Is it needed?
+    // If there are more than one ptrs, remove the inspector object's own ptr:
+    // when someone right-clicks a submodule icon, we don't want the compound
+    // module to be in the list.
+    if(objects.size() > 1)
+    {
+        cObject *object = insp->getObject();
+        objects.remove(objects.indexOf(object));
+    }
+
     if(objects.size() == 1)
     {
-        //fillInspectorContextMenu .popup $insp $ptrs
-    }// elseif {[llength $ptrs] > 1} {
-//    # then create a submenu for each object
-//    foreach ptr $ptrs {
-//        set submenu .popup.$ptr
-//        catch {destroy $submenu}
-//        menu $submenu -tearoff 0
-//        set name [opp_getobjectfullname $ptr]
-//        set shorttypename [opp_getobjectshorttypename $ptr]
-//        set infostr "$shorttypename, [opp_getobjectinfostring $ptr]"
-//        if {[string length $infostr] > 30} {
-//            set infostr [string range $infostr 0 29]...
-//        }
-//        set baseclass [opp_getobjectbaseclass $ptr]
-//        if {$baseclass == "cGate" } {
-//            set nextgateptr [opp_getobjectfield $ptr "nextGate"]
-//            set nextgatename [opp_getobjectfullname $nextgateptr]
-//            set ownerptr [opp_getobjectowner $ptr]
-//            set ownername [opp_getobjectfullname $ownerptr]
-//            set nextgateownerptr [opp_getobjectowner $nextgateptr]
-//            set nextgateownername [opp_getobjectfullname $nextgateownerptr]
+        fillInspectorContextMenu(menu, objects[0], insp);
+    }
+    else if(objects.size() > 1)
+    {
+        //then create a submenu for each object
+        for(cObject *object : objects)
+        {
+            const char *name = object->getFullName();
+            const char *shortTypeName = getObjectShortTypeName(object);
+            QString infoStr = shortTypeName + QString(", ") + object->info().c_str();
+            if(infoStr.size() > 30)
+            {
+                infoStr.truncate(30);
+                infoStr += "...";
+            }
 
-//            set label "$ownername.$name --> $nextgateownername.$nextgatename"
-//        } elseif {$baseclass == "cMessage" } {
-//            set shortinfo [opp_getmessageshortinfostring $ptr]
-//            set label "$name ($shorttypename, $shortinfo)"
-//        } else {
-//            set label "$name ($infostr)"
-//        }
-//        fillInspectorContextMenu $submenu $insp $ptr
-//        .popup add cascade -label $label -menu $submenu
-//    }
-//}
+            const char *baseClass = getObjectBaseClass(object);
+            QString label;
+            if(baseClass == "cGate")
+            {
+                cGate *nextGate = static_cast<cGate*>(object)->getNextGate();
+                const char *nextGateName = object->getFullName();
+                cObject *owner = object->getOwner();
+                const char *ownerName = owner->getFullName();
+                cObject *nextGateOwner = nextGate->getOwner();
+                const char *nextGateOwnerName = nextGateOwner->getFullName();
 
-//if [opp_isinspector $insp] {
-//   set ptr [opp_inspector_getobject $insp]
-//   if [opp_isnotnull $ptr] {
-//      set parentptr [opp_getobjectparent $ptr]
-//      if {[opp_isnotnull $parentptr] && [opp_inspector_supportsobject $insp $parentptr]} {
-//          .popup add separator
-//          .popup add command -label "Go Up" -command "opp_inspector_setobject $insp $parentptr"
-//      }
-//   }
-//}
+                label = ownerName + QString(".") + name + " --> " + nextGateOwnerName + "." + nextGateName;
+            }
+            else if(baseClass == "cMessage")
+            {
+                const char *shortInfo = getMessageShortInfoString(static_cast<cMessage*>(object));
+                label = label + name + " (" + shortTypeName + ", " + shortInfo + ")";
+            }
+            else
+                label = label + name + " (" + infoStr + ")";
 
-//return .popup
-//}
+            QMenu *subMenu = menu->addMenu(label);
+            fillInspectorContextMenu(subMenu, object, insp);
+        }
+    }
+
+    cObject *object = insp->getObject();
+    if(object)
+    {
+        cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+        if(parent && insp->supportsObject(parent))
+        {
+            menu->addSeparator();
+            QAction *action = menu->addAction("Go Up", insp, SLOT(goUpInto()));
+            action->setData(QVariant::fromValue(parent));
+        }
+    }
+    return menu;
 }
 
 } // namespace qtenv

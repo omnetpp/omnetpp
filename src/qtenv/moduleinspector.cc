@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QGridLayout>
 #include <QContextMenuEvent>
+#include <QMenu>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -51,6 +52,7 @@
 #include "canvasrenderer.h"
 #include "mainwindow.h"
 #include "modulegraphicsview.h"
+#include "inspectorutil.h"
 
 using namespace OPP::common;
 using namespace OPP::layout;
@@ -1342,6 +1344,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
    if(objects.size())
    {
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(objects.toVector(), this);
 //      set popup [createInspectorContextMenu $insp $ptrs]
 
 //      set tmp($c:showlabels) $inspectordata($c:showlabels)

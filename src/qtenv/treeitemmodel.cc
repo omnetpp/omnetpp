@@ -203,7 +203,9 @@ void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant> &list, QM
 
 QMenu *TreeItemModel::getContextMenu(QModelIndex& index)
 {
-    return InspectorUtil::fillInspectorContextMenu(getObjectFromIndex(index));
+    QMenu *menu = new QMenu();
+    InspectorUtil::fillInspectorContextMenu(menu, getObjectFromIndex(index), nullptr);
+    return menu;
 }
 
 } // namespace qtenv

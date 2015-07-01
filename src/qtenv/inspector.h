@@ -20,7 +20,10 @@
 #include "envir/envirbase.h"
 #include "qtutil.h"
 #include <QObject>
+
 #include <QWidget>
+
+class QContextMenuEvent;
 
 namespace omnetpp {
 namespace qtenv {
@@ -80,7 +83,7 @@ class QTENV_API Inspector : public QWidget
 
    protected slots:
       //Context menu's action's slots
-      virtual void goInto();
+      virtual void goUpInto();
 
    public:
       typedef QPair<OPP::cObject*, int> ActionDataPair;

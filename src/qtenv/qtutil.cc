@@ -281,6 +281,69 @@ QString getObjectIcon(cObject *object)
     return iconName;
 }
 
+const char *getObjectBaseClass(cObject *object)
+{
+    if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
+        return "cPlaceholderModule";
+    else if (dynamic_cast<cSimpleModule *>(object))
+        return"cSimpleModule";
+    else if (dynamic_cast<cModule *>(object))
+        return"cModule";
+    else if (dynamic_cast<cMessage *>(object))
+        return"cMessage";
+    else if (dynamic_cast<cArray *>(object))
+        return"cArray";
+    else if (dynamic_cast<cQueue *>(object))
+        return"cQueue";
+    else if (dynamic_cast<cGate *>(object))
+        return"cGate";
+    else if (dynamic_cast<cPar *>(object))
+        return"cPar";
+    else if (dynamic_cast<cChannel *>(object))
+        return"cChannel";
+    else if (dynamic_cast<cOutVector *>(object))
+        return"cOutVector";
+    else if (dynamic_cast<cStatistic *>(object))
+        return"cStatistic";
+    else if (dynamic_cast<cFutureEventSet *>(object))
+        return"cFutureEventSet";
+    else if (dynamic_cast<cWatchBase *>(object))
+        return"cWatchBase";
+    else if (dynamic_cast<cCanvas *>(object))
+        return"cCanvas";
+    else if (dynamic_cast<cFigure *>(object))
+        return"cFigure";
+    else if (dynamic_cast<cSimulation *>(object))
+        return"cSimulation";
+    else if (dynamic_cast<cRegistrationList *>(object))
+        return"cRegistrationList";
+    else
+        return object->getClassName();  // return itself as base class
+}
+
+const char *getMessageShortInfoString(cMessage *msg)
+{
+    cModule *tomodp = msg->getArrivalModule();
+    cModule *frommodp = msg->getSenderModule();
+    std::stringstream out;
+    const char *deletedstr = "<deleted module>";
+
+#define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
+    if (!tomodp)
+        out << "new msg";
+    else if (msg->getKind() == MK_STARTER)
+        out << "starter for " << MODNAME(tomodp);
+    else if (msg->getKind() == MK_TIMEOUT)
+        out << "timeoutmsg for " << MODNAME(tomodp);
+    else if (frommodp == tomodp)
+        out << "selfmsg for " << MODNAME(tomodp);
+    else
+        out << "msg for " << MODNAME(tomodp);
+#undef MODNAME
+
+    return out.str().c_str();
+}
+
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);

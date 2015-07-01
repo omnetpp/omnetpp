@@ -125,6 +125,10 @@ bool isAPL();
 
 QString getObjectIcon(cObject *object);
 
+const char *getObjectBaseClass(cObject *object);
+
+const char *getMessageShortInfoString(cMessage *msg);
+
 void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
