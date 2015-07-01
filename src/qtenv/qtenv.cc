@@ -74,7 +74,7 @@ using namespace OPP::envir;
 namespace omnetpp {
 namespace qtenv {
 //
-// Register the Tkenv user interface
+// Register the Qtenv user interface
 //
 Register_OmnetApp("Qtenv", Qtenv, 20, "Qt-based graphical user interface");
 
@@ -185,12 +185,6 @@ void Qtenv::doRun()
 #ifdef __APPLE__
         OSXTransformProcess();
 #endif
-        // path for the Tcl user interface files
-#ifdef OMNETPP_TKENV_DIR
-        tkenv_dir = getenv("OMNETPP_TKENV_DIR");
-        if (tkenv_dir.empty())
-            tkenv_dir = OMNETPP_TKENV_DIR;
-#endif
 
         // path for icon directories
         const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
@@ -211,56 +205,12 @@ void Qtenv::doRun()
         if (!opt->pluginPath.empty())
             plugin_path = std::string(opt->pluginPath.c_str()) + ";" + plugin_path;
 
-        // set up Tcl/Tk
-        interp = initTk(args->getArgCount(), args->getArgVector());
-//        if (!interp)
-//            throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
-
-        // add OMNeT++'s commands to Tcl
-        createTkCommands(interp, tcl_commands);
-
         icons.loadImages(image_path.c_str());
-        // Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
-        Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
-// Qt!        Tcl_SetVar(interp, "OMNETPP_LIB_DIR", OMNETPP_LIB_DIR, TCL_GLOBAL_ONLY);
-
-        Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
-        Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
-        Tcl_SetVar(interp, "OMNETPP_BUILDID", OMNETPP_BUILDID, TCL_GLOBAL_ONLY);
 
         // we need to flush streams, otherwise output written from Tcl tends to overtake
         // output written from C++ so far, at least in the IDE's console view
         fflush(stdout);
         fflush(stderr);
-
-        // eval Tcl sources: either from .tcl files or from compiled-in string
-        // literal (tclcode.cc)...
-
-#ifdef OMNETPP_TKENV_DIR
-        //
-        // Case A: TCL code in separate .tcl files
-        //
-        Tcl_SetVar(interp, "OMNETPP_TKENV_DIR", TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
-        if (Tcl_EvalFile(interp, opp_concat(tkenv_dir.c_str(), "/tkenv.tcl")) == TCL_ERROR) {
-            logTclError(__FILE__, __LINE__, interp);
-            throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
-                                    "set correctly? When not set, it defaults to " OMNETPP_TKENV_DIR ")",
-                    Tcl_GetStringResult(interp));
-        }
-#else
-        //
-        // Case B: compiled-in TCL code
-        //
-        // The tclcode.cc file is generated from the Tcl scripts
-        // with the tcl2c program (to be compiled from tcl2c.c).
-        //
-        const char *tcl_code = "";
-// Qt! #include "tclcode.cc"
-        if (Tcl_Eval(interp, (char *)tcl_code) == TCL_ERROR) {
-            logTclError(__FILE__, __LINE__, interp);
-            throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
-        }
-#endif
 
         // these three have to be available for the whole lifetime of the application
         static int argc = 1;
@@ -270,12 +220,6 @@ void Qtenv::doRun()
 
         mainwindow = new MainWindow(this);
         mainwindow->show();
-
-        // evaluate main script and build user interface
-        if (Tcl_Eval(interp, "startTkenv") == TCL_ERROR) {
-            logTclError(__FILE__, __LINE__, interp);
-            throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
-        }
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
@@ -298,10 +242,7 @@ void Qtenv::doRun()
         //
         // RUN
         //
-        CHK(Tcl_Eval(interp, "startupCommands"));
-
         QApplication::exec();
-        // runTk(interp);
     }
     catch (std::exception& e) {
         interp = nullptr;
@@ -420,7 +361,6 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     simstate = SIM_RUNNING;
 
     updateStatusDisplay();
-    // Tcl_Eval(interp, "update");
     QCoreApplication::processEvents();
 
     startClock();
@@ -567,7 +507,6 @@ bool Qtenv::doRunSimulation()
             refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
-            // Qt: Tcl_Eval(interp, "update");
             QCoreApplication::processEvents();
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
         }
@@ -606,7 +545,6 @@ bool Qtenv::doRunSimulationExpress()
     logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
-    // Qt: Tcl_Eval(interp, "update");
     QCoreApplication::processEvents();
 
     // OK, let's begin
@@ -961,7 +899,7 @@ std::string Qtenv::getWindowTitle()
     const char *inifile = getConfigEx()->getFileName();
 
     std::stringstream os;
-    os << OMNETPP_PRODUCT "/Tkenv - " << getWindowTitlePrefix();
+    os << OMNETPP_PRODUCT "/Qtenv - " << getWindowTitlePrefix();
     if (opp_isempty(configName))
         os << "No network";
     else
@@ -1181,7 +1119,6 @@ bool Qtenv::idle()
     // process UI events
     eState origsimstate = simstate;
     simstate = SIM_BUSY;
-    // Qt:Tcl_Eval(interp, "update");
     QCoreApplication::processEvents();
     simstate = origsimstate;
 
