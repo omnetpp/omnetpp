@@ -140,6 +140,204 @@ QtenvOptions::QtenvOptions()
     scrollbackLimit = 10000;
 }
 
+void Qtenv::storeOptsInPrefs() {
+
+    /* // I guess these are not needed anyways
+    size_t extraStack;        // per-module extra stack for activity() modules
+    opp_string imagePath;     // directory of module icon files
+
+    // this one is sure not
+    opp_string pluginPath;    // path for loading Tcl and binary plugins
+    */
+
+    setPref("default-configname", opt->defaultConfig.c_str());
+    setPref("default-runnumber", opt->defaultRun);
+
+    setPref("updatefreq_fast_ms", QVariant::fromValue<int>(opt->updateFreqFast));
+    setPref("updatefreq_express_ms", QVariant::fromValue<int>(opt->updateFreqExpress));
+    setPref("event_banners", opt->printEventBanners);
+    setPref("init_banners", opt->printInitBanners);
+    setPref("short_banners", opt->shortBanners);
+    setPref("animation_enabled", opt->animationEnabled);
+    setPref("nexteventmarkers", opt->showNextEventMarkers);
+    setPref("senddirect_arrows", opt->showSendDirectArrows);
+    setPref("anim_methodcalls", opt->animateMethodCalls);
+    setPref("methodcalls_delay", opt->methodCallAnimDelay);
+    setPref("animation_msgnames", opt->animationMsgNames);
+    setPref("animation_msgclassnames", opt->animationMsgClassNames);
+    setPref("animation_msgcolors", opt->animationMsgColors);
+    setPref("silent_event_filters", getSilentEventFilters());
+    setPref("penguin_mode", opt->penguinMode);
+    setPref("showlayouting", opt->showLayouting);
+
+    QString layouterChoiceString;
+    switch (opt->layouterChoice) {
+    case LAYOUTER_FAST:     layouterChoiceString = "fast";     break;
+    case LAYOUTER_ADVANCED: layouterChoiceString = "advanced"; break;
+    case LAYOUTER_AUTO:     layouterChoiceString = "auto";     break;
+    }
+    setPref("layouterchoice", layouterChoiceString);
+
+    setPref("arrangevectorconnections", opt->arrangeVectorConnections);
+    setPref("iconminsize", opt->iconMinimumSize);
+    setPref("bubbles", opt->showBubbles);
+    setPref("animation_speed", opt->animationSpeed);
+    setPref("expressmode_autoupdate", opt->autoupdateInExpress);
+    setPref("stoponmsgcancel", opt->stopOnMsgCancel);
+
+    QString stripNamespaceString;
+    switch (opt->stripNamespace) {
+    case STRIPNAMESPACE_NONE:    stripNamespaceString = "none";    break;
+    case STRIPNAMESPACE_OMNETPP: stripNamespaceString = "omnetpp"; break;
+    case STRIPNAMESPACE_ALL:     stripNamespaceString = "all";     break;
+    }
+    setPref("stripnamespace", stripNamespaceString);
+
+    setPref("logformat", opt->logFormat.c_str());
+
+    QString logLevelString;
+    switch (opt->logLevel) {
+    case LOGLEVEL_FATAL:  logLevelString = "fatal";  break;
+    case LOGLEVEL_ERROR:  logLevelString = "error";  break;
+    case LOGLEVEL_WARN:   logLevelString = "warn";   break;
+    case LOGLEVEL_INFO:   logLevelString = "info";   break;
+    case LOGLEVEL_DETAIL: logLevelString = "detail"; break;
+    case LOGLEVEL_DEBUG:  logLevelString = "debug";  break;
+    case LOGLEVEL_TRACE:  logLevelString = "trace";  break;
+    }
+    setPref("loglevel", logLevelString);
+
+    setPref("scrollbacklimit", opt->scrollbackLimit);
+    setPref("logbuffer_maxnumevents", logBuffer.getMaxNumEntries());
+}
+
+void Qtenv::restoreOptsFromPrefs() {
+    auto pref = getPref("default-configname");
+    if (pref.isValid()) opt->defaultConfig = pref.toString().toStdString();
+
+    pref = getPref("default-runnumber");
+    if (pref.isValid()) opt->defaultRun = pref.toInt();
+
+    pref = getPref("updatefreq_fast_ms");
+    if (pref.isValid()) opt->updateFreqFast = pref.toLongLong();
+
+    pref = getPref("updatefreq_express_ms");
+    if (pref.isValid()) opt->updateFreqExpress = pref.toLongLong();
+
+    pref = getPref("event_banners");
+    if (pref.isValid()) opt->printEventBanners = pref.toBool();
+
+    pref = getPref("init_banners");
+    if (pref.isValid()) opt->printInitBanners = pref.toBool();
+
+    pref = getPref("short_banners");
+    if (pref.isValid()) opt->shortBanners = pref.toBool();
+
+    pref = getPref("animation_enabled");
+    if (pref.isValid()) opt->animationEnabled = pref.toBool();
+
+    pref = getPref("nexteventmarkers");
+    if (pref.isValid()) opt->showNextEventMarkers = pref.toBool();
+
+    pref = getPref("senddirect_arrows");
+    if (pref.isValid()) opt->showSendDirectArrows = pref.toBool();
+
+    pref = getPref("anim_methodcalls");
+    if (pref.isValid()) opt->animateMethodCalls = pref.toBool();
+
+    pref = getPref("methodcalls_delay");
+    if (pref.isValid()) opt->methodCallAnimDelay = pref.toInt();
+
+    pref = getPref("animation_msgnames");
+    if (pref.isValid()) opt->animationMsgNames = pref.toBool();
+
+    pref = getPref("animation_msgclassnames");
+    if (pref.isValid()) opt->animationMsgClassNames = pref.toBool();
+
+    pref = getPref("animation_msgcolors");
+    if (pref.isValid()) opt->animationMsgColors = pref.toBool();
+
+    pref = getPref("silent_event_filters");
+    if (pref.isValid()) setSilentEventFilters(pref.toString().toStdString().c_str());
+
+    pref = getPref("penguin_mode");
+    if (pref.isValid()) opt->penguinMode = pref.toBool();
+
+    pref = getPref("showlayouting");
+    if (pref.isValid()) opt->showLayouting = pref.toBool();
+
+    pref = getPref("layouterchoice");
+    if (pref.isValid()) {
+        QString layouterChoiceString = pref.toString();
+        if (layouterChoiceString == "fast") {
+            opt->layouterChoice = LAYOUTER_FAST;
+        } else if (layouterChoiceString == "advanced") {
+            opt->layouterChoice = LAYOUTER_ADVANCED;
+        } else if (layouterChoiceString == "auto") {
+            opt->layouterChoice = LAYOUTER_AUTO;
+        }
+    }
+
+    pref = getPref("arrangevectorconnections");
+    if (pref.isValid()) opt->arrangeVectorConnections = pref.toBool();
+
+    pref = getPref("iconminsize");
+    if (pref.isValid()) opt->iconMinimumSize = pref.toInt();
+
+    pref = getPref("bubbles");
+    if (pref.isValid()) opt->showBubbles = pref.toBool();
+
+    pref = getPref("animation_speed");
+    if (pref.isValid()) opt->animationSpeed = pref.toDouble();
+
+    pref = getPref("expressmode_autoupdate");
+    if (pref.isValid()) opt->autoupdateInExpress = pref.toBool();
+
+    pref = getPref("stoponmsgcancel");
+    if (pref.isValid()) opt->stopOnMsgCancel = pref.toBool();
+
+    pref = getPref("stripnamespace");
+    if (pref.isValid()) {
+        QString stripNamespaceString = pref.toString();
+        if (stripNamespaceString == "none") {
+            opt->stripNamespace = STRIPNAMESPACE_NONE;
+        } else if (stripNamespaceString == "omnetpp") {
+            opt->stripNamespace = STRIPNAMESPACE_OMNETPP;
+        } else if (stripNamespaceString == "all") {
+            opt->stripNamespace = STRIPNAMESPACE_ALL;
+        }
+    }
+
+    pref = getPref("logformat");
+    if (pref.isValid()) opt->logFormat = pref.toString().toStdString().c_str();
+
+    pref = getPref("loglevel");
+    if (pref.isValid()) {
+        QString logLevelString = pref.toString();
+        if (logLevelString == "fatal") {
+            opt->logLevel = LOGLEVEL_FATAL;
+        } else if (logLevelString == "error") {
+            opt->logLevel = LOGLEVEL_ERROR;
+        } else if (logLevelString == "warn") {
+            opt->logLevel = LOGLEVEL_WARN;
+        } else if (logLevelString == "info") {
+            opt->logLevel = LOGLEVEL_INFO;
+        } else if (logLevelString == "detail") {
+            opt->logLevel = LOGLEVEL_DETAIL;
+        } else if (logLevelString == "debug") {
+            opt->logLevel = LOGLEVEL_DEBUG;
+        } else if (logLevelString == "trace") {
+            opt->logLevel = LOGLEVEL_TRACE;
+        }
+    }
+
+    pref = getPref("scrollbacklimit");
+    if (pref.isValid()) opt->scrollbackLimit = pref.toInt();
+
+    pref = getPref("logbuffer_maxnumevents");
+    if (pref.isValid()) logBuffer.setMaxNumEntries(pref.toInt());
+}
+
 Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
@@ -221,10 +419,14 @@ void Qtenv::doRun()
         app = new QApplication(argc, argv);
 
         mainwindow = new MainWindow(this);
-        mainwindow->show();
-		
+
         globalPrefs = new QSettings(QDir::homePath() + "/.qtenv.ini", QSettings::IniFormat);
         localPrefs = new QSettings(".qtenv.ini", QSettings::IniFormat);
+
+        restoreOptsFromPrefs();
+        mainwindow->restoreGeometry();
+
+        mainwindow->show();
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
@@ -274,8 +476,12 @@ void Qtenv::doRun()
     // pull down inspector factories
     inspectorfactories.clear();
 
+    mainwindow->storeGeometry();
+
     delete mainwindow;
     mainwindow = nullptr;
+
+    storeOptsInPrefs();
 
     delete globalPrefs;
     globalPrefs = nullptr;
@@ -1832,7 +2038,8 @@ void Qtenv::setPref(const QString &key, const QVariant &value) {
 }
 
 QVariant Qtenv::getPref(const QString &key) {
-    return (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->value(key);
+    QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
+    return settings->contains(key) ? settings->value(key) : QVariant();
 }
 
 // ======================================================================

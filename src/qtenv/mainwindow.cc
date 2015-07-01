@@ -888,6 +888,32 @@ void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *objec
     }
 }
 
+void MainWindow::storeGeometry()
+{
+    env->setPref("mainwindow-geom", geometry());
+    QList<QVariant> sizes;
+    sizes.append(ui->splitter_3->sizes()[0]);
+    sizes.append(ui->splitter_3->sizes()[1]);
+    env->setPref("mainwin-main-splittersizes", sizes);
+}
+
+void MainWindow::restoreGeometry()
+{
+    QRect geom = env->getPref("mainwindow-geom").toRect();
+    if (geom.isValid()) setGeometry(geom);
+
+    bool ok = false;
+    QList<QVariant> sizes = env->getPref("mainwin-main-splittersizes").value<QList<QVariant >>();
+    if (sizes.size() >= 2) {
+        QList<int> intSizes;
+        intSizes.append(sizes[0].toInt());
+        intSizes.append(sizes[1].toInt());
+        ui->splitter_3->setSizes(intSizes);
+    }
+
+    // TODO save right panel orientation and sizes
+}
+
 int MainWindow::modeToRunMode(Mode mode)
 {
     switch (mode) {

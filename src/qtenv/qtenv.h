@@ -188,6 +188,9 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
 
       QSet<QString> localPrefKeys;
 
+      void storeOptsInPrefs();
+      void restoreOptsFromPrefs();
+
    public:
       Qtenv();
       virtual ~Qtenv();

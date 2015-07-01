@@ -66,6 +66,9 @@ public:
 
     void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
 
+    void storeGeometry();
+    void restoreGeometry();
+
 private slots:
     void on_actionOneStep_triggered();
     bool on_actionQuit_triggered();
