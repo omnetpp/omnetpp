@@ -96,7 +96,10 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
     f.start = range.start;
     f.length = range.length;
-    f.format.setForeground(QBrush(QColor(0, 0, 255)));
+    if (!(option.state & QStyle::State_Selected)) {
+        // no highlighting on selected items, it was not well readable
+        f.format.setForeground(QBrush(QColor(0, 0, 255)));
+    }
     //f.format.setFontWeight(QFont::Bold); // - just causes complications everywhere (elision, editor width, etc.)
     formats.append(f);
 
@@ -106,7 +109,6 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     // the layout is complete, now we just draw it on the appropriate position
     layout.draw(painter, option.rect.translated(3 + textOffset, 1).topLeft());
     painter->restore();
-
 }
 
 void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
