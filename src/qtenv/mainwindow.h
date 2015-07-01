@@ -21,8 +21,6 @@
 #include <QMainWindow>
 #include <QModelIndex>
 
-#include <QDebug>
-
 class QGraphicsScene;
 class QStandardItem;
 class QTreeView;

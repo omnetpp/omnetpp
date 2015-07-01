@@ -16,126 +16,25 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QGraphicsItem>
 #include <QMessageBox>
 #include <QClipboard>
 #include <QCloseEvent>
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
-#include "genericobjecttreemodel.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
 #include "inspector.h"
 #include "common/stringutil.h"
 #include "stopdialog.h"
-#include <QStyledItemDelegate>
-#include <QTextLayout>
 #include <QTimer>
-#include <QLineEdit>
 #include <QDebug>
 
 using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
-
-// uses a QTextLayout to highlight a part of the displayed text
-// which is given by a HighlightRegion, returned by the tree model
-class HighlighterItemDelegate : public QStyledItemDelegate {
-public:
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-};
-
-void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    // drawing the selection background and focus rectangle, but no text
-    QStyledItemDelegate::paint(painter, option, QModelIndex());
-
-    // selecting the palette to use, depending on the item state
-    QPalette::ColorGroup group = option.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
-    if (group == QPalette::Normal && !(option.state & QStyle::State_Active))
-        group = QPalette::Inactive;
-
-    painter->save();
-
-    // getting the icon for the object, and if found, offsetting the text and drawing the icon
-    int textOffset = 0;
-    auto iconData = index.data(Qt::DecorationRole);
-    if (iconData.isValid()) {
-        textOffset += option.decorationSize.width();
-        QIcon icon = iconData.value<QIcon>();
-        painter->drawImage(option.rect.topLeft(), icon.pixmap(option.decorationSize).toImage());
-    }
-
-    //Text from item
-    QString text = index.data(Qt::DisplayRole).toString();
-    QTextLayout layout;
-    layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
-    // this is the standard layout procedure in a single line case
-    layout.beginLayout();
-    QTextLine line = layout.createLine();
-    line.setLineWidth(option.rect.width());
-    layout.endLayout();
-
-    // the formatted regions
-    QList<QTextLayout::FormatRange> formats;
-
-    QTextLayout::FormatRange f;
-
-    // this sets the color of the whole text depending on whether the item is selected or not
-    f.format.setForeground(option.palette.brush(group,
-        (option.state & QStyle::State_Selected) ? QPalette::HighlightedText : QPalette::Text));
-    f.start = 0;
-    f.length = text.length();
-    formats.append(f);
-
-    // and then adding another format region to highlight the range specified by the model
-    HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
-    f.start = range.start;
-    f.length = range.length;
-    if (!(option.state & QStyle::State_Selected)) {
-        // no highlighting on selected items, it was not well readable
-        f.format.setForeground(QBrush(QColor(0, 0, 255)));
-    }
-    //f.format.setFontWeight(QFont::Bold); // - just causes complications everywhere (elision, editor width, etc.)
-    formats.append(f);
-
-    // applying the format ranges
-    layout.setAdditionalFormats(formats);
-
-    // the layout is complete, now we just draw it on the appropriate position
-    layout.draw(painter, option.rect.translated(3 + textOffset, 1).topLeft());
-    painter->restore();
-}
-
-void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    // setting the initial geometry which covers the entire line
-    QStyledItemDelegate::updateEditorGeometry(editor, option, index);
-
-    // extracting the value from the index
-    QString wholeText = index.data().toString();
-    QString editorText = index.data(Qt::EditRole).toString();
-
-    // searching for the start of the value - if not found, it will be 2... which would still work
-    int startIndex = wholeText.indexOf(" = ") + 3;
-
-    // this is where the editor should start
-    int editorLeft = option.fontMetrics.width(wholeText.left(startIndex));
-
-    // and this is how wide it should be
-    int editorWidth = option.fontMetrics.width(editorText);
-
-    // moving the editor horizontally and setting its width as computed
-    auto geom = editor->geometry();
-    geom.translate(editorLeft, 0);
-    geom.setWidth(qMax(20, editorWidth)); // so empty values can be edited too
-    editor->setGeometry(geom);
-}
-
 
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
@@ -148,12 +47,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
-/*
-    auto objectModel = new GenericObjectTreeModel(nullptr, ui->treeView_2);
-    ui->treeView_2->setModel(objectModel);
-    ui->treeView_2->setHeaderHidden(true);
-    ui->treeView_2->setItemDelegate(new HighlighterItemDelegate());
-*/
+
     stopDialog = new StopDialog(this);
 
     //TODO

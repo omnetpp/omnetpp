@@ -57,6 +57,8 @@
 #include "treeitemmodel.h"
 #include <QApplication>
 #include <QTreeView>
+#include <QDir>
+#include <QDebug>
 
 // default plugin path -- allow overriding it via compiler option (-D)
 // (default image path comes from makefile)

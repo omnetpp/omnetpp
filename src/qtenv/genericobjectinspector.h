@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_GENERICOBJECTINSPECTOR_H
 
 #include "inspector.h"
+#include "genericobjecttreemodel.h"
 
 class QTreeView;
 
@@ -28,6 +29,7 @@ class QTENV_API GenericObjectInspector : public Inspector
 {
 protected:
       QTreeView *treeView;
+      GenericObjectTreeModel *model;
 
 public:
       GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
