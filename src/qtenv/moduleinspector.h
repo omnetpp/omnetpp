@@ -58,6 +58,14 @@ class QTENV_API ModuleInspector : public Inspector
       void zoomIn();
       void zoomOut();
 
+      void doubleClick(QMouseEvent *event);
+      void createContextMenu(QContextMenuEvent *event);
+
+      void layers();
+      void toggleLabels();
+      void toggleArrowheads();
+      void zoomIconsBy();
+
    protected:
       char canvas[128];
       CanvasRenderer *canvasRenderer;
@@ -151,10 +159,6 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void animateSenddirectCleanup();
       virtual void animateSenddirectDelivery(cModule *destSubmodule, cMessage *msg);
       static void performAnimations(Tcl_Interp *interp);
-
-private slots:
-      void doubleClick(QMouseEvent *event);
-      void createContextMenu(QContextMenuEvent *event);
 };
 
 } // namespace qtenv

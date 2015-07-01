@@ -73,10 +73,12 @@ signals:
     void doubleClick(QMouseEvent*);
     void contextMenuRequested(QContextMenuEvent*);
 
+public slots:
+    void relayoutAndRedrawAll();
+
 public:
     ModuleGraphicsView();
 
-    void relayoutAndRedrawAll();
     void setObject(cModule *obj);
     cObject *getObjectAt(qreal x, qreal y);
     QList<cObject*> getObjectsAt(qreal x, qreal y);

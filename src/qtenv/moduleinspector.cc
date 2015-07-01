@@ -1334,47 +1334,116 @@ void ModuleInspector::doubleClick(QMouseEvent *event)
 void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 {
     //TODO
-//proc ModuleInspector:rightClick {insp X Y x y} {
-//   global inspectordata tmp CTRL
+    //global inspectordata tmp CTRL
 
-//   ModuleInspector:zoomMarqueeCancel $insp ;# just in case
+    //ModuleInspector:zoomMarqueeCancel $insp ;# just in case
 
-//   set c $insp.c
+    //set c $insp.c
     QList<cObject*> objects = view->getObjectsAt(event->x(), event->y());
 
    if(objects.size())
    {
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects.toVector(), this);
-//      set popup [createInspectorContextMenu $insp $ptrs]
 
-//      set tmp($c:showlabels) $inspectordata($c:showlabels)
-//      set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
+        //TODO
+        //set tmp($c:showlabels) $inspectordata($c:showlabels)
+        //set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
-//      $popup add separator
-//      $popup add command     -label "Show/Hide Canvas Layers..." -command "ModuleInspector:layers $insp"
+        menu->addSeparator();
+        menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
 
-//      $popup add separator
-//      $popup add checkbutton -label "Show Module Names" -command "ModuleInspector:toggleLabels $insp" -accel "$CTRL+L" -variable tmp($c:showlabels)
-//      $popup add checkbutton -label "Show Arrowheads" -command "ModuleInspector:toggleArrowheads $insp" -accel "$CTRL+A" -variable tmp($c:showarrowheads)
+        menu->addSeparator();
+        menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
+        menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
 
-//      $popup add separator
-//      $popup add command -label "Increase Icon Size" -accel "$CTRL+I" -command "ModuleInspector:zoomIconsBy $insp 1.25"
-//      $popup add command -label "Decrease Icon Size" -accel "$CTRL+O" -command "ModuleInspector:zoomIconsBy $insp 0.8"
+        menu->addSeparator();
+        QAction *action = menu->addAction("Increase Icon Size", this, SLOT(zoomIconsBy()), QKeySequence(Qt::CTRL + Qt::Key_I));
+        action->setData(QVariant::fromValue(1.25));
+        action = menu->addAction("Decrease Icon Size", this, SLOT(zoomIconsBy()), QKeySequence(Qt::CTRL + Qt::Key_O));
+        action->setData(QVariant::fromValue(0.8));
 
-//      $popup add separator
-//      $popup add command -label "Zoom In"  -accel "$CTRL+M" -command "ModuleInspector:zoomIn $insp"
-//      $popup add command -label "Zoom Out" -accel "$CTRL+N" -command "ModuleInspector:zoomOut $insp"
-//      $popup add command -label "Re-Layout" -accel "$CTRL+R" -command "opp_inspectorcommand $insp relayout"
+        menu->addSeparator();
+        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_M));
+        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_N));
+        menu->addAction("Re-Layout", view, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
 
-//      $popup add separator
+        menu->addSeparator();
+        //TODO Create a preferences dialog in Qt designer and here set its exec() slot
 //      $popup add command -label "Layouting Settings..." -command "preferencesDialog $insp l"
+        menu->addAction("Layouting Settings...");
 //      $popup add command -label "Animation Settings..." -command "preferencesDialog $insp a"
+        menu->addAction("Animation Settings...");
 //      $popup add command -label "Animation Filter..." -command "preferencesDialog $insp t"
+        menu->addAction("Animation Filter...");
 
-//      tk_popup $popup $X $Y
+        menu->exec(event->globalPos());
+        delete menu;
     }
+}
+
+void ModuleInspector::layers()
+{
+//insp == this
+//proc ModuleInspector:layers {insp} {
+//    if {![opp_inspectorcommand $insp hascanvas]} {
+//        messagebox Confirm "No default canvas has been created for this module yet." info ok
+//        return
+//    }
+
+//    set allTags [opp_inspectorcommand $insp getalltags]
+//    set enabledTags [opp_inspectorcommand $insp getenabledtags]
+//    set exceptTags [opp_inspectorcommand $insp getexcepttags]
+
+//    set result [CanvasInspectors:layersDialog $allTags $enabledTags $exceptTags]
+
+//    if {$result != {}} {
+//        set enabledTags [lindex $result 0]
+//        set exceptTags [lindex $result 1]
+//        opp_inspectorcommand $insp setenabledtags $enabledTags
+//        opp_inspectorcommand $insp setexcepttags $exceptTags
+//        opp_inspectorcommand $insp redraw
+//    }
+//}
+}
+
+void ModuleInspector::toggleLabels()
+{
+//proc ModuleInspector:toggleLabels {insp} {
+//    global inspectordata
+//    set c $insp.c
+//    set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
+//    opp_inspectorcommand $insp redraw
+
+//    ModuleInspector:updatePreferences $insp
+//}
+}
+
+void ModuleInspector::toggleArrowheads()
+{
+//proc ModuleInspector:toggleArrowheads {insp} {
+//    global inspectordata
+//    set c $insp.c
+//    set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
+//    opp_inspectorcommand $insp redraw
+
+//    ModuleInspector:updatePreferences $insp
+//}
+}
+
+void ModuleInspector::zoomIconsBy()
+{
+//proc ModuleInspector:zoomIconsBy {insp mult} {
+//    global inspectordata
+//    set c $insp.c
+//    if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<5)} {
+//        set inspectordata($c:imagesizefactor) [expr $inspectordata($c:imagesizefactor) * $mult]
+//        if {abs($inspectordata($c:imagesizefactor)-1.0) < 0.1} {set inspectordata($c:imagesizefactor) 1}
+//        opp_inspectorcommand $insp redraw
+//    }
+
+//    ModuleInspector:updatePreferences $insp
+//}
 }
 
 } // namespace qtenv
 } // namespace omnetpp
-
