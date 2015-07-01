@@ -28,6 +28,7 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
+#include <QBoxLayout>
 
 using namespace OPP::common;
 
@@ -60,7 +61,8 @@ int insptypeCodeFromName(const char *name)
 
 // ----
 
-Inspector::Inspector(InspectorFactory *f)
+Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
+    : QWidget(parent, isTopLevel ? Qt::Window : Qt::Widget)
 {
     factory = f;
     interp = getQtenv()->getInterp();
@@ -71,7 +73,11 @@ Inspector::Inspector(InspectorFactory *f)
     closeRequested = false;
 
     windowName[0] = '\0';  // no window exists
-    window = nullptr;
+
+    auto layout = new QGridLayout(parent);
+    parent->setLayout(layout);
+    layout->setMargin(0);
+    layout->addWidget(this, 0, 0, 1, 1);
 }
 
 Inspector::~Inspector()
@@ -95,19 +101,6 @@ std::string Inspector::makeWindowName()
 {
     static int counter = 0;
     return opp_stringf(".inspector%d", counter++);
-}
-
-void Inspector::createWindow(const char *window, const char *geometry)
-{
-    strcpy(windowName, window);
-    isToplevelWindow = true;
-}
-
-void Inspector::useWindow(QWidget *parent)
-{
-    windowTitle = "";
-    isToplevelWindow = false;
-    window = parent;
 }
 
 void Inspector::doSetObject(cObject *obj)

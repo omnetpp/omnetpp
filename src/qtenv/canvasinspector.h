@@ -42,12 +42,12 @@ class QTENV_API CanvasInspector : public Inspector
       virtual void fillFigureRenderingHints(FigureRenderingHints *hints);
       virtual void updateBackgroundColor();
 
+      QGraphicsView *graphicsView;
+
    public:
-      CanvasInspector(InspectorFactory *f);
+      CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~CanvasInspector();
       virtual void doSetObject(cObject *obj) override;
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
       virtual void refresh() override;
       virtual void redraw() override;
       virtual void clearObjectChangeFlags() override;

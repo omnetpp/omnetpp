@@ -19,17 +19,20 @@
 
 #include "inspector.h"
 
+class QTreeView;
+
 namespace omnetpp {
 namespace qtenv {
 
 class QTENV_API GenericObjectInspector : public Inspector
 {
-   public:
-      GenericObjectInspector(InspectorFactory *f);
+protected:
+      QTreeView *treeView;
+
+public:
+      GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~GenericObjectInspector();
       virtual void doSetObject(cObject *obj) override;
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
       virtual void refresh() override;
 };
 

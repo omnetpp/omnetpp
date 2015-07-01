@@ -46,25 +46,13 @@ class WatchInspectorFactory : public InspectorFactory
 
     int getInspectorType() override { return INSP_OBJECT; }
     double getQualityAsDefault(cObject *object) override { return 2.0; }
-    Inspector *createInspector() override { return new WatchInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new WatchInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(WatchInspectorFactory);
 
-WatchInspector::WatchInspector(InspectorFactory *f) : Inspector(f)
+WatchInspector::WatchInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-}
-
-void WatchInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    CHK(Tcl_VarEval(interp, "createWatchInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-}
-
-void WatchInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(window);
 }
 
 void WatchInspector::refresh()

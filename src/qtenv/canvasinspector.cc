@@ -26,10 +26,10 @@
 #include "qtutil.h"
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
-#include "canvasinspectorform.h"
-
+#include "graphicsscene.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGridLayout>
 
 using namespace OPP::common;
 
@@ -44,15 +44,22 @@ class CanvasInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) override { return dynamic_cast<cCanvas *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
-    Inspector *createInspector() override { return new CanvasInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new CanvasInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(CanvasInspectorFactory);
 
-CanvasInspector::CanvasInspector(InspectorFactory *f) : Inspector(f)
+CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
     canvasRenderer = new CanvasRenderer();
-    window = new CanvasInspectorForm(this);
+
+    graphicsView = new QGraphicsView(this);
+    graphicsView->setScene(new QGraphicsScene(graphicsView));
+    canvasRenderer->setQtCanvas(graphicsView->scene(), getCanvas());
+
+    auto layout = new QGridLayout(this);
+    layout->addWidget(graphicsView, 0, 0, 1, 1);
+    layout->setMargin(0);
 }
 
 CanvasInspector::~CanvasInspector()
@@ -75,24 +82,6 @@ void CanvasInspector::doSetObject(cObject *obj)
         FigureRenderingHints hint;
         canvasRenderer->redraw(&hint);  // TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, nullptr ));
     }
-}
-
-void CanvasInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    CHK(Tcl_VarEval(interp, "createCanvasInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-
-    canvasRenderer->setQtCanvas(static_cast<CanvasInspectorForm *>(this->window)->getScene(), getCanvas());
-    this->window->show();
-}
-
-void CanvasInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(window);
-
-    // TODO create window
-    canvasRenderer->setQtCanvas(static_cast<QGraphicsView *>(this->window)->scene(), getCanvas());
 }
 
 void CanvasInspector::refresh()

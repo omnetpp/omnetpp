@@ -25,6 +25,7 @@
 
 class QGraphicsPixmapItem;
 class QGraphicsScene;
+class QGraphicsView;
 class QGraphicsItem;
 class QBoxLayout;
 
@@ -85,11 +86,9 @@ class QTENV_API ModuleInspector : public Inspector
       void zoomBy();
 
    public:
-      ModuleInspector(InspectorFactory *f);
+      ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~ModuleInspector();
       virtual void doSetObject(cObject *obj) override;
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
       virtual int inspectorCommand(int argc, const char **argv) override;

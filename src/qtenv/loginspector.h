@@ -78,10 +78,8 @@ class QTENV_API LogInspector : public Inspector, protected ILogBufferListener
       virtual void printMessage(const LogBuffer::Entry *entry, int msgIndex, int hopIndex, bool repeatedEvent, bool repeatedSimtime);
 
    public:
-      LogInspector(InspectorFactory *f);
+      LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual ~LogInspector();
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
 

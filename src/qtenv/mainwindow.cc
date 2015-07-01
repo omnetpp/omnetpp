@@ -148,12 +148,12 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
-
+/*
     auto objectModel = new GenericObjectTreeModel(nullptr, ui->treeView_2);
     ui->treeView_2->setModel(objectModel);
     ui->treeView_2->setHeaderHidden(true);
     ui->treeView_2->setItemDelegate(new HighlighterItemDelegate());
-
+*/
     stopDialog = new StopDialog(this);
 
     //TODO
@@ -178,18 +178,9 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
 void MainWindow::displayText(const char *t)
 {
-    ui->textBrowser->append(QString(t));
+    // ui->textBrowser->append(QString(t));
 }
 
-QTreeView *MainWindow::getObjectTree()
-{
-    return ui->treeView;
-}
-
-QTreeView *MainWindow::getObjectInspectorTree()
-{
-    return ui->treeView_2;
-}
 
 bool MainWindow::isRunning()
 {
@@ -744,7 +735,27 @@ void MainWindow::redrawTimeline()
 //            }
 //        }
 //    }
-//    $c lower "h"
+    //    $c lower "h"
+}
+
+QWidget *MainWindow::getMainInspectorArea()
+{
+    return ui->mainArea;
+}
+
+QTreeView *MainWindow::getObjectTree()
+{
+    return ui->treeView;
+}
+
+QWidget *MainWindow::getObjectInspectorArea()
+{
+    return ui->objectInspector;
+}
+
+QWidget *MainWindow::getLogInspectorArea()
+{
+    return ui->logInspector;
 }
 
 void MainWindow::onTreeViewContextMenu(QPoint point)
@@ -759,6 +770,7 @@ void MainWindow::onTreeViewContextMenu(QPoint point)
 
 void MainWindow::onTreeViewPressed(QModelIndex index)
 {
+    /*
     auto oldModel = dynamic_cast<GenericObjectTreeModel *>(ui->treeView_2->model());
     auto newModel = new GenericObjectTreeModel(
         static_cast<cObject *>(index.child(index.row(), index.column()).internalPointer()), ui->treeView_2);
@@ -767,6 +779,7 @@ void MainWindow::onTreeViewPressed(QModelIndex index)
     delete oldModel;
     ui->treeView_2->reset();
     ui->treeView_2->expand(newModel->index(0, 0, QModelIndex()));
+    */
 }
 
 // Handle object tree's context menu QAction's triggerd event.
@@ -1042,11 +1055,6 @@ void MainWindow::busy(QString msg)
         ui->statusBar->showMessage("Ready");
         this->setCursor(QCursor(Qt::ArrowCursor));
     }
-}
-
-QWidget *MainWindow::getMainArea()
-{
-    return ui->mainArea;
 }
 
 } // namespace qtenv

@@ -69,7 +69,7 @@ class QTENV_API InspectorFactory : public cNoncopyableOwnedObject
     /**
      * Creates an inspector.
      */
-    virtual Inspector *createInspector() = 0;
+    virtual Inspector *createInspector(QWidget *parent, bool isTopLevel) = 0;
     //@}
 
     /**

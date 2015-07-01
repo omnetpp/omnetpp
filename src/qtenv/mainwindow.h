@@ -57,13 +57,15 @@ public:
     explicit MainWindow(Qtenv *env, QWidget *parent = 0);
 
     void displayText(const char* t);
-    QTreeView *getObjectTree();
-    QTreeView *getObjectInspectorTree();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
     void redrawTimeline();
 
-    QWidget *getMainArea();
+    QWidget *getMainInspectorArea();
+    QTreeView *getObjectTree();
+    QWidget *getObjectInspectorArea();
+    QWidget *getLogInspectorArea();
+
     void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
 
 private slots:

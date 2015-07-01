@@ -20,8 +20,7 @@
 #include "envir/envirbase.h"
 #include "qtutil.h"
 #include <QObject>
-
-class QWidget;
+#include <QWidget>
 
 namespace omnetpp {
 namespace qtenv {
@@ -48,17 +47,16 @@ int insptypeCodeFromName(const char *namestr);
 /**
  * Base class for inspectors.
  */
-class QTENV_API Inspector : public QObject
+class QTENV_API Inspector : public QWidget
 {
    Q_OBJECT
 
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
-      Tcl_Interp *interp;     // Tcl interpreter
+      Tcl_Interp *interp;     // Tcl interpreterz
       cObject *object;        // the inspected object or nullptr if inspector is empty
       int type;               // INSP_OBJECT, etc.
       char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
-      QWidget *window;
       std::string windowTitle;// window title string
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
@@ -81,7 +79,7 @@ class QTENV_API Inspector : public QObject
       virtual void inspectParent();
 
    public:
-      Inspector(InspectorFactory *factory);
+      Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *factory);
       virtual ~Inspector();
       virtual const char *getClassName() const;
       virtual bool supportsObject(cObject *object) const;
@@ -100,8 +98,6 @@ class QTENV_API Inspector : public QObject
       virtual void markForDeletion() {closeRequested=true;}
       virtual bool isMarkedForDeletion() {return closeRequested;}
 
-      virtual void createWindow(const char *window, const char *geometry);
-      virtual void useWindow(QWidget *parent);
       virtual void showWindow();
 
       virtual void refresh();

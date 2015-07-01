@@ -34,6 +34,7 @@ namespace omnetpp {
 namespace qtenv {
 
 class MainWindow;
+class InspectorFactory;
 class Inspector;
 class GenericObjectInspector;
 class LogInspector;
@@ -259,7 +260,7 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       void refreshInspectors();
       void redrawInspectors();
       Inspector *inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry);
-      void addEmbeddedInspector(QWidget *parent, Inspector *insp);
+      Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
       Inspector *findInspector(const char *widget);
       void deleteInspector(Inspector *insp);

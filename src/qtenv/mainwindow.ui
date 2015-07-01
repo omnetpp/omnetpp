@@ -164,7 +164,7 @@
          <enum>Qt::CustomContextMenu</enum>
         </property>
        </widget>
-       <widget class="QTreeView" name="treeView_2">
+       <widget class="QWidget" name="objectInspector" native="true">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -203,7 +203,7 @@
          </size>
         </property>
        </widget>
-       <widget class="QTextBrowser" name="textBrowser">
+       <widget class="QWidget" name="logInspector" native="true">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -222,7 +222,7 @@
      <x>0</x>
      <y>0</y>
      <width>939</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

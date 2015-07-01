@@ -43,31 +43,13 @@ class GateInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) override { return dynamic_cast<cGate *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
-    Inspector *createInspector() override { return new GateInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new GateInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(GateInspectorFactory);
 
-GateInspector::GateInspector(InspectorFactory *f) : Inspector(f)
+GateInspector::GateInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-}
-
-void GateInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".c");
-
-    CHK(Tcl_VarEval(interp, "createGateInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-}
-
-void GateInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(window);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".c");
 }
 
 void GateInspector::doSetObject(cObject *obj)

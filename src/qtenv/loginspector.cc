@@ -25,6 +25,8 @@
 #include "tklib.h"
 #include "qtutil.h"
 #include "inspectorfactory.h"
+#include <QGridLayout>
+#include <QPlainTextEdit>
 
 using namespace OPP::common;
 
@@ -43,47 +45,28 @@ class LogInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) override { return dynamic_cast<cComponent*>(obj) != nullptr; }
     int getInspectorType() override { return INSP_MODULEOUTPUT; }
     double getQualityAsDefault(cObject *object) override { return 0.5; }
-    Inspector *createInspector() override { return new LogInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new LogInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(LogInspectorFactory);
 
-LogInspector::LogInspector(InspectorFactory *f) : Inspector(f), mode(MESSAGES)
+LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f), mode(MESSAGES)
 {
     logBuffer = getQtenv()->getLogBuffer();
     logBuffer->addListener(this);
     componentHistory = getQtenv()->getComponentHistory();
     lastMsgEventNumber = 0;
     lastMsgTime = 0;
+
+    auto layout = new QGridLayout(this);
+    layout->setMargin(0);
+    auto browser = new QPlainTextEdit(this);
+    layout->addWidget(browser, 0, 0, 1, 1);
 }
 
 LogInspector::~LogInspector()
 {
     logBuffer->removeListener(this);
-}
-
-void LogInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    strcpy(textWidget, windowName);
-    strcat(textWidget, ".main.text");
-
-    CHK(Tcl_VarEval(interp, "createLogInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-
-    // int success = Tcl_GetCommandInfo(interp, textWidget, &textWidgetCmdInfo);
-    // ASSERT(success);
-}
-
-void LogInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(window);
-
-    strcpy(textWidget, windowName);
-    strcat(textWidget, ".main.text");
-
-    // int success = Tcl_GetCommandInfo(interp, textWidget, &textWidgetCmdInfo);
-    // ASSERT(success);
 }
 
 void LogInspector::setMode(Mode m)

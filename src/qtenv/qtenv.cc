@@ -227,15 +227,11 @@ void Qtenv::doRun()
             sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
-        mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
-        addEmbeddedInspector(mainwindow->getObjectInspectorTree(), mainInspector);
 
-        mainNetworkView = (ModuleInspector *)InspectorFactory::get("ModuleInspectorFactory")->createInspector();
-        addEmbeddedInspector(mainwindow->getMainArea(), mainNetworkView);
 
-        mainLogView = (LogInspector *)InspectorFactory::get("LogInspectorFactory")->createInspector();
-        // TODO
-        addEmbeddedInspector(nullptr, mainLogView);
+        mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainwindow->getObjectInspectorArea()));
+        mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainwindow->getMainInspectorArea()));
+        mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainwindow->getLogInspectorArea()));
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -743,7 +739,8 @@ void Qtenv::setupNetwork(cModuleType *network)
     // loaded, there is a chance that some objects will be on the same place
     // (have the same pointer) as some of the old ones, so random nodes may
     // be expanded in the new tree depending on what was expanded before
-    mainwindow->getObjectTree()->collapseAll();
+    // TODO this should be done in the tree view inspector
+    // mainwindow->getObjectTree()->collapseAll();
 }
 
 Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
@@ -769,7 +766,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
         return existing_insp;
     }
 
-    Inspector *insp = p->createInspector();
+    Inspector *insp = p->createInspector(mainwindow, true);
     if (!insp) {
         // message: object has no such inspector
         confirm(opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
@@ -778,17 +775,19 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
 
     // everything ok, finish inspector
     inspectors.push_back(insp);
-    insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
+    // TODO geometry
+    // insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
     insp->setObject(obj);
 
     return insp;
 }
 
-void Qtenv::addEmbeddedInspector(QWidget *parent, Inspector *insp)
+Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *parent)
 {
+    Inspector *insp = factory->createInspector(parent, false);
     inspectors.push_back(insp);
-    insp->useWindow(parent);
     insp->refresh();
+    return insp;
 }
 
 Inspector *Qtenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded)

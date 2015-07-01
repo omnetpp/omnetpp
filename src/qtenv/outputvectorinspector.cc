@@ -35,7 +35,7 @@ class OutputVectorInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) override { return dynamic_cast<cOutVector *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
-    Inspector *createInspector() override { return new OutputVectorInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new OutputVectorInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(OutputVectorInspectorFactory);
@@ -70,7 +70,7 @@ static void record_in_insp(void *data, simtime_t t, double val1, double val2)
     insp->circbuf.add(t, val1, val2);
 }
 
-OutputVectorInspector::OutputVectorInspector(InspectorFactory *f) : Inspector(f), circbuf(100)
+OutputVectorInspector::OutputVectorInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f), circbuf(100)
 {
     autoscale = true;
     drawingMode = DRAW_LINES;
@@ -99,24 +99,6 @@ void OutputVectorInspector::doSetObject(cObject *obj)
     // make inspected output vector to call us back when it gets data to write out
     cOutVector *ov = static_cast<cOutVector *>(object);
     ov->setCallback(record_in_insp, (void *)this);
-}
-
-void OutputVectorInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".main.canvas");
-
-    CHK(Tcl_VarEval(interp, "createOutputVectorInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-}
-
-void OutputVectorInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(window);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".main.canvas");
 }
 
 void OutputVectorInspector::refresh()

@@ -31,9 +31,7 @@ class QTENV_API GateInspector : public Inspector
       virtual void doSetObject(cObject *obj) override;
 
    public:
-      GateInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
+      GateInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual void refresh() override;
       virtual void redraw() override;
       virtual int inspectorCommand(int argc, const char **argv) override;

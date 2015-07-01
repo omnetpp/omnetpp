@@ -62,11 +62,9 @@ class QTENV_API OutputVectorInspector : public Inspector
       simtime_t hairlineTime;   // t position of moving axis
 
    public:
-      OutputVectorInspector(InspectorFactory *f);
+      OutputVectorInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~OutputVectorInspector();
       virtual void doSetObject(cObject *obj) override;
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
       virtual void refresh() override;
       virtual int inspectorCommand(int argc, const char **argv) override;
 

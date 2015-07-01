@@ -25,9 +25,7 @@ namespace qtenv {
 class QTENV_API WatchInspector: public Inspector
 {
    public:
-      WatchInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
+      WatchInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual void refresh() override;
       virtual void commit() override;
 };

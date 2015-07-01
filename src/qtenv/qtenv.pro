@@ -35,7 +35,6 @@ QMAKE_CFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbuffer.cc outputvectorinspector.cc canvasinspector.cc gateinspector.cc inspector.cc loginspector.cc qtenv.cc watchinspector.cc canvasrenderer.cc genericobjectinspector.cc inspectorfactory.cc moduleinspector.cc tkcmd.cc componenthistory.cc graphicspatharrowitem.cc layouterenv.cc osxproctype.cc tklib.cc \
     stopdialog.cc \
     runselectiondialog.cc \
-    canvasinspectorform.cc \
     imagecache.cc \
     treeitemmodel.cc \
     graphicsscene.cc \
@@ -45,7 +44,6 @@ SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbu
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h \
     runselectiondialog.h \
     treeitemmodel.h \
-    canvasinspectorform.h \
     stopdialog.h \
     imagecache.h \
     graphicsscene.h \

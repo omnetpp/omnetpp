@@ -24,6 +24,7 @@
 #include <QBoxLayout>
 #include <QToolBar>
 #include <QAction>
+#include <QGridLayout>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
@@ -73,18 +74,20 @@ class ModuleInspectorFactory : public InspectorFactory
         return mod && mod->hasSubmodules() ? 3.0 : 0.9;
     }
 
-    Inspector *createInspector() override { return new ModuleInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new ModuleInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(ModuleInspectorFactory);
 
-ModuleInspector::ModuleInspector(InspectorFactory *f) : Inspector(f)
+ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
     needs_redraw = false;
     notDrawn = false;
     layoutSeed = 0;
+
     canvasRenderer = new CanvasRenderer();
-    scene = nullptr;
+    createView(this);
+    canvasRenderer->setQtCanvas(scene, getCanvas());
 }
 
 ModuleInspector::~ModuleInspector()
@@ -114,31 +117,12 @@ void ModuleInspector::doSetObject(cObject *obj)
             relayoutAndRedrawAll();
         }
         catch (std::exception& e) {
-            QMessageBox::warning(window, QString("Error"), QString("Error displaying network graphics: ") + e.what());
+            QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
         //    ModuleInspector:updateZoomLabel $insp
         //    ModuleInspector:adjustWindowSizeAndZoom $insp
         // }
     }
-}
-
-void ModuleInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".c");
-
-    CHK(Tcl_VarEval(interp, "createModuleInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-
-    // TODO canvasRenderer->setTkCanvas(interp, canvas);
-}
-
-void ModuleInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(parent);
-    createView(parent);
-    canvasRenderer->setQtCanvas(scene, getCanvas());
 }
 
 void ModuleInspector::createView(QWidget *parent)

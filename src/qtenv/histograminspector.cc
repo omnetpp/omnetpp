@@ -35,31 +35,13 @@ class HistogramInspectorFactory : public InspectorFactory
     bool supportsObject(cObject *obj) override { return dynamic_cast<cDensityEstBase *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
-    Inspector *createInspector() override { return new HistogramInspector(this); }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new HistogramInspector(parent, isTopLevel, this); }
 };
 
 Register_InspectorFactory(HistogramInspectorFactory);
 
-HistogramInspector::HistogramInspector(InspectorFactory *f) : Inspector(f)
+HistogramInspector::HistogramInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-}
-
-void HistogramInspector::createWindow(const char *window, const char *geometry)
-{
-    Inspector::createWindow(window, geometry);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".main.canvas");
-
-    CHK(Tcl_VarEval(interp, "createHistogramInspector ", windowName, " ", TclQuotedString(geometry).get(), TCL_NULL));
-}
-
-void HistogramInspector::useWindow(QWidget *parent)
-{
-    Inspector::useWindow(window);
-
-    strcpy(canvas, windowName);
-    strcat(canvas, ".main.canvas");
 }
 
 void HistogramInspector::refresh()

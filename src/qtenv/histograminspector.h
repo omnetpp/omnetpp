@@ -28,9 +28,7 @@ class QTENV_API HistogramInspector : public Inspector
    protected:
       char canvas[64];
    public:
-      HistogramInspector(InspectorFactory *f);
-      virtual void createWindow(const char *window, const char *geometry) override;
-      virtual void useWindow(QWidget *parent) override;
+      HistogramInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual void refresh() override;
       virtual void commit() override {}
       virtual int inspectorCommand(int argc, const char **argv) override;
