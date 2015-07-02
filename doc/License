@@ -1,23 +1,24 @@
                          ACADEMIC PUBLIC LICENSE
+                                version 1.1
 
-                    Copyright (C) 2003, 2010 Andras Varga
+               Copyright (C) 2003, 2010, 2015 Andras Varga
 
 
                                 Preamble
 
   This license contains the terms and conditions of using OMNeT++ in
 noncommercial settings: at academic institutions for teaching and research
-use, and at non-profit research organizations. You will find that this
+use and for personal or educational purposes. You will find that this
 license provides noncommercial users of OMNeT++ with rights that are
 similar to the well-known GNU General Public License, yet it retains the
-possibility for OMNeT++ authors to financially support the development
-by selling commercial licenses. In fact, if you intend to use OMNeT++
-in a "for-profit" environment, where research is conducted to develop
-or enhance a product, is used in a commercial service offering,
-or when a commercial company uses OMNeT++ to participate in a research
-project (for example government-funded or EU-funded research projects),
-then you need to obtain a commercial license for OMNeT++. In that case,
-please contact the Author to inquire about commercial licenses.
+possibility for OMNeT++ authors to financially support the development by
+selling commercial licenses. In fact, if you intend to use OMNeT++ in a
+"for-profit" environment, where research is conducted to develop or enhance
+a product, is used in a commercial service offering, or when an entity uses
+OMNeT++ to participate in government-funded, EU-funded, military or similar
+research projects, then you need to obtain a commercial license (OMNEST).
+In that case, or if you are unsure, please contact the Author or visit
+www.omnest.com to inquire about commercial licenses.
 
   What are the rights given to noncommercial users? Similarly to GPL, you
 have the right to use the software, to distribute copies, to receive source
@@ -65,16 +66,17 @@ tools that are part of the Program, or creating works based on the Program.
 
 Each licensee is addressed as "you".
 
-  1. Permission is hereby granted to use the Program free of charge for any
-noncommercial purpose, including teaching and research at universities,
-colleges and other educational institutions, research at non-profit
-research institutions, and personal non-profit purposes. For using the
-Program for commercial purposes, including but not restricted to consulting
-activities, design of commercial hardware or software networking products,
-and a commercial entity participating in research projects, you have to
-contact the Author for an appropriate license. Permission is also granted
-to use the Program for a reasonably limited period of time for the purpose
-of evaluating its usefulness for a particular purpose.
+  1. Permission is hereby granted to use the Program free of charge for
+noncommercial purposes, including teaching and academic research at
+universities, colleges and other educational institutions and personal
+non-profit purposes. For using the Program for commercial purposes,
+including but not restricted to consulting activities, design of commercial
+hardware or software networking products, and joint research with a
+commercial entity, government-funded, EU-funded, military or similar
+research projects, you have to contact the Author or visit www.omnest.com
+for an appropriate license. Permission is also granted to use the Program
+for a reasonably limited period of time for the purpose of evaluating its
+usefulness for a particular purpose.
 
   2. You may copy and distribute verbatim copies of the Program's
 source code as you receive it, in any medium, provided that you
