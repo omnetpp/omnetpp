@@ -68,6 +68,9 @@ public:
     virtual bool isEditable();
     virtual bool setData(const QVariant &value, int role);
 
+    // only used to save and restore the expansion state in the views
+    virtual QString getNodeIdentifier() = 0;
+
     virtual ~TreeNode();
 };
 
@@ -89,6 +92,8 @@ public:
 
     virtual bool isEditable() override;
     virtual bool setData(const QVariant &value, int role) override;
+
+    QString getNodeIdentifier() override;
 };
 
 class FieldGroupNode : public TreeNode {
@@ -98,6 +103,7 @@ protected:
 public:
     FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName);
     QVariant data(int role) override;
+    QString getNodeIdentifier() override;
 };
 
 class ArrayElementNode : public TreeNode {
@@ -111,9 +117,32 @@ public:
 
     bool isEditable() override;
     virtual bool setData(const QVariant &value, int role) override;
+    QString getNodeIdentifier() override;
 };
 
 // ---- main model class implementation ----
+
+QSet<QString> GenericObjectTreeModel::getExpandedNodesIn(QTreeView *view, const QModelIndex &index) {
+    QSet<QString> result;
+    if (view->isExpanded(index)) {
+        result.insert(static_cast<TreeNode *>(index.internalPointer())->getNodeIdentifier());
+        int numChildren = rowCount(index);
+        for (int i = 0; i < numChildren; ++i) {
+            result.unite(getExpandedNodesIn(view, index.child(i, 0)));
+        }
+    }
+    return result;
+}
+
+void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> &ids, const QModelIndex &index) {
+    if (ids.contains(static_cast<TreeNode *>(index.internalPointer())->getNodeIdentifier())) {
+        view->expand(index);
+        int numChildren = rowCount(index);
+        for (int i = 0; i < numChildren; ++i) {
+            expandNodesIn(view, ids, index.child(i, 0));
+        }
+    }
+}
 
 GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, QObject *parent) :
     QAbstractItemModel(parent),
@@ -173,6 +202,14 @@ Qt::ItemFlags GenericObjectTreeModel::flags(const QModelIndex &index) const {
         flags |= Qt::ItemIsEditable;
     }
     return flags;
+}
+
+QSet<QString> GenericObjectTreeModel::getExpandedNodesIn(QTreeView *view) {
+    return getExpandedNodesIn(view, index(0, 0, QModelIndex()));
+}
+
+void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> &ids) {
+    expandNodesIn(view, ids, index(0, 0, QModelIndex()));
 }
 
 GenericObjectTreeModel::~GenericObjectTreeModel() {
@@ -396,6 +433,10 @@ bool FieldNode::setData(const QVariant &value, int role) {
             : false;
 }
 
+QString FieldNode::getNodeIdentifier() {
+    return (parent ? parent->getNodeIdentifier() + "|" : "")
+            + QString("%1:%2").arg(voidPtrToStr(containingObject)).arg(fieldIndex);
+}
 
 
 FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName)
@@ -424,6 +465,11 @@ QVariant FieldGroupNode::data(int role) {
     default:
         return QVariant();
     };
+}
+
+QString FieldGroupNode::getNodeIdentifier() {
+    return (parent ? parent->getNodeIdentifier() + "|" : "")
+            + QString("%1(%2)").arg(voidPtrToStr(containingObject)).arg(groupName.c_str());
 }
 
 
@@ -482,6 +528,11 @@ bool ArrayElementNode::isEditable() {
 
 bool ArrayElementNode::setData(const QVariant &value, int role) {
     return containingDesc->setFieldValueAsString(containingObject, fieldIndex, arrayIndex, value.toString().toStdString().c_str());
+}
+
+QString ArrayElementNode::getNodeIdentifier() {
+    return (parent ? parent->getNodeIdentifier() + "|" : "")
+            + QString("%1:%2[%3]").arg(voidPtrToStr(containingObject)).arg(fieldIndex).arg(arrayIndex);
 }
 
 } // namespace qtenv

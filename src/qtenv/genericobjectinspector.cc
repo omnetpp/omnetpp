@@ -85,6 +85,7 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
     GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, this);
     treeView->setModel(newModel);
     treeView->reset();
+
     // expanding the top level item
     treeView->expand(newModel->index(0, 0, QModelIndex()));
 
@@ -94,10 +95,12 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
 
 void GenericObjectInspector::refresh() {
     Inspector::refresh();
-    // FIXME - maybe there is a better way
-    // but still no change information available
-    // TODO might want to save the expansion state here too?
+
+    QSet<QString> expanded = model->getExpandedNodesIn(treeView);
+
     doSetObject(object);
+
+    model->expandNodesIn(treeView, expanded);
 }
 
 // ---- HighlighterItemDelegate implementation ----
