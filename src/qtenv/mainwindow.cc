@@ -774,10 +774,27 @@ bool MainWindow::networkPresent()
 void MainWindow::storeGeometry()
 {
     env->setPref("mainwindow-geom", geometry());
+
     QList<QVariant> sizes;
-    sizes.append(ui->splitter_3->sizes()[0]);
-    sizes.append(ui->splitter_3->sizes()[1]);
-    env->setPref("mainwin-main-splittersizes", sizes);
+
+#define SAVE_SPLITTER(PREFNAME, SPLITTER) \
+    sizes.clear(); \
+    sizes.append(ui->SPLITTER->sizes()[0]); \
+    sizes.append(ui->SPLITTER->sizes()[1]); \
+    env->setPref(PREFNAME, sizes);
+
+    SAVE_SPLITTER("mainwin-main-splittersizes", splitter_3);
+    SAVE_SPLITTER("mainwin-left-splittersizes", splitter);
+
+    if (ui->splitter_2->orientation() == Qt::Horizontal) {
+        SAVE_SPLITTER("mainwin-right-splittersizes-horiz", splitter_2);
+        env->setPref("mainwin-right-splitter-orientation", "horiz");
+    } else {
+        SAVE_SPLITTER("mainwin-right-splittersizes-vert", splitter_2);
+        env->setPref("mainwin-right-splitter-orientation", "vert");
+    }
+
+#undef SAVE_SPLITTER
 }
 
 void MainWindow::restoreGeometry()
@@ -785,15 +802,32 @@ void MainWindow::restoreGeometry()
     QRect geom = env->getPref("mainwindow-geom").toRect();
     if (geom.isValid()) setGeometry(geom);
 
-    bool ok = false;
-    QList<QVariant> sizes = env->getPref("mainwin-main-splittersizes").value<QList<QVariant >>();
-    if (sizes.size() >= 2) {
-        QList<int> intSizes;
-        intSizes.append(sizes[0].toInt());
-        intSizes.append(sizes[1].toInt());
-        ui->splitter_3->setSizes(intSizes);
+    QList<QVariant> sizes;
+
+#define RESTORE_SPLITTER(PREFNAME, SPLITTER) \
+    sizes = env->getPref(PREFNAME).value<QList<QVariant >>(); \
+    if (sizes.size() >= 2) { \
+        QList<int> intSizes; \
+        intSizes.append(sizes[0].toInt()); \
+        intSizes.append(sizes[1].toInt()); \
+        ui->SPLITTER->setSizes(intSizes); \
     }
 
+    RESTORE_SPLITTER("mainwin-main-splittersizes", splitter_3);
+    RESTORE_SPLITTER("mainwin-left-splittersizes", splitter);
+
+    QVariant orient = env->getPref("mainwin-right-splitter-orientation");
+
+    if (orient == "horiz") {
+        ui->splitter_2->setOrientation(Qt::Horizontal);
+        RESTORE_SPLITTER("mainwin-right-splittersizes-horiz", splitter_2);
+    } else if (orient == "vert") {
+        ui->splitter_2->setOrientation(Qt::Vertical);
+        RESTORE_SPLITTER("mainwin-right-splittersizes-vert", splitter_2);
+    }
+
+
+#undef RESTORE_SPLITTER
     // TODO save right panel orientation and sizes
 }
 
