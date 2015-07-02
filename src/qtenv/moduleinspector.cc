@@ -309,7 +309,6 @@ cCanvas *ModuleInspector::getCanvas()
 
 void ModuleInspector::refresh()
 {
-    return;  // FIXME
     Inspector::refresh();
 
     if (!object) {
