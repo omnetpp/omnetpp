@@ -27,6 +27,7 @@
 #include "inspectorfactory.h"
 #include <QGridLayout>
 #include <QPlainTextEdit>
+#include <QDebug>
 
 using namespace OPP::common;
 
@@ -50,7 +51,7 @@ class LogInspectorFactory : public InspectorFactory
 
 Register_InspectorFactory(LogInspectorFactory);
 
-LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f), mode(MESSAGES)
+LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f), mode(LOG)
 {
     logBuffer = getQtenv()->getLogBuffer();
     logBuffer->addListener(this);
@@ -60,8 +61,8 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     auto layout = new QGridLayout(this);
     layout->setMargin(0);
-    auto browser = new QPlainTextEdit(this);
-    layout->addWidget(browser, 0, 0, 1, 1);
+    textWidget = new QPlainTextEdit(this);
+    layout->addWidget(textWidget, 0, 0, 1, 1);
 }
 
 LogInspector::~LogInspector()
@@ -109,28 +110,17 @@ void LogInspector::messageSendAdded()
     printLastMessageLine();
 }
 
-void LogInspector::textWidgetCommand(const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5, const char *arg6)
-{
-    // QT!
-//    // Note: args do NOT need to be quoted, because they are directly passed to the text widget's cmd proc as (argc,argv)
-//    const char *argv[] = {textWidget, arg1, arg2, arg3, arg4, arg5, arg6};
-//    int argc = !arg1 ? 1 : !arg2 ? 2 : !arg3 ? 3 : !arg4 ? 4 : !arg5 ? 5 : 6;
-
-//    TclCmdProc cmdProc = (TclCmdProc)textWidgetCmdInfo.proc;  // Tcl versions differ in the type of the last arg: char *argv[] vs const char *argv[] -- the purpose of this temp var is to make the code compile with both variants
-//    int ret = cmdProc(textWidgetCmdInfo.clientData, interp, argc, (char **)argv);
-//    if (ret == TCL_ERROR)
-//        getTkenv()->logTclError(__FILE__, __LINE__, Tcl_GetStringResult(interp));
-}
-
 void LogInspector::textWidgetInsert(const char *text, const char *tags)
 {
+    qDebug() << "textwidgetinsert";
     if (text)
-        textWidgetCommand("insert", "I", text, tags);
+        textWidget->appendPlainText(text);
 }
 
 void LogInspector::textWidgetGotoBeginning()
 {
-    textWidgetCommand("mark", "set", "I", "1.0");
+    //textWidget->setTextCursor();
+    // textWidgetCommand("mark", "set", "I", "1.0");
 }
 
 void LogInspector::textWidgetGotoEnd()
@@ -142,17 +132,17 @@ void LogInspector::textWidgetGotoEnd()
     //   $txt insert I "Hello" --> inserts text in line 1, while I is still 2.0
     //   $txt index "I linestart" --> 2.0, so not the start of the line we've been inserting text into!!!
     //
-    textWidgetCommand("mark", "set", "I", "end-1c");  // NOT "end" !
+    //textWidgetCommand("mark", "set", "I", "end-1c");  // NOT "end" !
 }
 
 void LogInspector::textWidgetSeeEnd()
 {
-    textWidgetCommand("see", "end");
+    //textWidgetCommand("see", "end");
 }
 
 void LogInspector::textWidgetSetBookmark(const char *bookmark, const char *pos)
 {
-    textWidgetCommand("mark", "set", bookmark, pos);
+    //textWidgetCommand("mark", "set", bookmark, pos);
 }
 
 void LogInspector::textWidgetDumpBookmarks(const char *label)

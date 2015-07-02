@@ -22,6 +22,7 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "inspector.h"
+#include <QPlainTextEdit>
 
 namespace omnetpp {
 namespace qtenv {
@@ -35,8 +36,7 @@ class QTENV_API LogInspector : public Inspector, protected ILogBufferListener
    protected:
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
-      char textWidget[128];
-      Tcl_CmdInfo textWidgetCmdInfo;
+      QPlainTextEdit *textWidget;
       std::set<int> excludedModuleIds;
       Mode mode;
 
@@ -51,7 +51,6 @@ class QTENV_API LogInspector : public Inspector, protected ILogBufferListener
 
    protected:
       cComponent *getInspectedObject();
-      void textWidgetCommand(const char *arg1, const char *arg2=nullptr, const char *arg3=nullptr, const char *arg4=nullptr, const char *arg5=nullptr, const char *arg6=nullptr);
       void textWidgetInsert(const char *text, const char *tags);
       void textWidgetSeeEnd();
       void textWidgetGotoBeginning();
