@@ -75,7 +75,6 @@ class FieldNode : public TreeNode {
 protected:
     // which field are we in the container. for the root it is -1
     int fieldIndex = -1;
-    int arrayIndex = 0;
 
     void *object = nullptr;
     cClassDescriptor *desc = nullptr;
@@ -84,7 +83,7 @@ protected:
 public:
     // only use this to create the root node for the model!
     explicit FieldNode(cObject *rootObject);
-    FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex = 0);
+    FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex);
 
     QVariant data(int role) override;
 
@@ -269,11 +268,11 @@ TreeNode::~TreeNode() {
 }
 
 
-FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex)
-    : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
+FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex)
+    : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex) {
     if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
-        object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, arrayIndex);
-        desc = getDescriptorForField(contObject, contDesc, fieldIndex, arrayIndex);
+        object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, 0);
+        desc = getDescriptorForField(contObject, contDesc, fieldIndex);
     }
 }
 
@@ -281,7 +280,6 @@ FieldNode::FieldNode(cObject *rootObject):
     TreeNode(nullptr, 0, nullptr, nullptr) {
     object = rootObject;
     desc = rootObject ? rootObject->getDescriptor() : nullptr;
-    arrayIndex = 0;
 }
 
 void FieldNode::fill() {
@@ -325,11 +323,8 @@ QVariant FieldNode::data(int role) {
 
     // the rest is for the regular, non-root nodes
 
-    bool isCompound = containingDesc->getFieldIsCompound(fieldIndex);
     bool isCObject = containingDesc->getFieldIsCObject(fieldIndex);
     bool isArray = containingDesc->getFieldIsArray(fieldIndex);
-
-
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
     QString objectClassName = objectCasted ? (QString(" (") + objectCasted->getClassName() + ")") : "";
@@ -347,8 +342,8 @@ QVariant FieldNode::data(int role) {
         fieldName = label;
     }
 
-    // it is a primitive value
-    if (!isArray && !isCompound) {
+    // it is a simple value (not an array, but may be compound - like color or transform)
+    if (!isArray && !isCObject) {
         fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
     }
 
@@ -389,7 +384,7 @@ QVariant FieldNode::data(int role) {
 }
 
 bool FieldNode::isEditable() {
-    return containingDesc // editing of arrays is handled in the elements
+    return containingDesc // editing of arrays is handled in the elements themselves
             ? (!containingDesc->getFieldIsArray(fieldIndex) && containingDesc->getFieldIsEditable(fieldIndex))
             : false;
 }

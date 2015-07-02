@@ -29,6 +29,7 @@
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QTextLayout>
+#include <QMessageBox>
 
 namespace omnetpp {
 namespace qtenv {
@@ -56,6 +57,7 @@ class HighlighterItemDelegate : public QStyledItemDelegate {
 public:
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 };
 
 
@@ -143,16 +145,16 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     f.length = text.length();
     formats.append(f);
 
-    // and then adding another format region to highlight the range specified by the model
-    HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
-    f.start = range.start;
-    f.length = range.length;
+    // no highlighting on selected items, it was not well readable
     if (!(option.state & QStyle::State_Selected)) {
-        // no highlighting on selected items, it was not well readable
+        // and then adding another format region to highlight the range specified by the model
+        HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
+        f.start = range.start;
+        f.length = range.length;
         f.format.setForeground(QBrush(QColor(0, 0, 255)));
+        // f.format.setFontWeight(QFont::Bold); // - just causes complications everywhere (elision, editor width, etc.)
+        formats.append(f);
     }
-    //f.format.setFontWeight(QFont::Bold); // - just causes complications everywhere (elision, editor width, etc.)
-    formats.append(f);
 
     // applying the format ranges
     layout.setAdditionalFormats(formats);
@@ -185,6 +187,15 @@ void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     geom.translate(editorLeft, 0);
     geom.setWidth(qMax(20, editorWidth)); // so empty values can be edited too
     editor->setGeometry(geom);
+}
+
+void HighlighterItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    try {
+        QStyledItemDelegate::setModelData(editor, model, index);
+    } catch (std::exception &e) {
+        QMessageBox::warning(editor, "Error editing item: " + index.data().toString(), e.what(), QMessageBox::StandardButton::Ok);
+    }
 }
 
 } // namespace qtenv
