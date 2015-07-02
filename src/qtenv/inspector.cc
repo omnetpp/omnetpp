@@ -69,15 +69,19 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     //FIXME put back:   window = getTkenv()->getWindow();
     object = nullptr;
     type = f->getInspectorType();
-    isToplevelWindow = false;
+    isToplevelWindow = isTopLevel;
     closeRequested = false;
 
     windowName[0] = '\0';  // no window exists
 
-    auto layout = new QGridLayout(parent);
-    parent->setLayout(layout);
-    layout->setMargin(0);
-    layout->addWidget(this, 0, 0, 1, 1);
+    if (isTopLevel) {
+        show();
+    } else {
+        auto layout = new QGridLayout(parent);
+        parent->setLayout(layout);
+        layout->setMargin(0);
+        layout->addWidget(this, 0, 0, 1, 1);
+    }
 }
 
 Inspector::~Inspector()
@@ -118,15 +122,16 @@ void Inspector::doSetObject(cObject *obj)
 
 void Inspector::showWindow()
 {
-    if (isToplevelWindow)
-        CHK(Tcl_VarEval(interp, "inspector:show ", windowName, TCL_NULL));
+    if (isToplevelWindow) {
+        show();
+        raise();
+    }
 }
 
 void Inspector::refresh()
 {
     if (isToplevelWindow)
         refreshTitle();
-    CHK(Tcl_VarEval(interp, "inspector:refresh ", windowName, TCL_NULL));
 }
 
 void Inspector::refreshTitle()
@@ -148,7 +153,7 @@ void Inspector::refreshTitle()
 
     if (windowTitle != newTitle) {
         windowTitle = newTitle;
-        CHK(Tcl_VarEval(interp, "wm title ", windowName, " {", windowTitle.c_str(), "}", TCL_NULL));
+        setWindowTitle(windowTitle.c_str());
     }
 }
 

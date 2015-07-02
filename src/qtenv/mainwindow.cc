@@ -359,7 +359,6 @@ void MainWindow::on_actionRunUntil_triggered()
 
 void MainWindow::inspectObject(QModelIndex index)
 {
-    qDebug() << "Inspecting object.";
     if (!index.isValid())
         return;
 
