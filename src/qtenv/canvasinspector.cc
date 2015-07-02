@@ -26,7 +26,6 @@
 #include "qtutil.h"
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
-#include "graphicsscene.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGridLayout>

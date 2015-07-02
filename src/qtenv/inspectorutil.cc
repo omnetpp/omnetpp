@@ -156,7 +156,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
                 infoStr += "...";
             }
 
-            const char *baseClass = getObjectBaseClass(object);
+            std::string baseClass = getObjectBaseClass(object);
             QString label;
             if(baseClass == "cGate")
             {

@@ -28,6 +28,7 @@
 #include <QGridLayout>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QDebug>
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
