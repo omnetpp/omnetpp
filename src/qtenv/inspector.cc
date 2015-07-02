@@ -364,6 +364,10 @@ void Inspector::utilitiesSubMenu()
     }
 }
 
+void Inspector::closeEvent(QCloseEvent *) {
+    markForDeletion();
+}
+
 } // namespace qtenv
 } // namespace omnetpp
 

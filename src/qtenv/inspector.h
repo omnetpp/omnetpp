@@ -79,6 +79,8 @@ class QTENV_API Inspector : public QWidget
       void inspectObject(cObject *object, int type = 0, const char *geometry = "");
       void runSimulationLocal(int runMode, cObject *object = nullptr);
 
+      void closeEvent(QCloseEvent *) override;
+
    public slots:
       virtual void goBack();
       virtual void goForward();
