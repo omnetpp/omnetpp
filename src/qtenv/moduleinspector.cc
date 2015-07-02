@@ -195,14 +195,12 @@ void ModuleInspector::addToolBar(QBoxLayout *layout)
 
 void ModuleInspector::runUntil()
 {
-    MainWindow *mainWindow = getQtenv()->getMainWindow();
-    mainWindow->runSimulationLocal(this, qtenv::Qtenv::eRunMode::RUNMODE_NORMAL);
+    runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_NORMAL);
 }
 
 void ModuleInspector::fastRunUntil()
 {
-    MainWindow *mainWindow = getQtenv()->getMainWindow();
-    mainWindow->runSimulationLocal(this, qtenv::Qtenv::eRunMode::RUNMODE_FAST);
+    runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_FAST);
 }
 
 void ModuleInspector::stopSimulation()
@@ -230,74 +228,53 @@ void ModuleInspector::relayout()
 //    ModuleInspector:adjustWindowSizeAndZoom $insp
 }
 
-void ModuleInspector::zoomIn()
+void ModuleInspector::zoomIn(int x, int y)
 {
-    //TODO
-//    proc ModuleInspector:zoomIn {insp {x ""} {y ""}} {
-//        global config
-//        ModuleInspector:zoomBy $insp $config(zoomby-factor) 1 $x $y
-//    }
+    QVariant variant = getQtenv()->getPref("zoomby-factor");
+    double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
+    zoomBy(zoomByFactor, 1, x, y);
 }
 
-void ModuleInspector::zoomOut()
+void ModuleInspector::zoomOut(int x, int y)
 {
-    //TODO
-//    proc ModuleInspector:zoomOut {insp {x ""} {y ""}} {
-//        global config
-//        ModuleInspector:zoomBy $insp [expr 1.0 / $config(zoomby-factor)] 1 $x $y
-//    }
+    QVariant variant = getQtenv()->getPref("zoomby-factor");
+    double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
+    zoomBy(1.0 / zoomByFactor, 1, x, y);
+
 }
 
-void ModuleInspector::zoomBy()
+void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 {
-    //TODO
-//    proc ModuleInspector:zoomBy {insp mult {snaptoone 0}  {x ""} {y ""}} {
-//        global inspectordata
-//        set c $insp.c
-//        if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
-//            # remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
-//            if {$x == ""} {set x [expr [winfo width $c] / 2]}
-//            if {$y == ""} {set y [expr [winfo height $c] / 2]}
-//            set origCanvasX [$c canvasx $x]
-//            set origCanvasY [$c canvasy $y]
-//            set origZoom $inspectordata($c:zoomfactor)
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    double zoomFactor = variant.isValid() ? variant.value<double>() : 1;
+    if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
+    {
+        //remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
+        if(x == 0)
+            x = view->width() / 2;
+        if(y == 0)
+            y = view->height() / 2;
 
-//            # update zoom factor and redraw
-//            set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
+        //update zoom factor and redraw
+        double newZoomFactor = zoomFactor * mult;
 
-//            # snap to 1 (note: this is not desirable when zoom is set programmatically to fit network into window)
-//            if {$snaptoone} {
-//                set m [expr $mult < 1 ? 1.0/$mult : $mult]
-//                set a [expr  1 - 0.9*(1 - 1.0/$m)]
-//                set b [expr  1 + 0.9*($m - 1)]
-//                if {$inspectordata($c:zoomfactor) > $a && $inspectordata($c:zoomfactor) < $b} {
-//                    set inspectordata($c:zoomfactor) 1
-//                }
-//            }
+        //snap to true (note: this is not desirable when zoom is set programmatically to fit network into window)
+        if(snaptoone)
+        {
+            double m = mult < 1 ? 1.0/mult : mult;
+            double a = 1 - 0.9*(1 - 1.0/m);
+            double b = 1 + 0.9*(m - 1);
+            if(zoomFactor > a && zoomFactor < b)
+                newZoomFactor = 1;
+        }
 
-//            # clear scrollregion so that it will be set up afresh
-//            $c config -scrollregion ""
-
-//            # redraw
-//            opp_inspectorcommand $insp redraw
-//            ModuleInspector:setScrollRegion $insp 0
-
-//            ModuleInspector:updateZoomLabel $insp
-
-//            # pan the canvas so that we zoom in/out around ($x, $y)
-//            set actualMult [expr $inspectordata($c:zoomfactor) / $origZoom]
-//            set canvasX [expr $origCanvasX * $actualMult]
-//            set canvasY [expr $origCanvasY * $actualMult]
-//            set dx [expr int($canvasX - $origCanvasX)]
-//            set dy [expr int($canvasY - $origCanvasY)]
-//            $c scan mark 0 0
-//            $c scan dragto $dx $dy -1
-//        }
-
-//        ModuleInspector:updatePreferences $insp
-
-//        ModuleInspector:popOutToolbarButtons $insp
-//    }
+        getQtenv()->setPref(prefName, newZoomFactor);
+        redraw();
+        //TODO
+        //ModuleInspector:updateZoomLabel $insp
+    }
 }
 
 cCanvas *ModuleInspector::getCanvas()
@@ -795,8 +772,8 @@ void ModuleInspector::drawConnection(cGate *gate)
 //               set dest_i "0"
 //           }
 
-//           set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
-//                      $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
+//           set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords
+//                      $src_rect $dest_rect $src_i $src_n $dest_i $dest_n
 //                      $mode $src_anch $dest_anch]]
 
 //           # puts "DEBUG: arrow=($arrow_coords)"
@@ -863,7 +840,7 @@ void ModuleInspector::drawConnection(cGate *gate)
 //           }
 
 //        } errmsg] {
-//           tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
+//           tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]]
 //                         -message "Error in display string of a connection: $errmsg"
 //        }
 //    }
@@ -1334,11 +1311,10 @@ void ModuleInspector::doubleClick(QMouseEvent *event)
 void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 {
     //TODO
-    //global inspectordata tmp CTRL
+    //global inspectordata tmp
 
     //ModuleInspector:zoomMarqueeCancel $insp ;# just in case
 
-    //set c $insp.c
     QList<cObject*> objects = view->getObjectsAt(event->x(), event->y());
 
    if(objects.size())
@@ -1383,17 +1359,18 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
 void ModuleInspector::layers()
 {
-//insp == this
-//proc ModuleInspector:layers {insp} {
-//    if {![opp_inspectorcommand $insp hascanvas]} {
-//        messagebox Confirm "No default canvas has been created for this module yet." info ok
-//        return
-//    }
+    if(!canvasRenderer->hasCanvas())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("No default canvas has been created for this module yet."),
+                QMessageBox::Ok);
+        return;
+    }
 
-//    set allTags [opp_inspectorcommand $insp getalltags]
-//    set enabledTags [opp_inspectorcommand $insp getenabledtags]
-//    set exceptTags [opp_inspectorcommand $insp getexcepttags]
+    const char *allTags = canvasRenderer->getAllTags().c_str();
+    const char *enabledTags = canvasRenderer->getEnabledTags().c_str();
+    const char *exceptTags = canvasRenderer->getExceptTags().c_str();
 
+    //TODO create dialog
 //    set result [CanvasInspectors:layersDialog $allTags $enabledTags $exceptTags]
 
 //    if {$result != {}} {
@@ -1408,41 +1385,45 @@ void ModuleInspector::layers()
 
 void ModuleInspector::toggleLabels()
 {
-//proc ModuleInspector:toggleLabels {insp} {
-//    global inspectordata
-//    set c $insp.c
-//    set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
-//    opp_inspectorcommand $insp redraw
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
+    QVariant variant = getQtenv()->getPref(prefName);
+    bool showLabels = variant.isValid() ? variant.value<bool>() : false;
 
-//    ModuleInspector:updatePreferences $insp
-//}
+    getQtenv()->setPref(prefName, !showLabels);
+    redraw();
 }
 
 void ModuleInspector::toggleArrowheads()
 {
-//proc ModuleInspector:toggleArrowheads {insp} {
-//    global inspectordata
-//    set c $insp.c
-//    set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
-//    opp_inspectorcommand $insp redraw
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
+    QVariant variant = getQtenv()->getPref(prefName);
+    bool showArrowheads = variant.isValid() ? variant.value<bool>() : false;
 
-//    ModuleInspector:updatePreferences $insp
-//}
+    getQtenv()->setPref(prefName, !showArrowheads);
+    redraw();
 }
 
 void ModuleInspector::zoomIconsBy()
 {
-//proc ModuleInspector:zoomIconsBy {insp mult} {
-//    global inspectordata
-//    set c $insp.c
-//    if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<5)} {
-//        set inspectordata($c:imagesizefactor) [expr $inspectordata($c:imagesizefactor) * $mult]
-//        if {abs($inspectordata($c:imagesizefactor)-1.0) < 0.1} {set inspectordata($c:imagesizefactor) 1}
-//        opp_inspectorcommand $insp redraw
-//    }
-
-//    ModuleInspector:updatePreferences $insp
-//}
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid())
+    {
+        double mult = variant.value<double>();
+        QString objName = object->getFullName();
+        QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
+        variant = getQtenv()->getPref(prefName);
+        double imageSizeFactor = variant.isValid() ? variant.value<double>() : 1;
+        if((mult < 1 && imageSizeFactor>0.1) || (mult > 1 && imageSizeFactor < 5))
+        {
+            double newImageSizeFactor = imageSizeFactor * mult;
+            if(imageSizeFactor - 1 < 0.1)
+                newImageSizeFactor = 1;
+            getQtenv()->setPref(prefName, newImageSizeFactor);
+            redraw();
+        }
+    }
 }
 
 } // namespace qtenv

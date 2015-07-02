@@ -55,8 +55,8 @@ class QTENV_API ModuleInspector : public Inspector
       void fastRunUntil();
       void stopSimulation();
       void relayout();
-      void zoomIn();
-      void zoomOut();
+      void zoomIn(int x = 0, int y = 0);
+      void zoomOut(int x = 0, int y = 0);
 
       void doubleClick(QMouseEvent *event);
       void createContextMenu(QContextMenuEvent *event);
@@ -96,7 +96,7 @@ class QTENV_API ModuleInspector : public Inspector
       void addToolBar(QBoxLayout *layout);
       void createView(QWidget *parent);
 
-      void zoomBy();
+      void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
 
    public:
       ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

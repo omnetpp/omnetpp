@@ -40,6 +40,8 @@ public:
     static void fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp);
     static QVector<int> supportedInspTypes(cObject *object);
     static QMenu *createInspectorContextMenu(QVector<cObject *> objects, Inspector *insp);
+    static void copyToClipboard(cObject *object, int what);
+    static void setClipboard(QString str);
 
 };
 

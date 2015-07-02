@@ -30,6 +30,7 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
+#include "inspectorutil.h"
 #include <QBoxLayout>
 
 using namespace OPP::common;
@@ -283,6 +284,83 @@ void Inspector::goUpInto()
     if (variant.isValid()) {
         cObject *object = variant.value<cObject*>();
         setObject(object);
+    }
+}
+
+void Inspector::inspectObject(cObject *object, int type, const char *geometry)
+{
+    if (!object)
+        return;
+
+    getQtenv()->inspect(object, type, true, geometry);
+}
+
+void Inspector::openInspector()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        inspectObject(objTypePair.first, objTypePair.second);
+    }
+}
+
+void Inspector::runUntilModule()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        runSimulationLocal(objTypePair.second, objTypePair.first);
+    }
+}
+
+void Inspector::runSimulationLocal(int runMode, cObject *object)
+{
+    MainWindow::eMode mode = MainWindow::runModeToMode(runMode);
+    MainWindow *mainWindow = getQtenv()->getMainWindow();
+    if (mainWindow->isRunning()) {
+        mainWindow->setGuiForRunmode(mode);
+        getQtenv()->setSimulationRunMode(runMode);
+        mainWindow->setRunUntilModule(this);
+    }
+    else {
+        if (!mainWindow->networkReady())
+            return;
+        mainWindow->setGuiForRunmode(mode, this);
+        if (object == nullptr)
+            object = this->getObject();
+
+        cModule *mod = dynamic_cast<cModule *>(object);
+        if (!mod) {
+            // TODO log "object is not a module"
+            return;
+        }
+        getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
+        mainWindow->setGuiForRunmode(MainWindow::NOT_RUNNING);
+    }
+}
+
+void Inspector::runUntilMessage()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+    }
+}
+
+void Inspector::excludeMessage()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid())
+        getQtenv()->getMainWindow()->excludeMessageFromAnimation(variant.value<cObject *>());
+}
+
+void Inspector::utilitiesSubMenu()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        InspectorUtil::copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
     }
 }
 

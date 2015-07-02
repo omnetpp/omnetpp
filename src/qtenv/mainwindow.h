@@ -50,6 +50,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum eMode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
+
     explicit MainWindow(Qtenv *env, QWidget *parent = 0);
 
     void displayText(const char* t);
@@ -62,10 +64,19 @@ public:
     QWidget *getObjectInspectorArea();
     QWidget *getLogInspectorArea();
 
-    void runSimulationLocal(Inspector *insp, int runMode, cObject *object = nullptr);
-
     void storeGeometry();
     void restoreGeometry();
+
+    static int modeToRunMode(eMode mode);
+    static eMode runModeToMode(int runMode);
+
+    //menuproc.tcl
+    bool isRunning();
+    void setGuiForRunmode(eMode mode, Inspector *insp = nullptr, bool untilMode = false);
+    void setRunUntilModule(Inspector *insp = nullptr);
+    bool networkReady();
+    void runUntilMsg(cMessage *msg, int runMode);
+    void excludeMessageFromAnimation(cObject *msg);
 
 private slots:
     void on_actionOneStep_triggered();
@@ -84,23 +95,15 @@ private slots:
 
 public slots:
     void on_actionStop_triggered();
-    void onClickOpenInspector();
-    void onClickRun();
-    void onClickRunMessage();
-    void onClickExcludeMessage();
-    void onClickUtilitiesSubMenu();
 
 private:
-    enum Mode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
     Ui::MainWindow *ui;
     Qtenv *env;
     StopDialog *stopDialog;
     QSlider *slider;
 
-    bool isRunning();
     bool checkRunning();
-    void setGuiForRunmode(Mode mode, Inspector *insp = nullptr, bool untilMode = false);
-    void runSimulation(Mode mode);
+    void runSimulation(eMode mode);
 
     void updateSimtimeDisplay();
     void updatePerformanceDisplay();
@@ -109,21 +112,11 @@ private:
     const char *getObjectShortTypeName(cObject *object);
     const char *stripNamespace(const char *className);
 
-    void inspectObject(cObject *object, int type = 0, const char *geometry = "");
-    void setRunUntilModule(Inspector *insp = nullptr);
-    int modeToRunMode(Mode mode);
-    Mode runModeToMode(int runMode);
-
-    void runUntilMsg(cMessage *msg, int runMode);
-    void excludeMessageFromAnimation(cObject *msg);
-
-    bool networkReady();
     bool networkPresent();
     bool isSimulationOk();
 
     void busy(QString msg = "");
     void copyToClipboard(cObject *object, int what);
-    void setClipboard(QString str);
 };
 
 } // namespace qtenv

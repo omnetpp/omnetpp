@@ -395,12 +395,10 @@ void ModuleGraphicsView::drawSubmodule(cModule *submod, double x, double y)
     if (!iconName || !iconName[0])
         iconName = "block/process";
 
-    // TODO context menu + doubleclick
     QImage *img = getQtenv()->icons.getImage(iconName);
     QPixmap icon = QPixmap::fromImage(*img);
     submoduleGraphicsItems[submod->getId()] = scene()->addPixmap(icon);
     submoduleGraphicsItems[submod->getId()]->setPos(x, y);
-    // TODO key
     submoduleGraphicsItems[submod->getId()]->setData(1, QVariant::fromValue(static_cast<cObject *>(submod)));
 
     char coords[64];

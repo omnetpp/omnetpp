@@ -17,7 +17,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
-#include <QClipboard>
 #include <QCloseEvent>
 #include "qtenv.h"
 #include "runselectiondialog.h"
@@ -86,7 +85,7 @@ bool MainWindow::isRunning()
     return state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY;
 }
 
-void MainWindow::setGuiForRunmode(Mode mode, Inspector *insp, bool untilMode)
+void MainWindow::setGuiForRunmode(eMode mode, Inspector *insp, bool untilMode)
 {
     ui->actionOneStep->setChecked(false);
     ui->actionRun->setChecked(false);
@@ -231,7 +230,7 @@ void MainWindow::initialSetUpConfiguration()
     ui->actionSetUpConfiguration->trigger();
 }
 
-void MainWindow::runSimulation(Mode mode)
+void MainWindow::runSimulation(eMode mode)
 {
     Qtenv::eRunMode runMode = (Qtenv::eRunMode)modeToRunMode(mode);
 
@@ -363,6 +362,7 @@ void MainWindow::on_actionRunUntil_triggered()
 
 void MainWindow::inspectObject(QModelIndex index)
 {
+    //TODO move to treeItemModel inspector
     if (!index.isValid())
         return;
 
@@ -371,15 +371,7 @@ void MainWindow::inspectObject(QModelIndex index)
     visitor.process(parent);
     cObject **objs = visitor.getArray();
     if (visitor.getArraySize() > index.row())
-        inspectObject(objs[index.row()]);
-}
-
-void MainWindow::inspectObject(cObject *object, int type, const char *geometry)
-{
-    if (!object)
-        return;
-
-    env->inspect(object, type, true, geometry);
+        {}//inspectObject(objs[index.row()]);
 }
 
 void MainWindow::updateStatusDisplay()
@@ -679,94 +671,6 @@ void MainWindow::onTreeViewPressed(QModelIndex index)
     */
 }
 
-// Handle object tree's context menu QAction's triggerd event.
-void MainWindow::onClickOpenInspector()
-{
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid()) {
-        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        //inspectObject(objTypePair.first, objTypePair.second);
-    }
-}
-
-// Handle object tree's context menu QAction's triggerd event.
-void MainWindow::onClickRun()
-{
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid()) {
-        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        //runSimulationLocal(nullptr, objTypePair.second, objTypePair.first);
-    }
-}
-
-// Handle object tree's context menu QAction's triggerd event.
-void MainWindow::onClickRunMessage()
-{
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid()) {
-        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        //runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
-    }
-}
-
-// Handle object tree's context menu QAction's triggerd event.
-void MainWindow::onClickExcludeMessage()
-{
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid())
-        excludeMessageFromAnimation(variant.value<cObject *>());
-}
-
-// Handle object tree's context menu QAction's triggerd event.
-void MainWindow::onClickUtilitiesSubMenu()
-{
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid()) {
-        //QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        //copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
-    }
-}
-
-void MainWindow::copyToClipboard(cObject *object, int what)
-{
-    switch (what) {
-        case InspectorUtil::COPY_PTR: {
-            void *address = static_cast<void *>(object);
-            std::stringstream ss;
-            ss << address;
-            setClipboard(QString(ss.str().c_str()));
-            break;
-        }
-
-        case InspectorUtil::COPY_PTRWITHCAST: {
-            void *address = static_cast<void *>(object);
-            std::stringstream ss;
-            ss << address;
-            setClipboard(QString("((") + object->getClassName() + " *)" + ss.str().c_str() + ")");
-            break;
-        }
-
-        case InspectorUtil::COPY_FULLPATH:
-            setClipboard(object->getFullPath().c_str());
-            break;
-
-        case InspectorUtil::COPY_FULLNAME:
-            setClipboard(object->getFullName());
-            break;
-
-        case InspectorUtil::COPY_CLASSNAME:
-            setClipboard(object->getClassName());
-            break;
-    }
-}
-
-void MainWindow::setClipboard(QString str)
-{
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(str);
-}
-
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
 {
     const char *cl = getObjectShortTypeName(msg);
@@ -867,31 +771,6 @@ bool MainWindow::networkPresent()
     return true;
 }
 
-void MainWindow::runSimulationLocal(Inspector *insp, int runMode, cObject *object)
-{
-    Mode mode = runModeToMode(runMode);
-    if (isRunning()) {
-        setGuiForRunmode(mode);
-        env->setSimulationRunMode(runMode);
-        setRunUntilModule(insp);
-    }
-    else {
-        if (!networkReady())
-            return;
-        setGuiForRunmode(mode, insp);
-        if (object == nullptr)
-            object = insp->getObject();
-
-        cModule *mod = dynamic_cast<cModule *>(object);
-        if (!mod) {
-            // TODO log "object is not a module"
-            return;
-        }
-        env->runSimulation(runMode, 0, 0, nullptr, mod);
-        setGuiForRunmode(NOT_RUNNING);
-    }
-}
-
 void MainWindow::storeGeometry()
 {
     env->setPref("mainwindow-geom", geometry());
@@ -918,7 +797,7 @@ void MainWindow::restoreGeometry()
     // TODO save right panel orientation and sizes
 }
 
-int MainWindow::modeToRunMode(Mode mode)
+int MainWindow::modeToRunMode(eMode mode)
 {
     switch (mode) {
         case NOT_RUNNING:
@@ -934,9 +813,11 @@ int MainWindow::modeToRunMode(Mode mode)
         case EXPRESS:
             return Qtenv::RUNMODE_EXPRESS;
     }
+
+    return -1;
 }
 
-MainWindow::Mode MainWindow::runModeToMode(int runMode)
+MainWindow::eMode MainWindow::runModeToMode(int runMode)
 {
     switch (runMode) {
         case Qtenv::RUNMODE_NORMAL:
@@ -948,6 +829,8 @@ MainWindow::Mode MainWindow::runModeToMode(int runMode)
         case Qtenv::RUNMODE_EXPRESS:
             return EXPRESS;
     }
+
+    return NORMAL;
 }
 
 // rebuild

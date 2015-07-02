@@ -16,6 +16,8 @@
 
 #include "inspectorutil.h"
 #include <QMenu>
+#include <QApplication>
+#include <QClipboard>
 #include <omnetpp/cobject.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/cmodule.h>
@@ -50,9 +52,6 @@ QVector<int> InspectorUtil::supportedInspTypes(cObject *object)
 
 void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp)
 {
-    //TODO
-    //global contextmenurules
-
     // add "Go Info" if applicable
     QString name = object->getFullName();
     if(insp && object != insp->getObject() && insp->supportsObject(object))
@@ -83,44 +82,44 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
                 break;
         }
         label += QString(" for '") + name + "'";
-        QAction *action = menu->addAction(label, insp, SLOT(onClickOpenInspector()));
+        QAction *action = menu->addAction(label, insp, SLOT(openInspector()));
         action->setData(QVariant::fromValue(ActionDataPair(object, type)));
     }
 
     // add "run until" menu items
     if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
         menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", insp, SLOT(onClickRun()));
+        QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", insp, SLOT(runUntilModule()));
         action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", insp, SLOT(onClickRun()));
+        action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", insp, SLOT(runUntilModule()));
         action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
     }
 
     if (dynamic_cast<cMessage *>(object)) {
         menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", insp, SLOT(onClickRunMessage()));
+        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", insp, SLOT(runUntilMessage()));
         action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", insp, SLOT(onClickRunMessage()));
+        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", insp, SLOT(runUntilMessage()));
         action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
-        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", insp, SLOT(onClickRunMessage()));
+        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", insp, SLOT(runUntilMessage()));
         menu->addSeparator();
-        action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", insp, SLOT(onClickExcludeMessage()));
+        action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", insp, SLOT(excludeMessage()));
         action->setData(QVariant::fromValue(object));
     }
 
     // add utilities menu
     menu->addSeparator();
     QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");
-    QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", insp, SLOT(onClickUtilitiesSubMenu()));
+    QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", insp, SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTRWITHCAST)));
-    action = subMenu->addAction("Copy Pointer Value (for Debugger)", insp, SLOT(onClickUtilitiesSubMenu()));
+    action = subMenu->addAction("Copy Pointer Value (for Debugger)", insp, SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTR)));
     subMenu->addSeparator();
-    action = subMenu->addAction("Copy Full Path", insp, SLOT(onClickUtilitiesSubMenu()));
+    action = subMenu->addAction("Copy Full Path", insp, SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLPATH)));
-    action = subMenu->addAction("Copy Name", insp, SLOT(onClickUtilitiesSubMenu()));
+    action = subMenu->addAction("Copy Name", insp, SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLNAME)));
-    action = subMenu->addAction("Copy Class Name", insp, SLOT(onClickUtilitiesSubMenu()));
+    action = subMenu->addAction("Copy Class Name", insp, SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
 }
 
@@ -194,6 +193,46 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
         }
     }
     return menu;
+}
+
+void InspectorUtil::copyToClipboard(cObject *object, int what)
+{
+    switch (what) {
+        case InspectorUtil::COPY_PTR: {
+            void *address = static_cast<void *>(object);
+            std::stringstream ss;
+            ss << address;
+            setClipboard(QString(ss.str().c_str()));
+            break;
+        }
+
+        case InspectorUtil::COPY_PTRWITHCAST: {
+            void *address = static_cast<void *>(object);
+            std::stringstream ss;
+            ss << address;
+            setClipboard(QString("((") + object->getClassName() + " *)" + ss.str().c_str() + ")");
+            break;
+        }
+
+        case InspectorUtil::COPY_FULLPATH:
+            setClipboard(object->getFullPath().c_str());
+            break;
+
+        case InspectorUtil::COPY_FULLNAME:
+            setClipboard(object->getFullName());
+            break;
+
+        case InspectorUtil::COPY_CLASSNAME:
+            setClipboard(object->getClassName());
+            break;
+    }
+}
+
+void InspectorUtil::setClipboard(QString str)
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->clear();
+    clipboard->setText(str);
 }
 
 } // namespace qtenv

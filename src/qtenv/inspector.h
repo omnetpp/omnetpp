@@ -76,6 +76,9 @@ class QTENV_API Inspector : public QWidget
       void setLabel(const char *label, const char *val);
       const char *getEntry(const char *entry);
 
+      void inspectObject(cObject *object, int type = 0, const char *geometry = "");
+      void runSimulationLocal(int runMode, cObject *object = nullptr);
+
    public slots:
       virtual void goBack();
       virtual void goForward();
@@ -84,6 +87,11 @@ class QTENV_API Inspector : public QWidget
    protected slots:
       //Context menu's action's slots
       virtual void goUpInto();
+      virtual void openInspector();
+      virtual void runUntilModule();
+      virtual void runUntilMessage();
+      virtual void excludeMessage();
+      virtual void utilitiesSubMenu();
 
    public:
       typedef QPair<OPP::cObject*, int> ActionDataPair;
