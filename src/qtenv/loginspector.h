@@ -22,59 +22,51 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "inspector.h"
-#include <QPlainTextEdit>
+#include <textviewerwidget.h>
 
 namespace omnetpp {
 namespace qtenv {
 
+class StringTextViewerContentProvider;
+class ModuleOutputContentProvider;
 
-class QTENV_API LogInspector : public Inspector, protected ILogBufferListener
+class QTENV_API LogInspector : public Inspector
 {
+    Q_OBJECT
+
    public:
       enum Mode {LOG, MESSAGES};
 
    protected:
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
-      QPlainTextEdit *textWidget;
+      TextViewerWidget *textWidget;
       std::set<int> excludedModuleIds;
       Mode mode;
 
-      // state used during incremental printing (printLastLogLine(), printLastMessageLine()):
-      // MESSAGES mode:
-      eventnumber_t lastMsgEventNumber;
-      simtime_t lastMsgTime;
-      // LOG mode:
-      bool entryMatches;
-      bool bannerPrinted;
-      bool bookmarkAdded;
-
-   protected:
       cComponent *getInspectedObject();
-      void textWidgetInsert(const char *text, const char *tags);
-      void textWidgetSeeEnd();
-      void textWidgetGotoBeginning();
-      void textWidgetGotoEnd();
-      void textWidgetSetBookmark(const char *bookmark, const char *pos);
-      void textWidgetDumpBookmarks(const char *label);
-
-      virtual void logEntryAdded() override;
-      virtual void logLineAdded() override;
-      virtual void messageSendAdded() override;
 
       bool isMatchingComponent(int componentId);
       bool isAncestorModule(int componentId, int potentialAncestorModuleId);
 
-      virtual void printLastLogLine();
-      virtual void printLastMessageLine();
+      QString lastFindText;
+      TextViewerWidget::FindOptions lastFindOptions;
 
-      void printBannerIfNeeded(const LogBuffer::Entry *entry);
-      void addBookmarkIfNeeded(const LogBuffer::Entry *entry);
-      virtual void printLogLine(const LogBuffer::Entry *entry, const LogBuffer::Line& line);
+      QAction *toMessagesModeAction;
+      QAction *toLogModeAction;
 
-      virtual int findFirstRelevantHop(const LogBuffer::MessageSend& msgsend, int fromHop);
-      virtual cMessagePrinter *chooseMessagePrinter(cMessage *msg);
-      virtual void printMessage(const LogBuffer::Entry *entry, int msgIndex, int hopIndex, bool repeatedEvent, bool repeatedSimtime);
+   protected slots:
+      void onFindButton(); // opens a dialog
+      void findAgain(); // when F3 is pressed, uses the last set options
+      void findAgainReverse(); // same, but in the other direction (with shift)
+
+      void onFilterButton();
+
+      void toMessagesMode();
+      void toLogMode();
+
+      void saveColumnWidths();
+      void restoreColumnWidths();
 
    public:
       LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
@@ -82,12 +74,8 @@ class QTENV_API LogInspector : public Inspector, protected ILogBufferListener
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
 
-      virtual void redisplay();
-
       virtual Mode getMode() const {return mode;}
       virtual void setMode(Mode mode);
-
-      virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
 } // namespace qtenv

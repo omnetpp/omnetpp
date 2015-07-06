@@ -31,20 +31,13 @@ class cModule;
 
 namespace qtenv {
 
-class ILogBufferListener
-{
-  public:
-    virtual ~ILogBufferListener() {}
-    virtual void logEntryAdded() = 0;
-    virtual void logLineAdded() = 0;
-    virtual void messageSendAdded() = 0;
-};
-
 /**
  * Stores textual debug output from modules.
  */
-class QTENV_API LogBuffer
+class QTENV_API LogBuffer : public QObject
 {
+    Q_OBJECT // for signals
+
   public:
     struct Line {
         int contextComponentId;
@@ -58,20 +51,19 @@ class QTENV_API LogBuffer
         std::vector<int> hopModuleIds; //TODO also: txStartTime, propagationDelay, duration for each hop
     };
     struct Entry {
-        eventnumber_t eventNumber; // 0 for initialization, >0 afterwards
-        simtime_t simtime;
-        int componentId;  // 0 for info log lines
+        eventnumber_t eventNumber = 0; // 0 for initialization, >0 afterwards
+        simtime_t simtime = 0;
+        int componentId = 0;  // 0 for info log lines
         //TODO msg name, class, kind, previousEventNumber
-        const char *banner;
+        const char *banner = nullptr;
         std::vector<Line> lines;
         std::vector<MessageSend> msgs;
 
-        Entry() {eventNumber=0; simtime=0; componentId=0; banner=nullptr;}
+        bool isEvent();
         ~Entry();
     };
 
   protected:
-    std::vector<ILogBufferListener*> listeners;
     circular_buffer<Entry*> entries;
     int maxNumEntries;
     int entriesDiscarded;
@@ -83,9 +75,6 @@ class QTENV_API LogBuffer
   public:
     LogBuffer();
     ~LogBuffer();
-
-    void addListener(ILogBufferListener *l);
-    void removeListener(ILogBufferListener *l);
 
     void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
@@ -112,6 +101,11 @@ class QTENV_API LogBuffer
     void clear();
 
     void dump() const;
+
+signals:
+    void logEntryAdded();
+    void logLineAdded();
+    void messageSendAdded();
 };
 
 } // namespace qtenv

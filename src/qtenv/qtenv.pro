@@ -41,6 +41,10 @@ SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbu
     qtutil.cc \
     modulegraphicsview.cc \
     inspectorutil.cc
+    textviewerwidget.cc \
+    textviewerproviders.cc \
+    logfinddialog.cc \
+    logfilterdialog.cc
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h mainwindow.h qtenvdefs.h \
     runselectiondialog.h \
@@ -51,6 +55,10 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     qtutil.h \
     modulegraphicsview.h \
     inspectorutil.h
+    textviewerwidget.h \
+    textviewerproviders.h \
+    logfinddialog.h \
+    logfilterdialog.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -61,7 +69,9 @@ INCLUDEPATH += .. ../../include
 FORMS += mainwindow.ui \
     runselectiondialog.ui \
     canvasinspectorform.ui \
-    stopdialog.ui
+    stopdialog.ui \
+    logfinddialog.ui \
+    logfilterdialog.ui
 
 RESOURCES += \
     icons.qrc

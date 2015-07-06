@@ -20,8 +20,14 @@
 #include "tklib.h"
 #include "logbuffer.h"
 
+#define emit // Qt...
+
 namespace omnetpp {
 namespace qtenv {
+
+bool LogBuffer::Entry::isEvent() {
+    return componentId > 0;
+}
 
 LogBuffer::Entry::~Entry()
 {
@@ -48,20 +54,6 @@ LogBuffer::~LogBuffer()
     clear();
 }
 
-void LogBuffer::addListener(ILogBufferListener *l)
-{
-    listeners.push_back(l);
-}
-
-void LogBuffer::removeListener(ILogBufferListener *l)
-{
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        if (listeners[i] == l) {
-            listeners.erase(listeners.begin()+i);
-            break;
-        }
-}
-
 void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
     entry->eventNumber = e;
@@ -77,8 +69,7 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     fillEntry(entry, e, t, mod, opp_strdup(banner));
     discardEventsIfLimitExceeded();
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logEntryAdded();
+    emit logEntryAdded();
 }
 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
@@ -94,8 +85,7 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, nullptr, opp_strdup(banner)));
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logLineAdded();
+    emit logLineAdded();
 }
 
 void LogBuffer::addLogLine(const char *prefix, const char *text)
@@ -118,8 +108,7 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text, len)));
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logLineAdded();
+    emit logLineAdded();
 }
 
 void LogBuffer::addInfo(const char *text)
@@ -135,8 +124,7 @@ void LogBuffer::addInfo(const char *text, int len)
     fillEntry(entry, 0, simTime(), nullptr, opp_strdup(text, len));
     discardEventsIfLimitExceeded();
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logEntryAdded();
+    emit logEntryAdded();
 }
 
 void LogBuffer::beginSend(cMessage *msg)
@@ -187,8 +175,7 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 
 void LogBuffer::endSend(cMessage *msg)
 {
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->messageSendAdded();  // TODO but endSend() is not called when msg is discarded in the channel!
+    emit messageSendAdded(); // TODO but endSend() is not called when msg is discarded in the channel!
 }
 
 void LogBuffer::setMaxNumEntries(int limit)

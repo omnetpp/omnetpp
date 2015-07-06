@@ -612,6 +612,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     animating = true;
     disableTracing = false;
+    recordEventlog = true;
     rununtil_msg = nullptr;
 
     if (simstate == SIM_TERMINATED) {
@@ -1931,15 +1932,13 @@ void Qtenv::log(cLogEntry *entry)
     const char *s = entry->text;
     int n = entry->textLength;
 
-    ::fputs(prefix.c_str(), stdout);
-    (void)::fwrite(s, 1, n, stdout);
-
+    /*
     if (!interp) {
         // fallback in case Tkenv didn't fire up correctly
         ::fputs(prefix.c_str(), stdout);
         (void)::fwrite(s, 1, n, stdout);
         return;
-    }
+    }*/
 
     // rough guard against forgotten "\n"'s in the code
     const int maxLen = 5000;
