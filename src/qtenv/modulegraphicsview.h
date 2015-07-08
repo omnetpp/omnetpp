@@ -45,6 +45,7 @@ private:
     bool notDrawn;
     bool needs_redraw;
     CanvasRenderer *canvasRenderer;
+    QString windowName;
 
     struct Point {double x,y;};
     typedef std::map<cModule*,Point> PositionMap;
@@ -110,6 +111,7 @@ public:
     void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
     void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
     void incLayoutSeed() { ++layoutSeed; }
+    void setWindowName(QString name) { windowName = name; }
 };
 
 } // namespace qtenv

@@ -74,6 +74,7 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     canvasRenderer = new CanvasRenderer();
     createView(this);
     canvasRenderer->setQtCanvas(view->scene(), getCanvas());
+    view->setWindowName(windowName);
 }
 
 ModuleInspector::~ModuleInspector()

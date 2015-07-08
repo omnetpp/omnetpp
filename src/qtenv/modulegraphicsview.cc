@@ -28,6 +28,7 @@
 #include "figurerenderers.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <canvasrenderer.h>
 
@@ -94,17 +95,16 @@ void ModuleGraphicsView::relayoutAndRedrawAll()
             sprintf(problem, "contains more than 1000 submodules (exactly %d)", submoduleCount);
         else
             sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
-        //TODO MessageBox
-//        CHK(Tcl_VarEval(interp, "tk_messageBox -parent ", windowName, " -type yesno -title Warning -icon question "
-//                                                                      "-message {Module '", object->getFullName(), "' ", problem,
-//                        ", it may take a long time to display the graphics. "
-//                        "Do you want to proceed with drawing?}", TCL_NULL));
-//        bool answer = (Tcl_GetStringResult(interp)[0] == 'y');
-//        if (answer == false) {
-//            notDrawn = true;
-//            CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));  // this must be done, still
-//            return;
-//        }
+
+        QString message = "Module '" + QString(object->getFullName()) + "' " + problem +
+                ", it may take a long time to display the graphics.\n\nDo you want to proceed with drawing?";
+        QMessageBox::StandardButton answer = QMessageBox::warning(this, windowName, message, QMessageBox::Yes | QMessageBox::No);
+        if(answer == QMessageBox::Yes)
+        {
+            notDrawn = true;
+            clear();  // this must be done, still
+            return;
+        }
     }
 
     recalculateLayout();

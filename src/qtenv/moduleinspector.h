@@ -61,6 +61,7 @@ class QTENV_API ModuleInspector : public Inspector
       ModuleGraphicsView *view;
 
    protected:
+      //TODO Where is getCanvas() right place? Here or in ModuleGraphicsView.
       cCanvas *getCanvas();
       static const char *animModeToStr(SendAnimMode mode);
 
