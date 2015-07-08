@@ -28,8 +28,12 @@ namespace omnetpp {
 class cModule;
 class cGate;
 class cObject;
+class cComponent;
 
 namespace qtenv {
+
+class FigureRenderingHints;
+class CanvasRenderer;
 
 class ModuleGraphicsView : public QGraphicsView
 {
@@ -39,6 +43,8 @@ private:
     cModule *object;
     int32_t layoutSeed;
     bool notDrawn;
+    bool needs_redraw;
+    CanvasRenderer *canvasRenderer;
 
     struct Point {double x,y;};
     typedef std::map<cModule*,Point> PositionMap;
@@ -46,22 +52,33 @@ private:
 
     std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
 
+    // does full layouting, stores results in submodPosMap
     void recalculateLayout();
+
+    // drawing methods:
     void redrawFigures();
+    void refreshFigures();
     void redrawModules();
     void redrawNextEventMarker();
     void redrawMessages();
     void refreshSubmodules();
     void adjustSubmodulesZOrder();
 
+    // updates submodPosMap (new modules, changed display strings, etc.)
     void refreshLayout();
+
+    // helper for layouting code
     void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
             double& x, double& y, double& sx, double& sy);
+
     void drawSubmodule(cModule *submod, double x, double y);
     void drawEnclosingModule(cModule *parentModule);
     void drawConnection(cGate *gate);
 
     QPointF getSubmodCoords(cModule *mod);
+    void fillFigureRenderingHints(FigureRenderingHints *hints);
+
+    void updateBackgroundColor();
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
@@ -77,13 +94,22 @@ public slots:
     void relayoutAndRedrawAll();
 
 public:
-    ModuleGraphicsView();
+    ModuleGraphicsView(CanvasRenderer *canvasRenderer);
 
     void setObject(cModule *obj);
     cObject *getObjectAt(qreal x, qreal y);
     QList<cObject*> getObjectsAt(qreal x, qreal y);
 
+    void redraw();
+    void refresh();
+
+    void bubble(cComponent *subcomponent, const char *text);
+
     void clear();
+    bool getNeedsRedraw() { return needs_redraw; }
+    void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
+    void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
+    void incLayoutSeed() { ++layoutSeed; }
 };
 
 } // namespace qtenv

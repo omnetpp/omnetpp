@@ -17,16 +17,8 @@
 #ifndef __OMNETPP_QTENV_MODULEINSPECTOR_H
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
-#include <map>
-#include <QRect>
-#include <QMetaType>
-#include "omnetpp/ccanvas.h"
 #include "inspector.h"
 
-class QGraphicsPixmapItem;
-class QGraphicsScene;
-class QGraphicsView;
-class QGraphicsItem;
 class QBoxLayout;
 class QMouseEvent;
 class QContextMenuEvent;
@@ -35,12 +27,10 @@ namespace omnetpp {
 class cObject;
 class cModule;
 class cGate;
-class cFigure;
+class cCanvas;
 
 namespace qtenv {
 
-class FigureRenderer;
-struct FigureRenderingHints;
 class CanvasRenderer;
 class ModuleGraphicsView;
 
@@ -67,32 +57,13 @@ class QTENV_API ModuleInspector : public Inspector
       void zoomIconsBy();
 
    protected:
-      char canvas[128];
       CanvasRenderer *canvasRenderer;
-
-      bool needs_redraw;
-      int32_t layoutSeed;
-      bool notDrawn;
-
-      struct Point {double x,y;};
-      typedef std::map<cModule*,Point> PositionMap;
-      PositionMap submodPosMap;  // recalculateLayout() fills this map
-
-      std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
-      QGraphicsScene *scene;
-
       ModuleGraphicsView *view;
 
    protected:
       cCanvas *getCanvas();
-      void drawSubmodule(cModule *submod, double x, double y);
-      void drawEnclosingModule(cModule *parentmodule);
-      void drawConnection(cGate *gate);
-      void fillFigureRenderingHints(FigureRenderingHints *hints);
-      void updateBackgroundColor();
       static const char *animModeToStr(SendAnimMode mode);
 
-      QPointF getSubmodCoords(cModule *mod);
       void addToolBar(QBoxLayout *layout);
       void createView(QWidget *parent);
 
@@ -106,7 +77,7 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void clearObjectChangeFlags() override;
       virtual int inspectorCommand(int argc, const char **argv) override;
 
-      bool needsRedraw() {return needs_redraw;}
+      bool needsRedraw();
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed();
@@ -116,26 +87,8 @@ class QTENV_API ModuleInspector : public Inspector
       virtual int getSubmodQ(int argc, const char **argv);
       virtual int getSubmodQLen(int argc, const char **argv);
 
-      // helper for layouting code
-      void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
-                                               double& x, double& y, double& sx, double& sy);
-
-      // does full layouting, stores results in submodPosMap
-      virtual void recalculateLayout();
-
-      // updates submodPosMap (new modules, changed display strings, etc.)
-      virtual void refreshLayout();
-
       // drawing methods:
       virtual void redraw() override;
-
-      virtual void redrawModules();
-      virtual void redrawMessages();
-      virtual void redrawNextEventMarker();
-      virtual void redrawFigures();
-      virtual void refreshFigures();
-      virtual void refreshSubmodules();
-      virtual void adjustSubmodulesZOrder();
 
       // notifications from envir:
       virtual void submoduleCreated(cModule *newmodule);

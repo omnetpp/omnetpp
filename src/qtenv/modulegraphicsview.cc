@@ -17,13 +17,19 @@
 #include "modulegraphicsview.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
+#include "omnetpp/csimulation.h"
+#include "omnetpp/csimplemodule.h"
+#include "omnetpp/cmodule.h"
+#include "omnetpp/cfutureeventset.h"
 #include "layout/graphlayouter.h"
 #include "layout/basicspringembedderlayout.h"
 #include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
+#include "figurerenderers.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QMouseEvent>
+#include <canvasrenderer.h>
 
 #include <QDebug>
 
@@ -37,10 +43,12 @@ using namespace OPP::layout;
 namespace omnetpp {
 namespace qtenv {
 
-ModuleGraphicsView::ModuleGraphicsView() :
+ModuleGraphicsView::ModuleGraphicsView(CanvasRenderer *canvasRenderer) :
     object(nullptr),
-    layoutSeed(1),
-    notDrawn(false)
+    layoutSeed(0),
+    notDrawn(false),
+    needs_redraw(false),
+    canvasRenderer(canvasRenderer)
 {
 }
 
@@ -120,7 +128,7 @@ void ModuleGraphicsView::refreshLayout()
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
     // only new nodes are re-layouted
 
-    cModule *parentModule = static_cast<cModule *>(object);
+    cModule *parentModule = object;
 
     // Note trick avoid calling getDisplayString() directly because it'd cause
     // the display string object inside cModule to spring into existence
@@ -353,12 +361,51 @@ void ModuleGraphicsView::getSubmoduleCoords(cModule *submod, bool& explicitcoord
 
 void ModuleGraphicsView::redrawFigures()
 {
-
+    FigureRenderingHints hints;
+    fillFigureRenderingHints(&hints);
+    canvasRenderer->redraw(&hints);
 }
 
+void ModuleGraphicsView::refreshFigures()
+{
+    FigureRenderingHints hints;
+    fillFigureRenderingHints(&hints);
+    canvasRenderer->refresh(&hints);
+}
+
+void ModuleGraphicsView::fillFigureRenderingHints(FigureRenderingHints *hints)
+{
+    //TODO
+    //const char *s;
+
+    // read $inspectordata($c:zoomfactor)
+//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
+//    hints->zoom = opp_atof(s);
+
+//    // read $inspectordata($c:imagesizefactor)
+//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":imagesizefactor").c_str()), TCL_GLOBAL_ONLY);
+//    hints->iconMagnification = opp_atof(s);
+
+//    // read $inspectordata($c:showlabels)
+//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showlabels").c_str()), TCL_GLOBAL_ONLY);
+//    hints->showSubmoduleLabels = opp_atol(s) != 0;
+
+//    // read $inspectordata($c:showarrowheads)
+//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
+//    hints->showArrowHeads = opp_atol(s) != 0;
+
+//    Tcl_Eval(interp, "font actual CanvasFont -family");
+//    hints->defaultFont = Tcl_GetStringResult(interp);
+
+//    Tcl_Eval(interp, "font actual CanvasFont -size");
+//    s = Tcl_GetStringResult(interp);
+//    hints->defaultFontSize = opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+}
+
+// requires either recalculateLayout() or refreshLayout() called before!
 void ModuleGraphicsView::redrawModules()
 {
-    cModule *parentModule = static_cast<cModule *>(object);
+    cModule *parentModule = object;
 
     // then display all submodules
     //CHK(Tcl_VarEval(interp, canvas, " delete dx", TCL_NULL));  // NOT "delete all" because that'd remove "bubbles" too!
@@ -647,22 +694,182 @@ void ModuleGraphicsView::clear()
 
 void ModuleGraphicsView::redrawNextEventMarker()
 {
+    cModule *mod = object;
 
+    // removing marker from previous event
+    //CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", TCL_NULL));
+
+    // this thingy is only needed if animation is going on
+    if (!getQtenv()->animating || !getQtenv()->opt->showNextEventMarkers)
+        return;
+
+    // if any parent of the module containing the next event is on this canvas, draw marker
+    cModule *nextMod = getSimulation()->guessNextModule();
+    cModule *nextModParent = nextMod;
+    while (nextModParent && nextModParent->getParentModule() != mod)
+        nextModParent = nextModParent->getParentModule();
+    if (nextModParent) {
+//        CHK(Tcl_VarEval(interp, "ModuleInspector:drawNextEventMarker ",
+//                        canvas, " ",
+//                        ptrToStr(nextModParent), " ",
+//                        (nextMod == nextModParent ? "2" : "1"),
+//                        TCL_NULL));
+    }
 }
 
 void ModuleGraphicsView::redrawMessages()
 {
+    // refresh & cleanup from prev. events
+    //CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
 
+    // this thingy is only needed if animation is going on
+    if (!getQtenv()->animating)
+        return;
+
+    // loop through all messages in the event queue and display them
+    cFutureEventSet *fes = getSimulation()->getFES();
+    int fesLen = fes->getLength();
+    for (int i = 0; i < fesLen; i++) {
+        cEvent *event = fes->get(i);
+        if (!event->isMessage())
+            continue;
+        cMessage *msg = (cMessage *)event;
+
+        cModule *arrivalMod = msg->getArrivalModule();
+        if (arrivalMod &&
+            arrivalMod->getParentModule() == object &&
+            msg->getArrivalGateId() >= 0)
+        {
+            char msgptr[32];
+            ptrToStr(msg, msgptr);
+            cGate *arrivalGate = msg->getArrivalGate();
+
+            // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
+            if (arrivalGate->getPreviousGate()) {
+                cGate *gate = arrivalGate->getPreviousGate();
+//                CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnGate ",
+//                                canvas, " ",
+//                                ptrToStr(gate), " ",
+//                                msgptr,
+//                                TCL_NULL));
+            }
+            else {
+//                CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnModule ",
+//                                canvas, " ",
+//                                ptrToStr(arrivalMod), " ",
+//                                msgptr,
+//                                TCL_NULL));
+            }
+        }
+    }
+    //CHK(Tcl_VarEval(interp, canvas, " raise bubble", TCL_NULL));
 }
 
 void ModuleGraphicsView::refreshSubmodules()
 {
-
+    for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
+//        CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
+//                        windowName, " ",
+//                        ptrToStr(*it),
+//                        TCL_NULL));
+    }
 }
 
 void ModuleGraphicsView::adjustSubmodulesZOrder()
 {
+//    cCanvas *canvas = getCanvas();
+//    if (canvas) {
+//        cFigure *submodulesLayer = canvas->getSubmodulesLayer();
+//        if (submodulesLayer) {
+//            char tag[32];
+//            sprintf(tag, "f%d", submodulesLayer->getId());
+//            //CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, TCL_NULL));
+//            //CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, TCL_NULL));
+//        }
+//    }
+}
 
+void ModuleGraphicsView::redraw()
+{
+    //TODO clear scene
+//    if (object == nullptr) {
+//        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+//        return;
+//    }
+
+    updateBackgroundColor();
+
+    refreshLayout();
+    redrawModules();
+    redrawFigures();
+    redrawNextEventMarker();
+    redrawMessages();
+    refreshSubmodules();
+    adjustSubmodulesZOrder();
+}
+
+void ModuleGraphicsView::updateBackgroundColor()
+{
+    //TODO szukseges-e a getCanvas() a ModuleInspector classban?
+    /*
+    cCanvas *canvas = getCanvas();
+    if (canvas) {
+        char buf[16];
+        cFigure::Color color = canvas->getBackgroundColor();
+        sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
+        //CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
+    }
+    */
+}
+
+void ModuleGraphicsView::refresh()
+{
+//    if (!object) {
+//        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+//        return;
+//    }
+
+    if (notDrawn)
+        return;
+
+    //TODO
+//    cCanvas *canvas = getCanvas();
+//    if (canvas != nullptr && !canvasRenderer->hasCanvas())  // canvas was recently created
+//        canvasRenderer->setCanvas(canvas);
+
+    updateBackgroundColor();
+
+    // redraw modules only if really needed
+    if (needs_redraw) {
+        needs_redraw = false;
+        redraw();
+    }
+    else {
+        refreshFigures();
+        redrawNextEventMarker();
+        redrawMessages();
+        refreshSubmodules();
+        adjustSubmodulesZOrder();
+    }
+}
+
+void ModuleGraphicsView::bubble(cComponent *subcomponent, const char *text)
+{
+    if (!subcomponent->isModule())
+        return;  // channel bubbles not yet supported
+
+    // if submod position is not yet known (because e.g. we're in fast mode
+    // and it was dynamically created since the last update), refresh layout
+    // so that we can get coordinates for it
+    cModule *submod = (cModule *)subcomponent;
+    if (submodPosMap.find(submod) == submodPosMap.end())
+        refreshLayout();
+
+    // invoke Tcl code to display bubble
+    char coords[64];
+    Point& pos = submodPosMap[submod];
+    sprintf(coords, " %g %g ", pos.x, pos.y);
+    //CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(text).get(), TCL_NULL));
 }
 
 } // namespace qtenv
