@@ -42,11 +42,6 @@
 #  define SIM_API
 #endif
 
-// nullptr
-#ifndef nullptr
-#define nullptr 0
-#endif
-
 //
 // other common defines
 //
