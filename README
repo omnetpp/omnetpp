@@ -61,7 +61,6 @@ Sample simulations are in the samples directory.
 The contrib directory contains material from the OMNeT++ community.
 
     contrib/     directory for contributed material
-      jsimplemodule/  package for writing OMNeT++ simulations in Java
       jresultwriter/  package for creating OMNeT++ result files from 3rd party Java-based simulators
       topologyexport/ simple module for exporting model topology in XML
       akaroa/    patch file to compile akaroa with GCC 4.4
