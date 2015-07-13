@@ -40,7 +40,7 @@ SOURCES += mainwindow.cc arrow.cc figurerenderers.cc histograminspector.cc logbu
     genericobjecttreemodel.cc \
     qtutil.cc \
     modulegraphicsview.cc \
-    inspectorutil.cc
+    inspectorutil.cc \
     textviewerwidget.cc \
     textviewerproviders.cc \
     logfinddialog.cc \
@@ -54,7 +54,7 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     genericobjecttreemodel.h \
     qtutil.h \
     modulegraphicsview.h \
-    inspectorutil.h
+    inspectorutil.h \
     textviewerwidget.h \
     textviewerproviders.h \
     logfinddialog.h \

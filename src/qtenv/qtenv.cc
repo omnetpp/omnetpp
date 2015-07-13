@@ -612,7 +612,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     animating = true;
     disableTracing = false;
-    recordEventlog = true;
+    recordEventlog = false;
     rununtil_msg = nullptr;
 
     if (simstate == SIM_TERMINATED) {
