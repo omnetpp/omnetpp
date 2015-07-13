@@ -19,6 +19,7 @@
 
 #include <stdint.h>  // int64_t (Note: <cstdint> is C++11)
 #include <climits>   // __WORDSIZE
+#include "platdefs.h"
 
 //
 // Breaking into the debugger
