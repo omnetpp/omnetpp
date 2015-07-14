@@ -1,3 +1,246 @@
+2015-06-24  Andras Varga
+
+	* cEnum: added getNameValueMap() method
+
+2015-06-23  Andras Varga
+
+	* Register_Enum documentation fix and improvement
+
+2015-06-23  Andras Varga
+
+	* Register_Enum bugfix (registered name didn't take namespace into
+	account)
+
+2015-06-12  Andras Varga
+
+	* Iterator cleanup and API change:
+	- added operator* and operator->, deprecated operator()
+	- cleaned up iterator increment/decrement operators
+	- affected classes: cModule::GateIterator, cModule::SubmoduleIterator,
+	  cModule::ChannelIterator, cQueue::Iterator
+
+2015-06-16  Andras Varga
+
+	* FES made replaceable:
+
+	- cMessageHeap has been renamed to cEventHeap
+	- an abstract cFutureEventSet base class has been introduced, and
+	  cEventHeap now extends cFutureEventSet
+	- use cSimulation::getFES() to access the FES; cSimulation.msgQueue and
+	  cSimulation.getMessageQueue() have been removed
+	- cSimulation::getFES() returns cFutureEventSet pointer
+	- introduced futureeventset-class= config option
+	- cEventHeap: peek(k) renamed to get(k)
+	- cEventHeap::Iterator removed (not much advantage over get(i))
+	- cEventHeap: removed length() and empty(); use getLength() and isEmpty()
+	  instead
+
+2015-06-15  Andras Varga
+
+	* cQueue: length(), empty() deprecated; use getLength() and isEmpty()
+	instead
+
+2015-06-09  Andras Varga
+
+	* Remove the deprecated status of cChannelType's createIdealChannel() etc.
+	methods, namely: createIdealChannel(), createDelayChannel() and
+	createDatarateChannel()
+
+2015-06-09  Andras Varga
+
+	* Remove deprecated methods and typedefs:
+
+	- cClassDescriptor: compatibility methods that emulated pre-4.2 API,
+	  i.e. certain overloaded versions of:
+	  getFieldCount(), getFieldName(), findField(), getFieldTypeFlags(),
+	  getFieldIsArray(), getFieldIsCompound(), getFieldIsPointer(),
+	  getFieldIsCObject(), getFieldIsCOwnedObject(), getFieldIsEditable(),
+	  getFieldDeclaredOn(), getFieldTypeString(), getFieldProperty(),
+	  getArraySize(), getFieldAsString(), getFieldAsString(),
+	  setFieldAsString(), getFieldStructName(), getFieldStructPointer()
+
+	- cGate::setChannel(); use reconnectWith() instead
+
+	- cMessage::setArrival()
+
+	- cMessage::addPar(cMsgPar&); use addPar(cMsgPar*) instead
+
+	- cSubModIterator class: use cModule::SubmoduleIterator instead
+
+	- cMsgPar::getAsText(); use str() instead
+
+	- cMsgPar::setFromText(); use parse() instead
+
+	- cSimpleChannel typedef; use cDatarateChannel
+
+	- cPolymorphic typedef; use cObject instead
+
+	- cPacket: getEncapsulatedMsg(); use getEncapsulatedPacket() instead
+
+	- Simtime: SCALEEXP_S and other SCALEEXP_xxx constants; use SIMTIME_xxx
+	  constants instead
+
+2015-06-09  Andras Varga
+
+	* Remove deprecated method cModule::getModuleByRelativePath()
+
+2015-05-22  Andras Varga
+
+	* Modernizing: added the 'override' keyword (C++11) to overridden methods;
+	it becomes blank when using with an older compiler.
+
+2015-05-21  Rudolf Hornig
+
+	* Modernizing: replaced NULLs by 'nullptr' (C++11); it is defined as 0
+	when using an older compiler.
+
+2015-05-12  Andras Varga
+
+	* Cleanup: several data members, function arguments and local variables
+	changed to camelCase
+
+2015-05-12  Andras Varga
+
+	* cException: getContextModuleID() -> getContextComponentId(), and more
+
+	* cComponent: added getComponentKind() (and isModule()/isChannel() changed
+	to rely on it)
+
+	* cException: added getContextComponentKind()
+
+2015-05-11  Andras Varga
+
+	* Some methods renamed in statistic classes:
+
+	cStatistic:
+	- addTransientDetection() -> setTransientDetectionObject()
+	- addAccuracyDetection() -> setAccuracyDetectionObject()
+
+	cDensityEstBase: methods renamed
+	- getNumFirstVals() -> getNumPrecollectedValues()
+	- setNumFirstVals() -> setNumPrecollectedValues()
+
+	cVarHistogram:
+	- unnamed enum of HIST_TR_xxx constants became cVarHistogram::TransformType
+
+2015-05-20  Andras Varga
+
+	* Cleanup: cModule, cStatistic: some private stuff made private
+
+2015-05-08  Andras Varga
+
+	* Cleanup: removed deprecated opp_error(), opp_terminate(), opp_warning()
+	functions
+
+2015-04-24  Andras Varga
+
+	* cStatistic to subclass from cRandom, and its random() has been deprecated
+	in favour of cRandom's draw()
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-15  Andras Varga
+
+	* Introduced cRandom:
+
+	- cRandom encapsulates a random number stream into an object. Random
+	  numbers can be extracted with the draw() method.
+
+	- Added the following cRandom subclasses: cUniform, cExponential,
+	  cNormal, cTruncNormal, cGamma, cBeta, cErlang, cChiSquare, cStudentT,
+	  cCauchy, cTriang, cWeibull, cParetoShifted, cIntUniform, cBernoulli,
+	  cBinomial, cGeometric, cNegBinomial, cPoisson. They encapsulate the
+	  similarly named functions (e.g. exponential()) with their parameters
+	  and the random number generator (cRNG).
+
+	* Refactoring of the random number generator functions:
+
+	- Random variate generation functions have been moved into cComponent.
+	  Goal: remove dependence on global variable (they used the RNGs of the
+	  *context* module).
+
+	- Affected: exponential(), normal() etc as well as intrand() and dblrand().
+
+	- Original standalone functions remained, but take cRNG* as argument
+	  instead of an integer RNG index.
+
+	* Removed: genk_intrand(), genk_dblrand(). Use the update intrand/dblrand
+	instead (they exist both in method and standalone function form).
+
+2015-04-14  Andras Varga
+
+	* Eliminating the "simulation" macro:
+
+	- Introduced a global getSimulation() function, and replaced "simulation"
+	  occurrences by a call to getSimulation().
+
+	- Added the following added accessor methods:
+	    - cComponent::getSimulation()
+	    - cComponent::getSystemModule()
+	    - cScheduler::getSimulation()
+
+	- Goal: long-term, there should be enough getSimulation() methods around
+	  so that the global function can be thrown out. Ultimately, we'd like
+	  to get rid of the activeSimulation global variable too.
+
+	- Note: simulation.getModuleByPath() calls in modules can simply be
+	  replaced by the module's getModuleByPath() method.
+
+	* Eliminating the "ev" macro:
+
+	- Introduced a global getEnvir() function, and replaced "ev" occurrences by
+	  a call to getEnvir(). Advantage: cComponent etc may later have getEnvir()
+	  methods --> less static vars.
+
+	- Added cComponent::hasGUI() to replace ev.isGUI() calls
+
+2015-04-11  Andras Varga
+
+	* Cleanup: standardize and qualify header guards with the OMNETPP prefix
+
+2015-04-14  Andras Varga
+
+	* Added OMNETPP_BUILDNUM
+
+2015-04-13  Andras Varga
+
+	* Added compatibility platdep/sockets.h that redirects to omnetpp/platdep/sockets.h.
+
+	Needed because sockets.h *must* be included before omnetpp.h, so we
+	cannot use OMNETPP_VERSION to decide between <platdep/sockets.h> (old)
+	and <omnetpp/platdep/sockets.h> (new).
+
+2015-04-01  Andras Varga
+
+	* cObject: parsimPack() became const
+
+2015-04-07  Andras Varga
+
+	* Restructuring: Header files moved into include/omnetpp, with the
+	exception of <omnetpp.h>
+
+2015-04-04  Andras Varga
+
+	* cObjectFactory: implemented namespace lookup. The following methods
+
+	   static cObjectFactory *find(const char *classname);
+	   static cObjectFactory *get(const char *classname);
+
+	have been extended with two extra arguments to allow lookup of names
+	within a context namespace, potentially falling back to the "omnetpp"
+	namespace:
+
+	   static cObjectFactory *find(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
+	   static cObjectFactory *get(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
+
+
+2015-03-23  Andras Varga
+
+	* Cleanup: VoidDelFunc and VoidDupFunc became inner types of cMsgPar,
+	as only cMsgPar used them.
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2015-02-14  Andras Varga

@@ -1,3 +1,15 @@
+2015-06-08  Andras Varga
+
+	* Cleanup: code formatting
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-12  Andras Varga
+
+	* Cleanup: copyright years updated
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2015-02-15  Andras varga

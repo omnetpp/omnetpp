@@ -1,3 +1,50 @@
+2015-06-16  Andras Varga
+
+	* Cleanup: prefer ++it to it++ (less copying)
+
+2015-06-12  Andras Varga
+
+	* Adapted to simkernel iterator API changes (added operator* and
+	operator->, deprecated operator())
+
+2015-06-16  Andras Varga
+
+	* Adapted to FES-related simkernel API changes
+
+2015-06-08  Andras Varga
+
+	* Cleanup: code formatting
+
+2015-05-22  Andras Varga
+
+	* Modernizing: added the 'override' keyword (C++11) to overridden methods;
+	it becomes blank when using with an older compiler.
+
+2015-05-21  Rudolf Hornig
+
+	* Modernizing: replaced NULLs by 'nullptr' (C++11); it is defined as 0
+	when using an older compiler.
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-12  Andras Varga
+
+	* Cleanup: copyright years updated
+
+2015-04-08  Andras Varga
+
+	* Modernizing:
+
+	- Use a fixed include path (-Iinclude -Isrc) for all source folders
+	  under src/, and qualify cross-folder #includes with the folder
+	  name (e.g. change #include "stringutil.h" to #include "common/stringutil.h").
+	  This increases readbility and reduces the chance of including a wrong
+	  header.
+
+	- In source files, sort #include statements by folder.
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2013-09-24  Andras Varga

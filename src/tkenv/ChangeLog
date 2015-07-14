@@ -1,3 +1,107 @@
+2015-06-26  Andras Varga
+
+	* Fix: right-clicking submodule queue length display ("q:2") resulted in
+	runtime error
+
+2015-06-22  Andras Varga
+
+	* Feature: double-clicking a module in the object tree will open it
+	in the main area instead of opening a new inspector window. A new
+	inspector can still be opened from the context menu.
+
+2015-06-22  Andras Varga
+
+	* Fix: "Open Details for X" caused runtime error
+	* Fix: WatchInspector logged error an ("no such variable $insp in createWatchViewer")
+	* Fix #831: "Run Until Next Event in Module X" resulted in Tcl error dialog
+
+2015-06-16  Andras Varga
+
+	* Cleanup: prefer ++it to it++ (less copying)
+
+2015-06-11  Andras Varga
+
+	* if(dynamic_cast) refactoring: change code like
+
+	    if (dynamic_cast<cComponent *>(object) != nullptr) {
+	        cComponent *component = (cComponent *)object;
+	        ...
+	    }
+
+	To:
+
+	    if (cComponent *component = dynamic_cast<cComponent *>(object)) {
+	        ...
+	    }
+
+2015-06-09  Andras Varga
+
+	* Images under images/old/ are no longer accessible without the "old/"
+	prefix, so one must change e.g. "i=cloud" to "i=old/cloud" in display
+	strings. The feature to let old/* images be accessible without the prefix
+	was originally introduced to ease the transition from OMNeT++ 3.x to 4.0.
+
+2015-06-08  Andras Varga
+
+	* Cleanup: longer header guards
+
+2015-06-08  Andras Varga
+
+	* Cleanup: code formatting
+
+2015-05-15  Andras Varga
+
+	* Cleanup: use per-folder nested namespaces: omnetpp::envir, omnetpp::tkenv,
+	omnetpp::layout, omnetpp::common, omnetpp::eventlog, etc.
+
+2015-05-22  Andras Varga
+
+	* Modernizing: added the 'override' keyword (C++11) to overridden methods;
+	it becomes blank when using with an older compiler.
+
+2015-05-21  Rudolf Hornig
+
+	* Modernizing: replaced NULLs by 'nullptr' (C++11); it is defined as 0
+	when using an older compiler.
+
+2015-05-11  Andras Varga
+
+	* Cleanup: data members renamed to camelCase
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-14  Andras Varga
+
+	* Occurrences of the "simulation" macro replaced by getSimulation() calls,
+	and "ev" by getEnvir() calls.
+
+2015-04-12  Andras Varga
+
+	* Cleanup: copyright years updated
+
+2015-04-08  Andras Varga
+
+	* Modernizing:
+
+	- Use a fixed include path (-Iinclude -Isrc) for all source folders
+	  under src/, and qualify cross-folder #includes with the folder
+	  name (e.g. change #include "stringutil.h" to #include "common/stringutil.h").
+	  This increases readbility and reduces the chance of including a wrong
+	  header.
+
+	- In source files, sort #include statements by folder.
+
+2015-03-23  Andras Varga
+
+	* Added the "Hide namespaces" option that turns off the display of the
+	namespace part of C++ class names when they appear in the GUI.
+
+2015-03-23  Andras Varga
+
+	* cCanvas rendering fixes.
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2015-02-26  Andras Varga

@@ -1,3 +1,189 @@
+2015-06-29  Andras Varga
+
+	* cClassDescriptor: string2enum() made more tolerant
+
+2015-06-24  Andras Varga
+
+	* sim_std.msg: refactored @enum annotations
+
+2015-06-19  Andras Varga
+
+	* cDynamicExpression: Fix #830 related bug: parser would crash on
+	encountering a "//" comment in an expression
+
+2015-06-16  Andras Varga
+
+	* Cleanup: prefer ++it to it++ (less copying)
+
+2015-06-12  Andras Varga
+
+	* Cleanup: implement/follow iterator API changes (increment/decrement
+	operators, operator* and operator->, deprecation of operator();
+	see include/omnetpp/ChangeLog for details)
+
+2015-06-08  Andras Varga
+
+	* Cleanup: More camelization and variable renaming
+
+2015-06-11  Andras Varga
+
+	* if(dynamic_cast) refactoring: change code like
+
+	    if (dynamic_cast<cComponent *>(object) != nullptr) {
+	        cComponent *component = (cComponent *)object;
+	        ...
+	    }
+
+	To:
+
+	    if (cComponent *component = dynamic_cast<cComponent *>(object)) {
+	        ...
+	    }
+
+2015-06-16  Andras Varga
+
+	* FES made replaceable (see details in include/omnetpp/ChangeLog)
+
+2015-06-15  Andras Varga
+
+	* Follow deprecation of cQueue: length() and empty()
+
+2015-06-09  Andras Varga
+
+	* Follow removal of deprecated methods and typedefs (see include/omnetpp/
+	ChangeLog)
+
+2015-06-09  Andras Varga
+
+	* Remove deprecated cModule::getModuleByRelativePath()
+
+2015-06-15  Andras Varga
+
+	* cPSquare: remove old inactive code; cosmetics
+
+2015-06-08  Andras Varga
+
+	* Cleanup: code formatting
+
+2015-05-22  Andras Varga
+
+	* Modernizing: added the 'override' keyword (C++11) to overridden methods;
+	it becomes blank when using with an older compiler.
+
+2015-05-21  Rudolf Hornig
+
+	* Modernizing: replaced NULLs by 'nullptr' (C++11); it is defined as 0
+	when using an older compiler.
+
+2015-05-12  Andras Varga
+
+	* Cleanup: data members, arguments and local vars changed to camelCase
+
+2015-05-12  Andras Varga
+
+	* Follow cException method renaming and related changes (see include/
+	omnetpp/ChangeLog)
+
+2015-05-11  Andras Varga
+
+	* Follow method renaming in statistic classes (see include/omnetpp/ChangeLog)
+
+2015-05-11  Andras Varga
+
+	* Follow data member renaming and camelization
+
+2015-05-08  Andras Varga
+
+	* Removed deprecated opp_error(), opp_terminate(), opp_warning() functions
+
+2015-04-24  Andras Varga
+
+	* Follow change: cStatistic now subclasses from cRandom, and random()
+	methods renamed to draw() (a random() still exists but is deprecated and
+	delegates to draw())
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-15  Andras Varga
+
+	* Implement and follow signature change of random variate generation
+	functions like exponential(). int rng argument became cRNG *rng and moved
+	to first place.
+
+	* Removed genk_intrand(), genk_dblrand().
+
+2015-04-14  Andras Varga
+
+	* Cleanup: Eliminating the "simulation" macro: replaced occurrences
+	by calls to the getSimulation() function.
+	Goal: long-term, there should be enough getSimulation() methods around so
+	that the global function can be thrown out. Ultimately, we'd like to get
+	rid of the activeSimulation global var too.
+
+2015-04-10  Andras Varga
+
+	* Cleanup: Eliminating the "simulation" macro: added accessor methods.
+
+	- cComponent::getSimulation()
+	- cComponent::getSystemModule()
+	- cScheduler::getSimulation()
+
+	Note: simulation.getModuleByPath() calls in modules can simply be
+	replaced by the module's getModuleByPath() method.
+
+2015-04-14  Andras Varga
+
+	* Cleanup: Eliminating the "ev" macro; its occurrences have been replaced
+	by calls to a getEnvir() standalone function.
+
+2015-04-09  Andras Varga
+
+	* Added cComponent::hasGUI() to replace ev.isGUI() calls
+
+2015-04-12  Andras Varga
+
+	* Cleanup: copyright years updated
+
+2015-04-11  Andras Varga
+
+	* Cleanup: standardize and qualify header guards with the OMNETPP prefix
+
+2015-04-08  Andras Varga
+
+	* Modernizing:
+
+	- Use a fixed include path (-Iinclude -Isrc) for all source folders
+	  under src/, and qualify cross-folder #includes with the folder
+	  name (e.g. change #include "stringutil.h" to #include "common/stringutil.h").
+	  This increases readbility and reduces the chance of including a wrong
+	  header.
+
+	- In source files, sort #include statements by folder.
+
+2015-04-01  Andras Varga
+
+	* Follow change: parsimPack() became const
+
+2015-04-04  Andras Varga
+
+	* Namespace-related improvements:
+
+	- cObjectFactory::get() and find() extended with namespace lookup
+
+	- signals type checking and createOne() to fall back to the "omnetpp"
+	  namespace
+
+2015-03-12  Andras Varga
+
+	* Default of "**.log-level" changed from DEBUG to TRACE
+
+2015-03-12  Andras Varga
+
+	* cPathFigure fix: closePath() broke the path (figure was not displayed
+	any longer)
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2014-12-12  Andras Varga
@@ -6,7 +192,7 @@
 
 2014-09-17  Andras Varga
 
-	Canvas API implementation finished. See include/ ChangeLog for details.
+	* Canvas API implementation finished. See include/ ChangeLog for details.
 
 2014-08-18  Zoltan Bojthe
 

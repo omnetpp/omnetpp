@@ -1,3 +1,66 @@
+2015-06-30  Andras Varga
+
+	* opp_strnistr() fix (did not match at the end of the string)
+
+2015-06-19  Andras Varga
+
+	* expression.lex: fix #830 "kernel crashes when adding '//' to parameter
+	lines in ini-files". The expression parser was not supposed to support
+	"//" comments in the first place
+
+2015-06-11  Andras Varga
+
+	* UnitConversion: put back kB/MB/GB/TB with the correct (base 10) meaning.
+	Note: base 2 units also exist: KiB, MiB, GiB, TiB.
+
+2015-06-08  Andras Varga
+
+	* Cleanup: longer header guards
+
+2015-06-08  Andras Varga
+
+	* Cleanup: code formatting
+
+2015-05-15  Andras Varga
+
+	* CommonStringPool renamed to StringPool (due to namespaces, it no longer
+	conflicts with StringPools in other source folders)
+
+2015-05-15  Andras Varga
+
+	* Cleanup: use per-folder nested namespaces: omnetpp::envir, omnetpp::tkenv,
+	omnetpp::layout, omnetpp::common, omnetpp::eventlog, etc.
+
+2015-05-22  Andras Varga
+
+	* Modernizing: added the 'override' keyword (C++11) to overridden methods;
+	it becomes blank when using with an older compiler.
+
+2015-05-21  Rudolf Hornig
+
+	* Modernizing: replaced NULLs by 'nullptr' (C++11); it is defined as 0
+	when using an older compiler.
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-12  Andras Varga
+
+	* Cleanup: copyright years updated
+
+2015-04-08  Andras Varga
+
+	* Modernizing:
+
+	- Use a fixed include path (-Iinclude -Isrc) for all source folders
+	  under src/, and qualify cross-folder #includes with the folder
+	  name (e.g. change #include "stringutil.h" to #include "common/stringutil.h").
+	  This increases readbility and reduces the chance of including a wrong
+	  header.
+
+	- In source files, sort #include statements by folder.
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2015-02-07  Andras Varga

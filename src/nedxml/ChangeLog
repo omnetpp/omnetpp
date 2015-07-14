@@ -1,3 +1,94 @@
+2015-06-16  Andras Varga
+
+	* Cleanup: prefer ++it to it++ (less copying)
+
+2015-06-20  Andras Varga
+
+	* nedtool: fix: handle C++ exceptions (instead of crashing)
+
+2015-06-19  Andras Varga
+
+	* NedTypeInfo: allow a "module" to extend a "simple" (motivation: INET 3.x)
+
+2015-06-09  Andras Varga
+
+	* MsgCppGenerator: doPacking() renamed to doParsimPacking(), same for
+	doUnpacking(), doArrayPacking() and doArrayUnpacking()
+
+2015-06-08  Andras Varga
+
+	* Cleanup: longer header guards
+
+2015-06-08  Andras Varga
+
+	* Cleanup: code formatting
+
+2015-05-15  Andras Varga
+
+	* Cleanup: use per-folder nested namespaces: omnetpp::envir, omnetpp::tkenv,
+	omnetpp::layout, omnetpp::common, omnetpp::eventlog, etc.
+
+2015-05-22  Andras Varga
+
+	* Modernizing: added the 'override' keyword (C++11) to overridden methods;
+	it becomes blank when using with an older compiler.
+
+	* MsgCppGenerator: generated code now contains 'override' annotations
+
+2015-05-21  Rudolf Hornig
+
+	* Modernizing: replaced NULLs by 'nullptr' (C++11); it is defined as 0
+	when using an older compiler.
+
+	* MsgCppGenerator: generated code now contains 'nullptr' instead of NULL
+
+2015-05-11  Andras Varga
+
+	* Cleanup: many data members renamed to camelCase
+
+2015-04-20  Andras Varga
+
+	* Cleanup: use C++ names of C headers (e.g. <cstdio> instead of <stdio.h>)
+
+2015-04-12  Andras Varga
+
+	* Cleanup: copyright years updated
+
+2015-04-14  Andras Varga
+
+	* MsgCppGenerator: eliminated "_var" suffix from data members. To emulate
+	the old behavior, add the following to a message definition:
+
+	    @fieldNameSuffix("_var");
+
+2015-04-08  Andras Varga
+
+	* Modernizing:
+
+	- Use a fixed include path (-Iinclude -Isrc) for all source folders
+	  under src/, and qualify cross-folder #includes with the folder
+	  name (e.g. change #include "stringutil.h" to #include "common/stringutil.h").
+	  This increases readbility and reduces the chance of including a wrong
+	  header.
+
+	- In source files, sort #include statements by folder.
+
+2015-04-07  Andras Varga
+
+	* msg2.y fix: msg file parser didn't support file properties
+
+2015-03-30  Andras Varga
+
+	* MsgCppGenerator: changed the code generated for parsimPack() / parsimUnpack()
+	in order to make it work with OMNeT++ and model C++ namespaces.
+
+	* Modified the generated operator<< functions for the same reason (namespaces).
+
+
+2015-03-25  Andras Varga
+
+	* MsgCppGenerator: fixed #821 wrong handling of multiple "namespace" directives
+
 2015-03-04  ------ omnetpp-5.0b1 released ------
 
 2014-09-23  Andras Varga
