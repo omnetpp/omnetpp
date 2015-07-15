@@ -118,7 +118,7 @@ class @TESTNAME@::Msg3 {
     string detailedInfo = ""
     int i = 900
     int e = "300 (THIRD)"
-    Base member = struct @TESTNAME@::Base {
+    Base member = class @TESTNAME@::Base {
         string className = @TESTNAME@::Base
         string fullName = ""
         string fullPath = ""
