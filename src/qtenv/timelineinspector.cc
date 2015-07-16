@@ -63,9 +63,8 @@ void TimeLineInspector::createContextMenu(QVector<cObject*> objects, QPoint glob
     }
     else
     {
-        //TODO Preferences Dialog
         QMenu *menu = new QMenu();
-        menu->addAction("Timeline Settings...");
+        menu->addAction("Timeline Settings...", this, SLOT(runPreferencesDialog()));
         menu->exec(globalPos);
         delete menu;
     }
@@ -84,6 +83,11 @@ void TimeLineInspector::openInspector(cObject *object)
 void TimeLineInspector::refresh()
 {
     timeLine->rebuildScene();
+}
+
+void TimeLineInspector::runPreferencesDialog()
+{
+    InspectorUtil::preferencesDialog(InspectorUtil::TAB_FILTERING);
 }
 
 } // namespace qtenv

@@ -34,6 +34,7 @@ class InspectorUtil
 {
 public:
     enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
+    enum eTab { TAB_GENERAL, TAB_LAYOUTING, TAB_ANIMATION, TAB_FILTERING, TAB_FONTS, TAB_NOTDEFINED };
 
     InspectorUtil() {}
 
@@ -42,7 +43,7 @@ public:
     static QMenu *createInspectorContextMenu(QVector<cObject *> objects, Inspector *insp);
     static void copyToClipboard(cObject *object, int what);
     static void setClipboard(QString str);
-
+    static void preferencesDialog(eTab defaultPage = TAB_NOTDEFINED);
 };
 
 } // namespace qtenv

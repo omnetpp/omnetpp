@@ -26,6 +26,9 @@ class LogFindDialog;
 }
 
 namespace omnetpp {
+
+class cObject;
+
 namespace qtenv {
 
 class LogFindDialog : public QDialog

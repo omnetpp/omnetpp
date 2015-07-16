@@ -781,5 +781,12 @@ void MainWindow::busy(QString msg)
     }
 }
 
+
+void MainWindow::on_actionPreferences_triggered()
+{
+    InspectorUtil::preferencesDialog();
+    getQtenv()->refreshInspectors();
+}
+
 } // namespace qtenv
 } // namespace omnetpp

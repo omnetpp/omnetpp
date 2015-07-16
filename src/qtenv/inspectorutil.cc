@@ -25,6 +25,7 @@
 #include <qtenv.h>
 #include <qtenv/inspector.h>
 #include <inspectorfactory.h>
+#include "preferencesdialog.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -235,6 +236,13 @@ void InspectorUtil::setClipboard(QString str)
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->clear();
     clipboard->setText(str);
+}
+
+void InspectorUtil::preferencesDialog(eTab defaultPage)
+{
+    PreferencesDialog *prefDialog = new PreferencesDialog(defaultPage);
+    prefDialog->exec();
+    delete prefDialog;
 }
 
 } // namespace qtenv

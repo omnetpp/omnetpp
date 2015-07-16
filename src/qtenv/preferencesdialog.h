@@ -1,5 +1,5 @@
 //==========================================================================
-//  TIMELINEINSPECTOR.H - part of
+//  PREFERENCESDIALOG.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,41 +14,36 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef TIMELINEINSPECTOR_H
-#define TIMELINEINSPECTOR_H
+#ifndef PREFERENCESDIALOG_H
+#define PREFERENCESDIALOG_H
 
-#include "inspector.h"
+#include <QDialog>
+
+namespace Ui {
+class PreferencesDialog;
+}
 
 namespace omnetpp {
 namespace qtenv {
 
-class TimeLineGraphicsView;
-
-class TimeLineInspector : public Inspector
+class PreferencesDialog : public QDialog
 {
     Q_OBJECT
-private:
-
-    TimeLineGraphicsView *timeLine;
-
-signals:
-    void selectionChange(cObject *);
-
-private slots:
-    void runPreferencesDialog();
-
-public slots:
-    void createContextMenu(QVector<cObject*> objects, QPoint globalPos);
-    void setObjectToObjectInspector(cObject* object);
-    void openInspector(cObject *object);
 
 public:
-    TimeLineInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+    explicit PreferencesDialog(int defaultPage = -1, QWidget *parent = 0);
+    ~PreferencesDialog();
 
-    virtual void refresh();
+public slots:
+    void accept();
+
+private:
+    Ui::PreferencesDialog *ui;
+
+    void init();
 };
 
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // TIMELINEINSPECTOR_H
+#endif // PREFERENCESDIALOG_H

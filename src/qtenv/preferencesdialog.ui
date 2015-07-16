@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PreferencesDialog</class>
+ <widget class="QDialog" name="PreferencesDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>552</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>10</width>
+    <height>10</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Preferences</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>4</number>
+     </property>
+     <widget class="QWidget" name="general">
+      <attribute name="title">
+       <string>General</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QGroupBox" name="userInterface">
+         <property name="title">
+          <string>User Interface</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QCheckBox" name="keepOnTop">
+            <property name="text">
+             <string>Keep inspector windows on top</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="reuseInsp">
+            <property name="text">
+             <string>Reuse inspectors if possible</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="confirmExit">
+            <property name="text">
+             <string>Confirm exit when simulation is in progress</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="formLayout_4">
+            <item row="0" column="0">
+             <widget class="QLabel" name="hideNamespaceText">
+              <property name="text">
+               <string>Hide namespaces from C++ class names:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="hideNameSpace">
+              <item>
+               <property name="text">
+                <string>none</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>omnetpp</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>all</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="logs">
+         <property name="title">
+          <string>Logs</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QCheckBox" name="initBanners">
+            <property name="text">
+             <string>Print initialization banners</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="eventBanners">
+            <property name="text">
+             <string>Print event banners</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="shortBanners">
+            <property name="text">
+             <string>Short event banners</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="formLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="logPrefixText">
+              <property name="text">
+               <string>Log prefix format:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="logLevelText">
+              <property name="text">
+               <string>Log level:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="logPrefix"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="logLevel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <item>
+               <property name="text">
+                <string>FATAL</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>ERROR</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>WARN</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>INFO</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>DETAIL</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>DEBUG</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>TRACE</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="settings">
+            <property name="text">
+             <string>The above settings apply to subsequent simulation events. Hover mouse to get help on log format syntax.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="formLayout_2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="overallText">
+              <property name="text">
+               <string>Overall history size (in events):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="scrollbackText">
+              <property name="text">
+               <string>Scrollback buffer (lines):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="overall"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="scrollback"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="applies">
+            <property name="text">
+             <string>Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="simulationExecution">
+         <property name="title">
+          <string>Simulation Execution</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="fastText">
+              <property name="text">
+               <string>Display update frequency for Fast Run (ms):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="expressText">
+              <property name="text">
+               <string>Display update frequency for Express Run (ms):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="fast"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="express"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="generalSapcer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layouting">
+      <attribute name="title">
+       <string>Layouting</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QGroupBox" name="layoutingBox">
+         <property name="title">
+          <string>Layouting</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="layoutingText">
+            <property name="text">
+             <string>Layouting algorithm:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_19">
+             <item>
+              <widget class="QRadioButton" name="fastRadio">
+               <property name="text">
+                <string>Fast</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="advancedRadio">
+               <property name="text">
+                <string>Advanced</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="adaptiveRadio">
+               <property name="text">
+                <string>Adaptive (Fast for large networks, Advanced for smaller ones)</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showLayouting">
+            <property name="text">
+             <string>Show layouting process</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="display">
+         <property name="title">
+          <string>Display</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <item>
+           <widget class="QCheckBox" name="arrange">
+            <property name="text">
+             <string>Arrange connections on vector gates parallel to each other</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="minIconSizeText">
+              <property name="text">
+               <string>Minimum icon size when zoomed out (pixels):</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="minIconSizeEdit"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="allowResize">
+            <property name="text">
+             <string>Resize window to fit network with current zoom level first</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="allowZoom">
+            <property name="text">
+             <string>Zoom out if necessary to fit network into window</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="layoutingSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="animation">
+      <attribute name="title">
+       <string>Animation</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QGroupBox" name="animGeneral">
+         <property name="title">
+          <string>General</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_13">
+          <item>
+           <widget class="QCheckBox" name="animMsg">
+            <property name="text">
+             <string>Animate messages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="animSpeedLayout">
+            <item>
+             <widget class="QLabel" name="animSpeedText">
+              <property name="text">
+               <string>Animation speed:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="animSpeedSlider">
+              <property name="maximum">
+               <number>90</number>
+              </property>
+              <property name="singleStep">
+               <number>1</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="animBroadcast">
+            <property name="text">
+             <string>Broadcast animation</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="animText">
+            <property name="text">
+             <string>Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showMarker">
+            <property name="text">
+             <string>Show next event markers</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showArrows">
+            <property name="text">
+             <string>Show arrows for sendDirect animation</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showBubbles">
+            <property name="text">
+             <string>Show bubbles (bubble() calls)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="animCalls">
+            <property name="text">
+             <string>Animate method calls</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="delayLayout">
+            <item>
+             <widget class="QLabel" name="delayText">
+              <property name="text">
+               <string>Method call delay (ms):</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="delayEdit"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="messages">
+         <property name="title">
+          <string>Messages</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <item>
+           <widget class="QCheckBox" name="dispName">
+            <property name="text">
+             <string>Display message names during animation</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dispClass">
+            <property name="text">
+             <string>Display message class during animation</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="colorMsg">
+            <property name="text">
+             <string>Color messages by message kind</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="colorCode">
+            <property name="text">
+             <string>Color code (message kind modulo 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="penguinMode">
+            <property name="text">
+             <string>Penguin mode</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="animSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="filtering">
+      <attribute name="title">
+       <string>Filtering</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QGroupBox" name="timeLine">
+         <property name="title">
+          <string>Timeline</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <widget class="QCheckBox" name="selfMsg">
+            <property name="text">
+             <string>Show self-messages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="nonSelfMsg">
+            <property name="text">
+             <string>Show non-self messages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="silentMsg">
+            <property name="text">
+             <string>Show silent (non-animated) messages, see below</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="animationBox">
+         <property name="title">
+          <string>Animation</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_16">
+          <item>
+           <widget class="QLabel" name="excludeMsgText">
+            <property name="text">
+             <string>Messages to exclude from animation:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="excludMsgEdit"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="details">
+            <property name="text">
+             <string>One expression per line. Wildcards, AND, OR, NOT, numeric ranges ({5..10}), field matchers (className(..), kind(..), byteLength(..), etc.) are accepted.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="filteringSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="fonts">
+      <attribute name="title">
+       <string>Fonts</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QGroupBox" name="fontsBox">
+         <property name="title">
+          <string>Fonts</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="userInterfaceText">
+            <property name="text">
+             <string>User interface:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="timeLineText">
+            <property name="text">
+             <string>Timeline:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="canvasText">
+            <property name="text">
+             <string>Canvas:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="logText">
+            <property name="text">
+             <string>Log windows:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <spacer name="fontsSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="1">
+           <widget class="QFontComboBox" name="userInterfaceBox"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QFontComboBox" name="timeLineBox"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QFontComboBox" name="canvasBox"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QFontComboBox" name="logBox"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSpinBox" name="userInterfaceNumBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>70</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QSpinBox" name="timeLineNumBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>70</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QSpinBox" name="canvasNumBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>70</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QSpinBox" name="logNumBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>70</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>PreferencesDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>257</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>PreferencesDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
+</ui>

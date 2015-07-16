@@ -93,6 +93,7 @@ private slots:
     void on_actionRebuildNetwork_triggered();
     void closeEvent(QCloseEvent *event);
     void initialSetUpConfiguration();
+    void on_actionPreferences_triggered();
 
 public slots:
     void on_actionStop_triggered();

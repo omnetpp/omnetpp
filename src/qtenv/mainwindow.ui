@@ -315,6 +315,8 @@
    <addaction name="actionHorizontalLayout"/>
    <addaction name="actionTimeline"/>
    <addaction name="separator"/>
+   <addaction name="actionPreferences"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
