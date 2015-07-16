@@ -56,8 +56,12 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     //TODO
     slider = new QSlider();
+    slider->setMinimum(50);
+    slider->setMaximum(300);
     slider->setOrientation(Qt::Orientation::Horizontal);
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    slider->setValue(getQtenv()->opt->animationSpeed * 100);
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     ui->toolBar->addWidget(slider);
 
     //TODO
@@ -180,6 +184,8 @@ void MainWindow::on_actionOneStep_triggered()
         env->doOneStep();
         setGuiForRunmode(NOT_RUNNING);
     }
+
+    getQtenv()->getAnimator()->hurry();
 }
 
 // exitOmnetpp
@@ -279,6 +285,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
             busy();
         }
     }
+    delete dialog;
 }
 
 // stopSimulation
@@ -291,6 +298,8 @@ void MainWindow::on_actionStop_triggered()
         // "setGuiForRunmode notrunning" will be called after "opp_run" has returned.
         env->setStopSimulationFlag();
     }
+
+    getQtenv()->getAnimator()->hurry();
 
     // this proc doubles as "stop layouting", when in graphical module inspectors
     // TODO
@@ -358,7 +367,12 @@ void MainWindow::on_actionRunUntil_triggered()
 //            messagebox {Error} "Error: $err" error ok
 //        }
 //        setGuiForRunmode notrunning
-//    }
+    //    }
+}
+
+void MainWindow::onSliderValueChanged(int value)
+{
+    getQtenv()->opt->animationSpeed = value / 100.0;
 }
 
 void MainWindow::inspectObject(QModelIndex index)

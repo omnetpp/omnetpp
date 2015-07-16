@@ -32,7 +32,8 @@ class cComponent;
 
 namespace qtenv {
 
-class FigureRenderingHints;
+class GraphicsLayer;
+struct FigureRenderingHints;
 class CanvasRenderer;
 
 class ModuleGraphicsView : public QGraphicsView
@@ -47,11 +48,11 @@ private:
     CanvasRenderer *canvasRenderer;
     QString windowName;
 
-    struct Point {double x,y;};
-    typedef std::map<cModule*,Point> PositionMap;
+    typedef std::map<cModule*,QPointF> PositionMap;
     PositionMap submodPosMap;  // recalculateLayout() fills this map
 
     std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
+    std::map<int, QGraphicsItem*> messageGraphicsItems;
 
     // does full layouting, stores results in submodPosMap
     void recalculateLayout();
@@ -61,7 +62,6 @@ private:
     void refreshFigures();
     void redrawModules();
     void redrawNextEventMarker();
-    void redrawMessages();
     void refreshSubmodules();
     void adjustSubmodulesZOrder();
 
@@ -76,10 +76,11 @@ private:
     void drawEnclosingModule(cModule *parentModule);
     void drawConnection(cGate *gate);
 
-    QPointF getSubmodCoords(cModule *mod);
     void fillFigureRenderingHints(FigureRenderingHints *hints);
 
     void updateBackgroundColor();
+
+    GraphicsLayer *layer = nullptr;
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
@@ -101,10 +102,15 @@ public:
     cObject *getObjectAt(qreal x, qreal y);
     QList<cObject*> getObjectsAt(qreal x, qreal y);
 
+    void setLayer(GraphicsLayer *layer);
+
     void redraw();
     void refresh();
 
     void bubble(cComponent *subcomponent, const char *text);
+
+    QPointF getSubmodCoords(cModule *mod);
+    QPointF getMessageEndPos(const QPointF &src, const QPointF &dest);
 
     void clear();
     bool getNeedsRedraw() { return needs_redraw; }

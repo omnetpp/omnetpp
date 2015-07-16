@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_QTENV_MODULEINSPECTOR_H
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
+#include "animator.h"
 #include "inspector.h"
 
 class QBoxLayout;
@@ -34,7 +35,19 @@ namespace qtenv {
 class CanvasRenderer;
 class ModuleGraphicsView;
 
-enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
+
+class GraphicsLayer : public QGraphicsObject {
+    Q_OBJECT
+
+public:
+    virtual QRectF boundingRect() const;
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void addItem(QGraphicsItem *item);
+    void removeItem(QGraphicsItem *item);
+    void clear();
+};
+
+
 
 class QTENV_API ModuleInspector : public Inspector
 {
@@ -57,8 +70,14 @@ class QTENV_API ModuleInspector : public Inspector
       void zoomIconsBy();
 
    protected:
+      // These layers should be the only top level items!
+      // After adding anything else to the scene, make
+      // sure to make it a descendant of one of these!
+      GraphicsLayer *networkLayer;
+      GraphicsLayer *animationLayer;
+
       CanvasRenderer *canvasRenderer;
-      ModuleGraphicsView *view;
+      ModuleGraphicsView *view; // holds the scene
 
    protected:
       //TODO Where is getCanvas() right place? Here or in ModuleGraphicsView.
@@ -101,18 +120,9 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged(cGate *gate);
       virtual void bubble(cComponent *subcomponent, const char *text);
 
-      virtual void animateMethodcallAscent(cModule *srcSubmodule, const char *methodText);
-      virtual void animateMethodcallDescent(cModule *destSubmodule, const char *methodText);
-      virtual void animateMethodcallHoriz(cModule *srcSubmodule, cModule *destSubmodule, const char *methodText);
-      static void animateMethodcallDelay(Tcl_Interp *interp);
-      virtual void animateMethodcallCleanup();
-      virtual void animateSendOnConn(cGate *srcGate, cMessage *msg, SendAnimMode mode);
-      virtual void animateSenddirectAscent(cModule *srcSubmodule, cMessage *msg);
-      virtual void animateSenddirectDescent(cModule *destSubmodule, cMessage *msg, SendAnimMode mode);
-      virtual void animateSenddirectHoriz(cModule *srcSubmodule, cModule *destSubmodule, cMessage *msg, SendAnimMode mode);
-      virtual void animateSenddirectCleanup();
-      virtual void animateSenddirectDelivery(cModule *destSubmodule, cMessage *msg);
-      static void performAnimations(Tcl_Interp *interp);
+      GraphicsLayer *getAnimationLayer() { return animationLayer; }
+      QPointF getSubmodCoords(cModule *mod);
+      QPointF getMessageEndPos(const QPointF &src, const QPointF &dest);
 };
 
 } // namespace qtenv

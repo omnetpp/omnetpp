@@ -52,6 +52,9 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
+
+    return; // XXX made the submodules disappear, might want to reenable and fix later
+
     scene->clear();
     FigureRenderer::deleteItems();
 

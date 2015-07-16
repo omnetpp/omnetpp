@@ -359,12 +359,15 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 
     localPrefKeys.insert("default-configname");
     localPrefKeys.insert("default-runnumber");
+
+    animator = new Animator();
 }
 
 Qtenv::~Qtenv()
 {
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
+    delete animator;
 }
 
 static void signalHandler(int signum)
@@ -419,14 +422,13 @@ void Qtenv::doRun()
         static char *argv[] = { arg, nullptr };
         app = new QApplication(argc, argv);
 
-        mainwindow = new MainWindow(this);
-
         globalPrefs = new QSettings(QDir::homePath() + "/.qtenv.ini", QSettings::IniFormat);
         localPrefs = new QSettings(".qtenv.ini", QSettings::IniFormat);
 
         restoreOptsFromPrefs();
-        mainwindow->restoreGeometry();
 
+        mainwindow = new MainWindow(this);
+        mainwindow->restoreGeometry();
         mainwindow->show();
 
         // create windowtitle prefix
@@ -1056,6 +1058,8 @@ void Qtenv::refreshInspectors()
         it = next;
     }
 
+    animator->redrawMessages();
+
     // clear the change flags on all inspected canvases
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
         (*it)->clearObjectChangeFlags();
@@ -1520,7 +1524,7 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp) {
                     numinsp++;
-                    insp->animateMethodcallAscent(mod, methodText);
+                    animator->animateMethodcallAscent(insp, mod, methodText);
                 }
             }
         }
@@ -1532,7 +1536,7 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp) {
                     numinsp++;
-                    insp->animateMethodcallDescent(mod, methodText);
+                    animator->animateMethodcallDescent(insp, mod, methodText);
                 }
             }
         }
@@ -1542,25 +1546,8 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp) {
                     numinsp++;
-                    insp->animateMethodcallHoriz(i->from, i->to, methodText);
+                    animator->animateMethodcallHoriz(insp, i->from, i->to, methodText);
                 }
-            }
-        }
-    }
-
-    if (numinsp > 0) {
-        // leave it there for a while
-        ModuleInspector::animateMethodcallDelay(interp);
-
-        // then remove all arrows
-        for (i = pathvec.begin(); i != pathvec.end(); i++) {
-            cModule *mod = i->from ? i->from : i->to;
-            cModule *enclosingmod = mod->getParentModule();
-
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp)
-                    insp->animateMethodcallCleanup();
             }
         }
     }
@@ -1733,7 +1720,7 @@ void Qtenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
             ModuleInspector *insp = isModuleInspectorFor(mod, *it);
             if (insp)
-                insp->animateSendOnConn(g, msg, (isLastGate ? ANIM_BEGIN : ANIM_THROUGH));
+                animator->animateSendOnConn(insp, g, msg, (isLastGate ? ANIM_BEGIN : ANIM_THROUGH));
         }
         g = g->getNextGate();
     }
@@ -1808,7 +1795,7 @@ void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                    insp->animateSenddirectAscent(mod, msg);
+                    animator->animateSenddirectAscent(insp, mod, msg);
             }
         }
         else if (i->from == nullptr) {
@@ -1819,7 +1806,7 @@ void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                    insp->animateSenddirectDescent(mod, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
+                    animator->animateSenddirectDescent(insp, mod, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
         }
         else {
@@ -1828,20 +1815,8 @@ void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
                 ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
                 if (insp)
-                    insp->animateSenddirectHoriz(i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
+                    animator->animateSenddirectHoriz(insp, i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
-        }
-    }
-
-    // then remove all arrows
-    for (i = pathvec.begin(); i != pathvec.end(); i++) {
-        cModule *mod = i->from ? i->from : i->to;
-        cModule *enclosingmod = mod->getParentModule();
-
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-            if (insp)
-                insp->animateSenddirectCleanup();
         }
     }
 }
@@ -1864,7 +1839,7 @@ void Qtenv::animateDelivery(cMessage *msg)
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
         ModuleInspector *insp = isModuleInspectorFor(mod, *it);
         if (insp)
-            insp->animateSendOnConn(g, msg, ANIM_END);
+            animator->animateSendOnConn(insp, g, msg, ANIM_END);
     }
 }
 
@@ -1887,13 +1862,13 @@ void Qtenv::animateDeliveryDirect(cMessage *msg)
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
         ModuleInspector *insp = isModuleInspectorFor(mod, *it);
         if (insp)
-            insp->animateSenddirectDelivery(destmod, msg);
+            animator->animateSenddirectDelivery(insp, destmod, msg);
     }
 }
 
 void Qtenv::performAnimations()
 {
-    ModuleInspector::performAnimations(interp);
+    animator->play();
 }
 
 void Qtenv::bubble(cComponent *component, const char *text)

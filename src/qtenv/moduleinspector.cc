@@ -27,7 +27,9 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QDebug>
-
+#include <QGraphicsItem>
+#include <QTimer>
+#include <QEventLoop>
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cqueue.h"
 #include "omnetpp/cmessage.h"
@@ -45,6 +47,32 @@ using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
+
+// ---- helper class ----
+
+QRectF GraphicsLayer::boundingRect() const {
+    return QRectF(); // doesn't matter
+}
+
+void GraphicsLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    // nothing here...
+}
+
+void GraphicsLayer::addItem(QGraphicsItem *item) {
+    scene()->addItem(item);
+    item->setParentItem(this);
+}
+
+void GraphicsLayer::removeItem(QGraphicsItem *item) {
+    scene()->removeItem(item);
+}
+
+void GraphicsLayer::clear() {
+    while (!childItems().isEmpty())
+        scene()->removeItem(childItems()[0]);
+}
+
+// ---- end of helper class ----
 
 #define UNKNOWNICON_WIDTH     32
 #define UNKNOWNICON_HEIGHT    32
@@ -71,10 +99,16 @@ Register_InspectorFactory(ModuleInspectorFactory);
 
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
+    networkLayer = new GraphicsLayer();
+    animationLayer = new GraphicsLayer();
+
     canvasRenderer = new CanvasRenderer();
     createView(this);
     canvasRenderer->setQtCanvas(view->scene(), getCanvas());
     view->setWindowName(windowName);
+
+    view->scene()->addItem(networkLayer);
+    view->scene()->addItem(animationLayer);
 }
 
 ModuleInspector::~ModuleInspector()
@@ -93,6 +127,7 @@ void ModuleInspector::doSetObject(cObject *obj)
     canvasRenderer->setCanvas(getCanvas());
 
     view->clear();
+    animationLayer->clear();
 
     if (object) {
         view->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
@@ -129,6 +164,7 @@ void ModuleInspector::createView(QWidget *parent)
     layout->setMargin(0);
     view->setRenderHints(QPainter::Antialiasing);
     view->setScene(new QGraphicsScene());
+    view->setLayer(networkLayer);
 
     QHBoxLayout *horizontalLayout = new QHBoxLayout();
     QVBoxLayout *verticalLayout = new QVBoxLayout();
@@ -202,7 +238,6 @@ void ModuleInspector::relayout()
 
 //    set c $insp.c
     view->incLayoutSeed();
-
     view->relayoutAndRedrawAll();
 
 //    if {[opp_inspector_istoplevel $insp] && $config(layout-may-resize-window)} {
@@ -327,180 +362,19 @@ void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
     view->bubble(subcomponent, text);
 }
 
-const char *ModuleInspector::animModeToStr(SendAnimMode mode)
+QPointF ModuleInspector::getSubmodCoords(cModule *mod)
 {
-    return mode == ANIM_BEGIN ? "beg" : mode == ANIM_THROUGH ? "thru" : mode == ANIM_END ? "end" : "???";
+    return view->getSubmodCoords(mod);
 }
 
-void ModuleInspector::animateMethodcallAscent(cModule *srcSubmod, const char *methodText)
+QPointF ModuleInspector::getMessageEndPos(const QPointF &src, const QPointF &dest)
 {
-    char parentPtr[30], modPtr[30];
-    ptrToStr(object, parentPtr);
-    ptrToStr(srcSubmod, modPtr);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallAscent ", getWindowName(), " ", parentPtr, " ", modPtr, " ", TclQuotedString(methodText).get(), TCL_NULL));
+    return view->getMessageEndPos(src, dest);
 }
 
-void ModuleInspector::animateMethodcallDescent(cModule *destSubmod, const char *methodText)
-{
-    char parentPtr[30], modPtr[30];
-    ptrToStr(object, parentPtr);
-    ptrToStr(destSubmod, modPtr);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallDescent ", getWindowName(), " ", parentPtr, " ", modPtr, " ", TclQuotedString(methodText).get(), TCL_NULL));
-}
-
-void ModuleInspector::animateMethodcallHoriz(cModule *srcSubmod, cModule *destSubmod, const char *methodText)
-{
-    char srcPtr[30], destPtr[30];
-    ptrToStr(srcSubmod, srcPtr);
-    ptrToStr(destSubmod, destPtr);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallHoriz ", getWindowName(), " ", srcPtr, " ", destPtr, " ", TclQuotedString(methodText).get(), TCL_NULL));
-}
-
-void ModuleInspector::animateMethodcallDelay(Tcl_Interp *interp)
-{
-    CHK(Tcl_Eval(interp, "ModuleInspector:animateMethodcallWait"));
-}
-
-void ModuleInspector::animateMethodcallCleanup()
-{
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateMethodcallCleanup ", getWindowName(), TCL_NULL));
-}
-
-void ModuleInspector::animateSendOnConn(cGate *srcGate, cMessage *msg, SendAnimMode mode)
-{
-    char gatePtr[30], msgPtr[30];
-    ptrToStr(srcGate, gatePtr);
-    ptrToStr(msg, msgPtr);
-    const char *modeStr = animModeToStr(mode);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateOnConn ", getWindowName(), " ", msgPtr, " ", gatePtr, " ", modeStr, TCL_NULL));
-}
-
-void ModuleInspector::animateSenddirectAscent(cModule *srcSubmod, cMessage *msg)
-{
-    char parentPtr[30], modPtr[30], msgPtr[30];
-    ptrToStr(object, parentPtr);
-    ptrToStr(srcSubmod, modPtr);
-    ptrToStr(msg, msgPtr);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectAscent ", getWindowName(), " ", msgPtr, " ", parentPtr, " ", modPtr, " ", "thru", TCL_NULL));
-}
-
-void ModuleInspector::animateSenddirectDescent(cModule *destSubmod, cMessage *msg, SendAnimMode mode)
-{
-    char parentPtr[30], modPtr[30], msgPtr[30];
-    ptrToStr(object, parentPtr);
-    ptrToStr(destSubmod, modPtr);
-    ptrToStr(msg, msgPtr);
-    const char *modeStr = animModeToStr(mode);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDescent ", getWindowName(), " ", msgPtr, " ", parentPtr, " ", modPtr, " ", modeStr, TCL_NULL));
-}
-
-void ModuleInspector::animateSenddirectHoriz(cModule *srcSubmod, cModule *destSubmod, cMessage *msg, SendAnimMode mode)
-{
-    char srcPtr[30], destPtr[30], msgPtr[30];
-    ptrToStr(srcSubmod, srcPtr);
-    ptrToStr(destSubmod, destPtr);
-    ptrToStr(msg, msgPtr);
-    const char *modeStr = animModeToStr(mode);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectHoriz ", getWindowName(), " ", msgPtr, " ", srcPtr, " ", destPtr, " ", modeStr, TCL_NULL));
-}
-
-void ModuleInspector::animateSenddirectCleanup()
-{
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectCleanup ", getWindowName(), TCL_NULL));
-}
-
-void ModuleInspector::animateSenddirectDelivery(cModule *destSubmod, cMessage *msg)
-{
-    char destPtr[30], msgPtr[30];
-    ptrToStr(destSubmod, destPtr);
-    ptrToStr(msg, msgPtr);
-
-    CHK(Tcl_VarEval(interp, "ModuleInspector:animateSenddirectDelivery ", getWindowName(), " ", msgPtr, " ", destPtr, TCL_NULL));
-}
-
-void ModuleInspector::performAnimations(Tcl_Interp *interp)
-{
-    CHK(Tcl_VarEval(interp, "performAnimations", TCL_NULL));
-}
 
 int ModuleInspector::inspectorCommand(int argc, const char **argv)
 {
-    if (argc < 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-
-    E_TRY
-    if (strcmp(argv[0], "arrowcoords") == 0) {
-        return arrowcoords(interp, argc, argv);
-    }
-    else if (strcmp(argv[0], "relayout") == 0) {
-        //TRY(relayoutAndRedrawAll());
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "redraw") == 0) {
-        TRY(redraw());
-        return TCL_OK;
-    }
-//   else if (strcmp(argv[0], "getdefaultlayoutseed") == 0) {
-//       return getDefaultLayoutSeed(argc, argv);
-//   }
-    else if (strcmp(argv[0], "getlayoutseed") == 0) {
-        return getLayoutSeed(argc, argv);
-    }
-    else if (strcmp(argv[0], "setlayoutseed") == 0) {
-        return setLayoutSeed(argc, argv);
-    }
-    else if (strcmp(argv[0], "submodulecount") == 0) {
-        return getSubmoduleCount(argc, argv);
-    }
-    else if (strcmp(argv[0], "getsubmodq") == 0) {
-        return getSubmodQ(argc, argv);
-    }
-    else if (strcmp(argv[0], "getsubmodqlen") == 0) {
-        return getSubmodQLen(argc, argv);
-    }
-    else if (strcmp(argv[0], "hascanvas") == 0) {  // needed because getalltags/getenabledtags/etc throw error if there's no canvas
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->hasCanvas() ? "1" : "0"), TCL_STATIC);
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "getalltags") == 0) {
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->getAllTags().c_str()), TCL_VOLATILE);
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "getenabledtags") == 0) {
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->getEnabledTags().c_str()), TCL_VOLATILE);
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "getexcepttags") == 0) {
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->getExceptTags().c_str()), TCL_VOLATILE);
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "setenabledtags") == 0) {
-        if (argc != 2) {
-            Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-        canvasRenderer->setEnabledTags(argv[1]);
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "setexcepttags") == 0) {
-        if (argc != 2) {
-            Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-        canvasRenderer->setExceptTags(argv[1]);
-        return TCL_OK;
-    }
-    E_CATCH
-
     return Inspector::inspectorCommand(argc, argv);
 }
 

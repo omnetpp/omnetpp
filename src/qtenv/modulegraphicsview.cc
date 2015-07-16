@@ -19,6 +19,7 @@
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/csimplemodule.h"
+#include "moduleinspector.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cfutureeventset.h"
 #include "layout/graphlayouter.h"
@@ -32,7 +33,7 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <canvasrenderer.h>
-
+#include "animator.h"
 #include <QDebug>
 
 #define emit
@@ -108,11 +109,12 @@ void ModuleGraphicsView::relayoutAndRedrawAll()
         }
     }
 
+    layer->clear();
     recalculateLayout();
     redrawFigures();
     redrawModules();
+    getQtenv()->getAnimator()->redrawMessages();
     redrawNextEventMarker();
-    redrawMessages();
     refreshSubmodules();
     adjustSubmodulesZOrder();
 }
@@ -175,23 +177,19 @@ void ModuleGraphicsView::refreshLayout()
         if (explicitCoords) {
             // e.g. "p=120,70" or "p=140,30,ring"
             layouter->addFixedNode(submod->getId(), x, y, sx, sy);
-            printf("explicitCoords\n");
         }
         else if (submodPosMap.find(submod) != submodPosMap.end()) {
             // reuse coordinates from previous layout
-            Point pos = submodPosMap[submod];
-            layouter->addFixedNode(submod->getId(), pos.x, pos.y, sx, sy);
-            printf("reuse coords\n");
+            QPointF pos = submodPosMap[submod];
+            layouter->addFixedNode(submod->getId(), pos.x(), pos.y(), sx, sy);
         }
         else if (obeysLayout) {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
             layouter->addAnchoredNode(submod->getId(), submod->getName(), x, y, sx, sy);
-            printf("addAnchoredNode\n");
         }
         else {
             layouter->addMovableNode(submod->getId(), sx, sy);
-            printf("addMovableNode %g %g \n", sx, sy);
         }
     }
 
@@ -250,9 +248,11 @@ void ModuleGraphicsView::refreshLayout()
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
         cModule *submod = *it;
 
-        Point pos;
-        layouter->getNodePosition(submod->getId(), pos.x, pos.y);
-        printf("Position: %g %g\n", pos.x, pos.y);
+        QPointF pos;
+        double x, y;
+        layouter->getNodePosition(submod->getId(), x, y);
+        pos.setX(x);
+        pos.setY(y);
         submodPosMap[submod] = pos;
     }
 
@@ -409,8 +409,8 @@ void ModuleGraphicsView::redrawModules()
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
         cModule *submod = *it;
         assert(submodPosMap.find(submod) != submodPosMap.end());
-        Point& pos = submodPosMap[submod];
-        drawSubmodule(submod, pos.x, pos.y);
+        QPointF& pos = submodPosMap[submod];
+        drawSubmodule(submod, pos.x(), pos.y());
     }
 
     // draw enclosing module
@@ -439,10 +439,14 @@ void ModuleGraphicsView::drawSubmodule(cModule *submod, double x, double y)
         iconName = "block/process";
 
     QImage *img = getQtenv()->icons.getImage(iconName);
+    if (!img) {
+        img = getQtenv()->icons.getImage("block/process");
+    }
     QPixmap icon = QPixmap::fromImage(*img);
     submoduleGraphicsItems[submod->getId()] = scene()->addPixmap(icon);
-    submoduleGraphicsItems[submod->getId()]->setPos(x, y);
+    submoduleGraphicsItems[submod->getId()]->setPos(x - icon.size().width() / 2, y - icon.size().height() / 2);
     submoduleGraphicsItems[submod->getId()]->setData(1, QVariant::fromValue(static_cast<cObject *>(submod)));
+    submoduleGraphicsItems[submod->getId()]->setParentItem(layer);
 
     char coords[64];
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
@@ -677,8 +681,6 @@ void ModuleGraphicsView::drawConnection(cGate *gate)
     cModule *mod = gate->getOwnerModule();
     cGate *destGate = gate->getNextGate();
 
-    char gateptr[32], srcptr[32], destptr[32], chanptr[32], indices[32];
-
     // check if this is a two way connection (an other connection is pointing back
     // to the this gate's pair from the next gate's pair)
     bool twoWayConnection = false;
@@ -698,10 +700,15 @@ void ModuleGraphicsView::drawConnection(cGate *gate)
         }
     }
 
-    QPointF src_rect = getSubmodCoords(mod);
-    QPointF dest_rect = getSubmodCoords(destGate->getOwnerModule());
+    QPointF src = getSubmodCoords(mod);
+    QPointF dest = getSubmodCoords(destGate->getOwnerModule());
 
-    scene()->addLine(src_rect.x(), src_rect.y(), dest_rect.x(), dest_rect.y());
+    auto item = new QGraphicsLineItem();
+    item->setLine(src.x(), src.y(), dest.x(), dest.y());
+    item->setZValue(-1);
+    item->setParentItem(layer);
+
+
 
 //    ptrToStr(gate, gateptr);
 //    ptrToStr(mod, srcptr);
@@ -839,13 +846,19 @@ void ModuleGraphicsView::drawConnection(cGate *gate)
 
 QPointF ModuleGraphicsView::getSubmodCoords(cModule *mod)
 {
-    if (submoduleGraphicsItems.find(mod->getId()) == submoduleGraphicsItems.end())
-        return QPointF(0, 0);
-    QPixmap icon = submoduleGraphicsItems[mod->getId()]->pixmap();
-    QPointF pos = submoduleGraphicsItems[mod->getId()]->pos();
-    pos.setX(pos.x() + icon.width() / 2);
-    pos.setY(pos.y() + icon.height() / 2);
-    return pos;
+    return QPointF(submodPosMap[mod]);
+}
+
+QPointF ModuleGraphicsView::getMessageEndPos(const QPointF &src, const QPointF &dest)
+{
+    auto delta = dest - src;
+    auto len = sqrt(delta.x() * delta.x() + delta.y() * delta.y());
+    if (len == 0) len = 1;
+    delta /= len;
+    len -= 20;
+    if (len < 1) len = 1;
+    delta *= len;
+    return src + delta;
 }
 
 cObject *ModuleGraphicsView::getObjectAt(qreal x, qreal y)
@@ -886,9 +899,16 @@ QList<cObject*> ModuleGraphicsView::getObjectsAt(qreal x, qreal y)
     return objects;
 }
 
+void ModuleGraphicsView::setLayer(GraphicsLayer *layer)
+{
+    clear();
+    this->layer = layer;
+    redraw();
+}
+
 void ModuleGraphicsView::clear()
 {
-    scene()->clear();
+    if (layer) layer->clear();
     submoduleGraphicsItems.clear();
 }
 
@@ -917,54 +937,6 @@ void ModuleGraphicsView::redrawNextEventMarker()
     }
 }
 
-void ModuleGraphicsView::redrawMessages()
-{
-    // refresh & cleanup from prev. events
-    //CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
-
-    // this thingy is only needed if animation is going on
-    if (!getQtenv()->animating)
-        return;
-
-    // loop through all messages in the event queue and display them
-    cFutureEventSet *fes = getSimulation()->getFES();
-    int fesLen = fes->getLength();
-    for (int i = 0; i < fesLen; i++) {
-        cEvent *event = fes->get(i);
-        if (!event->isMessage())
-            continue;
-        cMessage *msg = (cMessage *)event;
-
-        cModule *arrivalMod = msg->getArrivalModule();
-        if (arrivalMod &&
-            arrivalMod->getParentModule() == object &&
-            msg->getArrivalGateId() >= 0)
-        {
-            char msgptr[32];
-            ptrToStr(msg, msgptr);
-            cGate *arrivalGate = msg->getArrivalGate();
-
-            // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
-            if (arrivalGate->getPreviousGate()) {
-                cGate *gate = arrivalGate->getPreviousGate();
-//                CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnGate ",
-//                                canvas, " ",
-//                                ptrToStr(gate), " ",
-//                                msgptr,
-//                                TCL_NULL));
-            }
-            else {
-//                CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnModule ",
-//                                canvas, " ",
-//                                ptrToStr(arrivalMod), " ",
-//                                msgptr,
-//                                TCL_NULL));
-            }
-        }
-    }
-    //CHK(Tcl_VarEval(interp, canvas, " raise bubble", TCL_NULL));
-}
-
 void ModuleGraphicsView::refreshSubmodules()
 {
     for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
@@ -991,8 +963,8 @@ void ModuleGraphicsView::adjustSubmodulesZOrder()
 
 void ModuleGraphicsView::redraw()
 {
+    clear();
     if (object == nullptr) {
-        clear();
         return;
     }
 
@@ -1002,7 +974,6 @@ void ModuleGraphicsView::redraw()
     redrawModules();
     redrawFigures();
     redrawNextEventMarker();
-    redrawMessages();
     refreshSubmodules();
     adjustSubmodulesZOrder();
 }
@@ -1046,7 +1017,6 @@ void ModuleGraphicsView::refresh()
     else {
         refreshFigures();
         redrawNextEventMarker();
-        redrawMessages();
         refreshSubmodules();
         adjustSubmodulesZOrder();
     }
@@ -1066,8 +1036,8 @@ void ModuleGraphicsView::bubble(cComponent *subcomponent, const char *text)
 
     // invoke Tcl code to display bubble
     char coords[64];
-    Point& pos = submodPosMap[submod];
-    sprintf(coords, " %g %g ", pos.x, pos.y);
+    QPointF& pos = submodPosMap[submod];
+    sprintf(coords, " %g %g ", pos.x(), pos.y());
     //CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(text).get(), TCL_NULL));
 }
 

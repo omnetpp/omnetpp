@@ -86,6 +86,7 @@ private slots:
     void on_actionFastRun_triggered();
     void on_actionExpressRun_triggered();
     void on_actionRunUntil_triggered();
+    void onSliderValueChanged(int value);
     void inspectObject(QModelIndex index);
     void onTreeViewContextMenu(QPoint point);
     void onTreeViewPressed(QModelIndex index);

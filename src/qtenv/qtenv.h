@@ -27,6 +27,7 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "imagecache.h"
+#include "animator.h"
 #include <QSettings>
 #include <QSet>
 #include <QString>
@@ -175,6 +176,8 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       LogInspector *mainLogView;
       TimeLineInspector *mainTimeLine;
 
+      Animator *animator;
+
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
@@ -237,6 +240,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       virtual void openTkenvlogIfNeeded();
 
       MainWindow *getMainWindow() { return mainwindow; }
+      Animator *getAnimator() { return animator; }
 
 
       void setPref(const QString &key, const QVariant &value);
