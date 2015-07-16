@@ -21,8 +21,141 @@ Legend:
 (i)     information
 
 
-OMNeT++ 5.0
-~~~~~~~~~~~
+OMNeT++ 5.0b2
+~~~~~~~~~~~~~
+
+(+)     Introduced cRandom, which encapsulates a random number stream into an
+        object. Random numbers can be extracted with the draw() method.
+
+(+)     Added the following cRandom subclasses: cUniform, cExponential,
+        cNormal, cTruncNormal, cGamma, cBeta, cErlang, cChiSquare, cStudentT,
+        cCauchy, cTriang, cWeibull, cParetoShifted, cIntUniform, cBernoulli,
+        cBinomial, cGeometric, cNegBinomial, cPoisson. They encapsulate the
+        similarly named functions (e.g. exponential()) with their parameters
+        and the random number generator (cRNG).
+
+(!!!)   Random variate generation functions (normal(), etc.) signature change:
+        trailing "int rng" (RNG index of context module) argument changed
+        to cRNG*, and moved to the front. Motivation: break the functions'
+        dependence on the context module.
+        Affected functions: uniform(), exponential(), normal(), truncnormal(),
+        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
+        triang(), weibull(), pareto_shifted(), intuniform(), binomial(),
+        geometric(), negbinomial(), poisson(), intrand(), dblrand().
+
+(!!!)   Random variate generation functions (normal(), etc; see above) with
+        their original signatures have been added to cComponent as members.
+        Motivation: convenience for users; lessen the impact of signature change.
+
+(x)     Removed deprecated functions: genk_intrand(), genk_dblrand(). Use the
+        updated intrand/dblrand instead.
+
+(!)     cStatistic now subclasses from cRandom, and its random() has been
+        deprecated in favour of cRandom's draw()
+
+(+)     Iterators (cModule::GateIterator, cModule::SubmoduleIterator,
+        cModule::ChannelIterator, cQueue::Iterator, etc.): added operator*
+        and operator-> to make them behave more similar to STL iterators.
+
+(-)     Iterators: deprecated operator(); use operator* and operator-> instead.
+
+(!)     Iterators: changed increment/decrement operators to make them more
+        similar to STL iterators.
+
+(!)     cMessageHeap has been renamed to cEventHeap
+
+(+)     An abstract cFutureEventSet base class has been introduced, and
+        cEventHeap now extends cFutureEventSet
+
+(!)     cSimulation: removed msgQueue and getMessageQueue(); added getFES()
+        as replacement (returns cFutureEventSet*)
+
+(!)     cEventHeap: peek(k) renamed to get(k)
+
+(x)     cEventHeap::Iterator removed (not much advantage over get(i))
+
+(x)     cEventHeap: removed length() and empty(); use getLength() and isEmpty()
+        instead
+
+(-)     cQueue: deprecated length() and empty(); use getLength() and isEmpty()
+        instead
+
+(+)     cEnum: added getNameValueMap() method
+
+(+)     Remove the deprecated status of some cChannelType methods:
+        createIdealChannel(), createDelayChannel() and createDatarateChannel()
+
+(x)     cClassDescriptor: removed deprecated compatibility methods that emulated
+        pre-4.2 API, i.e. certain overloaded versions of:
+          getFieldCount(), getFieldName(), findField(), getFieldTypeFlags(),
+          getFieldIsArray(), getFieldIsCompound(), getFieldIsPointer(),
+          getFieldIsCObject(), getFieldIsCOwnedObject(), getFieldIsEditable(),
+          getFieldDeclaredOn(), getFieldTypeString(), getFieldProperty(),
+          getArraySize(), getFieldAsString(), getFieldAsString(),
+          setFieldAsString(), getFieldStructName(), getFieldStructPointer()
+
+(x)     Removed deprecated methods:
+        - cGate::setChannel(); use reconnectWith() instead
+        - cMessage::setArrival()
+        - cMessage::addPar(cMsgPar&); use addPar(cMsgPar*) instead
+        - cMsgPar::getAsText(); use str() instead
+        - cMsgPar::setFromText(); use parse() instead
+        - cPacket::getEncapsulatedMsg(); use getEncapsulatedPacket() instead
+        - cModule::getModuleByRelativePath()
+
+(x)     Removed deprecated types/typedefs and constants:
+        - cSubModIterator: use cModule::SubmoduleIterator instead
+        - cSimpleChannel typedef; use cDatarateChannel
+        - cPolymorphic typedef; use cObject instead
+        - Simtime::SCALEEXP_S and other SCALEEXP_xxx constants; use SIMTIME_xxx
+          constants instead
+
+(!)     cException: getContextModuleID() renamed to getContextComponentId()
+
+(+)     cException: added getContextComponentKind()
+
+(+)     cComponent: added getComponentKind() (and isModule()/isChannel() changed
+        to rely on it)
+
+(!)     cStatistic: methods renamed:
+        - addTransientDetection() -> setTransientDetectionObject()
+        - addAccuracyDetection() -> setAccuracyDetectionObject()
+
+(!)     cDensityEstBase: methods renamed:
+        - getNumFirstVals() -> getNumPrecollectedValues()
+        - setNumFirstVals() -> setNumPrecollectedValues()
+
+(!)     cVarHistogram: unnamed enum of HIST_TR_xxx constants became
+        cVarHistogram::TransformType
+
+(x)     Removed deprecated opp_error(), opp_terminate(), opp_warning() functions
+
+(+)     New global functions: getSimulation(), getEnvir()
+
+(+)     New methods:
+        - cComponent::getSimulation()
+        - cComponent::getSystemModule()
+        - cScheduler::getSimulation()
+
+(x)     Removed the "simulation" and "ev" macros, to reduce pollution of the
+        global namespace; use getSimulation() and getEnvir() instead
+
+(+)     Added cComponent::hasGUI() to replace ev.isGUI() calls
+
+(+)     Added OMNETPP_BUILDNUM
+
+(!)     cObject: parsimPack() became const
+
+(+)     cObjectFactory: the static find() and get() methods received two extra
+        args with default values, namely const char *contextNamespace=nullptr
+        and bool fallbackToOmnetpp=true
+
+(!)     VoidDelFunc and VoidDupFunc became inner types of cMsgPar, as only
+        cMsgPar used them.
+
+
+OMNeT++ 5.0b1
+~~~~~~~~~~~~~
 
 (+)     Added the canvas API for 2D figure-based drawing.
         - Principal classes: cCanvas, cFigure.
