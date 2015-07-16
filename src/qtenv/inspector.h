@@ -90,6 +90,7 @@ class QTENV_API Inspector : public QWidget
       //Context menu's action's slots
       virtual void goUpInto();
       virtual void openInspector();
+      virtual void openInspector(cObject *object, int type);
       virtual void runUntilModule();
       virtual void runUntilMessage();
       virtual void excludeMessage();

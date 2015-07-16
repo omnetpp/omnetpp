@@ -134,6 +134,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
     if(objects.size() > 1)
     {
         cObject *object = insp->getObject();
+        if(objects.indexOf(object) >= 0 && objects.indexOf(object) < objects.size())
         objects.remove(objects.indexOf(object));
     }
 
@@ -192,6 +193,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
             action->setData(QVariant::fromValue(parent));
         }
     }
+
     return menu;
 }
 

@@ -304,6 +304,11 @@ void Inspector::openInspector()
     }
 }
 
+void Inspector::openInspector(cObject *object, int type)
+{
+    inspectObject(object, type);
+}
+
 void Inspector::runUntilModule()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();

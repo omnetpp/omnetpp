@@ -25,6 +25,7 @@
 
 // a simple "class cObject;" is not enough for Q_DECLARE_METATYPE, it has to be fully defined
 #include "omnetpp/cobject.h"
+#include "omnetpp/cmessage.h"
 
 // this prevents the definition of "emit" as a macro
 // it is needed because OMNeT uses "emit" as a function name
@@ -39,6 +40,7 @@ typedef QPair<OPP::cObject*, int> ActionDataPair;
 
 Q_DECLARE_METATYPE(OPP::cObject*)
 Q_DECLARE_METATYPE(ActionDataPair)
+Q_DECLARE_METATYPE(OPP::cMessage*)
 
 
 #if defined(TKENV_EXPORT)

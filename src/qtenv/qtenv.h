@@ -42,6 +42,7 @@ class Inspector;
 class GenericObjectInspector;
 class LogInspector;
 class ModuleInspector;
+class TimeLineInspector;
 
 using namespace envir;
 
@@ -102,8 +103,9 @@ struct QtenvOptions : public OPP::envir::EnvirOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public OPP::envir::EnvirBase
+class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 {
+   Q_OBJECT
    public:
       //
       // state transitions:
@@ -171,6 +173,7 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
       GenericObjectInspector *mainInspector;
       ModuleInspector *mainNetworkView;
       LogInspector *mainLogView;
+      TimeLineInspector *mainTimeLine;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
@@ -238,6 +241,9 @@ class QTENV_API Qtenv : public OPP::envir::EnvirBase
 
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key);
+
+  private slots:
+      void selectionChanged(cObject *);
 
   protected:
       // redefined virtual functions from EnvirBase

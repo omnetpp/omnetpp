@@ -57,12 +57,12 @@ public:
     void displayText(const char* t);
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
-    void redrawTimeline();
 
     QWidget *getMainInspectorArea();
     QTreeView *getObjectTree();
     QWidget *getObjectInspectorArea();
     QWidget *getLogInspectorArea();
+    QWidget *getTimeLineArea();
 
     void storeGeometry();
     void restoreGeometry();

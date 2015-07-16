@@ -26,6 +26,7 @@
 #include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
 #include "figurerenderers.h"
+#include "inspector.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
@@ -375,31 +376,26 @@ void ModuleGraphicsView::refreshFigures()
 
 void ModuleGraphicsView::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
-    //TODO
-    //const char *s;
+    QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    hints->zoom = variant.isValid() ? variant.value<double>() : 0;
 
-    // read $inspectordata($c:zoomfactor)
-//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
-//    hints->zoom = opp_atof(s);
+    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":imagesizefactor";
+    variant = getQtenv()->getPref(prefName);
+    hints->iconMagnification = variant.isValid() ? variant.value<double>() : 0;
 
-//    // read $inspectordata($c:imagesizefactor)
-//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":imagesizefactor").c_str()), TCL_GLOBAL_ONLY);
-//    hints->iconMagnification = opp_atof(s);
+    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showlabels";
+    variant = getQtenv()->getPref(prefName);
+    hints->showSubmoduleLabels = variant.isValid() ? variant.value<bool>() : true;
 
-//    // read $inspectordata($c:showlabels)
-//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showlabels").c_str()), TCL_GLOBAL_ONLY);
-//    hints->showSubmoduleLabels = opp_atol(s) != 0;
+    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showarrowheads";
+    variant = getQtenv()->getPref(prefName);
+    hints->showArrowHeads = variant.isValid() ? variant.value<bool>() : false;
 
-//    // read $inspectordata($c:showarrowheads)
-//    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
-//    hints->showArrowHeads = opp_atol(s) != 0;
+    hints->defaultFont = scene()->font().family().toStdString();
 
-//    Tcl_Eval(interp, "font actual CanvasFont -family");
-//    hints->defaultFont = Tcl_GetStringResult(interp);
-
-//    Tcl_Eval(interp, "font actual CanvasFont -size");
-//    s = Tcl_GetStringResult(interp);
-//    hints->defaultFontSize = opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+    //TODO pixelSize() or pointSize()
+    hints->defaultFontSize = scene()->font().pointSize() * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!
@@ -407,7 +403,7 @@ void ModuleGraphicsView::redrawModules()
 {
     cModule *parentModule = object;
 
-    // then display all submodules
+    //TODO then display all submodules
     //CHK(Tcl_VarEval(interp, canvas, " delete dx", TCL_NULL));  // NOT "delete all" because that'd remove "bubbles" too!
 
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
@@ -459,6 +455,210 @@ void ModuleGraphicsView::drawSubmodule(cModule *submod, double x, double y)
 //                    TclQuotedString(dispstr).get(), " ",
 //                    (submod->isPlaceholder() ? "1" : "0"),
 //                    TCL_NULL));
+
+//    proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} {
+//       #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $isplaceholder"
+//       global icons inspectordata tkpFont canvasTextOptions
+
+    QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    double zoom = 0;
+    if(variant.isValid())
+        zoom = variant.value<double>();
+
+    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":imagesizefactor";
+    variant = getQtenv()->getPref(prefName);
+    double imagesizefactor = 0;
+    if(variant.isValid())
+        imagesizefactor = variant.value<double>();
+
+    double alphamult = 1;
+    if(submod->isPlaceholder()) {
+        alphamult = 0.3;
+    }
+
+    //opp_displaystring $dispstr parse tags $submodptr 1
+
+//    const char *array = "tags";
+//    cComponent *component = dynamic_cast<cComponent *>(submod);
+
+//    cDisplayString dp(dispstr);
+//    for (int k = 0; k < dp.getNumTags(); k++) {
+//        Tcl_Obj *arglist = Tcl_NewListObj(0, nullptr);
+//        for (int i = 0; i < dp.getNumArgs(k); i++) {
+//            const char *s = dp.getTagArg(k, i);
+//            TRY(s = substituteDisplayStringParamRefs(s, buffer, component, true))
+//            Tcl_ListObjAppendElement(interp, arglist, Tcl_NewStringObj(TCLCONST(s), -1));
+//        }
+//        Tcl_SetVar2Ex(interp, TCLCONST(array), TCLCONST(dp.getTagName(k)), arglist, 0);
+//    }
+
+//           # scale (x,y)
+//           if {$zoom != ""} {
+//               set x [expr $zoom*$x]
+//               set y [expr $zoom*$y]
+//           }
+
+//           # set sx and sy (and look up image)
+//           set isx 0
+//           set isy 0
+//           set bsx 0
+//           set bsy 0
+//           if ![info exists tags(is)] {
+//               set tags(is) {}
+//           }
+//           if [info exists tags(i)] {
+//               setvars {img isx isy} [dispstrGetImage $tags(i) $tags(is) $imagesizefactor $alphamult $icons(defaulticon)]
+//           }
+
+//           if [info exists tags(b)] {
+//               set bsx [lindex $tags(b) 0]
+//               set bsy [lindex $tags(b) 1]
+//               if {$bsx=="" && $bsy==""} {
+//                   set bsx 40
+//                   set bsy 24
+//               }
+//               if {$bsx==""} {set bsx $bsy}
+//               if {$bsy==""} {set bsy $bsx}
+//               if {$zoom != ""} {
+//                   set bsx [expr $zoom*$bsx]
+//                   set bsy [expr $zoom*$bsy]
+//               }
+//           } elseif ![info exists tags(i)] {
+//               setvars {img isx isy} [dispstrGetImage "" "" $imagesizefactor $alphamult $icons(defaulticon)]
+//           }
+
+//           set sx [expr {$isx<$bsx ? $bsx : $isx}]
+//           set sy [expr {$isy<$bsy ? $bsy : $isy}]
+
+//           if [info exists tags(b)] {
+
+//               set width [lindex $tags(b) 5]
+//               if {$width == ""} {set width 2}
+
+//               set rx [expr $bsx/2 - $width/2]
+//               set ry [expr $bsy/2 - $width/2]
+//               set x1 [expr $x - $rx]
+//               set y1 [expr $y - $ry]
+//               set x2 [expr $x + $rx]
+//               set y2 [expr $y + $ry]
+
+//               set fill [lindex $tags(b) 3]
+//               if {$fill == ""} {set fill #8080ff}
+//               if {$fill == "-"} {set fill ""}
+//               if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
+//               set outline [lindex $tags(b) 4]
+//               if {$outline == ""} {set outline black}
+//               if {$outline == "-"} {set outline ""}
+//               if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
+//               if {$isplaceholder} {set dash "1 1"} else {set dash ""}
+
+//               switch -regexp [lindex $tags(b) 2] {
+//                  "o.*"   {set what [list ellipse $x $y -rx $rx -ry $ry]}
+//                  "l.*"   {set what [list pline $x1 $y1 $x2 $y2]}
+//                  default {set what [list prect $x1 $y1 $x2 $y2 -strokelinejoin miter]}
+//               }
+
+//               $c create {*}$what \
+//                   -fill $fill -strokewidth $width -stroke $outline -strokedasharray $dash \
+//                   -tags "dx tooltip submod submodext $submodptr"
+
+//               if [info exists tags(i)] {
+//                   $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
+//               }
+//               if {$inspectordata($c:showlabels)} {
+//                   $c create ptext $x [expr $y2+$width/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
+//               }
+
+//           } else {
+//               # draw an icon when no shape is present (only i tag, or neither i nor b tag)
+//               $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
+//               if {$inspectordata($c:showlabels)} {
+//                   $c create ptext $x [expr $y+$sy/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
+//               }
+//           }
+
+//           # queue length
+//           if {[info exists tags(q)]} {
+//               set r [ModuleInspector:getSubmodCoords $c $submodptr]
+//               set qx [expr [lindex $r 2]+1]
+//               set qy [lindex $r 1]
+//               $c create ptext $qx $qy -text "q:?" -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip qlen qlen-$submodptr submodext"
+//           }
+
+//           # modifier icon (i2 tag)
+//           if {[info exists tags(i2)]} {
+//               if ![info exists tags(is2)] {
+//                   set tags(is2) {}
+//               }
+//               set r [ModuleInspector:getSubmodCoords $c $submodptr]
+//               set mx [expr [lindex $r 2]+2]
+//               set my [expr [lindex $r 1]-2]
+//               setvars {img2 dummy dummy} [dispstrGetImage $tags(i2) $tags(is2) $imagesizefactor $alphamult]
+//               $c create pimage $mx $my {*}$img2 -anchor ne -tags "dx tooltip submod submodext $submodptr"
+//           }
+
+//           # text (t=<text>,<position>,<color>); multiple t tags supported (t1,t2,etc)
+//           foreach {ttag} [array names tags -regexp {^t\d*$} ] {
+//               set txt [lindex $tags($ttag) 0]
+//               set pos [lindex $tags($ttag) 1]
+//               if {$pos == ""} {set pos "t"}
+//               set color [lindex $tags($ttag) 2]
+//               if {$color == ""} {set color "#0000ff"}
+//               if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
+
+//               set r [ModuleInspector:getSubmodCoords $c $submodptr]
+//               if {$pos=="l"} {
+//                   set tx [lindex $r 0]
+//                   set ty [lindex $r 1]
+//                   set anch "ne"
+//                   set just "right"
+//               } elseif {$pos=="r"} {
+//                   set tx [lindex $r 2]
+//                   set ty [lindex $r 1]
+//                   set anch "nw"
+//                   set just "left"
+//               } elseif {$pos=="t"} {
+//                   set tx [expr ([lindex $r 0]+[lindex $r 2])/2]
+//                   set ty [expr [lindex $r 1]+2]
+//                   set anch "s"
+//                   set just "center"
+//               } else {
+//                   error "wrong position in t= tag, should be `l', `r' or `t'"
+//               }
+//               $c create ptext $tx $ty -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
+//           }
+
+//           # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
+//           foreach {rtag} [array names tags -regexp {^r\d*$} ] {
+//               set radius [lindex $tags($rtag) 0]
+//               if {$radius == ""} {set radius 0}
+//               set rfill [lindex $tags($rtag) 1]
+//               if {$rfill == "-"} {set rfill ""}
+//               if {[string index $rfill 0]== "@"} {set rfill [opp_hsb_to_rgb $rfill]}
+//               # if rfill=="" --> not filled
+//               set routline [lindex $tags($rtag) 2]
+//               if {$routline == ""} {set routline black}
+//               if {$routline == "-"} {set routline ""}
+//               if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
+//               set rwidth [lindex $tags($rtag) 3]
+//               if {$rwidth == ""} {set rwidth 1}
+//               if {$zoom != ""} {
+//                   set radius [expr $zoom*$radius]
+//               }
+//               set radius [expr $radius-$rwidth/2]
+
+//               set x1 [expr $x - $radius]
+//               set y1 [expr $y - $radius]
+//               set x2 [expr $x + $radius]
+//               set y2 [expr $y + $radius]
+
+//               set circle [$c create circle $x $y -r $radius -fillopacity 0.5 \
+//                   -fill $rfill -strokewidth $rwidth -stroke $routline -tags "dx range submodext"]
+//               # has been moved to the beginning of ModuleInspector:drawEnclosingModule to maintain relative z order of range indicators
+//               # $c lower $circle
+//           }
+//    }
 }
 
 void ModuleGraphicsView::drawEnclosingModule(cModule *parentModule)
@@ -791,11 +991,10 @@ void ModuleGraphicsView::adjustSubmodulesZOrder()
 
 void ModuleGraphicsView::redraw()
 {
-    //TODO clear scene
-//    if (object == nullptr) {
-//        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
-//        return;
-//    }
+    if (object == nullptr) {
+        clear();
+        return;
+    }
 
     updateBackgroundColor();
 
@@ -824,10 +1023,10 @@ void ModuleGraphicsView::updateBackgroundColor()
 
 void ModuleGraphicsView::refresh()
 {
-//    if (!object) {
-//        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
-//        return;
-//    }
+    if (!object) {
+        clear();
+        return;
+    }
 
     if (notDrawn)
         return;

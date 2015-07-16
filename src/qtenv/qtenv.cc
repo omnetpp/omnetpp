@@ -55,6 +55,7 @@
 #include "watchinspector.h"
 #include "mainwindow.h"
 #include "treeitemmodel.h"
+#include "timelineinspector.h"
 #include <QApplication>
 #include <QTreeView>
 #include <QDir>
@@ -439,6 +440,9 @@ void Qtenv::doRun()
         mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainwindow->getObjectInspectorArea()));
         mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainwindow->getMainInspectorArea()));
         mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainwindow->getLogInspectorArea()));
+        mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainwindow->getTimeLineArea()));
+
+        connect(mainTimeLine, SIGNAL(selectionChange(cObject*)), this, SLOT(selectionChanged(cObject*)));
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -1141,7 +1145,6 @@ void Qtenv::updateNetworkRunDisplay()
 void Qtenv::updateStatusDisplay()
 {
     mainwindow->updateStatusDisplay();
-    mainwindow->redrawTimeline();
 }
 
 void Qtenv::printEventBanner(cEvent *event)
@@ -1863,6 +1866,11 @@ void Qtenv::animateDelivery(cMessage *msg)
         if (insp)
             insp->animateSendOnConn(g, msg, ANIM_END);
     }
+}
+
+void Qtenv::selectionChanged(cObject *object)
+{
+    mainInspector->setObject(object);
 }
 
 void Qtenv::animateDeliveryDirect(cMessage *msg)

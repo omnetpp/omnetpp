@@ -1,0 +1,84 @@
+//==========================================================================
+//  TIMELINEINSPECTOR.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include "timelineinspector.h"
+#include <QHBoxLayout>
+#include <QMenu>
+#include "timelinegraphicsview.h"
+#include "inspectorutil.h"
+#include "inspectorfactory.h"
+
+#define emit
+
+namespace omnetpp {
+namespace qtenv {
+
+class TimeLineInspectorFactory : public InspectorFactory
+{
+  public:
+    TimeLineInspectorFactory(const char *name) : InspectorFactory(name) {}
+
+    bool supportsObject(cObject *) override { return false; }
+    int getInspectorType() override { return INSP_MODULEOUTPUT; }
+    double getQualityAsDefault(cObject *) override { return 0; }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new TimeLineInspector(parent, isTopLevel, this); }
+};
+
+Register_InspectorFactory(TimeLineInspectorFactory);
+
+TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
+{
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setMargin(0);
+    TimeLineGraphicsView *timeLine = new TimeLineGraphicsView();
+    timeLine->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    timeLine->setScene(new QGraphicsScene());
+    layout->addWidget(timeLine);
+    connect(timeLine, SIGNAL(contextMenuRequested(QVector<cObject*>,QPoint)), this, SLOT(createContextMenu(QVector<cObject*>,QPoint)));
+    connect(timeLine, SIGNAL(click(cObject*)), this, SLOT(setObjectToObjectInspector(cObject*)));
+    connect(timeLine, SIGNAL(doubleClick(cObject*)), this, SLOT(openInspector(cObject*)));
+}
+
+void TimeLineInspector::createContextMenu(QVector<cObject*> objects, QPoint globalPos)
+{
+    if(objects.size())
+    {
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
+        menu->exec(globalPos);
+        delete menu;
+    }
+    else
+    {
+        //TODO Preferences Dialog
+        QMenu *menu = new QMenu();
+        menu->addAction("Timeline Settings...");
+        menu->exec(globalPos);
+        delete menu;
+    }
+}
+
+void TimeLineInspector::setObjectToObjectInspector(cObject* object)
+{
+    emit selectionChange(object);
+}
+
+void TimeLineInspector::openInspector(cObject *object)
+{
+    Inspector::openInspector(object, INSP_OBJECT);
+}
+
+} // namespace qtenv
+} // namespace omnetpp
