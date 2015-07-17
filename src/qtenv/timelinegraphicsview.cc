@@ -46,6 +46,8 @@ TimeLineGraphicsView::TimeLineGraphicsView() :
                                         Qt::GlobalColor::yellow, Qt::GlobalColor::cyan, Qt::GlobalColor::magenta, Qt::GlobalColor::black});
     msgKindBorderColors = QVector<QColor>({Qt::GlobalColor::red, Qt::GlobalColor::green, Qt::GlobalColor::blue, Qt::GlobalColor::gray,
                                            Qt::GlobalColor::yellow, Qt::GlobalColor::cyan, Qt::GlobalColor::magenta, Qt::GlobalColor::black});
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // TODO it can still be scrolled with the mouse however...
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 int TimeLineGraphicsView::getMinExponent() {
@@ -181,121 +183,9 @@ QVector<cMessage*> TimeLineGraphicsView::getMessages()
     return messages;
 }
 
-void TimeLineGraphicsView::paintEvent(QPaintEvent *event)
-{
-    if(scene() == nullptr)
-        qDebug() << "TimeLineGraphicsView::paintEvent: scene must be set";
-
-    scene()->clear();
-    simtime_t now = getSimulation()->getSimTime();
-
-    QVector<cMessage*> messages = getMessages();
-    setRenderHints(QPainter::Antialiasing);
-
-    QRectF r = rect();
-    setFont(tickLabelFont);
-    QGraphicsSimpleTextItem simpleText("+100ms");
-    simpleText.setFont(tickLabelFont);
-    QRectF maxTickLabelSize = simpleText.boundingRect();
-    int tickLabelHeight = maxTickLabelSize.height();
-
-    bool showTickLabels = enableTickLabels && (r.height() >= tickLabelHeight+5);
-    axisY = showTickLabels ? r.height() - tickLabelHeight - 1 : (r.height()-1)/2;
-    zeroStartX = maxTickLabelSize.width()/2;
-    zeroEndX = zeroStartX + 20;
-    arrowStartX = zeroEndX + 20;
-    arrowEndX = r.width() - 8;
-    minExponentX = arrowStartX + maxTickLabelSize.width();
-    maxExponentX = arrowEndX - maxTickLabelSize.width();
-
-    // adaptive modification of displayed exponent range
-    if (isAdaptiveMinExponent())
-        updateMinExponent(now, messages);
-    if (isAdaptiveMaxExponent())
-        updateMaxExponent(now, messages);
-
-    // draw axis
-    QPen pen;
-    pen.setColor(Qt::GlobalColor::black);
-    pen.setStyle(Qt::DotLine);
-    scene()->addLine(arrowStartX, axisY, minExponentX, axisY, pen);
-    scene()->addLine(maxExponentX, axisY, arrowEndX, axisY, pen);
-    pen.setStyle(Qt::SolidLine);
-    scene()->addLine(minExponentX, axisY, maxExponentX, axisY, pen);
-    scene()->addLine(arrowEndX-7, axisY-2, arrowEndX, axisY, pen);
-    scene()->addLine(arrowEndX-7, axisY+2, arrowEndX, axisY, pen);
-
-    // draw zero delta tray
-    scene()->setBackgroundBrush(QPalette().background());
-    int h=5;
-    scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-3, axisY+h, pen);
-    scene()->addLine(zeroEndX+3, axisY-h, zeroEndX+3, axisY+h, pen);
-    scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-1, axisY-h, pen);
-    scene()->addLine(zeroStartX-3, axisY+h, zeroStartX-1, axisY+h, pen);
-    scene()->addLine(zeroEndX+3, axisY-h, zeroEndX+1, axisY-h, pen);
-    scene()->addLine(zeroEndX+3, axisY+h, zeroEndX+1, axisY+h, pen);
-
-    // draw ticks
-    int tickSpacing = (maxExponentX-minExponentX) / (maxExponent-minExponent);
-    bool reduceTickLabels = tickSpacing < maxTickLabelSize.width()+10;  // if there's not enough space, we only write out 1ns, 1us, 1ms, 1s,1000s etc.
-    for (int exp = minExponent-1; exp <= maxExponent; exp++) {
-        if (exp >= minExponent) {
-            // tick
-            int x = getXForExponent(exp);
-            scene()->addLine(x, axisY-4, x, axisY+4, pen);
-
-            // label
-            if (showTickLabels && (!reduceTickLabels || exp % 3 == 0)) {
-
-                QString label = getTickLabel(1,exp);
-                simpleText.setText(label);
-                int labelWidth = simpleText.boundingRect().width();
-
-                QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
-                simpleTextItem->setBrush(QPalette().text());
-                simpleTextItem->setFont(tickLabelFont);
-                simpleTextItem->setPos(x - labelWidth/2, axisY+3);
-                scene()->addItem(simpleTextItem);
-            }
-        }
-
-        if (drawMinorTicks)
-            for (int i = 2; i <= 9; i++) {
-                int x = getXForTimeDelta(simtime_t(i,exp));
-                scene()->addLine(x, axisY-2, x, axisY+2);
-            }
-    }
-
-    if (showTickLabels) {
-        QString label = "+0s";
-        simpleText.setText(label);
-        int labelWidth = simpleText.boundingRect().width();
-
-        QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
-        simpleTextItem->setBrush(QPalette().text());
-        simpleTextItem->setFont(tickLabelFont);
-        simpleTextItem->setPos((zeroEndX+zeroStartX)/2 - labelWidth/2, axisY+3);
-        scene()->addItem(simpleTextItem);
-    }
-
-    messageXCoords = computeMessageCoordinates(now, messages);
-
-    // paint messages
-    scene()->setFont(messageLabelFont);
-    simpleText.setFont(messageLabelFont);
-    simpleText.setText("Lj");
-    int messageLabelHeight = simpleText.boundingRect().height();
-    int numRows = (axisY-3) / messageLabelHeight;  // we can place message labels in multiple rows, depending on available space
-
-    if (modules.size())
-        paintMessages(messages, false, messageLabelHeight, numRows); // draw non-highlighted (alpha) msgs first
-    paintMessages(messages, true, messageLabelHeight, numRows);
-
-    QGraphicsView::paintEvent(event);
-}
-
 void TimeLineGraphicsView::resizeEvent(QResizeEvent *event) {
     scene()->clear();
+    rebuildScene();
 }
 
 void TimeLineGraphicsView::updateMinExponent(simtime_t now, QVector<cMessage*> messages) {
@@ -513,6 +403,117 @@ QVector<cObject*> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
             objects.push_back(variant.value<cMessage*>());
     }
     return objects;
+}
+
+void TimeLineGraphicsView::rebuildScene()
+{
+    if(scene() == nullptr)
+        qDebug() << "TimeLineGraphicsView::rebuildScene: scene must be set";
+
+    scene()->clear();
+    simtime_t now = getSimulation()->getSimTime();
+
+    QVector<cMessage*> messages = getMessages();
+    setRenderHints(QPainter::Antialiasing);
+
+    QRectF r = rect();
+    setFont(tickLabelFont);
+    QGraphicsSimpleTextItem simpleText("+100ms");
+    simpleText.setFont(tickLabelFont);
+    QRectF maxTickLabelSize = simpleText.boundingRect();
+    int tickLabelHeight = maxTickLabelSize.height();
+
+    bool showTickLabels = enableTickLabels && (r.height() >= tickLabelHeight+5);
+    axisY = showTickLabels ? r.height() - tickLabelHeight - 1 : (r.height()-1)/2;
+    zeroStartX = maxTickLabelSize.width()/2;
+    zeroEndX = zeroStartX + 20;
+    arrowStartX = zeroEndX + 20;
+    arrowEndX = r.width() - 8;
+    minExponentX = arrowStartX + maxTickLabelSize.width();
+    maxExponentX = arrowEndX - maxTickLabelSize.width();
+
+    // adaptive modification of displayed exponent range
+    if (isAdaptiveMinExponent())
+        updateMinExponent(now, messages);
+    if (isAdaptiveMaxExponent())
+        updateMaxExponent(now, messages);
+
+    // draw axis
+    QPen pen;
+    pen.setColor(Qt::GlobalColor::black);
+    pen.setStyle(Qt::DotLine);
+    scene()->addLine(arrowStartX, axisY, minExponentX, axisY, pen);
+    scene()->addLine(maxExponentX, axisY, arrowEndX, axisY, pen);
+    pen.setStyle(Qt::SolidLine);
+    scene()->addLine(minExponentX, axisY, maxExponentX, axisY, pen);
+    scene()->addLine(arrowEndX-7, axisY-2, arrowEndX, axisY, pen);
+    scene()->addLine(arrowEndX-7, axisY+2, arrowEndX, axisY, pen);
+
+    // draw zero delta tray
+    scene()->setBackgroundBrush(QPalette().background());
+    int h=5;
+    scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-3, axisY+h, pen);
+    scene()->addLine(zeroEndX+3, axisY-h, zeroEndX+3, axisY+h, pen);
+    scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-1, axisY-h, pen);
+    scene()->addLine(zeroStartX-3, axisY+h, zeroStartX-1, axisY+h, pen);
+    scene()->addLine(zeroEndX+3, axisY-h, zeroEndX+1, axisY-h, pen);
+    scene()->addLine(zeroEndX+3, axisY+h, zeroEndX+1, axisY+h, pen);
+
+    // draw ticks
+    int tickSpacing = (maxExponentX-minExponentX) / (maxExponent-minExponent);
+    bool reduceTickLabels = tickSpacing < maxTickLabelSize.width()+10;  // if there's not enough space, we only write out 1ns, 1us, 1ms, 1s,1000s etc.
+    for (int exp = minExponent-1; exp <= maxExponent; exp++) {
+        if (exp >= minExponent) {
+            // tick
+            int x = getXForExponent(exp);
+            scene()->addLine(x, axisY-4, x, axisY+4, pen);
+
+            // label
+            if (showTickLabels && (!reduceTickLabels || exp % 3 == 0)) {
+
+                QString label = getTickLabel(1,exp);
+                simpleText.setText(label);
+                int labelWidth = simpleText.boundingRect().width();
+
+                QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
+                simpleTextItem->setBrush(QPalette().text());
+                simpleTextItem->setFont(tickLabelFont);
+                simpleTextItem->setPos(x - labelWidth/2, axisY+3);
+                scene()->addItem(simpleTextItem);
+            }
+        }
+
+        if (drawMinorTicks)
+            for (int i = 2; i <= 9; i++) {
+                int x = getXForTimeDelta(simtime_t(i,exp));
+                scene()->addLine(x, axisY-2, x, axisY+2);
+            }
+    }
+
+    if (showTickLabels) {
+        QString label = "+0s";
+        simpleText.setText(label);
+        int labelWidth = simpleText.boundingRect().width();
+
+        QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
+        simpleTextItem->setBrush(QPalette().text());
+        simpleTextItem->setFont(tickLabelFont);
+        simpleTextItem->setPos((zeroEndX+zeroStartX)/2 - labelWidth/2, axisY+3);
+        scene()->addItem(simpleTextItem);
+    }
+
+    messageXCoords = computeMessageCoordinates(now, messages);
+
+    // paint messages
+    scene()->setFont(messageLabelFont);
+    simpleText.setFont(messageLabelFont);
+    simpleText.setText("Lj");
+    int messageLabelHeight = simpleText.boundingRect().height();
+    int numRows = (axisY-3) / messageLabelHeight;  // we can place message labels in multiple rows, depending on available space
+
+    if (modules.size())
+        paintMessages(messages, false, messageLabelHeight, numRows); // draw non-highlighted (alpha) msgs first
+    paintMessages(messages, true, messageLabelHeight, numRows);
 }
 
 } // namespace qtenv

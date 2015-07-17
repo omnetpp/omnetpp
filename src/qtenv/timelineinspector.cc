@@ -41,12 +41,13 @@ Register_InspectorFactory(TimeLineInspectorFactory);
 
 TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setMargin(0);
-    TimeLineGraphicsView *timeLine = new TimeLineGraphicsView();
-    timeLine->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    QGridLayout *layout = new QGridLayout(this);
+    timeLine = new TimeLineGraphicsView();
+    timeLine->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    timeLine->setMaximumHeight(100); // TODO FIXME proper layouting
     timeLine->setScene(new QGraphicsScene());
-    layout->addWidget(timeLine);
+    layout->addWidget(timeLine, 0, 0);
+
     connect(timeLine, SIGNAL(contextMenuRequested(QVector<cObject*>,QPoint)), this, SLOT(createContextMenu(QVector<cObject*>,QPoint)));
     connect(timeLine, SIGNAL(click(cObject*)), this, SLOT(setObjectToObjectInspector(cObject*)));
     connect(timeLine, SIGNAL(doubleClick(cObject*)), this, SLOT(openInspector(cObject*)));
@@ -78,6 +79,11 @@ void TimeLineInspector::setObjectToObjectInspector(cObject* object)
 void TimeLineInspector::openInspector(cObject *object)
 {
     Inspector::openInspector(object, INSP_OBJECT);
+}
+
+void TimeLineInspector::refresh()
+{
+    timeLine->rebuildScene();
 }
 
 } // namespace qtenv

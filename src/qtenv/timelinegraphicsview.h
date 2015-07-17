@@ -68,7 +68,6 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
-    virtual void paintEvent(QPaintEvent *event);
 
     void updateMinExponent(simtime_t now, QVector<cMessage*> messages);
     void updateMaxExponent(simtime_t now, QVector<cMessage*> messages);
@@ -114,6 +113,8 @@ public:
      //This only affects the behavior of computeSize().
     void setDefaultNumMessageLabelRows(int defaultNumMessageLabelRows);
     void paintMessages(QVector<cMessage*> messages, bool wantHighlighted, int messageLabelHeight, int numRows);
+
+    void rebuildScene();
 };
 
 } // namespace qtenv

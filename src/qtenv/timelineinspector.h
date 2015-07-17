@@ -22,9 +22,13 @@
 namespace omnetpp {
 namespace qtenv {
 
+class TimeLineGraphicsView;
+
 class TimeLineInspector : public Inspector
 {
     Q_OBJECT
+
+    TimeLineGraphicsView *timeLine;
 
 signals:
     void selectionChange(cObject *);
@@ -36,6 +40,8 @@ public slots:
 
 public:
     TimeLineInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+
+    virtual void refresh();
 };
 
 } // namespace qtenv
