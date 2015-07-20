@@ -9,9 +9,126 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 OMNeT++ 5.0 beta 2 (July 2015)
 -----------------------------
 
+Core:
+
+ - Introduced cRandom, which encapsulates a random number stream into an
+   object. Random numbers can be extracted with the draw() method.
+   Added the following cRandom subclasses: cUniform, cExponential,
+   cNormal, cTruncNormal, cGamma, cBeta, cErlang, cChiSquare, cStudentT,
+   cCauchy, cTriang, cWeibull, cParetoShifted, cIntUniform, cBernoulli,
+   cBinomial, cGeometric, cNegBinomial, cPoisson. They encapsulate the
+   similarly named functions (e.g. exponential()) with their parameters
+   and the random number generator (cRNG). cStatistic also now subclasses
+   from cRandom: it can generate a random variate from the distribution
+   observed in the collected sample.
+
+ - Random variate generation functions (normal(), etc.) signature change:
+   the trailing "int rng" (RNG index of context module) argument was changed
+   to cRNG*, and moved to the front. Motivation: break the functions'
+   dependence on the context module.
+
+   However, to lessen the impact of the signature change, random variate
+   generation functions with their original signatures have been added
+   to cComponent as methods. Thus, models that only use those functions from
+   module methods will not notice any change.
+
+ - The interface of iterators (GateIterator, SubmoduleIterator and
+   ChannelIterator in cModule, cQueue::Iterator, etc.) have been changed
+   to make them more consistent with STL iterators. Therefore, operator()
+   as a means of dereferencing has been deprecated, and operator* and
+   operator-> have been added instead. The increment/decrement operators
+   have also been revised.
+
+ - FES made replaceable. To this end, an abstract cFutureEventSet base class
+   has been introduced, and cMessageHeap (now renamed cEventHeap) was made
+   to extend cFutureEventSet. An accessor method (cFutureEventSet* getFES())
+   has been added to cSimulation, and the older members msgQueue and
+   getMessageQueue() have been removed. Simulations now accept a
+
+      futureeventset-class=<classname>
+
+   configuration option.
+
+ - Further refinement of the new canvas API (cCanvas and cFigure + subclasses)
+
+ - The "simulation" and "ev" macros have been removed, to reduce pollution
+   of the global namespace. You can use the newly introduced getSimulation()
+   and getEnvir() functions instead.
+
+ - cObject::parsimPack() has become const. You only need to pay attention
+   (and add "const" manually) if you have classes that redefine parsimPack().
+
+ - cQueue and cMessageHeap had both length()/getLength() and empty()/isEmpty()
+   methods; the former have been removed; use getLength() and isEmpty() instead.
+
+ - There have been several other, smaller changes and improvements in many
+   classes, e.g. cException, cStatistic, cDensityEstBase, cObjectFactory, etc.
+
+ - Most methods, typedefs and other items deprecated in previous versions have
+   been removed.
+
+ - See doc/API-changelog.txt for a complete list of changes.
+
+
+General:
+
+ - The include/ folder was restructured: only the public header <omnetpp.h> was
+   left in it, all other include files were moved into an omnetpp/ subfolder
+   under include/.
+
+ - The source tree (src/) has gone through several modernizing and cleanup steps:
+
+   - Per-folder nested namespaces have been introduced, e.g. Tkenv code is now
+     in the omnetpp::tkenv namespace.
+
+   - Qualified includes with the folder, i.e. #include "stringutil.h" became
+     #include "common/stringutil.h". This increases readbility and reduces
+     the chance of including a wrong header.
+
+   - Use fully qualified header guards
+
+   - Modernizing: use the 'nullptr' and 'override' keywords; use C++ names of C
+     headers (e.g. <cstdio> instead of <stdio.h>).
+
+   - Code formatting
+
+NED:
+
+ - Allow a "module" to extend a "simple" (motivation: INET 3.x)
+
+ - The message compiler no longer appends "_var" to the names of data members
+   in generated classes. In cases where this change breaks existing code
+   (classes with @customize(true) or with subclasses), you can emulate the
+   old behavior by adding the following to the message definition:
+
+       @fieldNameSuffix("_var");
+
+ - In message compiler generated code, doPacking() has been renamed to
+   doParsimPacking(), doUnpacking() to doParsimUnpacking().
+
+Tkenv:
+
+ - Feature: double-clicking a module in the object tree will open it
+   in the main area instead of opening a new inspector window. A new
+   inspector can still be opened from the context menu.
+
+ - Added the "Hide namespaces" option in the Preferences dialog that turns off
+   the display of the namespace part of C++ class names when they appear in
+   the GUI.
+
+ - Images under images/old/ are no longer accessible without the "old/"
+   prefix, so if you use such an icon, you must add the "old/" prefix
+   manually for them to continue to work. For example, you have to change
+   "i=cloud" to "i=old/cloud" in display strings. The feature to let old/*
+   images be accessible without the prefix was originally introduced to ease
+   the transition from OMNeT++ 3.x to 4.0.
+
+ - Several bug fixes
+
 Contrib:
 
- - Removed JSimpleModule
+ - Removed JSimpleModule due to lack of users and good use cases
+
 
 OMNeT++ 5.0 beta 1 (Feb 2015)
 -----------------------------
