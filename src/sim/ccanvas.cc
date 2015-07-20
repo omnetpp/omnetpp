@@ -2322,53 +2322,155 @@ const char **cPathFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-inline double getNum(const char *&s)
+static double getNum(const char *&s)
 {
     char *end;
     double d = opp_strtod(s, &end);
     if (end == s)
-        throw cRuntimeError("number expected"); //TODO add offset to error message!
+        throw cRuntimeError("number expected");
     s = end;
     return d;
 }
 
-inline bool getBool(const char *&s)
+static bool getBool(const char *&s)
 {
-    return getNum(s) != 0;
+    double d = getNum(s);
+    if (d != 0 && d != 1)
+        throw cRuntimeError("boolean (0 or 1) expected");
+    return d != 0;
 }
 
 void cPathFigure::setPath(const char *pathString)
 {
     clearPath();
+
     const char *s = pathString;
     while (opp_isspace(*s))
         s++;
-    while (*s) {
-        char code = *s++;
-        switch (code) {
-            case 'M': addMoveTo(getNum(s), getNum(s)); break;
-            case 'm': addMoveRel(getNum(s), getNum(s)); break;
-            case 'L': addLineTo(getNum(s), getNum(s)); break;
-            case 'l': addLineRel(getNum(s), getNum(s)); break;
-            case 'H': addHorizontalLineTo(getNum(s)); break;
-            case 'h': addHorizontalLineRel(getNum(s)); break;
-            case 'V': addVerticalLineTo(getNum(s)); break;
-            case 'v': addVerticalLineRel(getNum(s)); break;
-            case 'A': addArcTo(getNum(s), getNum(s), getNum(s), getBool(s), getBool(s), getNum(s), getNum(s)); break;
-            case 'a': addArcRel(getNum(s), getNum(s), getNum(s), getBool(s), getBool(s), getNum(s), getNum(s)); break;
-            case 'Q': addCurveTo(getNum(s), getNum(s), getNum(s), getNum(s)); break;
-            case 'q': addCurveRel(getNum(s), getNum(s), getNum(s), getNum(s)); break;
-            case 'T': addSmoothCurveTo(getNum(s), getNum(s)); break;
-            case 't': addSmoothCurveRel(getNum(s), getNum(s)); break;
-            case 'C': addCubicBezierCurveTo(getNum(s), getNum(s), getNum(s), getNum(s), getNum(s), getNum(s)); break;
-            case 'c': addCubicBezierCurveRel(getNum(s), getNum(s), getNum(s), getNum(s), getNum(s), getNum(s)); break;
-            case 'S': addSmoothCubicBezierCurveTo(getNum(s), getNum(s), getNum(s), getNum(s)); break;
-            case 's': addSmoothCubicBezierCurveRel(getNum(s), getNum(s), getNum(s), getNum(s)); break;
-            case 'z': case 'Z': addClosePath(); break;
-            default: throw cRuntimeError("unknown path code '%c'", code);
+    try {
+        while (*s) {
+            char code = *s++;
+            switch (code) {
+                case 'M': {
+                    double x, y;
+                    x = getNum(s); y = getNum(s);
+                    addMoveTo(x, y);
+                    break;
+                }
+                case 'm': {
+                    double dx, dy;
+                    dx = getNum(s); dy = getNum(s);
+                    addMoveRel(dx, dy);
+                    break;
+                }
+                case 'L': {
+                    double x, y;
+                    x = getNum(s); y = getNum(s);
+                    addLineTo(x, y);
+                    break;
+                }
+                case 'l': {
+                    double dx, dy;
+                    dx = getNum(s); dy = getNum(s);
+                    addLineRel(dx, dy);
+                    break;
+                }
+                case 'H': {
+                    double x = getNum(s);
+                    addHorizontalLineTo(x);
+                    break;
+                }
+                case 'h': {
+                    double dx = getNum(s);
+                    addHorizontalLineRel(dx);
+                    break;
+                }
+                case 'V': {
+                    double y = getNum(s);
+                    addVerticalLineTo(y);
+                    break;
+                }
+                case 'v': {
+                    double dy = getNum(s);
+                    addVerticalLineRel(dy);
+                    break;
+                }
+                case 'A': {
+                    double rx, ry, phi, x, y;
+                    bool sweep, largeArc;
+                    rx = getNum(s); ry = getNum(s); phi = getNum(s); largeArc = getBool(s); sweep = getBool(s); x = getNum(s); y = getNum(s);
+                    addArcTo(rx, ry, phi, largeArc, sweep, x, y);
+                    break;
+                }
+                case 'a': {
+                    double rx, ry, phi, dx, dy;
+                    bool sweep, largeArc;
+                    rx = getNum(s); ry = getNum(s); phi = getNum(s); largeArc = getBool(s); sweep = getBool(s); dx = getNum(s); dy = getNum(s);
+                    addArcRel(rx, ry, phi, largeArc, sweep, dx, dy);
+                    break;
+                }
+                case 'Q': {
+                    double x1, y1, x, y;
+                    x1 = getNum(s); y1 = getNum(s); x = getNum(s); y = getNum(s);
+                    addCurveTo(x1, y1, x, y);
+                    break;
+                }
+                case 'q': {
+                    double dx1, dy1, dx, dy;
+                    dx1 = getNum(s); dy1 = getNum(s); dx = getNum(s); dy = getNum(s);
+                    addCurveTo(dx1, dy1, dx, dy);
+                    break;
+                }
+                case 'T': {
+                    double x, y;
+                    x = getNum(s); y = getNum(s);
+                    addSmoothCurveTo(x, y);
+                    break;
+                }
+                case 't': {
+                    double dx, dy;
+                    dx = getNum(s); dy = getNum(s);
+                    addSmoothCurveTo(dx, dy);
+                    break;
+                }
+                case 'C': {
+                    double x1, y1, x2, y2, x, y;
+                    x1 = getNum(s); y1 = getNum(s); x2 = getNum(s); y2 = getNum(s); x = getNum(s); y = getNum(s);
+                    addCubicBezierCurveTo(x1, y1, x2, y2, x, y);
+                    break;
+                }
+                case 'c': {
+                    double dx1, dy1, dx2, dy2, dx, dy;
+                    dx1 = getNum(s); dy1 = getNum(s); dx2 = getNum(s); dy2 = getNum(s); dx = getNum(s); dy = getNum(s);
+                    addCubicBezierCurveTo(dx1, dy1, dx2, dy2, dx, dy);
+                    break;
+                }
+                case 'S': {
+                    double x2, y2, x, y;
+                    x2 = getNum(s); y2 = getNum(s); x = getNum(s); y = getNum(s);
+                    addSmoothCubicBezierCurveTo(x2, y2, x, y);
+                    break;
+                }
+                case 's': {
+                    double dx2, dy2, dx, dy;
+                    dx2 = getNum(s); dy2 = getNum(s); dx = getNum(s); dy = getNum(s);
+                    addSmoothCubicBezierCurveRel(dx2, dy2, dx, dy);
+                    break;
+                }
+                case 'z': case 'Z': {
+                    addClosePath();
+                    break;
+                }
+                default:
+                    throw cRuntimeError("unknown drawing primitive '%c'", code);
+            }
+            while (opp_isspace(*s))
+                s++;
         }
-        while (opp_isspace(*s))
-            s++;
+    }
+    catch (std::exception& e) {
+        std::string msg = opp_stringf("%s in path near column %d", e.what(), s - pathString);
+        throw cRuntimeError(msg.c_str());
     }
 }
 
@@ -2480,6 +2582,7 @@ std::string cPathFigure::getPath() const
             default:
                 throw cRuntimeError(this, "unknown path item '%c'", base->code);
         }
+        os << " ";
     }
     cachedPathString = os.str();
     return cachedPathString;

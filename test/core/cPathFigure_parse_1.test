@@ -1,0 +1,73 @@
+%description:
+Test cPathFigure's path parsing
+
+%activity:
+cPathFigure f;
+
+#define T(path)  try { f.setPath(path); EV << f.getPath() << "\n"; } catch(std::exception& e) {EV << path << " ==> ERROR: " << e.what() << "\n";}
+
+// spaces
+T("M 1 2 Z");
+T("M -1 -2 Z");
+T("M1.5 2.5Z");
+T("M-1.5 -2.5Z");
+
+// primitives
+T("M 1 2 Z");
+T("m 3 4 Z");
+T("L 5 6 Z");
+T("l 7 8 Z");
+
+T("H 10 Z");
+T("h 20 Z");
+T("V 30 Z");
+T("v 40 Z");
+
+T("A 10 15 45 0 0 100 200 Z");
+T("a 10 15 45 0 0 100 200 Z");
+
+T("Q 50 60 100 200 Z");
+T("q 50 60 100 200 Z");
+T("T 100 200 Z");
+T("t 100 200 Z");
+T("C 20 30 50 60 100 200 Z");
+T("c 20 30 50 60 100 200 Z");
+T("S 50 60 100 200 Z");
+T("s 50 60 100 200 Z");
+
+// errors
+T("M 1 2 F");
+T("M 1 Z");
+T("A 10 15 45 0 999 100 200 Z");
+
+EV << ".\n";
+
+
+%contains: stdout
+M 1 2 Z
+M -1 -2 Z
+M 1.5 2.5 Z
+M -1.5 -2.5 Z
+M 1 2 Z
+m 3 4 Z
+L 5 6 Z
+l 7 8 Z
+H 10 Z
+h 20 Z
+V 30 Z
+v 40 Z
+A 10 15 45 0 0 100 200 Z
+a 10 15 45 0 0 100 200 Z
+Q 50 60 100 200 Z
+Q 50 60 100 200 Z
+T 100 200 Z
+T 100 200 Z
+C 20 30 50 60 100 200 Z
+C 20 30 50 60 100 200 Z
+s 50 60 100 200 Z
+s 50 60 100 200 Z
+M 1 2 F ==> ERROR: unknown drawing primitive 'F' in path near column 7
+M 1 Z ==> ERROR: number expected in path near column 3
+A 10 15 45 0 999 100 200 Z ==> ERROR: boolean (0 or 1) expected in path near column 16
+.
+
