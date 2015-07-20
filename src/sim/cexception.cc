@@ -94,6 +94,7 @@ cException::cException(const cException& e) : std::exception(e)
     contextClassName = e.contextClassName;
     contextFullPath = e.contextFullPath;
     contextComponentId = e.contextComponentId;
+    contextComponentKind = e.contextComponentKind;
 }
 
 void cException::storeContext()

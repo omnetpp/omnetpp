@@ -899,7 +899,7 @@ namespace @TESTNAME@ {
 class @MODULE@ : public cSimpleModule
 {
     public:
-        @MODULE@() : cSimpleModule(32768) {}
+        @MODULE@() : cSimpleModule(65536) {}
         virtual void activity();
 };
 
