@@ -25,6 +25,10 @@
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cexception.h"
 
+#ifdef USE_PORTABLE_COROUTINES
+#include "task.h"  // Stig Kofoed's "Portable Multitasking" coroutine library
+#endif
+
 NAMESPACE_BEGIN
 
 #ifdef USE_WIN32_FIBERS
@@ -177,8 +181,6 @@ unsigned cCoroutine::getStackUsage() const
 #endif
 
 #ifdef USE_PORTABLE_COROUTINES
-
-#include "task.h"  // Stig Kofoed's "Portable Multitasking" coroutine library
 
 void cCoroutine::init(unsigned totalStack, unsigned mainStack)
 {
