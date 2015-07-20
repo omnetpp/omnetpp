@@ -1550,8 +1550,8 @@ void cArcFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
-    ENSURE_POSITIVE(bounds.width);
-    ENSURE_POSITIVE(bounds.height);
+    ENSURE_NONNEGATIVE(bounds.width);
+    ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -1894,8 +1894,8 @@ void cRectangleFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
-    ENSURE_POSITIVE(bounds.width);
-    ENSURE_POSITIVE(bounds.height);
+    ENSURE_NONNEGATIVE(bounds.width);
+    ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -1969,8 +1969,8 @@ void cOvalFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
-    ENSURE_POSITIVE(bounds.width);
-    ENSURE_POSITIVE(bounds.height);
+    ENSURE_NONNEGATIVE(bounds.width);
+    ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -2035,8 +2035,8 @@ void cRingFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
-    ENSURE_POSITIVE(bounds.width);
-    ENSURE_POSITIVE(bounds.height);
+    ENSURE_NONNEGATIVE(bounds.width);
+    ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -2118,8 +2118,8 @@ void cPieSliceFigure::setBounds(const Rectangle& bounds)
 {
     if (bounds == this->bounds)
         return;
-    ENSURE_POSITIVE(bounds.width);
-    ENSURE_POSITIVE(bounds.height);
+    ENSURE_NONNEGATIVE(bounds.width);
+    ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
 }
@@ -2944,7 +2944,7 @@ void cAbstractImageFigure::setWidth(double width)
 {
     if (width == this->width)
         return;
-    ENSURE_POSITIVE(width);
+    ENSURE_NONNEGATIVE(width);
     this->width = width;
     fireGeometryChange();
 }
@@ -2953,7 +2953,7 @@ void cAbstractImageFigure::setHeight(double height)
 {
     if (height == this->height)
         return;
-    ENSURE_POSITIVE(height);
+    ENSURE_NONNEGATIVE(height);
     this->height = height;
     fireGeometryChange();
 }
