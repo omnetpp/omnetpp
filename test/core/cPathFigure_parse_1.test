@@ -1,10 +1,39 @@
 %description:
 Test cPathFigure's path parsing
 
-%activity:
-cPathFigure f;
+%global:
 
-#define T(path)  try { f.setPath(path); EV << f.getPath() << "\n"; } catch(std::exception& e) {EV << path << " ==> ERROR: " << e.what() << "\n";}
+static bool equalIgnoringSpaces(const char *s1, const char *s2)
+{
+    do {
+        while (*s1 == ' ') s1++;
+        while (*s2 == ' ') s2++;
+        if (*s1 != *s2) return false;
+        s1++;
+        s2++;
+    } while (*s1 && *s2);
+    return true;
+}
+
+static void testPath(cPathFigure *f, const char *path)
+{
+    try {
+        f->setPath(path);
+        const char *newPath = f->getPath();
+        EV << newPath;
+        if (!equalIgnoringSpaces(path, newPath))
+            EV << " ==> DIFFERS!\n";
+        EV << "\n";
+    }
+    catch(std::exception& e) {
+        EV << path << " ==> ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+cPathFigure *f = new cPathFigure();
+
+#define T(path) testPath(f,path)
 
 // spaces
 T("M 1 2 Z");
@@ -40,6 +69,7 @@ T("M 1 2 F");
 T("M 1 Z");
 T("A 10 15 45 0 999 100 200 Z");
 
+delete f;
 EV << ".\n";
 
 
@@ -59,12 +89,12 @@ v 40 Z
 A 10 15 45 0 0 100 200 Z
 a 10 15 45 0 0 100 200 Z
 Q 50 60 100 200 Z
-Q 50 60 100 200 Z
+q 50 60 100 200 Z
 T 100 200 Z
-T 100 200 Z
+t 100 200 Z
 C 20 30 50 60 100 200 Z
-C 20 30 50 60 100 200 Z
-s 50 60 100 200 Z
+c 20 30 50 60 100 200 Z
+S 50 60 100 200 Z
 s 50 60 100 200 Z
 M 1 2 F ==> ERROR: unknown drawing primitive 'F' in path near column 7
 M 1 Z ==> ERROR: number expected in path near column 3

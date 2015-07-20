@@ -2276,7 +2276,7 @@ void cPolygonFigure::setFillRule(FillRule fillRule)
 
 void cPathFigure::copy(const cPathFigure& other)
 {
-    setPath(other.getPath().c_str()); //FIXME do deep copy of structs instead!!!
+    setPath(other.getPath()); //FIXME do deep copy of structs instead!!!
     setJoinStyle(other.getJoinStyle());
     setCapStyle(other.getCapStyle());
 }
@@ -2418,7 +2418,7 @@ void cPathFigure::setPath(const char *pathString)
                 case 'q': {
                     double dx1, dy1, dx, dy;
                     dx1 = getNum(s); dy1 = getNum(s); dx = getNum(s); dy = getNum(s);
-                    addCurveTo(dx1, dy1, dx, dy);
+                    addCurveRel(dx1, dy1, dx, dy);
                     break;
                 }
                 case 'T': {
@@ -2430,7 +2430,7 @@ void cPathFigure::setPath(const char *pathString)
                 case 't': {
                     double dx, dy;
                     dx = getNum(s); dy = getNum(s);
-                    addSmoothCurveTo(dx, dy);
+                    addSmoothCurveRel(dx, dy);
                     break;
                 }
                 case 'C': {
@@ -2442,7 +2442,7 @@ void cPathFigure::setPath(const char *pathString)
                 case 'c': {
                     double dx1, dy1, dx2, dy2, dx, dy;
                     dx1 = getNum(s); dy1 = getNum(s); dx2 = getNum(s); dy2 = getNum(s); dx = getNum(s); dy = getNum(s);
-                    addCubicBezierCurveTo(dx1, dy1, dx2, dy2, dx, dy);
+                    addCubicBezierCurveRel(dx1, dy1, dx2, dy2, dx, dy);
                     break;
                 }
                 case 'S': {
@@ -2474,11 +2474,11 @@ void cPathFigure::setPath(const char *pathString)
     }
 }
 
-std::string cPathFigure::getPath() const
+const char *cPathFigure::getPath() const
 {
     // return cached copy if exists
     if (!cachedPathString.empty() || path.empty())
-        return cachedPathString;
+        return cachedPathString.c_str();
 
     // else produce string and cache it
     std::stringstream os;
@@ -2543,7 +2543,7 @@ std::string cPathFigure::getPath() const
             }
             case 'q': {
                 CurveRel *item = static_cast<CurveRel*>(base);
-                os << " q " << item->dx1 << " " << item->dy1 << " " << item->dx << " " << item->dy;
+                os << item->dx1 << " " << item->dy1 << " " << item->dx << " " << item->dy;
                 break;
             }
             case 'T': {
@@ -2585,7 +2585,7 @@ std::string cPathFigure::getPath() const
         os << " ";
     }
     cachedPathString = os.str();
-    return cachedPathString;
+    return cachedPathString.c_str();
 }
 
 void cPathFigure::addItem(PathItem *item)
@@ -2775,7 +2775,7 @@ void cPathFigure::addCubicBezierCurveRel(double dx1, double dy1, double dx2, dou
 void cPathFigure::addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y)
 {
     SmoothCubicBezierCurveTo *item = new SmoothCubicBezierCurveTo();
-    item->code = 's';
+    item->code = 'S';
     item->x2 = x2;
     item->y2 = y2;
     item->x = x;

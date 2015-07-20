@@ -1075,7 +1075,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
 
         /** @name Path manipulation */
         //@{
-        virtual std::string getPath() const;
+        virtual const char *getPath() const;
         virtual void setPath(const char *path);
         virtual int getNumPathItems() const {return path.size();}
         virtual const PathItem *getPathItem(int k) const {return path[k];}
