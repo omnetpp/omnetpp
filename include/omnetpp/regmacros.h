@@ -240,8 +240,13 @@ NAMESPACE_BEGIN
  * @see cEnum
  * @hideinitializer
  */
+#ifdef __INET_INETDEFS_H  //FIXME ~"when compiling INET". This is a hack to ensure that INET 3.0 compiles with OMNeT++ 5.0b2. To be removed latest in 5.0 final.
+#define Register_Enum(NAME, VALUES)  \
+  EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))  // old (4.x) version of the macro, does not play nice with namespaces
+#else
 #define Register_Enum(NAME, VALUES)  \
   EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(OPP::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
+#endif
 
 /**
  * Registers an enum, and makes it accessible via a global cEnum* pointer,

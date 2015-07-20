@@ -525,6 +525,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setEndArrowHead(ArrowHead endArrowHead);
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
         virtual void setZoomLineWidth(bool zoomLineWidth);
+        _OPPDEPRECATED void setScaleLineWidth(bool scale) {setZoomLineWidth(scale);}  //TODO remove in 5.0 final
         //@}
 };
 
@@ -742,6 +743,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void setFillOpacity(double fillOpacity);
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
         virtual void setZoomLineWidth(bool zoomLineWidth);
+        _OPPDEPRECATED void setScaleLineWidth(bool scale) {setZoomLineWidth(scale);}  //TODO remove in 5.0 final
         //@}
 };
 
