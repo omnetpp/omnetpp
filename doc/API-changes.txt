@@ -146,6 +146,9 @@ OMNeT++ 5.0b2
 
 (!)     cObject: parsimPack() became const
 
+(!)     Register_Enum(): implementation changed, so now the 1st arg must name
+        an existing C++ enum. Before this change any string would suffice.
+
 (+)     cObjectFactory: the static find() and get() methods received two extra
         args with default values, namely const char *contextNamespace=nullptr
         and bool fallbackToOmnetpp=true
