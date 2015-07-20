@@ -1,3 +1,5 @@
+2015-07-20  ------ omnetpp-5.0b2 released ------
+
 2015-06-29  Andras Varga
 
 	* cClassDescriptor: string2enum() made more tolerant

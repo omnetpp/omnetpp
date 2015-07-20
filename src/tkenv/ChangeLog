@@ -1,3 +1,5 @@
+2015-07-20  ------ omnetpp-5.0b2 released ------
+
 2015-06-26  Andras Varga
 
 	* Fix: right-clicking submodule queue length display ("q:2") resulted in

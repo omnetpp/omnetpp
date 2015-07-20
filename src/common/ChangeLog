@@ -1,3 +1,5 @@
+2015-07-20  ------ omnetpp-5.0b2 released ------
+
 2015-06-30  Andras Varga
 
 	* opp_strnistr() fix (did not match at the end of the string)
