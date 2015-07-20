@@ -64,8 +64,9 @@ RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
         runNumber = 0;
     }
 
-    int index = ui->configName->findText(configName.c_str());
+    int index = ui->configName->findData(configName.c_str());
     ui->configName->setCurrentIndex(index);
+
     for (int i = 0; i <= runNumber; ++i)
         ui->runNumber->addItem(QString::number(i), QVariant(i));
 }

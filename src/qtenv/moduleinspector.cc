@@ -160,7 +160,6 @@ void ModuleInspector::addToolBar(QBoxLayout *layout)
 
     action = toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)",
                        this, SLOT(stopSimulation()));
-    action->setShortcut(QKeySequence(Qt::Key_F8));
 
     toolBar->addSeparator();
     action = toolBar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl + R)",
