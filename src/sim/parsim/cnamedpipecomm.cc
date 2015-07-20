@@ -246,7 +246,6 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
     return receive(filtTag, buffer, receivedTag, sourceProcId, false);
 }
 
-#endif /* (!USE_WINDOWS_PIPES) */
-
 NAMESPACE_END
 
+#endif /* (!USE_WINDOWS_PIPES) */
