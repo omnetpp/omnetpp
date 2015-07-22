@@ -241,12 +241,16 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 
       MainWindow *getMainWindow() { return mainwindow; }
       Animator *getAnimator() { return animator; }
+      GenericObjectInspector *getMainObjectInspector() { return mainInspector; }
+      ModuleInspector *getMainModuleInspector() { return mainNetworkView; }
+      LogInspector *getMainLogInspector() { return mainLogView; }
+      TimeLineInspector *getMainTimeLineInspector() { return mainTimeLine; }
 
 
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key);
 
-  private slots:
+  public slots:
       void selectionChanged(cObject *);
 
   protected:

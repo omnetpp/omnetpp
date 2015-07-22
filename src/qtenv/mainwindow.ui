@@ -705,26 +705,10 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>treeView</sender>
-   <signal>pressed(QModelIndex)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>onTreeViewPressed(QModelIndex)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>238</x>
-     <y>315</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>469</x>
-     <y>345</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>inspectObject(QModelIndex)</slot>
   <slot>onTreeViewContextMenu(QPoint)</slot>
-  <slot>onTreeViewPressed(QModelIndex)</slot>
+  <slot>onTreeViewCurrentChanged(QModelIndex,QModelIndex)</slot>
  </slots>
 </ui>

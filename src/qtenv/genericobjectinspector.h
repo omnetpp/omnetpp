@@ -27,10 +27,14 @@ namespace qtenv {
 
 class QTENV_API GenericObjectInspector : public Inspector
 {
+    Q_OBJECT
+
 protected:
       QTreeView *treeView;
       GenericObjectTreeModel *model;
 
+protected slots:
+      void onTreeViewActivated(QModelIndex index);
 public:
       GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~GenericObjectInspector();

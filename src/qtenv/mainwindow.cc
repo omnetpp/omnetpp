@@ -28,6 +28,8 @@
 #include "common/stringutil.h"
 #include "stopdialog.h"
 #include "inspectorutil.h"
+#include "moduleinspector.h"
+#include "loginspector.h"
 #include "timelinegraphicsview.h"
 #include <QStyledItemDelegate>
 #include <QTextLayout>
@@ -51,6 +53,9 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     model->setRootObject(getSimulation());
     ui->treeView->setModel(model);
     ui->treeView->setHeaderHidden(true);
+    ui->treeView->setExpandsOnDoubleClick(false);
+    connect(ui->treeView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTreeViewCurrentChanged(QModelIndex,QModelIndex)));
+    connect(ui->treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
 
     stopDialog = new StopDialog(this);
 
@@ -197,13 +202,13 @@ bool MainWindow::on_actionQuit_triggered()
     if (getSimulation()->getSystemModule() != nullptr) {
         if (isRunning()) {
             int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
-                        QMessageBox::Yes | QMessageBox::No);
+                        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
             if (ans == QMessageBox::No)
                 return false;
         }
         else if (env->getSimulationState() == Qtenv::SIM_READY) {
             int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
-                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
             if (ans == QMessageBox::Yes)
                 env->finishSimulation();
             else if (ans == QMessageBox::Cancel)
@@ -542,18 +547,22 @@ void MainWindow::onTreeViewContextMenu(QPoint point)
     }
 }
 
-void MainWindow::onTreeViewPressed(QModelIndex index)
+void MainWindow::onTreeViewCurrentChanged(QModelIndex curr, QModelIndex prev)
 {
-    /*
-    auto oldModel = dynamic_cast<GenericObjectTreeModel *>(ui->treeView_2->model());
-    auto newModel = new GenericObjectTreeModel(
-        static_cast<cObject *>(index.child(index.row(), index.column()).internalPointer()), ui->treeView_2);
+    getQtenv()->selectionChanged(curr.data(Qt::UserRole).value<cObject *>());
+}
 
-    ui->treeView_2->setModel(newModel);
-    delete oldModel;
-    ui->treeView_2->reset();
-    ui->treeView_2->expand(newModel->index(0, 0, QModelIndex()));
-    */
+void MainWindow::onTreeViewActivated(QModelIndex curr)
+{
+    auto object = curr.data(Qt::UserRole).value<cObject *>();
+    // TODO FIXME this should be done in Qtenv, since the generic object inspector does the same
+    auto module = dynamic_cast<cModule *>(object);
+    if (module) {
+        getQtenv()->getMainModuleInspector()->setObject(module);
+        getQtenv()->getMainLogInspector()->setObject(module);
+    } else {
+        getQtenv()->inspect(object, INSP_DEFAULT, true, "");
+    }
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)

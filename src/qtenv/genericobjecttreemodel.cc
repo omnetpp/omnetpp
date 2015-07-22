@@ -212,6 +212,12 @@ void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> 
     expandNodesIn(view, ids, index(0, 0, QModelIndex()));
 }
 
+cObject *GenericObjectTreeModel::getCObjectPointer(QModelIndex index)
+{
+    auto node = static_cast<TreeNode *>(index.internalPointer());
+    return nullptr;
+}
+
 GenericObjectTreeModel::~GenericObjectTreeModel() {
     delete rootNode;
 }

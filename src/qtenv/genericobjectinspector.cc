@@ -20,6 +20,8 @@
 #include "qtenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
+#include "moduleinspector.h"
+#include "loginspector.h"
 #include "genericobjectinspector.h"
 #include "genericobjecttreemodel.h"
 #include "envir/objectprinter.h"
@@ -73,10 +75,26 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     layout->setMargin(0);
 
     model = new GenericObjectTreeModel(nullptr, this);
+
+    connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
 }
 
 GenericObjectInspector::~GenericObjectInspector() {
     delete model;
+}
+
+void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
+{
+    auto object = model->getCObjectPointer(index);
+
+    // TODO FIXME this should be done in Qtenv, since the object tree (in mainwindow.cc) does the same
+    auto module = dynamic_cast<cModule *>(object);
+    if (module) {
+        getQtenv()->getMainModuleInspector()->setObject(module);
+        getQtenv()->getMainLogInspector()->setObject(module);
+    } else {
+        getQtenv()->inspect(object, INSP_DEFAULT, true, "");
+    }
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj) {

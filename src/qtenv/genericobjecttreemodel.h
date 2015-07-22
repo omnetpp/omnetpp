@@ -61,6 +61,7 @@ public:
     QSet<QString> getExpandedNodesIn(QTreeView *view);
     void expandNodesIn(QTreeView *view, const QSet<QString> &ids);
 
+    cObject *getCObjectPointer(QModelIndex index);
     ~GenericObjectTreeModel();
 };
 
