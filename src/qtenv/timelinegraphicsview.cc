@@ -406,6 +406,10 @@ QVector<cObject*> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
 
 void TimeLineGraphicsView::rebuildScene()
 {
+    // this will prevent scrolling, because this way we only want to show
+    // a portion of a scene so big, that it will always exactly fit into the viewport
+    setSceneRect(contentsRect());
+
     if(scene() == nullptr)
         qDebug() << "TimeLineGraphicsView::rebuildScene: scene must be set";
 
@@ -423,7 +427,8 @@ void TimeLineGraphicsView::rebuildScene()
     int tickLabelHeight = maxTickLabelSize.height();
 
     bool showTickLabels = enableTickLabels && (r.height() >= tickLabelHeight+5);
-    axisY = showTickLabels ? r.height() - tickLabelHeight - 1 : (r.height()-1)/2;
+    // the -10 is a margin at the bottom, might want to correct later
+    axisY = showTickLabels ? r.height() - tickLabelHeight - 10 : (r.height()-1)/2;
     zeroStartX = maxTickLabelSize.width()/2;
     zeroEndX = zeroStartX + 20;
     arrowStartX = zeroEndX + 20;

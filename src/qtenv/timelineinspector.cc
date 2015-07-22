@@ -47,6 +47,7 @@ TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, Inspector
     timeLine->setMaximumHeight(100); // TODO FIXME proper layouting
     timeLine->setScene(new QGraphicsScene());
     layout->addWidget(timeLine, 0, 0);
+    layout->setMargin(0);
 
     connect(timeLine, SIGNAL(contextMenuRequested(QVector<cObject*>,QPoint)), this, SLOT(createContextMenu(QVector<cObject*>,QPoint)));
     connect(timeLine, SIGNAL(click(cObject*)), this, SLOT(setObjectToObjectInspector(cObject*)));
