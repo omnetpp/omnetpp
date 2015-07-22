@@ -184,7 +184,6 @@ QVector<cMessage*> TimeLineGraphicsView::getMessages()
 }
 
 void TimeLineGraphicsView::resizeEvent(QResizeEvent *event) {
-    scene()->clear();
     rebuildScene();
 }
 
