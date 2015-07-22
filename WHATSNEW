@@ -11,6 +11,20 @@ OMNeT++ 5.0 beta 2 (July 2015)
 
 Core:
 
+  - OMNeT++ classes are now in the "omnetpp" namespace. Models need to be
+    modified to compile, e.g. by adding "using namespace omnetpp" or
+    USING_NAMESPACE lines at appropriate places. (The latter conditionally
+    expands to the former when needed, and to the empty string when not,
+    making your code compatible with OMNeT++ 4.6 too.) If you don't want to
+    change the model source code, you can define the AUTOIMPORT_NAMESPACE
+    macro on the compiler command line (add -DAUTOIMPORT_NAMESPACE to
+    CFLAGS), which will basically add the using namespace directive at the
+    end of <omnetpp.h>.
+
+    Turning off the omnetpp namespace (by setting USE_NAMESPACE=no in
+    configure.user) is no longer fully supported, and will be removed
+    in the next beta.
+
  - Introduced cRandom, which encapsulates a random number stream into an
    object. Random numbers can be extracted with the draw() method.
    Added the following cRandom subclasses: cUniform, cExponential,
@@ -69,29 +83,6 @@ Core:
 
  - See doc/API-changelog.txt for a complete list of changes.
 
-
-General:
-
- - The include/ folder was restructured: only the public header <omnetpp.h> was
-   left in it, all other include files were moved into an omnetpp/ subfolder
-   under include/.
-
- - The source tree (src/) has gone through several modernizing and cleanup steps:
-
-   - Per-folder nested namespaces have been introduced, e.g. Tkenv code is now
-     in the omnetpp::tkenv namespace.
-
-   - Qualified includes with the folder, i.e. #include "stringutil.h" became
-     #include "common/stringutil.h". This increases readbility and reduces
-     the chance of including a wrong header.
-
-   - Use fully qualified header guards
-
-   - Modernizing: use the 'nullptr' and 'override' keywords; use C++ names of C
-     headers (e.g. <cstdio> instead of <stdio.h>).
-
-   - Code formatting
-
 NED:
 
  - Allow a "module" to extend a "simple" (motivation: INET 3.x)
@@ -124,6 +115,32 @@ Tkenv:
    the transition from OMNeT++ 3.x to 4.0.
 
  - Several bug fixes
+
+General:
+
+ - The include/ folder was restructured: only the public header <omnetpp.h> was
+   left in it, all other include files were moved into an omnetpp/ subfolder
+   under include/.
+
+ - The source tree (src/) has gone through several modernizing and cleanup steps:
+
+   - Per-folder nested namespaces have been introduced, e.g. Tkenv code is now
+     in the omnetpp::tkenv namespace.
+
+   - Qualified includes with the folder, i.e. #include "stringutil.h" became
+     #include "common/stringutil.h". This increases readability and reduces
+     the chance of including a wrong header.
+
+   - Use fully qualified header guards
+
+   - Modernizing: use the 'nullptr' and 'override' keywords; use C++ names of C
+     headers (e.g. <cstdio> instead of <stdio.h>).
+
+   - Code style: renamed many identifiers (local variables, arguments, private
+     data members, etc.) to have a consistent, camelcase naming); codebase
+     reformatted to have a consistent indentation style.
+
+ - Clarifications in the Academic Public License.
 
 Contrib:
 

@@ -24,6 +24,17 @@ Legend:
 OMNeT++ 5.0b2
 ~~~~~~~~~~~~~
 
+(!!!)   OMNeT++ classes are now in the "omnetpp" namespace. Models need to be
+        modified to compile, e.g. by adding "using namespace omnetpp" or
+        USING_NAMESPACE lines at appropriate places. (The latter conditionally
+        expands to the former when needed, and to the empty string when not,
+        making your code compatible with OMNeT++ 4.6 too.) If you don't want to
+        change the model source code, you can define the AUTOIMPORT_NAMESPACE
+        macro on the compiler command line (add -DAUTOIMPORT_NAMESPACE to
+        CFLAGS), which will basically add the using namespace directive at the
+        end of <omnetpp.h>. NOTE: USING_NAMESPACE and AUTOIMPORT_NAMESPACE will
+        be removed in the next beta.
+
 (+)     Introduced cRandom, which encapsulates a random number stream into an
         object. Random numbers can be extracted with the draw() method.
 
