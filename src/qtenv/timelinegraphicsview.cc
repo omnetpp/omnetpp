@@ -164,6 +164,7 @@ QVector<cMessage*> TimeLineGraphicsView::getMessages()
     bool wantSilentMsgs = variant.isValid() ? variant.value<bool>() : true;
 
     cFutureEventSet *fes = getSimulation()->getFES();
+    fes->sort();
     int fesLen = fes->getLength();
     QVector<cMessage*> messages;
     for (int i = 0; maxNum > 0 && i < fesLen; i++, maxNum--) {
