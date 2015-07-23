@@ -79,9 +79,6 @@ class Animator : public QObject
     std::list<Animation *> animations;
     std::map<std::pair<GraphicsLayer *, cMessage *>, QGraphicsItem *> messageItems;
 
-    void removeItemsForMessage(cMessage *msg);
-    void removeItemsOnLayer(GraphicsLayer *layer);
-
     static const int frameRate = 40;
     bool inHurry = false;
 
@@ -110,6 +107,10 @@ public slots:
     bool finished();
     void clear();
     void hurry();
+
+    // removes any animation and items on the given inspector,
+    // so it can be deleted safely. called from the ModuleInspector dtor
+    void clearInspector(ModuleInspector *insp);
 };
 
 } // namespace qtenv

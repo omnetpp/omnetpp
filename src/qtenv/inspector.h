@@ -62,7 +62,6 @@ class QTENV_API Inspector : public QWidget
       char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
       std::string windowTitle;// window title string
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
-      bool closeRequested;    // "mark for deletion" flag (set if user wants to close inspector during animation)
       std::vector<cObject*> historyBack;
       std::vector<cObject*> historyForward;
 
@@ -114,9 +113,6 @@ class QTENV_API Inspector : public QWidget
       virtual void setObject(cObject *object);
       virtual bool canGoForward();
       virtual bool canGoBack();
-
-      virtual void markForDeletion() {closeRequested=true;}
-      virtual bool isMarkedForDeletion() {return closeRequested;}
 
       virtual void showWindow();
 

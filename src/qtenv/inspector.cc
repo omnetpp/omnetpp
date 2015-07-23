@@ -73,7 +73,6 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     object = nullptr;
     type = f->getInspectorType();
     isToplevelWindow = isTopLevel;
-    closeRequested = false;
 
     windowName[0] = '\0';  // no window exists
 
@@ -370,7 +369,7 @@ void Inspector::utilitiesSubMenu()
 }
 
 void Inspector::closeEvent(QCloseEvent *) {
-    markForDeletion();
+    getQtenv()->deleteInspector(this);
 }
 
 } // namespace qtenv

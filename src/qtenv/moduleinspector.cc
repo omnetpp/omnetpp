@@ -113,6 +113,10 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
 
 ModuleInspector::~ModuleInspector()
 {
+    // so the window can be closed safely, without
+    // double deleting the message items (by the
+    // animations and the scene itself)
+    getQtenv()->getAnimator()->clearInspector(this);
     delete canvasRenderer;
 }
 

@@ -1051,10 +1051,7 @@ void Qtenv::refreshInspectors()
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
         Inspector *insp = *it;
         InspectorList::iterator next = ++it;
-        if (insp->isMarkedForDeletion())
-            deleteInspector(insp);
-        else
-            insp->refresh();
+        insp->refresh();
         it = next;
     }
 

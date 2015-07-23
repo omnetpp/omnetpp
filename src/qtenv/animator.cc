@@ -114,7 +114,7 @@ void Animator::onFrameTimer() {
         }
     }
 
-    animations.remove_if([](Animation *a){ return a == nullptr; });
+    animations.remove(nullptr);
 
     if (finished()) {
         emit finish();
@@ -175,6 +175,27 @@ void Animator::hurry()
 {
     if (!finished())
         inHurry = true;
+}
+
+void Animator::clearInspector(ModuleInspector *insp)
+{
+    auto inspLayer = insp->getAnimationLayer();
+    for (auto &anim : animations) {
+        if (anim->layer == inspLayer) {
+            delete anim;
+            anim = nullptr;
+        }
+    }
+    animations.remove(nullptr);
+
+    for (auto it = messageItems.begin(); it != messageItems.end(); /* blank */ ) {
+        if ((*it).first.first == inspLayer) {
+            delete (*it).second;
+            messageItems.erase(it++);
+        } else {
+            ++it;
+        }
+    }
 }
 
 

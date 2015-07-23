@@ -143,8 +143,6 @@ int inspectorIsToplevel_cmd(ClientData, Tcl_Interp *, int, const char **);
 int refreshInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int commitInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
-int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
-int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int refreshInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int redrawInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -267,8 +265,6 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_refreshinspector",  refreshInspector_cmd  }, // args: <window>
    { "opp_commitinspector",   commitInspector_cmd   }, // args: <window>
    { "opp_deleteinspector",   deleteInspector_cmd   }, // args: <window>
-   { "opp_markinspectorfordeletion", markInspectorForDeletion_cmd}, // args: <window>
-   { "opp_inspmarkedfordeletion", inspMarkedForDeletion_cmd}, // args: <window>
    { "opp_getinspectors",     getInspectors_cmd     }, // args: <toplevelOnly>
    { "opp_refreshinspectors", refreshInspectors_cmd }, // args: -
    { "opp_redrawinspectors",  redrawInspectors_cmd  }, // args: -
@@ -2327,40 +2323,6 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
         return TCL_ERROR;
     }
     app->deleteInspector(insp);
-    return TCL_OK;
-}
-
-int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-    // expected arg: inspector widget name
-    if (argc != 2) {
-        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    Qtenv *app = getQtenv();
-    Inspector *insp = app->findInspector(argv[1]);
-    if (!insp) {
-        Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    insp->markForDeletion();
-    return TCL_OK;
-}
-
-int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-    // expected arg: inspector widget name
-    if (argc != 2) {
-        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    Qtenv *app = getQtenv();
-    Inspector *insp = app->findInspector(argv[1]);
-    if (!insp) {
-        Tcl_SetResult(interp, TCLCONST("not an inspector window"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    Tcl_SetResult(interp, TCLCONST(insp->isMarkedForDeletion() ? "1" : "0"), TCL_STATIC);
     return TCL_OK;
 }
 
