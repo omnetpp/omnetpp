@@ -21,6 +21,7 @@
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
+#include <QGraphicsObject>
 #include <QIcon>
 
 namespace omnetpp {
@@ -29,6 +30,42 @@ class cPar;
 class cComponent;
 
 namespace qtenv {
+
+
+// used in the ModuleInspector and some related classes
+class GraphicsLayer : public QGraphicsObject {
+    Q_OBJECT
+
+public:
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void addItem(QGraphicsItem *item);
+    void clear();
+};
+
+
+// Used in the ModuleInspector to make text more readable on a cluttered background.
+// If the functionality is not enough, just implement more of QGraphicsSimpleTextItems
+// functions, and forward them to one or both members accordingly.
+class OutlinedTextItem : public QGraphicsItem {
+protected:
+    // these are NOT PART of the scene, not even children of this object
+    // we just misuse them in the paint method
+    QGraphicsSimpleTextItem *outlineItem; // never has a Brush
+    QGraphicsSimpleTextItem *fillItem; // never has a Pen
+
+public:
+    OutlinedTextItem(QGraphicsItem *parent = nullptr, QGraphicsScene *scene = nullptr);
+    virtual ~OutlinedTextItem();
+
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    void setText(const QString &text);
+    void setPen(const QPen &pen);
+    void setBrush(const QBrush &brush);
+};
+
 
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'

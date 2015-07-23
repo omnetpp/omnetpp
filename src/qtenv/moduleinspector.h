@@ -36,19 +36,6 @@ class CanvasRenderer;
 class ModuleGraphicsView;
 
 
-class GraphicsLayer : public QGraphicsObject {
-    Q_OBJECT
-
-public:
-    virtual QRectF boundingRect() const;
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void addItem(QGraphicsItem *item);
-    void removeItem(QGraphicsItem *item);
-    void clear();
-};
-
-
-
 class QTENV_API ModuleInspector : public Inspector
 {
    Q_OBJECT
@@ -61,6 +48,7 @@ class QTENV_API ModuleInspector : public Inspector
       void zoomIn(int x = 0, int y = 0);
       void zoomOut(int x = 0, int y = 0);
 
+      void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);
       void createContextMenu(QContextMenuEvent *event);
 
@@ -73,6 +61,8 @@ class QTENV_API ModuleInspector : public Inspector
       // These layers should be the only top level items!
       // After adding anything else to the scene, make
       // sure to make it a descendant of one of these!
+      GraphicsLayer *backgroundLayer;
+      GraphicsLayer *rangeLayer;
       GraphicsLayer *networkLayer;
       GraphicsLayer *animationLayer;
 

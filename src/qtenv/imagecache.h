@@ -34,12 +34,18 @@ class ImageCache
 {
 private:
     std::map<QString, QImage*> imagesWithSize;
-    std::map<QString, std::map<IconSize, QImage*> > images;
 
     void doLoadImages(const char *dir, const char *prefix = "");
 
+    // The one with the red questionmarks, from the icons.qrc file.
+    // This is returned when no image is found with the given name.
+    QImage *unknownImage;
+
+    static QString sizePostfix(IconSize size);
+
 public:
     ImageCache();
+    ~ImageCache();
 
     void loadImages(const char *path);
     QImage *getImage(const char *name, IconSize size);

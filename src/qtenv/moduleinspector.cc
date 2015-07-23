@@ -35,6 +35,7 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cgate.h"
 #include "moduleinspector.h"
+#include "genericobjectinspector.h"
 #include "qtenv.h"
 #include "inspectorfactory.h"
 #include "arrow.h"
@@ -47,35 +48,6 @@ using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
-
-// ---- helper class ----
-
-QRectF GraphicsLayer::boundingRect() const {
-    return QRectF(); // doesn't matter
-}
-
-void GraphicsLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    // nothing here...
-}
-
-void GraphicsLayer::addItem(QGraphicsItem *item) {
-    scene()->addItem(item);
-    item->setParentItem(this);
-}
-
-void GraphicsLayer::removeItem(QGraphicsItem *item) {
-    scene()->removeItem(item);
-}
-
-void GraphicsLayer::clear() {
-    while (!childItems().isEmpty())
-        scene()->removeItem(childItems()[0]);
-}
-
-// ---- end of helper class ----
-
-#define UNKNOWNICON_WIDTH     32
-#define UNKNOWNICON_HEIGHT    32
 
 void _dummy_for_moduleinspector() {}
 
@@ -99,6 +71,8 @@ Register_InspectorFactory(ModuleInspectorFactory);
 
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
+    backgroundLayer = new GraphicsLayer();
+    rangeLayer = new GraphicsLayer();
     networkLayer = new GraphicsLayer();
     animationLayer = new GraphicsLayer();
 
@@ -108,6 +82,8 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     view->setWindowName(windowName);
     parent->setMinimumSize(20, 20);
 
+    view->scene()->addItem(backgroundLayer);
+    view->scene()->addItem(rangeLayer);
     view->scene()->addItem(networkLayer);
     view->scene()->addItem(animationLayer);
 }
@@ -132,7 +108,7 @@ void ModuleInspector::doSetObject(cObject *obj)
     canvasRenderer->setCanvas(getCanvas());
 
     view->clear();
-    animationLayer->clear();
+    getQtenv()->getAnimator()->clearInspector(this);
 
     if (object) {
         view->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
@@ -162,6 +138,9 @@ void ModuleInspector::createView(QWidget *parent)
     parent->setLayout(layout);
     view = new ModuleGraphicsView(canvasRenderer);
 
+    connect(view, SIGNAL(back()), this, SLOT(goBack()));
+    connect(view, SIGNAL(forward()), this, SLOT(goForward()));
+    connect(view, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
     connect(view, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
     connect(view, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
 
@@ -169,7 +148,9 @@ void ModuleInspector::createView(QWidget *parent)
     layout->setMargin(0);
     view->setRenderHints(QPainter::Antialiasing);
     view->setScene(new QGraphicsScene());
-    view->setLayer(networkLayer);
+    view->setBackgroundLayer(backgroundLayer);
+    view->setSubmoduleLayer(networkLayer);
+    view->setRangeLayer(rangeLayer);
 
     QHBoxLayout *horizontalLayout = new QHBoxLayout();
     QVBoxLayout *verticalLayout = new QVBoxLayout();
@@ -461,9 +442,23 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
     return TCL_OK;
 }
 
+void ModuleInspector::click(QMouseEvent *event) {
+    auto objects = view->getObjectsAt(event->pos().x(), event->pos().y());
+    if (!objects.empty()) {
+        getQtenv()->getMainObjectInspector()->setObject(objects.front());
+    }
+}
+
 void ModuleInspector::doubleClick(QMouseEvent *event)
 {
-    cObject *object = view->getObjectAt(event->pos().x(), event->pos().y());
+    cObject *object = nullptr;
+    QList<cObject *> objects = view->getObjectsAt(event->pos().x(), event->pos().y());
+    for (auto &i : objects) {
+        if (i) {
+            object = i;
+            break;
+        }
+    }
 
     //TODO click to connection
     if(object == nullptr)

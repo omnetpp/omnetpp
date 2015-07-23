@@ -22,6 +22,7 @@
 #include <ctime>
 #include <cassert>
 #include <sstream>
+#include <QPainter>
 
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
@@ -48,6 +49,72 @@ using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
+
+
+// ---- GraphicsLayer implementation ----
+
+QRectF GraphicsLayer::boundingRect() const {
+    return QRectF(); // doesn't matter
+}
+
+void GraphicsLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    // nothing here...
+}
+
+void GraphicsLayer::addItem(QGraphicsItem *item) {
+    scene()->addItem(item);
+    item->setParentItem(this);
+}
+
+void GraphicsLayer::clear() {
+    while (!childItems().isEmpty())
+        delete childItems()[0];
+}
+
+// ---- end of GraphicsLayer ----
+
+
+// ---- OutlinedTextItem implementation ----
+
+OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
+    : QGraphicsItem(parent, scene)
+{
+    outlineItem = new QGraphicsSimpleTextItem();
+    fillItem = new QGraphicsSimpleTextItem();
+
+    outlineItem->setBrush(Qt::NoBrush);
+    fillItem->setPen(Qt::NoPen);
+}
+
+OutlinedTextItem::~OutlinedTextItem() {
+    delete fillItem;
+    delete outlineItem;
+}
+
+void OutlinedTextItem::setText(const QString &text) {
+    fillItem->setText(text);
+    outlineItem->setText(text);
+}
+
+QRectF OutlinedTextItem::boundingRect() const {
+    return fillItem->boundingRect().united(outlineItem->boundingRect());
+}
+
+void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    outlineItem->paint(painter, option, widget);
+    fillItem->paint(painter, option, widget);
+}
+
+void OutlinedTextItem::setPen(const QPen &pen) {
+    outlineItem->setPen(pen);
+}
+
+void OutlinedTextItem::setBrush(const QBrush &brush) {
+    fillItem->setBrush(brush);
+}
+
+// ---- end of OutlinedTextItem ----
+
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
 

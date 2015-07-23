@@ -17,6 +17,8 @@
 #ifndef MODULEGRAPHICSVIEW_H
 #define MODULEGRAPHICSVIEW_H
 
+#include "submoduleitem.h"
+
 #include <map>
 #include <QPointF>
 #include <QGraphicsView>
@@ -51,8 +53,7 @@ private:
     typedef std::map<cModule*,QPointF> PositionMap;
     PositionMap submodPosMap;  // recalculateLayout() fills this map
 
-    std::map<int, QGraphicsPixmapItem*> submoduleGraphicsItems;
-    std::map<int, QGraphicsItem*> messageGraphicsItems;
+    std::map<int, SubmoduleItem*> submoduleGraphicsItems;
 
     // does full layouting, stores results in submodPosMap
     void recalculateLayout();
@@ -80,7 +81,11 @@ private:
 
     void updateBackgroundColor();
 
-    GraphicsLayer *layer = nullptr;
+    GraphicsLayer *backgroundLayer = nullptr;
+    GraphicsLayer *rangeLayer = nullptr;
+    GraphicsLayer *submoduleLayer = nullptr;
+    QGraphicsRectItem *rectangleItem = nullptr;
+    QGraphicsRectItem *nextEventMarker = nullptr;
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
@@ -89,6 +94,8 @@ protected:
 
 signals:
     void click(QMouseEvent*);
+    void back();
+    void forward();
     void doubleClick(QMouseEvent*);
     void contextMenuRequested(QContextMenuEvent*);
 
@@ -102,7 +109,9 @@ public:
     cObject *getObjectAt(qreal x, qreal y);
     QList<cObject*> getObjectsAt(qreal x, qreal y);
 
-    void setLayer(GraphicsLayer *layer);
+    void setBackgroundLayer(GraphicsLayer *layer);
+    void setSubmoduleLayer(GraphicsLayer *layer);
+    void setRangeLayer(GraphicsLayer *layer);
 
     void redraw();
     void refresh();

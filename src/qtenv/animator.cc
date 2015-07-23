@@ -73,26 +73,18 @@ void Animator::redrawMessages()
                 arrivalMod->getParentModule() == moduleInsp->getObject() &&
                 msg->getArrivalGateId() >= 0)
             {
-                char msgptr[32];
-                ptrToStr(msg, msgptr);
                 cGate *arrivalGate = msg->getArrivalGate();
+
+                auto dot = new QGraphicsEllipseItem(-5, -5, 10, 10, moduleInsp->getAnimationLayer(), moduleInsp->getAnimationLayer()->scene());
+                dot->setBrush(QColor("red"));
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
                 if (arrivalGate->getPreviousGate()) {
-                    cGate *gate = arrivalGate->getPreviousGate();
-                    auto dot = new QGraphicsEllipseItem(-5, -5, 10, 10, moduleInsp->getAnimationLayer(), moduleInsp->getAnimationLayer()->scene());
-                    dot->setBrush(QColor("red"));
                     dot->setPos(moduleInsp->getMessageEndPos(moduleInsp->getSubmodCoords(msg->getSenderModule()), moduleInsp->getSubmodCoords(msg->getArrivalModule())));
-
-                    messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = dot;
-                }
-                else {
-                    auto dot = new QGraphicsEllipseItem(-5, -5, 10, 10, moduleInsp->getAnimationLayer(), moduleInsp->getAnimationLayer()->scene());
-                    dot->setBrush(QColor("red"));
+                } else {
                     dot->setPos(moduleInsp->getSubmodCoords(msg->getArrivalModule()));
-
-                    messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = dot;
                 }
+                messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = dot;
             }
         }
     }
@@ -322,9 +314,7 @@ Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, Animation::
 }
 
 Animation::~Animation() {
-    if (line) layer->removeItem(line);
     delete line;
-    if (dot) layer->removeItem(dot);
     delete dot;
 }
 

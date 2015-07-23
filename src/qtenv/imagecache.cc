@@ -32,6 +32,12 @@ namespace qtenv {
 
 ImageCache::ImageCache()
 {
+    unknownImage = new QImage(":/objects/icons/objects/unknown.png");
+}
+
+ImageCache::~ImageCache()
+{
+    delete unknownImage;
 }
 
 void ImageCache::loadImages(const char *path)
@@ -85,27 +91,6 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
         for(int i = 0; i < stringList.size() - 1; ++i)
             key += stringList[i];
         imagesWithSize[key] = image;
-
-        stringList = key.split("_");
-        key = "";
-        for(int i = 0; i < stringList.size() - 1; ++i)
-            key += stringList[i];
-
-        QString size = stringList[stringList.size() - 1];
-        if(size == "vl")
-            images[key][VERY_LARGE] = image;
-        else if (size == "xl")
-            images[key][EXTRA_LARGE] = image;
-        else if (size == "l")
-            images[key][LARGE] = image;
-        else if (size == "s")
-            images[key][SMALL] = image;
-        else if (size == "vs")
-            images[key][VERY_SMALL] = image;
-        else if (size == "xs")
-            images[key][EXTRA_LARGE] = image;
-        else
-            images[key][NORMAL] = image;
     }
 
     //# recurse into subdirs
@@ -119,19 +104,35 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     }
 }
 
+QString ImageCache::sizePostfix(IconSize size)
+{
+    switch (size) {
+    case EXTRA_SMALL: return "_xs";
+    case VERY_SMALL:  return "_vs";
+    case SMALL:       return "_s";
+    case NORMAL:      return "";
+    case LARGE:       return "_l";
+    case VERY_LARGE:  return "_vl";
+    case EXTRA_LARGE: return "_xl";
+    default: Q_ASSERT(false); return ""; // returning just to silence a warning...
+    }
+}
+
 QImage *ImageCache::getImage(const char *name, IconSize size)
 {
-    auto it = images.find(name);
-    if(it != images.end() && it->second.find(size) != it->second.end())
-        return images[QString(name)][size];
-    return nullptr;
+    QString nameWithSize = name;
+    QString postfix = sizePostfix(size);
+    if (!nameWithSize.endsWith(postfix))
+        nameWithSize += postfix;
+    return getImage((nameWithSize).toStdString().c_str());
 }
 
 QImage *ImageCache::getImage(const char *nameWithSize)
 {
     if(imagesWithSize.find(nameWithSize) != imagesWithSize.end())
         return imagesWithSize[nameWithSize];
-    return nullptr;
+    qDebug() << "ImageCache: Image" << nameWithSize << "not found!";
+    return unknownImage;
 }
 
 } // namespace qtenv

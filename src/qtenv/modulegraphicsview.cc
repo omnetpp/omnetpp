@@ -34,6 +34,7 @@
 #include <QMouseEvent>
 #include <canvasrenderer.h>
 #include "animator.h"
+#include "submoduleitem.h"
 #include <QDebug>
 
 #define emit
@@ -68,8 +69,12 @@ void ModuleGraphicsView::mouseDoubleClickEvent(QMouseEvent * event)
 
 void ModuleGraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::MouseButton::LeftButton)
-        emit click(event);
+    switch (event->button()) {
+    case Qt::LeftButton: emit click(event); break;
+    case Qt::XButton1:   emit back();       break;
+    case Qt::XButton2:   emit forward();    break;
+    default:   /* shut up, compiler! */     break;
+    }
 }
 
 void ModuleGraphicsView::contextMenuEvent(QContextMenuEvent * event)
@@ -109,7 +114,7 @@ void ModuleGraphicsView::relayoutAndRedrawAll()
         }
     }
 
-    layer->clear();
+    submoduleLayer->clear();
     recalculateLayout();
     redrawFigures();
     redrawModules();
@@ -434,246 +439,285 @@ void ModuleGraphicsView::redrawModules()
 
 void ModuleGraphicsView::drawSubmodule(cModule *submod, double x, double y)
 {
-    const char *iconName = submod->getDisplayString().getTagArg("i", 0);
-    if (!iconName || !iconName[0])
-        iconName = "block/process";
-
-    QImage *img = getQtenv()->icons.getImage(iconName);
-    if (!img) {
-        img = getQtenv()->icons.getImage("block/process");
-    }
-    QPixmap icon = QPixmap::fromImage(*img);
-    submoduleGraphicsItems[submod->getId()] = scene()->addPixmap(icon);
-    submoduleGraphicsItems[submod->getId()]->setPos(x - icon.size().width() / 2, y - icon.size().height() / 2);
-    submoduleGraphicsItems[submod->getId()]->setData(1, QVariant::fromValue(static_cast<cObject *>(submod)));
-    submoduleGraphicsItems[submod->getId()]->setParentItem(layer);
-
-    char coords[64];
-    const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
-
-//    CHK(Tcl_VarEval(interp, "ModuleInspector:drawSubmodule ",
-//                    canvas, " ",
-//                    ptrToStr(submod), " ",
-//                    coords,
-//                    "{", submod->getFullName(), "} ",
-//                    TclQuotedString(dispstr).get(), " ",
-//                    (submod->isPlaceholder() ? "1" : "0"),
-//                    TCL_NULL));
-
-//    proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} {
-//       #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $isplaceholder"
-//       global icons inspectordata tkpFont canvasTextOptions
-
-    QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
-    QVariant variant = getQtenv()->getPref(prefName);
-    double zoom = 0;
-    if(variant.isValid())
-        zoom = variant.value<double>();
-
-    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":imagesizefactor";
-    variant = getQtenv()->getPref(prefName);
-    double imagesizefactor = 0;
-    if(variant.isValid())
-        imagesizefactor = variant.value<double>();
-
-    double alphamult = 1;
-    if(submod->isPlaceholder()) {
-        alphamult = 0.3;
-    }
-
-    //opp_displaystring $dispstr parse tags $submodptr 1
-
-//    const char *array = "tags";
-//    cComponent *component = dynamic_cast<cComponent *>(submod);
-
-//    cDisplayString dp(dispstr);
-//    for (int k = 0; k < dp.getNumTags(); k++) {
-//        Tcl_Obj *arglist = Tcl_NewListObj(0, nullptr);
-//        for (int i = 0; i < dp.getNumArgs(k); i++) {
-//            const char *s = dp.getTagArg(k, i);
-//            TRY(s = substituteDisplayStringParamRefs(s, buffer, component, true))
-//            Tcl_ListObjAppendElement(interp, arglist, Tcl_NewStringObj(TCLCONST(s), -1));
-//        }
-//        Tcl_SetVar2Ex(interp, TCLCONST(array), TCLCONST(dp.getTagName(k)), arglist, 0);
-//    }
-
-//           # scale (x,y)
-//           if {$zoom != ""} {
-//               set x [expr $zoom*$x]
-//               set y [expr $zoom*$y]
-//           }
-
-//           # set sx and sy (and look up image)
-//           set isx 0
-//           set isy 0
-//           set bsx 0
-//           set bsy 0
-//           if ![info exists tags(is)] {
-//               set tags(is) {}
-//           }
-//           if [info exists tags(i)] {
-//               setvars {img isx isy} [dispstrGetImage $tags(i) $tags(is) $imagesizefactor $alphamult $icons(defaulticon)]
-//           }
-
-//           if [info exists tags(b)] {
-//               set bsx [lindex $tags(b) 0]
-//               set bsy [lindex $tags(b) 1]
-//               if {$bsx=="" && $bsy==""} {
-//                   set bsx 40
-//                   set bsy 24
-//               }
-//               if {$bsx==""} {set bsx $bsy}
-//               if {$bsy==""} {set bsy $bsx}
-//               if {$zoom != ""} {
-//                   set bsx [expr $zoom*$bsx]
-//                   set bsy [expr $zoom*$bsy]
-//               }
-//           } elseif ![info exists tags(i)] {
-//               setvars {img isx isy} [dispstrGetImage "" "" $imagesizefactor $alphamult $icons(defaulticon)]
-//           }
-
-//           set sx [expr {$isx<$bsx ? $bsx : $isx}]
-//           set sy [expr {$isy<$bsy ? $bsy : $isy}]
-
-//           if [info exists tags(b)] {
-
-//               set width [lindex $tags(b) 5]
-//               if {$width == ""} {set width 2}
-
-//               set rx [expr $bsx/2 - $width/2]
-//               set ry [expr $bsy/2 - $width/2]
-//               set x1 [expr $x - $rx]
-//               set y1 [expr $y - $ry]
-//               set x2 [expr $x + $rx]
-//               set y2 [expr $y + $ry]
-
-//               set fill [lindex $tags(b) 3]
-//               if {$fill == ""} {set fill #8080ff}
-//               if {$fill == "-"} {set fill ""}
-//               if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
-//               set outline [lindex $tags(b) 4]
-//               if {$outline == ""} {set outline black}
-//               if {$outline == "-"} {set outline ""}
-//               if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
-//               if {$isplaceholder} {set dash "1 1"} else {set dash ""}
-
-//               switch -regexp [lindex $tags(b) 2] {
-//                  "o.*"   {set what [list ellipse $x $y -rx $rx -ry $ry]}
-//                  "l.*"   {set what [list pline $x1 $y1 $x2 $y2]}
-//                  default {set what [list prect $x1 $y1 $x2 $y2 -strokelinejoin miter]}
-//               }
-
-//               $c create {*}$what \
-//                   -fill $fill -strokewidth $width -stroke $outline -strokedasharray $dash \
-//                   -tags "dx tooltip submod submodext $submodptr"
-
-//               if [info exists tags(i)] {
-//                   $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
-//               }
-//               if {$inspectordata($c:showlabels)} {
-//                   $c create ptext $x [expr $y2+$width/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
-//               }
-
-//           } else {
-//               # draw an icon when no shape is present (only i tag, or neither i nor b tag)
-//               $c create pimage $x $y {*}$img -anchor c -tags "dx tooltip submod submodext $submodptr"
-//               if {$inspectordata($c:showlabels)} {
-//                   $c create ptext $x [expr $y+$sy/2+3] -text $name -textanchor n {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
-//               }
-//           }
-
-//           # queue length
-//           if {[info exists tags(q)]} {
-//               set r [ModuleInspector:getSubmodCoords $c $submodptr]
-//               set qx [expr [lindex $r 2]+1]
-//               set qy [lindex $r 1]
-//               $c create ptext $qx $qy -text "q:?" -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip qlen qlen-$submodptr submodext"
-//           }
-
-//           # modifier icon (i2 tag)
-//           if {[info exists tags(i2)]} {
-//               if ![info exists tags(is2)] {
-//                   set tags(is2) {}
-//               }
-//               set r [ModuleInspector:getSubmodCoords $c $submodptr]
-//               set mx [expr [lindex $r 2]+2]
-//               set my [expr [lindex $r 1]-2]
-//               setvars {img2 dummy dummy} [dispstrGetImage $tags(i2) $tags(is2) $imagesizefactor $alphamult]
-//               $c create pimage $mx $my {*}$img2 -anchor ne -tags "dx tooltip submod submodext $submodptr"
-//           }
-
-//           # text (t=<text>,<position>,<color>); multiple t tags supported (t1,t2,etc)
-//           foreach {ttag} [array names tags -regexp {^t\d*$} ] {
-//               set txt [lindex $tags($ttag) 0]
-//               set pos [lindex $tags($ttag) 1]
-//               if {$pos == ""} {set pos "t"}
-//               set color [lindex $tags($ttag) 2]
-//               if {$color == ""} {set color "#0000ff"}
-//               if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-
-//               set r [ModuleInspector:getSubmodCoords $c $submodptr]
-//               if {$pos=="l"} {
-//                   set tx [lindex $r 0]
-//                   set ty [lindex $r 1]
-//                   set anch "ne"
-//                   set just "right"
-//               } elseif {$pos=="r"} {
-//                   set tx [lindex $r 2]
-//                   set ty [lindex $r 1]
-//                   set anch "nw"
-//                   set just "left"
-//               } elseif {$pos=="t"} {
-//                   set tx [expr ([lindex $r 0]+[lindex $r 2])/2]
-//                   set ty [expr [lindex $r 1]+2]
-//                   set anch "s"
-//                   set just "center"
-//               } else {
-//                   error "wrong position in t= tag, should be `l', `r' or `t'"
-//               }
-//               $c create ptext $tx $ty -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
-//           }
-
-//           # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
-//           foreach {rtag} [array names tags -regexp {^r\d*$} ] {
-//               set radius [lindex $tags($rtag) 0]
-//               if {$radius == ""} {set radius 0}
-//               set rfill [lindex $tags($rtag) 1]
-//               if {$rfill == "-"} {set rfill ""}
-//               if {[string index $rfill 0]== "@"} {set rfill [opp_hsb_to_rgb $rfill]}
-//               # if rfill=="" --> not filled
-//               set routline [lindex $tags($rtag) 2]
-//               if {$routline == ""} {set routline black}
-//               if {$routline == "-"} {set routline ""}
-//               if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
-//               set rwidth [lindex $tags($rtag) 3]
-//               if {$rwidth == ""} {set rwidth 1}
-//               if {$zoom != ""} {
-//                   set radius [expr $zoom*$radius]
-//               }
-//               set radius [expr $radius-$rwidth/2]
-
-//               set x1 [expr $x - $radius]
-//               set y1 [expr $y - $radius]
-//               set x2 [expr $x + $radius]
-//               set y2 [expr $y + $radius]
-
-//               set circle [$c create circle $x $y -r $radius -fillopacity 0.5 \
-//                   -fill $rfill -strokewidth $rwidth -stroke $routline -tags "dx range submodext"]
-//               # has been moved to the beginning of ModuleInspector:drawEnclosingModule to maintain relative z order of range indicators
-//               # $c lower $circle
-//           }
-//    }
+    auto item = new SubmoduleItem(submod);
+    item->setRangeLayer(rangeLayer);
+    SubmoduleItemUtil::setupFromDisplayString(item, submod);
+    item->setData(1, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
+    item->setPos(submodPosMap[submod]);
+    submoduleGraphicsItems[submod->getId()] = item;
+    item->setParentItem(submoduleLayer);
 }
 
 void ModuleGraphicsView::drawEnclosingModule(cModule *parentModule)
 {
-    const char *displayString = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString().str() : "";
-//    CHK(Tcl_VarEval(interp, "ModuleInspector:drawEnclosingModule ",
-//                    canvas, " ",
-//                    ptrToStr(parentModule), " ",
-//                    "{", parentModule->getFullPath().c_str(), "} ",
-//                    TclQuotedString(displayString).get(),
-//                    TCL_NULL));
+    cDisplayString ds = parentModule->hasDisplayString() && parentModule->parametersFinalized()
+            ? parentModule->getDisplayString()
+            : cDisplayString();
+
+    // replacing $param args with the actual parameter values
+    std::string buffer;
+    ds.updateWith(substituteDisplayStringParamRefs(ds, buffer, parentModule, true));
+
+    QRectF border;
+
+    if (ds.containsTag("bgb")) {
+        border.setLeft(QString(ds.getTagArg("bgb", 0)).toInt());
+        border.setTop(QString(ds.getTagArg("bgb", 1)).toInt());
+        // TODO: zoom
+    }
+
+    if (submoduleLayer->childItems().isEmpty()) {
+        border.setWidth(300);
+        border.setHeight(200);
+    } else {
+        // Neither layer->boundingRect or layer->childrenBoundingRect
+        // does what we want here. the former doesn't consider children at all,
+        // the latter encloses everything, right down to the leaves.
+        // What we want is the bounding box of only the child items themselves, no recursion.
+        for (auto c : submoduleLayer->childItems()) {
+            border = border.united(c->mapRectToParent(c->boundingRect()));
+        }
+        border = border.adjusted(-10, -10, 10, 10); // adding a bit of a margin
+    }
+
+    auto background = ds.getTagArg("bgb", 2);
+    QColor::setAllowX11ColorNames(true); // XXX only works on X11, remove later!
+    QColor backgroundColor("gray82");
+    if (background[0]) {
+        backgroundColor = SubmoduleItemUtil::parseColor(background);
+    }
+
+    auto outline = ds.getTagArg("bgb", 3);
+    QColor outlineColor("black");
+    if (outline[0]) {
+        outlineColor = SubmoduleItemUtil::parseColor(outline);
+    }
+
+    int outlineWidth;
+    bool ok;
+    outlineWidth = QString(ds.getTagArg("bgb", 4)).toInt(&ok);
+    if (!ok)
+        outlineWidth = 2;
+
+
+//$c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip modname $ptr"
+
+
+    setBackgroundBrush(QColor("#a0e0a0"));
+    delete rectangleItem;
+    rectangleItem = new QGraphicsRectItem(border.adjusted(-outlineWidth/2.0f, -outlineWidth/2.0f, outlineWidth/2.0f, outlineWidth/2.0f));
+    rectangleItem->setPen(QPen(outlineColor, outlineWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+    rectangleItem->setBrush(backgroundColor);
+    backgroundLayer->addItem(rectangleItem);
+    rectangleItem->setZValue(-10);
+    setSceneRect(border.adjusted(-10, -10, 10, 10));
+
+    /*
+
+if {$sx=="" || $sy==""} {
+    set bb [$c bbox submod]
+    if {$bb==""} {
+        if {$zoom==""} {
+            set bb [list $bx $by 300 200]
+        } else {
+            set bb [list $bx $by [expr $zoom*300] [expr $zoom*200]]
+        }
+    }
+    if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
+    if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
+}
+
+
+        */
+
+
+
+    /*
+    proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
+       global icons bitmaps inspectordata tkpFont canvasTextOptions
+       # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr"
+
+       set zoom $inspectordata($c:zoomfactor)
+
+       if [catch {
+
+           # lower all range indicators below the icons
+           $c lower "range"
+
+           # parse display string. note: we need "1" as last parameter (search
+           # for $params in parent module too), because all tags get resolved
+           # not only bg* ones.
+           opp_displaystring $dispstr parse tags $ptr 1
+
+           # determine top-left origin (bgp tag; currently not supported)
+           #if {![info exists tags(bgp)]} {set tags(bgp) {}}
+           #set bx [lindex $tags(bgp) 0]
+           #set by [lindex $tags(bgp) 1]
+           #if {$bx==""} {set bx 0}
+           #if {$by==""} {set by 0}
+           #if {$zoom != ""} {
+           #    set bx [expr $zoom*$bx]
+           #    set by [expr $zoom*$by]
+           #}
+           set bx 0
+           set by 0
+
+           # determine size
+           if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}
+           set sx [lindex $tags(bgb) 0]
+           set sy [lindex $tags(bgb) 1]
+           if {$zoom != ""} {
+               if {$sx!=""} {set sx [expr $zoom*$sx]}
+               if {$sy!=""} {set sy [expr $zoom*$sy]}
+           }
+
+           if {$sx=="" || $sy==""} {
+               set bb [$c bbox submod]
+               if {$bb==""} {
+                   if {$zoom==""} {
+                       set bb [list $bx $by 300 200]
+                   } else {
+                       set bb [list $bx $by [expr $zoom*300] [expr $zoom*200]]
+                   }
+               }
+               if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
+               if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
+           }
+
+           # determine colors and line width
+           set fill [lindex $tags(bgb) 2]
+           if {$fill == ""} {set fill grey82}
+           if {$fill == "-"} {set fill ""}
+           if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
+           set outline [lindex $tags(bgb) 3]
+           if {$outline == ""} {set outline black}
+           if {$outline == "-"} {set outline ""}
+           if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
+           set width [lindex $tags(bgb) 4]
+           if {$width == ""} {set width 2}
+
+           # draw (note: width should grow *outside* the $sx-by-$sy inner rectangle)
+           $c create prect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
+               -fill $fill -strokewidth $width -stroke $outline -strokelinejoin miter -tags "dx mod $ptr"
+           $c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip modname $ptr"
+
+           # background image
+           if {![info exists tags(bgi)]} {set tags(bgi) {}}
+           set imgname [lindex $tags(bgi) 0]
+           set imgmode [lindex $tags(bgi) 1]
+           if {$imgname!=""} {
+              if {[catch {set img $bitmaps($imgname)}]} {
+                  set img $icons(unknown)
+              }
+              set iwidth [image width $img]
+              set iheight [image height $img]
+              set isx [expr $iwidth*$zoom]
+              set isy [expr $iheight*$zoom]
+              if {[string index $imgmode 0]== "c"} {
+                  # image centered
+                  set imgx [expr $bx+$sx/2]
+                  set imgy [expr $by+$sy/2]
+                  set croppedsx [mathMin $sx $isx]
+                  set croppedsy [mathMin $sy $isy]
+                  if {$sx >= $isx} {
+                      set isrcx1 0
+                      set isrcx2 $iwidth
+                  } else {
+                      set isrcx1 [expr ($isx-$sx)/2/$zoom]
+                      set isrcx2 [expr $iwidth - $isrcx1]
+                  }
+                  if {$sy >= $isy} {
+                      set isrcy1 0
+                      set isrcy2 $iheight
+                  } else {
+                      set isrcy1 [expr ($isy-$sy)/2/$zoom]
+                      set isrcy2 [expr $iheight - $isrcy1]
+                  }
+                  $c create pimage $imgx $imgy -image $img -anchor c -width $croppedsx -height $croppedsy -srcregion [list $isrcx1 $isrcy1 $isrcx2 $isrcy2] -tags "dx mod $ptr"
+
+              } elseif {[string index $imgmode 0]== "s"} {
+                  # image stretched to fill the background area
+                  $c create pimage $bx $by -image $img -anchor nw -width $sx -height $sy -tags "dx mod $ptr"
+              } elseif {[string index $imgmode 0]== "t"} {
+                  # image "tile" mode
+                  set tx [expr $sx / $zoom]
+                  set ty [expr $sy / $zoom]
+                  $c create pimage $bx $by -image $img -anchor nw -width $sx -height $sy -srcregion [list 0 0 $tx $ty] -tags "dx mod $ptr"
+              } else {
+                  # default mode: image top-left corner gets aligned to background top-left corner
+                  # we need cropping
+                  set croppedsx [mathMin $sx $isx]
+                  set croppedsy [mathMin $sy $isy]
+                  set tx [expr $croppedsx / $zoom]
+                  set ty [expr $croppedsy / $zoom]
+                  $c create pimage $bx $by -image $img -anchor nw -width $croppedsx -height $croppedsy -srcregion [list 0 0 $tx $ty] -tags "dx mod $ptr"
+              }
+           }
+
+           # grid display
+           if {![info exists tags(bgg)]} {set tags(bgg) {}}
+           set gdist [lindex $tags(bgg) 0]
+           set gminor [lindex $tags(bgg) 1]
+           set gcolor [lindex $tags(bgg) 2]
+           if {$gcolor == ""} {set gcolor grey}
+           if {$gcolor == "-"} {set gcolor ""}
+           if {[string index $gcolor 0]== "@"} {set gcolor [opp_hsb_to_rgb $gcolor]}
+           if {$gdist!=""} {
+               if {$zoom != ""} {
+                   set gdist [expr $zoom*$gdist]
+               }
+               if {$gminor=="" || $gminor < 1} {set gminor 1}
+               for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
+                   set coords [list $x $by $x [expr $by+$sy]]
+                   $c create pline $coords -strokewidth 1 -stroke $gcolor -tags "dx mod $ptr"
+                   # create minor ticks
+                   set i 1
+                   for {set minorx [expr int($x+$gdist/$gminor)]} {$i < $gminor && $minorx < $bx+$sx} {
+                                                 set i [expr $i+1]} {
+                       set minorx [expr int($x+$i*$gdist/$gminor)]
+                       if {$minorx < $bx+$sx} {
+                           set coords [list $minorx $by $minorx [expr $by+$sy]]
+                           $c create pline $coords -strokewidth 1 -strokedasharray {2 3} -stroke $gcolor -tags "dx mod $ptr"
+                       }
+                   }
+               }
+               for {set y $by} {$y < $by+$sy} {set y [expr $y+$gdist]} {
+                   set coords [list $bx $y [expr $bx+$sx] $y]
+                   $c create pline $coords -strokewidth 1 -stroke $gcolor -tags "dx mod $ptr"
+                   # create minor ticks
+                   set i 1
+                   for {set minory [expr int($y+$gdist/$gminor)]} {$i < $gminor && $minory < $by+$sy} {
+                                                 set i [expr $i+1]} {
+                       set minory [expr int($y+$i*$gdist/$gminor)]
+                       if {$minory < $by+$sy} {
+                           set coords [list $bx $minory [expr $bx+$sx] $minory]
+                           $c create pline $coords -strokewidth 1 -strokedasharray {2 3} -stroke $gcolor -tags "dx mod $ptr"
+                       }
+                   }
+               }
+           }
+
+           # text: bgt=<x>,<y>,<text>,<color>; multiple bgt tags supported (bgt1,bgt2,etc)
+           foreach {bgttag} [array names tags -regexp {^bgt\d*$} ] {
+               set x [lindex $tags($bgttag) 0]
+               set y [lindex $tags($bgttag) 1]
+               if {$x==""} {set x 0}
+               if {$y==""} {set y 0}
+               set txt [lindex $tags($bgttag) 2]
+               set color [lindex $tags($bgttag) 3]
+               if {$color == ""} {set color black}
+               if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
+               $c create ptext $x $y -text $txt -fill $color -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx"
+           }
+
+           $c lower mod
+
+       } errmsg] {
+           tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
+                         -message "Error in display string of $name: $errmsg"
+       }
+    }
+    */
 }
 
 void ModuleGraphicsView::drawConnection(cGate *gate)
@@ -706,7 +750,7 @@ void ModuleGraphicsView::drawConnection(cGate *gate)
     auto item = new QGraphicsLineItem();
     item->setLine(src.x(), src.y(), dest.x(), dest.y());
     item->setZValue(-1);
-    item->setParentItem(layer);
+    item->setParentItem(submoduleLayer);
 
 
 
@@ -879,45 +923,49 @@ QList<cObject*> ModuleGraphicsView::getObjectsAt(qreal x, qreal y)
 {
     QList<QGraphicsItem*> items = scene()->items(mapToScene(x, y));
     QList<cObject*> objects;
-    if(items.size() == 0)
-        return objects;
 
-    for(auto item : items)
-    {
+    for (auto item : items) {
         QVariant variant = item->data(1);
-        if(!variant.isValid())
-        {
-            //TODO
-            qDebug() << "getObjectsAt: item has invalid data.";
-            continue;
-        }
-
-        objects.push_back(variant.value<cObject*>());
-
+        if (variant.isValid())
+            objects.push_back(variant.value<cObject*>());
     }
 
     return objects;
 }
 
-void ModuleGraphicsView::setLayer(GraphicsLayer *layer)
+void ModuleGraphicsView::setBackgroundLayer(GraphicsLayer *layer)
 {
     clear();
-    this->layer = layer;
+    backgroundLayer = layer;
     redraw();
 }
 
-void ModuleGraphicsView::clear()
-{
-    if (layer) layer->clear();
-    submoduleGraphicsItems.clear();
+void ModuleGraphicsView::setSubmoduleLayer(GraphicsLayer *layer) {
+    clear();
+    submoduleLayer = layer;
+    redraw();
 }
 
-void ModuleGraphicsView::redrawNextEventMarker()
-{
-    cModule *mod = object;
+void ModuleGraphicsView::setRangeLayer(GraphicsLayer *layer) {
+    clear();
+    this->rangeLayer = layer;
+    for (auto &i : submoduleGraphicsItems) {
+        i.second->setRangeLayer(layer);
+    }
+    redraw();
+}
 
-    // removing marker from previous event
-    //CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", TCL_NULL));
+void ModuleGraphicsView::clear() {
+    if (submoduleLayer) submoduleLayer->clear();
+    submoduleGraphicsItems.clear();
+    nextEventMarker = nullptr; // because it is on the submodule layer, it has been deleted by that
+}
+
+void ModuleGraphicsView::redrawNextEventMarker() {
+    delete nextEventMarker;
+    nextEventMarker = nullptr;
+
+    cModule *mod = object;
 
     // this thingy is only needed if animation is going on
     if (!getQtenv()->animating || !getQtenv()->opt->showNextEventMarkers)
@@ -928,12 +976,18 @@ void ModuleGraphicsView::redrawNextEventMarker()
     cModule *nextModParent = nextMod;
     while (nextModParent && nextModParent->getParentModule() != mod)
         nextModParent = nextModParent->getParentModule();
+
     if (nextModParent) {
-//        CHK(Tcl_VarEval(interp, "ModuleInspector:drawNextEventMarker ",
-//                        canvas, " ",
-//                        ptrToStr(nextModParent), " ",
-//                        (nextMod == nextModParent ? "2" : "1"),
-//                        TCL_NULL));
+        // XXX maybe move this to the animation layer?
+        nextEventMarker = new QGraphicsRectItem(submoduleLayer, scene());
+
+        auto item = submoduleGraphicsItems[nextModParent->getId()];
+        if (item) {
+            nextEventMarker->setRect(item->mapRectToParent(item->boundingRect()).adjusted(-2, -2, 2, 2));
+            nextEventMarker->setBrush(Qt::NoBrush);
+            nextEventMarker->setPen(QPen(QColor("red"), nextMod == nextModParent ? 2 : 1));
+            nextEventMarker->setZValue(10);
+        }
     }
 }
 
