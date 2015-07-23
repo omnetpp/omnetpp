@@ -32,6 +32,7 @@
 #include "inspectorfactory.h"
 #include "logfinddialog.h"
 #include "logfilterdialog.h"
+#include "genericobjectinspector.h"
 #include <QGridLayout>
 #include <QDebug>
 #include "textviewerproviders.h"
@@ -66,8 +67,10 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     auto layout = new QGridLayout(this);
     layout->setMargin(0);
+
     textWidget = new TextViewerWidget(this);
     layout->addWidget(textWidget, 0, 0, 1, 1);
+    connect(textWidget, SIGNAL(caretMoved(int,int)), this, SLOT(onCaretMoved(int, int)));
 
     /*
     stringContent = new StringTextViewerContentProvider(
@@ -105,9 +108,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     connect(toLogModeAction, SIGNAL(triggered()), this, SLOT(toLogMode()));
     toolBar->addAction(toLogModeAction);
 
-
     textWidget->setToolBar(toolBar);
-
 
     QAction *findAgainAction = new QAction(this);
     findAgainAction->setShortcut(Qt::Key_F3);
@@ -194,6 +195,13 @@ void LogInspector::onFilterButton() {
         textWidget->contentChanged();
     }
     delete dialog;
+}
+
+void LogInspector::onCaretMoved(int lineIndex, int column)
+{
+    auto msg = (cMessage*)textWidget->getContentProvider()->getUserData(lineIndex);
+    if (msg)
+        getQtenv()->getMainObjectInspector()->setObject(msg);
 }
 
 void LogInspector::findAgain() {

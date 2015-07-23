@@ -126,6 +126,7 @@ void TextViewerWidget::setCaretPosition(int lineIndex, int column) {
     caretColumn = std::max(0, column);  // do NOT clip to line length! content provider may be O(n)
     clearSelection();
     viewport()->update();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 Pos TextViewerWidget::getCaretPosition() {
@@ -140,6 +141,7 @@ void TextViewerWidget::setSelection(int startLineIndex, int startColumn, int end
     caretLineIndex = endLineIndex;
     caretColumn = endColumn;
     viewport()->update();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 Pos TextViewerWidget::getSelectionAnchor() {
@@ -370,11 +372,13 @@ void TextViewerWidget::setColumnWidths(const QList<QVariant> &widths) {
 void TextViewerWidget::doLineUp(bool select) {
     caretLineIndex = std::max(0, caretLineIndex-1);
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineDown(bool select) {
     caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex+1);
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doCursorPrevious(bool select) {
@@ -386,6 +390,7 @@ void TextViewerWidget::doCursorPrevious(bool select) {
         caretColumn = content->getLineText(caretLineIndex).length();
     }
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doCursorNext(bool select) {
@@ -396,6 +401,7 @@ void TextViewerWidget::doCursorNext(bool select) {
         caretColumn = 0;
     }
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageUp(bool select) {
@@ -403,6 +409,7 @@ void TextViewerWidget::doPageUp(bool select) {
     caretLineIndex = std::max(0, caretLineIndex - pageLines);
     topLineIndex = clip(0, std::max(0,content->getLineCount()-getNumVisibleLines()), topLineIndex - pageLines);
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageDown(bool select) {
@@ -411,16 +418,19 @@ void TextViewerWidget::doPageDown(bool select) {
     caretLineIndex = std::min(lastLineIndex, caretLineIndex + pageLines);
     topLineIndex = clip(0, std::max(0,content->getLineCount()-getNumVisibleLines()), topLineIndex + pageLines);
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineStart(bool select) {
     caretColumn = 0;
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineEnd(bool select) {
     caretColumn = content->getLineText(caretLineIndex).length();
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doWordPrevious(bool select) {
@@ -441,6 +451,7 @@ void TextViewerWidget::doWordPrevious(bool select) {
         caretColumn = pos;
     }
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doWordNext(bool select) {
@@ -462,31 +473,35 @@ void TextViewerWidget::doWordNext(bool select) {
         caretColumn = pos;
     }
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doPageStart(bool select) {
     caretLineIndex = topLineIndex;
     caretColumn = 0;
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
-
 
 void TextViewerWidget::doPageEnd(bool select) {
     caretLineIndex = std::min(content->getLineCount()-1, topLineIndex + getNumVisibleLines());
     caretColumn = content->getLineText(caretLineIndex).length();
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doContentStart(bool select) {
     caretLineIndex = 0;
     caretColumn = 0;
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doContentEnd(bool select) {
     caretLineIndex = content->getLineCount()-1;
     caretColumn = content->getLineText(caretLineIndex).length();
     if (!select) clearSelection();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::selectAll() {
@@ -494,6 +509,7 @@ void TextViewerWidget::selectAll() {
     selectionAnchorColumn = 0;
     caretLineIndex = content->getLineCount()-1;
     caretColumn = content->getLineText(caretLineIndex).length();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::clearSelection() {
@@ -552,6 +568,14 @@ void TextViewerWidget::paintEvent(QPaintEvent *event) {
     int lineIndex = topLineIndex;
     int startY = topLineY;
 
+    // Drawing the gray highlight under the line in which the caret is-
+    // Have to do this before any text painting, otherwise
+    // it might paint over some parts of a few letters.
+    int highlightY = startY + (caretLineIndex-topLineIndex) * lineHeight;
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor("lightgray"));
+    painter.drawRect(0, highlightY+2, contentsRect().width(), lineHeight+1);
+
     // draw the lines
     for (int y = startY; y < r.y()+r.height() && lineIndex < numLines; y += lineHeight) {
         drawLine(painter, lineIndex++, x, y);
@@ -569,7 +593,6 @@ void TextViewerWidget::drawLine(QPainter &painter, int lineIndex, int x, int y) 
 
     painter.setFont(font);
     QFontMetrics metrics = painter.fontMetrics();
-
 
     for (int partIndex = 0; partIndex < tabStops.size(); ++partIndex) {
         drawLinePart(painter, metrics, line, tabStops, lineIndex, partIndex, y);
@@ -619,7 +642,7 @@ void TextViewerWidget::drawLinePart(QPainter &painter, const QFontMetrics &metri
         // draw caret
         painter.setPen(foregroundColor);
         int caretX = getLineColumnOffset(metrics, line, tabStops, caretColumn);
-        painter.drawLine(caretX, y + 1, caretX, y + lineHeight + 1);
+        painter.drawLine(caretX, y + 2, caretX, y + lineHeight + 2);
     }
 }
 
@@ -660,6 +683,7 @@ void TextViewerWidget::mouseMoveEvent(QMouseEvent *event) {
         caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
         viewport()->update();
         doAutoScroll(event); // start/stop autoscrolling as needed
+        emit caretMoved(caretLineIndex, caretColumn);
     }
 }
 
@@ -687,6 +711,7 @@ void TextViewerWidget::mousePressEvent(QMouseEvent *event) {
         bool select = event->modifiers() & Qt::ShiftModifier;
         if (!select)
             clearSelection();
+        emit caretMoved(caretLineIndex, caretColumn);
     }
 
     caretShown = true;
@@ -709,6 +734,7 @@ void TextViewerWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     clickCount = 2;
 
     timeSinceLastDoubleClick.restart();
+    emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doAutoScroll(QMouseEvent *event) {
@@ -871,8 +897,13 @@ void TextViewerWidget::contentChanged() {
     Q_ASSERT(content->getLineCount() > 0);//, "content must be at least one line");
 
     // adjust caret and selection line index
+    int oldCaretLineIndex = caretLineIndex;
     caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex);
     selectionAnchorLineIndex = clip(0, content->getLineCount()-1, selectionAnchorLineIndex);
+
+    // only emitting the signal if it actually moved
+    if (oldCaretLineIndex != caretLineIndex)
+        emit caretMoved(caretLineIndex, caretColumn);
 
     // NOTE: for performance reasons, DO NOT ADJUST COLUMN INDICES!!! An out-of-bounds
     // column index causes no problem, but to clip it to the line length would require

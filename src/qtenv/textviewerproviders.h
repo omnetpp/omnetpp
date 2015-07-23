@@ -69,6 +69,12 @@ public:
     virtual bool showHeaders() = 0;
     virtual QStringList getHeaders() = 0;
 
+    // Only used in messages mode, in which
+    // it returns a valid cMessage*, it is
+    // a void* here only for the sake of genericity.
+    // Or it can be a nullptr, prepare for it!
+    virtual void *getUserData(int lineIndex) { return nullptr; }
+
 signals:
     void textChanged();
 };
@@ -192,6 +198,7 @@ public:
     QList<TabStop> getTabStops(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
+    void *getUserData(int lineIndex) override;
 
 protected:
     int getIndexOfEntryAt(int lineIndex);

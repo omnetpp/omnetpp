@@ -191,6 +191,9 @@ public slots:
     void scrolledHorizontally(int value);
     void scrolledVertically(int value);
 
+signals:
+    void caretMoved(int lineIndex, int column);
+
 public:
     explicit TextViewerWidget(QWidget *parent = 0);
     ~TextViewerWidget();

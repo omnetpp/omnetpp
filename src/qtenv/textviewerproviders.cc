@@ -119,6 +119,22 @@ QStringList ModuleOutputContentProvider::getHeaders() {
             : QStringList("prefix") << "line";
 }
 
+void *ModuleOutputContentProvider::getUserData(int lineIndex)
+{
+    if (mode != LogInspector::MESSAGES)
+        return nullptr;
+
+    Q_ASSERT(lineIndex >= 0 && lineIndex < lineCount);
+    if (lineIndex == lineCount-1)  // empty last line
+        return nullptr;
+
+    int entryIndex = getIndexOfEntryAt(lineIndex);
+    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
+    Q_ASSERT(!filter || filter->matches(eventEntry));
+
+    return eventEntry->msgs[lineIndex - entryStartLineNumbers[entryIndex]].msg;
+}
+
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex) {
     if (!isIndexValid())
         rebuildIndex();
@@ -262,7 +278,7 @@ QList<EventEntryLinesProvider::TabStop> EventEntryLinesProvider::getTabStops(Log
     }
 
     if (lineIndex < (int)entry->lines.size()) {
-        tabStops.append(TabStop(0, QColor("gray")));
+        tabStops.append(TabStop(0, QColor("dimgray")));
         LogBuffer::Line &line = entry->lines[lineIndex];
 
         int prefixLength = line.prefix ? strlen(line.prefix) : 0;
@@ -453,10 +469,10 @@ QList<EventEntryMessageLinesProvider::TabStop> EventEntryMessageLinesProvider::g
     if (lineIndex < (int)entry->msgs.size()) {
         int column = 0;
 
-        tabStops.append(TabStop(column, QColor("gray")));
+        tabStops.append(TabStop(column, QColor("dimgray")));
         column += 1 + QString::number(entry->eventNumber).length() + 1;
 
-        tabStops.append(TabStop(column, QColor("gray")));
+        tabStops.append(TabStop(column, QColor("dimgray")));
         column += entry->simtime.str().length() + 1;
 
         tabStops.append(TabStop(column, QColor("green")));
@@ -495,7 +511,6 @@ bool ModulePathsEventEntryFilter::matches(LogBuffer::Entry *entry) {
     }
     return false;
 }
-
 
 } // namespace qtenv
 } // namespace omnetpp
