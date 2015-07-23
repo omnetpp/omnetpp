@@ -28,11 +28,6 @@ namespace omnetpp {
 class cObject;
 } // namespace omnetpp
 
-//TODO clear
-//typedef QPair<OPP::cObject*, int> ActionDataPair;
-
-//Q_DECLARE_METATYPE(ActionDataPair)
-
 namespace omnetpp {
 namespace qtenv {
 
@@ -42,7 +37,6 @@ class TreeItemModel : public QAbstractItemModel
 private:
     cObject *rootNode;
 
-    cObject *getObjectFromIndex(const QModelIndex &index) const;
     int findObjectInParent(cObject *obj, cObject *parent) const;
 
 public:
@@ -66,7 +60,7 @@ public:
     void expandItems(QTreeView *view, const QList<QVariant> &list, QModelIndex idx = QModelIndex());
 
     void setRootObject(cObject *root);
-    QMenu *getContextMenu(QModelIndex &index);
+    cObject *getObjectFromIndex(const QModelIndex &index) const;
 };
 
 } // namespace qtenv

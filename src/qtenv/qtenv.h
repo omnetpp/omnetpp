@@ -44,6 +44,7 @@ class GenericObjectInspector;
 class LogInspector;
 class ModuleInspector;
 class TimeLineInspector;
+class ObjectTreeInspector;
 
 using namespace envir;
 
@@ -175,6 +176,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       ModuleInspector *mainNetworkView;
       LogInspector *mainLogView;
       TimeLineInspector *mainTimeLine;
+      ObjectTreeInspector *mainObjectTree;
 
       Animator *animator;
 
@@ -250,8 +252,8 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key);
 
-  public slots:
-      void selectionChanged(cObject *);
+  private slots:
+      void onSelectionChanged(cObject *);
 
   protected:
       // redefined virtual functions from EnvirBase

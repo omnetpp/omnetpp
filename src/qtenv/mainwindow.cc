@@ -49,14 +49,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    TreeItemModel *model = new TreeItemModel(ui->treeView);
-    model->setRootObject(getSimulation());
-    ui->treeView->setModel(model);
-    ui->treeView->setHeaderHidden(true);
-    ui->treeView->setExpandsOnDoubleClick(false);
-    connect(ui->treeView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTreeViewCurrentChanged(QModelIndex,QModelIndex)));
-    connect(ui->treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
-
     stopDialog = new StopDialog(this);
 
     //TODO
@@ -380,20 +372,6 @@ void MainWindow::onSliderValueChanged(int value)
     getQtenv()->opt->animationSpeed = value / 100.0;
 }
 
-void MainWindow::inspectObject(QModelIndex index)
-{
-    //TODO move to treeItemModel inspector
-    if (!index.isValid())
-        return;
-
-    cObject *parent = static_cast<cObject *>(index.internalPointer());
-    cCollectChildrenVisitor visitor(parent);
-    visitor.process(parent);
-    cObject **objs = visitor.getArray();
-    if (visitor.getArraySize() > index.row())
-        {}//inspectObject(objs[index.row()]);
-}
-
 void MainWindow::updateStatusDisplay()
 {
     updateSimtimeDisplay();
@@ -517,7 +495,7 @@ QWidget *MainWindow::getMainInspectorArea()
     return ui->mainArea;
 }
 
-QTreeView *MainWindow::getObjectTree()
+QWidget *MainWindow::getObjectTreeArea()
 {
     return ui->treeView;
 }
@@ -535,34 +513,6 @@ QWidget *MainWindow::getLogInspectorArea()
 QWidget *MainWindow::getTimeLineArea()
 {
     return ui->timeLine;
-}
-
-void MainWindow::onTreeViewContextMenu(QPoint point)
-{
-    QModelIndex index = ui->treeView->indexAt(point);
-    if (index.isValid()) {
-        QMenu *menu = static_cast<TreeItemModel *>(ui->treeView->model())->getContextMenu(index);
-        menu->exec(ui->treeView->mapToGlobal(point));
-        delete menu;
-    }
-}
-
-void MainWindow::onTreeViewCurrentChanged(QModelIndex curr, QModelIndex prev)
-{
-    getQtenv()->selectionChanged(curr.data(Qt::UserRole).value<cObject *>());
-}
-
-void MainWindow::onTreeViewActivated(QModelIndex curr)
-{
-    auto object = curr.data(Qt::UserRole).value<cObject *>();
-    // TODO FIXME this should be done in Qtenv, since the generic object inspector does the same
-    auto module = dynamic_cast<cModule *>(object);
-    if (module) {
-        getQtenv()->getMainModuleInspector()->setObject(module);
-        getQtenv()->getMainLogInspector()->setObject(module);
-    } else {
-        getQtenv()->inspect(object, INSP_DEFAULT, true, "");
-    }
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)

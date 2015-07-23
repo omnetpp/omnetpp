@@ -59,7 +59,7 @@ public:
     void updateNetworkRunDisplay();
 
     QWidget *getMainInspectorArea();
-    QTreeView *getObjectTree();
+    QWidget *getObjectTreeArea();
     QWidget *getObjectInspectorArea();
     QWidget *getLogInspectorArea();
     QWidget *getTimeLineArea();
@@ -87,10 +87,6 @@ private slots:
     void on_actionExpressRun_triggered();
     void on_actionRunUntil_triggered();
     void onSliderValueChanged(int value);
-    void inspectObject(QModelIndex index);
-    void onTreeViewContextMenu(QPoint point);
-    void onTreeViewCurrentChanged(QModelIndex curr, QModelIndex prev);
-    void onTreeViewActivated(QModelIndex index);
     void on_actionRebuildNetwork_triggered();
     void closeEvent(QCloseEvent *event);
     void initialSetUpConfiguration();

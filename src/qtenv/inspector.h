@@ -38,6 +38,7 @@ enum {
     INSP_OBJECT,
     INSP_GRAPHICAL,
     INSP_MODULEOUTPUT,
+    INSP_OBJECTTREE,
     NUM_INSPECTORTYPES   // this must be the last one
 };
 

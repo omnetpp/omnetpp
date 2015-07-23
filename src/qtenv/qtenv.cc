@@ -56,6 +56,7 @@
 #include "mainwindow.h"
 #include "treeitemmodel.h"
 #include "timelineinspector.h"
+#include "objecttreeinspector.h"
 #include <QApplication>
 #include <QTreeView>
 #include <QDir>
@@ -443,8 +444,10 @@ void Qtenv::doRun()
         mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainwindow->getMainInspectorArea()));
         mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainwindow->getLogInspectorArea()));
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainwindow->getTimeLineArea()));
+        mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainwindow->getObjectTreeArea()));
 
-        connect(mainTimeLine, SIGNAL(selectionChange(cObject*)), this, SLOT(selectionChanged(cObject*)));
+        connect(mainTimeLine, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
+        connect(mainObjectTree, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -1063,18 +1066,6 @@ void Qtenv::refreshInspectors()
 
     // update object tree
     qDebug() << "UPDATE";
-
-    TreeItemModel *model = static_cast<TreeItemModel *>(mainwindow->getObjectTree()->model());
-
-    // this will hold the pointers to the expanded nodes in the view
-    QList<QVariant> expandedItems;
-
-    // getting the expanded nodes
-    model->getExpandedItems(mainwindow->getObjectTree(), expandedItems);
-    // updating the view to reflect the changed model
-    mainwindow->getObjectTree()->reset();
-    // restoring the expansion state
-    model->expandItems(mainwindow->getObjectTree(), expandedItems);
 
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
@@ -1840,7 +1831,7 @@ void Qtenv::animateDelivery(cMessage *msg)
     }
 }
 
-void Qtenv::selectionChanged(cObject *object)
+void Qtenv::onSelectionChanged(cObject *object)
 {
     mainInspector->setObject(object);
 }

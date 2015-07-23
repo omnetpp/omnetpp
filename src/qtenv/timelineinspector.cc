@@ -73,7 +73,7 @@ void TimeLineInspector::createContextMenu(QVector<cObject*> objects, QPoint glob
 
 void TimeLineInspector::setObjectToObjectInspector(cObject* object)
 {
-    emit selectionChange(object);
+    emit selectionChanged(object);
 }
 
 void TimeLineInspector::openInspector(cObject *object)

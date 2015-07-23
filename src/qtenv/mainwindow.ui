@@ -131,7 +131,7 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QTreeView" name="treeView">
+       <widget class="QWidget" name="treeView">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -672,43 +672,4 @@
  <resources>
   <include location="icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>treeView</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>onTreeViewContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>132</x>
-     <y>245</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>276</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>treeView</sender>
-   <signal>doubleClicked(QModelIndex)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>inspectObject(QModelIndex)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>179</x>
-     <y>245</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>157</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <slots>
-  <slot>inspectObject(QModelIndex)</slot>
-  <slot>onTreeViewContextMenu(QPoint)</slot>
-  <slot>onTreeViewCurrentChanged(QModelIndex,QModelIndex)</slot>
- </slots>
 </ui>

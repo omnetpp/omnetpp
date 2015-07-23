@@ -1,0 +1,106 @@
+//==========================================================================
+//  OBJECTTREEINSPECTOR.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include "objecttreeinspector.h"
+#include "inspectorfactory.h"
+#include "treeitemmodel.h"
+#include "inspectorutil.h"
+#include <QLayout>
+#include <QTreeView>
+
+#include <QDebug>
+
+#define emit
+
+namespace omnetpp {
+namespace qtenv {
+
+class ObjectTreeInspectorFactory : public InspectorFactory
+{
+  public:
+    ObjectTreeInspectorFactory(const char *name) : InspectorFactory(name) {}
+
+    bool supportsObject(cObject *) override { return false; }
+    int getInspectorType() override { return INSP_OBJECTTREE; }
+    double getQualityAsDefault(cObject *) override { return 0; }
+    Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new ObjectTreeInspector(parent, isTopLevel, this); }
+};
+
+Register_InspectorFactory(ObjectTreeInspectorFactory);
+
+ObjectTreeInspector::ObjectTreeInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
+{
+    QGridLayout *layout = new QGridLayout(this);
+    view = new QTreeView();
+    layout->addWidget(view, 0, 0);
+    layout->setMargin(0);
+    model = new TreeItemModel(parent);
+    model->setRootObject(getSimulation());
+    view->setModel(model);
+    view->setHeaderHidden(true);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
+    connect(view, SIGNAL(clicked(QModelIndex)), this, SLOT(onClick(QModelIndex)));
+    connect(view, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(openInspector(QModelIndex)));
+}
+
+void ObjectTreeInspector::refresh()
+{
+    // this will hold the pointers to the expanded nodes in the view
+    QList<QVariant> expandedItems;
+
+    // getting the expanded nodes
+    model->getExpandedItems(view, expandedItems);
+    // updating the view to reflect the changed model
+    view->reset();
+    // restoring the expansion state
+    model->expandItems(view, expandedItems);
+}
+
+void ObjectTreeInspector::createContextMenu(QPoint pos)
+{
+    QModelIndex index = view->indexAt(pos);
+    if(index.isValid())
+    {
+        QVector<cObject*> objects;
+        objects.push_back(model->getObjectFromIndex(index));
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
+        menu->exec(mapToGlobal(pos));
+        delete menu;
+    }
+}
+
+void ObjectTreeInspector::onClick(QModelIndex index)
+{
+    if(index.isValid())
+    {
+        cObject *object = model->getObjectFromIndex(index);
+        emit selectionChanged(object);
+    }
+}
+
+void ObjectTreeInspector::openInspector(QModelIndex index)
+{
+    if(index.isValid())
+    {
+        cObject *obj = model->getObjectFromIndex(index);
+        Inspector::openInspector(obj, INSP_DEFAULT);
+    }
+}
+
+} // namespace qtenv
+} // namespace omnetpp

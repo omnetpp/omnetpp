@@ -1,5 +1,5 @@
 //==========================================================================
-//  TIMELINEINSPECTOR.H - part of
+//  OBJECTTREEINSPECTOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,36 +14,38 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef TIMELINEINSPECTOR_H
-#define TIMELINEINSPECTOR_H
+#ifndef OBJECTTREEINSPECTOR_H
+#define OBJECTTREEINSPECTOR_H
 
 #include "inspector.h"
+#include <QModelIndex>
+
+class QTreeView;
 
 namespace omnetpp {
 namespace qtenv {
 
-class TimeLineGraphicsView;
+class TreeItemModel;
 
-class TimeLineInspector : public Inspector
+class ObjectTreeInspector : public Inspector
 {
     Q_OBJECT
 private:
-
-    TimeLineGraphicsView *timeLine;
+    TreeItemModel *model;
+    QTreeView *view;
 
 signals:
-    void selectionChanged(cObject *);
+    void selectionChanged(cObject*);
 
 private slots:
-    void runPreferencesDialog();
+    void onClick(QModelIndex);
+    void openInspector(QModelIndex index);
 
 public slots:
-    void createContextMenu(QVector<cObject*> objects, QPoint globalPos);
-    void setObjectToObjectInspector(cObject* object);
-    void openInspector(cObject *object);
+    void createContextMenu(QPoint pos);
 
 public:
-    TimeLineInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+    ObjectTreeInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
 
     virtual void refresh();
 };
@@ -51,4 +53,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // TIMELINEINSPECTOR_H
+#endif // OBJECTTREEINSPECTOR_H
