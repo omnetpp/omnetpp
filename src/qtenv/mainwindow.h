@@ -100,6 +100,7 @@ private:
     Qtenv *env;
     StopDialog *stopDialog;
     QSlider *slider;
+    bool firstInit;
 
     bool checkRunning();
     void runSimulation(eMode mode);

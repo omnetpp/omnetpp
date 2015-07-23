@@ -231,6 +231,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::initialSetUpConfiguration()
 {
+    firstInit = true;
     ui->actionSetUpConfiguration->trigger();
 }
 
@@ -266,7 +267,8 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     if (checkRunning())
         return;
 
-    RunSelectionDialog *dialog = new RunSelectionDialog(env, this);
+    RunSelectionDialog *dialog = new RunSelectionDialog(this, firstInit);
+    firstInit = false;
     if (dialog->exec()) {
         // TODO debug "selected $configname $runnumber"
         busy("Setting up network...");

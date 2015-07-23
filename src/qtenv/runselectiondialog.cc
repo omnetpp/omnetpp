@@ -22,13 +22,15 @@
 #include <vector>
 #include <set>
 
+#include <QDebug>
+
 namespace omnetpp {
 namespace qtenv {
 
-RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
+RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
     QDialog(parent),
     ui(new Ui::RunSelectionDialog),
-    env(env)
+    firstRun(firstRun)
 {
     ui->setupUi(this);
     adjustSize();
@@ -40,8 +42,8 @@ RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
             continue;
         }
 
-        std::string desc = env->getConfigEx()->getConfigDescription(name.c_str());
-        int runs = env->getConfigEx()->getNumRunsInConfig(name.c_str());
+        std::string desc = getQtenv()->getConfigEx()->getConfigDescription(name.c_str());
+        int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(name.c_str());
 
         std::string displayName = name;
         if (isBase)
@@ -56,8 +58,8 @@ RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
         ui->configName->addItem(displayName.c_str(), QVariant(name.c_str()));
     }
 
-    std::string configName = env->opt->defaultConfig.c_str();
-    int runNumber = env->opt->defaultRun;
+    std::string configName = getQtenv()->opt->defaultConfig.c_str();
+    int runNumber = getQtenv()->opt->defaultRun;
 
     if (configName == "" && ui->configName->size().rheight() != 0) {
         configName = ui->configName->itemText(0).toStdString();
@@ -67,29 +69,40 @@ RunSelectionDialog::RunSelectionDialog(Qtenv *env, QWidget *parent) :
     int index = ui->configName->findData(configName.c_str());
     ui->configName->setCurrentIndex(std::max(0, index));
 
-    for (int i = 0; i <= runNumber; ++i)
-        ui->runNumber->addItem(QString::number(i), QVariant(i));
+    setRunNumber(configName.c_str());
+
+    ui->runNumber->setCurrentIndex(runNumber);
+
+    connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)));
 }
 
 RunSelectionDialog::~RunSelectionDialog()
 {
-    env->opt->defaultConfig = getConfigName();
-    env->opt->defaultRun = getRunNumber();
+    getQtenv()->opt->defaultConfig = getConfigName();
+    getQtenv()->opt->defaultRun = getRunNumber();
 
     delete ui;
+}
+
+int RunSelectionDialog::exec()
+{
+    if(!firstRun || ui->configName->count() > 2)
+        return QDialog::exec();
+
+    return QDialog::Accepted;
 }
 
 std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
 {
     std::set<std::string> hasderivedconfig;
 
-    for (auto c : env->getConfigEx()->getConfigNames())
-        for (auto base : env->getConfigEx()->getBaseConfigs(c.c_str()))
+    for (auto c : getQtenv()->getConfigEx()->getConfigNames())
+        for (auto base : getQtenv()->getConfigEx()->getBaseConfigs(c.c_str()))
             hasderivedconfig.insert(base);
 
 
     std::vector<std::string> leaves;
-    for (auto c : env->getConfigEx()->getConfigNames())
+    for (auto c : getQtenv()->getConfigEx()->getConfigNames())
         if (hasderivedconfig.end() == hasderivedconfig.find(c))
             leaves.push_back(c);
 
@@ -113,5 +126,20 @@ int RunSelectionDialog::getRunNumber()
     return ui->runNumber->itemData(index).toInt();
 }
 
-} // namespace qtenv
+void RunSelectionDialog::indexChanged(int index)
+{
+    setRunNumber(ui->configName->itemData(index).toString().toStdString().c_str());
+}
+
+void RunSelectionDialog::setRunNumber(const char *configName)
+{
+    ui->runNumber->clear();
+    int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(configName);
+    for (int i = 0; i < runs; ++i)
+        ui->runNumber->addItem(QString::number(i), QVariant(i));
+
+    ui->runNumber->setDisabled(ui->runNumber->count() < 2);
+}
+
+} // namespace qtgetQtenv()
 } // namespace omnetpp

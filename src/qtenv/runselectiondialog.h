@@ -35,17 +35,24 @@ class RunSelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit RunSelectionDialog(Qtenv *env, QWidget *parent = 0);
+    explicit RunSelectionDialog(QWidget *parent = 0, bool firstRun = false);
     ~RunSelectionDialog();
 
     std::string getConfigName();
     int getRunNumber();
 
+private slots:
+    void indexChanged(int index);
+
+public slots:
+    int exec();
+
 private:
     Ui::RunSelectionDialog *ui;
-    Qtenv *env;
+    bool firstRun;
 
     std::vector<std::string> groupAndSortConfigNames();
+    void setRunNumber(const char *configName);
 };
 
 } // namespace qtenv
