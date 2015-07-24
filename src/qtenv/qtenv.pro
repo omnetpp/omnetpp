@@ -70,7 +70,9 @@ SOURCES += mainwindow.cc \
     timelineinspector.cc \
     animator.cc \
     preferencesdialog.cc \
-    objecttreeinspector.cc
+    objecttreeinspector.cc \
+    osgcanvasinspector.cc \
+    osgviewer.cc
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h qtenvdefs.h \
     runselectiondialog.h \
@@ -89,13 +91,17 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     timelineinspector.h \
     animator.h \
     preferencesdialog.h \
-    objecttreeinspector.h
+    objecttreeinspector.h \
+    osgcanvasinspector.h \
+    osgviewer.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
 
 # next line is for the QtCreator only to be able to show the OMNeT++ sources (not needed for the actual build process)
 INCLUDEPATH += .. ../../include
+
+INCLUDEPATH += /usr/include/qt4/QtOpenGL /usr/X11R6/include  #FIXME HACK! needed of osg, but probably should go into configure
 
 FORMS += mainwindow.ui \
     runselectiondialog.ui \

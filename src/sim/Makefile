@@ -37,7 +37,7 @@ OBJS_STD=\
     $O/cksplit.o $O/clcg32.o $O/clistener.o $O/clog.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/ceventheap.o $O/chasher.o $O/ctimestampedvalue.o \
     $O/cmatchexpression.o $O/cpatternmatcher.o $O/cmessageprinter.o $O/cnullenvir.o $O/envirext.o \
-    $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
+    $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o $O/cosgcanvas.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o $O/crandom.o \
     $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o $O/clifecyclelistener.o \
     $O/cpsquare.o $O/cqueue.o $O/cpacketqueue.o $O/cscheduler.o $O/csimplemodule.o \
@@ -1759,6 +1759,24 @@ $O/cobjectfactory.o: cobjectfactory.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/stringutil.h
+$O/cosgcanvas.o: cosgcanvas.cc \
+  ../../include/omnetpp/cexception.h \
+  ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cosgcanvas.h \
+  ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cstringpool.h \
+  ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/regmacros.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../../include/omnetpp/simtime.h \
+  ../../include/omnetpp/simtime_t.h \
+  ../../include/omnetpp/simutil.h
 $O/coutvector.o: coutvector.cc \
   ../../include/omnetpp/ccommbuffer.h \
   ../../include/omnetpp/ccomponent.h \
@@ -3269,6 +3287,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/compat.h \
+  ../../include/omnetpp/cosgcanvas.h \
   ../../include/omnetpp/coutvector.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpacket.h \

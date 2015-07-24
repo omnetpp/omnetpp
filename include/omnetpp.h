@@ -69,6 +69,7 @@
 #include "omnetpp/cobject.h"
 #include "omnetpp/cnamedobject.h"
 #include "omnetpp/cnullenvir.h"
+#include "omnetpp/cosgcanvas.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cpar.h"
