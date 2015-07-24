@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_CANVASRENDERER_H
 
 #include "omnetpp/ccanvas.h"
+#include "moduleinspector.h"
 #include <QGraphicsScene>
 
 namespace omnetpp {
@@ -29,7 +30,7 @@ struct FigureRenderingHints;
 class CanvasRenderer
 {
 protected:
-    QGraphicsScene *scene;
+    GraphicsLayer *layer;
     cCanvas *canvas;    // nullptr is allowed
     uint64_t enabledTagBits, exceptTagBits;
 
@@ -45,7 +46,7 @@ public:
         canvas(nullptr), enabledTagBits(0), exceptTagBits(0) {}
     virtual ~CanvasRenderer() {}
 
-    virtual void setQtCanvas(QGraphicsScene *scene, cCanvas *canvas);
+    virtual void setLayer(GraphicsLayer *layer, cCanvas *canvas);
     virtual void setCanvas(cCanvas *canvas);
     virtual bool hasCanvas() {return canvas != nullptr;}
     virtual void refresh(FigureRenderingHints *hints);

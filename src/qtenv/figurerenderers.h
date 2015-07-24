@@ -20,6 +20,7 @@
 #include <string>
 #include <map>
 
+#include "moduleinspector.h"
 #include "omnetpp/ccanvas.h"
 
 class QPen;
@@ -106,7 +107,7 @@ public:
 
     static FigureRenderer *getRendererFor(cFigure *figure);
     static void deleteItems() { items.clear(); }
-    void render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform &transform, FigureRenderingHints *hints);
+    void render(cFigure *figure, GraphicsLayer *layer, const cFigure::Transform &transform, FigureRenderingHints *hints);
     virtual void refresh(cFigure *figure, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
 };
 

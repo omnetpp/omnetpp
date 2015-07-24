@@ -472,7 +472,7 @@ void FigureRenderer::setTransform(const cFigure::Transform& transform, QGraphics
 }
 
 // TODO hints
-void FigureRenderer::render(cFigure *figure, QGraphicsScene *scene, const cFigure::Transform& transform, FigureRenderingHints *hints)
+void FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     QGraphicsItem *item = createGeometry(figure);
     createVisual(figure, item);
@@ -481,7 +481,7 @@ void FigureRenderer::render(cFigure *figure, QGraphicsScene *scene, const cFigur
     refreshTransform(figure, transform);
 
     if (item)
-        scene->addItem(item);
+        item->setParentItem(layer);
 }
 
 void FigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)

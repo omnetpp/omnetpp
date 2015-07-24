@@ -14,10 +14,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <QDebug>
+
 #include "canvasrenderer.h"
 #include "figurerenderers.h"
 
-#include <QDebug>
+
 
 namespace omnetpp {
 
@@ -35,9 +37,9 @@ bool CanvasRenderer::fulfillsTagFilter(cFigure *figure)
 }
 
 // TODO: delete comment when ASSERT is available
-void CanvasRenderer::setQtCanvas(QGraphicsScene *scene, cCanvas *canvas)
+void CanvasRenderer::setLayer(GraphicsLayer *layer, cCanvas *canvas)
 {
-    this->scene = scene;
+    this->layer = layer;
     this->canvas = canvas;
 
     // ASSERT(canvas);
@@ -52,10 +54,7 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
-
-    return; // XXX made the submodules disappear, might want to reenable and fix later
-
-    scene->clear();
+    layer->clear();
     FigureRenderer::deleteItems();
 
     // draw
@@ -113,7 +112,7 @@ void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& pa
         figure->updateParentTransform(transform);
 
         FigureRenderer *renderer = getRendererFor(figure);
-        renderer->render(figure, scene, transform, hints);
+        renderer->render(figure, layer, transform, hints);
 
         for (int i = 0; i < figure->getNumFigures(); i++)
             drawFigureRec(figure->getFigure(i), transform, hints);

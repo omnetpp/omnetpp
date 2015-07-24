@@ -64,6 +64,7 @@ class QTENV_API ModuleInspector : public Inspector
       GraphicsLayer *backgroundLayer;
       GraphicsLayer *rangeLayer;
       GraphicsLayer *networkLayer;
+      GraphicsLayer *figureLayer;
       GraphicsLayer *animationLayer;
 
       CanvasRenderer *canvasRenderer;

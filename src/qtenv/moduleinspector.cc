@@ -74,17 +74,19 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     backgroundLayer = new GraphicsLayer();
     rangeLayer = new GraphicsLayer();
     networkLayer = new GraphicsLayer();
+    figureLayer = new GraphicsLayer();
     animationLayer = new GraphicsLayer();
 
     canvasRenderer = new CanvasRenderer();
     createView(this);
-    canvasRenderer->setQtCanvas(view->scene(), getCanvas());
+    canvasRenderer->setLayer(figureLayer, getCanvas());
     view->setWindowName(windowName);
     parent->setMinimumSize(20, 20);
 
     view->scene()->addItem(backgroundLayer);
     view->scene()->addItem(rangeLayer);
     view->scene()->addItem(networkLayer);
+    view->scene()->addItem(figureLayer);
     view->scene()->addItem(animationLayer);
 }
 

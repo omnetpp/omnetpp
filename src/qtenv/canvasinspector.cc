@@ -53,8 +53,11 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     canvasRenderer = new CanvasRenderer();
 
     graphicsView = new QGraphicsView(this);
-    graphicsView->setScene(new QGraphicsScene(graphicsView));
-    canvasRenderer->setQtCanvas(graphicsView->scene(), getCanvas());
+    auto scene = new QGraphicsScene(graphicsView);
+    graphicsView->setScene(scene);
+    GraphicsLayer *layer = new GraphicsLayer();
+    scene->addItem(layer);
+    canvasRenderer->setLayer(layer, getCanvas());
 
     auto layout = new QGridLayout(this);
     layout->addWidget(graphicsView, 0, 0, 1, 1);
