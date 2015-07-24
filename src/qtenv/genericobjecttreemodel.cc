@@ -215,6 +215,8 @@ void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> 
 cObject *GenericObjectTreeModel::getCObjectPointer(QModelIndex index)
 {
     auto node = static_cast<TreeNode *>(index.internalPointer());
+    // FIXME TODO - extract the object pointer from the node to inspect
+    // return node->containingObject;
     return nullptr;
 }
 
