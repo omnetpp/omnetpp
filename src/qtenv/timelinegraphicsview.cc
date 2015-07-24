@@ -425,7 +425,7 @@ void TimeLineGraphicsView::rebuildScene()
     QRectF maxTickLabelSize = simpleText.boundingRect();
     int tickLabelHeight = maxTickLabelSize.height();
 
-    bool showTickLabels = enableTickLabels && (r.height() >= tickLabelHeight+5);
+    bool showTickLabels = enableTickLabels && (r.height() >= tickLabelHeight+16);
     // the -10 is a margin at the bottom, might want to correct later
     axisY = showTickLabels ? r.height() - tickLabelHeight - 10 : (r.height()-1)/2;
     zeroStartX = maxTickLabelSize.width()/2;
