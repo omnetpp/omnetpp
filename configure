@@ -4644,7 +4644,8 @@ else
         # for the presence of the libraries with OPP_CHECK_LIB
         OSG_LIBS=`pkg-config --silence-errors --libs openscenegraph`
         if test -n "$OSG_LIBS"; then
-            QT_LIBS+=" -losgQt $OSG_LIBS -losgEarthUtil"
+            QT_LIBS+=" -losgQt"
+            SYS_LIBS+=" $OSG_LIBS -losgEarthUtil"
             CFLAGS_RELEASE+=" -DWITH_OSG"
             CFLAGS_DEBUG+=" -DWITH_OSG"
         fi
