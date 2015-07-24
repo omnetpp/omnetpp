@@ -116,7 +116,7 @@ void cFindByPathVisitor::visit(cObject *obj)
     // found it?
     if (strcmp(fullPath, objPath.c_str()) == 0
         && (!className || strcmp(className, getObjectShortTypeName(obj)) == 0)
-        && idMatches(obj))
+        && (objectId == -1 || idMatches(obj)))
     {
         // found, collect it
         addPointer(obj);
