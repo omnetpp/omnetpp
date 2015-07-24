@@ -54,6 +54,7 @@ public:
     enum eMode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
 
     explicit MainWindow(Qtenv *env, QWidget *parent = 0);
+    ~MainWindow();
 
     void displayText(const char* t);
     void updateStatusDisplay();
@@ -93,6 +94,7 @@ private slots:
     void initialSetUpConfiguration();
     void on_actionPreferences_triggered();
     void on_actionTimeline_toggled(bool isSunken);
+    void on_actionStatusDetails_triggered();
 
 public slots:
     void on_actionStop_triggered();
@@ -104,6 +106,7 @@ private:
     QSlider *slider;
     bool firstInit;
     QList<int> timeLineSize;
+    bool showStatusDetails;
 
     bool checkRunning();
     void runSimulation(eMode mode);

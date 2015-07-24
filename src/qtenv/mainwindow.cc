@@ -58,7 +58,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->timeLine->setVisible(isSunken);
     ui->actionTimeline->setChecked(isSunken);
 
-    //TODO
     slider = new QSlider();
     slider->setMinimum(50);
     slider->setMaximum(300);
@@ -68,18 +67,22 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     ui->toolBar->addWidget(slider);
 
-    //TODO
-    //if($config(display-statusdetails)
-    //{
-//        ui->labelDisplay1->hide();
-//        ui->labelDisplay2->hide();
-//        ui->labelDisplay3->hide();
-    // }
+    // initialize status bar
+    variant = getQtenv()->getPref("display-statusdetails");
+    showStatusDetails = variant.isValid() ? variant.value<bool>() : true;
+    ui->labelDisplay1->setVisible(showStatusDetails);
+    ui->labelDisplay2->setVisible(showStatusDetails);
+    ui->labelDisplay3->setVisible(showStatusDetails);
 
     // if we trigger the action here directly, it will block the initialization
     // this way the main window will be shown before the setup dialog
     // because the timer event is processed in the event loop
     QTimer::singleShot(0, this, SLOT(initialSetUpConfiguration()));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
 }
 
 void MainWindow::displayText(const char *t)
@@ -775,6 +778,16 @@ void MainWindow::on_actionTimeline_toggled(bool isSunken)
 
     ui->timeLine->setVisible(isSunken);
     getQtenv()->setPref("display-timeline", isSunken);
+}
+
+
+void MainWindow::on_actionStatusDetails_triggered()
+{
+    showStatusDetails = !showStatusDetails;
+    ui->labelDisplay1->setVisible(showStatusDetails);
+    ui->labelDisplay2->setVisible(showStatusDetails);
+    ui->labelDisplay3->setVisible(showStatusDetails);
+    getQtenv()->setPref("display-statusdetails", showStatusDetails);
 }
 
 } // namespace qtenv
