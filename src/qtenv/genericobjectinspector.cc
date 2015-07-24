@@ -73,6 +73,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     auto layout = new QGridLayout(this);
     layout->addWidget(treeView, 0, 0, 1, 1);
     layout->setMargin(0);
+    parent->setMinimumSize(20, 20);
 
     model = new GenericObjectTreeModel(nullptr, this);
 

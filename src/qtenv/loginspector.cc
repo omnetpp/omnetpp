@@ -71,6 +71,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     textWidget = new TextViewerWidget(this);
     layout->addWidget(textWidget, 0, 0, 1, 1);
     connect(textWidget, SIGNAL(caretMoved(int,int)), this, SLOT(onCaretMoved(int, int)));
+    parent->setMinimumSize(20, 20);
 
     /*
     stringContent = new StringTextViewerContentProvider(

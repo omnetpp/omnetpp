@@ -407,9 +407,7 @@ QVector<cObject*> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
 
 void TimeLineGraphicsView::rebuildScene()
 {
-    // this will prevent scrolling, because this way we only want to show
-    // a portion of a scene so big, that it will always exactly fit into the viewport
-    setSceneRect(contentsRect());
+    setSceneRect(0, contentsRect().height() * (2/3), contentsRect().width(), contentsRect().height());
 
     if(scene() == nullptr)
         qDebug() << "TimeLineGraphicsView::rebuildScene: scene must be set";

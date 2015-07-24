@@ -52,6 +52,7 @@ ObjectTreeInspector::ObjectTreeInspector(QWidget *parent, bool isTopLevel, Inspe
     view->setModel(model);
     view->setHeaderHidden(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
+    parent->setMinimumSize(20, 20);
 
     connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
     connect(view, SIGNAL(clicked(QModelIndex)), this, SLOT(onClick(QModelIndex)));

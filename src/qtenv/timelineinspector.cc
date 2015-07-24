@@ -20,6 +20,7 @@
 #include "timelinegraphicsview.h"
 #include "inspectorutil.h"
 #include "inspectorfactory.h"
+#include "qtenv.h"
 
 #define emit
 
@@ -43,9 +44,10 @@ TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, Inspector
 {
     QGridLayout *layout = new QGridLayout(this);
     timeLine = new TimeLineGraphicsView();
-    timeLine->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    timeLine->setMaximumHeight(100); // TODO FIXME proper layouting
+    timeLine->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     timeLine->setScene(new QGraphicsScene());
+
+    parent->setMinimumSize(20, 20);
     layout->addWidget(timeLine, 0, 0);
     layout->setMargin(0);
 

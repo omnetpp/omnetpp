@@ -106,6 +106,7 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     createView(this);
     canvasRenderer->setQtCanvas(view->scene(), getCanvas());
     view->setWindowName(windowName);
+    parent->setMinimumSize(20, 20);
 
     view->scene()->addItem(networkLayer);
     view->scene()->addItem(animationLayer);

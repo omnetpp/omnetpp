@@ -628,7 +628,8 @@ void MainWindow::storeGeometry()
     sizes.append(ui->SPLITTER->sizes()[1]); \
     env->setPref(PREFNAME, sizes);
 
-    SAVE_SPLITTER("mainwin-main-splittersizes", splitter_3);
+    SAVE_SPLITTER("mainwin-main-splittersizes", mainSplitter);
+    SAVE_SPLITTER("mainwin-bottom-splittersizes", splitter_3);
     SAVE_SPLITTER("mainwin-left-splittersizes", splitter);
 
     if (ui->splitter_2->orientation() == Qt::Horizontal) {
@@ -658,7 +659,8 @@ void MainWindow::restoreGeometry()
         ui->SPLITTER->setSizes(intSizes); \
     }
 
-    RESTORE_SPLITTER("mainwin-main-splittersizes", splitter_3);
+    RESTORE_SPLITTER("mainwin-main-splittersizes", mainSplitter);
+    RESTORE_SPLITTER("mainwin-bottom-splittersizes", splitter_3);
     RESTORE_SPLITTER("mainwin-left-splittersizes", splitter);
 
     QVariant orient = env->getPref("mainwin-right-splitter-orientation");

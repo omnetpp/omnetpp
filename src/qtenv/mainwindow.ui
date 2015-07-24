@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>939</width>
-    <height>692</height>
+    <height>673</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,65 +93,22 @@
         </item>
        </layout>
       </item>
-      <item>
-       <widget class="QWidget" name="timeLine" native="true"/>
-      </item>
      </layout>
     </item>
     <item>
-     <widget class="QSplitter" name="splitter_3">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>100</height>
-       </size>
-      </property>
+     <widget class="QSplitter" name="mainSplitter">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QSplitter" name="splitter">
+      <widget class="QWidget" name="timeLine" native="true">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <widget class="QWidget" name="treeView">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="contextMenuPolicy">
-         <enum>Qt::CustomContextMenu</enum>
-        </property>
-       </widget>
-       <widget class="QWidget" name="objectInspector" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-       </widget>
       </widget>
-      <widget class="QSplitter" name="splitter_2">
+      <widget class="QSplitter" name="splitter_3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -165,9 +122,9 @@
         </size>
        </property>
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QWidget" name="mainArea" native="true">
+       <widget class="QSplitter" name="splitter">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -180,14 +137,85 @@
           <height>100</height>
          </size>
         </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <widget class="QWidget" name="treeView" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
+        </widget>
+        <widget class="QWidget" name="objectInspector" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>100</height>
+          </size>
+         </property>
+        </widget>
        </widget>
-       <widget class="QWidget" name="logInspector" native="true">
+       <widget class="QSplitter" name="splitter_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>100</width>
           <height>100</height>
          </size>
         </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <widget class="QWidget" name="mainArea" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>100</height>
+          </size>
+         </property>
+        </widget>
+        <widget class="QWidget" name="logInspector" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>100</height>
+          </size>
+         </property>
+        </widget>
        </widget>
       </widget>
      </widget>
@@ -672,4 +700,5 @@
  <resources>
   <include location="icons.qrc"/>
  </resources>
+ <connections/>
 </ui>
