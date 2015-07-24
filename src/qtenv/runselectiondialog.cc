@@ -69,11 +69,11 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
     int index = ui->configName->findData(configName.c_str());
     ui->configName->setCurrentIndex(std::max(0, index));
 
-    setRunNumber(configName.c_str());
+    fillRunNumberCombo(configName.c_str());
 
     ui->runNumber->setCurrentIndex(runNumber);
 
-    connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)));
+    connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(configNameChanged(int)));
 }
 
 RunSelectionDialog::~RunSelectionDialog()
@@ -126,20 +126,22 @@ int RunSelectionDialog::getRunNumber()
     return ui->runNumber->itemData(index).toInt();
 }
 
-void RunSelectionDialog::indexChanged(int index)
+void RunSelectionDialog::configNameChanged(int index)
 {
-    setRunNumber(ui->configName->itemData(index).toString().toStdString().c_str());
+    fillRunNumberCombo(ui->configName->itemData(index).toString().toStdString().c_str());
 }
 
-void RunSelectionDialog::setRunNumber(const char *configName)
+void RunSelectionDialog::fillRunNumberCombo(const char *configName)
 {
     ui->runNumber->clear();
     int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(configName);
+    std::vector<std::string> configVariables = getQtenv()->getConfigEx()->unrollConfig(configName, false);
+
     for (int i = 0; i < runs; ++i)
-        ui->runNumber->addItem(QString::number(i), QVariant(i));
+        ui->runNumber->addItem(QString::number(i) + " (" + configVariables[i].c_str() + ")", QVariant(i));
 
     ui->runNumber->setDisabled(ui->runNumber->count() < 2);
 }
 
-} // namespace qtgetQtenv()
+} // namespace qtenv
 } // namespace omnetpp

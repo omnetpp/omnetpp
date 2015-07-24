@@ -42,7 +42,7 @@ public:
     int getRunNumber();
 
 private slots:
-    void indexChanged(int index);
+    void configNameChanged(int index);
 
 public slots:
     int exec();
@@ -52,7 +52,7 @@ private:
     bool firstRun;
 
     std::vector<std::string> groupAndSortConfigNames();
-    void setRunNumber(const char *configName);
+    void fillRunNumberCombo(const char *configName);
 };
 
 } // namespace qtenv
