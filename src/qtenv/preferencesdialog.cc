@@ -96,11 +96,11 @@ void PreferencesDialog::init()
 
     // Filtering tab
     variant = getQtenv()->getPref("timeline-wantselfmsgs");
-    ui->selfMsg->setChecked(variant.isValid() ? variant.value<bool>() : false);
+    ui->selfMsg->setChecked(variant.isValid() ? variant.value<bool>() : true);
     variant = getQtenv()->getPref("timeline-wantnonselfmsgs");
-    ui->nonSelfMsg->setChecked(variant.isValid() ? variant.value<bool>() : false);
+    ui->nonSelfMsg->setChecked(variant.isValid() ? variant.value<bool>() : true);
     variant = getQtenv()->getPref("timeline-wantsilentmsgs");
-    ui->silentMsg->setChecked(variant.isValid() ? variant.value<bool>() : false);
+    ui->silentMsg->setChecked(variant.isValid() ? variant.value<bool>() : true);
     ui->excludMsgEdit->setText(getQtenv()->getSilentEventFilters());
 
     // Fonts tab

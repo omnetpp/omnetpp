@@ -44,7 +44,7 @@ TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, Inspector
 {
     QGridLayout *layout = new QGridLayout(this);
     timeLine = new TimeLineGraphicsView();
-    timeLine->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    timeLine->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     timeLine->setScene(new QGraphicsScene());
 
     parent->setMinimumSize(20, 20);

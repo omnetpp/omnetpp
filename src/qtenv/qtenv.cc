@@ -429,8 +429,8 @@ void Qtenv::doRun()
         restoreOptsFromPrefs();
 
         mainwindow = new MainWindow(this);
-        mainwindow->restoreGeometry();
         mainwindow->show();
+        mainwindow->restoreGeometry();
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {

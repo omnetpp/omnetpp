@@ -103,6 +103,7 @@ private:
     StopDialog *stopDialog;
     QSlider *slider;
     bool firstInit;
+    QList<int> timeLineSize;
 
     bool checkRunning();
     void runSimulation(eMode mode);

@@ -638,6 +638,14 @@ void MainWindow::storeGeometry()
 
     if(ui->actionTimeline->isChecked())
         saveSplitter("mainwin-main-splittersizes", ui->mainSplitter);
+    else
+    {
+        QList<QVariant> sizes;
+        sizes.clear();
+        sizes.append(timeLineSize[0]);
+        sizes.append(timeLineSize[1]);
+        env->setPref("mainwin-main-splittersizes", sizes);
+    }
 
     saveSplitter("mainwin-bottom-splittersizes", ui->splitter_3);
     saveSplitter("mainwin-left-splittersizes", ui->splitter);
@@ -667,6 +675,9 @@ void MainWindow::restoreGeometry()
 {
     QRect geom = env->getPref("mainwindow-geom").toRect();
     if (geom.isValid()) setGeometry(geom);
+
+    // set timeline initial size
+    ui->mainSplitter->setSizes(QList<int>({100, ui->mainSplitter->height() - 100}));
 
     restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);
     restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3);
@@ -759,6 +770,9 @@ void MainWindow::on_actionPreferences_triggered()
 
 void MainWindow::on_actionTimeline_toggled(bool isSunken)
 {
+    if(!isSunken)
+        timeLineSize = ui->mainSplitter->sizes();
+
     ui->timeLine->setVisible(isSunken);
     getQtenv()->setPref("display-timeline", isSunken);
 }

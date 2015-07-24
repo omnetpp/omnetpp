@@ -62,7 +62,7 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
     int runNumber = getQtenv()->opt->defaultRun;
 
     if (configName == "" && ui->configName->size().rheight() != 0) {
-        configName = ui->configName->itemText(0).toStdString();
+        configName = groupAndSortConfigNames()[0];
         runNumber = 0;
     }
 
