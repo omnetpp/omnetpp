@@ -36,11 +36,15 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
     adjustSize();
 
     bool isBase = false;
-    for (auto name : groupAndSortConfigNames()) {
+    auto configNames = groupAndSortConfigNames();
+    std::string firstConfigName;
+    for (auto name : configNames) {
         if (name == "") {
             isBase = true;
             continue;
-        }
+        } else
+            if (firstConfigName.empty())
+                firstConfigName = name;
 
         std::string desc = getQtenv()->getConfigEx()->getConfigDescription(name.c_str());
         int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(name.c_str());
@@ -62,7 +66,7 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
     int runNumber = getQtenv()->opt->defaultRun;
 
     if (configName == "" && ui->configName->size().rheight() != 0) {
-        configName = groupAndSortConfigNames()[0];
+        configName = firstConfigName;
         runNumber = 0;
     }
 
