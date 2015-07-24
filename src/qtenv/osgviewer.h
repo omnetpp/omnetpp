@@ -52,7 +52,11 @@ class QTENV_API OsgViewerWidget : public QWidget, public osgViewer::CompositeVie
   public:
     OsgViewerWidget(QWidget *parent=nullptr);
     virtual ~OsgViewerWidget() {}
-    void setScene(osg::Node* scene) {view->setSceneData(scene);}
+    void setScene(osg::Node* scene);
+    osg::Node *getScene() const;
+    void setClearColor(float r, float g, float b, float alpha);
+    void setCameraManipulator(osgGA::CameraManipulator *manipulator);
+    void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
 };
 
 } // qtenv

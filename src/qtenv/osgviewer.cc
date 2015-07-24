@@ -48,9 +48,10 @@ QWidget *OsgViewerWidget::addViewWidget(osgQt::GraphicsWindowQt *gw)
 
     const osg::GraphicsContext::Traits* traits = gw->getTraits();
 
+    // default settings (will be overridden from inspector's setObject())
     camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
     camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
-    camera->setProjectionMatrixAsPerspective(30.0f, static_cast<double>(traits->width)/static_cast<double>(traits->height), 1.0f, 10000.0f );
+    camera->setProjectionMatrixAsPerspective(120.0f, 1.0, 1.0f, 10000.0f );
 
     view->addEventHandler( new osgViewer::StatsHandler );
 
@@ -83,6 +84,34 @@ void OsgViewerWidget::paintEvent(QPaintEvent *event)
 {
     printf("OsgViewerWidget::paintEvent()\n");
     frame();
+}
+
+void OsgViewerWidget::setScene(osg::Node* scene)
+{
+    view->setSceneData(scene);
+}
+
+osg::Node *OsgViewerWidget::getScene() const
+{
+    return view->getSceneData();
+}
+
+void OsgViewerWidget::setClearColor(float r, float g, float b, float alpha)
+{
+    osg::Camera* camera = view->getCamera();
+    camera->setClearColor(osg::Vec4(r, g, b, alpha));
+    camera->setProjectionMatrixAsPerspective(120.0f, 1.0, 1.0f, 10000.0f );
+}
+
+void OsgViewerWidget::setCameraManipulator(osgGA::CameraManipulator *manipulator)
+{
+    view->setCameraManipulator(manipulator);
+}
+
+void OsgViewerWidget::setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar)
+{
+    osg::Camera* camera = view->getCamera();
+    camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, aspect, zNear, zFar);
 }
 
 } // qtenv

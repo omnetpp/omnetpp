@@ -63,10 +63,27 @@ void OsgCanvasInspector::doSetObject(cObject *obj)
     cOsgCanvas *osgCanvas = dynamic_cast<cOsgCanvas*>(obj);
     osg::Node *scene = osgCanvas ? osgCanvas->getScene() : nullptr;
     viewWidget->setScene(scene); // note: increases scene's reference count
+
+    cOsgCanvas::Color color = osgCanvas->getClearColor();
+    viewWidget->setClearColor(color.red/255.0, color.green/255.0, color.blue/255.0, 1.0);
+
+    osgGA::CameraManipulator *manipulator = nullptr;
+    switch (osgCanvas->getCameraManipulatorType()) {
+    case cOsgCanvas::CAM_TRACKBALL: manipulator = new osgGA::TrackballManipulator; break;
+    case cOsgCanvas::CAM_EARTH: manipulator = new osgEarth::Util::EarthManipulator; break;
+    }
+    viewWidget->setCameraManipulator(manipulator);
+
+    viewWidget->setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getAspect(), osgCanvas->getZNear(), osgCanvas->getZFar());
+
 }
 
 void OsgCanvasInspector::refresh()
 {
+    cOsgCanvas *osgCanvas = dynamic_cast<cOsgCanvas*>(getObject());
+    osg::Node *scene = osgCanvas ? osgCanvas->getScene() : nullptr;
+    if (scene != viewWidget->getScene())
+        viewWidget->setScene(scene);
 }
 
 } // namespace qtenv

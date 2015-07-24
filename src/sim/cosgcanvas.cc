@@ -39,7 +39,9 @@ inline void unref(osg::Node *scene)
         scene->unref();
 }
 
-cOsgCanvas::cOsgCanvas(const char *name, osg::Node *scene) : cOwnedObject(name), scene(scene)
+cOsgCanvas::cOsgCanvas(const char *name, osg::Node *scene) : cOwnedObject(name),
+    scene(scene), clearColor(Color(128, 128, 220)), cameraManipulatorType(CAM_TRACKBALL),
+    fieldOfViewAngle(30), aspect(1.0), zNear(1.0), zFar(10000.0)
 {
     ref(scene);
 }
@@ -52,6 +54,13 @@ cOsgCanvas::~cOsgCanvas()
 void cOsgCanvas::copy(const cOsgCanvas& other)
 {
     setScene(other.getScene());
+
+    clearColor = other.clearColor;
+    cameraManipulatorType = other.cameraManipulatorType;
+    fieldOfViewAngle = other.fieldOfViewAngle;
+    aspect = other.aspect;
+    zNear = other.zNear;
+    zFar = other.zFar;
 }
 
 cOsgCanvas& cOsgCanvas::operator=(const cOsgCanvas& other)
@@ -78,6 +87,13 @@ void cOsgCanvas::setScene(osg::Node *scene)
 }
 
 //----
+
+cOsgEarthCanvas::cOsgEarthCanvas(const char *name, osg::Node *scene) :
+    cOsgCanvas(name, scene)
+{
+    cameraManipulatorType = CAM_EARTH;
+    clearColor = Color(0, 0, 80);
+}
 
 cOsgEarthCanvas& cOsgEarthCanvas::operator=(const cOsgEarthCanvas& other)
 {
