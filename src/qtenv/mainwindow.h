@@ -27,6 +27,7 @@ class QTreeView;
 class QGraphicsView;
 class QWidget;
 class QSlider;
+class QSplitter;
 
 namespace Ui {
 class MainWindow;
@@ -91,6 +92,7 @@ private slots:
     void closeEvent(QCloseEvent *event);
     void initialSetUpConfiguration();
     void on_actionPreferences_triggered();
+    void on_actionTimeline_toggled(bool isSunken);
 
 public slots:
     void on_actionStop_triggered();
@@ -117,6 +119,9 @@ private:
 
     void busy(QString msg = "");
     void copyToClipboard(cObject *object, int what);
+
+    void saveSplitter(QString prefName, QSplitter *splitter);
+    void restoreSplitter(QString prefName, QSplitter *splitter);
 };
 
 } // namespace qtenv

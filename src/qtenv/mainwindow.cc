@@ -18,6 +18,10 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QStyledItemDelegate>
+#include <QTextLayout>
+#include <QTimer>
+#include <QLineEdit>
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
@@ -31,10 +35,7 @@
 #include "moduleinspector.h"
 #include "loginspector.h"
 #include "timelinegraphicsview.h"
-#include <QStyledItemDelegate>
-#include <QTextLayout>
-#include <QTimer>
-#include <QLineEdit>
+
 #include <QDebug>
 
 using namespace OPP::common;
@@ -50,6 +51,12 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->setupUi(this);
 
     stopDialog = new StopDialog(this);
+
+    // initialize timeline
+    QVariant variant = getQtenv()->getPref("display-timeline");
+    bool isSunken = variant.isValid() ? variant.value<bool>() : true;
+    ui->timeLine->setVisible(isSunken);
+    ui->actionTimeline->setChecked(isSunken);
 
     //TODO
     slider = new QSlider();
@@ -616,31 +623,44 @@ bool MainWindow::networkPresent()
     return true;
 }
 
+void MainWindow::saveSplitter(QString prefName, QSplitter *splitter)
+{
+    QList<QVariant> sizes;
+    sizes.clear();
+    sizes.append(splitter->sizes()[0]);
+    sizes.append(splitter->sizes()[1]);
+    env->setPref(prefName, sizes);
+}
+
 void MainWindow::storeGeometry()
 {
     env->setPref("mainwindow-geom", geometry());
 
-    QList<QVariant> sizes;
+    if(ui->actionTimeline->isChecked())
+        saveSplitter("mainwin-main-splittersizes", ui->mainSplitter);
 
-#define SAVE_SPLITTER(PREFNAME, SPLITTER) \
-    sizes.clear(); \
-    sizes.append(ui->SPLITTER->sizes()[0]); \
-    sizes.append(ui->SPLITTER->sizes()[1]); \
-    env->setPref(PREFNAME, sizes);
-
-    SAVE_SPLITTER("mainwin-main-splittersizes", mainSplitter);
-    SAVE_SPLITTER("mainwin-bottom-splittersizes", splitter_3);
-    SAVE_SPLITTER("mainwin-left-splittersizes", splitter);
+    saveSplitter("mainwin-bottom-splittersizes", ui->splitter_3);
+    saveSplitter("mainwin-left-splittersizes", ui->splitter);
 
     if (ui->splitter_2->orientation() == Qt::Horizontal) {
-        SAVE_SPLITTER("mainwin-right-splittersizes-horiz", splitter_2);
+        saveSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
         env->setPref("mainwin-right-splitter-orientation", "horiz");
     } else {
-        SAVE_SPLITTER("mainwin-right-splittersizes-vert", splitter_2);
+        saveSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
         env->setPref("mainwin-right-splitter-orientation", "vert");
     }
+}
 
-#undef SAVE_SPLITTER
+void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter)
+{
+    QList<QVariant> sizes;
+    sizes = env->getPref(prefName).value<QList<QVariant >>();
+    if (sizes.size() >= 2) {
+        QList<int> intSizes;
+        intSizes.append(sizes[0].toInt());
+        intSizes.append(sizes[1].toInt());
+        splitter->setSizes(intSizes);
+    }
 }
 
 void MainWindow::restoreGeometry()
@@ -648,33 +668,20 @@ void MainWindow::restoreGeometry()
     QRect geom = env->getPref("mainwindow-geom").toRect();
     if (geom.isValid()) setGeometry(geom);
 
-    QList<QVariant> sizes;
-
-#define RESTORE_SPLITTER(PREFNAME, SPLITTER) \
-    sizes = env->getPref(PREFNAME).value<QList<QVariant >>(); \
-    if (sizes.size() >= 2) { \
-        QList<int> intSizes; \
-        intSizes.append(sizes[0].toInt()); \
-        intSizes.append(sizes[1].toInt()); \
-        ui->SPLITTER->setSizes(intSizes); \
-    }
-
-    RESTORE_SPLITTER("mainwin-main-splittersizes", mainSplitter);
-    RESTORE_SPLITTER("mainwin-bottom-splittersizes", splitter_3);
-    RESTORE_SPLITTER("mainwin-left-splittersizes", splitter);
+    restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);
+    restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3);
+    restoreSplitter("mainwin-left-splittersizes", ui->splitter);
 
     QVariant orient = env->getPref("mainwin-right-splitter-orientation");
 
     if (orient == "horiz") {
         ui->splitter_2->setOrientation(Qt::Horizontal);
-        RESTORE_SPLITTER("mainwin-right-splittersizes-horiz", splitter_2);
+        restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
     } else if (orient == "vert") {
         ui->splitter_2->setOrientation(Qt::Vertical);
-        RESTORE_SPLITTER("mainwin-right-splittersizes-vert", splitter_2);
+        restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
     }
 
-
-#undef RESTORE_SPLITTER
     // TODO save right panel orientation and sizes
 }
 
@@ -744,11 +751,16 @@ void MainWindow::busy(QString msg)
     }
 }
 
-
 void MainWindow::on_actionPreferences_triggered()
 {
     InspectorUtil::preferencesDialog();
     getQtenv()->refreshInspectors();
+}
+
+void MainWindow::on_actionTimeline_toggled(bool isSunken)
+{
+    ui->timeLine->setVisible(isSunken);
+    getQtenv()->setPref("display-timeline", isSunken);
 }
 
 } // namespace qtenv
