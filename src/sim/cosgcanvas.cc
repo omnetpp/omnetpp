@@ -20,12 +20,11 @@
 
 #include "omnetpp/globals.h"
 #include "osg/Node"
+#include "osgEarth/Viewpoint"
 
 NAMESPACE_BEGIN
 
 Register_Class(cOsgCanvas);
-Register_Class(cOsgEarthCanvas);
-
 
 inline void ref(osg::Node *scene)
 {
@@ -39,9 +38,10 @@ inline void unref(osg::Node *scene)
         scene->unref();
 }
 
-cOsgCanvas::cOsgCanvas(const char *name, osg::Node *scene) : cOwnedObject(name),
-    scene(scene), clearColor(Color(128, 128, 220)), cameraManipulatorType(CAM_TRACKBALL),
-    fieldOfViewAngle(30), aspect(1.0), zNear(1.0), zFar(10000.0)
+cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *scene) : cOwnedObject(name),
+    scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)), cameraManipulatorType(CAM_AUTO),
+    fieldOfViewAngle(30), aspect(1.0), zNear(1.0), zFar(10000.0), viewpoint(new osgEarth::Viewpoint())
+
 {
     ref(scene);
 }
@@ -49,6 +49,7 @@ cOsgCanvas::cOsgCanvas(const char *name, osg::Node *scene) : cOwnedObject(name),
 cOsgCanvas::~cOsgCanvas()
 {
     unref(scene);
+    delete viewpoint;
 }
 
 void cOsgCanvas::copy(const cOsgCanvas& other)
@@ -61,6 +62,7 @@ void cOsgCanvas::copy(const cOsgCanvas& other)
     aspect = other.aspect;
     zNear = other.zNear;
     zFar = other.zFar;
+    *viewpoint = *other.viewpoint;
 }
 
 cOsgCanvas& cOsgCanvas::operator=(const cOsgCanvas& other)
@@ -86,27 +88,9 @@ void cOsgCanvas::setScene(osg::Node *scene)
     this->scene = scene;
 }
 
-//----
-
-cOsgEarthCanvas::cOsgEarthCanvas(const char *name, osg::Node *scene) :
-    cOsgCanvas(name, scene)
+void cOsgCanvas::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
 {
-    cameraManipulatorType = CAM_EARTH;
-    clearColor = Color(0, 0, 80);
-}
-
-cOsgEarthCanvas& cOsgEarthCanvas::operator=(const cOsgEarthCanvas& other)
-{
-    if (this == &other)
-        return *this;
-    cOsgCanvas::operator=(other);
-    copy(other);
-    return *this;
-}
-
-std::string cOsgEarthCanvas::info() const
-{
-    return cOsgCanvas::info(); // TODO
+    *this->viewpoint = viewpoint;
 }
 
 NAMESPACE_END

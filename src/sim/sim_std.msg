@@ -217,6 +217,8 @@ class cProperties
 
 class cPar extends cObject;
 class cComponentType extends cOwnedObject;
+class cCanvas extends cOwnedObject;
+class cOsgCanvas extends cOwnedObject;
 
 class cComponent extends cDefaultList
 {
@@ -261,6 +263,8 @@ class cModule extends cComponent
     int size @getter(size) @group(fields) @hint("If vector: size of module vector this module belongs to");
     cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI");
     cGate *gate[] @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
+    cCanvas *canvas @getter(getCanvasIfExists) @group(fields) @hint("Built-in canvas instance");
+    cOsgCanvas *osgCanvas @getter(getOsgCanvasIfExists) @group(fields) @hint("Built-in 3D (OpenSceneGraph) canvas instance");
 }
 
 class cSimpleModule extends cModule
@@ -884,5 +888,10 @@ class cCanvas extends cOwnedObject
     cFigure *rootFigure;
     string allTags;
     Color backgroundColor @editable @tostring(.str()) @fromstring(parseColor);
+}
+
+
+class cOsgCanvas extends cOwnedObject
+{
 }
 

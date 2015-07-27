@@ -23,6 +23,7 @@
 
 // don't include OSG headers yet
 namespace osg { class Node; }
+namespace osgEarth { class Viewpoint; }
 
 NAMESPACE_BEGIN
 
@@ -37,21 +38,23 @@ NAMESPACE_BEGIN
  * API, e.g. using osgDB::readNodeFile() or creating and adding nodes directly.
  *
  * Since OpenSceneGraph is not a mandatory part of OMNeT++, it is recommended
- * that you surround your OSG code with #ifdef HAVE_OSG (or if you use osgEarth,
- * #ifdef HAVE_OSGEARTH) directives.
+ * that you surround your OSG code with #ifdef HAVE_OSG.
  *
  * @ingroup Canvas
  */
 class SIM_API cOsgCanvas : public cOwnedObject
 {
     public:
+        enum ViewerStyle { STYLE_GENERIC, STYLE_EARTH };
         typedef cFigure::Color Color;
-        enum CameraManipulatorType { CAM_TRACKBALL, CAM_EARTH };
+        enum CameraManipulatorType { CAM_AUTO, CAM_TRACKBALL, CAM_EARTH };
 
     protected:
         osg::Node *scene;  // reference counted
 
-        // viewer hints
+        ViewerStyle viewerStyle;
+
+        // OSG viewer hints
         Color clearColor;
         CameraManipulatorType cameraManipulatorType;
         double fieldOfViewAngle;  // a.k.a. fovy, see OpenGL gluPerspective
@@ -59,13 +62,16 @@ class SIM_API cOsgCanvas : public cOwnedObject
         double zNear; // see OpenGL gluPerspective
         double zFar;  // see OpenGL gluPerspective
 
+        // osgEarth-specific viewer hints
+        osgEarth::Viewpoint *viewpoint; // never nullptr
+
     private:
         void copy(const cOsgCanvas& other);
 
     public:
         /** @name Constructors, destructor, assignment */
         //@{
-        cOsgCanvas(const char *name=nullptr, osg::Node *scene=nullptr);
+        cOsgCanvas(const char *name=nullptr, ViewerStyle viewerStyle=STYLE_GENERIC, osg::Node *scene=nullptr);
         cOsgCanvas(const cOsgCanvas& other) : cOwnedObject(other) {copy(other);}
         virtual ~cOsgCanvas();
         cOsgCanvas& operator=(const cOsgCanvas& other);
@@ -91,8 +97,18 @@ class SIM_API cOsgCanvas : public cOwnedObject
         virtual osg::Node *getScene() const {return scene;}
         //@}
 
-        /** @name Hints for the 3D viewer in the GUI. */
+        /** @name Hints for the OSG viewer. */
         //@{
+        /**
+         * TODO
+         */
+        void setViewerStyle(ViewerStyle viewerStyle) {this->viewerStyle = viewerStyle;}
+
+        /**
+         * TODO
+         */
+        ViewerStyle getViewerStyle() const {return viewerStyle;}
+
         /**
          * Set the color hint for the background behind the scene.
          */
@@ -162,34 +178,23 @@ class SIM_API cOsgCanvas : public cOwnedObject
          */
         void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
         //@}
-};
 
-/**
- * cOsgCanvas specialized for osgEarth.
- *
- * @ingroup Canvas
- */
-class SIM_API cOsgEarthCanvas : public cOsgCanvas
-{
-    private:
-        void copy(const cOsgEarthCanvas& other) {}
-
-    public:
-        /** @name Constructors, destructor, assignment */
+        /** @name osgEarth-related viewer hints. */
         //@{
-        cOsgEarthCanvas(const char *name=nullptr, osg::Node *scene=nullptr);
-        cOsgEarthCanvas(const cOsgEarthCanvas& other) : cOsgCanvas(other) {copy(other);}
-        virtual ~cOsgEarthCanvas() {}
-        cOsgEarthCanvas& operator=(const cOsgEarthCanvas& other);
+        /**
+         * Sets the initial viewpoint hint.
+         */
+        void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
+
+        /**
+         * Returns the initial viewpoint hint.
+         */
+        const osgEarth::Viewpoint& getEarthViewpoint() const {return *viewpoint;}
+
+        //TODO more osgEarth-related hints
+
         //@}
 
-        /** @name Redefined cObject member functions. */
-        //@{
-        virtual cOsgCanvas *dup() const override {return new cOsgEarthCanvas(*this);}
-        virtual std::string info() const override;
-        //@}
-
-        //TODO stuff (osgEarth-related hints)
 };
 
 NAMESPACE_END
