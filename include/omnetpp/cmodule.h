@@ -24,12 +24,12 @@
 
 NAMESPACE_BEGIN
 
-
 class  cMessage;
 class  cGate;
 class  cSimulation;
 class  cModuleType;
 class  cCanvas;
+class  cOsgCanvas;
 
 /**
  * This class represents modules in the simulation. cModule can be used directly
@@ -305,6 +305,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 #endif
 
     cCanvas *canvas;  // nullptr when unused
+    cOsgCanvas *osgCanvas;  // nullptr when unused
 
   public:
     // internal: currently used by init
@@ -395,6 +396,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: return the canvas if exists, or nullptr if not (i.e. no create-on-demand)
     cCanvas *getCanvasIfExists() {return canvas;}
+
+    // internal: return the 3D canvas if exists, or nullptr if not (i.e. no create-on-demand)
+    cOsgCanvas *getOsgCanvasIfExists() {return osgCanvas;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -783,6 +787,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * existed before.
      */
     virtual cCanvas *getCanvas();
+
+    /**
+     * Returns the default 3D (OpenSceneGraph) canvas for this module, creating
+     * it if it hasn't existed before.
+     */
+    virtual cOsgCanvas *getOsgCanvas();
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.

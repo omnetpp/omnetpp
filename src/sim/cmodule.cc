@@ -34,6 +34,7 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/ccanvas.h"
+#include "omnetpp/cosgcanvas.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
 
@@ -70,6 +71,7 @@ cModule::cModule()
 #endif
 
     canvas = nullptr;
+    osgCanvas = nullptr;
 
     // gates and parameters will be added by cModuleType
 }
@@ -119,6 +121,7 @@ cModule::~cModule()
         getParentModule()->removeSubmodule(this);
 
     delete canvas;
+    delete osgCanvas;
 
     delete[] fullName;
     delete[] fullPath;
@@ -1281,6 +1284,19 @@ cCanvas *cModule::getCanvas()
         take(canvas);
     }
     return canvas;
+}
+
+cOsgCanvas *cModule::getOsgCanvas()
+{
+#ifndef WITH_OSG
+    throw cRuntimeError("cOsgCanvas is not available: OMNeT++ has been compiled without OpenSceneGraph support");
+#else
+    if (!osgCanvas) {
+        osgCanvas = new cOsgCanvas("osgCanvas");
+        take(osgCanvas);
+    }
+    return osgCanvas;
+#endif
 }
 
 void cModule::callInitialize()
