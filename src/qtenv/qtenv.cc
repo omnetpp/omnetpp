@@ -429,23 +429,23 @@ void Qtenv::doRun()
 
         restoreOptsFromPrefs();
 
-        mainwindow = new MainWindow(this);
-        mainwindow->show();
-        mainwindow->restoreGeometry();
+        mainWindow = new MainWindow(this);
+        mainWindow->show();
+        mainWindow->restoreGeometry();
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
-            windowtitleprefix.reserve(24);
-            sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            windowTitlePrefix.reserve(24);
+            sprintf(windowTitlePrefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
 
 
-        mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainwindow->getObjectInspectorArea()));
-        mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainwindow->getMainInspectorArea()));
-        mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainwindow->getLogInspectorArea()));
-        mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainwindow->getTimeLineArea()));
-        mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainwindow->getObjectTreeArea()));
+        mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
+        mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
+        mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
+        mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
+        mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
 
         connect(mainTimeLine, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
         connect(mainObjectTree, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
@@ -486,10 +486,10 @@ void Qtenv::doRun()
     // pull down inspector factories
     inspectorfactories.clear();
 
-    mainwindow->storeGeometry();
+    mainWindow->storeGeometry();
 
-    delete mainwindow;
-    mainwindow = nullptr;
+    delete mainWindow;
+    mainWindow = nullptr;
 
     storeOptsInPrefs();
 
@@ -999,7 +999,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
         return existing_insp;
     }
 
-    Inspector *insp = p->createInspector(mainwindow, true);
+    Inspector *insp = p->createInspector(mainWindow, true);
     if (!insp) {
         // message: object has no such inspector
         confirm(opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
@@ -1131,13 +1131,13 @@ std::string Qtenv::getWindowTitle()
 
 void Qtenv::updateNetworkRunDisplay()
 {
-    mainwindow->updateNetworkRunDisplay();
-    mainwindow->setWindowTitle(getWindowTitle().c_str());
+    mainWindow->updateNetworkRunDisplay();
+    mainWindow->setWindowTitle(getWindowTitle().c_str());
 }
 
 void Qtenv::updateStatusDisplay()
 {
-    mainwindow->updateStatusDisplay();
+    mainWindow->updateStatusDisplay();
 }
 
 void Qtenv::printEventBanner(cEvent *event)
@@ -1882,7 +1882,7 @@ void Qtenv::bubble(cComponent *component, const char *text)
 
 void Qtenv::confirm(const char *msg)
 {
-    QMessageBox::information(mainwindow, "Confirm", msg, QMessageBox::StandardButton::Ok);
+    QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok);
 }
 
 void Qtenv::putsmsg(const char *msg)

@@ -61,9 +61,9 @@ enum LayouterChoice
 
 enum StripNamespace
 {
-	STRIPNAMESPACE_NONE,
-	STRIPNAMESPACE_OMNETPP,
-	STRIPNAMESPACE_ALL
+    STRIPNAMESPACE_NONE,
+    STRIPNAMESPACE_OMNETPP,
+    STRIPNAMESPACE_ALL
 };
 
 struct QtenvOptions : public OPP::envir::EnvirOptions
@@ -148,9 +148,9 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 
    protected:
       QApplication *app = nullptr;
-      MainWindow *mainwindow = nullptr;
+      MainWindow *mainWindow = nullptr;
       Tcl_Interp *interp;          // Tcl interpreter
-      opp_string windowtitleprefix;// contains "procId=.." when using parsim
+      opp_string windowTitlePrefix;// contains "procId=.." when using parsim
 
       opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
 
@@ -241,7 +241,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       virtual void logTclError(const char *file, int line, const char *text);
       virtual void openTkenvlogIfNeeded();
 
-      MainWindow *getMainWindow() { return mainwindow; }
+      MainWindow *getMainWindow() { return mainWindow; }
       Animator *getAnimator() { return animator; }
       GenericObjectInspector *getMainObjectInspector() { return mainInspector; }
       ModuleInspector *getMainModuleInspector() { return mainNetworkView; }
@@ -337,8 +337,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       const char *getOutVectorFileName() {return outvectorManager->getFileName();}
       const char *getOutScalarFileName() {return outScalarManager->getFileName();}
       const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
-      const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
-      MainWindow *getWindow() {return mainwindow;}
+      const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
 };
 
 
