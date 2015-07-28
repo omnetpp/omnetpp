@@ -35,6 +35,7 @@
 #include "moduleinspector.h"
 #include "loginspector.h"
 #include "timelinegraphicsview.h"
+#include "rununtildialog.h"
 
 #include <QDebug>
 
@@ -334,49 +335,34 @@ void MainWindow::on_actionExpressRun_triggered()
 void MainWindow::on_actionRunUntil_triggered()
 {
     // implements Simulate|Run until...
-// TODO
+    ui->actionRunUntil->setChecked(false);
     if (!networkReady())
         return;
 
-//    set time ""
-//    set event ""
-//    set msg ""
-//    set mode ""    ;# will be set to Normal, Fast or Express
+    RunUntilDialog runUntilDialog;
+    if(!runUntilDialog.exec())
+        return;
 
-//    set ok [runUntilDialog time event msg mode]
-//    if {$ok==0} return
+    Qtenv::eRunMode mode = runUntilDialog.getMode();
+    simtime_t time = runUntilDialog.getTime();
+    eventnumber_t event = runUntilDialog.getEventNumber();
+    cMessage *msg = static_cast<cMessage*>(runUntilDialog.getMessage());
 
-//    if {$mode=="Normal"} {
-//        set mode "normal"
-//    } elseif {$mode=="Fast"} {
-//        set mode "fast"
-//    } elseif {$mode=="Express"} {
-//        set mode "express"
-//    } else {
-//        set mode "normal"
-//    }
+    bool untilMode = time.dbl() != 0 || event != 0 || strlen(msg->getDisplayString());
+    if (isRunning())
+    {
+        setGuiForRunmode(runModeToMode(mode), nullptr, untilMode);
+        getQtenv()->setSimulationRunMode(mode);
+        getQtenv()->setSimulationRunUntil(time, event, msg);
+    } else
+    {
+        if(!networkReady())
+            return;
 
-//    set untilmode "until_on"
-//    if {$time=="" && $event=="" && $msg==""} {set until_on "until_off"}
-
-//    if [isRunning] {
-//        if [catch {
-//            setGuiForRunmode $mode "" $untilmode
-//            opp_set_run_mode $mode
-//            opp_set_run_until $time $event $msg
-//        } err] {
-//            messagebox {Error} "Error: $err" error ok
-//        }
-//    } else {
-//        if {![networkReady]} {return}
-//        if [catch {
-//            setGuiForRunmode $mode "" $untilmode
-//            opp_run $mode $time $event $msg
-//        } err] {
-//            messagebox {Error} "Error: $err" error ok
-//        }
-//        setGuiForRunmode notrunning
-    //    }
+        setGuiForRunmode(runModeToMode(mode), nullptr, untilMode);
+        getQtenv()->runSimulation(mode, time, event, msg);
+        setGuiForRunmode(NOT_RUNNING);
+    }
 }
 
 void MainWindow::onSliderValueChanged(int value)

@@ -73,6 +73,7 @@ SOURCES += mainwindow.cc \
     objecttreeinspector.cc \
     osgcanvasinspector.cc \
     osgviewer.cc \
+    rununtildialog.cc \
     submoduleitem.cc
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h qtenvdefs.h \
@@ -95,6 +96,7 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     objecttreeinspector.h \
     osgcanvasinspector.h \
     osgviewer.h \
+    rununtildialog.h \
     submoduleitem.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
@@ -111,7 +113,8 @@ FORMS += mainwindow.ui \
     stopdialog.ui \
     logfinddialog.ui \
     logfilterdialog.ui \
-    preferencesdialog.ui
+    preferencesdialog.ui \
+    rununtildialog.ui
 
 RESOURCES += \
     icons.qrc
