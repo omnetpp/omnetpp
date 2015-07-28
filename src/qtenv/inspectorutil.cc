@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "inspectorutil.h"
+#include <QDebug>
 #include <QMenu>
 #include <QApplication>
 #include <QClipboard>
@@ -81,6 +82,13 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
             case INSP_MODULEOUTPUT:
                 label = "Open Component Log";
                 break;
+
+            case INSP_OBJECTTREE:
+                label = "Open Object Tree";
+                break;
+
+            default:
+                qDebug() << "Unsupported inspector type " << type << " in context menu";
         }
         label += QString(" for '") + name + "'";
         QAction *action = menu->addAction(label, insp, SLOT(openInspector()));

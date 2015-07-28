@@ -37,7 +37,7 @@ enum {
     INSP_DEFAULT,
     INSP_OBJECT,
     INSP_GRAPHICAL,
-    INSP_MODULEOUTPUT,
+    INSP_MODULEOUTPUT, //TODO rename to INSP_LOG
     INSP_OBJECTTREE,
     NUM_INSPECTORTYPES   // this must be the last one
 };
@@ -76,7 +76,7 @@ class QTENV_API Inspector : public QWidget
       void setLabel(const char *label, const char *val);
       const char *getEntry(const char *entry);
 
-      void inspectObject(cObject *object, int type = 0, const char *geometry = "");
+      void inspectObject(cObject *object, int type=INSP_DEFAULT);
       void runSimulationLocal(int runMode, cObject *object = nullptr);
 
       void closeEvent(QCloseEvent *) override;

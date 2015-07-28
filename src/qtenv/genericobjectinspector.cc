@@ -94,7 +94,7 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
         getQtenv()->getMainModuleInspector()->setObject(module);
         getQtenv()->getMainLogInspector()->setObject(module);
     } else {
-        getQtenv()->inspect(object, INSP_DEFAULT, true, "");
+        getQtenv()->inspect(object, INSP_DEFAULT, true);
     }
 }
 

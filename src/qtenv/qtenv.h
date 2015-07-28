@@ -27,6 +27,7 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "imagecache.h"
+#include "inspector.h"
 #include "animator.h"
 #include <QSettings>
 #include <QSet>
@@ -291,7 +292,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 
       void refreshInspectors();
       void redrawInspectors();
-      Inspector *inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry);
+      Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
       Inspector *findInspector(const char *widget);

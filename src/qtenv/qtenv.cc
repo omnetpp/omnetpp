@@ -976,13 +976,13 @@ void Qtenv::setupNetwork(cModuleType *network)
     // mainwindow->getObjectTree()->collapseAll();
 }
 
-Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
+Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
 {
     // create inspector object & window or display existing one
-    Inspector *existing_insp = findFirstInspector(obj, type, ignoreEmbedded);
-    if (existing_insp) {
-        existing_insp->showWindow();
-        return existing_insp;
+    Inspector *existingInspector = findFirstInspector(obj, type, ignoreEmbedded);
+    if (existingInspector) {
+        existingInspector->showWindow();
+        return existingInspector;
     }
 
     // create inspector
@@ -993,10 +993,10 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
     }
 
     int actualtype = p->getInspectorType();
-    existing_insp = findFirstInspector(obj, actualtype, ignoreEmbedded);
-    if (existing_insp) {
-        existing_insp->showWindow();
-        return existing_insp;
+    existingInspector = findFirstInspector(obj, actualtype, ignoreEmbedded);
+    if (existingInspector) {
+        existingInspector->showWindow();
+        return existingInspector;
     }
 
     Inspector *insp = p->createInspector(mainWindow, true);

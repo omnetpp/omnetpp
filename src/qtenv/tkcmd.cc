@@ -2133,7 +2133,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
     const char *geometry = (argc >= 4) ? argv[3] : "";
 
-    Inspector *insp = app->inspect(object, type, true, geometry);
+    Inspector *insp = app->inspect(object, type, true);
     Tcl_SetResult(interp, TCLCONST(insp ? insp->getWindowName() : ""), TCL_VOLATILE);
     return TCL_OK;
 }

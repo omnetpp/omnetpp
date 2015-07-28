@@ -38,6 +38,7 @@ using namespace OPP::common;
 namespace omnetpp {
 namespace qtenv {
 
+//TODO these two functions are likely not needed any more
 const char *insptypeNameFromCode(int code)
 {
 #define CASE(x)  case x: return #x;
@@ -46,6 +47,7 @@ const char *insptypeNameFromCode(int code)
         CASE(INSP_OBJECT);
         CASE(INSP_GRAPHICAL);
         CASE(INSP_MODULEOUTPUT);
+        CASE(INSP_OBJECTTREE);
         default: return "?";
     }
 #undef CASE
@@ -58,6 +60,7 @@ int insptypeCodeFromName(const char *name)
     CASE(INSP_OBJECT);
     CASE(INSP_GRAPHICAL);
     CASE(INSP_MODULEOUTPUT);
+    CASE(INSP_OBJECTTREE);
     return -1;
 #undef CASE
 }
@@ -231,7 +234,7 @@ void Inspector::inspectParent()
     if(supportsObject(parentPtr)) //TODO && $config(reuse-inspectors)
         setObject(parentPtr);
     else
-        {}  //TODO opp_inspect $parentptr
+        getQtenv()->inspect(parentPtr);
 }
 
 int Inspector::inspectorCommand(int argc, const char **argv)
@@ -286,12 +289,12 @@ void Inspector::goUpInto()
     }
 }
 
-void Inspector::inspectObject(cObject *object, int type, const char *geometry)
+void Inspector::inspectObject(cObject *object, int type)
 {
     if (!object)
         return;
 
-    getQtenv()->inspect(object, type, true, geometry);
+    getQtenv()->inspect(object, type, true);
 }
 
 void Inspector::openInspector()
