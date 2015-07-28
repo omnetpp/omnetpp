@@ -120,8 +120,11 @@ void Inspector::doSetObject(cObject *obj)
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
-        CHK(Tcl_VarEval(interp, "inspector:onSetObject ", windowName, TCL_NULL));
-        refresh();
+        //TODO this was part of inspector:onSetObject, should probably go into refresh():
+        // set icon [opp_getobjecticon $ptr]
+        // if [winfo exist $insp.infobar] {  ;#FIXME add proper condition
+        //     $insp.infobar.icon config -image $icon
+        // }
     }
 }
 
@@ -164,8 +167,10 @@ void Inspector::refreshTitle()
 
 void Inspector::objectDeleted(cObject *obj)
 {
-    if (obj == object)
+    if (obj == object) {
         doSetObject(nullptr);
+        refresh();
+    }
     removeFromToHistory(obj);
 }
 
@@ -177,6 +182,7 @@ void Inspector::setObject(cObject *obj)
             historyForward.clear();
         }
         doSetObject(obj);
+        refresh();
     }
 }
 
@@ -210,6 +216,7 @@ void Inspector::goForward()
         if (object != nullptr)
             historyBack.push_back(object);
         doSetObject(newObj);
+        refresh();
     }
 }
 
@@ -221,6 +228,7 @@ void Inspector::goBack()
         if (object != nullptr)
             historyForward.push_back(object);
         doSetObject(newObj);
+        refresh();
     }
 }
 
