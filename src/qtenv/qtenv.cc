@@ -61,6 +61,7 @@
 #include <QTreeView>
 #include <QDir>
 #include <QDebug>
+#include <QMessageBox>
 
 // default plugin path -- allow overriding it via compiler option (-D)
 // (default image path comes from makefile)
@@ -1881,10 +1882,7 @@ void Qtenv::bubble(cComponent *component, const char *text)
 
 void Qtenv::confirm(const char *msg)
 {
-    if (!interp)
-        ::printf("\n<!> %s\n\n", msg);  // fallback in case Tkenv didn't fire up correctly
-    else
-        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ", TclQuotedString(msg).get(), " info ok", TCL_NULL));
+    QMessageBox::information(mainwindow, "Confirm", msg, QMessageBox::StandardButton::Ok);
 }
 
 void Qtenv::putsmsg(const char *msg)
