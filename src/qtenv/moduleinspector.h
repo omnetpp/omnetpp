@@ -51,6 +51,8 @@ class QTENV_API ModuleInspector : public Inspector
       void relayout();
       void zoomIn(int x = 0, int y = 0);
       void zoomOut(int x = 0, int y = 0);
+      void increaseIconSize();
+      void decreaseIconSize();
 
       void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);
@@ -60,7 +62,7 @@ class QTENV_API ModuleInspector : public Inspector
       void layers();
       void toggleLabels();
       void toggleArrowheads();
-      void zoomIconsBy();
+      void zoomIconsBy(double mult);
       void resetOsgView();
 
       void switchToOsgView();
@@ -126,7 +128,7 @@ class QTENV_API ModuleInspector : public Inspector
 
       GraphicsLayer *getAnimationLayer();
       QPointF getSubmodCoords(cModule *mod);
-      QPointF getMessageEndPos(const QPointF &src, const QPointF &dest);
+      QPointF getMessageEndPos(cModule *src, cModule *dest);
 };
 
 } // namespace qtenv

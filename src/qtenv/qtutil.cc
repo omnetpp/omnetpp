@@ -83,7 +83,11 @@ OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
     fillItem = new QGraphicsSimpleTextItem();
 
     outlineItem->setBrush(Qt::NoBrush);
+    // grey82, 75% alpha; 2 pixels outwards
+    outlineItem->setPen(QPen(QColor(209, 209, 209, 191), 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
     fillItem->setPen(Qt::NoPen);
+    // the default brush is good for fillItem
 }
 
 OutlinedTextItem::~OutlinedTextItem() {

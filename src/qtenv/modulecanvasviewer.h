@@ -59,10 +59,11 @@ private:
     GraphicsLayer *submoduleLayer;
     GraphicsLayer *figureLayer;
     GraphicsLayer *animationLayer;
-    QGraphicsRectItem *rectangleItem = nullptr;
     QGraphicsRectItem *nextEventMarker = nullptr;
 
-private:
+    double zoomFactor = 1;
+    double imageSizeFactor = 1;
+
     // does full layouting, stores results in submodPosMap
     void recalculateLayout();
 
@@ -90,9 +91,11 @@ private:
     void updateBackgroundColor();
 
 protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent * event);
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent * event) override;
+    // only used to draw the zoom factor label in the bottom right corner
+    void drawForeground(QPainter *painter, const QRectF &rect) override;
 
 signals:
     void click(QMouseEvent*);
@@ -118,10 +121,13 @@ public:
     void redraw();
     void refresh();
 
+    void setZoomFactor(double zoomFactor);
+    void setImageSizeFactor(double imageSizeFactor);
+
     void bubble(cComponent *subcomponent, const char *text);
 
     QPointF getSubmodCoords(cModule *mod);
-    QPointF getMessageEndPos(const QPointF &src, const QPointF &dest);
+    QPointF getMessageEndPos(cModule *src, cModule *dest);
 
     void clear();
     bool getNeedsRedraw() { return needs_redraw; }

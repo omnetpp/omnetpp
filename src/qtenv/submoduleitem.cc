@@ -34,14 +34,18 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
     // replacing $param args with the actual parameter values
     std::string buffer;
-    ds.updateWith(substituteDisplayStringParamRefs(ds, buffer, mod, true));
+    ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
 
-    int shapeWidth = QString(ds.getTagArg("b", 0)).toInt();
-    int shapeHeight = QString(ds.getTagArg("b", 1)).toInt();
+    bool widthOk, heightOk;
+    double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
+    double shapeHeight = QString(ds.getTagArg("b", 1)).toDouble(&heightOk);
 
-    if (shapeWidth == 0) shapeWidth = shapeHeight;
-    if (shapeHeight == 0) shapeHeight = shapeWidth;
-    if (shapeWidth == 0 && shapeHeight == 0) shapeWidth = 40, shapeHeight = 24;
+    if (!widthOk) shapeWidth = shapeHeight;
+    if (!heightOk) shapeHeight = shapeWidth;
+    if (!widthOk && !heightOk) {
+        shapeWidth = 40;
+        shapeHeight = 24;
+    }
 
     si->setWidth(shapeWidth);
     si->setHeight(shapeHeight);
@@ -143,7 +147,7 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         if (!rangeOutlineColor.isValid() && rangeOutlineWidth > 0) {
             rangeOutlineColor = QColor("black");
         }
-        si->addRangeItem(r, rangeFillColor, rangeOutlineColor, rangeOutlineWidth);
+        si->addRangeItem(r, rangeOutlineWidth, rangeFillColor, rangeOutlineColor);
 
         ++rangeIndex;
     }
@@ -362,30 +366,31 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     //    }
 }
 
-QColor SubmoduleItemUtil::parseColor(const QString &name) {
-    if (name.isEmpty()) {
-        return QColor();
-    }
+QColor SubmoduleItemUtil::parseColor(const QString &name, const QColor &fallbackColor) {
+    if (name.isEmpty())
+        return fallbackColor;
+
+    if (name == "-")
+        return QColor("transparent");
 
     QColor::setAllowX11ColorNames(true); // XXX remove later?
 
-    QColor color(name);
+    QColor color;
     if (name[0] == '@') {  // HSB ( == HSV)
         bool ok;
         int hue = name.mid(1, 2).toInt(&ok, 16) / 255.0f * 360;
         int sat = name.mid(3, 2).toInt(&ok, 16);
         int val = name.mid(5, 2).toInt(&ok, 16);
         color.setHsv(hue, sat, val);
-    } else if (name[0] == '#'){ // #RRGGBB or name
-        color.setNamedColor(name);
+    } else { // #RRGGBB or name
+        color = QColor(name);
         // XXX Tkenv recognised X color names, listed in ccanvas.cc,
         // but Qt recognizes SVG color names, see the documentation.
         // We could enable the allowX11ColorNames property, but that
         // only works on X11...
-
     }
 
-    return color;
+    return color.isValid() ? color : fallbackColor;
 }
 
 void SubmoduleItem::updateNameItem() {
@@ -400,10 +405,11 @@ void SubmoduleItem::updateNameItem() {
 }
 
 void SubmoduleItem::realignAnchoredItems() {
+    auto mainBounds = shapeImageBoundingRect();
+
     // the info text label
     if (textItem) {
         auto textBounds = textItem->boundingRect();
-        auto mainBounds = shapeImageBoundingRect();
         QPointF pos;
 
         switch (textPos) {
@@ -425,17 +431,14 @@ void SubmoduleItem::realignAnchoredItems() {
     }
 
     // the queue length
-    if (queueItem) {
-        auto mainRect = shapeImageBoundingRect();
-        queueItem->setPos(mainRect.width() / 2, -mainRect.height() / 2);
-    }
+    if (queueItem)
+        queueItem->setPos(mainBounds.width() / 2, -mainBounds.height() / 2);
 
     // the icon in the corner
-    if (decoratorImageItem) {
-        auto rect = shapeImageBoundingRect();
-        // this 2 px offset was there in tkenv too, so might as well apply it here also
-        decoratorImageItem->setPos(rect.width() / 2 - 2, -rect.height() / 2 + 2);
-    }
+    if (decoratorImageItem)
+        decoratorImageItem->setPos(mainBounds.width() / 2, -mainBounds.height() / 2);
+
+    updateNameItem(); // the name is anchored too in some sense
 }
 
 void SubmoduleItem::adjustShapeItem() {
@@ -450,8 +453,8 @@ void SubmoduleItem::adjustShapeItem() {
         pen.setJoinStyle(Qt::MiterJoin);
         shapeItem->setPen(pen);
 
-        auto w = shapeWidth - shapeBorderWidth; // so the border grows inwards
-        auto h = shapeHeight - shapeBorderWidth;
+        auto w = shapeWidth * zoomFactor - shapeBorderWidth; // so the border grows inwards
+        auto h = shapeHeight * zoomFactor - shapeBorderWidth;
         if (auto ellipseItem = dynamic_cast<QGraphicsEllipseItem *>(shapeItem))
             ellipseItem->setRect(-w/2.0, -h / 2.0, w, h);
         if (auto rectItem = dynamic_cast<QGraphicsRectItem *>(shapeItem))
@@ -461,23 +464,47 @@ void SubmoduleItem::adjustShapeItem() {
     }
 }
 
+void SubmoduleItem::adjustRangeItem(int i) {
+    RangeData &data = ranges[i];
+    QGraphicsEllipseItem *range = rangeItems[i];
+    // the actual item radius, correcting for zoom and to make the outline grow inwards only
+    double corrR = data.radius * zoomFactor - data.outlineWidth / 2.0;
+    range->setRect(-corrR, -corrR, 2 * corrR, 2 * corrR);
+    range->setZValue(-data.radius); // bigger ranges go under smaller ones
+    QColor fillColorTransp = data.fillColor;
+    fillColorTransp.setAlphaF(data.fillColor.alphaF() * 0.5);
+    range->setBrush(data.fillColor.isValid() ? QBrush(fillColorTransp) : Qt::NoBrush);
+    range->setPen(data.outlineColor.isValid() ? QPen(data.outlineColor, data.outlineWidth) : Qt::NoPen);
+    range->setPos(pos());
+}
+
 QRectF SubmoduleItem::shapeImageBoundingRect() const {
     QRectF box;
-    if (imageItem) box = box.united(imageItem->boundingRect());
-    if (shapeItem) box = box.united(shapeItem->boundingRect());
+    if (imageItem) {
+        QRectF imageRect = imageItem->boundingRect();
+        // Image scaling is done with a transformation, and boundingRect does
+        // not factor that in, so we have to account the factor in here.
+        imageRect.setTopLeft(imageRect.topLeft() * imageSizeFactor);
+        imageRect.setBottomRight(imageRect.bottomRight() * imageSizeFactor);
+        box = box.united(imageRect);
+    }
+    if (shapeItem) {
+        QRectF shapeRect = shapeItem->boundingRect();
+        // Shape size is modulated by the zoom via adjusting its defining rectangle,
+        // (otherwise the outline would change width too), so its boundingRect is good as it is.
+        shapeRect.setTopLeft(shapeRect.topLeft());
+        shapeRect.setBottomRight(shapeRect.bottomRight());
+        box = box.united(shapeRect);
+    }
     return box;
 }
 
-SubmoduleItem::SubmoduleItem(cModule *mod) : module(mod) {
+SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
+    : module(mod), rangeLayer(rangeLayer)
+{
     nameItem = new OutlinedTextItem(this, scene());
     queueItem = new OutlinedTextItem(this, scene());
     textItem = new OutlinedTextItem(this, scene());
-
-    QColor col("gray82");
-    col.setAlphaF(0.75);
-    auto p = QPen(col, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    textItem->setPen(p);
-    nameItem->setPen(p);
 
     connect(this, SIGNAL(xChanged()), this, SLOT(onPositionChanged()));
     connect(this, SIGNAL(yChanged()), this, SLOT(onPositionChanged()));
@@ -488,6 +515,28 @@ SubmoduleItem::~SubmoduleItem()
 {
     for (auto i : rangeItems) {
         delete i;
+    }
+}
+
+void SubmoduleItem::setZoomFactor(double zoom) {
+    if (zoomFactor != zoom) {
+        zoomFactor = zoom;
+        adjustShapeItem();
+
+        for (int i = 0; i < ranges.length(); ++i) {
+            adjustRangeItem(i);
+        }
+    }
+}
+
+void SubmoduleItem::setImageSizeFactor(double imageSize) {
+    if (imageSizeFactor != imageSize) {
+        imageSizeFactor = imageSize;
+        if (imageItem)
+            imageItem->setScale(imageSizeFactor);
+        if (decoratorImageItem)
+            decoratorImageItem->setScale(imageSizeFactor);
+        realignAnchoredItems();
     }
 }
 
@@ -508,14 +557,14 @@ void SubmoduleItem::setShape(Shape shape) {
     }
 }
 
-void SubmoduleItem::setWidth(int width) {
+void SubmoduleItem::setWidth(double width) {
     if (this->shapeWidth != width) {
         this->shapeWidth = width;
         adjustShapeItem();
     }
 }
 
-void SubmoduleItem::setHeight(int height) {
+void SubmoduleItem::setHeight(double height) {
     if (this->shapeHeight != height) {
         this->shapeHeight = height;
         adjustShapeItem();
@@ -536,7 +585,7 @@ void SubmoduleItem::setBorderColor(const QColor &color) {
     }
 }
 
-void SubmoduleItem::setBorderWidth(int width) {
+void SubmoduleItem::setBorderWidth(double width) {
     if (shapeBorderWidth != width) {
         shapeBorderWidth = width;
         adjustShapeItem();
@@ -555,6 +604,9 @@ void SubmoduleItem::setImage(QImage *image) {
             colorizeEffect = new QGraphicsColorizeEffect(this);
             colorizeEffect->setStrength(0);
             imageItem->setGraphicsEffect(colorizeEffect);
+            imageItem->setScale(imageSizeFactor);
+            imageItem->setTransformationMode(Qt::SmoothTransformation);
+            // XXX the colorize effect makes it pixely again, if in effect...
         }
         updateNameItem();
         realignAnchoredItems();
@@ -581,10 +633,13 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
         decoratorColorizeEffect = nullptr;
         if (decoratorImage) {
             decoratorImageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*decoratorImage), this, scene());
-            decoratorImageItem->setOffset(-decoratorImage->width() / 2.0f, -decoratorImage->height() / 2.0f);
+            // It is easier to position using its (almost) upper right corner.
+            // The 2 pixel offset moves it a bit to the right and up.
+            decoratorImageItem->setOffset(-decoratorImage->width() + 2, -2);
             decoratorColorizeEffect = new QGraphicsColorizeEffect(this);
             decoratorColorizeEffect->setStrength(0);
             decoratorImageItem->setGraphicsEffect(decoratorColorizeEffect);
+            decoratorImageItem->setTransformationMode(Qt::SmoothTransformation);
         }
         realignAnchoredItems();
     }
@@ -644,22 +699,20 @@ void SubmoduleItem::setRangeLayer(GraphicsLayer *layer) {
     }
 }
 
-QList<QGraphicsEllipseItem *> &SubmoduleItem::getRangeItems() {
-    return rangeItems;
+int SubmoduleItem::addRangeItem(double radius, double outlineWidth, const QColor &fillColor, const QColor &outlineColor) {
+    return addRangeItem(RangeData{radius, outlineWidth, fillColor, outlineColor});
 }
 
-void SubmoduleItem::addRangeItem(double r, QColor fillColor, QColor outlineColor, int outlineWidth) {
+int SubmoduleItem::addRangeItem(const RangeData &data) {
     auto range = new QGraphicsEllipseItem();
-    // so the outline grows inwards
-    range->setRect(-r + outlineWidth / 2.0, -r + outlineWidth / 2.0, r*2 - outlineWidth, r*2 - outlineWidth);
-    fillColor.setAlphaF(0.5);
-    range->setZValue(-r); // bigger ranges go under smaller ones
-    range->setBrush(fillColor.isValid() ? QBrush(fillColor) : Qt::NoBrush);
-    range->setPen(outlineColor.isValid() ? QPen(outlineColor, outlineWidth) : Qt::NoPen);
-    range->setPos(pos());
+
+    ranges.append(data);
     rangeItems.append(range);
-    if (rangeLayer)
-        rangeLayer->addItem(range);
+    rangeLayer->addItem(range);
+
+    adjustRangeItem(rangeItems.length() - 1);
+
+    return rangeItems.length() - 1;
 }
 
 QRectF SubmoduleItem::boundingRect() const {

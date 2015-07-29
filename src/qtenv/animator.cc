@@ -79,11 +79,10 @@ void Animator::redrawMessages()
                 dot->setBrush(QColor("red"));
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
-                if (arrivalGate->getPreviousGate()) {
-                    dot->setPos(moduleInsp->getMessageEndPos(moduleInsp->getSubmodCoords(msg->getSenderModule()), moduleInsp->getSubmodCoords(msg->getArrivalModule())));
-                } else {
-                    dot->setPos(moduleInsp->getSubmodCoords(msg->getArrivalModule()));
-                }
+                dot->setPos(arrivalGate->getPreviousGate()
+                             ? moduleInsp->getMessageEndPos(msg->getSenderModule(), msg->getArrivalModule())
+                             : moduleInsp->getSubmodCoords(msg->getArrivalModule()));
+
                 messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = dot;
             }
         }
@@ -365,19 +364,22 @@ void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage
         }
     }
 
-    auto src = insp->getSubmodCoords(mod);
-    auto dest = insp->getSubmodCoords(destGate->getOwnerModule());
+    auto src = mod;
+    auto dest = destGate->getOwnerModule();
+
+    QPointF srcPos = insp->getSubmodCoords(src);
+    QPointF destPos = insp->getSubmodCoords(dest);
 
     if (mode == ANIM_BEGIN) {
-        dest = insp->getMessageEndPos(src, dest);
+        destPos = insp->getMessageEndPos(src, dest);
     }
     if (mode == ANIM_END) {
-        src = insp->getMessageEndPos(src, dest);
+        srcPos = insp->getMessageEndPos(src, dest);
     }
 
     addAnimation(new Animation(insp->getAnimationLayer(),
                                Animation::ANIM_ON_CONN, Animation::DIR_HORIZ,
-                               mode, src, dest, msg));
+                               mode, srcPos, destPos, msg));
 }
 
 void Animator::animateSenddirectAscent(ModuleInspector *insp, cModule *srcSubmod, cMessage *msg)

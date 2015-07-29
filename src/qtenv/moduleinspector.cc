@@ -249,6 +249,16 @@ void ModuleInspector::doSetObject(cObject *obj)
 
         try {
             canvasViewer->relayoutAndRedrawAll();
+
+            // XXX TODO this is the recallPreferences part from above, but there might be a prettier solution
+            QString objName = object->getFullName();
+            QVariant zoomFactorVariant = getQtenv()->getPref(objName + ":" + INSP_DEFAULT + ":zoomfactor");
+            double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
+            canvasViewer->setZoomFactor(zoomFactor);
+
+            QVariant imageSizeVariant = getQtenv()->getPref(objName + ":" + INSP_DEFAULT + ":imagesizefactor");
+            double imageSizeFactor = imageSizeVariant.isValid() ? imageSizeVariant.value<double>() : 1;
+            canvasViewer->setImageSizeFactor(imageSizeFactor);
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -372,12 +382,21 @@ void ModuleInspector::zoomOut(int x, int y)
 
 }
 
+void ModuleInspector::increaseIconSize() {
+    zoomIconsBy(1.25);
+}
+
+void ModuleInspector::decreaseIconSize() {
+    zoomIconsBy(0.8);
+}
+
 void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 {
     QString objName = object->getFullName();
     QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
     QVariant variant = getQtenv()->getPref(prefName);
     double zoomFactor = variant.isValid() ? variant.value<double>() : 1;
+
     if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
     {
         //remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
@@ -390,19 +409,17 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         double newZoomFactor = zoomFactor * mult;
 
         //snap to true (note: this is not desirable when zoom is set programmatically to fit network into window)
-        if(snaptoone)
-        {
+        /*if(snaptoone)
+        { // this code constantly kept the factor at 1...
             double m = mult < 1 ? 1.0/mult : mult;
             double a = 1 - 0.9*(1 - 1.0/m);
             double b = 1 + 0.9*(m - 1);
             if(zoomFactor > a && zoomFactor < b)
                 newZoomFactor = 1;
-        }
+        }*/
 
         getQtenv()->setPref(prefName, newZoomFactor);
-        redraw();
-        //TODO
-        //ModuleInspector:updateZoomLabel $insp
+        view->setZoomFactor(newZoomFactor);
     }
 }
 
@@ -461,7 +478,7 @@ QPointF ModuleInspector::getSubmodCoords(cModule *mod)
     return canvasViewer->getSubmodCoords(mod);
 }
 
-QPointF ModuleInspector::getMessageEndPos(const QPointF &src, const QPointF &dest)
+QPointF ModuleInspector::getMessageEndPos(cModule *src, cModule *dest)
 {
     return canvasViewer->getMessageEndPos(src, dest);
 }
@@ -611,10 +628,8 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
 
         menu->addSeparator();
-        QAction *action = menu->addAction("Increase Icon Size", this, SLOT(zoomIconsBy()), QKeySequence(Qt::CTRL + Qt::Key_I));
-        action->setData(QVariant::fromValue(1.25));
-        action = menu->addAction("Decrease Icon Size", this, SLOT(zoomIconsBy()), QKeySequence(Qt::CTRL + Qt::Key_O));
-        action->setData(QVariant::fromValue(0.8));
+        addAction(menu->addAction("Increase Icon Size", this, SLOT(increaseIconSize()), QKeySequence(Qt::CTRL + Qt::Key_I)));
+        addAction(menu->addAction("Decrease Icon Size", this, SLOT(decreaseIconSize()), QKeySequence(Qt::CTRL + Qt::Key_O)));
 
         menu->addSeparator();
         menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_M));
@@ -684,24 +699,16 @@ void ModuleInspector::toggleArrowheads()
     redraw();
 }
 
-void ModuleInspector::zoomIconsBy()
-{
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid())
+void ModuleInspector::zoomIconsBy(double mult) {
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    double imageSizeFactor = variant.isValid() ? variant.value<double>() : 1;
+    if((mult < 1 && imageSizeFactor>0.1) || (mult > 1 && imageSizeFactor < 5))
     {
-        double mult = variant.value<double>();
-        QString objName = object->getFullName();
-        QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
-        variant = getQtenv()->getPref(prefName);
-        double imageSizeFactor = variant.isValid() ? variant.value<double>() : 1;
-        if((mult < 1 && imageSizeFactor>0.1) || (mult > 1 && imageSizeFactor < 5))
-        {
-            double newImageSizeFactor = imageSizeFactor * mult;
-            if(imageSizeFactor - 1 < 0.1)
-                newImageSizeFactor = 1;
-            getQtenv()->setPref(prefName, newImageSizeFactor);
-            redraw();
-        }
+        double newImageSizeFactor = imageSizeFactor * mult;
+        getQtenv()->setPref(prefName, newImageSizeFactor);
+        view->setImageSizeFactor(newImageSizeFactor);
     }
 }
 

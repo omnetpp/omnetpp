@@ -34,7 +34,7 @@ class SubmoduleItem;
 class SubmoduleItemUtil {
 public:
     static void setupFromDisplayString(SubmoduleItem *si, cModule *mod);
-    static QColor parseColor(const QString &name);
+    static QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
 };
 
 
@@ -51,13 +51,15 @@ protected:
 
     // Realigns the queue length label, the info text, and the
     // decoration icon. Call this every time after the size
-    // of the image or shape changes.
+    // of the image or shape changes. Also updates the name.
     void realignAnchoredItems();
     void adjustShapeItem();
+    void adjustImage();
+    void adjustRangeItem(int i);
     QRectF shapeImageBoundingRect() const; // whichever is bigger in each direction
 
 protected slots:
-    void onPositionChanged(); // keeping the range items underneath outselves
+    void onPositionChanged(); // keeping the range items underneath ourselves
 
 public:
     enum Shape {
@@ -65,23 +67,33 @@ public:
         SHAPE_OVAL,
         SHAPE_RECT
     };
+
     enum TextPos {
         TEXTPOS_LEFT,
         TEXTPOS_RIGHT,
         TEXTPOS_TOP
     };
 
+    struct RangeData {
+        double radius;
+        double outlineWidth;
+        QColor fillColor; // this will get appied with halved alpha, no need to correct it here
+        QColor outlineColor;
+    };
+
 protected:
     // appearance
     int alpha = 255;
+    double zoomFactor = 1;
+    double imageSizeFactor = 1;
     QString name;
     int vectorIndex = -1; // if < 0, not displayed
     Shape shape = SHAPE_NONE;
-    int shapeWidth = 0; // zero if unspec
-    int shapeHeight = 0; // zero if unspec
+    double shapeWidth = 0; // zero if unspec
+    double shapeHeight = 0; // zero if unspec
     QColor shapeFillColor;
     QColor shapeBorderColor;
-    int shapeBorderWidth = 2;
+    double shapeBorderWidth = 2;
     QImage *image = nullptr; // not owned
     QImage *decoratorImage = nullptr; // not owned
     bool pinVisible = false;
@@ -90,6 +102,8 @@ protected:
     TextPos textPos = TEXTPOS_TOP;
     QColor textColor;
     QString queueText;
+
+    QList<RangeData> ranges; // these two lists must be in sync at all times
     QList<QGraphicsEllipseItem *> rangeItems;
 
     QAbstractGraphicsShapeItem *shapeItem = nullptr;
@@ -107,15 +121,18 @@ protected:
     GraphicsLayer *rangeLayer = nullptr;
 
 public:
-    SubmoduleItem(cModule *mod);
+    SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer);
     virtual ~SubmoduleItem();
 
+    void setZoomFactor(double zoom);
+    void setImageSizeFactor(double imageSize);
+
     void setShape(Shape shape);
-    void setWidth(int width);
-    void setHeight(int height);
+    void setWidth(double width);
+    void setHeight(double height);
     void setFillColor(const QColor &color);
     void setBorderColor(const QColor &color);
-    void setBorderWidth(int width);
+    void setBorderWidth(double width);
 
     void setImage(QImage *image);
     void setImageColor(const QColor &color);
@@ -131,8 +148,10 @@ public:
     void setInfoText(const QString &text, TextPos pos, const QColor &color);
 
     void setRangeLayer(GraphicsLayer *layer);
-    QList<QGraphicsEllipseItem *> &getRangeItems();
-    void addRangeItem(double r, QColor fillColor, QColor outlineColor, int outlineWidth);
+
+    // these return the index of the newly created range, for future reference
+    int addRangeItem(double radius, double outlineWidth, const QColor &fillColor, const QColor &outlineColor);
+    int addRangeItem(const RangeData &data);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

@@ -78,7 +78,8 @@ SOURCES += mainwindow.cc \
     filteredobjectlistdialog.cc \
     inspectorlistbox.cc \
     inspectorlistboxview.cc \
-    comboselectiondialog.cc
+    comboselectiondialog.cc \
+    compoundmoduleitem.cc
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h qtenvdefs.h \
     runselectiondialog.h \
@@ -105,7 +106,8 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     filteredobjectlistdialog.h \
     inspectorlistbox.h \
     inspectorlistboxview.h \
-    comboselectiondialog.h
+    comboselectiondialog.h \
+    compoundmoduleitem.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 

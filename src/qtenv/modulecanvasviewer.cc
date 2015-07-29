@@ -28,6 +28,7 @@
 #include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
 #include "figurerenderers.h"
+#include "omnetpp/cmodule.h"
 #include "inspector.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -35,6 +36,7 @@
 #include <QMouseEvent>
 #include <canvasrenderer.h>
 #include "animator.h"
+#include "compoundmoduleitem.h"
 #include "submoduleitem.h"
 #include <QDebug>
 
@@ -69,6 +71,9 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr);
+
+    // that beautiful green shade behind everything
+    setBackgroundBrush(QColor("#a0e0a0"));
 }
 
 ModuleCanvasViewer::~ModuleCanvasViewer()
@@ -461,285 +466,42 @@ void ModuleCanvasViewer::redrawModules()
 
 void ModuleCanvasViewer::drawSubmodule(cModule *submod, double x, double y)
 {
-    auto item = new SubmoduleItem(submod);
-    item->setRangeLayer(rangeLayer);
+    auto item = new SubmoduleItem(submod, rangeLayer);
     SubmoduleItemUtil::setupFromDisplayString(item, submod);
     item->setData(1, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
-    item->setPos(submodPosMap[submod]);
+    item->setZoomFactor(zoomFactor);
+    item->setImageSizeFactor(imageSizeFactor);
+    item->setPos(submodPosMap[submod] * zoomFactor);
     submoduleGraphicsItems[submod->getId()] = item;
     item->setParentItem(submoduleLayer);
 }
 
 void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
 {
-    cDisplayString ds = parentModule->hasDisplayString() && parentModule->parametersFinalized()
-            ? parentModule->getDisplayString()
-            : cDisplayString();
+    backgroundLayer->clear();
 
-    // replacing $param args with the actual parameter values
-    std::string buffer;
-    ds.updateWith(substituteDisplayStringParamRefs(ds, buffer, parentModule, true));
+    auto item = new CompoundModuleItem();
+    backgroundLayer->addItem(item);
 
-    QRectF border;
+    QRectF submodulesRect;
 
-    if (ds.containsTag("bgb")) {
-        border.setLeft(QString(ds.getTagArg("bgb", 0)).toInt());
-        border.setTop(QString(ds.getTagArg("bgb", 1)).toInt());
-        // TODO: zoom
-    }
-
-    if (submoduleLayer->childItems().isEmpty()) {
-        border.setWidth(300);
-        border.setHeight(200);
+    if (submoduleGraphicsItems.empty()) {
+        submodulesRect.setWidth(300 * zoomFactor);
+        submodulesRect.setHeight(200 * zoomFactor);
     } else {
         // Neither layer->boundingRect or layer->childrenBoundingRect
         // does what we want here. the former doesn't consider children at all,
         // the latter encloses everything, right down to the leaves.
         // What we want is the bounding box of only the child items themselves, no recursion.
-        for (auto c : submoduleLayer->childItems()) {
-            border = border.united(c->mapRectToParent(c->boundingRect()));
-        }
-        border = border.adjusted(-10, -10, 10, 10); // adding a bit of a margin
-    }
-
-    auto background = ds.getTagArg("bgb", 2);
-    QColor::setAllowX11ColorNames(true); // XXX only works on X11, remove later!
-    QColor backgroundColor("gray82");
-    if (background[0]) {
-        backgroundColor = SubmoduleItemUtil::parseColor(background);
-    }
-
-    auto outline = ds.getTagArg("bgb", 3);
-    QColor outlineColor("black");
-    if (outline[0]) {
-        outlineColor = SubmoduleItemUtil::parseColor(outline);
-    }
-
-    int outlineWidth;
-    bool ok;
-    outlineWidth = QString(ds.getTagArg("bgb", 4)).toInt(&ok);
-    if (!ok)
-        outlineWidth = 2;
-
-
-//$c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip modname $ptr"
-
-
-    setBackgroundBrush(QColor("#a0e0a0"));
-    delete rectangleItem;
-    rectangleItem = new QGraphicsRectItem(border.adjusted(-outlineWidth/2.0f, -outlineWidth/2.0f, outlineWidth/2.0f, outlineWidth/2.0f));
-    rectangleItem->setPen(QPen(outlineColor, outlineWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
-    rectangleItem->setBrush(backgroundColor);
-    backgroundLayer->addItem(rectangleItem);
-    rectangleItem->setZValue(-10);
-    setSceneRect(border.adjusted(-10, -10, 10, 10));
-
-    /*
-
-if {$sx=="" || $sy==""} {
-    set bb [$c bbox submod]
-    if {$bb==""} {
-        if {$zoom==""} {
-            set bb [list $bx $by 300 200]
-        } else {
-            set bb [list $bx $by [expr $zoom*300] [expr $zoom*200]]
+        for (auto gi : submoduleGraphicsItems) {
+            submodulesRect = submodulesRect.united(gi.second->mapRectToParent(gi.second->boundingRect()));
         }
     }
-    if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
-    if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
-}
 
+    CompoundModuleItemUtil::setupFromDisplayString(item, parentModule, zoomFactor, submodulesRect);
 
-        */
-
-
-
-    /*
-    proc ModuleInspector:drawEnclosingModule {c ptr name dispstr} {
-       global icons bitmaps inspectordata tkpFont canvasTextOptions
-       # puts "DEBUG: ModuleInspector:drawEnclosingModule $c $ptr $name $dispstr"
-
-       set zoom $inspectordata($c:zoomfactor)
-
-       if [catch {
-
-           # lower all range indicators below the icons
-           $c lower "range"
-
-           # parse display string. note: we need "1" as last parameter (search
-           # for $params in parent module too), because all tags get resolved
-           # not only bg* ones.
-           opp_displaystring $dispstr parse tags $ptr 1
-
-           # determine top-left origin (bgp tag; currently not supported)
-           #if {![info exists tags(bgp)]} {set tags(bgp) {}}
-           #set bx [lindex $tags(bgp) 0]
-           #set by [lindex $tags(bgp) 1]
-           #if {$bx==""} {set bx 0}
-           #if {$by==""} {set by 0}
-           #if {$zoom != ""} {
-           #    set bx [expr $zoom*$bx]
-           #    set by [expr $zoom*$by]
-           #}
-           set bx 0
-           set by 0
-
-           # determine size
-           if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}
-           set sx [lindex $tags(bgb) 0]
-           set sy [lindex $tags(bgb) 1]
-           if {$zoom != ""} {
-               if {$sx!=""} {set sx [expr $zoom*$sx]}
-               if {$sy!=""} {set sy [expr $zoom*$sy]}
-           }
-
-           if {$sx=="" || $sy==""} {
-               set bb [$c bbox submod]
-               if {$bb==""} {
-                   if {$zoom==""} {
-                       set bb [list $bx $by 300 200]
-                   } else {
-                       set bb [list $bx $by [expr $zoom*300] [expr $zoom*200]]
-                   }
-               }
-               if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
-               if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
-           }
-
-           # determine colors and line width
-           set fill [lindex $tags(bgb) 2]
-           if {$fill == ""} {set fill grey82}
-           if {$fill == "-"} {set fill ""}
-           if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
-           set outline [lindex $tags(bgb) 3]
-           if {$outline == ""} {set outline black}
-           if {$outline == "-"} {set outline ""}
-           if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
-           set width [lindex $tags(bgb) 4]
-           if {$width == ""} {set width 2}
-
-           # draw (note: width should grow *outside* the $sx-by-$sy inner rectangle)
-           $c create prect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
-               -fill $fill -strokewidth $width -stroke $outline -strokelinejoin miter -tags "dx mod $ptr"
-           $c create ptext [expr $bx+3] [expr $by+3] -text $name -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx tooltip modname $ptr"
-
-           # background image
-           if {![info exists tags(bgi)]} {set tags(bgi) {}}
-           set imgname [lindex $tags(bgi) 0]
-           set imgmode [lindex $tags(bgi) 1]
-           if {$imgname!=""} {
-              if {[catch {set img $bitmaps($imgname)}]} {
-                  set img $icons(unknown)
-              }
-              set iwidth [image width $img]
-              set iheight [image height $img]
-              set isx [expr $iwidth*$zoom]
-              set isy [expr $iheight*$zoom]
-              if {[string index $imgmode 0]== "c"} {
-                  # image centered
-                  set imgx [expr $bx+$sx/2]
-                  set imgy [expr $by+$sy/2]
-                  set croppedsx [mathMin $sx $isx]
-                  set croppedsy [mathMin $sy $isy]
-                  if {$sx >= $isx} {
-                      set isrcx1 0
-                      set isrcx2 $iwidth
-                  } else {
-                      set isrcx1 [expr ($isx-$sx)/2/$zoom]
-                      set isrcx2 [expr $iwidth - $isrcx1]
-                  }
-                  if {$sy >= $isy} {
-                      set isrcy1 0
-                      set isrcy2 $iheight
-                  } else {
-                      set isrcy1 [expr ($isy-$sy)/2/$zoom]
-                      set isrcy2 [expr $iheight - $isrcy1]
-                  }
-                  $c create pimage $imgx $imgy -image $img -anchor c -width $croppedsx -height $croppedsy -srcregion [list $isrcx1 $isrcy1 $isrcx2 $isrcy2] -tags "dx mod $ptr"
-
-              } elseif {[string index $imgmode 0]== "s"} {
-                  # image stretched to fill the background area
-                  $c create pimage $bx $by -image $img -anchor nw -width $sx -height $sy -tags "dx mod $ptr"
-              } elseif {[string index $imgmode 0]== "t"} {
-                  # image "tile" mode
-                  set tx [expr $sx / $zoom]
-                  set ty [expr $sy / $zoom]
-                  $c create pimage $bx $by -image $img -anchor nw -width $sx -height $sy -srcregion [list 0 0 $tx $ty] -tags "dx mod $ptr"
-              } else {
-                  # default mode: image top-left corner gets aligned to background top-left corner
-                  # we need cropping
-                  set croppedsx [mathMin $sx $isx]
-                  set croppedsy [mathMin $sy $isy]
-                  set tx [expr $croppedsx / $zoom]
-                  set ty [expr $croppedsy / $zoom]
-                  $c create pimage $bx $by -image $img -anchor nw -width $croppedsx -height $croppedsy -srcregion [list 0 0 $tx $ty] -tags "dx mod $ptr"
-              }
-           }
-
-           # grid display
-           if {![info exists tags(bgg)]} {set tags(bgg) {}}
-           set gdist [lindex $tags(bgg) 0]
-           set gminor [lindex $tags(bgg) 1]
-           set gcolor [lindex $tags(bgg) 2]
-           if {$gcolor == ""} {set gcolor grey}
-           if {$gcolor == "-"} {set gcolor ""}
-           if {[string index $gcolor 0]== "@"} {set gcolor [opp_hsb_to_rgb $gcolor]}
-           if {$gdist!=""} {
-               if {$zoom != ""} {
-                   set gdist [expr $zoom*$gdist]
-               }
-               if {$gminor=="" || $gminor < 1} {set gminor 1}
-               for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
-                   set coords [list $x $by $x [expr $by+$sy]]
-                   $c create pline $coords -strokewidth 1 -stroke $gcolor -tags "dx mod $ptr"
-                   # create minor ticks
-                   set i 1
-                   for {set minorx [expr int($x+$gdist/$gminor)]} {$i < $gminor && $minorx < $bx+$sx} {
-                                                 set i [expr $i+1]} {
-                       set minorx [expr int($x+$i*$gdist/$gminor)]
-                       if {$minorx < $bx+$sx} {
-                           set coords [list $minorx $by $minorx [expr $by+$sy]]
-                           $c create pline $coords -strokewidth 1 -strokedasharray {2 3} -stroke $gcolor -tags "dx mod $ptr"
-                       }
-                   }
-               }
-               for {set y $by} {$y < $by+$sy} {set y [expr $y+$gdist]} {
-                   set coords [list $bx $y [expr $bx+$sx] $y]
-                   $c create pline $coords -strokewidth 1 -stroke $gcolor -tags "dx mod $ptr"
-                   # create minor ticks
-                   set i 1
-                   for {set minory [expr int($y+$gdist/$gminor)]} {$i < $gminor && $minory < $by+$sy} {
-                                                 set i [expr $i+1]} {
-                       set minory [expr int($y+$i*$gdist/$gminor)]
-                       if {$minory < $by+$sy} {
-                           set coords [list $bx $minory [expr $bx+$sx] $minory]
-                           $c create pline $coords -strokewidth 1 -strokedasharray {2 3} -stroke $gcolor -tags "dx mod $ptr"
-                       }
-                   }
-               }
-           }
-
-           # text: bgt=<x>,<y>,<text>,<color>; multiple bgt tags supported (bgt1,bgt2,etc)
-           foreach {bgttag} [array names tags -regexp {^bgt\d*$} ] {
-               set x [lindex $tags($bgttag) 0]
-               set y [lindex $tags($bgttag) 1]
-               if {$x==""} {set x 0}
-               if {$y==""} {set y 0}
-               set txt [lindex $tags($bgttag) 2]
-               set color [lindex $tags($bgttag) 3]
-               if {$color == ""} {set color black}
-               if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-               $c create ptext $x $y -text $txt -fill $color -textanchor nw {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx"
-           }
-
-           $c lower mod
-
-       } errmsg] {
-           tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
-                         -message "Error in display string of $name: $errmsg"
-       }
-    }
-    */
+    // leaving a bit of a margin on top of the outline
+    setSceneRect(item->boundingRect().adjusted(-10, -10, 10, 10));
 }
 
 void ModuleCanvasViewer::drawConnection(cGate *gate)
@@ -912,19 +674,27 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 {
-    return QPointF(submodPosMap[mod]);
+    return QPointF(submodPosMap[mod]) * zoomFactor;
 }
 
-QPointF ModuleCanvasViewer::getMessageEndPos(const QPointF &src, const QPointF &dest)
+QPointF ModuleCanvasViewer::getMessageEndPos(cModule *src, cModule *dest)
 {
-    auto delta = dest - src;
-    auto len = sqrt(delta.x() * delta.x() + delta.y() * delta.y());
-    if (len == 0) len = 1;
-    delta /= len;
-    len -= 20;
-    if (len < 1) len = 1;
-    delta *= len;
-    return src + delta;
+    auto srcPos = getSubmodCoords(src);
+    auto destPos = getSubmodCoords(dest);
+
+    auto destRect = submoduleGraphicsItems[src->getId()]->boundingRect();
+
+    // from dest to src
+    auto direction = srcPos - destPos;
+
+    // normalizing
+    direction.setX(direction.x() / (destRect.width() / 2));
+    direction.setY(direction.y() / (destRect.height() / 2));
+
+    // after this, one coordinate will be +/- 1, and the other one will be scaled to keep the direction
+    direction /= std::max(std::abs(direction.x()), std::abs(direction.y()));
+
+    return destPos + QPointF(direction.x() * destRect.width() / 2, direction.y() * destRect.height() / 2);
 }
 
 cObject *ModuleCanvasViewer::getObjectAt(qreal x, qreal y)
@@ -1077,6 +847,20 @@ void ModuleCanvasViewer::refresh()
     }
 }
 
+void ModuleCanvasViewer::setZoomFactor(double zoomFactor) {
+    if (this->zoomFactor != zoomFactor) {
+        this->zoomFactor = zoomFactor;
+        redraw();
+    }
+}
+
+void ModuleCanvasViewer::setImageSizeFactor(double imageSizeFactor) {
+    if (this->imageSizeFactor != imageSizeFactor) {
+        this->imageSizeFactor = imageSizeFactor;
+        redraw();
+    }
+}
+
 void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
 {
     if (!subcomponent->isModule())
@@ -1093,7 +877,34 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
     char coords[64];
     QPointF& pos = submodPosMap[submod];
     sprintf(coords, " %g %g ", pos.x(), pos.y());
-    //CHK(Tcl_VarEval(interp, "ModuleInspector:bubble ", canvas, coords, " ", TclQuotedString(text).get(), TCL_NULL));
+
+}
+
+void ModuleCanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
+    painter->save();
+
+    auto font = painter->font();
+    font.setBold(true);
+    painter->setFont(font);
+
+    QString text = "Zoom: " + QString::number(zoomFactor, 'f', 2) + "x";
+    QFontMetrics fontMetrics(painter->font());
+
+    QSize textSize = fontMetrics.boundingRect(text).size();
+    QSize viewportSize = viewport()->size();
+
+    // moving the whole thing 2 pixels to the left and up as spacing
+    // and also adding 2 pixels to the left and right inside the grey area as margin
+    // then the painter is in scene coords, so we have to map, and convert back to Rect
+    QRectF textRect = mapToScene(viewportSize.width() - textSize.width() - 6,
+                               viewportSize.height() - textSize.height() - 2,
+                               textSize.width() + 4, textSize.height()).boundingRect();
+
+    painter->fillRect(textRect, QColor("lightgrey"));
+    // moving 2 pixels to the right and accounting for font descent, since the y coord is the baseline
+    painter->drawText(textRect.bottomLeft() + QPoint(2, - fontMetrics.descent()), text);
+
+    painter->restore();
 }
 
 } // namespace qtenv
