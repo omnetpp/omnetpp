@@ -77,6 +77,10 @@ public:
 
 signals:
     void textChanged();
+    // This is used to move the cursor and anchor up in the viewer
+    // so the content will not "slide up underneath them"
+    // when lines are disappearing from the top.
+    void linesDiscarded(int numDiscardedLines);
 };
 
 
@@ -208,9 +212,8 @@ protected:
     void rebuildIndex();
 
 protected slots:
-    void onLogEntryAdded();
-    void onLogLineAdded();
-    void onMessageSendAdded();
+    void onContentAdded();
+    void onEntryDiscarded(LogBuffer::Entry *discardedEntry);
 };
 
 } // namespace qtenv

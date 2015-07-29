@@ -32,9 +32,10 @@ ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponen
         linesProvider = new EventEntryLinesProvider(componentHistory);
     }
 
-    connect(logBuffer, SIGNAL(logEntryAdded()), this, SLOT(onLogEntryAdded()));
-    connect(logBuffer, SIGNAL(logLineAdded()), this, SLOT(onLogLineAdded()));
-    connect(logBuffer, SIGNAL(messageSendAdded()), this, SLOT(onMessageSendAdded()));
+    connect(logBuffer, SIGNAL(logEntryAdded()), this, SLOT(onContentAdded()));
+    connect(logBuffer, SIGNAL(logLineAdded()), this, SLOT(onContentAdded()));
+    connect(logBuffer, SIGNAL(messageSendAdded()), this, SLOT(onContentAdded()));
+    connect(logBuffer, SIGNAL(entryDiscarded(LogBuffer::Entry*)), this, SLOT(onEntryDiscarded(LogBuffer::Entry*)));
 }
 
 LogBuffer *ModuleOutputContentProvider::getLogBuffer() {
@@ -176,21 +177,15 @@ void ModuleOutputContentProvider::rebuildIndex() {
     lineCount = currentLineNumber + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
 }
 
-void ModuleOutputContentProvider::onLogEntryAdded()
-{
+// Merged the 3 on*Added handlers into this, since they were all the same.
+void ModuleOutputContentProvider::onContentAdded() {
     invalidateIndex();
     emit textChanged();
 }
 
-void ModuleOutputContentProvider::onLogLineAdded()
-{
+void ModuleOutputContentProvider::onEntryDiscarded(LogBuffer::Entry *entry) {
     invalidateIndex();
-    emit textChanged();
-}
-
-void ModuleOutputContentProvider::onMessageSendAdded()
-{
-    invalidateIndex();
+    emit linesDiscarded(linesProvider->getNumLines(entry));
     emit textChanged();
 }
 

@@ -314,18 +314,14 @@ Pos TextViewerWidget::getLineColumnAt(int x, int y) {
 
 void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent) {
 
-    delete content; // will disconnect the changed signal - which is not even connected now
+    delete content; // this will disconnect the signals
 
     content = newContent;
 
-    /*
-    // If this is connected, performance will drop drastically in fast mode (to less than 10%),
-    // because even if the inspector is not refreshed, the logging of modules will trigger
-    // an index rebuild and all kinds of slow operations via this signal.
-    // But it seems that this is not even necessary, if the refresh function calls the slot manually.
-    if (content)
-        connect(content, SIGNAL(textChanged()), this, SLOT(contentChanged()));
-    */
+    if (content) {
+        connect(content, SIGNAL(textChanged()), this, SLOT(onContentChanged()));
+        connect(content, SIGNAL(linesDiscarded(int)), this, SLOT(onLinesDiscarded(int)));
+    }
 
     headerModel->clear();
     auto headers = content->getHeaders();
@@ -343,7 +339,7 @@ void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent)
         }
     }
 
-    contentChanged();
+    onContentChanged();
 
     doContentEnd(false);
     revealCaret();
@@ -533,6 +529,10 @@ void TextViewerWidget::resizeEvent(QResizeEvent *event) {
 }
 
 void TextViewerWidget::paintEvent(QPaintEvent *event) {
+    if (contentChangedFlag) {
+        handleContentChange();
+    }
+
     QPainter painter(viewport());
 
     painter.setBackground(backgroundColor);
@@ -772,7 +772,7 @@ void TextViewerWidget::stopAutoScroll() {
     autoScrollTimer.stop();
 }
 
-void TextViewerWidget::updateScrollbars() {
+void TextViewerWidget::updateScrollbars(bool allowStickingToBottom) {
     auto vsb = verticalScrollBar();
     auto hsb = horizontalScrollBar();
 
@@ -799,13 +799,43 @@ void TextViewerWidget::updateScrollbars() {
 
     if (vsb->maximum() > vsb->minimum()) { // we can scroll at all
         // following output growth
-        if (atBottom) {
+        if (atBottom && allowStickingToBottom) {
             vsb->setValue(vsb->maximum());
             alignBottomLine();
         }
     } else { // content fits on the viewport entirely
         alignTopLine();
-    }    
+    }
+}
+
+void TextViewerWidget::handleContentChange() {
+    Q_ASSERT(content->getLineCount() > 0);//, "content must be at least one line");
+
+    // adjust caret and selection line index
+    int oldCaretLineIndex = caretLineIndex;
+    caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex);
+    selectionAnchorLineIndex = clip(0, content->getLineCount()-1, selectionAnchorLineIndex);
+
+    // only emitting the signal if it actually moved
+    if (oldCaretLineIndex != caretLineIndex)
+        emit caretMoved(caretLineIndex, caretColumn);
+
+    // NOTE: for performance reasons, DO NOT ADJUST COLUMN INDICES!!! An out-of-bounds
+    // column index causes no problem, but to clip it to the line length would require
+    // us to ask the content provide for the line -- at that can be very COSTLY if
+    // the line index is far from the currently displayed line range. (The underlying
+    // content provider was not designed for random access, it takes O(n) time to
+    // return a random line!!!)
+    //
+    // So, do NOT do this:
+    //caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
+    //selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
+
+    updateScrollbars();
+
+    viewport()->update();
+
+    contentChangedFlag = false;
 }
 
 void TextViewerWidget::revealCaret() {
@@ -827,7 +857,8 @@ void TextViewerWidget::revealCaret() {
     //        if (caretLineIndex >= topLineIndex + getNumVisibleLines())
     //            topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
 
-    updateScrollbars();
+    // we want to break free from the bottom
+    updateScrollbars(false);
 }
 
 void TextViewerWidget::alignTopLine() {
@@ -893,32 +924,23 @@ void TextViewerWidget::copySelection() {
     QApplication::clipboard()->setText(text);
 }
 
-void TextViewerWidget::contentChanged() {
-    Q_ASSERT(content->getLineCount() > 0);//, "content must be at least one line");
+void TextViewerWidget::onContentChanged() {
+    contentChangedFlag = true;
+}
 
-    // adjust caret and selection line index
-    int oldCaretLineIndex = caretLineIndex;
-    caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex);
-    selectionAnchorLineIndex = clip(0, content->getLineCount()-1, selectionAnchorLineIndex);
+void TextViewerWidget::onLinesDiscarded(int numLinesDiscarded) {
+    caretLineIndex -= numLinesDiscarded;
+    if (caretLineIndex < 0) {
+        caretLineIndex = 0;
+        caretColumn = 0;
+    }
+    selectionAnchorLineIndex -= numLinesDiscarded;
+    if (selectionAnchorLineIndex < 0) {
+        selectionAnchorLineIndex = 0;
+        selectionAnchorColumn = 0;
+    }
 
-    // only emitting the signal if it actually moved
-    if (oldCaretLineIndex != caretLineIndex)
-        emit caretMoved(caretLineIndex, caretColumn);
-
-    // NOTE: for performance reasons, DO NOT ADJUST COLUMN INDICES!!! An out-of-bounds
-    // column index causes no problem, but to clip it to the line length would require
-    // us to ask the content provide for the line -- at that can be very COSTLY if
-    // the line index is far from the currently displayed line range. (The underlying
-    // content provider was not designed for random access, it takes O(n) time to
-    // return a random line!!!)
-    //
-    // So, do NOT do this:
-    //caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
-    //selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
-
-    updateScrollbars();
-
-    viewport()->update();
+    contentChangedFlag = true;
 }
 
 void TextViewerWidget::scrolledHorizontally(int value) {

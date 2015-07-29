@@ -17,10 +17,7 @@
 #ifndef __OMNETPP_QTENV_LOGBUFFER_H
 #define __OMNETPP_QTENV_LOGBUFFER_H
 
-#include <string>
-#include <list>
 #include <vector>
-#include <set>
 #include "omnetpp/simtime_t.h"
 #include "qtutil.h"
 #include "circularbuffer.h"
@@ -106,6 +103,10 @@ signals:
     void logEntryAdded();
     void logLineAdded();
     void messageSendAdded();
+
+    // When this signal is fired, the entry in the parameter is
+    // no longer in the buffer, but is not deleted yet.
+    void entryDiscarded(LogBuffer::Entry *discardedEntry);
 };
 
 } // namespace qtenv

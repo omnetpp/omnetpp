@@ -17,7 +17,6 @@
 #include <cstring>
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
-#include "tklib.h"
 #include "logbuffer.h"
 
 #define emit // Qt...
@@ -188,9 +187,11 @@ void LogBuffer::discardEventsIfLimitExceeded()
 {
     // discard first entry
     while (maxNumEntries > 0 && entries.size() > maxNumEntries) {
-        delete entries.front();
+        auto discardedEntry = entries.front();
         entries.pop_front();
         entriesDiscarded++;
+        emit entryDiscarded(discardedEntry);
+        delete discardedEntry;
     }
 }
 

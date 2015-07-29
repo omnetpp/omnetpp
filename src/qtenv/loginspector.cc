@@ -168,7 +168,7 @@ cComponent *LogInspector::getInspectedObject()
 
 void LogInspector::refresh() {
     Inspector::refresh();
-    textWidget->contentChanged();
+    textWidget->onContentChanged();
     textWidget->update();
     textWidget->viewport()->update();
 }
@@ -193,7 +193,7 @@ void LogInspector::onFilterButton() {
         if (provider) {
             provider->setExcludedModuleIds(excludedModuleIds);
         }
-        textWidget->contentChanged();
+        textWidget->onContentChanged();
     }
     delete dialog;
 }

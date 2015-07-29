@@ -168,7 +168,14 @@ protected:
     void startOrRefineAutoScroll(ScrollDirection direction, int distance);
     void stopAutoScroll();
 
-    void updateScrollbars();
+    // If the parameter is true, the vertical scrollbar will
+    // stay at its maximum if it has already been there,
+    // to follow a growing text.
+    void updateScrollbars(bool allowStickingToBottom = true);
+
+    // This does the actual handling of the change, when really needed (before painting).
+    void handleContentChange();
+    bool contentChangedFlag = true; // initially we should update
 
     /**
      * Scroll the caret into view
@@ -186,7 +193,10 @@ protected slots:
     void copySelection();
 
 public slots:
-    void contentChanged();
+    // This is the signal handler, but only sets a flag for
+    // performance reasons, see handleContentChange().
+    void onContentChanged();
+    void onLinesDiscarded(int numLinesDiscarded);
 
     void scrolledHorizontally(int value);
     void scrolledVertically(int value);
