@@ -57,7 +57,7 @@ void HistogramInspector::refresh()
 
     char buf[80];
     generalInfo(buf);
-    CHK(Tcl_VarEval(interp, windowName, ".bot.info config -text {", buf, "}", TCL_NULL));
+    //CHK(Tcl_VarEval(interp, windowName, ".bot.info config -text {", buf, "}", TCL_NULL));
 
     // can we draw anything at all?
     if (!distr->isTransformed() || distr->getNumCells() == 0)

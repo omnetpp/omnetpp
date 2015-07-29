@@ -1033,16 +1033,6 @@ Inspector *Qtenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded
     return nullptr;
 }
 
-Inspector *Qtenv::findInspector(const char *widget)
-{
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
-        if (strcmp(insp->getWindowName(), widget) == 0)
-            return insp;
-    }
-    return nullptr;
-}
-
 void Qtenv::deleteInspector(Inspector *insp)
 {
     inspectors.remove(insp);

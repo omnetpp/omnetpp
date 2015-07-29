@@ -80,7 +80,6 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     canvasRenderer = new CanvasRenderer();
     createView(this);
     canvasRenderer->setLayer(figureLayer, getCanvas());
-    view->setWindowName(windowName);
     parent->setMinimumSize(20, 20);
 
     view->scene()->addItem(backgroundLayer);

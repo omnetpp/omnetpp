@@ -105,7 +105,7 @@ void ModuleGraphicsView::relayoutAndRedrawAll()
 
         QString message = "Module '" + QString(object->getFullName()) + "' " + problem +
                 ", it may take a long time to display the graphics.\n\nDo you want to proceed with drawing?";
-        QMessageBox::StandardButton answer = QMessageBox::warning(this, windowName, message, QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::StandardButton answer = QMessageBox::warning(this, "Warning", message, QMessageBox::Yes | QMessageBox::No);
         if(answer == QMessageBox::Yes)
         {
             notDrawn = true;

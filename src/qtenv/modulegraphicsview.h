@@ -48,7 +48,6 @@ private:
     bool notDrawn;
     bool needs_redraw;
     CanvasRenderer *canvasRenderer;
-    QString windowName;
 
     typedef std::map<cModule*,QPointF> PositionMap;
     PositionMap submodPosMap;  // recalculateLayout() fills this map
@@ -126,7 +125,6 @@ public:
     void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
     void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
     void incLayoutSeed() { ++layoutSeed; }
-    void setWindowName(QString name) { windowName = name; }
 };
 
 } // namespace qtenv

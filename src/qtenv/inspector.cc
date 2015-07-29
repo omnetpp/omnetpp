@@ -72,12 +72,9 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
 {
     factory = f;
     interp = getQtenv()->getInterp();
-    //FIXME put back:   window = getTkenv()->getWindow();
     object = nullptr;
     type = f->getInspectorType();
     isToplevelWindow = isTopLevel;
-
-    windowName[0] = '\0';  // no window exists
 
     if (isTopLevel) {
         show();
@@ -91,9 +88,6 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
 
 Inspector::~Inspector()
 {
-    if (isToplevelWindow && windowName[0]) {
-        CHK(Tcl_VarEval(interp, "inspector:destroy ", windowName, TCL_NULL));
-    }
 }
 
 const char *Inspector::getClassName() const
@@ -265,27 +259,6 @@ int Inspector::inspectorCommand(int argc, const char **argv)
         return TCL_ERROR;
     }
     return TCL_OK;
-}
-
-void Inspector::setEntry(const char *entry, const char *val)
-{
-    if (!val)
-        val = "";
-    CHK(Tcl_VarEval(interp, windowName, entry, " delete 0 end;",
-                    windowName, entry, " insert 0 {", val, "}", TCL_NULL));
-}
-
-void Inspector::setLabel(const char *label, const char *val)
-{
-    if (!val)
-        val = "";
-    CHK(Tcl_VarEval(interp, windowName, label, " config -text {", val, "}", TCL_NULL));
-}
-
-const char *Inspector::getEntry(const char *entry)
-{
-    CHK(Tcl_VarEval(interp, windowName, entry, " get", TCL_NULL));
-    return Tcl_GetStringResult(interp);
 }
 
 void Inspector::goUpInto()

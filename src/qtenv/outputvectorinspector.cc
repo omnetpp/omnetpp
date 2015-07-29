@@ -107,13 +107,13 @@ void OutputVectorInspector::refresh()
 
     if (!object) {
         CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
-        setLabel(".bot.info", "");
+        //TODO setLabel(".bot.info", "");
         return;
     }
 
     char buf[80];
     generalInfo(buf);
-    setLabel(".bot.info", buf);
+    //TODO setLabel(".bot.info", buf);
 
     if (circbuf.items() == 0)
         return;

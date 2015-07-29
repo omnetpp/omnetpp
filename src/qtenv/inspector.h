@@ -60,7 +60,6 @@ class QTENV_API Inspector : public QWidget
       Tcl_Interp *interp;     // Tcl interpreterz
       cObject *object;        // the inspected object or nullptr if inspector is empty
       int type;               // INSP_OBJECT, etc.
-      char windowName[24];    // Tk widget path   --FIXME use std::string here! (and for canvas etc)
       std::string windowTitle;// window title string
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       std::vector<cObject*> historyBack;
@@ -71,10 +70,6 @@ class QTENV_API Inspector : public QWidget
 
       virtual void doSetObject(cObject *obj);
       virtual void removeFromToHistory(cObject *obj);
-
-      void setEntry(const char *entry, const char *val);
-      void setLabel(const char *label, const char *val);
-      const char *getEntry(const char *entry);
 
       void inspectObject(cObject *object, int type=INSP_DEFAULT);
       void runSimulationLocal(int runMode, cObject *object = nullptr);
@@ -107,7 +102,7 @@ class QTENV_API Inspector : public QWidget
       static std::string makeWindowName();
 
       virtual int getType() const {return type;}
-      virtual const char *getWindowName() const {return windowName;}
+      virtual const char *getWindowName() const {return "";} //TODO obsolete, remove! returned inspector's Tk widget
       virtual bool isToplevel() const {return isToplevelWindow;}
 
       virtual cObject *getObject() const {return object;}

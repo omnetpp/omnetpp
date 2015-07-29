@@ -60,14 +60,14 @@ void WatchInspector::refresh()
     Inspector::refresh();
 
     cWatchBase *watch = static_cast<cWatchBase *>(object);
-    setLabel(".main.name.l", watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
-    setEntry(".main.name.e", watch ? watch->info().c_str() : "n/a");
+    //TODO setLabel(".main.name.l", watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
+    //TODO setEntry(".main.name.e", watch ? watch->info().c_str() : "n/a");
 }
 
 void WatchInspector::commit()
 {
     cWatchBase *watch = static_cast<cWatchBase *>(object);
-    const char *s = getEntry(".main.name.e");
+    const char *s = ""; //TODO getEntry(".main.name.e");
     if (watch->supportsAssignment())
         watch->assign(s);
     else
