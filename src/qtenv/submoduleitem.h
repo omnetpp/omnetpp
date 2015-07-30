@@ -45,12 +45,14 @@ class SubmoduleItem : public QGraphicsObject
 protected:
     cModule *module;
 
-    // this should be called whenever a property
-    // affecting the name label position (like image size,
-    // name text, etc) changes
+    // Sets the text of the name item, appending the
+    // vector index to it if any, and center-aligns it.
     void updateNameItem();
-    void realignTextItem();
-    void realignDecoratorImageItem();
+
+    // Realigns the queue length label, the info text, and the
+    // decoration icon. Call this every time after the size
+    // of the image or shape changes.
+    void realignAnchoredItems();
     void adjustShapeItem();
     QRectF shapeImageBoundingRect() const; // whichever is bigger in each direction
 
@@ -100,6 +102,7 @@ protected:
 
     OutlinedTextItem *nameItem = nullptr; // includes the vector index
     OutlinedTextItem *textItem = nullptr;
+    OutlinedTextItem *queueItem = nullptr;
 
     GraphicsLayer *rangeLayer = nullptr;
 

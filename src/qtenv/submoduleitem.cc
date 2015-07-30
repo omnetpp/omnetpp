@@ -19,6 +19,7 @@
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
 #include <omnetpp/cdisplaystring.h>
+#include <omnetpp/cqueue.h>
 
 namespace omnetpp {
 namespace qtenv {
@@ -146,6 +147,15 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
         ++rangeIndex;
     }
+
+    QString queueText;
+    if (ds.containsTag("q")) {
+        auto queueName = ds.getTagArg("q", 0);
+        cQueue *q = dynamic_cast<cQueue *>(mod->findObject(queueName));
+        if (q)
+            queueText = QString("q: %1").arg(q->getLength());
+    }
+    si->setQueueText(queueText);
 
 //    proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} {
 //       #puts "DEBUG: ModuleInspector:drawSubmodule $c $submodptr $x $y $name $dispstr $isplaceholder"
@@ -389,7 +399,8 @@ void SubmoduleItem::updateNameItem() {
     }
 }
 
-void SubmoduleItem::realignTextItem() {
+void SubmoduleItem::realignAnchoredItems() {
+    // the info text label
     if (textItem) {
         auto textBounds = textItem->boundingRect();
         auto mainBounds = shapeImageBoundingRect();
@@ -412,9 +423,14 @@ void SubmoduleItem::realignTextItem() {
 
         textItem->setPos(pos);
     }
-}
 
-void SubmoduleItem::realignDecoratorImageItem() {
+    // the queue length
+    if (queueItem) {
+        auto mainRect = shapeImageBoundingRect();
+        queueItem->setPos(mainRect.width() / 2, -mainRect.height() / 2);
+    }
+
+    // the icon in the corner
     if (decoratorImageItem) {
         auto rect = shapeImageBoundingRect();
         // this 2 px offset was there in tkenv too, so might as well apply it here also
@@ -441,8 +457,7 @@ void SubmoduleItem::adjustShapeItem() {
         if (auto rectItem = dynamic_cast<QGraphicsRectItem *>(shapeItem))
             rectItem->setRect(-w/2.0, -h / 2.0, w, h);
         updateNameItem();
-        realignTextItem();
-        realignDecoratorImageItem();
+        realignAnchoredItems();
     }
 }
 
@@ -455,6 +470,7 @@ QRectF SubmoduleItem::shapeImageBoundingRect() const {
 
 SubmoduleItem::SubmoduleItem(cModule *mod) : module(mod) {
     nameItem = new OutlinedTextItem(this, scene());
+    queueItem = new OutlinedTextItem(this, scene());
     textItem = new OutlinedTextItem(this, scene());
 
     QColor col("gray82");
@@ -541,8 +557,7 @@ void SubmoduleItem::setImage(QImage *image) {
             imageItem->setGraphicsEffect(colorizeEffect);
         }
         updateNameItem();
-        realignTextItem();
-        realignDecoratorImageItem();
+        realignAnchoredItems();
     }
 }
 
@@ -571,7 +586,7 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
             decoratorColorizeEffect->setStrength(0);
             decoratorImageItem->setGraphicsEffect(decoratorColorizeEffect);
         }
-        realignDecoratorImageItem();
+        realignAnchoredItems();
     }
 }
 
@@ -604,6 +619,8 @@ void SubmoduleItem::setVectorIndex(int index) {
 void SubmoduleItem::setQueueText(const QString &queueText) {
     if (this->queueText != queueText) {
         this->queueText = queueText;
+        queueItem->setText(queueText);
+        realignAnchoredItems();
     }
 }
 
@@ -614,7 +631,7 @@ void SubmoduleItem::setInfoText(const QString &text, TextPos pos, const QColor &
         textColor = color;
         textItem->setText(text);
         textItem->setBrush(color);
-        realignTextItem();
+        realignAnchoredItems();
     }
 }
 
