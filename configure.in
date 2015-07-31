@@ -770,7 +770,8 @@ else
         OSG_LIBS=`pkg-config --silence-errors --libs openscenegraph`
         if test -n "$OSG_LIBS"; then
             QT_LIBS+=" -losgQt"
-            SYS_LIBS+=" $OSG_LIBS -losgEarthUtil"
+            # FIXME osgEarth libs should be autodected, too
+            SYS_LIBS+=" $OSG_LIBS -losgEarthUtil -losgEarth -losgEarthFeatures -losgEarthSymbology -losgEarthAnnotation"
             CFLAGS_RELEASE+=" -DWITH_OSG"
             CFLAGS_DEBUG+=" -DWITH_OSG"
         fi
