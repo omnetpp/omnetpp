@@ -934,135 +934,131 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     QGraphicsPathItem *pathItem = static_cast<QGraphicsPathItem *>(item);
     QPainterPath painter;
 
-    // parse
-    std::stringstream path(pathFigure->getPath());
-    std::string token;
-    std::vector<std::string> tokens;
-
-    while (getline(path, token, ' '))
-        tokens.push_back(token);
-
     char prevCommand;
     cFigure::Point controlPoint;
 
-    // figure->getPath will be validate
-    for (size_t i = 0; i < tokens.size(); ++i) {
-        char command = tokens[i][0];
+    for (int i = 0; i < pathFigure->getNumPathItems(); ++i) {
+        const cPathFigure::PathItem *command = pathFigure->getPathItem(i);
         QPointF pos = painter.currentPosition();
-        switch (tokens[i][0]) {
+        switch (command->code) {
             case 'M': {
-                painter.moveTo(stod(tokens[i+1]), stod(tokens[i+2]));
-                i += 2;
+                const cPathFigure::MoveTo *moveTo = static_cast<const cPathFigure::MoveTo*>(command);
+                painter.moveTo(moveTo->x, moveTo->y);
                 break;
             }
 
             case 'm': {
-                painter.moveTo(pos.x() + stod(tokens[i+1]), pos.y() + stod(tokens[i+2]));
-                i += 2;
+                const cPathFigure::MoveRel *moveRel = static_cast<const cPathFigure::MoveRel*>(command);
+                painter.moveTo(pos.x() + moveRel->dx, pos.y() + moveRel->dy);
                 break;
             }
 
             case 'L': {
-                painter.lineTo(stod(tokens[i+1]), stod(tokens[i+2]));
-                i += 2;
+                const cPathFigure::LineTo *lineTo = static_cast<const cPathFigure::LineTo*>(command);
+                painter.lineTo(lineTo->x, lineTo->y);
                 break;
             }
 
             case 'l': {
-                painter.lineTo(pos.x() + stod(tokens[i+1]), pos.y() + stod(tokens[i+2]));
-                i += 2;
+                const cPathFigure::LineRel *lineRel = static_cast<const cPathFigure::LineRel*>(command);
+                painter.lineTo(pos.x() + lineRel->dx, pos.y() + lineRel->dy);
                 break;
             }
 
             case 'H': {
-                painter.lineTo(stod(tokens[i+1]), pos.y());
-                ++i;
+                const cPathFigure::HorizLineTo *horizLineTo = static_cast<const cPathFigure::HorizLineTo*>(command);
+                painter.lineTo(horizLineTo->x, pos.y());
                 break;
             }
 
             case 'h': {
-                painter.lineTo(pos.x() + stod(tokens[i+1]), pos.y());
-                ++i;
+                const cPathFigure::HorizLineRel *horizLineRel = static_cast<const cPathFigure::HorizLineRel*>(command);
+                painter.lineTo(pos.x() + horizLineRel->dx, pos.y());
                 break;
             }
 
             case 'V': {
-                painter.lineTo(pos.x(), stod(tokens[i+1]));
-                ++i;
+                const cPathFigure::VertLineTo *vertLineTo = static_cast<const cPathFigure::VertLineTo*>(command);
+                painter.lineTo(pos.x(), vertLineTo->y);
                 break;
             }
 
             case 'v': {
-                painter.lineTo(pos.x(), pos.y() + stod(tokens[i+1]));
-                ++i;
+                const cPathFigure::VertLineRel *vertLineRel = static_cast<const cPathFigure::VertLineRel*>(command);
+                painter.lineTo(pos.x(), pos.y() + vertLineRel->dy);
                 break;
             }
 
             case 'A': {
-                arcToUsingBezier(painter, pos.x(), pos.y(), stod(tokens[i+6]), stod(tokens[i+7]), stod(tokens[i+1]), stod(tokens[i+2]),
-                        stod(tokens[i+3]), stoi(tokens[i+4]), stoi(tokens[i+5]), false);
-                i += 7;
+                const cPathFigure::ArcTo *arcTo = static_cast<const cPathFigure::ArcTo*>(command);
+                arcToUsingBezier(painter, pos.x(), pos.y(), arcTo->x, arcTo->y, arcTo->rx, arcTo->ry,
+                        arcTo->phi, arcTo->largeArc, arcTo->sweep, false);
                 break;
             }
 
             case 'a': {
-                arcToUsingBezier(painter, pos.x(), pos.y(), stod(tokens[i+6]), stod(tokens[i+7]), stod(tokens[i+1]), stod(tokens[i+2]),
-                        stod(tokens[i+3]), stoi(tokens[i+4]), stoi(tokens[i+5]), true);
-                i += 7;
+                const cPathFigure::ArcRel *arcRel = static_cast<const cPathFigure::ArcRel*>(command);
+                arcToUsingBezier(painter, pos.x(), pos.y(), arcRel->dx, arcRel->dy, arcRel->rx, arcRel->ry,
+                        arcRel->phi, arcRel->largeArc, arcRel->sweep, true);
                 break;
             }
 
             case 'Q': {
-                controlPoint = cFigure::Point(stod(tokens[i+1]), stod(tokens[i+2]));
-                painter.quadTo(controlPoint.x, controlPoint.y, stod(tokens[i+3]), stod(tokens[i+4]));
-                i += 4;
+                const cPathFigure::CurveTo *curveTo = static_cast<const cPathFigure::CurveTo*>(command);
+                controlPoint = cFigure::Point(curveTo->x1, curveTo->y1);
+                painter.quadTo(controlPoint.x, controlPoint.y, curveTo->x, curveTo->y);
                 break;
             }
 
             case 'q': {
+                const cPathFigure::CurveRel *curveRel = static_cast<const cPathFigure::CurveRel*>(command);
                 QPointF pos = painter.currentPosition();
-                controlPoint = cFigure::Point(stod(tokens[i+1]), stod(tokens[i+2]));
-                painter.quadTo(controlPoint.x, controlPoint.y, pos.x() + stod(tokens[i+3]), pos.y() + stod(tokens[i+4]));
-                i += 4;
+                controlPoint = cFigure::Point(curveRel->dx1, curveRel->dy1);
+                painter.quadTo(controlPoint.x, controlPoint.y, pos.x() + curveRel->dx, pos.y() + curveRel->dy);
                 break;
             }
 
             case 'T': {
-                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]));
-                i += 2;
+                const cPathFigure::SmoothCurveTo *smoothCurveTo = static_cast<const cPathFigure::SmoothCurveTo*>(command);
+                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                                   smoothCurveTo->x, smoothCurveTo->y);
                 break;
             }
 
             case 't': {
-                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]), true);
-                i += 2;
+                const cPathFigure::SmoothCurveRel *smoothCurveRel = static_cast<const cPathFigure::SmoothCurveRel*>(command);
+                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                                   smoothCurveRel->dx, smoothCurveRel->dy, true);
                 break;
             }
 
             case 'C': {
-                controlPoint = cFigure::Point(stod(tokens[i+3]), stod(tokens[i+4]));
-                painter.cubicTo(stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]), stod(tokens[i+5]),
-                        stod(tokens[i+6]));
-                i += 6;
+                const cPathFigure::CubicBezierCurveTo *bezierTo = static_cast<const cPathFigure::CubicBezierCurveTo*>(command);
+                controlPoint = cFigure::Point(bezierTo->x2, bezierTo->y2);
+                painter.cubicTo(bezierTo->x1, bezierTo->y1, bezierTo->x2, bezierTo->y2, bezierTo->x,
+                        bezierTo->y);
                 break;
             }
 
             case 'c': {
-                controlPoint = cFigure::Point(stod(tokens[i+3]), stod(tokens[i+4]));
-                painter.cubicTo(stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]), pos.x() + stod(tokens[i+5]),
-                        pos.y() + stod(tokens[i+6]));
-                i += 6;
+                const cPathFigure::CubicBezierCurveRel *bezierRel = static_cast<const cPathFigure::CubicBezierCurveRel*>(command);
+                controlPoint = cFigure::Point(bezierRel->dx2, bezierRel->dy2);
+                painter.cubicTo(bezierRel->dx1, bezierRel->dy1, bezierRel->dx2, bezierRel->dy2, pos.x() + bezierRel->dx,
+                        pos.y() + bezierRel->dy);
                 break;
             }
 
             case 'S': {
-                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]));
-                i += 4;
+                const cPathFigure::SmoothCubicBezierCurveTo *sBezierTo = static_cast<const cPathFigure::SmoothCubicBezierCurveTo*>(command);
+                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                                       sBezierTo->x2, sBezierTo->y2, sBezierTo->x, sBezierTo->y);
                 break;
             }
 
             case 's': {
-                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y, stod(tokens[i+1]), stod(tokens[i+2]), stod(tokens[i+3]), stod(tokens[i+4]), true);
+                const cPathFigure::SmoothCubicBezierCurveRel *sBezierRel = static_cast<const cPathFigure::SmoothCubicBezierCurveRel*>(command);
+                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                                       sBezierRel->dx2, sBezierRel->dy2, sBezierRel->dx, sBezierRel->dy, true);
                 i += 4;
                 break;
             }
@@ -1072,7 +1068,7 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
                 break;
             }
         }
-        prevCommand = command;
+        prevCommand = command->code;
     }
 
     pathItem->setPath(painter);
