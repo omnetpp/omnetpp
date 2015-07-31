@@ -253,7 +253,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key);
 
-  private slots:
+  public slots:
       void onSelectionChanged(cObject *);
 
   protected:

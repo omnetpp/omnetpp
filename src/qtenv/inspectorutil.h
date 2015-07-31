@@ -44,6 +44,7 @@ public:
     static void copyToClipboard(cObject *object, int what);
     static void setClipboard(QString str);
     static void preferencesDialog(eTab defaultPage = TAB_NOTDEFINED);
+    static QString getInspectMenuLabel(int typeCode);
 };
 
 } // namespace qtenv

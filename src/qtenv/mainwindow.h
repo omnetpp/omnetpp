@@ -45,6 +45,7 @@ namespace qtenv {
 class Qtenv;
 class Inspector;
 class StopDialog;
+class FilteredObjectListDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -80,7 +81,7 @@ public:
     void runUntilMsg(cMessage *msg, int runMode);
     void excludeMessageFromAnimation(cObject *msg);
 
-private slots:
+public slots:
     void on_actionOneStep_triggered();
     bool on_actionQuit_triggered();
     void on_actionRun_triggered();
@@ -94,10 +95,12 @@ private slots:
     void initialSetUpConfiguration();
     void on_actionPreferences_triggered();
     void on_actionTimeline_toggled(bool isSunken);
+    void on_actionTimeline_toggled();
     void on_actionStatusDetails_triggered();
-
-public slots:
+    void on_actionFindInspectObjects_triggered();
     void on_actionStop_triggered();
+    void on_actionDebugNextEvent_triggered();
+    void on_actionEventlogRecording_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -107,6 +110,7 @@ private:
     bool firstInit;
     QList<int> timeLineSize;
     bool showStatusDetails;
+    FilteredObjectListDialog *filteredObjectListDialog;
 
     bool checkRunning();
     void runSimulation(eMode mode);
@@ -126,6 +130,8 @@ private:
 
     void saveSplitter(QString prefName, QSplitter *splitter);
     void restoreSplitter(QString prefName, QSplitter *splitter);
+
+    void reflectRecordEventlog();
 };
 
 } // namespace qtenv

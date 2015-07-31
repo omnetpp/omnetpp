@@ -253,5 +253,21 @@ void InspectorUtil::preferencesDialog(eTab defaultPage)
     delete prefDialog;
 }
 
+QString InspectorUtil::getInspectMenuLabel(int typeCode)
+{
+    switch(typeCode)
+    {
+        case INSP_DEFAULT:
+            return "Open Best View";
+        case INSP_OBJECT:
+            return "Open Details";
+        case INSP_GRAPHICAL:
+            return "Open Graphical View";
+        case INSP_MODULEOUTPUT:
+            return"Open Component Log";
+    }
+    return "";
+}
+
 } // namespace qtenv
 } // namespace omnetpp

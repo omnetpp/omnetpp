@@ -32,10 +32,11 @@
 #include "common/stringutil.h"
 #include "stopdialog.h"
 #include "inspectorutil.h"
-#include "moduleinspector.h"
+#include "genericobjectinspector.h"
 #include "loginspector.h"
 #include "timelinegraphicsview.h"
 #include "rununtildialog.h"
+#include "filteredobjectlistdialog.h"
 
 #include <QDebug>
 
@@ -47,7 +48,8 @@ namespace qtenv {
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    env(env)
+    env(env),
+    filteredObjectListDialog(nullptr)
 {
     ui->setupUi(this);
 
@@ -84,6 +86,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    if(filteredObjectListDialog)
+        delete filteredObjectListDialog;
 }
 
 void MainWindow::displayText(const char *t)
@@ -230,6 +234,7 @@ bool MainWindow::on_actionQuit_triggered()
 //    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
 //    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
 
+    filteredObjectListDialog->close();
     close();
     return true;
 }
@@ -285,7 +290,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
         busy("Setting up network...");
         // TODO inspectorList:addAll 1
         env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
-        // TODO reflectRecordEventlog
+        reflectRecordEventlog();
         busy();
 
         if (getSimulation()->getSystemModule() != nullptr) {
@@ -735,7 +740,7 @@ void MainWindow::on_actionRebuildNetwork_triggered()
     busy("Rebuilding network...");
     // TODO inspectorList:addAll 1
     env->rebuildSim();
-    // TODO reflectRecordEventlog
+    reflectRecordEventlog();
     busy();
 }
 
@@ -766,6 +771,12 @@ void MainWindow::on_actionTimeline_toggled(bool isSunken)
     getQtenv()->setPref("display-timeline", isSunken);
 }
 
+void MainWindow::on_actionTimeline_toggled()
+{
+    QVariant variant = getQtenv()->getPref("display-timeline");
+    bool isVisible = variant.isValid() ? variant.value<bool>() : true;
+    on_actionTimeline_toggled(!isVisible);
+}
 
 void MainWindow::on_actionStatusDetails_triggered()
 {
@@ -774,6 +785,63 @@ void MainWindow::on_actionStatusDetails_triggered()
     ui->labelDisplay2->setVisible(showStatusDetails);
     ui->labelDisplay3->setVisible(showStatusDetails);
     getQtenv()->setPref("display-statusdetails", showStatusDetails);
+}
+
+void MainWindow::on_actionFindInspectObjects_triggered()
+{
+    // implements Find/inspect objects...
+    cObject *obj = getQtenv()->getMainObjectInspector()->getObject();
+    if(!filteredObjectListDialog)
+        filteredObjectListDialog = new FilteredObjectListDialog(obj);
+    else
+        filteredObjectListDialog->setSearchEdit(obj);
+    filteredObjectListDialog->show();
+}
+
+// debugNextEvent
+void MainWindow::on_actionDebugNextEvent_triggered()
+{
+    //implements Simulate|Debug next event
+
+    if(isRunning())
+        QMessageBox::warning(this, tr("Error"), tr("Simulation is currently running -- please stop it first."),
+                QMessageBox::Ok);
+    else {
+        if (!networkReady())
+            return;
+        int ans = QMessageBox::warning(this, tr("Confirm"),
+                             tr("Trigger debugger breakpoint for the next simulation event?\nNote: If you are not running under a debugger, this will likely result in a crash."),
+                QMessageBox::Ok | QMessageBox::Cancel);
+        if(ans == QMessageBox::Ok)
+        {
+           setGuiForRunmode(STEP);
+           getSimulation()->requestTrapOnNextEvent();
+           on_actionOneStep_triggered();
+           setGuiForRunmode(NOT_RUNNING);
+        }
+    }
+}
+
+void MainWindow::on_actionEventlogRecording_triggered()
+{
+    if(getQtenv()->recordEventlog)
+        getQtenv()->setEventlogRecording(false);
+    else
+        getQtenv()->setEventlogRecording(true);
+
+    if(getQtenv()->hasEventlogRecordingIntervals())
+    {
+        QMessageBox::warning(this, tr("Eventlog Recording"),
+                                     tr("Switching to manual control of eventlog recording -- \
+                                        the recording intervals specified in the configuration will be ignored."),
+                        QMessageBox::Ok);
+        getQtenv()->clearEventlogRecordingIntervals();
+    }
+}
+
+void MainWindow::reflectRecordEventlog()
+{
+    ui->actionEventlogRecording->setChecked(getQtenv()->recordEventlog);
 }
 
 } // namespace qtenv
