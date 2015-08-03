@@ -15,23 +15,22 @@
 *--------------------------------------------------------------*/
 
 #include "graphicspatharrowitem.h"
-
 #include <QPen>
-#include <QPainter>
 
-void GraphicsPathArrowItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
+    : QGraphicsPolygonItem(parent)
 {
-//    auto polygons = path.toSubpathPolygons();
-//    qreal lineWidth = pen().widthF();
-//    switch(path.elementAt(1).type)   //0 element is QPainterPath::MoveToElement
-//    {
-//        case QPainterPath::LineToElement:
-////            path.lineTo();
-////            path.moveTo(polygons[0])
-//            break;
-//    }
-
-    QGraphicsPathItem::paint(painter, option, widget);
-    painter->drawEllipse(QPoint(10, 10), 13, 200);
+    setPen(Qt::NoPen);
 }
 
+void GraphicsPathArrowItem::setLineWidth(double width) {
+    width = std::max(minimumWidth, width);
+    QPolygonF polygon;
+
+    polygon.append(QPointF(0, 0));
+    polygon.append(QPointF(-width * 2,   -width * 2));
+    polygon.append(QPointF(-width * 1.5,  0));
+    polygon.append(QPointF(-width * 2,    width * 2));
+
+    setPolygon(polygon);
+}

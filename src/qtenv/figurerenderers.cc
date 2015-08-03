@@ -666,13 +666,13 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, const cFigur
 void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
 {
     cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
-    GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem *>(item);
+    //GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem *>(item);
 
     cFigure::Point startPoint = lineFigure->getStart();
     cFigure::Point endPoint = lineFigure->getEnd();
     QPainterPath painter(QPointF(startPoint.x, startPoint.y));
     painter.lineTo(endPoint.x, endPoint.y);
-    lineItem->setPath(painter);
+    //lineItem->setPath(painter);
 }
 
 void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)

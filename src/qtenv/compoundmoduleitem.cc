@@ -291,12 +291,17 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     std::string buffer;
     ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
 
-    QRectF border;
+    bool widthOk, heightOk;
+    double width, height;
+    width = QString(ds.getTagArg("bgb", 0)).toDouble(&widthOk) * zoomFactor;
+    height = QString(ds.getTagArg("bgb", 1)).toDouble(&heightOk) * zoomFactor;
 
-    if (ds.containsTag("bgb")) {
-        border.setWidth(QString(ds.getTagArg("bgb", 0)).toDouble() * zoomFactor);
-        border.setHeight(QString(ds.getTagArg("bgb", 1)).toDouble() * zoomFactor);
-    } else {
+    if (!widthOk) width = height;
+    if (!heightOk) height = width;
+
+    QRectF border(0, 0, width, height);
+
+    if (!widthOk && !heightOk) {
         // In this branch we don't need to care about zooming,
         // the scaled submodule positioning and symmetricizing is enough.
 

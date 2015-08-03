@@ -37,6 +37,7 @@
 #include <canvasrenderer.h>
 #include "animator.h"
 #include "compoundmoduleitem.h"
+#include "connectionitem.h"
 #include "submoduleitem.h"
 #include <QDebug>
 
@@ -74,6 +75,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
 
     // that beautiful green shade behind everything
     setBackgroundBrush(QColor("#a0e0a0"));
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
 ModuleCanvasViewer::~ModuleCanvasViewer()
@@ -528,161 +530,28 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
         }
     }
 
-    QPointF src = getSubmodCoords(mod);
-    QPointF dest = getSubmodCoords(destGate->getOwnerModule());
+    // XXX TODO should use the arrow.cc line intersection algorithm, with hints
+    QPointF src = getMessageEndPos(destGate->getOwnerModule(), mod);
+    QPointF dest = getMessageEndPos(mod, destGate->getOwnerModule());
 
-    auto item = new QGraphicsLineItem();
-    item->setLine(src.x(), src.y(), dest.x(), dest.y());
+    auto item = new ConnectionItem(submoduleLayer);
+    item->setSource(src);
+    item->setDestination(dest);
+    ConnectionItemUtil::setupFromDisplayString(item, gate, destGate, twoWayConnection);
     item->setZValue(-1);
-    item->setParentItem(submoduleLayer);
-
-
-
-//    ptrToStr(gate, gateptr);
-//    ptrToStr(mod, srcptr);
-//    ptrToStr(destGate->getOwnerModule(), destptr);
-//    sprintf(indices, "%d %d %d %d",
-//            gate->getIndex(), gate->size(),
-//            destGate->getIndex(), destGate->size());
-//    cChannel *chan = gate->getChannel();
-//    ptrToStr(chan, chanptr);
-//    const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
-
-//    CHK(Tcl_VarEval(interp, "ModuleInspector:drawConnection ",
-//            canvas, " ",
-//            gateptr, " ",
-//            TclQuotedString(dispstr).get(), " ",
-//            srcptr, " ",
-//            destptr, " ",
-//            chanptr, " ",
-//            indices, " ",
-//            twoWayConnection ? "1" : "0",
-//            nullptr
-//             ));
-
-//    proc ModuleInspector:drawConnection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
-//        global inspectordata tkpFont canvasTextOptions
-
-//        # puts "DEBUG: ModuleInspector:drawConnection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
-
-//        if [catch {
-//           set src_rect [ModuleInspector:getSubmodCoords $c $srcptr]
-//           set dest_rect [ModuleInspector:getSubmodCoords $c $destptr]
-//        } errmsg] {
-//           # skip this connection if source or destination of the arrow cannot be found
-//           return
-//        }
-
-//        if [catch {
-
-//           opp_displaystring $dispstr parse tags $chanptr 1
-
-//           if {![info exists tags(m)]} {set tags(m) {a}}
-
-//           set mode [lindex $tags(m) 0]
-//           if {$mode==""} {set mode "a"}
-//           set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
-//           set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
-
-//           # puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
-//           # puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
-
-//           regexp -- {^.[^.]*} $c win
-
-//           # switch off the connection arrangement if the option is not enabled
-//           # all connection are treated as the first one in an array with size 1
-//           if {![opp_getsimoption arrangevectorconnections]} {
-//               set src_n "1"
-//               set dest_n "1"
-//               set src_i "0"
-//               set dest_i "0"
-//           }
-
-//           set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
-//                      $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
-//                      $mode $src_anch $dest_anch]]
-
-//           # puts "DEBUG: arrow=($arrow_coords)"
-
-//           if {![info exists tags(ls)]} {set tags(ls) {}}
-//           set fill [lindex $tags(ls) 0]
-//           if {$fill == ""} {set fill black}
-//           if {$fill == "-"} {set fill ""}
-//           set width [lindex $tags(ls) 1]
-//           if {$width == ""} {set width 1}
-//           if {$width == "0"} {set fill ""}
-//           set style [lindex $tags(ls) 2]
-//           switch -glob $style {
-//               "da*"   {set pattern "2 2"}
-//               "d*"    {set pattern "1 1"}
-//               default {set pattern ""}
-//           }
-
-//           set state "normal"
-//           if {$inspectordata($c:showarrowheads) && !$two_way} {
-//               set arrow {-endarrow 1}
-//           } else {
-//               set arrow {}
-//           }
-
-//           $c create pline $arrow_coords {*}$arrow -stroke $fill -strokedasharray $pattern -strokewidth $width -tags "dx tooltip conn submodext $gateptr"
-
-//           # if we have a two way connection we should draw only in one direction
-//           # the other line will be hidden (lowered under anything else)
-//           if {[string compare $srcptr $destptr] >=0 && $two_way} {
-//               $c lower $gateptr "dx"
-//           }
-
-//           if {[info exists tags(t)]} {
-//               set txt [lindex $tags(t) 0]
-//               set pos [lindex $tags(t) 1]
-//               if {$pos == ""} {set pos "t"}
-//               set color [lindex $tags(t) 2]
-//               if {$color == ""} {set color "#005030"}
-//               if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-//               set x1 [lindex $arrow_coords 0]
-//               set y1 [lindex $arrow_coords 1]
-//               set x2 [lindex $arrow_coords 2]
-//               set y2 [lindex $arrow_coords 3]
-//               set anch "c"
-//               set just "center"
-//               if {$pos=="l"} {
-//                   # "beginning"
-//                   set x [expr (3*$x1+$x2)/4]
-//                   set y [expr (3*$y1+$y2)/4]
-//               } elseif {$pos=="r"} {
-//                   # "end"
-//                   set x [expr ($x1+3*$x2)/4]
-//                   set y [expr ($y1+3*$y2)/4]
-//               } elseif {$pos=="t"} {
-//                   # "middle"
-//                   set x [expr ($x1+$x2)/2]
-//                   set y [expr ($y1+$y2)/2]
-//                   if {($x1==$x2)?($y1<$y2):($x1<$x2)} {set anch "n"} else {set anch "s"}
-//               } else {
-//                   error "wrong position \"$pos\" in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
-//               }
-//               $c create ptext $x $y -text $txt -fill $color -textanchor $anch {*}$tkpFont(CanvasFont) {*}$canvasTextOptions -tags "dx submodext"
-//           }
-
-//        } errmsg] {
-//           tk_messageBox -type ok -title "Error" -icon error -parent [winfo toplevel [focusOrRoot]] \
-//                         -message "Error in display string of a connection: $errmsg"
-//        }
-//    }
 }
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 {
-    return QPointF(submodPosMap[mod]) * zoomFactor;
+    return submodPosMap[mod] * zoomFactor;
 }
 
 QPointF ModuleCanvasViewer::getMessageEndPos(cModule *src, cModule *dest)
 {
-    auto srcPos = getSubmodCoords(src);
-    auto destPos = getSubmodCoords(dest);
+    QPointF srcPos = getSubmodCoords(src);
+    QPointF destPos = getSubmodCoords(dest);
 
-    auto destRect = submoduleGraphicsItems[src->getId()]->boundingRect();
+    QRectF destRect = submoduleGraphicsItems[dest->getId()]->boundingRect();
 
     // from dest to src
     auto direction = srcPos - destPos;

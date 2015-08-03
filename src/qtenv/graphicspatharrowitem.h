@@ -17,15 +17,20 @@
 #ifndef __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H
 #define __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H
 
-#include <QGraphicsPathItem>
+#include <QGraphicsPolygonItem>
 
-class GraphicsPathArrowItem : public QGraphicsPathItem
+class GraphicsPathArrowItem : public QGraphicsPolygonItem
 {
+    // any smaller width will be clamped to this, so the arrowhead
+    // will not be too small to notice even on thin lines
+    const double minimumWidth = 3.0;
 public:
-    GraphicsPathArrowItem() {}
+    GraphicsPathArrowItem(QGraphicsItem *parent = nullptr);
 
-protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    // The width of the line on the end of which the arrow is placed.
+    // You should make the line (with a flat cap) this much shorter
+    // on the arrowed end, otherwise it will poke through the arrowhead.
+    void setLineWidth(double width);
 };
 
-#endif // GRAPHICSPATHARROWITEM_H
+#endif // __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H

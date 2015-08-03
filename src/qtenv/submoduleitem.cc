@@ -492,8 +492,6 @@ QRectF SubmoduleItem::shapeImageBoundingRect() const {
         QRectF shapeRect = shapeItem->boundingRect();
         // Shape size is modulated by the zoom via adjusting its defining rectangle,
         // (otherwise the outline would change width too), so its boundingRect is good as it is.
-        shapeRect.setTopLeft(shapeRect.topLeft());
-        shapeRect.setBottomRight(shapeRect.bottomRight());
         box = box.united(shapeRect);
     }
     return box;
