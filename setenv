@@ -2,8 +2,10 @@
 
 case "$-" in
 *i*) ;;
-*)  echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
-    exit 1
+*)  if [ "$1" != "-f" ]; then # allow use from scripts, as ". setenv -f"
+        echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
+        exit 1
+    fi
 esac
 
 if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
