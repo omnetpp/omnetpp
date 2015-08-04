@@ -2,6 +2,16 @@
 
 USING_NAMESPACE
 
+class DisplayStringMessage : public cMessage
+{
+    const char *dispStr = "";
+public:
+    using cMessage::cMessage;
+    
+    void setDisplayString(const char *ds) { dispStr = ds; }
+    const char *getDisplayString() const override { return dispStr; }
+};
+
 class Gen : public cSimpleModule
 {
   public:
@@ -17,6 +27,7 @@ class Gen : public cSimpleModule
     void hue();
     void saturation();
     void brightness();
+    void messages();
 };
 
 Define_Module(Gen);
@@ -40,6 +51,8 @@ void Gen::activity()
         saturation();
     else if (!strcmp(what, "brightness"))
         brightness();
+    else if (!strcmp(what, "messages"))
+        messages();
     else
         error("wrong value '%s'", what);
 }
@@ -139,6 +152,30 @@ void Gen::brightness()
         sprintf(buf, "@4080%2.2x", i);
         getDisplayString().setTagArg("b", 3, buf);
         show();
+    }
+}
+
+void Gen::messages()
+{
+    static const char *const displayStrings[] = {
+        "", "", "", "", "", "", "", "", // 8 colored kinds with no displaystring
+        "i=msg/package",
+        "b=15,15,rect,white,kind,5",
+        "b=",
+        "b=,,,kind",
+        "b=15,15,oval,yellow,green,6"
+    };
+    
+    EV << "Messages:\n";
+    
+    char msgname[32];
+    for (unsigned int i = 0; i < sizeof(displayStrings) / sizeof(const char *); ++i) {
+        sprintf(msgname, "job-%d", i);
+        DisplayStringMessage *msg = new DisplayStringMessage(msgname, i);
+        msg->setDisplayString(displayStrings[i]);        
+        EV << "Sending message #" << i << " with display string: \"" << displayStrings[i] << "\".\n";
+        send(msg, "out");
+        wait(0);
     }
 }
 

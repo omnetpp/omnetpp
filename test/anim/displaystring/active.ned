@@ -60,6 +60,12 @@ module Active
             parameters:
                 @display("i=browser;p=84,249");
         };
+        messages: Gen {
+            parameters:
+                what = "messages";
+                startTime = 600;
+                @display("p=240,270;i=device/satellite");
+        };
         dummy3: Sink {
             parameters:
                 @display("p=106,152;b=40,24");
@@ -70,6 +76,7 @@ module Active
         icons.out --> dummy3.in[0];
         boxes.out --> dummy3.in[1];
         options.out --> dummy3.in[2];
+        messages.out --> dummy3.in[3];
 }
 
 
