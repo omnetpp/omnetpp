@@ -184,6 +184,7 @@ QToolBar *ModuleInspector::createToolbar()
 {
     QToolBar *toolbar = new QToolBar();
 
+    // general
     toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
     toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
     toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
@@ -195,14 +196,23 @@ QToolBar *ModuleInspector::createToolbar()
     action = toolbar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()));
     toolbar->addSeparator();
 
+    // canvas-specfic
     action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+    canvasRelayoutAction = action;
     action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    canvasZoomInAction = action;
     action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+    canvasZoomOutAction = action;
+
+    // osg-specific
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/reset.png"), "Reset view", this, SLOT(resetOsgView()));
+    resetOsgViewAction = action;
     toolbar->addSeparator();
 
+    // mode switching
     action = toolbar->addAction(QIcon(":/tools/icons/tools/3dscene.png"), "3D Scene", this, SLOT(switchToOsgView()));
     action->setCheckable(true);
     switchToOsgViewAction = action;
@@ -248,6 +258,13 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     cOsgCanvas *osgCanvas = getOsgCanvas();
     setOsgCanvas(osgCanvas);
+}
+
+cCanvas *ModuleInspector::getCanvas()
+{
+    cModule *mod = static_cast<cModule *>(object);
+    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
+    return canvas;
 }
 
 void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
@@ -387,11 +404,9 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
     }
 }
 
-cCanvas *ModuleInspector::getCanvas()
+void ModuleInspector::resetOsgView()
 {
-    cModule *mod = static_cast<cModule *>(object);
-    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
-    return canvas;
+    osgViewer->applyViewerHints();
 }
 
 GraphicsLayer *ModuleInspector::getAnimationLayer()
@@ -685,20 +700,30 @@ void ModuleInspector::zoomIconsBy()
 
 void ModuleInspector::switchToOsgView()
 {
-    //TODO rebuild toolbar
     stackedLayout->setCurrentWidget(osgViewer);
 
     switchToCanvasViewAction->setChecked(false);
     switchToOsgViewAction->setChecked(true);
+
+    // show/hide view-specific actions
+    canvasRelayoutAction->setVisible(false);
+    canvasZoomInAction->setVisible(false);
+    canvasZoomOutAction->setVisible(false);
+    resetOsgViewAction->setVisible(true);
 }
 
 void ModuleInspector::switchToCanvasView()
 {
-    //TODO rebuild toolbar
     stackedLayout->setCurrentWidget(canvasViewer);
 
     switchToCanvasViewAction->setChecked(true);
     switchToOsgViewAction->setChecked(false);
+
+    // show/hide view-specific actions
+    canvasRelayoutAction->setVisible(true);
+    canvasZoomInAction->setVisible(true);
+    canvasZoomOutAction->setVisible(true);
+    resetOsgViewAction->setVisible(false);
 }
 
 } // namespace qtenv

@@ -69,6 +69,7 @@
         <file>icons/tools/recordeventlog.png</file>
         <file>icons/tools/redo.png</file>
         <file>icons/tools/redraw.png</file>
+        <file>icons/tools/reset.png</file>
         <file>icons/tools/restart.png</file>
         <file>icons/tools/revert.png</file>
         <file>icons/tools/run.png</file>

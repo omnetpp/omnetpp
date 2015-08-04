@@ -49,9 +49,6 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     QWidget *addViewWidget();
     virtual void paintEvent(QPaintEvent* event);
 
-    void applyViewerHints();
-    void resetViewer();
-
     void setClearColor(float r, float g, float b, float alpha);
     void setCameraManipulator(osgGA::CameraManipulator *manipulator);
     void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
@@ -63,6 +60,9 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     void setOsgCanvas(cOsgCanvas *canvas);
     cOsgCanvas *getOsgCanvas() const {return osgCanvas;}
     void refresh();
+    void applyViewerHints();
+    void resetViewer();
+
 };
 
 } // qtenv

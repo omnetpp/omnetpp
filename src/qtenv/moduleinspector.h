@@ -60,6 +60,7 @@ class QTENV_API ModuleInspector : public Inspector
       void toggleLabels();
       void toggleArrowheads();
       void zoomIconsBy();
+      void resetOsgView();
 
       void switchToOsgView();
       void switchToCanvasView();
@@ -67,6 +68,11 @@ class QTENV_API ModuleInspector : public Inspector
    protected:
       QAction *switchToOsgViewAction;
       QAction *switchToCanvasViewAction;
+
+      QAction *canvasRelayoutAction;
+      QAction *canvasZoomInAction;
+      QAction *canvasZoomOutAction;
+      QAction *resetOsgViewAction;
 
       QStackedLayout *stackedLayout;
 
