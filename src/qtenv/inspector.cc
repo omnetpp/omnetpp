@@ -108,17 +108,11 @@ std::string Inspector::makeWindowName()
 
 void Inspector::doSetObject(cObject *obj)
 {
-    // TODO ASSERT2(windowName[0], "createWindow()/useWindow() needs to be called before setObject()");
-
     if (obj != object) {
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
-        //TODO this was part of inspector:onSetObject, should probably go into refresh():
-        // set icon [opp_getobjecticon $ptr]
-        // if [winfo exist $insp.infobar] {  ;#FIXME add proper condition
-        //     $insp.infobar.icon config -image $icon
-        // }
+        // note that doSetObject() is always followed by refresh(), see setObject()
     }
 }
 

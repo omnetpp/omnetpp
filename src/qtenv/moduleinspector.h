@@ -20,20 +20,24 @@
 #include "animator.h"
 #include "inspector.h"
 
-class QBoxLayout;
+class QAction;
+class QStackedLayout;
 class QMouseEvent;
 class QContextMenuEvent;
+class QToolBar;
 
 namespace omnetpp {
 class cObject;
 class cModule;
 class cGate;
 class cCanvas;
+class cOsgCanvas;
 
 namespace qtenv {
 
 class CanvasRenderer;
-class ModuleGraphicsView;
+class ModuleCanvasViewer;
+class OsgViewer;
 
 
 class QTENV_API ModuleInspector : public Inspector
@@ -57,26 +61,28 @@ class QTENV_API ModuleInspector : public Inspector
       void toggleArrowheads();
       void zoomIconsBy();
 
-   protected:
-      // These layers should be the only top level items!
-      // After adding anything else to the scene, make
-      // sure to make it a descendant of one of these!
-      GraphicsLayer *backgroundLayer;
-      GraphicsLayer *rangeLayer;
-      GraphicsLayer *networkLayer;
-      GraphicsLayer *figureLayer;
-      GraphicsLayer *animationLayer;
-
-      CanvasRenderer *canvasRenderer;
-      ModuleGraphicsView *view; // holds the scene
+      void switchToOsgView();
+      void switchToCanvasView();
 
    protected:
-      //TODO Where is getCanvas() right place? Here or in ModuleGraphicsView.
+      QAction *switchToOsgViewAction;
+      QAction *switchToCanvasViewAction;
+
+      QStackedLayout *stackedLayout;
+
+      ModuleCanvasViewer *canvasViewer;
+
+      OsgViewer *osgViewer;
+
+   protected:
       cCanvas *getCanvas();
+      cOsgCanvas *getOsgCanvas();
       static const char *animModeToStr(SendAnimMode mode);
 
-      void addToolBar(QBoxLayout *layout);
-      void createView(QWidget *parent);
+      void createViews(QWidget *parent);
+      QToolBar *createToolbar();
+      void refreshOsgViewer();
+      void setOsgCanvas(cOsgCanvas *osgCanvas);
 
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
 
@@ -111,7 +117,7 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged(cGate *gate);
       virtual void bubble(cComponent *subcomponent, const char *text);
 
-      GraphicsLayer *getAnimationLayer() { return animationLayer; }
+      GraphicsLayer *getAnimationLayer();
       QPointF getSubmodCoords(cModule *mod);
       QPointF getMessageEndPos(const QPointF &src, const QPointF &dest);
 };

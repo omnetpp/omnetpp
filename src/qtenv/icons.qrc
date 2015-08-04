@@ -26,6 +26,7 @@
         <file>icons/objects/unknown.png</file>
     </qresource>
     <qresource prefix="/tools">
+        <file>icons/tools/3dscene.png</file>
         <file>icons/tools/apply.png</file>
         <file>icons/tools/arrowhead.png</file>
         <file>icons/tools/as.png</file>
@@ -54,6 +55,7 @@
         <file>icons/tools/log.png</file>
         <file>icons/tools/mfast.png</file>
         <file>icons/tools/modnames.png</file>
+        <file>icons/tools/modulegraphics.png</file>
         <file>icons/tools/modtype.png</file>
         <file>icons/tools/mrun.png</file>
         <file>icons/tools/network.png</file>

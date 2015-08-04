@@ -36,27 +36,33 @@
 namespace omnetpp {
 namespace qtenv {
 
-class QTENV_API OsgViewerWidget : public QWidget, public osgViewer::CompositeViewer
+class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
     Q_OBJECT   // this *must* be in a header file to be noticed by the moc!
 
   protected:
+    cOsgCanvas *osgCanvas;
     osgViewer::View *view;
-    QTimer _timer;
+    QTimer timer;
 
   protected:
-    QWidget *addViewWidget(osgQt::GraphicsWindowQt *gw);
-    osgQt::GraphicsWindowQt *createGraphicsWindow(int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false);
+    QWidget *addViewWidget();
     virtual void paintEvent(QPaintEvent* event);
 
-  public:
-    OsgViewerWidget(QWidget *parent=nullptr);
-    virtual ~OsgViewerWidget() {}
-    void setScene(osg::Node* scene);
-    osg::Node *getScene() const;
+    void applyViewerHints();
+    void resetViewer();
+
     void setClearColor(float r, float g, float b, float alpha);
     void setCameraManipulator(osgGA::CameraManipulator *manipulator);
     void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
+    void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
+
+  public:
+    OsgViewer(QWidget *parent=nullptr);
+    virtual ~OsgViewer() {}
+    void setOsgCanvas(cOsgCanvas *canvas);
+    cOsgCanvas *getOsgCanvas() const {return osgCanvas;}
+    void refresh();
 };
 
 } // qtenv

@@ -40,9 +40,9 @@ Register_InspectorFactory(OsgCanvasInspectorFactory);
 
 OsgCanvasInspector::OsgCanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-    viewWidget = new OsgViewerWidget();
+    osgViewer = new OsgViewer();
     QGridLayout *grid = new QGridLayout;
-    grid->addWidget( viewWidget, 0, 0 );
+    grid->addWidget( osgViewer, 0, 0 );
     grid->setMargin(0);
     setLayout( grid );
 }
@@ -55,35 +55,14 @@ void OsgCanvasInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
 
-    //XXX test:
-    //scene = osgDB::readNodeFile("cow.osgt");
-    //osg::Node* scene = osgDB::readNodeFile("/usr/share/osgearth/maps/boston.earth");
-    //viewWidget->setScene(scene);
-
     cOsgCanvas *osgCanvas = dynamic_cast<cOsgCanvas*>(obj);
-    osg::Node *scene = osgCanvas ? osgCanvas->getScene() : nullptr;
-    viewWidget->setScene(scene); // note: increases scene's reference count
-
-    cOsgCanvas::Color color = osgCanvas->getClearColor();
-    viewWidget->setClearColor(color.red/255.0, color.green/255.0, color.blue/255.0, 1.0);
-
-    osgGA::CameraManipulator *manipulator = nullptr;
-    switch (osgCanvas->getCameraManipulatorType()) {
-    case cOsgCanvas::CAM_TRACKBALL: manipulator = new osgGA::TrackballManipulator; break;
-    case cOsgCanvas::CAM_EARTH: manipulator = new osgEarth::Util::EarthManipulator; break;
-    }
-    viewWidget->setCameraManipulator(manipulator);
-
-    viewWidget->setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getAspect(), osgCanvas->getZNear(), osgCanvas->getZFar());
-
+    osgViewer->setOsgCanvas(osgCanvas); // note: increases scene's reference count
 }
 
 void OsgCanvasInspector::refresh()
 {
-    cOsgCanvas *osgCanvas = dynamic_cast<cOsgCanvas*>(getObject());
-    osg::Node *scene = osgCanvas ? osgCanvas->getScene() : nullptr;
-    if (scene != viewWidget->getScene())
-        viewWidget->setScene(scene);
+    Inspector::refresh();
+    osgViewer->refresh();
 }
 
 } // namespace qtenv

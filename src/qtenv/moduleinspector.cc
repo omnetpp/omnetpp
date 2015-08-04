@@ -23,7 +23,7 @@
 #include <QToolBar>
 #include <QAction>
 #include <QMouseEvent>
-#include <QGridLayout>
+#include <QStackedLayout>
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QDebug>
@@ -32,6 +32,7 @@
 #include <QEventLoop>
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cqueue.h"
+#include "omnetpp/cosgcanvas.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cgate.h"
 #include "moduleinspector.h"
@@ -40,14 +41,83 @@
 #include "inspectorfactory.h"
 #include "arrow.h"
 #include "canvasrenderer.h"
+#include "osgviewer.h"
 #include "mainwindow.h"
-#include "modulegraphicsview.h"
+#include "modulecanvasviewer.h"
 #include "inspectorutil.h"
 
 using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
+
+/**
+ * Layout that manages two children: a client that completely fills the
+ * parent; and a toolbar that flots over the client in the top-right corner.
+ */
+class FloatingToolbarLayout : public QLayout
+{
+public:
+    FloatingToolbarLayout(): QLayout(), child(nullptr), toolbar(nullptr) {}
+    FloatingToolbarLayout(QWidget *parent): QLayout(parent), child(nullptr), toolbar(nullptr) {}
+    ~FloatingToolbarLayout() {
+        delete child;
+        delete toolbar;
+    }
+
+    void addItem(QLayoutItem *item) {
+        if (!child) child = item;
+        else if (!toolbar) toolbar = item;
+        else throw std::runtime_error("only two items are accepted");
+    }
+
+    int count() const {
+        if (!child) return 0;
+        else if (!toolbar) return 1;
+        else return 2;
+    }
+
+    QLayoutItem *itemAt(int i) const {
+        if (i==0) return child;
+        else if (i==1) return toolbar;
+        else return nullptr;
+    }
+
+    QLayoutItem *takeAt(int i) {
+        QLayoutItem *result = nullptr;
+        if (i==1) {result = toolbar; toolbar = nullptr;}
+        else if (i==0) {result = child; child = toolbar; toolbar = nullptr;}
+        else throw std::runtime_error("illegal index, must be 0 or 1");
+        return result;
+    }
+
+    QSize sizeHint() const {
+        if (child) return child->sizeHint();
+        else return QSize(100,100);
+    }
+
+    QSize minimumSize() const {
+        if (child) return child->minimumSize();
+        else return QSize(0,0);
+    }
+
+    void setGeometry(const QRect &rect) {
+        if (child)
+            child->setGeometry(rect); // margin?
+        if (toolbar) {
+            QSize size = toolbar->sizeHint();
+            int x = std::max(dx, rect.width() - size.width() - dx);
+            int width = std::min(rect.width() - 2*dx, size.width());
+            toolbar->setGeometry(QRect(x, dy, width, size.height()));
+        }
+    }
+
+private:
+    QLayoutItem *child;
+    QLayoutItem *toolbar;
+    const int dx = 5, dy = 5; // toolbar distance from edges
+};
+
 
 void _dummy_for_moduleinspector() {}
 
@@ -71,22 +141,11 @@ Register_InspectorFactory(ModuleInspectorFactory);
 
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-    backgroundLayer = new GraphicsLayer();
-    rangeLayer = new GraphicsLayer();
-    networkLayer = new GraphicsLayer();
-    figureLayer = new GraphicsLayer();
-    animationLayer = new GraphicsLayer();
+    switchToOsgViewAction = nullptr;
+    switchToCanvasViewAction = nullptr;
 
-    canvasRenderer = new CanvasRenderer();
-    createView(this);
-    canvasRenderer->setLayer(figureLayer, getCanvas());
+    createViews(this);
     parent->setMinimumSize(20, 20);
-
-    view->scene()->addItem(backgroundLayer);
-    view->scene()->addItem(rangeLayer);
-    view->scene()->addItem(networkLayer);
-    view->scene()->addItem(figureLayer);
-    view->scene()->addItem(animationLayer);
 }
 
 ModuleInspector::~ModuleInspector()
@@ -95,29 +154,89 @@ ModuleInspector::~ModuleInspector()
     // double deleting the message items (by the
     // animations and the scene itself)
     getQtenv()->getAnimator()->clearInspector(this);
-    delete canvasRenderer;
 }
+
+void ModuleInspector::createViews(QWidget *parent)
+{
+    canvasViewer = new ModuleCanvasViewer();
+    canvasViewer->setRenderHints(QPainter::Antialiasing);
+
+    connect(canvasViewer, SIGNAL(back()), this, SLOT(goBack()));
+    connect(canvasViewer, SIGNAL(forward()), this, SLOT(goForward()));
+    connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
+    connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
+    connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
+
+    osgViewer = new OsgViewer();
+
+    QToolBar *toolbar = createToolbar();
+    QWidget *contentArea = new QWidget();
+    auto layout = new FloatingToolbarLayout(parent);
+    layout->addWidget(contentArea);
+    layout->addWidget(toolbar);
+
+    stackedLayout = new QStackedLayout(contentArea);
+    stackedLayout->addWidget(osgViewer);
+    stackedLayout->addWidget(canvasViewer);
+}
+
+QToolBar *ModuleInspector::createToolbar()
+{
+    QToolBar *toolbar = new QToolBar();
+
+    toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
+    toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
+    toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    toolbar->addSeparator();
+
+    toolbar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this, SLOT(runUntil()));
+    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)", this, SLOT(fastRunUntil()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()));
+    toolbar->addSeparator();
+
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+    toolbar->addSeparator();
+
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/3dscene.png"), "3D Scene", this, SLOT(switchToOsgView()));
+    action->setCheckable(true);
+    switchToOsgViewAction = action;
+
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/modulegraphics.png"), "Module", this, SLOT(switchToCanvasView()));
+    action->setCheckable(true);
+    switchToCanvasViewAction = action;
+
+    toolbar->setAutoFillBackground(true);
+
+    return toolbar;
+}
+
 
 void ModuleInspector::doSetObject(cObject *obj)
 {
     if (obj == object)
         return;
 
-    view->setObject(static_cast<cModule*>(obj));
     Inspector::doSetObject(obj);
 
-    canvasRenderer->setCanvas(getCanvas());
+    cModule *module = dynamic_cast<cModule*>(obj);
 
-    view->clear();
+    canvasViewer->setObject(module);
+    canvasViewer->clear();
     getQtenv()->getAnimator()->clearInspector(this);
 
     if (object) {
-        view->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
+        canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
         // TODO
         //    ModuleInspector:recallPreferences $insp
 
         try {
-            view->relayoutAndRedrawAll();
+            canvasViewer->relayoutAndRedrawAll();
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -126,78 +245,63 @@ void ModuleInspector::doSetObject(cObject *obj)
         //    ModuleInspector:adjustWindowSizeAndZoom $insp
         // }
     }
+
+    cOsgCanvas *osgCanvas = getOsgCanvas();
+    setOsgCanvas(osgCanvas);
 }
+
+void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
+{
+    osgViewer->setOsgCanvas(osgCanvas);
+
+    switchToOsgViewAction->setEnabled(osgCanvas != nullptr);
+
+    if (osgCanvas != nullptr)
+        switchToOsgView();
+    else
+        switchToCanvasView();
+}
+
+cOsgCanvas *ModuleInspector::getOsgCanvas()
+{
+    cModule *module = dynamic_cast<cModule*>(getObject());
+    cOsgCanvas *osgCanvas = module ? module->getOsgCanvasIfExists() : nullptr;
+    return osgCanvas;
+}
+
+void ModuleInspector::refresh()
+{
+    Inspector::refresh();
+
+    canvasViewer->refresh();
+    refreshOsgViewer();
+}
+
+void ModuleInspector::refreshOsgViewer()
+{
+    cOsgCanvas *osgCanvas = getOsgCanvas();
+    if (osgViewer->getOsgCanvas() != osgCanvas)
+        setOsgCanvas(osgCanvas);
+    else
+        osgViewer->refresh();
+}
+
+void ModuleInspector::redraw()
+{
+    canvasViewer->redraw();
+}
+
+void ModuleInspector::clearObjectChangeFlags()
+{
+    cCanvas *canvas = getCanvas();
+    if (canvas)
+        canvas->getRootFigure()->clearChangeFlags();
+}
+
 
 bool ModuleInspector::needsRedraw()
 {
-    return view->getNeedsRedraw();
-}
-
-void ModuleInspector::createView(QWidget *parent)
-{
-    QVBoxLayout *layout = new QVBoxLayout();
-    parent->setLayout(layout);
-    view = new ModuleGraphicsView(canvasRenderer);
-
-    connect(view, SIGNAL(back()), this, SLOT(goBack()));
-    connect(view, SIGNAL(forward()), this, SLOT(goForward()));
-    connect(view, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
-    connect(view, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
-    connect(view, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
-
-    layout->addWidget(view);
-    layout->setMargin(0);
-    view->setRenderHints(QPainter::Antialiasing);
-    view->setScene(new QGraphicsScene());
-    view->setBackgroundLayer(backgroundLayer);
-    view->setSubmoduleLayer(networkLayer);
-    view->setRangeLayer(rangeLayer);
-
-    QHBoxLayout *horizontalLayout = new QHBoxLayout();
-    QVBoxLayout *verticalLayout = new QVBoxLayout();
-    horizontalLayout->addLayout(verticalLayout);
-    horizontalLayout->insertStretch(0);
-    view->setLayout(horizontalLayout);
-
-    addToolBar(verticalLayout);
-}
-
-void ModuleInspector::addToolBar(QBoxLayout *layout)
-{
-    QToolBar *toolBar = new QToolBar();
-    layout->addWidget(toolBar);
-    layout->insertStretch(1);
-
-    toolBar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back",
-                       this, SLOT(goBack()));
-    toolBar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward",
-                       this, SLOT(goForward()));
-    toolBar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module",
-                       this, SLOT(inspectParent()));
-    toolBar->addSeparator();
-    toolBar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module",
-                       this, SLOT(runUntil()));
-    QAction *action = toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl + F4)",
-                       this, SLOT(fastRunUntil()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
-
-    action = toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)",
-                       this, SLOT(stopSimulation()));
-
-    toolBar->addSeparator();
-    action = toolBar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl + R)",
-                                this, SLOT(relayout()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-
-    action = toolBar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl + M)",
-                                this, SLOT(zoomIn()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
-
-    action = toolBar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl + N)",
-                                this, SLOT(zoomOut()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
-
-    toolBar->setAutoFillBackground(true);
+    return canvasViewer->getNeedsRedraw();
 }
 
 void ModuleInspector::runUntil()
@@ -224,8 +328,8 @@ void ModuleInspector::relayout()
 //    global config inspectordata
 
 //    set c $insp.c
-    view->incLayoutSeed();
-    view->relayoutAndRedrawAll();
+    canvasViewer->incLayoutSeed();
+    canvasViewer->relayoutAndRedrawAll();
 
 //    if {[opp_inspector_istoplevel $insp] && $config(layout-may-resize-window)} {
 //        wm geometry $insp ""
@@ -259,9 +363,9 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
     {
         //remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
         if(x == 0)
-            x = view->width() / 2;
+            x = canvasViewer->width() / 2;
         if(y == 0)
-            y = view->height() / 2;
+            y = canvasViewer->height() / 2;
 
         //update zoom factor and redraw
         double newZoomFactor = zoomFactor * mult;
@@ -290,73 +394,59 @@ cCanvas *ModuleInspector::getCanvas()
     return canvas;
 }
 
-void ModuleInspector::refresh()
+GraphicsLayer *ModuleInspector::getAnimationLayer()
 {
-    Inspector::refresh();
-
-    view->refresh();
-}
-
-void ModuleInspector::redraw()
-{
-    view->redraw();
-}
-
-void ModuleInspector::clearObjectChangeFlags()
-{
-    cCanvas *canvas = getCanvas();
-    if (canvas)
-        canvas->getRootFigure()->clearChangeFlags();
+    return canvasViewer->getAnimationLayer();
 }
 
 void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
-    view->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw();
 }
 
 void ModuleInspector::submoduleDeleted(cModule *module)
 {
-    view->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw();
 }
 
 void ModuleInspector::connectionCreated(cGate *srcgate)
 {
-    view->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw();
 }
 
 void ModuleInspector::connectionDeleted(cGate *srcgate)
 {
-    view->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw();
 }
 
 void ModuleInspector::displayStringChanged(cModule *)
 {
-    view->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw();
 }
 
 void ModuleInspector::displayStringChanged()
 {
-    view->setNeedsRedraw();  // TODO check, probably only non-background tags have changed...
+    canvasViewer->setNeedsRedraw();  // TODO check, probably only non-background tags have changed...
 }
 
 void ModuleInspector::displayStringChanged(cGate *)
 {
-    view->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw();
 }
 
 void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
 {
-    view->bubble(subcomponent, text);
+    canvasViewer->bubble(subcomponent, text);
 }
 
 QPointF ModuleInspector::getSubmodCoords(cModule *mod)
 {
-    return view->getSubmodCoords(mod);
+    return canvasViewer->getSubmodCoords(mod);
 }
 
 QPointF ModuleInspector::getMessageEndPos(const QPointF &src, const QPointF &dest)
 {
-    return view->getMessageEndPos(src, dest);
+    return canvasViewer->getMessageEndPos(src, dest);
 }
 
 
@@ -390,7 +480,7 @@ int ModuleInspector::setLayoutSeed(int argc, const char **argv)
         Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
         return TCL_ERROR;
     }
-    view->setLayoutSeed(atol(argv[1]));
+    canvasViewer->setLayoutSeed(atol(argv[1]));
     return TCL_OK;
 }
 
@@ -444,7 +534,7 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 }
 
 void ModuleInspector::click(QMouseEvent *event) {
-    auto objects = view->getObjectsAt(event->pos().x(), event->pos().y());
+    auto objects = canvasViewer->getObjectsAt(event->pos().x(), event->pos().y());
     if (!objects.empty()) {
         getQtenv()->getMainObjectInspector()->setObject(objects.front());
     }
@@ -453,7 +543,7 @@ void ModuleInspector::click(QMouseEvent *event) {
 void ModuleInspector::doubleClick(QMouseEvent *event)
 {
     cObject *object = nullptr;
-    QList<cObject *> objects = view->getObjectsAt(event->pos().x(), event->pos().y());
+    QList<cObject *> objects = canvasViewer->getObjectsAt(event->pos().x(), event->pos().y());
     for (auto &i : objects) {
         if (i) {
             object = i;
@@ -481,7 +571,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
     //ModuleInspector:zoomMarqueeCancel $insp ;# just in case
 
-    QList<cObject*> objects = view->getObjectsAt(event->x(), event->y());
+    QList<cObject*> objects = canvasViewer->getObjectsAt(event->x(), event->y());
 
    if(objects.size())
    {
@@ -507,7 +597,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         menu->addSeparator();
         menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_M));
         menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_N));
-        menu->addAction("Re-Layout", view, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
+        menu->addAction("Re-Layout", canvasViewer, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
 
         menu->addSeparator();
         //TODO Create a preferences dialog in Qt designer and here set its exec() slot
@@ -525,6 +615,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
 void ModuleInspector::layers()
 {
+    CanvasRenderer *canvasRenderer = canvasViewer->getCanvasRenderer();
     if(!canvasRenderer->hasCanvas())
     {
         QMessageBox::warning(this, tr("Warning"), tr("No default canvas has been created for this module yet."),
@@ -590,6 +681,24 @@ void ModuleInspector::zoomIconsBy()
             redraw();
         }
     }
+}
+
+void ModuleInspector::switchToOsgView()
+{
+    //TODO rebuild toolbar
+    stackedLayout->setCurrentWidget(osgViewer);
+
+    switchToCanvasViewAction->setChecked(false);
+    switchToOsgViewAction->setChecked(true);
+}
+
+void ModuleInspector::switchToCanvasView()
+{
+    //TODO rebuild toolbar
+    stackedLayout->setCurrentWidget(canvasViewer);
+
+    switchToCanvasViewAction->setChecked(true);
+    switchToOsgViewAction->setChecked(false);
 }
 
 } // namespace qtenv

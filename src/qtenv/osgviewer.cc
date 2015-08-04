@@ -14,104 +14,151 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <osgEarthUtil/EarthManipulator>
+#include "omnetpp/cosgcanvas.h"
 #include "osgviewer.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-OsgViewerWidget::OsgViewerWidget(QWidget *parent) : QWidget(parent)
+OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
 {
     setThreadingModel(osgViewer::ViewerBase::SingleThreaded);  //XXX crashes with Multithreaded
 
     // disable the default setting of viewer.done() by pressing Escape.
     setKeyEventSetsDone(0);
 
-    QWidget* widget1 = addViewWidget(createGraphicsWindow(0,0,100,100));
+    QWidget *glWidget = addViewWidget();
 
-    QGridLayout* grid = new QGridLayout;
-    grid->addWidget( widget1, 0, 0 );
+    QGridLayout *grid = new QGridLayout;
+    grid->addWidget(glWidget, 0, 0);
     grid->setMargin(1);  // WARNING: don't set 0 or the 3D scene won't appear!
+    setLayout(grid);
 
-    setLayout( grid );
-
-    connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
-    _timer.start( 10 );
+    // set up periodic update of 3D view
+    connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
+    timer.start(10);
 }
 
-QWidget *OsgViewerWidget::addViewWidget(osgQt::GraphicsWindowQt *gw)
+QWidget *OsgViewer::addViewWidget()
 {
+    // create an OSG viewer (NOT part of the Qt widget tree!)
     view = new osgViewer::View();
-    addView( view );
+    addView(view);
 
-    osg::Camera* camera = view->getCamera();
-    camera->setGraphicsContext( gw );
+    // configure viewer and its camera with some default settings
+    // (they will be overwritten from inspector hints later)
+    osg::Camera *camera = view->getCamera();
+    camera->setClearColor(osg::Vec4(0.9, 0.9, 0.9, 1.0));
+    camera->setViewport(new osg::Viewport(0, 0, 100, 100));
+    camera->setProjectionMatrixAsPerspective(120.0f, 1.0, 1.0f, 10000.0f);
+    view->addEventHandler(new osgViewer::StatsHandler);
+    view->setCameraManipulator(new osgGA::TrackballManipulator);
 
-    const osg::GraphicsContext::Traits* traits = gw->getTraits();
-
-    // default settings (will be overridden from inspector's setObject())
-    camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
-    camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
-    camera->setProjectionMatrixAsPerspective(120.0f, 1.0, 1.0f, 10000.0f );
-
-    view->addEventHandler( new osgViewer::StatsHandler );
-
-    //view->setCameraManipulator( new osgGA::TrackballManipulator );
-    view->setCameraManipulator( new osgEarth::Util::EarthManipulator() );
-
-    return gw->getGLWidget();
-}
-
-osgQt::GraphicsWindowQt *OsgViewerWidget::createGraphicsWindow(int x, int y, int w, int h, const std::string &name, bool windowDecoration)
-{
-    osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
+    // create an OSG "graphics window" where camera will render the scene;
+    // the graphics window wraps a QGLWidget, and we'll add THAT to the Qt widget tree
+    osg::DisplaySettings *ds = osg::DisplaySettings::instance().get();
     osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
-    traits->windowName = name;
-    traits->windowDecoration = windowDecoration;
-    traits->x = x;
-    traits->y = y;
-    traits->width = w;
-    traits->height = h;
+    traits->windowName = "";
+    traits->windowDecoration = false;
+    traits->x = 0;
+    traits->y = 0;
+    traits->width = 100;
+    traits->height = 100;
     traits->doubleBuffer = true;
     traits->alpha = ds->getMinimumNumAlphaBits();
     traits->stencil = ds->getMinimumNumStencilBits();
     traits->sampleBuffers = ds->getMultiSamples();
     traits->samples = ds->getNumMultiSamples();
 
-    return new osgQt::GraphicsWindowQt(traits.get());
+    osgQt::GraphicsWindowQt *graphicsWindow = new osgQt::GraphicsWindowQt(traits.get());
+    camera->setGraphicsContext(graphicsWindow);
+    return graphicsWindow->getGLWidget();
 }
 
-void OsgViewerWidget::paintEvent(QPaintEvent *event)
+void OsgViewer::paintEvent(QPaintEvent *event)
 {
-    printf("OsgViewerWidget::paintEvent()\n");
+    //printf("OsgViewerWidget::paintEvent()\r");
     frame();
 }
 
-void OsgViewerWidget::setScene(osg::Node* scene)
+void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
 {
-    view->setSceneData(scene);
+    if (osgCanvas != canvas) {
+        osgCanvas = canvas;
+        refresh();
+        if (osgCanvas != nullptr)
+            applyViewerHints();
+        else
+            resetViewer();
+    }
 }
 
-osg::Node *OsgViewerWidget::getScene() const
+void OsgViewer::refresh()
 {
-    return view->getSceneData();
+    osg::Node *scene = osgCanvas ? osgCanvas->getScene() : nullptr;
+    if (scene != view->getSceneData())
+        view->setSceneData(scene);
 }
 
-void OsgViewerWidget::setClearColor(float r, float g, float b, float alpha)
+void OsgViewer::applyViewerHints()
 {
-    osg::Camera* camera = view->getCamera();
+    printf("applyViewerHints()\n");
+    ASSERT(osgCanvas != nullptr);
+
+    cOsgCanvas::Color color = osgCanvas->getClearColor();
+    setClearColor(color.red/255.0, color.green/255.0, color.blue/255.0, 1.0);
+
+    osgGA::CameraManipulator *manipulator = nullptr;
+    auto manipulatorType = osgCanvas->getCameraManipulatorType();
+    if (manipulatorType == cOsgCanvas::CAM_AUTO)
+        manipulatorType = osgCanvas->getViewerStyle()==cOsgCanvas::STYLE_GENERIC ? cOsgCanvas::CAM_TRACKBALL : cOsgCanvas::CAM_EARTH;
+    switch (manipulatorType) {
+        case cOsgCanvas::CAM_TRACKBALL: manipulator = new osgGA::TrackballManipulator; break;
+        case cOsgCanvas::CAM_EARTH: manipulator = new osgEarth::Util::EarthManipulator; break;
+    }
+    setCameraManipulator(manipulator);
+
+    setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getAspect(), osgCanvas->getZNear(), osgCanvas->getZFar());
+
+    if (osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_EARTH)
+        setEarthViewpoint(osgCanvas->getEarthViewpoint());
+}
+
+void OsgViewer::resetViewer()
+{
+    printf("resetViewer()\n");
+    setClearColor(0.9, 0.9, 0.9, 1.0);
+    setCameraManipulator(nullptr);
+    setPerspective(30, 1.0, 1, 1000);
+}
+
+void OsgViewer::setClearColor(float r, float g, float b, float alpha)
+{
+    osg::Camera *camera = view->getCamera();
     camera->setClearColor(osg::Vec4(r, g, b, alpha));
-    camera->setProjectionMatrixAsPerspective(120.0f, 1.0, 1.0f, 10000.0f );
 }
 
-void OsgViewerWidget::setCameraManipulator(osgGA::CameraManipulator *manipulator)
+void OsgViewer::setCameraManipulator(osgGA::CameraManipulator *manipulator)
 {
     view->setCameraManipulator(manipulator);
 }
 
-void OsgViewerWidget::setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar)
+void OsgViewer::setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar)
 {
-    osg::Camera* camera = view->getCamera();
+    osg::Camera *camera = view->getCamera();
     camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, aspect, zNear, zFar);
+}
+
+void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
+{
+    if (viewpoint.isValid()) {
+        osgGA::CameraManipulator *manip = view->getCameraManipulator();
+        if (osgEarth::Util::EarthManipulator *earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(manip)) {
+            double duration = 0.5; //XXX or something
+            earthManip->setViewpoint(viewpoint, duration);
+        }
+    }
 }
 
 } // qtenv

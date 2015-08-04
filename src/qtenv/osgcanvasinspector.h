@@ -22,14 +22,14 @@
 namespace omnetpp {
 namespace qtenv {
 
-class OsgViewerWidget;
+class OsgViewer;
 
 class QTENV_API OsgCanvasInspector : public Inspector
 {
     Q_OBJECT
 
    private:
-      OsgViewerWidget *viewWidget;
+      OsgViewer *osgViewer;
 
    public:
       OsgCanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

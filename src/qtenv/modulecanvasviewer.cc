@@ -1,5 +1,5 @@
 //==========================================================================
-//  MODULEGRAPHICSVIEW.CC - part of
+//  MODULECANVASVIEWER.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,7 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "modulegraphicsview.h"
+#include "modulecanvasviewer.h"
+#include "canvasrenderer.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/csimulation.h"
@@ -47,27 +48,49 @@ using namespace OPP::layout;
 namespace omnetpp {
 namespace qtenv {
 
-ModuleGraphicsView::ModuleGraphicsView(CanvasRenderer *canvasRenderer) :
+ModuleCanvasViewer::ModuleCanvasViewer() :
     object(nullptr),
     layoutSeed(0),
     notDrawn(false),
-    needs_redraw(false),
-    canvasRenderer(canvasRenderer)
+    needs_redraw(false)
 {
+    backgroundLayer = new GraphicsLayer();
+    rangeLayer = new GraphicsLayer();
+    submoduleLayer = new GraphicsLayer();
+    figureLayer = new GraphicsLayer();
+    animationLayer = new GraphicsLayer();
+
+    setScene(new QGraphicsScene());
+    scene()->addItem(backgroundLayer);
+    scene()->addItem(rangeLayer);
+    scene()->addItem(submoduleLayer);
+    scene()->addItem(figureLayer);
+    scene()->addItem(animationLayer);
+
+    canvasRenderer = new CanvasRenderer();
+    canvasRenderer->setLayer(figureLayer, nullptr);
 }
 
-void ModuleGraphicsView::setObject(cModule *obj)
+ModuleCanvasViewer::~ModuleCanvasViewer()
+{
+    delete canvasRenderer;
+}
+
+void ModuleCanvasViewer::setObject(cModule *obj)
 {
     object = obj;
+
+    cCanvas *canvas = object ? object->getCanvasIfExists() : nullptr;
+    canvasRenderer->setCanvas(canvas);
 }
 
-void ModuleGraphicsView::mouseDoubleClickEvent(QMouseEvent * event)
+void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent * event)
 {
     if(event->button() == Qt::MouseButton::LeftButton)
         emit doubleClick(event);
 }
 
-void ModuleGraphicsView::mousePressEvent(QMouseEvent *event)
+void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
 {
     switch (event->button()) {
     case Qt::LeftButton: emit click(event); break;
@@ -77,12 +100,12 @@ void ModuleGraphicsView::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void ModuleGraphicsView::contextMenuEvent(QContextMenuEvent * event)
+void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent * event)
 {
     emit contextMenuRequested(event);
 }
 
-void ModuleGraphicsView::relayoutAndRedrawAll()
+void ModuleCanvasViewer::relayoutAndRedrawAll()
 {
     ASSERT(object != nullptr);
 
@@ -124,14 +147,14 @@ void ModuleGraphicsView::relayoutAndRedrawAll()
     adjustSubmodulesZOrder();
 }
 
-void ModuleGraphicsView::recalculateLayout()
+void ModuleCanvasViewer::recalculateLayout()
 {
     // refresh layout with empty submodPosMap -- everything layouted
     submodPosMap.clear();
     refreshLayout();
 }
 
-void ModuleGraphicsView::refreshLayout()
+void ModuleCanvasViewer::refreshLayout()
 {
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
     // only new nodes are re-layouted
@@ -266,7 +289,7 @@ void ModuleGraphicsView::refreshLayout()
     delete layouter;
 }
 
-void ModuleGraphicsView::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
+void ModuleCanvasViewer::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
         double& x, double& y, double& sx, double& sy)
 {
     const cDisplayString blank;
@@ -365,21 +388,21 @@ void ModuleGraphicsView::getSubmoduleCoords(cModule *submod, bool& explicitcoord
     }
 }
 
-void ModuleGraphicsView::redrawFigures()
+void ModuleCanvasViewer::redrawFigures()
 {
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
     canvasRenderer->redraw(&hints);
 }
 
-void ModuleGraphicsView::refreshFigures()
+void ModuleCanvasViewer::refreshFigures()
 {
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
     canvasRenderer->refresh(&hints);
 }
 
-void ModuleGraphicsView::fillFigureRenderingHints(FigureRenderingHints *hints)
+void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
     QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
     QVariant variant = getQtenv()->getPref(prefName);
@@ -404,7 +427,7 @@ void ModuleGraphicsView::fillFigureRenderingHints(FigureRenderingHints *hints)
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!
-void ModuleGraphicsView::redrawModules()
+void ModuleCanvasViewer::redrawModules()
 {
     cModule *parentModule = object;
 
@@ -437,7 +460,7 @@ void ModuleGraphicsView::redrawModules()
     //CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0", TCL_NULL));
 }
 
-void ModuleGraphicsView::drawSubmodule(cModule *submod, double x, double y)
+void ModuleCanvasViewer::drawSubmodule(cModule *submod, double x, double y)
 {
     auto item = new SubmoduleItem(submod);
     item->setRangeLayer(rangeLayer);
@@ -448,7 +471,7 @@ void ModuleGraphicsView::drawSubmodule(cModule *submod, double x, double y)
     item->setParentItem(submoduleLayer);
 }
 
-void ModuleGraphicsView::drawEnclosingModule(cModule *parentModule)
+void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
 {
     cDisplayString ds = parentModule->hasDisplayString() && parentModule->parametersFinalized()
             ? parentModule->getDisplayString()
@@ -720,7 +743,7 @@ if {$sx=="" || $sy==""} {
     */
 }
 
-void ModuleGraphicsView::drawConnection(cGate *gate)
+void ModuleCanvasViewer::drawConnection(cGate *gate)
 {
     cModule *mod = gate->getOwnerModule();
     cGate *destGate = gate->getNextGate();
@@ -888,12 +911,12 @@ void ModuleGraphicsView::drawConnection(cGate *gate)
 //    }
 }
 
-QPointF ModuleGraphicsView::getSubmodCoords(cModule *mod)
+QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 {
     return QPointF(submodPosMap[mod]);
 }
 
-QPointF ModuleGraphicsView::getMessageEndPos(const QPointF &src, const QPointF &dest)
+QPointF ModuleCanvasViewer::getMessageEndPos(const QPointF &src, const QPointF &dest)
 {
     auto delta = dest - src;
     auto len = sqrt(delta.x() * delta.x() + delta.y() * delta.y());
@@ -905,7 +928,7 @@ QPointF ModuleGraphicsView::getMessageEndPos(const QPointF &src, const QPointF &
     return src + delta;
 }
 
-cObject *ModuleGraphicsView::getObjectAt(qreal x, qreal y)
+cObject *ModuleCanvasViewer::getObjectAt(qreal x, qreal y)
 {
     QGraphicsItem *item = scene()->itemAt(mapToScene(x, y), QTransform());
     if(item == nullptr)
@@ -919,7 +942,7 @@ cObject *ModuleGraphicsView::getObjectAt(qreal x, qreal y)
     return object;
 }
 
-QList<cObject*> ModuleGraphicsView::getObjectsAt(qreal x, qreal y)
+QList<cObject*> ModuleCanvasViewer::getObjectsAt(qreal x, qreal y)
 {
     QList<QGraphicsItem*> items = scene()->items(mapToScene(x, y));
     QList<cObject*> objects;
@@ -933,35 +956,14 @@ QList<cObject*> ModuleGraphicsView::getObjectsAt(qreal x, qreal y)
     return objects;
 }
 
-void ModuleGraphicsView::setBackgroundLayer(GraphicsLayer *layer)
+void ModuleCanvasViewer::clear()
 {
-    clear();
-    backgroundLayer = layer;
-    redraw();
-}
-
-void ModuleGraphicsView::setSubmoduleLayer(GraphicsLayer *layer) {
-    clear();
-    submoduleLayer = layer;
-    redraw();
-}
-
-void ModuleGraphicsView::setRangeLayer(GraphicsLayer *layer) {
-    clear();
-    this->rangeLayer = layer;
-    for (auto &i : submoduleGraphicsItems) {
-        i.second->setRangeLayer(layer);
-    }
-    redraw();
-}
-
-void ModuleGraphicsView::clear() {
     if (submoduleLayer) submoduleLayer->clear();
     submoduleGraphicsItems.clear();
     nextEventMarker = nullptr; // because it is on the submodule layer, it has been deleted by that
 }
 
-void ModuleGraphicsView::redrawNextEventMarker() {
+void ModuleCanvasViewer::redrawNextEventMarker() {
     delete nextEventMarker;
     nextEventMarker = nullptr;
 
@@ -991,7 +993,7 @@ void ModuleGraphicsView::redrawNextEventMarker() {
     }
 }
 
-void ModuleGraphicsView::refreshSubmodules()
+void ModuleCanvasViewer::refreshSubmodules()
 {
     for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
 //        CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
@@ -1001,7 +1003,7 @@ void ModuleGraphicsView::refreshSubmodules()
     }
 }
 
-void ModuleGraphicsView::adjustSubmodulesZOrder()
+void ModuleCanvasViewer::adjustSubmodulesZOrder()
 {
 //    cCanvas *canvas = getCanvas();
 //    if (canvas) {
@@ -1015,7 +1017,7 @@ void ModuleGraphicsView::adjustSubmodulesZOrder()
 //    }
 }
 
-void ModuleGraphicsView::redraw()
+void ModuleCanvasViewer::redraw()
 {
     clear();
     if (object == nullptr) {
@@ -1032,7 +1034,7 @@ void ModuleGraphicsView::redraw()
     adjustSubmodulesZOrder();
 }
 
-void ModuleGraphicsView::updateBackgroundColor()
+void ModuleCanvasViewer::updateBackgroundColor()
 {
     //TODO szukseges-e a getCanvas() a ModuleInspector classban?
     /*
@@ -1046,7 +1048,7 @@ void ModuleGraphicsView::updateBackgroundColor()
     */
 }
 
-void ModuleGraphicsView::refresh()
+void ModuleCanvasViewer::refresh()
 {
     if (!object) {
         clear();
@@ -1076,7 +1078,7 @@ void ModuleGraphicsView::refresh()
     }
 }
 
-void ModuleGraphicsView::bubble(cComponent *subcomponent, const char *text)
+void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
 {
     if (!subcomponent->isModule())
         return;  // channel bubbles not yet supported

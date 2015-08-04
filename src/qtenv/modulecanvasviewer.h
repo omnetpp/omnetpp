@@ -1,5 +1,5 @@
 //==========================================================================
-//  MODULEGRAPHICSVIEW.H - part of
+//  MODULECANVASVIEWER.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef MODULEGRAPHICSVIEW_H
-#define MODULEGRAPHICSVIEW_H
+#ifndef MODULECANVASVIEWER_H
+#define MODULECANVASVIEWER_H
 
 #include "submoduleitem.h"
 
@@ -38,7 +38,7 @@ class GraphicsLayer;
 struct FigureRenderingHints;
 class CanvasRenderer;
 
-class ModuleGraphicsView : public QGraphicsView
+class ModuleCanvasViewer : public QGraphicsView
 {
     Q_OBJECT
 
@@ -54,6 +54,15 @@ private:
 
     std::map<int, SubmoduleItem*> submoduleGraphicsItems;
 
+    GraphicsLayer *backgroundLayer;
+    GraphicsLayer *rangeLayer;
+    GraphicsLayer *submoduleLayer;
+    GraphicsLayer *figureLayer;
+    GraphicsLayer *animationLayer;
+    QGraphicsRectItem *rectangleItem = nullptr;
+    QGraphicsRectItem *nextEventMarker = nullptr;
+
+private:
     // does full layouting, stores results in submodPosMap
     void recalculateLayout();
 
@@ -80,12 +89,6 @@ private:
 
     void updateBackgroundColor();
 
-    GraphicsLayer *backgroundLayer = nullptr;
-    GraphicsLayer *rangeLayer = nullptr;
-    GraphicsLayer *submoduleLayer = nullptr;
-    QGraphicsRectItem *rectangleItem = nullptr;
-    QGraphicsRectItem *nextEventMarker = nullptr;
-
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
@@ -102,15 +105,15 @@ public slots:
     void relayoutAndRedrawAll();
 
 public:
-    ModuleGraphicsView(CanvasRenderer *canvasRenderer);
+    ModuleCanvasViewer();
+    ~ModuleCanvasViewer();
 
     void setObject(cModule *obj);
     cObject *getObjectAt(qreal x, qreal y);
     QList<cObject*> getObjectsAt(qreal x, qreal y);
 
-    void setBackgroundLayer(GraphicsLayer *layer);
-    void setSubmoduleLayer(GraphicsLayer *layer);
-    void setRangeLayer(GraphicsLayer *layer);
+    GraphicsLayer *getAnimationLayer() { return animationLayer; }
+    CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }
 
     void redraw();
     void refresh();
