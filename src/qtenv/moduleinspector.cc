@@ -420,7 +420,7 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         }*/
 
         getQtenv()->setPref(prefName, newZoomFactor);
-        view->setZoomFactor(newZoomFactor);
+        canvasViewer->setZoomFactor(newZoomFactor);
     }
 }
 
@@ -709,7 +709,7 @@ void ModuleInspector::zoomIconsBy(double mult) {
     {
         double newImageSizeFactor = imageSizeFactor * mult;
         getQtenv()->setPref(prefName, newImageSizeFactor);
-        view->setImageSizeFactor(newImageSizeFactor);
+        canvasViewer->setImageSizeFactor(newImageSizeFactor);
     }
 }
 
