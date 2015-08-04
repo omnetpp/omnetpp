@@ -41,12 +41,8 @@ Animator::~Animator() {
     clear();
 }
 
-void Animator::redrawMessages()
-{
-    for (auto i : messageItems) {
-        delete i.second;
-    }
-    messageItems.clear();
+void Animator::redrawMessages() {
+    clear();
 
     // this thingy is only needed if animation is going on
     if (!getQtenv()->animating)
@@ -75,15 +71,15 @@ void Animator::redrawMessages()
             {
                 cGate *arrivalGate = msg->getArrivalGate();
 
-                auto dot = new QGraphicsEllipseItem(-5, -5, 10, 10, moduleInsp->getAnimationLayer(), moduleInsp->getAnimationLayer()->scene());
-                dot->setBrush(QColor("red"));
+                auto messageItem = new MessageItem(moduleInsp->getAnimationLayer());
+                MessageItemUtil::setupFromDisplayString(messageItem, msg);
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
-                dot->setPos(arrivalGate->getPreviousGate()
+                messageItem->setPos(arrivalGate->getPreviousGate()
                              ? moduleInsp->getMessageEndPos(msg->getSenderModule(), msg->getArrivalModule())
                              : moduleInsp->getSubmodCoords(msg->getArrivalModule()));
 
-                messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = dot;
+                messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = messageItem;
             }
         }
     }
@@ -196,31 +192,29 @@ void Animation::setToTime(float time) {
 
     if (ended()) {
         if (mode != ANIM_BEGIN || direction == DIR_ASCENT || direction == DIR_DESCENT) {
-            if (line) line->setVisible(false);
-            if (dot) dot->setVisible(false);
+            if (connectionItem) connectionItem->setVisible(false);
+            if (messageItem) messageItem->setVisible(false);
         }
-        if (type == ANIM_SENDDIRECT && dot) {
-            dot->setPos(dest);
-            dot->setVisible(true);
+        if (type == ANIM_SENDDIRECT && messageItem) {
+            messageItem->setPos(dest);
+            messageItem->setVisible(true);
         }
     } else {
-        if (line) line->setVisible(true);
-        if (dot) dot->setVisible(true);
+        if (connectionItem) connectionItem->setVisible(true);
+        if (messageItem) messageItem->setVisible(true);
     }
 
     switch (type) {
     case ANIM_SENDDIRECT:
         if (mode == ANIM_END) {
-            dot->setVisible((t < 0.2) || (t > 0.4 && t < 0.6) || (t > 0.8 && t < 1));
+            messageItem->setVisible((t < 0.2) || (t > 0.4 && t < 0.6) || (t > 0.8 && t < 1));
             break;
         } // if not and END - a.k.a. delivery, we just slide
     case ANIM_ON_CONN:
-        dot->setPos((1.0f - t) * src + t * dest);
+        messageItem->setPos((1.0f - t) * src + t * dest);
         break;
     case ANIM_METHODCALL:
-        auto pen = line->pen();
-        pen.setDashOffset(-t * 20);
-        line->setPen(pen);
+        connectionItem->setDashOffset(-t * 20);
         break;
     }
 }
@@ -284,17 +278,18 @@ Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, AnimDirecti
     : type(type), direction(direction), mode(mode), text(text), msg(msg), layer(layer), src(src), dest(dest)
 {
     if (type != ANIM_ON_CONN) {
-        line = new QGraphicsLineItem(layer, layer->scene());
-        line->setLine(src.x(), src.y(), dest.x(), dest.y());
-        line->setPen(QPen((type == ANIM_METHODCALL) ? QColor("red") : QColor("blue"), 2, Qt::DashLine, Qt::FlatCap));
+        connectionItem = new ConnectionItem(layer);
+        connectionItem->setSource(src);
+        connectionItem->setDestination(dest);
+        connectionItem->setColor((type == ANIM_METHODCALL) ? "red" : "blue");
+        connectionItem->setLineStyle(Qt::DashLine);
     }
 
     if (type != ANIM_METHODCALL) {
-        dot = new QGraphicsEllipseItem(layer, layer->scene());
-        dot->setBrush(QColor("red"));
-        dot->setRect(QRect(-5, -5, 10, 10));
-        dot->setVisible(false);
-        dot->setPos(src);
+        messageItem = new MessageItem(layer);
+        MessageItemUtil::setupFromDisplayString(messageItem, msg);
+        messageItem->setVisible(false);
+        messageItem->setPos(src);
     }
 
     auto delta = dest - src;
@@ -302,7 +297,7 @@ Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, AnimDirecti
                // if SENDDIRECT is in END, that's the flashing, so make it a bit quicker
     duration = (type == ANIM_SENDDIRECT) ? ((mode == ANIM_END) ? 0.5 : 1) :
                // at most 1 sec, otherwise 100 pixels/sec
-               (type == ANIM_ON_CONN) ? std::min(sqrt(delta.x() * delta.x() + delta.y() * delta.y()) * 0.01, 1.0) :
+               (type == ANIM_ON_CONN) ? std::min(std::sqrt(delta.x() * delta.x() + delta.y() * delta.y()) * 0.01, 1.0) :
                // method calls are fixed duration
                0.5;
 }
@@ -313,8 +308,8 @@ Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, Animation::
 }
 
 Animation::~Animation() {
-    delete line;
-    delete dot;
+    delete connectionItem;
+    delete messageItem;
 }
 
 

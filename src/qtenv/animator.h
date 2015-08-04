@@ -24,6 +24,8 @@
 #include <QTimer>
 #include <omnetpp/cmessage.h>
 #include "omnetpp/simtime_t.h"
+#include "messageitem.h"
+#include "connectionitem.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -53,8 +55,9 @@ struct Animation {
 
     float time = 0;
     float duration;
-    QGraphicsEllipseItem *dot = nullptr;
-    QGraphicsLineItem *line = nullptr;
+    MessageItem *messageItem = nullptr;
+    // only used in senddirect and methodcall modes to temporarily connect the modules
+    ConnectionItem *connectionItem = nullptr;
     GraphicsLayer *layer;
 
     QPointF src;
@@ -77,7 +80,7 @@ class Animator : public QObject
     Q_OBJECT
 
     std::list<Animation *> animations;
-    std::map<std::pair<GraphicsLayer *, cMessage *>, QGraphicsItem *> messageItems;
+    std::map<std::pair<GraphicsLayer *, cMessage *>, MessageItem *> messageItems;
 
     static const int frameRate = 40;
     bool inHurry = false;

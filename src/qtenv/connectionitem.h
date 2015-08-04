@@ -44,6 +44,7 @@ protected:
     double lineWidth = 1;
     QColor lineColor = QColor("black");
     Qt::PenStyle lineStyle = Qt::SolidLine; // not directly fed to the lineItem
+    double dashOffset = 0;
     QString text;
     Qt::Alignment textAlignment = Qt::AlignCenter; // Left for source, Right for dest, Center for middle
     QColor textColor = QColor("#005030");
@@ -67,6 +68,7 @@ public:
     void setWidth(double width);
     void setColor(const QColor &color);
     void setLineStyle(Qt::PenStyle style);
+    void setDashOffset(double offset);
     void setText(const QString &text);
     void setTextPosition(Qt::Alignment alignment);
     void setTextColor(const QColor &color);

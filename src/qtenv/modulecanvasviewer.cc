@@ -85,10 +85,12 @@ ModuleCanvasViewer::~ModuleCanvasViewer()
 
 void ModuleCanvasViewer::setObject(cModule *obj)
 {
+    clear();
     object = obj;
 
     cCanvas *canvas = object ? object->getCanvasIfExists() : nullptr;
     canvasRenderer->setCanvas(canvas);
+    redraw();
 }
 
 void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent * event)
@@ -548,6 +550,9 @@ QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 
 QPointF ModuleCanvasViewer::getMessageEndPos(cModule *src, cModule *dest)
 {
+    if (dest == object)
+        return QPointF();
+
     QPointF srcPos = getSubmodCoords(src);
     QPointF destPos = getSubmodCoords(dest);
 
@@ -720,6 +725,7 @@ void ModuleCanvasViewer::setZoomFactor(double zoomFactor) {
     if (this->zoomFactor != zoomFactor) {
         this->zoomFactor = zoomFactor;
         redraw();
+        viewport()->update();
     }
 }
 

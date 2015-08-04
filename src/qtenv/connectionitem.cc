@@ -79,16 +79,17 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
 }
 
 void ConnectionItem::updateLineItem() {
-    if (!lineEnabled) {
+    if (!lineEnabled || (dest == src)) { // not drawing the line if the conn would be 0 long
         lineItem->setPen(Qt::NoPen);
         return;
     }
 
     QPointF direction = dest - src;
-    direction /= std::sqrt(direction.x() * direction.x() + direction.y() * direction.y());
+    double length = std::sqrt(direction.x() * direction.x() + direction.y() * direction.y());
+    direction /= length;
 
     // correcting the destination if needed, so it won't mess up the arrowhead
-    lineItem->setLine(QLineF(src, dest - (arrowEnabled ? (direction * lineWidth) : QPointF(0, 0))));
+    lineItem->setLine(QLineF(src, dest - direction * (arrowEnabled ? std::min(length, lineWidth) : 0.0)));
     QPen pen(lineColor, lineWidth);
     pen.setCapStyle(Qt::FlatCap);
 
@@ -102,6 +103,8 @@ void ConnectionItem::updateLineItem() {
     default:
         pen.setStyle(Qt::SolidLine);
     }
+
+    pen.setDashOffset(dashOffset);
 
     lineItem->setPen(pen);
 }
@@ -130,7 +133,7 @@ void ConnectionItem::updateTextItem() {
 }
 
 void ConnectionItem::updateArrowItem() {
-    if (!arrowEnabled) {
+    if (!arrowEnabled || (dest == src)) { // no arrow for a 0 long connection
         arrowItem->setBrush(Qt::NoBrush);
         return;
     }
@@ -197,6 +200,13 @@ void ConnectionItem::setLineStyle(Qt::PenStyle style) {
 
     if (style != lineStyle) {
         lineStyle = style;
+        updateLineItem();
+    }
+}
+
+void ConnectionItem::setDashOffset(double offset) {
+    if (dashOffset != offset) {
+        dashOffset = offset;
         updateLineItem();
     }
 }

@@ -234,13 +234,14 @@ void ModuleInspector::doSetObject(cObject *obj)
     if (obj == object)
         return;
 
+    getQtenv()->getAnimator()->clearInspector(this);
+
     Inspector::doSetObject(obj);
 
     cModule *module = dynamic_cast<cModule*>(obj);
 
     canvasViewer->setObject(module);
     canvasViewer->clear();
-    getQtenv()->getAnimator()->clearInspector(this);
 
     if (object) {
         canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
@@ -263,9 +264,9 @@ void ModuleInspector::doSetObject(cObject *obj)
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
-        //    ModuleInspector:updateZoomLabel $insp
-        //    ModuleInspector:adjustWindowSizeAndZoom $insp
-        // }
+
+        // so they will appear on the correct places with the updated zoom levels.
+        getQtenv()->getAnimator()->redrawMessages();
     }
 
     cOsgCanvas *osgCanvas = getOsgCanvas();
