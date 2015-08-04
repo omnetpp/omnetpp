@@ -58,7 +58,7 @@ struct Animation {
     MessageItem *messageItem = nullptr;
     // only used in senddirect and methodcall modes to temporarily connect the modules
     ConnectionItem *connectionItem = nullptr;
-    GraphicsLayer *layer;
+    ModuleInspector *inspector;
 
     QPointF src;
     QPointF dest;
@@ -70,8 +70,8 @@ struct Animation {
 
     QString info();
 
-    Animation(GraphicsLayer *layer, AnimType type, AnimDirection direction, SendAnimMode mode, QPointF src, QPointF dest, cMessage *msg, const QString &text = "");
-    Animation(GraphicsLayer *layer, AnimType type, AnimDirection direction, const QPointF &src, const QPointF &dest, cMessage *msg = nullptr, const QString &text = "");
+    Animation(ModuleInspector *insp, AnimType type, AnimDirection direction, SendAnimMode mode, QPointF src, QPointF dest, cMessage *msg, const QString &text = "");
+    Animation(ModuleInspector *insp, AnimType type, AnimDirection direction, const QPointF &src, const QPointF &dest, cMessage *msg = nullptr, const QString &text = "");
     ~Animation();
 };
 
@@ -80,7 +80,7 @@ class Animator : public QObject
     Q_OBJECT
 
     std::list<Animation *> animations;
-    std::map<std::pair<GraphicsLayer *, cMessage *>, MessageItem *> messageItems;
+    std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
 
     static const int frameRate = 40;
     bool inHurry = false;

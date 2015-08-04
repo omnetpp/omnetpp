@@ -19,6 +19,7 @@
 
 #include "qtutil.h"
 
+#include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>
 
 namespace omnetpp {
@@ -26,36 +27,63 @@ namespace qtenv {
 
 class MessageItem;
 class MessageItemUtil {
+    static QVector<QColor> msgKindColors;
 public:
-    static void setupFromDisplayString(MessageItem *mi, cMessage *msg);
+    static void setupFromDisplayString(MessageItem *mi, cMessage *msg, double imageSizeFactor);
 };
 
 class MessageItem : public QGraphicsObject
 {
     Q_OBJECT
 
+public:
+    enum Shape {
+        SHAPE_NONE,
+        SHAPE_OVAL,
+        SHAPE_RECT
+    };
+
 protected:
+    double imageSizeFactor = 1; // no zoom factor, it doesn't affect messages
     QImage *image = nullptr;
-    QColor color;
+    QColor shapeFillColor = QColor("red");
+    QColor shapeOutlineColor = QColor("red");
+    double shapeOutlineWidth = 0;
+    double shapeWidth = 10;
+    double shapeHeight = 10;
+    Shape shape = SHAPE_OVAL;
     QString text;
 
     OutlinedTextItem *textItem;
-    QGraphicsEllipseItem *ellipseItem = nullptr;
+    QAbstractGraphicsShapeItem *shapeItem = nullptr;
     QGraphicsPixmapItem *imageItem = nullptr;
+    // TODO FIXME - this effect does not look the same as the one in tkenv
+    QGraphicsColorizeEffect *colorizeEffect = nullptr; // owned by the image item
 
-    QRectF ellipseImageBoundingBox() const;
+    QRectF shapeImageBoundingRect() const;
 
     void updateTextItem();
-    void updateEllipseItem();
+    void updateShapeItem();
     void updateImageItem();
 
 public:
     explicit MessageItem(QGraphicsItem *parent = nullptr);
     virtual ~MessageItem();
 
+    void setImageSizeFactor(double imageSize);
+
     void setText(const QString &text);
-    void setColor(const QColor &color); // will hide the image and show the ellipse only
-    void setImage(QImage *image);       // will hide the ellipse and show the image only
+
+    void setShape(Shape shape);
+    void setWidth(double width);
+    void setHeight(double height);
+    void setFillColor(const QColor &color);
+    void setOutlineColor(const QColor &color);
+    void setOutlineWidth(double width);
+
+    void setImage(QImage *image);
+    void setImageColor(const QColor &color);
+    void setImageColorPercentage(int percent);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

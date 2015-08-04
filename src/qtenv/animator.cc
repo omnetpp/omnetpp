@@ -72,14 +72,14 @@ void Animator::redrawMessages() {
                 cGate *arrivalGate = msg->getArrivalGate();
 
                 auto messageItem = new MessageItem(moduleInsp->getAnimationLayer());
-                MessageItemUtil::setupFromDisplayString(messageItem, msg);
+                MessageItemUtil::setupFromDisplayString(messageItem, msg, moduleInsp->getImageSizeFactor());
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
                 messageItem->setPos(arrivalGate->getPreviousGate()
                              ? moduleInsp->getMessageEndPos(msg->getSenderModule(), msg->getArrivalModule())
                              : moduleInsp->getSubmodCoords(msg->getArrivalModule()));
 
-                messageItems[std::make_pair(moduleInsp->getAnimationLayer(), msg)] = messageItem;
+                messageItems[std::make_pair(moduleInsp, msg)] = messageItem;
             }
         }
     }
@@ -119,7 +119,7 @@ void Animator::onFrameTimer() {
     for (auto &a : animations) {
         if (a->groupIndex == 0) {
             for (auto &i : messageItems) {
-                if (i.first == std::make_pair(a->layer, a->msg)) {
+                if (i.first == std::make_pair(a->inspector, a->msg)) {
                     i.second->setVisible(false);
                 }
             }
@@ -164,11 +164,9 @@ void Animator::hurry()
         inHurry = true;
 }
 
-void Animator::clearInspector(ModuleInspector *insp)
-{
-    auto inspLayer = insp->getAnimationLayer();
+void Animator::clearInspector(ModuleInspector *insp) {
     for (auto &anim : animations) {
-        if (anim->layer == inspLayer) {
+        if (anim->inspector == insp) {
             delete anim;
             anim = nullptr;
         }
@@ -176,7 +174,7 @@ void Animator::clearInspector(ModuleInspector *insp)
     animations.remove(nullptr);
 
     for (auto it = messageItems.begin(); it != messageItems.end(); /* blank */ ) {
-        if ((*it).first.first == inspLayer) {
+        if ((*it).first.first == insp) {
             delete (*it).second;
             messageItems.erase(it++);
         } else {
@@ -274,9 +272,11 @@ QString Animation::info()
     */
 }
 
-Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, AnimDirection direction, SendAnimMode mode, QPointF src, QPointF dest, cMessage *msg, const QString &text)
-    : type(type), direction(direction), mode(mode), text(text), msg(msg), layer(layer), src(src), dest(dest)
+Animation::Animation(ModuleInspector *insp, Animation::AnimType type, AnimDirection direction, SendAnimMode mode, QPointF src, QPointF dest, cMessage *msg, const QString &text)
+    : type(type), direction(direction), mode(mode), text(text), msg(msg), inspector(insp), src(src), dest(dest)
 {
+    auto layer = insp->getAnimationLayer();
+
     if (type != ANIM_ON_CONN) {
         connectionItem = new ConnectionItem(layer);
         connectionItem->setSource(src);
@@ -287,7 +287,7 @@ Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, AnimDirecti
 
     if (type != ANIM_METHODCALL) {
         messageItem = new MessageItem(layer);
-        MessageItemUtil::setupFromDisplayString(messageItem, msg);
+        MessageItemUtil::setupFromDisplayString(messageItem, msg, insp->getImageSizeFactor());
         messageItem->setVisible(false);
         messageItem->setPos(src);
     }
@@ -302,8 +302,8 @@ Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, AnimDirecti
                0.5;
 }
 
-Animation::Animation(GraphicsLayer *layer, Animation::AnimType type, Animation::AnimDirection direction, const QPointF &src, const QPointF &dest, cMessage *msg, const QString &text)
-    :Animation(layer, type, direction, ANIM_BEGIN, src, dest, msg, text) {
+Animation::Animation(ModuleInspector *insp, Animation::AnimType type, Animation::AnimDirection direction, const QPointF &src, const QPointF &dest, cMessage *msg, const QString &text)
+    :Animation(insp, type, direction, ANIM_BEGIN, src, dest, msg, text) {
     // the delegated ctor does the job
 }
 
@@ -318,21 +318,21 @@ void Animator::animateMethodcallAscent(ModuleInspector *insp, cModule *srcSubmod
 {
     auto start = insp->getSubmodCoords(srcSubmod);
     QPointF end(start.x() + start.y() / 4, 0);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_METHODCALL, Animation::DIR_ASCENT, start, end, nullptr, methodText));
+    addAnimation(new Animation(insp, Animation::ANIM_METHODCALL, Animation::DIR_ASCENT, start, end, nullptr, methodText));
 }
 
 void Animator::animateMethodcallDescent(ModuleInspector *insp, cModule *destSubmod, const char *methodText)
 {
     auto end = insp->getSubmodCoords(destSubmod);
     QPointF start(end.x() - end.y() / 4, 0);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_METHODCALL, Animation::DIR_DESCENT, start, end, nullptr, methodText));
+    addAnimation(new Animation(insp, Animation::ANIM_METHODCALL, Animation::DIR_DESCENT, start, end, nullptr, methodText));
 }
 
 void Animator::animateMethodcallHoriz(ModuleInspector *insp, cModule *srcSubmod, cModule *destSubmod, const char *methodText)
 {
     auto start = insp->getSubmodCoords(srcSubmod);
     auto end = insp->getSubmodCoords(destSubmod);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_METHODCALL, Animation::DIR_HORIZ, start, end, nullptr, methodText));
+    addAnimation(new Animation(insp, Animation::ANIM_METHODCALL, Animation::DIR_HORIZ, start, end, nullptr, methodText));
 }
 
 void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage *msg, SendAnimMode mode)
@@ -372,8 +372,7 @@ void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage
         srcPos = insp->getMessageEndPos(src, dest);
     }
 
-    addAnimation(new Animation(insp->getAnimationLayer(),
-                               Animation::ANIM_ON_CONN, Animation::DIR_HORIZ,
+    addAnimation(new Animation(insp, Animation::ANIM_ON_CONN, Animation::DIR_HORIZ,
                                mode, srcPos, destPos, msg));
 }
 
@@ -381,27 +380,27 @@ void Animator::animateSenddirectAscent(ModuleInspector *insp, cModule *srcSubmod
 {
     auto start = insp->getSubmodCoords(srcSubmod);
     QPointF end(start.x() + start.y() / 4, 0);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_SENDDIRECT, Animation::DIR_ASCENT, start, end, msg));
+    addAnimation(new Animation(insp, Animation::ANIM_SENDDIRECT, Animation::DIR_ASCENT, start, end, msg));
 }
 
 void Animator::animateSenddirectDescent(ModuleInspector *insp, cModule *destSubmod, cMessage *msg, SendAnimMode mode)
 {
     auto end = insp->getSubmodCoords(destSubmod);
     QPointF start(end.x() - end.y() / 4, 0);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_SENDDIRECT, Animation::DIR_DESCENT, mode, start, end, msg));
+    addAnimation(new Animation(insp, Animation::ANIM_SENDDIRECT, Animation::DIR_DESCENT, mode, start, end, msg));
 }
 
 void Animator::animateSenddirectHoriz(ModuleInspector *insp, cModule *srcSubmod, cModule *destSubmod, cMessage *msg, SendAnimMode mode)
 {
     auto start = insp->getSubmodCoords(srcSubmod);
     auto end = insp->getSubmodCoords(destSubmod);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_SENDDIRECT, Animation::DIR_HORIZ, mode, start, end, msg));
+    addAnimation(new Animation(insp, Animation::ANIM_SENDDIRECT, Animation::DIR_HORIZ, mode, start, end, msg));
 }
 
 void Animator::animateSenddirectDelivery(ModuleInspector *insp, cModule *destSubmod, cMessage *msg)
 {
     auto end = insp->getSubmodCoords(destSubmod);
-    addAnimation(new Animation(insp->getAnimationLayer(), Animation::ANIM_SENDDIRECT, Animation::DIR_HORIZ, ANIM_END, end, end, msg));
+    addAnimation(new Animation(insp, Animation::ANIM_SENDDIRECT, Animation::DIR_HORIZ, ANIM_END, end, end, msg));
 }
 
 } // namespace qtenv

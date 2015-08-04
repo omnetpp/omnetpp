@@ -60,10 +60,10 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     si->setShape(shape);
 
     si->setFillColor(parseColor(ds.getTagArg("b", 3)));
-    si->setBorderColor(parseColor(ds.getTagArg("b", 4)));
+    si->setOutlineColor(parseColor(ds.getTagArg("b", 4)));
     bool ok;
-    int borderWidth = QString(ds.getTagArg("b", 5)).toInt(&ok);
-    si->setBorderWidth(ok ? borderWidth : 2);
+    int outlineWidth = QString(ds.getTagArg("b", 5)).toInt(&ok);
+    si->setOutlineWidth(ok ? outlineWidth : 2);
 
 
     const char *imageName = ds.getTagArg("i", 0);
@@ -71,17 +71,8 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     if (!imageName[0] && shape == SubmoduleItem::SHAPE_NONE)
         imageName = "block/process";
 
-    QString imageSizeText = ds.getTagArg("is", 0);
-    IconSize imageSize = NORMAL;
-    if (!imageSizeText.isEmpty()) {
-        if (imageSizeText[0] == 's') imageSize = SMALL;
-        else if (imageSizeText[0] == 'l') imageSize = LARGE;
-        else if (imageSizeText.contains(QRegExp("v.*s.*"))) imageSize = VERY_SMALL;
-        else if (imageSizeText.contains(QRegExp("v[^s]*l.*"))) imageSize = VERY_LARGE;
-    }
-
     if (imageName[0]) {
-        auto image = getQtenv()->icons.getImage(imageName, imageSize);
+        auto image = getQtenv()->icons.getImage(imageName, ds.getTagArg("is", 0));
         si->setImage(image);
 
         const char *imageColor = ds.getTagArg("i", 1);
@@ -441,24 +432,24 @@ void SubmoduleItem::realignAnchoredItems() {
     updateNameItem(); // the name is anchored too in some sense
 }
 
-void SubmoduleItem::adjustShapeItem() {
+void SubmoduleItem::updateShapeItem() {
     if (shapeItem) {
         shapeItem->setBrush(shapeFillColor.isValid() ? shapeFillColor : QColor("#8080ff"));
-        auto pen = shapeBorderWidth == 0
+        auto pen = shapeOutlineWidth == 0
                      ? Qt::NoPen
-                     : QPen(shapeBorderColor.isValid()
-                              ? shapeBorderColor
+                     : QPen(shapeOutlineColor.isValid()
+                              ? shapeOutlineColor
                               : QColor("black"),
-                            shapeBorderWidth);
+                            shapeOutlineWidth);
         pen.setJoinStyle(Qt::MiterJoin);
         shapeItem->setPen(pen);
 
-        auto w = shapeWidth * zoomFactor - shapeBorderWidth; // so the border grows inwards
-        auto h = shapeHeight * zoomFactor - shapeBorderWidth;
+        auto w = shapeWidth * zoomFactor - shapeOutlineWidth; // so the outline grows inwards
+        auto h = shapeHeight * zoomFactor - shapeOutlineWidth;
         if (auto ellipseItem = dynamic_cast<QGraphicsEllipseItem *>(shapeItem))
-            ellipseItem->setRect(-w/2.0, -h / 2.0, w, h);
+            ellipseItem->setRect(-w / 2.0, -h / 2.0, w, h);
         if (auto rectItem = dynamic_cast<QGraphicsRectItem *>(shapeItem))
-            rectItem->setRect(-w/2.0, -h / 2.0, w, h);
+            rectItem->setRect(-w / 2.0, -h / 2.0, w, h);
         updateNameItem();
         realignAnchoredItems();
     }
@@ -479,22 +470,22 @@ void SubmoduleItem::adjustRangeItem(int i) {
 }
 
 QRectF SubmoduleItem::shapeImageBoundingRect() const {
-    QRectF box;
+    QRectF rect;
     if (imageItem) {
         QRectF imageRect = imageItem->boundingRect();
         // Image scaling is done with a transformation, and boundingRect does
         // not factor that in, so we have to account the factor in here.
         imageRect.setTopLeft(imageRect.topLeft() * imageSizeFactor);
         imageRect.setBottomRight(imageRect.bottomRight() * imageSizeFactor);
-        box = box.united(imageRect);
+        rect = rect.united(imageRect);
     }
     if (shapeItem) {
         QRectF shapeRect = shapeItem->boundingRect();
         // Shape size is modulated by the zoom via adjusting its defining rectangle,
         // (otherwise the outline would change width too), so its boundingRect is good as it is.
-        box = box.united(shapeRect);
+        rect = rect.united(shapeRect);
     }
-    return box;
+    return rect;
 }
 
 SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
@@ -519,7 +510,7 @@ SubmoduleItem::~SubmoduleItem()
 void SubmoduleItem::setZoomFactor(double zoom) {
     if (zoomFactor != zoom) {
         zoomFactor = zoom;
-        adjustShapeItem();
+        updateShapeItem();
 
         for (int i = 0; i < ranges.length(); ++i) {
             adjustRangeItem(i);
@@ -551,42 +542,42 @@ void SubmoduleItem::setShape(Shape shape) {
         case SHAPE_RECT: shapeItem = new QGraphicsRectItem(this, scene());    break;
         }
 
-        adjustShapeItem();
+        updateShapeItem();
     }
 }
 
 void SubmoduleItem::setWidth(double width) {
     if (this->shapeWidth != width) {
         this->shapeWidth = width;
-        adjustShapeItem();
+        updateShapeItem();
     }
 }
 
 void SubmoduleItem::setHeight(double height) {
     if (this->shapeHeight != height) {
         this->shapeHeight = height;
-        adjustShapeItem();
+        updateShapeItem();
     }
 }
 
 void SubmoduleItem::setFillColor(const QColor &color) {
     if (shapeFillColor != color) {
         shapeFillColor = color;
-        adjustShapeItem();
+        updateShapeItem();
     }
 }
 
-void SubmoduleItem::setBorderColor(const QColor &color) {
-    if (shapeBorderColor != color) {
-        shapeBorderColor = color;
-        adjustShapeItem();
+void SubmoduleItem::setOutlineColor(const QColor &color) {
+    if (shapeOutlineColor != color) {
+        shapeOutlineColor = color;
+        updateShapeItem();
     }
 }
 
-void SubmoduleItem::setBorderWidth(double width) {
-    if (shapeBorderWidth != width) {
-        shapeBorderWidth = width;
-        adjustShapeItem();
+void SubmoduleItem::setOutlineWidth(double width) {
+    if (shapeOutlineWidth != width) {
+        shapeOutlineWidth = width;
+        updateShapeItem();
     }
 }
 

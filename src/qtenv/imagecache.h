@@ -48,6 +48,7 @@ public:
     ~ImageCache();
 
     void loadImages(const char *path);
+    QImage *getImage(const char *name, const char *size);
     QImage *getImage(const char *name, IconSize size);
     QImage *getImage(const char *nameWithSize);
 };

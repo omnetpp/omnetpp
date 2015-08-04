@@ -118,6 +118,19 @@ QString ImageCache::sizePostfix(IconSize size)
     }
 }
 
+QImage *ImageCache::getImage(const char *name, const char *size) {
+    QString sizeText(size);
+    IconSize imageSize = NORMAL;
+    if (!sizeText.isEmpty()) {
+        if (sizeText[0] == 's') imageSize = SMALL;
+        else if (sizeText[0] == 'l') imageSize = LARGE;
+        else if (sizeText.contains(QRegExp("v.*s.*"))) imageSize = VERY_SMALL;
+        else if (sizeText.contains(QRegExp("v[^s]*l.*"))) imageSize = VERY_LARGE;
+    }
+
+    return getImage(name, imageSize);
+}
+
 QImage *ImageCache::getImage(const char *name, IconSize size)
 {
     QString nameWithSize = name;

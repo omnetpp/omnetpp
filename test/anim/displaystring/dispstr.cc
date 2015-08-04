@@ -7,7 +7,7 @@ class DisplayStringMessage : public cMessage
     const char *dispStr = "";
 public:
     using cMessage::cMessage;
-    
+
     void setDisplayString(const char *ds) { dispStr = ds; }
     const char *getDisplayString() const override { return dispStr; }
 };
@@ -159,20 +159,29 @@ void Gen::messages()
 {
     static const char *const displayStrings[] = {
         "", "", "", "", "", "", "", "", // 8 colored kinds with no displaystring
-        "i=msg/package",
         "b=15,15,rect,white,kind,5",
         "b=",
+        "b=20",
+        "b=,20",
+        "b=25,15,rect,kind,invalidcolor",
+        "b=15,25,rect,invalidcolor,kind",
         "b=,,,kind",
-        "b=15,15,oval,yellow,green,6"
+        "b=15,15,oval,yellow,green,6",
+        "i=msg/package",
+        "i=msg/package;is=vl",
+        "i=msg/packet,lightgreen",
+        "i=msg/mail,purple,100",
+        "b=25,25,oval;i=misc/cloud_s",
+        "i=device/antennatower_vl"
     };
-    
+
     EV << "Messages:\n";
-    
+
     char msgname[32];
     for (unsigned int i = 0; i < sizeof(displayStrings) / sizeof(const char *); ++i) {
         sprintf(msgname, "job-%d", i);
         DisplayStringMessage *msg = new DisplayStringMessage(msgname, i);
-        msg->setDisplayString(displayStrings[i]);        
+        msg->setDisplayString(displayStrings[i]);
         EV << "Sending message #" << i << " with display string: \"" << displayStrings[i] << "\".\n";
         send(msg, "out");
         wait(0);
@@ -197,4 +206,3 @@ void Sink::handleMessage(cMessage *msg)
 }
 
 Define_Module(Sink);
-

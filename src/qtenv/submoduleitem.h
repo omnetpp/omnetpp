@@ -53,8 +53,7 @@ protected:
     // decoration icon. Call this every time after the size
     // of the image or shape changes. Also updates the name.
     void realignAnchoredItems();
-    void adjustShapeItem();
-    void adjustImage();
+    void updateShapeItem();
     void adjustRangeItem(int i);
     QRectF shapeImageBoundingRect() const; // whichever is bigger in each direction
 
@@ -82,8 +81,6 @@ public:
     };
 
 protected:
-    // appearance
-    int alpha = 255;
     double zoomFactor = 1;
     double imageSizeFactor = 1;
     QString name;
@@ -92,12 +89,10 @@ protected:
     double shapeWidth = 0; // zero if unspec
     double shapeHeight = 0; // zero if unspec
     QColor shapeFillColor;
-    QColor shapeBorderColor;
-    double shapeBorderWidth = 2;
+    QColor shapeOutlineColor;
+    double shapeOutlineWidth = 2;
     QImage *image = nullptr; // not owned
     QImage *decoratorImage = nullptr; // not owned
-    bool pinVisible = false;
-    bool nameVisible = true;
     QString text;
     TextPos textPos = TEXTPOS_TOP;
     QColor textColor;
@@ -131,8 +126,8 @@ public:
     void setWidth(double width);
     void setHeight(double height);
     void setFillColor(const QColor &color);
-    void setBorderColor(const QColor &color);
-    void setBorderWidth(double width);
+    void setOutlineColor(const QColor &color);
+    void setOutlineWidth(double width);
 
     void setImage(QImage *image);
     void setImageColor(const QColor &color);

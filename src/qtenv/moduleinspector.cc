@@ -420,13 +420,37 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         }*/
 
         getQtenv()->setPref(prefName, newZoomFactor);
+        // so animations will not wander around at the old module positions
+        getQtenv()->getAnimator()->clearInspector(this);
         canvasViewer->setZoomFactor(newZoomFactor);
+        getQtenv()->getAnimator()->redrawMessages();
     }
 }
 
 void ModuleInspector::resetOsgView()
 {
     osgViewer->applyViewerHints();
+}
+
+double ModuleInspector::getZoomFactor() {
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    return variant.isValid() ? variant.value<double>() : 1;
+}
+
+double ModuleInspector::getImageSizeFactor() {
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    return variant.isValid() ? variant.value<double>() : 1;
+}
+
+cCanvas *ModuleInspector::getCanvas()
+{
+    cModule *mod = static_cast<cModule *>(object);
+    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
+    return canvas;
 }
 
 GraphicsLayer *ModuleInspector::getAnimationLayer()
@@ -710,6 +734,7 @@ void ModuleInspector::zoomIconsBy(double mult) {
         double newImageSizeFactor = imageSizeFactor * mult;
         getQtenv()->setPref(prefName, newImageSizeFactor);
         canvasViewer->setImageSizeFactor(newImageSizeFactor);
+        getQtenv()->getAnimator()->redrawMessages();
     }
 }
 

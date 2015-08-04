@@ -126,6 +126,9 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged(cGate *gate);
       virtual void bubble(cComponent *subcomponent, const char *text);
 
+      double getZoomFactor();
+      double getImageSizeFactor();
+
       GraphicsLayer *getAnimationLayer();
       QPointF getSubmodCoords(cModule *mod);
       QPointF getMessageEndPos(cModule *src, cModule *dest);
