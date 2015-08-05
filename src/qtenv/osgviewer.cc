@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <QDebug>
 #include <osgEarthUtil/EarthManipulator>
 #include "omnetpp/cosgcanvas.h"
 #include "osgviewer.h"
@@ -28,7 +29,7 @@ OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
     // disable the default setting of viewer.done() by pressing Escape.
     setKeyEventSetsDone(0);
 
-    QWidget *glWidget = addViewWidget();
+    glWidget = addViewWidget();
 
     QGridLayout *grid = new QGridLayout;
     grid->addWidget(glWidget, 0, 0);
@@ -51,7 +52,8 @@ QWidget *OsgViewer::addViewWidget()
     osg::Camera *camera = view->getCamera();
     camera->setClearColor(osg::Vec4(0.9, 0.9, 0.9, 1.0));
     camera->setViewport(new osg::Viewport(0, 0, 100, 100));
-    camera->setProjectionMatrixAsPerspective(120.0f, 1.0, 1.0f, 10000.0f);
+    camera->setProjectionResizePolicy(osg::Camera::HORIZONTAL);
+    //camera->setProjectionMatrixAsPerspective(120.0f, aspect, 1.0f, 10000.0f); -- would need real widget aspect ration which is not yet available at this point
     view->addEventHandler(new osgViewer::StatsHandler);
     view->setCameraManipulator(new osgGA::TrackballManipulator);
 
@@ -74,6 +76,15 @@ QWidget *OsgViewer::addViewWidget()
     osgQt::GraphicsWindowQt *graphicsWindow = new osgQt::GraphicsWindowQt(traits.get());
     camera->setGraphicsContext(graphicsWindow);
     return graphicsWindow->getGLWidget();
+}
+
+bool OsgViewer::event(QEvent *event)
+{
+    // workaround: initial camera->setProjectionMatrixAsPerspective() needs the correct glWidget aspect ratio which is first available in the Polish event
+    if (event->type() == QEvent::PolishRequest)
+        applyViewerHints(); // for camera->setProjectionMatrixAsPerspective()
+
+    return QWidget::event(event);
 }
 
 void OsgViewer::paintEvent(QPaintEvent *event)
@@ -147,7 +158,8 @@ void OsgViewer::setCameraManipulator(osgGA::CameraManipulator *manipulator)
 void OsgViewer::setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar)
 {
     osg::Camera *camera = view->getCamera();
-    camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, aspect, zNear, zFar);
+    double widgetAspect = glWidget->geometry().width() / (double) glWidget->geometry().height();
+    camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, aspect*widgetAspect, zNear, zFar);
 }
 
 void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)

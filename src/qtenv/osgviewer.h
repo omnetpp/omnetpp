@@ -43,6 +43,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
   protected:
     cOsgCanvas *osgCanvas;
     osgViewer::View *view;
+    QWidget *glWidget;
     QTimer timer;
 
   protected:
@@ -53,6 +54,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     void setCameraManipulator(osgGA::CameraManipulator *manipulator);
     void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
     void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
+    bool event(QEvent *);
 
   public:
     OsgViewer(QWidget *parent=nullptr);
