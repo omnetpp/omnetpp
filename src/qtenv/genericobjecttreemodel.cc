@@ -340,8 +340,8 @@ void FieldNode::fill() {
 
 QVariant FieldNode::data(int role) {
     cObject *objectCasted = nullptr;
-	
-	// if no containingDesc, then this the root, which must be cObject
+
+    // if no containingDesc, then this the root, which must be cObject
     if (!containingDesc || containingDesc->getFieldIsCObject(fieldIndex)) {
         objectCasted = static_cast<cObject *>(object);
     }
@@ -356,7 +356,7 @@ QVariant FieldNode::data(int role) {
         case Qt::ToolTipRole:
         case Qt::DisplayRole: {
             QString value = object
-                             ? QString(objectCasted->getName())
+                             ? QString(objectCasted->getFullName())
                                 + " (" + getObjectShortTypeName(objectCasted) + ")"
                              : "no object selected";
             return value;
@@ -373,7 +373,7 @@ QVariant FieldNode::data(int role) {
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
     QString objectClassName = objectCasted ? (QString(" (") + objectCasted->getClassName() + ")") : "";
-    QString objectName = objectCasted ? QString(" ") + objectCasted->getName() : "";
+    QString objectName = objectCasted ? QString(" ") + objectCasted->getFullName() : "";
     QString arraySize;
     QString fieldValue;
     QString objectInfo;
@@ -399,7 +399,7 @@ QVariant FieldNode::data(int role) {
                 objectInfo = QString(": ") + objectInfo;
             }
         } else {
-            fieldValue = "NULL";
+            fieldValue = "nullptr";
         }
     }
 
@@ -504,8 +504,8 @@ QVariant ArrayElementNode::data(int role) {
         valueInfo += (fieldPointer
                         ? QString("(%1) %2")
                           .arg(fieldPointer->getClassName())
-                          .arg(fieldPointer->getName())
-                         : "NULL");
+                          .arg(fieldPointer->getFullName())
+                         : "nullptr");
 
         std::string info = fieldPointer ? fieldPointer->info() : "";
         if (!info.empty()) {

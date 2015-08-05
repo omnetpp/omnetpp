@@ -190,7 +190,6 @@ void ModuleCanvasViewer::refreshLayout()
     if (sy != 0 && sy < 2*border)
         border = sy/2;
     layouter->setSize(sx, sy, border);
-    printf("Layout->setSize %d %d \n", sx, sy);
     // TODO support "bgp" tag ("background position")
 
     // loop through all submodules, get their sizes and positions and feed them into layouting engine

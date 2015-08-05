@@ -116,7 +116,7 @@ OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
 
     // set up periodic update of 3D view
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer.start(10);
+    timer.start(33);  // 60Hz -- TODO make configurable
 }
 
 QWidget *OsgViewer::addViewWidget()
@@ -160,7 +160,7 @@ QWidget *OsgViewer::addViewWidget()
 bool OsgViewer::event(QEvent *event)
 {
     // workaround: initial camera->setProjectionMatrixAsPerspective() needs the correct glWidget aspect ratio which is first available in the Polish event
-    if (event->type() == QEvent::PolishRequest)
+    if (event->type() == QEvent::PolishRequest && osgCanvas != nullptr)
         applyViewerHints(); // for camera->setProjectionMatrixAsPerspective()
 
     return QWidget::event(event);
@@ -246,7 +246,7 @@ void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
     if (viewpoint.isValid()) {
         osgGA::CameraManipulator *manip = view->getCameraManipulator();
         if (osgEarth::Util::EarthManipulator *earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(manip)) {
-            double duration = 0.5; //XXX or something
+            double duration = 0.0; //XXX make configurable (or viewer hint in cOsgCanvas
             earthManip->setViewpoint(viewpoint, duration);
         }
     }

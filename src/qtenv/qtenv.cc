@@ -1041,6 +1041,8 @@ void Qtenv::deleteInspector(Inspector *insp)
 
 void Qtenv::refreshInspectors()
 {
+    qDebug() << "refreshInspectors()";
+
     // update inspectors
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
         Inspector *insp = *it;
@@ -1054,9 +1056,6 @@ void Qtenv::refreshInspectors()
     // clear the change flags on all inspected canvases
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
         (*it)->clearObjectChangeFlags();
-
-    // update object tree
-    qDebug() << "UPDATE";
 
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
