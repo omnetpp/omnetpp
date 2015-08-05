@@ -42,7 +42,6 @@ void Model3d::initialize()
     cOsgCanvas *earthCanvas2 = new cOsgCanvas("boston-with-hints", cOsgCanvas::STYLE_EARTH);
     earthCanvas2->setScene(bostonScene);
     earthCanvas2->setClearColor(cOsgCanvas::Color(0,64,0));
-    earthCanvas2->setAspect(0.6);
 
     cOsgCanvas *builtinOsgCanvas = getParentModule()->getOsgCanvas();
     builtinOsgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);

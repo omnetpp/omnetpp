@@ -40,7 +40,7 @@ inline void unref(osg::Node *scene)
 
 cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *scene) : cOwnedObject(name),
     scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)), cameraManipulatorType(CAM_AUTO),
-    fieldOfViewAngle(30), aspect(1.0), zNear(1.0), zFar(10000.0), viewpoint(new osgEarth::Viewpoint())
+    fieldOfViewAngle(30), zNear(1.0), zFar(10000.0), viewpoint(new osgEarth::Viewpoint())
 
 {
     ref(scene);
@@ -59,7 +59,6 @@ void cOsgCanvas::copy(const cOsgCanvas& other)
     clearColor = other.clearColor;
     cameraManipulatorType = other.cameraManipulatorType;
     fieldOfViewAngle = other.fieldOfViewAngle;
-    aspect = other.aspect;
     zNear = other.zNear;
     zFar = other.zFar;
     *viewpoint = *other.viewpoint;

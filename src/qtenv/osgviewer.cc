@@ -130,7 +130,7 @@ void OsgViewer::applyViewerHints()
     }
     setCameraManipulator(manipulator);
 
-    setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getAspect(), osgCanvas->getZNear(), osgCanvas->getZFar());
+    setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
 
     if (osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_EARTH)
         setEarthViewpoint(osgCanvas->getEarthViewpoint());
@@ -141,7 +141,7 @@ void OsgViewer::resetViewer()
     printf("resetViewer()\n");
     setClearColor(0.9, 0.9, 0.9, 1.0);
     setCameraManipulator(nullptr);
-    setPerspective(30, 1.0, 1, 1000);
+    setPerspective(30, 1, 1000);
 }
 
 void OsgViewer::setClearColor(float r, float g, float b, float alpha)
@@ -155,11 +155,11 @@ void OsgViewer::setCameraManipulator(osgGA::CameraManipulator *manipulator)
     view->setCameraManipulator(manipulator);
 }
 
-void OsgViewer::setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar)
+void OsgViewer::setPerspective(double fieldOfViewAngle, double zNear, double zFar)
 {
     osg::Camera *camera = view->getCamera();
     double widgetAspect = glWidget->geometry().width() / (double) glWidget->geometry().height();
-    camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, aspect*widgetAspect, zNear, zFar);
+    camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, widgetAspect, zNear, zFar);
 }
 
 void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)

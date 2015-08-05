@@ -52,7 +52,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 
     void setClearColor(float r, float g, float b, float alpha);
     void setCameraManipulator(osgGA::CameraManipulator *manipulator);
-    void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
+    void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
     void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
     bool event(QEvent *);
 

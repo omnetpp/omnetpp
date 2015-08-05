@@ -58,7 +58,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
         Color clearColor;
         CameraManipulatorType cameraManipulatorType;
         double fieldOfViewAngle;  // a.k.a. fovy, see OpenGL gluPerspective
-        double aspect;  // see OpenGL gluPerspective
         double zNear; // see OpenGL gluPerspective
         double zFar;  // see OpenGL gluPerspective
 
@@ -141,16 +140,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
         double getFieldOfViewAngle() const {return fieldOfViewAngle;}
 
         /**
-         * Set the aspect ratio hint (ratio of width to height).
-         */
-        void setAspect(double aspect) {this->aspect = aspect;}
-
-        /**
-         * Return the aspect ratio hint.
-         */
-        double getAspect() const {return aspect;}
-
-        /**
          * Set the distance hint from the viewer to the near clipping plane
          * (always positive).
          */
@@ -174,9 +163,9 @@ class SIM_API cOsgCanvas : public cOwnedObject
 
         /**
          * Set all perspective-related viewer hints together.
-         * @see setFieldOfViewAngle(), setAspect(), setZNear(), setZFar()
+         * @see setFieldOfViewAngle(), setZNear(), setZFar()
          */
-        void setPerspective(double fieldOfViewAngle, double aspect, double zNear, double zFar);
+        void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
         //@}
 
         /** @name osgEarth-related viewer hints. */
