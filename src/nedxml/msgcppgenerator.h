@@ -222,6 +222,7 @@ class NEDXML_API MsgCppGenerator
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
     void generate(MsgFileElement *fileElement);
+    std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
 
   public:
     /**

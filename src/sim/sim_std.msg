@@ -754,7 +754,7 @@ class cFigure extends cOwnedObject
     int id;
     bool visible @getter(isVisible) @editable;
     string tags @editable;
-    Transform transform @editable @tostring(.str()) @fromstring(parseTransform);
+    Transform transform @editable @tostring(.str()) @fromstring(parseTransform($));
     cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
@@ -764,7 +764,7 @@ class cGroupFigure extends cFigure
 
 class cAbstractLineFigure extends cFigure
 {
-    Color lineColor @editable @tostring(.str()) @fromstring(parseColor);
+    Color lineColor @editable @tostring(.str()) @fromstring(parseColor($));
     int lineStyle @editable @enum(omnetpp::cFigure::LineStyle);
     double lineWidth @editable;
     double lineOpacity @editable;
@@ -776,20 +776,20 @@ class cAbstractLineFigure extends cFigure
 
 class cLineFigure extends cAbstractLineFigure
 {
-    Point start @editable @tostring(.str()) @fromstring(parsePoint);
-    Point end @editable @tostring(.str()) @fromstring(parsePoint);
+    Point start @editable @tostring(.str()) @fromstring(parsePoint($));
+    Point end @editable @tostring(.str()) @fromstring(parsePoint($));
 }
 
 class cArcFigure extends cAbstractLineFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle);
+    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle($));
     double startAngle @editable;
     double endAngle @editable;
 }
 
 class cPolylineFigure extends cAbstractLineFigure
 {
-    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(parsePoint);
+    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(parsePoint($));
     bool smooth @editable;
     int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
 }
@@ -798,8 +798,8 @@ class cAbstractShapeFigure extends cFigure
 {
     bool outlined @getter(isOutlined) @editable;
     bool filled @getter(isFilled) @editable;
-    Color lineColor @editable @tostring(.str()) @fromstring(parseColor);
-    Color fillColor @editable @tostring(.str()) @fromstring(parseColor);
+    Color lineColor @editable @tostring(.str()) @fromstring(parseColor($));
+    Color fillColor @editable @tostring(.str()) @fromstring(parseColor($));
     int lineStyle @editable @enum(cFigure::LineStyle);
     double lineWidth @editable;
     double lineOpacity @editable;
@@ -809,26 +809,26 @@ class cAbstractShapeFigure extends cFigure
 
 class cRectangleFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle);
+    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle($));
     double cornerRx @editable;
     double cornerRy @editable;
 }
 
 class cOvalFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle);
+    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle($));
 }
 
 class cPieSliceFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle);
+    Rectangle bounds @editable @tostring(.str()) @fromstring(parseRectangle($));
     double startAngle @editable;
     double endAngle @editable;
 }
 
 class cPolygonFigure extends cAbstractShapeFigure
 {
-    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(parsePoint);
+    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(parsePoint($));
     bool smooth @editable;
     int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
     int fillRule @editable @enum(omnetpp::cFigure::FillRule);
@@ -837,7 +837,7 @@ class cPolygonFigure extends cAbstractShapeFigure
 class cPathFigure extends cAbstractShapeFigure
 {
     string path @editable;
-    Point offset @editable @tostring(.str()) @fromstring(parsePoint);
+    Point offset @editable @tostring(.str()) @fromstring(parsePoint($));
     int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
     int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
     int fillRule @editable @enum(omnetpp::cFigure::FillRule);
@@ -845,11 +845,11 @@ class cPathFigure extends cAbstractShapeFigure
 
 class cAbstractTextFigure extends cFigure
 {
-    Point position @editable @tostring(.str()) @fromstring(parsePoint);
+    Point position @editable @tostring(.str()) @fromstring(parsePoint($));
     int anchor @editable @enum(omnetpp::cFigure::Anchor);
     string text @editable;
-    Font font @editable @tostring(.str()) @fromstring(parseFont);
-    Color color @editable @tostring(.str()) @fromstring(parseColor);
+    Font font @editable @tostring(.str()) @fromstring(parseFont($));
+    Color color @editable @tostring(.str()) @fromstring(parseColor($));
     double opacity @editable;
 }
 
@@ -863,13 +863,13 @@ class cLabelFigure extends cAbstractTextFigure
 
 class cAbstractImageFigure extends cFigure
 {
-    Point position @editable @tostring(.str()) @fromstring(parsePoint);
+    Point position @editable @tostring(.str()) @fromstring(parsePoint($));
     int anchor @editable @enum(omnetpp::cFigure::Anchor);
     double width @editable;
     double height @editable;
     int interpolation @editable @enum(omnetpp::cFigure::Interpolation);
     double opacity @editable;
-    Color tintColor @editable @tostring(.str()) @fromstring(parseColor);
+    Color tintColor @editable @tostring(.str()) @fromstring(parseColor($));
     double tintAmount @editable;
 }
 
@@ -887,7 +887,7 @@ class cCanvas extends cOwnedObject
 {
     cFigure *rootFigure;
     string allTags;
-    Color backgroundColor @editable @tostring(.str()) @fromstring(parseColor);
+    Color backgroundColor @editable @tostring(.str()) @fromstring(parseColor($));
 }
 
 

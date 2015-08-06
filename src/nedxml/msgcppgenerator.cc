@@ -58,17 +58,21 @@ inline std::string SL(const std::string& s)
 #define SL(x)    (x)
 #endif
 
+inline std::string str(const char *s) {
+    return s;
+}
+
 inline std::string TS(const std::string& s)
 {
     return s.empty() ? s : s + " ";
 }
 
-char charToNameFilter(char ch)
+static char charToNameFilter(char ch)
 {
     return (isalnum(ch)) ? ch : '_';
 }
 
-std::string canonicalizeQName(const std::string& namespac, const std::string& name)
+static std::string canonicalizeQName(const std::string& namespac, const std::string& name)
 {
     std::string qname;
     if (name.find("::") != name.npos) {
@@ -82,12 +86,12 @@ std::string canonicalizeQName(const std::string& namespac, const std::string& na
     return qname;
 }
 
-std::ostream& operator<<(std::ostream& o, const std::pair<std::string, int>& p)
+inline std::ostream& operator<<(std::ostream& o, const std::pair<std::string, int>& p)
 {
     return o << '(' << p.first << ':' << p.second << ')';
 }
 
-std::string ptr2str(const char *ptr)
+inline std::string ptr2str(const char *ptr)
 {
     return ptr ? ptr : "";
 }
@@ -116,36 +120,36 @@ P check_and_cast(T *p)
 }
 
 MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
-{ //     nedTypeName        cppTypeName        fromstring         tostring            emptyValue
-        {"bool",            "bool",            "string2bool",     "bool2string",      "false"},
-        {"float",           "float",           "string2double",   "double2string",    "0"},
-        {"double",          "double",          "string2double",   "double2string",    "0"},
-        {"simtime_t",       "simtime_t",       "string2double",   "double2string",    "0"},
-        {"string",          OPP_PREFIX "opp_string", " ",         "oppstring2string", ""},      // fromstring=" ": must be not empty, but do nothing (char* to char* conversion)
-        {"char",            "char",            "string2long",     "long2string",      "0"},
-        {"short",           "short",           "string2long",     "long2string",      "0"},
-        {"int",             "int",             "string2long",     "long2string",      "0"},
-        {"long",            "long",            "string2long",     "long2string",      "0"},
-        {"int8",            "int8_t",          "string2long",     "long2string",      "0"},
-        {"int8_t",          "int8_t",          "string2long",     "long2string",      "0"},
-        {"int16",           "int16_t",         "string2long",     "long2string",      "0"},
-        {"int16_t",         "int16_t",         "string2long",     "long2string",      "0"},
-        {"int32",           "int32_t",         "string2long",     "long2string",      "0"},
-        {"int32_t",         "int32_t",         "string2long",     "long2string",      "0"},
-        {"unsigned char",   "unsigned char",   "string2ulong",    "ulong2string",     "0"},
-        {"unsigned short",  "unsigned short",  "string2ulong",    "ulong2string",     "0"},
-        {"unsigned int",    "unsigned int",    "string2ulong",    "ulong2string",     "0"},
-        {"unsigned long",   "unsigned long",   "string2ulong",    "ulong2string",     "0"},
-        {"uint8",           "uint8_t",         "string2ulong",    "ulong2string",     "0"},
-        {"uint8_t",         "uint8_t",         "string2ulong",    "ulong2string",     "0"},
-        {"uint16",          "uint16_t",        "string2ulong",    "ulong2string",     "0"},
-        {"uint16_t",        "uint16_t",        "string2ulong",    "ulong2string",     "0"},
-        {"uint32",          "uint32_t",        "string2ulong",    "ulong2string",     "0"},
-        {"uint32_t",        "uint32_t",        "string2ulong",    "ulong2string",     "0"},
-        {"int64",           "int64_t",         "string2int64",    "int642string",     "0"},
-        {"int64_t",         "int64_t",         "string2int64",    "int642string",     "0"},
-        {"uint64",          "uint64_t",        "string2uint64",   "uint642string",    "0"},
-        {"uint64_t",        "uint64_t",        "string2uint64",   "uint642string",    "0"},
+{ //     nedTypeName        cppTypeName        fromstring            tostring               emptyValue
+        {"bool",            "bool",            "string2bool($)",     "bool2string($)",      "false"},
+        {"float",           "float",           "string2double($)",   "double2string($)",    "0"},
+        {"double",          "double",          "string2double($)",   "double2string($)",    "0"},
+        {"simtime_t",       "simtime_t",       "string2double($)",   "double2string($)",    "0"},
+        {"string",   OPP_PREFIX "opp_string",  "($)",                "oppstring2string($)", ""},
+        {"char",            "char",            "string2long($)",     "long2string($)",      "0"},
+        {"short",           "short",           "string2long($)",     "long2string($)",      "0"},
+        {"int",             "int",             "string2long($)",     "long2string($)",      "0"},
+        {"long",            "long",            "string2long($)",     "long2string($)",      "0"},
+        {"int8",            "int8_t",          "string2long($)",     "long2string($)",      "0"},
+        {"int8_t",          "int8_t",          "string2long($)",     "long2string($)",      "0"},
+        {"int16",           "int16_t",         "string2long($)",     "long2string($)",      "0"},
+        {"int16_t",         "int16_t",         "string2long($)",     "long2string($)",      "0"},
+        {"int32",           "int32_t",         "string2long($)",     "long2string($)",      "0"},
+        {"int32_t",         "int32_t",         "string2long($)",     "long2string($)",      "0"},
+        {"unsigned char",   "unsigned char",   "string2ulong($)",    "ulong2string($)",     "0"},
+        {"unsigned short",  "unsigned short",  "string2ulong($)",    "ulong2string($)",     "0"},
+        {"unsigned int",    "unsigned int",    "string2ulong($)",    "ulong2string($)",     "0"},
+        {"unsigned long",   "unsigned long",   "string2ulong($)",    "ulong2string($)",     "0"},
+        {"uint8",           "uint8_t",         "string2ulong($)",    "ulong2string($)",     "0"},
+        {"uint8_t",         "uint8_t",         "string2ulong($)",    "ulong2string($)",     "0"},
+        {"uint16",          "uint16_t",        "string2ulong($)",    "ulong2string($)",     "0"},
+        {"uint16_t",        "uint16_t",        "string2ulong($)",    "ulong2string($)",     "0"},
+        {"uint32",          "uint32_t",        "string2ulong($)",    "ulong2string($)",     "0"},
+        {"uint32_t",        "uint32_t",        "string2ulong($)",    "ulong2string($)",     "0"},
+        {"int64",           "int64_t",         "string2int64($)",    "int642string($)",     "0"},
+        {"int64_t",         "int64_t",         "string2int64($)",    "int642string($)",     "0"},
+        {"uint64",          "uint64_t",        "string2uint64($)",   "uint642string($)",    "0"},
+        {"uint64_t",        "uint64_t",        "string2uint64($)",   "uint642string($)",    "0"},
         {nullptr,nullptr,nullptr,nullptr,nullptr}
 };
 
@@ -419,7 +423,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), charToNameFilter);
     // capitalize
     std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), ::toupper);
-    headerGuard = std::string("__") + headerGuard;
+    headerGuard = str("__") + headerGuard;
 
     H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
       << " from " << fileElement->getFilename() << ".\n//\n\n";
@@ -683,7 +687,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->classtype = getClassType(it->ftypeqname);
 
         if (it->ftypeqname != OPP_PREFIX "cObject")
-            it->ftypeqname = std::string("::") + it->ftypeqname; //FIXME why, really?
+            it->ftypeqname = str("::") + it->ftypeqname; //FIXME why, really?
     }
 
     if (info.generate_class) {
@@ -721,9 +725,9 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
         it->fprops["enum"] = it->enumqname;  // need to modify the property in place
         if (it->tostring.empty())
-            it->tostring = std::string("enum2string($, \"") + it->enumqname + "\")";
+            it->tostring = str("enum2string($, \"") + it->enumqname + "\")";
         if (it->fromstring.empty())
-            it->fromstring = std::string("(") + it->enumqname + ")string2enum($, \"" + it->enumqname + "\")";
+            it->fromstring = str("(") + it->enumqname + ")string2enum($, \"" + it->enumqname + "\")";
     }
 
     // variable name
@@ -743,15 +747,15 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     if (info.classtype != STRUCT) {
         std::string capfieldname = it->fname;
         capfieldname[0] = toupper(capfieldname[0]);
-        it->setter = std::string("set") + capfieldname;
-        it->alloc = std::string("set") + capfieldname + "ArraySize";
+        it->setter = str("set") + capfieldname;
+        it->alloc = str("set") + capfieldname + "ArraySize";
         if (info.omitgetverb) {
             it->getter = it->fname;
             it->getsize = it->fname + "ArraySize";
         }
         else {
-            it->getter = std::string("get") + capfieldname;
-            it->getsize = std::string("get") + capfieldname + "ArraySize";
+            it->getter = str("get") + capfieldname;
+            it->getsize = str("get") + capfieldname + "ArraySize";
         }
 
         // allow customization of names
@@ -773,7 +777,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     it->maybe_c_str = "";
     if (it->fkind == "struct") {
         it->datatype = it->ftype;
-        it->argtype = std::string("const ") + it->ftype + "&";
+        it->argtype = str("const ") + it->ftype + "&";
         it->rettype = it->ftype + "&";
         // it->fval = "" unless (it->fval != "");
     }
@@ -1797,7 +1801,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 CC << "return pp->" << field.varsize << ";\n";
             }
             else {
-                CC << "return pp->" << field.getsize << "();\n";
+                CC << "return " << makeFuncall("pp", field.getsize) << ";\n";
             }
         }
     }
@@ -1820,61 +1824,25 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.fkind == "basic" || (field.fkind == "struct" && !field.tostring.empty())) {
-            size_t pos = field.tostring.find('$');
-            std::string tostringB, tostringE;
-            if (pos != field.tostring.npos) {
-                tostringB = field.tostring.substr(0, pos);
-                tostringE = field.tostring.substr(pos + 1);
-            }
-            else if (field.tostring[0] == '.') {
-                tostringB = "";
-                tostringE = field.tostring;
-            }
-            else {
-                tostringB = field.tostring + "(";
-                tostringE = ")";
-            }
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
-                    if (!field.farraysize.empty()) {
-                        CC << "if (i>=" << field.farraysize << ") return \"\";\n";
-                    }
-                    else {
-                        CC << "if (i>=pp->" << field.varsize << ") return \"\";\n";
-                    }
-                    CC << "                return " << tostringB << "pp->" << field.var << "[i]" << tostringE << ";\n";
+                    std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
+                    CC << "if (i>=" << arraySize << ") return \"\";\n                ";
                 }
-                else {
-                    CC << "return " << tostringB << "pp->" << field.var << tostringE << ";\n";
-                }
+                CC << "return " << makeFuncall(str("pp->") + field.var + (field.fisarray ? "[i]" : ""), field.tostring) << ";\n";
             }
             else {
-                if (field.fisarray) {
-                    CC << "return " << tostringB << "pp->" << field.getter << "(i)" << tostringE << ";\n";
-                }
-                else {
-                    CC << "return " << tostringB << "pp->" << field.getter << "()" << tostringE << ";\n";
-                }
+                CC << "return " << makeFuncall(makeFuncall("pp", field.getter, field.fisarray), field.tostring) << ";\n";
             }
         }
         else if (field.fkind == "struct") {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
-                if (field.fisarray) {
-                    CC << "{std::stringstream out; out << pp->" << field.var << "[i]; return out.str();}\n";
-                }
-                else {
-                    CC << "{std::stringstream out; out << pp->" << field.var << "; return out.str();}\n";
-                }
+                CC << "{std::stringstream out; out << pp->" << field.var << (field.fisarray ? "[i]" : "") << "; return out.str();}\n";
             }
             else {
-                if (field.fisarray) {
-                    CC << "{std::stringstream out; out << pp->" << field.getter << "(i); return out.str();}\n";
-                }
-                else {
-                    CC << "{std::stringstream out; out << pp->" << field.getter << "(); return out.str();}\n";
-                }
+                CC << "{std::stringstream out; out << " << makeFuncall("pp", field.getter, field.fisarray) << "; return out.str();}\n";
             }
         }
         else {
@@ -1904,37 +1872,17 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
                 continue;
             }
-            std::string fromstring;
-            size_t pos = field.fromstring.find('$');
-            if (pos != field.fromstring.npos) {
-                fromstring = field.fromstring.substr(0, pos) + "value" + field.fromstring.substr(pos + 1);
-            }
-            else {
-                fromstring = field.fromstring + "(value)";
-            }
-
+            std::string fromstringCall = makeFuncall("value", field.fromstring);
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
-                    if (!field.farraysize.empty()) {
-                        CC << "if (i>=" << field.farraysize << ") return false;\n";
-                    }
-                    else {
-                        CC << "if (i>=pp->" << field.varsize << ") return false;\n";
-                    }
-                    CC << "                pp->"<<field.var << "[i] = " << fromstring << "; return true;\n";
+                    std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
+                    CC << "if (i>=" << arraySize << ") return false;\n                ";
                 }
-                else {
-                    CC << "pp->" << field.var << " = " << fromstring << "; return true;\n";
-                }
+                CC << "pp->" << field.var << (field.fisarray ? "[i]" : "") << " = " << fromstringCall << "; return true;\n";
             }
             else {
-                if (field.fisarray) {
-                    CC << "pp->" << field.setter << "(i," << fromstring << "); return true;\n";
-                }
-                else {
-                    CC << "pp->" << field.setter << "(" << fromstring << "); return true;\n";
-                }
+                CC << makeFuncall("pp", field.setter, field.fisarray, fromstringCall) << "; return true;\n";
             }
         }
     }
@@ -1988,20 +1936,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             std::string cast;
             std::string value;
             if (info.classtype == STRUCT) {
-                if (field.fisarray) {
-                    value = std::string("pp->") + field.var + "[i]";
-                }
-                else {
-                    value = std::string("pp->") + field.var;
-                }
+                value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
             }
             else {
-                if (field.fisarray) {
-                    value = std::string("pp->") + field.getter + "(i)";
-                }
-                else {
-                    value = std::string("pp->") + field.getter + "()";
-                }
+                value = makeFuncall("pp", field.getter, field.fisarray);
             }
             cast = "(void *)";
             if (field.classtype == COBJECT || field.classtype == CNAMEDOBJECT || field.classtype == COWNEDOBJECT)
@@ -2093,6 +2031,23 @@ std::string MsgCppGenerator::prefixWithNamespace(const std::string& name)
 {
     return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
 }
+
+std::string MsgCppGenerator::makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex, const std::string& value)
+{
+    if (funcTemplate[0] == '.' || funcTemplate[0] == '-') {
+        // ".foo()" becomes "var.foo()", "->foo()" becomes "var->foo()"
+        return var + funcTemplate;
+    }
+    else if (funcTemplate.find('$') != std::string::npos) {
+        // "tostring($)" becomes "tostring(var)", "getchild($,i)" becomes "getchild(var,i)"
+        return opp_replacesubstring(funcTemplate.c_str(), "$", var.c_str(), true);
+    }
+    else {
+        // "foo" is a shorthand for "var->foo()" or "var->foo(i)", depending on flag
+        return var + "->" + funcTemplate + "(" + (withIndex ? "i" : "") + ((withIndex && value!="") ? "," : "") + value + ")";
+    }
+}
+
 
 bool MsgCppGenerator::getPropertyAsBool(const Properties& p, const char *name, bool defval)
 {
