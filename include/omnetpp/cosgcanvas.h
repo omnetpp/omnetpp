@@ -116,7 +116,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
         /**
          * Return the color hint for background behind the scene.
          */
-        Color getClearColor() const {return clearColor;}
+        const Color& getClearColor() const {return clearColor;}
 
         /**
          * Set the camera manipulator type hint. The camera manipulator

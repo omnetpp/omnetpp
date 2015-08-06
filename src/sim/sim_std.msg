@@ -28,6 +28,9 @@ enum omnetpp::cFigure::FillRule;
 enum omnetpp::cFigure::ArrowHead;
 enum omnetpp::cFigure::Anchor;
 enum omnetpp::cFigure::Interpolation;
+enum omnetpp::cOsgCanvas::ViewerStyle;
+enum omnetpp::cOsgCanvas::CameraManipulatorType;
+
 
 cplusplus
 {{
@@ -56,6 +59,9 @@ Register_Enum(cFigure::ArrowHead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_T
 Register_Enum(cFigure::Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW));
 Register_Enum(cFigure::Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
 #undef cF
+
+Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC, cOsgCanvas::STYLE_EARTH));
+Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL, cOsgCanvas::CAM_EARTH));
 
 //
 // Define operator<< for some classes
@@ -153,6 +159,53 @@ NAMESPACE_END
 #ifndef USE_NAMESPACE
 #define omnetpp   //XXX horrible hack to make it compile with the omnetpp namespace turned off
 #endif
+
+#ifdef WITH_OSG
+
+#include <osg/Node>
+#include <osg/Group>
+//TODO #include <osgEarth/Viewpoint>
+
+namespace osg {
+    inline std::ostream& operator<<(std::ostream& os, Node *node) {
+        return os << "(" << node->className() << ")";
+    }
+} // namespace
+
+inline int osgNode_getNumChildren(osg::Node *node)
+{
+    osg::Group *group = node->asGroup();
+    return group ? group->getNumChildren() : 0;
+}
+
+inline osg::Node *osgNode_getChild(osg::Node *node, int i)
+{
+    return node->asGroup()->getChild(i);
+}
+
+//TODO namespace osgEarth {
+//TODO     inline std::ostream& operator<<(std::ostream& os, const Viewpoint& viewpoint) {
+//TODO         return os << viewpoint.toString();
+//TODO     }
+//TODO } // namespace
+
+#else
+
+// dummy version to make Node's descriptor class compile
+namespace osg {
+    class Node {
+      public:
+        const char *getDescription(int) const {return "";}
+        int getNumDescriptions() const {return 0;}
+    };
+    inline std::ostream& operator<<(std::ostream& os, Node *node) { return os; }
+} // namespace
+
+inline int osgNode_getNumChildren(osg::Node *node) { return 0; }
+inline osg::Node *osgNode_getChild(osg::Node *node, int i) { return nullptr; }
+
+#endif // WITH_OSG
+
 
 }}
 
@@ -890,8 +943,43 @@ class cCanvas extends cOwnedObject
     Color backgroundColor @editable @tostring(.str()) @fromstring(parseColor($));
 }
 
+class osg::Node extends void;
+class osgEarth::Viewpoint extends void;
 
 class cOsgCanvas extends cOwnedObject
 {
+    osg::Node *scene;
+    int viewerStyle @editable @enum(omnetpp::cOsgCanvas::ViewerStyle) @group(viewer hints);
+    Color clearColor @editable @tostring(.str()) @fromstring(parseColor($)) @group(viewer hints);
+    int cameraManipulatorType @editable @enum(omnetpp::cOsgCanvas::CameraManipulatorType) @group(viewer hints);
+    double fieldOfViewAngle @editable @group(viewer hints);
+    double zNear @editable @group(viewer hints);
+    double zFar @editable @group(viewer hints);
+//TODO    osgEarth::Viewpoint earthViewpoint @group(viewer hints) @tostring(.toString());
 }
+
+namespace osg;
+
+class Node extends void
+{
+    //string className @getter(className);
+    string descriptions[] @getter(getDescription) @sizeGetter(getNumDescriptions);
+    Node *children[] @getter(osgNode_getChild($,i)) @sizeGetter(osgNode_getNumChildren($));
+}
+
+//TODO
+//namespace osgEarth;
+//
+//class Viewpoint extends void
+//{
+//    string name;
+//    bool isValid @getter(isValid);
+//    double x @getter(x);
+//    double y @getter(y);
+//    double z @getter(z);
+//    double heading @editable;
+//    double pitch @editable;
+//    double range @editable;
+//    //TODO string SRS; //const osgEarth::SpatialReference *getSRS()
+//}
 
