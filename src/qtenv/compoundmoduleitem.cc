@@ -203,6 +203,10 @@ void CompoundModuleItem::setArea(QRectF area) {
     }
 }
 
+QRectF CompoundModuleItem::getArea() {
+    return area;
+}
+
 void CompoundModuleItem::setBackgroundColor(const QColor &color) {
     if (backgroundColor != color) {
         backgroundColor = color;

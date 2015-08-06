@@ -35,6 +35,8 @@ class cComponent;
 namespace qtenv {
 
 class GraphicsLayer;
+class CompoundModuleItem;
+class SubmoduleItem;
 struct FigureRenderingHints;
 class CanvasRenderer;
 
@@ -52,6 +54,7 @@ private:
     typedef std::map<cModule*,QPointF> PositionMap;
     PositionMap submodPosMap;  // recalculateLayout() fills this map
 
+    CompoundModuleItem *compoundModuleItem = nullptr;
     std::map<int, SubmoduleItem*> submoduleGraphicsItems;
 
     GraphicsLayer *backgroundLayer;
@@ -82,7 +85,7 @@ private:
     void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
             double& x, double& y, double& sx, double& sy);
 
-    void drawSubmodule(cModule *submod, double x, double y);
+    void drawSubmodule(cModule *submod);
     void drawEnclosingModule(cModule *parentModule);
     void drawConnection(cGate *gate);
 
@@ -127,7 +130,9 @@ public:
     void bubble(cComponent *subcomponent, const char *text);
 
     QPointF getSubmodCoords(cModule *mod);
-    QPointF getMessageEndPos(cModule *src, cModule *dest);
+    // also accepts the inspected module, returns the whole rectangle for it
+    QRectF getSubmodRect(cModule *mod);
+    QLineF getConnectionLine(cGate *gate);
 
     void clear();
     bool getNeedsRedraw() { return needs_redraw; }

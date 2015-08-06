@@ -87,6 +87,7 @@ public:
 
     void setZoomFactor(double zoom);
     void setArea(QRectF area);
+    QRectF getArea(); // see the area field
 
     void setBackgroundColor(const QColor &color);
     void setOutlineColor(const QColor &color);

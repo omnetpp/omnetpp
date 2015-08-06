@@ -109,65 +109,39 @@ static void clip_line_to_rect(double& x1, double& y1, double x2, double y2,
     // leave line unchanged
 }
 
-int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
+QLineF arrowcoords(const QRectF &srcRect, const QRectF &destRect,
+                  int src_i, int src_n, // src vector gate index and size
+                  int dest_i, int dest_n, // src vector gate index and size
+                  char mode, // amnews
+                  QPointF srcAnch,
+                  QPointF destAnch)
 {
-    if (argc != 18) {
-        printf("arrowcoords called with wrong number of args: %d\n", argc-1);
-        for (int i = 1; i < argc; i++) {
-            if (i == 1)
-                printf(" src:");
-            if (i == 5)
-                printf(" dest:");
-            if (i == 9)
-                printf(" srcgateindex/size:");
-            if (i == 11)
-                printf(" destgateindex/size:");
-            if (i == 13)
-                printf(" mode:");
-            if (i == 14)
-                printf(" anchorpoints:");
-            printf(" <%s>", argv[i]);
-        }
-        printf("\n");
-        Tcl_SetResult(interp, TCLCONST("17 args expected"), TCL_STATIC);
-        return TCL_ERROR;
-    }
+    return arrowcoords(srcRect.left(), srcRect.top(), srcRect.right(), srcRect.bottom(),
+                       destRect.left(), destRect.top(), destRect.right(), destRect.bottom(),
+                       src_i, src_n, dest_i, dest_n, mode,
+                       srcAnch.x(), srcAnch.y(),
+                       destAnch.x(), destAnch.y());
 
-    // args 1..4: coords of source module rectangle
-    double src_x1 = atof(argv[1]),
-           src_y1 = atof(argv[2]),
-           src_x2 = atof(argv[3]),
-           src_y2 = atof(argv[4]);
+}
 
-    // args 5..8: coords of destination module rectangle
-    double dest_x1 = atof(argv[5]),
-           dest_y1 = atof(argv[6]),
-           dest_x2 = atof(argv[7]),
-           dest_y2 = atof(argv[8]);
 
-    // args 9..12: gate indices and gate vector sizes
-    int src_i = atoi(argv[9]),
-        src_n = atoi(argv[10]);
-    int dest_i = atoi(argv[11]),
-        dest_n = atoi(argv[12]);
-
-    // arg 13: mode: a(uto), m(anual), n, e, w, s (default is 'a')
-    int mode = argv[13][0] == '-' ? 'a' : argv[13][0];
-
-    // args 14..17: destination anchoring (default value 50%)
-    double src_anch_dx = argv[14][0] == '-' ? 50 : atof(argv[14]),
-           src_anch_dy = argv[15][0] == '-' ? 50 : atof(argv[15]);
-    double dest_anch_dx = argv[16][0] == '-' ? 50 : atof(argv[16]),
-           dest_anch_dy = argv[17][0] == '-' ? 50 : atof(argv[17]);
+QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, // src rect
+                  double dest_x1, double dest_y1, double dest_x2, double dest_y2, // dest rect
+                  int src_i, int src_n, // src vector gate index and size
+                  int dest_i, int dest_n, // src vector gate index and size
+                  char mode, // amnews
+                  double src_anch_dx, double src_anch_dy, // src anchor percentages
+                  double dest_anch_dx, double dest_anch_dy) // dest anchor percentages
+{
 
     double src_x, src_y, dest_x, dest_y;
-
-    // error checks
+/*
+    // error checks TODO
     if (!strchr("amnews", mode)) {
         Tcl_SetResult(interp, TCLCONST("mode must be one of (a,m,n,e,w,s)"), TCL_STATIC);
         return TCL_ERROR;
     }
-
+*/
     // see if the two rects are the same, one is in the other etc.
     int same_rect = 0;
     int src_within_dest = 0;
@@ -385,10 +359,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
         }
     }
 
-    char buf[60];
-    sprintf(buf, "%g %g %g %g", src_x, src_y, dest_x, dest_y);
-    Tcl_SetResult(interp, buf, TCL_VOLATILE);
-    return TCL_OK;
+    return QLineF(src_x, src_y, dest_x, dest_y);
 }
 
 } // namespace qtenv

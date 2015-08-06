@@ -131,7 +131,7 @@ class QTENV_API ModuleInspector : public Inspector
 
       GraphicsLayer *getAnimationLayer();
       QPointF getSubmodCoords(cModule *mod);
-      QPointF getMessageEndPos(cModule *src, cModule *dest);
+      QLineF getConnectionLine(cGate *gate);
 };
 
 } // namespace qtenv

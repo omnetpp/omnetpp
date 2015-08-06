@@ -40,6 +40,7 @@
 #include "connectionitem.h"
 #include "submoduleitem.h"
 #include <QDebug>
+#include "arrow.h"
 
 #define emit
 
@@ -146,7 +147,7 @@ void ModuleCanvasViewer::relayoutAndRedrawAll()
         }
     }
 
-    submoduleLayer->clear();
+    clear();
     recalculateLayout();
     redrawFigures();
     redrawModules();
@@ -445,8 +446,7 @@ void ModuleCanvasViewer::redrawModules()
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
         cModule *submod = *it;
         assert(submodPosMap.find(submod) != submodPosMap.end());
-        QPointF& pos = submodPosMap[submod];
-        drawSubmodule(submod, pos.x(), pos.y());
+        drawSubmodule(submod);
     }
 
     // draw enclosing module
@@ -468,7 +468,7 @@ void ModuleCanvasViewer::redrawModules()
     //CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0", TCL_NULL));
 }
 
-void ModuleCanvasViewer::drawSubmodule(cModule *submod, double x, double y)
+void ModuleCanvasViewer::drawSubmodule(cModule *submod)
 {
     auto item = new SubmoduleItem(submod, rangeLayer);
     SubmoduleItemUtil::setupFromDisplayString(item, submod);
@@ -483,9 +483,8 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod, double x, double y)
 void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
 {
     backgroundLayer->clear();
-
-    auto item = new CompoundModuleItem();
-    backgroundLayer->addItem(item);
+    compoundModuleItem = new CompoundModuleItem();
+    backgroundLayer->addItem(compoundModuleItem);
 
     QRectF submodulesRect;
 
@@ -502,10 +501,10 @@ void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
         }
     }
 
-    CompoundModuleItemUtil::setupFromDisplayString(item, parentModule, zoomFactor, submodulesRect);
+    CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, parentModule, zoomFactor, submodulesRect);
 
     // leaving a bit of a margin on top of the outline
-    setSceneRect(item->boundingRect().adjusted(-10, -10, 10, 10));
+    setSceneRect(compoundModuleItem->boundingRect().adjusted(-10, -10, 10, 10));
 }
 
 void ModuleCanvasViewer::drawConnection(cGate *gate)
@@ -532,43 +531,55 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
         }
     }
 
-    // XXX TODO should use the arrow.cc line intersection algorithm, with hints
-    QPointF src = getMessageEndPos(destGate->getOwnerModule(), mod);
-    QPointF dest = getMessageEndPos(mod, destGate->getOwnerModule());
-
     auto item = new ConnectionItem(submoduleLayer);
-    item->setSource(src);
-    item->setDestination(dest);
+    item->setLine(getConnectionLine(gate));
     ConnectionItemUtil::setupFromDisplayString(item, gate, destGate, twoWayConnection);
     item->setZValue(-1);
 }
 
-QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
-{
+QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod) {
     return submodPosMap[mod] * zoomFactor;
 }
 
-QPointF ModuleCanvasViewer::getMessageEndPos(cModule *src, cModule *dest)
-{
-    if (dest == object)
-        return QPointF();
+QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod) {
+    return mod == object
+            ? compoundModuleItem->getArea()
+            : submoduleGraphicsItems[mod->getId()]->boundingRect().translated(getSubmodCoords(mod));
+}
 
-    QPointF srcPos = getSubmodCoords(src);
-    QPointF destPos = getSubmodCoords(dest);
+QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
+    char mode = 'a';
 
-    QRectF destRect = submoduleGraphicsItems[dest->getId()]->boundingRect();
+    QPointF srcAnch(50, 50);
+    QPointF destAnch(50, 50);
 
-    // from dest to src
-    auto direction = srcPos - destPos;
+    auto channel = gate->getChannel();
+    if (channel) {
+        cDisplayString ds = channel->getDisplayString();
 
-    // normalizing
-    direction.setX(direction.x() / (destRect.width() / 2));
-    direction.setY(direction.y() / (destRect.height() / 2));
+        const char *modeString = ds.getTagArg("m", 0);
+        if (modeString[0] && QString("amnews").contains(modeString[0]))
+            mode = modeString[0];
 
-    // after this, one coordinate will be +/- 1, and the other one will be scaled to keep the direction
-    direction /= std::max(std::abs(direction.x()), std::abs(direction.y()));
+        bool xOk, yOk;
+        int x = QString(ds.getTagArg("m", 1)).toInt(&xOk);
+        int y = QString(ds.getTagArg("m", 2)).toInt(&yOk);
 
-    return destPos + QPointF(direction.x() * destRect.width() / 2, direction.y() * destRect.height() / 2);
+        if (xOk) srcAnch.setX(x);
+        if (yOk) srcAnch.setY(y);
+
+        x = QString(ds.getTagArg("m", 3)).toInt(&xOk);
+        y = QString(ds.getTagArg("m", 4)).toInt(&yOk);
+
+        if (xOk) destAnch.setX(x);
+        if (yOk) destAnch.setY(y);
+    }
+
+    return arrowcoords(getSubmodRect(gate->getOwnerModule()),
+                       getSubmodRect(gate->getNextGate()->getOwnerModule()),
+                       0, 1, 0, 1, // TODO vector gates are not arranged at all now
+                       mode,
+                       srcAnch, destAnch);
 }
 
 cObject *ModuleCanvasViewer::getObjectAt(qreal x, qreal y)

@@ -503,9 +503,9 @@ QPointF ModuleInspector::getSubmodCoords(cModule *mod)
     return canvasViewer->getSubmodCoords(mod);
 }
 
-QPointF ModuleInspector::getMessageEndPos(cModule *src, cModule *dest)
+QLineF ModuleInspector::getConnectionLine(cGate *gate)
 {
-    return canvasViewer->getMessageEndPos(src, dest);
+    return canvasViewer->getConnectionLine(gate);
 }
 
 

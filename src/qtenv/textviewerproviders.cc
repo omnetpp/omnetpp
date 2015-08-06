@@ -155,9 +155,9 @@ int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex) {
 }
 
 void ModuleOutputContentProvider::rebuildIndex() {
-    if (!inspectedComponent) {
-        return;
-    }
+    /*if (!inspectedComponent) { // this caused the nasty assertion failures in the viewer.cc,
+        return;                  // but it seems like this is not even needed
+    }*/
 
     // recompute line numbers. note: entryStartLineNumber[] contains one slot
     // for ALL event entries, even those that don't match the filter!

@@ -76,9 +76,8 @@ void Animator::redrawMessages() {
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
                 messageItem->setPos(arrivalGate->getPreviousGate()
-                             ? moduleInsp->getMessageEndPos(msg->getSenderModule(), msg->getArrivalModule())
-                             : moduleInsp->getSubmodCoords(msg->getArrivalModule()));
-
+                             ? moduleInsp->getConnectionLine(arrivalGate->getPreviousGate()).p2()
+                             : moduleInsp->getSubmodCoords(arrivalMod));
                 messageItems[std::make_pair(moduleInsp, msg)] = messageItem;
             }
         }
@@ -361,15 +360,22 @@ void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage
 
     auto src = mod;
     auto dest = destGate->getOwnerModule();
+    QLineF connLine = insp->getConnectionLine(srcGate);
 
-    QPointF srcPos = insp->getSubmodCoords(src);
-    QPointF destPos = insp->getSubmodCoords(dest);
+    QPointF srcPos = src == insp->getObject() ? connLine.p1() : insp->getSubmodCoords(src);
+    QPointF destPos = dest == insp->getObject() ? connLine.p2() : insp->getSubmodCoords(dest);
 
-    if (mode == ANIM_BEGIN) {
-        destPos = insp->getMessageEndPos(src, dest);
-    }
-    if (mode == ANIM_END) {
-        srcPos = insp->getMessageEndPos(src, dest);
+    switch (mode) {
+    case ANIM_BEGIN:
+        destPos = connLine.p2();
+        break;
+    case ANIM_END:
+        srcPos = connLine.p2();
+        break;
+    case ANIM_THROUGH:
+        srcPos = connLine.p1();
+        destPos = connLine.p2();
+        break;
     }
 
     addAnimation(new Animation(insp, Animation::ANIM_ON_CONN, Animation::DIR_HORIZ,

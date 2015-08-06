@@ -42,6 +42,10 @@ class SubmoduleItem : public QGraphicsObject
 {
     Q_OBJECT
 
+    // if the bounding rectangle of the shape and the image would be
+    // smaller than this in any dimension, this is used instead
+    static constexpr double minimumRectSize = 10;
+
 protected:
     cModule *module;
 
@@ -55,7 +59,9 @@ protected:
     void realignAnchoredItems();
     void updateShapeItem();
     void adjustRangeItem(int i);
-    QRectF shapeImageBoundingRect() const; // whichever is bigger in each direction
+    // whichever is bigger in each direction, has a minimum size, see above.
+    // assumed to be always centered around the origin.
+    QRectF shapeImageBoundingRect() const;
 
 protected slots:
     void onPositionChanged(); // keeping the range items underneath ourselves

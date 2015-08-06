@@ -485,6 +485,17 @@ QRectF SubmoduleItem::shapeImageBoundingRect() const {
         // (otherwise the outline would change width too), so its boundingRect is good as it is.
         rect = rect.united(shapeRect);
     }
+
+    if (rect.width() < minimumRectSize) {
+        rect.setLeft(-minimumRectSize / 2);
+        rect.setRight(minimumRectSize / 2);
+    }
+
+    if (rect.height() < minimumRectSize) {
+        rect.setTop(-minimumRectSize / 2);
+        rect.setBottom(minimumRectSize / 2);
+    }
+
     return rect;
 }
 

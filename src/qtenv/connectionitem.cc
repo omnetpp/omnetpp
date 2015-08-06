@@ -176,6 +176,11 @@ void ConnectionItem::setDestination(const QPointF &destination) {
     }
 }
 
+void ConnectionItem::setLine(const QLineF &line) {
+    setSource(line.p1());
+    setDestination(line.p2());
+}
+
 void ConnectionItem::setWidth(double width) {
     if (width != lineWidth) {
         lineWidth = width;

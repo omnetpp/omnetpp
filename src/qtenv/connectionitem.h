@@ -28,6 +28,7 @@ namespace qtenv {
 class ConnectionItem;
 class ConnectionItemUtil {
 public:
+    // only stylistic tags are handled here (color, width, style, etc), positioning is in the ModuleCanvasViewer
     static void setupFromDisplayString(ConnectionItem *ci, cGate *gate, cGate *destGate, bool twoWay);
 };
 
@@ -65,6 +66,7 @@ public:
 
     void setSource(const QPointF &source);
     void setDestination(const QPointF &destination);
+    void setLine(const QLineF &line);
     void setWidth(double width);
     void setColor(const QColor &color);
     void setLineStyle(Qt::PenStyle style);
