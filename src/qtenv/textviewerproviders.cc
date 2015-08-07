@@ -331,7 +331,7 @@ int EventEntryMessageLinesProvider::findFirstRelevantHop(const LogBuffer::Messag
 
 bool ModuleOutputContentProvider::isMatchingComponent(int componentId)
 {
-    if (componentId == 0)
+    if (componentId == 0 || !inspectedComponent)
         return false;
     int inspectedComponentId = inspectedComponent->getId();
     return (componentId == inspectedComponentId || isAncestorModule(componentId, inspectedComponentId))

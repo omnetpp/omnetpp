@@ -362,20 +362,12 @@ void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage
     auto dest = destGate->getOwnerModule();
     QLineF connLine = insp->getConnectionLine(srcGate);
 
-    QPointF srcPos = src == insp->getObject() ? connLine.p1() : insp->getSubmodCoords(src);
-    QPointF destPos = dest == insp->getObject() ? connLine.p2() : insp->getSubmodCoords(dest);
+    QPointF srcPos = connLine.p1();
+    QPointF destPos = connLine.p2();
 
-    switch (mode) {
-    case ANIM_BEGIN:
-        destPos = connLine.p2();
-        break;
-    case ANIM_END:
+    if (mode == ANIM_END) {
         srcPos = connLine.p2();
-        break;
-    case ANIM_THROUGH:
-        srcPos = connLine.p1();
-        destPos = connLine.p2();
-        break;
+        destPos = insp->getSubmodCoords(dest);
     }
 
     addAnimation(new Animation(insp, Animation::ANIM_ON_CONN, Animation::DIR_HORIZ,

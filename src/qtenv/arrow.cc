@@ -135,13 +135,10 @@ QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, /
 {
 
     double src_x, src_y, dest_x, dest_y;
-/*
-    // error checks TODO
-    if (!strchr("amnews", mode)) {
-        Tcl_SetResult(interp, TCLCONST("mode must be one of (a,m,n,e,w,s)"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-*/
+
+    // error checks
+    ASSERT2(strchr("amnews", mode), "mode must be one of (a,m,n,e,w,s)");
+
     // see if the two rects are the same, one is in the other etc.
     int same_rect = 0;
     int src_within_dest = 0;

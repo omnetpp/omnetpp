@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef MODULECANVASVIEWER_H
-#define MODULECANVASVIEWER_H
+#ifndef __OMNETPP_QTENV_MODULECANVASVIEWER_H
+#define __OMNETPP_QTENV_MODULECANVASVIEWER_H
 
 #include "submoduleitem.h"
 
@@ -144,4 +144,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // MODULEGRAPHICSVIEW_H
+#endif // __OMNETPP_QTENV_MODULECANVASVIEWER_H

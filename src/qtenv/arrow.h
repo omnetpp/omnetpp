@@ -29,7 +29,7 @@ namespace qtenv {
 QLineF arrowcoords(const QRectF &srcRect, const QRectF &destRect,
                   int src_i = 0, int src_n = 1, // src vector gate index and size
                   int dest_i = 0, int dest_n = 1, // src vector gate index and size
-                  char mode = 'a', // amnews
+                  char mode = 'a', // must be one of "amnews"
                   QPointF srcAnch = QPointF(50, 50),
                   QPointF destAnch = QPointF(50, 50));
 
@@ -37,7 +37,7 @@ QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, /
                   double dest_x1, double dest_y1, double dest_x2, double dest_y2, // dest rect
                   int src_i = 0, int src_n = 1, // src vector gate index and size
                   int dest_i = 0, int dest_n = 1, // src vector gate index and size
-                  char mode = 'a', // amnews
+                  char mode = 'a', // must be one of "amnews"
                   double src_anch_dx = 50, double src_anch_dy = 50, // src anchor percentages
                   double dest_anch_dx = 50, double dest_anch_dy = 50); // dest anchor percentages
 
