@@ -31,9 +31,6 @@ private:
 
     TimeLineGraphicsView *timeLine;
 
-signals:
-    void selectionChanged(cObject *);
-
 private slots:
     void runPreferencesDialog();
 

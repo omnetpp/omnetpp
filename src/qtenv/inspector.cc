@@ -33,6 +33,8 @@
 #include "inspectorutil.h"
 #include <QBoxLayout>
 
+#define emit
+
 using namespace OPP::common;
 
 namespace omnetpp {
@@ -204,7 +206,7 @@ void Inspector::goForward()
         if (object != nullptr)
             historyBack.push_back(object);
         doSetObject(newObj);
-        refresh();
+        emit objectPicked(newObj);
     }
 }
 
@@ -216,7 +218,7 @@ void Inspector::goBack()
         if (object != nullptr)
             historyForward.push_back(object);
         doSetObject(newObj);
-        refresh();
+        emit objectPicked(newObj);
     }
 }
 
@@ -227,8 +229,10 @@ void Inspector::inspectParent()
         return;
 
     //inspect in current inspector if possible (and allowed), otherwise open a new one
-    if(supportsObject(parentPtr)) //TODO && $config(reuse-inspectors)
-        setObject(parentPtr);
+    if(supportsObject(parentPtr)) { //TODO && $config(reuse-inspectors)
+        doSetObject(parentPtr);
+        emit objectPicked(parentPtr);
+    }
     else
         getQtenv()->inspect(parentPtr);
 }

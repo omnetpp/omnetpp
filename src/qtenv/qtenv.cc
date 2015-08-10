@@ -450,6 +450,11 @@ void Qtenv::doRun()
         connect(mainLogView, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
         connect(mainNetworkView, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
 
+        connect(mainInspector, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
+        connect(mainNetworkView, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
+        connect(mainLogView, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
+        connect(mainObjectTree, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
+
         setLogFormat(opt->logFormat.c_str());
 
         //
@@ -1821,9 +1826,18 @@ void Qtenv::animateDelivery(cMessage *msg)
     }
 }
 
-void Qtenv::onSelectionChanged(cObject *object)
-{
+void Qtenv::onSelectionChanged(cObject *object) {
     mainInspector->setObject(object);
+}
+
+void Qtenv::onObjectPicked(cObject *object) {
+    if (cModule *module = dynamic_cast<cModule *>(object)) {
+        mainNetworkView->setObject(module);
+        mainLogView->setObject(module);
+        mainInspector->setObject(module);
+    } else {
+        inspect(object);
+    }
 }
 
 void Qtenv::animateDeliveryDirect(cMessage *msg)

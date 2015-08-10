@@ -68,10 +68,10 @@ class QTENV_API ModuleInspector : public Inspector
       void switchToOsgView();
       void switchToCanvasView();
 
-signals:
-      void selectionChanged(cObject*);
-
    protected:
+      QAction *goBackAction;
+      QAction *goForwardAction;
+      QAction *goUpAction;
       QAction *switchToOsgViewAction;
       QAction *switchToCanvasViewAction;
 

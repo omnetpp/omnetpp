@@ -188,9 +188,9 @@ QToolBar *ModuleInspector::createToolbar()
     QToolBar *toolbar = new QToolBar();
 
     // general
-    toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
-    toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
-    toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
+    goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
+    goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
     toolbar->addSeparator();
 
     toolbar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this, SLOT(runUntil()));
@@ -240,6 +240,11 @@ void ModuleInspector::doSetObject(cObject *obj)
     Inspector::doSetObject(obj);
 
     cModule *module = dynamic_cast<cModule*>(obj);
+
+    goBackAction->setEnabled(canGoBack());
+    goForwardAction->setEnabled(canGoForward());
+    goUpAction->setEnabled(module && module->getParentModule());
+
 
     canvasViewer->setObject(module);
     canvasViewer->clear();
@@ -608,24 +613,15 @@ void ModuleInspector::doubleClick(QMouseEvent *event)
 {
     cObject *object = nullptr;
     QList<cObject *> objects = canvasViewer->getObjectsAt(event->pos().x(), event->pos().y());
-    for (auto &i : objects) {
-        if (i) {
-            object = i;
+    for (auto &o : objects) {
+        if (o) {
+            object = o;
             break;
         }
     }
 
-    //TODO click to connection
-    if(object == nullptr)
-    {
-        qDebug() << "mouseDoubleClickEvent: object is null";
-        return;
-    }
-
-    if(supportsObject(object))    //TODO && $config(reuse-inspectors)
-        setObject(object);
-    else
-    {}  //TODO opp_inspect $ptr
+    if (object)
+        emit objectPicked(object);
 }
 
 void ModuleInspector::createContextMenu(QContextMenuEvent *event)

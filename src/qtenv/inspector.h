@@ -91,6 +91,10 @@ class QTENV_API Inspector : public QWidget
       virtual void excludeMessage();
       virtual void utilitiesSubMenu();
 
+   signals:
+      void selectionChanged(cObject *object);
+      void objectPicked(cObject *object);
+
    public:
       typedef QPair<OPP::cObject*, int> ActionDataPair;
 

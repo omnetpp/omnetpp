@@ -71,6 +71,9 @@ public:
     // only used to save and restore the expansion state in the views
     virtual QString getNodeIdentifier() = 0;
 
+    // returns a nullptr where not applicable
+    virtual cObject *getCObjectPointer();
+
     virtual ~TreeNode();
 };
 
@@ -90,9 +93,9 @@ public:
 
     QVariant data(int role) override;
 
-    virtual bool isEditable() override;
-    virtual bool setData(const QVariant &value, int role) override;
-
+    bool isEditable() override;
+    bool setData(const QVariant &value, int role) override;
+    cObject *getCObjectPointer() override;
     QString getNodeIdentifier() override;
 };
 
@@ -118,6 +121,7 @@ public:
     bool isEditable() override;
     virtual bool setData(const QVariant &value, int role) override;
     QString getNodeIdentifier() override;
+    cObject *getCObjectPointer() override;
 };
 
 // ---- main model class implementation ----
@@ -212,12 +216,9 @@ void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> 
     expandNodesIn(view, ids, index(0, 0, QModelIndex()));
 }
 
-cObject *GenericObjectTreeModel::getCObjectPointer(QModelIndex index)
-{
+cObject *GenericObjectTreeModel::getCObjectPointer(QModelIndex index) {
     auto node = static_cast<TreeNode *>(index.internalPointer());
-    // FIXME TODO - extract the object pointer from the node to inspect
-    // return node->containingObject;
-    return nullptr;
+    return node ? node->getCObjectPointer() : nullptr;
 }
 
 GenericObjectTreeModel::~GenericObjectTreeModel() {
@@ -304,6 +305,10 @@ bool TreeNode::isEditable() {
 
 bool TreeNode::setData(const QVariant &value, int role) {
     return false;
+}
+
+cObject *TreeNode::getCObjectPointer() {
+    return nullptr;
 }
 
 TreeNode::~TreeNode() {
@@ -441,6 +446,12 @@ bool FieldNode::setData(const QVariant &value, int role) {
             : false;
 }
 
+cObject *FieldNode::getCObjectPointer() {
+    return containingDesc && containingDesc->getFieldIsCObject(fieldIndex) && !containingDesc->getFieldIsArray(fieldIndex)
+            ? static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0))
+            : nullptr;
+}
+
 QString FieldNode::getNodeIdentifier() {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
             + QString("%1:%2").arg(voidPtrToStr(containingObject)).arg(fieldIndex);
@@ -541,6 +552,12 @@ bool ArrayElementNode::setData(const QVariant &value, int role) {
 QString ArrayElementNode::getNodeIdentifier() {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
             + QString("%1:%2[%3]").arg(voidPtrToStr(containingObject)).arg(fieldIndex).arg(arrayIndex);
+}
+
+cObject *ArrayElementNode::getCObjectPointer() {
+    return containingDesc->getFieldIsCObject(fieldIndex)
+            ? static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex))
+            : nullptr;
 }
 
 } // namespace qtenv

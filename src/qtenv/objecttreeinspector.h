@@ -34,11 +34,9 @@ private:
     TreeItemModel *model;
     QTreeView *view;
 
-signals:
-    void selectionChanged(cObject*);
-
 private slots:
-    void onClick(QModelIndex);
+    void onClick(QModelIndex index);
+    void onDoubleClick(QModelIndex index);
     void openInspector(QModelIndex index);
 
 public slots:

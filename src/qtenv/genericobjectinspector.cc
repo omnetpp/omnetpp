@@ -33,6 +33,8 @@
 #include <QTextLayout>
 #include <QMessageBox>
 
+#define emit
+
 namespace omnetpp {
 namespace qtenv {
 
@@ -84,18 +86,10 @@ GenericObjectInspector::~GenericObjectInspector() {
     delete model;
 }
 
-void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
-{
+void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
     auto object = model->getCObjectPointer(index);
-
-    // TODO FIXME this should be done in Qtenv, since the object tree (in mainwindow.cc) does the same
-    auto module = dynamic_cast<cModule *>(object);
-    if (module) {
-        getQtenv()->getMainModuleInspector()->setObject(module);
-        getQtenv()->getMainLogInspector()->setObject(module);
-    } else {
-        getQtenv()->inspect(object, INSP_DEFAULT, true);
-    }
+    if (object)
+        emit objectPicked(object);
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj) {

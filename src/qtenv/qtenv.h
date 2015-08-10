@@ -257,7 +257,9 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 
   public slots:
       // on single click, only shows the object in the GenericObjectInspector
-      void onSelectionChanged(cObject *);
+      void onSelectionChanged(cObject *object);
+      // XXX could have a better name...
+      void onObjectPicked(cObject *object);
 
   protected:
       // redefined virtual functions from EnvirBase

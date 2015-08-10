@@ -56,7 +56,7 @@ ObjectTreeInspector::ObjectTreeInspector(QWidget *parent, bool isTopLevel, Inspe
 
     connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
     connect(view, SIGNAL(clicked(QModelIndex)), this, SLOT(onClick(QModelIndex)));
-    connect(view, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(openInspector(QModelIndex)));
+    connect(view, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClick(QModelIndex)));
 }
 
 void ObjectTreeInspector::refresh()
@@ -91,6 +91,15 @@ void ObjectTreeInspector::onClick(QModelIndex index)
     {
         cObject *object = model->getObjectFromIndex(index);
         emit selectionChanged(object);
+    }
+}
+
+void ObjectTreeInspector::onDoubleClick(QModelIndex index)
+{
+    if(index.isValid())
+    {
+        cObject *object = model->getObjectFromIndex(index);
+        emit objectPicked(object);
     }
 }
 
