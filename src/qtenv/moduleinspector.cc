@@ -169,6 +169,8 @@ void ModuleInspector::createViews(QWidget *parent)
 
     osgViewer = new OsgViewer();
 
+    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(objectsPicked(const std::vector<cObject*>&)));
+
     QToolBar *toolbar = createToolbar();
     QWidget *contentArea = new QWidget();
     auto layout = new FloatingToolbarLayout(parent);
@@ -553,6 +555,11 @@ void ModuleInspector::click(QMouseEvent *event) {
     if (!objects.empty()) {
         getQtenv()->getMainObjectInspector()->setObject(objects.front());
     }
+}
+
+void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
+{
+    getQtenv()->getMainObjectInspector()->setObject(objects.front());
 }
 
 void ModuleInspector::doubleClick(QMouseEvent *event)

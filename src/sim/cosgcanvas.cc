@@ -92,6 +92,12 @@ void cOsgCanvas::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
     *this->viewpoint = viewpoint;
 }
 
+//---
+
+OmnetppObjectNode::~OmnetppObjectNode()
+{
+}
+
 NAMESPACE_END
 
 #endif // WITH_OSG

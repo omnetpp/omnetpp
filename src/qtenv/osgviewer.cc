@@ -16,11 +16,89 @@
 
 #include <QDebug>
 #include <osgEarthUtil/EarthManipulator>
+#include <osgGA/GUIEventAdapter>
+#include <osg/TexGenNode>
 #include "omnetpp/cosgcanvas.h"
 #include "osgviewer.h"
 
 namespace omnetpp {
 namespace qtenv {
+
+#define emit
+
+class PickHandler : public osgGA::GUIEventHandler
+{
+private:
+    OsgViewer *viewer;
+public:
+    PickHandler(OsgViewer *viewer) : viewer(viewer) {}
+    virtual ~PickHandler();
+    bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    virtual void pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
+};
+
+PickHandler::~PickHandler()
+{
+}
+
+bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    switch(ea.getEventType())
+    {
+        case osgGA::GUIEventAdapter::PUSH: {
+            osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
+            if (view)
+                pick(view, ea);
+            break;
+        }
+        case osgGA::GUIEventAdapter::KEYDOWN: {
+            if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space || ea.getKey() == osgGA::GUIEventAdapter::KEY_Return) {
+                osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
+                osg::ref_ptr<osgGA::GUIEventAdapter> event = new osgGA::GUIEventAdapter(ea);
+                event->setX((ea.getXmin()+ea.getXmax())*0.5);
+                event->setY((ea.getYmin()+ea.getYmax())*0.5);
+                if (view)
+                    pick(view, *event);
+            }
+            break;
+        }
+        default:;
+    }
+    return false;
+}
+
+void PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
+{
+    printf("pick()\n");
+
+    osgUtil::LineSegmentIntersector::Intersections intersections;
+    std::vector<cObject*> objects;
+
+    if (view->computeIntersections(ea, intersections)) {
+        // looks like the list goes in increasing distance from camera, so we can just pick the first one
+        for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
+            const osg::NodePath& nodePath = hitr->nodePath;
+            if (!nodePath.empty()) {
+                // find cObject pointer node (OmnetppObjectNode) in nodepath, back to front
+                for (int i = nodePath.size()-1; i >= 0; --i) {
+                    if (OmnetppObjectNode *objNode = dynamic_cast<OmnetppObjectNode*>(nodePath[i])) {
+                        if (cObject *obj = objNode->getObject()) {
+                            qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
+                            if (std::find(objects.begin(), objects.end(), obj) == objects.end()) // filter out duplicates
+                                objects.push_back(obj);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!objects.empty())
+            emit viewer->objectsPicked(objects);
+    }
+}
+
+
+//---
 
 OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
 {
@@ -54,6 +132,7 @@ QWidget *OsgViewer::addViewWidget()
     camera->setViewport(new osg::Viewport(0, 0, 100, 100));
     camera->setProjectionResizePolicy(osg::Camera::HORIZONTAL);
     //camera->setProjectionMatrixAsPerspective(120.0f, aspect, 1.0f, 10000.0f); -- would need real widget aspect ration which is not yet available at this point
+    view->addEventHandler(new PickHandler(this));
     view->addEventHandler(new osgViewer::StatsHandler);
     view->setCameraManipulator(new osgGA::TrackballManipulator);
 

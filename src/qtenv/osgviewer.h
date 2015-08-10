@@ -36,8 +36,12 @@
 namespace omnetpp {
 namespace qtenv {
 
+class PickHandler;
+
 class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
+    friend class PickHandler;
+
     Q_OBJECT   // this *must* be in a header file to be noticed by the moc!
 
   protected:
@@ -64,6 +68,9 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     void refresh();
     void applyViewerHints();
     void resetViewer();
+
+  signals:
+    void objectsPicked(const std::vector<cObject*>&);
 
 };
 
