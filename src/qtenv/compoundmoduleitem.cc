@@ -328,9 +328,8 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     cmi->setZoomFactor(zoomFactor);
     cmi->setArea(border);
 
-    QColor::setAllowX11ColorNames(true); // XXX remove later
-    cmi->setBackgroundColor(SubmoduleItemUtil::parseColor(ds.getTagArg("bgb", 2), QColor("gray82")));
-    cmi->setOutlineColor(SubmoduleItemUtil::parseColor(ds.getTagArg("bgb", 3), QColor("black")));
+    cmi->setBackgroundColor(parseColor(ds.getTagArg("bgb", 2), parseColor("grey82")));
+    cmi->setOutlineColor(parseColor(ds.getTagArg("bgb", 3), QColor("black")));
 
     double outlineWidth;
     bool ok;
@@ -360,7 +359,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     cmi->setGridMajorDistance(QString(ds.getTagArg("bgg", 0)).toDouble());
     // if failed to parse, the default 0 will disable the minor lines
     cmi->setGridMinorNum(QString(ds.getTagArg("bgg", 1)).toInt());
-    cmi->setGridColor(SubmoduleItemUtil::parseColor(ds.getTagArg("bgg", 2), QColor("grey")));
+    cmi->setGridColor(parseColor(ds.getTagArg("bgg", 2), QColor("grey")));
 
     // the text in the top left corner
     cmi->setModulePath(mod->getFullPath().c_str());
@@ -377,7 +376,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
                          QString(ds.getTagArg(tagName.c_str(), 0)).toDouble(),
                          QString(ds.getTagArg(tagName.c_str(), 1)).toDouble()),
                      ds.getTagArg(tagName.c_str(), 2),
-                     SubmoduleItemUtil::parseColor(ds.getTagArg(tagName.c_str(), 3), QColor("black")));
+                     parseColor(ds.getTagArg(tagName.c_str(), 3), QColor("black")));
 
         ++textIndex;
     }

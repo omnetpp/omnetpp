@@ -17,7 +17,6 @@
 #include "connectionitem.h"
 
 #include <QDebug>
-#include "submoduleitem.h"
 #include <QPainter>
 #include <omnetpp/cgate.h>
 #include <omnetpp/cchannel.h>
@@ -42,7 +41,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
 
     ci->setToolTip(ds.getTagArg("tt", 0));
 
-    ci->setColor(SubmoduleItemUtil::parseColor(ds.getTagArg("ls", 0), QColor("black")));
+    ci->setColor(parseColor(ds.getTagArg("ls", 0), QColor("black")));
 
     bool ok;
     double width = QString(ds.getTagArg("ls", 1)).toDouble(&ok);
@@ -70,7 +69,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     default:  ci->setTextPosition(Qt::AlignCenter); break;
     }
 
-    ci->setTextColor(SubmoduleItemUtil::parseColor(ds.getTagArg("t", 2), QColor("#005030")));
+    ci->setTextColor(parseColor(ds.getTagArg("t", 2), QColor("#005030")));
 
     // no need for arrowheads on a bidirectional connection
     ci->setArrowEnabled(!twoWay);

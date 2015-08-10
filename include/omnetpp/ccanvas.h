@@ -236,7 +236,6 @@ class SIM_API cFigure : public cOwnedObject
     private:
         static int lastId;
         static cStringPool stringPool;
-        static std::map<std::string, Color> colors;
         int id;
         bool visible; // treated as structural change, for simpler handling
         Transform transform;  // TODO make it optional (nullptr = identity transform)
@@ -272,7 +271,6 @@ class SIM_API cFigure : public cOwnedObject
         static Interpolation parseInterpolation(const char *s);
         static Anchor parseAnchor(const char *s);
         static void concatArrays(const char **dest, const char **first, const char **second);
-        static void fillColorsMap();
 
     public:
         // internal:

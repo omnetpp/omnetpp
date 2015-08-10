@@ -66,6 +66,9 @@ public:
     void setBrush(const QBrush &brush);
 };
 
+// wraps the one in common to be more convenient, also adds support for a fallback color
+// and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
+QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
 
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'

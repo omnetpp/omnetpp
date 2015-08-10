@@ -153,33 +153,6 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     si->setQueueText(queueText);
 }
 
-QColor SubmoduleItemUtil::parseColor(const QString &name, const QColor &fallbackColor) {
-    if (name.isEmpty())
-        return fallbackColor;
-
-    if (name == "-")
-        return QColor("transparent");
-
-    QColor::setAllowX11ColorNames(true); // XXX remove later?
-
-    QColor color;
-    if (name[0] == '@') {  // HSB ( == HSV)
-        bool ok;
-        int hue = name.mid(1, 2).toInt(&ok, 16) / 255.0f * 360;
-        int sat = name.mid(3, 2).toInt(&ok, 16);
-        int val = name.mid(5, 2).toInt(&ok, 16);
-        color.setHsv(hue, sat, val);
-    } else { // #RRGGBB or name
-        color = QColor(name);
-        // XXX Tkenv recognised X color names, listed in ccanvas.cc,
-        // but Qt recognizes SVG color names, see the documentation.
-        // We could enable the allowX11ColorNames property, but that
-        // only works on X11...
-    }
-
-    return color.isValid() ? color : fallbackColor;
-}
-
 void SubmoduleItem::updateNameItem() {
     if (nameItem) {
         QString label = name;

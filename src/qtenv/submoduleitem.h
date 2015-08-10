@@ -34,7 +34,6 @@ class SubmoduleItem;
 class SubmoduleItemUtil {
 public:
     static void setupFromDisplayString(SubmoduleItem *si, cModule *mod);
-    static QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
 };
 
 

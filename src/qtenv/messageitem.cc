@@ -17,8 +17,6 @@
 #include "messageitem.h"
 #include <QDebug>
 #include "qtenv.h"
-#include "submoduleitem.h"
-
 
 namespace omnetpp {
 namespace qtenv {
@@ -85,12 +83,12 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
         QString fillColorName = ds.getTagArg("b", 3);
         QColor fillColor = fillColorName == "kind"
                             ? kindColor
-                            : SubmoduleItemUtil::parseColor(fillColorName, "red");
+                            : parseColor(fillColorName, "red");
         mi->setFillColor(fillColor);
         QString outlineColorName = ds.getTagArg("b", 4);
         mi->setOutlineColor(outlineColorName == "kind"
                              ? kindColor
-                             : SubmoduleItemUtil::parseColor(outlineColorName, fillColor));
+                             : parseColor(outlineColorName, fillColor));
 
         bool ok;
         int outlineWidth = QString(ds.getTagArg("b", 5)).toInt(&ok);
@@ -100,7 +98,7 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
         mi->setImage(imageName[0] ? getQtenv()->icons.getImage(imageName, ds.getTagArg("is", 0)) : nullptr);
 
         const char *imageColor = ds.getTagArg("i", 1);
-        mi->setImageColor(SubmoduleItemUtil::parseColor(imageColor));
+        mi->setImageColor(parseColor(imageColor));
         mi->setImageColorPercentage((ds.getNumArgs("i") == 2) // color given, but no percentage
                                       ? 30
                                       : QString(ds.getTagArg("i", 2)).toDouble());

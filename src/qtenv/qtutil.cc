@@ -23,8 +23,10 @@
 #include <cassert>
 #include <sstream>
 #include <QPainter>
+#include <QDebug>
 
 #include "common/stringutil.h"
+#include "common/colorutil.h"
 #include "common/opp_ctype.h"
 #include "common/patternmatcher.h"
 #include "common/ver.h"
@@ -119,6 +121,23 @@ void OutlinedTextItem::setBrush(const QBrush &brush) {
 }
 
 // ---- end of OutlinedTextItem ----
+
+QColor parseColor(const QString &name, const QColor &fallbackColor) {
+    if (name.isEmpty())
+        return fallbackColor;
+
+    if (name == "-")
+        return QColor("transparent");
+
+    try {
+        uint8_t r, g, b;
+        OPP::common::parseColor(name.toStdString().c_str(), r, g, b);
+        return QColor(r, g, b);
+    } catch (std::runtime_error &e) {
+        qDebug() << "Failed to parse color" << name << "because:" << e.what();
+        return fallbackColor;
+    }
+}
 
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
