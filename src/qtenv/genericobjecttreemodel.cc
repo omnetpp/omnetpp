@@ -372,7 +372,7 @@ QVariant FieldNode::data(int role) {
     bool isArray = containingDesc->getFieldIsArray(fieldIndex);
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
-    QString objectClassName = objectCasted ? (QString(" (") + objectCasted->getClassName() + ")") : "";
+    QString objectClassName = objectCasted ? (QString(" (") + getObjectShortTypeName(objectCasted) + ")") : "";
     QString objectName = objectCasted ? QString(" ") + objectCasted->getFullName() : "";
     QString arraySize;
     QString fieldValue;
@@ -403,16 +403,16 @@ QVariant FieldNode::data(int role) {
         }
     }
 
-    if (isArray) {
+    if (isArray)
         arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
-        equals = "";
-    }
 
-    if ((role == Qt::DisplayRole || role == Qt::UserRole) && fieldType == "string") {
-        // the apostrophes have to be there when showing the value and when calculating the highlight range
-        // but not in the editor or the tooltip
+    // the apostrophes have to be there when showing the value and when calculating the highlight range
+    // but not in the editor or the tooltip
+    if ((role == Qt::DisplayRole || role == Qt::UserRole) && fieldType == "string")
         fieldValue = "'" + fieldValue + "'";
-    }
+
+    if (isArray || fieldValue.isEmpty())
+        equals = ""; // no need to add an " = " in these cases
 
     switch (role) {
     case Qt::EditRole:
@@ -503,9 +503,9 @@ QVariant ArrayElementNode::data(int role) {
 
         valueInfo += (fieldPointer
                         ? QString("(%1) %2")
-                          .arg(fieldPointer->getClassName())
+                          .arg(getObjectShortTypeName(fieldPointer))
                           .arg(fieldPointer->getFullName())
-                         : "nullptr");
+                         : "NULL");
 
         std::string info = fieldPointer ? fieldPointer->info() : "";
         if (!info.empty()) {
