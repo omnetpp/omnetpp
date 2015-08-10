@@ -407,10 +407,14 @@ LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a st
     bool isString = false;
     try {
         const char *text = toString(textpos);
-        const char *endp;
-        opp_parsequotedstr(text, endp);
-        if (*endp == '\0')
-            isString = true;
+        while (opp_isspace(*text))
+            text++;
+        if (*text == '"') {
+            const char *endp;
+            opp_parsequotedstr(text, endp);
+            if (*endp == '\0')
+                isString = true;
+        }
     }
     catch (std::exception& e) {  /*not string*/
     }
