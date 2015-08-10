@@ -447,6 +447,8 @@ void Qtenv::doRun()
 
         connect(mainTimeLine, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
         connect(mainObjectTree, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
+        connect(mainLogView, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
+        connect(mainNetworkView, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
 
         setLogFormat(opt->logFormat.c_str());
 

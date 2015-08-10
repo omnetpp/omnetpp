@@ -32,7 +32,6 @@
 #include "inspectorfactory.h"
 #include "logfinddialog.h"
 #include "logfilterdialog.h"
-#include "genericobjectinspector.h"
 #include <QGridLayout>
 #include <QDebug>
 #include "textviewerproviders.h"
@@ -202,7 +201,7 @@ void LogInspector::onCaretMoved(int lineIndex, int column)
 {
     auto msg = (cMessage*)textWidget->getContentProvider()->getUserData(lineIndex);
     if (msg)
-        getQtenv()->getMainObjectInspector()->setObject(msg);
+        emit selectionChanged(msg);
 }
 
 void LogInspector::findAgain() {

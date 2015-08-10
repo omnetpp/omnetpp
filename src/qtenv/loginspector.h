@@ -55,6 +55,9 @@ class QTENV_API LogInspector : public Inspector
       QAction *toMessagesModeAction;
       QAction *toLogModeAction;
 
+signals:
+      void selectionChanged(cObject*);
+
    protected slots:
       void onFindButton(); // opens a dialog
       void findAgain(); // when F3 is pressed, uses the last set options

@@ -36,7 +36,6 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cgate.h"
 #include "moduleinspector.h"
-#include "genericobjectinspector.h"
 #include "qtenv.h"
 #include "inspectorfactory.h"
 #include "arrow.h"
@@ -47,6 +46,8 @@
 #include "inspectorutil.h"
 
 using namespace OPP::common;
+
+#define emit
 
 namespace omnetpp {
 namespace qtenv {
@@ -594,9 +595,8 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 
 void ModuleInspector::click(QMouseEvent *event) {
     auto objects = canvasViewer->getObjectsAt(event->pos().x(), event->pos().y());
-    if (!objects.empty()) {
-        getQtenv()->getMainObjectInspector()->setObject(objects.front());
-    }
+    if (!objects.empty())
+        emit selectionChanged(objects.front());
 }
 
 void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)

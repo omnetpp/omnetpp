@@ -256,6 +256,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       QVariant getPref(const QString &key, const QVariant &defaultValue = QVariant());
 
   public slots:
+      // on single click, only shows the object in the GenericObjectInspector
       void onSelectionChanged(cObject *);
 
   protected:
