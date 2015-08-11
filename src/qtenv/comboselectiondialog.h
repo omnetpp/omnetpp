@@ -1,5 +1,5 @@
 //==========================================================================
-//  RUNSELECTIONDIALOG.H - part of
+//  COMBOSELECTIONDIALOG.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,46 +14,33 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_RUNSELECTIONDIALOG_H
-#define __OMNETPP_QTENV_RUNSELECTIONDIALOG_H
+#ifndef COMBOSELECTIONDIALOG_H
+#define COMBOSELECTIONDIALOG_H
 
 #include <QDialog>
-#include <map>
-#include "qtenvdefs.h"
 
 namespace Ui {
-class RunSelectionDialog;
+class ComboSelectionDialog;
 }
 
 namespace omnetpp {
 namespace qtenv {
 
-class Qtenv;
-
-class RunSelectionDialog : public QDialog
+class ComboSelectionDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit RunSelectionDialog(QWidget *parent = 0);
-    ~RunSelectionDialog();
+    explicit ComboSelectionDialog(QString netName, QStringList networkNames, QWidget *parent = 0);
+    ~ComboSelectionDialog();
 
-    std::string getConfigName();
-    int getRunNumber();
-    int getConfigNumber();
-
-private slots:
-    void configNameChanged(int index);
+    QString getSelectedNetName();
 
 private:
-    Ui::RunSelectionDialog *ui;
-    int configNumber;
-
-    std::vector<std::string> groupAndSortConfigNames();
-    void fillRunNumberCombo(const char *configName);
+    Ui::ComboSelectionDialog *ui;
 };
 
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif
+#endif // COMBOSELECTIONDIALOG_H

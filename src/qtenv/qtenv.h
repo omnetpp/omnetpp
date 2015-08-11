@@ -33,6 +33,8 @@
 #include <QSet>
 #include <QString>
 
+#include <QDebug>
+
 class QWidget;
 
 namespace omnetpp {

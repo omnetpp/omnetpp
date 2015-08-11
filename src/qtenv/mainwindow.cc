@@ -37,6 +37,7 @@
 #include "timelinegraphicsview.h"
 #include "rununtildialog.h"
 #include "filteredobjectlistdialog.h"
+#include "comboselectiondialog.h"
 
 #include <QDebug>
 
@@ -234,7 +235,8 @@ bool MainWindow::on_actionQuit_triggered()
 //    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
 //    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
 
-    filteredObjectListDialog->close();
+    if(filteredObjectListDialog)
+        filteredObjectListDialog->close();
     close();
     return true;
 }
@@ -247,7 +249,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::initialSetUpConfiguration()
 {
-    firstInit = true;
     ui->actionSetUpConfiguration->trigger();
 }
 
@@ -283,9 +284,8 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     if (checkRunning())
         return;
 
-    RunSelectionDialog *dialog = new RunSelectionDialog(this, firstInit);
-    firstInit = false;
-    if (dialog->exec()) {
+    RunSelectionDialog *dialog = new RunSelectionDialog(this);
+    if (dialog->getConfigNumber() == 2 || dialog->exec()) {
         // TODO debug "selected $configname $runnumber"
         busy("Setting up network...");
         // TODO inspectorList:addAll 1
@@ -842,6 +842,73 @@ void MainWindow::on_actionEventlogRecording_triggered()
 void MainWindow::reflectRecordEventlog()
 {
     ui->actionEventlogRecording->setChecked(getQtenv()->recordEventlog);
+}
+
+// newNetwork
+void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
+{
+    // implements File|New network...
+
+    if(checkRunning())
+        return;
+
+    // get list of network names
+    QVector<cModuleType*> networks;
+    cRegistrationList *types = componentTypes.getInstance();
+    for (int i = 0; i < types->size(); i++)
+    {
+        cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
+        if (t && t->isNetwork())
+            networks.push_back(t);
+    }
+    const char *localPackage = getQtenv()->getLocalPackage().c_str();
+    QStringList networkNames;
+    QStringList localNetworkNames;
+    for(cModuleType *net : networks)
+    {
+        const char *networkName = net->getName();
+        const char *networkQName = net->getFullName();
+        char result[100];
+        strcpy(result, localPackage);
+        strcat(result, ".");
+        strcat(result, networkName);
+        if(strcmp(result, networkQName) == 0)
+            localNetworkNames.push_back(networkName);
+        else
+            networkNames.push_back(networkQName);
+    }
+
+    auto lessThan = [](QString arg1, QString arg2) -> bool
+                    {
+                        return arg1.toLower() < arg2.toLower();
+                    };
+
+    qSort(localNetworkNames.begin(), localNetworkNames.end(), lessThan);
+    qSort(networkNames.begin(), networkNames.end(), lessThan);
+    networkNames = localNetworkNames << networkNames;
+
+    // pop up dialog, with current network as default
+    cModuleType *networkType = getSimulation()->getNetworkType();
+    const char *netName = networkType ? networkType->getName() : nullptr;
+    ComboSelectionDialog comboDialog(netName, localNetworkNames);
+    if(comboDialog.exec() == QDialog::Accepted)
+    {
+        busy("Setting up network...");
+        //TODO
+        //inspectorList:addAll 1
+        getQtenv()->newNetwork(comboDialog.getSelectedNetName().toStdString().c_str());
+        reflectRecordEventlog();
+        busy();
+
+        if(getSimulation()->getSystemModule())
+        {
+            // tell plugins about it
+            busy("Notifying Tcl plugins...");
+            //TODO
+            //notifyPlugins newNetwork
+            busy();
+       }
+    }
 }
 
 } // namespace qtenv

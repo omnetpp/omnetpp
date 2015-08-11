@@ -27,17 +27,17 @@
 namespace omnetpp {
 namespace qtenv {
 
-RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
+RunSelectionDialog::RunSelectionDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::RunSelectionDialog),
-    firstRun(firstRun)
+    ui(new Ui::RunSelectionDialog)
 {
     ui->setupUi(this);
     adjustSize();
 
     bool isBase = false;
     auto configNames = groupAndSortConfigNames();
-    std::string firstConfigName;
+    configNumber = 0;
+    std::string firstConfigName = "";
     for (auto name : configNames) {
         if (name == "") {
             isBase = true;
@@ -60,12 +60,15 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent, bool firstRun) :
             displayName += " (config with " + std::to_string(runs) + " runs)";
 
         ui->configName->addItem(displayName.c_str(), QVariant(name.c_str()));
+        ++configNumber;
     }
 
     std::string configName = getQtenv()->opt->defaultConfig.c_str();
     int runNumber = getQtenv()->opt->defaultRun;
 
-    if (configName == "" && ui->configName->size().rheight() != 0) {
+    auto it = std::find(configNames.begin(), configNames.end(), configName);
+
+    if ((configName.size() == 0 && ui->configName->count() != 0) || it == configNames.end()) {
         configName = firstConfigName;
         runNumber = 0;
     }
@@ -86,14 +89,6 @@ RunSelectionDialog::~RunSelectionDialog()
     getQtenv()->opt->defaultRun = getRunNumber();
 
     delete ui;
-}
-
-int RunSelectionDialog::exec()
-{
-    if(!firstRun || ui->configName->count() > 2)
-        return QDialog::exec();
-
-    return QDialog::Accepted;
 }
 
 std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
@@ -145,6 +140,11 @@ void RunSelectionDialog::fillRunNumberCombo(const char *configName)
         ui->runNumber->addItem(QString::number(i) + " (" + configVariables[i].c_str() + ")", QVariant(i));
 
     ui->runNumber->setDisabled(ui->runNumber->count() < 2);
+}
+
+int RunSelectionDialog::getConfigNumber()
+{
+    return configNumber;
 }
 
 } // namespace qtenv

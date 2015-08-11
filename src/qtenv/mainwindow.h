@@ -101,13 +101,13 @@ public slots:
     void on_actionStop_triggered();
     void on_actionDebugNextEvent_triggered();
     void on_actionEventlogRecording_triggered();
+    void on_actionSetUpUnconfiguredNetwork_triggered();
 
 private:
     Ui::MainWindow *ui;
     Qtenv *env;
     StopDialog *stopDialog;
     QSlider *slider;
-    bool firstInit;
     QList<int> timeLineSize;
     bool showStatusDetails;
     FilteredObjectListDialog *filteredObjectListDialog;

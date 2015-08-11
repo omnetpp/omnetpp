@@ -429,17 +429,15 @@ void Qtenv::doRun()
 
         restoreOptsFromPrefs();
 
-        mainWindow = new MainWindow(this);
-        mainWindow->show();
-        mainWindow->restoreGeometry();
-
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
             windowTitlePrefix.reserve(24);
             sprintf(windowTitlePrefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
-
+        mainWindow = new MainWindow(this);
+        mainWindow->show();
+        mainWindow->restoreGeometry();
 
         mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
         mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
