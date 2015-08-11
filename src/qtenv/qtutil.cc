@@ -122,6 +122,66 @@ void OutlinedTextItem::setBrush(const QBrush &brush) {
 
 // ---- end of OutlinedTextItem ----
 
+
+// ---- BubbleItem implementation ----
+
+BubbleItem::BubbleItem(QPointF position, const QString &text, QGraphicsItem *parent)
+    : QGraphicsObject(parent), text(text)
+{
+    setPos(position);
+    timer.singleShot(1000 / (0.1 + getQtenv()->opt->animationSpeed), this, SLOT(onTimerElapsed()));
+}
+
+void BubbleItem::onTimerElapsed() {
+    delete this; // BOOM!
+}
+
+QRectF BubbleItem::boundingRect() const {
+    double textWidth = QFontMetrics(scene()->font()).width(text);
+    double textHeight = QFontMetrics(scene()->font()).height();
+
+    // the -1 and +2 is the line width, and also "just to be safe".
+    return QRectF(-textWidth/2 - margin - 1,
+                  -vertOffset - textHeight - margin - 1,
+                  textWidth + margin*2 + 2,
+                  margin + textHeight + vertOffset + 2);
+}
+
+void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QFontMetrics metrics(scene()->font());
+
+    double textWidth = metrics.width(text);
+    double textHeight = metrics.height();
+
+    if (!pathBuilt) {
+        // will translate into the 4 corners
+        QRectF arcRect(-margin, -margin, margin*2, margin*2);
+
+        path.moveTo(0, 0);
+        path.lineTo(0, -vertOffset + margin); // moving up (left edge of the triangle)
+        path.arcTo(arcRect.translated(-textWidth/2, -vertOffset),               -90, -90); // lower left
+        path.arcTo(arcRect.translated(-textWidth/2, -vertOffset - textHeight), -180, -90); // upper left
+        path.arcTo(arcRect.translated( textWidth/2, -vertOffset - textHeight),   90, -90); // upper right
+        path.arcTo(arcRect.translated( textWidth/2, -vertOffset),                 0, -90); // lower right
+        path.lineTo(std::min(textWidth/2, vertOffset/2), -vertOffset + margin); // moving a bit to the left (the right half of the bottom edge)
+        path.closeSubpath(); // the right edge of the triangle
+
+        pathBuilt = true;
+    }
+
+    painter->save();
+    painter->setPen(QPen(QColor("black"), 0));
+    painter->setBrush(QColor(248, 248, 216)); // yellowish
+    painter->drawPath(path);
+    // uses the pen as color, also have to move up by the descent, to align the baseline
+    painter->setFont(scene()->font()); // might not be needed, but whatever
+    painter->drawText(-textWidth/2, -vertOffset - metrics.descent(), text);
+    painter->restore();
+}
+
+// ---- end of BubbleItem ----
+
+
 QColor parseColor(const QString &name, const QColor &fallbackColor) {
     if (name.isEmpty())
         return fallbackColor;

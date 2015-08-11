@@ -62,6 +62,7 @@ private:
     GraphicsLayer *submoduleLayer;
     GraphicsLayer *figureLayer;
     GraphicsLayer *animationLayer;
+    GraphicsLayer *bubbleLayer;
     QGraphicsRectItem *nextEventMarker = nullptr;
 
     double zoomFactor = 1;

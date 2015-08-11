@@ -63,6 +63,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     submoduleLayer = new GraphicsLayer();
     figureLayer = new GraphicsLayer();
     animationLayer = new GraphicsLayer();
+    bubbleLayer = new GraphicsLayer();
 
     setScene(new QGraphicsScene());
     scene()->addItem(backgroundLayer);
@@ -70,6 +71,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     scene()->addItem(submoduleLayer);
     scene()->addItem(figureLayer);
     scene()->addItem(animationLayer);
+    scene()->addItem(bubbleLayer);
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr);
@@ -612,7 +614,9 @@ std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(qreal x, qreal y)
 
 void ModuleCanvasViewer::clear()
 {
-    if (submoduleLayer) submoduleLayer->clear();
+    // everything on the animationLayer is handled by the Animator, so don't touch that!
+    submoduleLayer->clear();
+    bubbleLayer->clear();
     submoduleGraphicsItems.clear();
     nextEventMarker = nullptr; // because it is on the submodule layer, it has been deleted by that
 }
@@ -734,6 +738,12 @@ void ModuleCanvasViewer::refresh()
 
 void ModuleCanvasViewer::setZoomFactor(double zoomFactor) {
     if (this->zoomFactor != zoomFactor) {
+
+        // just moving the bubbles where they belong after the zoom, because it's easy
+        double ratio = zoomFactor / this->zoomFactor;
+        for (auto i : bubbleLayer->childItems())
+            i->setPos(i->pos() * ratio);
+
         this->zoomFactor = zoomFactor;
         redraw();
         viewport()->update();
@@ -759,11 +769,8 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
     if (submodPosMap.find(submod) == submodPosMap.end())
         refreshLayout();
 
-    // invoke Tcl code to display bubble
-    char coords[64];
-    QPointF& pos = submodPosMap[submod];
-    sprintf(coords, " %g %g ", pos.x(), pos.y());
-
+    // will delete itself after a timeout
+    bubbleLayer->addItem(new BubbleItem(getSubmodCoords(submod), text));
 }
 
 void ModuleCanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {

@@ -23,6 +23,7 @@
 #include "qtenvdefs.h"
 #include <QGraphicsObject>
 #include <QIcon>
+#include <QTimer>
 
 namespace omnetpp {
 
@@ -65,6 +66,33 @@ public:
     void setPen(const QPen &pen);
     void setBrush(const QBrush &brush);
 };
+
+class BubbleItem : public QGraphicsObject {
+    Q_OBJECT
+
+protected:
+
+    // the distance between the tip of the handle, and the bottom of the text bounding rectangle
+    // includes the bottom margin (the yellow thingy will begin a margin size lower than this)
+    static constexpr double vertOffset = 15;
+    static constexpr double margin = 3; // also acts as corner rounding radius
+
+    QString text;
+    QTimer timer;
+
+    QPainterPath path;
+    bool pathBuilt = false;
+
+protected slots:
+    void onTimerElapsed();
+
+public:
+    BubbleItem(QPointF position, const QString &text, QGraphicsItem *parent = nullptr);
+
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+};
+
 
 // wraps the one in common to be more convenient, also adds support for a fallback color
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
