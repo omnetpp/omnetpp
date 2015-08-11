@@ -596,10 +596,10 @@ cObject *ModuleCanvasViewer::getObjectAt(qreal x, qreal y)
     return object;
 }
 
-QList<cObject*> ModuleCanvasViewer::getObjectsAt(qreal x, qreal y)
+std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(qreal x, qreal y)
 {
     QList<QGraphicsItem*> items = scene()->items(mapToScene(x, y));
-    QList<cObject*> objects;
+    std::vector<cObject*> objects;
 
     for (auto item : items) {
         QVariant variant = item->data(1);

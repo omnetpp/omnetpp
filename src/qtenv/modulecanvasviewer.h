@@ -116,7 +116,7 @@ public:
 
     void setObject(cModule *obj);
     cObject *getObjectAt(qreal x, qreal y);
-    QList<cObject*> getObjectsAt(qreal x, qreal y);
+    std::vector<cObject *> getObjectsAt(qreal x, qreal y);
 
     GraphicsLayer *getAnimationLayer() { return animationLayer; }
     CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }

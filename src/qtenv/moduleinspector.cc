@@ -452,13 +452,6 @@ double ModuleInspector::getImageSizeFactor() {
     return variant.isValid() ? variant.value<double>() : 1;
 }
 
-cCanvas *ModuleInspector::getCanvas()
-{
-    cModule *mod = static_cast<cModule *>(object);
-    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
-    return canvas;
-}
-
 GraphicsLayer *ModuleInspector::getAnimationLayer()
 {
     return canvasViewer->getAnimationLayer();
@@ -604,15 +597,13 @@ void ModuleInspector::click(QMouseEvent *event) {
         emit selectionChanged(objects.front());
 }
 
-void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
-{
-    getQtenv()->getMainObjectInspector()->setObject(objects.front());
+void ModuleInspector::doubleClick(QMouseEvent *event) {
+    objectsPicked(canvasViewer->getObjectsAt(event->pos().x(), event->pos().y()));
 }
 
-void ModuleInspector::doubleClick(QMouseEvent *event)
+void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
 {
     cObject *object = nullptr;
-    QList<cObject *> objects = canvasViewer->getObjectsAt(event->pos().x(), event->pos().y());
     for (auto &o : objects) {
         if (o) {
             object = o;
@@ -631,11 +622,11 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
     //ModuleInspector:zoomMarqueeCancel $insp ;# just in case
 
-    QList<cObject*> objects = canvasViewer->getObjectsAt(event->x(), event->y());
+    std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->x(), event->y());
 
-   if(objects.size())
-   {
-        QMenu *menu = InspectorUtil::createInspectorContextMenu(objects.toVector(), this);
+    if(objects.size())
+    {
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
 
         //TODO
         //set tmp($c:showlabels) $inspectordata($c:showlabels)
