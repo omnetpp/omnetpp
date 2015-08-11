@@ -45,7 +45,7 @@ OBJS_STD=\
     $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o $O/cvarhist.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
-    $O/simtime.o $O/task.o $O/util.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \
+    $O/simtime.o $O/task.o $O/util.o $O/expr.tab.o $O/nedsupport.o $O/osgutil.o $O/sim_std_m.o \
     $O/resultfilters.o $O/resultrecorders.o $O/ccommbuffer.o $O/cparsimcomm.o
 
 OBJS_NETBUILDER=\
@@ -297,7 +297,10 @@ $O/cclassdescriptor.o: cclassdescriptor.cc \
   ../../include/omnetpp/simtime_t.h \
   ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
-  ../common/opp_ctype.h
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/opp_ctype.h \
+  ../common/stringutil.h
 $O/ccommbuffer.o: ccommbuffer.cc \
   ../../include/omnetpp/ccommbuffer.h \
   ../../include/omnetpp/cexception.h \
@@ -1486,6 +1489,7 @@ $O/cmodule.o: cmodule.cc \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cobjectfactory.h \
+  ../../include/omnetpp/cosgcanvas.h \
   ../../include/omnetpp/cownedobject.h \
   ../../include/omnetpp/cpar.h \
   ../../include/omnetpp/cproperties.h \
@@ -1760,15 +1764,21 @@ $O/cobjectfactory.o: cobjectfactory.cc \
   ../common/exception.h \
   ../common/stringutil.h
 $O/cosgcanvas.o: cosgcanvas.cc \
+  ../../include/omnetpp/ccanvas.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cnamedobject.h \
   ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cobjectfactory.h \
   ../../include/omnetpp/cosgcanvas.h \
   ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cregistrationlist.h \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/globals.h \
+  ../../include/omnetpp/onstartup.h \
   ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/osgutil.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -2208,7 +2218,11 @@ $O/cregistrationlist.o: cregistrationlist.cc \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
-  ../../include/omnetpp/simutil.h
+  ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/stringutil.h
 $O/cresultfilter.o: cresultfilter.cc \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/clistener.h \
@@ -3126,6 +3140,36 @@ $O/onstartup.o: onstartup.cc \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/onstartup.h \
   ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/regmacros.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../../include/omnetpp/simtime.h \
+  ../../include/omnetpp/simtime_t.h \
+  ../../include/omnetpp/simutil.h
+$O/osgutil.o: osgutil.cc \
+  ../../include/omnetpp/ccomponent.h \
+  ../../include/omnetpp/cdefaultlist.h \
+  ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cexception.h \
+  ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/clifecyclelistener.h \
+  ../../include/omnetpp/clistener.h \
+  ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedvalue.h \
+  ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crng.h \
+  ../../include/omnetpp/csimulation.h \
+  ../../include/omnetpp/cstringpool.h \
+  ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
+  ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/osgutil.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \

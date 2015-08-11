@@ -44,7 +44,7 @@ OBJS_STD=\
     $O/cstringpool.obj $O/cstringtokenizer.obj $O/cclassdescriptor.obj $O/ctopology.obj $O/cvarhist.obj \
     $O/cvisitor.obj $O/cwatch.obj $O/cxmlelement.obj $O/cxmlparimpl.obj $O/distrib.obj $O/nedfunctions.obj \
     $O/errmsg.obj $O/globals.obj $O/cregistrationlist.obj $O/lex.expryy.obj $O/minixpath.obj $O/onstartup.obj \
-    $O/simtime.obj $O/task.obj $O/util.obj  $O/expr.tab.obj $O/nedsupport.obj $O/sim_std_m.obj \
+    $O/simtime.obj $O/task.obj $O/util.obj  $O/expr.tab.obj $O/nedsupport.obj $O/osgutil.obj $O/sim_std_m.obj \
     $O/resultfilters.obj $O/resultrecorders.obj $O/ccommbuffer.obj $O/cparsimcomm.obj
 
 OBJS_NETBUILDER=\

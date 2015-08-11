@@ -19,6 +19,7 @@
 #include <osgGA/GUIEventAdapter>
 #include <osg/TexGenNode>
 #include "omnetpp/cosgcanvas.h"
+#include "omnetpp/osgutil.h"
 #include "osgviewer.h"
 
 namespace omnetpp {

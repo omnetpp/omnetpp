@@ -19,6 +19,7 @@
 #ifdef WITH_OSG
 
 #include "omnetpp/globals.h"
+#include "omnetpp/osgutil.h" // OmnetppObjectNode
 #include "osg/Node"
 #include "osgEarth/Viewpoint"
 
@@ -92,10 +93,30 @@ void cOsgCanvas::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
     *this->viewpoint = viewpoint;
 }
 
-//---
-
-OmnetppObjectNode::~OmnetppObjectNode()
+osg::Group *cOsgCanvas::createOmnetppObjectNode(cObject *object)
 {
+    return new OmnetppObjectNode(object);
+}
+
+bool cOsgCanvas::isOmnetppObjectNode(osg::Group *omnetppObjectNode)
+{
+    return dynamic_cast<OmnetppObjectNode*>(omnetppObjectNode) != nullptr;
+}
+
+void cOsgCanvas::setOmnetppObject(osg::Group *omnetppObjectNode, cObject *object)
+{
+    OmnetppObjectNode *node = dynamic_cast<OmnetppObjectNode*>(omnetppObjectNode);
+    if (!node)
+        throw cRuntimeError("cOsgCanvas::setOmnetppObject(): node is not an OmnetppObjectNode");
+    node->setObject(object);
+}
+
+cObject *cOsgCanvas::getOmnetppObject(osg::Group *omnetppObjectNode)
+{
+    OmnetppObjectNode *node = dynamic_cast<OmnetppObjectNode*>(omnetppObjectNode);
+    if (!node)
+        throw cRuntimeError("cOsgCanvas::setOmnetppObject(): node is not an OmnetppObjectNode");
+    return node->getObject();
 }
 
 NAMESPACE_END

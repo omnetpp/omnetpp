@@ -22,7 +22,7 @@
 #ifdef WITH_OSG
 
 // don't include OSG headers yet
-namespace osg { class Node; }
+namespace osg { class Node; class Group; }
 namespace osgEarth { class Viewpoint; }
 
 NAMESPACE_BEGIN
@@ -184,49 +184,16 @@ class SIM_API cOsgCanvas : public cOwnedObject
 
         //@}
 
+        /**
+         * TODO
+         */
+        static osg::Group *createOmnetppObjectNode(cObject *object);
+        static bool isOmnetppObjectNode(osg::Group *omnetppObjectNode);
+        static void setOmnetppObject(osg::Group *omnetppObjectNode, cObject *object);
+        static cObject *getOmnetppObject(osg::Group *omnetppObjectNode);
+
 };
 
-NAMESPACE_END
-
-//TODO into separate file
-#include <osg/Group>
-#include "csimulation.h"
-
-NAMESPACE_BEGIN
-
-/**
- * osg::Node for defining correspondence to an OMNeT++ object.
- */
-//XXX note: code based on osg::TexGenNode
-class SIM_API OmnetppObjectNode : public osg::Group
-{
-    protected:
-        int componentId; // 0=none
-        cObject *object; // object pointer; if componentId!=0, it takes precedence
-
-    protected:
-        virtual ~OmnetppObjectNode();
-
-    public:
-        OmnetppObjectNode() : componentId(0), object(nullptr) {}
-        OmnetppObjectNode(cObject *object) : componentId(0), object(nullptr) {setObject(object);}
-        OmnetppObjectNode(const OmnetppObjectNode& node, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY) : Group(node, copyop) {componentId=node.componentId; object=node.object;}
-        META_Node(osg, OmnetppObjectNode);
-
-        cObject *getObject() const {
-            return componentId != 0 ? getSimulation()->getComponent(componentId) : object;
-        }
-        void setObject(cObject *obj) {
-            if (cComponent *component = dynamic_cast<cComponent*>(obj)) {
-                componentId = component->getId();
-                object = nullptr;
-            }
-            else {
-                componentId = 0;
-                object = obj;
-            }
-        }
-};
 NAMESPACE_END
 
 #endif // WITH_OSG
