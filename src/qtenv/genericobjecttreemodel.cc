@@ -447,8 +447,11 @@ bool FieldNode::setData(const QVariant &value, int role) {
 }
 
 cObject *FieldNode::getCObjectPointer() {
-    return containingDesc && containingDesc->getFieldIsCObject(fieldIndex) && !containingDesc->getFieldIsArray(fieldIndex)
-            ? static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0))
+    return (fieldIndex == -1) // either it is the root, so it must be cObject
+            || (containingDesc // or it is a node representing a single cObject
+                 && containingDesc->getFieldIsCObject(fieldIndex)
+                 && !containingDesc->getFieldIsArray(fieldIndex))
+            ? (cObject*)object
             : nullptr;
 }
 

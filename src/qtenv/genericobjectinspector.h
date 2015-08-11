@@ -35,6 +35,7 @@ protected:
 
 protected slots:
       void onTreeViewActivated(QModelIndex index);
+      void createContextMenu(QPoint pos);
 
 public:
       GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

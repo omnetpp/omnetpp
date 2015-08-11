@@ -24,6 +24,7 @@
 #include "loginspector.h"
 #include "genericobjectinspector.h"
 #include "genericobjecttreemodel.h"
+#include "inspectorutil.h"
 #include "envir/objectprinter.h"
 #include <QTreeView>
 #include <QDebug>
@@ -79,6 +80,9 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     model = new GenericObjectTreeModel(nullptr, this);
 
+    treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
+
     connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
 }
 
@@ -90,6 +94,17 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
     auto object = model->getCObjectPointer(index);
     if (object)
         emit objectPicked(object);
+}
+
+void GenericObjectInspector::createContextMenu(QPoint pos) {
+    cObject *object = model->getCObjectPointer(treeView->indexAt(pos));
+    if (object) {
+        QVector<cObject*> objects;
+        objects.push_back(object);
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
+        menu->exec(mapToGlobal(pos));
+        delete menu;
+    }
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj) {
