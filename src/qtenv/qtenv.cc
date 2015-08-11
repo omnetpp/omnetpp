@@ -1836,7 +1836,7 @@ void Qtenv::onObjectPicked(cObject *object) {
         mainLogView->setObject(module);
         mainInspector->setObject(module);
     } else {
-        inspect(object);
+        inspect(object, INSP_DEFAULT, true);
     }
 }
 

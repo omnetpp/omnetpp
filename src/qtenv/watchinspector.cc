@@ -19,6 +19,8 @@
 
 #include <cstring>
 #include <cmath>
+#include <QMessageBox>
+#include <QBoxLayout>
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cstlwatch.h"
 #include "qtenv.h"
@@ -53,6 +55,17 @@ Register_InspectorFactory(WatchInspectorFactory);
 
 WatchInspector::WatchInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
+    auto layout = new QHBoxLayout(this);
+    layout->setMargin(2);
+    layout->setSpacing(2);
+
+    label = new QLabel(this);
+    editor = new QLineEdit(this);
+
+    layout->addWidget(label);
+    layout->addWidget(editor);
+
+    connect(editor, SIGNAL(returnPressed()), this, SLOT(commit()));
 }
 
 void WatchInspector::refresh()
@@ -60,18 +73,22 @@ void WatchInspector::refresh()
     Inspector::refresh();
 
     cWatchBase *watch = static_cast<cWatchBase *>(object);
-    //TODO setLabel(".main.name.l", watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
-    //TODO setEntry(".main.name.e", watch ? watch->info().c_str() : "n/a");
+
+    editor->setEnabled(watch->supportsAssignment());
+    editor->setText(watch ? watch->info().c_str() : "n/a");
+    label->setText(watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
 }
 
 void WatchInspector::commit()
 {
     cWatchBase *watch = static_cast<cWatchBase *>(object);
-    const char *s = ""; //TODO getEntry(".main.name.e");
-    if (watch->supportsAssignment())
-        watch->assign(s);
+    if (watch->supportsAssignment()) {
+        watch->assign(editor->text().toStdString().c_str());
+        getQtenv()->refreshInspectors();
+    }
     else
-        CHK(Tcl_VarEval(interp, "messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", TCL_NULL));
+        QMessageBox::warning(this, "Warning", "This inspector doesn't support changing the value.", QMessageBox::Ok);
+
     Inspector::commit();  // must be there after all changes
 }
 

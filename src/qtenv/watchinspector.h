@@ -19,21 +19,32 @@
 
 #include "inspector.h"
 
+#include <QLabel>
+#include <QLineEdit>
+
 namespace omnetpp {
 namespace qtenv {
 
 class QTENV_API WatchInspector: public Inspector
 {
-   public:
-      WatchInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-      virtual void refresh() override;
-      virtual void commit() override;
+    Q_OBJECT
+
+protected:
+    QLabel *label;
+    QLineEdit *editor;
+
+public:
+    WatchInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+
+public slots:
+    virtual void refresh() override;
+    virtual void commit() override;
 };
 
 } // namespace qtenv qtenv
 } // namespace omnetpp
 
-#endif
+#endif // __OMNETPP_QTENV_WATCHINSPECTOR_H
 
 
 

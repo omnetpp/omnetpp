@@ -35,6 +35,7 @@ protected:
 
 protected slots:
       void onTreeViewActivated(QModelIndex index);
+      void onDataChanged();
       void createContextMenu(QPoint pos);
 
 public:

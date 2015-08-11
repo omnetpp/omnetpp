@@ -82,7 +82,6 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
-
     connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
 }
 
@@ -94,6 +93,10 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
     auto object = model->getCObjectPointer(index);
     if (object)
         emit objectPicked(object);
+}
+
+void GenericObjectInspector::onDataChanged() {
+    getQtenv()->refreshInspectors();
 }
 
 void GenericObjectInspector::createContextMenu(QPoint pos) {
@@ -119,6 +122,8 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
 
     delete model;
     model = newModel;
+
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
 }
 
 void GenericObjectInspector::refresh() {
