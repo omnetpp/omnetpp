@@ -20,21 +20,30 @@
 #include "inspector.h"
 #include "genericobjecttreemodel.h"
 
+class QLabel;
 class QTreeView;
+class QTabWidget;
 
 namespace omnetpp {
 namespace qtenv {
+
+class InspectorListBox;
 
 class QTENV_API GenericObjectInspector : public Inspector
 {
     Q_OBJECT
 
 protected:
+      QLabel *icon, *name; // the top row
+      QTabWidget *tabs;
       QTreeView *treeView;
       GenericObjectTreeModel *model;
+      InspectorListBox *listModel;
+      void mousePressEvent(QMouseEvent *) override;
 
 protected slots:
       void onTreeViewActivated(QModelIndex index);
+      void onListActivated(QModelIndex index);
       void onDataChanged();
       void createContextMenu(QPoint pos);
 

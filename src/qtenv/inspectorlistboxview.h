@@ -36,14 +36,13 @@ private:
     int type;
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
 
-signals:
-    void pressEnter(QModelIndex);
+private slots:
+    void contextMenuItemTriggerd();
 
 public:
-    InspectorListBoxView();
+    InspectorListBoxView(QWidget *parent = nullptr);
     ~InspectorListBoxView();
 
     void setModel(InspectorListBox *model);

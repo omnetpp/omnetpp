@@ -36,7 +36,6 @@ public slots:
     void sort(int i, Qt::SortOrder order);
 
 public:
-
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

@@ -30,7 +30,8 @@
 namespace omnetpp {
 namespace qtenv {
 
-InspectorListBoxView::InspectorListBoxView()
+InspectorListBoxView::InspectorListBoxView(QWidget *parent)
+    : QTableView(parent)
 {
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -43,6 +44,7 @@ InspectorListBoxView::InspectorListBoxView()
 
     setShowGrid(false);
     setSortingEnabled(true);
+    setWordWrap(false);
 }
 
 InspectorListBoxView::~InspectorListBoxView()
@@ -70,18 +72,6 @@ void InspectorListBoxView::setModel(InspectorListBox *model)
         for(int i = 0; i < columnWidths.size(); ++i)
             setColumnWidth(i, columnWidths[i].toInt());
     }
-}
-
-void InspectorListBoxView::keyPressEvent(QKeyEvent *event)
-{
-    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
-    {
-        QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
-        if(selectedIndexes.size() > 0)
-            emit pressEnter(selectedIndexes[0]);
-    }
-
-    QTableView::keyPressEvent(event);
 }
 
 void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)
