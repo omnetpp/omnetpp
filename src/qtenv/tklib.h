@@ -21,7 +21,7 @@
 
 namespace omnetpp {
 namespace qtenv {
-
+/*TCLKILL
 struct OmnetTclCommand {
     const char *namestr;
     int (*func)(ClientData, Tcl_Interp *, int, const char **);
@@ -33,7 +33,7 @@ extern int exitOmnetpp;
 Tcl_Interp *initTk(int argc, char **argv);
 int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *tcl_commands);
 int runTk(Tcl_Interp *interp);
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 

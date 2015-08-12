@@ -66,7 +66,7 @@ void GateInspector::redraw()
 {
     cGate *gate = (cGate *)object;
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+    //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     // draw modules
     int k = 0;
@@ -79,7 +79,7 @@ void GateInspector::redraw()
         else
             prevdir = g->getType();
 
-        char modptr[32], gateptr[32], kstr[16], xstr[16], dir[2];
+        /*TCLKILL char modptr[32], gateptr[32], kstr[16], xstr[16], dir[2];
         ptrToStr(g->getOwnerModule(), modptr);
         ptrToStr(g, gateptr);
         sprintf(kstr, "%d", k);
@@ -97,11 +97,12 @@ void GateInspector::redraw()
                         dir, " ",
                         g == gate ? "1" : "0",
                         TCL_NULL));
+                        */
     }
 
     // draw connections
     for (g = gate->getPathStartGate(); g->getNextGate() != nullptr; g = g->getNextGate()) {
-        char srcgateptr[32], destgateptr[32], chanptr[32];
+        /*TCLKILL char srcgateptr[32], destgateptr[32], chanptr[32];
         ptrToStr(g, srcgateptr);
         ptrToStr(g->getNextGate(), destgateptr);
         cChannel *chan = g->getChannel();
@@ -114,7 +115,7 @@ void GateInspector::redraw()
                         chanptr, " ",
                         TclQuotedString(chan ? chan->info().c_str() : "").get(), " ",
                         TclQuotedString(dispstr).get(), " ",
-                        TCL_NULL));
+                        TCL_NULL));*/
     }
 
     // loop through all messages in the event queue
@@ -126,7 +127,7 @@ void GateInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+        //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -135,7 +136,7 @@ void GateInspector::refresh()
     // redraw modules only on explicit request
 
     // loop through all messages in the event queue
-    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
+    //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", TCL_NULL));
     cGate *destGate = gate->getPathEndGate();
 
     cFutureEventSet *fes = getSimulation()->getFES();
@@ -154,31 +155,31 @@ void GateInspector::refresh()
                 char msgptr[32], gateptr[32];
                 ptrToStr(msg, msgptr);
                 ptrToStr(gate, gateptr);
-                CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnGate ",
+                /*TCLKILL CHK(Tcl_VarEval(interp, "ModuleInspector:drawMessageOnGate ",
                                 canvas, " ",
                                 gateptr, " ",
                                 msgptr,
-                                TCL_NULL));
+                                TCL_NULL));*/
             }
         }
     }
 }
-
+/*TCLKILL
 int GateInspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc < 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
+        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        //TCLKILL return TCL_ERROR;
     }
 
     if (strcmp(argv[0], "redraw") == 0) {
         redraw();
-        return TCL_OK;
+        //TCLKILL return TCL_OK;
     }
 
     return Inspector::inspectorCommand(argc, argv);
 }
-
+*/
 void GateInspector::displayStringChanged(cGate *gate)
 {
     // XXX should defer redraw (via redraw_needed) to avoid "flickering"

@@ -26,7 +26,7 @@ class cModule;
 class cDisplayString;
 
 namespace qtenv {
-
+/*TCLKILL
 class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironment
 {
    protected:
@@ -63,7 +63,7 @@ class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironme
       virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
       virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
 };
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 

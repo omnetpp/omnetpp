@@ -19,7 +19,7 @@
 #define __OMNETPP_QTENV_TKDUMMY_H
 
 #include <cstdlib>  // nullptr
-
+/*TCLKILL
 struct Tcl_Interp {};
 typedef void *ClientData;
 struct Tcl_Namespace {};
@@ -104,5 +104,5 @@ inline void Tk_DoOneEvent(int) {}
 inline void Tcl_FindExecutable(const char *) {}
 
 inline char *Tcl_Alloc(size_t size)  {return new char[size];}
-
+*/
 #endif

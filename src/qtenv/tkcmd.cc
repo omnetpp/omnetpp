@@ -57,7 +57,7 @@ namespace omnetpp {
 namespace qtenv {
 
 using std::string;
-
+/*TCLKILL
 // command functions
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -2568,6 +2568,7 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     app->loadNedFile(fname);
     return TCL_OK;
 }
+*/
 
 /*Qt!
 static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_PhotoImageBlock *destImgblockptr)
@@ -2587,11 +2588,10 @@ static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_Phot
    }
    return TCL_OK;
 }
-*/
+
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-/*Qt!
    if (argc!=4) {Tcl_SetResult(interp, TCLCONST("3 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *imgname = argv[1];
    const char *targetcolorname = argv[2];
@@ -2645,13 +2645,11 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
            pixel[blueoffset] = b;
        }
    }
- */
     return TCL_OK;
 }
 
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-/*Qt!
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("2 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *destImageName = argv[1];
    const char *srcImageName = argv[2];
@@ -2767,13 +2765,11 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    //
    Tk_PhotoHandle destImageHandle = Tk_FindPhoto(interp, TCLCONST(destImageName));
    Tk_PhotoPutBlock(interp, destImageHandle, &destImage, 0, 0, destWidth, destHeight, TK_PHOTO_COMPOSITE_SET);
- */
     return TCL_OK;
 }
 
 int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-/*Qt!
    // swaps the R and B channels of an image; this is needed to work around a "wm iconphoto"
    // bug in Tk 8.4, see #1467997 "[wm iconphoto] issues on Win XP".
    // http://sourceforge.net/tracker/index.php?func=detail&aid=1467997&group_id=12997&atid=112997
@@ -2807,13 +2803,11 @@ int imageSwapRedAndBlue_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
- */
     return TCL_OK;
 }
 
 int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-/*Qt!
    // multiplies the alpha channel by a floating point value.
 
     if (argc != 3) {
@@ -2847,13 +2841,11 @@ int imageMultiplyAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
- */
     return TCL_OK;
 }
 
 int imageReduceAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-/*Qt!
    // cut alpha to 1 bit
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("2 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *imgname = argv[1];
@@ -2880,7 +2872,6 @@ int imageReduceAlpha_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    // on the canvas when the icon is drawn.
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    Tk_PhotoPutBlock(interp, imghandle, &img, 0, 0, img.width, img.height, TK_PHOTO_COMPOSITE_SET);
- */
     return TCL_OK;
 }
 
@@ -3232,7 +3223,7 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
 #endif
     return TCL_OK;
 }
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 

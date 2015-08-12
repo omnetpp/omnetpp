@@ -507,12 +507,12 @@ QLineF ModuleInspector::getConnectionLine(cGate *gate)
     return canvasViewer->getConnectionLine(gate);
 }
 
-
+/*TCLKILL
 int ModuleInspector::inspectorCommand(int argc, const char **argv)
 {
     return Inspector::inspectorCommand(argc, argv);
 }
-
+*/
 int ModuleInspector::getDefaultLayoutSeed()
 {
     const cDisplayString blank;
@@ -523,44 +523,47 @@ int ModuleInspector::getDefaultLayoutSeed()
 }
 
 int ModuleInspector::getLayoutSeed(int argc, const char **argv)
-{
+{/*
     if (argc != 1) {
         Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
         return TCL_ERROR;
     }
     //Tcl_SetObjResult(interp, Tcl_NewIntObj((int)layoutSeed));
-    return TCL_OK;
+    return TCL_OK;*/
+    return 0;
 }
 
 int ModuleInspector::setLayoutSeed(int argc, const char **argv)
-{
+{/*
     if (argc != 2) {
         Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
         return TCL_ERROR;
     }
     canvasViewer->setLayoutSeed(atol(argv[1]));
-    return TCL_OK;
+    return TCL_OK;*/
+    return 0;
 }
 
 int ModuleInspector::getSubmoduleCount(int argc, const char **argv)
 {
     if (argc != 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
+        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        //TCLKILL return TCL_ERROR;
     }
     int count = 0;
     for (cModule::SubmoduleIterator it(static_cast<cModule *>(object)); !it.end(); ++it)
         count++;
-    Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
-    return TCL_OK;
+    //TCLKILL Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
+    //TCLKILL return TCL_OK;
+    return 0;
 }
 
 int ModuleInspector::getSubmodQ(int argc, const char **argv)
 {
     // args: <module ptr> <qname>
     if (argc != 3) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
+        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        //TCLKILL return TCL_ERROR;
     }
 
     cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
@@ -568,27 +571,29 @@ int ModuleInspector::getSubmodQ(int argc, const char **argv)
     cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
     char buf[21];
     ptrToStr(q, buf);
-    Tcl_SetResult(interp, buf, TCL_VOLATILE);
-    return TCL_OK;
+    //TCLKILL Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    //TCLKILL return TCL_OK;
+    return 0;
 }
 
 int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 {
     // args: <module ptr> <qname>
     if (argc != 3) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
+        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
+        //TCLKILL return TCL_ERROR;
     }
 
     cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
     const char *qname = argv[2];
     cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));  // FIXME THIS MUST BE REFINED! SEARCHES WAY TOO DEEEEEP!!!!
     if (!q) {
-        Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
-        return TCL_OK;
+        //TCLKILL Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
+        //TCLKILL return TCL_OK;
     }
-    Tcl_SetObjResult(interp, Tcl_NewIntObj(q->getLength()));
-    return TCL_OK;
+    //TCLKILL Tcl_SetObjResult(interp, Tcl_NewIntObj(q->getLength()));
+    //TCLKILL return TCL_OK;
+    return 0;
 }
 
 void ModuleInspector::click(QMouseEvent *event) {
@@ -672,9 +677,9 @@ void ModuleInspector::layers()
         return;
     }
 
-    const char *allTags = canvasRenderer->getAllTags().c_str();
-    const char *enabledTags = canvasRenderer->getEnabledTags().c_str();
-    const char *exceptTags = canvasRenderer->getExceptTags().c_str();
+    //TCLKILL const char *allTags = canvasRenderer->getAllTags().c_str();
+    //TCLKILL const char *enabledTags = canvasRenderer->getEnabledTags().c_str();
+    //TCLKILL const char *exceptTags = canvasRenderer->getExceptTags().c_str();
 
     //TODO create dialog
 //    set result [CanvasInspectors:layersDialog $allTags $enabledTags $exceptTags]

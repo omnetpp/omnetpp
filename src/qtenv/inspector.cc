@@ -73,7 +73,7 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     : QWidget(parent, isTopLevel ? Qt::Tool : Qt::Widget)
 {
     factory = f;
-    interp = getQtenv()->getInterp();
+    //TCLKILL interp = getQtenv()->getInterp();
     object = nullptr;
     type = f->getInspectorType();
     isToplevelWindow = isTopLevel;
@@ -236,7 +236,7 @@ void Inspector::inspectParent()
     else
         getQtenv()->inspect(parentPtr);
 }
-
+/*TCLKILL
 int Inspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc != 1) {
@@ -258,7 +258,7 @@ int Inspector::inspectorCommand(int argc, const char **argv)
     }
     return TCL_OK;
 }
-
+*/
 void Inspector::goUpInto()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();

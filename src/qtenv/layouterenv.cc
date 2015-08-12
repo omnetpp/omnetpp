@@ -31,7 +31,7 @@
 
 namespace omnetpp {
 namespace qtenv {
-
+/*TCLKILL
 TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
     : displayString(displayString)
 {
@@ -152,7 +152,7 @@ void TkenvGraphLayouterEnvironment::cleanup()
         CHK(Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, TCL_NULL));
     }
 }
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 

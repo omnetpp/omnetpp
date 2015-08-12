@@ -57,7 +57,7 @@ class QTENV_API Inspector : public QWidget
 
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
-      Tcl_Interp *interp;     // Tcl interpreterz
+      //TCLKILL Tcl_Interp *interp;     // Tcl interpreterz
       cObject *object;        // the inspected object or nullptr if inspector is empty
       int type;               // INSP_OBJECT, etc.
       std::string windowTitle;// window title string
@@ -122,7 +122,7 @@ class QTENV_API Inspector : public QWidget
 
       virtual void clearObjectChangeFlags() {}
 
-      virtual int inspectorCommand(int, const char **);
+      //TCLKILL virtual int inspectorCommand(int, const char **);
 
       virtual void objectDeleted(cObject *);
 };

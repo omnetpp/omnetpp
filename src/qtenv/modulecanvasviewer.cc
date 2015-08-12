@@ -308,11 +308,11 @@ void ModuleCanvasViewer::getSubmoduleCoords(cModule *submod, bool& explicitcoord
 
     // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
     double boxsx = 0, boxsy = 0;
-    int iconsx = 0, iconsy = 0;
+    int iconsx = 30, iconsy = 30;
     if (ds.containsTag("b") || !ds.containsTag("i")) {
         boxsx = resolveDoubleDispStrArg(ds.getTagArg("b", 0), submod, 40);
         boxsy = resolveDoubleDispStrArg(ds.getTagArg("b", 1), submod, 24);
-    }
+    }/*
     if (ds.containsTag("i")) {
         const char *imgName = ds.getTagArg("i", 0);
         const char *imgSize = ds.getTagArg("is", 0);
@@ -323,7 +323,6 @@ void ModuleCanvasViewer::getSubmoduleCoords(cModule *submod, bool& explicitcoord
         else {
             //CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, TCL_NULL));
             iconsx = iconsy = 30;  // TODO
-/*Qt!
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), nullptr, nullptr);
             if (!img)
             {
@@ -335,9 +334,8 @@ void ModuleCanvasViewer::getSubmoduleCoords(cModule *submod, bool& explicitcoord
                 Tk_SizeOfImage(img, &iconsx, &iconsy);
                 Tk_FreeImage(img);
             }
- */
         }
-    }
+    }*/
     sx = (boxsx > iconsx) ? boxsx : iconsx;
     sy = (boxsy > iconsy) ? boxsy : iconsy;
 

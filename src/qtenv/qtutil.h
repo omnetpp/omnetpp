@@ -97,7 +97,7 @@ public:
 // wraps the one in common to be more convenient, also adds support for a fallback color
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
 QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
-
+/*TCLKILL
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'
 // in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
@@ -134,9 +134,8 @@ QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
   }
 
 
-/**
- * Quoting strings for Tcl_Eval
- */
+
+//TCLKILL  Quoting strings for Tcl_Eval
 class QTENV_API TclQuotedString
 {
   private:
@@ -154,7 +153,7 @@ class QTENV_API TclQuotedString
     const char *get() {return quotedstr;}
     operator const char *() {return quotedstr;}
 };
-
+*/
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
@@ -196,7 +195,7 @@ QString getObjectIcon(cObject *object);
 const char *getObjectBaseClass(cObject *object);
 
 const char *getMessageShortInfoString(cMessage *msg);
-
+/*TCLKILL
 void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
@@ -204,7 +203,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 void feedCollectionIntoInspectorListbox(OPP::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
-
+*/
 /**
  * Looks up the given parameter
  */
@@ -232,14 +231,14 @@ const char *substituteDisplayStringParamRefs(const char *dispstr, std::string& b
 bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue);
 long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
-
+/*TCLKILL
 void logTclError(const char *file, int line, Tcl_Interp *interp);
 
 
 typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[]);
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 

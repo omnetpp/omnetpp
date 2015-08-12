@@ -78,7 +78,7 @@ void CanvasInspector::doSetObject(cObject *obj)
 
     canvasRenderer->setCanvas(getCanvas());
 
-    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+    //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     if (object) {
         FigureRenderingHints hint;
@@ -91,7 +91,7 @@ void CanvasInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+        //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -124,30 +124,30 @@ cCanvas *CanvasInspector::getCanvas()
 
 void CanvasInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
-    const char *s;
+    //TCLKILL const char *s;
 
     // read $inspectordata($c:zoomfactor)
-    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
-    hints->zoom = opp_atof(s);
+    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
+    hints->zoom = 1; //opp_atof(s);
 
     // read $inspectordata($c:imagesizefactor)
-    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":imagesizefactor").c_str()), TCL_GLOBAL_ONLY);
-    hints->iconMagnification = opp_atof(s);
+    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":imagesizefactor").c_str()), TCL_GLOBAL_ONLY);
+    hints->iconMagnification = 1; //opp_atof(s);
 
     // read $inspectordata($c:showlabels)
-    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showlabels").c_str()), TCL_GLOBAL_ONLY);
-    hints->showSubmoduleLabels = opp_atol(s) != 0;
+    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showlabels").c_str()), TCL_GLOBAL_ONLY);
+    hints->showSubmoduleLabels = true; //opp_atol(s) != 0;
 
     // read $inspectordata($c:showarrowheads)
-    s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
-    hints->showArrowHeads = opp_atol(s) != 0;
+    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
+    hints->showArrowHeads = true; //opp_atol(s) != 0;
 
-    Tcl_Eval(interp, "font actual CanvasFont -family");
-    hints->defaultFont = Tcl_GetStringResult(interp);
+    //TCLKILL Tcl_Eval(interp, "font actual CanvasFont -family");
+    //TCLKILL hints->defaultFont = Tcl_GetStringResult(interp);
 
-    Tcl_Eval(interp, "font actual CanvasFont -size");
-    s = Tcl_GetStringResult(interp);
-    hints->defaultFontSize = opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+    //TCLKILL Tcl_Eval(interp, "font actual CanvasFont -size");
+    //TCLKILL s = Tcl_GetStringResult(interp);
+    hints->defaultFontSize = 16; //opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
 }
 
 void CanvasInspector::updateBackgroundColor()
@@ -157,10 +157,10 @@ void CanvasInspector::updateBackgroundColor()
         char buf[16];
         cFigure::Color color = canvas->getBackgroundColor();
         sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
+        //TCLKILL CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
     }
 }
-
+/*TCLKILL
 int CanvasInspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc < 1) {
@@ -205,7 +205,7 @@ int CanvasInspector::inspectorCommand(int argc, const char **argv)
 
     return Inspector::inspectorCommand(argc, argv);
 }
-
+*/
 } // namespace omnetpp
 } // namespace omnetpp
 

@@ -152,7 +152,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
    protected:
       QApplication *app = nullptr;
       MainWindow *mainWindow = nullptr;
-      Tcl_Interp *interp;          // Tcl interpreter
+      //TCLKILL Tcl_Interp *interp;          // Tcl interpreter
       opp_string windowTitlePrefix;// contains "procId=.." when using parsim
 
       opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
@@ -240,9 +240,9 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       // with Tkenv, activity() modules need extra stack
       virtual unsigned getExtraStackForEnvir() const override;
 
-      virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
+      /*TCLKILL virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
       virtual void logTclError(const char *file, int line, const char *text);
-      virtual void openTkenvlogIfNeeded();
+      virtual void openTkenvlogIfNeeded();*/
 
       MainWindow *getMainWindow() { return mainWindow; }
       Animator *getAnimator() { return animator; }
@@ -308,7 +308,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       void setStopSimulationFlag() {stopsimulation_flag = true;}
       bool getStopSimulationFlag() {return stopsimulation_flag;}
       Speedometer& getSpeedometer() {return speedometer;}
-      Tcl_Interp *getInterp() {return interp;}
+      //TCLKILL Tcl_Interp *getInterp() {return interp;}
       LogBuffer *getLogBuffer() {return &logBuffer;}
       ComponentHistory *getComponentHistory() {return &componentHistory;}
       const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}

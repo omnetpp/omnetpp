@@ -347,7 +347,7 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
 
-    interp = nullptr;  // Tcl/Tk not set up yet
+    //TCLKILL interp = nullptr;  // Tcl/Tk not set up yet
     ferrorlog = nullptr;
     simstate = SIM_NONET;
     stopsimulation_flag = false;
@@ -463,7 +463,7 @@ void Qtenv::doRun()
         QApplication::exec();
     }
     catch (std::exception& e) {
-        interp = nullptr;
+        //TCLKILL interp = nullptr;
         throw;
     }
     //
@@ -1063,7 +1063,7 @@ void Qtenv::refreshInspectors()
         (*it)->clearObjectChangeFlags();
 
     // try opening "pending" inspectors
-    CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
+    //TCLKILL CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
 }
 
 void Qtenv::redrawInspectors()
@@ -1931,7 +1931,7 @@ void Qtenv::log(cLogEntry *entry)
 bool Qtenv::inputDialog(const char *title, const char *prompt,
         const char *checkboxLabel, const char *defaultValue,
         std::string& outResult, bool& inoutCheckState)
-{
+{/*
     CHK(Tcl_Eval(interp, "global opp"));
     Tcl_SetVar2(interp, "opp", "result", (char *)defaultValue, TCL_GLOBAL_ONLY);
     Tcl_SetVar2(interp, "opp", "check", (char *)(inoutCheckState ? "1" : "0"), TCL_GLOBAL_ONLY);
@@ -1952,7 +1952,8 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
         outResult = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
         inoutCheckState = Tcl_GetVar2(interp, "opp", "check", TCL_GLOBAL_ONLY)[0] == '1';
         return true;  // OK
-    }
+    }*/
+    return false;
 }
 
 std::string Qtenv::gets(const char *promt, const char *defaultReply)
@@ -1970,15 +1971,16 @@ std::string Qtenv::gets(const char *promt, const char *defaultReply)
 bool Qtenv::askyesno(const char *question)
 {
     // should return -1 when CANCEL is pressed
-    CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ", TclQuotedString(question).get(), " question yesno", TCL_NULL));
-    return Tcl_GetStringResult(interp)[0] == 'y';
+    //TCLKILL CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ", TclQuotedString(question).get(), " question yesno", TCL_NULL));
+    //TCLKILL return Tcl_GetStringResult(interp)[0] == 'y';
+    return false;
 }
 
 unsigned Qtenv::getExtraStackForEnvir() const
 {
     return opt->extraStack;
 }
-
+/*TCLKILL
 void Qtenv::logTclError(const char *file, int line, Tcl_Interp *interp)
 {
     logTclError(file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
@@ -2003,7 +2005,7 @@ void Qtenv::openTkenvlogIfNeeded()
         ::fprintf(ferrorlog, "---- %s ---------------------------------------------------------\n\n\n", opp_makedatetimestring().c_str());
     }
 }
-
+*/
 void Qtenv::setPref(const QString &key, const QVariant &value) {
     (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->setValue(key, value);
 }

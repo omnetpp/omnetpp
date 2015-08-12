@@ -34,7 +34,7 @@ class QTENV_API GateInspector : public Inspector
       GateInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual void refresh() override;
       virtual void redraw() override;
-      virtual int inspectorCommand(int argc, const char **argv) override;
+      //TCLKILL virtual int inspectorCommand(int argc, const char **argv) override;
 
       // notifications from envir:
       virtual void displayStringChanged(cGate *gate);

@@ -49,7 +49,7 @@ void HistogramInspector::refresh()
     Inspector::refresh();
 
     if (!object) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+        //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
 
@@ -85,17 +85,20 @@ void HistogramInspector::refresh()
     }
 
     // get canvas size
-    CHK(Tcl_VarEval(interp, "winfo width ", canvas, TCL_NULL));
-    int canvaswidth = atoi(Tcl_GetStringResult(interp));
-    CHK(Tcl_VarEval(interp, "winfo height ", canvas, TCL_NULL));
-    int canvasheight = atoi(Tcl_GetStringResult(interp));
+    //TCLKILL CHK(Tcl_VarEval(interp, "winfo width ", canvas, TCL_NULL));
+    //TCLKILL int canvaswidth = atoi(Tcl_GetStringResult(interp));
+    //TCLKILL CHK(Tcl_VarEval(interp, "winfo height ", canvas, TCL_NULL));
+    //TCLKILL int canvasheight = atoi(Tcl_GetStringResult(interp));
+    int canvaswidth = 1;
+    int canvasheight = 1;
+
 
     // temporarily define X() and Y() coordinate translation macros
 #define X(x)    (int)(10+((x)-xmin)*((long)canvaswidth-20)/xrange)
 #define Y(y)    (int)(canvasheight-10-(y)*((long)canvasheight-20)/ymax)
 
     // delete previous drawing
-    CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+    //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
 
     // draw the histogram
     cell_upper = distr->getBasepoint(0);
@@ -112,9 +115,9 @@ void HistogramInspector::refresh()
         char coords[64];
         sprintf(coords, "%d %d %d %d", X(cell_lower), Y(0), X(cell_upper), Y(y));
         // draw rectangle
-        CHK(Tcl_VarEval(interp, canvas,
+        /*TCLKILL CHK(Tcl_VarEval(interp, canvas,
                         " create rect ", coords, " -tag ", tag,
-                        " -fill black -outline black", TCL_NULL));
+                        " -fill black -outline black", TCL_NULL));*/
     }
 #undef X
 #undef Y
@@ -146,7 +149,7 @@ void HistogramInspector::getCellInfo(char *buf, int cell)
             count / (double)(d->getCount()) / (cell_upper-cell_lower)
             );
 }
-
+/*TCLKILL
 int HistogramInspector::inspectorCommand(int argc, const char **argv)
 {
     if (argc < 1) {
@@ -171,7 +174,7 @@ int HistogramInspector::inspectorCommand(int argc, const char **argv)
 
     return Inspector::inspectorCommand(argc, argv);
 }
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 

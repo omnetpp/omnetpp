@@ -336,30 +336,6 @@ void Animator::animateMethodcallHoriz(ModuleInspector *insp, cModule *srcSubmod,
 
 void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage *msg, SendAnimMode mode)
 {
-    cModule *mod = srcGate->getOwnerModule();
-    cGate *destGate = srcGate->getNextGate();
-
-    // check if this is a two way connection (an other connection is pointing back
-    // to the this gate's pair from the next gate's pair)
-    bool twoWayConnection = false;
-    // check if this gate is really part of an in/out gate pair
-    // gate      o-------------------->o dest_gate
-    // gate_pair o<--------------------o dest_gate_pair
-    if (srcGate->getNameSuffix()[0]) {
-        const cGate *gatePair = mod->gateHalf(srcGate->getBaseName(),
-                    srcGate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
-                    srcGate->isVector() ? srcGate->getIndex() : -1);
-
-        if (destGate->getNameSuffix()[0]) {
-            const cGate *destGatePair = destGate->getOwnerModule()->gateHalf(destGate->getBaseName(),
-                        destGate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
-                        destGate->isVector() ? destGate->getIndex() : -1);
-            twoWayConnection = destGatePair == gatePair->getPreviousGate();
-        }
-    }
-
-    auto src = mod;
-    auto dest = destGate->getOwnerModule();
     QLineF connLine = insp->getConnectionLine(srcGate);
 
     QPointF srcPos = connLine.p1();
@@ -367,6 +343,7 @@ void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage
 
     if (mode == ANIM_END) {
         srcPos = connLine.p2();
+        cModule *dest = srcGate->getNextGate()->getOwnerModule();
         destPos = insp->getSubmodCoords(dest);
     }
 

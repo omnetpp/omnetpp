@@ -31,7 +31,7 @@
 
 namespace omnetpp {
 namespace qtenv {
-
+/*TCLKILL
 int exitOmnetpp;
 #if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION < 6
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
@@ -66,7 +66,7 @@ Tcl_Interp *initTk(int argc, char **argv)
         throw opp_runtime_error("Tkenv: Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
 #endif
 
-/*Qt!
+
     Tk_Window mainWindow = Tk_MainWindow(interp);
 
     Tk_SetAppName( mainWindow, "omnetpp" );
@@ -77,7 +77,7 @@ Tcl_Interp *initTk(int argc, char **argv)
 
     // Grab initial size and background
     Tk_GeometryRequest(mainWindow,200,200);
-*/
+
     return interp;
 }
 
@@ -106,7 +106,7 @@ int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 
 //    return TCL_OK;
 // }
-
+*/
 } // namespace qtenv
 } // namespace omnetpp
 
