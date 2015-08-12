@@ -34,10 +34,8 @@ private:
 
 public slots:
     void sort(int i, Qt::SortOrder order);
-    void selectionChanged(QModelIndex index);
 
 public:
-    InspectorListBox();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;

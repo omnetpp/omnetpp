@@ -1994,9 +1994,9 @@ void Qtenv::setPref(const QString &key, const QVariant &value) {
     (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->setValue(key, value);
 }
 
-QVariant Qtenv::getPref(const QString &key) {
+QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
     QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
-    return settings->contains(key) ? settings->value(key) : QVariant();
+    return settings->contains(key) ? settings->value(key) : defaultValue;
 }
 
 // ======================================================================

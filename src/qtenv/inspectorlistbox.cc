@@ -22,25 +22,11 @@
 namespace omnetpp {
 namespace qtenv {
 
-InspectorListBox::InspectorListBox()
-{}
-
-void InspectorListBox::selectionChanged(QModelIndex index)
-{
-    if(!index.isValid())
-        return;
-
-    QVariant variant = data(index, Qt::UserRole);
-    if(variant.isValid())
-        getQtenv()->onSelectionChanged(variant.value<cObject*>());
-}
-
 QModelIndex InspectorListBox::index(int row, int column, const QModelIndex&) const
 {
-    if(objects.size() == 0)
-        return QModelIndex();
-
-    return createIndex(row, column, objects[row]);
+    return objects.empty()
+            ? QModelIndex()
+            : createIndex(row, column, objects[row]);
 }
 
 int InspectorListBox::rowCount(const QModelIndex &parent) const
@@ -50,24 +36,15 @@ int InspectorListBox::rowCount(const QModelIndex &parent) const
 
 int InspectorListBox::columnCount(const QModelIndex &parent) const
 {
-    return 4;
+    return 3;
 }
 
 QVariant InspectorListBox::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
-        if(section == 0)
-            return QVariant::fromValue<QString>("Class");
-        if(section == 1)
-            return QVariant::fromValue<QString>("Name");
-        if(section == 2)
-            return QVariant::fromValue<QString>("Info");
-        if(section == 3)
-            return QVariant::fromValue<QString>("Pointer");
-    }
-
-    return QVariant();
+    static QString titles[] = {"Class", "Name", "Info"};
+    return (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+            ? titles[section]
+            : QVariant();
 }
 
 void InspectorListBox::sort(int i, Qt::SortOrder order)

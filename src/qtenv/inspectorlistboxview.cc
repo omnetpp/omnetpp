@@ -32,8 +32,17 @@ namespace qtenv {
 
 InspectorListBoxView::InspectorListBoxView()
 {
-    horizontalHeader()->setStretchLastSection(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
+    setSelectionMode(QAbstractItemView::SingleSelection);
+
+    horizontalHeader()->setStretchLastSection(true);
+    setHorizontalScrollMode(ScrollPerPixel);
+
+    verticalHeader()->setVisible(false);
+    verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+
+    setShowGrid(false);
+    setSortingEnabled(true);
 }
 
 InspectorListBoxView::~InspectorListBoxView()
@@ -46,9 +55,12 @@ InspectorListBoxView::~InspectorListBoxView()
 
 void InspectorListBoxView::setModel(InspectorListBox *model)
 {
-    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), model, SLOT(sort(int,Qt::SortOrder)));
-    connect(this, SIGNAL(clicked(QModelIndex)), model, SLOT(selectionChanged(QModelIndex)));
     QTableView::setModel(model);
+
+    // factory defaults
+    setColumnWidth(0, 120);
+    setColumnWidth(1, 250);
+    setColumnWidth(2, 600);
 
     QVariant variant = getQtenv()->getPref("objdialog:columnwidths");
     if(variant.isValid())

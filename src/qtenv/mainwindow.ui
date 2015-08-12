@@ -228,7 +228,7 @@
      <x>0</x>
      <y>0</y>
      <width>939</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -354,6 +354,9 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionOneStep">
    <property name="checkable">
@@ -372,6 +375,9 @@
    <property name="shortcut">
     <string>F4</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionRun">
    <property name="checkable">
@@ -389,6 +395,9 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionSetUpConfiguration">
@@ -417,6 +426,9 @@
    <property name="shortcut">
     <string>F8</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionFastRun">
    <property name="checkable">
@@ -434,6 +446,9 @@
    </property>
    <property name="shortcut">
     <string>F6</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionExpressRun">
@@ -453,6 +468,9 @@
    <property name="shortcut">
     <string>F7</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionRunUntil">
    <property name="checkable">
@@ -470,6 +488,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionLoadNEDFile">

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Find Objects</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
@@ -77,10 +77,10 @@
          <string>Refresh</string>
         </property>
         <property name="autoDefault">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="default">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -180,7 +180,7 @@
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <signal>clicked(QAbstractButton*)</signal>
+   <signal>rejected()</signal>
    <receiver>FilteredObjectListDialog</receiver>
    <slot>accept()</slot>
    <hints>

@@ -18,6 +18,7 @@
 #define FILTEREDOBJECTLISTDIALOG_H
 
 #include <QDialog>
+#include <QItemSelection>
 #include <QModelIndex>
 
 namespace Ui {
@@ -44,6 +45,7 @@ public:
 private slots:
     void refresh();
     void inspect(QModelIndex index);
+    void onListBoxSelectionChanged(QItemSelection selected, QItemSelection deselected);
 
 public slots:
     virtual void done(int r);
@@ -59,7 +61,6 @@ private:
     QStringList getClassNames();
     void checkPattern(const char *pattern);
     cObject **getSubObjectsFilt(cObject *object, const char *classNamePattern, const char *objFullPathPattern, int maxCount, int &num);
-    virtual void keyPressEvent(QKeyEvent *event);
 };
 
 } // namespace qtenv
