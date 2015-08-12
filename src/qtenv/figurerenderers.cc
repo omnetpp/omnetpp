@@ -503,6 +503,7 @@ QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure)
 {
     QGraphicsItem *item = newItem();
     setItemGeometryProperties(figure, item);
+    item->setData(1, QVariant::fromValue((cObject*)figure));
     return item;
 }
 
