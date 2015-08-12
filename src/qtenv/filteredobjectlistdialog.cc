@@ -229,7 +229,7 @@ void FilteredObjectListDialog::inspect(QModelIndex index)
     }
 
     cObject* object = static_cast<cObject*>(index.internalPointer());
-    getQtenv()->inspect(object, INSP_DEFAULT, true, "");
+    getQtenv()->inspect(object, INSP_DEFAULT, true);
 }
 
 void FilteredObjectListDialog::setSearchEdit(cObject *obj)
@@ -332,7 +332,7 @@ void FilteredObjectListDialog::refresh()
     if(num == maxCount)
     {
         viewAll = QMessageBox::warning(this, "Too many objects",
-                QString("Your query matched at least ") + num + " objects, click OK to display them.",
+                QString("Your query matched at least %1 objects, click OK to display them.").arg(num),
                 QMessageBox::StandardButton::Ok | QMessageBox::StandardButton::Cancel);
     }
 

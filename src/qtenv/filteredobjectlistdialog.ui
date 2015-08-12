@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/logo/icons/logo/logo128w.png</normaloff>:/logo/icons/logo/logo128w.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -170,7 +174,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

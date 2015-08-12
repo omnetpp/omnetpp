@@ -110,7 +110,7 @@ void InspectorListBoxView::contextMenuItemTriggerd()
         return;
 
 
-    getQtenv()->inspect(object, variant.value<int>(), true, "");
+    getQtenv()->inspect(object, variant.value<int>(), true);
 }
 
 } // namespace qtenv
