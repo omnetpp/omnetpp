@@ -19,14 +19,10 @@
 #include "canvasrenderer.h"
 #include "figurerenderers.h"
 
-
-
 namespace omnetpp {
-
 namespace qtenv {
 
-FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure)
-{
+FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure) {
     return FigureRenderer::getRendererFor(figure);
 }
 
@@ -55,7 +51,7 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
     layer->clear();
-    FigureRenderer::deleteItems();
+    items.clear();
 
     // draw
     if (canvas) {
@@ -112,7 +108,10 @@ void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& pa
         figure->updateParentTransform(transform);
 
         FigureRenderer *renderer = getRendererFor(figure);
-        renderer->render(figure, layer, transform, hints);
+        QGraphicsItem *item = renderer->render(figure, layer, transform, hints);
+
+        if (item)
+            items[figure] = item;
 
         for (int i = 0; i < figure->getNumFigures(); i++)
             drawFigureRec(figure->getFigure(i), transform, hints);
@@ -155,7 +154,7 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform&
         uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
         if (what) {
             FigureRenderer *renderer = getRendererFor(figure);
-            renderer->refresh(figure, what, transform, hints);
+            renderer->refresh(figure, items[figure], what, transform, hints);
         }
 
         if (subtreeChanges || ancestorTransformChanged) {

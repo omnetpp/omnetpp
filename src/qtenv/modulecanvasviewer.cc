@@ -475,8 +475,8 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
     item->setData(1, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
     item->setZoomFactor(zoomFactor);
     item->setImageSizeFactor(imageSizeFactor);
-    item->setPos(submodPosMap[submod] * zoomFactor);
-    submoduleGraphicsItems[submod->getId()] = item;
+    item->setPos(getSubmodCoords(submod));
+    submoduleGraphicsItems[submod] = item;
     item->setParentItem(submoduleLayer);
 }
 
@@ -504,7 +504,7 @@ void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
     CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, parentModule, zoomFactor, submodulesRect);
 
     // leaving a bit of a margin on top of the outline
-    setSceneRect(compoundModuleItem->boundingRect().adjusted(-10, -10, 10, 10));
+    setSceneRect(compoundModuleItem->boundingRect().united(submodulesRect).united(figureLayer->childrenBoundingRect()).adjusted(-10, -10, 10, 10));
 }
 
 void ModuleCanvasViewer::drawConnection(cGate *gate)
@@ -544,7 +544,7 @@ QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod) {
 QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod) {
     return mod == object
             ? compoundModuleItem->getArea()
-            : submoduleGraphicsItems[mod->getId()]->boundingRect().translated(getSubmodCoords(mod));
+            : submoduleGraphicsItems[mod]->boundingRect().translated(getSubmodCoords(mod));
 }
 
 QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
@@ -582,23 +582,9 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
                        srcAnch, destAnch);
 }
 
-cObject *ModuleCanvasViewer::getObjectAt(qreal x, qreal y)
+std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(const QPoint &pos)
 {
-    QGraphicsItem *item = scene()->itemAt(mapToScene(x, y), QTransform());
-    if(item == nullptr)
-        return nullptr;
-
-    QVariant variant = item->data(1);
-    cObject *object = nullptr;
-    if(variant.isValid())
-         object = variant.value<cObject*>();
-
-    return object;
-}
-
-std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(qreal x, qreal y)
-{
-    QList<QGraphicsItem*> items = scene()->items(mapToScene(x, y));
+    QList<QGraphicsItem*> items = scene()->items(mapToScene(pos));
     std::vector<cObject*> objects;
 
     for (auto item : items) {
@@ -639,7 +625,7 @@ void ModuleCanvasViewer::redrawNextEventMarker() {
         // XXX maybe move this to the animation layer?
         nextEventMarker = new QGraphicsRectItem(submoduleLayer, scene());
 
-        auto item = submoduleGraphicsItems[nextModParent->getId()];
+        auto item = submoduleGraphicsItems[nextModParent];
         if (item) {
             nextEventMarker->setRect(item->mapRectToParent(item->boundingRect()).adjusted(-2, -2, 2, 2));
             nextEventMarker->setBrush(Qt::NoBrush);
@@ -680,6 +666,10 @@ void ModuleCanvasViewer::redraw()
         return;
     }
 
+    FigureRenderingHints hints;
+    fillFigureRenderingHints(&hints);
+    canvasRenderer->redraw(&hints);
+
     updateBackgroundColor();
 
     refreshLayout();
@@ -714,10 +704,13 @@ void ModuleCanvasViewer::refresh()
     if (notDrawn)
         return;
 
-    //TODO
-//    cCanvas *canvas = getCanvas();
-//    if (canvas != nullptr && !canvasRenderer->hasCanvas())  // canvas was recently created
-//        canvasRenderer->setCanvas(canvas);
+    cCanvas *canvas = object->getCanvasIfExists();
+    if (canvas != nullptr && !canvasRenderer->hasCanvas())  // canvas was recently created
+        canvasRenderer->setCanvas(canvas);
+
+    FigureRenderingHints hints;
+    fillFigureRenderingHints(&hints);
+    canvasRenderer->refresh(&hints);
 
     updateBackgroundColor();
 
@@ -725,8 +718,7 @@ void ModuleCanvasViewer::refresh()
     if (needs_redraw) {
         needs_redraw = false;
         redraw();
-    }
-    else {
+    } else {
         refreshFigures();
         redrawNextEventMarker();
         refreshSubmodules();
@@ -764,7 +756,7 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
     // and it was dynamically created since the last update), refresh layout
     // so that we can get coordinates for it
     cModule *submod = (cModule *)subcomponent;
-    if (submodPosMap.find(submod) == submodPosMap.end())
+    if (!submodPosMap.count(submod))
         refreshLayout();
 
     // will delete itself after a timeout

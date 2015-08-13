@@ -597,13 +597,13 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 }
 
 void ModuleInspector::click(QMouseEvent *event) {
-    auto objects = canvasViewer->getObjectsAt(event->pos().x(), event->pos().y());
+    auto objects = canvasViewer->getObjectsAt(event->pos());
     if (!objects.empty())
         emit selectionChanged(objects.front());
 }
 
 void ModuleInspector::doubleClick(QMouseEvent *event) {
-    objectsPicked(canvasViewer->getObjectsAt(event->pos().x(), event->pos().y()));
+    objectsPicked(canvasViewer->getObjectsAt(event->pos()));
 }
 
 void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
@@ -627,7 +627,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
     //ModuleInspector:zoomMarqueeCancel $insp ;# just in case
 
-    std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->x(), event->y());
+    std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
 
     if(objects.size())
     {

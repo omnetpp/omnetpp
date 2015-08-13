@@ -20,15 +20,51 @@
 #include <sstream>
 #include <cfloat>
 #include <QGraphicsScene>
+#include <QDebug>
 #include <QGraphicsItem>
 #include <QFontMetrics>
 #include <QGraphicsColorizeEffect>
+#include <QPainter>
 
 namespace omnetpp {
 namespace qtenv {
 
+QPainterPath FigureRenderer::PathItem::shape() const {
+    QPainterPath result;
+
+    const QBrush &b = brush();
+    const QPen &p = pen();
+
+    if (b != Qt::NoBrush && b.color().alpha() > 0)
+        result += path(); // if we are filled visibly, including the insides
+
+    if (p != Qt::NoPen && p.color().alpha() > 0) {
+        // and if the outline is drawn, including that too.
+        QPainterPathStroker s;
+        // setting up the stroker properly
+        s.setDashPattern(p.dashPattern());
+        s.setDashOffset(p.dashOffset());
+        s.setMiterLimit(p.miterLimit());
+        s.setJoinStyle(p.joinStyle());
+        s.setWidth(p.widthF()); // note the F at the end...
+        s.setCapStyle(p.capStyle());
+        // and adding the outline to the path
+        result += s.createStroke(path());
+    }
+
+    return result;
+}
+
+/* // only for debugging
+void FigureRenderer::PathItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QGraphicsPathItem::paint(painter, option, widget);
+    painter->setBrush(QColor(255, 0, 0, 100));
+    painter->setPen(QColor(0, 255, 0, 100));
+    painter->drawPath(shape());
+}
+*/
+
 std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
-std::map<int, QGraphicsItem *> FigureRenderer::items;
 
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
@@ -380,12 +416,16 @@ void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath& painter, char prevComm
         painter.cubicTo(prevCpx, prevCpy, cpx, cpy, x, y);
 }
 
-QPen FigureRenderer::createPen(const cAbstractLineFigure *figure) const
+QPen FigureRenderer::createPen(const cAbstractLineFigure *figure, FigureRenderingHints *hints) const
 {
     cFigure::Color color = figure->getLineColor();
     QPen pen;
     pen.setColor(QColor(color.red, color.green, color.blue, figure->getLineOpacity()*255));
-    pen.setWidthF(figure->getLineWidth());
+
+    double width = figure->getLineWidth();
+    if (!figure->getZoomLineWidth())
+        width /= hints->zoom;
+    pen.setWidthF(width);
 
     Qt::PenStyle style;
     switch (figure->getLineStyle()) {
@@ -422,13 +462,16 @@ QPen FigureRenderer::createPen(const cAbstractLineFigure *figure) const
     return pen;
 }
 
-QPen FigureRenderer::createPen(const cAbstractShapeFigure *figure) const
+QPen FigureRenderer::createPen(const cAbstractShapeFigure *figure, FigureRenderingHints *hints) const
 {
     QPen pen;
     if (figure->isOutlined()) {
         cFigure::Color color = figure->getLineColor();
         pen.setColor(QColor(color.red, color.green, color.blue, figure->getLineOpacity()*255));
-        pen.setWidthF(figure->getLineWidth());
+        double width = figure->getLineWidth();
+        if (!figure->getZoomLineWidth())
+            width /= hints->zoom;
+        pen.setWidthF(width);
 
         Qt::PenStyle style;
         switch (figure->getLineStyle()) {
@@ -471,78 +514,76 @@ void FigureRenderer::setTransform(const cFigure::Transform& transform, QGraphics
     item->setTransform(qTrans);
 }
 
-// TODO hints
-void FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, const cFigure::Transform& transform, FigureRenderingHints *hints)
+QGraphicsItem *FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
-    QGraphicsItem *item = createGeometry(figure);
-    createVisual(figure, item);
+    QGraphicsItem *item = createGeometry(figure, hints);
+    createVisual(figure, item, hints);
 
-    items[figure->getId()] = item;
-    refreshTransform(figure, transform);
+    refreshTransform(figure, item, transform);
 
     if (item)
         item->setParentItem(layer);
+
+    return item;
 }
 
-void FigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
+void FigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
-        refreshVisual(figure);
+        refreshVisual(figure, item, hints);
     if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA))
-        refreshGeometry(figure);
+        refreshGeometry(figure, item, hints);
     if (what & cFigure::CHANGE_TRANSFORM)
-        refreshTransform(figure, transform);
+        refreshTransform(figure, item, transform);
 }
 
-void FigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform& transform)
+void FigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
-    setTransform(transform, items[figure->getId()]);
+    setTransform(transform, item);
 }
 
-QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure)
+QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure, FigureRenderingHints *hints)
 {
     QGraphicsItem *item = newItem();
-    setItemGeometryProperties(figure, item);
+    setItemGeometryProperties(figure, item, hints);
     item->setData(1, QVariant::fromValue((cObject*)figure));
     return item;
 }
 
-void FigureRenderer::refreshGeometry(cFigure *figure)
-{
-    setItemGeometryProperties(figure, items[figure->getId()]);
+void FigureRenderer::refreshGeometry(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) {
+    setItemGeometryProperties(figure, item, hints);
 }
 
-void FigureRenderer::refreshVisual(cFigure *figure)
-{
-    createVisual(figure, items[figure->getId()]);
+void FigureRenderer::refreshVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) {
+    createVisual(figure, item, hints);
 }
 
-void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cAbstractShapeFigure *shapeFigure = static_cast<cAbstractShapeFigure *>(figure);
     QAbstractGraphicsShapeItem *shapeItem = static_cast<QAbstractGraphicsShapeItem *>(item);
-    shapeItem->setPen(createPen(shapeFigure));
+    shapeItem->setPen(createPen(shapeFigure, hints));
     shapeItem->setBrush(createBrush(shapeFigure));
 }
 
-void AbstractTextFigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
+void AbstractTextFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
-        refreshVisual(figure);
+        refreshVisual(figure, item, hints);
     if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM)) {
-        refreshGeometry(figure);
-        refreshTransform(figure, transform);
+        refreshGeometry(figure, item, hints);
+        refreshTransform(figure, item, transform);
     }
 }
 
-void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform& transform)
+void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
-    QGraphicsSimpleTextItem *item = static_cast<QGraphicsSimpleTextItem *>(items[figure->getId()]);
+    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
 
     cFigure::Point pos = textFigure->getPosition();
 
-    QFontMetrics fontMetric(item->font());
+    QFontMetrics fontMetric(textItem->font());
     QRectF bounds = item->boundingRect();
     QPointF anchor;
     switch (textFigure->getAnchor()) {
@@ -595,22 +636,21 @@ void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, const cFigure
             break;
     }
 
-    setTransform(transform, items[figure->getId()], &anchor);
+    setTransform(transform, item, &anchor);
 }
 
-void AbstractImageFigureRenderer::refresh(cFigure *figure, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
+void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
-        refreshVisual(figure);
+        refreshVisual(figure, item, hints);
     if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM)) {
-        refreshGeometry(figure);
-        refreshTransform(figure, transform);
+        refreshGeometry(figure, item, hints);
+        refreshTransform(figure, item, transform);
     }
 }
 
-void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform& transform)
+void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
-    QGraphicsPixmapItem *item = static_cast<QGraphicsPixmapItem *>(items[figure->getId()]);
     cAbstractImageFigure *imageFigure = static_cast<cAbstractImageFigure *>(figure);
 
     QRectF bounds = item->boundingRect();
@@ -660,11 +700,11 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, const cFigur
             break;
     }
 
-    setTransform(transform, items[figure->getId()], &anchor);
+    setTransform(transform, item, &anchor);
 }
 
 // TODO: Start/End Arrow
-void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
     //GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem *>(item);
@@ -676,10 +716,10 @@ void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     //lineItem->setPath(painter);
 }
 
-void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem *>(item);
-    lineItem->setPen(createPen(static_cast<cAbstractLineFigure *>(figure)));
+    lineItem->setPen(createPen(static_cast<cAbstractLineFigure *>(figure), hints));
 }
 
 QGraphicsItem *LineFigureRenderer::newItem()
@@ -687,7 +727,7 @@ QGraphicsItem *LineFigureRenderer::newItem()
     return new GraphicsPathArrowItem();
 }
 
-void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cArcFigure *arcFigure = static_cast<cArcFigure *>(figure);
     QGraphicsPathItem *arcItem = static_cast<QGraphicsPathItem *>(item);
@@ -699,10 +739,10 @@ void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem
     arcItem->setPath(painter);
 }
 
-void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     QGraphicsPathItem *arcItem = static_cast<QGraphicsPathItem *>(item);
-    arcItem->setPen(createPen(static_cast<cAbstractLineFigure *>(figure)));
+    arcItem->setPen(createPen(static_cast<cAbstractLineFigure *>(figure), hints));
 }
 
 QGraphicsItem *ArcFigureRenderer::newItem()
@@ -710,7 +750,7 @@ QGraphicsItem *ArcFigureRenderer::newItem()
     return new QGraphicsPathItem();
 }
 
-void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPolylineFigure *polyFigure = static_cast<cPolylineFigure *>(figure);
     QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
@@ -741,15 +781,15 @@ void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
     polyItem->setPath(painter);
 }
 
-void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPolylineFigure *polyFigure = static_cast<cPolylineFigure *>(figure);
     QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
 
     if (!(figure->getParentFigure()->getLocalChangeFlags() & cFigure::CHANGE_STRUCTURAL || figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY))
-        setItemGeometryProperties(polyFigure, polyItem);
+        setItemGeometryProperties(polyFigure, polyItem, hints);
 
-    QPen pen = createPen(polyFigure);
+    QPen pen = createPen(polyFigure, hints);
     Qt::PenJoinStyle joinStyle;
 
     switch (polyFigure->getJoinStyle()) {
@@ -772,10 +812,10 @@ void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
 
 QGraphicsItem *PolylineFigureRenderer::newItem()
 {
-    return new QGraphicsPathItem();
+    return new PathItem();
 }
 
-void RectangleFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void RectangleFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cRectangleFigure *rectFigure = static_cast<cRectangleFigure *>(figure);
     QGraphicsPathItem *rectItem = static_cast<QGraphicsPathItem *>(item);
@@ -791,7 +831,7 @@ QGraphicsItem *RectangleFigureRenderer::newItem()
     return new QGraphicsPathItem();
 }
 
-void OvalFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void OvalFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cOvalFigure *ovalFigure = static_cast<cOvalFigure *>(figure);
     QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem *>(item);
@@ -805,7 +845,7 @@ QGraphicsItem *OvalFigureRenderer::newItem()
     return new QGraphicsEllipseItem();
 }
 
-void RingFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void RingFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cRingFigure *ringFigure = static_cast<cRingFigure *>(figure);
     QGraphicsPathItem *ringItem = static_cast<QGraphicsPathItem *>(item);
@@ -824,10 +864,10 @@ void RingFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 
 QGraphicsItem *RingFigureRenderer::newItem()
 {
-    return new QGraphicsPathItem();
+    return new PathItem();
 }
 
-void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPieSliceFigure *pieSliceFigure = static_cast<cPieSliceFigure *>(figure);
     QGraphicsEllipseItem *pieSliceItem = static_cast<QGraphicsEllipseItem *>(item);
@@ -844,7 +884,7 @@ QGraphicsItem *PieSliceFigureRenderer::newItem()
     return new QGraphicsEllipseItem();
 }
 
-void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPolygonFigure *polyFigure = static_cast<cPolygonFigure *>(figure);
     QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
@@ -885,13 +925,13 @@ void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphics
     polyItem->setPath(painter);
 }
 
-void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPolygonFigure *polyFigure = static_cast<cPolygonFigure *>(figure);
     QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
 
     if (!(figure->getParentFigure()->getLocalChangeFlags() & cFigure::CHANGE_STRUCTURAL || figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY))
-        setItemGeometryProperties(polyFigure, polyItem);
+        setItemGeometryProperties(polyFigure, polyItem, hints);
 
     QPainterPath painter = polyItem->path();
 
@@ -902,7 +942,7 @@ void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
 
     polyItem->setPath(painter);
 
-    QPen pen = createPen(polyFigure);
+    QPen pen = createPen(polyFigure, hints);
     Qt::PenJoinStyle joinStyle;
 
     switch (polyFigure->getJoinStyle()) {
@@ -926,10 +966,10 @@ void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
 
 QGraphicsItem *PolygonFigureRenderer::newItem()
 {
-    return new QGraphicsPathItem();
+    return new PathItem();
 }
 
-void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPathFigure *pathFigure = static_cast<cPathFigure *>(figure);
     QGraphicsPathItem *pathItem = static_cast<QGraphicsPathItem *>(item);
@@ -1074,17 +1114,17 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 
     pathItem->setPath(painter);
     cFigure::Point offset = pathFigure->getOffset();
-    pathItem->setTransform(QTransform().scale(offset.x, offset.y));
+    pathItem->setTransform(QTransform().scale(offset.x, offset.y)); // XXX FIXME scale?! why?!
 }
 
-void PathFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform& transform)
+void PathFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
     cFigure::Point offset = static_cast<cPathFigure *>(figure)->getOffset();
     QPointF qOffset = QPointF(offset.x, offset.y);
-    setTransform(transform, items[figure->getId()], &qOffset);
+    setTransform(transform, item, &qOffset);
 }
 
-void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPathFigure *pathFigure = static_cast<cPathFigure *>(figure);
     QGraphicsPathItem *shapeItem = static_cast<QGraphicsPathItem *>(item);
@@ -1096,7 +1136,7 @@ void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
         painter.setFillRule(Qt::OddEvenFill);
     shapeItem->setPath(painter);
 
-    QPen pen = createPen(pathFigure);
+    QPen pen = createPen(pathFigure, hints);
     Qt::PenJoinStyle joinStyle;
 
     switch (pathFigure->getJoinStyle()) {
@@ -1136,10 +1176,10 @@ void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
 
 QGraphicsItem *PathFigureRenderer::newItem()
 {
-    return new QGraphicsPathItem();
+    return new PathItem();
 }
 
-void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
     QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
@@ -1156,7 +1196,7 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     textItem->setFont(qFont);
 }
 
-void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
     QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
@@ -1172,12 +1212,12 @@ QGraphicsItem *TextFigureRenderer::newItem()
     return new QGraphicsSimpleTextItem();
 }
 
-void LabelFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Transform& transform)
+void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
-    QGraphicsSimpleTextItem *item = static_cast<QGraphicsSimpleTextItem *>(items[figure->getId()]);
+    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
 
-    QFontMetrics fontMetric(item->font());
+    QFontMetrics fontMetric(textItem->font());
     QRectF bounds = item->boundingRect();
     QPointF anchor;
     switch (textFigure->getAnchor()) {
@@ -1237,7 +1277,7 @@ void LabelFigureRenderer::refreshTransform(cFigure *figure, const cFigure::Trans
     item->setTransform(qTrans);
 }
 
-void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item)
+void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
     // TODO image location
@@ -1250,7 +1290,7 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
         imageItem->setPixmap(QPixmap::fromImage(image));
 }
 
-void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item)
+void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);

@@ -34,6 +34,8 @@ protected:
     cCanvas *canvas;    // nullptr is allowed
     uint64_t enabledTagBits, exceptTagBits;
 
+    std::map<cFigure *, QGraphicsItem*> items;
+
 protected:
     void assertCanvas();
     virtual FigureRenderer *getRendererFor(cFigure *figure);

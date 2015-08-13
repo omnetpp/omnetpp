@@ -55,6 +55,8 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     graphicsView = new QGraphicsView(this);
     auto scene = new QGraphicsScene(graphicsView);
     graphicsView->setScene(scene);
+    graphicsView->setRenderHint(QPainter::Antialiasing);
+
     GraphicsLayer *layer = new GraphicsLayer();
     scene->addItem(layer);
     canvasRenderer->setLayer(layer, getCanvas());

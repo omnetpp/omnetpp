@@ -51,11 +51,10 @@ private:
     bool needs_redraw;
     CanvasRenderer *canvasRenderer;
 
-    typedef std::map<cModule*,QPointF> PositionMap;
-    PositionMap submodPosMap;  // recalculateLayout() fills this map
+    std::map<cModule*,QPointF> submodPosMap;  // recalculateLayout() fills this map
 
     CompoundModuleItem *compoundModuleItem = nullptr;
-    std::map<int, SubmoduleItem*> submoduleGraphicsItems;
+    std::map<cModule*, SubmoduleItem*> submoduleGraphicsItems;
 
     GraphicsLayer *backgroundLayer;
     GraphicsLayer *rangeLayer;
@@ -116,8 +115,7 @@ public:
     ~ModuleCanvasViewer();
 
     void setObject(cModule *obj);
-    cObject *getObjectAt(qreal x, qreal y);
-    std::vector<cObject *> getObjectsAt(qreal x, qreal y);
+    std::vector<cObject *> getObjectsAt(const QPoint &pos);
 
     GraphicsLayer *getAnimationLayer() { return animationLayer; }
     CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }
