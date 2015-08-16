@@ -103,6 +103,10 @@ public slots:
     void on_actionEventlogRecording_triggered();
     void on_actionSetUpUnconfiguredNetwork_triggered();
 
+private slots:
+    void on_actionVerticalLayout_triggered(bool checked);
+    void on_actionHorizontalLayout_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
     Qtenv *env;

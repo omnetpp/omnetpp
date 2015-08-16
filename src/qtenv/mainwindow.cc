@@ -681,9 +681,11 @@ void MainWindow::restoreGeometry()
 
     if (orient == "horiz") {
         ui->splitter_2->setOrientation(Qt::Horizontal);
+        ui->actionHorizontalLayout->setChecked(true);
         restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
     } else if (orient == "vert") {
         ui->splitter_2->setOrientation(Qt::Vertical);
+        ui->actionVerticalLayout->setChecked(true);
         restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
     }
 
@@ -908,6 +910,34 @@ void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
             //notifyPlugins newNetwork
             busy();
        }
+    }
+}
+
+void MainWindow::on_actionVerticalLayout_triggered(bool checked)
+{
+    if(checked)
+    {
+        ui->actionHorizontalLayout->setChecked(false);
+        ui->splitter_2->setOrientation(Qt::Vertical);
+    }
+    else
+    {
+        ui->actionVerticalLayout->setChecked(false);
+        on_actionHorizontalLayout_triggered(true);
+    }
+}
+
+void omnetpp::qtenv::MainWindow::on_actionHorizontalLayout_triggered(bool checked)
+{
+    if(checked)
+    {
+        ui->actionVerticalLayout->setChecked(false);
+        ui->splitter_2->setOrientation(Qt::Horizontal);
+    }
+    else
+    {
+        ui->actionHorizontalLayout->setChecked(false);
+        on_actionVerticalLayout_triggered(true);
     }
 }
 
