@@ -315,6 +315,7 @@ void MainWindow::on_actionStop_triggered()
     }
 
     getQtenv()->getAnimator()->hurry();
+    stopDialog->close();
 
     // this proc doubles as "stop layouting", when in graphical module inspectors
     // TODO
@@ -368,6 +369,7 @@ void MainWindow::on_actionRunUntil_triggered()
         getQtenv()->runSimulation(mode, time, event, msg);
         setGuiForRunmode(NOT_RUNNING);
     }
+    stopDialog->close();
 }
 
 void MainWindow::onSliderValueChanged(int value)
