@@ -342,12 +342,12 @@ bool ModuleInspector::needsRedraw()
 
 void ModuleInspector::runUntil()
 {
-    runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_NORMAL);
+    getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_NORMAL);
 }
 
 void ModuleInspector::fastRunUntil()
 {
-    runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_FAST);
+    getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_FAST);
 }
 
 void ModuleInspector::stopSimulation()

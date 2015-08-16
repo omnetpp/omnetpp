@@ -91,45 +91,52 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
                 qDebug() << "Unsupported inspector type " << type << " in context menu";
         }
         label += QString(" for '") + name + "'";
-        QAction *action = menu->addAction(label, insp, SLOT(openInspector()));
+        QAction *action = menu->addAction(label, getQtenv(), SLOT(inspect()));
         action->setData(QVariant::fromValue(ActionDataPair(object, type)));
     }
 
     // add "run until" menu items
     if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
         menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", insp, SLOT(runUntilModule()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", insp, SLOT(runUntilModule()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
+        QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", getQtenv(), SLOT(runUntilModule()));
+        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, Qtenv::RUNMODE_NORMAL), insp)));
+        action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", getQtenv(), SLOT(runUntilModule()));
+        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, Qtenv::RUNMODE_FAST), insp)));
     }
 
     if (dynamic_cast<cMessage *>(object)) {
         menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", insp, SLOT(runUntilMessage()));
+        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
         action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", insp, SLOT(runUntilMessage()));
+        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
         action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
-        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", insp, SLOT(runUntilMessage()));
+        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
         menu->addSeparator();
-        action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", insp, SLOT(excludeMessage()));
+        action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", getQtenv(), SLOT(excludeMessage()));
         action->setData(QVariant::fromValue(object));
     }
 
     // add utilities menu
     menu->addSeparator();
     QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");
-    QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", insp, SLOT(utilitiesSubMenu()));
+    QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTRWITHCAST)));
-    action = subMenu->addAction("Copy Pointer Value (for Debugger)", insp, SLOT(utilitiesSubMenu()));
+    action = subMenu->addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTR)));
     subMenu->addSeparator();
-    action = subMenu->addAction("Copy Full Path", insp, SLOT(utilitiesSubMenu()));
+    action = subMenu->addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLPATH)));
-    action = subMenu->addAction("Copy Name", insp, SLOT(utilitiesSubMenu()));
+    action = subMenu->addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLNAME)));
-    action = subMenu->addAction("Copy Class Name", insp, SLOT(utilitiesSubMenu()));
+    action = subMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
+}
+
+QMenu *InspectorUtil::createInspectorContextMenu(cObject* object, Inspector *insp)
+{
+    QVector<cObject*> obj;
+    obj.push_back(object);
+    return createInspectorContextMenu(obj, insp);
 }
 
 QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Inspector *insp)
@@ -140,7 +147,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
     // If there are more than one ptrs, remove the inspector object's own ptr:
     // when someone right-clicks a submodule icon, we don't want the compound
     // module to be in the list.
-    if(objects.size() > 1)
+    if(insp && objects.size() > 1)
     {
         cObject *object = insp->getObject();
         if(objects.indexOf(object) >= 0 && objects.indexOf(object) < objects.size())
@@ -191,15 +198,18 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
         }
     }
 
-    cObject *object = insp->getObject();
-    if(object)
+    if(insp)
     {
-        cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
-        if(parent && insp->supportsObject(parent))
+        cObject *object = insp->getObject();
+        if(object)
         {
-            menu->addSeparator();
-            QAction *action = menu->addAction("Go Up", insp, SLOT(goUpInto()));
-            action->setData(QVariant::fromValue(parent));
+            cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+            if(parent && insp->supportsObject(parent))
+            {
+                menu->addSeparator();
+                QAction *action = menu->addAction("Go Up", insp, SLOT(goUpInto()));
+                action->setData(QVariant::fromValue(parent));
+            }
         }
     }
 

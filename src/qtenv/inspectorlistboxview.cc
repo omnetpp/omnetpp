@@ -96,33 +96,16 @@ void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)
     if(!object)
         return;
 
-    QVector<int> inspTypes = InspectorUtil::supportedInspTypes(object);
-
     variant = getQtenv()->getPref("outofdate");
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     bool state = (variant.isValid() ? variant.value<bool>() : true) || mainWindow->isRunning();
 
-    QMenu menu;
-    for(int type : inspTypes)
-    {
-        QString label = InspectorUtil::getInspectMenuLabel(type);
-        QAction *action = menu.addAction(label, this, SLOT(contextMenuItemTriggerd()));
-        action->setDisabled(state);
-        action->setData(QVariant::fromValue(type));
-    }
+    QMenu *menu = InspectorUtil::createInspectorContextMenu(object);
+    menu->setDisabled(state);
 
-    menu.exec(event->globalPos());
-}
+    menu->exec(event->globalPos());
 
-void InspectorListBoxView::contextMenuItemTriggerd()
-{
-    QAction *action = static_cast<QAction*>(sender());
-    QVariant variant = action->data();
-    if(!variant.isValid())
-        return;
-
-
-    getQtenv()->inspect(object, variant.value<int>(), true);
+    delete menu;
 }
 
 } // namespace qtenv

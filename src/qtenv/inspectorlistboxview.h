@@ -39,9 +39,6 @@ protected:
     void keyPressEvent(QKeyEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
 
-private slots:
-    void contextMenuItemTriggerd();
-
 signals:
     void pressEnter(QModelIndex);
 

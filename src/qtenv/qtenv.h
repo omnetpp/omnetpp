@@ -260,6 +260,12 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       void onSelectionChanged(cObject *object);
       // XXX could have a better name...
       void onObjectPicked(cObject *object);
+      // for context menu
+      void inspect();
+      void runUntilModule();
+      void runUntilMessage();
+      void excludeMessage();
+      void utilitiesSubMenu();
 
   protected:
       // redefined virtual functions from EnvirBase
@@ -344,6 +350,8 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       const char *getOutScalarFileName() {return outScalarManager->getFileName();}
       const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
       const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
+
+      void runSimulationLocal(int runMode, cObject *object = nullptr, Inspector *insp = nullptr);
 };
 
 

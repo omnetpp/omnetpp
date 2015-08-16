@@ -37,7 +37,6 @@ private:
 private slots:
     void onClick(QModelIndex index);
     void onDoubleClick(QModelIndex index);
-    void openInspector(QModelIndex index);
 
 public slots:
     void createContextMenu(QPoint pos);

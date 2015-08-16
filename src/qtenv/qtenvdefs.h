@@ -35,11 +35,18 @@
 
 #include <QMetaType>
 #include <QPair>
+namespace omnetpp{
+namespace qtenv{
+    class Inspector;
+} // namespace qtenv
+} // namespace omnetpp
 
 typedef QPair<OPP::cObject*, int> ActionDataPair;
+typedef QPair<ActionDataPair, omnetpp::qtenv::Inspector*> ActionDataTriplet;
 
 Q_DECLARE_METATYPE(OPP::cObject*)
 Q_DECLARE_METATYPE(ActionDataPair)
+Q_DECLARE_METATYPE(ActionDataTriplet)
 Q_DECLARE_METATYPE(OPP::cMessage*)
 
 

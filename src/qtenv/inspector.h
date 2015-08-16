@@ -71,9 +71,6 @@ class QTENV_API Inspector : public QWidget
       virtual void doSetObject(cObject *obj);
       virtual void removeFromToHistory(cObject *obj);
 
-      void inspectObject(cObject *object, int type=INSP_DEFAULT);
-      void runSimulationLocal(int runMode, cObject *object = nullptr);
-
       void closeEvent(QCloseEvent *) override;
 
    public slots:
@@ -82,14 +79,8 @@ class QTENV_API Inspector : public QWidget
       virtual void inspectParent();
 
    protected slots:
-      //Context menu's action's slots
+      //Context menu's action's slot
       virtual void goUpInto();
-      virtual void openInspector();
-      virtual void openInspector(cObject *object, int type);
-      virtual void runUntilModule();
-      virtual void runUntilMessage();
-      virtual void excludeMessage();
-      virtual void utilitiesSubMenu();
 
    signals:
       void selectionChanged(cObject *object);

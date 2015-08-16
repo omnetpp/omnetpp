@@ -103,14 +103,5 @@ void ObjectTreeInspector::onDoubleClick(QModelIndex index)
     }
 }
 
-void ObjectTreeInspector::openInspector(QModelIndex index)
-{
-    if(index.isValid())
-    {
-        cObject *obj = model->getObjectFromIndex(index);
-        Inspector::openInspector(obj, INSP_DEFAULT);
-    }
-}
-
 } // namespace qtenv
 } // namespace omnetpp

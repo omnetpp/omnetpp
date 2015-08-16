@@ -80,7 +80,7 @@ void TimeLineInspector::setObjectToObjectInspector(cObject* object)
 
 void TimeLineInspector::openInspector(cObject *object)
 {
-    Inspector::openInspector(object, INSP_OBJECT);
+    getQtenv()->inspect(object, INSP_OBJECT, true);
 }
 
 void TimeLineInspector::refresh()

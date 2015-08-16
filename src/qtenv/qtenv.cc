@@ -48,6 +48,7 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
+#include "inspectorutil.h"
 #include "moduleinspector.h"
 #include "loginspector.h"
 #include "gateinspector.h"
@@ -2013,6 +2014,75 @@ void Qtenv::setPref(const QString &key, const QVariant &value) {
 QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
     QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
     return settings->contains(key) ? settings->value(key) : defaultValue;
+}
+
+void Qtenv::runSimulationLocal(int runMode, cObject *object, Inspector *insp)
+{
+    MainWindow::eMode mode = MainWindow::runModeToMode(runMode);
+    MainWindow *mainWindow = getQtenv()->getMainWindow();
+    if (mainWindow->isRunning()) {
+        mainWindow->setGuiForRunmode(mode);
+        getQtenv()->setSimulationRunMode(runMode);
+        mainWindow->setRunUntilModule(insp);
+    }
+    else {
+        if (!mainWindow->networkReady())
+            return;
+        mainWindow->setGuiForRunmode(mode, insp);
+        if (object == nullptr && insp)
+            object = insp->getObject();
+
+        cModule *mod = dynamic_cast<cModule *>(object);
+        if (!mod) {
+            // TODO log "object is not a module"
+            return;
+        }
+        getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
+        mainWindow->setGuiForRunmode(MainWindow::NOT_RUNNING);
+    }
+}
+
+void Qtenv::inspect()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        inspect(objTypePair.first, objTypePair.second, true);
+    }
+}
+
+void Qtenv::runUntilModule()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        ActionDataTriplet objTypePair = variant.value<ActionDataTriplet>();
+        runSimulationLocal(objTypePair.first.second, objTypePair.first.first, objTypePair.second);
+    }
+}
+
+void Qtenv::runUntilMessage()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+    }
+}
+
+void Qtenv::excludeMessage()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid())
+        getQtenv()->getMainWindow()->excludeMessageFromAnimation(variant.value<cObject *>());
+}
+
+void Qtenv::utilitiesSubMenu()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid()) {
+        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
+        InspectorUtil::copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+    }
 }
 
 // ======================================================================
