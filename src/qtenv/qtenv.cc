@@ -63,6 +63,9 @@
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QCheckBox>
 
 // default plugin path -- allow overriding it via compiler option (-D)
 // (default image path comes from makefile)
@@ -1932,29 +1935,38 @@ void Qtenv::log(cLogEntry *entry)
 bool Qtenv::inputDialog(const char *title, const char *prompt,
         const char *checkboxLabel, const char *defaultValue,
         std::string& outResult, bool& inoutCheckState)
-{/*
-    CHK(Tcl_Eval(interp, "global opp"));
-    Tcl_SetVar2(interp, "opp", "result", (char *)defaultValue, TCL_GLOBAL_ONLY);
-    Tcl_SetVar2(interp, "opp", "check", (char *)(inoutCheckState ? "1" : "0"), TCL_GLOBAL_ONLY);
-    if (checkboxLabel == nullptr)
-        CHK(Tcl_VarEval(interp, "inputbox ",
-                        TclQuotedString(title).get(), " ",
-                        TclQuotedString(prompt).get(), " opp(result) ", TCL_NULL));
-    else
-        CHK(Tcl_VarEval(interp, "inputbox ",
-                        TclQuotedString(title).get(), " ",
-                        TclQuotedString(prompt).get(), " opp(result) ",
-                        TclQuotedString(checkboxLabel).get(), " opp(check)", TCL_NULL));
+{
+    QDialog *dialog = new QDialog();
+    dialog->setWindowTitle(title);
 
-    if (Tcl_GetStringResult(interp)[0] == '0') {
-        return false;  // cancel
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(new QLabel(prompt));
+    QLineEdit *edit = new QLineEdit(defaultValue);
+    layout->addWidget(edit);
+
+    QCheckBox *checkBox;
+    if(checkboxLabel)
+    {
+        checkBox = new QCheckBox(checkboxLabel);
+        layout->addWidget(checkBox);
     }
-    else {
-        outResult = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
-        inoutCheckState = Tcl_GetVar2(interp, "opp", "check", TCL_GLOBAL_ONLY)[0] == '1';
-        return true;  // OK
-    }*/
-    return false;
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    layout->addWidget(buttonBox);
+
+    dialog->setLayout(layout);
+
+    if(dialog->exec() == QDialog::Rejected)
+        return false;
+
+    outResult = edit->text().toStdString();
+    if(checkBox)
+        inoutCheckState = checkBox->isChecked();
+
+    delete dialog;
+    return true;
 }
 
 std::string Qtenv::gets(const char *promt, const char *defaultReply)
