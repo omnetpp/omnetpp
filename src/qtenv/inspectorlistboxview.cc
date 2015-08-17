@@ -49,10 +49,6 @@ InspectorListBoxView::InspectorListBoxView(QWidget *parent)
 
 InspectorListBoxView::~InspectorListBoxView()
 {
-    QString widths = "";
-    for(int i = 0; i < model()->columnCount(); ++i)
-        widths += QString::number(columnWidth(i)) + "#";
-    getQtenv()->setPref("objdialog:columnwidths", widths);
 }
 
 void InspectorListBoxView::setModel(InspectorListBox *model)
@@ -63,15 +59,6 @@ void InspectorListBoxView::setModel(InspectorListBox *model)
     setColumnWidth(0, 120);
     setColumnWidth(1, 250);
     setColumnWidth(2, 600);
-
-    QVariant variant = getQtenv()->getPref("objdialog:columnwidths");
-    if(variant.isValid())
-    {
-        QString widths = variant.value<QString>();
-        QStringList columnWidths = widths.split("#");
-        for(int i = 0; i < columnWidths.size(); ++i)
-            setColumnWidth(i, columnWidths[i].toInt());
-    }
 }
 
 void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)

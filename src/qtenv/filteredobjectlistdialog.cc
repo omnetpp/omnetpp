@@ -157,6 +157,15 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     inspectorListBoxView = new InspectorListBoxView();
     inspectorListBoxView->setModel(inspectorListBox);
 
+    variant = getQtenv()->getPref("objdialog:columnwidths");
+    if(variant.isValid())
+    {
+        QString widths = variant.value<QString>();
+        QStringList columnWidths = widths.split("#");
+        for(int i = 0; i < columnWidths.size(); ++i)
+            inspectorListBoxView->setColumnWidth(i, columnWidths[i].toInt());
+    }
+
     QVBoxLayout *layout = new QVBoxLayout();
     ui->inspectorListView->setLayout(layout);
     layout->addWidget(inspectorListBoxView);
@@ -377,9 +386,16 @@ void FilteredObjectListDialog::checkPattern(const char *pattern)
 
 FilteredObjectListDialog::~FilteredObjectListDialog()
 {
-    delete ui;
     getQtenv()->setPref("filtobjlist-width", width());
     getQtenv()->setPref("filtobjlist-height", height());
+
+    QString widths = "";
+    for(int i = 0; i < inspectorListBoxView->model()->columnCount(); ++i)
+        widths += QString::number(inspectorListBoxView->columnWidth(i)) + "#";
+
+    getQtenv()->setPref("objdialog:columnwidths", widths);
+
+    delete ui;
 }
 
 } // namespace qtenv
