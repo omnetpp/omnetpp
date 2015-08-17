@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>552</width>
-    <height>700</height>
+    <height>609</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="general">
       <attribute name="title">
@@ -90,6 +90,59 @@
          </layout>
         </widget>
        </item>
+       <item>
+        <widget class="QGroupBox" name="simulationExecution">
+         <property name="title">
+          <string>Simulation Execution</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="fastText">
+              <property name="text">
+               <string>Display update frequency for Fast Run (ms):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="expressText">
+              <property name="text">
+               <string>Display update frequency for Express Run (ms):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="fast"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="express"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="generalSapcer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="logsPage">
+      <attribute name="title">
+       <string>Logs</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_17">
        <item>
         <widget class="QGroupBox" name="logs">
          <property name="title">
@@ -227,54 +280,21 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="simulationExecution">
-         <property name="title">
-          <string>Simulation Execution</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
-           <layout class="QFormLayout" name="formLayout_3">
-            <item row="0" column="0">
-             <widget class="QLabel" name="fastText">
-              <property name="text">
-               <string>Display update frequency for Fast Run (ms):</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="expressText">
-              <property name="text">
-               <string>Display update frequency for Express Run (ms):</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="fast"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="express"/>
-            </item>
-           </layout>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="generalSapcer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
