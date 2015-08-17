@@ -38,9 +38,6 @@ private:
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
 
-private slots:
-    void contextMenuItemTriggerd();
-
 public:
     InspectorListBoxView(QWidget *parent = nullptr);
     ~InspectorListBoxView();
