@@ -381,10 +381,8 @@ void MainWindow::updateStatusDisplay()
 {
     updateSimtimeDisplay();
 
-    if (true) {  // TODO $config(display-statusdetails)
-        int runMode = env->getSimulationRunMode();
-        if (env->getSimulationState() == Qtenv::SIM_RUNNING &&
-            (runMode == Qtenv::RUNMODE_FAST || runMode == Qtenv::RUNMODE_EXPRESS))
+    if (showStatusDetails) {
+        if (env->getSimulationState() == Qtenv::SIM_RUNNING)
             updatePerformanceDisplay();
         else
             updateNextModuleDisplay();
@@ -413,7 +411,7 @@ void MainWindow::updateNextModuleDisplay()
     cEvent *msgptr = nullptr;
 
     int state = env->getSimulationState();
-    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING) {
+    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY) {
         modptr = getSimulation()->guessNextModule();
         msgptr = getSimulation()->guessNextEvent();
     }
@@ -789,6 +787,7 @@ void MainWindow::on_actionStatusDetails_triggered()
     ui->labelDisplay2->setVisible(showStatusDetails);
     ui->labelDisplay3->setVisible(showStatusDetails);
     getQtenv()->setPref("display-statusdetails", showStatusDetails);
+    updateStatusDisplay();
 }
 
 void MainWindow::on_actionFindInspectObjects_triggered()
