@@ -94,8 +94,6 @@ public slots:
     void closeEvent(QCloseEvent *event);
     void initialSetUpConfiguration();
     void on_actionPreferences_triggered();
-    void on_actionTimeline_toggled(bool isSunken);
-    void on_actionTimeline_toggled();
     void on_actionStatusDetails_triggered();
     void on_actionFindInspectObjects_triggered();
     void on_actionStop_triggered();
@@ -106,6 +104,7 @@ public slots:
 private slots:
     void on_actionVerticalLayout_triggered(bool checked);
     void on_actionHorizontalLayout_triggered(bool checked);
+    void on_actionTimeline_toggled(bool isSunken);
 
 private:
     Ui::MainWindow *ui;

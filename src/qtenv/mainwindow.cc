@@ -56,12 +56,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     stopDialog = new StopDialog(this);
 
-    // initialize timeline
-    QVariant variant = getQtenv()->getPref("display-timeline");
-    bool isSunken = variant.isValid() ? variant.value<bool>() : true;
-    ui->timeLine->setVisible(isSunken);
-    ui->actionTimeline->setChecked(isSunken);
-
     slider = new QSlider();
     slider->setMinimum(50);
     slider->setMaximum(300);
@@ -70,13 +64,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     slider->setValue(getQtenv()->opt->animationSpeed * 100);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     ui->toolBar->addWidget(slider);
-
-    // initialize status bar
-    variant = getQtenv()->getPref("display-statusdetails");
-    showStatusDetails = variant.isValid() ? variant.value<bool>() : true;
-    ui->labelDisplay1->setVisible(showStatusDetails);
-    ui->labelDisplay2->setVisible(showStatusDetails);
-    ui->labelDisplay3->setVisible(showStatusDetails);
 
     // if we trigger the action here directly, it will block the initialization
     // this way the main window will be shown before the setup dialog
@@ -651,6 +638,9 @@ void MainWindow::storeGeometry()
         saveSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
         env->setPref("mainwin-right-splitter-orientation", "vert");
     }
+
+    getQtenv()->setPref("display-timeline", ui->actionTimeline->isChecked());
+    getQtenv()->setPref("display-statusdetails", showStatusDetails);
 }
 
 void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter)
@@ -689,7 +679,19 @@ void MainWindow::restoreGeometry()
         restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
     }
 
-    // TODO save right panel orientation and sizes
+    // initialize timeline
+    QVariant variant = getQtenv()->getPref("display-timeline");
+    bool isSunken = variant.isValid() ? variant.value<bool>() : true;
+    ui->timeLine->setVisible(isSunken);
+    ui->actionTimeline->setChecked(isSunken);
+    timeLineSize = ui->mainSplitter->sizes();
+
+    // initialize status bar
+    variant = getQtenv()->getPref("display-statusdetails");
+    showStatusDetails = variant.isValid() ? variant.value<bool>() : true;
+    ui->labelDisplay1->setVisible(showStatusDetails);
+    ui->labelDisplay2->setVisible(showStatusDetails);
+    ui->labelDisplay3->setVisible(showStatusDetails);
 }
 
 int MainWindow::modeToRunMode(eMode mode)
@@ -770,14 +772,6 @@ void MainWindow::on_actionTimeline_toggled(bool isSunken)
         timeLineSize = ui->mainSplitter->sizes();
 
     ui->timeLine->setVisible(isSunken);
-    getQtenv()->setPref("display-timeline", isSunken);
-}
-
-void MainWindow::on_actionTimeline_toggled()
-{
-    QVariant variant = getQtenv()->getPref("display-timeline");
-    bool isVisible = variant.isValid() ? variant.value<bool>() : true;
-    on_actionTimeline_toggled(!isVisible);
 }
 
 void MainWindow::on_actionStatusDetails_triggered()
@@ -786,7 +780,6 @@ void MainWindow::on_actionStatusDetails_triggered()
     ui->labelDisplay1->setVisible(showStatusDetails);
     ui->labelDisplay2->setVisible(showStatusDetails);
     ui->labelDisplay3->setVisible(showStatusDetails);
-    getQtenv()->setPref("display-statusdetails", showStatusDetails);
     updateStatusDisplay();
 }
 
