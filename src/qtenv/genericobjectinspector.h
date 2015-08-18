@@ -23,6 +23,7 @@
 class QLabel;
 class QTreeView;
 class QTabWidget;
+class QToolBar;
 
 namespace omnetpp {
 namespace qtenv {
@@ -39,7 +40,9 @@ protected:
       QTreeView *treeView;
       GenericObjectTreeModel *model;
       InspectorListBox *listModel;
+
       void mousePressEvent(QMouseEvent *) override;
+      QToolBar *createToolbar();
 
 protected slots:
       void onTreeViewActivated(QModelIndex index);

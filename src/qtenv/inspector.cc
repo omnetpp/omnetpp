@@ -24,6 +24,8 @@
 #include <algorithm>
 #include <QMenu>
 #include <QContextMenuEvent>
+#include <QBoxLayout>
+#include <QToolBar>
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
@@ -31,7 +33,6 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"
-#include <QBoxLayout>
 
 #define emit
 
@@ -270,6 +271,81 @@ void Inspector::goUpInto()
 
 void Inspector::closeEvent(QCloseEvent *) {
     getQtenv()->deleteInspector(this);
+}
+
+QToolBar *Inspector::createToolBarToplevel()
+{
+    QToolBar *toolbar = new QToolBar();
+
+    // general
+    goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
+    goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
+    goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    toolbar->addSeparator();
+
+    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/inspectas.png"), "Inspect", this, SLOT(inspectAsPopup()));
+    // TODO find out position
+    action->setData(QVariant::fromValue(toolbar->pos()));
+
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/copyptr.png"), "Copy name, type or pointer", this, SLOT(namePopup()));
+    // TODO find out position
+    action->setData(QVariant::fromValue(toolbar->pos()));
+    MainWindow *mainWindow = getQtenv()->getMainWindow();
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find objects (CTRL+S)", mainWindow,
+                       SLOT(on_actionFindInspectObjects_triggered()));
+
+    return toolbar;
+}
+
+void Inspector::inspectAsPopup()
+{
+    if(!object)
+        return;
+
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if(!variant.isValid())
+        return;
+
+    auto typeList = InspectorUtil::supportedInspTypes(object);
+
+    QMenu menu;
+    for(auto type : typeList)
+    {
+        bool state = type == this->type;
+        QString label = InspectorUtil::getInspectMenuLabel(type);
+        QAction *action = menu.addAction(label, getQtenv(), SLOT(inspect()));
+        action->setDisabled(state);
+        action->setData(QVariant::fromValue(ActionDataPair(object, type)));
+    }
+
+    QPoint point = variant.value<QPoint>();
+    menu.exec(mapToGlobal(point));
+}
+
+void Inspector::namePopup()
+{
+    if(!object)
+        return;
+
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if(!variant.isValid())
+        return;
+
+    QMenu menu;
+    QAction *action = menu.addAction("Copy Pointer With Cast (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_PTRWITHCAST)));
+    action = menu.addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_PTR)));
+    menu.addSeparator();
+    action = menu.addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_FULLPATH)));
+    action = menu.addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_FULLNAME)));
+    action = menu.addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
+    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_CLASSNAME)));
+
+    QPoint point = variant.value<QPoint>();
+    menu.exec(mapToGlobal(point));
 }
 
 } // namespace qtenv

@@ -17,32 +17,32 @@
 #ifndef __OMNETPP_QTENV_CANVASINSPECTOR_H
 #define __OMNETPP_QTENV_CANVASINSPECTOR_H
 
-#include "omnetpp/ccanvas.h"
 #include "inspector.h"
-#include "canvasrenderer.h"
 
 namespace omnetpp {
 
-class cFigure;
+class cCanvas;
 
 namespace qtenv {
 
-class FigureRenderer;
-struct FigureRenderingHints;
-class CanvasRenderer;
+class CanvasViewer;
 
 class QTENV_API CanvasInspector : public Inspector
 {
-   protected:
-      char canvas[128];
-      CanvasRenderer *canvasRenderer;
+   Q_OBJECT
+   private:
+      void zoomBy(double mult);
 
    protected:
       virtual cCanvas *getCanvas();
-      virtual void fillFigureRenderingHints(FigureRenderingHints *hints);
-      virtual void updateBackgroundColor();
+      QToolBar *createToolbar();
 
-      QGraphicsView *graphicsView;
+      CanvasViewer *canvasViewer;
+
+   private slots:
+      void relayout();
+      void zoomIn();
+      void zoomOut();
 
    public:
       CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

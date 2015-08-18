@@ -56,7 +56,6 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
     // draw
     if (canvas) {
         cFigure::Transform transform;
-        // TODO fillFigureRenderingHints in ModuleInspector class
         transform.scale(hints->zoom);
         drawFigureRec(canvas->getRootFigure(), transform, hints);
     }

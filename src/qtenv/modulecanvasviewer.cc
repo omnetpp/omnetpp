@@ -415,11 +415,11 @@ void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
     QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
     QVariant variant = getQtenv()->getPref(prefName);
-    hints->zoom = variant.isValid() ? variant.value<double>() : 0;
+    hints->zoom = variant.isValid() ? variant.value<double>() : 1;
 
     prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":imagesizefactor";
     variant = getQtenv()->getPref(prefName);
-    hints->iconMagnification = variant.isValid() ? variant.value<double>() : 0;
+    hints->iconMagnification = variant.isValid() ? variant.value<double>() : 1;
 
     prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showlabels";
     variant = getQtenv()->getPref(prefName);

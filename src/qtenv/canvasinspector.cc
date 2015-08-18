@@ -26,9 +26,15 @@
 #include "qtutil.h"
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
+#include "canvasviewer.h"
+#include "qtenv.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGridLayout>
+#include <QToolBar>
+#include <QAction>
+
+#include <QDebug>
 
 using namespace OPP::common;
 
@@ -50,25 +56,37 @@ Register_InspectorFactory(CanvasInspectorFactory);
 
 CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-    canvasRenderer = new CanvasRenderer();
+    canvasViewer = new CanvasViewer();
+    canvasViewer->setRenderHint(QPainter::Antialiasing);
 
-    graphicsView = new QGraphicsView(this);
-    auto scene = new QGraphicsScene(graphicsView);
-    graphicsView->setScene(scene);
-    graphicsView->setRenderHint(QPainter::Antialiasing);
-
-    GraphicsLayer *layer = new GraphicsLayer();
-    scene->addItem(layer);
-    canvasRenderer->setLayer(layer, getCanvas());
-
-    auto layout = new QGridLayout(this);
-    layout->addWidget(graphicsView, 0, 0, 1, 1);
+    auto layout = new QVBoxLayout(this);
+    layout->addWidget(createToolbar());
+    layout->addWidget(canvasViewer);
     layout->setMargin(0);
 }
 
 CanvasInspector::~CanvasInspector()
 {
-    delete canvasRenderer;
+}
+
+QToolBar *CanvasInspector::createToolbar()
+{
+    QToolBar *toolbar = createToolBarToplevel();
+
+    toolbar->addSeparator();
+
+    // canvas-specfic
+    //TODO Slots aren't found
+    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+
+    toolbar->setAutoFillBackground(true);
+
+    return toolbar;
 }
 
 void CanvasInspector::doSetObject(cObject *obj)
@@ -78,14 +96,10 @@ void CanvasInspector::doSetObject(cObject *obj)
 
     Inspector::doSetObject(obj);
 
-    canvasRenderer->setCanvas(getCanvas());
+    canvasViewer->setObject(getCanvas());
 
-    //TCLKILL CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
-
-    if (object) {
-        FigureRenderingHints hint;
-        canvasRenderer->redraw(&hint);  // TODO CHK(Tcl_VarEval(interp, "CanvasInspector:onSetObject ", windowName, nullptr ));
-    }
+    if (object)
+        redraw();
 }
 
 void CanvasInspector::refresh()
@@ -97,20 +111,12 @@ void CanvasInspector::refresh()
         return;
     }
 
-    updateBackgroundColor();
-
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    canvasRenderer->refresh(&hints);
+    canvasViewer->refresh();
 }
 
 void CanvasInspector::redraw()
 {
-    updateBackgroundColor();
-
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    canvasRenderer->redraw(&hints);
+    canvasViewer->redraw();
 }
 
 void CanvasInspector::clearObjectChangeFlags()
@@ -124,44 +130,59 @@ cCanvas *CanvasInspector::getCanvas()
     return static_cast<cCanvas *>(object);
 }
 
-void CanvasInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
+void CanvasInspector::relayout()
 {
-    //TCLKILL const char *s;
-
-    // read $inspectordata($c:zoomfactor)
-    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
-    hints->zoom = 1; //opp_atof(s);
-
-    // read $inspectordata($c:imagesizefactor)
-    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":imagesizefactor").c_str()), TCL_GLOBAL_ONLY);
-    hints->iconMagnification = 1; //opp_atof(s);
-
-    // read $inspectordata($c:showlabels)
-    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showlabels").c_str()), TCL_GLOBAL_ONLY);
-    hints->showSubmoduleLabels = true; //opp_atol(s) != 0;
-
-    // read $inspectordata($c:showarrowheads)
-    //TCLKILL s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
-    hints->showArrowHeads = true; //opp_atol(s) != 0;
-
-    //TCLKILL Tcl_Eval(interp, "font actual CanvasFont -family");
-    //TCLKILL hints->defaultFont = Tcl_GetStringResult(interp);
-
-    //TCLKILL Tcl_Eval(interp, "font actual CanvasFont -size");
-    //TCLKILL s = Tcl_GetStringResult(interp);
-    hints->defaultFontSize = 16; //opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+    //canvasViewer->incLayoutSeed();
+    canvasViewer->relayoutAndRedrawAll();
 }
 
-void CanvasInspector::updateBackgroundColor()
+void CanvasInspector::zoomIn()
 {
-    cCanvas *canvas = getCanvas();
-    if (canvas) {
-        char buf[16];
-        cFigure::Color color = canvas->getBackgroundColor();
-        sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        //TCLKILL CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
+    QVariant variant = getQtenv()->getPref("zoomby-factor");
+    double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
+    zoomBy(zoomByFactor);
+}
+
+void CanvasInspector::zoomOut()
+{
+    QVariant variant = getQtenv()->getPref("zoomby-factor");
+    double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
+    zoomBy(1.0 / zoomByFactor);
+}
+
+void CanvasInspector::zoomBy(double mult)
+{
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
+    QVariant variant = getQtenv()->getPref(prefName);
+    double zoomFactor = variant.isValid() ? variant.value<double>() : 1;
+
+    if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
+    {
+        //update zoom factor and redraw
+        double newZoomFactor = zoomFactor * mult;
+
+        // Snaptoone always 1
+        //snap to true (note: this is not desirable when zoom is set programmatically to fit network into window)
+        /*if(snaptoone)
+        { // this code constantly kept the factor at 1...
+            double m = mult < 1 ? 1.0/mult : mult;
+            double a = 1 - 0.9*(1 - 1.0/m);
+            double b = 1 + 0.9*(m - 1);
+            if(zoomFactor > a && zoomFactor < b)
+                newZoomFactor = 1;
+        }*/
+
+        getQtenv()->setPref(prefName, newZoomFactor);
+        // so animations will not wander around at the old module positions
+        //getQtenv()->getAnimator()->clearInspector(this);
+        canvasViewer->setZoomFactor(newZoomFactor);
+        redraw();
+        //getQtenv()->getAnimator()->redrawMessages();
+        qDebug() << "zoomBy";
     }
 }
+
 /*TCLKILL
 int CanvasInspector::inspectorCommand(int argc, const char **argv)
 {

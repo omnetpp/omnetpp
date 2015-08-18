@@ -30,8 +30,8 @@ struct FigureRenderingHints;
 class CanvasRenderer
 {
 protected:
-    GraphicsLayer *layer;
-    cCanvas *canvas;    // nullptr is allowed
+    GraphicsLayer *layer = nullptr;
+    cCanvas *canvas = nullptr;    // nullptr is allowed
     uint64_t enabledTagBits, exceptTagBits;
 
     std::map<cFigure *, QGraphicsItem*> items;

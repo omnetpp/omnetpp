@@ -69,9 +69,6 @@ class QTENV_API ModuleInspector : public Inspector
       void switchToCanvasView();
 
    protected:
-      QAction *goBackAction;
-      QAction *goForwardAction;
-      QAction *goUpAction;
       QAction *switchToOsgViewAction;
       QAction *switchToCanvasViewAction;
 
@@ -91,8 +88,8 @@ class QTENV_API ModuleInspector : public Inspector
       cOsgCanvas *getOsgCanvas();
       static const char *animModeToStr(SendAnimMode mode);
 
-      void createViews(QWidget *parent);
-      QToolBar *createToolbar();
+      void createViews(QWidget *parent, bool isTopLevel);
+      QToolBar *createToolbar(bool isTopLevel);
       void refreshOsgViewer();
       void setOsgCanvas(cOsgCanvas *osgCanvas);
 

@@ -95,8 +95,24 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     tabs->addTab(list, "Contents");
     tabs->setDocumentMode(true); // makes it prettier
 
-    auto layout = new QVBoxLayout(this);
-    layout->setMargin(0);
+    QVBoxLayout *layoutBox;
+    if(isTopLevel)
+    {
+        QToolBar *toolbar = createToolBarToplevel();
+        layoutBox = new QVBoxLayout(this);
+        layoutBox->addWidget(toolbar);
+    }
+    else
+    {
+        QToolBar *toolbar = createToolbar();
+        QWidget *contentArea = new QWidget();
+        auto layout = new FloatingToolbarLayout(this);
+        layout->addWidget(contentArea);
+        layout->addWidget(toolbar);
+        layoutBox = new QVBoxLayout(contentArea);
+    }
+
+    layoutBox->setMargin(0);
 
     auto titleLayout = new QHBoxLayout();
     titleLayout->setMargin(0);
@@ -104,9 +120,9 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     titleLayout->addWidget(icon);
     titleLayout->addWidget(name, 1);
 
-    layout->addLayout(titleLayout);
-    layout->addWidget(tabs, 1);
-    layout->setMargin(0);
+    layoutBox->addLayout(titleLayout);
+    layoutBox->addWidget(tabs, 1);
+    layoutBox->setMargin(0);
     parent->setMinimumSize(20, 20);
 
     model = new GenericObjectTreeModel(nullptr, this);
@@ -118,6 +134,20 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
 GenericObjectInspector::~GenericObjectInspector() {
     delete model;
+}
+
+QToolBar *GenericObjectInspector::createToolbar()
+{
+    QToolBar *toolbar = new QToolBar();
+
+    // general
+    goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
+    goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
+    goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+
+    toolbar->setAutoFillBackground(true);
+
+    return toolbar;
 }
 
 void GenericObjectInspector::mousePressEvent(QMouseEvent *event) {
@@ -165,6 +195,14 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
 
     delete model;
     model = newModel;
+
+    cObject *parentPtr = nullptr;
+    if(object)
+        parentPtr = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+
+    goBackAction->setEnabled(canGoBack());
+    goForwardAction->setEnabled(canGoForward());
+    goUpAction->setEnabled(parentPtr);
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
 

@@ -52,74 +52,6 @@ using namespace OPP::common;
 namespace omnetpp {
 namespace qtenv {
 
-/**
- * Layout that manages two children: a client that completely fills the
- * parent; and a toolbar that flots over the client in the top-right corner.
- */
-class FloatingToolbarLayout : public QLayout
-{
-public:
-    FloatingToolbarLayout(): QLayout(), child(nullptr), toolbar(nullptr) {}
-    FloatingToolbarLayout(QWidget *parent): QLayout(parent), child(nullptr), toolbar(nullptr) {}
-    ~FloatingToolbarLayout() {
-        delete child;
-        delete toolbar;
-    }
-
-    void addItem(QLayoutItem *item) {
-        if (!child) child = item;
-        else if (!toolbar) toolbar = item;
-        else throw std::runtime_error("only two items are accepted");
-    }
-
-    int count() const {
-        if (!child) return 0;
-        else if (!toolbar) return 1;
-        else return 2;
-    }
-
-    QLayoutItem *itemAt(int i) const {
-        if (i==0) return child;
-        else if (i==1) return toolbar;
-        else return nullptr;
-    }
-
-    QLayoutItem *takeAt(int i) {
-        QLayoutItem *result = nullptr;
-        if (i==1) {result = toolbar; toolbar = nullptr;}
-        else if (i==0) {result = child; child = toolbar; toolbar = nullptr;}
-        else throw std::runtime_error("illegal index, must be 0 or 1");
-        return result;
-    }
-
-    QSize sizeHint() const {
-        if (child) return child->sizeHint();
-        else return QSize(100,100);
-    }
-
-    QSize minimumSize() const {
-        if (child) return child->minimumSize();
-        else return QSize(0,0);
-    }
-
-    void setGeometry(const QRect &rect) {
-        if (child)
-            child->setGeometry(rect); // margin?
-        if (toolbar) {
-            QSize size = toolbar->sizeHint();
-            int x = std::max(dx, rect.width() - size.width() - dx);
-            int width = std::min(rect.width() - 2*dx, size.width());
-            toolbar->setGeometry(QRect(x, dy, width, size.height()));
-        }
-    }
-
-private:
-    QLayoutItem *child;
-    QLayoutItem *toolbar;
-    const int dx = 5, dy = 5; // toolbar distance from edges
-};
-
-
 void _dummy_for_moduleinspector() {}
 
 class ModuleInspectorFactory : public InspectorFactory
@@ -145,7 +77,7 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     switchToOsgViewAction = nullptr;
     switchToCanvasViewAction = nullptr;
 
-    createViews(this);
+    createViews(this, isTopLevel);
     parent->setMinimumSize(20, 20);
 }
 
@@ -157,7 +89,7 @@ ModuleInspector::~ModuleInspector()
     getQtenv()->getAnimator()->clearInspector(this);
 }
 
-void ModuleInspector::createViews(QWidget *parent)
+void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
 {
     canvasViewer = new ModuleCanvasViewer();
     canvasViewer->setRenderHints(QPainter::Antialiasing);
@@ -172,25 +104,42 @@ void ModuleInspector::createViews(QWidget *parent)
 
     connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(objectsPicked(const std::vector<cObject*>&)));
 
-    QToolBar *toolbar = createToolbar();
-    QWidget *contentArea = new QWidget();
-    auto layout = new FloatingToolbarLayout(parent);
-    layout->addWidget(contentArea);
-    layout->addWidget(toolbar);
+    QToolBar *toolbar = createToolbar(isTopLevel);
+    if(isTopLevel)
+    {
+        auto layout = new QVBoxLayout(parent);
+        layout->setMargin(1);
+        stackedLayout = new QStackedLayout();
+        layout->addWidget(toolbar);
+        layout->addLayout(stackedLayout);
+    }
+    else
+    {
+        QWidget *contentArea = new QWidget();
+        auto layout = new FloatingToolbarLayout(parent);
+        layout->addWidget(contentArea);
+        layout->addWidget(toolbar);
+        stackedLayout = new QStackedLayout(contentArea);
+    }
 
-    stackedLayout = new QStackedLayout(contentArea);
     stackedLayout->addWidget(osgViewer);
     stackedLayout->addWidget(canvasViewer);
 }
 
-QToolBar *ModuleInspector::createToolbar()
+QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 {
-    QToolBar *toolbar = new QToolBar();
+    QToolBar *toolbar;
 
-    // general
-    goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
-    goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
-    goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    if(isTopLevel)
+        toolbar = createToolBarToplevel();
+    else
+    {
+        toolbar = new QToolBar();
+        // general
+        goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
+        goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
+        goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    }
     toolbar->addSeparator();
 
     toolbar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this, SLOT(runUntil()));
@@ -360,18 +309,8 @@ void ModuleInspector::stopSimulation()
 
 void ModuleInspector::relayout()
 {
-    //TODO
-//    global config inspectordata
-
-//    set c $insp.c
     canvasViewer->incLayoutSeed();
     canvasViewer->relayoutAndRedrawAll();
-
-//    if {[opp_inspector_istoplevel $insp] && $config(layout-may-resize-window)} {
-//        wm geometry $insp ""
-//    }
-
-//    ModuleInspector:adjustWindowSizeAndZoom $insp
 }
 
 void ModuleInspector::zoomIn(int x, int y)
