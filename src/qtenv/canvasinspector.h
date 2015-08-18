@@ -40,16 +40,18 @@ class QTENV_API CanvasInspector : public Inspector
       CanvasViewer *canvasViewer;
 
    private slots:
-      void relayout();
       void zoomIn();
       void zoomOut();
+      void onClick(QMouseEvent *event);
+
+   public slots:
+      virtual void redraw() override;
 
    public:
       CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~CanvasInspector();
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
-      virtual void redraw() override;
       virtual void clearObjectChangeFlags() override;
       //TCLKILL virtual int inspectorCommand(int argc, const char **argv) override;
 };

@@ -33,8 +33,11 @@
 #include <QGridLayout>
 #include <QToolBar>
 #include <QAction>
+#include <QMouseEvent>
 
 #include <QDebug>
+
+#define emit
 
 using namespace OPP::common;
 
@@ -63,6 +66,8 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     layout->addWidget(createToolbar());
     layout->addWidget(canvasViewer);
     layout->setMargin(0);
+
+    connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(onClick(QMouseEvent*)));
 }
 
 CanvasInspector::~CanvasInspector()
@@ -76,8 +81,8 @@ QToolBar *CanvasInspector::createToolbar()
     toolbar->addSeparator();
 
     // canvas-specfic
-    //TODO Slots aren't found
-    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
+    //TODO QAction::eventFilter: Ambiguous shortcut overload: Ctrl+M
+    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Redraw (Ctrl+R)", this, SLOT(redraw()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
     action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
@@ -130,12 +135,6 @@ cCanvas *CanvasInspector::getCanvas()
     return static_cast<cCanvas *>(object);
 }
 
-void CanvasInspector::relayout()
-{
-    //canvasViewer->incLayoutSeed();
-    canvasViewer->relayoutAndRedrawAll();
-}
-
 void CanvasInspector::zoomIn()
 {
     QVariant variant = getQtenv()->getPref("zoomby-factor");
@@ -174,13 +173,15 @@ void CanvasInspector::zoomBy(double mult)
         }*/
 
         getQtenv()->setPref(prefName, newZoomFactor);
-        // so animations will not wander around at the old module positions
-        //getQtenv()->getAnimator()->clearInspector(this);
         canvasViewer->setZoomFactor(newZoomFactor);
         redraw();
-        //getQtenv()->getAnimator()->redrawMessages();
-        qDebug() << "zoomBy";
     }
+}
+
+void CanvasInspector::onClick(QMouseEvent *event) {
+    auto objects = canvasViewer->getObjectsAt(event->pos());
+    if (!objects.empty())
+        getQtenv()->onSelectionChanged(objects.front());
 }
 
 /*TCLKILL

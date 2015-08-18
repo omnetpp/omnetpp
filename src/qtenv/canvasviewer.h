@@ -44,44 +44,31 @@ private:
 
     GraphicsLayer *figureLayer;
 
-    // does full layouting, stores results in submodPosMap
-    void recalculateLayout();
-
-    // updates submodPosMap (new modules, changed display strings, etc.)
-    void refreshLayout();
-
-    void fillFigureRenderingHints(FigureRenderingHints *hints); ///
-
-    void updateBackgroundColor(); ///
+    void fillFigureRenderingHints(FigureRenderingHints *hints);
     void clear();
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override; ///
-    void contextMenuEvent(QContextMenuEvent * event) override; ///
+    void mousePressEvent(QMouseEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent * event) override;
+    // only used to draw the zoom factor label in the bottom right corner
+    void drawForeground(QPainter *painter, const QRectF &rect) override;
 
 signals:
-    void click(QMouseEvent*); ///
-    void contextMenuRequested(QContextMenuEvent*); ///
-
-public slots:
-    void relayoutAndRedrawAll();
+    void click(QMouseEvent*);
+    void contextMenuRequested(QContextMenuEvent*);
 
 public:
-    CanvasViewer(); ///
-    ~CanvasViewer(); ///
+    CanvasViewer();
+    ~CanvasViewer();
 
-    void setObject(cCanvas *obj); ///
-    std::vector<cObject *> getObjectsAt(const QPoint &pos); ///
+    void setObject(cCanvas *obj);
+    std::vector<cObject *> getObjectsAt(const QPoint &pos);
 
-    CanvasRenderer *getCanvasRenderer() { return canvasRenderer; } ///
+    CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }
 
-    void redraw(); ///
-    void refresh(); ///
-
-    void setZoomFactor(double zoomFactor); ///
-
-//    void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
-//    void incLayoutSeed() { ++layoutSeed; }
+    void redraw();
+    void refresh();
+    void setZoomFactor(double zoomFactor);
 };
 
 } // namespace qtenv

@@ -93,181 +93,31 @@ void CanvasViewer::contextMenuEvent(QContextMenuEvent * event)
     emit contextMenuRequested(event);
 }
 
-void CanvasViewer::relayoutAndRedrawAll()
-{
-//    ASSERT(object != nullptr);
+void CanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
+    painter->save();
 
-//    cModule *mod = object;
-//    int submoduleCount = 0;
-//    int estimatedGateCount = mod->gateCount();
-//    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it) {
-//        submoduleCount++;
-//        // note: estimatedGateCount will count unconnected gates in the gate array as well
-//        estimatedGateCount += (*it)->gateCount();
-//    }
+    auto font = painter->font();
+    font.setBold(true);
+    painter->setFont(font);
 
-//    notDrawn = false;
-//    if (submoduleCount > 1000 || estimatedGateCount > 4000) {
-//        char problem[200];
-//        if (submoduleCount > 1000)
-//            sprintf(problem, "contains more than 1000 submodules (exactly %d)", submoduleCount);
-//        else
-//            sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
+    QString text = "Zoom: " + QString::number(zoomFactor, 'f', 2) + "x";
+    QFontMetrics fontMetrics(painter->font());
 
-//        QString message = "Module '" + QString(object->getFullName()) + "' " + problem +
-//                ", it may take a long time to display the graphics.\n\nDo you want to proceed with drawing?";
-//        QMessageBox::StandardButton answer = QMessageBox::warning(this, "Warning", message, QMessageBox::Yes | QMessageBox::No);
-//        if(answer == QMessageBox::Yes)
-//        {
-//            notDrawn = true;
-//            clear();  // this must be done, still
-//            return;
-//        }
-//    }
+    QSize textSize = fontMetrics.boundingRect(text).size();
+    QSize viewportSize = viewport()->size();
 
-    clear();
-    redraw();
-}
+    // moving the whole thing 2 pixels to the left and up as spacing
+    // and also adding 2 pixels to the left and right inside the grey area as margin
+    // then the painter is in scene coords, so we have to map, and convert back to Rect
+    QRectF textRect = mapToScene(viewportSize.width() - textSize.width() - 6,
+                               viewportSize.height() - textSize.height() - 2,
+                               textSize.width() + 4, textSize.height()).boundingRect();
 
-void CanvasViewer::recalculateLayout()
-{
-//    // refresh layout with empty submodPosMap -- everything layouted
-//    submodPosMap.clear();
-//    refreshLayout();
-}
+    painter->fillRect(textRect, QColor("lightgrey"));
+    // moving 2 pixels to the right and accounting for font descent, since the y coord is the baseline
+    painter->drawText(textRect.bottomLeft() + QPoint(2, - fontMetrics.descent()), text);
 
-void CanvasViewer::refreshLayout()
-{
-//    // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
-//    // only new nodes are re-layouted
-
-//    cModule *parentModule = object;
-
-//    // Note trick avoid calling getDisplayString() directly because it'd cause
-//    // the display string object inside cModule to spring into existence
-//    const cDisplayString blank;
-//    const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-
-//    // create and configure layouter object
-//    LayouterChoice choice = getQtenv()->opt->layouterChoice;
-//    if (choice == LAYOUTER_AUTO) {
-//        const int LIMIT = 20;  // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
-//        int submodCountLimited = 0;
-//        for (cModule::SubmoduleIterator it(parentModule); !it.end() && submodCountLimited < LIMIT; ++it)
-//            submodCountLimited++;
-//        choice = submodCountLimited >= LIMIT ? LAYOUTER_FAST : LAYOUTER_ADVANCED;
-//    }
-//    GraphLayouter *layouter = choice == LAYOUTER_FAST ?
-//        (GraphLayouter *)new BasicSpringEmbedderLayout() :
-//        (GraphLayouter *)new ForceDirectedGraphLayouter();
-
-//    layouter->setSeed(layoutSeed);
-
-//    // background size
-//    int sx = resolveLongDispStrArg(ds.getTagArg("bgb", 0), parentModule, 0);
-//    int sy = resolveLongDispStrArg(ds.getTagArg("bgb", 1), parentModule, 0);
-//    int border = 30;
-//    if (sx != 0 && sx < 2*border)
-//        border = sx/2;
-//    if (sy != 0 && sy < 2*border)
-//        border = sy/2;
-//    layouter->setSize(sx, sy, border);
-//    // TODO support "bgp" tag ("background position")
-
-//    // loop through all submodules, get their sizes and positions and feed them into layouting engine
-//    for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
-//        cModule *submod = *it;
-
-//        bool explicitCoords, obeysLayout;
-//        double x, y, sx, sy;
-//        getSubmoduleCoords(submod, explicitCoords, obeysLayout, x, y, sx, sy);
-
-//        // add node into layouter:
-//        if (explicitCoords) {
-//            // e.g. "p=120,70" or "p=140,30,ring"
-//            layouter->addFixedNode(submod->getId(), x, y, sx, sy);
-//        }
-//        else if (submodPosMap.find(submod) != submodPosMap.end()) {
-//            // reuse coordinates from previous layout
-//            QPointF pos = submodPosMap[submod];
-//            layouter->addFixedNode(submod->getId(), pos.x(), pos.y(), sx, sy);
-//        }
-//        else if (obeysLayout) {
-//            // all modules are anchored to the anchor point with the vector's name
-//            // e.g. "p=,,ring"
-//            layouter->addAnchoredNode(submod->getId(), submod->getName(), x, y, sx, sy);
-//        }
-//        else {
-//            layouter->addMovableNode(submod->getId(), sx, sy);
-//        }
-//    }
-
-//    // add connections into the layouter, too
-//    bool atParent = false;
-//    for (cModule::SubmoduleIterator it(parentModule); !atParent; ++it) {
-//        cModule *mod = !it.end() ? *it : (atParent = true, parentModule);
-
-//        for (cModule::GateIterator git(mod); !git.end(); ++git) {
-//            cGate *gate = *git;
-//            cGate *destGate = gate->getNextGate();
-//            if (gate->getType() == (atParent ? cGate::INPUT : cGate::OUTPUT) && destGate) {
-//                cModule *destMod = destGate->getOwnerModule();
-//                if (mod == parentModule && destMod == parentModule) {
-//                    // nop
-//                }
-//                else if (destMod == parentModule) {
-//                    layouter->addEdgeToBorder(mod->getId());
-//                }
-//                else if (destMod->getParentModule() != parentModule) {
-//                    // connection goes to a module under a different parent!
-//                    // this in fact violates module encapsulation, but let's
-//                    // accept it nevertheless. Just skip this connection.
-//                }
-//                else if (mod == parentModule) {
-//                    layouter->addEdgeToBorder(destMod->getId());
-//                }
-//                else {
-//                    layouter->addEdge(mod->getId(), destMod->getId());
-//                }
-//            }
-//        }
-//    }
-
-//    // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
-//    // TODO TkenvGraphLayouterEnvironment
-//    BasicGraphLayouterEnvironment environment;
-
-//    // TODO
-////    std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
-////    bool isExpressMode = getTkenv()->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS;
-////    if (!isExpressMode)
-////        environment.setWidgetToGrab(stopButton.c_str());
-
-////    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
-////    // if (getTkenv()->opt->showlayouting)  // for debugging
-////    if (submodPosMap.empty() && getTkenv()->opt->showLayouting)
-////        environment.setCanvas(canvas);
-
-//    layouter->setEnvironment(&environment);
-//    layouter->execute();
-//    // environment.cleanup();
-
-//    // fill the map with the results
-//    submodPosMap.clear();
-//    for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
-//        cModule *submod = *it;
-
-//        QPointF pos;
-//        double x, y;
-//        layouter->getNodePosition(submod->getId(), x, y);
-//        pos.setX(x);
-//        pos.setY(y);
-//        submodPosMap[submod] = pos;
-//    }
-
-//    layoutSeed = layouter->getSeed();
-
-//    delete layouter;
+    painter->restore();
 }
 
 void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
@@ -314,25 +164,9 @@ void CanvasViewer::redraw()
     if (object == nullptr)
         return;
 
-    updateBackgroundColor();
-
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
     getCanvasRenderer()->redraw(&hints);
-}
-
-void CanvasViewer::updateBackgroundColor()
-{
-    //TODO szukseges-e a getCanvas() a ModuleInspector classban?
-    /*
-    cCanvas *canvas = getCanvas();
-    if (canvas) {
-        char buf[16];
-        cFigure::Color color = canvas->getBackgroundColor();
-        sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        //CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
-    }
-    */
 }
 
 void CanvasViewer::refresh()
@@ -341,8 +175,6 @@ void CanvasViewer::refresh()
         clear();
         return;
     }
-
-    updateBackgroundColor();
 
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
