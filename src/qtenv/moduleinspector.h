@@ -53,6 +53,7 @@ class QTENV_API ModuleInspector : public Inspector
       void zoomOut(int x = 0, int y = 0);
       void increaseIconSize();
       void decreaseIconSize();
+      void runPreferencesDialog();
 
       void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);

@@ -561,27 +561,29 @@ void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
 
 void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 {
-    //TODO
-    //global inspectordata tmp
-
-    //ModuleInspector:zoomMarqueeCancel $insp ;# just in case
-
     std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
 
     if(objects.size())
     {
         QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
 
-        //TODO
-        //set tmp($c:showlabels) $inspectordata($c:showlabels)
-        //set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
+        QString objName = object->getFullName();
+        QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
+        bool showLabels = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
+        prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
+        bool showArrowHeads = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
 
         menu->addSeparator();
         menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
 
         menu->addSeparator();
-        menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
-        menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
+        //TODO not working these "Show" menu points
+        QAction *action = menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
+        action->setCheckable(true);
+        action->setChecked(showLabels);
+        action = menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
+        action->setCheckable(true);
+        action->setChecked(showArrowHeads);
 
         menu->addSeparator();
         addAction(menu->addAction("Increase Icon Size", this, SLOT(increaseIconSize()), QKeySequence(Qt::CTRL + Qt::Key_I)));
@@ -593,17 +595,23 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         menu->addAction("Re-Layout", canvasViewer, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
 
         menu->addSeparator();
-        //TODO Create a preferences dialog in Qt designer and here set its exec() slot
-//      $popup add command -label "Layouting Settings..." -command "preferencesDialog $insp l"
-        menu->addAction("Layouting Settings...");
-//      $popup add command -label "Animation Settings..." -command "preferencesDialog $insp a"
-        menu->addAction("Animation Settings...");
-//      $popup add command -label "Animation Filter..." -command "preferencesDialog $insp t"
-        menu->addAction("Animation Filter...");
+        action = menu->addAction("Layouting Settings...", this, SLOT(runPreferencesDialog()));
+        action->setData(InspectorUtil::TAB_LAYOUTING);
+        action = menu->addAction("Animation Settings...", this, SLOT(runPreferencesDialog()));
+        action->setData(InspectorUtil::TAB_ANIMATION);
+        action = menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()));
+        action->setData(InspectorUtil::TAB_FILTERING);
 
         menu->exec(event->globalPos());
         delete menu;
     }
+}
+
+void ModuleInspector::runPreferencesDialog()
+{
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    if (variant.isValid())
+        InspectorUtil::preferencesDialog((InspectorUtil::eTab)variant.value<int>());
 }
 
 void ModuleInspector::layers()

@@ -16,38 +16,12 @@
 
 #include "canvasviewer.h"
 #include "canvasrenderer.h"
-#include "omnetpp/cmodule.h"
-#include "omnetpp/cdisplaystring.h"
-#include "omnetpp/csimulation.h"
-#include "omnetpp/csimplemodule.h"
-#include "moduleinspector.h"
-#include "omnetpp/cmodule.h"
-#include "omnetpp/cfutureeventset.h"
-#include "layout/graphlayouter.h"
-#include "layout/basicspringembedderlayout.h"
-#include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
 #include "figurerenderers.h"
-#include "omnetpp/cmodule.h"
-#include "inspector.h"
-#include <QGraphicsScene>
-#include <QGraphicsPixmapItem>
-#include <QMessageBox>
 #include <QMouseEvent>
-#include <canvasrenderer.h>
-#include "animator.h"
-#include "compoundmoduleitem.h"
-#include "connectionitem.h"
-#include "submoduleitem.h"
 #include <QDebug>
-#include "arrow.h"
 
 #define emit
-
-#define UNKNOWNICON_WIDTH     32
-#define UNKNOWNICON_HEIGHT    32
-
-using namespace OPP::layout;
 
 namespace omnetpp {
 namespace qtenv {

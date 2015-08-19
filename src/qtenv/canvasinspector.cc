@@ -28,13 +28,14 @@
 #include "canvasrenderer.h"
 #include "canvasviewer.h"
 #include "qtenv.h"
+#include "inspectorutil.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGridLayout>
 #include <QToolBar>
 #include <QAction>
 #include <QMouseEvent>
-
+#include <QMenu>
 #include <QDebug>
 
 #define emit
@@ -68,6 +69,7 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     layout->setMargin(0);
 
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(onClick(QMouseEvent*)));
+    connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(onContextMenuRequested(QContextMenuEvent*)));
 }
 
 CanvasInspector::~CanvasInspector()
@@ -182,6 +184,29 @@ void CanvasInspector::onClick(QMouseEvent *event) {
     auto objects = canvasViewer->getObjectsAt(event->pos());
     if (!objects.empty())
         getQtenv()->onSelectionChanged(objects.front());
+}
+
+void CanvasInspector::createContextMenu(QContextMenuEvent *event)
+{
+    std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
+
+    if(objects.size())
+    {
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
+
+        menu->addSeparator();
+        // TODO Create Select Layers dialog
+        menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
+
+        menu->addSeparator();
+
+        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_M));
+        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_N));
+
+        menu->exec(event->globalPos());
+        delete menu;
+    }
+
 }
 
 /*TCLKILL
