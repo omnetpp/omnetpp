@@ -707,24 +707,22 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsIte
 void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
-    //GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem *>(item);
-
-    cFigure::Point startPoint = lineFigure->getStart();
-    cFigure::Point endPoint = lineFigure->getEnd();
-    QPainterPath painter(QPointF(startPoint.x, startPoint.y));
-    painter.lineTo(endPoint.x, endPoint.y);
-    //lineItem->setPath(painter);
+    QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem *>(item);
+    QPointF start(lineFigure->getStart().x, lineFigure->getStart().y);
+    QPointF end(lineFigure->getEnd().x, lineFigure->getEnd().y);
+    lineItem->setLine(QLineF(start, end));
 }
 
 void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
-    GraphicsPathArrowItem *lineItem = static_cast<GraphicsPathArrowItem *>(item);
-    lineItem->setPen(createPen(static_cast<cAbstractLineFigure *>(figure), hints));
+    cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
+    QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem *>(item);
+    lineItem->setPen(createPen(lineFigure, hints));
 }
 
 QGraphicsItem *LineFigureRenderer::newItem()
 {
-    return new GraphicsPathArrowItem();
+    return new QGraphicsLineItem();
 }
 
 void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
