@@ -33,6 +33,17 @@ class ModuleOutputContentProvider;
 class QTENV_API LogInspector : public Inspector
 {
     Q_OBJECT
+   private:
+      QAction *runUntilAction;
+      QAction *fastRunUntilAction;
+
+      QToolBar *createToolbar(bool isTopLevel);
+      void addModeActions(QToolBar *toolBar);
+
+   private slots:
+      void runUntil(bool isChecked);
+      void fastRunUntil(bool isChecked);
+      void stopSimulation();
 
    public:
       enum Mode {LOG, MESSAGES};
@@ -72,6 +83,8 @@ signals:
 
       void saveColumnWidths();
       void restoreColumnWidths();
+
+      void saveContent();
 
    public:
       LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
