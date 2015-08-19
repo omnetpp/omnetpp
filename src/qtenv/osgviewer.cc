@@ -16,6 +16,7 @@
 
 #include <QDebug>
 #include <osgEarthUtil/EarthManipulator>
+#include <osgEarthUtil/SkyNode>
 #include <osgGA/GUIEventAdapter>
 #include <osg/TexGenNode>
 #include "omnetpp/cosgcanvas.h"
@@ -188,8 +189,13 @@ void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
 void OsgViewer::refresh()
 {
     osg::Node *scene = osgCanvas ? osgCanvas->getScene() : nullptr;
-    if (scene != view->getSceneData())
+    if (scene != view->getSceneData()) {
         view->setSceneData(scene);
+
+        auto sky = osgEarth::findTopMostNodeOfType<osgEarth::Util::SkyNode>(scene);
+        if (sky)
+            sky->attach(view);
+    }
 }
 
 void OsgViewer::applyViewerHints()
