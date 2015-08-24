@@ -15,4 +15,5 @@ simple OsgEarthScene
 {
     @display("i=misc/globe");
     string scene;
+    double timeStep @unit("s") = default(60s);  // the time granularity of earth rotation
 }

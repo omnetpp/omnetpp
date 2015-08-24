@@ -84,7 +84,8 @@ int ChannelController::findGroundStation(GroundStation *p)
 }
 
 void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type) {
-   osgEarth::Util::LinearLineOfSightNode *los = new osgEarth::Util::LinearLineOfSightNode(mapNode.get());
+    auto mapNode = osgEarth::MapNode::findMapNode(scene);
+    osgEarth::Util::LinearLineOfSightNode *los = new osgEarth::Util::LinearLineOfSightNode(mapNode);
     losNodes.push_back(los);
 
     // not drawing the line of sight nodes' lines
@@ -95,7 +96,7 @@ void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type) {
     los->setUpdateCallback(new osgEarth::Util::LineOfSightTether(a, b));
     los->setTerrainOnly(true); // so the dish model itself won't occlude
 
-    mapNode->addChild(los);
+    scene->addChild(los);
 }
 
 void ChannelController::addSatellite(Satellite *p)
@@ -135,11 +136,9 @@ void ChannelController::initialize(int stage)
         showConnections = par("showConnections").boolValue();
         break;
     case 1:
-        // scene is initialized in stage 0 so we have to do our init in stage 1
-        mapNode = osgEarth::MapNode::findMapNode(OsgEarthScene::getInstance()->getScene());
-
         connections = new osg::Geode();
-        mapNode.get()->addChild(connections);
+        scene = OsgEarthScene::getInstance()->getScene()->asGroup();
+        scene->addChild(connections);
         break;
     case 2:
         for (int i = 0; i < (int)satellites.size(); ++i) {

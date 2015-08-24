@@ -49,7 +49,7 @@ protected:
     bool showConnections = true;
     std::string connectionColor;
     // the node containing the osgEarth data
-    osg::observer_ptr<osgEarth::MapNode> mapNode = nullptr;
+    osg::Group *scene = nullptr;
 
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override { return 3; }

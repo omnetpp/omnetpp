@@ -23,6 +23,5 @@ simple Satellite
         
         double altitude @unit("km") = default(5000km); // above sea level
         double startingPhase @unit("rad") = default(0rad);
-        double timeStep @unit("s") = default(10ms);  // the time granularity of movement calculation (for 30fps)
-        
+        double timeStep @unit("s") = default(60s);  // the time granularity of movement calculation
 }

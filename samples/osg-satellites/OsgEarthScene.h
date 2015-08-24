@@ -22,8 +22,10 @@ USING_NAMESPACE
 class OsgEarthScene : public cSimpleModule
 {
   protected:
+    double timeStep; // for earth rotation
     static OsgEarthScene *instance;
     osg::ref_ptr<osg::Node> scene;
+    osg::PositionAttitudeTransform *earthRotator;
 
   public:
     OsgEarthScene();

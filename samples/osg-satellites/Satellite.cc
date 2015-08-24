@@ -55,7 +55,7 @@ void Satellite::initialize(int stage)
 
         cross.normalize();
         orbitX = cross;
-        orbitY = cross ^ normal;
+        orbitY = normal ^ cross;
 
         break;
     }
@@ -96,7 +96,7 @@ void Satellite::initialize(int stage)
         }
 
         // add the locator node to the scene
-        mapNode->addChild(locatorNode);
+        scene->asGroup()->addChild(locatorNode);
 
         osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
         osg::ref_ptr<osg::DrawArrays> drawArrayLines = new  osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP);
@@ -127,7 +127,7 @@ void Satellite::initialize(int stage)
        osg::ref_ptr<osg::Geode> geode = new osg::Geode;
        geode->addDrawable( geom.get() );
 
-       mapNode->addChild(geode);
+       scene->asGroup()->addChild(geode);
 
        double R = earthRadius + altitude;
        double alpha = std::asin(earthRadius / R);

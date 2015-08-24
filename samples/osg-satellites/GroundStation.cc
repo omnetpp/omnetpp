@@ -57,9 +57,9 @@ void GroundStation::initialize(int stage)
 
         auto modelNode = osgDB::readNodeFile(modelURL);
 
-        modelNode->getOrCreateStateSet()->setAttributeAndModes(
+        locatorNode->getOrCreateStateSet()->setAttributeAndModes(
           new osg::Program(), osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
-        modelNode->getOrCreateStateSet()->setMode(
+        locatorNode->getOrCreateStateSet()->setMode(
                           GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
 
         // scale and rotate the model if necessary
@@ -84,7 +84,6 @@ void GroundStation::initialize(int stage)
 
         // add the locator node to the scene
         mapNode->addChild(locatorNode);
-
 
         // position the nodes, so we will see them at correct position right after initialization
         refreshVisuals();

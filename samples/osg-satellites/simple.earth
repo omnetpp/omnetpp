@@ -17,9 +17,4 @@ TIP: set your OSG_NUM_HTTP_DATABASE_THREADS to 4 or more!
         <cache_policy usage="no_cache"/>
         <nodata_image>http://oatile3.mqcdn.com/tiles/1.0.0/sat/13/636/6210.jpg</nodata_image>
     </image>
-    <!--
-    <options>
-        <lighting>false</lighting>
-    </options> -->
-    
 </map>
