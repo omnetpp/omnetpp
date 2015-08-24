@@ -52,13 +52,13 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 
   protected:
     QWidget *addViewWidget();
-    virtual void paintEvent(QPaintEvent* event);
+    void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     void setClearColor(float r, float g, float b, float alpha);
     void setCameraManipulator(osgGA::CameraManipulator *manipulator);
     void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
     void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
-    bool event(QEvent *);
 
   public:
     OsgViewer(QWidget *parent=nullptr);

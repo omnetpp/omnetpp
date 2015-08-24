@@ -556,7 +556,7 @@ void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
     }
 
     if (object)
-        emit objectPicked(object);
+        emit selectionChanged(object);
 }
 
 void ModuleInspector::createContextMenu(QContextMenuEvent *event)

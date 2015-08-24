@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <QDebug>
+#include <QResizeEvent>
 #include <osgEarthUtil/EarthManipulator>
 #include <osgEarthUtil/SkyNode>
 #include <osgGA/GUIEventAdapter>
@@ -132,8 +133,8 @@ QWidget *OsgViewer::addViewWidget()
     osg::Camera *camera = view->getCamera();
     camera->setClearColor(osg::Vec4(0.9, 0.9, 0.9, 1.0));
     camera->setViewport(new osg::Viewport(0, 0, 100, 100));
-    camera->setProjectionResizePolicy(osg::Camera::HORIZONTAL);
-    //camera->setProjectionMatrixAsPerspective(120.0f, aspect, 1.0f, 10000.0f); -- would need real widget aspect ration which is not yet available at this point
+    camera->setProjectionResizePolicy(osg::Camera::FIXED);
+
     view->addEventHandler(new PickHandler(this));
     view->addEventHandler(new osgViewer::StatsHandler);
     view->setCameraManipulator(new osgGA::TrackballManipulator);
@@ -159,19 +160,15 @@ QWidget *OsgViewer::addViewWidget()
     return graphicsWindow->getGLWidget();
 }
 
-bool OsgViewer::event(QEvent *event)
-{
-    // workaround: initial camera->setProjectionMatrixAsPerspective() needs the correct glWidget aspect ratio which is first available in the Polish event
-    if (event->type() == QEvent::PolishRequest && osgCanvas != nullptr)
-        applyViewerHints(); // for camera->setProjectionMatrixAsPerspective()
-
-    return QWidget::event(event);
-}
-
 void OsgViewer::paintEvent(QPaintEvent *event)
 {
-    //printf("OsgViewerWidget::paintEvent()\r");
     frame();
+}
+
+void OsgViewer::resizeEvent(QResizeEvent *event)
+{
+    setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
+    QWidget::resizeEvent(event);
 }
 
 void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
@@ -213,6 +210,7 @@ void OsgViewer::applyViewerHints()
     switch (manipulatorType) {
         case cOsgCanvas::CAM_TRACKBALL: manipulator = new osgGA::TrackballManipulator; break;
         case cOsgCanvas::CAM_EARTH: manipulator = new osgEarth::Util::EarthManipulator; break;
+        case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
     }
     setCameraManipulator(manipulator);
 
