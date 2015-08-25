@@ -42,7 +42,6 @@ void GroundStation::initialize(int stage)
         labelColor = par("labelColor").stringValue();
         longitude = par("longitude");
         latitude = par("latitude");
-
         break;
     }
     case 1:
@@ -66,7 +65,6 @@ void GroundStation::initialize(int stage)
         auto pat = new osg::PositionAttitudeTransform();
         pat->setScale(osg::Vec3d(modelScale, modelScale, modelScale));
 
-        //pat->setAttitude(osg::Quat(-90 / 180.0 * M_PI, osg::Vec3d(1, 0, 0)));
         auto objectNode = cOsgCanvas::createOmnetppObjectNode(this);
         pat->addChild(objectNode);
         objectNode->addChild(modelNode);

@@ -41,7 +41,7 @@ class GroundStation : public cSimpleModule
     // osgEarth node for 3D visualization
     osgEarth::Util::ObjectLocatorNode *locatorNode = nullptr;
 
-    double longitude = -70, latitude = 40, altitude = 5000;
+    double longitude = -70, latitude = 40, altitude = 400;
 
   public:
 

@@ -10,6 +10,7 @@
 #include <osgEarthUtil/ObjectLocator>
 #include <osgEarthUtil/LinearLineOfSight>
 #include <osg/ValueObject>
+#include <osg/LineWidth>
 #include <osg/Depth>
 #include "ChannelController.h"
 
@@ -40,34 +41,30 @@ ChannelController *ChannelController::getInstance()
     return instance;
 }
 
-// modified, source: http://forum.openscenegraph.org/viewtopic.php?t=7805&view=previous
-osg::ref_ptr<osg::ShapeDrawable> ChannelController::createCylinderBetweenPoints(osg::Vec3 start, osg::Vec3 end, float radius, osg::Vec4 color) {
-    osg::Vec3 center = (start + end) / 2;
-    float height = (start - end).length();
+osg::ref_ptr<osg::Drawable> ChannelController::createLineBetweenPoints(osg::Vec3 start, osg::Vec3 end, float width, osg::Vec4 color) {
+    osg::ref_ptr<osg::Geometry> orbitGeom = new osg::Geometry;
+    osg::ref_ptr<osg::DrawArrays> drawArrayLines = new  osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP);
+    osg::ref_ptr<osg::Vec3Array> vertexData = new osg::Vec3Array;
 
-    // This is the default direction for the cylinders to face in OpenGL
-    osg::Vec3 z(0, 0, 1);
-
-    // Get diff between two points you want cylinder along
-    osg::Vec3 p = (start - end);
-
-    // Get CROSS product (the axis of rotation)
-    osg::Vec3 t = z ^ p;
-
-    // Get angle. length is magnitude of the vector
-    double angle = std::acos((z * p) / p.length());
-
-    // Create a cylinder between the two points with the given radius
-    osg::ref_ptr<osg::Cylinder> cylinder = new osg::Cylinder(center, radius, height);
-    cylinder->setRotation(osg::Quat(angle, t));
-
-    osg::ref_ptr<osg::ShapeDrawable> drawable = new osg::ShapeDrawable(cylinder);
-    drawable->setColor(color);
-    drawable->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    orbitGeom->addPrimitiveSet(drawArrayLines);
+    auto stateSet = orbitGeom->getOrCreateStateSet();
+    stateSet->setAttributeAndModes(new osg::LineWidth(width), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+    stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     auto depth = new osg::Depth;
     depth->setWriteMask(false);
-    drawable->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::ON);
-    return drawable;
+    stateSet->setAttributeAndModes(depth, osg::StateAttribute::ON);
+
+    vertexData->push_back(start);
+    vertexData->push_back(end);
+
+    orbitGeom->setVertexArray(vertexData);
+    drawArrayLines->setFirst(0);
+    drawArrayLines->setCount(vertexData->size());
+
+    osg::ref_ptr<osg::Vec4Array> colorData = new osg::Vec4Array;
+    colorData->push_back(osgEarth::Color(color));
+    orbitGeom->setColorArray(colorData, osg::Array::BIND_OVERALL);
+    return orbitGeom;
 }
 
 int ChannelController::findSatellite(Satellite *p)
@@ -96,6 +93,13 @@ void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type) {
     // not drawing the line of sight nodes' lines
     los->setGoodColor(osg::Vec4f(0, 0, 0, 0));
     los->setBadColor(osg::Vec4f(0, 0, 0, 0));
+
+    auto stateSet = los->getOrCreateStateSet();
+    stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    auto depth = new osg::Depth;
+    depth->setWriteMask(false);
+    stateSet->setAttributeAndModes(depth, osg::StateAttribute::ON);
+
     los->setUserValue("type", type);
 
     los->setUpdateCallback(new osgEarth::Util::LineOfSightTether(a, b));
@@ -137,8 +141,10 @@ void ChannelController::initialize(int stage)
 {
     switch (stage) {
     case 0:
-        connectionColor = par("connectionColor").stringValue();
-        showConnections = par("showConnections").boolValue();
+        satToSatColor = par("satToSatColor").stringValue();
+        satToSatWidth = par("satToSatWidth").doubleValue();
+        satToGroundColor = par("satToGroundColor").stringValue();
+        satToGroundWidth = par("satToGroundWidth").doubleValue();
         break;
     case 1:
         connections = new osg::Geode();
@@ -153,48 +159,38 @@ void ChannelController::initialize(int stage)
             for (int j = i+1; j < (int)satellites.size(); ++j)
                 addLineOfSight(satellites[i]->getLocatorNode(), satellites[j]->getLocatorNode(), 1);
         }
-    	break;
+        break;
     }
 }
 
 void ChannelController::updateConnectionGraph()
 {
-	connections->removeDrawables(0, connections->getNumDrawables());
-	auto s2s = osg::Vec4(0, 1, 0, 0.75);
-	auto s2g = osg::Vec4(1, 0.5, 0, 0.75);
+    connections->removeDrawables(0, connections->getNumDrawables());
 
-	int ns2s = 0;
-	int ns2g = 0;
-	//static int id = 0;
-    if (showConnections)
-		for (auto n : losNodes)
-			if (n->getHasLOS()) {
-			    auto start = n->getStartWorld();
-			    auto end = n->getEndWorld();
-			    /*std::stringstream name;
-			    name << "conn-" << id++;
-			    auto line = new cLineFigure(name.str().c_str());
-			    line->setVisible(true);
-			    line->setLineWidth(2);
-			    line->setLineColor(cFigure::Color("green"));
-			    line->setStart(cFigure::Point(300 + start.x() / 100000, 300 - start.y() / 100000));
-			    line->setEnd(cFigure::Point(300 + end.x() / 100000, 300 - end.y() / 100000));
-			    EV << "owner:" << getParentModule()->getFullName() << "\n";
-			    getParentModule()->getCanvas()->addFigure(line);*/
-			    int type;
-			    n->getUserValue("type", type);
-			    switch (type) {
-			    case 0: // sat to ground
-			        connections->addDrawable(createCylinderBetweenPoints(start, end, 20000, s2g));
-			        ++ns2g;
-			        break;
-			    case 1: // sat to sat
-			        connections->addDrawable(createCylinderBetweenPoints(start, end, 20000, s2s));
-			        ++ns2s;
-			        break;
-			    }
+    int ns2s = 0;
+    int ns2g = 0;
 
-			}
+    for (auto n : losNodes) {
+        if (n->getHasLOS()) {
+            auto start = n->getStartWorld();
+            auto end = n->getEndWorld();
+
+            int type;
+            n->getUserValue("type", type);
+            switch (type) {
+            case 0:
+                ++ns2g;
+                if (!satToGroundColor.empty())
+                    connections->addDrawable(createLineBetweenPoints(start, end, satToGroundWidth, osgEarth::Color(satToGroundColor)));
+                break;
+            case 1:
+                ++ ns2s;
+                if (!satToSatColor.empty())
+                    connections->addDrawable(createLineBetweenPoints(start, end, satToSatWidth, osgEarth::Color(satToSatColor)));
+                break;
+            }
+        }
+    }
 
     EV << "Active connections: " << ns2s << " sat-to-sat and " << ns2g << " sat-to-ground \n";
 }

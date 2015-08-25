@@ -9,6 +9,9 @@
 
 #include "Satellite.h"
 
+#include <sstream>
+#include <iomanip>
+
 #include <osg/Node>
 #include <osg/Texture>
 #include <osg/LineWidth>
@@ -44,14 +47,32 @@ void Satellite::initialize(int stage)
         labelColor = par("labelColor").stringValue();
         altitude = par("altitude");
 
+        phase = startingPhase = par("startingPhase").doubleValue() * M_PI / 180.0;
 
-        phase = startingPhase = par("startingPhase");
+        std::string normalString = par("orbitNormal");
+        if (normalString.empty()) {
+            // it is not a correct spherical distribution, nor deterministic, but will do here
+             normal.set(dblrand() * 2 - 1, dblrand() * 2 - 1, dblrand() * 2 - 1);
+        } else {
+            std::stringstream ss(normalString);
 
-        normal = osg::Vec3d(std::cos(getIndex()), std::sin(getIndex()), 4);
+            double x, y, z;
+            ss >> x;
+            ss.ignore();
+            ss >> y;
+            ss.ignore();
+            ss >> z;
+
+            if (!ss)
+                throw cRuntimeError("Couldn't parse orbit normal \"%s\", the correct format is for example \"2.5,3,0\", or leave it empty for random.", normalString.c_str());
+
+            normal.set(x, y, z);
+        }
+
         normal.normalize();
 
-        auto c1 = normal ^ osg::Vec3d(1, 0, 0);
-        auto c2 = normal ^ osg::Vec3d(0, 1, 0);
+        auto c1 = normal ^ osg::Vec3d(0, 1, 0);
+        auto c2 = normal ^ osg::Vec3d(1, 0, 0);
         osg::Vec3d &cross = c1.length2() < 0.1 ? c2 : c1;
 
         cross.normalize();

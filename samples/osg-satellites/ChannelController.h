@@ -35,7 +35,7 @@ class ChannelController : public cSimpleModule
 {
 protected:
 
-    static osg::ref_ptr<osg::ShapeDrawable> createCylinderBetweenPoints(osg::Vec3 start, osg::Vec3 end, float radius, osg::Vec4 color);
+    static osg::ref_ptr<osg::Drawable> createLineBetweenPoints(osg::Vec3 start, osg::Vec3 end, float width, osg::Vec4 color);
 
     static ChannelController *instance;
     std::vector<Satellite *> satellites;
@@ -45,9 +45,12 @@ protected:
     std::map<Satellite *, osg::Geometry *> orbitsMap;
 
     osg::ref_ptr<osg::Geode> connections = nullptr;
+    // visual parameters of the connections
+    std::string satToSatColor;
+    double satToSatWidth = 0;
+    std::string satToGroundColor;
+    double satToGroundWidth = 0;
 
-    bool showConnections = true;
-    std::string connectionColor;
     // the node containing the osgEarth data
     osg::Group *scene = nullptr;
 

@@ -9,11 +9,13 @@
 
 //
 // This module is responsible for tracking the distance of mobile nodes,
-// and visualizing the connectivity graph via KML.
+// and visualizing the connectivity graph via osgEarth.
 //
 simple ChannelController
 {
     @display("i=block/network2");
-    bool showConnections = default(true); // whether to show the connection graph (all nodes within range are connected by a line)
-    string connectionColor = default(""); // the color of the connection graph in hex BBGGRR format or "" for random color
+    string satToSatColor = default("#00FF00BF");
+    double satToSatWidth = default(2);
+    string satToGroundColor = default("#FFBF00BF");
+    double satToGroundWidth = default(2);
 }
