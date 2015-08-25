@@ -57,12 +57,13 @@ void OsgEarthScene::initialize()
 
     scene = new osg::Group();
     scene->asGroup()->addChild(earthRotator);
-
     scene->asGroup()->addChild(new osgEarth::Util::SkyNode(mapNode->getMap()));
 
-    scene->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
-    scene->getOrCreateStateSet()->setMode(GL_CULL_FACE, osg::StateAttribute::ON);
-    scene->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    auto stateSet = scene->getOrCreateStateSet();
+    stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
+    stateSet->setMode(GL_CULL_FACE, osg::StateAttribute::ON);
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
     mapNode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
     builtinOsgCanvas->setScene(scene);

@@ -10,6 +10,7 @@
 #include <osgEarthUtil/ObjectLocator>
 #include <osgEarthUtil/LinearLineOfSight>
 #include <osg/ValueObject>
+#include <osg/Depth>
 #include "ChannelController.h"
 
 using namespace osgEarth;
@@ -62,6 +63,10 @@ osg::ref_ptr<osg::ShapeDrawable> ChannelController::createCylinderBetweenPoints(
 
     osg::ref_ptr<osg::ShapeDrawable> drawable = new osg::ShapeDrawable(cylinder);
     drawable->setColor(color);
+    drawable->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    auto depth = new osg::Depth;
+    depth->setWriteMask(false);
+    drawable->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::ON);
     return drawable;
 }
 

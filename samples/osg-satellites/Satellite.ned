@@ -20,7 +20,8 @@ simple Satellite
         double modelScale = default(1);
         // decorations and annotations
         string labelColor = default("#000000ff");    // the color of the model label in hex RRGGBBAA format or "" to turn off labels
-        
+        string orbitColor = default("#80C8C8C8");    // the color of the orbit circle in hex RRGGBBAA, or "" to hide the orbit
+        string coneColor = default("#FFFFFF20");    // the color of the range cone in hex RRGGBBAA, or "" to hide the cone
         double altitude @unit("km") = default(5000km); // above sea level
         double startingPhase @unit("rad") = default(0rad);
         double timeStep @unit("s") = default(60s);  // the time granularity of movement calculation

@@ -15,6 +15,7 @@
 #include <osg/PolygonMode>
 #include <osg/Texture2D>
 #include <osg/Image>
+#include <osg/Depth>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Capabilities>
 #include <osgEarthAnnotation/LabelNode>
@@ -98,53 +99,65 @@ void Satellite::initialize(int stage)
         // add the locator node to the scene
         scene->asGroup()->addChild(locatorNode);
 
-        osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
-        osg::ref_ptr<osg::DrawArrays> drawArrayLines = new  osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP);
+        // making the orbit circle
+        std::string orbitColor = par("orbitColor");
+        if (!orbitColor.empty()) {
+            osg::ref_ptr<osg::Geometry> orbitGeom = new osg::Geometry;
+            osg::ref_ptr<osg::DrawArrays> drawArrayLines = new  osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP);
+            osg::ref_ptr<osg::Vec3Array> vertexData = new osg::Vec3Array;
 
-        osg::ref_ptr<osg::Vec3Array> vertexData = new osg::Vec3Array;
+            orbitGeom->addPrimitiveSet(drawArrayLines);
+            auto stateSet = orbitGeom->getOrCreateStateSet();
+            stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
+            stateSet->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+            stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+            stateSet->setAttributeAndModes(new osg::LineWidth(1.5), osg::StateAttribute::ON);
+            stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+            auto depth = new osg::Depth;
+            depth->setWriteMask(false);
+            stateSet->setAttributeAndModes(depth, osg::StateAttribute::ON);
 
+            for (int i = 0; i <= 100; ++i)
+                vertexData->push_back(getPositionAtPhase(i / 100.0 * M_PI*2));
 
-        geom->addPrimitiveSet(drawArrayLines);
-        geom->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
-        geom->getOrCreateStateSet()->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
-        geom->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-        geom->getOrCreateStateSet()->setAttributeAndModes(new osg::LineWidth(1.5), osg::StateAttribute::ON);
+            orbitGeom->setVertexArray(vertexData);
+            drawArrayLines->setFirst(0);
+            drawArrayLines->setCount(vertexData->size());
 
-        for (int i = 0; i <= 100; ++i)
-            vertexData->push_back(getPositionAtPhase(i / 100.0 * M_PI*2));
+            osg::ref_ptr<osg::Vec4Array> colorData = new osg::Vec4Array;
+            colorData->push_back(osgEarth::Color(orbitColor));
+            orbitGeom->setColorArray(colorData, osg::Array::BIND_OVERALL);
 
+            osg::ref_ptr<osg::Geode> orbitGeode = new osg::Geode;
+            orbitGeode->addDrawable(orbitGeom.get());
+            scene->asGroup()->addChild(orbitGeode);
+        }
 
-        geom->setVertexArray(vertexData);
-        drawArrayLines->setFirst(0);
-        drawArrayLines->setCount(vertexData->size());
+        std::string coneColor = par("coneColor");
+        if (!coneColor.empty()) {
+            double orbitRadius = earthRadius + altitude; // in kilometers
+            // the angle between the center of the earth and the horizon as seen from the satellite, in radians
+            double alpha = std::asin(earthRadius / orbitRadius);
+            // the distance of the horizon from the satellite, in meters
+            double horizonDistance = std::sqrt(orbitRadius * orbitRadius - earthRadius * earthRadius) * 1000;
+            double coneHeight = std::sin(alpha)*horizonDistance;
+            double coneRadius = std::cos(alpha)*horizonDistance;
+            // the offset is to position the tip to the satellite
+            osg::Cone *cone = new osg::Cone(osg::Vec3(0, 0, -coneRadius*0.75), coneHeight, coneRadius);
 
+            osg::ref_ptr<osg::Geode> coneGeode = new osg::Geode;
+            auto coneDrawable = new osg::ShapeDrawable(cone);
+            coneDrawable->setColor(osgEarth::Color(coneColor));
 
-       osg::ref_ptr<osg::Vec4Array> colorData = new osg::Vec4Array;
-       colorData->push_back(osg::Vec4(0.5, 0.75, 0.75, 0.75));
-       geom->setColorArray(colorData, osg::Array::BIND_OVERALL);
-
-       // Add the Geometry (Drawable) to a Geode and return the Geode.
-       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-       geode->addDrawable( geom.get() );
-
-       scene->asGroup()->addChild(geode);
-
-       double R = earthRadius + altitude;
-       double alpha = std::asin(earthRadius / R);
-       double th = std::sqrt(R * R - earthRadius * earthRadius);
-       double h = std::sin(alpha)*th*1000;
-       double r = std::cos(alpha)*th*1000;
-       osg::Cone *cone = new osg::Cone(osg::Vec3(0, 0, -r*0.75), h, r);
-
-       osg::ref_ptr<osg::Geode> geode2 = new osg::Geode;
-       auto shdr = new osg::ShapeDrawable(cone);
-       shdr->setColor(osg::Vec4(1, 1, 1, 0.1));
-
-        geode2->addDrawable(shdr);
-        geode2->getOrCreateStateSet()->setAttribute(new osg::PolygonMode(
-          osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ));
-
-       locatorNode->addChild(geode2);
+            coneGeode->addDrawable(coneDrawable);
+            coneGeode->getOrCreateStateSet()->setAttribute(new osg::PolygonMode(
+                osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE));
+            coneGeode->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+            auto depth = new osg::Depth;
+            depth->setWriteMask(false);
+            coneGeode->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::ON);
+            locatorNode->addChild(coneGeode);
+        }
 
         // position the nodes, so we will see them at correct position right after initialization
         refreshVisuals();

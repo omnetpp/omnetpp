@@ -22,17 +22,17 @@ USING_NAMESPACE
 class OsgEarthScene : public cSimpleModule
 {
   protected:
-    double timeStep; // for earth rotation
+    double timeStep = 60; // for earth rotation
     static OsgEarthScene *instance;
     osg::ref_ptr<osg::Node> scene;
-    osg::PositionAttitudeTransform *earthRotator;
+    osg::PositionAttitudeTransform *earthRotator = nullptr;
 
   public:
     OsgEarthScene();
     virtual ~OsgEarthScene();
 
     static OsgEarthScene *getInstance();
-    virtual osg::Node *getScene() {return scene; }
+    virtual osg::Node *getScene() { return scene; }
   protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
