@@ -58,10 +58,12 @@ void MobileNode::initialize(int stage)
         auto modelNode = osgDB::readNodeFile(modelURL);
         if (!modelNode)
             throw cRuntimeError("Model file \"%s\" not found", modelURL.c_str());
-        // disable shader on the model so textures are correctly shown
+
+        // disable shader and lighting on the model so textures are correctly shown
         modelNode->getOrCreateStateSet()->setAttributeAndModes(
                             new osg::Program(),
-                            osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+                            osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
+        modelNode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
         auto objectNode = cOsgCanvas::createOmnetppObjectNode(this);  // make the node selectable in QTEnv
         objectNode->addChild(modelNode);
