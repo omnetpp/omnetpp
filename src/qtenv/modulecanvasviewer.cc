@@ -74,6 +74,10 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     // that beautiful green shade behind everything
     setBackgroundBrush(QColor("#a0e0a0"));
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    setDragMode(ScrollHandDrag);
+    // otherwise it would be a hand, that's why this is in mousePressEvent and mouseReleaseEvent too
+    viewport()->setCursor(Qt::ArrowCursor);
+    setResizeAnchor(AnchorViewCenter);
 }
 
 ModuleCanvasViewer::~ModuleCanvasViewer()
@@ -105,6 +109,28 @@ void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
     case Qt::XButton2:   emit forward();    break;
     default:   /* shut up, compiler! */     break;
     }
+    QGraphicsView::mousePressEvent(event);
+    viewport()->setCursor(Qt::ArrowCursor);
+}
+
+void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseReleaseEvent(event);
+    viewport()->setCursor(Qt::ArrowCursor);
+}
+
+void ModuleCanvasViewer::wheelEvent(QWheelEvent *event)
+{
+    if (event->modifiers() & Qt::ControlModifier)
+        event->ignore(); // scroll wheel zooming is handled by the inspector
+    else
+        QGraphicsView::wheelEvent(event);
+}
+
+void ModuleCanvasViewer::resizeEvent(QResizeEvent *event)
+{
+    QGraphicsView::resizeEvent(event);
+    recalcSceneRect();
 }
 
 void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent * event)
@@ -481,6 +507,12 @@ void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
     compoundModuleItem = new CompoundModuleItem();
     backgroundLayer->addItem(compoundModuleItem);
 
+    CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, parentModule, zoomFactor, getSubmodulesRect());
+
+    recalcSceneRect();
+}
+
+QRectF ModuleCanvasViewer::getSubmodulesRect() {
     QRectF submodulesRect;
 
     if (submoduleGraphicsItems.empty()) {
@@ -496,10 +528,21 @@ void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
         }
     }
 
-    CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, parentModule, zoomFactor, submodulesRect);
+    return submodulesRect;
+}
 
-    // leaving a bit of a margin on top of the outline
-    setSceneRect(compoundModuleItem->boundingRect().united(submodulesRect).united(figureLayer->childrenBoundingRect()).adjusted(-10, -10, 10, 10));
+void ModuleCanvasViewer::recalcSceneRect() {
+    if (compoundModuleItem) {
+        auto rect = compoundModuleItem->boundingRect()
+                      .united(getSubmodulesRect())
+                      .united(figureLayer->childrenBoundingRect())
+                      .adjusted(-10, -10, 10, 10); // leaving a bit of a margin on top of the outline
+
+        // how much additional space we need to show both ways in each direction
+        double horizExcess = std::max(0.0, viewport()->width() - rect.width());
+        double vertExcess = std::max(0.0, viewport()->height() - rect.height());
+        setSceneRect(rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess));
+    }
 }
 
 void ModuleCanvasViewer::drawConnection(cGate *gate)

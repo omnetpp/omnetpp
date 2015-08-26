@@ -242,6 +242,23 @@ void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
         switchToCanvasView();
 }
 
+void ModuleInspector::wheelEvent(QWheelEvent *event)
+{
+    if (event->modifiers() & Qt::ControlModifier) {
+        int d = event->delta() / 120; // see the Qt docs for the division
+        if (d < 0)
+            while (d++ < 0)
+                zoomOut(event->x(), event->y());
+        else
+            while (d-- > 0)
+                zoomIn(event->x(), event->y());
+
+        event->accept();
+    } else {
+        Inspector::wheelEvent(event);
+    }
+}
+
 cOsgCanvas *ModuleInspector::getOsgCanvas()
 {
     cModule *module = dynamic_cast<cModule*>(getObject());
@@ -312,14 +329,14 @@ void ModuleInspector::zoomIn(int x, int y)
 {
     QVariant variant = getQtenv()->getPref("zoomby-factor");
     double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
-    zoomBy(zoomByFactor, 1, x, y);
+    zoomBy(zoomByFactor, true, x, y);
 }
 
 void ModuleInspector::zoomOut(int x, int y)
 {
     QVariant variant = getQtenv()->getPref("zoomby-factor");
     double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
-    zoomBy(1.0 / zoomByFactor, 1, x, y);
+    zoomBy(1.0 / zoomByFactor, true, x, y);
 
 }
 
@@ -340,11 +357,14 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 
     if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
     {
+        int cx = canvasViewer->viewport()->width() / 2;
+        int cy = canvasViewer->viewport()->height() / 2;
+
         //remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
-        if(x == 0)
-            x = canvasViewer->width() / 2;
-        if(y == 0)
-            y = canvasViewer->height() / 2;
+        if(x == 0) x = cx;
+        if(y == 0) y = cy;
+
+        QPointF oldModulePos = canvasViewer->mapToScene(x, y) / zoomFactor;
 
         //update zoom factor and redraw
         double newZoomFactor = zoomFactor * mult;
@@ -364,6 +384,8 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         getQtenv()->getAnimator()->clearInspector(this);
         canvasViewer->setZoomFactor(newZoomFactor);
         getQtenv()->getAnimator()->redrawMessages();
+
+        canvasViewer->centerOn(oldModulePos * newZoomFactor - QPointF(x - cx, y - cy));
     }
 }
 

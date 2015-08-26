@@ -96,9 +96,15 @@ private:
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     // only used to draw the zoom factor label in the bottom right corner
     void drawForeground(QPainter *painter, const QRectF &rect) override;
+
+    void recalcSceneRect();
+    QRectF getSubmodulesRect();
 
 signals:
     void click(QMouseEvent*);

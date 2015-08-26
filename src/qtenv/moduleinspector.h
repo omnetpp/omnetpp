@@ -94,6 +94,7 @@ class QTENV_API ModuleInspector : public Inspector
       void refreshOsgViewer();
       void setOsgCanvas(cOsgCanvas *osgCanvas);
 
+      void wheelEvent(QWheelEvent *event) override;
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
 
    public:
