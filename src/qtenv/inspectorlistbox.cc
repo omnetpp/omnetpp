@@ -50,7 +50,7 @@ QVariant InspectorListBox::headerData(int section, Qt::Orientation orientation, 
 void InspectorListBox::sort(int i, Qt::SortOrder order)
 {
     beginResetModel();
-    qDebug() << "Sort" << order;
+    // qDebug() << "Sort" << order;
     qSort(objects.begin(), objects.end(),
           [i, order](cObject *arg1, cObject *arg2) -> bool
           {
@@ -96,7 +96,7 @@ QVariant InspectorListBox::data(const QModelIndex &index, int role) const
 {
     if(objects.size() < index.row())
     {
-        qDebug() << "object is nullptr";
+        // qDebug() << "object is nullptr";
         return QVariant();
     }
 

@@ -72,7 +72,7 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
 
 void PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
 {
-    printf("pick()\n");
+    // printf("pick()\n");
 
     osgUtil::LineSegmentIntersector::Intersections intersections;
     std::vector<cObject*> objects;
@@ -86,7 +86,7 @@ void PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
                 for (int i = nodePath.size()-1; i >= 0; --i) {
                     if (OmnetppObjectNode *objNode = dynamic_cast<OmnetppObjectNode*>(nodePath[i])) {
                         if (cObject *obj = objNode->getObject()) {
-                            qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
+                            // qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
                             if (std::find(objects.begin(), objects.end(), obj) == objects.end()) // filter out duplicates
                                 objects.push_back(obj);
                         }
@@ -198,7 +198,7 @@ void OsgViewer::refresh()
 
 void OsgViewer::applyViewerHints()
 {
-    printf("applyViewerHints()\n");
+    // printf("applyViewerHints()\n");
     ASSERT(osgCanvas != nullptr);
 
     cOsgCanvas::Color color = osgCanvas->getClearColor();
@@ -223,7 +223,7 @@ void OsgViewer::applyViewerHints()
 
 void OsgViewer::resetViewer()
 {
-    printf("resetViewer()\n");
+    // printf("resetViewer()\n");
     setClearColor(0.9, 0.9, 0.9, 1.0);
     setCameraManipulator(nullptr);
     setPerspective(30, 1, 1000);

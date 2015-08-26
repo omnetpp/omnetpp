@@ -144,7 +144,7 @@ QImage *ImageCache::getImage(const char *nameWithSize)
 {
     if(imagesWithSize.find(nameWithSize) != imagesWithSize.end())
         return imagesWithSize[nameWithSize];
-    qDebug() << "ImageCache: Image" << nameWithSize << "not found!";
+    // qDebug() << "ImageCache: Image" << nameWithSize << "not found!";
     return unknownImage;
 }
 

@@ -1056,7 +1056,7 @@ void Qtenv::deleteInspector(Inspector *insp)
 
 void Qtenv::refreshInspectors()
 {
-    qDebug() << "refreshInspectors()";
+    // qDebug() << "refreshInspectors()";
 
     // update inspectors
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
