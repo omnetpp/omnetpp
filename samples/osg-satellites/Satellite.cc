@@ -190,6 +190,18 @@ void Satellite::initialize(int stage)
     }
 }
 
+void Satellite::handleMessage(cMessage *msg)
+{
+    // update the node position
+    move();
+
+    // synchronize the OSG node positions to the module position
+    refreshVisuals();
+
+    // schedule next movement
+    scheduleAt(simTime() + timeStep, msg);
+}
+
 void Satellite::refreshVisuals()
 {
     osg::Vec3d pos = getPosition();
@@ -205,14 +217,7 @@ void Satellite::refreshVisuals()
     getDisplayString().setTagArg("p", 1, 300 - pos.y() / 100000);
 }
 
-void Satellite::handleMessage(cMessage *msg)
+void Satellite::move()
 {
-    // update the node position
-    move();
-
-    // synchronize the OSG node positions to the module position
-    refreshVisuals();
-
-    // schedule next movement
-    scheduleAt(simTime() + timeStep, msg);
+    phase = startingPhase + (getSimulation()->getSimTime().inUnit(SIMTIME_MS) / 1000.0) * getOmega();
 }
