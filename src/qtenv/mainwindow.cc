@@ -236,7 +236,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::initialSetUpConfiguration()
 {
-    ui->actionSetUpConfiguration->trigger();
+    setupConfiguration(false);
 }
 
 void MainWindow::runSimulation(eMode mode)
@@ -267,27 +267,7 @@ void MainWindow::on_actionRun_triggered()
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
-    // implements File|Set Up a Configuration...
-    if (checkRunning())
-        return;
-
-    RunSelectionDialog *dialog = new RunSelectionDialog(this);
-    if (dialog->getConfigNumber() == 2 || dialog->exec()) {
-        // TODO debug "selected $configname $runnumber"
-        busy("Setting up network...");
-        // TODO inspectorList:addAll 1
-        env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
-        reflectRecordEventlog();
-        busy();
-
-        if (getSimulation()->getSystemModule() != nullptr) {
-            // tell plugins about it
-            busy("Notifying Tcl plugins...");
-            // TODO notifyPlugins newNetwork
-            busy();
-        }
-    }
-    delete dialog;
+    setupConfiguration(true);
 }
 
 // stopSimulation
@@ -525,6 +505,37 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     env->setSilentEventFilters(filters.toStdString().c_str());
 
     env->refreshInspectors();
+}
+
+void MainWindow::setupConfiguration(bool forceDialog)
+{
+    // implements File|Set Up a Configuration...
+    if (checkRunning())
+        return;
+
+    RunSelectionDialog *dialog = new RunSelectionDialog(this);
+    int dialogResult = 1; // if we don't even run it, we'll take it as accepted
+    if (forceDialog || dialog->getConfigNumber() > 1 || dialog->getRunNumber() > 1)
+        dialogResult = dialog->exec();
+
+    // if the dialog is accepted (or was not run at all), setting it up
+    if (dialogResult) {
+        // TODO debug "selected $configname $runnumber"
+        busy("Setting up network...");
+        // TODO inspectorList:addAll 1
+        env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
+        reflectRecordEventlog();
+        busy();
+
+        if (getSimulation()->getSystemModule() != nullptr) {
+            // tell plugins about it
+            busy("Notifying Tcl plugins...");
+            // TODO notifyPlugins newNetwork
+            busy();
+        }
+    }
+
+    delete dialog;
 }
 
 void MainWindow::runUntilMsg(cMessage *msg, int runMode)

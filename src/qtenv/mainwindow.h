@@ -81,6 +81,10 @@ public:
     void runUntilMsg(cMessage *msg, int runMode);
     void excludeMessageFromAnimation(cObject *msg);
 
+protected:
+    // if the parameter is true, the dialog will be shown even if there is only a single config
+    void setupConfiguration(bool forceDialog);
+
 public slots:
     void on_actionOneStep_triggered();
     bool on_actionQuit_triggered();
