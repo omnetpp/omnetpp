@@ -167,7 +167,7 @@ void OsgViewer::paintEvent(QPaintEvent *event)
 
 void OsgViewer::resizeEvent(QResizeEvent *event)
 {
-    if(osgCanvas)
+    if (osgCanvas)
         setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
     QWidget::resizeEvent(event);
 }
