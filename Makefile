@@ -52,7 +52,7 @@ endif
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv utils
-SAMPLES=aloha canvas canvas3d cqn dyna embedding embedding2 fifo google-earth osg-earth hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
+SAMPLES=aloha canvas canvas3d cqn dyna embedding embedding2 fifo google-earth osg-earth osg-indoor osg-satellites hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 # add systemc optionally
