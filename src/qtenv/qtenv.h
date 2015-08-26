@@ -259,7 +259,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       // on single click, only shows the object in the GenericObjectInspector
       void onSelectionChanged(cObject *object);
       // XXX could have a better name...
-      void onObjectPicked(cObject *object);
+      void onObjectDoubleClicked(cObject *object);
       // for context menu
       void inspect();
       void runUntilModule();

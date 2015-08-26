@@ -118,6 +118,7 @@ void Inspector::doSetObject(cObject *obj)
         if(findObjects)
             findObjects->setData(QVariant::fromValue(object));
         // note that doSetObject() is always followed by refresh(), see setObject()
+        emit inspectedObjectChanged(object);
     }
 }
 
@@ -219,7 +220,6 @@ void Inspector::goForward()
             historyBack.push_back(object);
         doSetObject(newObj);
         refresh();
-        emit objectPicked(newObj);
     }
 }
 
@@ -232,7 +232,6 @@ void Inspector::goBack()
             historyForward.push_back(object);
         doSetObject(newObj);
         refresh();
-        emit objectPicked(newObj);
     }
 }
 
@@ -245,7 +244,6 @@ void Inspector::inspectParent()
     //inspect in current inspector if possible (and allowed), otherwise open a new one
     if(supportsObject(parentPtr)) { //TODO && $config(reuse-inspectors)
         setObject(parentPtr);
-        emit objectPicked(parentPtr);
     }
     else
         getQtenv()->inspect(parentPtr);

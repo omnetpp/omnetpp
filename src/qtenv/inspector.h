@@ -158,6 +158,7 @@ class QTENV_API Inspector : public QWidget
       QToolBar *createToolBarToplevel();
 
    public slots:
+      virtual void setObject(cObject *object);
       virtual void goBack();
       virtual void goForward();
       virtual void inspectParent();
@@ -170,7 +171,8 @@ class QTENV_API Inspector : public QWidget
 
    signals:
       void selectionChanged(cObject *object);
-      void objectPicked(cObject *object);
+      void objectDoubleClicked(cObject *object);
+      void inspectedObjectChanged(cObject *object);
 
    public:
       typedef QPair<OPP::cObject*, int> ActionDataPair;
@@ -187,7 +189,6 @@ class QTENV_API Inspector : public QWidget
       virtual bool isToplevel() const {return isToplevelWindow;}
 
       virtual cObject *getObject() const {return object;}
-      virtual void setObject(cObject *object);
       virtual bool canGoForward();
       virtual bool canGoBack();
 

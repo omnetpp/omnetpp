@@ -58,7 +58,7 @@ class QTENV_API ModuleInspector : public Inspector
       void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);
       void createContextMenu(QContextMenuEvent *event);
-      void objectsPicked(const std::vector<cObject*>&);
+      void onObjectsPicked(const std::vector<cObject*>&);
 
       void layers();
       void toggleLabels();

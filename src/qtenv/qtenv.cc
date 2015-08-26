@@ -449,15 +449,7 @@ void Qtenv::doRun()
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
         mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
 
-        connect(mainTimeLine, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
-        connect(mainObjectTree, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
-        connect(mainLogView, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
-        connect(mainNetworkView, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
-
-        connect(mainInspector, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
-        connect(mainNetworkView, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
-        connect(mainLogView, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
-        connect(mainObjectTree, SIGNAL(objectPicked(cObject*)), this, SLOT(onObjectPicked(cObject *)));
+        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject*)), mainLogView, SLOT(setObject(cObject*)));
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -1028,6 +1020,10 @@ Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *paren
 {
     Inspector *insp = factory->createInspector(parent, false);
     inspectors.push_back(insp);
+
+    connect(insp, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
+    connect(insp, SIGNAL(objectDoubleClicked(cObject*)), this, SLOT(onObjectDoubleClicked(cObject *)));
+
     insp->refresh();
     return insp;
 }
@@ -1834,11 +1830,9 @@ void Qtenv::onSelectionChanged(cObject *object) {
     mainInspector->setObject(object);
 }
 
-void Qtenv::onObjectPicked(cObject *object) {
+void Qtenv::onObjectDoubleClicked(cObject *object) {
     if (cModule *module = dynamic_cast<cModule *>(object)) {
         mainNetworkView->setObject(module);
-        mainLogView->setObject(module);
-        mainInspector->setObject(module);
     } else {
         inspect(object, INSP_DEFAULT, true);
     }

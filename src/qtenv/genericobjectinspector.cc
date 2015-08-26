@@ -161,7 +161,7 @@ void GenericObjectInspector::mousePressEvent(QMouseEvent *event) {
 void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
     auto object = model->getCObjectPointer(index);
     if (object)
-        emit objectPicked(object);
+        emit objectDoubleClicked(object);
 }
 
 void GenericObjectInspector::onListActivated(QModelIndex index) {

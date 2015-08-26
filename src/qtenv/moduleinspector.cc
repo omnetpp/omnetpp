@@ -102,7 +102,7 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
 
     osgViewer = new OsgViewer();
 
-    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(objectsPicked(const std::vector<cObject*>&)));
+    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(onObjectsPicked(const std::vector<cObject*>&)));
 
     QToolBar *toolbar = createToolbar(isTopLevel);
     if(isTopLevel)
@@ -537,10 +537,15 @@ void ModuleInspector::click(QMouseEvent *event) {
 }
 
 void ModuleInspector::doubleClick(QMouseEvent *event) {
-    objectsPicked(canvasViewer->getObjectsAt(event->pos()));
+    auto objects = canvasViewer->getObjectsAt(event->pos());
+
+    if (!objects.empty()) {
+        setObject(objects.front());
+        emit objectDoubleClicked(objects.front());
+    }
 }
 
-void ModuleInspector::objectsPicked(const std::vector<cObject*>& objects)
+void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)
 {
     cObject *object = nullptr;
     for (auto &o : objects) {

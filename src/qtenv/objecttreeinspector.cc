@@ -99,7 +99,7 @@ void ObjectTreeInspector::onDoubleClick(QModelIndex index)
     if(index.isValid())
     {
         cObject *object = model->getObjectFromIndex(index);
-        emit objectPicked(object);
+        emit objectDoubleClicked(object);
     }
 }
 
