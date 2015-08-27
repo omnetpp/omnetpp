@@ -112,10 +112,10 @@ LogInspector::~LogInspector() {
 
 QToolBar *LogInspector::createToolbar(bool isTopLevel)
 {
-    QToolBar *toolBar;
+    QToolBar *toolBar = new QToolBar();
     if(isTopLevel)
     {
-        toolBar = createToolBarToplevel();
+        addTopLevelToolBarActions(toolBar);
 
         toolBar->addSeparator();
         toolBar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard (Ctrl+C)",
@@ -145,7 +145,6 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
     }
     else
     {
-        toolBar = new QToolBar();
         toolBar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard (Ctrl+C)",
                            textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
         toolBar->addAction(QIcon(":/tools/icons/tools/find.png"), "Find string in window (Ctrl+F)",

@@ -155,7 +155,7 @@ class QTENV_API Inspector : public QWidget
 
       void closeEvent(QCloseEvent *) override;
 
-      QToolBar *createToolBarToplevel();
+      void addTopLevelToolBarActions(QToolBar *toolbar);
 
    public slots:
       virtual void setObject(cObject *object);

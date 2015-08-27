@@ -98,7 +98,9 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     QVBoxLayout *layoutBox;
     if(isTopLevel)
     {
-        QToolBar *toolbar = createToolBarToplevel();
+        QToolBar *toolbar = new QToolBar();
+        addModeActions(toolbar);
+        addTopLevelToolBarActions(toolbar);
         layoutBox = new QVBoxLayout(this);
         layoutBox->addWidget(toolbar);
     }
@@ -125,7 +127,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     layoutBox->setMargin(0);
     parent->setMinimumSize(20, 20);
 
-    model = new GenericObjectTreeModel(nullptr, this);
+    setMode(mode);
 
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
@@ -140,6 +142,8 @@ QToolBar *GenericObjectInspector::createToolbar()
 {
     QToolBar *toolbar = new QToolBar();
 
+    addModeActions(toolbar);
+
     // general
     goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
     goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
@@ -148,6 +152,18 @@ QToolBar *GenericObjectInspector::createToolbar()
     toolbar->setAutoFillBackground(true);
 
     return toolbar;
+}
+
+void GenericObjectInspector::addModeActions(QToolBar *toolbar) {
+    // mode selection
+    toNormalModeAction = toolbar->addAction("N", this, SLOT(toNormalMode()));
+    toNormalModeAction->setCheckable(true);
+    toFlatModeAction = toolbar->addAction("F", this, SLOT(toFlatMode()));
+    toFlatModeAction->setCheckable(true);
+    toChildrenModeAction = toolbar->addAction("C", this, SLOT(toChildrenMode()));
+    toChildrenModeAction->setCheckable(true);
+    toInheritanceModeAction = toolbar->addAction("I", this, SLOT(toInheritanceMode()));
+    toInheritanceModeAction->setCheckable(true);
 }
 
 void GenericObjectInspector::mousePressEvent(QMouseEvent *event) {
@@ -183,10 +199,29 @@ void GenericObjectInspector::createContextMenu(QPoint pos) {
     }
 }
 
+void GenericObjectInspector::setMode(Mode mode)
+{
+    this->mode = mode;
+
+    toNormalModeAction->setChecked(false);
+    toFlatModeAction->setChecked(false);
+    toChildrenModeAction->setChecked(false);
+    toInheritanceModeAction->setChecked(false);
+
+    switch (mode) {
+    case NORMAL:      toNormalModeAction->setChecked(true);     break;
+    case FLAT:        toFlatModeAction->setChecked(true);       break;
+    case CHILDREN:    toChildrenModeAction->setChecked(true);   break;
+    case INHERITANCE: toInheritanceModeAction->setChecked(true);break;
+    }
+
+    doSetObject(object);
+}
+
 void GenericObjectInspector::doSetObject(cObject *obj) {
     Inspector::doSetObject(obj);
 
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, this);
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode != FLAT, this);
     treeView->setModel(newModel);
     treeView->reset();
 

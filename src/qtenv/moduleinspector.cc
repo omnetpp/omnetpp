@@ -128,13 +128,12 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
 
 QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 {
-    QToolBar *toolbar;
+    QToolBar *toolbar = new QToolBar();
 
     if(isTopLevel)
-        toolbar = createToolBarToplevel();
+        addTopLevelToolBarActions(toolbar);
     else
     {
-        toolbar = new QToolBar();
         // general
         goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
         goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));

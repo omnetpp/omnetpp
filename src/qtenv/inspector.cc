@@ -284,10 +284,8 @@ void Inspector::closeEvent(QCloseEvent *) {
     getQtenv()->deleteInspector(this);
 }
 
-QToolBar *Inspector::createToolBarToplevel()
+void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)
 {
-    QToolBar *toolbar = new QToolBar();
-
     // general
     goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
     goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
@@ -304,8 +302,6 @@ QToolBar *Inspector::createToolBarToplevel()
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     findObjects = toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find objects (CTRL+S)", mainWindow,
                        SLOT(on_actionFindInspectObjects_triggered()));
-
-    return toolbar;
 }
 
 void Inspector::inspectAsPopup()

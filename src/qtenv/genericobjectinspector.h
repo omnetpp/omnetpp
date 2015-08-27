@@ -18,7 +18,8 @@
 #define __OMNETPP_QTENV_GENERICOBJECTINSPECTOR_H
 
 #include "inspector.h"
-#include "genericobjecttreemodel.h"
+
+#include <QModelIndex>
 
 class QLabel;
 class QTreeView;
@@ -29,26 +30,50 @@ namespace omnetpp {
 namespace qtenv {
 
 class InspectorListBox;
+class GenericObjectTreeModel;
 
 class QTENV_API GenericObjectInspector : public Inspector
 {
     Q_OBJECT
 
+public:
+    enum Mode {
+        NORMAL,
+        FLAT,
+        CHILDREN,
+        INHERITANCE,
+        //PACKET
+    };
+
 protected:
       QLabel *icon, *name; // the top row
       QTabWidget *tabs;
       QTreeView *treeView;
-      GenericObjectTreeModel *model;
+      GenericObjectTreeModel *model = nullptr;
       InspectorListBox *listModel;
 
       void mousePressEvent(QMouseEvent *) override;
       QToolBar *createToolbar();
+      void addModeActions(QToolBar *toolbar);
+
+      Mode mode = FLAT;
+      QAction *toNormalModeAction;
+      QAction *toFlatModeAction;
+      QAction *toChildrenModeAction;
+      QAction *toInheritanceModeAction;
 
 protected slots:
       void onTreeViewActivated(QModelIndex index);
       void onListActivated(QModelIndex index);
       void onDataChanged();
       void createContextMenu(QPoint pos);
+
+      void setMode(Mode mode);
+
+      void toNormalMode()      { setMode(NORMAL);      }
+      void toFlatMode()        { setMode(FLAT);        }
+      void toChildrenMode()    { setMode(CHILDREN);    }
+      void toInheritanceMode() { setMode(INHERITANCE); }
 
 public:
       GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

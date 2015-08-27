@@ -151,7 +151,8 @@ CanvasInspector::~CanvasInspector()
 
 QToolBar *CanvasInspector::createToolbar()
 {
-    QToolBar *toolbar = createToolBarToplevel();
+    QToolBar *toolbar = new QToolBar(this);
+    addTopLevelToolBarActions(toolbar);
 
     toolbar->addSeparator();
 
