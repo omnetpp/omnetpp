@@ -221,6 +221,8 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     cOsgCanvas *osgCanvas = getOsgCanvas();
     setOsgCanvas(osgCanvas);
+
+    canvasViewer->recalcSceneRect(true);
 }
 
 cCanvas *ModuleInspector::getCanvas()

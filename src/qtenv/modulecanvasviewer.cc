@@ -32,6 +32,7 @@
 #include "submoduleitem.h"
 #include "arrow.h"
 #include <QGraphicsScene>
+#include <QScrollBar>
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -512,7 +513,8 @@ void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
     recalcSceneRect();
 }
 
-QRectF ModuleCanvasViewer::getSubmodulesRect() {
+QRectF ModuleCanvasViewer::getSubmodulesRect()
+{
     QRectF submodulesRect;
 
     if (submoduleGraphicsItems.empty()) {
@@ -531,7 +533,8 @@ QRectF ModuleCanvasViewer::getSubmodulesRect() {
     return submodulesRect;
 }
 
-void ModuleCanvasViewer::recalcSceneRect() {
+void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
+{
     if (compoundModuleItem) {
         auto rect = compoundModuleItem->boundingRect()
                       .united(getSubmodulesRect())
@@ -542,6 +545,18 @@ void ModuleCanvasViewer::recalcSceneRect() {
         double horizExcess = std::max(0.0, viewport()->width() - rect.width());
         double vertExcess = std::max(0.0, viewport()->height() - rect.height());
         setSceneRect(rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess));
+
+        if (alignTopLeft) {
+            horizontalScrollBar()->setValue(
+                        (horizExcess > 0)
+                          ? horizontalScrollBar()->maximum()
+                          : horizontalScrollBar()->minimum());
+
+            verticalScrollBar()->setValue(
+                        (vertExcess > 0)
+                          ? verticalScrollBar()->maximum()
+                          : verticalScrollBar()->minimum());
+        }
     }
 }
 

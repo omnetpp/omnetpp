@@ -103,7 +103,6 @@ protected:
     // only used to draw the zoom factor label in the bottom right corner
     void drawForeground(QPainter *painter, const QRectF &rect) override;
 
-    void recalcSceneRect();
     QRectF getSubmodulesRect();
 
 signals:
@@ -128,6 +127,7 @@ public:
 
     void redraw();
     void refresh();
+    void recalcSceneRect(bool alignTopLeft = false);
 
     void setZoomFactor(double zoomFactor);
     void setImageSizeFactor(double imageSizeFactor);
