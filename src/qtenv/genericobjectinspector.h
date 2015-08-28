@@ -53,7 +53,6 @@ protected:
       InspectorListBox *listModel;
 
       void mousePressEvent(QMouseEvent *) override;
-      QToolBar *createToolbar();
       void addModeActions(QToolBar *toolbar);
 
       Mode mode = GROUPED;

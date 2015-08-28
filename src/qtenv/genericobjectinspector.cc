@@ -95,26 +95,31 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     tabs->addTab(list, "Contents");
     tabs->setDocumentMode(true); // makes it prettier
 
-    QVBoxLayout *layoutBox;
-    if(isTopLevel)
-    {
-        QToolBar *toolbar = new QToolBar();
-        addModeActions(toolbar);
-        toolbar->addSeparator();
-        addTopLevelToolBarActions(toolbar);
-        layoutBox = new QVBoxLayout(this);
-        layoutBox->addWidget(toolbar);
-    }
-    else
-    {
-        QToolBar *toolbar = createToolbar();
-        QWidget *contentArea = new QWidget();
-        auto layout = new FloatingToolbarLayout(this);
-        layout->addWidget(contentArea);
-        layout->addWidget(toolbar);
-        layoutBox = new QVBoxLayout(contentArea);
+    QVBoxLayout *layoutBox = new QVBoxLayout(this);
+
+    QToolBar *toolbar = new QToolBar();
+
+    if (!isTopLevel) {
+        // aligning right
+        QWidget* spacer = new QWidget();
+        spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        toolbar->addWidget(spacer);
     }
 
+    addModeActions(toolbar);
+    toolbar->addSeparator();
+
+    if (isTopLevel) {
+        addTopLevelToolBarActions(toolbar);
+    } else {
+        goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
+        goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
+        goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    }
+
+    toolbar->setAutoFillBackground(true);
+
+    layoutBox->addWidget(toolbar);
     layoutBox->setMargin(0);
 
     auto titleLayout = new QHBoxLayout();
@@ -137,23 +142,6 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
 GenericObjectInspector::~GenericObjectInspector() {
     delete model;
-}
-
-QToolBar *GenericObjectInspector::createToolbar()
-{
-    QToolBar *toolbar = new QToolBar();
-
-    addModeActions(toolbar);
-    toolbar->addSeparator();
-
-    // general
-    goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
-    goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
-    goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
-
-    toolbar->setAutoFillBackground(true);
-
-    return toolbar;
 }
 
 void GenericObjectInspector::addModeActions(QToolBar *toolbar) {
