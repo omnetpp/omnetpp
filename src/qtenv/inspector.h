@@ -132,9 +132,10 @@ class QTENV_API Inspector : public QWidget
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       std::vector<cObject*> historyBack;
       std::vector<cObject*> historyForward;
-      QAction *goBackAction;
-      QAction *goForwardAction;
-      QAction *goUpAction;
+      QAction *goBackAction = nullptr;
+      QAction *goForwardAction = nullptr;
+      QAction *goUpAction = nullptr;
+      QAction *findObjects = nullptr;
 
    protected:
       virtual void refreshTitle();

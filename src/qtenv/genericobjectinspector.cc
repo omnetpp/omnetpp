@@ -196,14 +196,6 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
     delete model;
     model = newModel;
 
-    cObject *parentPtr = nullptr;
-    if(object)
-        parentPtr = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
-
-    goBackAction->setEnabled(canGoBack());
-    goForwardAction->setEnabled(canGoForward());
-    goUpAction->setEnabled(parentPtr);
-
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
 
     QVector<cObject*> children;

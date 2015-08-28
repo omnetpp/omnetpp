@@ -131,16 +131,14 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         addModeActions(toolBar);
 
         toolBar->addSeparator();
-        runUntilAction = new QAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", nullptr);
+        runUntilAction = toolBar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this,
+                                            SLOT(runUntil()));
         runUntilAction->setCheckable(true);
-        connect(runUntilAction, SIGNAL(toggled(bool)), this, SLOT(runUntil(bool)));
-        toolBar->addAction(runUntilAction);
 
-        fastRunUntilAction = new QAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)",
-                                         nullptr);
+        fastRunUntilAction = toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)",
+                                                this, SLOT(fastRunUntil()));
         fastRunUntilAction->setCheckable(true);
         fastRunUntilAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
-        connect(fastRunUntilAction, SIGNAL(toggled(bool)), this, SLOT(fastRunUntil(bool)));
 
         toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()))->setShortcut(
                     QKeySequence(Qt::Key_F8));
@@ -221,16 +219,20 @@ cComponent *LogInspector::getInspectedObject()
     return static_cast<cComponent*>(object);
 }
 
-void LogInspector::runUntil(bool isChecked)
+void LogInspector::runUntil()
 {
-    if(isChecked)
-        getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_NORMAL, nullptr, this);
+    runUntilAction->setEnabled(false);
+    getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_NORMAL, nullptr, this);
+    runUntilAction->setChecked(false);
+    runUntilAction->setEnabled(true);
 }
 
-void LogInspector::fastRunUntil(bool isChecked)
+void LogInspector::fastRunUntil()
 {
-    if(isChecked)
-        getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_FAST, nullptr, this);
+    fastRunUntilAction->setEnabled(false);
+    getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_FAST, nullptr, this);
+    fastRunUntilAction->setChecked(false);
+    fastRunUntilAction->setEnabled(true);
 }
 
 void LogInspector::stopSimulation()

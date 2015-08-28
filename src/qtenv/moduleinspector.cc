@@ -190,11 +190,6 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     cModule *module = dynamic_cast<cModule*>(obj);
 
-    goBackAction->setEnabled(canGoBack());
-    goForwardAction->setEnabled(canGoForward());
-    goUpAction->setEnabled(module && module->getParentModule());
-
-
     canvasViewer->setObject(module);
     canvasViewer->clear();
 

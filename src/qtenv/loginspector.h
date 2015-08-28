@@ -41,8 +41,8 @@ class QTENV_API LogInspector : public Inspector
       void addModeActions(QToolBar *toolBar);
 
    private slots:
-      void runUntil(bool isChecked);
-      void fastRunUntil(bool isChecked);
+      void runUntil();
+      void fastRunUntil();
       void stopSimulation();
 
    public:

@@ -115,6 +115,8 @@ void Inspector::doSetObject(cObject *obj)
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
+        if(findObjects)
+            findObjects->setData(QVariant::fromValue(object));
         // note that doSetObject() is always followed by refresh(), see setObject()
     }
 }
@@ -131,6 +133,16 @@ void Inspector::refresh()
 {
     if (isToplevelWindow)
         refreshTitle();
+
+    if(goBackAction)
+        goBackAction->setEnabled(canGoBack());
+    if(goForwardAction)
+        goForwardAction->setEnabled(canGoForward());
+    if(object && goUpAction)
+    {
+        cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+        goUpAction->setEnabled(parent);
+    }
 }
 
 void Inspector::refreshTitle()
@@ -149,7 +161,6 @@ void Inspector::refreshTitle()
         else
             sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
     }
-
     if (windowTitle != newTitle) {
         windowTitle = newTitle;
         setWindowTitle(windowTitle.c_str());
@@ -207,6 +218,7 @@ void Inspector::goForward()
         if (object != nullptr)
             historyBack.push_back(object);
         doSetObject(newObj);
+        refresh();
         emit objectPicked(newObj);
     }
 }
@@ -219,6 +231,7 @@ void Inspector::goBack()
         if (object != nullptr)
             historyForward.push_back(object);
         doSetObject(newObj);
+        refresh();
         emit objectPicked(newObj);
     }
 }
@@ -231,7 +244,7 @@ void Inspector::inspectParent()
 
     //inspect in current inspector if possible (and allowed), otherwise open a new one
     if(supportsObject(parentPtr)) { //TODO && $config(reuse-inspectors)
-        doSetObject(parentPtr);
+        setObject(parentPtr);
         emit objectPicked(parentPtr);
     }
     else
@@ -291,7 +304,7 @@ QToolBar *Inspector::createToolBarToplevel()
     // TODO find out position
     action->setData(QVariant::fromValue(toolbar->pos()));
     MainWindow *mainWindow = getQtenv()->getMainWindow();
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find objects (CTRL+S)", mainWindow,
+    findObjects = toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find objects (CTRL+S)", mainWindow,
                        SLOT(on_actionFindInspectObjects_triggered()));
 
     return toolbar;

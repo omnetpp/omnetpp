@@ -800,7 +800,8 @@ void MainWindow::on_actionStatusDetails_triggered()
 void MainWindow::on_actionFindInspectObjects_triggered()
 {
     // implements Find/inspect objects...
-    cObject *obj = getQtenv()->getMainObjectInspector()->getObject();
+    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
+    cObject *obj = variant.isValid() ? variant.value<cObject*>() : getQtenv()->getMainObjectInspector()->getObject();
     if(!filteredObjectListDialog)
         filteredObjectListDialog = new FilteredObjectListDialog(obj);
     else

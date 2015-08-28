@@ -45,9 +45,9 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     Q_OBJECT   // this *must* be in a header file to be noticed by the moc!
 
   protected:
-    cOsgCanvas *osgCanvas;
-    osgViewer::View *view;
-    QWidget *glWidget;
+    cOsgCanvas *osgCanvas = nullptr;
+    osgViewer::View *view = nullptr;
+    QWidget *glWidget = nullptr;
     QTimer timer;
 
   protected:
