@@ -255,6 +255,9 @@ void MainWindow::runSimulation(eMode mode)
         env->runSimulation(mode);
         setGuiForRunmode(NOT_RUNNING);
     }
+
+    if(runMode == Qtenv::eRunMode::RUNMODE_EXPRESS)
+        stopDialog->close();
 }
 
 // runNormal
