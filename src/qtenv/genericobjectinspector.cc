@@ -100,6 +100,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     {
         QToolBar *toolbar = new QToolBar();
         addModeActions(toolbar);
+        toolbar->addSeparator();
         addTopLevelToolBarActions(toolbar);
         layoutBox = new QVBoxLayout(this);
         layoutBox->addWidget(toolbar);
@@ -143,6 +144,7 @@ QToolBar *GenericObjectInspector::createToolbar()
     QToolBar *toolbar = new QToolBar();
 
     addModeActions(toolbar);
+    toolbar->addSeparator();
 
     // general
     goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
@@ -156,13 +158,13 @@ QToolBar *GenericObjectInspector::createToolbar()
 
 void GenericObjectInspector::addModeActions(QToolBar *toolbar) {
     // mode selection
-    toNormalModeAction = toolbar->addAction("N", this, SLOT(toNormalMode()));
-    toNormalModeAction->setCheckable(true);
-    toFlatModeAction = toolbar->addAction("F", this, SLOT(toFlatMode()));
+    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_grouped.png"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
+    toGroupedModeAction->setCheckable(true);
+    toFlatModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_flat.png"), "Switch to flat mode", this, SLOT(toFlatMode()));
     toFlatModeAction->setCheckable(true);
-    toChildrenModeAction = toolbar->addAction("C", this, SLOT(toChildrenMode()));
+    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_children.png"), "Switch to children mode UNIMPLEMENTED", this, SLOT(toChildrenMode()));
     toChildrenModeAction->setCheckable(true);
-    toInheritanceModeAction = toolbar->addAction("I", this, SLOT(toInheritanceMode()));
+    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_inher.png"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
     toInheritanceModeAction->setCheckable(true);
 }
 
@@ -203,13 +205,13 @@ void GenericObjectInspector::setMode(Mode mode)
 {
     this->mode = mode;
 
-    toNormalModeAction->setChecked(false);
+    toGroupedModeAction->setChecked(false);
     toFlatModeAction->setChecked(false);
     toChildrenModeAction->setChecked(false);
     toInheritanceModeAction->setChecked(false);
 
     switch (mode) {
-    case NORMAL:      toNormalModeAction->setChecked(true);     break;
+    case GROUPED:     toGroupedModeAction->setChecked(true);    break;
     case FLAT:        toFlatModeAction->setChecked(true);       break;
     case CHILDREN:    toChildrenModeAction->setChecked(true);   break;
     case INHERITANCE: toInheritanceModeAction->setChecked(true);break;
@@ -221,7 +223,7 @@ void GenericObjectInspector::setMode(Mode mode)
 void GenericObjectInspector::doSetObject(cObject *obj) {
     Inspector::doSetObject(obj);
 
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode == NORMAL, mode == INHERITANCE, this);
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode == GROUPED, mode == INHERITANCE, this);
     treeView->setModel(newModel);
     treeView->reset();
 

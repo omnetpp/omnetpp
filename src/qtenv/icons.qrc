@@ -82,5 +82,12 @@
         <file>icons/tools/vertical.png</file>
         <file>icons/tools/zoomin.png</file>
         <file>icons/tools/zoomout.png</file>
+        <file>icons/tools/treemode_auto.png</file>
+        <file>icons/tools/treemode_children.png</file>
+        <file>icons/tools/treemode_essentials.png</file>
+        <file>icons/tools/treemode_flat.png</file>
+        <file>icons/tools/treemode_grouped.png</file>
+        <file>icons/tools/treemode_inher.png</file>
+        <file>icons/tools/treemode_packet.png</file>
     </qresource>
 </RCC>

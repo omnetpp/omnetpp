@@ -38,7 +38,7 @@ class QTENV_API GenericObjectInspector : public Inspector
 
 public:
     enum Mode {
-        NORMAL,
+        GROUPED,
         FLAT,
         CHILDREN,
         INHERITANCE,
@@ -56,8 +56,8 @@ protected:
       QToolBar *createToolbar();
       void addModeActions(QToolBar *toolbar);
 
-      Mode mode = NORMAL;
-      QAction *toNormalModeAction;
+      Mode mode = GROUPED;
+      QAction *toGroupedModeAction;
       QAction *toFlatModeAction;
       QAction *toChildrenModeAction;
       QAction *toInheritanceModeAction;
@@ -70,7 +70,7 @@ protected slots:
 
       void setMode(Mode mode);
 
-      void toNormalMode()      { setMode(NORMAL);      }
+      void toGroupedMode()     { setMode(GROUPED);     }
       void toFlatMode()        { setMode(FLAT);        }
       void toChildrenMode()    { setMode(CHILDREN);    }
       void toInheritanceMode() { setMode(INHERITANCE); }
