@@ -25,16 +25,18 @@ void Model3d::initialize()
 {
     osg::Node* gliderScene = osgDB::readNodeFile("glider.osgb");
 
-    cOsgCanvas *osgCanvas = new cOsgCanvas("3d model");
+    cOsgCanvas *osgCanvas = getParentModule()->getOsgCanvas();
+    osgCanvas->setClearColor(cOsgCanvas::Color(135,206,235));  // sky blue
     osgCanvas->setScene(gliderScene);
 
-    cOsgCanvas *osgCanvas2 = new cOsgCanvas("3d model with hints");
+    cOsgCanvas *osgCanvas2 = new cOsgCanvas("3d model (120deg FOV)");
     osgCanvas2->setScene(gliderScene);
     osgCanvas2->setClearColor(cOsgCanvas::Color(0,64,0));
     osgCanvas2->setFieldOfViewAngle(120);
 
     // BOSTON EXAMPLE:
-    osg::Node* bostonScene = osgDB::readNodeFile("/usr/share/osgearth/maps/boston.earth");
+
+    osg::Node* bostonScene = osgDB::readNodeFile("/usr/share/osgearth/maps/boston.earth"); // FIXME hardcoded path
 
     cOsgCanvas *earthCanvas = new cOsgCanvas("boston", cOsgCanvas::STYLE_EARTH);
     earthCanvas->setScene(bostonScene);
@@ -42,10 +44,6 @@ void Model3d::initialize()
     cOsgCanvas *earthCanvas2 = new cOsgCanvas("boston-with-hints", cOsgCanvas::STYLE_EARTH);
     earthCanvas2->setScene(bostonScene);
     earthCanvas2->setClearColor(cOsgCanvas::Color(0,64,0));
-
-    cOsgCanvas *builtinOsgCanvas = getParentModule()->getOsgCanvas();
-    builtinOsgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);
-    builtinOsgCanvas->setScene(bostonScene);
 }
 
 void Model3d::handleMessage(cMessage *msg)
