@@ -221,7 +221,7 @@ void GenericObjectInspector::setMode(Mode mode)
 void GenericObjectInspector::doSetObject(cObject *obj) {
     Inspector::doSetObject(obj);
 
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode != FLAT, this);
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode == NORMAL, mode == INHERITANCE, this);
     treeView->setModel(newModel);
     treeView->reset();
 
@@ -283,7 +283,10 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     if (iconData.isValid()) {
         textOffset += option.decorationSize.width();
         QIcon icon = iconData.value<QIcon>();
-        painter->drawImage(option.rect.topLeft(), icon.pixmap(option.decorationSize).toImage());
+        painter->drawImage(option.rect.topLeft()
+                             + QPointF(0, option.rect.height() / 2.0
+                                          - option.decorationSize.height() / 2.0),
+                           icon.pixmap(option.decorationSize).toImage());
     }
 
     //Text from item

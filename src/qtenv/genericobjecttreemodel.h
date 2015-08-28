@@ -47,10 +47,8 @@ class GenericObjectTreeModel : public QAbstractItemModel
     QSet<QString> getExpandedNodesIn(QTreeView *view, const QModelIndex &index);
     void expandNodesIn(QTreeView *view, const QSet<QString> &ids, const QModelIndex &index);
 
-    bool grouping = true;
-
 public:
-    explicit GenericObjectTreeModel(cObject *object, bool grouping, QObject *parent = nullptr);
+    explicit GenericObjectTreeModel(cObject *object, bool grouping, bool inheritance, QObject *parent = nullptr);
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;
@@ -72,6 +70,6 @@ public:
 
 // this is needed to wrap the HighlightRange into a QVariant
 // according to the Qt docs, this must not be in a namespace
-Q_DECLARE_METATYPE(omnetpp::qtenv::HighlightRange);
+Q_DECLARE_METATYPE(omnetpp::qtenv::HighlightRange)
 
 #endif // __OMNETPP_QTENV_GENERICOBJECTTREEMODEL_H

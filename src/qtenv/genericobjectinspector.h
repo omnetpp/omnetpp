@@ -56,7 +56,7 @@ protected:
       QToolBar *createToolbar();
       void addModeActions(QToolBar *toolbar);
 
-      Mode mode = FLAT;
+      Mode mode = NORMAL;
       QAction *toNormalModeAction;
       QAction *toFlatModeAction;
       QAction *toChildrenModeAction;

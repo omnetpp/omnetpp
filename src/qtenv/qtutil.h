@@ -175,6 +175,7 @@ class QTENV_API cFindByPathVisitor : public OPP::envir::cCollectObjectsVisitor
 //
 // Utility functions:
 //
+const char *stripNamespace(const char *className);
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 
