@@ -18,6 +18,7 @@
 
 #include <QDebug>
 #include <set>
+#include "envir/visitor.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -46,6 +47,7 @@ protected:
     // these will query the respective options from the root
     virtual bool groupingEnabled();
     virtual bool inheritanceEnabled();
+    virtual bool childrenModeEnabled();
 
     // these are nullptrs only in the root node
     void *containingObject = nullptr; // may or may not be a cObject, so we need the descriptor for it
@@ -54,6 +56,7 @@ protected:
     void addObjectChildren(void *of, cClassDescriptor *desc, bool excludeInherited = false);
 
     static cClassDescriptor *getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
+    static QVariant getDefaultObjectData(cObject *object, int role);
 
 public:
     TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc);
@@ -93,18 +96,28 @@ public:
     QString getNodeIdentifier();
 };
 
+class ChildObjectNode : public TreeNode {
+    cObject *object;
+protected:
+    void fill() override;
+
+public:
+    ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object);
+    QVariant data(int role) override;
+    QString getNodeIdentifier() override;
+    cObject *getCObjectPointer() override;
+};
+
 
 class FieldNode : public TreeNode {
 protected:
-    // which field are we in the container. for the root it is -1
-    int fieldIndex = -1;
+    int fieldIndex = 0;
 
     void *object = nullptr;
     cClassDescriptor *desc = nullptr;
 
     void fill() override;
 public:
-    // only use this to create the root node for the model!
     FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex);
 
     QVariant data(int role) override;
@@ -120,14 +133,16 @@ class RootNode : public TreeNode {
 
     bool grouping = true;
     bool inheritance = false;
+    bool childrenMode = false;
 
 protected:
     bool groupingEnabled() override;
     bool inheritanceEnabled() override;
+    bool childrenModeEnabled() override;
     void fill() override;
 
 public:
-    RootNode(cObject *object, bool grouping, bool inheritance);
+    RootNode(cObject *object, bool grouping, bool inheritance, bool childrenMode);
     QVariant data(int role) override;
     QString getNodeIdentifier() override;
     cObject *getCObjectPointer() override;
@@ -182,8 +197,8 @@ void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> 
     }
 }
 
-GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, bool grouping, bool inheritance, QObject *parent) :
-    QAbstractItemModel(parent), rootNode(new RootNode(object, grouping, inheritance))
+GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, bool grouping, bool inheritance, bool childrenMode, QObject *parent) :
+    QAbstractItemModel(parent), rootNode(new RootNode(object, grouping, inheritance, childrenMode))
 {
 }
 
@@ -272,6 +287,11 @@ bool TreeNode::inheritanceEnabled() {
     return parent->inheritanceEnabled();
 }
 
+bool TreeNode::childrenModeEnabled() {
+    // the RootNode terminates this recursion by overriding this function
+    return parent->childrenModeEnabled();
+}
+
 // the ArrayElementNode contains the children of the element itself
 // but the object pointer in those nodes point to the object that
 // contains the array itself, so we need this parameter
@@ -280,26 +300,36 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
         return;
     }
 
-    if (inheritanceEnabled() && !excludeInherited) {
-        for (int i = desc->getInheritanceChainLength() - 1; i >= 0; --i) {
-            children.push_back(new SuperClassNode(this, i, of, desc, i));
+    if (childrenModeEnabled()) {
+        envir::cCollectChildrenVisitor visitor((cObject*)of);
+        visitor.process((cObject*)of);
+
+        cObject **objs = visitor.getArray();
+        for (int i = 0; i < visitor.getArraySize(); ++i) {
+            children.push_back(new ChildObjectNode(this, i, of, desc, objs[i]));
         }
     } else {
-        int childIndex = 0;
-        auto base = desc->getBaseClassDescriptor();
-        std::set<std::string> groupNames;
-        for (int i = excludeInherited && base ? base->getFieldCount() : 0; i < desc->getFieldCount(); ++i) {
-            const char *groupName = desc->getFieldProperty(i, "group");
-            if (groupingEnabled() && groupName) {
-                groupNames.insert(groupName);
-            } else {
-                children.push_back(new FieldNode(this, childIndex++, of, desc, i));
+        if (inheritanceEnabled() && !excludeInherited) {
+            for (int i = desc->getInheritanceChainLength() - 1; i >= 0; --i) {
+                children.push_back(new SuperClassNode(this, i, of, desc, i));
             }
-        }
+        } else {
+            int childIndex = 0;
+            auto base = desc->getBaseClassDescriptor();
+            std::set<std::string> groupNames;
+            for (int i = excludeInherited && base ? base->getFieldCount() : 0; i < desc->getFieldCount(); ++i) {
+                const char *groupName = desc->getFieldProperty(i, "group");
+                if (groupingEnabled() && groupName) {
+                    groupNames.insert(groupName);
+                } else {
+                    children.push_back(new FieldNode(this, childIndex++, of, desc, i));
+                }
+            }
 
-        if (groupingEnabled()) {
-            for (auto &name : groupNames) {
-                children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name));
+            if (groupingEnabled()) {
+                for (auto &name : groupNames) {
+                    children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name));
+                }
             }
         }
     }
@@ -316,6 +346,21 @@ cClassDescriptor *TreeNode::getDescriptorForField(void *object, cClassDescriptor
     }
 
     return fieldDesc;
+}
+
+QVariant TreeNode::getDefaultObjectData(cObject *object, int role) {
+    switch (role) {
+    case Qt::DecorationRole:
+        return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(object))) : QVariant();
+    case Qt::ToolTipRole:
+    case Qt::DisplayRole:
+        return object
+                 ? QString(object->getFullName())
+                   + " (" + getObjectShortTypeName(object) + ")"
+                   : "no object selected";
+    default:
+        return QVariant();
+    }
 }
 
 
@@ -370,6 +415,7 @@ TreeNode::~TreeNode() {
     }
 }
 
+
 SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex)
     : TreeNode(parent, indexInParent, contObject, contDesc), superClassIndex(superClassIndex) {
     superDesc = containingDesc;
@@ -398,6 +444,38 @@ QString SuperClassNode::getNodeIdentifier() {
 }
 
 
+ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object)
+    : TreeNode(parent, indexInParent, contObject, contDesc), object(object) {
+
+}
+
+QVariant ChildObjectNode::data(int role) {
+    QString defaultText = getDefaultObjectData(object, Qt::DisplayRole).value<QString>();
+    QString infoText = object->info().c_str();
+    switch (role) {
+    case Qt::DisplayRole:
+        return defaultText + (infoText.isEmpty() ? "" : (QString(" ") + infoText));
+    case Qt::UserRole:
+        return QVariant::fromValue(HighlightRange{defaultText.length(), infoText.isEmpty() ? 0 : infoText.length() + 1});
+    default:
+        return getDefaultObjectData(object, role);
+    }
+}
+
+QString ChildObjectNode::getNodeIdentifier() {
+    return (parent ? parent->getNodeIdentifier() + "|" : "")
+            + QString("%1{%3}").arg(voidPtrToStr(containingObject)).arg(object->getClassName());
+}
+
+cObject *ChildObjectNode::getCObjectPointer() {
+    return object;
+}
+
+void ChildObjectNode::fill() {
+    addObjectChildren(object, cClassDescriptor::getDescriptorFor(object));
+}
+
+
 FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex)
     : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex) {
     if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
@@ -420,29 +498,8 @@ void FieldNode::fill() {
 QVariant FieldNode::data(int role) {
     cObject *objectCasted = nullptr;
 
-    // if no containingDesc, then this the root, which must be cObject
-    if (!containingDesc || containingDesc->getFieldIsCObject(fieldIndex)) {
-        objectCasted = static_cast<cObject *>(object);
-    }
-
     if ((role == Qt::DecorationRole) && objectCasted) {
         return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(objectCasted))) : QVariant();
-    }
-
-    if (!containingDesc) {
-        // this is the root object, so it can't have "field name", and it must be a cObject
-        switch (role) {
-        case Qt::ToolTipRole:
-        case Qt::DisplayRole: {
-            QString value = object
-                             ? QString(objectCasted->getFullName())
-                                + " (" + getObjectShortTypeName(objectCasted) + ")"
-                             : "no object selected";
-            return value;
-        }
-        default:
-            return QVariant();
-        }
     }
 
     // the rest is for the regular, non-root nodes
@@ -543,30 +600,23 @@ bool RootNode::inheritanceEnabled() {
     return inheritance;
 }
 
+bool RootNode::childrenModeEnabled() {
+    return childrenMode;
+}
+
 void RootNode::fill() {
     if (object)
         addObjectChildren(object, cClassDescriptor::getDescriptorFor(object), false);
 }
 
-RootNode::RootNode(cObject *object, bool grouping, bool inheritance)
-    : TreeNode(nullptr, 0, nullptr, nullptr), object(object), grouping(grouping), inheritance(inheritance) {
+RootNode::RootNode(cObject *object, bool grouping, bool inheritance, bool childrenMode)
+    : TreeNode(nullptr, 0, nullptr, nullptr), object(object),
+      grouping(grouping), inheritance(inheritance), childrenMode(childrenMode) {
 
 }
 
-QVariant RootNode::data(int role)
-{
-    switch (role) {
-    case Qt::DecorationRole:
-        return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(object))) : QVariant();
-    case Qt::ToolTipRole:
-    case Qt::DisplayRole:
-        return object
-                 ? QString(object->getFullName())
-                   + " (" + getObjectShortTypeName(object) + ")"
-                   : "no object selected";
-    default:
-        return QVariant();
-    }
+QVariant RootNode::data(int role) {
+    return getDefaultObjectData(object, role);
 }
 
 QString RootNode::getNodeIdentifier() {
