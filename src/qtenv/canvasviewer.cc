@@ -83,7 +83,7 @@ void CanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
     // moving the whole thing 2 pixels to the left and up as spacing
     // and also adding 2 pixels to the left and right inside the grey area as margin
     // then the painter is in scene coords, so we have to map, and convert back to Rect
-    QRectF textRect = mapToScene(viewportSize.width() - textSize.width() - 6,
+    textRect = mapToScene(viewportSize.width() - textSize.width() - 6,
                                viewportSize.height() - textSize.height() - 2,
                                textSize.width() + 4, textSize.height()).boundingRect();
 
@@ -92,6 +92,13 @@ void CanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
     painter->drawText(textRect.bottomLeft() + QPoint(2, - fontMetrics.descent()), text);
 
     painter->restore();
+}
+
+void CanvasViewer::scrollContentsBy(int dx, int dy)
+{
+    //TODO fix zoom label refresh
+    scene()->invalidate(textRect);
+    QGraphicsView::scrollContentsBy(dx, dy);
 }
 
 void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)

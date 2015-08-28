@@ -43,7 +43,7 @@ class QTENV_API CanvasInspector : public Inspector
       void zoomIn();
       void zoomOut();
       void onClick(QMouseEvent *event);
-      void createContextMenu(QContextMenuEvent *event);
+      void onContextMenuRequested(QContextMenuEvent *event);
 
    public slots:
       virtual void redraw() override;

@@ -41,6 +41,7 @@ private:
     cCanvas *object;
     CanvasRenderer *canvasRenderer;
     double zoomFactor = 1;
+    QRectF textRect;
 
     GraphicsLayer *figureLayer;
 
@@ -52,6 +53,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent * event) override;
     // only used to draw the zoom factor label in the bottom right corner
     void drawForeground(QPainter *painter, const QRectF &rect) override;
+    void scrollContentsBy(int dx, int dy) override;
 
 signals:
     void click(QMouseEvent*);

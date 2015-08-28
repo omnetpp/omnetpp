@@ -104,6 +104,9 @@ void CanvasInspector::doSetObject(cObject *obj)
     Inspector::doSetObject(obj);
 
     canvasViewer->setObject(getCanvas());
+    QVariant zoomFactorVariant = getQtenv()->getPref(object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor");
+    double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
+    canvasViewer->setZoomFactor(zoomFactor);
 
     if (object)
         redraw();
@@ -186,7 +189,7 @@ void CanvasInspector::onClick(QMouseEvent *event) {
         getQtenv()->onSelectionChanged(objects.front());
 }
 
-void CanvasInspector::createContextMenu(QContextMenuEvent *event)
+void CanvasInspector::onContextMenuRequested(QContextMenuEvent *event)
 {
     std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
 
