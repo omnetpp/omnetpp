@@ -23,13 +23,11 @@
 
 class QLabel;
 class QTreeView;
-class QTabWidget;
 class QToolBar;
 
 namespace omnetpp {
 namespace qtenv {
 
-class InspectorListBox;
 class GenericObjectTreeModel;
 
 class QTENV_API GenericObjectInspector : public Inspector
@@ -46,11 +44,8 @@ public:
     };
 
 protected:
-      QLabel *icon, *name; // the top row
-      QTabWidget *tabs;
       QTreeView *treeView;
       GenericObjectTreeModel *model = nullptr;
-      InspectorListBox *listModel;
 
       void mousePressEvent(QMouseEvent *) override;
       void addModeActions(QToolBar *toolbar);
@@ -63,7 +58,6 @@ protected:
 
 protected slots:
       void onTreeViewActivated(QModelIndex index);
-      void onListActivated(QModelIndex index);
       void onDataChanged();
       void createContextMenu(QPoint pos);
 

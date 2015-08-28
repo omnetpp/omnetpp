@@ -25,8 +25,6 @@
 #include "genericobjectinspector.h"
 #include "genericobjecttreemodel.h"
 #include "inspectorutil.h"
-#include "inspectorlistbox.h"
-#include "inspectorlistboxview.h"
 #include "envir/objectprinter.h"
 #include "envir/visitor.h"
 #include <QTreeView>
@@ -36,8 +34,6 @@
 #include <QPainter>
 #include <QTextLayout>
 #include <QMessageBox>
-#include <QTableWidget>
-#include <QLabel>
 
 #define emit
 
@@ -74,29 +70,11 @@ public:
 // ---- GenericObjectInspector implementation ----
 
 GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f) {
-    icon = new QLabel(this);
-    name = new QLabel("N/A", this);
-
     treeView = new QTreeView(this);
     treeView->setHeaderHidden(true);
     treeView->setItemDelegate(new HighlighterItemDelegate());
 
-    listModel = new InspectorListBox();
-    InspectorListBoxView *list = new InspectorListBoxView(this);
-    list->setModel(listModel);
-    list->setColumnWidth(0, 75);
-    list->setColumnWidth(1, 75);
-    list->setColumnWidth(2, 0);
-
-    connect(list, SIGNAL(activated(QModelIndex)), this, SLOT(onListActivated(QModelIndex)));
-
-    tabs = new QTabWidget(this);
-    tabs->addTab(treeView, "Fields");
-    tabs->addTab(list, "Contents");
-    tabs->setDocumentMode(true); // makes it prettier
-
-    QVBoxLayout *layoutBox = new QVBoxLayout(this);
-
+    QVBoxLayout *layout = new QVBoxLayout(this);
     QToolBar *toolbar = new QToolBar();
 
     if (!isTopLevel) {
@@ -119,18 +97,9 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     toolbar->setAutoFillBackground(true);
 
-    layoutBox->addWidget(toolbar);
-    layoutBox->setMargin(0);
-
-    auto titleLayout = new QHBoxLayout();
-    titleLayout->setMargin(0);
-
-    titleLayout->addWidget(icon);
-    titleLayout->addWidget(name, 1);
-
-    layoutBox->addLayout(titleLayout);
-    layoutBox->addWidget(tabs, 1);
-    layoutBox->setMargin(0);
+    layout->addWidget(toolbar);
+    layout->addWidget(treeView, 1);
+    layout->setMargin(0);
     parent->setMinimumSize(20, 20);
 
     setMode(mode);
@@ -168,10 +137,6 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
     auto object = model->getCObjectPointer(index);
     if (object)
         emit objectDoubleClicked(object);
-}
-
-void GenericObjectInspector::onListActivated(QModelIndex index) {
-    setObject(index.data(Qt::UserRole).value<cObject*>());
 }
 
 void GenericObjectInspector::onDataChanged() {
@@ -222,25 +187,6 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
     model = newModel;
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
-
-    QVector<cObject*> children;
-
-    if (obj) {
-        cCollectChildrenVisitor visitor(obj);
-        visitor.process(obj);
-
-        for (int i = 0; i < visitor.getArraySize(); ++i)
-            children.push_back(visitor.getArray()[i]);
-
-        name->setText(obj->getFullName());
-        icon->setPixmap(QPixmap(":/objects/icons/objects/" + getObjectIcon(obj)));
-    } else {
-        name->setText("N/A");
-        icon->setPixmap(QPixmap(":/objects/icons/objects/none_vs"));
-    }
-
-    listModel->setObjects(children);
-    tabs->setTabText(1, QString("Contents (%1)").arg(children.size()));
 }
 
 void GenericObjectInspector::refresh() {
