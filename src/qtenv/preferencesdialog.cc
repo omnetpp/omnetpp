@@ -135,9 +135,9 @@ void PreferencesDialog::accept()
     getQtenv()->opt->printInitBanners = ui->initBanners->isChecked();
     getQtenv()->opt->shortBanners = ui->shortBanners->isChecked();
 
-    const char *logFormat = ui->logPrefix->text().toStdString().c_str();
-    getQtenv()->setLogFormat(logFormat);
-    getQtenv()->opt->logFormat = logFormat;
+    std::string logFormat = ui->logPrefix->text().toStdString();
+    getQtenv()->setLogFormat(logFormat.c_str());
+    getQtenv()->opt->logFormat = logFormat.c_str();
 
     LogLevel logLevel = LogLevel(ui->logLevel->currentIndex());
     getQtenv()->opt->logLevel = logLevel;
