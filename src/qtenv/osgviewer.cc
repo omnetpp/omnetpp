@@ -152,8 +152,7 @@ QWidget *OsgViewer::addViewWidget()
     traits->doubleBuffer = true;
     traits->alpha = ds->getMinimumNumAlphaBits();
     traits->stencil = ds->getMinimumNumStencilBits();
-    traits->sampleBuffers = ds->getMultiSamples();
-    traits->samples = ds->getNumMultiSamples();
+    traits->samples = 4;  // TODO should come from a hint
 
     osgQt::GraphicsWindowQt *graphicsWindow = new osgQt::GraphicsWindowQt(traits.get());
     camera->setGraphicsContext(graphicsWindow);
