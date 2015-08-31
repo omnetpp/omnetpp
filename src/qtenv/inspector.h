@@ -53,38 +53,38 @@ int insptypeCodeFromName(const char *namestr);
  * Layout that manages two children: a client that completely fills the
  * parent; and a toolbar that flots over the client in the top-right corner.
  */
-class FloatingToolbarLayout : public QLayout
+class FloatingLayout : public QLayout
 {
 public:
-    FloatingToolbarLayout(): QLayout(), child(nullptr), toolbar(nullptr) {}
-    FloatingToolbarLayout(QWidget *parent): QLayout(parent), child(nullptr), toolbar(nullptr) {}
-    ~FloatingToolbarLayout() {
+    FloatingLayout(): QLayout(), child(nullptr), floatingItem(nullptr) {}
+    FloatingLayout(QWidget *parent): QLayout(parent), child(nullptr), floatingItem(nullptr) {}
+    ~FloatingLayout() {
         delete child;
-        delete toolbar;
+        delete floatingItem;
     }
 
     void addItem(QLayoutItem *item) {
         if (!child) child = item;
-        else if (!toolbar) toolbar = item;
+        else if (!floatingItem) floatingItem = item;
         else throw std::runtime_error("only two items are accepted");
     }
 
     int count() const {
         if (!child) return 0;
-        else if (!toolbar) return 1;
+        else if (!floatingItem) return 1;
         else return 2;
     }
 
     QLayoutItem *itemAt(int i) const {
         if (i==0) return child;
-        else if (i==1) return toolbar;
+        else if (i==1) return floatingItem;
         else return nullptr;
     }
 
     QLayoutItem *takeAt(int i) {
         QLayoutItem *result = nullptr;
-        if (i==1) {result = toolbar; toolbar = nullptr;}
-        else if (i==0) {result = child; child = toolbar; toolbar = nullptr;}
+        if (i==1) {result = floatingItem; floatingItem = nullptr;}
+        else if (i==0) {result = child; child = floatingItem; floatingItem = nullptr;}
         else throw std::runtime_error("illegal index, must be 0 or 1");
         return result;
     }
@@ -99,21 +99,31 @@ public:
         else return QSize(0,0);
     }
 
+protected:
+    QLayoutItem *child;
+    QLayoutItem *floatingItem;
+};
+
+
+class FloatingToolbarLayout : public FloatingLayout
+{
+private:
+    const int dx = 5, dy = 5; // toolbar distance from edges
+
+public:
+    FloatingToolbarLayout(): FloatingLayout() {}
+    FloatingToolbarLayout(QWidget *parent): FloatingLayout(parent) {}
+
     void setGeometry(const QRect &rect) {
         if (child)
             child->setGeometry(rect); // margin?
-        if (toolbar) {
-            QSize size = toolbar->sizeHint();
+        if (floatingItem) {
+            QSize size = floatingItem->sizeHint();
             int x = std::max(dx, rect.width() - size.width() - dx);
             int width = std::min(rect.width() - 2*dx, size.width());
-            toolbar->setGeometry(QRect(x, dy, width, size.height()));
+            floatingItem->setGeometry(QRect(x, dy, width, size.height()));
         }
     }
-
-private:
-    QLayoutItem *child;
-    QLayoutItem *toolbar;
-    const int dx = 5, dy = 5; // toolbar distance from edges
 };
 
 /**

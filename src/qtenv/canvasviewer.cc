@@ -67,40 +67,6 @@ void CanvasViewer::contextMenuEvent(QContextMenuEvent * event)
     emit contextMenuRequested(event);
 }
 
-void CanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
-    painter->save();
-
-    auto font = painter->font();
-    font.setBold(true);
-    painter->setFont(font);
-
-    QString text = "Zoom: " + QString::number(zoomFactor, 'f', 2) + "x";
-    QFontMetrics fontMetrics(painter->font());
-
-    QSize textSize = fontMetrics.boundingRect(text).size();
-    QSize viewportSize = viewport()->size();
-
-    // moving the whole thing 2 pixels to the left and up as spacing
-    // and also adding 2 pixels to the left and right inside the grey area as margin
-    // then the painter is in scene coords, so we have to map, and convert back to Rect
-    textRect = mapToScene(viewportSize.width() - textSize.width() - 6,
-                               viewportSize.height() - textSize.height() - 2,
-                               textSize.width() + 4, textSize.height()).boundingRect();
-
-    painter->fillRect(textRect, QColor("lightgrey"));
-    // moving 2 pixels to the right and accounting for font descent, since the y coord is the baseline
-    painter->drawText(textRect.bottomLeft() + QPoint(2, - fontMetrics.descent()), text);
-
-    painter->restore();
-}
-
-void CanvasViewer::scrollContentsBy(int dx, int dy)
-{
-    //TODO fix zoom label refresh
-    scene()->invalidate(textRect);
-    QGraphicsView::scrollContentsBy(dx, dy);
-}
-
 void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
     QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
@@ -160,14 +126,6 @@ void CanvasViewer::refresh()
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
     getCanvasRenderer()->refresh(&hints);
-}
-
-void CanvasViewer::setZoomFactor(double zoomFactor) {
-    if (this->zoomFactor != zoomFactor) {
-        this->zoomFactor = zoomFactor;
-        redraw();
-        viewport()->update();
-    }
 }
 
 void CanvasViewer::clear()

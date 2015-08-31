@@ -45,6 +45,72 @@ using namespace OPP::common;
 namespace omnetpp {
 namespace qtenv {
 
+class ZoomLabelLayout : public FloatingLayout
+{
+public:
+    ZoomLabelLayout(): FloatingLayout() {}
+    ZoomLabelLayout(QWidget *parent): FloatingLayout(parent) {}
+
+    void setGeometry(const QRect &rect) {
+        if (child)
+            child->setGeometry(rect); // margin?
+        if (floatingItem) {
+            QWidget *widget = static_cast<QWidgetItem*>(floatingItem)->widget();
+            QSize size = widget->sizeHint();
+
+            //TODO set position when scrollbar is visible
+            floatingItem->setGeometry(QRect(rect.width() - size.width() - 6, rect.height() - size.height() - 4,
+                                            size.width(), size.height()));
+        }
+    }
+};
+
+class ZoomLabel : public QGraphicsView
+{
+private:
+    QFont font;
+    double zoomFactor;
+    QSize rectSize;
+
+public:
+    ZoomLabel(QFont font) : font(font)
+    {
+        this->font.setBold(true);
+        setScene(new QGraphicsScene());
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
+
+    void setZoomFactor(double zoomFactor)
+    {
+        if(this->zoomFactor == zoomFactor)
+            return;
+
+        scene()->clear();
+
+        QString text = "Zoom: " + QString::number(zoomFactor, 'f', 2) + "x";
+        QFontMetrics fontMetrics(font);
+
+        QSize textSize = fontMetrics.boundingRect(text).size();
+
+        QColor lightGrey = QColor("lightgrey");
+        QRectF textRect(0, 0, textSize.width() + 4, textSize.height());
+        rectSize = QSize(textSize.width() + 6, textSize.height() + 2);
+
+        scene()->addRect(textRect, QPen(lightGrey), QBrush(lightGrey));
+        // moving 2 pixels to the right and accounting for font descent, since the y coord is the baseline
+        QGraphicsTextItem *textItem = scene()->addText(text, font);
+        textItem->setPos(QPointF(2, - fontMetrics.descent() - 1));
+
+        scene()->setSceneRect(textRect);
+    }
+
+    QSize sizeHint() const {
+        return rectSize;
+    }
+};
+
+
 class CanvasInspectorFactory : public InspectorFactory
 {
   public:
@@ -63,10 +129,17 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     canvasViewer = new CanvasViewer();
     canvasViewer->setRenderHint(QPainter::Antialiasing);
 
-    auto layout = new QVBoxLayout(this);
-    layout->addWidget(createToolbar());
-    layout->addWidget(canvasViewer);
-    layout->setMargin(0);
+    zoomLabel = new ZoomLabel(canvasViewer->scene()->font());
+
+    QWidget *contentArea = new QWidget();
+    auto layout = new ZoomLabelLayout(this);
+    layout->addWidget(contentArea);
+    layout->addWidget(zoomLabel);
+
+    auto contentLayout = new QVBoxLayout(contentArea);
+    contentLayout->addWidget(createToolbar());
+    contentLayout->addWidget(canvasViewer);
+    contentLayout->setMargin(0);
 
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(onClick(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(onContextMenuRequested(QContextMenuEvent*)));
@@ -106,7 +179,7 @@ void CanvasInspector::doSetObject(cObject *obj)
     canvasViewer->setObject(getCanvas());
     QVariant zoomFactorVariant = getQtenv()->getPref(object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor");
     double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
-    canvasViewer->setZoomFactor(zoomFactor);
+    zoomLabel->setZoomFactor(zoomFactor);
 
     if (object)
         redraw();
@@ -178,7 +251,7 @@ void CanvasInspector::zoomBy(double mult)
         }*/
 
         getQtenv()->setPref(prefName, newZoomFactor);
-        canvasViewer->setZoomFactor(newZoomFactor);
+        zoomLabel->setZoomFactor(newZoomFactor);
         redraw();
     }
 }

@@ -26,11 +26,14 @@ class cCanvas;
 namespace qtenv {
 
 class CanvasViewer;
+class ZoomLabel;
 
 class QTENV_API CanvasInspector : public Inspector
 {
    Q_OBJECT
    private:
+      ZoomLabel *zoomLabel;
+
       void zoomBy(double mult);
 
    protected:
