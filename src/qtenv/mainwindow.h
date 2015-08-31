@@ -75,7 +75,7 @@ public:
 
     //menuproc.tcl
     bool isRunning();
-    void setGuiForRunmode(eMode mode, Inspector *insp = nullptr, bool untilMode = false);
+    void setGuiForRunmode(eMode mode, bool untilMode = false);
     void setRunUntilModule(Inspector *insp = nullptr);
     bool networkReady();
     void runUntilMsg(cMessage *msg, int runMode);
@@ -139,6 +139,9 @@ private:
     void restoreSplitter(QString prefName, QSplitter *splitter);
 
     void reflectRecordEventlog();
+
+    void showStopDialog();
+    void closeStopDialog();
 };
 
 } // namespace qtenv

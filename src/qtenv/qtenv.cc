@@ -2040,7 +2040,7 @@ void Qtenv::runSimulationLocal(int runMode, cObject *object, Inspector *insp)
     else {
         if (!mainWindow->networkReady())
             return;
-        mainWindow->setGuiForRunmode(mode, insp);
+        mainWindow->setGuiForRunmode(mode);
         if (object == nullptr && insp)
             object = insp->getObject();
 

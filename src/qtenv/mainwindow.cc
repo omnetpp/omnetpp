@@ -90,67 +90,50 @@ bool MainWindow::isRunning()
     return state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY;
 }
 
-void MainWindow::setGuiForRunmode(eMode mode, Inspector *insp, bool untilMode)
+void MainWindow::setGuiForRunmode(eMode mode, bool untilMode)
 {
     ui->actionOneStep->setChecked(false);
     ui->actionRun->setChecked(false);
     ui->actionFastRun->setChecked(false);
     ui->actionExpressRun->setChecked(false);
-    // TODO
-    // catch {toolbutton:setsunken $opp(sunken-run-button) 0}
 
-    if (insp == nullptr)
-        switch (mode) {
-            case STEP:
-                ui->actionOneStep->setChecked(true);
-                break;
+    switch (mode) {
+        case STEP:
+            ui->actionOneStep->setChecked(true);
+            break;
 
-            case NORMAL:
-                ui->actionRun->setChecked(true);
-                break;
+        case NORMAL:
+            ui->actionRun->setChecked(true);
+            break;
 
-            case FAST:
-                ui->actionFastRun->setChecked(true);
-                break;
+        case FAST:
+            ui->actionFastRun->setChecked(true);
+            break;
 
-            case EXPRESS:
-                ui->actionExpressRun->setChecked(true);
-                // TODO disabled mainwindow
-                stopDialog->show();
-                break;
+        case EXPRESS:
+            ui->actionExpressRun->setChecked(true);
+            showStopDialog();
+            break;
 
-            case NOT_RUNNING:
-                ui->actionRunUntil->setChecked(false);
-                break;
-        }
-    else
-        switch (mode) {
-            case NORMAL:
-                // TODO
-                // toolbutton:setsunken $insp.toolbar.mrun 1
-                // set opp(sunken-run-button) $insp.toolbar.mrun
-                break;
-
-            case FAST:
-                // TODO
-                // toolbutton:setsunken $insp.toolbar.mfast 1
-                // set opp(sunken-run-button) $insp.toolbar.mfast
-                break;
-
-            case EXPRESS:
-                // TODO disabled mainwindow
-                stopDialog->show();
-                break;
-
-            case NOT_RUNNING:
-                // TODO toolbutton:setsunken .toolbar.until 0
-                break;
-
-            case STEP:
-                break;
-        }
+        case NOT_RUNNING:
+            ui->actionRunUntil->setChecked(false);
+            break;
+    }
 
     ui->actionRunUntil->setChecked(untilMode);
+}
+
+void MainWindow::showStopDialog()
+{
+    stopDialog->show();
+    setEnabled(false);
+    stopDialog->setEnabled(true);
+}
+
+void MainWindow::closeStopDialog()
+{
+    stopDialog->close();
+    setEnabled(true);
 }
 
 bool MainWindow::checkRunning()
@@ -257,7 +240,7 @@ void MainWindow::runSimulation(eMode mode)
     }
 
     if(runMode == Qtenv::eRunMode::RUNMODE_EXPRESS)
-        stopDialog->close();
+        closeStopDialog();
 }
 
 // runNormal
@@ -285,7 +268,7 @@ void MainWindow::on_actionStop_triggered()
     }
 
     getQtenv()->getAnimator()->hurry();
-    stopDialog->close();
+    closeStopDialog();
 
     // this proc doubles as "stop layouting", when in graphical module inspectors
     // TODO
@@ -327,7 +310,7 @@ void MainWindow::on_actionRunUntil_triggered()
     bool untilMode = time.dbl() != 0 || event != 0 || strlen(msg->getDisplayString());
     if (isRunning())
     {
-        setGuiForRunmode(runModeToMode(mode), nullptr, untilMode);
+        setGuiForRunmode(runModeToMode(mode), untilMode);
         getQtenv()->setSimulationRunMode(mode);
         getQtenv()->setSimulationRunUntil(time, event, msg);
     } else
@@ -335,11 +318,11 @@ void MainWindow::on_actionRunUntil_triggered()
         if(!networkReady())
             return;
 
-        setGuiForRunmode(runModeToMode(mode), nullptr, untilMode);
+        setGuiForRunmode(runModeToMode(mode), untilMode);
         getQtenv()->runSimulation(mode, time, event, msg);
         setGuiForRunmode(NOT_RUNNING);
     }
-    stopDialog->close();
+    closeStopDialog();
 }
 
 void MainWindow::onSliderValueChanged(int value)
@@ -548,12 +531,12 @@ void MainWindow::runUntilMsg(cMessage *msg, int runMode)
 
     // mode must be "normal", "fast" or "express"
     if (isRunning()) {
-        setGuiForRunmode(runModeToMode(runMode), nullptr, true);
+        setGuiForRunmode(runModeToMode(runMode), true);
         env->setSimulationRunMode(runMode);
         env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
     }
     else {
-        setGuiForRunmode(runModeToMode(runMode), nullptr, true);
+        setGuiForRunmode(runModeToMode(runMode), true);
         env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
         setGuiForRunmode(NOT_RUNNING);
     }
