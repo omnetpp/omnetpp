@@ -16,6 +16,7 @@
 #include "colorutil.h"
 
 #include "exception.h"
+#include "math.h"
 #include <algorithm>
 #include <map>
 #include <cstring>
