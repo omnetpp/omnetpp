@@ -496,7 +496,10 @@ void FieldNode::fill() {
 }
 
 QVariant FieldNode::data(int role) {
-    cObject *objectCasted = nullptr;
+    cObject *objectCasted =
+              (containingDesc && containingDesc->getFieldIsCObject(fieldIndex))
+                ? static_cast<cObject *>(object)
+                : nullptr;
 
     if ((role == Qt::DecorationRole) && objectCasted) {
         return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(objectCasted))) : QVariant();
