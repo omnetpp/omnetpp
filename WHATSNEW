@@ -170,6 +170,10 @@ more:
      getCanvas(), getOsgCanvas()
 
 
+SystemC:
+
+  - Updated the bundled System C reference implementation to version 2.3.1
+
 Qtenv:
 
    Added!
