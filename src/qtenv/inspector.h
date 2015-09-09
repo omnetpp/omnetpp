@@ -98,18 +98,21 @@ public:
         if (child) return child->minimumSize();
         else return QSize(0,0);
     }
+    
+    void setFloatMargins(const QMargins &margins) {
+        floatMargins = margins;
+        invalidate();
+    }
 
 protected:
     QLayoutItem *child;
     QLayoutItem *floatingItem;
+    QMargins floatMargins;
 };
 
 
 class FloatingToolbarLayout : public FloatingLayout
 {
-private:
-    const int dx = 5, dy = 5; // toolbar distance from edges
-
 public:
     FloatingToolbarLayout(): FloatingLayout() {}
     FloatingToolbarLayout(QWidget *parent): FloatingLayout(parent) {}
@@ -119,9 +122,10 @@ public:
             child->setGeometry(rect); // margin?
         if (floatingItem) {
             QSize size = floatingItem->sizeHint();
-            int x = std::max(dx, rect.width() - size.width() - dx);
-            int width = std::min(rect.width() - 2*dx, size.width());
-            floatingItem->setGeometry(QRect(x, dy, width, size.height()));
+            int x = std::max(floatMargins.left(), rect.width() - size.width() - floatMargins.right());
+            int width = std::min(rect.width() - floatMargins.left() - floatMargins.right(), size.width());
+            int height = std::min(rect.height() - floatMargins.top() - floatMargins.bottom(), size.height());
+            floatingItem->setGeometry(QRect(x, floatMargins.top(), width, height));
         }
     }
 };

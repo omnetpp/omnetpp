@@ -38,6 +38,7 @@ namespace qtenv {
 class CanvasRenderer;
 class ModuleCanvasViewer;
 class OsgViewer;
+class FloatingToolbarLayout;
 
 
 class QTENV_API ModuleInspector : public Inspector
@@ -70,8 +71,11 @@ class QTENV_API ModuleInspector : public Inspector
       void switchToCanvasView();
 
       void onFontChanged();
+      void updateToolbarLayout(); // mostly the margins, to prevent occluding the scrollbar
 
    protected:
+      const int toolbarSpacing = 10; // from the edges, in pixels, the scrollbar size will be added to this
+
       QAction *switchToOsgViewAction;
       QAction *switchToCanvasViewAction;
 
@@ -81,6 +85,7 @@ class QTENV_API ModuleInspector : public Inspector
       QAction *resetOsgViewAction;
 
       QStackedLayout *stackedLayout;
+      FloatingToolbarLayout *toolbarLayout = nullptr; // not used in toplevel mode
 
       ModuleCanvasViewer *canvasViewer;
 
@@ -97,6 +102,7 @@ class QTENV_API ModuleInspector : public Inspector
       void setOsgCanvas(cOsgCanvas *osgCanvas);
 
       void wheelEvent(QWheelEvent *event) override;
+      void resizeEvent(QResizeEvent *event) override;
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
 
    public:

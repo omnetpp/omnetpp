@@ -94,6 +94,10 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     canvasViewer = new ModuleCanvasViewer();
     canvasViewer->setRenderHints(QPainter::Antialiasing);
 
+    // otherwise if the content fits exactly, these will disappear only for a moment during resizing
+    canvasViewer->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    canvasViewer->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
     connect(canvasViewer, SIGNAL(back()), this, SLOT(goBack()));
     connect(canvasViewer, SIGNAL(forward()), this, SLOT(goForward()));
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
@@ -117,9 +121,9 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     else
     {
         QWidget *contentArea = new QWidget();
-        auto layout = new FloatingToolbarLayout(parent);
-        layout->addWidget(contentArea);
-        layout->addWidget(toolbar);
+        toolbarLayout = new FloatingToolbarLayout(parent);
+        toolbarLayout->addWidget(contentArea);
+        toolbarLayout->addWidget(toolbar);
         stackedLayout = new QStackedLayout(contentArea);
     }
 
@@ -249,6 +253,28 @@ void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
         switchToCanvasView();
 }
 
+void ModuleInspector::updateToolbarLayout() {
+    if (!toolbarLayout)
+        return;
+
+    if (stackedLayout->currentWidget() == canvasViewer) {
+        // this includes the scrollbars
+        auto viewerRect = canvasViewer->contentsRect();
+        // this doesn't
+        auto viewportRect = canvasViewer->viewport()->contentsRect();
+        // placing them in the same coordinate system
+        viewportRect.setTopLeft(canvasViewer->viewport()->mapToParent(viewportRect.topLeft()));
+        // calculating the margins required to place the toolbar inside the scrolling viewport
+        toolbarLayout->setFloatMargins(QMargins(viewportRect.left() - viewerRect.left()     + toolbarSpacing,
+                                                viewportRect.top()  - viewerRect.top()      + toolbarSpacing,
+                                                viewerRect.right()  - viewportRect.right()  + toolbarSpacing,
+                                                viewerRect.bottom() - viewportRect.bottom() + toolbarSpacing));
+    } else {
+        // the osg mode never displays scrollbars.
+        toolbarLayout->setFloatMargins(QMargins(toolbarSpacing, toolbarSpacing, toolbarSpacing, toolbarSpacing));
+    }
+}
+
 void ModuleInspector::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() & Qt::ControlModifier) {
@@ -264,6 +290,11 @@ void ModuleInspector::wheelEvent(QWheelEvent *event)
     } else {
         Inspector::wheelEvent(event);
     }
+}
+
+void ModuleInspector::resizeEvent(QResizeEvent *event) {
+    Inspector::resizeEvent(event);
+    updateToolbarLayout();
 }
 
 cOsgCanvas *ModuleInspector::getOsgCanvas()
@@ -709,6 +740,7 @@ void ModuleInspector::zoomIconsBy(double mult) {
 void ModuleInspector::switchToOsgView()
 {
     stackedLayout->setCurrentWidget(osgViewer);
+    updateToolbarLayout();
 
     switchToCanvasViewAction->setChecked(false);
     switchToOsgViewAction->setChecked(true);
@@ -723,6 +755,7 @@ void ModuleInspector::switchToOsgView()
 void ModuleInspector::switchToCanvasView()
 {
     stackedLayout->setCurrentWidget(canvasViewer);
+    updateToolbarLayout();
 
     switchToCanvasViewAction->setChecked(true);
     switchToOsgViewAction->setChecked(false);
