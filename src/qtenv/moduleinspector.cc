@@ -99,6 +99,7 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
+    connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     osgViewer = new OsgViewer();
 
@@ -124,6 +125,11 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
 
     stackedLayout->addWidget(osgViewer);
     stackedLayout->addWidget(canvasViewer);
+}
+
+void ModuleInspector::onFontChanged()
+{
+    canvasViewer->setFont(getQtenv()->getCanvasFont());
 }
 
 QToolBar *ModuleInspector::createToolbar(bool isTopLevel)

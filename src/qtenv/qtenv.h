@@ -193,6 +193,11 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 
       FILE *ferrorlog;             // .tkenvlog file; nullptr if not yet open
 
+      QFont boldFont;
+      QFont timelineFont;
+      QFont canvasFont;
+      QFont logFont;
+
       // these only exist while doRun() runs
       QSettings *globalPrefs = nullptr;
       QSettings *localPrefs = nullptr;
@@ -254,6 +259,8 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
 
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key, const QVariant &defaultValue = QVariant());
+  signals:
+      void fontChanged();
 
   public slots:
       // on single click, only shows the object in the GenericObjectInspector
@@ -350,6 +357,22 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       const char *getOutScalarFileName() {return outScalarManager->getFileName();}
       const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
       const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
+
+      QFont getBoldFont() {return boldFont;}
+      QFont getTimelineFont() {return timelineFont;}
+      QFont getCanvasFont() {return canvasFont;}
+      QFont getLogFont() {return logFont;}
+
+      void setBoldFont(QFont &font) {boldFont = font;}
+      void setTimelineFont(QFont &font) {timelineFont = font;}
+      void setCanvasFont(QFont &font) {canvasFont = font;}
+      void setLogFont(QFont &font) {logFont = font;}
+
+      void updateQtFonts();
+
+      void initFonts();
+      void saveFonts();
+      QFont getFirstAvailableFontFamily(QStringList preferenceList, int pointSize, QFont defaultValue = QString());
 
       void runSimulationLocal(int runMode, cObject *object = nullptr, Inspector *insp = nullptr);
 };

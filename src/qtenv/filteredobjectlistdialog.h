@@ -46,6 +46,7 @@ private slots:
     void refresh();
     void inspect(QModelIndex index);
     void onListBoxSelectionChanged(QItemSelection selected, QItemSelection deselected);
+    void onFontChanged();
 
 public slots:
     virtual void done(int r);

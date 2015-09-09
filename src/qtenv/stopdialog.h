@@ -38,6 +38,8 @@ public slots:
     void onClickStop();
     void onClickUpdate();
     void stopDialogAutoupdate();
+    void show();
+
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
 

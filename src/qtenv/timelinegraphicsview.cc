@@ -40,8 +40,7 @@ TimeLineGraphicsView::TimeLineGraphicsView() :
     enableMessageLabels(true),
     defaultNumMessageLabelRows(2)
 {
-    tickLabelFont.setPointSize(10);
-    messageLabelFont.setPointSize(10);
+    messageLabelFont = tickLabelFont = getQtenv()->getTimelineFont();
     msgKindFillColors = QVector<QColor>({Qt::GlobalColor::red, Qt::GlobalColor::green, Qt::GlobalColor::blue, Qt::GlobalColor::white,
                                         Qt::GlobalColor::yellow, Qt::GlobalColor::cyan, Qt::GlobalColor::magenta, Qt::GlobalColor::black});
     msgKindBorderColors = QVector<QColor>({Qt::GlobalColor::red, Qt::GlobalColor::green, Qt::GlobalColor::blue, Qt::GlobalColor::gray,

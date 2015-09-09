@@ -30,6 +30,7 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
     ui(new Ui::RunUntilDialog)
 {
     ui->setupUi(this);
+    setFont(getQtenv()->getBoldFont());
 
     // collect FES messages for combo
     QList<cObject*> msgPtrs = fesEvents(1000, 0, 1, 1, 1); // exclude non-message events

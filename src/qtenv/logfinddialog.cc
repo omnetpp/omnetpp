@@ -17,6 +17,7 @@
 
 #include "logfinddialog.h"
 #include "ui_logfinddialog.h"
+#include "qtenv.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -27,6 +28,7 @@ LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, TextViewerWidget
     ui(new Ui::LogFindDialog)
 {
     ui->setupUi(this);
+    setFont(getQtenv()->getBoldFont());
 
     ui->text->setText(lastText);
     ui->caseCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_CASE_SENSITIVE));

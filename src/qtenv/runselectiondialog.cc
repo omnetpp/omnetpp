@@ -33,6 +33,7 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     adjustSize();
+    setFont(getQtenv()->getBoldFont());
 
     bool isBase = false;
     auto configNames = groupAndSortConfigNames();

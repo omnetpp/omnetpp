@@ -69,6 +69,8 @@ class QTENV_API ModuleInspector : public Inspector
       void switchToOsgView();
       void switchToCanvasView();
 
+      void onFontChanged();
+
    protected:
       QAction *switchToOsgViewAction;
       QAction *switchToCanvasViewAction;

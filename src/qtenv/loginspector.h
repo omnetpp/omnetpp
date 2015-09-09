@@ -44,6 +44,7 @@ class QTENV_API LogInspector : public Inspector
       void runUntil();
       void fastRunUntil();
       void stopSimulation();
+      void onFontChanged();
 
    public:
       enum Mode {LOG, MESSAGES};

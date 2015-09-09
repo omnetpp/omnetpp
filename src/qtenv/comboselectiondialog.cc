@@ -16,6 +16,7 @@
 
 #include "comboselectiondialog.h"
 #include "ui_comboselectiondialog.h"
+#include "qtenv.h"
 #include <QDebug>
 
 namespace omnetpp {
@@ -26,6 +27,7 @@ ComboSelectionDialog::ComboSelectionDialog(QString netName, QStringList networkN
     ui(new Ui::ComboSelectionDialog)
 {
     ui->setupUi(this);
+    setFont(getQtenv()->getBoldFont());
 
     if(!netName.isEmpty() && !networkNames.contains(netName))
         ui->comboBox->addItem(netName);

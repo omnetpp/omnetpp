@@ -95,6 +95,7 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     ui(new Ui::FilteredObjectListDialog)
 {
     ui->setupUi(this);
+    setFont(getQtenv()->getBoldFont());
 
     if(ptr == nullptr)
         ptr = getSimulation();
@@ -172,6 +173,12 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
 
     connect(inspectorListBoxView, SIGNAL(activated(QModelIndex)), this, SLOT(inspect(QModelIndex)));
     connect(inspectorListBoxView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(onListBoxSelectionChanged(QItemSelection,QItemSelection)));
+    connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
+}
+
+void FilteredObjectListDialog::onFontChanged()
+{
+    setFont(getQtenv()->getBoldFont());
 }
 
 void FilteredObjectListDialog::inspect(QModelIndex index)

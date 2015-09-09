@@ -54,6 +54,8 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     notDrawn(false),
     needs_redraw(false)
 {
+    font = getQtenv()->getCanvasFont();
+
     backgroundLayer = new GraphicsLayer();
     rangeLayer = new GraphicsLayer();
     submoduleLayer = new GraphicsLayer();
@@ -451,10 +453,8 @@ void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
     variant = getQtenv()->getPref(prefName);
     hints->showArrowHeads = variant.isValid() ? variant.value<bool>() : false;
 
-    hints->defaultFont = scene()->font().family().toStdString();
-
-    //TODO pixelSize() or pointSize()
-    hints->defaultFontSize = scene()->font().pointSize() * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+    hints->defaultFont = font.family().toStdString();
+    hints->defaultFontSize = font.pixelSize();
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!

@@ -70,6 +70,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     layout->setMargin(0);
 
     textWidget = new TextViewerWidget(this);
+    textWidget->setFont(getQtenv()->getLogFont());
     QToolBar *toolBar = createToolbar(isTopLevel);
     if(isTopLevel)
         layout->addWidget(toolBar);
@@ -101,6 +102,8 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     connect(findAgainReverseAction, SIGNAL(triggered()), this, SLOT(findAgainReverse()));
     addAction(findAgainReverseAction);
 
+    connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
+
     setMode(LOG);
 }
 
@@ -108,6 +111,11 @@ LogInspector::~LogInspector() {
     if (mode == MESSAGES) {
         saveColumnWidths();
     }
+}
+
+void LogInspector::onFontChanged()
+{
+    textWidget->setFont(getQtenv()->getLogFont());
 }
 
 QToolBar *LogInspector::createToolbar(bool isTopLevel)

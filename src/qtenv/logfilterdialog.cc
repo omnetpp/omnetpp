@@ -16,7 +16,7 @@
 
 #include "logfilterdialog.h"
 #include "ui_logfilterdialog.h"
-
+#include "qtenv.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -52,6 +52,7 @@ LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std
     ui(new Ui::logfilterdialog)
 {
     ui->setupUi(this);
+    setFont(getQtenv()->getBoldFont());
 
     Q_ASSERT(rootModule);
 

@@ -228,6 +228,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     //Text from item
     QString text = index.data(Qt::DisplayRole).toString();
     QTextLayout layout;
+    layout.setFont(getQtenv()->getBoldFont());
     layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
     // this is the standard layout procedure in a single line case
     layout.beginLayout();

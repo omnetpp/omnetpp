@@ -70,5 +70,11 @@ void StopDialog::keyPressEvent(QKeyEvent *e)
     }
 }
 
+void StopDialog::show()
+{
+    setFont(getQtenv()->getBoldFont());
+    QDialog::show();
+}
+
 } // namespace qtenv
 } // namespace omnetpp

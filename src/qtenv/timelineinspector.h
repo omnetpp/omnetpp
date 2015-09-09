@@ -33,6 +33,7 @@ private:
 
 private slots:
     void runPreferencesDialog();
+    void onFontChanged();
 
 public slots:
     void createContextMenu(QVector<cObject*> objects, QPoint globalPos);

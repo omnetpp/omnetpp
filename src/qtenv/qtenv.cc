@@ -66,6 +66,9 @@
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QCheckBox>
+#include <QFontDatabase>
+
+#define emit
 
 // default plugin path -- allow overriding it via compiler option (-D)
 // (default image path comes from makefile)
@@ -443,6 +446,10 @@ void Qtenv::doRun()
         mainWindow->show();
         mainWindow->restoreGeometry();
 
+        initFonts();
+
+        mainWindow->setFont(boldFont);
+
         mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
         mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
         mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
@@ -488,6 +495,7 @@ void Qtenv::doRun()
     inspectorfactories.clear();
 
     mainWindow->storeGeometry();
+    saveFonts();
 
     delete mainWindow;
     mainWindow = nullptr;
@@ -1931,6 +1939,7 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
         std::string& outResult, bool& inoutCheckState)
 {
     QDialog *dialog = new QDialog();
+    dialog->setFont(boldFont);
     dialog->setWindowTitle(title);
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -2089,6 +2098,67 @@ void Qtenv::utilitiesSubMenu()
         QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
         InspectorUtil::copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
     }
+}
+
+void Qtenv::initFonts()
+{
+    // set up fonts
+    #ifdef Q_WS_WIN
+    // Windows
+    QFont normalFamily = getFirstAvailableFontFamily({"Segoe UI", "MS Sans Serif", "Arial"}, 9);
+    boldFont = getPref("font-bold", normalFamily).value<QFont>();
+    canvasFont = getPref("font-canvas", normalFamily).value<QFont>();
+    timelineFont = getPref("font-timeline", getFirstAvailableFontFamily({"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"},
+                                                                        normalFamily.pointSize(), normalFamily)).value<QFont>();
+    logFont = getPref("font-log", getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9)).value<QFont>();
+
+    #elif Q_WS_MAC
+    // Mac
+    QFont normalFamily = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
+    boldFont = getPref("font-bold", normalFamily).value<QFont>();
+    canvasFont = getPref("font-canvas", normalFamily).value<QFont>();
+    timelineFont = getPref("font-timeline", getFirstAvailableFontFamily({"Arial Narrow"}, normalFamily.pointSize(), normalFamily)).value<QFont>();
+    logFont = getPref("font-log", getFirstAvailableFontFamily({"Monaco", "Courier"}, 13)).value<QFont>();
+
+    #else
+    // Linux and other systems
+    QFont normalFamily = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L",
+                                                      "FreeSans", "Sans"}, 9);
+    boldFont = getPref("font-bold", normalFamily).value<QFont>();
+    canvasFont = getPref("font-canvas", normalFamily).value<QFont>();
+    timelineFont = getPref("font-timeline", getFirstAvailableFontFamily({"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"},
+                                                                        normalFamily.pointSize(), normalFamily)).value<QFont>();
+    logFont = getPref("font-log", getFirstAvailableFontFamily({"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"},
+                                                              9)).value<QFont>();
+    #endif
+}
+
+// Returns the first font family from the given preference list that is
+// available on the system. If none are available, returns defaultValue.
+QFont Qtenv::getFirstAvailableFontFamily(QStringList preferenceList, int pointSize, QFont defaultValue)
+{
+    for(QString str : preferenceList)
+    {
+        QFontDatabase fontDb;
+        QFont font = fontDb.font(str, "Normal", pointSize);
+        if(font != QFont())
+            return font;
+    }
+    return defaultValue;
+}
+
+void Qtenv::saveFonts()
+{
+    setPref("font-bold", boldFont);
+    setPref("font-canvas", canvasFont);
+    setPref("font-timeline", timelineFont);
+    setPref("font-log", logFont);
+}
+
+void Qtenv::updateQtFonts()
+{
+    emit fontChanged();
+    mainWindow->setFont(boldFont);
 }
 
 // ======================================================================

@@ -82,7 +82,9 @@ OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsItem(parent, scene)
 {
     outlineItem = new QGraphicsSimpleTextItem();
+    outlineItem->setFont(getQtenv()->getCanvasFont());
     fillItem = new QGraphicsSimpleTextItem();
+    fillItem->setFont(getQtenv()->getCanvasFont());
 
     outlineItem->setBrush(Qt::NoBrush);
     QColor col = parseColor("grey82");

@@ -29,6 +29,7 @@ PreferencesDialog::PreferencesDialog(int defaultPage, QWidget *parent) :
     ui(new Ui::PreferencesDialog)
 {
     ui->setupUi(this);
+    setFont(getQtenv()->getBoldFont());
 
     if(defaultPage == InspectorUtil::TAB_NOTDEFINED)
     {
@@ -104,8 +105,19 @@ void PreferencesDialog::init()
     ui->excludMsgEdit->setText(getQtenv()->getSilentEventFilters());
 
     // Fonts tab
-    //TODO
+    QFont interfaceFont = getQtenv()->getBoldFont();
+    QFont timelineFont = getQtenv()->getTimelineFont();
+    QFont canvasFont = getQtenv()->getCanvasFont();
+    QFont logBox = getQtenv()->getLogFont();
 
+    ui->userInterfaceBox->setCurrentFont(interfaceFont);
+    ui->userInterfaceNumBox->setValue(interfaceFont.pointSize());
+    ui->timeLineBox->setCurrentFont(timelineFont);
+    ui->timeLineNumBox->setValue(timelineFont.pointSize());
+    ui->canvasBox->setCurrentFont(canvasFont);
+    ui->canvasNumBox->setValue(canvasFont.pointSize());
+    ui->logBox->setCurrentFont(logBox);
+    ui->logNumBox->setValue(logBox.pointSize());
 }
 
 void PreferencesDialog::accept()
@@ -174,8 +186,24 @@ void PreferencesDialog::accept()
     getQtenv()->setPref("timeline-wantnonselfmsgs", ui->nonSelfMsg->isChecked());
     getQtenv()->setPref("timeline-wantsilentmsgs", ui->silentMsg->isChecked());
 
-    //TODO Fonts tab
-    //TODO fontChanged, setTickLabelFont(), setMessageLabelFont()
+    // Fonts tab
+    QFont font = ui->userInterfaceBox->currentFont();
+    font.setPointSize(ui->userInterfaceNumBox->value());
+    getQtenv()->setBoldFont(font);
+
+    font = ui->timeLineBox->currentFont();
+    font.setPointSize(ui->timeLineNumBox->value());
+    getQtenv()->setTimelineFont(font);
+
+    font = ui->canvasBox->currentFont();
+    font.setPointSize(ui->canvasNumBox->value());
+    getQtenv()->setCanvasFont(font);
+
+    font = ui->logBox->currentFont();
+    font.setPointSize(ui->logNumBox->value());
+    getQtenv()->setLogFont(font);
+
+    getQtenv()->updateQtFonts();
 
     getQtenv()->redrawInspectors();
 

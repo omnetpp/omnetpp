@@ -54,6 +54,13 @@ TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, Inspector
     connect(timeLine, SIGNAL(contextMenuRequested(QVector<cObject*>,QPoint)), this, SLOT(createContextMenu(QVector<cObject*>,QPoint)));
     connect(timeLine, SIGNAL(click(cObject*)), this, SLOT(setObjectToObjectInspector(cObject*)));
     connect(timeLine, SIGNAL(doubleClick(cObject*)), this, SLOT(openInspector(cObject*)));
+    connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
+}
+
+void TimeLineInspector::onFontChanged()
+{
+    timeLine->setTickLabelFont(getQtenv()->getTimelineFont());
+    timeLine->setMessageLabelFont(getQtenv()->getTimelineFont());
 }
 
 void TimeLineInspector::createContextMenu(QVector<cObject*> objects, QPoint globalPos)
