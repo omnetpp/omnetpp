@@ -30,6 +30,9 @@
 namespace omnetpp {
 namespace qtenv {
 
+const int Animator::frameRate = 40;
+const double Animator::msgEndCreep = 10;
+
 Animator::Animator()
 {
     timer.setInterval(1000 / frameRate);
@@ -347,7 +350,11 @@ void Animator::animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage
     if (mode == ANIM_END) {
         srcPos = connLine.p2();
         cModule *dest = srcGate->getNextGate()->getOwnerModule();
-        destPos = insp->getSubmodCoords(dest);
+        QPointF destCenterPos = insp->getSubmodCoords(dest);
+        QPointF fromEdgeToCenter = destCenterPos - connLine.p2();
+        double length = std::sqrt(fromEdgeToCenter.x() * fromEdgeToCenter.x() + fromEdgeToCenter.y() * fromEdgeToCenter.y());
+        ASSERT(length > 0.0); // there is a minimum bounding box size on the modules, so the edge can't be in the center
+        destPos = connLine.p2() + fromEdgeToCenter / length * std::min(length, msgEndCreep);
     }
 
     addAnimation(new Animation(insp, Animation::ANIM_ON_CONN, Animation::DIR_HORIZ,

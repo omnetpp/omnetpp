@@ -82,7 +82,9 @@ class Animator : public QObject
     std::list<Animation *> animations;
     std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
 
-    static const int frameRate = 40;
+    static const int frameRate;
+    // the max amount of pixels an arriving message will move inside the dest submodule rectangle
+    static const double msgEndCreep;
     bool inHurry = false;
 
 public:
