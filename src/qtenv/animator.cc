@@ -86,10 +86,6 @@ void Animator::redrawMessages() {
 
 void Animator::addAnimation(Animation *anim) {
     animations.push_back(anim);
-
-    if (anim->mode == ANIM_END) {
-        play();
-    }
 }
 
 void Animator::onFrameTimer() {
@@ -108,7 +104,34 @@ void Animator::onFrameTimer() {
     }
 
     for (auto it = animations.begin(); it != animations.end(); ++it) {
-        (*it)->groupIndex = std::count_if(animations.begin(), it, [&it](Animation *a) { return  (*it)->msg == a->msg; });
+        // counting the number of animations that must be performed before *it can be started
+        (*it)->groupIndex = std::count_if(animations.begin(), it, [&it](Animation *a) {
+            const Animation &a1 = *a;
+            const Animation &a2 = **it;
+
+            bool sameMethod = (a1.type == Animation::ANIM_METHODCALL)
+                && (a2.type == Animation::ANIM_METHODCALL)
+                && (a1.text == a2.text);
+
+            bool sameMsg = a1.msg == a2.msg;
+            bool sameKind = (a1.mode == a2.mode)
+                && (a1.direction == a2.direction)
+                && (a1.type == a2.type);
+
+            // the animations take place in inspectors that inspect the same module
+            bool sameObject = a1.inspector->getObject() == a2.inspector->getObject();
+
+            // user configurable in the preferences dialog
+            bool concurrentEnabled = getQtenv()->getPref("concurrent-anim").value<bool>();
+
+            // these two animations can be played at the same time
+            bool concurrent = sameMethod
+                || (concurrentEnabled && !sameMsg)
+                || (sameMsg && sameKind && sameObject);
+
+            // if not, we count the first into the groupIndex of the second
+            return !concurrent;
+        });
     }
 
     if (animations.empty()) {
@@ -116,7 +139,7 @@ void Animator::onFrameTimer() {
     }
 
     for (auto &a : animations) {
-        if (a->groupIndex == 0) {
+        if (a->groupIndex == 0) { // this animation doesn't have to wait any longer
             for (auto &i : messageItems) {
                 if (i.first == std::make_pair(a->inspector, a->msg)) {
                     i.second->setVisible(false);
@@ -249,26 +272,6 @@ QString Animation::info()
     case ANIM_THROUGH: modeString = "through"; break;
     }
     return typeString + " " + directionString + " " + modeString + " \"" + text + "\"";
-
-    /*
-
-        QString text;
-        cMessage *msg = nullptr;
-
-        float time = 0;
-        float duration;
-        QGraphicsEllipseItem *dot = nullptr;
-        QGraphicsLineItem *line = nullptr;
-        GraphicsLayer *layer;
-
-        QPointF src;
-        QPointF dest;
-        void setToTime(float time);
-        void advance(float delta);
-        bool ended();
-
-        int groupIndex = 0;
-    */
 }
 
 Animation::Animation(ModuleInspector *insp, Animation::AnimType type, AnimDirection direction, SendAnimMode mode, QPointF src, QPointF dest, cMessage *msg, const QString &text)
