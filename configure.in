@@ -1387,17 +1387,17 @@ fi
 # Check for SystemC settings
 #---------------------------
 
-if test -d src/systemc; then
-  if test "$SYSTEMC" = "yes"; then
-    if test "$PLATFORM" != "linux.x86" -a "$PLATFORM" != "linux.x86_64"; then
-        AC_MSG_ERROR([SystemC is enabled, but it is not supported on this platform. Set SYSTEMC=no in configure.user])
-    fi
-  else
-    if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
-        AC_MSG_NOTICE([SystemC is disabled. You can enable it by setting SYSTEMC=yes in configure.user])
-    fi
-  fi
-fi
+#if test -d src/systemc; then
+#  if test "$SYSTEMC" = "yes"; then
+#    if test "$PLATFORM" != "linux.x86" -a "$PLATFORM" != "linux.x86_64"; then
+#        AC_MSG_ERROR([SystemC is enabled, but it is not supported on this platform. Set SYSTEMC=no in configure.user])
+#    fi
+#  else
+#    if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
+#        AC_MSG_NOTICE([SystemC is disabled. You can enable it by setting SYSTEMC=yes in configure.user])
+#    fi
+#  fi
+#fi
 
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES
