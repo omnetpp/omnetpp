@@ -456,8 +456,11 @@
             </item>
             <item>
              <widget class="QSlider" name="animSpeedSlider">
+              <property name="minimum">
+               <number>50</number>
+              </property>
               <property name="maximum">
-               <number>90</number>
+               <number>500</number>
               </property>
               <property name="singleStep">
                <number>1</number>

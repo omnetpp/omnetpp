@@ -34,6 +34,12 @@ public:
     explicit PreferencesDialog(int defaultPage = -1, QWidget *parent = 0);
     ~PreferencesDialog();
 
+protected slots:
+    // the slider was dragged by the user, setting the speed appropriately
+    void onAnimationSliderMoved(int value);
+    // the speed changed from some other source, making the slider follow it
+    void onAnimationSpeedChanged(float speed);
+
 public slots:
     void accept();
 

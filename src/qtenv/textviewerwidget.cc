@@ -34,8 +34,6 @@ namespace qtenv {
 TextViewerWidget::TextViewerWidget(QWidget *parent)
     : QAbstractScrollArea(parent)
 {
-    setFont(getMonospaceFont());
-
     backgroundColor = parent->palette().color(QPalette::Active, QPalette::Base);
     foregroundColor = parent->palette().color(QPalette::Active, QPalette::Text);
 
@@ -65,8 +63,7 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
     header->setDefaultAlignment(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
     header->setModel(headerModel);
 
-    setViewportMargins(0, 20, 0, 0);
-    header->setFixedHeight(20);
+    setFont(getMonospaceFont());
 
     layout->setMargin(0);
     layout->addWidget(header);
@@ -99,6 +96,8 @@ void TextViewerWidget::setFont(QFont font) {
 
     lineHeight = metrics.height();
     averageCharWidth = metrics.averageCharWidth();
+
+    header->setFixedHeight(header->sizeHint().height());
 
     isMonospaceFont = QFontInfo(font).fixedPitch();
     viewport()->update();
@@ -329,7 +328,9 @@ void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent)
 
     if (content->showHeaders()) {
         header->show();
-        setViewportMargins(0, 20, 0, 0);
+        // no other way of setting a fixed height worked correctly for me
+        header->setFixedHeight(header->sizeHint().height());
+        setViewportMargins(0, header->height(), 0, 0);
     } else {
         header->hide();
         setViewportMargins(0, 0, 0, 0);

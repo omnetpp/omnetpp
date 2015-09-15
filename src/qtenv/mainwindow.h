@@ -105,10 +105,12 @@ public slots:
     void on_actionEventlogRecording_triggered();
     void on_actionSetUpUnconfiguredNetwork_triggered();
 
-private slots:
+protected slots:
     void on_actionVerticalLayout_triggered(bool checked);
     void on_actionHorizontalLayout_triggered(bool checked);
     void on_actionTimeline_toggled(bool isSunken);
+    // most likely the slider in the preferences window was moved
+    void onAnimationSpeedChanged(float speed);
 
 private:
     Ui::MainWindow *ui;

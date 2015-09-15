@@ -70,6 +70,8 @@
 
 #define emit
 
+#define emit
+
 // default plugin path -- allow overriding it via compiler option (-D)
 // (default image path comes from makefile)
 #ifndef OMNETPP_PLUGIN_PATH
@@ -298,7 +300,7 @@ void Qtenv::restoreOptsFromPrefs() {
     if (pref.isValid()) opt->showBubbles = pref.toBool();
 
     pref = getPref("animation_speed");
-    if (pref.isValid()) opt->animationSpeed = pref.toDouble();
+    if (pref.isValid()) setAnimationSpeed(pref.toDouble());
 
     pref = getPref("expressmode_autoupdate");
     if (pref.isValid()) opt->autoupdateInExpress = pref.toBool();
@@ -1187,6 +1189,12 @@ void Qtenv::printEventBanner(cEvent *event)
 
     // insert into log buffer
     logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
+}
+
+void Qtenv::setAnimationSpeed(float speed) {
+    opt->animationSpeed = speed;
+    setPref("animation_speed", opt->animationSpeed);
+    emit animationSpeedChanged(speed);
 }
 
 void Qtenv::displayException(std::exception& ex)

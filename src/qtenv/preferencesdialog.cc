@@ -82,7 +82,8 @@ void PreferencesDialog::init()
 
     // Animation tab
     ui->animMsg->setChecked(getQtenv()->opt->animationEnabled);
-    ui->animSpeedSlider->setValue(getQtenv()->opt->animationSpeed*30);
+    ui->animSpeedSlider->setValue(getQtenv()->opt->animationSpeed*100);
+    connect(ui->animSpeedSlider, SIGNAL(valueChanged(int)), this, SLOT(onAnimationSliderMoved(int)));
     variant = getQtenv()->getPref("concurrent-anim");
     ui->animBroadcast->setChecked(variant.isValid() ? variant.value<bool>() : false);
     ui->showMarker->setChecked(getQtenv()->opt->showNextEventMarkers);
@@ -94,6 +95,9 @@ void PreferencesDialog::init()
     ui->colorMsg->setChecked(getQtenv()->opt->animationMsgColors);
     ui->penguinMode->setChecked(getQtenv()->opt->penguinMode);
     ui->delayEdit->setText(QString::number(getQtenv()->opt->methodCallAnimDelay));
+
+// to follow speed changes from other sources (possibly the mainwindow)
+    connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
 
     // Filtering tab
     variant = getQtenv()->getPref("timeline-wantselfmsgs");
@@ -175,7 +179,7 @@ void PreferencesDialog::accept()
 
     getQtenv()->opt->arrangeVectorConnections = ui->arrange->isChecked();
     getQtenv()->opt->showBubbles = ui->showBubbles->isChecked();
-    getQtenv()->opt->animationSpeed = ui->animSpeedSlider->value() / 30.;
+    getQtenv()->setAnimationSpeed(ui->animSpeedSlider->value() / 100.0);
     getQtenv()->setPref("keep-inspectors-on-top", ui->keepOnTop->isChecked());
     getQtenv()->setPref("reuse-inspectors", ui->reuseInsp->isChecked());
     getQtenv()->setPref("confirm-exit", ui->confirmExit->isChecked());
@@ -210,6 +214,15 @@ void PreferencesDialog::accept()
     getQtenv()->setPref("preferences-dialog-page", ui->tabWidget->currentIndex());
 
     QDialog::accept();
+}
+
+void PreferencesDialog::onAnimationSliderMoved(int value) {
+    if (value > 95 && value < 105) value = 100;
+    getQtenv()->setAnimationSpeed(value / 100.0);
+}
+
+void PreferencesDialog::onAnimationSpeedChanged(float speed) {
+    ui->animSpeedSlider->setValue(speed * 100);
 }
 
 PreferencesDialog::~PreferencesDialog()

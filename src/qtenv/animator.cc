@@ -30,7 +30,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-const int Animator::frameRate = 40;
+const int Animator::frameRate = 60;
 const double Animator::msgEndCreep = 10;
 
 Animator::Animator()
@@ -223,7 +223,10 @@ void Animation::setToTime(float time) {
             messageItem->setVisible(true);
         }
     } else {
-        if (connectionItem) connectionItem->setVisible(true);
+        if (connectionItem
+                && (type != ANIM_SENDDIRECT // respecting the preference
+                    || getQtenv()->opt->showSendDirectArrows))
+            connectionItem->setVisible(true);
         if (messageItem) messageItem->setVisible(true);
     }
 
@@ -284,10 +287,15 @@ Animation::Animation(ModuleInspector *insp, Animation::AnimType type, AnimDirect
 
     if (type != ANIM_ON_CONN) {
         connectionItem = new ConnectionItem(layer);
+        connectionItem->setVisible(false);
         connectionItem->setSource(src);
         connectionItem->setDestination(dest);
         connectionItem->setColor((type == ANIM_METHODCALL) ? "red" : "blue");
         connectionItem->setLineStyle(Qt::DashLine);
+        connectionItem->setWidth(2);
+        connectionItem->setText(text);
+        connectionItem->setTextPosition(Qt::AlignCenter);
+        connectionItem->setTextColor("black");
     }
 
     if (type != ANIM_METHODCALL) {
@@ -303,8 +311,8 @@ Animation::Animation(ModuleInspector *insp, Animation::AnimType type, AnimDirect
     duration = (type == ANIM_SENDDIRECT) ? ((mode == ANIM_END) ? 0.5 : 1) :
                // at most 1 sec, otherwise 100 pixels/sec
                (type == ANIM_ON_CONN) ? std::min(std::sqrt(delta.x() * delta.x() + delta.y() * delta.y()) * 0.01, 1.0) :
-               // method calls are fixed duration
-               0.5;
+               // it is a method call, the duration can be set in the preferences dialog (in ms units)
+               getQtenv()->opt->methodCallAnimDelay / 1000.0;
 }
 
 Animation::Animation(ModuleInspector *insp, Animation::AnimType type, Animation::AnimDirection direction, const QPointF &src, const QPointF &dest, cMessage *msg, const QString &text)

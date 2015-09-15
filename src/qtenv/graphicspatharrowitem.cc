@@ -28,9 +28,9 @@ void GraphicsPathArrowItem::setLineWidth(double width) {
     QPolygonF polygon;
 
     polygon.append(QPointF(0, 0));
-    polygon.append(QPointF(-width * 2,   -width * 2));
+    polygon.append(QPointF(-width * 3,   -width * 2));
     polygon.append(QPointF(-width * 1.5,  0));
-    polygon.append(QPointF(-width * 2,    width * 2));
+    polygon.append(QPointF(-width * 3,    width * 2));
 
     setPolygon(polygon);
 }

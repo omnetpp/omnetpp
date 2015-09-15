@@ -262,6 +262,9 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
   signals:
       void fontChanged();
 
+  signals:
+      void animationSpeedChanged(float newSpeed);
+
   public slots:
       // on single click, only shows the object in the GenericObjectInspector
       void onSelectionChanged(cObject *object);
@@ -343,6 +346,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
                        std::string& outResult, bool& inoutCheckState);
 
       void printEventBanner(cEvent *event);
+      void setAnimationSpeed(float speed);
       void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
       void animateDelivery(cMessage *msg);

@@ -58,12 +58,14 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     slider = new QSlider();
     slider->setMinimum(50);
-    slider->setMaximum(300);
+    slider->setMaximum(500);
     slider->setOrientation(Qt::Orientation::Horizontal);
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     slider->setValue(getQtenv()->opt->animationSpeed * 100);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     ui->toolBar->addWidget(slider);
+
+    connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
 
     // if we trigger the action here directly, it will block the initialization
     // this way the main window will be shown before the setup dialog
@@ -325,9 +327,8 @@ void MainWindow::on_actionRunUntil_triggered()
     closeStopDialog();
 }
 
-void MainWindow::onSliderValueChanged(int value)
-{
-    getQtenv()->opt->animationSpeed = value / 100.0;
+void MainWindow::onSliderValueChanged(int value) {
+    getQtenv()->setAnimationSpeed(value / 100.0);
 }
 
 void MainWindow::updateStatusDisplay()
@@ -769,6 +770,10 @@ void MainWindow::on_actionTimeline_toggled(bool isSunken)
         timeLineSize = ui->mainSplitter->sizes();
 
     ui->timeLine->setVisible(isSunken);
+}
+
+void MainWindow::onAnimationSpeedChanged(float speed) {
+    slider->setValue(speed * 100);
 }
 
 void MainWindow::on_actionStatusDetails_triggered()
