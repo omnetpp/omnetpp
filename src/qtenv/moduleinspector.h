@@ -25,6 +25,7 @@ class QStackedLayout;
 class QMouseEvent;
 class QContextMenuEvent;
 class QToolBar;
+class QPrinter;
 
 namespace omnetpp {
 class cObject;
@@ -73,6 +74,9 @@ class QTENV_API ModuleInspector : public Inspector
       void onFontChanged();
       void updateToolbarLayout(); // mostly the margins, to prevent occluding the scrollbar
 
+      void exportToPdf();
+      void print();
+
    protected:
       const int toolbarSpacing = 10; // from the edges, in pixels, the scrollbar size will be added to this
 
@@ -107,6 +111,8 @@ class QTENV_API ModuleInspector : public Inspector
       void wheelEvent(QWheelEvent *event) override;
       void resizeEvent(QResizeEvent *event) override;
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
+
+      void renderToPrinter(QPrinter &printer);
 
    public:
       ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

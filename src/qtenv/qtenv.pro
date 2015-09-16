@@ -134,7 +134,6 @@ INCLUDEPATH += /usr/include/qt4/QtOpenGL /usr/X11R6/include  #FIXME HACK! needed
 
 FORMS += mainwindow.ui \
     runselectiondialog.ui \
-    canvasinspectorform.ui \
     stopdialog.ui \
     logfinddialog.ui \
     logfilterdialog.ui \

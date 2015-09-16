@@ -69,6 +69,8 @@ private:
 
     QFont font;
 
+    bool isExport;
+
     // does full layouting, stores results in submodPosMap
     void recalculateLayout();
 
@@ -149,6 +151,8 @@ public:
 
     QFont getFont() {return font;}
     void setFont(const QFont &font) {this->font = font;}
+
+    void setExport(bool enable) { isExport = enable; }
 };
 
 } // namespace qtenv

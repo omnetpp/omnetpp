@@ -30,6 +30,9 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QEventLoop>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QFileDialog>
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cqueue.h"
 #include "omnetpp/cosgcanvas.h"
@@ -672,9 +675,52 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         action = menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()));
         action->setData(InspectorUtil::TAB_FILTERING);
 
+        menu->addSeparator();
+        menu->addAction("Export to pdf", this, SLOT(exportToPdf()));
+        menu->addAction("Print", this, SLOT(print()));
+
         menu->exec(event->globalPos());
         delete menu;
     }
+}
+
+void ModuleInspector::exportToPdf()
+{
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setColorMode(QPrinter::Color);
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export to pdf"), "./.pdf",
+                                                    tr("pdf files (*.pdf)"));
+    if(!fileName.endsWith(".pdf", Qt::CaseInsensitive))
+        fileName += ".pdf";
+
+    printer.setOutputFileName(fileName);
+
+    renderToPrinter(printer);
+}
+
+void ModuleInspector::print()
+{
+    QPrinter printer(QPrinter::HighResolution);
+
+    QPrintDialog printDialog(&printer);
+    if (printDialog.exec() != QDialog::Accepted)
+        return;
+
+    renderToPrinter(printer);
+}
+
+void ModuleInspector::renderToPrinter(QPrinter &printer)
+{
+    QPainter painter;
+    canvasViewer->setExport(true);
+    painter.begin(&printer);
+
+    canvasViewer->render(&painter, QRectF(0, 0, printer.width(), printer.height()),
+                                   canvasViewer->mapFromScene(canvasViewer->sceneRect()).boundingRect());
+    painter.end();
+    canvasViewer->setExport(false);
 }
 
 void ModuleInspector::runPreferencesDialog()

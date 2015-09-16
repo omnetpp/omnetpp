@@ -52,7 +52,8 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     object(nullptr),
     layoutSeed(0),
     notDrawn(false),
-    needs_redraw(false)
+    needs_redraw(false),
+    isExport(false)
 {
     font = getQtenv()->getCanvasFont();
 
@@ -817,6 +818,8 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
 }
 
 void ModuleCanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
+    if(isExport)
+        return;
     painter->save();
 
     auto font = painter->font();
