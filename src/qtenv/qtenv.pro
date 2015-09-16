@@ -18,6 +18,9 @@
 #   for the release configuration add the MODE=release argument to the make line
 #
 
+MAKEFILE_GENERATOR = UNIX
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+
 QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -52,7 +55,6 @@ SOURCES += mainwindow.cc \
     componenthistory.cc \
     graphicspatharrowitem.cc \
     layouterenv.cc \
-    osxproctype.cc \
     tklib.cc \
     stopdialog.cc \
     runselectiondialog.cc \

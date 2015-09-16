@@ -761,8 +761,10 @@ if test -z "$QT_VERSION"; then
     QTENV_IF_POSSIBLE=missing-dependency
 else 
     if test "$QT_VERSION" = "qt5"; then
+        # on MAC OS X use framework instead
         QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets"
     else
+        # on MAC OS X use framework instead
         QT_LIBS="-lQtGui -lQtCore"
         # detect openscenegraph (requires libopenscenegraph-dev, openscenegraph-plugin-osgearth and libosgearth-dev)
         # TODO: detecting with pkg-config will probably not work on Windows and MAC, better to test directly

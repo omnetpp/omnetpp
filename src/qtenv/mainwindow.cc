@@ -659,7 +659,10 @@ void MainWindow::restoreGeometry()
     if (geom.isValid()) setGeometry(geom);
 
     // set timeline initial size
-    ui->mainSplitter->setSizes(QList<int>({100, ui->mainSplitter->height() - 100}));
+    QList<int> sizes;
+    sizes.append(100);
+    sizes.append(ui->mainSplitter->height() - 100);
+    ui->mainSplitter->setSizes(sizes);
 
     restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);
     restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3);

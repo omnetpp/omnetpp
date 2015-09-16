@@ -41,10 +41,17 @@ TimeLineGraphicsView::TimeLineGraphicsView() :
     defaultNumMessageLabelRows(2)
 {
     messageLabelFont = tickLabelFont = getQtenv()->getTimelineFont();
-    msgKindFillColors = QVector<QColor>({Qt::GlobalColor::red, Qt::GlobalColor::green, Qt::GlobalColor::blue, Qt::GlobalColor::white,
-                                        Qt::GlobalColor::yellow, Qt::GlobalColor::cyan, Qt::GlobalColor::magenta, Qt::GlobalColor::black});
-    msgKindBorderColors = QVector<QColor>({Qt::GlobalColor::red, Qt::GlobalColor::green, Qt::GlobalColor::blue, Qt::GlobalColor::gray,
-                                           Qt::GlobalColor::yellow, Qt::GlobalColor::cyan, Qt::GlobalColor::magenta, Qt::GlobalColor::black});
+    QVector<QColor> colorList;
+    colorList.append(Qt::GlobalColor::red);
+    colorList.append(Qt::GlobalColor::green);
+    colorList.append(Qt::GlobalColor::blue);
+    colorList.append(Qt::GlobalColor::white);
+    colorList.append(Qt::GlobalColor::yellow);
+    colorList.append(Qt::GlobalColor::cyan);
+    colorList.append(Qt::GlobalColor::magenta);
+    colorList.append(Qt::GlobalColor::black);
+    msgKindFillColors = colorList;
+    msgKindBorderColors = colorList;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // TODO it can still be scrolled with the mouse however...
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }

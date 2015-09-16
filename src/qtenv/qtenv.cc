@@ -78,10 +78,6 @@
 #define OMNETPP_PLUGIN_PATH    "./plugins"
 #endif
 
-#ifdef __APPLE__
-void OSXTransformProcess();
-#endif
-
 using namespace OPP::common;
 using namespace OPP::envir;
 
@@ -93,12 +89,12 @@ namespace qtenv {
 Register_OmnetApp("Qtenv", Qtenv, 20, "Qt-based graphical user interface");
 
 //
-// The following function can be used to force linking with Tkenv; specify
-// -u _tkenv_lib (gcc) or /include:_tkenv_lib (vc++) in the link command.
+// The following function can be used to force linking with Qtenv; specify
+// -u _qtenv_lib (gcc) or /include:_qtenv_lib (vc++) in the link command.
 //
-extern "C" QTENV_API void tkenv_lib() {}
+extern "C" QTENV_API void qtenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
-extern "C" QTENV_API void _tkenv_lib() {}
+extern "C" QTENV_API void _qtenv_lib() {}
 
 #define LL                             INT64_PRINTF_FORMAT
 
@@ -396,10 +392,6 @@ void Qtenv::doRun()
         // set signal handler
         signal(SIGINT, signalHandler);
         signal(SIGTERM, signalHandler);
-
-#ifdef __APPLE__
-        OSXTransformProcess();
-#endif
 
         // path for icon directories
         const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
