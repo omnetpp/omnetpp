@@ -944,29 +944,37 @@ void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
 
 void MainWindow::on_actionVerticalLayout_triggered(bool checked)
 {
-    if(checked)
-    {
+    if (checked) { // it just got pressed
         ui->actionHorizontalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Vertical);
-    }
-    else
-    {
-        ui->actionVerticalLayout->setChecked(false);
-        on_actionHorizontalLayout_triggered(true);
+    } else { // not letting the user uncheck the action
+        ui->actionVerticalLayout->setChecked(true);
     }
 }
 
 void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
 {
-    if(checked)
-    {
+    if (checked) { // it just got pressed
         ui->actionVerticalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Horizontal);
+    } else { // not letting the user uncheck the action
+        ui->actionHorizontalLayout->setChecked(true);
     }
-    else
-    {
+}
+
+void MainWindow::on_actionFlipWindowLayout_triggered()
+{
+    switch (ui->splitter_2->orientation()) {
+    case Qt::Horizontal:
+        ui->splitter_2->setOrientation(Qt::Vertical);
         ui->actionHorizontalLayout->setChecked(false);
-        on_actionVerticalLayout_triggered(true);
+        ui->actionVerticalLayout->setChecked(true);
+        break;
+    case Qt::Vertical:
+        ui->splitter_2->setOrientation(Qt::Horizontal);
+        ui->actionHorizontalLayout->setChecked(true);
+        ui->actionVerticalLayout->setChecked(false);
+        break;
     }
 }
 

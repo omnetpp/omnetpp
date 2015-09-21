@@ -110,6 +110,7 @@ public slots:
 protected slots:
     void on_actionVerticalLayout_triggered(bool checked);
     void on_actionHorizontalLayout_triggered(bool checked);
+    void on_actionFlipWindowLayout_triggered();
     void on_actionTimeline_toggled(bool isSunken);
     // most likely the slider in the preferences window was moved
     void onAnimationSpeedChanged(float speed);
