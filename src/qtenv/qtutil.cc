@@ -139,8 +139,9 @@ void BubbleItem::onTimerElapsed() {
 }
 
 QRectF BubbleItem::boundingRect() const {
-    double textWidth = QFontMetrics(scene()->font()).width(text);
-    double textHeight = QFontMetrics(scene()->font()).height();
+    QFontMetrics metrics(getQtenv()->getCanvasFont());
+    double textWidth = metrics.width(text);
+    double textHeight = metrics.height();
 
     // the -1 and +2 is the line width, and also "just to be safe".
     return QRectF(-textWidth/2 - margin - 1,
@@ -150,7 +151,7 @@ QRectF BubbleItem::boundingRect() const {
 }
 
 void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    QFontMetrics metrics(scene()->font());
+    QFontMetrics metrics(getQtenv()->getCanvasFont());
 
     double textWidth = metrics.width(text);
     double textHeight = metrics.height();
@@ -176,7 +177,7 @@ void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->setBrush(QColor(248, 248, 216)); // yellowish
     painter->drawPath(path);
     // uses the pen as color, also have to move up by the descent, to align the baseline
-    painter->setFont(scene()->font()); // might not be needed, but whatever
+    painter->setFont(getQtenv()->getCanvasFont());
     painter->drawText(-textWidth/2, -vertOffset - metrics.descent(), text);
     painter->restore();
 }
