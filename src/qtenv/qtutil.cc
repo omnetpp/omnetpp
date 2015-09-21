@@ -23,6 +23,7 @@
 #include <cassert>
 #include <sstream>
 #include <QPainter>
+#include <QGraphicsView>
 #include <QDebug>
 
 #include "common/stringutil.h"
@@ -75,6 +76,36 @@ void GraphicsLayer::clear() {
 
 // ---- end of GraphicsLayer ----
 
+// ---- ZoomLabel implementation ----
+
+ZoomLabel::ZoomLabel()
+{
+    setText("ZoomLabel");
+}
+
+void ZoomLabel::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+    painter->setBrush(Qt::lightGray);
+    painter->setPen(Qt::lightGray);
+    painter->drawRect(boundingRect());
+
+    QFont f = font();
+    f.setBold(true);
+    setFont(f);
+    QGraphicsSimpleTextItem::paint(painter, option, widget);
+}
+
+void ZoomLabel::setZoomFactor(double zoomFactor)
+{
+    if(this->zoomFactor == zoomFactor)
+        return;
+
+    this->zoomFactor = zoomFactor;
+    setText(" Zoom:" + QString::number(zoomFactor, 'f', 2) + "x");
+    update();
+}
+
+// ---- end of ZoomLabel ----
 
 // ---- OutlinedTextItem implementation ----
 

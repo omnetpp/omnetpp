@@ -32,16 +32,11 @@ class QTENV_API CanvasInspector : public Inspector
 {
    Q_OBJECT
    private:
-      ZoomLabel *zoomLabel;
-      FloatingToolbarLayout *floatingLayout;
-
       void zoomBy(double mult);
 
    protected:
       virtual cCanvas *getCanvas();
       QToolBar *createToolbar();
-
-      void resizeEvent(QResizeEvent *event) override;
 
       CanvasViewer *canvasViewer;
 
@@ -50,7 +45,6 @@ class QTENV_API CanvasInspector : public Inspector
       void zoomOut();
       void onClick(QMouseEvent *event);
       void onContextMenuRequested(QContextMenuEvent *event);
-      void setZoomLabelMargins();
 
    public slots:
       virtual void redraw() override;

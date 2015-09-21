@@ -63,6 +63,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     figureLayer = new GraphicsLayer();
     animationLayer = new GraphicsLayer();
     bubbleLayer = new GraphicsLayer();
+    zoomLabelLayer = new GraphicsLayer();
 
     setScene(new QGraphicsScene());
     scene()->addItem(backgroundLayer);
@@ -71,6 +72,11 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     scene()->addItem(figureLayer);
     scene()->addItem(animationLayer);
     scene()->addItem(bubbleLayer);
+    scene()->addItem(zoomLabelLayer);
+
+    zoomLabel = new ZoomLabel();
+    zoomLabelLayer->addItem(zoomLabel);
+    zoomLabel->setZoomFactor(zoomFactor);
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr);
@@ -97,6 +103,18 @@ void ModuleCanvasViewer::setObject(cModule *obj)
     cCanvas *canvas = object ? object->getCanvasIfExists() : nullptr;
     canvasRenderer->setCanvas(canvas);
     redraw();
+}
+
+void ModuleCanvasViewer::scrollContentsBy(int dx, int dy)
+{
+    QGraphicsView::scrollContentsBy(dx, dy);
+    updateZoomLabelPos();
+}
+
+void ModuleCanvasViewer::updateZoomLabelPos()
+{
+    QPointF size = mapToScene(viewport()->size().width(), viewport()->size().height());
+    zoomLabel->setPos(size.x() - zoomLabel->boundingRect().width() - 4, size.y() - zoomLabel->boundingRect().height() - 4);
 }
 
 void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent * event)
@@ -135,6 +153,7 @@ void ModuleCanvasViewer::resizeEvent(QResizeEvent *event)
 {
     QGraphicsView::resizeEvent(event);
     recalcSceneRect();
+    updateZoomLabelPos();
 }
 
 void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent * event)
@@ -789,6 +808,7 @@ void ModuleCanvasViewer::setZoomFactor(double zoomFactor) {
             i->setPos(i->pos() * ratio);
 
         this->zoomFactor = zoomFactor;
+        zoomLabel->setZoomFactor(zoomFactor);
         redraw();
         viewport()->update();
     }
@@ -815,35 +835,6 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
 
     // will delete itself after a timeout
     bubbleLayer->addItem(new BubbleItem(getSubmodCoords(submod), text));
-}
-
-void ModuleCanvasViewer::drawForeground(QPainter *painter, const QRectF &rect) {
-    if(isExport)
-        return;
-    painter->save();
-
-    auto font = painter->font();
-    font.setBold(true);
-    painter->setFont(font);
-
-    QString text = "Zoom: " + QString::number(zoomFactor, 'f', 2) + "x";
-    QFontMetrics fontMetrics(painter->font());
-
-    QSize textSize = fontMetrics.boundingRect(text).size();
-    QSize viewportSize = viewport()->size();
-
-    // moving the whole thing 2 pixels to the left and up as spacing
-    // and also adding 2 pixels to the left and right inside the grey area as margin
-    // then the painter is in scene coords, so we have to map, and convert back to Rect
-    QRectF textRect = mapToScene(viewportSize.width() - textSize.width() - 6,
-                               viewportSize.height() - textSize.height() - 2,
-                               textSize.width() + 4, textSize.height()).boundingRect();
-
-    painter->fillRect(textRect, QColor("lightgrey"));
-    // moving 2 pixels to the right and accounting for font descent, since the y coord is the baseline
-    painter->drawText(textRect.bottomLeft() + QPoint(2, - fontMetrics.descent()), text);
-
-    painter->restore();
 }
 
 } // namespace qtenv

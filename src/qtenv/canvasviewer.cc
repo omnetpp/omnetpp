@@ -30,12 +30,17 @@ CanvasViewer::CanvasViewer() :
     object(nullptr)
 {
     figureLayer = new GraphicsLayer();
+    zoomLabelLayer = new GraphicsLayer();
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr);
 
     setScene(new QGraphicsScene());
     scene()->addItem(figureLayer);
+    scene()->addItem(zoomLabelLayer);
+
+    zoomLabel = new ZoomLabel();
+    zoomLabelLayer->addItem(zoomLabel);
 
     // that beautiful green shade behind everything
     setBackgroundBrush(QColor("#a0e0a0"));
@@ -54,6 +59,29 @@ void CanvasViewer::setObject(cCanvas *obj)
 
     canvasRenderer->setCanvas(object);
     redraw();
+}
+
+void CanvasViewer::resizeEvent(QResizeEvent *event)
+{
+    QGraphicsView::resizeEvent(event);
+    updateZoomLabelPos();
+}
+
+void CanvasViewer::scrollContentsBy(int dx, int dy)
+{
+    QGraphicsView::scrollContentsBy(dx, dy);
+    updateZoomLabelPos();
+}
+
+void CanvasViewer::updateZoomLabelPos()
+{
+    QPointF size = mapToScene(viewport()->size().width(), viewport()->size().height());
+    zoomLabel->setPos(size.x() - zoomLabel->boundingRect().width() - 4, size.y() - zoomLabel->boundingRect().height() - 4);
+}
+
+void CanvasViewer::setZoomFactor(double zoomFactor)
+{
+    zoomLabel->setZoomFactor(zoomFactor);
 }
 
 void CanvasViewer::mousePressEvent(QMouseEvent *event)

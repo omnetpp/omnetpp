@@ -62,6 +62,7 @@ private:
     GraphicsLayer *figureLayer;
     GraphicsLayer *animationLayer;
     GraphicsLayer *bubbleLayer;
+    GraphicsLayer *zoomLabelLayer;
     QGraphicsRectItem *nextEventMarker = nullptr;
 
     double zoomFactor = 1;
@@ -69,6 +70,7 @@ private:
 
     QFont font;
 
+    ZoomLabel *zoomLabel;
     bool isExport;
 
     // does full layouting, stores results in submodPosMap
@@ -97,6 +99,8 @@ private:
 
     void updateBackgroundColor();
 
+    void updateZoomLabelPos();
+
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -104,8 +108,7 @@ protected:
     void wheelEvent(QWheelEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
-    // only used to draw the zoom factor label in the bottom right corner
-    void drawForeground(QPainter *painter, const QRectF &rect) override;
+    void scrollContentsBy(int dx, int dy) override;
 
     QRectF getSubmodulesRect();
 

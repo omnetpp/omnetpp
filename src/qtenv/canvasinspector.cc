@@ -35,7 +35,6 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QDebug>
-#include <QLabel>
 #include <QScrollBar>
 
 #define emit
@@ -44,42 +43,6 @@ using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
-
-class ZoomLabel : public QLabel
-{
-private:
-    double zoomFactor;
-    int h = -1;
-
-public:
-    ZoomLabel(QFont font)
-    {
-        font.setBold(true);
-        setFont(font);
-        setAutoFillBackground(true);
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window, QColor("lightgrey"));
-        setPalette(pal);
-    }
-
-    void setZoomFactor(double zoomFactor)
-    {
-        if(this->zoomFactor == zoomFactor)
-            return;
-
-        this->zoomFactor = zoomFactor;
-        setText(" Zoom:" + QString::number(zoomFactor, 'f', 2) + "x");
-        update();
-    }
-
-    int height()
-    {
-        if(h == -1)
-            h = QLabel::height();
-
-        return h;
-    }
-};
 
 class CanvasInspectorFactory : public InspectorFactory
 {
@@ -99,21 +62,13 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     canvasViewer = new CanvasViewer();
     canvasViewer->setRenderHint(QPainter::Antialiasing);
 
-    zoomLabel = new ZoomLabel(canvasViewer->scene()->font());
-
-    QWidget *contentArea = new QWidget();
-    floatingLayout = new FloatingToolbarLayout(this);
-    floatingLayout->addWidget(contentArea);
-    floatingLayout->addWidget(zoomLabel);
-
-    auto contentLayout = new QVBoxLayout(contentArea);
+    auto contentLayout = new QVBoxLayout(this);
     contentLayout->addWidget(createToolbar());
     contentLayout->addWidget(canvasViewer);
     contentLayout->setMargin(0);
 
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(onClick(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(onContextMenuRequested(QContextMenuEvent*)));
-    QTimer::singleShot(0, this, SLOT(setZoomLabelMargins()));
 }
 
 CanvasInspector::~CanvasInspector()
@@ -141,23 +96,6 @@ QToolBar *CanvasInspector::createToolbar()
     return toolbar;
 }
 
-void CanvasInspector::resizeEvent(QResizeEvent *event)
-{
-    QWidget::resizeEvent(event);
-    setZoomLabelMargins();
-}
-
-//TODO label position when scrollbar is visible
-void CanvasInspector::setZoomLabelMargins()
-{
-    QScrollBar *scrollBar = canvasViewer->horizontalScrollBar();
-    int top = scrollBar->isVisible() ? scrollBar->height() + 2 : 0;
-
-    scrollBar = canvasViewer->verticalScrollBar();
-    int right = scrollBar->isVisible() ? scrollBar->width() + 2: 0;
-    floatingLayout->setToolbarMargins(QMargins(0, height() - zoomLabel->height() - top - 3, right + 3, 0));
-}
-
 void CanvasInspector::doSetObject(cObject *obj)
 {
     if (obj == object)
@@ -168,7 +106,7 @@ void CanvasInspector::doSetObject(cObject *obj)
     canvasViewer->setObject(getCanvas());
     QVariant zoomFactorVariant = getQtenv()->getPref(object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor");
     double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
-    zoomLabel->setZoomFactor(zoomFactor);
+    canvasViewer->setZoomFactor(zoomFactor);
 
     if (object)
         redraw();
@@ -240,9 +178,8 @@ void CanvasInspector::zoomBy(double mult)
         }*/
 
         getQtenv()->setPref(prefName, newZoomFactor);
-        zoomLabel->setZoomFactor(newZoomFactor);
+        canvasViewer->setZoomFactor(newZoomFactor);
         redraw();
-        setZoomLabelMargins();
     }
 }
 

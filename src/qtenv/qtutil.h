@@ -67,6 +67,21 @@ public:
     void setBrush(const QBrush &brush);
 };
 
+// Label in the bottom right corner that display zoom factor
+class ZoomLabel : public QGraphicsSimpleTextItem
+{
+private:
+    double zoomFactor;
+
+protected:
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget) override;
+
+public:
+    ZoomLabel();
+
+    void setZoomFactor(double zoomFactor);
+};
+
 class BubbleItem : public QGraphicsObject {
     Q_OBJECT
 
@@ -92,7 +107,6 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
-
 
 // wraps the one in common to be more convenient, also adds support for a fallback color
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
