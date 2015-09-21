@@ -97,8 +97,6 @@ void TextViewerWidget::setFont(QFont font) {
     lineHeight = metrics.height();
     averageCharWidth = metrics.averageCharWidth();
 
-    header->setFixedHeight(header->sizeHint().height() < 0 ? 0 : header->sizeHint().height());
-
     isMonospaceFont = QFontInfo(font).fixedPitch();
 
     viewport()->update();
@@ -231,18 +229,25 @@ int TextViewerWidget::getMaxVisibleLineWidth() {
     for (int lineIndex = topLineIndex; lineIndex < content->getLineCount() && lineIndex < topLineIndex + n; ++lineIndex) {
         auto line = content->getLineText(lineIndex);
         auto tabStops = content->getTabStops(lineIndex);
-        maxLength = std::max(maxLength, getLineColumnOffset(metrics, line, tabStops, line.length()) + horizontalScrollOffset );
+        maxLength = std::max(maxLength, getLineColumnOffset(metrics, line, tabStops, line.length()) + horizontalScrollOffset);
     }
     return maxLength;
 }
 
 int TextViewerWidget::getNumVisibleLines() {
-    // count partially visible lines as well
-    return (viewport()->height() + lineHeight - 1) / lineHeight;
+    // Counts partially visible lines as well.
+    // The maximumViewPortSize has to be used for the height to break the infinite loop:
+    //   long line scrolled in from the bottom ->
+    //   horizontal scrollbar appears, occludes the long line ->
+    //   horizontal scrollbar disappears, long line visible again ->
+    //   GOTO 10
+    return (maximumViewportSize().height() + lineHeight - 1) / lineHeight;
 }
 
 int TextViewerWidget::getNumVisibleColumns() {
-    // count partially visible columns as well
+    // Counts partially visible columns as well.
+    // The loop described above can't happen here, as the vertical scrollbar
+    // is not affected by the position of the horizontal scrollbar, only the other way around.
     return (viewport()->width() + averageCharWidth - 1) / averageCharWidth;
 }
 
