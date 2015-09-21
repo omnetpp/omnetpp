@@ -52,8 +52,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     object(nullptr),
     layoutSeed(0),
     notDrawn(false),
-    needs_redraw(false),
-    isExport(false)
+    needs_redraw(false)
 {
     font = getQtenv()->getCanvasFont();
 
@@ -115,6 +114,11 @@ void ModuleCanvasViewer::updateZoomLabelPos()
 {
     QPointF size = mapToScene(viewport()->size().width(), viewport()->size().height());
     zoomLabel->setPos(size.x() - zoomLabel->boundingRect().width() - 4, size.y() - zoomLabel->boundingRect().height() - 4);
+}
+
+void ModuleCanvasViewer::setZoomLabelVisible(bool visible)
+{
+    zoomLabel->setVisible(visible);
 }
 
 void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent * event)

@@ -714,13 +714,13 @@ void ModuleInspector::print()
 void ModuleInspector::renderToPrinter(QPrinter &printer)
 {
     QPainter painter;
-    canvasViewer->setExport(true);
+    canvasViewer->setZoomLabelVisible(false);
     painter.begin(&printer);
 
     canvasViewer->render(&painter, QRectF(0, 0, printer.width(), printer.height()),
                                    canvasViewer->mapFromScene(canvasViewer->sceneRect()).boundingRect());
     painter.end();
-    canvasViewer->setExport(false);
+    canvasViewer->setZoomLabelVisible(true);
 }
 
 void ModuleInspector::runPreferencesDialog()
