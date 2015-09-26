@@ -370,12 +370,10 @@ void SubmoduleItem::setImage(QImage *image) {
         if (image) {
             imageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*image), this, scene());
             imageItem->setOffset(-image->width() / 2.0f, -image->height() / 2.0f);
-            colorizeEffect = new QGraphicsColorizeEffect(this);
-            colorizeEffect->setStrength(0);
+            colorizeEffect = new ColorizeEffect();
             imageItem->setGraphicsEffect(colorizeEffect);
             imageItem->setScale(imageSizeFactor);
             imageItem->setTransformationMode(Qt::SmoothTransformation);
-            // XXX the colorize effect makes it pixely again, if in effect...
         }
         updateNameItem();
         realignAnchoredItems();
@@ -390,7 +388,7 @@ void SubmoduleItem::setImageColor(const QColor &color) {
 
 void SubmoduleItem::setImageColorPercentage(int percent) {
     if (colorizeEffect) {
-        colorizeEffect->setStrength(percent / 100.0f);
+        colorizeEffect->setWeight(percent / 100.0);
     }
 }
 
@@ -405,8 +403,7 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
             // It is easier to position using its (almost) upper right corner.
             // The 2 pixel offset moves it a bit to the right and up.
             decoratorImageItem->setOffset(-decoratorImage->width() + 2, -2);
-            decoratorColorizeEffect = new QGraphicsColorizeEffect(this);
-            decoratorColorizeEffect->setStrength(0);
+            decoratorColorizeEffect = new ColorizeEffect();
             decoratorImageItem->setGraphicsEffect(decoratorColorizeEffect);
             decoratorImageItem->setTransformationMode(Qt::SmoothTransformation);
         }
@@ -422,7 +419,7 @@ void SubmoduleItem::setDecoratorImageColor(const QColor &color) {
 
 void SubmoduleItem::setDecoratorImageColorPercentage(int percent) {
     if (decoratorColorizeEffect) {
-        decoratorColorizeEffect->setStrength(percent / 100.0f);
+        decoratorColorizeEffect->setWeight(percent / 100.0);
     }
 }
 

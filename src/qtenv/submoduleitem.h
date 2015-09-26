@@ -108,11 +108,9 @@ protected:
 
     QAbstractGraphicsShapeItem *shapeItem = nullptr;
     QGraphicsPixmapItem *imageItem = nullptr;
-    // TODO FIXME - this effect does not look the same as the one in tkenv
-    QGraphicsColorizeEffect *colorizeEffect = nullptr; // owned by the image item
+    ColorizeEffect *colorizeEffect = nullptr; // owned by the image item
     QGraphicsPixmapItem *decoratorImageItem = nullptr;
-    // TODO FIXME - this effect does not look the same as the one in tkenv
-    QGraphicsColorizeEffect *decoratorColorizeEffect; // owned by the decorator image item
+    ColorizeEffect *decoratorColorizeEffect = nullptr; // owned by the decorator image item
 
     OutlinedTextItem *nameItem = nullptr; // includes the vector index
     OutlinedTextItem *textItem = nullptr;

@@ -22,6 +22,7 @@
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
 #include <QGraphicsObject>
+#include <QGraphicsEffect>
 #include <QIcon>
 #include <QTimer>
 
@@ -31,6 +32,30 @@ class cPar;
 class cComponent;
 
 namespace qtenv {
+
+// does something similar to QGraphicsColorizeEffect,
+// but in a way that matches the Tkenv colorization,
+// and also preserves smooth scaling of pixmaps
+class ColorizeEffect : public QGraphicsEffect {
+    QColor color = QColor(255, 0, 0); // alpha is ignored
+    double weight = 0; // [0..1]
+
+    // if true, chachedImage has to be recomputed before the next draw
+    bool changed = true;
+    // we store the colorized pixels here, so we won't have to colorize every frame
+    QImage cachedImage;
+
+public:
+    QColor getColor();
+    void setColor(const QColor &color);
+
+    double getWeight();
+    void setWeight(double weight);
+
+protected:
+    void draw(QPainter *painter) override;
+    void sourceChanged(ChangeFlags flags) override;
+};
 
 
 // used in the ModuleInspector and some related classes

@@ -24,6 +24,7 @@
 #include <sstream>
 #include <QPainter>
 #include <QGraphicsView>
+#include <QGraphicsEffect>
 #include <QDebug>
 
 #include "common/stringutil.h"
@@ -109,6 +110,73 @@ void ZoomLabel::setZoomFactor(double zoomFactor)
 }
 
 // ---- end of ZoomLabel ----
+
+// ---- ColorizeEffect implementation ----
+
+QColor ColorizeEffect::getColor() {
+    return color;
+}
+
+void ColorizeEffect::setColor(const QColor &color) {
+    if (this->color != color) {
+        this->color = color;
+        changed = true;
+        update();
+    }
+}
+
+double ColorizeEffect::getWeight() {
+    return weight;
+}
+
+void ColorizeEffect::setWeight(double weight) {
+    if (this->weight != weight) {
+        this->weight = weight;
+        changed = true;
+        update();
+    }
+}
+
+void ColorizeEffect::draw(QPainter *painter) {
+    if (changed) {
+        cachedImage = sourcePixmap(Qt::DeviceCoordinates, 0, NoPad).toImage();
+
+        double rdest = color.redF();
+        double gdest = color.greenF();
+        double bdest = color.blueF();
+
+        for (int y = 0; y < cachedImage.height(); y++) {
+            QRgb *scanLine = reinterpret_cast<QRgb*>(cachedImage.scanLine(y));
+            for (int x = 0; x < cachedImage.width(); x++) {
+                QRgb &pixel = scanLine[x];
+
+                int r = qRed(pixel);
+                int g = qGreen(pixel);
+                int b = qBlue(pixel);
+
+                // transform - code taken from tkenv/tkcmd.cc (colorizeImage_cmd)
+                int lum = (int)(0.2126*r + 0.7152*g + 0.0722*b);
+                r = (int)((1-weight)*r + weight*lum*rdest);
+                g = (int)((1-weight)*g + weight*lum*gdest);
+                b = (int)((1-weight)*b + weight*lum*bdest);
+
+                pixel = qRgba(r, g, b, qAlpha(pixel));
+            }
+        }
+
+        changed = false;
+    }
+
+    painter->drawImage(sourceBoundingRect(Qt::LogicalCoordinates).toRect(), cachedImage);
+}
+
+void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags) {
+    changed = true;
+    update();
+}
+
+// ---- end of ColorizeEffect ----
+
 
 // ---- OutlinedTextItem implementation ----
 
