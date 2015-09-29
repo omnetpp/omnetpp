@@ -1056,7 +1056,7 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             case 'q': {
                 const cPathFigure::CurveRel *curveRel = static_cast<const cPathFigure::CurveRel*>(command);
                 QPointF pos = painter.currentPosition();
-                controlPoint = cFigure::Point(curveRel->dx1, curveRel->dy1);
+                controlPoint = cFigure::Point(pos.x() + curveRel->dx1, pos.y() + curveRel->dy1);
                 painter.quadTo(controlPoint.x, controlPoint.y, pos.x() + curveRel->dx, pos.y() + curveRel->dy);
                 break;
             }
@@ -1284,6 +1284,8 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
     // TODO image location
     QImage image(QString("./images/") + imageFigure->getImageName() + ".png");
+    if(image.isNull())
+        qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
 
     if (imageFigure->getWidth() != 0 && imageFigure->getHeight() != 0)

@@ -22,7 +22,7 @@ void Animator::handleMessage(cMessage *msg)
     figure->scale(0.997, 0.997);
 
     cOvalFigure *oval = check_and_cast<cOvalFigure *>(getParentModule()->getCanvas()->findFigureRecursively("oval1"));
-    int w = (int)(simTime().dbl())%20;
+    int w = (int)(simTime().dbl())%20 + 1;
     oval->setLineWidth(w);
 
     oval->rotate(-0.005, 500, 150);
