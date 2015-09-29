@@ -274,13 +274,13 @@ void ModuleInspector::updateToolbarLayout() {
         // placing them in the same coordinate system
         viewportRect.setTopLeft(canvasViewer->viewport()->mapToParent(viewportRect.topLeft()));
         // calculating the margins required to place the toolbar inside the scrolling viewport
-        toolbarLayout->setFloatMargins(QMargins(viewportRect.left() - viewerRect.left()     + toolbarSpacing,
+        toolbarLayout->setToolbarMargins(QMargins(viewportRect.left() - viewerRect.left()     + toolbarSpacing,
                                                 viewportRect.top()  - viewerRect.top()      + toolbarSpacing,
                                                 viewerRect.right()  - viewportRect.right()  + toolbarSpacing,
                                                 viewerRect.bottom() - viewportRect.bottom() + toolbarSpacing));
     } else {
         // the osg mode never displays scrollbars.
-        toolbarLayout->setFloatMargins(QMargins(toolbarSpacing, toolbarSpacing, toolbarSpacing, toolbarSpacing));
+        toolbarLayout->setToolbarMargins(QMargins(toolbarSpacing, toolbarSpacing, toolbarSpacing, toolbarSpacing));
     }
 }
 

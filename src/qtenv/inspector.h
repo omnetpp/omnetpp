@@ -23,6 +23,7 @@
 #include <QLayout>
 
 #include <QWidget>
+#include <QDebug>
 
 class QContextMenuEvent;
 class QToolBar;
@@ -53,38 +54,38 @@ int insptypeCodeFromName(const char *namestr);
  * Layout that manages two children: a client that completely fills the
  * parent; and a toolbar that flots over the client in the top-right corner.
  */
-class FloatingLayout : public QLayout
+class FloatingToolbarLayout : public QLayout
 {
 public:
-    FloatingLayout(): QLayout(), child(nullptr), floatingItem(nullptr) {}
-    FloatingLayout(QWidget *parent): QLayout(parent), child(nullptr), floatingItem(nullptr) {}
-    ~FloatingLayout() {
+    FloatingToolbarLayout(): QLayout(), child(nullptr), toolbar(nullptr) {}
+    FloatingToolbarLayout(QWidget *parent): QLayout(parent), child(nullptr), toolbar(nullptr) {}
+    ~FloatingToolbarLayout() {
         delete child;
-        delete floatingItem;
+        delete toolbar;
     }
 
     void addItem(QLayoutItem *item) {
         if (!child) child = item;
-        else if (!floatingItem) floatingItem = item;
+        else if (!toolbar) toolbar = item;
         else throw std::runtime_error("only two items are accepted");
     }
 
     int count() const {
         if (!child) return 0;
-        else if (!floatingItem) return 1;
+        else if (!toolbar) return 1;
         else return 2;
     }
 
     QLayoutItem *itemAt(int i) const {
         if (i==0) return child;
-        else if (i==1) return floatingItem;
+        else if (i==1) return toolbar;
         else return nullptr;
     }
 
     QLayoutItem *takeAt(int i) {
         QLayoutItem *result = nullptr;
-        if (i==1) {result = floatingItem; floatingItem = nullptr;}
-        else if (i==0) {result = child; child = floatingItem; floatingItem = nullptr;}
+        if (i==1) {result = toolbar; toolbar = nullptr;}
+        else if (i==0) {result = child; child = toolbar; toolbar = nullptr;}
         else throw std::runtime_error("illegal index, must be 0 or 1");
         return result;
     }
@@ -98,36 +99,28 @@ public:
         if (child) return child->minimumSize();
         else return QSize(0,0);
     }
-    
-    void setFloatMargins(const QMargins &margins) {
-        floatMargins = margins;
+
+    void setGeometry(const QRect &rect) {
+        if (child)
+            child->setGeometry(rect); // margin?
+        if (toolbar) {
+            QSize size = toolbar->widget()->sizeHint();
+            int x = std::max(toolbarMargins.left(), rect.width() - size.width() - toolbarMargins.right());
+            int width = std::min(rect.width() - toolbarMargins.left() - toolbarMargins.right(), size.width());
+            int height = std::min(rect.height() - toolbarMargins.top() - toolbarMargins.bottom(), size.height());
+            toolbar->setGeometry(QRect(x, toolbarMargins.top(), width, height));
+        }
+    }
+
+    void setToolbarMargins(const QMargins &margins) {
+        toolbarMargins = margins;
         invalidate();
     }
 
 protected:
     QLayoutItem *child;
-    QLayoutItem *floatingItem;
-    QMargins floatMargins;
-};
-
-
-class FloatingToolbarLayout : public FloatingLayout
-{
-public:
-    FloatingToolbarLayout(): FloatingLayout() {}
-    FloatingToolbarLayout(QWidget *parent): FloatingLayout(parent) {}
-
-    void setGeometry(const QRect &rect) {
-        if (child)
-            child->setGeometry(rect); // margin?
-        if (floatingItem) {
-            QSize size = floatingItem->sizeHint();
-            int x = std::max(floatMargins.left(), rect.width() - size.width() - floatMargins.right());
-            int width = std::min(rect.width() - floatMargins.left() - floatMargins.right(), size.width());
-            int height = std::min(rect.height() - floatMargins.top() - floatMargins.bottom(), size.height());
-            floatingItem->setGeometry(QRect(x, floatMargins.top(), width, height));
-        }
-    }
+    QLayoutItem *toolbar;
+    QMargins toolbarMargins;
 };
 
 /**
