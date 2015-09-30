@@ -938,9 +938,9 @@ void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, F
     QPainterPath painter = polyItem->path();
 
     if (polyFigure->getFillRule() == cFigure::FILL_EVENODD)
-        painter.setFillRule(Qt::WindingFill);
-    else
         painter.setFillRule(Qt::OddEvenFill);
+    else
+        painter.setFillRule(Qt::WindingFill);
 
     polyItem->setPath(painter);
 
