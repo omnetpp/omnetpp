@@ -660,8 +660,8 @@ void MainWindow::restoreGeometry()
 
     // set timeline initial size
     QList<int> sizes;
-    sizes.append(100);
-    sizes.append(ui->mainSplitter->height() - 100);
+    sizes.append(50);
+    sizes.append(ui->mainSplitter->height() - 50);
     ui->mainSplitter->setSizes(sizes);
 
     restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);

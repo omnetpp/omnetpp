@@ -471,7 +471,7 @@ void TimeLineGraphicsView::rebuildScene()
     // draw ticks
     int tickSpacing = (maxExponentX-minExponentX) / (maxExponent-minExponent);
     bool reduceTickLabels = tickSpacing < maxTickLabelSize.width()+10;  // if there's not enough space, we only write out 1ns, 1us, 1ms, 1s,1000s etc.
-    for (int exp = minExponent-1; exp <= maxExponent; exp++) {
+    for (int exp = std::max(minExponent-1, simtime_t::getScaleExp()); exp <= maxExponent; exp++) {
         if (exp >= minExponent) {
             // tick
             int x = getXForExponent(exp);
