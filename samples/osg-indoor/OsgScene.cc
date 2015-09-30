@@ -37,6 +37,10 @@ void OsgScene::initialize()
 
     cOsgCanvas *builtinOsgCanvas = getParentModule()->getOsgCanvas();
     builtinOsgCanvas->setScene(scene);
+    builtinOsgCanvas->setGenericViewpoint(cOsgCanvas::Viewpoint(
+            cOsgCanvas::Vec3d(20, -30, 30),
+            cOsgCanvas::Vec3d(30, 20, 0),
+            cOsgCanvas::Vec3d(0, 0, 1)));
 }
 
 OsgScene *OsgScene::getInstance()

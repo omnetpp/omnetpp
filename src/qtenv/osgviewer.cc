@@ -21,9 +21,11 @@
 #include <osgEarthUtil/EarthManipulator>
 #include <osgEarthUtil/SkyNode>
 #include <osgGA/GUIEventAdapter>
+#include <osgGA/TerrainManipulator>
+#include <osgGA/TrackballManipulator>
 #include <osg/TexGenNode>
-#include "omnetpp/cosgcanvas.h"
 #include "omnetpp/osgutil.h"
+#include "inspectorutil.h"
 #include "osgviewer.h"
 
 namespace omnetpp {
@@ -39,7 +41,7 @@ public:
     PickHandler(OsgViewer *viewer) : viewer(viewer) {}
     virtual ~PickHandler();
     bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    virtual void pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
+    virtual std::vector<cObject*> pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
 };
 
 PickHandler::~PickHandler()
@@ -48,31 +50,46 @@ PickHandler::~PickHandler()
 
 bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
     switch(ea.getEventType())
     {
-        case osgGA::GUIEventAdapter::PUSH: {
-            osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
-            if (view)
-                pick(view, ea);
+        case osgGA::GUIEventAdapter::PUSH:
+            if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+                emit viewer->objectsPicked(pick(view, ea));
             break;
-        }
-        case osgGA::GUIEventAdapter::KEYDOWN: {
+        // context menus can't be opened on push, because then only the QMenu would receive
+        // the release event, osg wouldn't, and it would think it's stuck in the "down" position
+        case osgGA::GUIEventAdapter::RELEASE:
+            if (view && ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
+                auto objects = pick(view, ea);
+                Inspector *insp = dynamic_cast<Inspector*>(viewer->parentWidget()->parentWidget());
+                QMenu *menu;
+                if (!objects.empty()) {
+                    menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), insp);
+                    menu->addSeparator();
+                } else {
+                    menu = new QMenu(viewer);
+                }
+
+                menu->addMenu(viewer->createCameraManipulatorMenu());
+                menu->exec(viewer->mapToGlobal(QPoint(ea.getX(), viewer->height() - ea.getY())));
+            }
+            break;
+        case osgGA::GUIEventAdapter::KEYDOWN:
             if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space || ea.getKey() == osgGA::GUIEventAdapter::KEY_Return) {
-                osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
                 osg::ref_ptr<osgGA::GUIEventAdapter> event = new osgGA::GUIEventAdapter(ea);
                 event->setX((ea.getXmin()+ea.getXmax())*0.5);
                 event->setY((ea.getYmin()+ea.getYmax())*0.5);
                 if (view)
-                    pick(view, *event);
+                    emit viewer->objectsPicked(pick(view, *event));
             }
             break;
-        }
         default:;
     }
     return false;
 }
 
-void PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
+std::vector<cObject*> PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
 {
     // printf("pick()\n");
 
@@ -96,10 +113,9 @@ void PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
                 }
             }
         }
-
-        if (!objects.empty())
-            emit viewer->objectsPicked(objects);
     }
+
+    return objects;
 }
 
 
@@ -108,7 +124,7 @@ void PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
 OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
 {
     setThreadingModel(osgViewer::ViewerBase::SingleThreaded);  //XXX crashes with Multithreaded
-
+    setContextMenuPolicy(Qt::NoContextMenu); // to prevent the default Qt context handling, we will do it manually
     // disable the default setting of viewer.done() by pressing Escape.
     setKeyEventSetsDone(0);
 
@@ -122,6 +138,24 @@ OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
     // set up periodic update of 3D view
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
     timer.start(33);  // 60Hz -- TODO make configurable
+
+    QActionGroup *cameraManipulatorActionGroup = new QActionGroup(this); // will provide radiobutton functionality
+    connect(cameraManipulatorActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(setCameraManipulator(QAction*)));
+
+    toTerrainManipulatorAction = new QAction("Terrain", this);
+    toTerrainManipulatorAction->setData(cOsgCanvas::CAM_TERRAIN);
+    toTerrainManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
+    toTerrainManipulatorAction->setCheckable(true);
+
+    toTrackballManipulatorAction = new QAction("Trackball", this);
+    toTrackballManipulatorAction->setData(cOsgCanvas::CAM_TRACKBALL);
+    toTrackballManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
+    toTrackballManipulatorAction->setCheckable(true);
+
+    toEarthManipulatorAction = new QAction("Earth", this);
+    toEarthManipulatorAction->setData(cOsgCanvas::CAM_EARTH);
+    toEarthManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
+    toEarthManipulatorAction->setCheckable(true);
 }
 
 QWidget *OsgViewer::addViewWidget()
@@ -178,8 +212,10 @@ void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
     if (osgCanvas != canvas) {
         osgCanvas = canvas;
         refresh();
-        if (osgCanvas != nullptr)
+        if (osgCanvas != nullptr) {
             applyViewerHints();
+            toEarthManipulatorAction->setEnabled(osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_EARTH);
+        }
         else
             resetViewer();
     }
@@ -205,16 +241,7 @@ void OsgViewer::applyViewerHints()
     cOsgCanvas::Color color = osgCanvas->getClearColor();
     setClearColor(color.red/255.0, color.green/255.0, color.blue/255.0, 1.0);
 
-    osgGA::CameraManipulator *manipulator = nullptr;
-    auto manipulatorType = osgCanvas->getCameraManipulatorType();
-    if (manipulatorType == cOsgCanvas::CAM_AUTO)
-        manipulatorType = osgCanvas->getViewerStyle()==cOsgCanvas::STYLE_GENERIC ? cOsgCanvas::CAM_TRACKBALL : cOsgCanvas::CAM_EARTH;
-    switch (manipulatorType) {
-        case cOsgCanvas::CAM_TRACKBALL: manipulator = new osgGA::TrackballManipulator; break;
-        case cOsgCanvas::CAM_EARTH: manipulator = new osgEarth::Util::EarthManipulator; break;
-        case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
-    }
-    setCameraManipulator(manipulator);
+    setCameraManipulator(osgCanvas->getCameraManipulatorType());
 
     setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
 
@@ -226,7 +253,7 @@ void OsgViewer::resetViewer()
 {
     // printf("resetViewer()\n");
     setClearColor(0.9, 0.9, 0.9, 1.0);
-    setCameraManipulator(nullptr);
+    //setCameraManipulator(nullptr);
     setPerspective(30, 1, 1000);
 }
 
@@ -236,8 +263,38 @@ void OsgViewer::setClearColor(float r, float g, float b, float alpha)
     camera->setClearColor(osg::Vec4(r, g, b, alpha));
 }
 
-void OsgViewer::setCameraManipulator(osgGA::CameraManipulator *manipulator)
+void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type)
 {
+    osgGA::CameraManipulator *manipulator = nullptr;
+
+    if (type == cOsgCanvas::CAM_AUTO)
+        type = osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_GENERIC ? cOsgCanvas::CAM_TERRAIN : cOsgCanvas::CAM_EARTH;
+
+    switch (type) {
+        case cOsgCanvas::CAM_TERRAIN:
+            manipulator = new osgGA::TerrainManipulator;
+            toTerrainManipulatorAction->setChecked(true);
+            break;
+        case cOsgCanvas::CAM_TRACKBALL:
+            manipulator = new osgGA::TrackballManipulator;
+            toTrackballManipulatorAction->setChecked(true);
+            break;
+        case cOsgCanvas::CAM_EARTH:
+            manipulator = new osgEarth::Util::EarthManipulator;
+            toEarthManipulatorAction->setChecked(true);
+            break;
+        case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
+    }
+
+    const cOsgCanvas::Viewpoint &viewpoint = osgCanvas->getGenericViewpoint();
+
+    osg::Vec3d eye(viewpoint.eye.x, viewpoint.eye.y, viewpoint.eye.z);
+    osg::Vec3d center(viewpoint.center.x, viewpoint.center.y, viewpoint.center.z);
+    osg::Vec3d up(viewpoint.up.x, viewpoint.up.y, viewpoint.up.z);
+
+    manipulator->setHomePosition(eye, center, up);
+    manipulator->home(0);
+
     view->setCameraManipulator(manipulator);
 }
 
@@ -257,6 +314,20 @@ void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
             earthManip->setViewpoint(viewpoint, duration);
         }
     }
+}
+
+QMenu *OsgViewer::createCameraManipulatorMenu()
+{
+    QMenu *menu = new QMenu("Camera manipulator", this);
+    menu->addAction(toTerrainManipulatorAction);
+    menu->addAction(toTrackballManipulatorAction);
+    menu->addAction(toEarthManipulatorAction);
+    return menu;
+}
+
+void OsgViewer::setCameraManipulator(QAction *sender)
+{
+    setCameraManipulator((cOsgCanvas::CameraManipulatorType)sender->data().value<int>());
 }
 
 } // qtenv

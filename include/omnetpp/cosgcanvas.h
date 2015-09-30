@@ -47,8 +47,19 @@ class SIM_API cOsgCanvas : public cOwnedObject
     public:
         enum ViewerStyle { STYLE_GENERIC, STYLE_EARTH };
         typedef cFigure::Color Color;
-        enum CameraManipulatorType { CAM_AUTO, CAM_TRACKBALL, CAM_EARTH };
+        enum CameraManipulatorType { CAM_AUTO, CAM_TERRAIN, CAM_TRACKBALL, CAM_EARTH };
 
+        // this is only needed to simplify the Viewpoint hint
+        struct Vec3d {
+            double x, y, z;
+            Vec3d(double x, double y, double z): x(x), y(y), z(z) {}
+        };
+
+        struct Viewpoint {
+            Vec3d eye, center, up; // see OpenGL gluLookAt
+            Viewpoint(const Vec3d &eye, const Vec3d &center, const Vec3d &up): eye(eye), center(center), up(up) {}
+        };
+        
     protected:
         osg::Node *scene;  // reference counted
 
@@ -61,8 +72,10 @@ class SIM_API cOsgCanvas : public cOwnedObject
         double zNear; // see OpenGL gluPerspective
         double zFar;  // see OpenGL gluPerspective
 
+        Viewpoint *genericViewpoint; // never nullptr
+
         // osgEarth-specific viewer hints
-        osgEarth::Viewpoint *viewpoint; // never nullptr
+        osgEarth::Viewpoint *earthViewpoint; // never nullptr
 
     private:
         void copy(const cOsgCanvas& other);
@@ -168,17 +181,33 @@ class SIM_API cOsgCanvas : public cOwnedObject
         void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
         //@}
 
+        /** @name Viewer hints for the generic style. */
+        //@{
+        /**
+         * Sets the initial genericViewpoint hint.
+         */
+        void setGenericViewpoint(const Viewpoint& viewpoint);
+
+        /**
+         * Returns the initial genericViewpoint hint.
+         */
+        const Viewpoint& getGenericViewpoint() const {return *genericViewpoint;}
+
+        //TODO more generic style related hints
+
+        //@}
+
         /** @name osgEarth-related viewer hints. */
         //@{
         /**
-         * Sets the initial viewpoint hint.
+         * Sets the initial earthViewpoint hint.
          */
-        void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
+        void setEarthViewpoint(const osgEarth::Viewpoint& earthViewpoint);
 
         /**
-         * Returns the initial viewpoint hint.
+         * Returns the initial earthViewpoint hint.
          */
-        const osgEarth::Viewpoint& getEarthViewpoint() const {return *viewpoint;}
+        const osgEarth::Viewpoint& getEarthViewpoint() const {return *earthViewpoint;}
 
         //TODO more osgEarth-related hints
 

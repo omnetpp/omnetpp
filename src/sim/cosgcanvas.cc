@@ -40,8 +40,10 @@ inline void unref(osg::Node *scene)
 }
 
 cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *scene) : cOwnedObject(name),
-    scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)), cameraManipulatorType(CAM_AUTO),
-    fieldOfViewAngle(30), zNear(1.0), zFar(10000.0), viewpoint(new osgEarth::Viewpoint())
+    scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)),
+    cameraManipulatorType(CAM_AUTO), fieldOfViewAngle(30), zNear(1.0), zFar(10000.0),
+    genericViewpoint(new Viewpoint(Vec3d(10, 10, 10), Vec3d(0, 0, 0), Vec3d(0, 0, 1))),
+    earthViewpoint(new osgEarth::Viewpoint())
 
 {
     ref(scene);
@@ -50,7 +52,8 @@ cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *sce
 cOsgCanvas::~cOsgCanvas()
 {
     unref(scene);
-    delete viewpoint;
+    delete genericViewpoint;
+    delete earthViewpoint;
 }
 
 void cOsgCanvas::copy(const cOsgCanvas& other)
@@ -62,7 +65,7 @@ void cOsgCanvas::copy(const cOsgCanvas& other)
     fieldOfViewAngle = other.fieldOfViewAngle;
     zNear = other.zNear;
     zFar = other.zFar;
-    *viewpoint = *other.viewpoint;
+    *earthViewpoint = *other.earthViewpoint;
 }
 
 cOsgCanvas& cOsgCanvas::operator=(const cOsgCanvas& other)
@@ -88,9 +91,14 @@ void cOsgCanvas::setScene(osg::Node *scene)
     this->scene = scene;
 }
 
+void cOsgCanvas::setGenericViewpoint(const Viewpoint& viewpoint)
+{
+    *genericViewpoint = viewpoint;
+}
+
 void cOsgCanvas::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
 {
-    *this->viewpoint = viewpoint;
+    *earthViewpoint = viewpoint;
 }
 
 osg::Group *cOsgCanvas::createOmnetppObjectNode(cObject *object)

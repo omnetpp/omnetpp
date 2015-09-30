@@ -20,6 +20,7 @@
 #ifdef WITH_OSG
 
 #include "qtenv.h"
+#include "omnetpp/cosgcanvas.h"
 
 #include <QTimer>
 #include <QApplication>
@@ -27,6 +28,7 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QLineEdit>
+#include <QMenu>
 
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
@@ -52,15 +54,23 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     QWidget *glWidget = nullptr;
     QTimer timer;
 
+    QAction *toTerrainManipulatorAction;
+    QAction *toTrackballManipulatorAction;
+    QAction *toEarthManipulatorAction;
+
   protected:
     QWidget *addViewWidget();
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
 
     void setClearColor(float r, float g, float b, float alpha);
-    void setCameraManipulator(osgGA::CameraManipulator *manipulator);
+    void setCameraManipulator(cOsgCanvas::CameraManipulatorType type);
     void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
     void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
+    QMenu *createCameraManipulatorMenu();
+
+  protected slots:
+    void setCameraManipulator(QAction *sender);
 
   public:
     OsgViewer(QWidget *parent=nullptr);
@@ -73,7 +83,6 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 
   signals:
     void objectsPicked(const std::vector<cObject*>&);
-
 };
 
 } // qtenv
