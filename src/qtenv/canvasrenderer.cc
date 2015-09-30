@@ -33,10 +33,14 @@ bool CanvasRenderer::fulfillsTagFilter(cFigure *figure)
 }
 
 // TODO: delete comment when ASSERT is available
-void CanvasRenderer::setLayer(GraphicsLayer *layer, cCanvas *canvas)
+void CanvasRenderer::setLayer(GraphicsLayer *layer, cCanvas *canvas, GraphicsLayer *networkLayer)
 {
     this->layer = layer;
     this->canvas = canvas;
+    this->networkLayer = networkLayer;
+
+    if(networkLayer)
+        this->layer->addItem(networkLayer);
 
     // ASSERT(canvas);
 }
@@ -50,6 +54,9 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
+    if(networkLayer)
+        layer->removeItem(networkLayer);
+
     layer->clear();
     items.clear();
 
@@ -58,6 +65,11 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
         cFigure::Transform transform;
         transform.scale(hints->zoom);
         drawFigureRec(canvas->getRootFigure(), transform, hints);
+    }
+    else
+    {
+        if(networkLayer)
+            layer->addItem(networkLayer);
     }
 }
 
@@ -114,6 +126,10 @@ void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& pa
 
         for (int i = 0; i < figure->getNumFigures(); i++)
             drawFigureRec(figure->getFigure(i), transform, hints);
+
+        if(canvas->getSubmodulesLayer() == figure)
+            if(networkLayer)
+                layer->addItem(networkLayer);
     }
 }
 

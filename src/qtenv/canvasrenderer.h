@@ -31,6 +31,8 @@ class CanvasRenderer
 {
 protected:
     GraphicsLayer *layer = nullptr;
+    GraphicsLayer *networkLayer = nullptr;
+
     cCanvas *canvas = nullptr;    // nullptr is allowed
     uint64_t enabledTagBits, exceptTagBits;
 
@@ -48,7 +50,7 @@ public:
         canvas(nullptr), enabledTagBits(0), exceptTagBits(0) {}
     virtual ~CanvasRenderer() {}
 
-    virtual void setLayer(GraphicsLayer *layer, cCanvas *canvas);
+    virtual void setLayer(GraphicsLayer *layer, cCanvas *canvas, GraphicsLayer *networkLayer = nullptr);
     virtual void setCanvas(cCanvas *canvas);
     virtual bool hasCanvas() {return canvas != nullptr;}
     virtual void refresh(FigureRenderingHints *hints);

@@ -66,19 +66,21 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
 
     setScene(new QGraphicsScene());
     scene()->addItem(backgroundLayer);
-    scene()->addItem(rangeLayer);
-    scene()->addItem(submoduleLayer);
     scene()->addItem(figureLayer);
-    scene()->addItem(animationLayer);
     scene()->addItem(bubbleLayer);
     scene()->addItem(zoomLabelLayer);
+
+    GraphicsLayer *networkLayer = new GraphicsLayer();
+    networkLayer->addItem(submoduleLayer);
+    networkLayer->addItem(rangeLayer);
+    networkLayer->addItem(animationLayer);
 
     zoomLabel = new ZoomLabel();
     zoomLabelLayer->addItem(zoomLabel);
     zoomLabel->setZoomFactor(zoomFactor);
 
     canvasRenderer = new CanvasRenderer();
-    canvasRenderer->setLayer(figureLayer, nullptr);
+    canvasRenderer->setLayer(figureLayer, nullptr, networkLayer);
 
     // that beautiful green shade behind everything
     setBackgroundBrush(QColor("#a0e0a0"));
@@ -204,7 +206,6 @@ void ModuleCanvasViewer::relayoutAndRedrawAll()
     getQtenv()->getAnimator()->redrawMessages();
     redrawNextEventMarker();
     refreshSubmodules();
-    adjustSubmodulesZOrder();
 }
 
 void ModuleCanvasViewer::recalculateLayout()
@@ -722,20 +723,6 @@ void ModuleCanvasViewer::refreshSubmodules()
     }
 }
 
-void ModuleCanvasViewer::adjustSubmodulesZOrder()
-{
-//    cCanvas *canvas = getCanvas();
-//    if (canvas) {
-//        cFigure *submodulesLayer = canvas->getSubmodulesLayer();
-//        if (submodulesLayer) {
-//            char tag[32];
-//            sprintf(tag, "f%d", submodulesLayer->getId());
-//            //CHK(Tcl_VarEval(interp, this->canvas, " lower submodext ", tag, TCL_NULL));
-//            //CHK(Tcl_VarEval(interp, this->canvas, " raise submodext ", tag, TCL_NULL));
-//        }
-//    }
-}
-
 void ModuleCanvasViewer::redraw()
 {
     clear();
@@ -754,7 +741,6 @@ void ModuleCanvasViewer::redraw()
     redrawFigures();
     redrawNextEventMarker();
     refreshSubmodules();
-    adjustSubmodulesZOrder();
 }
 
 void ModuleCanvasViewer::updateBackgroundColor()
@@ -799,7 +785,6 @@ void ModuleCanvasViewer::refresh()
         refreshFigures();
         redrawNextEventMarker();
         refreshSubmodules();
-        adjustSubmodulesZOrder();
     }
 }
 

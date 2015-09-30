@@ -81,7 +81,6 @@ private:
     void redrawModules();
     void redrawNextEventMarker();
     void refreshSubmodules();
-    void adjustSubmodulesZOrder();
 
     // updates submodPosMap (new modules, changed display strings, etc.)
     void refreshLayout();

@@ -41,6 +41,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void addItem(QGraphicsItem *item);
+    void removeItem(QGraphicsItem *item);
     void clear();
 };
 

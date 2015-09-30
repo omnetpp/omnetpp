@@ -65,8 +65,11 @@ void GraphicsLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 }
 
 void GraphicsLayer::addItem(QGraphicsItem *item) {
-    scene()->addItem(item);
     item->setParentItem(this);
+}
+
+void GraphicsLayer::removeItem(QGraphicsItem *item) {
+    item->setParentItem(nullptr);
 }
 
 void GraphicsLayer::clear() {
