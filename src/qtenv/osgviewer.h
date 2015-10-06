@@ -55,6 +55,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     QTimer timer;
 
     QAction *toTerrainManipulatorAction;
+    QAction *toOverviewManipulatorAction;
     QAction *toTrackballManipulatorAction;
     QAction *toEarthManipulatorAction;
 
@@ -70,7 +71,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     QMenu *createCameraManipulatorMenu();
 
   protected slots:
-    void setCameraManipulator(QAction *sender);
+    void setCameraManipulator(QAction *sender); // will get the type from the QAction data
 
   public:
     OsgViewer(QWidget *parent=nullptr);

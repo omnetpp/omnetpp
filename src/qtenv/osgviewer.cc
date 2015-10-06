@@ -27,6 +27,7 @@
 #include "omnetpp/osgutil.h"
 #include "inspectorutil.h"
 #include "osgviewer.h"
+#include "cameramanipulators.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -51,16 +52,30 @@ PickHandler::~PickHandler()
 bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
+
+    // keeping track of where the right button has been pressed down so we can
+    // show the context menu upon release only if it hasn't been moved much
+    // - otherwise it was probably a zooming or panning gesture, no need for a menu
+    static float rightClickX;
+    static float rightClickY;
+    // only showing the context menu if the drag was shorter than this many pixels
+    const int rightDragThreshold = 3;
+
     switch(ea.getEventType())
     {
         case osgGA::GUIEventAdapter::PUSH:
             if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
                 emit viewer->objectsPicked(pick(view, ea));
+            if (ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
+                rightClickX = ea.getX();
+                rightClickY = ea.getY();
+            }
             break;
         // context menus can't be opened on push, because then only the QMenu would receive
         // the release event, osg wouldn't, and it would think it's stuck in the "down" position
         case osgGA::GUIEventAdapter::RELEASE:
-            if (view && ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
+            if (view && ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON
+                    && osg::Vec2d(ea.getX() - rightClickX, ea.getY() - rightClickY).length() < rightDragThreshold) {
                 auto objects = pick(view, ea);
                 Inspector *insp = dynamic_cast<Inspector*>(viewer->parentWidget()->parentWidget());
                 QMenu *menu;
@@ -146,6 +161,11 @@ OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
     toTerrainManipulatorAction->setData(cOsgCanvas::CAM_TERRAIN);
     toTerrainManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
     toTerrainManipulatorAction->setCheckable(true);
+
+    toOverviewManipulatorAction = new QAction("Overview", this);
+    toOverviewManipulatorAction->setData(cOsgCanvas::CAM_OVERVIEW);
+    toOverviewManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
+    toOverviewManipulatorAction->setCheckable(true);
 
     toTrackballManipulatorAction = new QAction("Trackball", this);
     toTrackballManipulatorAction->setData(cOsgCanvas::CAM_TRACKBALL);
@@ -268,12 +288,16 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type)
     osgGA::CameraManipulator *manipulator = nullptr;
 
     if (type == cOsgCanvas::CAM_AUTO)
-        type = osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_GENERIC ? cOsgCanvas::CAM_TERRAIN : cOsgCanvas::CAM_EARTH;
+        type = osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_GENERIC ? cOsgCanvas::CAM_OVERVIEW : cOsgCanvas::CAM_EARTH;
 
     switch (type) {
         case cOsgCanvas::CAM_TERRAIN:
             manipulator = new osgGA::TerrainManipulator;
             toTerrainManipulatorAction->setChecked(true);
+            break;
+        case cOsgCanvas::CAM_OVERVIEW:
+            manipulator = new OverviewManipulator;
+            toOverviewManipulatorAction->setChecked(true);
             break;
         case cOsgCanvas::CAM_TRACKBALL:
             manipulator = new osgGA::TrackballManipulator;
@@ -320,6 +344,7 @@ QMenu *OsgViewer::createCameraManipulatorMenu()
 {
     QMenu *menu = new QMenu("Camera manipulator", this);
     menu->addAction(toTerrainManipulatorAction);
+    menu->addAction(toOverviewManipulatorAction);
     menu->addAction(toTrackballManipulatorAction);
     menu->addAction(toEarthManipulatorAction);
     return menu;

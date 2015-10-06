@@ -47,7 +47,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
     public:
         enum ViewerStyle { STYLE_GENERIC, STYLE_EARTH };
         typedef cFigure::Color Color;
-        enum CameraManipulatorType { CAM_AUTO, CAM_TERRAIN, CAM_TRACKBALL, CAM_EARTH };
+        enum CameraManipulatorType { CAM_AUTO, CAM_TERRAIN, CAM_OVERVIEW, CAM_TRACKBALL, CAM_EARTH };
 
         // this is only needed to simplify the Viewpoint hint
         struct Vec3d {
@@ -59,7 +59,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
             Vec3d eye, center, up; // see OpenGL gluLookAt
             Viewpoint(const Vec3d &eye, const Vec3d &center, const Vec3d &up): eye(eye), center(center), up(up) {}
         };
-        
+
     protected:
         osg::Node *scene;  // reference counted
 

@@ -93,7 +93,8 @@ SOURCES += mainwindow.cc \
     messageitem.cc \
     canvasviewer.cc \
     layersdialog.cc \
-    fileeditor.cc
+    fileeditor.cc \
+    cameramanipulators.cc
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h qtenvdefs.h \
     runselectiondialog.h \
@@ -126,7 +127,8 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     messageitem.h \
     canvasviewer.h \
     layersdialog.h \
-    fileeditor.h
+    fileeditor.h \
+    cameramanipulators.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
