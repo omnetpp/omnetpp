@@ -246,6 +246,11 @@ protected:
     virtual QGraphicsItem *newItem();
 };
 
+class PixmapFigureRenderer : public ImageFigureRenderer
+{
+    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+};
+
 } // namespace qtenv
 } // namespace omnetpp
 

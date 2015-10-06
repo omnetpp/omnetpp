@@ -17,6 +17,7 @@
 #include "figurerenderers.h"
 
 #include "graphicspatharrowitem.h"
+#include "qtenv.h"
 #include <sstream>
 #include <cfloat>
 #include <QGraphicsScene>
@@ -192,6 +193,16 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
             renderer = it->second;
         else {
             renderer = new ImageFigureRenderer();
+            rendererCache[className] = renderer;
+        }
+    }
+    else if (dynamic_cast<cPixmapFigure *>(figure)) {
+        className = "PixmapFigure";
+        auto it = rendererCache.find(className);
+        if (it != rendererCache.end())
+            renderer = it->second;
+        else {
+            renderer = new PixmapFigureRenderer();
             rendererCache[className] = renderer;
         }
     }
@@ -1282,16 +1293,15 @@ void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item,
 void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
-    // TODO image location
-    QImage image(QString("./images/") + imageFigure->getImageName() + ".png");
-    if(image.isNull())
+    QImage *image = getQtenv()->icons.getImage(imageFigure->getImageName(), "");
+    if(image->isNull())
         qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
 
     if (imageFigure->getWidth() != 0 && imageFigure->getHeight() != 0)
-        imageItem->setPixmap(QPixmap::fromImage(image.scaled(imageFigure->getWidth(), imageFigure->getHeight())));
+        imageItem->setPixmap(QPixmap::fromImage(image->scaled(imageFigure->getWidth(), imageFigure->getHeight())));
     else
-        imageItem->setPixmap(QPixmap::fromImage(image));
+        imageItem->setPixmap(QPixmap::fromImage(*image));
 }
 
 void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1299,6 +1309,7 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
 
+    //TODO not working with QTransform
     if (imageFigure->getInterpolation() == cFigure::INTERPOLATION_BEST)
         imageItem->setTransformationMode(Qt::SmoothTransformation);
     else
@@ -1316,6 +1327,25 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
 QGraphicsItem *ImageFigureRenderer::newItem()
 {
     return new QGraphicsPixmapItem();
+}
+
+void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
+{
+    cPixmapFigure *pixmapFigure = static_cast<cPixmapFigure *>(figure);
+    QGraphicsPixmapItem *pixmapItem = static_cast<QGraphicsPixmapItem *>(item);
+
+    QImage image(pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(), QImage::Format_ARGB32);
+    for(int x = 0; x < image.width(); ++x)
+        for(int y = 0; y < image.height(); ++y)
+        {
+            cFigure::RGBA rgba = pixmapFigure->getPixel(x, y);
+            image.setPixel(x, y, qRgba(rgba.red, rgba.green, rgba.blue, rgba.alpha));
+        }
+
+    Qt::TransformationMode transMode = pixmapFigure->getInterpolation() == cFigure::INTERPOLATION_BEST ?
+                Qt::FastTransformation : Qt::SmoothTransformation;
+    image = image.scaled(pixmapFigure->getWidth(), pixmapFigure->getHeight(), Qt::IgnoreAspectRatio, transMode);
+    pixmapItem->setPixmap(QPixmap::fromImage(image));
 }
 
 } // namespace qtenv
