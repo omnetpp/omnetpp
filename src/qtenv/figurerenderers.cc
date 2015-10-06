@@ -71,151 +71,54 @@ void FigureRenderer::PathItem::paint(QPainter *painter, const QStyleOptionGraphi
 
 std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
 
+template<class T>
+FigureRenderer *FigureRenderer::searchInCache(std::string className)
+{
+    FigureRenderer *renderer;
+    auto it = rendererCache.find(className);
+    if (it != rendererCache.end())
+        renderer = it->second;
+    else {
+        renderer = new T;
+        rendererCache[className] = renderer;
+    }
+
+    return renderer;
+}
+
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
     FigureRenderer *renderer = nullptr;
     std::string className;
 
-    if (dynamic_cast<cArcFigure *>(figure)) {
-        className = "ArcFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new ArcFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cLineFigure *>(figure)) {
-        className = "LineFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new LineFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cPolylineFigure *>(figure)) {
-        className = "PolylineFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new PolylineFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cRectangleFigure *>(figure)) {
-        className = "RectangleFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new RectangleFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cOvalFigure *>(figure)) {
-        className = "OvalFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new OvalFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cRingFigure *>(figure)) {
-        className = "RingFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new RingFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cPieSliceFigure *>(figure)) {
-        className = "PieSliceFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new PieSliceFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cPolygonFigure *>(figure)) {
-        className = "PolygonFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new PolygonFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cPathFigure *>(figure)) {
-        className = "PathFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new PathFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cTextFigure *>(figure)) {
-        className = "TextFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new TextFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cLabelFigure *>(figure)) {
-        className = "LabelFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new LabelFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cImageFigure *>(figure)) {
-        className = "ImageFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new ImageFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else if (dynamic_cast<cPixmapFigure *>(figure)) {
-        className = "PixmapFigure";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new PixmapFigureRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
-    else {
-        className = "Null";
-        auto it = rendererCache.find(className);
-        if (it != rendererCache.end())
-            renderer = it->second;
-        else {
-            renderer = new NullRenderer();
-            rendererCache[className] = renderer;
-        }
-    }
+    if (dynamic_cast<cArcFigure *>(figure))
+        renderer = searchInCache<ArcFigureRenderer>("ArcFigure");
+    else if (dynamic_cast<cLineFigure *>(figure))
+        renderer = searchInCache<LineFigureRenderer>("LineFigure");
+    else if (dynamic_cast<cPolylineFigure *>(figure))
+        renderer = searchInCache<PolylineFigureRenderer>("PolylineFigure");
+    else if (dynamic_cast<cRectangleFigure *>(figure))
+        renderer = searchInCache<RectangleFigureRenderer>("RectangleFigure");
+    else if (dynamic_cast<cOvalFigure *>(figure))
+        renderer = searchInCache<OvalFigureRenderer>("OvalFigure");
+    else if (dynamic_cast<cRingFigure *>(figure))
+        renderer = searchInCache<RingFigureRenderer>("RingFigure");
+    else if (dynamic_cast<cPieSliceFigure *>(figure))
+        renderer = searchInCache<PieSliceFigureRenderer>("PieSliceFigure");
+    else if (dynamic_cast<cPolygonFigure *>(figure))
+        renderer = searchInCache<PolygonFigureRenderer>("PolygonFigure");
+    else if (dynamic_cast<cPathFigure *>(figure))
+        renderer = searchInCache<PathFigureRenderer>("PathFigure");
+    else if (dynamic_cast<cTextFigure *>(figure))
+        renderer = searchInCache<TextFigureRenderer>("TextFigure");
+    else if (dynamic_cast<cLabelFigure *>(figure))
+        renderer = searchInCache<LabelFigureRenderer>("LabelFigure");
+    else if (dynamic_cast<cImageFigure *>(figure))
+        renderer = searchInCache<ImageFigureRenderer>("ImageFigure");
+    else if (dynamic_cast<cPixmapFigure *>(figure))
+        renderer = searchInCache<PixmapFigureRenderer>("PixmapFigure");
+    else
+        renderer = searchInCache<NullRenderer>("Null");
 
     return renderer;
 }

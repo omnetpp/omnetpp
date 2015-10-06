@@ -81,6 +81,9 @@ private:
                                             double &centerX, double &centerY,
                                             double &startAngle, double &sweepLength) const;
 
+    template<class T>
+    static FigureRenderer *searchInCache(std::string className);
+
 protected:
 
     inline cFigure::Point polarToCertasian(cFigure::Point center, double rx, double ry, double rad) const;
