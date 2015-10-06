@@ -25,6 +25,8 @@
 #include "layout/basicspringembedderlayout.h"
 #include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
+#include "mainwindow.h"
+#include "layouterenv.h"
 #include "figurerenderers.h"
 #include "animator.h"
 #include "compoundmoduleitem.h"
@@ -35,8 +37,11 @@
 #include <QScrollBar>
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
+#include <QGraphicsWidget>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QApplication>
+#include <QAction>
 
 #define emit
 
@@ -158,8 +163,8 @@ void ModuleCanvasViewer::wheelEvent(QWheelEvent *event)
 
 void ModuleCanvasViewer::resizeEvent(QResizeEvent *event)
 {
-    QGraphicsView::resizeEvent(event);
-    recalcSceneRect();
+    if (isEnabled())
+        recalcSceneRect();
     updateZoomLabelPos();
 }
 
@@ -230,6 +235,13 @@ void ModuleCanvasViewer::recalculateLayout()
 
 void ModuleCanvasViewer::refreshLayout()
 {
+    static bool inProgress = false;
+
+    if (inProgress)
+        return;
+
+    inProgress = true;
+
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
     // only new nodes are re-layouted
 
@@ -325,24 +337,50 @@ void ModuleCanvasViewer::refreshLayout()
         }
     }
 
+
+
     // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
-    // TODO TkenvGraphLayouterEnvironment
-    BasicGraphLayouterEnvironment environment;
+    qtenv::QtenvGraphLayouterEnvironment qtenvEnvironment(parentModule, ds);
+    connect(getQtenv()->getMainWindow()->getStopAction(), SIGNAL(triggered()), &qtenvEnvironment, SLOT(stop()));
 
-    // TODO
-//    std::string stopButton = std::string(getWindowName()) + ".toolbar.stop";
-//    bool isExpressMode = getTkenv()->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS;
-//    if (!isExpressMode)
-//        environment.setWidgetToGrab(stopButton.c_str());
+    // we still have to set something for the layouter if visualisation is disabled.
+    BasicGraphLayouterEnvironment basicEnvironment;
 
-//    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
-//    // if (getTkenv()->opt->showlayouting)  // for debugging
-//    if (submodPosMap.empty() && getTkenv()->opt->showLayouting)
-//        environment.setCanvas(canvas);
+    // we are replacing the scene in the view with a temporary one which is used only
+    // for visualising the layouting process, and is managed by the qtenvEnvironment
+    // so we don't ruin the layer structure in the existing scene
 
-    layouter->setEnvironment(&environment);
+    auto moduleScene = scene();
+    QGraphicsScene *layoutScene = nullptr;
+
+    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
+    if (submodPosMap.empty() && getQtenv()->opt->showLayouting) { // for realz
+    //if (getQtenv()->opt->showLayouting) { // for debugging
+        layoutScene = new QGraphicsScene(this);
+
+        setSceneRect(QRectF());
+        setScene(layoutScene);
+        qtenvEnvironment.setView(this);
+
+        layoutScene->setBackgroundBrush(QColor("#a0e0a0"));
+
+        getQtenv()->getMainWindow()->enterLayoutingMode();
+
+        layouter->setEnvironment(&qtenvEnvironment);
+    } else {
+        layouter->setEnvironment(&basicEnvironment);
+    }
+
+
     layouter->execute();
-    // environment.cleanup();
+    qtenvEnvironment.cleanup();
+
+    if (moduleScene != scene())
+        setScene(moduleScene);
+
+    delete layoutScene;
+
+    getQtenv()->getMainWindow()->exitLayoutingMode();
 
     // fill the map with the results
     submodPosMap.clear();
@@ -360,6 +398,8 @@ void ModuleCanvasViewer::refreshLayout()
     layoutSeed = layouter->getSeed();
 
     delete layouter;
+
+    inProgress = false;
 }
 
 void ModuleCanvasViewer::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,

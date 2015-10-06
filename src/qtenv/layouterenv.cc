@@ -21,137 +21,121 @@
 #include <cstdlib>
 #include <cmath>
 #include <cassert>
-#include <QCoreApplication>
 
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "layouterenv.h"
 #include "qtutil.h"
+#include "qtenv.h"
+#include <QDebug>
+#include <QApplication>
 
 namespace omnetpp {
 namespace qtenv {
-/*TCLKILL
-TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString)
-    : displayString(displayString)
-{
-    this->interp = interp;
-    this->parentModule = parentModule;
-    widgetToGrab = nullptr;
-    canvas = nullptr;
-    interp = nullptr;
 
-    gettimeofday(&beginTime, nullptr);
-    gettimeofday(&lastCheck, nullptr);
-    grabActive = false;
+QtenvGraphLayouterEnvironment::QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString)
+    : parentModule(parentModule), displayString(displayString)
+{
 }
 
-bool TkenvGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
+bool QtenvGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
 {
     return resolveBoolDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-long TkenvGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
+long QtenvGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
 {
     return resolveLongDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-double TkenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
+double QtenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
 {
     return resolveDoubleDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-void TkenvGraphLayouterEnvironment::clearGraphics()
+void QtenvGraphLayouterEnvironment::clearGraphics()
 {
-    if (inspected()) {
-        CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
+    if (scene)
+        scene->clear();
+}
+
+void QtenvGraphLayouterEnvironment::showGraphics(const char *text)
+{
+    bbox = nextbbox;
+    nextbbox = QRectF();
+    auto item = new QGraphicsTextItem(text);
+    item->setTextWidth(view->viewport()->size().width());
+    item->setFont(getQtenv()->getCanvasFont());
+    scene->addItem(item);
+    scene->setSceneRect(scene->itemsBoundingRect());
+    QApplication::processEvents();
+}
+
+void QtenvGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
+{
+    scaleCoords(x, y);
+    auto item = new QGraphicsSimpleTextItem(text);
+    item->setPos(x, y);
+    item->setBrush(parseColor(color));
+    item->setFont(getQtenv()->getCanvasFont());
+    scene->addItem(item);
+}
+
+void QtenvGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
+{
+    scaleCoords(x1, y1);
+    scaleCoords(x2, y2);
+    auto item = new QGraphicsLineItem(x1, y1, x2, y2);
+    item->setPen(parseColor(color));
+    scene->addItem(item);
+}
+
+void QtenvGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
+{
+    scaleCoords(x1, y1);
+    scaleCoords(x2, y2);
+    auto item = new QGraphicsRectItem(x1, y1, x2-x1, y2-y1);
+    item->setPen(parseColor(color));
+    scene->addItem(item);
+}
+
+bool QtenvGraphLayouterEnvironment::okToProceed()
+{
+    QApplication::processEvents();
+    return !stopFlag;
+}
+
+void QtenvGraphLayouterEnvironment::cleanup()
+{
+    if (view)
+        view->setTransform(QTransform());
+    clearGraphics();
+}
+
+void QtenvGraphLayouterEnvironment::stop()
+{
+    stopFlag = true;
+}
+
+void QtenvGraphLayouterEnvironment::scaleCoords(double &x, double &y)
+{
+    int vMargin = QFontMetrics(getQtenv()->getCanvasFont()).height()*2;
+    int hMargin = 20;
+
+    if (view) {
+        nextbbox = nextbbox.united(QRectF(x, y, 1, 1));
+        auto viewRect = view->viewport()->geometry();
+        x -= bbox.left();
+        y -= bbox.top();
+        float scale =std::min(1.0,
+                              std::min((viewRect.width()-hMargin*2) / bbox.width(),
+                                       (viewRect.height()-vMargin*2) / bbox.height()));
+        x *= scale;
+        y *= scale;
+        x += hMargin;
+        y += vMargin;
     }
 }
 
-void TkenvGraphLayouterEnvironment::showGraphics(const char *text)
-{
-    if (inspected()) {
-        CHK(Tcl_VarEval(interp, canvas, " raise node", TCL_NULL));
-        CHK(Tcl_VarEval(interp, "layouter:debugDrawFinish ", canvas, " {", text, "}", TCL_NULL));
-    }
-}
-
-void TkenvGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
-{
-    if (inspected()) {
-        char coords[100];
-        sprintf(coords, "%d %d", (int)x, (int)y);
-        CHK(Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, TCL_NULL));
-    }
-}
-
-void TkenvGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
-{
-    if (inspected()) {
-        char coords[100];
-        sprintf(coords, "%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
-        CHK(Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, TCL_NULL));
-    }
-}
-
-void TkenvGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
-{
-    if (inspected()) {
-        char coords[100];
-        sprintf(coords, "%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
-        CHK(Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, TCL_NULL));
-    }
-}
-
-bool TkenvGraphLayouterEnvironment::okToProceed()
-{
-    //
-    // Strategy: do not interact with UI for up to 3 seconds. At the end of the
-    // 3rd second, start grab on the "STOP" button, and read its state
-    // occasionally (5 times per second). At the end (in cleanup()) we have to
-    // release the grab. Do not set a grab in Express mode (i.e. if widgetToGrab==nullptr),
-    // because Express mode's large STOP button already has one.
-    //
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    if (timeval_msec(now - beginTime) < 3000)
-        return true;  // no UI interaction for up to 3 sec
-
-    if (!grabActive && widgetToGrab) {
-        // start grab
-        grabActive = true;
-        Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
-        CHK(Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, TCL_NULL));
-    }
-
-    // only check the UI once a while
-    if (timeval_msec(now - lastCheck) < 200)
-        return true;
-    lastCheck = now;
-
-    // process UI events; we assume that a "grab" is in effect to the Stop button
-    // (i.e. the user can only interact with the Stop button, but nothing else)
-    // Qt: CHK(Tcl_VarEval(interp, "update\n", TCL_NULL));
-    QCoreApplication::processEvents();
-    const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
-    bool stopNow = var && var[0] && var[0] != '0';
-    return !stopNow;
-}
-
-void TkenvGraphLayouterEnvironment::cleanup()
-{
-    if (inspected()) {
-        CHK(Tcl_VarEval(interp,
-                        canvas, " delete all\n",
-                        canvas, " config -scrollregion {0 0 1 1}\n",
-                        canvas, " xview moveto 0\n",
-                        canvas, " yview moveto 0\n",
-                        TCL_NULL));
-    }
-    if (grabActive) {
-        CHK(Tcl_VarEval(interp, "layouter:releaseGrab ", widgetToGrab, TCL_NULL));
-    }
-}
-*/
 } // namespace qtenv
 } // namespace omnetpp
-

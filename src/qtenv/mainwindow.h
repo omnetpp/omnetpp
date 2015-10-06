@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_QTENV_MAINWINDOW_H
 #define __OMNETPP_QTENV_MAINWINDOW_H
 
+#include <set>
 #include "qtenvdefs.h"
 #include <QMainWindow>
 #include <QModelIndex>
@@ -52,6 +53,10 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    // stores actions and inspectors that have been disabled
+    // only for layouting (so we can restore the state later)
+    std::set<QObject*> disabledForLayouting;
+
 public:
     enum eMode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
 
@@ -67,6 +72,7 @@ public:
     QWidget *getObjectInspectorArea();
     QWidget *getLogInspectorArea();
     QWidget *getTimeLineArea();
+    QAction *getStopAction();
 
     void storeGeometry();
     void restoreGeometry();
@@ -81,6 +87,14 @@ public:
     bool networkReady();
     void runUntilMsg(cMessage *msg, int runMode);
     void excludeMessageFromAnimation(cObject *msg);
+
+    // disables all actions and inspectors except the stopAction and ModuleInspectors
+    // and saves the disabled objects into disabledForLayouting.
+    // the exit counterpart must be called at least once between calls
+    void enterLayoutingMode();
+    // restores the changes made by the function above.
+    // will do no harm if called multiple times, or without any enterLayoutingMode call at all
+    void exitLayoutingMode();
 
 protected:
     // if the parameter is true, the dialog will be shown even if there is only a single config

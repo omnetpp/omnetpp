@@ -172,7 +172,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     toolbar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this, SLOT(runUntil()));
     QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)", this, SLOT(fastRunUntil()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()));
+    toolbar->addAction(getQtenv()->getMainWindow()->getStopAction());
     toolbar->addSeparator();
 
     // canvas-specfic
@@ -375,8 +375,7 @@ void ModuleInspector::fastRunUntil()
 
 void ModuleInspector::stopSimulation()
 {
-    MainWindow *mainWindow = getQtenv()->getMainWindow();
-    mainWindow->on_actionStop_triggered();
+    getQtenv()->getMainWindow()->getStopAction()->trigger();
 }
 
 //Relayout the compound module, and resize the window accordingly.

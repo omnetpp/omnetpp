@@ -38,6 +38,7 @@
 #include "genericobjectinspector.h"
 #include "loginspector.h"
 #include "timelineinspector.h"
+#include "moduleinspector.h"
 #include "timelinegraphicsview.h"
 #include "rununtildialog.h"
 #include "filteredobjectlistdialog.h"
@@ -148,6 +149,42 @@ void MainWindow::closeStopDialog()
 {
     stopDialog->close();
     setEnabled(true);
+}
+
+void MainWindow::enterLayoutingMode()
+{
+    ASSERT(disabledForLayouting.empty());
+
+    for (auto c : findChildren<QObject*>()) {
+        auto action = dynamic_cast<QAction*>(c);
+        if (action && action->isEnabled() && action != ui->actionStop) {
+            disabledForLayouting.insert(action);
+            action->setEnabled(false);
+        }
+
+        auto inspector = dynamic_cast<Inspector*>(c);
+        // ModuleInspectors themselves aren't disabled, so the STOP button
+        // will still work them and any other actions are disabled anyways
+        if (inspector && inspector->isEnabled() && !dynamic_cast<ModuleInspector*>(inspector)) {
+            disabledForLayouting.insert(inspector);
+            inspector->setEnabled(false);
+        }
+    }
+}
+
+void MainWindow::exitLayoutingMode()
+{
+    for (auto c : disabledForLayouting) {
+        auto action = dynamic_cast<QAction*>(c);
+        if (action)
+            action->setEnabled(true);
+
+        auto inspector = dynamic_cast<Inspector*>(c);
+        if (inspector)
+            inspector->setEnabled(true);
+    }
+
+    disabledForLayouting.clear();
 }
 
 bool MainWindow::checkRunning()
@@ -484,6 +521,11 @@ QWidget *MainWindow::getLogInspectorArea()
 QWidget *MainWindow::getTimeLineArea()
 {
     return ui->timeLine;
+}
+
+QAction *MainWindow::getStopAction()
+{
+    return ui->actionStop;
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)

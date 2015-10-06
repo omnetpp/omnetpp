@@ -18,7 +18,9 @@
 #define __OMNETPP_QTENV_LAYOUTERENV_H
 
 #include "layout/graphlayouter.h"
-#include "qtenvdefs.h"
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QObject>
 
 namespace omnetpp {
 
@@ -26,31 +28,40 @@ class cModule;
 class cDisplayString;
 
 namespace qtenv {
-/*TCLKILL
-class TkenvGraphLayouterEnvironment : public omnetpp::layout::GraphLayouterEnvironment
+
+class QtenvGraphLayouterEnvironment : public QObject, public omnetpp::layout::GraphLayouterEnvironment
 {
+    Q_OBJECT
    protected:
       // configuration
-      const char *widgetToGrab;
-      const char *canvas;
-      Tcl_Interp *interp;
+      QGraphicsScene *scene = nullptr;
+      QGraphicsView *view = nullptr;
       cModule *parentModule;
       const cDisplayString& displayString;
 
       // state
-      struct timeval beginTime;
-      struct timeval lastCheck;
-      bool grabActive;
+      bool stopFlag = false;
+
+      // bbox is used to scale the item coords to fit the viewport
+      // and nextbbox is the union of all the unscaled coords drawn
+      // in the current "frame", and will be used to scale the next one
+      QRectF bbox, nextbbox;
+
+      // the regular scene transformation methods distort text, so we have
+      // to scale the coords ourselves.
+      void scaleCoords(double &x, double &y);
+
+public slots:
+      void stop();
 
    public:
-      TkenvGraphLayouterEnvironment(Tcl_Interp *interp, cModule *parentModule, const cDisplayString& displayString);
+      QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString);
 
-      void setWidgetToGrab(const char *w) { this->widgetToGrab = w; }
-      void setCanvas(const char *canvas) { this->canvas = canvas; }
+      void setView(QGraphicsView *view) { this->view = view; scene = view->scene(); }
 
       void cleanup();
 
-      virtual bool inspected() override { return canvas && interp; }
+      virtual bool inspected() override { return scene; }
       virtual bool okToProceed() override;
 
       virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue) override;
@@ -63,8 +74,9 @@ class TkenvGraphLayouterEnvironment : public omnetpp::layout::GraphLayouterEnvir
       virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
       virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
 };
-*/
+
 } // namespace qtenv
 } // namespace omnetpp
+
 
 #endif
