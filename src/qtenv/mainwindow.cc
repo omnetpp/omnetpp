@@ -22,6 +22,7 @@
 #include <QTextLayout>
 #include <QTimer>
 #include <QLineEdit>
+#include <QDialogButtonBox>
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
@@ -30,6 +31,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "inspector.h"
 #include "common/stringutil.h"
+#include "common/ver.h"
 #include "stopdialog.h"
 #include "inspectorutil.h"
 #include "genericobjectinspector.h"
@@ -45,6 +47,9 @@ using namespace OPP::common;
 
 namespace omnetpp {
 namespace qtenv {
+
+QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Framework\n\n(C) 1992-2015 Opensim Ltd.\n\
+        Release: " + QString(OMNETPP_RELEASE) + ", build: " + OMNETPP_BUILDID + "\n" + OMNETPP_EDITION + "\n\nNO WARRANTY -- see license for details.";
 
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
@@ -927,7 +932,7 @@ void MainWindow::on_actionVerticalLayout_triggered(bool checked)
     }
 }
 
-void omnetpp::qtenv::MainWindow::on_actionHorizontalLayout_triggered(bool checked)
+void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
 {
     if(checked)
     {
@@ -939,6 +944,39 @@ void omnetpp::qtenv::MainWindow::on_actionHorizontalLayout_triggered(bool checke
         ui->actionHorizontalLayout->setChecked(false);
         on_actionVerticalLayout_triggered(true);
     }
+}
+
+
+void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
+{
+    QDialog *about = new QDialog();
+    about->setWindowTitle("About OMNeT++/OMNEST");
+    QVBoxLayout *layout = new QVBoxLayout();
+    about->setLayout(layout);
+
+    QFrame *frame = new QFrame();
+    frame->setFrameShape(QFrame::StyledPanel);
+    QVBoxLayout *frameLayout = new QVBoxLayout();
+    frame->setLayout(frameLayout);
+
+    QLabel *label = new QLabel(aboutText);
+    QFont font = label->font();
+    font.setBold(true);
+    label->setFont(font);
+    label->setAlignment(Qt::AlignHCenter);
+    frameLayout->addWidget(label);
+
+    layout->addWidget(frame);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(buttonBox, SIGNAL(accepted()), about, SLOT(accept()));
+    layout->addWidget(buttonBox);
+    about->exec();
+
+    delete layout;
+    delete frameLayout;
+    delete buttonBox;
+    delete about;
 }
 
 } // namespace qtenv

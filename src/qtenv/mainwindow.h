@@ -104,6 +104,7 @@ public slots:
     void on_actionDebugNextEvent_triggered();
     void on_actionEventlogRecording_triggered();
     void on_actionSetUpUnconfiguredNetwork_triggered();
+    void on_actionAbout_OMNeT_Qtenv_triggered();
 
 protected slots:
     void on_actionVerticalLayout_triggered(bool checked);
@@ -120,6 +121,7 @@ private:
     QList<int> timeLineSize;
     bool showStatusDetails;
     FilteredObjectListDialog *filteredObjectListDialog;
+    static QString aboutText;
 
     bool checkRunning();
     void runSimulation(eMode mode);
