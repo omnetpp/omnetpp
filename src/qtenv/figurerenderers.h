@@ -157,24 +157,39 @@ protected:
     virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*, FigureRenderingHints *hints) {}
 };
 
-class LineFigureRenderer : public FigureRenderer
+class AbstractLineFigureRenderer : public FigureRenderer
 {
+protected:
+    void setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem);
+};
+
+class LineFigureRenderer : public AbstractLineFigureRenderer
+{
+private:
+    void setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, QPen *pen = nullptr);
+
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual QGraphicsItem *newItem();
 };
 
-class ArcFigureRenderer : public FigureRenderer
+class ArcFigureRenderer : public AbstractLineFigureRenderer
 {
+private:
+    void setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, QPen *pen = nullptr);
+
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual QGraphicsItem *newItem();
 };
 
-class PolylineFigureRenderer : public FigureRenderer
+class PolylineFigureRenderer : public AbstractLineFigureRenderer
 {
+private:
+    void setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, QPen *pen = nullptr);
+
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);

@@ -621,26 +621,120 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsIte
     setTransform(transform, item, &anchor);
 }
 
-// TODO: Start/End Arrow
+void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, QPen *pen)
+{
+    if(lineFigure->getStartArrowHead() == cFigure::ARROW_NONE &&
+            lineFigure->getEndArrowHead() == cFigure::ARROW_NONE)
+        return;
+
+    QPointF start(lineFigure->getStart().x, lineFigure->getStart().y);
+    QPointF end(lineFigure->getEnd().x, lineFigure->getEnd().y);
+    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(lineItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(lineItem->childItems()[1]);
+
+    if(lineFigure->getStartArrowHead() != cFigure::ARROW_NONE)
+    {
+        startArrow->setVisible(true);
+        setArrowStyle(lineFigure->getStartArrowHead(), startArrow);
+        if(pen)
+            startArrow->setPen(*pen);
+        startArrow->configureArrow(start, end);
+    }
+    else
+        startArrow->setVisible(false);
+
+    if(lineFigure->getEndArrowHead() != cFigure::ARROW_NONE)
+    {
+        endArrow->setVisible(true);
+        setArrowStyle(lineFigure->getEndArrowHead(), endArrow);
+        if(pen)
+            endArrow->setPen(*pen);
+        endArrow->configureArrow(end, start);
+    }
+    else
+        endArrow->setVisible(false);
+}
+
+void AbstractLineFigureRenderer::setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem)
+{
+    switch (style) {
+        case cFigure::ARROW_BARBED:
+            arrowItem->setArrowStyle(GraphicsPathArrowItem::BARBED);
+            break;
+        case cFigure::ARROW_SIMPLE:
+            arrowItem->setArrowStyle(GraphicsPathArrowItem::SIMPLE);
+            break;
+        case cFigure::ARROW_TRIANGLE:
+            arrowItem->setArrowStyle(GraphicsPathArrowItem::TRIANGLE);
+            break;
+    default:
+        break;
+    }
+}
+
 void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
     QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem *>(item);
     QPointF start(lineFigure->getStart().x, lineFigure->getStart().y);
     QPointF end(lineFigure->getEnd().x, lineFigure->getEnd().y);
+
     lineItem->setLine(QLineF(start, end));
+    setArrows(lineFigure, lineItem);
 }
 
 void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
     QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem *>(item);
+    QPen pen = createPen(lineFigure, hints);
     lineItem->setPen(createPen(lineFigure, hints));
+    setArrows(lineFigure, lineItem, &pen);
 }
 
 QGraphicsItem *LineFigureRenderer::newItem()
 {
-    return new QGraphicsLineItem();
+    QGraphicsLineItem *lineItem = new QGraphicsLineItem();
+    new GraphicsPathArrowItem(lineItem);
+    new GraphicsPathArrowItem(lineItem);
+    return lineItem;
+}
+
+void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, QPen *pen)
+{
+    if(arcFigure->getStartArrowHead() == cFigure::ARROW_NONE &&
+            arcFigure->getEndArrowHead() == cFigure::ARROW_NONE)
+        return;
+
+    QPainterPath painter = arcItem->path();
+    QPainterPath::Element element = painter.elementAt(0);
+    QPointF start(element.x, element.y);
+    QPointF end(painter.currentPosition());
+    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[1]);
+
+    if(arcFigure->getStartArrowHead() != cFigure::ARROW_NONE)
+    {
+        startArrow->setVisible(true);
+        setArrowStyle(arcFigure->getStartArrowHead(), startArrow);
+        if(pen)
+            startArrow->setPen(*pen);
+        startArrow->configureArrow(start, end);
+    }
+    else
+        startArrow->setVisible(false);
+
+
+    if(arcFigure->getEndArrowHead() != cFigure::ARROW_NONE)
+    {
+        endArrow->setVisible(true);
+        setArrowStyle(arcFigure->getEndArrowHead(), endArrow);
+        if(pen)
+            endArrow->setPen(*pen);
+        endArrow->configureArrow(end, start);
+    }
+    else
+        endArrow->setVisible(false);
 }
 
 void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -653,23 +747,75 @@ void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem
     QPainterPath painter(QPointF(startPoint.x, startPoint.y));
     painter.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, arcFigure->getStartAngle()*180/M_PI, qAbs(arcFigure->getStartAngle()-arcFigure->getEndAngle())*180/M_PI);
     arcItem->setPath(painter);
+
+    setArrows(arcFigure, arcItem);
 }
 
 void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
+    cArcFigure *arcFigure = static_cast<cArcFigure *>(figure);
     QGraphicsPathItem *arcItem = static_cast<QGraphicsPathItem *>(item);
-    arcItem->setPen(createPen(static_cast<cAbstractLineFigure *>(figure), hints));
+    QPen pen = createPen(arcFigure, hints);
+    arcItem->setPen(pen);
+
+    setArrows(arcFigure, arcItem, &pen);
 }
 
 QGraphicsItem *ArcFigureRenderer::newItem()
 {
-    return new QGraphicsPathItem();
+    QGraphicsPathItem *arcItem = new QGraphicsPathItem();
+    new GraphicsPathArrowItem(arcItem);
+    new GraphicsPathArrowItem(arcItem);
+    return arcItem;
+}
+
+void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, QPen *pen)
+{
+    if(polyFigure->getStartArrowHead() == cFigure::ARROW_NONE &&
+            polyFigure->getEndArrowHead() == cFigure::ARROW_NONE)
+        return;
+
+    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[1]);
+
+    if(polyFigure->getStartArrowHead() != cFigure::ARROW_NONE)
+    {
+        QPainterPath painter = polyItem->path();
+        QPainterPath::Element element = painter.elementAt(0);
+        QPointF start(element.x, element.y);
+        element = painter.elementAt(1);
+        QPointF end(element.x, element.y);
+
+        startArrow->setVisible(true);
+        setArrowStyle(polyFigure->getStartArrowHead(), startArrow);
+        if(pen)
+            startArrow->setPen(*pen);
+        startArrow->configureArrow(start, end);
+    }
+    else
+        startArrow->setVisible(false);
+
+    if(polyFigure->getEndArrowHead() != cFigure::ARROW_NONE)
+    {
+        QPainterPath painter = polyItem->path();
+        QPainterPath::Element element = painter.elementAt(painter.elementCount() - 2);
+        QPointF start(element.x, element.y);
+        QPointF end(painter.currentPosition());
+
+        endArrow->setVisible(true);
+        setArrowStyle(polyFigure->getEndArrowHead(), endArrow);
+        if(pen)
+            endArrow->setPen(*pen);
+        endArrow->configureArrow(end, start);
+    }
+    else
+        endArrow->setVisible(false);
 }
 
 void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPolylineFigure *polyFigure = static_cast<cPolylineFigure *>(figure);
-    QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
+    PathItem *polyItem = static_cast<PathItem *>(item);
 
     std::vector<cFigure::Point> points = polyFigure->getPoints();
     if (points.size() < 2)
@@ -695,12 +841,14 @@ void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
 
 
     polyItem->setPath(painter);
+
+    setArrows(polyFigure, polyItem);
 }
 
 void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPolylineFigure *polyFigure = static_cast<cPolylineFigure *>(figure);
-    QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
+    PathItem *polyItem = static_cast<PathItem *>(item);
 
     if (!(figure->getParentFigure()->getLocalChangeFlags() & cFigure::CHANGE_STRUCTURAL || figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY))
         setItemGeometryProperties(polyFigure, polyItem, hints);
@@ -724,11 +872,16 @@ void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, 
     pen.setJoinStyle(joinStyle);
 
     polyItem->setPen(pen);
+
+    setArrows(polyFigure, polyItem, &pen);
 }
 
 QGraphicsItem *PolylineFigureRenderer::newItem()
 {
-    return new PathItem();
+    PathItem *polylineItem = new PathItem();
+    new GraphicsPathArrowItem(polylineItem);
+    new GraphicsPathArrowItem(polylineItem);
+    return polylineItem;
 }
 
 void RectangleFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
