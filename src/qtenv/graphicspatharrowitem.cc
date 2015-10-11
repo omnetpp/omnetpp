@@ -24,7 +24,7 @@ GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
     //setPen(Qt::NoPen);
-
+    setVisible(false);
     arrowDescrInit();
 }
 
