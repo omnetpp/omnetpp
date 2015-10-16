@@ -21,9 +21,8 @@
 #include <QDebug>
 
 GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
-    : QGraphicsPolygonItem(parent)
+    : QGraphicsPolygonItem(parent), arrowStyle(BARBED)
 {
-    //setPen(Qt::NoPen);
     setVisible(false);
     arrowDescrInit();
 }
@@ -128,9 +127,6 @@ void GraphicsPathArrowItem::paint(QPainter *painter, const QStyleOptionGraphicsI
         pen.setStyle(Qt::SolidLine);
         painter->setPen(pen);
         painter->setBrush(brush);
-//        qDebug() << "ARROW POINTS";
-//        for(int i = 0; i < PTS_IN_ARROW; ++i)
-//            qDebug() << arrowDescr.arrowPointsPtr[i];
 
         switch(arrowStyle)
         {

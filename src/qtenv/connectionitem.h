@@ -50,7 +50,6 @@ protected:
     Qt::Alignment textAlignment = Qt::AlignCenter; // Left for source, Right for dest, Center for middle
     QColor textColor = QColor("#005030");
     bool lineEnabled = true; // disabled for one of the two connection items in a bidirectional connection
-    bool arrowEnabled = true; // disabled for bidirectional connections
 
     QGraphicsLineItem *lineItem = nullptr;
     OutlinedTextItem *textItem = nullptr;

@@ -92,7 +92,7 @@ void ConnectionItem::updateLineItem() {
     direction /= length;
 
     // correcting the destination if needed, so it won't mess up the arrowhead
-    lineItem->setLine(QLineF(src, dest - direction * (arrowEnabled ? std::min(length, lineWidth) : 0.0)));
+    lineItem->setLine(QLineF(src, dest)); //TODO
     QPen pen(lineColor, lineWidth);
     pen.setCapStyle(Qt::FlatCap);
 
@@ -136,15 +136,13 @@ void ConnectionItem::updateTextItem() {
 }
 
 void ConnectionItem::updateArrowItem() {
-    if (!arrowEnabled || (dest == src)) { // no arrow for a 0 long connection
-        arrowItem->setBrush(Qt::NoBrush);
+    if (!arrowItem->isVisible() || (dest == src)) { // no arrow for a 0 long connection
+        arrowItem->setVisible(false);
         return;
     }
 
-    arrowItem->setPos(dest);
-    arrowItem->setRotation(std::atan2(dest.y() - src.y(), dest.x() - src.x()) * 180 / M_PI);
-    arrowItem->setLineWidth(lineWidth);
-    arrowItem->setBrush(lineColor);
+    arrowItem->setVisible(true);
+    arrowItem->configureArrow(dest, src);
 }
 
 ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
@@ -152,13 +150,13 @@ ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
 {
     lineItem = new QGraphicsLineItem(this);
     textItem = new OutlinedTextItem(this);
-    arrowItem = new GraphicsPathArrowItem(this);
+    //TODO arrowItem disappear when a part of lineItem is out of view.
+    arrowItem = new GraphicsPathArrowItem(lineItem);
 }
 
 ConnectionItem::~ConnectionItem() {
     delete lineItem;
     delete textItem;
-    delete arrowItem;
 }
 
 void ConnectionItem::setSource(const QPointF &source){
@@ -253,8 +251,8 @@ void ConnectionItem::setLineEnabled(bool enabled) {
 }
 
 void ConnectionItem::setArrowEnabled(bool enabled) {
-    if (enabled != arrowEnabled) {
-        arrowEnabled = enabled;
+    if (enabled != arrowItem->isVisible()) {
+        arrowItem->setVisible(enabled);
         updateLineItem();
         updateArrowItem();
     }
@@ -272,7 +270,6 @@ void ConnectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 // so the tooltip will not appear while hovering anywhere in the bounding rect, only on the line
 QPainterPath ConnectionItem::shape() const {
     QPainterPath shape = lineItem->shape(); // even if it is not enabled, because it is most likely half of a bidirectional
-    if (arrowEnabled) shape = shape.united(arrowItem->shape()); // only if needed
 
     // expanding the path to make the connection easier to pick
     // thanks: http://stackoverflow.com/a/5732289
