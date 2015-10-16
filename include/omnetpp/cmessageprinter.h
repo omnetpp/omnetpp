@@ -18,7 +18,7 @@
 
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cMessage;
 
@@ -56,7 +56,7 @@ class SIM_API cDefaultMessagePrinter : public cMessagePrinter
         virtual void printMessage(std::ostream& os, cMessage *msg) const override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

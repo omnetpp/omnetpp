@@ -21,7 +21,7 @@
 #include "nederror.h"
 #include "neddtdvalidator.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 void NEDDTDValidator::validateElement(FilesElement *node)
@@ -552,5 +552,5 @@ void NEDDTDValidator::validateElement(UnknownElement *node)
 }
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

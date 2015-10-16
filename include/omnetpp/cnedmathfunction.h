@@ -21,7 +21,7 @@
 #include "globals.h"
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -204,7 +204,7 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
 
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

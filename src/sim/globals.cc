@@ -19,7 +19,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/ccomponenttype.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //
 // Global objects
@@ -47,4 +47,4 @@ EXECUTE_ON_SHUTDOWN(
 );
 
 
-NAMESPACE_END
+}  // namespace omnetpp

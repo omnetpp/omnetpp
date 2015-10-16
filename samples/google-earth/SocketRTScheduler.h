@@ -14,7 +14,7 @@
 #include <omnetpp/platdep/timeutil.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Real-time scheduler with socket-based external communication.

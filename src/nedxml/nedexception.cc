@@ -21,9 +21,9 @@
 #include "nedexception.h"
 #include "nedelement.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 #define BUFLEN    1024
@@ -50,5 +50,5 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

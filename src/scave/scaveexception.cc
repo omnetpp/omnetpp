@@ -17,7 +17,7 @@
 #include <sstream>
 #include "scaveexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -35,5 +35,5 @@ ResultFileFormatException::ResultFileFormatException(const char *message, const 
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -19,7 +19,7 @@
 #include "nederror.h"
 #include "nedxmlparser.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
@@ -37,5 +37,5 @@ NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

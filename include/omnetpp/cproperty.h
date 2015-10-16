@@ -24,7 +24,7 @@
 #include "cstringpool.h"
 #include "cproperties.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -225,7 +225,7 @@ class SIM_API cProperty : public cNamedObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

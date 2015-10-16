@@ -384,7 +384,7 @@ cObject **FilteredObjectListDialog::getSubObjectsFilt(cObject *object, const cha
 void FilteredObjectListDialog::checkPattern(const char *pattern)
 {
     // try parse className
-    OPP::common::MatchExpression matcher(pattern, false, true, true);
+    omnetpp::common::MatchExpression matcher(pattern, false, true, true);
     // let's see if MatchableObjectAdapter can parse field names inside
     // (unmatched "[", etc.), by trying to match some random object
     MatchableObjectAdapter objectAdapter(MatchableObjectAdapter::FULLNAME, getSimulation());

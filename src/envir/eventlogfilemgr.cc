@@ -33,9 +33,9 @@
 #include "eventlogwriter.h"
 #include "envirbase.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the eventlog file to generate.");
@@ -801,5 +801,5 @@ void EventlogFileManager::addPreviousEventNumber(eventnumber_t previousEventNumb
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -19,7 +19,7 @@
 
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 class TKENV_API WatchInspector: public Inspector
@@ -33,7 +33,7 @@ class TKENV_API WatchInspector: public Inspector
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

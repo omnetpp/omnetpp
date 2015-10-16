@@ -19,7 +19,7 @@
 
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #if defined(COMMON_EXPORT)
@@ -31,7 +31,7 @@ namespace common {
 #endif
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -25,7 +25,7 @@
 #include <map>
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 /**
@@ -115,7 +115,7 @@ class ENVIR_API ArgList
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

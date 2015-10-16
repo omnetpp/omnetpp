@@ -20,7 +20,7 @@
 #include <vector>
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * String tokenizer class, modelled after strtok(). It considers the input
@@ -125,7 +125,7 @@ class SIM_API cStringTokenizer
     std::vector<double> asDoubleVector();
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

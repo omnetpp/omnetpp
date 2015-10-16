@@ -16,10 +16,10 @@
 
 #include "startreeembedding.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
-using OPP::common::POSITIVE_INFINITY;
+using omnetpp::common::POSITIVE_INFINITY;
 
 StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
@@ -208,5 +208,5 @@ void StarTreeEmbedding::calculatePositionRecursive(Vertex *vertex, Pt pt)
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

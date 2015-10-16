@@ -24,7 +24,7 @@
 #include "omnetpp/cparsimcomm.h"
 #include "omnetpp/simutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -110,7 +110,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

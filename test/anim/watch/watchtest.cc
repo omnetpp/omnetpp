@@ -1,7 +1,7 @@
 #include <omnetpp.h>
 #include "watchtest_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 class WatchTest : public cSimpleModule
 {

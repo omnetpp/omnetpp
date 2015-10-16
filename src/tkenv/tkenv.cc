@@ -64,10 +64,10 @@
 void OSXTransformProcess();
 #endif
 
-using namespace OPP::common;
-using namespace OPP::envir;
+using namespace omnetpp::common;
+using namespace omnetpp::envir;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 //
@@ -1854,5 +1854,5 @@ void _dummy_func()
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

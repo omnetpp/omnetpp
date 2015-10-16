@@ -19,7 +19,7 @@
 #include "cchannel.h"
 #include "csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -228,7 +228,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

@@ -22,7 +22,7 @@
 #include "commondefs.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -173,7 +173,7 @@ inline void StringTokenizer2::skipDelimiters()
 
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

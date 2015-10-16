@@ -22,7 +22,7 @@
 #include "globals.h"
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cResultFilter;
 
@@ -36,8 +36,8 @@ class cResultFilter;
  * @hideinitializer
  */
 #define Register_ResultFilter(NAME, CLASSNAME) \
-  static OPP::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(OPP::resultFilters.getInstance()->add(new OPP::cResultFilterDescriptor(NAME,__FILEUNIQUENAME__));)
+  static omnetpp::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterDescriptor(NAME,__FILEUNIQUENAME__));)
 
 
 /**
@@ -146,7 +146,7 @@ class SIM_API cResultFilterDescriptor : public cNoncopyableOwnedObject
     static cResultFilterDescriptor *get(const char *name);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

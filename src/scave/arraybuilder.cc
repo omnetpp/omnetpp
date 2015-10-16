@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "arraybuilder.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 ArrayBuilderNode::ArrayBuilderNode()
@@ -161,5 +161,5 @@ Node *ArrayBuilderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

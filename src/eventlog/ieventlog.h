@@ -24,7 +24,7 @@
 #include "eventlogdefs.h"
 #include "ievent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 class IEventLog;
@@ -194,7 +194,7 @@ class EVENTLOG_API IEventLog
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

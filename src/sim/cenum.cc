@@ -28,7 +28,7 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cstringtokenizer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cEnum);
 
@@ -179,5 +179,5 @@ std::string cEnum::str() const
     return out.str();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

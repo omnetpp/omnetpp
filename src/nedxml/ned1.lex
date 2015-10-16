@@ -46,7 +46,7 @@ void comment();
 void countChars();
 void extendCount();
 
-using namespace OPP::nedxml;
+using namespace omnetpp::nedxml;
 
 %}
 

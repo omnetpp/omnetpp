@@ -10,7 +10,7 @@
 #include <omnetpp.h>
 #include "NetPkt_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Represents the network "cloud" between clients and the server;

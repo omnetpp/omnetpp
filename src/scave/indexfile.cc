@@ -28,9 +28,9 @@
 
 #define LL    INT64_PRINTF_FORMAT
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 static bool serialLess(const Block& first, const Block& second)
@@ -560,5 +560,5 @@ void IndexFileWriter::closeFile()
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

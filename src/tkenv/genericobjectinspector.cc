@@ -21,7 +21,7 @@
 #include "inspectorfactory.h"
 #include "genericobjectinspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 void _dummy_for_genericobjectinspector() {}
@@ -84,5 +84,5 @@ int GenericObjectInspector::inspectorCommand(int argc, const char **argv)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

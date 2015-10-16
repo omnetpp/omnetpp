@@ -27,9 +27,9 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fallbackValue)
 {
@@ -247,5 +247,5 @@ std::string cConfiguration::getAsPath(const char *objectFullPath, cConfigOption 
     TRY(return adjustPath(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -19,7 +19,7 @@
 #include <string>
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace common { class MatchExpression; };
 
@@ -75,7 +75,7 @@ class SIM_API cMatchExpression
     };
 
   private:
-    OPP::common::MatchExpression *impl;
+    omnetpp::common::MatchExpression *impl;
 
   public:
     /**
@@ -121,7 +121,7 @@ class SIM_API cMatchableString : public cMatchExpression::Matchable
     virtual const char *getAsString(const char *attribute) const override {return nullptr;}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

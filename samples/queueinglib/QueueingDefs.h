@@ -12,7 +12,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 #if OMNETPP_VERSION < 0x0400
 #  error At least OMNeT++/OMNEST version 4.0 required

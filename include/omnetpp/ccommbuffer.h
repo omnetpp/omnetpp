@@ -20,7 +20,7 @@
 #include "cobject.h"
 #include "simtime.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class opp_string;
 
@@ -386,7 +386,7 @@ class SIM_API cCommBuffer : public cObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

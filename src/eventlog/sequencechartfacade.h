@@ -24,7 +24,7 @@
 #include "ieventlog.h"
 #include "eventlogfacade.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 /**
@@ -106,6 +106,6 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

@@ -22,7 +22,7 @@
 #include "simkerneldefs.h"
 #include "simutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Lightweight string class, used internally in some parts of \opp.
@@ -186,7 +186,7 @@ class SIM_API opp_string_map : public std::map<opp_string,opp_string>
     opp_string_map(const opp_string_map& other) : std::map<opp_string,opp_string>(other) {}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

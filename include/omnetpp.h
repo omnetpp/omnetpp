@@ -120,7 +120,7 @@
 #include "omnetpp/platdep/intlimits.h"
 
 #ifdef AUTOIMPORT_NAMESPACE
-USING_NAMESPACE
+using namespace omnetpp;
 #endif
 
 #endif

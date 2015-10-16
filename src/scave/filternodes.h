@@ -21,7 +21,7 @@
 #include "commonnodes.h"
 #include "enums.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -574,7 +574,7 @@ class SCAVE_API SubtractFirstValueNodeType : public FilterNodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

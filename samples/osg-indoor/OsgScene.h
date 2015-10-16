@@ -13,7 +13,7 @@
 #include <omnetpp.h>
 #include <osg/Node>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Initialize global 3d canvas and load the configured model file.

@@ -18,7 +18,7 @@
 
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * A signal which is fired before simulation model changes such as module
@@ -498,7 +498,7 @@ class SIM_API cPostDisplayStringChangeNotification : public cModelChangeNotifica
     cDisplayString *displayString;  ///< The display string that was updated
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

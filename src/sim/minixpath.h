@@ -22,7 +22,7 @@
 
 #include "omnetpp/cxmlelement.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -59,7 +59,7 @@ class MiniXPath
     cXMLElement *matchPathExpression(cXMLElement *contextNode, const char *pathexpr, cXMLElement *documentNode);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

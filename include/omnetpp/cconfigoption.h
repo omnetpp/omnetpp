@@ -19,7 +19,7 @@
 #include <string>
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -145,7 +145,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

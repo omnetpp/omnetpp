@@ -37,9 +37,9 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
@@ -739,5 +739,5 @@ unsigned cSimpleModule::getStackUsage() const
     return coroutine ? coroutine->getStackUsage() : 0;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

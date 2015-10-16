@@ -21,10 +21,10 @@
 #include "common/expression.h"
 #include "commonnodes.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
-using OPP::common::Expression;
+using omnetpp::common::Expression;
 
 /**
  * Processing node which evaluates an arbitrary expression entered
@@ -43,7 +43,7 @@ using OPP::common::Expression;
 class SCAVE_API ExpressionFilterNode : public FilterNode
 {
     private:
-        typedef OPP::common::Expression Expression;
+        typedef omnetpp::common::Expression Expression;
     public:
         /**
          * Implements a variable in the expression. Currently just delegates
@@ -87,7 +87,7 @@ class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

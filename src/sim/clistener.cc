@@ -20,7 +20,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 struct Subscription
 {
@@ -133,5 +133,5 @@ void cListener::receiveSignal(cComponent *, simsignal_t signalID, cObject *)
     unsupportedType(signalID, "cObject *");
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

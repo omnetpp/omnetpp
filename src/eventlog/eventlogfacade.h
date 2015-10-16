@@ -20,7 +20,7 @@
 #include "ievent.h"
 #include "ieventlog.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("nullptr ptr exception");
@@ -106,7 +106,7 @@ class EVENTLOG_API EventLogFacade
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

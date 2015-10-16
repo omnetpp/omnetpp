@@ -18,7 +18,7 @@
 
 #include "cfutureeventset.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Default implementation for the future event set. The underlying data structure
@@ -168,7 +168,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     virtual void sort() override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

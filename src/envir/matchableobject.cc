@@ -18,7 +18,7 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "matchableobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
@@ -106,5 +106,5 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

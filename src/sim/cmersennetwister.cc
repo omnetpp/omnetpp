@@ -24,7 +24,7 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cconfigoption.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cMersenneTwister);
 
@@ -112,5 +112,5 @@ double cMersenneTwister::doubleRandIncl1()
     return rng.rand();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

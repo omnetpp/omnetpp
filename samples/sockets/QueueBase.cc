@@ -10,7 +10,7 @@
 #include <omnetpp.h>
 #include "QueueBase.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 QueueBase::QueueBase()
 {

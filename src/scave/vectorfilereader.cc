@@ -24,9 +24,9 @@
 #include "vectorfilereader.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
@@ -206,5 +206,5 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

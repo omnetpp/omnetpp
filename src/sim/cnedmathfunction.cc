@@ -23,9 +23,9 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cNEDMathFunction::cNEDMathFunction(const char *name, MathFuncNoArg f, int ac, const char *category, const char *description) :
     cNoncopyableOwnedObject(name, false)
@@ -169,5 +169,5 @@ cNEDMathFunction *cNEDMathFunction::findByPointer(MathFunc f)
     return nullptr;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

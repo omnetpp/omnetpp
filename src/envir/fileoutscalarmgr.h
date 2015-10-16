@@ -24,7 +24,7 @@
 #include "envirdefs.h"
 #include "runattributes.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 /**
@@ -103,7 +103,7 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

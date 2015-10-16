@@ -23,7 +23,7 @@
 
 #include "cparsimsynchr.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cCommBuffer;
 
@@ -66,7 +66,7 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
     virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

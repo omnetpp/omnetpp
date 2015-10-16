@@ -36,11 +36,6 @@ using namespace omnetpp::eventlog;
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN  namespace omnetpp {
-#define NAMESPACE_END    }
-#define USING_NAMESPACE  using namespace omnetpp;
-#define OPP              omnetpp
-
 %typemap(javacode) omnetpp::common::FileReader %{
     public FileReader(String fileName, boolean cMemoryOwn) {
         this(fileName);
@@ -52,9 +47,9 @@ using namespace omnetpp::eventlog;
 
 namespace omnetpp { namespace eventlog {
 
-typedef OPP::common::BigDecimal BigDecimal;
-typedef OPP::common::FileReader FileReader;
-typedef OPP::common::opp_runtime_error opp_runtime_error;
+typedef omnetpp::common::BigDecimal BigDecimal;
+typedef omnetpp::common::FileReader FileReader;
+typedef omnetpp::common::opp_runtime_error opp_runtime_error;
 typedef omnetpp::common::BigDecimal BigDecimal;
 
 typedef unsigned long ptr_t;

@@ -18,7 +18,7 @@
 
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cCanvas;
 class cProperty;
@@ -1491,7 +1491,7 @@ class SIM_API cCanvas : public cOwnedObject
         //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

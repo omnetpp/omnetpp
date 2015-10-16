@@ -60,8 +60,8 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
-using namespace OPP::common;
+using namespace omnetpp;
+using namespace omnetpp::common;
 
 #define yyin expressionyyin
 #define yyout expressionyyout

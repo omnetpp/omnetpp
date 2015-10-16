@@ -37,7 +37,7 @@
 using std::ostream;
 using std::endl;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cKSplit);
 
@@ -869,5 +869,5 @@ double cKSplit::Iterator::getCellValue() const
     return ks->getRealCellValue(g, cell);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

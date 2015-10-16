@@ -19,15 +19,15 @@
 #include <cstdlib>
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 extern "C" ENVIR_API int evMain(int argc, char *argv[]);
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 int main(int argc, char *argv[])
 {
     // call the main function and start the simulation
-    return OPP::envir::evMain(argc, argv);
+    return omnetpp::envir::evMain(argc, argv);
 }
 

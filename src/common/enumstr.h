@@ -19,7 +19,7 @@
 
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -42,7 +42,7 @@ class COMMON_API EnumStringIterator
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

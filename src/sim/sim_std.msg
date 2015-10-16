@@ -40,7 +40,7 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //
 // Register enums from the sim. kernel
@@ -148,11 +148,7 @@ using namespace canvas_stream_ops;
 //
 void std_sim_descriptor_dummy() {}
 
-NAMESPACE_END
-
-#ifndef USE_NAMESPACE
-#define omnetpp   //XXX horrible hack to make it compile with the omnetpp namespace turned off
-#endif
+}  // namespace omnetpp
 
 #ifndef WITH_OSG
 
@@ -174,7 +170,7 @@ inline osg::Node *osgNode_getChild(osg::Node *node, int i) { return nullptr; }
 
 }}
 
-namespace omnetpp;  //XXX this ought to be conditional on USE_NAMESPACE but cannot; see hack above!
+namespace omnetpp;
 
 struct cDensityEstBase::Cell;
 

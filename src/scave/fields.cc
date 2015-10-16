@@ -24,9 +24,9 @@
 #include "fields.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /*----------------------------------------
@@ -225,5 +225,5 @@ bool ResultItemFields::less(const ResultItem& d1, const ResultItem& d2) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

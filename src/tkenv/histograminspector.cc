@@ -22,7 +22,7 @@
 #include "inspectorfactory.h"
 #include "histograminspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 void _dummy_for_histograminspector() {}
@@ -191,5 +191,5 @@ int HistogramInspector::inspectorCommand(int argc, const char **argv)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -23,7 +23,7 @@
 #include <vector>
 #include "dataflowmanager.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 class Node;
@@ -105,7 +105,7 @@ class SCAVE_API NodeType
 
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

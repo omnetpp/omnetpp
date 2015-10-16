@@ -22,7 +22,7 @@
 
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace cmdenv {
 
 #if defined(CMDENV_EXPORT)
@@ -34,7 +34,7 @@ namespace cmdenv {
 #endif
 
 } // namespace cmdenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

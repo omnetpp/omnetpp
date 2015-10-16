@@ -14,7 +14,7 @@
 #include <omnetpp.h>
 #include "TokenRing_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 // Frame header and trailer are 21 octets (168 bits), with the following
 // frame layout (lengths in parens):

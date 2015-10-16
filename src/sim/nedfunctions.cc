@@ -29,9 +29,9 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //FIXME cDynamicExpression to add function name to exceptions thrown from functions
 
@@ -765,5 +765,5 @@ DEF(nedf_firstAvailable,
     throw cRuntimeError("None of the following NED types are available: %s", typelist.c_str());
 })
 
-NAMESPACE_END
+}  // namespace omnetpp
 

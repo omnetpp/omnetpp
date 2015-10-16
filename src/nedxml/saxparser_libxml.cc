@@ -25,7 +25,7 @@
 #include <cstdarg>
 #include "saxparser.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 
@@ -425,5 +425,5 @@ int SAXParser::getCurrentLineNumber()
 #endif
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

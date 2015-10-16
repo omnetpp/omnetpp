@@ -41,9 +41,9 @@
 #include "xmlgenerator.h"
 #include "nedtools.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 using std::ofstream;
@@ -405,9 +405,9 @@ bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStor
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
-using namespace OPP::nedxml;
+using namespace omnetpp::nedxml;
 
 int main(int argc, char **argv)
 {

@@ -7,7 +7,7 @@ Tests the BigDecimal operator+.
 #include <common/bigdecimal.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static void add(const char *x, const char *y)
 {

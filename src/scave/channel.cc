@@ -17,7 +17,7 @@
 
 #include "channel.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 Channel::Channel()
@@ -56,5 +56,5 @@ void Channel::write(Datum *a, int n)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

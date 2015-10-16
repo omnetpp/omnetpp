@@ -48,7 +48,7 @@
 #include "qtenv.h"
 #include "qtutil.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace qtenv {
@@ -228,7 +228,7 @@ QColor parseColor(const QString &name, const QColor &fallbackColor) {
 
     try {
         uint8_t r, g, b;
-        OPP::common::parseColor(name.toStdString().c_str(), r, g, b);
+        omnetpp::common::parseColor(name.toStdString().c_str(), r, g, b);
         return QColor(r, g, b);
     } catch (std::runtime_error &e) {
         qDebug() << "Failed to parse color" << name << "because:" << e.what();

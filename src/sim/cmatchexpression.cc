@@ -18,9 +18,9 @@
 #include "common/matchexpression.h"
 #include "omnetpp/cmatchexpression.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cMatchExpression::cMatchExpression()
 {
@@ -59,5 +59,5 @@ bool cMatchExpression::matches(const Matchable *object)
     return impl->matches(&wrapper);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

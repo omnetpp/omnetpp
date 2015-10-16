@@ -19,9 +19,9 @@
 #include "nederror.h"
 #include "neddtdvalidator.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 void NEDTools::repairNEDElementTree(NEDElement *tree)
@@ -102,5 +102,5 @@ void NEDTools::splitToFiles(FilesElement *tree)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

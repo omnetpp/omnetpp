@@ -33,9 +33,9 @@
 #include "valueiterator.h"
 #include "scenario.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 // XXX error messages (exceptions) should contain file/line info!
@@ -1342,5 +1342,5 @@ void SectionBasedConfiguration::dump() const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

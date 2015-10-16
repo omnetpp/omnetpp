@@ -51,9 +51,9 @@
 #include "sim/netbuilder/cnedloader.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -891,5 +891,5 @@ cEnvir *cSimulation::staticEnvir = &staticEnv;
 
 cSimulation *cSimulation::activeSimulation = nullptr;
 
-NAMESPACE_END
+}  // namespace omnetpp
 

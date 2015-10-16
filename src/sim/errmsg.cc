@@ -19,7 +19,7 @@
 
 #include "omnetpp/errmsg.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 const char *cErrorMessages::get(OppErrorCode e)
@@ -68,5 +68,5 @@ const char *cErrorMessages::get(OppErrorCode e)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

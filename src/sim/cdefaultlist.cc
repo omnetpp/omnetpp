@@ -31,7 +31,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 Register_Class(cDefaultList);
@@ -223,5 +223,5 @@ bool cDefaultList::hasChangedSince(int64_t lastRefreshSerial)
 
 #endif
 
-NAMESPACE_END
+}  // namespace omnetpp
 

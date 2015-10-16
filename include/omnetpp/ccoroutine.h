@@ -35,7 +35,7 @@
 #endif
 
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #ifdef USE_PORTABLE_COROUTINES
 struct _Task;
@@ -172,7 +172,7 @@ class SIM_API cCoroutine
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -5,7 +5,7 @@ Tests the UnitConversion class
 #include <common/unitconversion.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
 {

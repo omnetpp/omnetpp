@@ -16,7 +16,7 @@
 
 #include "stringpool.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 StringPool::StringPool()
@@ -55,5 +55,5 @@ const char *StringPool::get(const char *s)
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

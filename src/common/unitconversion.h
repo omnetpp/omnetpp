@@ -21,7 +21,7 @@
 #include "commondefs.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -111,7 +111,7 @@ class COMMON_API UnitConversion
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

@@ -24,7 +24,7 @@
 #include "cexception.h"
 #include "cstringpool.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -129,7 +129,7 @@ class SIM_API cNamedObject : public cObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include "nedxmldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 class NEDElement;
@@ -59,7 +59,7 @@ class NEDXML_API NEDException : public std::runtime_error
 
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

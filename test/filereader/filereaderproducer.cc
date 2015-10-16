@@ -20,7 +20,7 @@
 #include <common/exception.h>
 #include <omnetpp/platdep/timeutil.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 void runProducer(const char *filename, double duration, int numberOfLines)
 {

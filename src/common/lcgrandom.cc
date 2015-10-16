@@ -17,7 +17,7 @@
 #include <cmath>
 #include "lcgrandom.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 LCGRandom::LCGRandom(int32_t seed)
@@ -68,5 +68,5 @@ void LCGRandom::selfTest()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -9,7 +9,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Emulates an empty omnetpp.ini, causing config options' default values

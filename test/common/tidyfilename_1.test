@@ -5,7 +5,7 @@ Tests tidyFilename() h function
 #include <common/fileutil.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static void tidy(const char *fname, bool slashes=true)
 {

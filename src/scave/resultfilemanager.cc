@@ -47,9 +47,9 @@
 #define WRITER_MUTEX
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -1597,5 +1597,5 @@ const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) con
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

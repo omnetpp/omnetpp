@@ -20,7 +20,7 @@
 #include <sstream>
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cObject;
 class cComponent;
@@ -146,9 +146,9 @@ class SIM_API cLogLevel
 #define OPP_LOGPROXY(object, classname, loglevel, category) \
         ((void)0, !(loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
          !getEnvir()->isDisabled() && \
-         loglevel <= OPP::cLogLevel::globalRuntimeLoglevel && \
-         OPP::cLogProxy::isEnabled(object, category, loglevel))) ? \
-         OPP::cLogProxy::dummyStream : OPP::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
+         loglevel <= omnetpp::cLogLevel::globalRuntimeLoglevel && \
+         omnetpp::cLogProxy::isEnabled(object, category, loglevel))) ? \
+         omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
 
 
 // Returns nullptr. Helper function for the logging macros.
@@ -169,7 +169,7 @@ inline const char *getClassName() {return nullptr;}
  * @ingroup Logging
  * @hideinitializer
  */
-#define EV_STATICCONTEXT  void *(*getThisPtr)() = OPP::getThisPtr; const char *(*getClassName)() = OPP::getClassName;
+#define EV_STATICCONTEXT  void *(*getThisPtr)() = omnetpp::getThisPtr; const char *(*getClassName)() = omnetpp::getClassName;
 
 /**
  * This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
@@ -307,6 +307,6 @@ class SIM_API cLogProxy
     void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

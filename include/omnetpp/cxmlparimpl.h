@@ -18,7 +18,7 @@
 
 #include "cparimpl.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * A cParImpl subclass that stores a module/channel parameter of type XML.
@@ -201,7 +201,7 @@ class SIM_API cXMLParImpl : public cParImpl
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

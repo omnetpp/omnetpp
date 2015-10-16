@@ -172,7 +172,7 @@ class QTENV_API Inspector : public QWidget
       void inspectedObjectChanged(cObject *object);
 
    public:
-      typedef QPair<OPP::cObject*, int> ActionDataPair;
+      typedef QPair<omnetpp::cObject*, int> ActionDataPair;
 
       Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *factory);
       virtual ~Inspector();

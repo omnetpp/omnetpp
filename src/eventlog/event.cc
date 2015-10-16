@@ -21,9 +21,9 @@
 #include "eventlog.h"
 #include "eventlogentry.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 Event::Event(EventLog *eventLog)
@@ -374,5 +374,5 @@ IMessageDependencyList *Event::getConsequences()
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -24,7 +24,7 @@
 #include "node.h"
 #include "nodetype.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -61,7 +61,7 @@ class SCAVE_API TeeNodeType : public NodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

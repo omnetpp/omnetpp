@@ -21,9 +21,9 @@
 #include "nederror.h"
 #include "neddtdvalidatorbase.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[])
@@ -192,5 +192,5 @@ void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *at
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

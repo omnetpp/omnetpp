@@ -19,7 +19,7 @@
 #include "simtime_t.h"
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cComponent;
 
@@ -33,7 +33,7 @@ class cComponent;
  */
 typedef int simsignal_t;
 
-#define SIMSIGNAL_NULL   ((OPP::simsignal_t)-1)
+#define SIMSIGNAL_NULL   ((omnetpp::simsignal_t)-1)
 
 /**
  * Signal data types.
@@ -170,7 +170,7 @@ class SIM_API cListener : public cIListener
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

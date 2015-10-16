@@ -20,7 +20,7 @@
 #include "cownedobject.h"
 #include "simtime.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -256,7 +256,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

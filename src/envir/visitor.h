@@ -25,7 +25,7 @@
 #include "envirdefs.h"
 #include "matchableobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 
@@ -78,7 +78,7 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
 class ENVIR_API cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
   protected:
-    typedef OPP::common::MatchExpression MatchExpression;
+    typedef omnetpp::common::MatchExpression MatchExpression;
   private:
     unsigned int category;
     MatchExpression *classnamePattern;
@@ -148,7 +148,7 @@ void ENVIR_API sortObjectsByFullPath(cObject **objs, int n);
 void ENVIR_API sortObjectsByShortTypeName(cObject **objs, int n);
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

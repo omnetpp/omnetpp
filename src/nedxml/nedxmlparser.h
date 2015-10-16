@@ -21,7 +21,7 @@
 #include "nedelement.h"
 #include "nederror.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 /**
@@ -32,7 +32,7 @@ namespace nedxml {
 NEDXML_API NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

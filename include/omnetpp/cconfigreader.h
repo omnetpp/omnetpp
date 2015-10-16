@@ -18,7 +18,7 @@
 
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cConfiguration;
 
@@ -105,7 +105,7 @@ class cConfigurationReader
     virtual void dump() const = 0;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

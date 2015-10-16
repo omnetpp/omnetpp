@@ -23,7 +23,7 @@
 #include "omnetpp/platdep/platdefs.h"
 #include "common/exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #if defined(ENVIR_EXPORT)
@@ -34,9 +34,9 @@ namespace envir {
 #  define ENVIR_API
 #endif
 
-using OPP::common::opp_runtime_error;
+using omnetpp::common::opp_runtime_error;
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

@@ -26,9 +26,9 @@
 #include "nedutil.h"
 #include "nedelements.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 static void renameTag(DisplayString& ds, const char *from, const char *to)
@@ -232,5 +232,5 @@ bool NEDElementUtil::isNEDType(NEDElement *node)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

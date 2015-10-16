@@ -17,7 +17,7 @@
 #include <cstdlib>
 #include "enumstr.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 EnumStringIterator::EnumStringIterator(const char *s)
@@ -105,5 +105,5 @@ int EnumStringIterator::operator++(int)
 }
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

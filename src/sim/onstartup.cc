@@ -19,7 +19,7 @@
 
 #include "omnetpp/onstartup.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #if NDEBUG
 extern "C" SIM_API bool __is_release_oppsim__;
@@ -78,5 +78,5 @@ void CodeFragments::executeAll(Type type)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

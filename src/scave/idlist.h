@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include "scavedefs.h" // int64_t
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 class ResultFileManager;
@@ -120,7 +120,7 @@ class SCAVE_API IDList
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

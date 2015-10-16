@@ -25,9 +25,9 @@
 #include "tklib.h"
 #include "tkutil.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 CanvasRenderer::CanvasRenderer() : interp(nullptr), canvas(nullptr), enabledTagBits(0), exceptTagBits(0)
@@ -176,5 +176,5 @@ void CanvasRenderer::setExceptTags(const char *tags)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

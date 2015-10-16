@@ -23,7 +23,7 @@
 #include "osg/Node"
 #include "osgEarth/Viewpoint"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cOsgCanvas);
 
@@ -119,7 +119,7 @@ cObject *cOsgCanvas::getOmnetppObject(osg::Group *omnetppObjectNode)
     return node->getObject();
 }
 
-NAMESPACE_END
+} // namespace omnetpp
 
 #else
 

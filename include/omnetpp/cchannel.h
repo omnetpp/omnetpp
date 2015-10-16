@@ -21,7 +21,7 @@
 #include "cmessage.h"
 #include "ctimestampedvalue.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cGate;
 
@@ -388,7 +388,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

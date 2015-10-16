@@ -23,7 +23,7 @@
 #include "bigdecimal.h"
 #include "commonutil.h"  // NaN & friends
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 // helpers
@@ -119,11 +119,11 @@ void BigDecimal::normalize()
 const BigDecimal& BigDecimal::operator=(double d)
 {
     // check NaN and infinity
-    if (OPP::common::isNaN(d))
+    if (omnetpp::common::isNaN(d))
         return *this = NaN;
-    else if (OPP::common::isPositiveInfinity(d))
+    else if (omnetpp::common::isPositiveInfinity(d))
         return *this = PositiveInfinity;
-    else if (OPP::common::isNegativeInfinity(d))
+    else if (omnetpp::common::isNegativeInfinity(d))
         return *this = NegativeInfinity;
 
     int sign = 1;
@@ -255,7 +255,7 @@ double BigDecimal::dbl() const
 {
     if (isSpecial()) {
         if (isNaN())
-            return OPP::common::NaN;
+            return omnetpp::common::NaN;
         else if (*this == PositiveInfinity)
             return POSITIVE_INFINITY;
         else if (*this == NegativeInfinity)
@@ -496,5 +496,5 @@ const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

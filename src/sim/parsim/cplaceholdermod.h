@@ -24,7 +24,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * In distributed parallel simulation, modules of the network
@@ -87,7 +87,7 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
 };
 
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

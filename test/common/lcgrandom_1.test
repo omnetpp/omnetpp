@@ -5,7 +5,7 @@ Test LCGRandom
 #include <common/lcgrandom.h>
 
 %activity:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 LCGRandom rng;
 

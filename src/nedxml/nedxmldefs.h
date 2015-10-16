@@ -20,7 +20,7 @@
 
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 #if defined(NEDXML_EXPORT)
@@ -32,7 +32,7 @@ namespace nedxml {
 #endif
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

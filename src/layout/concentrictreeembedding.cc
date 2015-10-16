@@ -16,7 +16,7 @@
 
 #include "concentrictreeembedding.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 ConcentricTreeEmbedding::ConcentricTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
@@ -44,5 +44,5 @@ void ConcentricTreeEmbedding::calculateCenterRecursive(Vertex *vertex, int level
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

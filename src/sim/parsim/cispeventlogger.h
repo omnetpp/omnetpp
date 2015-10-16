@@ -23,7 +23,7 @@
 
 #include "cnullmessageprot.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -89,7 +89,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
     virtual void putBackEvent(cEvent *event) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

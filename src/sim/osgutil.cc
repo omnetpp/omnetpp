@@ -19,7 +19,7 @@
 
 #ifdef WITH_OSG
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 OmnetppObjectNode::OmnetppObjectNode() : componentId(0), object(nullptr)
 {
@@ -57,6 +57,6 @@ void OmnetppObjectNode::setObject(cObject* obj)
     }
 }
 
-NAMESPACE_END
+} // namespace omnetpp
 
 #endif // WITH_OSG

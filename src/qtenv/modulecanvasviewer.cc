@@ -43,7 +43,7 @@
 #define UNKNOWNICON_WIDTH     32
 #define UNKNOWNICON_HEIGHT    32
 
-using namespace OPP::layout;
+using namespace omnetpp::layout;
 
 namespace omnetpp {
 namespace qtenv {

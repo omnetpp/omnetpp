@@ -21,9 +21,9 @@
 #include "scaveutils.h"
 #include "enumtype.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 EnumType::EnumType(const EnumType& list)
@@ -125,5 +125,5 @@ void EnumType::parseFromString(const char *str)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

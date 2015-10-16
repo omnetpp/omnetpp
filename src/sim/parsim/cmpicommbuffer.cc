@@ -26,7 +26,7 @@
 #include "omnetpp/regmacros.h"
 #include "cmpicommbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cMPICommBuffer);
 
@@ -491,7 +491,7 @@ void cMPICommBuffer::unpack(SimTime *d, int size)
         unpack(d[i]);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif  // WITH_MPI
 

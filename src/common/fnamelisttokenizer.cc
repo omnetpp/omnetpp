@@ -19,7 +19,7 @@
 #include <cstring>
 #include "fnamelisttokenizer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 FilenamesListTokenizer::FilenamesListTokenizer(const char *s)
@@ -89,5 +89,5 @@ std::vector<std::string> FilenamesListTokenizer::asVector()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

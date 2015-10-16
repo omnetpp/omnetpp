@@ -35,7 +35,7 @@
 #define M_E     2.7182818284590452353602874713527
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //----------------------------------------------------------------------------
 //
@@ -418,5 +418,5 @@ int poisson(cRNG *rng, double lambda)
     return X;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

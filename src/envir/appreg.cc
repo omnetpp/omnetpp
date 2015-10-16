@@ -17,7 +17,7 @@
 
 #include "appreg.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 cGlobalRegistrationList omnetapps("omnetapps");
@@ -38,5 +38,5 @@ cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
 }
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

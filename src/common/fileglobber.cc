@@ -24,7 +24,7 @@
 #include <direct.h>
 #include <cstdlib>  // _MAX_PATH
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 struct GlobPrivateData
@@ -100,7 +100,7 @@ const char *FileGlobber::getNext()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #elif defined __ANDROID__
 
@@ -109,7 +109,7 @@ NAMESPACE_END
 #include <fnmatch.h>
 #include <limits.h>
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 struct GlobPrivateData
@@ -209,13 +209,13 @@ const char *FileGlobber::getNext()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #else
 
 #include <glob.h>
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 struct GlobPrivateData
@@ -260,11 +260,11 @@ const char *FileGlobber::getNext()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 std::vector<std::string> FileGlobber::getFilenames()
@@ -277,5 +277,5 @@ std::vector<std::string> FileGlobber::getFilenames()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

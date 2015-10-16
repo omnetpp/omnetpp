@@ -24,7 +24,7 @@
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 Define_Module(GroundStation)
 

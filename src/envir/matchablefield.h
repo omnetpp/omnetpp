@@ -22,7 +22,7 @@
 #include "omnetpp/cobject.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cClassDescriptor;
 
@@ -32,7 +32,7 @@ namespace envir {
  * Wrapper around a cObject field to make it matchable with MatchExpression.
  * The default attribute is the field name.
  */
-class ENVIR_API MatchableFieldAdapter : public OPP::common::MatchExpression::Matchable
+class ENVIR_API MatchableFieldAdapter : public omnetpp::common::MatchExpression::Matchable
 {
   protected:
     cObject *object;
@@ -48,6 +48,6 @@ class ENVIR_API MatchableFieldAdapter : public OPP::common::MatchExpression::Mat
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

@@ -39,9 +39,9 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 using std::string;
@@ -1059,5 +1059,5 @@ void cMsgPar::convertToConst()
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

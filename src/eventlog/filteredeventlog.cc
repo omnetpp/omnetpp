@@ -18,7 +18,7 @@
 #include <algorithm>
 #include "filteredeventlog.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
@@ -731,5 +731,5 @@ bool FilteredEventLog::isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

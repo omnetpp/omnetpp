@@ -22,7 +22,7 @@
 #include "nedyydefs.h"
 #include "nederror.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 class NEDFileBuffer;
@@ -155,7 +155,7 @@ class NEDXML_API NEDParser
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

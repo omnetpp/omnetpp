@@ -146,7 +146,7 @@ print H
 #include \"envirdefs.h\"
 #include \"omnetpp/simtime_t.h\"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 class EventLogWriter
@@ -164,7 +164,7 @@ foreach $class (@classes)
 print H "};
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 ";
@@ -195,10 +195,10 @@ print CC "
 
 #define LL    INT64_PRINTF_FORMAT
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 void EventLogWriter::recordLogLine(FILE *f, const char *prefix, const char *line, int lineLength)
 {
@@ -216,7 +216,7 @@ foreach $class (@classes)
 
 print CC "
 } // namespace envir\n
-NAMESPACE_END
+}  // namespace omnetpp
 ";
 
 close(CC);

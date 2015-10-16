@@ -20,14 +20,14 @@
 #include "layout/graphlayouter.h"
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cModule;
 class cDisplayString;
 
 namespace tkenv {
 
-class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironment
+class TkenvGraphLayouterEnvironment : public omnetpp::layout::GraphLayouterEnvironment
 {
    protected:
       // configuration
@@ -65,7 +65,7 @@ class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironme
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

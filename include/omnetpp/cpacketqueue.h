@@ -19,7 +19,7 @@
 #include "cqueue.h"
 #include "cpacket.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -183,7 +183,7 @@ class SIM_API cPacketQueue : public cQueue
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -20,7 +20,7 @@
 #include "cexception.h"
 #include "cnedvalue.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cXMLElement;
 
@@ -157,7 +157,7 @@ class SIM_API cExpression : public cObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

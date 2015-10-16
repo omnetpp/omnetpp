@@ -21,7 +21,7 @@
 #include "common/progressmonitor.h"
 #include "resultfilemanager.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -30,14 +30,14 @@ namespace scave {
 class SCAVE_API VectorFileIndexer
 {
     public:
-        typedef OPP::common::IProgressMonitor IProgressMonitor;
+        typedef omnetpp::common::IProgressMonitor IProgressMonitor;
     public:
         void generateIndex(const char *filename, IProgressMonitor *monitor = nullptr);
         void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = nullptr);
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

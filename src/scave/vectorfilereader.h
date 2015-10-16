@@ -28,7 +28,7 @@
 #include "commonnodes.h"
 #include "resultfilemanager.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
@@ -43,7 +43,7 @@ Datum parseColumns(char **tokens, int numtokens, const std::string &columns, con
 class SCAVE_API VectorFileReaderNode : public ReaderNode
 {
     public:
-        typedef OPP::common::LineTokenizer LineTokenizer;
+        typedef omnetpp::common::LineTokenizer LineTokenizer;
         typedef std::vector<Port> PortVector;
         typedef std::map<int,PortVector> Portmap;
         typedef std::string ColumnSpec;
@@ -78,7 +78,7 @@ class SCAVE_API VectorFileReaderNodeType : public ReaderNodeType
 
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

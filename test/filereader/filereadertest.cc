@@ -27,7 +27,7 @@
 
 #define LL    INT64_PRINTF_FORMAT
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 int parseLineNumber(char *line)
 {

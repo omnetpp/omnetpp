@@ -20,7 +20,7 @@
 #include "tklib.h"
 #include "logbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 LogBuffer::Entry::~Entry()
@@ -253,5 +253,5 @@ void LogBuffer::dump() const
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

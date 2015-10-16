@@ -38,9 +38,9 @@
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cModule);
 
@@ -228,7 +228,7 @@ void cModule::updateFullName()
         fullName = nullptr;
     }
     if (isVector()) {
-        fullName = new char[OPP::opp_strlen(getName()) + 10];
+        fullName = new char[omnetpp::opp_strlen(getName()) + 10];
         strcpy(fullName, getName());
         opp_appendindex(fullName, getIndex());
     }
@@ -268,7 +268,7 @@ void cModule::updateFullPathRec()
 {
     delete[] fullPath;
     fullPath = nullptr;  // for the next getFullPath() call
-    fullPath = OPP::opp_strdup(getFullPath().c_str());
+    fullPath = omnetpp::opp_strdup(getFullPath().c_str());
 
     for (cModule *child = firstSubmodule; child; child = child->nextSibling)
         child->updateFullPathRec();
@@ -1537,5 +1537,5 @@ void cModule::ChannelIterator::init(const cModule *parentModule)
     k = 0;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

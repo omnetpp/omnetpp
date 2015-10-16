@@ -5,11 +5,11 @@ Check dynamic array of cOwnedObject-based class as message member
 
 namespace @TESTNAME@;
 
-class OPP::cQueue;
+class omnetpp::cQueue;
 
 message MyMessage
 {
-    OPP::cQueue q[];
+    omnetpp::cQueue q[];
 };
 
 %includes:

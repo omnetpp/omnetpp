@@ -20,7 +20,7 @@
 #include "globals.h"
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -153,7 +153,7 @@ inline cObject *createOneIfClassIsKnown(const char *classname) {
 }
 //@}
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

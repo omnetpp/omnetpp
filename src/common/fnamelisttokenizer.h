@@ -22,7 +22,7 @@
 #include "commondefs.h"
 #include "commonutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 
@@ -76,7 +76,7 @@ class COMMON_API FilenamesListTokenizer
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -19,7 +19,7 @@
 #include <algorithm>
 #include "omnetpp/cnullenvir.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 cNullEnvir::cNullEnvir(int ac, char **av, cConfiguration *c)
 {

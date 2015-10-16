@@ -24,7 +24,7 @@
 #include <cstring>
 #include "nedvalidator.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 class NEDResourceCache;
@@ -126,7 +126,7 @@ class NEDXML_API NEDCrossValidator : public NEDValidatorBase
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -22,7 +22,7 @@
 #include "nederror.h"
 #include "saxparser.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 
@@ -80,7 +80,7 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

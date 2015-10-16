@@ -24,7 +24,7 @@
 #include "omnetpp/cexception.h"
 #include "parsimutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char *caller)
 {
@@ -49,5 +49,5 @@ void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char 
                 caller, parg);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

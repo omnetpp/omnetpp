@@ -20,7 +20,7 @@
 #include "omnetpp/ccanvas.h"
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 struct TKENV_API FigureRenderingHints
@@ -235,6 +235,6 @@ class TKENV_API PixmapFigureRenderer : public AbstractImageFigureRenderer
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

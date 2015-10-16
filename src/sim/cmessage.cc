@@ -27,7 +27,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -357,5 +357,5 @@ void cMessage::execute()
     throw new cRuntimeError("illegal call to cMessage::execute()");
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

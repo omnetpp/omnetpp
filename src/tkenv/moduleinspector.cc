@@ -41,10 +41,10 @@
 #include "layouterenv.h"
 #include "canvasrenderer.h"
 
-using namespace OPP::common;
-using namespace OPP::layout;
+using namespace omnetpp::common;
+using namespace omnetpp::layout;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 #define UNKNOWNICON_WIDTH     32
@@ -1031,5 +1031,5 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

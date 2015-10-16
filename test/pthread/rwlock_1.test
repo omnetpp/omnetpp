@@ -4,7 +4,7 @@ Tests the ReadWriteLock class
 %includes:
 
 #include <common/rwlock.h>
-USING_NAMESPACE
+using namespace omnetpp;
 
 %activity:
 

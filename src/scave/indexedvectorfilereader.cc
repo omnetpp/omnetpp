@@ -23,9 +23,9 @@
 #include "indexedvectorfilereader.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 #define LL    INT64_PRINTF_FORMAT
@@ -194,5 +194,5 @@ Port *IndexedVectorFileReaderNodeType::getPort(Node *node, const char *portname)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

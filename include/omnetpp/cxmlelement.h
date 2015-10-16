@@ -22,7 +22,7 @@
 #include "simkerneldefs.h"
 #include "cenvir.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cXMLElement;
 class cModule;
@@ -354,7 +354,7 @@ class SIM_API StringMapParamResolver : public cXMLElement::ParamResolver
     virtual bool resolve(const char *paramname, std::string& value) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

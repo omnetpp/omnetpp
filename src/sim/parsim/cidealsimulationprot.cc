@@ -34,7 +34,7 @@
 #include "cparsimpartition.h"
 #include "messagetags.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cIdealSimulationProtocol);
 
@@ -167,5 +167,5 @@ void cIdealSimulationProtocol::putBackEvent(cEvent *event)
                         "cannot be used with this scheduler (putBackEvent() not implemented)");
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

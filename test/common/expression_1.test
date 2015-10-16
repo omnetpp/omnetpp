@@ -5,7 +5,7 @@ Tests the expression evaluation class
 #include <common/expression.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 class Variable : public Expression::Functor
 {

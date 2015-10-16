@@ -21,7 +21,7 @@
 
 #include "cdensityestbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -371,7 +371,7 @@ double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *);
 double divfunc_babak(const cKSplit&, cKSplit::Grid&, double, double *);
 
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

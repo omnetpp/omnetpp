@@ -20,7 +20,7 @@
 #include <vector>
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace common { class PatternMatcher; };
 
@@ -73,7 +73,7 @@ namespace common { class PatternMatcher; };
 class SIM_API cPatternMatcher
 {
   private:
-    OPP::common::PatternMatcher *impl;
+    omnetpp::common::PatternMatcher *impl;
 
   public:
     /**
@@ -147,7 +147,7 @@ class SIM_API cPatternMatcher
 
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

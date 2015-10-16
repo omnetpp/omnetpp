@@ -31,7 +31,7 @@
 #include "statistics.h"
 #include "fields.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 typedef std::vector<ID> IDVector;
@@ -220,7 +220,7 @@ class SCAVE_API DataSorter
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

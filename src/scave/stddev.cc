@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "stddev.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -112,5 +112,5 @@ Node *StddevNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -31,7 +31,7 @@
 #include "cidealsimulationprot.h"
 #include "clinkdelaylookahead.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cPlaceholderModule::cPlaceholderModule()
 {
@@ -84,5 +84,5 @@ void parsim_dummy()
     (void)fc; (void)npc; (void)ns; (void)np; (void)iel; (void)ip; (void)ldla;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -19,7 +19,7 @@
 #include <cstdio>
 #include "cstatistic.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Statistics class to collect min, max, mean, and standard deviation.
@@ -383,7 +383,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

@@ -22,7 +22,7 @@
 #include "omnetpp/cvisitor.h"
 #include "omnetpp/cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 bool cVisitor::process(cObject *obj)
 {
@@ -46,5 +46,5 @@ bool cVisitor::processChildrenOf(cObject *obj)
     return true;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

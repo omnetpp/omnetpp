@@ -20,7 +20,7 @@
 #include "channel.h"
 #include "xyplotnode.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 Port *XYPlotNode::getPortY(int k)
@@ -132,5 +132,5 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

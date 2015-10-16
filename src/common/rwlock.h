@@ -21,7 +21,7 @@
 
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 class COMMON_API ILock
@@ -115,7 +115,7 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

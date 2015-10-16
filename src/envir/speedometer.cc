@@ -18,7 +18,7 @@
 #include <cassert>
 #include "speedometer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Speedometer::Speedometer()
@@ -109,5 +109,5 @@ double Speedometer::getSimSecPerSec()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

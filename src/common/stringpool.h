@@ -21,7 +21,7 @@
 #include <cstring>
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -53,7 +53,7 @@ class COMMON_API StringPool
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

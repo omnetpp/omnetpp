@@ -20,7 +20,7 @@
 #include <vector>
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //
 // Note: We *may* need to use these classes in public API functions exposed
@@ -79,7 +79,7 @@ class SIM_API stdcharpvector : public std::vector<const char *>
 };
 
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -21,9 +21,9 @@
 #include "ned1generator.h"
 #include "nedutil.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 using std::ostream;
@@ -1130,5 +1130,5 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

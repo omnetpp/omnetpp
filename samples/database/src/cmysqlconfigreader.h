@@ -25,7 +25,7 @@
 #include <omnetpp.h>
 #include "cconfigreader.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Configuration class which reads data from a MYSQL database. The two

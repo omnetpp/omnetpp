@@ -1191,9 +1191,6 @@ fi
 if test "$WITH_NETBUILDER" = yes; then
    DEFINES="$DEFINES -DWITH_NETBUILDER"
 fi
-if test "$USE_NAMESPACE" = yes; then
-   DEFINES="$DEFINES -DUSE_NAMESPACE"
-fi
 
 #-----------------------
 # add defines to cflags

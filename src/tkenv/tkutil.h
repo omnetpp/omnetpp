@@ -22,7 +22,7 @@
 #include "omnetpp/cobject.h"
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cPar;
 class cComponent;
@@ -89,7 +89,7 @@ class TKENV_API TclQuotedString
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
-class TKENV_API cFindByPathVisitor : public OPP::envir::cCollectObjectsVisitor
+class TKENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
 {
   private:
     const char *fullPath;
@@ -124,11 +124,11 @@ bool isAPL();
 
 std::string getObjectIcon(Tcl_Interp *interp, cObject *object);
 
-void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
+void setObjectListResult(Tcl_Interp *interp, omnetpp::envir::cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
 
-void feedCollectionIntoInspectorListbox(OPP::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
+void feedCollectionIntoInspectorListbox(omnetpp::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
@@ -168,7 +168,7 @@ typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, c
 void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[]);
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

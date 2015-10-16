@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 //FIXME rename this file
@@ -54,7 +54,7 @@ class COMMON_API opp_runtime_error : public std::runtime_error
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

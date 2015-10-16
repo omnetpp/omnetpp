@@ -19,7 +19,7 @@
 #include "channel.h"
 #include "slidingwinavg.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -99,5 +99,5 @@ void SlidingWindowAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& at
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -21,7 +21,7 @@
 #include "scaveutils.h"
 #include "mergernodes.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 Port *MergerNode::addPort()
@@ -264,5 +264,5 @@ Port *AggregatorNodeType::getPort(Node *node, const char *portname) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

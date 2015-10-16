@@ -10,7 +10,7 @@
 #endif
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 std::string stringf(const char *format, ...)
 {

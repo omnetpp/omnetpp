@@ -18,7 +18,7 @@
 
 #include "cmodule.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cQueue;
 class cCoroutine;
@@ -474,7 +474,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

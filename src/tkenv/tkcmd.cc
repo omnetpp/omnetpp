@@ -50,10 +50,10 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 
-using namespace OPP::common;
-using namespace OPP::envir;
+using namespace omnetpp::common;
+using namespace omnetpp::envir;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 
@@ -3265,5 +3265,5 @@ int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, c
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

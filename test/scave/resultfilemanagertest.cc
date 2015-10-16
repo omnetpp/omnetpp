@@ -18,7 +18,7 @@
 #include <scave/resultfilemanager.h>
 #include <scave/idlist.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 static void testUnload(const char *inputfile)
 {

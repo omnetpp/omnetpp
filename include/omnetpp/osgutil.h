@@ -26,7 +26,7 @@
 
 #include <osg/Group>
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cObject;
 
@@ -52,7 +52,7 @@ class SIM_API OmnetppObjectNode : public osg::Group
         void setObject(cObject* obj);
 };
 
-NAMESPACE_END
+} // namespace omnetpp
 
 #endif // WITH_OSG
 

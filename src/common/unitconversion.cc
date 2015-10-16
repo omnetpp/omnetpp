@@ -24,7 +24,7 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 const double K = 1024.0;
@@ -258,5 +258,5 @@ std::vector<const char *> UnitConversion::getAllUnits()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -27,7 +27,7 @@
 #include "exception.h"
 #include "stringutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #define LL    INT64_PRINTF_FORMAT
@@ -674,5 +674,5 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
    }
  */
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -10,7 +10,7 @@
 #include <omnetpp.h>
 #include "TelnetPkt_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Simple model of a Telnet client.

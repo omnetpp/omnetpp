@@ -24,7 +24,7 @@
 #include "scavedefs.h"
 #include "xyarray.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -83,7 +83,7 @@ class SCAVE_API OctaveExport
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

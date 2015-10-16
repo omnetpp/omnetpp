@@ -21,11 +21,11 @@
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 char EventLogEntry::buffer[128];
-OPP::common::LineTokenizer EventLogEntry::tokenizer(32768);
+omnetpp::common::LineTokenizer EventLogEntry::tokenizer(32768);
 static const char *currentLine;
 static int currentLineLength;
 
@@ -262,4 +262,4 @@ const char *EventLogMessageEntry::getAsString(const char *attribute) const
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp

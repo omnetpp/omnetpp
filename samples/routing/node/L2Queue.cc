@@ -11,7 +11,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Point-to-point interface module. While one frame is transmitted,

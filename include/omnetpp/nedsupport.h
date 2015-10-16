@@ -18,7 +18,7 @@
 
 #include "cdynamicexpression.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace NEDSupport {
 
@@ -145,7 +145,7 @@ class Sizeof : public Functor
 
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

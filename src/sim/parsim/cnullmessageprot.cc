@@ -37,7 +37,7 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cNullMessageProtocol);
 
@@ -302,5 +302,5 @@ void cNullMessageProtocol::rescheduleEvent(cMessage *msg, simtime_t t)
     sim->getFES()->insert(msg);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -26,7 +26,7 @@
 #include "inspectorfactory.h"
 #include "watchinspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 void _dummy_for_watchinspector() {}
@@ -88,5 +88,5 @@ void WatchInspector::commit()
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -22,7 +22,7 @@
 #include "nedyydefs.h"
 #include "nedparser.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 #define NONREENTRANT_NED_PARSER(p) \
@@ -107,7 +107,7 @@ inline YYLTYPE makeEmptyYYLTYPE() {
 }
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

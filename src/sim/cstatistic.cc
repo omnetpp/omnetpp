@@ -39,9 +39,9 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -172,5 +172,5 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     va_end(va);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

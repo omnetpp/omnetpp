@@ -9,7 +9,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 class FF1Sink : public cSimpleModule
 {

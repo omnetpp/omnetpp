@@ -25,9 +25,9 @@
 #include "envirbase.h"
 #include "runattributes.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #ifdef CHECK
@@ -46,7 +46,7 @@ void RunData::initRun()
 
         std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
         for (int i = 0; i < (int)keys1.size(); i++)
-            if (OPP::opp_strcmp(keys1[i], CFGVAR_RUNID) != 0)  // skip runId
+            if (omnetpp::opp_strcmp(keys1[i], CFGVAR_RUNID) != 0)  // skip runId
                 attributes[keys1[i]] = cfg->getVariable(keys1[i]);
 
 
@@ -91,5 +91,5 @@ void RunData::writeRunData(FILE *f, opp_string fname)
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -172,7 +172,7 @@ class QTENV_API TclQuotedString
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
-class QTENV_API cFindByPathVisitor : public OPP::envir::cCollectObjectsVisitor
+class QTENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
 {
   private:
     const char *fullPath;
@@ -212,11 +212,11 @@ const char *getObjectBaseClass(cObject *object);
 
 const char *getMessageShortInfoString(cMessage *msg);
 /*TCLKILL
-void setObjectListResult(Tcl_Interp *interp, OPP::envir::cCollectObjectsVisitor *visitor);
+void setObjectListResult(Tcl_Interp *interp, omnetpp::envir::cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
 
-void feedCollectionIntoInspectorListbox(OPP::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
+void feedCollectionIntoInspectorListbox(omnetpp::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 */

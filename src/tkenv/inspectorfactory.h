@@ -21,7 +21,7 @@
 #include "omnetpp/cregistrationlist.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 #define Register_InspectorFactory(FACTORYNAME) \
@@ -93,7 +93,7 @@ extern cGlobalRegistrationList inspectorfactories;
 InspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

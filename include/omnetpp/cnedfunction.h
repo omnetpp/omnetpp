@@ -22,7 +22,7 @@
 #include "cownedobject.h"
 #include "cdynamicexpression.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -170,7 +170,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     static cNEDFunction *findByPointer(NEDFunction f);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

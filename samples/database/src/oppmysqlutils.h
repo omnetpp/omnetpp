@@ -20,7 +20,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * The following options are read from the configuration (omnetpp.ini):

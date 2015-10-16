@@ -26,10 +26,6 @@ using namespace omnetpp::layout;
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN  namespace omnetpp {
-#define NAMESPACE_END    }
-#define USING_NAMESPACE  using namespace omnetpp;
-
 // %typemap(jni)    cModule* "jobject"
 // %typemap(jtype)  cModule* "Object"
 // %typemap(jstype) cModule* "Object"

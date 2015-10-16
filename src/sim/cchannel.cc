@@ -31,7 +31,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -200,5 +200,5 @@ cIdealChannel *cIdealChannel::create(const char *name)
     return dynamic_cast<cIdealChannel *>(cChannelType::getIdealChannelType()->create(name));
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

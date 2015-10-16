@@ -27,7 +27,7 @@ class cDisplayString;
 
 namespace qtenv {
 /*TCLKILL
-class TkenvGraphLayouterEnvironment : public OPP::layout::GraphLayouterEnvironment
+class TkenvGraphLayouterEnvironment : public omnetpp::layout::GraphLayouterEnvironment
 {
    protected:
       // configuration

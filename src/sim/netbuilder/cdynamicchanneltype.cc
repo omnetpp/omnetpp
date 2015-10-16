@@ -24,7 +24,7 @@
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
@@ -117,5 +117,5 @@ bool cDynamicChannelType::isInnerType() const
     return decl->isInnerType();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

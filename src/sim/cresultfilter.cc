@@ -18,9 +18,9 @@
 #include "common/commonutil.h"
 #include "omnetpp/cresultfilter.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cResultFilter::cResultFilter()
 {
@@ -227,5 +227,5 @@ cResultFilterDescriptor *cResultFilterDescriptor::get(const char *name)
     return p;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

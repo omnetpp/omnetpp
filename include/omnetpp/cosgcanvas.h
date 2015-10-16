@@ -25,7 +25,7 @@
 namespace osg { class Node; class Group; }
 namespace osgEarth { class Viewpoint; }
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #define OMNETPP_OSGCANVAS_VERSION  0x20150721  //XXX identifies canvas code version until API stabilizes
 
@@ -193,7 +193,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
         static cObject *getOmnetppObject(osg::Group *omnetppObjectNode);
 };
 
-NAMESPACE_END
+} // namespace omnetpp
 
 #else // not WITH_OSG
 

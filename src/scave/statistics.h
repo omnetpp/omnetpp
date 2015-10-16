@@ -22,7 +22,7 @@
 #include "scavedefs.h"
 #include "scaveutils.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -87,7 +87,7 @@ inline void Statistics::adjoin(const Statistics &other)
 }
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

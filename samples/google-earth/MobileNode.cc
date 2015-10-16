@@ -12,7 +12,7 @@
 #include "KmlUtil.h"
 #include "ChannelController.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * A mobile node.

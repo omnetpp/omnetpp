@@ -32,7 +32,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cOutVector);
 
@@ -208,5 +208,5 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     return stored;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -890,7 +890,7 @@ simple @MODULE@
 
 @INCLUDES@
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 namespace @TESTNAME@ {
 
@@ -918,7 +918,7 @@ void @MODULE@::activity()
 
 @INCLUDES@
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 namespace @TESTNAME@ {
 

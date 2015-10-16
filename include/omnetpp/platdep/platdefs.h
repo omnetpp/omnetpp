@@ -68,21 +68,5 @@
 #  define nullptr  0
 #endif
 
-#ifdef USE_NAMESPACE
-#  define NAMESPACE_BEGIN  namespace omnetpp {
-#  define NAMESPACE_END    };
-#  define USING_NAMESPACE  using namespace omnetpp;
-#  define OPP              omnetpp
-#  define OPP_STR          "omnetpp"
-#  define OPP_PREFIX       "omnetpp::"
-#else
-#  define NAMESPACE_BEGIN
-#  define NAMESPACE_END
-#  define USING_NAMESPACE
-#  define OPP
-#  define OPP_STR          ""
-#  define OPP_PREFIX       ""
-#endif
-
 #endif
 

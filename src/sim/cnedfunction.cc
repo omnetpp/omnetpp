@@ -25,9 +25,9 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cexception.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
         const char *category, const char *description) :
@@ -196,5 +196,5 @@ cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
     return nullptr;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

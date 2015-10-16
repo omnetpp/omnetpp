@@ -19,7 +19,7 @@
 #include "channel.h"
 #include "teenode.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 Port *TeeNode::addPort()
@@ -82,5 +82,5 @@ Port *TeeNodeType::getPort(Node *node, const char *portname) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

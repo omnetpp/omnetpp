@@ -19,7 +19,7 @@
 #include "crandom.h"
 #include "simtime.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cTransientDetection;
 class cAccuracyDetection;
@@ -283,7 +283,7 @@ class SIM_API cStatistic : public cRandom
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

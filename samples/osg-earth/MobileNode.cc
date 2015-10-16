@@ -19,7 +19,7 @@
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 using namespace osgEarth;
 using namespace osgEarth::Annotation;

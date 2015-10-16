@@ -19,7 +19,7 @@
 #include "commondefs.h"
 #include <stdint.h> // should use cstdint, but that is C++11
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -32,6 +32,6 @@ namespace common {
 COMMON_API void parseColor(const char *s, uint8_t &r, uint8_t &g, uint8_t &b);
 
 } // namespace common
-NAMESPACE_END
+} // namespace omnetpp
 
 #endif // __OMNETPP_COMMON_COLORUTIL_H

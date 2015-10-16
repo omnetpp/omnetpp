@@ -23,9 +23,9 @@
 #include "omnetpp/simutil.h"
 #include "logformatter.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 LogFormatter::LogFormatter(const char *format)
@@ -439,5 +439,5 @@ void LogFormatter::resetAdaptiveTabs()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

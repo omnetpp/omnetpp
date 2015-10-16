@@ -30,7 +30,7 @@
 #include "tkutil.h"
 #include "inspectorfactory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 void _dummy_for_gateinspector() {}
@@ -203,5 +203,5 @@ void GateInspector::displayStringChanged(cGate *gate)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -3,7 +3,7 @@ Tests the ValueIterator class in envir
 
 %includes:
 #include <envir/valueiterator.h>
-using namespace OPP::envir;
+using namespace omnetpp::envir;
 
 %global:
 

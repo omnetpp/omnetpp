@@ -27,7 +27,7 @@
 #include "indexfile.h"
 #include "resultfilemanager.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
@@ -39,7 +39,7 @@ namespace scave {
  */
 class SCAVE_API IndexedVectorFileReaderNode2 : public ReaderNode
 {
-    typedef OPP::common::LineTokenizer LineTokenizer;
+    typedef omnetpp::common::LineTokenizer LineTokenizer;
     typedef std::vector<Port> PortVector;
 
     struct PortData {
@@ -86,7 +86,7 @@ class SCAVE_API IndexedVectorFileReaderNode2Type : public ReaderNodeType
 
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

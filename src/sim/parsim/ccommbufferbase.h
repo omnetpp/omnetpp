@@ -23,7 +23,7 @@
 
 #include "omnetpp/ccommbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Adds buffer (re)allocation functions to cCommBuffer. This functionality
@@ -101,7 +101,7 @@ class SIM_API cCommBufferBase : public cCommBuffer
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

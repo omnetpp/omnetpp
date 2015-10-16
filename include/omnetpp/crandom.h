@@ -19,7 +19,7 @@
 #include <sstream>
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cRNG;
 
@@ -812,7 +812,7 @@ class SIM_API cPoisson : public cRandom
         //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

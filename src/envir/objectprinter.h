@@ -23,7 +23,7 @@
 #include "envirdefs.h"
 #include "common/matchexpression.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cClassDescriptor;
 class cObject;
@@ -56,7 +56,7 @@ typedef ObjectPrinterRecursionControl (*ObjectPrinterRecursionPredicate)(void *,
 class ENVIR_API ObjectPrinter
 {
     public:
-        typedef OPP::common::MatchExpression MatchExpression;
+        typedef omnetpp::common::MatchExpression MatchExpression;
 
     protected:
         int indentSize;
@@ -113,7 +113,7 @@ class ENVIR_API ObjectPrinter
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

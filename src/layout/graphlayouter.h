@@ -23,7 +23,7 @@
 #include "common/commonutil.h"
 #include "layoutdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 //#define TRACE_LAYOUTER
@@ -87,7 +87,7 @@ class LAYOUT_API BasicGraphLayouterEnvironment : public GraphLayouterEnvironment
 class LAYOUT_API GraphLayouter
 {
   protected:
-    OPP::common::LCGRandom lcgRandom;
+    omnetpp::common::LCGRandom lcgRandom;
 
     GraphLayouterEnvironment *environment;
 
@@ -185,7 +185,7 @@ class LAYOUT_API GraphLayouter
 };
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

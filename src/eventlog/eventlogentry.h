@@ -26,7 +26,7 @@
 #include "eventlogdefs.h"
 #include "enums.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 class Event;
@@ -37,7 +37,7 @@ class EventLog;
  * Base class for all kind of event log entries.
  * An entry is represented by a single line in the log file.
  */
-class EVENTLOG_API EventLogEntry : public OPP::common::MatchExpression::Matchable
+class EVENTLOG_API EventLogEntry : public omnetpp::common::MatchExpression::Matchable
 {
     public:
         int contextModuleId;
@@ -47,7 +47,7 @@ class EVENTLOG_API EventLogEntry : public OPP::common::MatchExpression::Matchabl
         Event* event; // back pointer
         int entryIndex;
         static char buffer[128];
-        static OPP::common::LineTokenizer tokenizer; // not thread safe
+        static omnetpp::common::LineTokenizer tokenizer; // not thread safe
 
     public:
         EventLogEntry();
@@ -111,7 +111,7 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

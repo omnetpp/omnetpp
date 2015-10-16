@@ -28,9 +28,9 @@
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 // FIXME TODO: assert types begin with capital letters, and submods/gates/params with lowercase! warning if not!
@@ -778,5 +778,5 @@ void NEDSyntaxValidator::validateElement(UnknownElement *node)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

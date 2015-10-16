@@ -10,7 +10,7 @@
 #include <omnetpp.h>
 #include "HttpMsg_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 class HTTPClient : public cSimpleModule
 {

@@ -21,7 +21,7 @@
 #include "commondefs.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
@@ -49,7 +49,7 @@ class COMMON_API LCGRandom
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

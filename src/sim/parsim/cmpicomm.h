@@ -25,7 +25,7 @@
 
 #include "omnetpp/cparsimcomm.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cMPICommBuffer;
 
@@ -115,7 +115,7 @@ class SIM_API cMPICommunications : public cParsimCommunications
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

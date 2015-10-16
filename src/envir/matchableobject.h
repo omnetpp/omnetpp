@@ -22,7 +22,7 @@
 #include "omnetpp/cobject.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cClassDescriptor;
 
@@ -32,7 +32,7 @@ namespace envir {
  * Wrapper around a cObject to make it matchable with MatchExpression.
  * The default match string is either getFullName() or getFullPath().
  */
-class ENVIR_API MatchableObjectAdapter : public OPP::common::MatchExpression::Matchable
+class ENVIR_API MatchableObjectAdapter : public omnetpp::common::MatchExpression::Matchable
 {
   public:
     enum DefaultAttribute {FULLNAME, FULLPATH, CLASSNAME};
@@ -53,7 +53,7 @@ class ENVIR_API MatchableObjectAdapter : public OPP::common::MatchExpression::Ma
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

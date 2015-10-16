@@ -20,7 +20,7 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cConfigOption;
 
@@ -457,7 +457,7 @@ class SIM_API cConfigurationEx : public cConfiguration
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

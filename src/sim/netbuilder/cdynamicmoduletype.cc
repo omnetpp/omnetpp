@@ -24,7 +24,7 @@
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
@@ -143,5 +143,5 @@ bool cDynamicModuleType::isInnerType() const
     return decl->isInnerType();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -15,7 +15,7 @@
 #include <omnetpp.h>
 #include "MobileNode.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 // a structure to store time coded waypoints
 struct Waypoint

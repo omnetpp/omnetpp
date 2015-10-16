@@ -21,7 +21,7 @@
 #include "simkerneldefs.h"
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 // Generating identifiers unique for this file. See MSVC Help for __COUNTER__ for more info.
@@ -49,7 +49,7 @@ NAMESPACE_BEGIN
 #define EXECUTE_ON_STARTUP(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static OPP::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, OPP::CodeFragments::STARTUP); \
+    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, omnetpp::CodeFragments::STARTUP); \
   };
 
 /**
@@ -64,7 +64,7 @@ NAMESPACE_BEGIN
 #define EXECUTE_ON_SHUTDOWN(CODE)  \
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
-    static OPP::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, OPP::CodeFragments::SHUTDOWN); \
+    static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, omnetpp::CodeFragments::SHUTDOWN); \
   };
 
 /**
@@ -87,7 +87,7 @@ class SIM_API CodeFragments
     static void executeAll(Type type);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

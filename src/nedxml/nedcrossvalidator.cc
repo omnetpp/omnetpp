@@ -23,9 +23,9 @@
 #include "nedresourcecache.h"
 #include "nedcrossvalidator.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 NEDCrossValidator::NEDCrossValidator(bool parsedExpr, NEDResourceCache *res, NEDErrorStore *e)
@@ -442,5 +442,5 @@ void NEDCrossValidator::validateElement(UnknownElement *node)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

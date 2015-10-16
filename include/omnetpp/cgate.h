@@ -24,7 +24,7 @@
 #include "simtime_t.h"
 #include "cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cGate;
 class cModule;
@@ -485,7 +485,7 @@ class SIM_API cGate : public cObject, noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

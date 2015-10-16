@@ -22,7 +22,7 @@
 #include "cgate.h"
 #include "csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class  cMessage;
 class  cGate;
@@ -868,7 +868,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

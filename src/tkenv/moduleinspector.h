@@ -21,7 +21,7 @@
 #include "omnetpp/ccanvas.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cModule;
 class cGate;
@@ -127,6 +127,6 @@ class TKENV_API ModuleInspector : public Inspector
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

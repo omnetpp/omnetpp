@@ -22,7 +22,7 @@
 #include "cconfiguration.h"
 #include "mersennetwister.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -73,7 +73,7 @@ class SIM_API cMersenneTwister : public cRNG
     virtual double doubleRandIncl1() override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

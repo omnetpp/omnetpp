@@ -12,7 +12,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 // Include a generated file: the header file created from tictoc13.msg.
 // It contains the definition of the TictocMsg10 class, derived from

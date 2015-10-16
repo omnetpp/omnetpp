@@ -21,7 +21,7 @@
 #include "common/commonutil.h"
 #include "scavedefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -153,7 +153,7 @@ class SCAVE_API Node
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

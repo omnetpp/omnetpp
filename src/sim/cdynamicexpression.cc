@@ -27,9 +27,9 @@
 #include "omnetpp/cmodule.h"
 #include "expryydefs.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cStringPool cDynamicExpression::Elem::stringPool("cDynamicExpression::Elem::stringPool");
 
@@ -79,7 +79,7 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
     switch (type) {
 #define CMP(x)    (x == other.x ? 0 : x < other.x ? -1 : 1)
         case BOOL: return (int)other.b - (int)b;
-        case DBL: return d.d == other.d.d ? OPP::opp_strcmp(d.unit, other.d.unit) : d.d < other.d.d ? -1 : 1;
+        case DBL: return d.d == other.d.d ? omnetpp::opp_strcmp(d.unit, other.d.unit) : d.d < other.d.d ? -1 : 1;
         case STR: return CMP(s);
         case XML: return CMP(x);
         case MATHFUNC: return CMP(f);
@@ -774,5 +774,5 @@ std::string cDynamicExpression::str() const
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

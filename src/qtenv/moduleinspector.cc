@@ -49,7 +49,7 @@
 #include "inspectorutil.h"
 #include "layersdialog.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 #define emit
 

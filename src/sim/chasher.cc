@@ -17,7 +17,7 @@
 
 #include "omnetpp/chasher.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void cHasher::add(const char *p, size_t length)
 {
@@ -93,5 +93,5 @@ int main(int argc, char **argv)
 }
 */
 
-NAMESPACE_END
+}  // namespace omnetpp
 

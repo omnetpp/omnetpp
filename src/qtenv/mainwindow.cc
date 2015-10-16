@@ -44,7 +44,7 @@
 
 #include <QDebug>
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace qtenv {

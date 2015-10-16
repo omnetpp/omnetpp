@@ -27,9 +27,9 @@
 #include "datasorter.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 ResultFileManager *DataSorter::tmpResultFileMgr;
@@ -587,5 +587,5 @@ IDVectorVector DataSorter::prepareCopyToClipboard(const IDList& idlist)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

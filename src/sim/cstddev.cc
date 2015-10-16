@@ -41,9 +41,9 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -397,5 +397,5 @@ void cWeightedStdDev::loadFromFile(FILE *f)
     freadvarsf(f, "%g\t #= sum_weights_squared_vals", &sumWeightedSquaredValues);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

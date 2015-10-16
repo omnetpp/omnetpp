@@ -35,9 +35,9 @@
 #include "omnetpp/cscheduler.h"  // dummy()
 #include "omnetpp/distrib.h"  // dummy()
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
 {
@@ -276,7 +276,7 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
     getSimulation()->setContextType(savedcontexttype);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 //----
 // dummy function to force over-optimizing Unix linkers to include these symbols
@@ -297,9 +297,9 @@ NAMESPACE_END
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cvarhist.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #ifdef __GNUC__
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -349,5 +349,5 @@ void _sim_dummy_func()
     //_dummy_for_env();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

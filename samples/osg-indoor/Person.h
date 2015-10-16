@@ -17,7 +17,7 @@
 #define M_PI    3.14159265358979323846
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 struct Waypoint
 {

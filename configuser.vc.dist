@@ -16,11 +16,6 @@
 OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 
 #
-# Set to "yes" if you want OMNeT++ classes to go into the omnetpp namespace.
-#
-USE_NAMESPACE=yes
-
-#
 # Choose build mode. The default is "debug" for models.
 #
 #MODE=debug
@@ -436,10 +431,4 @@ TOOLCHAIN_NAME = vc100
 !ifndef CONFIGNAME
 CONFIGNAME=msvc-$(MODE)
 !endif
-
-# Misc settings
-!if "$(USE_NAMESPACE)"=="yes"
-CFLAGS = $(CFLAGS) -DUSE_NAMESPACE
-!endif
-
 

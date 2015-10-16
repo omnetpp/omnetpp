@@ -25,7 +25,7 @@
 #include "common/stringtokenizer.h"
 #include "imagecache.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace qtenv {

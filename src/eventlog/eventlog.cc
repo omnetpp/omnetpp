@@ -19,9 +19,9 @@
 #include "common/stringpool.h"
 #include "eventlog.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 StringPool eventLogStringPool;
@@ -544,5 +544,5 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -22,7 +22,7 @@
 #include "omnetpp/simutil.h"
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cComponentType;
 
@@ -60,7 +60,7 @@ class TKENV_API ComponentHistory
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

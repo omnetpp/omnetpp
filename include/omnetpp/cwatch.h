@@ -20,7 +20,7 @@
 #include <sstream>
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -326,7 +326,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH(variable)  OPP::createWatch(#variable,(variable))
+#define WATCH(variable)  omnetpp::createWatch(#variable,(variable))
 
 /**
  * Makes types with operator\<\< and operator\>\> inspectable in Tkenv.
@@ -334,7 +334,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_RW(variable)  OPP::createWatch_genericAssignable(#variable,(variable))
+#define WATCH_RW(variable)  omnetpp::createWatch_genericAssignable(#variable,(variable))
 
 /**
  * Makes classes derived from cObject inspectable in Tkenv.
@@ -342,7 +342,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_OBJ(variable)  OPP::createWatch_cObject(#variable,(variable))
+#define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable,(variable))
 
 /**
  * Makes pointers to objects derived from cObject inspectable in Tkenv.
@@ -350,10 +350,10 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  *
  * @hideinitializer
  */
-#define WATCH_PTR(variable)  OPP::createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
+#define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
 //@}
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

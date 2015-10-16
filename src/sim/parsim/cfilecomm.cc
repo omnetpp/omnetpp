@@ -38,9 +38,9 @@
 #include "cfilecommbuffer.h"
 #include "parsimutil.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cFileCommunications);
 
@@ -210,5 +210,5 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
     return ret;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

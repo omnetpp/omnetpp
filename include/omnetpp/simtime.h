@@ -22,7 +22,7 @@
 #include "platdep/intlimits.h"
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cPar;
 
@@ -396,7 +396,7 @@ inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
     return os << SimTime::ttoa(buf, x.raw(), SimTime::getScaleExp(), endp);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 // used locally; needed because sign of a%b is implementation dependent if a<0
 inline int64_t _i64mod(const int64_t& any_t, const int64_t& positive_u)
@@ -408,11 +408,11 @@ inline int64_t _i64mod(const int64_t& any_t, const int64_t& positive_u)
 /**
  * simtime_t version of floor(double) from math.h.
  */
-inline const OPP::SimTime floor(const OPP::SimTime& x)
+inline const omnetpp::SimTime floor(const omnetpp::SimTime& x)
 {
-    int64_t u = OPP::SimTime::getScale();
+    int64_t u = omnetpp::SimTime::getScale();
     int64_t t = x.raw();
-    return OPP::SimTime().setRaw(t - _i64mod(t,u));
+    return omnetpp::SimTime().setRaw(t - _i64mod(t,u));
 }
 
 /**
@@ -422,50 +422,50 @@ inline const OPP::SimTime floor(const OPP::SimTime& x)
  * Examples: floor(2.1234, 0.1) = 2.1; floor(2.1234, 0.1, 0.007) = 2.107;
  * floor(2.1006, 0.1, 0.007) = 2.007.
  */
-inline const OPP::SimTime floor(const OPP::SimTime& x, const OPP::SimTime& unit, const OPP::SimTime& offset = OPP::SimTime())
+inline const omnetpp::SimTime floor(const omnetpp::SimTime& x, const omnetpp::SimTime& unit, const omnetpp::SimTime& offset = omnetpp::SimTime())
 {
     int64_t off = offset.raw();
     int64_t u = unit.raw();
     int64_t t = x.raw() - off;
-    return OPP::SimTime().setRaw(t - _i64mod(t,u) + off);
+    return omnetpp::SimTime().setRaw(t - _i64mod(t,u) + off);
 }
 
 /**
  * simtime_t version of ceil(double) from math.h.
  */
-inline const OPP::SimTime ceil(const OPP::SimTime& x)
+inline const omnetpp::SimTime ceil(const omnetpp::SimTime& x)
 {
-    int64_t u = OPP::SimTime::getScale();
+    int64_t u = omnetpp::SimTime::getScale();
     int64_t t = x.raw() + u-1;
-    return OPP::SimTime().setRaw(t - _i64mod(t,u));
+    return omnetpp::SimTime().setRaw(t - _i64mod(t,u));
 }
 
 /**
  * Generalized version of ceil(), accepting a unit and an offset:
  * ceil(x,u,off) = ceil((x-off)/u)*u + off.
  */
-inline const OPP::SimTime ceil(const OPP::SimTime& x, const OPP::SimTime& unit, const OPP::SimTime& offset = OPP::SimTime())
+inline const omnetpp::SimTime ceil(const omnetpp::SimTime& x, const omnetpp::SimTime& unit, const omnetpp::SimTime& offset = omnetpp::SimTime())
 {
     int64_t off = offset.raw();
     int64_t u = unit.raw();
     int64_t t = x.raw() - off + u-1;
-    return OPP::SimTime().setRaw(t - _i64mod(t,u) + off);
+    return omnetpp::SimTime().setRaw(t - _i64mod(t,u) + off);
 }
 
 /**
  * simtime_t version of fabs(double) from math.h.
  */
-inline const OPP::SimTime fabs(const OPP::SimTime& x)
+inline const omnetpp::SimTime fabs(const omnetpp::SimTime& x)
 {
-    return x.raw()<0 ? OPP::SimTime().setRaw(-x.raw()) : x;
+    return x.raw()<0 ? omnetpp::SimTime().setRaw(-x.raw()) : x;
 }
 
 /**
  * simtime_t version of fmod(double,double) from math.h.
  */
-inline const OPP::SimTime fmod(const OPP::SimTime& x, const OPP::SimTime& y)
+inline const omnetpp::SimTime fmod(const omnetpp::SimTime& x, const omnetpp::SimTime& y)
 {
-    return OPP::SimTime().setRaw(x.raw() % y.raw());
+    return omnetpp::SimTime().setRaw(x.raw() % y.raw());
 }
 
 #endif

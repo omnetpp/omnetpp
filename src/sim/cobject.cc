@@ -24,7 +24,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cenvir.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #ifdef SIMFRONTEND_SUPPORT
 int64_t cObject::changeCounter = 0;
@@ -210,5 +210,5 @@ cObject *cObject::findObject(const char *objname, bool deep)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

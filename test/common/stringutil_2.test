@@ -6,7 +6,7 @@ Test string quoting/parsing by converting random strings back and forth
 #include <common/lcgrandom.h>
 
 %activity:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 LCGRandom rng;
 

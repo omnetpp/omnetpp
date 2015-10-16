@@ -28,7 +28,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 using std::ostream;
 

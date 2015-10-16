@@ -27,7 +27,7 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 class Inspector;
@@ -55,7 +55,7 @@ enum StripNamespace
     STRIPNAMESPACE_ALL
 };
 
-struct TkenvOptions : public OPP::envir::EnvirOptions
+struct TkenvOptions : public omnetpp::envir::EnvirOptions
 {
     TkenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
@@ -94,7 +94,7 @@ struct TkenvOptions : public OPP::envir::EnvirOptions
 /**
  * A Tcl/Tk-based user interface.
  */
-class TKENV_API Tkenv : public OPP::envir::EnvirBase
+class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
 {
    public:
       //
@@ -164,7 +164,7 @@ class TKENV_API Tkenv : public OPP::envir::EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
-      typedef OPP::common::MatchExpression MatchExpression;
+      typedef omnetpp::common::MatchExpression MatchExpression;
       typedef std::vector<MatchExpression*> MatchExpressions;
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
@@ -308,6 +308,6 @@ inline Tkenv *getTkenv()
 }
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

@@ -27,7 +27,7 @@
 #include "nedelements.h"
 #include "nederror.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 struct MsgCppGeneratorOptions
@@ -243,7 +243,7 @@ class NEDXML_API MsgCppGenerator
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

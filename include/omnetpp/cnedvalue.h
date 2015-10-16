@@ -20,7 +20,7 @@
 #include "simkerneldefs.h"
 #include "cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cPar;
 class cXMLElement;
@@ -439,7 +439,7 @@ class SIM_API cNEDValue
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

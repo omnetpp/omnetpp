@@ -15,7 +15,7 @@
 #include "crng.h"
 #include "simtime.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //TODO @group etc
 /**
@@ -386,7 +386,7 @@ SIM_API int poisson(cRNG *rng, double lambda);
 
 //@}
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

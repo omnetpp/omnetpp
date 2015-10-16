@@ -19,7 +19,7 @@
 #include "cchannel.h"
 #include "csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Channel with propagation delay.
@@ -149,7 +149,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

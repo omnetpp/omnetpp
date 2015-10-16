@@ -28,9 +28,9 @@
 #include "common/commonutil.h"
 #include "basicspringembedderlayout.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 static bool debug = false;
@@ -700,5 +700,5 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

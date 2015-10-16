@@ -25,7 +25,7 @@
 #include "forcedirectedparameters.h"
 #include "graphcomponent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 
@@ -229,7 +229,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
 };
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

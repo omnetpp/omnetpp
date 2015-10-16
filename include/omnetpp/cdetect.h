@@ -19,7 +19,7 @@
 #include "cownedobject.h"
 #include "cstatistic.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 class cStatistic;
@@ -431,7 +431,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

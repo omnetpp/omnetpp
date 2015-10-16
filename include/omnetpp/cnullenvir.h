@@ -21,7 +21,7 @@
 #include "ccomponent.h"
 #include "cmersennetwister.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -151,7 +151,7 @@ class SIM_API cNullEnvir : public cEnvir
 };
 
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

@@ -26,7 +26,7 @@
 #include "omnetpp/simtime_t.h"
 #include "omnetpp/clifecyclelistener.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cSimulation;
 class cParsimSynchronizer;
@@ -154,7 +154,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     virtual void broadcastException(std::exception& e);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

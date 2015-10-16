@@ -41,13 +41,13 @@ namespace qtenv{
 } // namespace qtenv
 } // namespace omnetpp
 
-typedef QPair<OPP::cObject*, int> ActionDataPair;
+typedef QPair<omnetpp::cObject*, int> ActionDataPair;
 typedef QPair<ActionDataPair, omnetpp::qtenv::Inspector*> ActionDataTriplet;
 
-Q_DECLARE_METATYPE(OPP::cObject*)
+Q_DECLARE_METATYPE(omnetpp::cObject*)
 Q_DECLARE_METATYPE(ActionDataPair)
 Q_DECLARE_METATYPE(ActionDataTriplet)
-Q_DECLARE_METATYPE(OPP::cMessage*)
+Q_DECLARE_METATYPE(omnetpp::cMessage*)
 
 
 #if defined(TKENV_EXPORT)

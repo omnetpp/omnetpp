@@ -31,7 +31,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -428,5 +428,5 @@ const cDensityEstBase::Cell& cDensityEstBase::internalGetCellInfo(int k) const
     return buf;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

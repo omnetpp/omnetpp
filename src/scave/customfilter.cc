@@ -20,10 +20,10 @@
 #include "customfilter.h"
 #include "scaveutils.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 /**
  * Resolves variables (x, y) and functions (sin, fabs, etc) in
@@ -136,5 +136,5 @@ void ExpressionFilterNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs,
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

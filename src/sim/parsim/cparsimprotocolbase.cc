@@ -28,7 +28,7 @@
 #include "messagetags.h"
 #include "cparsimprotocolbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cParsimProtocolBase::cParsimProtocolBase() : cParsimSynchronizer()
 {
@@ -103,5 +103,5 @@ bool cParsimProtocolBase::receiveBlocking()
     return true;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

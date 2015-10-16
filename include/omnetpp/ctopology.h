@@ -23,7 +23,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cPar;
 
@@ -580,6 +580,6 @@ class SIM_API cTopology : public cOwnedObject
     virtual Link *createLink() { return new Link(); }
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

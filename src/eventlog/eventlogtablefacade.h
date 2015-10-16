@@ -22,7 +22,7 @@
 #include "ieventlog.h"
 #include "eventlogfacade.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 enum EventLogTableFilterMode {
@@ -42,7 +42,7 @@ enum EventLogTableFilterMode {
  */
 class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 {
-    typedef OPP::common::MatchExpression MatchExpression;
+    typedef omnetpp::common::MatchExpression MatchExpression;
     protected:
         eventnumber_t approximateNumberOfEntries; // cached value, -1 means not yet calculated
         eventnumber_t lastMatchedEventNumber; // -1 means unused
@@ -86,7 +86,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

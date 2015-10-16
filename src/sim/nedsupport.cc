@@ -26,9 +26,9 @@
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/nedsupport.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace NEDSupport {
 
@@ -92,7 +92,7 @@ std::string ParameterRef::str(std::string args[], int numargs)
 
 SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex)
 {
-    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && OPP::opp_strcmp(moduleName, "this") != 0);
+    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && omnetpp::opp_strcmp(moduleName, "this") != 0);
     this->moduleName = moduleName;
     this->paramName = paramName;
     this->ofParent = ofParent;
@@ -207,7 +207,7 @@ std::string Sizeof::str(std::string args[], int numargs)
 
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 /*
 //TODO make error messages consistent

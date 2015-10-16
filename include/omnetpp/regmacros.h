@@ -18,7 +18,7 @@
 
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * @ingroup Macros
@@ -40,7 +40,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(OPP::nedFunctions.getInstance()->add(new OPP::cNEDMathFunction(#NAME,NAME,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
  * Like Define_NED_Math_Function(), but takes three arguments, the second one being the
@@ -50,7 +50,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(OPP::nedFunctions.getInstance()->add(new OPP::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * Like Define_NED_Math_Function(), but takes category and description strings as well.
@@ -58,7 +58,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(OPP::nedFunctions.getInstance()->add(new OPP::cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * Like Define_NED_Math_Function2(), but takes category and description strings as well.
@@ -66,7 +66,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(OPP::nedFunctions.getInstance()->add(new OPP::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
@@ -93,7 +93,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Function(FUNCTION,SIGNATURE) \
-  EXECUTE_ON_STARTUP(OPP::nedFunctions.getInstance()->add(new OPP::cNEDFunction(FUNCTION,SIGNATURE));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDFunction(FUNCTION,SIGNATURE));)
 
 /**
  * Like Define_NED_Function(), but allows one to specify a category string
@@ -102,7 +102,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Function2(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(OPP::nedFunctions.getInstance()->add(new OPP::cNEDFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
  * Register class. This defines a factory object which makes it possible
@@ -113,7 +113,7 @@ NAMESPACE_BEGIN
  * @see cObjectFactory, cObjectFactory::createOne(), cObjectFactory::isInstance()
  * @hideinitializer
  */
-#define Register_Class(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, OPP::cObject, "class")
+#define Register_Class(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, omnetpp::cObject, "class")
 
 /**
  * Register an abstract class. Registration makes it possible to dynamically test
@@ -124,7 +124,7 @@ NAMESPACE_BEGIN
  * @see cObjectFactory, cObjectFactory::isInstance()
  * @hideinitializer
  */
-#define Register_Abstract_Class(CLASSNAME)  __REGISTER_ABSTRACT_CLASS(CLASSNAME, OPP::cObject, "class")
+#define Register_Abstract_Class(CLASSNAME)  __REGISTER_ABSTRACT_CLASS(CLASSNAME, omnetpp::cObject, "class")
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -132,7 +132,7 @@ NAMESPACE_BEGIN
  *
  * @hideinitializer
  */
-#define Define_Module(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, OPP::cModule, "module")
+#define Define_Module(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, omnetpp::cModule, "module")
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
@@ -140,18 +140,18 @@ NAMESPACE_BEGIN
  *
  * @hideinitializer
  */
-#define Define_Channel(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, OPP::cChannel, "channel")
+#define Define_Channel(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, omnetpp::cChannel, "channel")
 
 // internal
 #define __REGISTER_CLASS(CLASSNAME, BASECLASS, DESC) \
-  static OPP::cObject *MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_)() {BASECLASS *ret = new CLASSNAME; return ret; } \
-  static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(OPP::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
-  EXECUTE_ON_STARTUP(OPP::classes.getInstance()->add(new OPP::cObjectFactory(OPP::opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
+  static omnetpp::cObject *MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_)() {BASECLASS *ret = new CLASSNAME; return ret; } \
+  static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(omnetpp::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
+  EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
 
 // internal
 #define __REGISTER_ABSTRACT_CLASS(CLASSNAME, BASECLASS /*unused*/, DESC) \
-  static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(OPP::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
-  EXECUTE_ON_STARTUP(OPP::classes.getInstance()->add(new OPP::cObjectFactory(OPP::opp_typename(typeid(CLASSNAME)), nullptr, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
+  static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(omnetpp::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
+  EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), nullptr, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
 
 /**
  * Internal. Registers a class descriptor which provides reflection information.
@@ -159,12 +159,12 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_ClassDescriptor(DESCRIPTORCLASS) \
-  EXECUTE_ON_STARTUP(OPP::classDescriptors.getInstance()->add(new DESCRIPTORCLASS());)
+  EXECUTE_ON_STARTUP(omnetpp::classDescriptors.getInstance()->add(new DESCRIPTORCLASS());)
 
 // internal
 #define __REGISTER_CONFIGOPTION(ID, ARGLIST) \
   cConfigOption *ID; \
-  EXECUTE_ON_STARTUP(OPP::configOptions.getInstance()->add(ID = new OPP::cConfigOption ARGLIST);)
+  EXECUTE_ON_STARTUP(omnetpp::configOptions.getInstance()->add(ID = new omnetpp::cConfigOption ARGLIST);)
 
 /**
  * Registers a global configuration option.
@@ -172,7 +172,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, true, OPP::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, true, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a per-run configuration option.
@@ -180,7 +180,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, false, OPP::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a global configuration option with type==CFG_DOUBLE and an
@@ -189,7 +189,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, true, OPP::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, true, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a per-run configuration option with type==CFG_DOUBLE and an
@@ -198,7 +198,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, false, OPP::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a per-object configuration option.
@@ -206,7 +206,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_PerObjectConfigOption(ID, NAME, KIND, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, OPP::cConfigOption::KIND, OPP::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::KIND, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a per-object configuration option with type==CFG_DOUBLE and an
@@ -215,7 +215,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_PerObjectConfigOptionU(ID, NAME, KIND, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGOPTION(ID, (NAME, OPP::cConfigOption::KIND, OPP::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::KIND, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Registers a message printer class (cMessagePrinter)
@@ -223,7 +223,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_MessagePrinter(CLASSNAME) \
-  EXECUTE_ON_STARTUP(OPP::messagePrinters.getInstance()->add(new CLASSNAME());)
+  EXECUTE_ON_STARTUP(omnetpp::messagePrinters.getInstance()->add(new CLASSNAME());)
 
 /**
  * Registers an enum.
@@ -242,10 +242,10 @@ NAMESPACE_BEGIN
  */
 #ifdef __INET_INETDEFS_H  //FIXME ~"when compiling INET". This is a hack to ensure that INET 3.0 compiles with OMNeT++ 5.0b2. To be removed latest in 5.0 final.
 #define Register_Enum(NAME, VALUES)  \
-  EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))  // old (4.x) version of the macro, does not play nice with namespaces
+  EXECUTE_ON_STARTUP(omnetpp::enums.getInstance()->add((new omnetpp::cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))  // old (4.x) version of the macro, does not play nice with namespaces
 #else
 #define Register_Enum(NAME, VALUES)  \
-  EXECUTE_ON_STARTUP(OPP::enums.getInstance()->add((new OPP::cEnum(OPP::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
+  EXECUTE_ON_STARTUP(omnetpp::enums.getInstance()->add((new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
 #endif
 
 /**
@@ -271,12 +271,12 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_Enum2(VAR, NAME, VALUES)  \
-  static OPP::cEnum *VAR; \
-  EXECUTE_ON_STARTUP(VAR = new OPP::cEnum(NAME); VAR->bulkInsert VALUES; OPP::enums.getInstance()->add(VAR))
+  static omnetpp::cEnum *VAR; \
+  EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAME); VAR->bulkInsert VALUES; omnetpp::enums.getInstance()->add(VAR))
 
 //@}
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

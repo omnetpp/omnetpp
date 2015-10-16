@@ -19,9 +19,9 @@
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/cexception.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(*castf)(cObject *), const char *description)
     : cNoncopyableOwnedObject(name, false)
@@ -72,5 +72,5 @@ cObject *cObjectFactory::createOneIfClassIsKnown(const char *classname)
     return p ? p->createOne() : nullptr;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

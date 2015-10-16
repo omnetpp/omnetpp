@@ -22,7 +22,7 @@
 #include "commonnodes.h"
 #include "xyarray.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 class ArrayBuilderNodeType;
@@ -68,7 +68,7 @@ class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

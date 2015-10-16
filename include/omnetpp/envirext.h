@@ -25,7 +25,7 @@
 #include "opp_string.h"
 #include "clifecyclelistener.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 class cModule;
@@ -306,7 +306,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

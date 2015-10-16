@@ -18,7 +18,7 @@
 
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Event type for cISimulationLifecycleListener's lifecycleEvent() method.
@@ -208,6 +208,6 @@ class SIM_API cISimulationLifecycleListener
     static const char *getSimulationLifecycleEventName(SimulationLifecycleEventType eventType);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

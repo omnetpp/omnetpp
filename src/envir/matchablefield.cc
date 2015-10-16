@@ -19,9 +19,9 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "matchablefield.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 MatchableFieldAdapter::MatchableFieldAdapter(cObject *object, int fieldIndex)
@@ -68,5 +68,5 @@ const char *MatchableFieldAdapter::getAsString(const char *attribute) const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

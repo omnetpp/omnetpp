@@ -21,9 +21,9 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "fsutils.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
@@ -78,5 +78,5 @@ void loadExtensionLibrary(const char *lib)
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

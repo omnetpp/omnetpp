@@ -30,7 +30,6 @@ export CFLAGS_RELEASE=
 export SYSTEMC=no
 export PREFER_CLANG=no
 export USE_CXX11=no
-export USE_NAMESPACE=no
 
 export TWEAKCONFIG="perl $TEST_DIR/tweakconfigfile.pl"
 
@@ -101,7 +100,6 @@ compile_gcc() {
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
     $TWEAKCONFIG setoradd configure.user USE_CXX11 "$USE_CXX11" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user USE_NAMESPACE "$USE_NAMESPACE" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
@@ -154,8 +152,6 @@ compile_clang() {
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
     $TWEAKCONFIG setoradd configure.user USE_CXX11 "$USE_CXX11" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user USE_NAMESPACE "$USE_NAMESPACE" || failure $CFG
-
 
 
     echo "    Configuring..."
@@ -187,7 +183,7 @@ compile() {
 
 ###############################################
 #
-# fingerprint testing functions 
+# fingerprint testing functions
 #
 
 checkfingerprint() {
@@ -341,14 +337,6 @@ cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
 
 $TWEAKCONFIG assert_contains Makefile.inc CXXFLAGS  "-std=c++11" || failure $CFG
 
-########################################
-# USE_NAMESPACE test
-# 
-
-CFG=default_only_use_namespace
-(USE_NAMESPACE=yes compile)
-(checkfingerprints)
-(runtest core 0)
 
 ########################################
 # Test MPI only on linux where MPI libs are available
@@ -394,8 +382,8 @@ CFG=with_double_simtime
 # The rest is tested only on GCC, because with Visual C++
 # the libs should be configured by hand (no configure process)
 # in configuser.vc file. If we change those libs in this test
-# (i.e. set it to a fake value) those lib settings will be 
-# permanently lost and the user will be forced to restore 
+# (i.e. set it to a fake value) those lib settings will be
+# permanently lost and the user will be forced to restore
 # the original configuser.vc somehow (e.g. by reinsalling OMNEST)
 # We don't want to permanently ruin the installation.
 #

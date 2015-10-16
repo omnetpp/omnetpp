@@ -26,7 +26,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -151,5 +151,5 @@ void cNamedObject::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

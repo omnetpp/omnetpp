@@ -32,9 +32,9 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cPar::~cPar()
 {
@@ -437,5 +437,5 @@ void cPar::parse(const char *text)
     afterChange();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

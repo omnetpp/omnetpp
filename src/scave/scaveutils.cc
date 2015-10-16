@@ -21,7 +21,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "scaveutils.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -141,5 +141,5 @@ const std::string *ScaveStringPool::find(const std::string& str) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

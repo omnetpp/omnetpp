@@ -37,9 +37,9 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cTopology);
 
@@ -457,5 +457,5 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

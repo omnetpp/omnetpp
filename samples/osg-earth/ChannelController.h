@@ -21,7 +21,7 @@
 #include "OsgEarthScene.h"
 #include "MobileNode.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * This module is responsible for tracking the distance of mobile nodes

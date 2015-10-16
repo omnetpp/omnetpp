@@ -31,9 +31,9 @@
 #undef CHECK
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 #define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
@@ -197,5 +197,5 @@ Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

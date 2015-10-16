@@ -24,7 +24,7 @@
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/simtime_t.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cSimulation;
 class cMessage;
@@ -103,7 +103,7 @@ class SIM_API cParsimSynchronizer : public cScheduler
     virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) = 0;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

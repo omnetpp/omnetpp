@@ -11,7 +11,7 @@
 #include "stresscapsulate.h"
 #include "stress_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 Define_Module(StressCapsulate);
 

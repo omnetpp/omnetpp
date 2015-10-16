@@ -25,7 +25,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -66,7 +66,7 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

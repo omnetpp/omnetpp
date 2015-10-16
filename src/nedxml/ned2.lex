@@ -71,7 +71,7 @@ static int parenDepth = 0;
 #define P(x)  (x)
 //#define P(x)  debugPrint(x)  /*for debugging*/
 
-using namespace OPP::nedxml;
+using namespace omnetpp::nedxml;
 
 %}
 

@@ -17,7 +17,7 @@
 #include <cfloat>
 #include "graphcomponent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 Vertex::Vertex(Pt pt, Rs rs, void *identity)
@@ -234,5 +234,5 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

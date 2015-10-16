@@ -24,7 +24,7 @@
 #include "exception.h"
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -261,7 +261,7 @@ class COMMON_API FileChangedError : public opp_runtime_error
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

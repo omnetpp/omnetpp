@@ -28,7 +28,7 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/ceventheap.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cEventHeap);
 
@@ -336,5 +336,5 @@ void cEventHeap::putBackFirst(cEvent *event)
         cbgrow();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

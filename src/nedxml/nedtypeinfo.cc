@@ -25,9 +25,9 @@
 #include "nedresourcecache.h"
 #include "ned2generator.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree)
@@ -124,7 +124,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
             if (numExtendsNames() != 0)
                 implClassName = opp_nulltoempty(getSuperDecl()->getImplementationClassName());
             else if (getType() == COMPOUND_MODULE)
-                implClassName = OPP_PREFIX "cModule";
+                implClassName = "omnetpp::cModule";
             else
                 implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
         }
@@ -469,5 +469,5 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

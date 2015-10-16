@@ -17,7 +17,7 @@
 #include <cstdio>
 #include "ievent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 IEvent::IEvent()
@@ -73,5 +73,5 @@ void IEvent::unlinkNeighbourEvents(IEvent *event)
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

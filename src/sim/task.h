@@ -22,7 +22,7 @@
 #include <csetjmp>
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #define JMP_BUF jmp_buf
 #define SETJMP  setjmp
@@ -72,7 +72,7 @@ void task_restart( _Task *t );
 bool task_testoverflow( _Task *t );
 unsigned task_stackusage( _Task *t );
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

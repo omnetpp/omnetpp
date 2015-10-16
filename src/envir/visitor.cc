@@ -34,9 +34,9 @@
 #include "common/patternmatcher.h"
 #include "visitor.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 cCollectObjectsVisitor::cCollectObjectsVisitor()
@@ -227,5 +227,5 @@ void sortObjectsByShortTypeName(cObject **objs, int n)
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -22,7 +22,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/ccomponent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cUniform);
 Register_Class(cExponential);
@@ -83,7 +83,7 @@ std::string cUniform::info() const
 
 double cUniform::draw() const
 {
-    return OPP::uniform(rng, a, b);
+    return omnetpp::uniform(rng, a, b);
 }
 
 //----
@@ -112,7 +112,7 @@ std::string cExponential::info() const
 
 double cExponential::draw() const
 {
-    return OPP::exponential(rng, mean);
+    return omnetpp::exponential(rng, mean);
 }
 
 //----
@@ -142,7 +142,7 @@ std::string cNormal::info() const
 
 double cNormal::draw() const
 {
-    return OPP::normal(rng, mean, stddev);
+    return omnetpp::normal(rng, mean, stddev);
 }
 
 //----
@@ -172,7 +172,7 @@ std::string cTruncNormal::info() const
 
 double cTruncNormal::draw() const
 {
-    return OPP::truncnormal(rng, mean, stddev);
+    return omnetpp::truncnormal(rng, mean, stddev);
 }
 
 //----
@@ -202,7 +202,7 @@ std::string cGamma::info() const
 
 double cGamma::draw() const
 {
-    return OPP::gamma_d(rng, alpha, theta);
+    return omnetpp::gamma_d(rng, alpha, theta);
 }
 
 //----
@@ -232,7 +232,7 @@ std::string cBeta::info() const
 
 double cBeta::draw() const
 {
-    return OPP::beta(rng, alpha1, alpha2);
+    return omnetpp::beta(rng, alpha1, alpha2);
 }
 
 //----
@@ -262,7 +262,7 @@ std::string cErlang::info() const
 
 double cErlang::draw() const
 {
-    return OPP::erlang_k(rng, k, mean);
+    return omnetpp::erlang_k(rng, k, mean);
 }
 
 //----
@@ -291,7 +291,7 @@ std::string cChiSquare::info() const
 
 double cChiSquare::draw() const
 {
-    return OPP::chi_square(rng, k);
+    return omnetpp::chi_square(rng, k);
 }
 
 //----
@@ -320,7 +320,7 @@ std::string cStudentT::info() const
 
 double cStudentT::draw() const
 {
-    return OPP::student_t(rng, i);
+    return omnetpp::student_t(rng, i);
 }
 
 //----
@@ -350,7 +350,7 @@ std::string cCauchy::info() const
 
 double cCauchy::draw() const
 {
-    return OPP::cauchy(rng, a, b);
+    return omnetpp::cauchy(rng, a, b);
 }
 
 //----
@@ -381,7 +381,7 @@ std::string cTriang::info() const
 
 double cTriang::draw() const
 {
-    return OPP::triang(rng, a, b, c);
+    return omnetpp::triang(rng, a, b, c);
 }
 
 //----
@@ -411,7 +411,7 @@ std::string cWeibull::info() const
 
 double cWeibull::draw() const
 {
-    return OPP::weibull(rng, a, b);
+    return omnetpp::weibull(rng, a, b);
 }
 
 //----
@@ -442,7 +442,7 @@ std::string cParetoShifted::info() const
 
 double cParetoShifted::draw() const
 {
-    return OPP::pareto_shifted(rng, a, b, c);
+    return omnetpp::pareto_shifted(rng, a, b, c);
 }
 
 //----
@@ -472,7 +472,7 @@ std::string cIntUniform::info() const
 
 double cIntUniform::draw() const
 {
-    return (double)OPP::intuniform(rng, a, b);
+    return (double)omnetpp::intuniform(rng, a, b);
 }
 
 //----
@@ -501,7 +501,7 @@ std::string cBernoulli::info() const
 
 double cBernoulli::draw() const
 {
-    return (double)OPP::bernoulli(rng, p);
+    return (double)omnetpp::bernoulli(rng, p);
 }
 
 //----
@@ -531,7 +531,7 @@ std::string cBinomial::info() const
 
 double cBinomial::draw() const
 {
-    return (double)OPP::binomial(rng, n, p);
+    return (double)omnetpp::binomial(rng, n, p);
 }
 
 //----
@@ -560,7 +560,7 @@ std::string cGeometric::info() const
 
 double cGeometric::draw() const
 {
-    return (double)OPP::geometric(rng, p);
+    return (double)omnetpp::geometric(rng, p);
 }
 
 //----
@@ -590,7 +590,7 @@ std::string cNegBinomial::info() const
 
 double cNegBinomial::draw() const
 {
-    return (double)OPP::negbinomial(rng, n, p);
+    return (double)omnetpp::negbinomial(rng, n, p);
 }
 
 //----
@@ -619,8 +619,8 @@ std::string cPoisson::info() const
 
 double cPoisson::draw() const
 {
-    return (double)OPP::poisson(rng, lambda);
+    return (double)omnetpp::poisson(rng, lambda);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

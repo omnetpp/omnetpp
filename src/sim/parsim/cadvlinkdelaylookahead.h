@@ -23,7 +23,7 @@
 
 #include "cnmplookahead.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Lookahead calculation based on inter-partition link delays only.
@@ -82,7 +82,7 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
     virtual simtime_t getCurrentLookahead(int procId);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

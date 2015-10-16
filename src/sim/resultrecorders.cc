@@ -20,9 +20,9 @@
 #include "omnetpp/csimulation.h"
 #include "resultrecorders.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using namespace OPP::common;  // Expression
+using namespace omnetpp::common;  // Expression
 
 Register_ResultRecorder("vector", VectorRecorder);
 Register_ResultRecorder("count", CountRecorder);
@@ -194,5 +194,5 @@ void ExpressionRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

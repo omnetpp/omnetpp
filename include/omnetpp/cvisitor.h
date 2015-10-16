@@ -18,7 +18,7 @@
 
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cObject;
 
@@ -95,7 +95,7 @@ class SIM_API cVisitor
     virtual void visit(cObject *obj) = 0;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

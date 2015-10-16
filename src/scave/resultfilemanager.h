@@ -38,7 +38,7 @@
 #include "common/rwlock.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 struct Run;
@@ -274,7 +274,7 @@ class SCAVE_API ResultFileManager
 
     ComputedIDCache computedIDCache;
 #ifdef THREADED
-    OPP::common::ReentrantReadWriteLock lock;
+    omnetpp::common::ReentrantReadWriteLock lock;
 #endif
 
     struct sParseContext
@@ -352,7 +352,7 @@ class SCAVE_API ResultFileManager
     ~ResultFileManager();
 
 #ifdef THREADED
-    typedef OPP::common::ILock ILock;
+    typedef omnetpp::common::ILock ILock;
     ILock& getReadLock() { return lock.readLock(); }
     ILock& getWriteLock() { return lock.writeLock(); }
     ILock& getReadLock() const { return const_cast<ResultFileManager*>(this)->lock.readLock(); }
@@ -511,7 +511,7 @@ inline bool ResultFileManager::isStaleID(ID id) const
 }
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

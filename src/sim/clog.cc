@@ -21,7 +21,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the globally specified runtime log level and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
@@ -166,5 +166,5 @@ void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *s
     currentEntry.userTime = clock();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

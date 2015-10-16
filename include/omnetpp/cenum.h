@@ -18,7 +18,7 @@
 
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Provides string representation for enums. The class basically implements
@@ -162,7 +162,7 @@ class SIM_API cEnum : public cOwnedObject
 
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

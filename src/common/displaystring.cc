@@ -20,7 +20,7 @@
 #include "displaystring.h"
 #include "stringutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 DisplayString::DisplayString()
@@ -429,5 +429,5 @@ void DisplayString::strcatEscaped(char *d, const char *s)
 }
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -27,7 +27,7 @@
 #include "cidealsimulationprot.h"
 #include "cplaceholdermod.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cISPEventLogger);
 
@@ -98,5 +98,5 @@ void cISPEventLogger::putBackEvent(cEvent *event)
                         "used with this scheduler (putBackEvent() not implemented)");
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

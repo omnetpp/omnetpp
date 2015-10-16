@@ -19,7 +19,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Builds a network dynamically, with the topology coming from a

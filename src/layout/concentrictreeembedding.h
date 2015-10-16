@@ -21,7 +21,7 @@
 #include "geometry.h"
 #include "graphcomponent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 /**
@@ -52,7 +52,7 @@ class ConcentricTreeEmbedding
 };
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

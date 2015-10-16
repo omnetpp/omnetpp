@@ -18,7 +18,7 @@
 
 #include "cmessage.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -298,7 +298,7 @@ class SIM_API cPacket : public cMessage
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

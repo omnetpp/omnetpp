@@ -12,7 +12,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Packet sink; see NED file for more info.

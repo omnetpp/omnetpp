@@ -16,10 +16,10 @@
 
 #include "heapembedding.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
-using OPP::common::POSITIVE_INFINITY;
+using omnetpp::common::POSITIVE_INFINITY;
 
 HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
@@ -160,5 +160,5 @@ void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vec
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

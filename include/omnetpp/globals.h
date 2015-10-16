@@ -20,7 +20,7 @@
 #include "cregistrationlist.h"
 #include "cobjectfactory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //
 // Global objects
@@ -40,7 +40,7 @@ SIM_API extern cGlobalRegistrationList resultFilters;   ///< List of result filt
 SIM_API extern cGlobalRegistrationList resultRecorders; ///< List of result recorders (cResultRecorder)
 SIM_API extern cGlobalRegistrationList messagePrinters; ///< List of message printers (cMessagePrinter)
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

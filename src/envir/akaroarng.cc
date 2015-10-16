@@ -29,7 +29,7 @@
 #include "omnetpp/cexception.h"
 #include "akaroarng.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Register_Class(cAkaroaRNG);
@@ -87,7 +87,7 @@ double cAkaroaRNG::doubleRandIncl1()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

@@ -66,7 +66,7 @@
 #include <ctime>
 #include <cmath>
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class MTRand {
 // Data
@@ -383,7 +383,7 @@ inline std::istream& operator>>( std::istream& is, MTRand& mtrand )
     return is;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif  // MERSENNETWISTER_H

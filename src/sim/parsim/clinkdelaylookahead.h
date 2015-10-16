@@ -23,7 +23,7 @@
 
 #include "cnmplookahead.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cGate;
 
@@ -80,7 +80,7 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
     virtual simtime_t getCurrentLookahead(int procId) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

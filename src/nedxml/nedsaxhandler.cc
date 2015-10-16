@@ -19,7 +19,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
@@ -112,5 +112,5 @@ void NEDSAXHandler::endCdataSection()
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

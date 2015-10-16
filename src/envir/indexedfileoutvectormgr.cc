@@ -40,9 +40,9 @@
 #include "envirbase.h"
 #include "indexedfileoutvectormgr.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #define INDEX_FILE_VERSION 2
@@ -304,5 +304,5 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

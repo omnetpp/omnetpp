@@ -18,7 +18,7 @@
 #include <omnetpp.h>
 #include "OsgEarthScene.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * A mobile node (with a 3D model) moving around . A range indicator, and the

@@ -21,9 +21,9 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/csimulation.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cEnvir::cEnvir()
 {
@@ -66,5 +66,5 @@ bool cEnvir::askYesNo(const char *fmt, ...)
     return askyesno(staticbuf);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -21,7 +21,7 @@
 #include "cmsgpar.h"
 #include "csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cMsgPar;
 class cGate;
@@ -649,7 +649,7 @@ class SIM_API cMessage : public cEvent
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

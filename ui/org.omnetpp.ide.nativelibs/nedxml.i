@@ -32,10 +32,6 @@ using namespace omnetpp::nedxml;
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
-#define NAMESPACE_BEGIN  namespace omnetpp {
-#define NAMESPACE_END    }
-#define USING_NAMESPACE  using namespace omnetpp;
-
 namespace std {
 //class ostream;
 };

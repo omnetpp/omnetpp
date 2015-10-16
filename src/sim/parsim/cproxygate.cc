@@ -27,7 +27,7 @@
 #include "cproxygate.h"
 #include "cparsimpartition.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cProxyGate::cProxyGate() : cGate()
 {
@@ -65,5 +65,5 @@ void cProxyGate::setRemoteGate(short procId, int moduleId, int gateId)
     remoteGateId = gateId;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

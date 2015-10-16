@@ -21,7 +21,7 @@
 #include "crng.h"
 #include "cconfiguration.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 #define LCG32_MAX  0x7ffffffeL  /* = 2^31-2 */
@@ -80,7 +80,7 @@ class SIM_API cLCG32 : public cRNG
     virtual double doubleRandIncl1() override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

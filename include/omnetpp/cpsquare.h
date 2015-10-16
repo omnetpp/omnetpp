@@ -20,7 +20,7 @@
 
 #include "cdensityestbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -198,7 +198,7 @@ class SIM_API cPSquare : public cDensityEstBase
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

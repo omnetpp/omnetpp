@@ -19,7 +19,7 @@
 
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 
@@ -42,7 +42,7 @@ class TKENV_API HistogramInspector : public Inspector
 
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

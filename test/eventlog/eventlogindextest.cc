@@ -20,7 +20,7 @@
 
 #define LL    INT64_PRINTF_FORMAT
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 bool getReadForward(MatchKind matchKind)
 {

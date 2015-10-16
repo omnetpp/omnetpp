@@ -15,7 +15,7 @@
 #include <jni.h>
 #include "jprogressmonitor.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 JniProgressMonitor::JniProgressMonitor(jobject jProgressMonitor, JNIEnv *env)
 	: env(env), jProgressMonitor(jProgressMonitor)
@@ -88,4 +88,4 @@ void JniProgressMonitor::worked(int work)
 	}
 }
 
-NAMESPACE_END
+}  // namespace omnetpp

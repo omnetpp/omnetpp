@@ -22,7 +22,7 @@
 #include "nedelements.h"
 #include "xmlgenerator.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 using std::ostream;
@@ -160,5 +160,5 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -18,7 +18,7 @@
 
 #include "cstddev.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Common base class for density estimation classes. Provides several
@@ -376,7 +376,7 @@ class SIM_API cDensityEstBase : public cStdDev
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

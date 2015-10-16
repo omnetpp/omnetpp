@@ -23,7 +23,7 @@
 
 #include "omnetpp/cgate.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cParsimPartition;
 
@@ -135,7 +135,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

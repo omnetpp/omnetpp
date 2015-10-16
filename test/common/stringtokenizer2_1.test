@@ -6,7 +6,7 @@ Positive test cases for StringTokenizer2.
 #include <common/stringtokenizer2.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static void tokenize(const char *text)
 {

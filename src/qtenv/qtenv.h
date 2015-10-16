@@ -69,7 +69,7 @@ enum StripNamespace
     STRIPNAMESPACE_ALL
 };
 
-struct QtenvOptions : public OPP::envir::EnvirOptions
+struct QtenvOptions : public omnetpp::envir::EnvirOptions
 {
     QtenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
@@ -108,7 +108,7 @@ struct QtenvOptions : public OPP::envir::EnvirOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
+class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 {
    Q_OBJECT
    public:
@@ -186,7 +186,7 @@ class QTENV_API Qtenv : public QObject, public OPP::envir::EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
-      typedef OPP::common::MatchExpression MatchExpression;
+      typedef omnetpp::common::MatchExpression MatchExpression;
       typedef std::vector<MatchExpression*> MatchExpressions;
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline

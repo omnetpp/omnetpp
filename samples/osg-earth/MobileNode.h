@@ -18,7 +18,7 @@
 #include <omnetpp.h>
 #include "OsgEarthScene.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Interface to be implemented by mobile nodes to be able to

@@ -22,7 +22,7 @@
 #include "common/commonutil.h"
 #include "node.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -103,7 +103,7 @@ class SCAVE_API Channel
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

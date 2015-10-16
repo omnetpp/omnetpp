@@ -22,7 +22,7 @@
 #include <vector>
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -186,7 +186,7 @@ class COMMON_API PatternMatcher
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

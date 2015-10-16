@@ -21,7 +21,7 @@
 #include <map>
 #include <cstring>
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 struct rgb_t { // only used internally for easier map storage
@@ -982,4 +982,4 @@ static void fillColorsMap()
 }
 
 } // namespace common
-NAMESPACE_END
+} // namespace omnetpp

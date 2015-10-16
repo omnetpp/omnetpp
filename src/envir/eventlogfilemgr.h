@@ -25,7 +25,7 @@
 #include "objectprinter.h"
 #include "intervals.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cComponent;
 class cModule;
@@ -176,6 +176,6 @@ class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

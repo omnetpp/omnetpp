@@ -23,7 +23,7 @@
 #include "stringutil.h"
 #include "stringpool.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -413,7 +413,7 @@ class COMMON_API MathFunction : public Expression::Function
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

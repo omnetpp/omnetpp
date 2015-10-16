@@ -29,7 +29,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -192,5 +192,5 @@ void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
     emit(channelBusySignal, &tmp);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

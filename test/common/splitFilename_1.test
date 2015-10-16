@@ -6,7 +6,7 @@ NOTE: the output is far from being perfect, but for canonical absolute paths it 
 #include <common/fileutil.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static void slice(const char *s)
 {

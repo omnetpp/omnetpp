@@ -20,7 +20,7 @@
 #include "cgate.h"
 #include "cmodule.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -297,7 +297,7 @@ class SIM_API cDisplayString
 };
 
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

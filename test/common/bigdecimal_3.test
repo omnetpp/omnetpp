@@ -7,7 +7,7 @@ Tests the BigDecimal comparison operators
 #include <common/bigdecimal.h>
 
 %global:
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static void compare(const char *x, const char *y)
 {

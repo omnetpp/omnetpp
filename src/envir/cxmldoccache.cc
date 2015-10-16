@@ -22,10 +22,10 @@
 #include "omnetpp/cexception.h"
 #include "cxmldoccache.h"
 
-using namespace OPP::common;
-using namespace OPP::nedxml;
+using namespace omnetpp::common;
+using namespace omnetpp::nedxml;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 // We depend on WITH_NETBUILDER because it brings the nedxml library which
@@ -251,5 +251,5 @@ void cXMLDocCache::flushParsedContentCache()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

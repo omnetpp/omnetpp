@@ -21,13 +21,13 @@
 
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv);
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

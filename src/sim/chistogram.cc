@@ -38,7 +38,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #define MIN(a, b)    ((a) < (b) ? (a) : (b))
 #define MAX(a, b)    ((a) > (b) ? (a) : (b))
@@ -484,5 +484,5 @@ cDoubleHistogram& cDoubleHistogram::operator=(const cDoubleHistogram& res)
     return *this;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

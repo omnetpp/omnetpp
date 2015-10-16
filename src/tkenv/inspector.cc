@@ -28,9 +28,9 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 const char *insptypeNameFromCode(int code)
@@ -262,5 +262,5 @@ const char *Inspector::getEntry(const char *entry)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

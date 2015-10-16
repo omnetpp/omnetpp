@@ -21,7 +21,7 @@
 #include <string>
 #include "commonnodes.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -56,7 +56,7 @@ class SCAVE_API FileWriterNodeType : public SingleSinkNodeType
 
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

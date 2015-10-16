@@ -24,11 +24,11 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cstatistic.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using OPP::common::NaN;
-using OPP::common::POSITIVE_INFINITY;
-using OPP::common::NEGATIVE_INFINITY;
+using omnetpp::common::NaN;
+using omnetpp::common::POSITIVE_INFINITY;
+using omnetpp::common::NEGATIVE_INFINITY;
 
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
@@ -194,7 +194,7 @@ class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
 class SIM_API ExpressionFilter : public cNumericResultFilter
 {
     public:
-        typedef OPP::common::Expression Expression;
+        typedef omnetpp::common::Expression Expression;
     protected:
         class ValueVariable : public Expression::Variable
         {
@@ -306,7 +306,7 @@ class SIM_API SumPerDurationFilter : public cNumericResultFilter
         SumPerDurationFilter() {sum = 0;}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

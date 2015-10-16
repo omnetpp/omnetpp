@@ -36,7 +36,7 @@
 #include "creceivedexception.h"
 #include "messagetags.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cParsimPartition);
 
@@ -286,5 +286,5 @@ void cParsimPartition::broadcastException(std::exception& e)
     comm->recycleCommBuffer(buffer);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

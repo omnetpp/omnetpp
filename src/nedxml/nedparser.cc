@@ -30,9 +30,9 @@
 
 #include "nedyydefs.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 #define MAGIC_PREFIX    "@expr@"  // note: must agree with ned2.lex
@@ -45,7 +45,7 @@ const char *NEDParser::getBuiltInDeclarations()
 {
     return
         "package ned;\n"
-        "@namespace(\"" OPP_STR "\");\n"
+        "@namespace(\"omnetpp\");\n"
         "\n"
         "channel IdealChannel\n"
         "{\n"
@@ -55,8 +55,8 @@ const char *NEDParser::getBuiltInDeclarations()
         "channel DelayChannel\n"
         "{\n"
         "    @class(cDelayChannel);\n"
-        "    @signal[messageSent](type=" OPP_PREFIX "cMessage);\n"
-        "    @signal[messageDiscarded](type=" OPP_PREFIX "cMessage);\n"
+        "    @signal[messageSent](type=omnetpp::cMessage);\n"
+        "    @signal[messageDiscarded](type=omnetpp::cMessage);\n"
         "    @statistic[messages](source=\"constant1(messageSent)\";record=count?;interpolationmode=none);\n"
         "    @statistic[messagesDiscarded](source=\"constant1(messageDiscarded)\";record=count?;interpolationmode=none);\n"
         "    bool disabled = default(false);\n"
@@ -67,8 +67,8 @@ const char *NEDParser::getBuiltInDeclarations()
         "{\n"
         "    @class(cDatarateChannel);\n"
         "    @signal[channelBusy](type=long);\n"
-        "    @signal[messageSent](type=" OPP_PREFIX "cMessage);\n"
-        "    @signal[messageDiscarded](type=" OPP_PREFIX "cMessage);\n"
+        "    @signal[messageSent](type=omnetpp::cMessage);\n"
+        "    @signal[messageDiscarded](type=omnetpp::cMessage);\n"
         "    @statistic[busy](source=channelBusy;record=vector?;interpolationmode=sample-hold);\n"
         "    @statistic[utilization](source=\"timeavg(channelBusy)\";record=last?);\n"
         "    @statistic[packets](source=\"constant1(messageSent)\";record=count?;interpolationmode=none);\n"
@@ -284,5 +284,5 @@ void NEDParser::error(const char *msg, int line)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

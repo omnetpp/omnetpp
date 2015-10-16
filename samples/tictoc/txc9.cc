@@ -11,7 +11,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * In the previous model we just created another packet if we needed to

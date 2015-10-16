@@ -174,7 +174,7 @@ print ENTRIES_H_FILE
 #include \"eventlogdefs.h\"
 #include \"eventlogentry.h\"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 class Event;
@@ -216,7 +216,7 @@ class EVENTLOG_API $class->{NAME} : public $class->{SUPER}
 
 print ENTRIES_H_FILE "
 } // namespace eventlog
-NAMESPACE_END
+} // namespace omnetpp
 
 #endif
 ";
@@ -246,10 +246,10 @@ print ENTRIES_CC_FILE
 #include \"eventlogentries.h\"
 #include \"common/stringutil.h\"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 ";
 
@@ -448,7 +448,7 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "}\n\n";
 }
 
-print ENTRIES_CC_FILE "} // namespace eventlog\nNAMESPACE_END\n";
+print ENTRIES_CC_FILE "} // namespace eventlog\n} // namespace omnetpp\n";
 
 close(ENTRIES_CC_FILE);
 
@@ -474,7 +474,7 @@ print FACTORY_CC_FILE
 #include \"event.h\"
 #include \"eventlogentryfactory.h\"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, int entryIndex, char **tokens, int numTokens)
@@ -510,7 +510,7 @@ print FACTORY_CC_FILE "        return nullptr;\n\n";
 print FACTORY_CC_FILE "    entry->parse(tokens, numTokens);\n";
 print FACTORY_CC_FILE "    return entry;\n";
 print FACTORY_CC_FILE "}\n\n";
-print FACTORY_CC_FILE "} // namespace eventlog\nNAMESPACE_END\n";
+print FACTORY_CC_FILE "} // namespace eventlog\n} // namespace omnetpp\n";
 
 close(FACTORY_CC_FILE);
 

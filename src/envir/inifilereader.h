@@ -24,7 +24,7 @@
 #include "omnetpp/cconfigreader.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 /**
@@ -96,7 +96,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

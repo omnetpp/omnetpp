@@ -23,7 +23,7 @@
 #include "filteredeventlog.h"
 #include "eventlogfacade.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
@@ -309,5 +309,5 @@ FilteredMessageDependency::Kind EventLogFacade::FilteredMessageDependency_getKin
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

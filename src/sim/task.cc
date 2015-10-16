@@ -19,7 +19,7 @@
 #include <cstring>
 #include "task.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 _Task main_task;
 _Task *current_task = nullptr;
@@ -193,5 +193,5 @@ unsigned task_stackusage(_Task *t)
     return dist(t, p);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

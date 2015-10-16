@@ -21,7 +21,7 @@
 #include "globals.h"
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cProperty;
 
@@ -168,7 +168,7 @@ class SIM_API cProperties : public cObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

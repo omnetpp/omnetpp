@@ -18,7 +18,7 @@
 #include "rwlock.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #ifdef _WIN32
@@ -236,5 +236,5 @@ void ReentrantReadWriteLock::unlockWrite()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

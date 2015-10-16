@@ -29,9 +29,9 @@
 #include "omnetpp/cobjectfactory.h"  // createOne()
 #include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 #define LL  INT64_PRINTF_FORMAT  /* abbreviation */
@@ -247,7 +247,7 @@ bool cClassDescriptor::extendsCObject() const
         const cClassDescriptor *current = this;
 
         while (current) {
-            if (!strcmp(OPP_PREFIX "cObject", current->getName())) {
+            if (!strcmp("omnetpp::cObject", current->getName())) {
                 this_->extendscObject = true;
                 break;
             }
@@ -312,5 +312,5 @@ int cClassDescriptor::findField(const char *fieldName) const
     return -1;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

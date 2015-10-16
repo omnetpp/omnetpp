@@ -19,7 +19,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "componenthistory.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 void ComponentHistory::componentDeleted(cComponent *component)
@@ -114,5 +114,5 @@ std::string ComponentHistory::getComponentTypeName(int componentId) const
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -19,7 +19,7 @@
 #define __OMNETPP_COMMON_MATCHEXPRESSIONLEXER_H
 
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -35,7 +35,7 @@ class MatchExpressionLexer
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

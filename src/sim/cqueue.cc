@@ -30,7 +30,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -328,5 +328,5 @@ cObject *cQueue::get(int i) const
     return p ? p->obj : nullptr;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

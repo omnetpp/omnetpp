@@ -25,7 +25,7 @@
 // misunderstanding Register_Class() in other source files as a function declaration
 #include "regmacros.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cCommBuffer;
 class cClassDescriptor;
@@ -330,7 +330,7 @@ class noncopyable
     const noncopyable& operator=(const noncopyable&);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

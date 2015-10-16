@@ -36,11 +36,6 @@ using namespace omnetpp::scave;
 #define SCAVE_API
 #define COMMON_API
 
-#define NAMESPACE_BEGIN  namespace omnetpp {
-#define NAMESPACE_END    }
-#define USING_NAMESPACE  using namespace omnetpp;
-#define OPP              omnetpp
-
 namespace omnetpp { namespace scave {
 
 typedef omnetpp::common::BigDecimal BigDecimal;

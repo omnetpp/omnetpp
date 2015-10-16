@@ -13,7 +13,7 @@
 #include <omnetpp.h>
 #include "tictoc16_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * The main problem with the previous step is that we must modify the model's

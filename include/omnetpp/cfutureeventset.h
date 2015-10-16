@@ -18,7 +18,7 @@
 
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cEvent;
 
@@ -130,7 +130,7 @@ class SIM_API cFutureEventSet : public cOwnedObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

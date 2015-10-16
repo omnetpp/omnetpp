@@ -22,7 +22,7 @@
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedembedding.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 inline double signum(double val) {
@@ -820,7 +820,7 @@ class CircleConstraint : public BodyConstraint {
 };
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -22,9 +22,9 @@
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 // this global var is shared by all lexers
@@ -511,5 +511,5 @@ NEDElement *unaryMinus(NEDElement *node)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

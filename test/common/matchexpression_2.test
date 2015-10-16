@@ -6,8 +6,8 @@ Tests MatchExpression class.
 #include <envir/matchableobject.h>
 
 %global:
-using namespace OPP::common;
-using namespace OPP::envir;
+using namespace omnetpp::common;
+using namespace omnetpp::envir;
 
 static bool dottedpath;
 static bool fullstring;

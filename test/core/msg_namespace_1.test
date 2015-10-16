@@ -9,13 +9,13 @@ class Foo { }
 
 struct Struct { }
 
-class OPP::cMessage;
+class omnetpp::cMessage;
 
 message cMessage { } // that is, @TESTNAME@::cMessage extends OMNeT++'s cMessage
 
 message Derived1 extends cMessage { }  // extends @TESTNAME@::cMessage
 
-message Derived2 extends OPP::cMessage { }  // extends OMNeT++ cMessage
+message Derived2 extends omnetpp::cMessage { }  // extends OMNeT++ cMessage
 
 
 %includes:

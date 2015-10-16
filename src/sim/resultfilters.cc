@@ -18,9 +18,9 @@
 #include "omnetpp/cpacket.h"  // PacketBytesFilter
 #include "resultfilters.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using namespace OPP::common;  // Expression
+using namespace omnetpp::common;  // Expression
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
 Register_ResultFilter("count", CountFilter);
@@ -197,5 +197,5 @@ bool SumPerDurationFilter::process(simtime_t& t, double& value)
     return true;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

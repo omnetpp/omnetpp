@@ -19,9 +19,9 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cProperties::cProperties()
 {
@@ -98,7 +98,7 @@ cProperty *cProperties::get(int k) const
 cProperty *cProperties::get(const char *name, const char *index) const
 {
     for (int i = 0; i < (int)propv.size(); i++)
-        if (!strcmp(propv[i]->getName(), name) && !OPP::opp_strcmp(index, propv[i]->getIndex()))
+        if (!strcmp(propv[i]->getName(), name) && !omnetpp::opp_strcmp(index, propv[i]->getIndex()))
             return propv[i];
 
     return nullptr;
@@ -113,7 +113,7 @@ bool cProperties::getAsBool(const char *name, const char *index) const
     if (!opp_isempty(value) && strcmp(value, "true") != 0 && strcmp(value, "false") != 0)
         throw cRuntimeError(this, "@%s property: boolean value expected, got '%s'", name, value);
 
-    return OPP::opp_strcmp(value, "false") == 0 ? false : true;
+    return omnetpp::opp_strcmp(value, "false") == 0 ? false : true;
 }
 
 void cProperties::add(cProperty *p)
@@ -167,5 +167,5 @@ void cProperties::lock()
         propv[i]->lock();
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

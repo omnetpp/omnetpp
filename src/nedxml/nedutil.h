@@ -24,7 +24,7 @@
 #include <string>
 #include "nedelement.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace common { class DisplayString; };
 
@@ -40,7 +40,7 @@ class LiteralElement;
 class NEDXML_API DisplayStringUtil
 {
   private:
-    typedef OPP::common::DisplayString DisplayString;
+    typedef omnetpp::common::DisplayString DisplayString;
     static void parseDisplayString(const char *s, DisplayString& ds);
   public:
     static std::string upgradeBackgroundDisplayString(const char *s);
@@ -79,7 +79,7 @@ class NEDXML_API NEDElementUtil
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

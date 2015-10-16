@@ -79,8 +79,8 @@
 #define OMNETPP_PLUGIN_PATH    "./plugins"
 #endif
 
-using namespace OPP::common;
-using namespace OPP::envir;
+using namespace omnetpp::common;
+using namespace omnetpp::envir;
 
 namespace omnetpp {
 namespace qtenv {

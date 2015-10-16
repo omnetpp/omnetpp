@@ -13,7 +13,7 @@
 #include <omnetpp.h>
 #include "tictoc14_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * In this step we keep track of how many messages we send and received,

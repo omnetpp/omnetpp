@@ -22,7 +22,7 @@
 #include "cnednetworkbuilder.h"
 #include "cneddeclaration.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -73,7 +73,7 @@ class SIM_API cDynamicChannelType : public cChannelType
 };
 
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -32,7 +32,7 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cAdvancedLinkDelayLookahead);
 
@@ -150,5 +150,5 @@ simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(int procId)
     return segInfo[procId].lookahead;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

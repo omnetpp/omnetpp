@@ -19,7 +19,7 @@
 #include "simkerneldefs.h"
 #include "clistener.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cResultFilter;
 class cComponent;
@@ -63,7 +63,7 @@ class SIM_API cResultListener : public cIListener
         virtual void finish(cComponent *component, simsignal_t signalID) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

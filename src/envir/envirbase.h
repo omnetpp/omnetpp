@@ -38,7 +38,7 @@
 #include "envirdefs.h"
 #include "eventlogfilemgr.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cScheduler;
 class cModuleType;
@@ -326,7 +326,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

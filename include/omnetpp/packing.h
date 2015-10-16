@@ -18,16 +18,16 @@
 
 #include "ccommbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //
 // pack/unpack functions for primitive types
 //
 #define DOPACKING(T,R) \
-          inline void doParsimPacking(OPP::cCommBuffer *b, const T R a) {b->pack(a);}  \
-          inline void doParsimPacking(OPP::cCommBuffer *b, const T *a, int n) {b->pack(a,n);}  \
-          inline void doParsimUnpacking(OPP::cCommBuffer *b, T& a) {b->unpack(a);}  \
-          inline void doParsimUnpacking(OPP::cCommBuffer *b, T *a, int n) {b->unpack(a,n);}
+          inline void doParsimPacking(omnetpp::cCommBuffer *b, const T R a) {b->pack(a);}  \
+          inline void doParsimPacking(omnetpp::cCommBuffer *b, const T *a, int n) {b->pack(a,n);}  \
+          inline void doParsimUnpacking(omnetpp::cCommBuffer *b, T& a) {b->unpack(a);}  \
+          inline void doParsimUnpacking(omnetpp::cCommBuffer *b, T *a, int n) {b->unpack(a,n);}
 #define _
 DOPACKING(char,_)
 DOPACKING(unsigned char,_)
@@ -47,7 +47,7 @@ DOPACKING(opp_string,&)
 #undef _
 #undef DOPACKING
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

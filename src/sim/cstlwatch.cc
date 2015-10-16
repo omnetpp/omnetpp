@@ -21,7 +21,7 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/globals.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 //
 // Internal
@@ -171,5 +171,5 @@ cClassDescriptor *cStdVectorWatcherBase::getDescriptor()
     return desc;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

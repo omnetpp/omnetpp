@@ -22,7 +22,7 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 /**************************************************/
@@ -319,5 +319,5 @@ void FilteredMessageDependency::print(FILE *file)
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

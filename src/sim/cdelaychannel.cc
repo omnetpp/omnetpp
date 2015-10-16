@@ -29,7 +29,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -93,5 +93,5 @@ void cDelayChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

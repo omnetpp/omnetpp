@@ -27,7 +27,7 @@
 #include "clog.h"
 #include "distrib.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cComponentType;
 class cProperties;
@@ -455,7 +455,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param a, b the interval, a<b
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double uniform(double a, double b, int rng=0) const  {return OPP::uniform(getRNG(rng), a, b);}
+    double uniform(double a, double b, int rng=0) const  {return omnetpp::uniform(getRNG(rng), a, b);}
 
     /**
      * SimTime version of uniform(double,double,int), for convenience.
@@ -469,7 +469,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param mean mean value
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double exponential(double mean, int rng=0) const  {return OPP::exponential(getRNG(rng), mean);};
+    double exponential(double mean, int rng=0) const  {return omnetpp::exponential(getRNG(rng), mean);};
 
     /**
      * SimTime version of exponential(double,int), for convenience.
@@ -484,7 +484,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param stddev standard deviation of the normal distribution
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double normal(double mean, double stddev, int rng=0) const  {return OPP::normal(getRNG(rng), mean, stddev);};
+    double normal(double mean, double stddev, int rng=0) const  {return omnetpp::normal(getRNG(rng), mean, stddev);};
 
     /**
      * SimTime version of normal(double,double,int), for convenience.
@@ -506,7 +506,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param stddev standard deviation of the normal distribution
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double truncnormal(double mean, double stddev, int rng=0) const  {return OPP::truncnormal(getRNG(rng), mean, stddev);};
+    double truncnormal(double mean, double stddev, int rng=0) const  {return omnetpp::truncnormal(getRNG(rng), mean, stddev);};
 
     /**
      * SimTime version of truncnormal(double,double,int), for convenience.
@@ -548,7 +548,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param theta >0  the "scale" parameter
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double gamma_d(double alpha, double theta, int rng=0) const  {return OPP::gamma_d(getRNG(rng), alpha, theta);};
+    double gamma_d(double alpha, double theta, int rng=0) const  {return omnetpp::gamma_d(getRNG(rng), alpha, theta);};
 
     /**
      * Returns a random variate from the beta distribution with parameters
@@ -562,7 +562,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param alpha1, alpha2 >0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double beta(double alpha1, double alpha2, int rng=0) const  {return OPP::beta(getRNG(rng), alpha1, alpha2);};
+    double beta(double alpha1, double alpha2, int rng=0) const  {return omnetpp::beta(getRNG(rng), alpha1, alpha2);};
 
     /**
      * Returns a random variate from the Erlang distribution with k phases
@@ -582,7 +582,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param mean >0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double erlang_k(unsigned int k, double mean, int rng=0) const  {return OPP::erlang_k(getRNG(rng), k, mean);};
+    double erlang_k(unsigned int k, double mean, int rng=0) const  {return omnetpp::erlang_k(getRNG(rng), k, mean);};
 
     /**
      * Returns a random variate from the chi-square distribution
@@ -599,7 +599,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param k degrees of freedom, k>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double chi_square(unsigned int k, int rng=0) const  {return OPP::chi_square(getRNG(rng), k);};
+    double chi_square(unsigned int k, int rng=0) const  {return omnetpp::chi_square(getRNG(rng), k);};
 
     /**
      * Returns a random variate from the student-t distribution with
@@ -612,7 +612,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param i degrees of freedom, i>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double student_t(unsigned int i, int rng=0) const  {return OPP::student_t(getRNG(rng), i);};
+    double student_t(unsigned int i, int rng=0) const  {return omnetpp::student_t(getRNG(rng), i);};
 
     /**
      * Returns a random variate from the Cauchy distribution (also called
@@ -628,7 +628,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param b  b>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double cauchy(double a, double b, int rng=0) const  {return OPP::cauchy(getRNG(rng), a, b);};
+    double cauchy(double a, double b, int rng=0) const  {return omnetpp::cauchy(getRNG(rng), a, b);};
 
     /**
      * Returns a random variate from the triangular distribution with parameters
@@ -639,7 +639,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param a, b, c   a <= b <= c
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double triang(double a, double b, double c, int rng=0) const  {return OPP::triang(getRNG(rng), a, b, c);};
+    double triang(double a, double b, double c, int rng=0) const  {return omnetpp::triang(getRNG(rng), a, b, c);};
 
     /**
      * Returns a random variate from the lognormal distribution with "scale"
@@ -652,7 +652,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param w  "shape" parameter, w>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double lognormal(double m, double w, int rng=0) const  {return OPP::lognormal(getRNG(rng), m, w);}
+    double lognormal(double m, double w, int rng=0) const  {return omnetpp::lognormal(getRNG(rng), m, w);}
 
     /**
      * Returns a random variate from the Weibull distribution with parameters
@@ -673,7 +673,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param b  the "shape" parameter, b>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double weibull(double a, double b, int rng=0) const  {return OPP::weibull(getRNG(rng), a, b);};
+    double weibull(double a, double b, int rng=0) const  {return omnetpp::weibull(getRNG(rng), a, b);};
 
     /**
      * Returns a random variate from the shifted generalized Pareto distribution.
@@ -684,7 +684,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param c    shift parameter for left-shift
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double pareto_shifted(double a, double b, double c, int rng=0) const  {return OPP::pareto_shifted(getRNG(rng), a, b, c);};
+    double pareto_shifted(double a, double b, double c, int rng=0) const  {return omnetpp::pareto_shifted(getRNG(rng), a, b, c);};
     //@}
 
     /** @name Random variate generation -- discrete distributions. */
@@ -697,7 +697,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param a, b  the interval, a<b
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int intuniform(int a, int b, int rng=0) const  {return OPP::intuniform(getRNG(rng), a, b);};
+    int intuniform(int a, int b, int rng=0) const  {return omnetpp::intuniform(getRNG(rng), a, b);};
 
     /**
      * Returns the result of a Bernoulli trial with probability p,
@@ -708,7 +708,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p  0=<p<=1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int bernoulli(double p, int rng=0) const  {return OPP::bernoulli(getRNG(rng), p);};
+    int bernoulli(double p, int rng=0) const  {return omnetpp::bernoulli(getRNG(rng), p);};
 
     /**
      * Returns a random integer from the binomial distribution with
@@ -722,7 +722,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p 0<=p<=1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int binomial(int n, double p, int rng=0) const  {return OPP::binomial(getRNG(rng), n, p);};
+    int binomial(int n, double p, int rng=0) const  {return omnetpp::binomial(getRNG(rng), n, p);};
 
     /**
      * Returns a random integer from the geometric distribution with parameter p,
@@ -736,7 +736,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p  0<p<=1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int geometric(double p, int rng=0) const  {return OPP::geometric(getRNG(rng), p);};
+    int geometric(double p, int rng=0) const  {return omnetpp::geometric(getRNG(rng), p);};
 
     /**
      * Returns a random integer from the negative binomial distribution with
@@ -750,7 +750,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p  0<p<1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int negbinomial(int n, double p, int rng=0) const  {return OPP::negbinomial(getRNG(rng), n, p);};
+    int negbinomial(int n, double p, int rng=0) const  {return omnetpp::negbinomial(getRNG(rng), n, p);};
 
     /**
      * Returns a random integer from the Poisson distribution with parameter lambda,
@@ -767,7 +767,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param lambda  > 0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int poisson(double lambda, int rng=0) const  {return OPP::poisson(getRNG(rng), lambda);};
+    int poisson(double lambda, int rng=0) const  {return omnetpp::poisson(getRNG(rng), lambda);};
     //@}
 
     /** @name Emitting simulation signals. */
@@ -1006,7 +1006,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

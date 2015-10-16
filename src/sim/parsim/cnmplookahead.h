@@ -24,7 +24,7 @@
 #include "omnetpp/cobject.h"
 #include "omnetpp/simtime_t.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cMessage;
 class cSimulation;
@@ -85,7 +85,7 @@ class SIM_API cNMPLookahead : public cObject
 
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

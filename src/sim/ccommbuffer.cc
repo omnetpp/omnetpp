@@ -23,7 +23,7 @@
 #include "omnetpp/cobject.h"
 #include "omnetpp/cobjectfactory.h"  // createOne()
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void cCommBuffer::packObject(cObject *obj)
 {
@@ -42,5 +42,5 @@ cObject *cCommBuffer::unpackObject()
     return obj;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

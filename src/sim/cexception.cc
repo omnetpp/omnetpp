@@ -32,9 +32,9 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT and DEBUG_TRAP
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #define BUFLEN 1024
 static char buffer[BUFLEN];
@@ -305,5 +305,5 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

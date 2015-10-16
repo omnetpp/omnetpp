@@ -22,7 +22,7 @@
 #include <iostream>
 #include "nedelements.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 /**
@@ -95,7 +95,7 @@ class NEDXML_API NEDXMLGenerator
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

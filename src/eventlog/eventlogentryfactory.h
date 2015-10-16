@@ -19,7 +19,7 @@
 
 #include "eventlogentries.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 class EVENTLOG_API EventLogEntryFactory
@@ -29,7 +29,7 @@ class EVENTLOG_API EventLogEntryFactory
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

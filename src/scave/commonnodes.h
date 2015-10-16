@@ -23,7 +23,7 @@
 #include "node.h"
 #include "nodetype.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 #ifdef _MSC_VER
@@ -76,7 +76,7 @@ class SCAVE_API ReaderNode : public Node
 {
     protected:
         std::string filename;
-        OPP::common::FileReader reader;
+        omnetpp::common::FileReader reader;
     public:
         ReaderNode(const char* filename, size_t bufferSize)
             : filename(filename), reader(filename, bufferSize) {}
@@ -130,7 +130,7 @@ class SCAVE_API ReaderNodeType : public NodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

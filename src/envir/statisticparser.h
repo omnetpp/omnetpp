@@ -22,7 +22,7 @@
 #include "sim/resultrecorders.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 
@@ -51,7 +51,7 @@ class ENVIR_API SignalSource
 class ENVIR_API StatisticSourceParser
 {
   protected:
-    typedef OPP::common::Expression Expression;
+    typedef omnetpp::common::Expression Expression;
   protected:
     // create and install a cResultFilter; its input is the expression at the top of the stack (length 'len').
     // filterRef may be nullptr; in that case, only the expression filter needs to be created
@@ -64,7 +64,7 @@ class ENVIR_API StatisticSourceParser
 class ENVIR_API StatisticRecorderParser
 {
   protected:
-    typedef OPP::common::Expression Expression;
+    typedef omnetpp::common::Expression Expression;
   protected:
     // create and install a cResultFilter or a cResultRecorder, depending on the makeRecorder flag;
     // its input is the expression at the top of the stack (length 'len').
@@ -77,7 +77,7 @@ class ENVIR_API StatisticRecorderParser
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

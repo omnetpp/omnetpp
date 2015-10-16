@@ -21,7 +21,7 @@
 #include <string>
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -96,7 +96,7 @@ class IProgressMonitor
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

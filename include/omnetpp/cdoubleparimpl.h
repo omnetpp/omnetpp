@@ -18,7 +18,7 @@
 
 #include "cparimpl.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * A cParImpl subclass that stores a module/channel parameter
@@ -199,7 +199,7 @@ class SIM_API cDoubleParImpl : public cParImpl
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

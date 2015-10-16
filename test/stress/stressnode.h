@@ -12,7 +12,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 class StressNode : public cSimpleModule
 {

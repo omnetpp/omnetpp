@@ -18,7 +18,7 @@
 
 #include "omnetpp/clifecyclelistener.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(SimulationLifecycleEventType eventType)
 {
@@ -45,4 +45,4 @@ const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(Simul
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp

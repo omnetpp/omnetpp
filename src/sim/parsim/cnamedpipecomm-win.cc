@@ -39,7 +39,7 @@
 #include "cmemcommbuffer.h"
 #include "parsimutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cNamedPipeCommunications);
 
@@ -263,7 +263,7 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
     return receive(filtTag, buffer, receivedTag, sourceProcId, false);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif /* USE_WINDOWS_PIPES */
 

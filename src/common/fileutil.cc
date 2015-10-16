@@ -32,7 +32,7 @@
 #include "stringtokenizer.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 std::string fileNameToSlash(const char *fileName)
@@ -270,5 +270,5 @@ PushDir::~PushDir()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

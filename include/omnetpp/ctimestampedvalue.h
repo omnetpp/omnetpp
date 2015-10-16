@@ -20,7 +20,7 @@
 #include "simtime_t.h"
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -118,7 +118,7 @@ class SIM_API cTimestampedValue : public cITimestampedValue, public cObject
         //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

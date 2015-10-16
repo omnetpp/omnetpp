@@ -29,7 +29,7 @@
 #include "nodetype.h"
 #include "resultfilemanager.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 struct OutputVectorEntry {
@@ -181,7 +181,7 @@ class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

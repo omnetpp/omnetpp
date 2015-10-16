@@ -32,9 +32,9 @@
 #include "envirbase.h"
 #include "fileoutvectormgr.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Register_Class(cFileOutputVectorManager);
@@ -213,5 +213,5 @@ void cFileOutputVectorManager::flush()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

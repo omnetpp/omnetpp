@@ -20,9 +20,9 @@
 #include "envirbase.h"
 #include "intervals.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Intervals::Intervals()
@@ -88,5 +88,5 @@ bool Intervals::empty() const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

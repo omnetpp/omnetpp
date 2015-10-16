@@ -19,7 +19,7 @@
 #include "filteredevent.h"
 #include "filteredeventlog.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 static FilteredMessageDependency::Kind getMessageDependencyKind(IMessageDependency *messageDependency)
@@ -335,5 +335,5 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

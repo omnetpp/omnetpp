@@ -45,7 +45,7 @@
 
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 struct GlobPrivateData;
@@ -85,7 +85,7 @@ class COMMON_API FileGlobber
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

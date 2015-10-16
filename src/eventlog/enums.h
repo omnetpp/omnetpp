@@ -19,7 +19,7 @@
 
 #include "eventlogdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 /**
@@ -65,6 +65,6 @@ enum TimelineMode {
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

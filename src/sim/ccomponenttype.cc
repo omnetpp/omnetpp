@@ -39,9 +39,9 @@
 #include "sim/parsim/cplaceholdermod.h"
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 static const char *getSignalTypeName(SimsignalType type)
 {
@@ -521,5 +521,5 @@ cDatarateChannel *cChannelType::createDatarateChannel(const char *name)
     return cDatarateChannel::create(name);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -18,9 +18,9 @@
 #include "common/commonutil.h"
 #include "nodetype.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 void NodeType::checkAttrNames(const StringMap& attrs) const
@@ -56,5 +56,5 @@ void NodeType::mapVectorAttributes(StringMap& attrs,  /*out*/ StringVector& warn
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

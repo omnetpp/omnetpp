@@ -27,7 +27,7 @@
 #include "omnetpp/simutil.h"
 #include "fileoutvectormgr.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 
@@ -85,7 +85,7 @@ class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
 
 #endif
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

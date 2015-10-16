@@ -23,14 +23,14 @@
 //
 // misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files
 //
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 class NEDElement;
 class NEDParser;
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 #ifdef YYLTYPE
 #error 'YYLTYPE defined before nedyydefs.h -- type clash?'
@@ -43,20 +43,20 @@ struct my_yyltype {
    char *text;
 };
 #define YYLTYPE  struct my_yyltype
-#define YYSTYPE  OPP::nedxml::NEDElement*
+#define YYSTYPE  omnetpp::nedxml::NEDElement*
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
-OPP::nedxml::NEDElement *doParseNED2(OPP::nedxml::NEDParser *p, const char *nedtext);
-OPP::nedxml::NEDElement *doParseNED1(OPP::nedxml::NEDParser *p, const char *nedtext);
-OPP::nedxml::NEDElement *doParseMSG2(OPP::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::NEDElement *doParseNED2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::NEDElement *doParseNED1(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::NEDElement *doParseMSG2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
 
 #endif
 

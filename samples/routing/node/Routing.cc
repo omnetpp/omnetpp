@@ -15,7 +15,7 @@
 #include <omnetpp.h>
 #include "Packet_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Demonstrates static routing, utilizing the cTopology class.

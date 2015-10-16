@@ -27,9 +27,9 @@
 #include "matchableobject.h"
 #include "objectprinter.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #define MAXIMUM_OBJECT_PRINTER_LEVEL    20
@@ -239,5 +239,5 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -27,7 +27,7 @@
 #include "eventlogdefs.h"
 #include "enums.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 /**
@@ -39,7 +39,7 @@ class EVENTLOG_API EventLogIndex
 {
     protected:
         FileReader *reader;
-        OPP::common::LineTokenizer tokenizer;
+        omnetpp::common::LineTokenizer tokenizer;
 
         file_offset_t firstEventOffset;
         file_offset_t lastEventOffset;
@@ -161,6 +161,6 @@ class EVENTLOG_API EventLogIndex
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

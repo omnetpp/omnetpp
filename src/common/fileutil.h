@@ -20,7 +20,7 @@
 #include <string>
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #ifdef _WIN32
@@ -96,7 +96,7 @@ class COMMON_API PushDir
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

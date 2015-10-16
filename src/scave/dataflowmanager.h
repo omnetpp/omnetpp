@@ -23,7 +23,7 @@
 #include "node.h"
 #include "channel.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -86,7 +86,7 @@ class SCAVE_API DataflowManager
          * method). If none of them are ready but there are ones which
          * haven't finished yet, the method declares a deadlock.
          */
-        void execute(OPP::common::IProgressMonitor *monitor = nullptr);
+        void execute(omnetpp::common::IProgressMonitor *monitor = nullptr);
 
         /**
          * For debugging: dumps the data-flow network on the standard output.
@@ -95,7 +95,7 @@ class SCAVE_API DataflowManager
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

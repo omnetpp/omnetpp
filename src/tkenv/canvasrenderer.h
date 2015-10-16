@@ -20,7 +20,7 @@
 #include "omnetpp/ccanvas.h"
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cFigure;
 
@@ -63,6 +63,6 @@ class TKENV_API CanvasRenderer
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

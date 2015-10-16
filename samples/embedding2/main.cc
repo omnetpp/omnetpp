@@ -12,7 +12,7 @@
 #include <string>
 #include <iostream>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 // strings containing the NED sources to be loaded by the simulation
 // See the nedfiles.cc file in the model directory.

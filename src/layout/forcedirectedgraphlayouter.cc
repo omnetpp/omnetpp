@@ -27,9 +27,9 @@
 #include "startreeembedding.h"
 #include "heapembedding.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
@@ -619,5 +619,5 @@ void ForceDirectedGraphLayouter::debugDraw()
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

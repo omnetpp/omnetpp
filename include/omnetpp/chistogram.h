@@ -18,7 +18,7 @@
 
 #include "cdensityestbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -436,7 +436,7 @@ class SIM_API cDoubleHistogram : public cHistogram
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

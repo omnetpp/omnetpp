@@ -26,7 +26,7 @@
 #include "omnetpp/onstartup.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 //
@@ -74,7 +74,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

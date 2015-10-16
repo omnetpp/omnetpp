@@ -29,9 +29,9 @@
 #include "tkutil.h"
 #include "tkenv.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 int exitOmnetpp;
@@ -118,5 +118,5 @@ int runTk(Tcl_Interp *)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

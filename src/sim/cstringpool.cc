@@ -17,9 +17,9 @@
 #include "omnetpp/cstringpool.h"
 #include "omnetpp/cownedobject.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cStringPool::cStringPool(const char *poolName)
 {
@@ -53,7 +53,7 @@ const char *cStringPool::get(const char *s)
 {
     if (!cStaticFlag::isSet()) {
         fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s);
-        return OPP::opp_strdup(s);
+        return omnetpp::opp_strdup(s);
     }
     if (!s)
         return nullptr;
@@ -116,5 +116,5 @@ void cStringPool::release(const char *s)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -35,9 +35,9 @@
 #include "scaveutils.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -748,9 +748,9 @@ int indexCommand(int argc, char **argv)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
-using namespace OPP::scave;
+using namespace omnetpp::scave;
 
 int main(int argc, char **argv)
 {

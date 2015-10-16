@@ -21,9 +21,9 @@
 #include "figurerenderers.h"
 #include "tkenv.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
@@ -929,5 +929,5 @@ void PixmapFigureRenderer::ensureImage(Tcl_Interp *interp, const char *imageName
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

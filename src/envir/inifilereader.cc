@@ -27,9 +27,9 @@
 #include "inifilereader.h"
 #include "fsutils.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #define ERRPREFIX    "Error at `%s' line %d: "
@@ -305,5 +305,5 @@ void InifileReader::dump() const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

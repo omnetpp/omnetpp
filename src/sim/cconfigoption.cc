@@ -20,9 +20,9 @@
 #include "common/exception.h"
 #include "omnetpp/cconfigoption.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 cConfigOption::cConfigOption(const char *name, bool isGlobal, Type type, const char *unit,
@@ -102,5 +102,5 @@ const char *cConfigOption::getObjectKindName(ObjectKind kind)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

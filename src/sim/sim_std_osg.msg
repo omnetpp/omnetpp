@@ -1,4 +1,3 @@
-
 //==============================================================
 //   SIM_STD_OSG.MSG  - part of
 //                     OMNeT++/OMNEST
@@ -18,7 +17,8 @@ enum omnetpp::cOsgCanvas::CameraManipulatorType;
 
 cplusplus
 {{
-NAMESPACE_BEGIN
+
+namespace omnetpp {
 
 typedef cFigure::Color Color;
 
@@ -27,11 +27,7 @@ Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanv
 
 cFigure::Color parseColor(const char *s);
 
-NAMESPACE_END
-
-#ifndef USE_NAMESPACE
-#define omnetpp   //XXX horrible hack to make it compile with the omnetpp namespace turned off
-#endif
+} // namespace omnetpp
 
 #include <osg/Node>
 #include <osg/Group>

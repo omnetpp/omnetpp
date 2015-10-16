@@ -17,14 +17,8 @@ After this step, you have to remove all previous libraries and recompile @OMNETP
 
 Options:
 
-`USE_NAMESPACE=no`::
-  Turning on this option will place all @OMNETPP@ APIs into the `omnetpp` namespace 
-  to prevent name collisions with other libraries. After that, models must be updated
-  to either import the namespace or use qualified names. To compile unmodified models, 
-  use -DAUTOIMPORT_NAMESPACE in the compiler flags (CFLAGS).
-
 `PREFER_CLANG=no`::
-  If both `gcc` and `clang` are installed on your system, setting this variable to `yes` 
+  If both `gcc` and `clang` are installed on your system, setting this variable to `yes`
   will force the configure script to use `clang` as C++ compiler.
 
 `USE_CXX11=yes`::
@@ -88,8 +82,8 @@ endif::OMNEST[]
   static or dynamic libraries. By default, the @OMNETPP@ runtime is built as a set of shared libraries.
   If you want to build a single executable from your simulation, specify `SHARED_LIBS=no`
   in `configure.user` to create static @OMNETPP@ libraries and then reconfigure (`./configure`)
-  and recompile @OMNETPP@ (`make cleanall; make`). Once the @OMNETPP@ static libraries are 
-  correctly built, your own project have to be rebuilt, too. You will get a single, statically 
+  and recompile @OMNETPP@ (`make cleanall; make`). Once the @OMNETPP@ static libraries are
+  correctly built, your own project have to be rebuilt, too. You will get a single, statically
   linked executable, which requires only the NED and INI files to run.
 
 WARNING: It is important to completely delete the @OMNETPP@ libraries (`make cleanall`)

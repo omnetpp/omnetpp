@@ -15,20 +15,20 @@ class MyClass
     int bb;
 }
 
-class OPP::cQueue;
+class omnetpp::cQueue;
 
 message Base
 {
     MyStruct ms[];
     MyClass mc[];
-    OPP::cQueue q[];
+    omnetpp::cQueue q[];
 }
 
 message MyMessage extends Base
 {
     MyStruct ms2[];
     MyClass mc2[];
-    OPP::cQueue q2[];
+    omnetpp::cQueue q2[];
 };
 
 %includes:

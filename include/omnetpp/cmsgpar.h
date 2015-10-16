@@ -19,7 +19,7 @@
 #include "cownedobject.h"
 #include "cnedmathfunction.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class  cStatistic;
 class  cXMLElement;
@@ -576,7 +576,7 @@ class SIM_API cMsgPar : public cOwnedObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

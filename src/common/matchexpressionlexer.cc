@@ -19,7 +19,7 @@
 #include "matchexpression.tab.hh"  // token values
 #include "matchexpressionlexer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 MatchExpressionLexer::MatchExpressionLexer(const char *input)
@@ -85,5 +85,5 @@ int MatchExpressionLexer::getNextToken(char **valuep)
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

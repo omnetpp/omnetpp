@@ -33,7 +33,7 @@
 #include "cmpicomm.h"
 #include "cmpicommbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cMPICommunications);
 
@@ -193,7 +193,7 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
     return false;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif  // WITH_MPI
 

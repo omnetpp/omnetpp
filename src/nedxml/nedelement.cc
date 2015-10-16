@@ -24,7 +24,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 using std::ostream;
@@ -345,5 +345,5 @@ NEDElementUserData *NEDElement::getUserData() const
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

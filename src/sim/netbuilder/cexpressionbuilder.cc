@@ -31,9 +31,9 @@
 #include "omnetpp/nedsupport.h"
 #include "cexpressionbuilder.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /* for debugging
 static void dump(NEDElement *node)
@@ -288,5 +288,5 @@ void cExpressionBuilder::setExpression(cParImpl *par, cDynamicExpression *expr)
         par->convertToConst(nullptr);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

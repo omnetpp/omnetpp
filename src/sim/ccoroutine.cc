@@ -29,7 +29,7 @@
 #include "task.h"  // Stig Kofoed's "Portable Multitasking" coroutine library
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #ifdef USE_WIN32_FIBERS
 
@@ -231,5 +231,5 @@ unsigned cCoroutine::getStackUsage() const
 
 #endif
 
-NAMESPACE_END
+}  // namespace omnetpp
 

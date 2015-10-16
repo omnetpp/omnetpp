@@ -24,7 +24,7 @@
 #undef CHECK
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 #define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
 
@@ -101,5 +101,5 @@ Node *FileWriterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

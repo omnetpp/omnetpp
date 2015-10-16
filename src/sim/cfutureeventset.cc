@@ -23,7 +23,7 @@
 #include <sstream>
 #include "omnetpp/cfutureeventset.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 std::string cFutureEventSet::info() const
 {
@@ -42,5 +42,5 @@ cFutureEventSet& cFutureEventSet::operator=(const cFutureEventSet& other)
     return *this;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -23,9 +23,9 @@
 #include "eventlog.h"
 #include "filteredeventlog.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 class Options
@@ -450,9 +450,9 @@ void parseStringTokens(std::vector<std::string>& parameter, char *str)
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
-using namespace OPP::eventlog;
+using namespace omnetpp::eventlog;
 
 int main(int argc, char **argv)
 {

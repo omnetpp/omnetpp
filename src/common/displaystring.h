@@ -19,7 +19,7 @@
 
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #define MAXARGS 16
@@ -264,7 +264,7 @@ class COMMON_API DisplayString
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

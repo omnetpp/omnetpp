@@ -34,9 +34,9 @@
 #include "envirbase.h"
 #include "fileoutscalarmgr.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #define SCALAR_FILE_VERSION    2
@@ -266,5 +266,5 @@ void cFileOutputScalarManager::flush()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

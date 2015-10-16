@@ -20,9 +20,9 @@
 #include "eventlogentry.h"
 #include "eventlogindex.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 #define LL    INT64_PRINTF_FORMAT
@@ -640,5 +640,5 @@ void EventLogIndex::dump()
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

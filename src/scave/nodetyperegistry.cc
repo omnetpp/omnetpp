@@ -35,9 +35,9 @@
 #include "stddev.h"
 #include "teenode.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
@@ -190,5 +190,5 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

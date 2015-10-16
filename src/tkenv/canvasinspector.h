@@ -21,7 +21,7 @@
 #include "inspector.h"
 #include "canvasrenderer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cFigure;
 
@@ -55,6 +55,6 @@ class TKENV_API CanvasInspector : public Inspector
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

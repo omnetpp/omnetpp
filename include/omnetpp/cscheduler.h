@@ -20,7 +20,7 @@
 #include "cobject.h"
 #include "clifecyclelistener.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cEvent;
 class cSimulation;
@@ -241,7 +241,7 @@ class SIM_API cRealTimeScheduler : public cScheduler
     virtual void putBackEvent(cEvent *event) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

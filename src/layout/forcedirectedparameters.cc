@@ -16,9 +16,9 @@
 
 #include "forcedirectedparameters.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

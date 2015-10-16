@@ -24,9 +24,9 @@
 #include "scenario.h"
 #include "valueiterator.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraintText) :
@@ -287,5 +287,5 @@ std::string Scenario::str() const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

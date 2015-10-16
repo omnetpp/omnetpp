@@ -21,7 +21,7 @@
 #include <cstdio>
 #include "nedxmldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 class SAXParser;
@@ -152,7 +152,7 @@ class NEDXML_API SAXParser
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

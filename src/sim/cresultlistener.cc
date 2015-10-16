@@ -22,9 +22,9 @@
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/ctimestampedvalue.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void cResultListener::subscribedTo(cResultFilter *prev)
 {
@@ -152,5 +152,5 @@ void cResultListener::finish(cComponent *component, simsignal_t signalID)
     callFinish(nullptr);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

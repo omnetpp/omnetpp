@@ -12,7 +12,7 @@
 #include "TelnetPkt_m.h"
 #include "SocketRTScheduler.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Simple model of a Telnet client.

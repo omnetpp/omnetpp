@@ -23,7 +23,7 @@
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 class IEvent;
@@ -170,7 +170,7 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

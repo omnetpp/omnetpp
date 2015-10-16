@@ -22,9 +22,9 @@
 #include "commonnodes.h"
 #include "dataflowmanager.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 DataflowManager::DataflowManager()
@@ -270,5 +270,5 @@ void DataflowManager::dump()
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

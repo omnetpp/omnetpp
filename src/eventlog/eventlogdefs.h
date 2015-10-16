@@ -23,11 +23,11 @@
 #include "common/bigdecimal.h"
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common { class FileReader; };
-NAMESPACE_END
+}  // namespace omnetpp
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 #if defined(EVENTLOG_EXPORT)
@@ -61,9 +61,9 @@ inline int64_t abs64(int64_t a)
    return a < 0 ? -a : a;
 }
 
-using OPP::common::BigDecimal;
-using OPP::common::FileReader;
-using OPP::common::opp_runtime_error;
+using omnetpp::common::BigDecimal;
+using omnetpp::common::FileReader;
+using omnetpp::common::opp_runtime_error;
 
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
@@ -73,7 +73,7 @@ typedef BigDecimal simtime_t;
 #endif
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

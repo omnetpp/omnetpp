@@ -20,7 +20,7 @@
 
 #include "nedelements.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 /**
@@ -45,7 +45,7 @@ class NEDXML_API NEDTools
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

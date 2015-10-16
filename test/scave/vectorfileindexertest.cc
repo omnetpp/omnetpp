@@ -18,7 +18,7 @@
 #include <scave/vectorfileindexer.h>
 #include "testutil.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 using namespace std;
 
 void testIndexer(const char *inputFile)

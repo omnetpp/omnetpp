@@ -23,9 +23,9 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cpar.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void cNEDValue::operator=(const cNEDValue& other)
 {
@@ -110,5 +110,5 @@ std::string cNEDValue::str() const
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

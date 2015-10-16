@@ -23,7 +23,7 @@
 #include "commondefs.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 class PatternMatcher;
@@ -162,7 +162,7 @@ class COMMON_API MatchableString : public MatchExpression::Matchable
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

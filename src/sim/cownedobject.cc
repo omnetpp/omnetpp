@@ -31,7 +31,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -206,5 +206,5 @@ static struct X {
 } x;
 */
 
-NAMESPACE_END
+}  // namespace omnetpp
 

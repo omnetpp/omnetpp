@@ -18,7 +18,7 @@
 
 #include "chistogram.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -209,7 +209,7 @@ class SIM_API cVarHistogram : public cHistogramBase
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

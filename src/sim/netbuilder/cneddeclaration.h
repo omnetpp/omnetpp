@@ -30,11 +30,11 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace common { class PatternMatcher; };
 
-using namespace OPP::nedxml;
+using namespace omnetpp::nedxml;
 
 /**
  * Extends NEDTypeInfo with property and cached expression storage,
@@ -57,7 +57,7 @@ using namespace OPP::nedxml;
 class SIM_API cNEDDeclaration : public NEDTypeInfo
 {
   public:
-    typedef OPP::common::PatternMatcher PatternMatcher;
+    typedef omnetpp::common::PatternMatcher PatternMatcher;
     struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
   protected:
     // properties
@@ -150,7 +150,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

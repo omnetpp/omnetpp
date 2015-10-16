@@ -31,7 +31,7 @@
 #include "cparsimpartition.h"
 #include "messagetags.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cNoSynchronization);
 
@@ -72,5 +72,5 @@ void cNoSynchronization::putBackEvent(cEvent *event)
     sim->getFES()->putBackFirst(event);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

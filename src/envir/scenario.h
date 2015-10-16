@@ -27,7 +27,7 @@
 #include "sectionbasedconfig.h"
 #include "valueiterator.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 /**
@@ -37,7 +37,7 @@ namespace envir {
 class ENVIR_API Scenario
 {
   public:
-    typedef OPP::common::Expression Expression;
+    typedef omnetpp::common::Expression Expression;
     typedef SectionBasedConfiguration::IterationVariable IterationVariable;
 
   private:
@@ -124,7 +124,7 @@ class ENVIR_API Scenario
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

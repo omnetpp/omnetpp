@@ -19,7 +19,7 @@
 #include <jni.h>
 #include "common/progressmonitor.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Implementation of the IProgressMonitor interface
@@ -46,7 +46,7 @@ class JniProgressMonitor : public OPP::common::IProgressMonitor
         virtual void worked(int work);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

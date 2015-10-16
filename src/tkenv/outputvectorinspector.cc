@@ -22,7 +22,7 @@
 #include "inspectorfactory.h"
 #include "outputvectorinspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 void _dummy_for_outputvectorinspector() {}
@@ -430,5 +430,5 @@ int OutputVectorInspector::inspectorCommand(int argc, const char **argv)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

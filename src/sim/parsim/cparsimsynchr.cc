@@ -20,7 +20,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "cparsimsynchr.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 cEvent *cParsimSynchronizer::guessNextEvent()
 {

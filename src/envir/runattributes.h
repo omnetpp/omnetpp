@@ -21,7 +21,7 @@
 #include <cstdio>
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 /**
@@ -42,7 +42,7 @@ struct RunData {
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

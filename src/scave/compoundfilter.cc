@@ -21,9 +21,9 @@
 #include "filternodes.h"
 #include "nodetyperegistry.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 bool CompoundFilterType::Subfilter::operator==(const CompoundFilterType::Subfilter& other) const
@@ -208,5 +208,5 @@ void CompoundFilterType::mapVectorAttributes(  /*inout*/ StringMap& attrs,  /*ou
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

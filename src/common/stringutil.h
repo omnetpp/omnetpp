@@ -24,7 +24,7 @@
 #include "commondefs.h"
 #include "commonutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -343,7 +343,7 @@ COMMON_API std::string opp_urldecode(const std::string& src);
 COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

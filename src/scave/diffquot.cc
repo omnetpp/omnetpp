@@ -17,7 +17,7 @@
 #include "channel.h"
 #include "diffquot.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 DifferenceQuotientNode::DifferenceQuotientNode()
@@ -83,5 +83,5 @@ void DifferenceQuotientNodeType::mapVectorAttributes(  /*inout*/ StringMap& attr
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -19,7 +19,7 @@
 
 #include "tkdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 struct OmnetTclCommand {
@@ -35,7 +35,7 @@ int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *tcl_commands);
 int runTk(Tcl_Interp *interp);
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

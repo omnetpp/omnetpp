@@ -17,7 +17,7 @@
 
 #include "omnetpp/envirext.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 void cIOutputVectorManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
 {

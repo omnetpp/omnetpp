@@ -27,9 +27,9 @@
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 class CanvasInspectorFactory : public InspectorFactory
@@ -213,5 +213,5 @@ int CanvasInspector::inspectorCommand(int argc, const char **argv)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

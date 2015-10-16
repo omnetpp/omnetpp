@@ -23,10 +23,10 @@
 #include "envir/speedometer.h"
 #include "omnetpp/csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace cmdenv {
 
-using namespace OPP::envir;
+using namespace omnetpp::envir;
 
 struct CMDENV_API CmdenvOptions : public EnvirOptions
 {
@@ -107,7 +107,7 @@ class CMDENV_API Cmdenv : public EnvirBase
 };
 
 } // namespace cmdenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

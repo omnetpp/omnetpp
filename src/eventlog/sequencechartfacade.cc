@@ -25,9 +25,9 @@
 #include "messagedependency.h"
 #include "sequencechartfacade.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
@@ -627,5 +627,5 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

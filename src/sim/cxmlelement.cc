@@ -28,9 +28,9 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -385,5 +385,5 @@ bool StringMapParamResolver::resolve(const char *paramName, std::string& value)
     return true;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

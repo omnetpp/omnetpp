@@ -21,7 +21,7 @@
 #include "simkerneldefs.h"
 #include "simutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * For saving memory on the storage of (largely) constant strings that occur in
@@ -77,7 +77,7 @@ class cStringPool
     void dump() const;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

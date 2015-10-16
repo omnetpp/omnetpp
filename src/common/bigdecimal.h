@@ -26,7 +26,7 @@
 #include "commondefs.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 // maximum number of digits in an int64_t number, i.e. number of digits in INT64_MAX.
@@ -280,7 +280,7 @@ inline const BigDecimal min(const BigDecimal& x, const BigDecimal& y)
 #endif // SWIG
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

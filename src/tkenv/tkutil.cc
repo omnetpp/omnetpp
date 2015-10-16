@@ -44,9 +44,9 @@
 #include "tkenv.h"
 #include "tkutil.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
@@ -526,5 +526,5 @@ void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

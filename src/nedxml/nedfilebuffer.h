@@ -19,7 +19,7 @@
 
 #include "nedparser.h"   // for YYLTYPE
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 /**
@@ -135,7 +135,7 @@ class NEDXML_API NEDFileBuffer
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

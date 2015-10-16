@@ -20,7 +20,7 @@
 #include "event.h"
 #include "eventlogtablefacade.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 #define LL    INT64_PRINTF_FORMAT
@@ -389,5 +389,5 @@ eventnumber_t EventLogTableFacade::getApproximateNumberOfEntries()
 }
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 

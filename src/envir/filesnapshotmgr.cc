@@ -25,9 +25,9 @@
 #include "envirbase.h"
 #include "filesnapshotmgr.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 using std::ostream;
@@ -76,5 +76,5 @@ const char *cFileSnapshotManager::getFileName() const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -21,9 +21,9 @@
 #include "channel.h"
 #include "filternodes.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 bool NopNode::isReady() const
@@ -1150,5 +1150,5 @@ void SubtractFirstValueNodeType::mapVectorAttributes(  /*inout*/ StringMap& attr
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

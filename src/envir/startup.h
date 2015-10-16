@@ -20,13 +20,13 @@
 
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 int ENVIR_API setupUserInterface(int argc, char *argv[]);
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

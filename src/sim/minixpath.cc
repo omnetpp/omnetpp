@@ -22,9 +22,9 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 
@@ -319,5 +319,5 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

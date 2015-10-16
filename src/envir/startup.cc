@@ -42,9 +42,9 @@
 #include "akoutvectormgr.h"
 #include "matchableobject.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
@@ -279,5 +279,5 @@ void env_dummy_function()
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

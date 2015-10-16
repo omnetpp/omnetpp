@@ -22,7 +22,7 @@
 #include "common/commonutil.h"
 #include "omnetpp/platdep/platdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 #if defined(SCAVE_EXPORT)
@@ -35,11 +35,11 @@ namespace scave {
 
 #define DEFAULT_PRECISION  14
 
-using OPP::common::BigDecimal;
-using OPP::common::opp_runtime_error;
-using OPP::common::NaN;
-using OPP::common::POSITIVE_INFINITY;
-using OPP::common::NEGATIVE_INFINITY;
+using omnetpp::common::BigDecimal;
+using omnetpp::common::opp_runtime_error;
+using omnetpp::common::NaN;
+using omnetpp::common::POSITIVE_INFINITY;
+using omnetpp::common::NEGATIVE_INFINITY;
 
 // simulation time
 typedef BigDecimal simultime_t;
@@ -49,7 +49,7 @@ typedef int64_t eventnumber_t;
 
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

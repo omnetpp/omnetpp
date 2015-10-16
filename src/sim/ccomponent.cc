@@ -31,9 +31,9 @@
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cenvir.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
@@ -835,5 +835,5 @@ void cComponent::releaseLocalListeners()
  */
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

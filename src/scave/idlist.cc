@@ -34,9 +34,9 @@
 #define READER_MUTEX
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 IDList::IDList(const IDList& ids)
@@ -548,5 +548,5 @@ void IDList::fromByteArray(char *array, int n)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

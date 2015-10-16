@@ -33,7 +33,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 using std::endl;
@@ -329,5 +329,5 @@ void cPSquare::loadFromFile(FILE *f)
         freadvarsf(f, " %g", q+i);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

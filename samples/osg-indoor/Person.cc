@@ -12,7 +12,7 @@
 #include "Person.h"
 #include "OsgScene.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 Define_Module(Person);
 

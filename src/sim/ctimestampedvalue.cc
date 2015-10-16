@@ -17,7 +17,7 @@
 #include "omnetpp/ctimestampedvalue.h"
 #include "omnetpp/csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-NAMESPACE_END
+}  // namespace omnetpp
 

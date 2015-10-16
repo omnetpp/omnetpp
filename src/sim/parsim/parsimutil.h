@@ -21,7 +21,7 @@
 #ifndef __OMNETPP_PARSIMUTIL_H
 #define __OMNETPP_PARSIMUTIL_H
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Expects a -p<procId>,<numPartitions> command line argument, and parses it
@@ -30,7 +30,7 @@ NAMESPACE_BEGIN
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions,
                                   const char *caller);
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

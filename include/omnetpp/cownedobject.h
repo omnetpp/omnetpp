@@ -23,7 +23,7 @@
 #include "cnamedobject.h"
 #include "cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 class cOwnedObject;
@@ -301,7 +301,7 @@ inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
     return os << (const cOwnedObject&)o;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -19,10 +19,10 @@
 #include "sim/resultrecorders.h"  // ExpressionRecorder
 #include "statisticparser.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 void SignalSource::subscribe(cResultListener *listener) const
 {
@@ -494,5 +494,5 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

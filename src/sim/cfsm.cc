@@ -25,7 +25,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cfsm.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -73,5 +73,5 @@ void cFSM::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this, "parsimUnpack() not implemented");
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -29,7 +29,7 @@
 #include "omnetpp/regmacros.h"
 #include "cfilecommbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cFileCommBuffer);
 
@@ -514,5 +514,5 @@ void cFileCommBuffer::unpack(SimTime *d, int size)
         unpack(d[i]);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

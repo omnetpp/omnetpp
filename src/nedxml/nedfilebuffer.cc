@@ -23,9 +23,9 @@
 #include "nedfilebuffer.h"
 #include "nedyylib.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 //-----------------------------------------------------------
@@ -490,5 +490,5 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

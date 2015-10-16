@@ -24,7 +24,7 @@
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
 {
@@ -147,5 +147,5 @@ std::vector<double> cStringTokenizer::asDoubleVector()
     return v;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -21,7 +21,7 @@
 #include "onstartup.h"
 #include "globals.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cResultRecorder;
 class cProperty;
@@ -36,8 +36,8 @@ class cProperty;
  * @hideinitializer
  */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
-  static OPP::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(OPP::resultRecorders.getInstance()->add(new OPP::cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
+  static omnetpp::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
 
 
 /**
@@ -134,7 +134,7 @@ class SIM_API cResultRecorderDescriptor : public cNoncopyableOwnedObject
     static cResultRecorderDescriptor *get(const char *name);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

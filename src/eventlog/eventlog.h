@@ -27,10 +27,10 @@
 #include "ieventlog.h"
 #include "eventlogindex.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
-extern EVENTLOG_API OPP::common::StringPool eventLogStringPool;
+extern EVENTLOG_API omnetpp::common::StringPool eventLogStringPool;
 
 class Event;
 class EventLogEntry;
@@ -136,7 +136,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

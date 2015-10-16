@@ -24,7 +24,7 @@
 #include "clistener.h"  // for simsignal_t
 #include "clifecyclelistener.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cObject;
 class cOwnedObject;
@@ -714,7 +714,7 @@ class SIM_API cRunnableEnvir : public cEnvir
     virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

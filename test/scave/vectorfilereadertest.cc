@@ -31,7 +31,7 @@
 #include <scave/arraybuilder.h>
 #include "testutil.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 using namespace std;
 
 /**

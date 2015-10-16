@@ -20,7 +20,7 @@
 #include "cexpression.h"
 #include "cstringpool.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cXMLElement;
 class cPar;
@@ -339,7 +339,7 @@ class SIM_API cDynamicExpression : public cExpression
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

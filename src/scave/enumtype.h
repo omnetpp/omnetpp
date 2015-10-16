@@ -23,7 +23,7 @@
 #include <string>
 #include "scavedefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -95,7 +95,7 @@ class SCAVE_API EnumType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

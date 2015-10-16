@@ -20,7 +20,7 @@
 #include "scaveutils.h"
 #include "windowavg.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 WindowAverageNode::WindowAverageNode(int windowSize)
@@ -184,5 +184,5 @@ void TimeWindowAverageNodeType::mapVectorAttributes(  /*inout*/ StringMap& attrs
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

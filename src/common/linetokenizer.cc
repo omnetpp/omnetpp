@@ -20,7 +20,7 @@
 #include "exception.h"
 #include "linetokenizer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char sep2)
@@ -199,5 +199,5 @@ int main(int argc, char **argv)
 */
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -13,7 +13,7 @@
 #include <omnetpp.h>
 #include "Sink.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Sink module that displays the number of received jobs.

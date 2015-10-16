@@ -21,7 +21,7 @@
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cXMLParImpl::cXMLParImpl()
 {
@@ -209,5 +209,5 @@ int cXMLParImpl::compare(const cParImpl *other) const
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

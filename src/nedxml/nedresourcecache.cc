@@ -29,9 +29,9 @@
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 // TODO collect errors in a NEDErrorStore?
@@ -507,5 +507,5 @@ const std::vector<std::string>& NEDResourceCache::getTypeNames() const
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

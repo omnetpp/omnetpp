@@ -38,7 +38,7 @@
 #include "logfilterdialog.h"
 #include "textviewerproviders.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace qtenv {

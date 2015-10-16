@@ -19,9 +19,9 @@
 #include "forcedirectedembedding.h"
 #include "forcedirectedparameters.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 ForceDirectedEmbedding::ForceDirectedEmbedding()
@@ -380,5 +380,5 @@ void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

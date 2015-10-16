@@ -19,7 +19,7 @@
 #include "exception.h"
 #include "commonutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 
@@ -31,5 +31,5 @@ opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime
 }
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

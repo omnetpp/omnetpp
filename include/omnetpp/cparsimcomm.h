@@ -19,7 +19,7 @@
 
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cCommBuffer;
 
@@ -112,7 +112,7 @@ class SIM_API cParsimCommunications : public cObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

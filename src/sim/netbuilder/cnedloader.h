@@ -22,7 +22,7 @@
 #include "omnetpp/simkerneldefs.h"
 #include "cneddeclaration.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Stores dynamically loaded NED files, and one can look up NED declarations
@@ -57,7 +57,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     virtual cNEDDeclaration *getDecl(const char *qname) const override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -12,7 +12,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Let's make it more interesting by using several (n) `tic' modules,

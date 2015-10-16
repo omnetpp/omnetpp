@@ -20,7 +20,7 @@
 #include "tkdefs.h"
 #include "omnetpp/simkerneldefs.h" // for ASSERT
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 /**
@@ -90,7 +90,7 @@ class circular_buffer
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

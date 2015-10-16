@@ -24,7 +24,7 @@
 #include "nedelements.h"
 #include "nedtypeinfo.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 
@@ -212,7 +212,7 @@ class NEDXML_API NEDResourceCache
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

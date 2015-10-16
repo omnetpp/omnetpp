@@ -19,7 +19,7 @@
 #include "commonnodes.h"
 #include "channel.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 Port *SingleSourceNodeType::getPort(Node *node, const char *name) const
@@ -54,5 +54,5 @@ Port *FilterNodeType::getPort(Node *node, const char *name) const
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

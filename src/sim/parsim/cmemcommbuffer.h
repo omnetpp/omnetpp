@@ -23,7 +23,7 @@
 
 #include "ccommbufferbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -130,7 +130,7 @@ class SIM_API cMemCommBuffer : public cCommBufferBase
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

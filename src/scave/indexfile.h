@@ -25,7 +25,7 @@
 #include "scavedefs.h"
 #include "statistics.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -341,7 +341,7 @@ class SCAVE_API IndexFileWriter
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

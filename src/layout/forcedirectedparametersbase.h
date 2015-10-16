@@ -20,7 +20,7 @@
 #include <cmath>
 #include "geometry.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 class ForceDirectedEmbedding;
@@ -378,7 +378,7 @@ class IForceProvider {
 };
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

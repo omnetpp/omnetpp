@@ -23,7 +23,7 @@
 #include "envirdefs.h"
 #include "startup.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 //
@@ -45,5 +45,5 @@ extern "C" ENVIR_API int evMain(int argc, char *argv[])
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

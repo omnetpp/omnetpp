@@ -11,7 +11,7 @@
 #include <omnetpp.h>
 #include "Packet_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * A bursty packet generator; see NED file for more info.

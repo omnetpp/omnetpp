@@ -38,9 +38,9 @@
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -81,7 +81,7 @@ cGate::Name::Name(const char *name, Type type)
 
 bool cGate::Name::operator<(const Name& other) const
 {
-    int d = OPP::opp_strcmp(name.c_str(), other.name.c_str());
+    int d = omnetpp::opp_strcmp(name.c_str(), other.name.c_str());
     if (d < 0)
         return true;
     else if (d > 0)
@@ -145,7 +145,7 @@ const char *cGate::getFullName() const
     // otherwise, produce fullname in a temp buffer, and return its stringpooled copy
     // note: this implementation assumes that this method will be called infrequently
     // (ie. we reproduce the string every time).
-    if (OPP::opp_strlen(getName()) > 100)
+    if (omnetpp::opp_strlen(getName()) > 100)
         throw cRuntimeError(this, "getFullName(): gate name too long, should be under 100 characters");
 
     static char tmp[128];
@@ -625,5 +625,5 @@ void cGate::setDisplayString(const char *dispstr)
     getDisplayString().set(dispstr);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

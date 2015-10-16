@@ -21,9 +21,9 @@
 #include "omnetpp/cpar.h"
 #include "omnetpp/onstartup.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #define LL    INT64_PRINTF_FORMAT
 
@@ -265,5 +265,5 @@ const SimTime SimTime::parse(const char *s, const char *& endp)
     return parse(std::string(s, endp - s).c_str());
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

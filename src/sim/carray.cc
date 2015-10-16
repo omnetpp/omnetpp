@@ -30,7 +30,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cArray);
 
@@ -397,5 +397,5 @@ cObject *cArray::remove(int m)
     return obj;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

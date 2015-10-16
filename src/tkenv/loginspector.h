@@ -23,7 +23,7 @@
 #include "componenthistory.h"
 #include "inspector.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 
@@ -94,7 +94,7 @@ class TKENV_API LogInspector : public Inspector, protected ILogBufferListener
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

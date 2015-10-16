@@ -24,7 +24,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "cparsimprotocolbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cCommBuffer;
 
@@ -74,7 +74,7 @@ class SIM_API cNoSynchronization : public cParsimProtocolBase
     virtual void putBackEvent(cEvent *event) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

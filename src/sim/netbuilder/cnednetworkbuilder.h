@@ -26,9 +26,9 @@
 #include "omnetpp/cpar.h"
 #include "cneddeclaration.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using namespace OPP::nedxml;
+using namespace omnetpp::nedxml;
 
 class cModule;
 class cGate;
@@ -152,7 +152,7 @@ class SIM_API cNEDNetworkBuilder
     void buildInside(cModule *module, cNEDDeclaration *decl);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -18,7 +18,7 @@
 
 #include "simkerneldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Error codes
@@ -82,7 +82,7 @@ class SIM_API cErrorMessages
     static const char *get(OppErrorCode e);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

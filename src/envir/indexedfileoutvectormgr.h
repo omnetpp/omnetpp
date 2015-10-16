@@ -29,7 +29,7 @@
 #include "omnetpp/platdep/platmisc.h"
 #include "fileoutvectormgr.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 #define MIN_BUFFER_MEMORY    (1024*1024)
@@ -145,7 +145,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

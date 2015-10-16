@@ -21,7 +21,7 @@
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 /**
@@ -35,7 +35,7 @@ namespace envir {
 ENVIR_API void loadExtensionLibrary(const char *lib);
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

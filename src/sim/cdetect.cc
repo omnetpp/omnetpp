@@ -29,7 +29,7 @@
 #include "omnetpp/csimulation.h"  // simTime()
 #include "omnetpp/cdetect.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection(r)
 {
@@ -295,5 +295,5 @@ void cADByStddev::detectAccuracy()
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

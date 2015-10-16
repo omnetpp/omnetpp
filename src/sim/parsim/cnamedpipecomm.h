@@ -37,7 +37,7 @@
 #define USE_WINDOWS_PIPES
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 #ifdef USE_WINDOWS_PIPES
 typedef HANDLE PIPE;
@@ -137,7 +137,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

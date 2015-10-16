@@ -24,9 +24,9 @@
 #include "omnetpp/cownedobject.h"
 #include "common/stringutil.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cRegistrationList::~cRegistrationList()
 {
@@ -147,5 +147,5 @@ void cGlobalRegistrationList::clear()
     inst = nullptr;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

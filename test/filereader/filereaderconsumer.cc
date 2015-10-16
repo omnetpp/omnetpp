@@ -19,7 +19,7 @@
 #include <common/filereader.h>
 #include <omnetpp/platdep/timeutil.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 void runConsumer(const char *filename, double duration)
 {

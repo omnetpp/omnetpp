@@ -23,7 +23,7 @@
 
 #include "omnetpp/cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 /**
  * Represents an exception that has been received from other partitions.
@@ -54,7 +54,7 @@ class cReceivedTerminationException : public cTerminationException
     cReceivedTerminationException(int sourceProcId, const char *msg);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

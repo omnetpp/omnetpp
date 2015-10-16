@@ -24,7 +24,7 @@
 #include "nodetype.h"
 #include "commonnodes.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -150,7 +150,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
 
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

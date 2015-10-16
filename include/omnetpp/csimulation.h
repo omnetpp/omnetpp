@@ -21,7 +21,7 @@
 #include "ccomponent.h"
 #include "cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cEvent;
 class cMessage;
@@ -580,7 +580,7 @@ inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();
  */
 inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -19,7 +19,7 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cConfiguration;
 
@@ -112,7 +112,7 @@ class SIM_API cRNG : public cObject
     double doubleRandNonzIncl1() {return 1-doubleRand();}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

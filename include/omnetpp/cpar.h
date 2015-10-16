@@ -20,7 +20,7 @@
 #include "cexpression.h"
 #include "cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cParImpl;
 class cExpression;
@@ -525,7 +525,7 @@ class SIM_API cPar : public cObject
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

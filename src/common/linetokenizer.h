@@ -21,7 +21,7 @@
 #include <string>
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 /**
@@ -76,7 +76,7 @@ class COMMON_API LineTokenizer
 };
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

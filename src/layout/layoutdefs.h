@@ -20,7 +20,7 @@
 #include "omnetpp/platdep/platdefs.h"
 #include "common/commonutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 #if defined(LAYOUT_EXPORT)
@@ -31,14 +31,14 @@ namespace layout {
 #  define LAYOUT_API
 #endif
 
-using OPP::common::opp_runtime_error;
-using OPP::common::NaN;
-using OPP::common::isNaN;
-using OPP::common::POSITIVE_INFINITY;
-using OPP::common::NEGATIVE_INFINITY;
+using omnetpp::common::opp_runtime_error;
+using omnetpp::common::NaN;
+using omnetpp::common::isNaN;
+using omnetpp::common::POSITIVE_INFINITY;
+using omnetpp::common::NEGATIVE_INFINITY;
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

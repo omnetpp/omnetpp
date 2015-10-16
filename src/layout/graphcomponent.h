@@ -22,7 +22,7 @@
 #include <deque>
 #include "geometry.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
 class Edge;
@@ -225,7 +225,7 @@ class GraphComponent {
 };
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

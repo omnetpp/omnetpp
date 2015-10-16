@@ -19,7 +19,7 @@
 
 #include "commonnodes.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 
@@ -50,7 +50,7 @@ class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

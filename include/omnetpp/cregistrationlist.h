@@ -21,7 +21,7 @@
 #include "simkerneldefs.h"
 #include "cnamedobject.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cOwnedObject;
 
@@ -108,7 +108,7 @@ class SIM_API cGlobalRegistrationList
     void clear();
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

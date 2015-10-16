@@ -28,9 +28,9 @@
 #define M_PI    3.14159265358979323846
 #endif
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using namespace canvas_stream_ops;
 
@@ -842,7 +842,7 @@ std::string cFigure::info() const
 
 void cFigure::setTags(const char *tags)
 {
-    if (OPP::opp_strcmp(this->tags, tags) == 0)
+    if (omnetpp::opp_strcmp(this->tags, tags) == 0)
         return;
     const char *oldTags = this->tags;
     this->tags = stringPool.get(tags);
@@ -3387,5 +3387,5 @@ std::vector<std::string> cCanvas::getAllTagsAsVector() const
     return result;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

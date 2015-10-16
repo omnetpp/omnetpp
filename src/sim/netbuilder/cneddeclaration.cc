@@ -26,9 +26,9 @@
 #include "cneddeclaration.h"
 #include "cnedloader.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree) : NEDTypeInfo(resolver, qname, isInnerType, tree)
 {
@@ -391,5 +391,5 @@ void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, std::ve
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

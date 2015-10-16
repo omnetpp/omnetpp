@@ -27,7 +27,7 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 using std::ostream;
 
@@ -159,5 +159,5 @@ cObject *cPacketQueue::remove(cObject *obj)
     return pkt;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

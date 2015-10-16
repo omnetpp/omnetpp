@@ -18,7 +18,7 @@
 #include "nederror.h"
 #include "saxparser.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 
@@ -56,5 +56,5 @@ int SAXParser::getCurrentLineNumber()
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

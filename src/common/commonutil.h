@@ -25,7 +25,7 @@
 #include "commondefs.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 #ifdef NDEBUG
@@ -139,6 +139,6 @@ uint64_t readCPUTimeStampCounter();
     } __guard;
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

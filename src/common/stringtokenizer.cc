@@ -23,7 +23,7 @@
 #include <cstring>
 #include "stringtokenizer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 StringTokenizer::StringTokenizer(const char *s, const char *delim)
@@ -90,5 +90,5 @@ std::vector<std::string> StringTokenizer::asVector()
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

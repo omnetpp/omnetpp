@@ -31,7 +31,7 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_Class(cLinkDelayLookahead);
 
@@ -130,5 +130,5 @@ simtime_t cLinkDelayLookahead::getCurrentLookahead(int procId)
     return segInfo[procId].minDelay;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

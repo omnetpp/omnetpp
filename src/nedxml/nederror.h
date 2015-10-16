@@ -23,7 +23,7 @@
 #include <string>
 #include "nedxmldefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 class NEDElement;
@@ -148,7 +148,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

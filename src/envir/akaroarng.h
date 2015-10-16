@@ -28,7 +28,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 
@@ -90,7 +90,7 @@ class ENVIR_API cAkaroaRNG : public cRNG
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

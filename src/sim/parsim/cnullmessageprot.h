@@ -24,7 +24,7 @@
 #include "omnetpp/cmessage.h"  // MK_PARSIM_BEGIN
 #include "cparsimprotocolbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cCommBuffer;
 class cNMPLookahead;
@@ -137,7 +137,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

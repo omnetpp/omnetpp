@@ -22,9 +22,9 @@
 #include "common/opp_ctype.h"
 #include "args.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 ArgList::ArgList()
@@ -131,5 +131,5 @@ const char *ArgList::argument(int k) const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

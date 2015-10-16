@@ -27,9 +27,9 @@
 #include "valueiterator.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace envir {
 
 inline const char *getTypeName(char type)
@@ -96,7 +96,7 @@ struct Resolver : public opp_substitutevariables_resolver
     Resolver(const ValueIterator::VariableMap& map) : map(map) {}
     virtual bool isVariableNameChar(char c) override
     {
-        return OPP::envir::isVariableNameChar(c);
+        return omnetpp::envir::isVariableNameChar(c);
     }
 
     virtual std::string operator()(const std::string& name) override
@@ -348,5 +348,5 @@ void ValueIterator::dump() const
 }
 
 }  // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 

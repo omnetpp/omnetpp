@@ -9,7 +9,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Sends received packets to one of the outputs; see NED file for more info

@@ -25,7 +25,7 @@
 #include "clistener.h"
 
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cModule;
 class cChannel;
@@ -392,7 +392,7 @@ class SIM_API cChannelType : public cComponentType
     static cDatarateChannel *createDatarateChannel(const char *name);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

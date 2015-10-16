@@ -22,11 +22,11 @@
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cstatistic.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using OPP::common::NaN;
-using OPP::common::POSITIVE_INFINITY;
-using OPP::common::NEGATIVE_INFINITY;
+using omnetpp::common::NaN;
+using omnetpp::common::POSITIVE_INFINITY;
+using omnetpp::common::NEGATIVE_INFINITY;
 
 /**
  * Listener for recording a signal to an output vector
@@ -188,7 +188,7 @@ class SIM_API HistogramRecorder : public StatisticsRecorder
 class SIM_API ExpressionRecorder : public cNumericResultRecorder
 {
     public:
-        typedef OPP::common::Expression Expression;
+        typedef omnetpp::common::Expression Expression;
     protected:
         Expression expr;
     public:
@@ -205,7 +205,7 @@ class SIM_API ExpressionRecorder : public cNumericResultRecorder
         virtual void finish(cResultFilter *prev) override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

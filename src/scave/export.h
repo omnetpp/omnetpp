@@ -29,7 +29,7 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 typedef std::vector<std::string> StringVector;
@@ -365,7 +365,7 @@ class SCAVE_API ExporterFactory
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

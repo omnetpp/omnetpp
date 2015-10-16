@@ -25,7 +25,7 @@
 #include "omnetpp/platdep/timeutil.h"
 #include "scavedefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 SCAVE_API bool parseInt(const char *str, int &dest);
@@ -81,7 +81,7 @@ class ScaveStringPool
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

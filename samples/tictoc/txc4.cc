@@ -11,7 +11,7 @@
 #include <string.h>
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * In this step you'll learn how to add input parameters to the simulation:

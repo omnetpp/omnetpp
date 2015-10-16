@@ -20,7 +20,7 @@
 
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 #include "oppmysqlutils.h"
 

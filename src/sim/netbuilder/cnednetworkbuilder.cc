@@ -49,9 +49,9 @@
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_PerRunConfigOption(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
 Register_PerObjectConfigOption(CFGID_TYPENAME, "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, nullptr, "Specifies type for submodules and channels declared with 'like <>'.");
@@ -729,7 +729,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
     ParametersElement *paramsNode = submod->getFirstParametersChild();
     if (paramsNode)
         for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop != nullptr; prop = prop->getNextPropertySibling())
-            if (OPP::opp_strcmp(prop->getName(), "dynamic") == 0 && NEDElementUtil::propertyAsBool(prop) == true)
+            if (omnetpp::opp_strcmp(prop->getName(), "dynamic") == 0 && NEDElementUtil::propertyAsBool(prop) == true)
                 return;
 
 
@@ -1253,5 +1253,5 @@ std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cC
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

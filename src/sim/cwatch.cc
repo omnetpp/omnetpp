@@ -23,9 +23,9 @@
 #include "common/stringutil.h"
 #include "omnetpp/cwatch.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 std::string cWatch_stdstring::info() const
 {
@@ -42,5 +42,5 @@ void cWatch_stdstring::assign(const char *s)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

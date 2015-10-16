@@ -19,7 +19,7 @@
 
 #include "tkutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 class InspectorFactory;
@@ -106,7 +106,7 @@ class TKENV_API Inspector
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

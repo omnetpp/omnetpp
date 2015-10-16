@@ -24,9 +24,9 @@
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
-using namespace OPP::nedxml;
+using namespace omnetpp::nedxml;
 
 class cParImpl;
 
@@ -76,7 +76,7 @@ class SIM_API cExpressionBuilder
     static void setExpression(cParImpl *par, cDynamicExpression *expr);
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -22,7 +22,7 @@
 #define M_PI    3.14159265358979323846
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * A mobile node (with a 3D model) moving around . A range indicator, and the

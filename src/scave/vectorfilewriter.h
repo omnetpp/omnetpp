@@ -23,7 +23,7 @@
 #include "nodetype.h"
 #include "resultfilemanager.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -76,7 +76,7 @@ class SCAVE_API VectorFileWriterNodeType : public NodeType
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

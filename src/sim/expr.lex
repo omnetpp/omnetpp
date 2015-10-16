@@ -46,7 +46,7 @@ S  [ \t\v\n\r\f]
 #include "expryydefs.h"
 #include "expr.tab.hh"
 
-using OPP::opp_strdup;
+using omnetpp::opp_strdup;
 
 #define yylval expryylval
 extern YYSTYPE yylval;

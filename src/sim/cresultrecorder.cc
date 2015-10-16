@@ -22,9 +22,9 @@
 #include "omnetpp/chistogram.h"
 #include "omnetpp/cstringtokenizer.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode, cProperty *property, opp_string_map *attrs)
 {
@@ -193,5 +193,5 @@ cResultRecorderDescriptor *cResultRecorderDescriptor::get(const char *name)
     return p;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

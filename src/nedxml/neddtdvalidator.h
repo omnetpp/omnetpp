@@ -23,7 +23,7 @@
 #include "nedelements.h"
 #include "neddtdvalidatorbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 /**
@@ -93,7 +93,7 @@ class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

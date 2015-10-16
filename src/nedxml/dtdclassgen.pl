@@ -226,7 +226,7 @@ print H "$copyright\n";
 print H "#ifndef __OMNETPP_NEDXML_NEDELEMENTS_H\n";
 print H "#define __OMNETPP_NEDXML_NEDELEMENTS_H\n\n";
 print H "#include \"nedelement.h\"\n\n";
-print H "NAMESPACE_BEGIN\n";
+print H "namespace omnetpp {\n";
 print H "namespace nedxml {\n\n";
 
 print CC "$copyright\n";
@@ -234,7 +234,7 @@ print CC "#include <cstring>\n";
 print CC "#include \"nederror.h\"\n";
 print CC "#include \"nedexception.h\"\n";
 print CC "#include \"$hfile\"\n\n";
-print CC "NAMESPACE_BEGIN\n";
+print CC "namespace omnetpp {\n";
 print CC "namespace nedxml {\n\n";
 
 # forward declarations
@@ -528,7 +528,7 @@ print H "    virtual NEDElement *createElementWithTag(const char *tagname);\n";
 print H "    /** Creates NEDElement subclass which corresponds to tagcode */\n";
 print H "    virtual NEDElement *createElementWithTag(int tagcode);\n";
 print H "};\n\n} // namespace nedxml\n";
-print H "NAMESPACE_END\n\n";
+print H "}  // namespace omnetpp\n\n";
 print H "#endif\n\n";
 
 print CC "NEDElementFactory *NEDElementFactory::f;\n\n";
@@ -559,7 +559,7 @@ foreach $element (@elements)
 print CC "    }\n";
 print CC "    throw NEDException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
 print CC "}\n\n} // namespace nedxml\n";
-print CC "NAMESPACE_END\n\n";
+print CC "}  // namespace omnetpp\n\n";
 
 
 #-------------------------------------------------------------------------------------
@@ -575,7 +575,7 @@ print VAL_H "#define __OMNETPP_NEDXML_NEDVALIDATOR_H\n\n";
 print VAL_H "#include \"nederror.h\"\n";
 print VAL_H "#include \"nedexception.h\"\n";
 print VAL_H "#include \"nedelements.h\"\n\n";
-print VAL_H "NAMESPACE_BEGIN\n";
+print VAL_H "namespace omnetpp {\n";
 print VAL_H "namespace nedxml {\n\n";
 
 print VAL_CC "$copyright\n";
@@ -583,7 +583,7 @@ print VAL_CC "#include <cstdio>\n";
 print VAL_CC "#include \"nederror.h\"\n";
 print VAL_CC "#include \"nedexception.h\"\n";
 print VAL_CC "#include \"$validatorhfile\"\n\n";
-print VAL_CC "NAMESPACE_BEGIN\n";
+print VAL_CC "namespace omnetpp {\n";
 print VAL_CC "namespace nedxml {\n\n";
 
 print VAL_H "/**\n";
@@ -615,7 +615,7 @@ foreach $element (@elements)
 }
 print VAL_H "    //\@}\n";
 print VAL_H "};\n\n} // namespace nedxml\n";
-print VAL_H "NAMESPACE_END\n\n";
+print VAL_H "}  // namespace omnetpp\n\n";
 print VAL_H "#endif\n\n";
 
 print VAL_CC "void  NEDValidatorBase::validate(NEDElement *node)\n";
@@ -643,7 +643,7 @@ print VAL_CC "    {\n";
 print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NEDException: %s\", e.what());\n";
 print VAL_CC "    }\n";
 print VAL_CC "}\n\n} // namespace nedxml\n";
-print VAL_CC "NAMESPACE_END\n\n";
+print VAL_CC "}  // namespace omnetpp\n\n";
 
 
 #-------------------------------------------------------------------------------------
@@ -658,14 +658,14 @@ print DTDVAL_H "#ifndef __OMNETPP_NEDXML_DTDVALIDATOR_H\n";
 print DTDVAL_H "#define __OMNETPP_NEDXML_DTDVALIDATOR_H\n\n";
 print DTDVAL_H "#include \"nedelements.h\"\n";
 print DTDVAL_H "#include \"$dtdvalidatorbasehfile\"\n\n";
-print DTDVAL_H "NAMESPACE_BEGIN\n";
+print DTDVAL_H "namespace omnetpp {\n";
 print DTDVAL_H "namespace nedxml {\n\n";
 
 print DTDVAL_CC "$copyright\n";
 print DTDVAL_CC "#include <stdio.h>\n";
 print DTDVAL_CC "#include \"nederror.h\"\n";
 print DTDVAL_CC "#include \"$dtdvalidatorhfile\"\n\n";
-print DTDVAL_CC "NAMESPACE_BEGIN\n";
+print DTDVAL_CC "namespace omnetpp {\n";
 print DTDVAL_CC "namespace nedxml {\n\n";
 
 print DTDVAL_H "/**\n";
@@ -688,7 +688,7 @@ foreach $element (@elements)
 }
 print DTDVAL_H "    //\@}\n";
 print DTDVAL_H "};\n\n} // namespace nedxml\n";
-print DTDVAL_H "NAMESPACE_END\n\n";
+print DTDVAL_H "}  // namespace omnetpp\n\n";
 print DTDVAL_H "#endif\n\n";
 
 foreach $element (@elements)
@@ -805,5 +805,5 @@ foreach $element (@elements)
 }
 
 print DTDVAL_CC "} // namespace nedxml\n";
-print DTDVAL_CC "NAMESPACE_END\n\n";
+print DTDVAL_CC "}  // namespace omnetpp\n\n";
 

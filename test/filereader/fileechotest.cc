@@ -24,7 +24,7 @@
 #define _setmode(a, b)
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 void testFileEcho(const char *file, bool forward)
 {

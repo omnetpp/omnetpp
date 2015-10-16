@@ -26,9 +26,9 @@
 #include "tkutil.h"
 #include "inspectorfactory.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace tkenv {
 
 #define LL    INT64_PRINTF_FORMAT
@@ -607,5 +607,5 @@ int LogInspector::inspectorCommand(int argc, const char **argv)
 }
 
 }  // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 

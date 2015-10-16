@@ -33,9 +33,9 @@
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cNEDLoader *cNEDLoader::inst;
 
@@ -79,5 +79,5 @@ cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
     return decl;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

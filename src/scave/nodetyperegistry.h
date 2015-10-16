@@ -24,7 +24,7 @@
 #include "node.h"
 #include "nodetype.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 class DataflowManager;
@@ -78,7 +78,7 @@ class SCAVE_API NodeTypeRegistry
 };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

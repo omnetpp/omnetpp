@@ -24,7 +24,7 @@
 #include "stringutil.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 PatternMatcher::PatternMatcher()
@@ -413,5 +413,5 @@ bool PatternMatcher::containsWildcards(const char *pattern)
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

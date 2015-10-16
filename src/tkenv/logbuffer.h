@@ -25,7 +25,7 @@
 #include "tkutil.h"
 #include "circularbuffer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cModule;
 
@@ -115,7 +115,7 @@ class TKENV_API LogBuffer
 };
 
 } // namespace tkenv
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

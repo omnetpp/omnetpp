@@ -26,7 +26,7 @@
 #include "simkerneldefs.h"
 #include "errmsg.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 // forward declarations
 class cComponent;
@@ -103,7 +103,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method_Silent() macro
  */
-#define Enter_Method  OPP::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
+#define Enter_Method  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
 
 /**
  * Denotes module class member function as callable from other modules.
@@ -121,7 +121,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method() macro
  */
-#define Enter_Method_Silent  OPP::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
+#define Enter_Method_Silent  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
 
 /**
  * The constructor switches the context to the given component, and the
@@ -276,7 +276,7 @@ inline std::string double_to_str(double t)
 #endif
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

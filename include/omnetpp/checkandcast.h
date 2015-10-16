@@ -23,7 +23,7 @@
 #include "cmodule.h"
 #include "csimulation.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 template<class P, class T>
 void check_and_cast_failure(T *p, P ret)
@@ -83,7 +83,7 @@ P check_and_cast_nullable(T *p)
     return ret;
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

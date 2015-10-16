@@ -21,7 +21,7 @@
 #include "omnetpp/cexception.h"
 #include "ccommbufferbase.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cCommBufferBase::cCommBufferBase()
 {
@@ -119,5 +119,5 @@ void cCommBufferBase::assertBufferEmpty()
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

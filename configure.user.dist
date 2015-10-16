@@ -8,11 +8,6 @@
 #
 
 #
-# Set to "yes" if you want OMNeT++ classes to go into the omnetpp namespace.
-#
-USE_NAMESPACE=yes
-
-#
 # Edit here if you want to use a different compiler from the one autodetected
 # by configure. Turns off the compiler autodetection.
 #

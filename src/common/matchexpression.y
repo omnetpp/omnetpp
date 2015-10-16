@@ -45,7 +45,7 @@
 #include "patternmatcher.h"
 #include "exception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 void yyerror (void *statePtr, const char *s);  // used by bison 3+
@@ -165,4 +165,4 @@ void yyerror(const char *s)
 }
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp

@@ -28,7 +28,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/platdep/platmisc.h"  // usleep
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 Register_GlobalConfigOption(CFGID_REALTIMESCHEDULER_SCALING, "realtimescheduler-scaling", CFG_DOUBLE, nullptr, "When cRealTimeScheduler is selected as scheduler class: ratio of simulation time to real time. For example, scaling=2 will cause simulation time to progress twice as fast as runtime.");
 
@@ -172,5 +172,5 @@ void cRealTimeScheduler::putBackEvent(cEvent *event)
     sim->getFES()->putBackFirst(event);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

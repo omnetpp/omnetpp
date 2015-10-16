@@ -9,7 +9,7 @@
 
 #include "DynaPacket_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * The server computer; see NED file for more info

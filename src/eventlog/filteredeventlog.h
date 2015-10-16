@@ -26,7 +26,7 @@
 #include "eventlog.h"
 #include "filteredevent.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace eventlog {
 
 /**
@@ -37,8 +37,8 @@ namespace eventlog {
  */
 class EVENTLOG_API FilteredEventLog : public IEventLog
 {
-    typedef OPP::common::MatchExpression MatchExpression;
-    typedef OPP::common::PatternMatcher PatternMatcher;
+    typedef omnetpp::common::MatchExpression MatchExpression;
+    typedef omnetpp::common::PatternMatcher PatternMatcher;
 
     protected:
         IEventLog *eventLog; // this will not be destructed because might be shared among multiple filtered event logs
@@ -212,7 +212,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 };
 
 } // namespace eventlog
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

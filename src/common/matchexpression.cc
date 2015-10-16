@@ -18,7 +18,7 @@
 #include "patternmatcher.h"
 #include "commonutil.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
@@ -123,5 +123,5 @@ bool MatchExpression::matches(const Matchable *object)
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

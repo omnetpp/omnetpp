@@ -27,7 +27,7 @@
 #include "omnetpp/cconfigreader.h"
 #include "envirdefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 namespace common { class PatternMatcher; };
 
@@ -46,8 +46,8 @@ class Scenario;
 class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 {
   private:
-    typedef OPP::common::StringPool StringPool;
-    typedef OPP::common::PatternMatcher PatternMatcher;
+    typedef omnetpp::common::StringPool StringPool;
+    typedef omnetpp::common::PatternMatcher PatternMatcher;
 
   private:
     // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of
@@ -256,7 +256,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 };
 
 } // namespace envir
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

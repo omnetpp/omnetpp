@@ -21,9 +21,9 @@
 #include "nederror.h"
 #include "nedelement.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
@@ -178,5 +178,5 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 }
 
 }  // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 

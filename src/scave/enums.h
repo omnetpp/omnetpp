@@ -20,7 +20,7 @@
 
 #include "scavedefs.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 /**
@@ -29,6 +29,6 @@ namespace scave {
 enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
 
 } // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif

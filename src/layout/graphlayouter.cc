@@ -17,10 +17,10 @@
 #include <ctime>
 #include "graphlayouter.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace layout {
 
-using OPP::common::opp_runtime_error;
+using omnetpp::common::opp_runtime_error;
 
 BasicGraphLayouterEnvironment::BasicGraphLayouterEnvironment()
 {
@@ -79,5 +79,5 @@ void GraphLayouter::setSize(double w, double h, double bd)
 }
 
 } // namespace layout
-NAMESPACE_END
+}  // namespace omnetpp
 

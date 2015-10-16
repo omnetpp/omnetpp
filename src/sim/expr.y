@@ -83,9 +83,9 @@ LineColumn xpos, xprevpos;
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/nedsupport.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
 static cDynamicExpression::Elem *e;
 
@@ -247,9 +247,9 @@ simple_expr
 funcname
         : NAME
         | XMLDOC_
-                { $$ = OPP::opp_strdup("xmldoc"); }
+                { $$ = omnetpp::opp_strdup("xmldoc"); }
         | XMLTYPE
-                { $$ = OPP::opp_strdup("xml"); }
+                { $$ = omnetpp::opp_strdup("xml"); }
         ;
 
 identifier

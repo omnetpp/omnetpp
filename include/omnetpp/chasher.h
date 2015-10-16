@@ -23,7 +23,7 @@
 #include "cobject.h"
 #include "cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -101,7 +101,7 @@ class SIM_API cHasher : noncopyable
     //@}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 #endif
 

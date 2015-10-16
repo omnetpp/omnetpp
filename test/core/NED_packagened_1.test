@@ -39,7 +39,7 @@ simple Dumb { }  // C++ class is ::Dumb
 %file: a/pkg/Source.cc
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 namespace a {
 class Source : public cSimpleModule { };
 Define_Module(Source);
@@ -48,7 +48,7 @@ Define_Module(Source);
 %file: b/pkg/Sink.cc
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 namespace b {
 class Sink : public cSimpleModule { };
 Define_Module(Sink);
@@ -57,14 +57,14 @@ Define_Module(Sink);
 %file: c/pkg/Casdf.cc
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 class Casdf : public cSimpleModule { };
 Define_Module(Casdf);
 
 %file: d/pkg/Dumb.cc
 #include <omnetpp.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 class Dumb : public cSimpleModule { };
 Define_Module(Dumb);
 

@@ -18,7 +18,7 @@
 #include <vector>
 #include <common/exception.h>
 
-USING_NAMESPACE
+using namespace omnetpp;
 using namespace std;
 
 void testReaderWriter(const char *inputfile, const char *outputfile);

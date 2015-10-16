@@ -18,7 +18,7 @@
 #define M_PI    3.14159265358979323846
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * Initialize global 3d canvas and load the configured earth model file.

@@ -9,7 +9,7 @@
 
 #include "DynaPacket_m.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 #define STACKSIZE    16384
 

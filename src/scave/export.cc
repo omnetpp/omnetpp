@@ -26,9 +26,9 @@
 #include "export.h"
 
 using namespace std;
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 // XXX unfortunately, VC8.0 doesn't like the following lines, so Column needs to be fully qualified in the source...
@@ -1008,5 +1008,5 @@ ScaveExport *ExporterFactory::createExporter(const string format)
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -17,9 +17,9 @@
 #include "common/patternmatcher.h"
 #include "omnetpp/cpatternmatcher.h"
 
-using namespace OPP::common;
+using namespace omnetpp::common;
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 cPatternMatcher::cPatternMatcher()
 {
@@ -66,5 +66,5 @@ bool cPatternMatcher::containsWildcards(const char *pattern)
     return PatternMatcher::containsWildcards(pattern);
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

@@ -20,7 +20,7 @@
 #include <utility>
 #include "xyarray.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace scave {
 
 using namespace std;
@@ -61,5 +61,5 @@ void XYArray::sortByX()
 }
 
 }  // namespace scave
-NAMESPACE_END
+}  // namespace omnetpp
 

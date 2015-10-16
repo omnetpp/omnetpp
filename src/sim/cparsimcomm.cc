@@ -26,7 +26,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
 {
@@ -52,5 +52,5 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
         throw cRuntimeError("Error during broadcast: %s", exceptionText.c_str());
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

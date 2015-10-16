@@ -86,10 +86,10 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
-USING_NAMESPACE
+using namespace omnetpp;
 
-using namespace OPP::common;
-using namespace OPP::nedxml;
+using namespace omnetpp::common;
+using namespace omnetpp::nedxml;
 
 static struct MSG2ParserState
 {

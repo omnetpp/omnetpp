@@ -24,7 +24,7 @@
 #include "errmsg.h"
 #include "opp_string.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 class cObject;
 class cComponent;
@@ -379,7 +379,7 @@ class SIM_API cStackCleanupException : public cException
     virtual bool isError() const override {return false;}
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

@@ -17,7 +17,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cproperties.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 const char *cProperty::DEFAULTKEY = "";
 
@@ -296,5 +296,5 @@ void cProperty::erase(const char *key)
     }
 }
 
-NAMESPACE_END
+}  // namespace omnetpp
 

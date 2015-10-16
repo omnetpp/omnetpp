@@ -27,7 +27,7 @@
 #include "stringutil.h"
 #include "stringtokenizer.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 bool opp_isblank(const char *txt)
@@ -730,5 +730,5 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
 }
 
 }  // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 

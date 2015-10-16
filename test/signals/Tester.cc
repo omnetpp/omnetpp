@@ -10,7 +10,7 @@
 #endif
 #endif
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 // register 64+ signals...
 #define Reg(name)    simsignal_t name ## Signal = cComponent::registerSignal( #name);

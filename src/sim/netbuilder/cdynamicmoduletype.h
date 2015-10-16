@@ -22,7 +22,7 @@
 #include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 
 
 /**
@@ -87,7 +87,7 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual bool isSimple() const override;
 };
 
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

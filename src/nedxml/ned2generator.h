@@ -21,7 +21,7 @@
 #include "nedelements.h"
 #include "nederror.h"
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace nedxml {
 
 
@@ -172,7 +172,7 @@ class NEDXML_API NED2Generator
 };
 
 } // namespace nedxml
-NAMESPACE_END
+}  // namespace omnetpp
 
 
 #endif

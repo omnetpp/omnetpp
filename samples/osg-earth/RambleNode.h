@@ -14,7 +14,7 @@
 #include "MobileNode.h"
 #include <osgAnimation/BasicAnimationManager>
 
-USING_NAMESPACE
+using namespace omnetpp;
 
 /**
  * A mobile node (with a 3D model) moving around with a constant speed, changing

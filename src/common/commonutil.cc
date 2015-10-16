@@ -24,7 +24,7 @@
 #include <unistd.h>
 #endif
 
-NAMESPACE_BEGIN
+namespace omnetpp {
 namespace common {
 
 
@@ -106,5 +106,5 @@ uint64_t readCPUTimeStampCounter()
 #endif
 
 } // namespace common
-NAMESPACE_END
+}  // namespace omnetpp
 
