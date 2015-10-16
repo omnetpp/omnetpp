@@ -707,19 +707,27 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         return;
 
     QPainterPath painter = arcItem->path();
-    QPainterPath::Element element = painter.elementAt(0);
-    QPointF start(element.x, element.y);
-    QPointF end(painter.currentPosition());
+    QPolygonF polygon = painter.toFillPolygon();
+
+    // First and last points are the first point of arc and penult point is last point of arc
+    if(polygon.size() < 3)
+    {
+        qDebug() << "Error in ArcFigureRenderer::setArrows: there is no separate start and end point.";
+        return;
+    }
+
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[1]);
 
     if(arcFigure->getStartArrowHead() != cFigure::ARROW_NONE)
     {
+        QPointF start(polygon[polygon.size() - 3]);
+        QPointF end(painter.currentPosition());
         startArrow->setVisible(true);
         setArrowStyle(arcFigure->getStartArrowHead(), startArrow);
         if(pen)
             startArrow->setPen(*pen);
-        startArrow->configureArrow(start, end);
+        startArrow->configureArrow(end, start);
     }
     else
         startArrow->setVisible(false);
@@ -727,11 +735,13 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
 
     if(arcFigure->getEndArrowHead() != cFigure::ARROW_NONE)
     {
+        QPointF start(painter.elementAt(0).x, painter.elementAt(0).y);
+        QPointF end(polygon[1]);
         endArrow->setVisible(true);
         setArrowStyle(arcFigure->getEndArrowHead(), endArrow);
         if(pen)
             endArrow->setPen(*pen);
-        endArrow->configureArrow(end, start);
+        endArrow->configureArrow(start, end);
     }
     else
         endArrow->setVisible(false);
