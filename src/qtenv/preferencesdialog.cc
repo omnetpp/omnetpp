@@ -63,14 +63,10 @@ void PreferencesDialog::init()
     ui->hideNameSpace->setCurrentIndex(getQtenv()->opt->stripNamespace);
 
     // Layouting tab
-    switch(getQtenv()->opt->layouterChoice)
-    {
-        case LAYOUTER_FAST:
-            ui->fastRadio->setChecked(true);
-        case LAYOUTER_ADVANCED:
-            ui->advancedRadio->setChecked(true);
-        case LAYOUTER_AUTO:
-            ui->adaptiveRadio->setChecked(true);
+    switch(getQtenv()->opt->layouterChoice) {
+        case LAYOUTER_FAST:     ui->fastRadio->setChecked(true);     break;
+        case LAYOUTER_ADVANCED: ui->advancedRadio->setChecked(true); break;
+        case LAYOUTER_AUTO:     ui->adaptiveRadio->setChecked(true); break;
     }
     ui->showLayouting->setChecked(getQtenv()->opt->showLayouting);
     ui->arrange->setChecked(getQtenv()->opt->arrangeVectorConnections);
