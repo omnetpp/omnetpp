@@ -119,7 +119,7 @@
 #include "omnetpp/compat.h"
 #include "omnetpp/platdep/intlimits.h"
 
-#ifdef AUTOIMPORT_NAMESPACE
+#ifdef AUTOIMPORT_OMNETPP_NAMESPACE
 using namespace omnetpp;
 #endif
 
