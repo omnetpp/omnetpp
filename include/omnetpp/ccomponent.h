@@ -121,7 +121,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     SignalData *findOrCreateSignalData(simsignal_t signalID);
     void removeSignalData(simsignal_t signalID);
     void checkNotFiring(simsignal_t, cIListener **listenerList);
-    template<typename T> void fire(cComponent *src, simsignal_t signalID, const uint64_t& mask, T x);
+    template<typename T> void fire(cComponent *src, simsignal_t signalID, const uint64_t& mask, T x, cObject *details);
     void fireFinish();
     void signalListenerAdded(simsignal_t signalID, uint64_t mask);
     void signalListenerRemoved(simsignal_t signalID, uint64_t mask);
@@ -807,76 +807,76 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, bool b);
+    void emit(simsignal_t signalID, bool b, cObject *details = nullptr);
 
     /**
      * Emits the long value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, long l);
+    void emit(simsignal_t signalID, long l, cObject *details = nullptr);
 
     /**
      * Emits the unsigned long value as a signal. If the given signal has listeners in
      * this component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, unsigned long l);
+    void emit(simsignal_t signalID, unsigned long l, cObject *details = nullptr);
 
     /**
      * Emits the double value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, double d);
+    void emit(simsignal_t signalID, double d, cObject *details = nullptr);
 
     /**
      * Emits the simtime_t value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, const SimTime& t);
+    void emit(simsignal_t signalID, const SimTime& t, cObject *details = nullptr);
 
     /**
      * Emits the given string as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, const char *s);
+    void emit(simsignal_t signalID, const char *s, cObject *details = nullptr);
 
     /**
      * Emits the given object as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, cObject *obj);
+    void emit(simsignal_t signalID, cObject *obj, cObject *details = nullptr);
 
     /** Delegates to emit(simsignal_t, cObject*) after a const_cast. */
-    void emit(simsignal_t signalID, const cObject *obj) { emit(signalID, const_cast<cObject *>(obj)); }
+    void emit(simsignal_t signalID, const cObject *obj, cObject *details = nullptr) { emit(signalID, const_cast<cObject *>(obj), details); }
 
     /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, char c) {emit(signalID,(long)c);}
+    void emit(simsignal_t signalID, char c, cObject *details = nullptr) {emit(signalID,(long)c, details);}
 
     /** Delegates to emit(simsignal_t, unsigned long) */
-    void emit(simsignal_t signalID, unsigned char c) {emit(signalID,(unsigned long)c);}
+    void emit(simsignal_t signalID, unsigned char c, cObject *details = nullptr) {emit(signalID,(unsigned long)c, details);}
 
     /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, short i) {emit(signalID,(long)i);}
+    void emit(simsignal_t signalID, short i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
 
     /** Delegates to emit(simsignal_t, unsigned long) */
-    void emit(simsignal_t signalID, unsigned short i) {emit(signalID,(unsigned long)i);}
+    void emit(simsignal_t signalID, unsigned short i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
 
     /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, int i) {emit(signalID,(long)i);}
+    void emit(simsignal_t signalID, int i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
 
     /** Delegates to emit(simsignal_t, unsigned long) */
-    void emit(simsignal_t signalID, unsigned int i) {emit(signalID,(unsigned long)i);}
+    void emit(simsignal_t signalID, unsigned int i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
 
     /** Delegates to emit(simsignal_t, double) */
-    void emit(simsignal_t signalID, float f) {emit(signalID,(double)f);}
+    void emit(simsignal_t signalID, float f, cObject *details = nullptr) {emit(signalID,(double)f, details);}
 
     /** Delegates to emit(simsignal_t, double) */
-    void emit(simsignal_t signalID, long double d) {emit(signalID,(double)d);}
+    void emit(simsignal_t signalID, long double d, cObject *details = nullptr) {emit(signalID,(double)d, details);}
 
     /**
      * If producing a value for a signal has a significant runtime cost, this

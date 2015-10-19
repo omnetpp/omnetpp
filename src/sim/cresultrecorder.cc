@@ -135,37 +135,37 @@ void cResultRecorder::tweakTitle(opp_string& title)
 
 //---
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
-    collect(t, b);
+    collect(t, b, details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
 {
-    collect(t, l);
+    collect(t, l, details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
 {
-    collect(t, l);
+    collect(t, l, details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
 {
-    collect(t, d);
+    collect(t, d, details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
 {
-    collect(t, v.dbl());
+    collect(t, v.dbl(), details);
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
     throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
-void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());

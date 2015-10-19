@@ -88,25 +88,25 @@ class SIM_API cIListener
      * to make a temporary copy of the listener list each time, but this is
      * not desirable for performance reasons.)
      */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b) = 0;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) = 0;
 
-    /** Receive an emitted long value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) = 0;
+    /** Receive an emitted long value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) = 0;
 
-    /** Receive an emitted unsigned long value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) = 0;
+    /** Receive an emitted unsigned long value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) = 0;
 
-    /** Receive an emitted double value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) = 0;
+    /** Receive an emitted double value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) = 0;
 
-    /** Receive an emitted simtime_t value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t) = 0;
+    /** Receive an emitted simtime_t value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t, cObject *details) = 0;
 
-    /** Receive an emitted string value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) = 0;
+    /** Receive an emitted string value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) = 0;
 
-    /** Receive an emitted cObject value. See receiveSignal(cComponent*,simsignal_t,bool) for more info. */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) = 0;
+    /** Receive an emitted cObject value. See receiveSignal(cComponent*,simsignal_t,bool,cObject*) for more info. */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) = 0;
 
     /**
      * Called by a component on its local listeners after the component's
@@ -161,13 +161,13 @@ class SIM_API cListener : public cIListener
     /** Utility function, throws a "data type not supported" error. */
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
   public:
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) override;
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 };
 
 }  // namespace omnetpp

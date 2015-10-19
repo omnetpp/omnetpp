@@ -50,82 +50,82 @@ const char *cResultListener::getPooled(const char *s)
                         cComponent::getSignalName(signalID), (int)signalID, \
                         source->getClassName(), source->getFullPath().c_str(), datatype, e.what())
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), b);
+        receiveSignal(nullptr, getSimulation()->getSimTime(), b, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "bool", e);
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), l);
+        receiveSignal(nullptr, getSimulation()->getSimTime(), l, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "long", e);
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), l);
+        receiveSignal(nullptr, getSimulation()->getSimTime(), l, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "unsigned long", e);
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), d);
+        receiveSignal(nullptr, getSimulation()->getSimTime(), d, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "double", e);
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), v);
+        receiveSignal(nullptr, getSimulation()->getSimTime(), v, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "simtime_t", e);
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details)
 {
     try {
-        receiveSignal(nullptr, getSimulation()->getSimTime(), s);
+        receiveSignal(nullptr, getSimulation()->getSimTime(), s, details);
     }
     catch (std::exception& e) {
         THROW(source, signalID, "const char *", e);
     }
 }
 
-void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     try {
         cITimestampedValue *v = dynamic_cast<cITimestampedValue *>(obj);
         if (!v)
-            receiveSignal(nullptr, getSimulation()->getSimTime(), obj);
+            receiveSignal(nullptr, getSimulation()->getSimTime(), obj, details);
         else {
             // dispatch cITimestampedValue by data type
             switch (v->getValueType(signalID)) {
-                case SIMSIGNAL_BOOL: receiveSignal(nullptr, v->getTimestamp(signalID), v->boolValue(signalID)); break;
-                case SIMSIGNAL_LONG: receiveSignal(nullptr, v->getTimestamp(signalID), v->longValue(signalID)); break;
-                case SIMSIGNAL_ULONG: receiveSignal(nullptr, v->getTimestamp(signalID), v->unsignedLongValue(signalID)); break;
-                case SIMSIGNAL_DOUBLE: receiveSignal(nullptr, v->getTimestamp(signalID), v->doubleValue(signalID)); break;
-                case SIMSIGNAL_SIMTIME: receiveSignal(nullptr, v->getTimestamp(signalID), v->simtimeValue(signalID)); break;
-                case SIMSIGNAL_STRING: receiveSignal(nullptr, v->getTimestamp(signalID), v->stringValue(signalID)); break;
-                case SIMSIGNAL_OBJECT: receiveSignal(nullptr, v->getTimestamp(signalID), v->objectValue(signalID)); break;
+                case SIMSIGNAL_BOOL: receiveSignal(nullptr, v->getTimestamp(signalID), v->boolValue(signalID), details); break;
+                case SIMSIGNAL_LONG: receiveSignal(nullptr, v->getTimestamp(signalID), v->longValue(signalID), details); break;
+                case SIMSIGNAL_ULONG: receiveSignal(nullptr, v->getTimestamp(signalID), v->unsignedLongValue(signalID), details); break;
+                case SIMSIGNAL_DOUBLE: receiveSignal(nullptr, v->getTimestamp(signalID), v->doubleValue(signalID), details); break;
+                case SIMSIGNAL_SIMTIME: receiveSignal(nullptr, v->getTimestamp(signalID), v->simtimeValue(signalID), details); break;
+                case SIMSIGNAL_STRING: receiveSignal(nullptr, v->getTimestamp(signalID), v->stringValue(signalID), details); break;
+                case SIMSIGNAL_OBJECT: receiveSignal(nullptr, v->getTimestamp(signalID), v->objectValue(signalID), details); break;
                 default: throw opp_runtime_error("got cITimestampedValue with blank or invalid data type");
             }
         }

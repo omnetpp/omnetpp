@@ -487,53 +487,53 @@ void cComponent::removeSignalData(simsignal_t signalID)
     }
 }
 
-void cComponent::emit(simsignal_t signalID, bool b)
+void cComponent::emit(simsignal_t signalID, bool b, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_BOOL);
-    fire(this, signalID, getSignalMask(signalID), b);
+    fire(this, signalID, getSignalMask(signalID), b, details);
 }
 
-void cComponent::emit(simsignal_t signalID, long l)
+void cComponent::emit(simsignal_t signalID, long l, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_LONG);
-    fire(this, signalID, getSignalMask(signalID), l);
+    fire(this, signalID, getSignalMask(signalID), l, details);
 }
 
-void cComponent::emit(simsignal_t signalID, unsigned long l)
+void cComponent::emit(simsignal_t signalID, unsigned long l, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_ULONG);
-    fire(this, signalID, getSignalMask(signalID), l);
+    fire(this, signalID, getSignalMask(signalID), l, details);
 }
 
-void cComponent::emit(simsignal_t signalID, double d)
+void cComponent::emit(simsignal_t signalID, double d, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_DOUBLE);
-    fire(this, signalID, getSignalMask(signalID), d);
+    fire(this, signalID, getSignalMask(signalID), d, details);
 }
 
-void cComponent::emit(simsignal_t signalID, const SimTime& t)
+void cComponent::emit(simsignal_t signalID, const SimTime& t, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_SIMTIME);
-    fire(this, signalID, getSignalMask(signalID), t);
+    fire(this, signalID, getSignalMask(signalID), t, details);
 }
 
-void cComponent::emit(simsignal_t signalID, const char *s)
+void cComponent::emit(simsignal_t signalID, const char *s, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_STRING);
-    fire(this, signalID, getSignalMask(signalID), s);
+    fire(this, signalID, getSignalMask(signalID), s, details);
 }
 
-void cComponent::emit(simsignal_t signalID, cObject *obj)
+void cComponent::emit(simsignal_t signalID, cObject *obj, cObject *details)
 {
     if (checkSignals)
         getComponentType()->checkSignal(signalID, SIMSIGNAL_OBJECT, obj);
-    fire(this, signalID, getSignalMask(signalID), obj);
+    fire(this, signalID, getSignalMask(signalID), obj, details);
 }
 
 uint64_t cComponent::getSignalMask(simsignal_t signalID)
@@ -554,7 +554,7 @@ uint64_t cComponent::getSignalMask(simsignal_t signalID)
 }
 
 template<typename T>
-void cComponent::fire(cComponent *source, simsignal_t signalID, const uint64_t& mask, T x)
+void cComponent::fire(cComponent *source, simsignal_t signalID, const uint64_t& mask, T x, cObject *details)
 {
     if ((~signalHasLocalListeners & mask) == 0) {  // always true for mask==0
         // notify local listeners if there are any
@@ -568,7 +568,7 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, const uint64_t& 
             try {
                 notificationStack[notificationSP++] = listeners;  // lock against modification
                 for (int i = 0; listeners[i]; i++)
-                    listeners[i]->receiveSignal(source, signalID, x);  // will crash if listener is already deleted
+                    listeners[i]->receiveSignal(source, signalID, x, details);  // will crash if listener is already deleted
                 notificationSP--;
             }
             catch (std::exception& e) {
@@ -582,7 +582,7 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, const uint64_t& 
         // notify ancestors recursively
         cModule *parent = getParentModule();
         if (parent)
-            parent->fire(source, signalID, mask, x);
+            parent->fire(source, signalID, mask, x, details);
     }
 }
 

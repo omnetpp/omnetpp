@@ -54,7 +54,7 @@ void VectorRecorder::subscribedTo(cResultFilter *prev)
         getEnvir()->setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
 }
 
-void VectorRecorder::collect(simtime_t_cref t, double value)
+void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)
 {
     if (t < lastTime) {
         throw cRuntimeError("%s: Cannot record data with an earlier timestamp (t=%s) "
@@ -116,7 +116,7 @@ void MaxRecorder::finish(cResultFilter *prev)
 
 //---
 
-void TimeAverageRecorder::collect(simtime_t_cref t, double value)
+void TimeAverageRecorder::collect(simtime_t_cref t, double value, cObject *details)
 {
     if (startTime < SIMTIME_ZERO)  // uninitialized
         startTime = t;
@@ -130,7 +130,7 @@ void TimeAverageRecorder::finish(cResultFilter *prev)
 {
     bool empty = (startTime < SIMTIME_ZERO);
     simtime_t t = getSimulation()->getSimTime();
-    collect(t, NaN);  // to get the last interval counted in; the value is just a dummy
+    collect(t, NaN, nullptr);  // to get the last interval counted in; the value is just a dummy
     double interval = SIMTIME_DBL(t - startTime);
 
     opp_string_map attributes = getStatisticAttributes();

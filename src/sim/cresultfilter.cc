@@ -68,46 +68,46 @@ cResultFilter::~cResultFilter()
     delete[] delegates;
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, bool b)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, b);
+        delegates[i]->receiveSignal(this, t, b, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, long l)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, l);
+        delegates[i]->receiveSignal(this, t, l, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, l);
+        delegates[i]->receiveSignal(this, t, l, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, double d)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, d);
+        delegates[i]->receiveSignal(this, t, d, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, v);
+        delegates[i]->receiveSignal(this, t, v, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const char *s)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, s);
+        delegates[i]->receiveSignal(this, t, s, details);
 }
 
-void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, cObject *obj)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)
-        delegates[i]->receiveSignal(this, t, obj);
+        delegates[i]->receiveSignal(this, t, obj, details);
 }
 
 void cResultFilter::callFinish(cResultFilter *prev)
@@ -119,51 +119,51 @@ void cResultFilter::callFinish(cResultFilter *prev)
 
 //---
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
     simtime_t tt = t;
     double d = b;
-    if (process(tt, d))
-        fire(this, tt, d);
+    if (process(tt, d, details))
+        fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
 {
     simtime_t tt = t;
     double d = l;
-    if (process(tt, d))
-        fire(this, tt, d);
+    if (process(tt, d, details))
+        fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
 {
     simtime_t tt = t;
     double d = l;
-    if (process(tt, d))
-        fire(this, tt, d);
+    if (process(tt, d, details))
+        fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
 {
     simtime_t tt = t;
-    if (process(tt, d))
-        fire(this, tt, d);
+    if (process(tt, d, details))
+        fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
 {
     simtime_t tt = t;
     double d = v.dbl();
-    if (process(tt, d))
-        fire(this, tt, d);
+    if (process(tt, d, details))
+        fire(this, tt, d, details);
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
     throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
-void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());
@@ -173,32 +173,32 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 
 #define THROW(t)    throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
     THROW("long");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
 {
     THROW("long");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
 {
     THROW("unsigned long");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
 {
     THROW("double");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
 {
     THROW("simtime_t");
 }
 
-void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
     THROW("const char *");
 }

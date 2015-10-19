@@ -38,26 +38,26 @@ class SIM_API cResultListener : public cIListener
         static const char *getPooled(const char *s);
 
         // simplified API that better supports chaining:
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s) = 0;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) = 0;
         virtual void subscribedTo(cResultFilter *prev);
         virtual void unsubscribedFrom(cResultFilter *prev);
         virtual void callFinish(cResultFilter *prev) {finish(prev);}
         virtual void finish(cResultFilter *prev) {}
 
         // original listener API delegates to simplified API:
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s) override;
-        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details) override;
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
         virtual void subscribedTo(cComponent *component, simsignal_t signalID) override;
         virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) override;
         virtual void finish(cComponent *component, simsignal_t signalID) override;

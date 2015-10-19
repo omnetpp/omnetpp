@@ -37,52 +37,52 @@ Register_ResultFilter("packetBytes", PacketBytesFilter);
 Register_ResultFilter("packetBits", PacketBitsFilter);
 Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
-        fire(this, t, b);
+        fire(this, t, b, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
-        fire(this, t, l);
+        fire(this, t, l, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
-        fire(this, t, l);
+        fire(this, t, l, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
-        fire(this, t, d);
+        fire(this, t, d, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
-        fire(this, t, v);
+        fire(this, t, v, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
     if (t >= getEndWarmupPeriod())
-        fire(this, t, s);
+        fire(this, t, s, details);
 }
 
-void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     if (t >= getEndWarmupPeriod())
-        fire(this, t, obj);
+        fire(this, t, obj, details);
 }
 
 //---
 
-bool TimeAverageFilter::process(simtime_t& t, double& value)
+bool TimeAverageFilter::process(simtime_t& t, double& value, cObject *details)
 {
     bool isFirstValue = startTime < SIMTIME_ZERO;
     if (isFirstValue)
@@ -102,7 +102,7 @@ bool TimeAverageFilter::process(simtime_t& t, double& value)
 
 //---
 
-bool UnaryExpressionFilter::process(simtime_t& t, double& value)
+bool UnaryExpressionFilter::process(simtime_t& t, double& value, cObject *details)
 {
     currentTime = t;
     currentValue = value;
@@ -110,43 +110,43 @@ bool UnaryExpressionFilter::process(simtime_t& t, double& value)
     return true;
 }
 
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
     simtime_t tt = t;
     double d = b;
     if (process(prev, tt, d))
-        fire(this, tt, d);
+        fire(this, tt, d, details);
 }
 
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details)
 {
     simtime_t tt = t;
     double d = l;
     if (process(prev, tt, d))
-        fire(this, tt, d);
+        fire(this, tt, d, details);
 }
 
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details)
 {
     simtime_t tt = t;
     double d = l;
     if (process(prev, tt, d))
-        fire(this, tt, d);
+        fire(this, tt, d, details);
 }
 
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details)
 {
     simtime_t tt = t;
     if (process(prev, tt, d))
-        fire(this, tt, d);
+        fire(this, tt, d, details);
 }
 
-void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details)
 {
     simtime_t tt = t;
     double d = v.dbl();
     if (process(prev, tt, d))
-        fire(this, tt, d);
+        fire(this, tt, d, details);
 }
 
 bool NaryExpressionFilter::process(cResultFilter *prev, simtime_t& t, double& value)
@@ -172,25 +172,23 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultF
 
 //---
 
-void PacketBytesFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object)
+void PacketBytesFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-    if (cPacket *packet = dynamic_cast<cPacket *>(object)) {
-        fire(this, t, (double)packet->getByteLength());
-    }
+    if (cPacket *packet = dynamic_cast<cPacket *>(object))
+        fire(this, t, (double)packet->getByteLength(), details);
 }
 
 //---
 
-void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object)
+void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-    if (cPacket *packet = dynamic_cast<cPacket *>(object)) {
-        fire(this, t, (double)packet->getBitLength());
-    }
+    if (cPacket *packet = dynamic_cast<cPacket *>(object))
+        fire(this, t, (double)packet->getBitLength(), details);
 }
 
 //---
 
-bool SumPerDurationFilter::process(simtime_t& t, double& value)
+bool SumPerDurationFilter::process(simtime_t& t, double& value, cObject *details)
 {
     sum += value;
     value = sum / (t - getSimulation()->getWarmupPeriod());

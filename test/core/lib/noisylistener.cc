@@ -24,49 +24,49 @@ void NoisyListener::printFrom(cComponent *source, simsignal_t signalID)
     EV << "signal \"" << cComponent::getSignalName(signalID) << "\" (id=" << signalID << ")";
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", bool " << b << "\n";
     getSimulation()->getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", long " << l << "\n";
     getSimulation()->getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", long " << l << "\n";
     getSimulation()->getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, double d, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", double " << d << "\n";
     getSimulation()->getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", simtime " << t << "\n";
     getSimulation()->getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", string " << s << "\n";
     getSimulation()->getSystemModule()->checkSignalConsistency();
 }
 
-void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
     EV << ", class " << obj->getClassName() << ", info: " << obj->info() << "\n";
