@@ -87,12 +87,7 @@ void ConnectionItem::updateLineItem() {
         return;
     }
 
-    QPointF direction = dest - src;
-    double length = std::sqrt(direction.x() * direction.x() + direction.y() * direction.y());
-    direction /= length;
-
-    // correcting the destination if needed, so it won't mess up the arrowhead
-    lineItem->setLine(QLineF(src, dest)); //TODO
+    lineItem->setLine(QLineF(src, dest));
     QPen pen(lineColor, lineWidth);
     pen.setCapStyle(Qt::FlatCap);
 
