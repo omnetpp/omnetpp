@@ -47,6 +47,7 @@
 #include "mainwindow.h"
 #include "modulecanvasviewer.h"
 #include "inspectorutil.h"
+#include "layersdialog.h"
 
 using namespace OPP::common;
 
@@ -740,21 +741,24 @@ void ModuleInspector::layers()
         return;
     }
 
-    //TCLKILL const char *allTags = canvasRenderer->getAllTags().c_str();
-    //TCLKILL const char *enabledTags = canvasRenderer->getEnabledTags().c_str();
-    //TCLKILL const char *exceptTags = canvasRenderer->getExceptTags().c_str();
+    const char *allTags = canvasRenderer->getAllTags().c_str();
+    const char *enabledTags = canvasRenderer->getEnabledTags().c_str();
+    const char *exceptTags = canvasRenderer->getExceptTags().c_str();
 
-    //TODO create dialog
-//    set result [CanvasInspectors:layersDialog $allTags $enabledTags $exceptTags]
 
-//    if {$result != {}} {
-//        set enabledTags [lindex $result 0]
-//        set exceptTags [lindex $result 1]
-//        opp_inspectorcommand $insp setenabledtags $enabledTags
-//        opp_inspectorcommand $insp setexcepttags $exceptTags
-//        opp_inspectorcommand $insp redraw
-//    }
-//}
+    LayersDialog *layersDialog = new LayersDialog(allTags, enabledTags, exceptTags);
+    if(QDialog::Accepted == layersDialog->exec())
+    {
+        QString enabledTags = layersDialog->getEnabledTags().join(" ");
+        QString exceptTags = layersDialog->getExceptTags().join(" ");
+        qDebug() << "Output: " << enabledTags << exceptTags;
+        //TODO Error in set function
+        canvasRenderer->setEnabledTags(enabledTags.toStdString().c_str());
+        canvasRenderer->setExceptTags(exceptTags.toStdString().c_str());
+        redraw();
+    }
+
+    delete layersDialog;
 }
 
 void ModuleInspector::toggleLabels()

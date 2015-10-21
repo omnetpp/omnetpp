@@ -91,7 +91,8 @@ SOURCES += mainwindow.cc \
     compoundmoduleitem.cc \
     connectionitem.cc \
     messageitem.cc \
-    canvasviewer.cc
+    canvasviewer.cc \
+    layersdialog.cpp
 
 HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h tklib.h circularbuffer.h genericobjectinspector.h inspector.h qtenvdefs.h \
     runselectiondialog.h \
@@ -122,7 +123,8 @@ HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layou
     compoundmoduleitem.h \
     connectionitem.h \
     messageitem.h \
-    canvasviewer.h
+    canvasviewer.h \
+    layersdialog.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -140,7 +142,8 @@ FORMS += mainwindow.ui \
     preferencesdialog.ui \
     rununtildialog.ui \
     filteredobjectlistdialog.ui \
-    comboselectiondialog.ui
+    comboselectiondialog.ui \
+    layersdialog.ui
 
 RESOURCES += \
     icons.qrc
