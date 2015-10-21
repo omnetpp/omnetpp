@@ -36,6 +36,7 @@
 #include "inspectorutil.h"
 #include "genericobjectinspector.h"
 #include "loginspector.h"
+#include "timelineinspector.h"
 #include "timelinegraphicsview.h"
 #include "rununtildialog.h"
 #include "filteredobjectlistdialog.h"
@@ -663,10 +664,12 @@ void MainWindow::restoreGeometry()
     QRect geom = env->getPref("mainwindow-geom").toRect();
     if (geom.isValid()) setGeometry(geom);
 
-    // set timeline initial size
+    // set timeline initial size if there is no qtenv.ini
     QList<int> sizes;
-    sizes.append(50);
-    sizes.append(ui->mainSplitter->height() - 50);
+    TimeLineInspector *timeLineInsp = static_cast<TimeLineInspector*>(ui->timeLine->children()[0]);
+    double timeLineHeight = timeLineInsp->getInitHeight();
+    sizes.append(timeLineHeight);
+    sizes.append(ui->mainSplitter->height() - timeLineHeight);
     ui->mainSplitter->setSizes(sizes);
 
     restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);

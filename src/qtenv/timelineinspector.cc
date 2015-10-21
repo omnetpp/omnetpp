@@ -100,5 +100,10 @@ void TimeLineInspector::runPreferencesDialog()
     InspectorUtil::preferencesDialog(InspectorUtil::TAB_FILTERING);
 }
 
+double TimeLineInspector::getInitHeight()
+{
+    return timeLine->getInitHeight();
+}
+
 } // namespace qtenv
 } // namespace omnetpp

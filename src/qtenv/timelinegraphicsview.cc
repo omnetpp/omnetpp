@@ -411,6 +411,15 @@ QVector<cObject*> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
     return objects;
 }
 
+double TimeLineGraphicsView::getInitHeight()
+{
+    // similar to the calculation of showTickLabels in rebuildScene method
+    QGraphicsSimpleTextItem simpleText("+100ms");
+    simpleText.setFont(tickLabelFont);
+    // don't add 16 thus tick labels aren't shown
+    return simpleText.boundingRect().height();
+}
+
 void TimeLineGraphicsView::rebuildScene()
 {
     setSceneRect(0, contentsRect().height() * (2/3), contentsRect().width(), contentsRect().height());

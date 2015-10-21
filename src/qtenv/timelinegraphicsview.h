@@ -109,6 +109,7 @@ public:
     int getDefaultNumMessageLabelRows();
     QVector<cModule*> getModulePathsMessageFilter();
     void setModulePathsMessageFilter(QVector<cModule*> modules);
+    double getInitHeight();
 
      //This only affects the behavior of computeSize().
     void setDefaultNumMessageLabelRows(int defaultNumMessageLabelRows);

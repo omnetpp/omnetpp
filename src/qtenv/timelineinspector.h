@@ -44,6 +44,7 @@ public:
     TimeLineInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
 
     virtual void refresh();
+    double getInitHeight();
 };
 
 } // namespace qtenv

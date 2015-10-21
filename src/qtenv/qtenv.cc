@@ -439,7 +439,6 @@ void Qtenv::doRun()
 
         mainWindow = new MainWindow(this);
         mainWindow->show();
-        mainWindow->restoreGeometry();
 
         initFonts();
 
@@ -450,6 +449,8 @@ void Qtenv::doRun()
         mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
         mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
+
+        mainWindow->restoreGeometry();
 
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject*)), mainLogView, SLOT(setObject(cObject*)));
 
