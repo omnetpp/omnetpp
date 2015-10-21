@@ -960,9 +960,7 @@ void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
     frame->setLayout(frameLayout);
 
     QLabel *label = new QLabel(aboutText);
-    QFont font = label->font();
-    font.setBold(true);
-    label->setFont(font);
+    label->setFont(getQtenv()->getBoldFont());
     label->setAlignment(Qt::AlignHCenter);
     frameLayout->addWidget(label);
 
