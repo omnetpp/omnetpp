@@ -56,7 +56,7 @@ void CompoundModuleItem::updateImage() {
             imageItem->setPixmap(QPixmap::fromImage(*image));
             // setting up some defaults
             imageItem->setOffset(-image->width() / 2.0, -image->height() / 2.0);
-            imageItem->setPos(area.width() / 2.0, area.height() / 2.0);
+            imageItem->setPos(area.center());
             imageItem->setScale(zoomFactor);
             imageItem->setTransformationMode(Qt::SmoothTransformation);
 
@@ -76,7 +76,7 @@ void CompoundModuleItem::updateImage() {
             case MODE_FIX: // fixed on the top left corner
                 // no positioning at all, please. the zoom scaling can stay.
                 imageItem->setOffset(0, 0);
-                imageItem->setPos(0, 0);
+                imageItem->setPos(area.topLeft());
                 break;
             default:
                 ASSERT2(false, "unhandled image mode");
@@ -170,7 +170,7 @@ CompoundModuleItem::CompoundModuleItem(QGraphicsItem *parent) :
 
     modulePath = new OutlinedTextItem(this);
     // just moving it off the left border outline
-    modulePath->setPos(2, 0);
+    modulePath->setPos(area.topLeft() + QPointF(2, 0));
     modulePath->setZValue(1);
 
     // text items will be at Z = 2
@@ -200,6 +200,7 @@ void CompoundModuleItem::setArea(QRectF area) {
         updateRectangle();
         updateImage();
         updateGrid();
+        modulePath->setPos(area.topLeft() + QPointF(2, 0));
     }
 }
 
@@ -308,6 +309,11 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     if (!widthOk && !heightOk) {
         // In this branch we don't need to care about zooming,
         // the scaled submodule positioning and symmetricizing is enough.
+
+        // XXX should we enforce to have the top-left corner always at (0;0)?
+        // Because this way zooming can make the submodules slide areound a bit
+        // relative to the compound module background (if it does not have
+        // a fixed size specified by the bgb tag...).
 
         border = submodulesRect;
 
