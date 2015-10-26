@@ -741,18 +741,15 @@ void ModuleInspector::layers()
         return;
     }
 
-    const char *allTags = canvasRenderer->getAllTags().c_str();
-    const char *enabledTags = canvasRenderer->getEnabledTags().c_str();
-    const char *exceptTags = canvasRenderer->getExceptTags().c_str();
-
+    QString allTags = canvasRenderer->getAllTags().c_str();
+    QString enabledTags = canvasRenderer->getEnabledTags().c_str();
+    QString exceptTags = canvasRenderer->getExceptTags().c_str();
 
     LayersDialog *layersDialog = new LayersDialog(allTags, enabledTags, exceptTags);
     if(QDialog::Accepted == layersDialog->exec())
     {
         QString enabledTags = layersDialog->getEnabledTags().join(" ");
         QString exceptTags = layersDialog->getExceptTags().join(" ");
-        qDebug() << "Output: " << enabledTags << exceptTags;
-        //TODO Error in set function
         canvasRenderer->setEnabledTags(enabledTags.toStdString().c_str());
         canvasRenderer->setExceptTags(exceptTags.toStdString().c_str());
         redraw();

@@ -34,8 +34,6 @@ LayersDialog::LayersDialog(QString allTags, QString enabledTags, QString exceptT
     this->enabledTags = QString(enabledTags).split(' ', QString::SkipEmptyParts);
     this->exceptTags = QString(exceptTags).split(' ', QString::SkipEmptyParts);
 
-    qDebug() << "Input: " << this->enabledTags << this->exceptTags;
-
     QVBoxLayout *showFigLayout = static_cast<QVBoxLayout*>(ui->showFigWidget->layout());
     QVBoxLayout *hideFigLayout = static_cast<QVBoxLayout*>(ui->hideFigWidget->layout());
 
