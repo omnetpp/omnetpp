@@ -97,9 +97,10 @@ void TextViewerWidget::setFont(QFont font) {
     lineHeight = metrics.height();
     averageCharWidth = metrics.averageCharWidth();
 
-    header->setFixedHeight(header->sizeHint().height());
+    header->setFixedHeight(header->sizeHint().height() < 0 ? 0 : header->sizeHint().height());
 
     isMonospaceFont = QFontInfo(font).fixedPitch();
+
     viewport()->update();
 }
 
