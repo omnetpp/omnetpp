@@ -74,6 +74,8 @@ public:
 // Used in the ModuleInspector to make text more readable on a cluttered background.
 // If the functionality is not enough, just implement more of QGraphicsSimpleTextItems
 // functions, and forward them to one or both members accordingly.
+// The occasional small "offset" of the outline relative to the text
+// itself (mostly with small fonts) is likely caused by font hinting.
 class OutlinedTextItem : public QGraphicsItem {
 protected:
     // these are NOT PART of the scene, not even children of this object

@@ -195,6 +195,11 @@ OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
 
     fillItem->setPen(Qt::NoPen);
     // the default brush is good for fillItem
+
+    // Makes scrolling the module (with many submodules) a lot faster while
+    // not degrading performance, but using (hopefully just) a bit more memory.
+    // Needed because text outline drawing is very slow in Qt (4.8).
+    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 }
 
 OutlinedTextItem::~OutlinedTextItem() {
