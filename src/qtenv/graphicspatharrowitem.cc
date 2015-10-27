@@ -91,14 +91,13 @@ void GraphicsPathArrowItem::configureArrow(const QPointF &pf, const QPointF &pl)
 
     arrowDescr.arrowPointsPtr = poly;
 }
-
 QRectF GraphicsPathArrowItem::boundingRect() const
 {
     if(!isVisible())
         return QRectF();
 
-    double maxDouble = std::numeric_limits<double>::max();
-    QRectF rect(maxDouble, maxDouble, -maxDouble, -maxDouble);
+    const double max = std::numeric_limits<qreal>::max();
+    QRectF rect(max, max, -max, -max);
     for (int i = 0; i < PTS_IN_ARROW; i++)
         if (!isnan(arrowDescr.arrowPointsPtr[i].x()) && ! isnan(arrowDescr.arrowPointsPtr[i].y()))
         {
@@ -106,10 +105,9 @@ QRectF GraphicsPathArrowItem::boundingRect() const
             double y = arrowDescr.arrowPointsPtr[i].y();
             double rectX = rect.x() + rect.width();
             double rectY = rect.y() + rect.height();
-
             rect.setX(std::min(rect.x(), x));
             rect.setY(std::min(rect.y(), y));
-            rectX = std::max(rectX, y);
+            rectX = std::max(rectX, x);
             rectY = std::max(rectY, y);
             rect.setWidth(rect.x() + rectX);
             rect.setHeight(rect.y() + rectY);
@@ -153,16 +151,4 @@ void GraphicsPathArrowItem::paint(QPainter *painter, const QStyleOptionGraphicsI
 
     }
     QGraphicsPolygonItem::paint(painter, option, widget);
-}
-
-void GraphicsPathArrowItem::setLineWidth(double width) {
-    width = std::max(minimumWidth, width);
-    QPolygonF polygon;
-
-    polygon.append(QPointF(0, 0));
-    polygon.append(QPointF(-width * 3,   -width * 2));
-    polygon.append(QPointF(-width * 1.5,  0));
-    polygon.append(QPointF(-width * 3,    width * 2));
-
-    setPolygon(polygon);
 }

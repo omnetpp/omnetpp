@@ -61,11 +61,6 @@ public:
 
     QRectF boundingRect() const;
 
-    // The width of the line on the end of which the arrow is placed.
-    // You should make the line (with a flat cap) this much shorter
-    // on the arrowed end, otherwise it will poke through the arrowhead.
-    void setLineWidth(double width);
-
 };
 
 #endif // __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H
