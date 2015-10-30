@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osgDB/ReadFile>
 #include <osgEarth/Viewpoint>
 #include <osgEarth/MapNode>
@@ -84,3 +85,5 @@ void OsgEarthScene::handleMessage(cMessage *msg)
 {
     throw cRuntimeError("This module does not handle messages from the outside");
 }
+
+#endif // WITH_OSG

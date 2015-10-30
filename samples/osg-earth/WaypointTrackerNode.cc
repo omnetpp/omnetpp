@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include "WaypointTrackerNode.h"
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
@@ -80,3 +81,5 @@ void WaypointTrackerNode::move()
     x += distance * sin(M_PI * heading / 180);
     y += distance * -cos(M_PI * heading / 180);
 }
+
+#endif // WITH_OSG

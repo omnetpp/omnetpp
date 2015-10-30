@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Capabilities>
@@ -163,3 +164,5 @@ void MobileNode::handleMessage(cMessage *msg)
     // schedule next movement
     scheduleAt(simTime() + timeStep, msg);
 }
+
+#endif // WITH_OSG

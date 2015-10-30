@@ -1,0 +1,7 @@
+# add required libraries for OpenSceneGraph and osgEarth
+ifneq ($(OSG_LIBS),)
+LIBS += $(OSG_LIBS) -losgDB -losgAnimation
+endif
+ifneq ($(OSGEARTH_LIBS),)
+LIBS += $(OSGEARTH_LIBS) -losgEarthFeatures -losgEarthSymbology -losgEarthAnnotation
+endif

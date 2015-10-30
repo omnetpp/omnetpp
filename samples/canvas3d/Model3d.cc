@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osgDB/ReadFile>
 #include <omnetpp.h>
 
@@ -49,3 +50,5 @@ void Model3d::initialize()
 void Model3d::handleMessage(cMessage *msg)
 {
 }
+
+#endif // WITH_OSG

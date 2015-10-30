@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include "Satellite.h"
 
 #include <sstream>
@@ -221,3 +222,5 @@ void Satellite::move()
 {
     phase = startingPhase + (getSimulation()->getSimTime().inUnit(SIMTIME_MS) / 1000.0) * getOmega();
 }
+
+#endif // WITH_OSG

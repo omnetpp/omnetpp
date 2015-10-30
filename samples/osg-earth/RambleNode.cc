@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include "RambleNode.h"
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
@@ -137,3 +138,5 @@ void RambleNode::transmit()
 {
     animationManager->playAnimation(transmissionAnim);
 }
+
+#endif // WITH_OSG

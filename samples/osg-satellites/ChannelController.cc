@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osgEarthUtil/ObjectLocator>
 #include <osgEarthUtil/LinearLineOfSight>
 #include <osg/ValueObject>
@@ -199,3 +200,5 @@ void ChannelController::handleMessage(cMessage *msg)
 {
     throw cRuntimeError("This module does not process messages");
 }
+
+#endif // WITH_OSG

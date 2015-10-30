@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osg/PositionAttitudeTransform>
 #include <osgEarthUtil/ObjectLocator>
 
@@ -118,3 +119,5 @@ void ChannelController::handleMessage(cMessage *msg)
 {
     throw cRuntimeError("This module does not process messages");
 }
+
+#endif // WITH_OSG

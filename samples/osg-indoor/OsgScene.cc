@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osgDB/ReadFile>
 #include "OsgScene.h"
 
@@ -49,3 +50,5 @@ void OsgScene::handleMessage(cMessage *msg)
 {
     throw cRuntimeError("This module does not handle messages from the outside");
 }
+
+#endif  // WITH_OSG

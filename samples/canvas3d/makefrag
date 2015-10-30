@@ -1,0 +1,4 @@
+# add required libraries for OpenSceneGraph and osgEarth
+ifneq ($(OSG_LIBS),)
+LIBS += $(OSG_LIBS) -losgDB $(OSGEARTH_LIBS)
+endif

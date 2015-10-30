@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osg/Node>
 #include <osg/Texture>
 #include <osg/LineWidth>
@@ -98,3 +99,5 @@ void GroundStation::handleMessage(cMessage *msg)
 {
 
 }
+
+#endif // WITH_OSG

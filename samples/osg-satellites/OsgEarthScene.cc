@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osgDB/ReadFile>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Viewpoint>
@@ -87,3 +88,5 @@ void OsgEarthScene::handleMessage(cMessage *msg)
     ChannelController::getInstance()->updateConnectionGraph();
     scheduleAt(simTime() + SimTime(timeStep, SIMTIME_S), msg);
 }
+
+#endif // WITH_OSG

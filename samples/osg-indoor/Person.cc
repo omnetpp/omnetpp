@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef WITH_OSG
 #include <osgDB/ReadFile>
 #include "Person.h"
 #include "OsgScene.h"
@@ -123,3 +124,5 @@ void Person::move()
     x += distance * sin(M_PI * heading / 180);
     y += distance * -cos(M_PI * heading / 180);
 }
+
+#endif  // WITH_OSG
