@@ -612,7 +612,12 @@ MPI_CFLAGS
 HAVE_MPI
 ZLIB_LIBS
 ZLIB_CFLAGS
+OSGEARTH_LIBS
+OSGEARTH_CFLAGS
+OSG_LIBS
+OSG_CFLAGS
 QT_LIBS
+QT_CFLAGS
 QT_VERSION
 TK_LIBS
 TK_CFLAGS
@@ -646,8 +651,10 @@ AS_NEEDED_OFF
 AS_NEEDED_ON
 WHOLE_ARCHIVE_OFF
 WHOLE_ARCHIVE_ON
+DEFINES
 CFLAGS_RELEASE
 CFLAGS_DEBUG
+OMNETPP_TOOLS_DIR
 OMNETPP_TEST_DIR
 OMNETPP_SAMPLES_DIR
 OMNETPP_DOC_DIR
@@ -672,6 +679,7 @@ JRE
 WISH
 CXXCPP
 XMKMF
+QMAKE
 SWIG
 PERL
 MAKE
@@ -2268,11 +2276,10 @@ $as_echo "$as_me: reading configure.user for your custom settings" >&6;}
 $as_echo "$as_me: -----------------------------------------------" >&6;}
 . ./configure.user
 
-
-#
+#------------------------------------
 # set default library suffixes. May be already defined
 # with system/arch specific values
-#
+#------------------------------------
 A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
@@ -2280,9 +2287,46 @@ EXE_SUFFIX=
 SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
 
-#
+#----------------------
+# Default flags for values for other variables that come from configure.user.
+#----------------------
+
+#----------------------
+# Set variables to defaults if not already set.
+# Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
+#----------------------
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+CXXFLAGS=${CXXFLAGS:-}
+DEFINES=${DEFINES:-}
+PREFER_CLANG=${PREFER_CLANG:-}
+USE_CXX11=${USE_CXX11:-}
+
+MSGC=${MSGC:-opp_msgc}
+NEDTOOL=${NEDTOOL:-nedtool}
+SMC=${SMC:-opp_smc}
+MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
+LN=${LN:-ln -sf}
+MKPATH=${MKPATH:-mkdir -p}
+SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
+
+JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
+
+# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
+CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
+
+# Build shared library by default
+SHARED_LIBS=${SHARED_LIBS:-yes}
+
+# No SystemC support by default
+SYSTEMC=${SYSTEMC:-no}
+
+WHOLE_ARCHIVE_ON=
+WHOLE_ARCHIVE_OFF=
+
+#-------------------------------
 #  Figure out the host platform
-#
+#-------------------------------
 if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
@@ -2295,6 +2339,7 @@ else
     jni_platform=$host_os
     case $host in
     *-*-cygwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         cygwin=yes
         jni_platform=win32
         PLATFORM=win32.x86
@@ -2304,6 +2349,7 @@ else
         LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
     *-*-mingw32*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         mingw=yes
         jni_platform=win32
         PLATFORM=win32.x86
@@ -2328,16 +2374,21 @@ else
             # /usr/lib directory as that would interfere with the native build.
         ;;
     x86_64-*-linux*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux64"
         jni_platform=linux
         PLATFORM=linux.x86_64
         ;;
     *-linux*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux32"
         # add long file support on 32 bit linux
-        CFLAGS_ARCH="$CFLAGS_ARCH -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
         jni_platform=linux
         PLATFORM=linux.x86
         ;;
     *darwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
+        CFLAGS_ARCH="$CFLAGS_ARCH -I$OMNETPP_TOOLS_DIR/include"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
         jni_platform=
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
@@ -2347,42 +2398,6 @@ else
         ;;
     esac
 fi
-
-JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
-
-# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
-
-# Build shared library by default
-SHARED_LIBS=${SHARED_LIBS:-yes}
-
-# No SystemC support by default
-SYSTEMC=${SYSTEMC:-no}
-
-#----------------------
-# Default flags for values for other variables that come from configure.user.
-#----------------------
-
-#----------------------
-# Set variables to defaults if not already set.
-# Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
-#----------------------
-CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
-CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
-CXXFLAGS=${CXXFLAGS:-}
-PREFER_CLANG=${PREFER_CLANG:-}
-USE_CXX11=${USE_CXX11:-}
-
-WHOLE_ARCHIVE_ON=
-WHOLE_ARCHIVE_OFF=
-
-MSGC=${MSGC:-opp_msgc}
-NEDTOOL=${NEDTOOL:-nedtool}
-SMC=${SMC:-opp_smc}
-MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
-LN=${LN:-ln -sf}
-MKPATH=${MKPATH:-mkdir -p}
-SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
 
 #----------------------
 # Check compiler
@@ -3624,7 +3639,7 @@ if test "x$ac_cv_func_swapcontext" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_SWAPCONTEXT 1
 _ACEOF
- CFLAGS_ARCH="$CFLAGS_ARCH -DHAVE_SWAPCONTEXT"
+ DEFINES="$DEFINES -DHAVE_SWAPCONTEXT"
 fi
 done
 
@@ -3932,7 +3947,7 @@ LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether linker supports -rpath" >&5
 $as_echo_n "checking whether linker supports -rpath... " >&6; }
 LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR) -Wl,-rpath,."
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR) -Wl,-rpath,\$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,."
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -4635,24 +4650,312 @@ if test -z "$QT_VERSION"; then
     # skip building QT
     QTENV_IF_POSSIBLE=missing-dependency
 else
-    if test "$QT_VERSION" = "qt5"; then
+    if test "$QT_VERSION" = "5"; then
+        # TODO add tests for QT5
         QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets"
-    else
-        QT_LIBS="-lQtGui -lQtCore"
-        # detect openscenegraph (requires libopenscenegraph-dev, openscenegraph-plugin-osgearth and libosgearth-dev)
-        # TODO: detecting with pkg-config will probably not work on Windows and MAC, better to test directly
-        # for the presence of the libraries with OPP_CHECK_LIB
-        OSG_LIBS=`pkg-config --silence-errors --libs openscenegraph`
-        if test -n "$OSG_LIBS"; then
-            QT_LIBS+=" -losgQt"
-            # FIXME osgEarth libs should be autodected, too
-            SYS_LIBS+=" $OSG_LIBS -losgEarthUtil -losgEarth -losgEarthFeatures -losgEarthSymbology -losgEarthAnnotation"
-            CFLAGS_RELEASE+=" -DWITH_OSG"
-            CFLAGS_DEBUG+=" -DWITH_OSG"
+        as_fn_error $? "Qt5 is not currently supported, -- Please install Qt4 development files " "$LINENO" 5
+    elif test "$QT_VERSION" = "4"; then
+        # Check for qmake.
+        for ac_prog in $QMAKE qmake-qt4 qmake
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_QMAKE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$QMAKE"; then
+  ac_cv_prog_QMAKE="$QMAKE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_QMAKE="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+QMAKE=$ac_cv_prog_QMAKE
+if test -n "$QMAKE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $QMAKE" >&5
+$as_echo "$QMAKE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$QMAKE" && break
+done
+test -n "$QMAKE" || QMAKE="nope"
+
+        if test "$QMAKE" = nope; then
+            as_fn_error $? "Qtenv is enabled, but cannot find qmake, -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake)" "$LINENO" 5
         fi
+
+        # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
+        # we have to link with those libraries when we are linking the Qtenv shared libs.
+        # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE"
+   LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui4 -lQtCore4 -lQtOpenGL4\"" >&5
+$as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui4 -lQtCore4 -lQtOpenGL4\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h >
+int
+main ()
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; qt_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+        if test $qt_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE"
+   LIBS="-lQtGui -lQtCore -lQtOpenGL"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui -lQtCore -lQtOpenGL\"" >&5
+$as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui -lQtCore -lQtOpenGL\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-lQtGui -lQtCore -lQtOpenGL"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; qt_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+        fi
+        # we are using frameworks on MAC OS X
+        if test $qt_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE"
+   LIBS="-framework QtGui -framework QtCore -framework QtOpenGL"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtOpenGL\"" >&5
+$as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtOpenGL\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; qt_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+        fi
+        # finally fall back to use pkg-config (if available)
+        if test $qt_ok = no; then
+            QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --cflags`
+            QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --libs`
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE"
+   LIBS="$QT_LIBS_PKG_CONFIG"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"$QT_LIBS_PKG_CONFIG\"" >&5
+$as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"$QT_LIBS_PKG_CONFIG\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; qt_ok=yes; QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; qt_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+        fi
+    fi
+
+    if test "$qt_ok" = ""; then
+        as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
     fi
     ALL_ENV_LIBS+=' $(QTENV_LIBS)'
     QTENV_IF_POSSIBLE=qtenv
+fi
+
+#-----------------------------
+# Detecting OpenSceneGraph (libopenscenegraph-dev)
+# and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
+#-----------------------------
+if test -z "$OSG_LIBS"; then
+    OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
+fi
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$OSG_CFLAGS"
+   LIBS="$OSG_LIBS"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenSceneGraph with CFLAGS=\"$OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"" >&5
+$as_echo_n "checking for OpenSceneGraph with CFLAGS=\"$OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <osg/Version>
+int
+main ()
+{
+osgGetVersion();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; osg_ok=yes;
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; osg_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+if test $osg_ok = no; then
+  OSG_LIBS=""
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&5
+$as_echo "$as_me: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&2;}
+else
+    # OpenSceneGraph found, detect osgEarth, too
+    if test -z "$OSGEARTH_LIBS"; then
+        OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+    fi
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$OSGEARTH_CFLAGS"
+   LIBS="$OSGEARTH_LIBS"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osgEarth with CFLAGS=\"$OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"" >&5
+$as_echo_n "checking for osgEarth with CFLAGS=\"$OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <osgEarth/Version>
+int
+main ()
+{
+osgEarthGetVersion();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; osgearth_ok=yes;
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; osgearth_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    if test $osgearth_ok = no; then
+      OSGEARTH_LIBS=""
+      as_fn_error $? "Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required." "$LINENO" 5
+    else
+        # on MAC and Windows we don't have to link the executables directly with these libs
+        if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
+          SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
+        fi
+        # models can detect whether OSG is present based on the presence of WITH_OSG macro
+        DEFINES="$DEFINES -DWITH_OSG"
+    fi
 fi
 
 #----------------------
@@ -4705,7 +5008,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    else
+   else
         # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
 
    save_CXXFLAGS=$CXXFLAGS
@@ -5818,7 +6121,7 @@ fi
 
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
-   MPI_CFLAGS="$MPI_CFLAGS -DWITH_MPI"
+   DEFINES="$DEFINES -DWITH_MPI"
 else
    HAVE_MPI=no
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
@@ -5971,8 +6274,9 @@ fi
 
 if test $pcap_ok = yes; then
 	HAVE_PCAP=yes
-	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
-	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
+	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS"
+	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS"
+  DEFINES="$DEFINES -DHAVE_PCAP"
 else
     HAVE_PCAP=no
     PCAP_CFLAGS=""
@@ -6313,8 +6617,7 @@ else
 $as_echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
 fi
 
-CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
-CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
+DEFINES="$DEFINES -DXMLPARSER=$XMLPARSER"
 
 # zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
 if test $libxml_ok = yes -o $expat_ok = yes -o -z "$NO_TCL"; then
@@ -6443,8 +6746,9 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 if test $akaroa_ok = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS -DWITH_AKAROA"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS -DWITH_AKAROA"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS"
+   DEFINES="$DEFINES -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
@@ -6452,22 +6756,24 @@ else
 $as_echo "$as_me: WARNING: Optional package Akaroa not found" >&2;}
 fi
 
-
 #----------------------
 # #defines in CFLAGS
 #----------------------
 if test "$WITH_PARSIM" = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_PARSIM"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_PARSIM"
+   DEFINES="$DEFINES -DWITH_PARSIM"
 fi
 if test "$WITH_NETBUILDER" = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
+   DEFINES="$DEFINES -DWITH_NETBUILDER"
 fi
 if test "$USE_NAMESPACE" = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DUSE_NAMESPACE"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DUSE_NAMESPACE"
+   DEFINES="$DEFINES -DUSE_NAMESPACE"
 fi
+
+#-----------------------
+# add defines to cflags
+#-----------------------
+CFLAGS_DEBUG="$DEFINES $CFLAGS_DEBUG"
+CFLAGS_RELEASE="$DEFINES $CFLAGS_RELEASE"
 
 #----------------------
 # Files to be generated
@@ -6478,6 +6784,14 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
+
+
+
+
+
 
 
 
@@ -7922,4 +8236,3 @@ to /usr/lib/tcl8.5)
 EOT
 
 fi
-

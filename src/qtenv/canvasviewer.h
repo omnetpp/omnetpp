@@ -30,7 +30,7 @@ class cObject;
 namespace qtenv {
 
 class CanvasRenderer;
-class FigureRenderingHints;
+struct FigureRenderingHints;
 class GraphicsLayer;
 
 class CanvasViewer : public QGraphicsView

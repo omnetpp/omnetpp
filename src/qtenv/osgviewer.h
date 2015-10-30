@@ -17,6 +17,8 @@
 #ifndef __OMNETPP_QTENV_OSGVIEWER_H
 #define __OMNETPP_QTENV_OSGVIEWER_H
 
+#ifdef WITH_OSG
+
 #include "qtenv.h"
 
 #include <QTimer>
@@ -77,6 +79,6 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 } // qtenv
 } // omnetpp
 
+#endif // WITH_OSG
+
 #endif
-
-

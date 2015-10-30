@@ -14,6 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef WITH_OSG
+
 #include "qtenvdefs.h"
 
 #include "inspectorfactory.h"
@@ -67,3 +69,5 @@ void OsgCanvasInspector::refresh()
 
 } // namespace qtenv
 } // namespace omnetpp
+
+#endif  // WITH_OSG

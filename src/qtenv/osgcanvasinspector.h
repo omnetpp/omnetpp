@@ -17,6 +17,8 @@
 #ifndef __OMNETPP_QTENV_OSGCANVASINSPECTOR_H
 #define __OMNETPP_QTENV_OSGCANVASINSPECTOR_H
 
+#ifdef WITH_OSG
+
 #include "inspector.h"
 
 namespace omnetpp {
@@ -41,5 +43,6 @@ class QTENV_API OsgCanvasInspector : public Inspector
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif
+#endif // WITH_OSG
 
+#endif

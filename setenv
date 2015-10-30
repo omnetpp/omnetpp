@@ -14,8 +14,10 @@ if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
 else
     omnetpp_root=`pwd`
     echo $omnetpp_root
+    if test `uname` == "Darwin"; then
+      export PATH=$omnetpp_root/tools/macosx/bin:$PATH
+    fi
     export PATH=$omnetpp_root/bin:$PATH
-    export LD_LIBRARY_PATH=$omnetpp_root/lib:$LD_LIBRARY_PATH
     export HOSTNAME
     export HOST
 fi

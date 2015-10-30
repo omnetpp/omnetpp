@@ -14,15 +14,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "runselectiondialog.h"
-#include "ui_runselectiondialog.h"
-#include "qtenv.h"
 #include <iterator>
 #include <algorithm>
 #include <vector>
 #include <set>
-
 #include <QDebug>
+#include "runselectiondialog.h"
+#include "ui_runselectiondialog.h"
+#include "qtenv.h"
 
 namespace omnetpp {
 namespace qtenv {

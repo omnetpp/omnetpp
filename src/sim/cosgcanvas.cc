@@ -121,4 +121,13 @@ cObject *cOsgCanvas::getOmnetppObject(osg::Group *omnetppObjectNode)
 
 NAMESPACE_END
 
+#else
+
+// Dummy cOsgCanvas class in case OpenSceneGraph is not available
+namespace omnetpp {
+
+cOsgCanvas::cOsgCanvas() : cOwnedObject() { }
+
+}
+
 #endif // WITH_OSG

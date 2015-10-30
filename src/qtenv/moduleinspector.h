@@ -89,18 +89,21 @@ class QTENV_API ModuleInspector : public Inspector
 
       ModuleCanvasViewer *canvasViewer;
 
+#ifdef WITH_OSG
       OsgViewer *osgViewer;
+#endif
 
    protected:
       cCanvas *getCanvas();
-      cOsgCanvas *getOsgCanvas();
       static const char *animModeToStr(SendAnimMode mode);
 
       void createViews(QWidget *parent, bool isTopLevel);
       QToolBar *createToolbar(bool isTopLevel);
       void refreshOsgViewer();
+#ifdef WITH_OSG
+      cOsgCanvas *getOsgCanvas();
       void setOsgCanvas(cOsgCanvas *osgCanvas);
-
+#endif
       void wheelEvent(QWheelEvent *event) override;
       void resizeEvent(QResizeEvent *event) override;
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);

@@ -14,16 +14,16 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "imagecache.h"
-#include "common/stringtokenizer.h"
 #include <cstring>
 #include <QStringList>
 #include <QDir>
 #include <QImage>
 #include <QPixmap>
 #include <QRegExp>
-
 #include <QDebug>
+
+#include "common/stringtokenizer.h"
+#include "imagecache.h"
 
 using namespace OPP::common;
 

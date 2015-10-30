@@ -23,7 +23,7 @@ USE_NAMESPACE=yes
 # Set to "yes" if you want to use clang/clang++ instead of gcc/g++ when both
 # compiler is installed.
 #
-PREFER_CLANG=no
+PREFER_CLANG=yes
 
 #
 # Set to "yes" to compile with C++ 11 support enabled (-std=c++11)
@@ -125,6 +125,10 @@ SHARED_LIBS=yes
 #  NO_TCL=true
 # below lets you build just the non-GUI components.
 
+# Select which QT version you prefer to use.
+# Possible values: 4, 5 or leave it empty (comment out) to disable QT support
+QT_VERSION=4
+
 #
 # Compiler and linker options for Qt
 #
@@ -133,12 +137,17 @@ SHARED_LIBS=yes
 # are autodetected by 'configure', so you only need to edit here if 
 # autodetection doesn't work.
 #
+#QT_CFLAGS=
 #QT_LIBS=
 
+# OpenSceneGrap libraries we want to use. Leave empty for autodetection
+# or specify some invalid value (like "no" to explicitly disable OpenSceneGraph)
+# At least the following libraries must be found: osg osgGA osgViewer osgQt OpenThreads
+#OSG_LIBS=
 
-# Select which QT version you prefer to use.
-# Possible values: qt4, qt5 or leave it empty (comment out) to disable QT support
-QT_VERSION=qt4
+# osgEarth libraries to be used. Leave empty for autodetection.
+# At least the following libraries are required: osgEarth osgEarthUtil
+#OSGEARTH_LIBS=
 
 #
 # ZLib is a compression library needed by libxml2 and Tkenv's png support.

@@ -38,7 +38,7 @@ NAMESPACE_BEGIN
  * API, e.g. using osgDB::readNodeFile() or creating and adding nodes directly.
  *
  * Since OpenSceneGraph is not a mandatory part of OMNeT++, it is recommended
- * that you surround your OSG code with #ifdef HAVE_OSG.
+ * that you surround your OSG code with #ifdef WITH_OSG.
  *
  * @ingroup Canvas
  */
@@ -191,12 +191,23 @@ class SIM_API cOsgCanvas : public cOwnedObject
         static bool isOmnetppObjectNode(osg::Group *omnetppObjectNode);
         static void setOmnetppObject(osg::Group *omnetppObjectNode, cObject *object);
         static cObject *getOmnetppObject(osg::Group *omnetppObjectNode);
-
 };
 
 NAMESPACE_END
 
-#endif // WITH_OSG
+#else // not WITH_OSG
 
+// Dummy cOsgCanvas class in case OpenSceneGraph is not available
+namespace omnetpp {
+
+  class SIM_API cOsgCanvas : public cOwnedObject
+  {
+      public:
+          cOsgCanvas();
+  };
+
+}
+
+#endif // WITH_OSG
 
 #endif

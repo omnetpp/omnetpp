@@ -15,12 +15,6 @@ ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
 $(error OMNETPP_LIB_DIR must be correctly set)
 endif
 
-ifeq ("$(QT_VERSION)","qt4")
-QMAKE=qmake-qt4
-else
-QMAKE=qmake
-endif
-
 .PHONY: all qtenv qmake clean depend
 
 #
@@ -30,7 +24,8 @@ LIBNAME=liboppqtenv$D
 O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/qtenv
 L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
-IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS)
+IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS) $(OSG_LIBS) $(OSGEARTH_LIBS)
+CFLAGS+=$(QT_CFLAGS)
 
 all: $(QTENV_IF_POSSIBLE)
 
@@ -38,9 +33,9 @@ qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 qmake:
-	@echo Invoking $(QMAKE) and building qtenv using $(QT_VERSION)
+	@echo Invoking $(QMAKE) and building qtenv using qt$(QT_VERSION)
 	@mkdir -p $O
-	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" $(QMAKE) "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
+	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" OPP_DEFINES="$(DEFINES)" $(QMAKE) "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "QMAKE_AR=$(AR)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : qmake
 	@mkdir -p $L

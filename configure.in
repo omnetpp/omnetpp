@@ -1,5 +1,5 @@
 # NOTE1: to do a proper Win32 cross compile from Linux use ./configure --host=i686-w64-mingw32
-# 
+#
 # NOTE2: $build refers to the platform where this script is running
 #        $host refers to the platform where the final code will run
 
@@ -179,11 +179,10 @@ AC_MSG_NOTICE(reading configure.user for your custom settings)
 AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
 
-
-#
+#------------------------------------
 # set default library suffixes. May be already defined
 # with system/arch specific values
-#
+#------------------------------------
 A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
@@ -191,9 +190,46 @@ EXE_SUFFIX=
 SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 LIB_PREFIX="lib"
 
-#
+#----------------------
+# Default flags for values for other variables that come from configure.user.
+#----------------------
+
+#----------------------
+# Set variables to defaults if not already set.
+# Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
+#----------------------
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+CXXFLAGS=${CXXFLAGS:-}
+DEFINES=${DEFINES:-}
+PREFER_CLANG=${PREFER_CLANG:-}
+USE_CXX11=${USE_CXX11:-}
+
+MSGC=${MSGC:-opp_msgc}
+NEDTOOL=${NEDTOOL:-nedtool}
+SMC=${SMC:-opp_smc}
+MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
+LN=${LN:-ln -sf}
+MKPATH=${MKPATH:-mkdir -p}
+SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
+
+JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
+
+# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
+CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
+
+# Build shared library by default
+SHARED_LIBS=${SHARED_LIBS:-yes}
+
+# No SystemC support by default
+SYSTEMC=${SYSTEMC:-no}
+
+WHOLE_ARCHIVE_ON=
+WHOLE_ARCHIVE_OFF=
+
+#-------------------------------
 #  Figure out the host platform
-#
+#-------------------------------
 if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
@@ -206,6 +242,7 @@ else
     jni_platform=$host_os
     case $host in
     *-*-cygwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         cygwin=yes
         jni_platform=win32
         PLATFORM=win32.x86
@@ -215,6 +252,7 @@ else
         LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
     *-*-mingw32*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         mingw=yes
         jni_platform=win32
         PLATFORM=win32.x86
@@ -234,21 +272,26 @@ else
             CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib"
         fi
-            # NOTE: if we are cross-compiling we may need to add the lib and include path 
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
             # /usr/lib directory as that would interfere with the native build.
         ;;
     x86_64-*-linux*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux64"
         jni_platform=linux
         PLATFORM=linux.x86_64
         ;;
     *-linux*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux32"
         # add long file support on 32 bit linux
-        CFLAGS_ARCH="$CFLAGS_ARCH -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
         jni_platform=linux
         PLATFORM=linux.x86
         ;;
     *darwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
+        CFLAGS_ARCH="$CFLAGS_ARCH -I$OMNETPP_TOOLS_DIR/include"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
         jni_platform=
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
@@ -258,42 +301,6 @@ else
         ;;
     esac
 fi
-
-JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
-
-# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
-
-# Build shared library by default
-SHARED_LIBS=${SHARED_LIBS:-yes}
-
-# No SystemC support by default
-SYSTEMC=${SYSTEMC:-no}
-
-#----------------------
-# Default flags for values for other variables that come from configure.user.
-#----------------------
-
-#----------------------
-# Set variables to defaults if not already set.
-# Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
-#----------------------
-CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
-CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
-CXXFLAGS=${CXXFLAGS:-}
-PREFER_CLANG=${PREFER_CLANG:-}
-USE_CXX11=${USE_CXX11:-}
-
-WHOLE_ARCHIVE_ON=
-WHOLE_ARCHIVE_OFF=
-
-MSGC=${MSGC:-opp_msgc}
-NEDTOOL=${NEDTOOL:-nedtool}
-SMC=${SMC:-opp_smc}
-MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
-LN=${LN:-ln -sf}
-MKPATH=${MKPATH:-mkdir -p}
-SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
 
 #----------------------
 # Check compiler
@@ -415,7 +422,7 @@ AC_PROG_CXX_OPTION($AS_NEEDED_ON, ,AS_NEEDED_ON="")
 # original 'portable' implementation on MAC.
 #----------------------
 if test "$PLATFORM" != "macosx"; then
-AC_CHECK_FUNCS(swapcontext, [CFLAGS_ARCH="$CFLAGS_ARCH -DHAVE_SWAPCONTEXT"])
+AC_CHECK_FUNCS(swapcontext, [DEFINES="$DEFINES -DHAVE_SWAPCONTEXT"])
 fi
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
@@ -650,7 +657,7 @@ LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 # Also, we add "." to rpath so that opp_run -L option does not need full path of the library
 AC_MSG_CHECKING(whether linker supports -rpath)
 LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR) -Wl,-rpath,."
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR) -Wl,-rpath,\$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,."
 AC_LINK_IFELSE(
      [AC_LANG_PROGRAM()],
      [AC_MSG_RESULT(yes)],
@@ -759,27 +766,72 @@ ALL_ENV_LIBS='$(CMDENV_LIBS)'
 if test -z "$QT_VERSION"; then
     # skip building QT
     QTENV_IF_POSSIBLE=missing-dependency
-else 
-    if test "$QT_VERSION" = "qt5"; then
-        # on MAC OS X use framework instead
+else
+    if test "$QT_VERSION" = "5"; then
+        # TODO add tests for QT5
         QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets"
-    else
-        # on MAC OS X use framework instead
-        QT_LIBS="-lQtGui -lQtCore"
-        # detect openscenegraph (requires libopenscenegraph-dev, openscenegraph-plugin-osgearth and libosgearth-dev)
-        # TODO: detecting with pkg-config will probably not work on Windows and MAC, better to test directly
-        # for the presence of the libraries with OPP_CHECK_LIB
-        OSG_LIBS=`pkg-config --silence-errors --libs openscenegraph`
-        if test -n "$OSG_LIBS"; then
-            QT_LIBS+=" -losgQt"
-            # FIXME osgEarth libs should be autodected, too
-            SYS_LIBS+=" $OSG_LIBS -losgEarthUtil -losgEarth -losgEarthFeatures -losgEarthSymbology -losgEarthAnnotation"
-            CFLAGS_RELEASE+=" -DWITH_OSG"
-            CFLAGS_DEBUG+=" -DWITH_OSG"
+        AC_MSG_ERROR([Qt5 is not currently supported, -- Please install Qt4 development files ])
+    elif test "$QT_VERSION" = "4"; then
+        # Check for qmake.
+        AC_CHECK_PROGS(QMAKE, $QMAKE qmake-qt4 qmake, nope)
+        if test "$QMAKE" = nope; then
+            AC_MSG_ERROR([Qtenv is enabled, but cannot find qmake, -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake)])
         fi
+
+        # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
+        # we have to link with those libraries when we are linking the Qtenv shared libs.
+        # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
+        OPP_CHECK_LIB(Qt4, stdio.h ,, $CFLAGS_RELEASE, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4")
+        if test $qt_ok = no; then
+            OPP_CHECK_LIB(Qt4, stdio.h,, $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
+        fi
+        # we are using frameworks on MAC OS X
+        if test $qt_ok = no; then
+            OPP_CHECK_LIB(Qt4, stdio.h,, $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL")
+        fi
+        # finally fall back to use pkg-config (if available)
+        if test $qt_ok = no; then
+            QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --cflags`
+            QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --libs`
+            OPP_CHECK_LIB(Qt4, stdio.h,, $CFLAGS_RELEASE, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
+        fi
+    fi
+
+    if test "$qt_ok" = ""; then
+        AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
     fi
     ALL_ENV_LIBS+=' $(QTENV_LIBS)'
     QTENV_IF_POSSIBLE=qtenv
+fi
+
+#-----------------------------
+# Detecting OpenSceneGraph (libopenscenegraph-dev)
+# and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
+#-----------------------------
+if test -z "$OSG_LIBS"; then
+    OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
+fi
+OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $OSG_CFLAGS, $OSG_LIBS, osg_ok)
+if test $osg_ok = no; then
+  OSG_LIBS=""
+  AC_MSG_WARN([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!])
+else
+    # OpenSceneGraph found, detect osgEarth, too
+    if test -z "$OSGEARTH_LIBS"; then
+        OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+    fi
+    OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
+    if test $osgearth_ok = no; then
+      OSGEARTH_LIBS=""
+      AC_MSG_ERROR([Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required.])
+    else
+        # on MAC and Windows we don't have to link the executables directly with these libs
+        if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
+          SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
+        fi
+        # models can detect whether OSG is present based on the presence of WITH_OSG macro
+        DEFINES="$DEFINES -DWITH_OSG"
+    fi
 fi
 
 #----------------------
@@ -799,7 +851,7 @@ else
 
    if test -n "$TK_LIBS"; then
         OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
-    else
+   else
         # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
         OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS86, -ltk8.6 -ltcl8.6,
                           tcltk_ok, TK_LIBS="-ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86)
@@ -968,7 +1020,7 @@ fi
 
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
-   MPI_CFLAGS="$MPI_CFLAGS -DWITH_MPI"
+   DEFINES="$DEFINES -DWITH_MPI"
 else
    HAVE_MPI=no
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
@@ -1012,8 +1064,9 @@ fi
 
 if test $pcap_ok = yes; then
 	HAVE_PCAP=yes
-	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
-	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
+	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS"
+	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS"
+  DEFINES="$DEFINES -DHAVE_PCAP"
 else
     HAVE_PCAP=no
     PCAP_CFLAGS=""
@@ -1089,8 +1142,7 @@ else
     AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
-CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
-CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
+DEFINES="$DEFINES -DXMLPARSER=$XMLPARSER"
 
 # zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
 if test $libxml_ok = yes -o $expat_ok = yes -o -z "$NO_TCL"; then
@@ -1120,30 +1172,33 @@ fi
 
 OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
 if test $akaroa_ok = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS -DWITH_AKAROA"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS -DWITH_AKAROA"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS"
+   DEFINES="$DEFINES -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
    AC_MSG_WARN([Optional package Akaroa not found])
 fi
 
-
 #----------------------
 # #defines in CFLAGS
 #----------------------
 if test "$WITH_PARSIM" = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_PARSIM"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_PARSIM"
+   DEFINES="$DEFINES -DWITH_PARSIM"
 fi
 if test "$WITH_NETBUILDER" = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
+   DEFINES="$DEFINES -DWITH_NETBUILDER"
 fi
 if test "$USE_NAMESPACE" = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG -DUSE_NAMESPACE"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE -DUSE_NAMESPACE"
+   DEFINES="$DEFINES -DUSE_NAMESPACE"
 fi
+
+#-----------------------
+# add defines to cflags
+#-----------------------
+CFLAGS_DEBUG="$DEFINES $CFLAGS_DEBUG"
+CFLAGS_RELEASE="$DEFINES $CFLAGS_RELEASE"
 
 #----------------------
 # Files to be generated
@@ -1176,7 +1231,9 @@ AC_SUBST(OMNETPP_UTILS_DIR)
 AC_SUBST(OMNETPP_DOC_DIR)
 AC_SUBST(OMNETPP_SAMPLES_DIR)
 AC_SUBST(OMNETPP_TEST_DIR)
+AC_SUBST(OMNETPP_TOOLS_DIR)
 
+AC_SUBST(QMAKE)
 AC_SUBST(PERL)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
@@ -1185,6 +1242,7 @@ AC_SUBST(CXX)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_RELEASE)
+AC_SUBST(DEFINES)
 AC_SUBST(LDFLAGS)
 AC_SUBST(WHOLE_ARCHIVE_ON)
 AC_SUBST(WHOLE_ARCHIVE_OFF)
@@ -1223,7 +1281,12 @@ AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
 AC_SUBST(QT_VERSION)
+AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
+AC_SUBST(OSG_CFLAGS)
+AC_SUBST(OSG_LIBS)
+AC_SUBST(OSGEARTH_CFLAGS)
+AC_SUBST(OSGEARTH_LIBS)
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)
 AC_SUBST(HAVE_MPI)
@@ -1344,14 +1407,14 @@ WARNING: The configuration script could not detect the following packages:
   $OPP_PROBLEM_PACKAGES
 
 Scroll up to see the warning messages (use shift+PgUp), and search config.log
-for more details. While you can use $OMNETPP_PRODUCT in the current configuration, 
+for more details. While you can use $OMNETPP_PRODUCT in the current configuration,
 be aware that some functionality may be unavailable or incomplete.
 
 EOT
   if module avail >/dev/null 2>/dev/null; then
     cat 1>&2 << EOT
-NOTE: Some packages like MPI may need to be loaded explicitly using a 
-"module load <MODULENAME>" command  prior to running ./configure. 
+NOTE: Some packages like MPI may need to be loaded explicitly using a
+"module load <MODULENAME>" command  prior to running ./configure.
 Enter "module avail" to see the list of available modules on your system.
 
 EOT
@@ -1444,4 +1507,3 @@ to /usr/lib/tcl8.5)
 EOT
 
 fi
-

@@ -14,6 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef WITH_OSG
+
 #include <QDebug>
 #include <QResizeEvent>
 #include <osgEarthUtil/EarthManipulator>
@@ -260,3 +262,4 @@ void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
 } // qtenv
 } // omnetpp
 
+#endif // WITH_OSG

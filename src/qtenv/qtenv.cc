@@ -24,6 +24,16 @@
 #include <cstdio>
 #include <string>
 
+#include <QApplication>
+#include <QTreeView>
+#include <QDir>
+#include <QDebug>
+#include <QMessageBox>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QCheckBox>
+#include <QFontDatabase>
+
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/matchexpression.h"
@@ -58,15 +68,6 @@
 #include "treeitemmodel.h"
 #include "timelineinspector.h"
 #include "objecttreeinspector.h"
-#include <QApplication>
-#include <QTreeView>
-#include <QDir>
-#include <QDebug>
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QCheckBox>
-#include <QFontDatabase>
 
 #define emit
 
@@ -2112,7 +2113,7 @@ void Qtenv::initFonts()
                                                                         normalFamily.pointSize(), normalFamily)).value<QFont>();
     logFont = getPref("font-log", getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9)).value<QFont>();
 
-    #elif Q_WS_MAC
+    #elif defined(Q_WS_MAC)
     // Mac
     QFont normalFamily = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
     boldFont = getPref("font-bold", normalFamily).value<QFont>();

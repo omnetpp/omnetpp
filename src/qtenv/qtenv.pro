@@ -18,22 +18,29 @@
 #   for the release configuration add the MODE=release argument to the make line
 #
 
+TARGET = qtenv
+TEMPLATE = lib
+
 MAKEFILE_GENERATOR = UNIX
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
-QT += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-WARNING_FLAGS += "-Wall -Wextra -Wno-unused-parameter"
-
-TARGET = qtenv
-TEMPLATE = lib
-CONFIG += static c++11
+# IMPORTANT: on turn off the option to generate both debug and release version
+# we need only eithor of them not both and this is the default setting on Windows
+# but sadly it generates broken makefiles
+CONFIG *= static c++11 qt
+CONFIG -= debug_and_release
 CONFIG -= warn_on warn_off
 DEFINES += "BUILDING_QTENV"
+WARNING_FLAGS *= -Wall -Wextra -Wno-unused-parameter
+!win32: WARNING_FLAGS *= -Wno-inconsistent-missing-override
 QMAKE_CXXFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 QMAKE_CFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
+# we have to add all defines to the MOC compiler command line to correctly parse the code
+QMAKE_MOC += $$(OPP_DEFINES)
+
+# add QT modules
+# QT *= core gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 SOURCES += mainwindow.cc \
     arrow.cc \

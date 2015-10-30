@@ -105,9 +105,10 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
+#ifdef WITH_OSG
     osgViewer = new OsgViewer();
-
     connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(onObjectsPicked(const std::vector<cObject*>&)));
+#endif
 
     QToolBar *toolbar = createToolbar(isTopLevel);
     if(isTopLevel)
@@ -126,8 +127,9 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
         toolbarLayout->addWidget(toolbar);
         stackedLayout = new QStackedLayout(contentArea);
     }
-
+#ifdef WITH_OSG
     stackedLayout->addWidget(osgViewer);
+#endif
     stackedLayout->addWidget(canvasViewer);
 }
 
@@ -228,17 +230,20 @@ void ModuleInspector::doSetObject(cObject *obj)
         getQtenv()->getAnimator()->redrawMessages();
     }
 
+#ifdef WITH_OSG
     cOsgCanvas *osgCanvas = getOsgCanvas();
     setOsgCanvas(osgCanvas);
+#endif
 
     canvasViewer->recalcSceneRect(true);
 }
 
-cCanvas *ModuleInspector::getCanvas()
+#ifdef WITH_OSG
+cOsgCanvas *ModuleInspector::getOsgCanvas()
 {
-    cModule *mod = static_cast<cModule *>(object);
-    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
-    return canvas;
+    cModule *module = dynamic_cast<cModule*>(getObject());
+    cOsgCanvas *osgCanvas = module ? module->getOsgCanvasIfExists() : nullptr;
+    return osgCanvas;
 }
 
 void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
@@ -252,6 +257,7 @@ void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
     else
         switchToCanvasView();
 }
+#endif // WITH_OSG
 
 void ModuleInspector::updateToolbarLayout() {
     if (!toolbarLayout)
@@ -273,6 +279,13 @@ void ModuleInspector::updateToolbarLayout() {
         // the osg mode never displays scrollbars.
         toolbarLayout->setFloatMargins(QMargins(toolbarSpacing, toolbarSpacing, toolbarSpacing, toolbarSpacing));
     }
+}
+
+cCanvas *ModuleInspector::getCanvas()
+{
+    cModule *mod = static_cast<cModule *>(object);
+    cCanvas *canvas = mod ? mod->getCanvasIfExists() : nullptr;
+    return canvas;
 }
 
 void ModuleInspector::wheelEvent(QWheelEvent *event)
@@ -297,13 +310,6 @@ void ModuleInspector::resizeEvent(QResizeEvent *event) {
     updateToolbarLayout();
 }
 
-cOsgCanvas *ModuleInspector::getOsgCanvas()
-{
-    cModule *module = dynamic_cast<cModule*>(getObject());
-    cOsgCanvas *osgCanvas = module ? module->getOsgCanvasIfExists() : nullptr;
-    return osgCanvas;
-}
-
 void ModuleInspector::refresh()
 {
     Inspector::refresh();
@@ -314,11 +320,13 @@ void ModuleInspector::refresh()
 
 void ModuleInspector::refreshOsgViewer()
 {
+#ifdef WITH_OSG
     cOsgCanvas *osgCanvas = getOsgCanvas();
     if (osgViewer->getOsgCanvas() != osgCanvas)
         setOsgCanvas(osgCanvas);
     else
         osgViewer->refresh();
+#endif
 }
 
 void ModuleInspector::redraw()
@@ -429,7 +437,9 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 
 void ModuleInspector::resetOsgView()
 {
+#ifdef WITH_OSG
     osgViewer->applyViewerHints();
+#endif
 }
 
 double ModuleInspector::getZoomFactor() {
@@ -739,6 +749,7 @@ void ModuleInspector::zoomIconsBy(double mult) {
 
 void ModuleInspector::switchToOsgView()
 {
+#ifdef WITH_OSG
     stackedLayout->setCurrentWidget(osgViewer);
     updateToolbarLayout();
 
@@ -750,6 +761,7 @@ void ModuleInspector::switchToOsgView()
     canvasZoomInAction->setVisible(false);
     canvasZoomOutAction->setVisible(false);
     resetOsgViewAction->setVisible(true);
+#endif
 }
 
 void ModuleInspector::switchToCanvasView()
