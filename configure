@@ -4700,12 +4700,13 @@ done
 test -n "$QMAKE" || QMAKE="nope"
 
         if test "$QMAKE" = nope; then
-            as_fn_error $? "Qtenv is enabled, but cannot find qmake, -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake)" "$LINENO" 5
-        fi
-
-        # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
-        # we have to link with those libraries when we are linking the Qtenv shared libs.
-        # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv is configured to use QT4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv" >&5
+$as_echo "$as_me: WARNING: Qtenv is configured to use QT4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv" >&2;}
+            QTENV_IF_POSSIBLE=missing-dependency
+        else
+            # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
+            # we have to link with those libraries when we are linking the Qtenv shared libs.
+            # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4740,7 +4741,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-        if test $qt_ok = no; then
+            if test $qt_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4775,9 +4776,9 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-        fi
-        # we are using frameworks on MAC OS X
-        if test $qt_ok = no; then
+            fi
+            # we are using frameworks on MAC OS X
+            if test $qt_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4812,11 +4813,11 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-        fi
-        # finally fall back to use pkg-config (if available)
-        if test $qt_ok = no; then
-            QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --cflags`
-            QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --libs`
+            fi
+            # finally fall back to use pkg-config (if available)
+            if test $qt_ok = no; then
+                QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --cflags`
+                QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --libs`
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4851,14 +4852,14 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+            fi
+            if test "$qt_ok" = ""; then
+                as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
+            fi
+            ALL_ENV_LIBS+=' $(QTENV_LIBS)'
+            QTENV_IF_POSSIBLE=qtenv
         fi
     fi
-
-    if test "$qt_ok" = ""; then
-        as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
-    fi
-    ALL_ENV_LIBS+=' $(QTENV_LIBS)'
-    QTENV_IF_POSSIBLE=qtenv
 fi
 
 #-----------------------------
