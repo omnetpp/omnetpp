@@ -2366,8 +2366,8 @@ else
         # /usr/include directories as they are not added by default, but they are needed
         # to properly find the Tcl/Tk, LibXML2 libraries.
         if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib"
+            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include -I/mingw32/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
@@ -4707,15 +4707,16 @@ $as_echo "$as_me: WARNING: Qtenv is configured to use QT4, but cannot find qmake
             # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
             # we have to link with those libraries when we are linking the Qtenv shared libs.
             # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
+            # detect Qt4 on mingw32
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE"
+   CXXFLAGS="$CFLAGS_RELEASE -I/mingw32/include/qt4"
    LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui4 -lQtCore4 -lQtOpenGL4\"" >&5
-$as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui4 -lQtCore4 -lQtOpenGL4\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE -I/mingw32/include/qt4\" LIBS=\"-lQtGui4 -lQtCore4 -lQtOpenGL4\"" >&5
+$as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE -I/mingw32/include/qt4\" LIBS=\"-lQtGui4 -lQtCore4 -lQtOpenGL4\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4730,7 +4731,7 @@ qVersion();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4"
+$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4" QT_CFLAGS="-I/mingw32/include/qt4"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; qt_ok=no;

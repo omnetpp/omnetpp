@@ -269,8 +269,8 @@ else
         # /usr/include directories as they are not added by default, but they are needed
         # to properly find the Tcl/Tk, LibXML2 libraries.
         if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib"
+            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include -I/mingw32/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
@@ -781,7 +781,8 @@ else
             # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
             # we have to link with those libraries when we are linking the Qtenv shared libs.
             # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
-            OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4")
+            # detect Qt4 on mingw32
+            OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE -I/mingw32/include/qt4, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4" QT_CFLAGS="-I/mingw32/include/qt4")
             if test $qt_ok = no; then
                 OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
             fi

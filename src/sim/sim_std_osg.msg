@@ -1,6 +1,6 @@
 
 //==============================================================
-//   SIM_STD.MSG  - part of
+//   SIM_STD_OSG.MSG  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -49,9 +49,19 @@ inline int osgNode_getNumChildren(osg::Node *node)
     return group ? group->getNumChildren() : 0;
 }
 
-inline osg::Node *osgNode_getChild(osg::Node *node, int i)
+inline osg::Node *osgNode_getChild(osg::Node *node, unsigned int i)
 {
     return node->asGroup()->getChild(i);
+}
+
+inline int osgNode_getNumDescriptions(osg::Node *node)
+{
+    return node->getNumDescriptions();
+}
+
+inline std::string osgNode_getDescription(osg::Node *node, unsigned int i)
+{
+    return node->getDescription(i);
 }
 
 //TODO namespace osgEarth {
@@ -85,7 +95,7 @@ namespace osg;
 class Node extends void
 {
     //string className @getter(className);
-    string descriptions[] @getter(getDescription) @sizeGetter(getNumDescriptions);
+    string descriptions[] @getter(osgNode_getDescription($,i)) @sizeGetter(osgNode_getNumDescriptions($));
     Node *children[] @getter(osgNode_getChild($,i)) @sizeGetter(osgNode_getNumChildren($));
 }
 

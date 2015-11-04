@@ -154,36 +154,7 @@ NAMESPACE_END
 #define omnetpp   //XXX horrible hack to make it compile with the omnetpp namespace turned off
 #endif
 
-#ifdef WITH_OSG
-
-#include <osg/Node>
-#include <osg/Group>
-//TODO #include <osgEarth/Viewpoint>
-
-namespace osg {
-    inline std::ostream& operator<<(std::ostream& os, Node *node) {
-        return os << "(" << node->className() << ")";
-    }
-} // namespace
-
-inline int osgNode_getNumChildren(osg::Node *node)
-{
-    osg::Group *group = node->asGroup();
-    return group ? group->getNumChildren() : 0;
-}
-
-inline osg::Node *osgNode_getChild(osg::Node *node, int i)
-{
-    return node->asGroup()->getChild(i);
-}
-
-//TODO namespace osgEarth {
-//TODO     inline std::ostream& operator<<(std::ostream& os, const Viewpoint& viewpoint) {
-//TODO         return os << viewpoint.toString();
-//TODO     }
-//TODO } // namespace
-
-#else
+#ifndef WITH_OSG
 
 // dummy version to make Node's descriptor class compile
 namespace osg {
