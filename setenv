@@ -16,6 +16,7 @@ else
     echo $omnetpp_root
     if test `uname` == "Darwin"; then
       export PATH=$omnetpp_root/tools/macosx/bin:$PATH
+      export QT_PLUGIN_PATH=$omnetpp_root/tools/macosx/plugins
     fi
     export PATH=$omnetpp_root/bin:$PATH
     export HOSTNAME

@@ -781,21 +781,21 @@ else
             # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
             # we have to link with those libraries when we are linking the Qtenv shared libs.
             # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
-            OPP_CHECK_LIB(Qt4, stdio.h ,, $CFLAGS_RELEASE, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4")
+            OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4")
             if test $qt_ok = no; then
-                OPP_CHECK_LIB(Qt4, stdio.h,, $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
+                OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
             fi
             # we are using frameworks on MAC OS X
             if test $qt_ok = no; then
-                OPP_CHECK_LIB(Qt4, stdio.h,, $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL")
+                OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL")
             fi
             # finally fall back to use pkg-config (if available)
             if test $qt_ok = no; then
                 QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --cflags`
                 QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --libs`
-                OPP_CHECK_LIB(Qt4, stdio.h,, $CFLAGS_RELEASE, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
+                OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
             fi
-            if test "$qt_ok" = ""; then
+            if test $qt_ok = no; then
                 AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
             fi
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
@@ -811,7 +811,7 @@ fi
 if test -z "$OSG_LIBS"; then
     OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
 fi
-OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $OSG_CFLAGS, $OSG_LIBS, osg_ok)
+OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
 if test $osg_ok = no; then
   OSG_LIBS=""
   AC_MSG_WARN([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!])
@@ -820,7 +820,7 @@ else
     if test -z "$OSGEARTH_LIBS"; then
         OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
     fi
-    OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
+    OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS_RELEASE $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
     if test $osgearth_ok = no; then
       OSGEARTH_LIBS=""
       AC_MSG_ERROR([Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required.])

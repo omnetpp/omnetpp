@@ -4719,11 +4719,11 @@ $as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui4 -lQ
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <stdio.h >
+#include <QtCore/QtGlobal>
 int
 main ()
 {
-;
+qVersion();
   ;
   return 0;
 }
@@ -4754,11 +4754,11 @@ $as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQtGui -lQt
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <stdio.h>
+#include <QtCore/QtGlobal>
 int
 main ()
 {
-;
+qVersion();
   ;
   return 0;
 }
@@ -4791,11 +4791,11 @@ $as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-framework Q
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <stdio.h>
+#include <QtCore/QtGlobal>
 int
 main ()
 {
-;
+qVersion();
   ;
   return 0;
 }
@@ -4830,11 +4830,11 @@ $as_echo_n "checking for Qt4 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"$QT_LIBS_PKG
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <stdio.h>
+#include <QtCore/QtGlobal>
 int
 main ()
 {
-;
+qVersion();
   ;
   return 0;
 }
@@ -4853,7 +4853,7 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
             fi
-            if test "$qt_ok" = ""; then
+            if test $qt_ok = no; then
                 as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
             fi
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
@@ -4873,11 +4873,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$OSG_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $OSG_CFLAGS"
    LIBS="$OSG_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenSceneGraph with CFLAGS=\"$OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"" >&5
-$as_echo_n "checking for OpenSceneGraph with CFLAGS=\"$OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenSceneGraph with CFLAGS=\"$CFLAGS_RELEASE $OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"" >&5
+$as_echo_n "checking for OpenSceneGraph with CFLAGS=\"$CFLAGS_RELEASE $OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4916,11 +4916,11 @@ else
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$OSGEARTH_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $OSGEARTH_CFLAGS"
    LIBS="$OSGEARTH_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osgEarth with CFLAGS=\"$OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"" >&5
-$as_echo_n "checking for osgEarth with CFLAGS=\"$OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osgEarth with CFLAGS=\"$CFLAGS_RELEASE $OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"" >&5
+$as_echo_n "checking for osgEarth with CFLAGS=\"$CFLAGS_RELEASE $OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
