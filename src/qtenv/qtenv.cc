@@ -87,7 +87,7 @@ namespace qtenv {
 //
 // Register the Qtenv user interface
 //
-Register_OmnetApp("Qtenv", Qtenv, 20, "Qt-based graphical user interface");
+Register_OmnetApp("Qtenv", Qtenv, 15, "Qt-based graphical user interface");  //note: priority to be changed to 30 when Qtenv becomes the default
 
 //
 // The following function can be used to force linking with Qtenv; specify
