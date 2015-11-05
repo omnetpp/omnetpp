@@ -761,7 +761,7 @@ OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS
 ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 #-----------------------------
-# Check for QT cflags and libs
+# Check for Qt cflags and libs
 #-----------------------------
 if test -z "$QT_VERSION"; then
     # skip building QT
@@ -775,7 +775,7 @@ else
         # Check for qmake.
         AC_CHECK_PROGS(QMAKE, $QMAKE qmake-qt4 qmake, nope)
         if test "$QMAKE" = nope; then
-            AC_MSG_WARN([Qtenv is configured to use QT4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv])
+            AC_MSG_WARN([Qtenv is configured to use Qt4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv])
             QTENV_IF_POSSIBLE=missing-dependency
         else
             OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
@@ -797,7 +797,7 @@ else
                 OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
             fi
             if test $qt_ok = no; then
-                AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
+                AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
             fi
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
             QTENV_IF_POSSIBLE=qtenv
