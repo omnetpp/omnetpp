@@ -778,15 +778,15 @@ else
             AC_MSG_WARN([Qtenv is configured to use QT4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv])
             QTENV_IF_POSSIBLE=missing-dependency
         else
+            OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
             # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
             # we have to link with those libraries when we are linking the Qtenv shared libs.
             # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
             # detect Qt4 on mingw32
-            OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE -I/mingw32/include/qt4, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4" QT_CFLAGS="-I/mingw32/include/qt4")
             if test $qt_ok = no; then
-                OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQtGui -lQtCore -lQtOpenGL, qt_ok, QT_LIBS="-lQtGui -lQtCore -lQtOpenGL")
+              OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE -I/mingw32/include/qt4, -lQtGui4 -lQtCore4 -lQtOpenGL4, qt_ok, QT_LIBS="-lQtGui4 -lQtCore4 -lQtOpenGL4" QT_CFLAGS="-I/mingw32/include/qt4")
             fi
-            # we are using frameworks on MAC OS X
+            # Test on Mac OS X using the local QT framework
             if test $qt_ok = no; then
                 OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL")
             fi
@@ -794,7 +794,7 @@ else
             if test $qt_ok = no; then
                 QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --cflags`
                 QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors QtCore QtGui QtOpenGL --libs`
-                OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
+                OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
             fi
             if test $qt_ok = no; then
                 AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
