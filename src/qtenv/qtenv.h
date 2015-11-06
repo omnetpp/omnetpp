@@ -157,10 +157,12 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run
       int runMode;                 // the current mode the simulation is executing under
-      simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
-      eventnumber_t rununtil_eventnum;// event number in current "Run Until" execution, or zero
-      cMessage *rununtil_msg;      // stop before this event; also when this message gets cancelled
-      cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
+      struct RunUntil {
+          simtime_t time;          // time limit in current "Run Until" execution, or zero
+          eventnumber_t eventNumber;  // event number in current "Run Until" execution, or zero
+          cMessage *msg;           // stop before this event; also when this message is cancelled
+          cModule *module;         // stop before and after events in this module; ignored with EXPRESS mode
+      } runUntil;
       Speedometer speedometer;
 
       bool stopSimulationFlag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)

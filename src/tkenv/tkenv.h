@@ -142,10 +142,12 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run
       int runMode;                 // the current mode the simulation is executing under
-      simtime_t runUntilTime;      // time limit in current "Run Until" execution, or zero
-      eventnumber_t runUntilEventnum;// event number in current "Run Until" execution, or zero
-      cMessage *runUntilMsg;       // stop before this event; also when this message gets cancelled
-      cModule *runUntilModule;     // stop before and after events in this module; ignored with EXPRESS mode
+      struct RunUntil {
+          simtime_t time;          // time limit in current "Run Until" execution, or zero
+          eventnumber_t eventNumber;  // event number in current "Run Until" execution, or zero
+          cMessage *msg;           // stop before this event; also when this message is cancelled
+          cModule *module;         // stop before and after events in this module; ignored with EXPRESS mode
+      } runUntil;
       Speedometer speedometer;
 
       bool stopSimulationFlag;     // indicates that the simulation should be stopped (STOP button pressed in the UI)

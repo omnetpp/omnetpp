@@ -148,7 +148,7 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
     stopSimulationFlag = false;
     animating = false;
     isConfigRun = false;
-    runUntilMsg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     gettimeofday(&idleLastUICheck, nullptr);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
@@ -341,7 +341,7 @@ void Tkenv::doOneStep()
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     animating = true;
-    runUntilMsg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     simulationState = SIM_RUNNING;
 
     updateStatusDisplay();
@@ -392,10 +392,10 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     runMode = mode;
-    runUntilTime = until_time;
-    runUntilEventnum = until_eventnum;
-    runUntilMsg = until_msg;
-    runUntilModule = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runUntil.time = until_time;
+    runUntil.eventNumber = until_eventnum;
+    runUntil.msg = until_msg;
+    runUntil.module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
@@ -434,7 +434,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     animating = true;
     disableTracing = false;
-    runUntilMsg = nullptr;
+    runUntil.msg = nullptr;
 
     if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
@@ -461,14 +461,14 @@ void Tkenv::setSimulationRunMode(int mode)
 
 void Tkenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
 {
-    runUntilTime = until_time;
-    runUntilEventnum = until_eventnum;
-    runUntilMsg = until_msg;
+    runUntil.time = until_time;
+    runUntil.eventNumber = until_eventnum;
+    runUntil.msg = until_msg;
 }
 
 void Tkenv::setSimulationRunUntilModule(cModule *until_module)
 {
-    runUntilModule = until_module;
+    runUntil.module = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -513,7 +513,7 @@ bool Tkenv::doRunSimulation()
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (runUntilMsg && event == runUntilMsg) {
+        if (runUntil.msg && event == runUntil.msg) {
             getSimulation()->putBackEvent(event);
             break;
         }
@@ -522,7 +522,7 @@ bool Tkenv::doRunSimulation()
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
         cModule *mod = event->isMessage() ? static_cast<cMessage *>(event)->getArrivalModule() : nullptr;
-        bool untilmodule_reached = runUntilModule && moduleContains(runUntilModule, mod);
+        bool untilmodule_reached = runUntil.module && moduleContains(runUntil.module, mod);
         if (untilmodule_reached && !firstevent) {
             getSimulation()->putBackEvent(event);
             break;
@@ -557,9 +557,9 @@ bool Tkenv::doRunSimulation()
             break;
         if (stopSimulationFlag)
             break;
-        if (runUntilTime > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= runUntilTime)
+        if (runUntil.time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= runUntil.time)
             break;
-        if (runUntilEventnum > 0 && getSimulation()->getEventNumber() >= runUntilEventnum)
+        if (runUntil.eventNumber > 0 && getSimulation()->getEventNumber() >= runUntil.eventNumber)
             break;
 
         checkTimeLimits();
@@ -603,7 +603,7 @@ bool Tkenv::doRunSimulationExpress()
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (runUntilMsg && event == runUntilMsg) {
+        if (runUntil.msg && event == runUntil.msg) {
             getSimulation()->putBackEvent(event);
             break;
         }
@@ -627,8 +627,8 @@ bool Tkenv::doRunSimulationExpress()
         }
         checkTimeLimits();
     } while (!stopSimulationFlag &&
-             (runUntilTime <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntilTime) &&
-             (runUntilEventnum <= 0 || getSimulation()->getEventNumber() < runUntilEventnum)
+             (runUntil.time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntil.time) &&
+             (runUntil.eventNumber <= 0 || getSimulation()->getEventNumber() < runUntil.eventNumber)
              );
 
     sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
@@ -1154,10 +1154,10 @@ bool Tkenv::idle()
 
 void Tkenv::objectDeleted(cObject *object)
 {
-    if (object == runUntilMsg) {
+    if (object == runUntil.msg) {
         // message to "run until" deleted -- stop the simulation by other means
-        runUntilMsg = nullptr;
-        runUntilEventnum = getSimulation()->getEventNumber();
+        runUntil.msg = nullptr;
+        runUntil.eventNumber = getSimulation()->getEventNumber();
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm("Message to run until has just been deleted.");
     }
@@ -1223,11 +1223,11 @@ void Tkenv::messageScheduled(cMessage *msg)
 
 void Tkenv::messageCancelled(cMessage *msg)
 {
-    if (msg == runUntilMsg && opt->stopOnMsgCancel) {
+    if (msg == runUntil.msg && opt->stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
-        runUntilMsg = nullptr;
-        runUntilEventnum = getSimulation()->getEventNumber();  // stop the simulation using the eventnumber limit
+        runUntil.msg = nullptr;
+        runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }
     EnvirBase::messageCancelled(msg);
 }

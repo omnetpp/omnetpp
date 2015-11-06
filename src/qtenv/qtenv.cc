@@ -359,7 +359,7 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     stopSimulationFlag = false;
     animating = false;
     isConfigRun = false;
-    rununtil_msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     gettimeofday(&idleLastUICheck, nullptr);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
@@ -534,7 +534,7 @@ void Qtenv::doOneStep()
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     animating = true;
-    rununtil_msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     simulationState = SIM_RUNNING;
 
     updateStatusDisplay();
@@ -585,10 +585,10 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     runMode = mode;
-    rununtil_time = until_time;
-    rununtil_eventnum = until_eventnum;
-    rununtil_msg = until_msg;
-    rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runUntil.time = until_time;
+    runUntil.eventNumber = until_eventnum;
+    runUntil.msg = until_msg;
+    runUntil.module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
@@ -628,7 +628,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     animating = true;
     disableTracing = false;
     recordEventlog = false;
-    rununtil_msg = nullptr;
+    runUntil.msg = nullptr;
 
     if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
@@ -654,14 +654,14 @@ void Qtenv::setSimulationRunMode(int mode)
 
 void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
 {
-    rununtil_time = until_time;
-    rununtil_eventnum = until_eventnum;
-    rununtil_msg = until_msg;
+    runUntil.time = until_time;
+    runUntil.eventNumber = until_eventnum;
+    runUntil.msg = until_msg;
 }
 
 void Qtenv::setSimulationRunUntilModule(cModule *until_module)
 {
-    rununtil_module = until_module;
+    runUntil.module = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -686,7 +686,7 @@ bool Qtenv::doRunSimulation()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - runmode, runUntil.time, runUntil.eventNumber, runUntil.msg, runUntil.module;
     //  - stopsimulation_flag
     //
     speedometer.start(getSimulation()->getSimTime());
@@ -706,7 +706,7 @@ bool Qtenv::doRunSimulation()
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && event == rununtil_msg) {
+        if (runUntil.msg && event == runUntil.msg) {
             getSimulation()->putBackEvent(event);
             break;
         }
@@ -715,7 +715,7 @@ bool Qtenv::doRunSimulation()
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
         cModule *mod = event->isMessage() ? static_cast<cMessage *>(event)->getArrivalModule() : nullptr;
-        bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module, mod);
+        bool untilmodule_reached = runUntil.module && moduleContains(runUntil.module, mod);
         if (untilmodule_reached && !firstevent) {
             getSimulation()->putBackEvent(event);
             break;
@@ -750,9 +750,9 @@ bool Qtenv::doRunSimulation()
             break;
         if (stopSimulationFlag)
             break;
-        if (rununtil_time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= rununtil_time)
+        if (runUntil.time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= runUntil.time)
             break;
-        if (rununtil_eventnum > 0 && getSimulation()->getEventNumber() >= rununtil_eventnum)
+        if (runUntil.eventNumber > 0 && getSimulation()->getEventNumber() >= runUntil.eventNumber)
             break;
 
         checkTimeLimits();
@@ -766,11 +766,11 @@ bool Qtenv::doRunSimulationExpress()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - runmode, runUntil.time, runUntil.eventNumber, runUntil.msg, runUntil.module;
     //  - stopsimulation_flag
     //  - opt->expressmode_autoupdate
     //
-    // EXPRESS does not support rununtil_module!
+    // EXPRESS does not support runUntil.module!
     //
 
     char info[128];
@@ -796,7 +796,7 @@ bool Qtenv::doRunSimulationExpress()
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && event == rununtil_msg) {
+        if (runUntil.msg && event == runUntil.msg) {
             getSimulation()->putBackEvent(event);
             break;
         }
@@ -821,8 +821,8 @@ bool Qtenv::doRunSimulationExpress()
         }
         checkTimeLimits();
     } while (!stopSimulationFlag &&
-             (rununtil_time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < rununtil_time) &&
-             (rununtil_eventnum <= 0 || getSimulation()->getEventNumber() < rununtil_eventnum)
+             (runUntil.time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntil.time) &&
+             (runUntil.eventNumber <= 0 || getSimulation()->getEventNumber() < runUntil.eventNumber)
              );
 
     sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
@@ -1354,10 +1354,10 @@ bool Qtenv::idle()
 
 void Qtenv::objectDeleted(cObject *object)
 {
-    if (object == rununtil_msg) {
+    if (object == runUntil.msg) {
         // message to "run until" deleted -- stop the simulation by other means
-        rununtil_msg = nullptr;
-        rununtil_eventnum = getSimulation()->getEventNumber();
+        runUntil.msg = nullptr;
+        runUntil.eventNumber = getSimulation()->getEventNumber();
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm("Message to run until has just been deleted.");
     }
@@ -1423,11 +1423,11 @@ void Qtenv::messageScheduled(cMessage *msg)
 
 void Qtenv::messageCancelled(cMessage *msg)
 {
-    if (msg == rununtil_msg && opt->stopOnMsgCancel) {
+    if (msg == runUntil.msg && opt->stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
-        rununtil_msg = nullptr;
-        rununtil_eventnum = getSimulation()->getEventNumber();  // stop the simulation using the eventnumber limit
+        runUntil.msg = nullptr;
+        runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }
     EnvirBase::messageCancelled(msg);
 }
