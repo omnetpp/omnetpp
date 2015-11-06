@@ -144,11 +144,11 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
 
     interp = nullptr;  // Tcl/Tk not set up yet
     ferrorlog = nullptr;
-    simstate = SIM_NONET;
-    stopsimulation_flag = false;
+    simulationState = SIM_NONET;
+    stopSimulationFlag = false;
     animating = false;
-    isconfigrun = false;
-    rununtil_msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    isConfigRun = false;
+    runUntilMsg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     gettimeofday(&idleLastUICheck, nullptr);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
@@ -182,9 +182,9 @@ void Tkenv::doRun()
 #endif
         // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
-        tkenv_dir = getenv("OMNETPP_TKENV_DIR");
-        if (tkenv_dir.empty())
-            tkenv_dir = OMNETPP_TKENV_DIR;
+        tkenvDir = getenv("OMNETPP_TKENV_DIR");
+        if (tkenvDir.empty())
+            tkenvDir = OMNETPP_TKENV_DIR;
 #endif
 
         // path for icon directories
@@ -234,8 +234,8 @@ void Tkenv::doRun()
         //
         // Case A: TCL code in separate .tcl files
         //
-        Tcl_SetVar(interp, "OMNETPP_TKENV_DIR", TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
-        if (Tcl_EvalFile(interp, opp_concat(tkenv_dir.c_str(), "/tkenv.tcl")) == TCL_ERROR) {
+        Tcl_SetVar(interp, "OMNETPP_TKENV_DIR", TCLCONST(tkenvDir.c_str()), TCL_GLOBAL_ONLY);
+        if (Tcl_EvalFile(interp, opp_concat(tkenvDir.c_str(), "/tkenv.tcl")) == TCL_ERROR) {
             logTclError(__FILE__, __LINE__, interp);
             throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
                                     "set correctly? When not set, it defaults to " OMNETPP_TKENV_DIR ")",
@@ -263,8 +263,8 @@ void Tkenv::doRun()
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
-            windowtitleprefix.reserve(24);
-            sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            windowTitlePrefix.reserve(24);
+            sprintf(windowTitlePrefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
         }
 
         mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();
@@ -306,7 +306,7 @@ void Tkenv::doRun()
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????
 
     // delete network if not yet done
-    if (simstate != SIM_NONET && simstate != SIM_FINISHCALLED)
+    if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
         endRun();
     getSimulation()->deleteNetwork();
 
@@ -328,7 +328,7 @@ void Tkenv::printUISpecificHelp()
 
 void Tkenv::rebuildSim()
 {
-    if (isconfigrun)
+    if (isConfigRun)
         newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
     else if (getSimulation()->getNetworkType() != nullptr)
         newNetwork(getSimulation()->getNetworkType()->getName());
@@ -338,11 +338,11 @@ void Tkenv::rebuildSim()
 
 void Tkenv::doOneStep()
 {
-    ASSERT(simstate == SIM_NEW || simstate == SIM_READY);
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     animating = true;
-    rununtil_msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    simstate = SIM_RUNNING;
+    runUntilMsg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    simulationState = SIM_RUNNING;
 
     updateStatusDisplay();
 
@@ -357,25 +357,25 @@ void Tkenv::doOneStep()
         }
         updateStatusDisplay();
         refreshInspectors();
-        simstate = SIM_READY;
+        simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e) {
-        simstate = SIM_TERMINATED;
+        simulationState = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e) {
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
-    if (simstate == SIM_TERMINATED) {
+    if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         //
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
@@ -389,16 +389,16 @@ void Tkenv::doOneStep()
 
 void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
 {
-    ASSERT(simstate == SIM_NEW || simstate == SIM_READY);
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
-    runmode = mode;
-    rununtil_time = until_time;
-    rununtil_eventnum = until_eventnum;
-    rununtil_msg = until_msg;
-    rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runMode = mode;
+    runUntilTime = until_time;
+    runUntilEventnum = until_eventnum;
+    runUntilMsg = until_msg;
+    runUntilModule = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
-    stopsimulation_flag = false;
-    simstate = SIM_RUNNING;
+    stopSimulationFlag = false;
+    simulationState = SIM_RUNNING;
 
     updateStatusDisplay();
     Tcl_Eval(interp, "update");
@@ -409,34 +409,34 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
         // funky while loop to handle switching to and from EXPRESS mode....
         bool cont = true;
         while (cont) {
-            if (runmode == RUNMODE_EXPRESS)
+            if (runMode == RUNMODE_EXPRESS)
                 cont = doRunSimulationExpress();
             else
                 cont = doRunSimulation();
         }
-        simstate = SIM_READY;
+        simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e) {
-        simstate = SIM_TERMINATED;
+        simulationState = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e) {
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
     animating = true;
     disableTracing = false;
-    rununtil_msg = nullptr;
+    runUntilMsg = nullptr;
 
-    if (simstate == SIM_TERMINATED) {
+    if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         //
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
@@ -456,19 +456,19 @@ void Tkenv::setSimulationRunMode(int mode)
     // This function (and the next one too) is called while runSimulation() is
     // underway, from Tcl code that gets a chance to run via the
     // Tcl_Eval(interp, "update") commands
-    runmode = mode;
+    runMode = mode;
 }
 
 void Tkenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
 {
-    rununtil_time = until_time;
-    rununtil_eventnum = until_eventnum;
-    rununtil_msg = until_msg;
+    runUntilTime = until_time;
+    runUntilEventnum = until_eventnum;
+    runUntilMsg = until_msg;
 }
 
 void Tkenv::setSimulationRunUntilModule(cModule *until_module)
 {
-    rununtil_module = until_module;
+    runUntilModule = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -504,7 +504,7 @@ bool Tkenv::doRunSimulation()
     gettimeofday(&last_update, nullptr);
 
     while (true) {
-        if (runmode == RUNMODE_EXPRESS)
+        if (runMode == RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
 
         // query which module will execute the next event
@@ -513,7 +513,7 @@ bool Tkenv::doRunSimulation()
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && event == rununtil_msg) {
+        if (runUntilMsg && event == runUntilMsg) {
             getSimulation()->putBackEvent(event);
             break;
         }
@@ -522,15 +522,15 @@ bool Tkenv::doRunSimulation()
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
         cModule *mod = event->isMessage() ? static_cast<cMessage *>(event)->getArrivalModule() : nullptr;
-        bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module, mod);
+        bool untilmodule_reached = runUntilModule && moduleContains(runUntilModule, mod);
         if (untilmodule_reached && !firstevent) {
             getSimulation()->putBackEvent(event);
             break;
         }
         firstevent = false;
 
-        animating = (runmode == RUNMODE_NORMAL) || untilmodule_reached;
-        bool frequent_updates = (runmode == RUNMODE_NORMAL);
+        animating = (runMode == RUNMODE_NORMAL) || untilmodule_reached;
+        bool frequent_updates = (runMode == RUNMODE_NORMAL);
 
         speedometer.addEvent(getSimulation()->getSimTime());
 
@@ -555,11 +555,11 @@ bool Tkenv::doRunSimulation()
         // exit conditions
         if (untilmodule_reached)
             break;
-        if (stopsimulation_flag)
+        if (stopSimulationFlag)
             break;
-        if (rununtil_time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= rununtil_time)
+        if (runUntilTime > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= runUntilTime)
             break;
-        if (rununtil_eventnum > 0 && getSimulation()->getEventNumber() >= rununtil_eventnum)
+        if (runUntilEventnum > 0 && getSimulation()->getEventNumber() >= runUntilEventnum)
             break;
 
         checkTimeLimits();
@@ -603,7 +603,7 @@ bool Tkenv::doRunSimulationExpress()
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && event == rununtil_msg) {
+        if (runUntilMsg && event == runUntilMsg) {
             getSimulation()->putBackEvent(event);
             break;
         }
@@ -620,15 +620,15 @@ bool Tkenv::doRunSimulationExpress()
                 speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
-            if (runmode != RUNMODE_EXPRESS) {
+            if (runMode != RUNMODE_EXPRESS) {
                 result = true;  // should continue, but in a different mode
                 break;
             }
         }
         checkTimeLimits();
-    } while (!stopsimulation_flag &&
-             (rununtil_time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < rununtil_time) &&
-             (rununtil_eventnum <= 0 || getSimulation()->getEventNumber() < rununtil_eventnum)
+    } while (!stopSimulationFlag &&
+             (runUntilTime <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntilTime) &&
+             (runUntilEventnum <= 0 || getSimulation()->getEventNumber() < runUntilEventnum)
              );
 
     sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
@@ -646,9 +646,9 @@ void Tkenv::startAll()
 void Tkenv::finishSimulation()
 {
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
-    ASSERT(simstate == SIM_NEW || simstate == SIM_READY || simstate == SIM_TERMINATED || simstate == SIM_ERROR);
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_TERMINATED || simulationState == SIM_ERROR);
 
-    if (simstate == SIM_NEW || simstate == SIM_READY) {
+    if (simulationState == SIM_NEW || simulationState == SIM_READY) {
         cTerminationException e("The user has finished the simulation");
         stoppedWithTerminationException(e);
     }
@@ -675,7 +675,7 @@ void Tkenv::finishSimulation()
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
-    simstate = SIM_FINISHCALLED;
+    simulationState = SIM_FINISHCALLED;
 
     updateStatusDisplay();
     refreshInspectors();
@@ -695,30 +695,30 @@ void Tkenv::newNetwork(const char *networkname)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
-        if (simstate != SIM_NONET) {
-            if (simstate != SIM_FINISHCALLED)
+        if (simulationState != SIM_NONET) {
+            if (simulationState != SIM_FINISHCALLED)
                 endRun();
             getSimulation()->deleteNetwork();
-            simstate = SIM_NONET;
+            simulationState = SIM_NONET;
         }
 
         cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
 
         // set up new network with config General.
-        isconfigrun = false;
+        isConfigRun = false;
         getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
         startRun();
 
-        simstate = SIM_NEW;
+        simulationState = SIM_NEW;
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
     }
     // update GUI
     animating = false;  // affects how network graphics is drawn!
@@ -731,15 +731,15 @@ void Tkenv::newRun(const char *configname, int runnumber)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
-        if (simstate != SIM_NONET) {
-            if (simstate != SIM_FINISHCALLED)
+        if (simulationState != SIM_NONET) {
+            if (simulationState != SIM_FINISHCALLED)
                 endRun();
             getSimulation()->deleteNetwork();
-            simstate = SIM_NONET;
+            simulationState = SIM_NONET;
         }
 
         // set up new network
-        isconfigrun = true;
+        isConfigRun = true;
         getConfigEx()->activateConfig(configname, runnumber);
         readPerRunOptions();
 
@@ -754,12 +754,12 @@ void Tkenv::newRun(const char *configname, int runnumber)
         setupNetwork(network);
         startRun();
 
-        simstate = SIM_NEW;
+        simulationState = SIM_NEW;
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
     }
     // update GUI
     animating = false;  // affects how network graphics is drawn!
@@ -782,40 +782,40 @@ void Tkenv::setupNetwork(cModuleType *network)
 
 Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry)
 {
-    // create inspector object & window or display existing one
-    Inspector *existing_insp = findFirstInspector(obj, type, ignoreEmbedded);
-    if (existing_insp) {
-        existing_insp->showWindow();
-        return existing_insp;
+    // first, try finding and displaying existing inspector
+    Inspector *inspector = findFirstInspector(obj, type, ignoreEmbedded);
+    if (inspector) {
+        inspector->showWindow();
+        return inspector;
     }
 
-    // create inspector
-    InspectorFactory *p = findInspectorFactoryFor(obj, type);
-    if (!p) {
+    InspectorFactory *factory = findInspectorFactoryFor(obj, type);
+    if (!factory) {
         confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
         return nullptr;
     }
 
-    int actualtype = p->getInspectorType();
-    existing_insp = findFirstInspector(obj, actualtype, ignoreEmbedded);
-    if (existing_insp) {
-        existing_insp->showWindow();
-        return existing_insp;
+    int actualType = factory->getInspectorType();
+    inspector = findFirstInspector(obj, actualType, ignoreEmbedded);
+    if (inspector) {
+        inspector->showWindow();
+        return inspector;
     }
 
-    Inspector *insp = p->createInspector();
-    if (!insp) {
+    // create inspector
+    inspector = factory->createInspector();
+    if (!inspector) {
         // message: object has no such inspector
         confirm(opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
         return nullptr;
     }
 
     // everything ok, finish inspector
-    inspectors.push_back(insp);
-    insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
-    insp->setObject(obj);
+    inspectors.push_back(inspector);
+    inspector->createWindow(Inspector::makeWindowName().c_str(), geometry);
+    inspector->setObject(obj);
 
-    return insp;
+    return inspector;
 }
 
 void Tkenv::addEmbeddedInspector(const char *widget, Inspector *insp)
@@ -1006,7 +1006,7 @@ void Tkenv::displayException(std::exception& ex)
 
 void Tkenv::componentInitBegin(cComponent *component, int stage)
 {
-    if (!opt->printInitBanners || runmode == RUNMODE_EXPRESS)
+    if (!opt->printInitBanners || runMode == RUNMODE_EXPRESS)
         return;
 
     // produce banner text
@@ -1126,7 +1126,7 @@ bool Tkenv::idle()
     // mode, because in normal Run mode inspectors are already up to date here
     // (they are refreshed after every event), and in Express mode all user
     // interactions are disabled except for the STOP button.
-    if (runmode == RUNMODE_FAST) {
+    if (runMode == RUNMODE_FAST) {
         // updateInspectors() may be costly, so do not check the UI too often
         timeval now;
         gettimeofday(&now, nullptr);
@@ -1139,26 +1139,26 @@ bool Tkenv::idle()
     }
 
     // process UI events
-    eState origsimstate = simstate;
-    simstate = SIM_BUSY;
+    eState origsimstate = simulationState;
+    simulationState = SIM_BUSY;
     Tcl_Eval(interp, "update");
-    simstate = origsimstate;
+    simulationState = origsimstate;
 
-    bool stop = stopsimulation_flag;
-    stopsimulation_flag = false;
+    bool stop = stopSimulationFlag;
+    stopSimulationFlag = false;
 
-    if (runmode == RUNMODE_FAST)
+    if (runMode == RUNMODE_FAST)
         gettimeofday(&idleLastUICheck, nullptr);
     return stop;
 }
 
 void Tkenv::objectDeleted(cObject *object)
 {
-    if (object == rununtil_msg) {
+    if (object == runUntilMsg) {
         // message to "run until" deleted -- stop the simulation by other means
-        rununtil_msg = nullptr;
-        rununtil_eventnum = getSimulation()->getEventNumber();
-        if (simstate == SIM_RUNNING || simstate == SIM_BUSY)
+        runUntilMsg = nullptr;
+        runUntilEventnum = getSimulation()->getEventNumber();
+        if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm("Message to run until has just been deleted.");
     }
 
@@ -1223,11 +1223,11 @@ void Tkenv::messageScheduled(cMessage *msg)
 
 void Tkenv::messageCancelled(cMessage *msg)
 {
-    if (msg == rununtil_msg && opt->stopOnMsgCancel) {
-        if (simstate == SIM_RUNNING || simstate == SIM_BUSY)
+    if (msg == runUntilMsg && opt->stopOnMsgCancel) {
+        if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
-        rununtil_msg = nullptr;
-        rununtil_eventnum = getSimulation()->getEventNumber();  // stop the simulation using the eventnumber limit
+        runUntilMsg = nullptr;
+        runUntilEventnum = getSimulation()->getEventNumber();  // stop the simulation using the eventnumber limit
     }
     EnvirBase::messageCancelled(msg);
 }

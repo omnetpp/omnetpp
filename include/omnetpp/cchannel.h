@@ -66,7 +66,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     };
 
     /**
-     * Signal value that acompanies the "messageSent" signal.
+     * Signal value that accompanies the "messageSent" signal.
      */
     class MessageSentSignalValue : public cITimestampedValue, public cObject
     {

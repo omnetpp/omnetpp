@@ -135,20 +135,20 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
 
    protected:
       Tcl_Interp *interp;          // Tcl interpreter
-      opp_string windowtitleprefix;// contains "procId=.." when using parsim
+      opp_string windowTitlePrefix;// contains "procId=.." when using parsim
 
-      opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
+      opp_string tkenvDir;         // directory of Tkenv's *.tcl files
 
-      bool isconfigrun;            // true after newRun(), and false after newConfig()
-      eState simstate;             // state of the simulation run
-      int runmode;                 // the current mode the simulation is executing under
-      simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
-      eventnumber_t rununtil_eventnum;// event number in current "Run Until" execution, or zero
-      cMessage *rununtil_msg;      // stop before this event; also when this message gets cancelled
-      cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
+      bool isConfigRun;            // true after newRun(), and false after newConfig()
+      eState simulationState;      // state of the simulation run
+      int runMode;                 // the current mode the simulation is executing under
+      simtime_t runUntilTime;      // time limit in current "Run Until" execution, or zero
+      eventnumber_t runUntilEventnum;// event number in current "Run Until" execution, or zero
+      cMessage *runUntilMsg;       // stop before this event; also when this message gets cancelled
+      cModule *runUntilModule;     // stop before and after events in this module; ignored with EXPRESS mode
       Speedometer speedometer;
 
-      bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
+      bool stopSimulationFlag;     // indicates that the simulation should be stopped (STOP button pressed in the UI)
       timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
 
       typedef std::list<Inspector*> InspectorList;
@@ -236,7 +236,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       void doOneStep();
       void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr);
       void setSimulationRunMode(int runmode);
-      int getSimulationRunMode() const {return runmode;}
+      int getSimulationRunMode() const {return runMode;}
       void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
       void setSimulationRunUntilModule(cModule *until_module);
       bool doRunSimulation();
@@ -256,9 +256,9 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 
-      int getSimulationState() {return simstate;}
-      void setStopSimulationFlag() {stopsimulation_flag = true;}
-      bool getStopSimulationFlag() {return stopsimulation_flag;}
+      int getSimulationState() {return simulationState;}
+      void setStopSimulationFlag() {stopSimulationFlag = true;}
+      bool getStopSimulationFlag() {return stopSimulationFlag;}
       Speedometer& getSpeedometer() {return speedometer;}
       Tcl_Interp *getInterp() {return interp;}
       LogBuffer *getLogBuffer() {return &logBuffer;}
@@ -295,7 +295,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       const char *getOutVectorFileName() {return outvectorManager->getFileName();}
       const char *getOutScalarFileName() {return outScalarManager->getFileName();}
       const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
-      const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
+      const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
 };
 
 

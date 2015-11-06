@@ -355,10 +355,10 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 
     //TCLKILL interp = nullptr;  // Tcl/Tk not set up yet
     ferrorlog = nullptr;
-    simstate = SIM_NONET;
-    stopsimulation_flag = false;
+    simulationState = SIM_NONET;
+    stopSimulationFlag = false;
     animating = false;
-    isconfigrun = false;
+    isConfigRun = false;
     rununtil_msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     gettimeofday(&idleLastUICheck, nullptr);
 
@@ -483,7 +483,7 @@ void Qtenv::doRun()
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????
 
     // delete network if not yet done
-    if (simstate != SIM_NONET && simstate != SIM_FINISHCALLED)
+    if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
         endRun();
     getSimulation()->deleteNetwork();
 
@@ -521,7 +521,7 @@ void Qtenv::printUISpecificHelp()
 
 void Qtenv::rebuildSim()
 {
-    if (isconfigrun)
+    if (isConfigRun)
         newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
     else if (getSimulation()->getNetworkType() != nullptr)
         newNetwork(getSimulation()->getNetworkType()->getName());
@@ -531,11 +531,11 @@ void Qtenv::rebuildSim()
 
 void Qtenv::doOneStep()
 {
-    ASSERT(simstate == SIM_NEW || simstate == SIM_READY);
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
     animating = true;
     rununtil_msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    simstate = SIM_RUNNING;
+    simulationState = SIM_RUNNING;
 
     updateStatusDisplay();
 
@@ -550,25 +550,25 @@ void Qtenv::doOneStep()
         }
         updateStatusDisplay();
         refreshInspectors();
-        simstate = SIM_READY;
+        simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e) {
-        simstate = SIM_TERMINATED;
+        simulationState = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e) {
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
-    if (simstate == SIM_TERMINATED) {
+    if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         //
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
@@ -582,16 +582,16 @@ void Qtenv::doOneStep()
 
 void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
 {
-    ASSERT(simstate == SIM_NEW || simstate == SIM_READY);
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
-    runmode = mode;
+    runMode = mode;
     rununtil_time = until_time;
     rununtil_eventnum = until_eventnum;
     rununtil_msg = until_msg;
     rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
-    stopsimulation_flag = false;
-    simstate = SIM_RUNNING;
+    stopSimulationFlag = false;
+    simulationState = SIM_RUNNING;
 
     updateStatusDisplay();
     QCoreApplication::processEvents();
@@ -602,35 +602,35 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
         // funky while loop to handle switching to and from EXPRESS mode....
         bool cont = true;
         while (cont) {
-            if (runmode == RUNMODE_EXPRESS)
+            if (runMode == RUNMODE_EXPRESS)
                 cont = doRunSimulationExpress();
             else
                 cont = doRunSimulation();
         }
-        simstate = SIM_READY;
+        simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e) {
-        simstate = SIM_TERMINATED;
+        simulationState = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
     }
     catch (std::exception& e) {
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
     stopClock();
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
     animating = true;
     disableTracing = false;
     recordEventlog = false;
     rununtil_msg = nullptr;
 
-    if (simstate == SIM_TERMINATED) {
+    if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         //
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
@@ -649,7 +649,7 @@ void Qtenv::setSimulationRunMode(int mode)
 {
     // This function (and the next one too) is called while runSimulation() is
     // underway, from Tcl code that gets a chance to run via Tcl_Eval(interp, "update") commands
-    runmode = mode;
+    runMode = mode;
 }
 
 void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
@@ -697,7 +697,7 @@ bool Qtenv::doRunSimulation()
     gettimeofday(&last_update, nullptr);
 
     while (true) {
-        if (runmode == RUNMODE_EXPRESS)
+        if (runMode == RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
 
         // query which module will execute the next event
@@ -722,8 +722,8 @@ bool Qtenv::doRunSimulation()
         }
         firstevent = false;
 
-        animating = (runmode == RUNMODE_NORMAL) || untilmodule_reached;
-        bool frequent_updates = (runmode == RUNMODE_NORMAL);
+        animating = (runMode == RUNMODE_NORMAL) || untilmodule_reached;
+        bool frequent_updates = (runMode == RUNMODE_NORMAL);
 
         speedometer.addEvent(getSimulation()->getSimTime());
 
@@ -748,7 +748,7 @@ bool Qtenv::doRunSimulation()
         // exit conditions
         if (untilmodule_reached)
             break;
-        if (stopsimulation_flag)
+        if (stopSimulationFlag)
             break;
         if (rununtil_time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= rununtil_time)
             break;
@@ -814,13 +814,13 @@ bool Qtenv::doRunSimulationExpress()
             // Qt: Tcl_Eval(interp, "update");
             QCoreApplication::processEvents();
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
-            if (runmode != RUNMODE_EXPRESS) {
+            if (runMode != RUNMODE_EXPRESS) {
                 result = true;  // should continue, but in a different mode
                 break;
             }
         }
         checkTimeLimits();
-    } while (!stopsimulation_flag &&
+    } while (!stopSimulationFlag &&
              (rununtil_time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < rununtil_time) &&
              (rununtil_eventnum <= 0 || getSimulation()->getEventNumber() < rununtil_eventnum)
              );
@@ -840,9 +840,9 @@ void Qtenv::startAll()
 void Qtenv::finishSimulation()
 {
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
-    ASSERT(simstate == SIM_NEW || simstate == SIM_READY || simstate == SIM_TERMINATED || simstate == SIM_ERROR);
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_TERMINATED || simulationState == SIM_ERROR);
 
-    if (simstate == SIM_NEW || simstate == SIM_READY) {
+    if (simulationState == SIM_NEW || simulationState == SIM_READY) {
         cTerminationException e("The user has finished the simulation");
         stoppedWithTerminationException(e);
     }
@@ -869,7 +869,7 @@ void Qtenv::finishSimulation()
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
-    simstate = SIM_FINISHCALLED;
+    simulationState = SIM_FINISHCALLED;
 
     updateStatusDisplay();
     refreshInspectors();
@@ -889,30 +889,30 @@ void Qtenv::newNetwork(const char *networkname)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
-        if (simstate != SIM_NONET) {
-            if (simstate != SIM_FINISHCALLED)
+        if (simulationState != SIM_NONET) {
+            if (simulationState != SIM_FINISHCALLED)
                 endRun();
             getSimulation()->deleteNetwork();
-            simstate = SIM_NONET;
+            simulationState = SIM_NONET;
         }
 
         cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
 
         // set up new network with config General.
-        isconfigrun = false;
+        isConfigRun = false;
         getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
         startRun();
 
-        simstate = SIM_NEW;
+        simulationState = SIM_NEW;
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
     }
     // update GUI
     animating = false;  // affects how network graphics is drawn!
@@ -925,15 +925,15 @@ void Qtenv::newRun(const char *configname, int runnumber)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
-        if (simstate != SIM_NONET) {
-            if (simstate != SIM_FINISHCALLED)
+        if (simulationState != SIM_NONET) {
+            if (simulationState != SIM_FINISHCALLED)
                 endRun();
             getSimulation()->deleteNetwork();
-            simstate = SIM_NONET;
+            simulationState = SIM_NONET;
         }
 
         // set up new network
-        isconfigrun = true;
+        isConfigRun = true;
         getConfigEx()->activateConfig(configname, runnumber);
         readPerRunOptions();
 
@@ -948,12 +948,12 @@ void Qtenv::newRun(const char *configname, int runnumber)
         setupNetwork(network);
         startRun();
 
-        simstate = SIM_NEW;
+        simulationState = SIM_NEW;
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
-        simstate = SIM_ERROR;
+        simulationState = SIM_ERROR;
     }
     // update GUI
     animating = false;  // affects how network graphics is drawn!
@@ -983,41 +983,41 @@ void Qtenv::setupNetwork(cModuleType *network)
 
 Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
 {
-    // create inspector object & window or display existing one
-    Inspector *existingInspector = findFirstInspector(obj, type, ignoreEmbedded);
-    if (existingInspector) {
-        existingInspector->showWindow();
-        return existingInspector;
+    // first, try finding and displaying existing inspector
+    Inspector *inspector = findFirstInspector(obj, type, ignoreEmbedded);
+    if (inspector) {
+        inspector->showWindow();
+        return inspector;
     }
 
-    // create inspector
-    InspectorFactory *p = findInspectorFactoryFor(obj, type);
-    if (!p) {
+    InspectorFactory *factory = findInspectorFactoryFor(obj, type);
+    if (!factory) {
         confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
         return nullptr;
     }
 
-    int actualtype = p->getInspectorType();
-    existingInspector = findFirstInspector(obj, actualtype, ignoreEmbedded);
-    if (existingInspector) {
-        existingInspector->showWindow();
-        return existingInspector;
+    int actualType = factory->getInspectorType();
+    inspector = findFirstInspector(obj, actualType, ignoreEmbedded);
+    if (inspector) {
+        inspector->showWindow();
+        return inspector;
     }
 
-    Inspector *insp = p->createInspector(mainWindow, true);
-    if (!insp) {
+    // create inspector
+    inspector = factory->createInspector(mainWindow, true);
+    if (!inspector) {
         // message: object has no such inspector
         confirm(opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
         return nullptr;
     }
 
     // everything ok, finish inspector
-    inspectors.push_back(insp);
+    inspectors.push_back(inspector);
     // TODO geometry
     // insp->createWindow(Inspector::makeWindowName().c_str(), geometry);
-    insp->setObject(obj);
+    inspector->setObject(obj);
 
-    return insp;
+    return inspector;
 }
 
 Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *parent)
@@ -1206,7 +1206,7 @@ void Qtenv::displayException(std::exception& ex)
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
-    if (!opt->printInitBanners || runmode == RUNMODE_EXPRESS)
+    if (!opt->printInitBanners || runMode == RUNMODE_EXPRESS)
         return;
 
     // produce banner text
@@ -1326,7 +1326,7 @@ bool Qtenv::idle()
     // mode, because in normal Run mode inspectors are already up to date here
     // (they are refreshed after every event), and in Express mode all user
     // interactions are disabled except for the STOP button.
-    if (runmode == RUNMODE_FAST) {
+    if (runMode == RUNMODE_FAST) {
         // updateInspectors() may be costly, so do not check the UI too often
         timeval now;
         gettimeofday(&now, nullptr);
@@ -1339,15 +1339,15 @@ bool Qtenv::idle()
     }
 
     // process UI events
-    eState origsimstate = simstate;
-    simstate = SIM_BUSY;
+    eState origsimstate = simulationState;
+    simulationState = SIM_BUSY;
     QCoreApplication::processEvents();
-    simstate = origsimstate;
+    simulationState = origsimstate;
 
-    bool stop = stopsimulation_flag;
-    stopsimulation_flag = false;
+    bool stop = stopSimulationFlag;
+    stopSimulationFlag = false;
 
-    if (runmode == RUNMODE_FAST)
+    if (runMode == RUNMODE_FAST)
         gettimeofday(&idleLastUICheck, nullptr);
     return stop;
 }
@@ -1358,7 +1358,7 @@ void Qtenv::objectDeleted(cObject *object)
         // message to "run until" deleted -- stop the simulation by other means
         rununtil_msg = nullptr;
         rununtil_eventnum = getSimulation()->getEventNumber();
-        if (simstate == SIM_RUNNING || simstate == SIM_BUSY)
+        if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm("Message to run until has just been deleted.");
     }
 
@@ -1424,7 +1424,7 @@ void Qtenv::messageScheduled(cMessage *msg)
 void Qtenv::messageCancelled(cMessage *msg)
 {
     if (msg == rununtil_msg && opt->stopOnMsgCancel) {
-        if (simstate == SIM_RUNNING || simstate == SIM_BUSY)
+        if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
         rununtil_msg = nullptr;
         rununtil_eventnum = getSimulation()->getEventNumber();  // stop the simulation using the eventnumber limit
