@@ -11,10 +11,6 @@
 
 using namespace omnetpp;
 
-#ifndef M_PI
-#define M_PI    3.14159265358979323846
-#endif
-
 typedef cFigure::Point Point;
 
 class CarAnimator : public cSimpleModule

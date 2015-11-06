@@ -13,10 +13,6 @@
 #include "ChannelController.h"
 #include <osg/Depth>
 
-#ifndef M_PI
-#define M_PI    3.14159265358979323846
-#endif
-
 using namespace omnetpp;
 
 Define_Module(RambleNode);

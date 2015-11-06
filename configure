@@ -2236,7 +2236,7 @@ case $build in
 *-*-cygwin*)
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
     ;;
-*-*-mingw32*)
+*-*-mingw*)
     OMNETPP_ROOT=`pwd -W`
     ;;
 *)
@@ -2348,7 +2348,7 @@ else
         # on NT, set total stack size
         LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
-    *-*-mingw32*)
+    *-*-mingw*)
         OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         mingw=yes
         jni_platform=win32
@@ -6140,7 +6140,7 @@ fi
 # otherwise the test program (that links with pcap.lib) brings up a GUI (!)
 # error dialog complaining that wpcap.dll was missing
 case $host in
-*-*-cygwin* | *-*-mingw32*)
+*-*-cygwin* | *-*-mingw*)
     # we do not have to test for the DLL if we are cross-compiling because the DLL is obviously not installed
     # on the build system (as it is a non-windows architecture).
     if test "$cross_compiling" = no ; then

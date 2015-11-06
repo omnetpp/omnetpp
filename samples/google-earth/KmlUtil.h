@@ -14,10 +14,6 @@
 
 using namespace omnetpp;
 
-#ifndef M_PI
-#define M_PI    3.14159265  // needed on Windows
-#endif
-
 /**
  * A collection of utility functions to generate KML markup for this demo
  */
