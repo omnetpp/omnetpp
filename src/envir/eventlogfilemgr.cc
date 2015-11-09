@@ -564,25 +564,21 @@ void EventlogFileManager::messageDeleted(cMessage *msg)
 void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)
 {
     if (isEventLogRecordingEnabled) {
-        if (from && from->isModule() && to->isModule()) {
-            const char *methodText = "";  // for the Enter_Method_Silent case
-            if (methodFmt) {
-                static char methodTextBuf[MAX_METHODCALL];
-                vsnprintf(methodTextBuf, MAX_METHODCALL, methodFmt, va);
-                methodTextBuf[MAX_METHODCALL-1] = '\0';
-                methodText = methodTextBuf;
-            }
-            EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog, ((cModule *)from)->getId(), ((cModule *)to)->getId(), methodText);
-            entryIndex++;
+        const char *methodText = "";  // for the Enter_Method_Silent case
+        if (methodFmt) {
+            static char methodTextBuf[MAX_METHODCALL];
+            vsnprintf(methodTextBuf, MAX_METHODCALL, methodFmt, va);
+            methodTextBuf[MAX_METHODCALL-1] = '\0';
+            methodText = methodTextBuf;
         }
+        EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog, from ? from->getId() : -1, to->getId(), methodText);
+        entryIndex++;
     }
 }
 
 void EventlogFileManager::componentMethodEnd()
 {
     if (isEventLogRecordingEnabled) {
-        // TODO: problem when channel method is called: we'll emit an "End" entry but no "Begin"
-        // TODO: same problem when the caller is not a module or is nullptr
         EventLogWriter::recordModuleMethodEndEntry(feventlog);
         entryIndex++;
     }
