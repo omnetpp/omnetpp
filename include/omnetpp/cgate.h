@@ -43,7 +43,7 @@ class cDatarateChannel;
 //
 #define GATEID_LBITS  20
 #define GATEID_HBITS  (8*sizeof(int)-GATEID_LBITS)   // usually 12
-#define GATEID_HMASK  ((~0)<<GATEID_LBITS)           // usually 0xFFF00000
+#define GATEID_HMASK  ((~0U)<<GATEID_LBITS)          // usually 0xFFF00000
 #define GATEID_LMASK  (~GATEID_HMASK)                // usually 0x000FFFFF
 
 #define MAX_VECTORGATES  ((1<<(GATEID_HBITS-1))-2)   // usually 2046
@@ -114,8 +114,8 @@ class SIM_API cGate : public cObject, noncopyable
         bool isInput(const cGate *g) const {return (g->pos&1)==0;}
         bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
         int gateSize() const {return vectorSize>=0 ? vectorSize : 1;}
-        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); input.gate=g; g->desc=this; g->pos=(-1<<2);}
-        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); output.gate=g; g->desc=this; g->pos=(-1<<2)|1;}
+        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); input.gate=g; g->desc=this; g->pos=(-(1<<2));}
+        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); output.gate=g; g->desc=this; g->pos=(-(1<<2))|1;}
         void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); input.gatev[index]=g; g->desc=this; g->pos=(index<<2);}
         void setOutputGate(cGate *g, int index) {ASSERT(getType()!=INPUT && isVector()); output.gatev[index]=g; g->desc=this; g->pos=(index<<2)|1;}
         static int capacityFor(int size) {return size<8 ? (size+1)&~1 : size<32 ? (size+3)&~3 : size<256 ? (size+15)&~15 : (size+63)&~63;}
@@ -488,4 +488,3 @@ class SIM_API cGate : public cObject, noncopyable
 }  // namespace omnetpp
 
 #endif
-

@@ -236,7 +236,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     std::string type0 = child->getTagName();
     std::string myclass = name;
     std::string baseclass = ptr2str(child->getAttribute("extends-name"));
-    ClassType type;     //FIXME not initialized in all cases
+    ClassType type;
     bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
 
     std::string classqname = canonicalizeQName(namespaceName, myclass);
@@ -277,6 +277,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     }
     else {
         errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
+        return;
     }
 
     addClassType(classqname, type, child);
@@ -2252,4 +2253,3 @@ MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& clas
 
 }  // namespace nedxml
 }  // namespace omnetpp
-
