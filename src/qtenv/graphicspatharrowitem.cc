@@ -99,7 +99,7 @@ QRectF GraphicsPathArrowItem::boundingRect() const
     const double max = std::numeric_limits<qreal>::max();
     QRectF rect(max, max, -max, -max);
     for (int i = 0; i < PTS_IN_ARROW; i++)
-        if (!isnan(arrowDescr.arrowPointsPtr[i].x()) && ! isnan(arrowDescr.arrowPointsPtr[i].y()))
+        if (!std::isnan(arrowDescr.arrowPointsPtr[i].x()) && ! std::isnan(arrowDescr.arrowPointsPtr[i].y()))
         {
             double x = arrowDescr.arrowPointsPtr[i].x();
             double y = arrowDescr.arrowPointsPtr[i].y();
