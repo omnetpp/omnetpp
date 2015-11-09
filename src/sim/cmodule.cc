@@ -1427,6 +1427,30 @@ void cModule::callFinish()
     }
 }
 
+void cModule::callRefreshDisplay()
+{
+    // This is the interface for calling refreshDisplay().
+
+    // first call it for submodules and channels...
+    for (ChannelIterator it(this); !it.end(); ++it)
+        (*it)->callRefreshDisplay();
+    for (SubmoduleIterator it(this); !it.end(); ++it)
+        (*it)->callRefreshDisplay();
+
+    // ...then for this module, in our context: save parameters, then finish()
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_REFRESHDISPLAY);
+    try {
+        refreshDisplay();
+   }
+    catch (cException&) {
+        throw;
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
+    }
+}
+
 void cModule::arrived(cMessage *msg, cGate *ongate, simtime_t)
 {
     // by default, cModule acts as compound module (cSimpleModule overrides this)

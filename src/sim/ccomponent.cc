@@ -116,6 +116,12 @@ void cComponent::handleParameterChange(const char *)
     // Can be redefined by the user.
 }
 
+void cComponent::refreshDisplay()
+{
+    // Called by graphical user interfaces when the display needs to be refreshed.
+    // Can be redefined by the user.
+}
+
 cComponentType *cComponent::getComponentType() const
 {
     if (!componentType)

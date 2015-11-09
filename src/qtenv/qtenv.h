@@ -310,6 +310,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 
+      void callRefreshDisplay();
       void refreshInspectors();
       void redrawInspectors();
       Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);

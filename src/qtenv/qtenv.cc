@@ -548,6 +548,7 @@ void Qtenv::doOneStep()
             getSimulation()->executeEvent(event);
             performAnimations();
         }
+        callRefreshDisplay();
         updateStatusDisplay();
         refreshInspectors();
         simulationState = SIM_READY;
@@ -737,6 +738,7 @@ bool Qtenv::doRunSimulation()
 
         // display update
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
+            callRefreshDisplay();
             updateStatusDisplay();
             refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
@@ -807,8 +809,10 @@ bool Qtenv::doRunSimulationExpress()
 
         if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->updateFreqExpress, last_update)) {
             updateStatusDisplay();
-            if (opt->autoupdateInExpress)
+            if (opt->autoupdateInExpress) {
+                callRefreshDisplay();
                 refreshInspectors();
+            }
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
             // Qt: Tcl_Eval(interp, "update");
@@ -852,6 +856,7 @@ void Qtenv::finishSimulation()
     // now really call finish()
     try {
         getSimulation()->callFinish();
+        callRefreshDisplay();
         cLogProxy::flushLastLine();
 
         checkFingerprint();
@@ -908,6 +913,7 @@ void Qtenv::newNetwork(const char *networkname)
         startRun();
 
         simulationState = SIM_NEW;
+        callRefreshDisplay();
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -949,6 +955,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         startRun();
 
         simulationState = SIM_NEW;
+        callRefreshDisplay();
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -1048,10 +1055,14 @@ void Qtenv::deleteInspector(Inspector *insp)
     delete insp;
 }
 
+void Qtenv::callRefreshDisplay()
+{
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_RUNNING || simulationState == SIM_TERMINATED);
+    getSimulation()->getSystemModule()->callRefreshDisplay();  // Beware: this may throw a cRuntimeError, so needs to be under a try/catch
+}
+
 void Qtenv::refreshInspectors()
 {
-    // qDebug() << "refreshInspectors()";
-
     // update inspectors
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
         Inspector *insp = *it;

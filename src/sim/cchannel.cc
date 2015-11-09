@@ -164,6 +164,21 @@ void cChannel::callFinish()
     }
 }
 
+void cChannel::callRefreshDisplay()
+{
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_REFRESHDISPLAY);
+    try {
+        refreshDisplay();
+    }
+    catch (cException&) {
+        throw;
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
+    }
+}
+
 cModule *cChannel::getParentModule() const
 {
     // find which (compound) module contains this connection

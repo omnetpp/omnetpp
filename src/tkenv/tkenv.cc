@@ -355,6 +355,7 @@ void Tkenv::doOneStep()
             getSimulation()->executeEvent(event);
             performAnimations();
         }
+        callRefreshDisplay();
         updateStatusDisplay();
         refreshInspectors();
         simulationState = SIM_READY;
@@ -368,6 +369,7 @@ void Tkenv::doOneStep()
     }
     catch (std::exception& e) {
         simulationState = SIM_ERROR;
+        updateStatusDisplay();
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
@@ -544,6 +546,7 @@ bool Tkenv::doRunSimulation()
 
         // display update
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
+            callRefreshDisplay();
             updateStatusDisplay();
             refreshInspectors();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
@@ -614,8 +617,10 @@ bool Tkenv::doRunSimulationExpress()
 
         if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->updateFreqExpress, last_update)) {
             updateStatusDisplay();
-            if (opt->autoupdateInExpress)
+            if (opt->autoupdateInExpress) {
+                callRefreshDisplay();
                 refreshInspectors();
+            }
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
             Tcl_Eval(interp, "update");
@@ -658,6 +663,7 @@ void Tkenv::finishSimulation()
     // now really call finish()
     try {
         getSimulation()->callFinish();
+        callRefreshDisplay();
         cLogProxy::flushLastLine();
 
         checkFingerprint();
@@ -694,6 +700,8 @@ void Tkenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
 void Tkenv::newNetwork(const char *networkname)
 {
     try {
+        animating = false;  // affects how network graphics is drawn by refreshInspectors()
+
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
             if (simulationState != SIM_FINISHCALLED)
@@ -710,10 +718,11 @@ void Tkenv::newNetwork(const char *networkname)
         getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
+
         setupNetwork(network);
         startRun();
-
         simulationState = SIM_NEW;
+        callRefreshDisplay();
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -730,6 +739,8 @@ void Tkenv::newNetwork(const char *networkname)
 void Tkenv::newRun(const char *configname, int runnumber)
 {
     try {
+        animating = false;  // affects how network graphics is drawn by refreshInspectors()
+
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
             if (simulationState != SIM_FINISHCALLED)
@@ -753,8 +764,8 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         setupNetwork(network);
         startRun();
-
         simulationState = SIM_NEW;
+        callRefreshDisplay();
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -849,6 +860,12 @@ void Tkenv::deleteInspector(Inspector *insp)
 {
     inspectors.remove(insp);
     delete insp;
+}
+
+void Tkenv::callRefreshDisplay()
+{
+    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_RUNNING || simulationState == SIM_TERMINATED);
+    getSimulation()->getSystemModule()->callRefreshDisplay();  // Beware: this may throw a cRuntimeError, so needs to be under a try/catch
 }
 
 void Tkenv::refreshInspectors()

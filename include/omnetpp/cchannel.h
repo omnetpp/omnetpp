@@ -52,6 +52,9 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     // internal: overridden to perform additional checks
     virtual void finalizeParameters() override;
 
+    // internal: calls refreshDisplay() recursively
+    virtual void callRefreshDisplay() override;
+
   public:
     /**
      * Allows returning multiple values from the processMessage() method.
@@ -392,5 +395,3 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
 
 
 #endif
-
-

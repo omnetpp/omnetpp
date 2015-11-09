@@ -1,0 +1,7 @@
+Model for testing refreshDisplay(). 
+Rules:
+1. it should be invoked after network setup (intitialization), network finalization (finish()), 
+   and every time the display is updated after processing one or more events
+2. throwing an exception from refreshDisplay() should result in a simulation error
+3. refreshDisplay() must NOT be invoked at all after the simulation has stopped with an error (cRuntimeError)
+

@@ -160,6 +160,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: has initialize() been called?
     bool initialized() const {return flags&FL_INITIALIZED;}
 
+    // internal: calls refreshDisplay() recursively
+    virtual void callRefreshDisplay() = 0;
+
     // internal: used from Tkenv: find out if this module has a display string.
     // getDisplayString() would create the object immediately which we want to avoid.
     bool hasDisplayString();
@@ -248,6 +251,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * handleParameterChange(), to avoid creating an infinite notification loop.
      */
     virtual void handleParameterChange(const char *parname);
+
+    /**
+     * TODO
+     */
+    virtual void refreshDisplay();
     //@}
 
   public:

@@ -394,6 +394,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal utility function. Takes O(n) time as it iterates on the gates
     cGate *gateByOrdinal(int k) const;
 
+    // internal: calls refreshDisplay() recursively
+    virtual void callRefreshDisplay() override;
+
     // internal: return the canvas if exists, or nullptr if not (i.e. no create-on-demand)
     cCanvas *getCanvasIfExists() {return canvas;}
 
@@ -871,4 +874,3 @@ class SIM_API cModule : public cComponent //implies noncopyable
 }  // namespace omnetpp
 
 #endif
-

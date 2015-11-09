@@ -32,7 +32,7 @@ namespace omnetpp {
 class cComponent;
 
 // logically belongs to csimulation.h but must be here because of declaration order
-enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH, CTX_CLEANUP};
+enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
 
 /**
  * Some of these functions are similar to \<string.h\> functions, with the
