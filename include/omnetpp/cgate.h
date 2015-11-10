@@ -42,13 +42,13 @@ class cDatarateChannel;
 // See note in cgate.cc
 //
 #define GATEID_LBITS  20
-#define GATEID_HBITS  (8*sizeof(int)-GATEID_LBITS)   // usually 12
-#define GATEID_HMASK  ((~0U)<<GATEID_LBITS)          // usually 0xFFF00000
-#define GATEID_LMASK  (~GATEID_HMASK)                // usually 0x000FFFFF
+#define GATEID_HBITS  (8*sizeof(int)-GATEID_LBITS)   // default 12
+#define GATEID_HMASK  ((~0U)<<GATEID_LBITS)          // default 0xFFF00000
+#define GATEID_LMASK  (~GATEID_HMASK)                // default 0x000FFFFF
 
-#define MAX_VECTORGATES  ((1<<(GATEID_HBITS-1))-2)   // usually 2046
-#define MAX_SCALARGATES  ((1<<(GATEID_LBITS-1))-2)   // usually ~500000
-#define MAX_VECTORGATESIZE ((1<<(GATEID_LBITS-1))-1) // usually ~500000
+#define MAX_VECTORGATES  ((1<<(GATEID_HBITS-1))-2)   // default 2046
+#define MAX_SCALARGATES  ((1<<(GATEID_LBITS-1))-2)   // default ~500000
+#define MAX_VECTORGATESIZE ((1<<(GATEID_LBITS-1))-1) // default ~500000
 
 /**
  * Represents a module gate. cGate object are created and managed by modules;
