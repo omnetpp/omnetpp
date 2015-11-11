@@ -86,7 +86,7 @@ private:
 
 protected:
 
-    inline cFigure::Point polarToCertasian(cFigure::Point center, double rx, double ry, double rad) const;
+    inline cFigure::Point polarToCartesian(cFigure::Point center, double rx, double ry, double rad) const;
     void arcToUsingBezier(QPainterPath &painter, double currentX,
                           double currentY, double x, double y,
                           double rx, double ry, double angle,

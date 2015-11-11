@@ -123,7 +123,7 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
     return renderer;
 }
 
-cFigure::Point FigureRenderer::polarToCertasian(cFigure::Point center, double rx, double ry, double rad) const
+cFigure::Point FigureRenderer::polarToCartesian(cFigure::Point center, double rx, double ry, double rad) const
 {
     return cFigure::Point(
             center.x + rx * cos(rad),
@@ -753,7 +753,7 @@ void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem
     QGraphicsPathItem *arcItem = static_cast<QGraphicsPathItem *>(item);
 
     cFigure::Rectangle bounds = arcFigure->getBounds();
-    cFigure::Point startPoint = polarToCertasian(bounds.getCenter(), bounds.width/2, bounds.height/2, arcFigure->getStartAngle());
+    cFigure::Point startPoint = polarToCartesian(bounds.getCenter(), bounds.width/2, bounds.height/2, arcFigure->getStartAngle());
     QPainterPath painter(QPointF(startPoint.x, startPoint.y));
     painter.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, arcFigure->getStartAngle()*180/M_PI, qAbs(arcFigure->getStartAngle()-arcFigure->getEndAngle())*180/M_PI);
     arcItem->setPath(painter);
