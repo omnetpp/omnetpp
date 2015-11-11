@@ -83,13 +83,12 @@ QToolBar *CanvasInspector::createToolbar()
     toolbar->addSeparator();
 
     // canvas-specfic
-    //TODO QAction::eventFilter: Ambiguous shortcut overload: Ctrl+M
     QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Redraw (Ctrl+R)", this, SLOT(redraw()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+Plus)", this, SLOT(zoomIn()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+Minus)", this, SLOT(zoomOut()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
 
     toolbar->setAutoFillBackground(true);
 
@@ -203,8 +202,8 @@ void CanvasInspector::onContextMenuRequested(QContextMenuEvent *event)
 
         menu->addSeparator();
 
-        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_M));
-        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_N));
+        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_Plus));
+        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_Minus));
 
         menu->exec(event->globalPos());
         delete menu;

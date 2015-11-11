@@ -167,11 +167,11 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
     canvasRelayoutAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+Plus)", this, SLOT(zoomIn()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
     canvasZoomInAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+Minus)", this, SLOT(zoomOut()));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
     canvasZoomOutAction = action;
 
     // osg-specific
@@ -664,8 +664,8 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         addAction(menu->addAction("Decrease Icon Size", this, SLOT(decreaseIconSize()), QKeySequence(Qt::CTRL + Qt::Key_O)));
 
         menu->addSeparator();
-        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_M));
-        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_N));
+        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_Plus));
+        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_Minus));
         menu->addAction("Re-Layout", canvasViewer, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
 
         menu->addSeparator();

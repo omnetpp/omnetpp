@@ -71,7 +71,7 @@ int insptypeCodeFromName(const char *name)
 // ----
 
 Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
-    : QWidget(parent, isTopLevel ? Qt::Tool : Qt::Widget)
+    : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget)
 {
     factory = f;
     //TCLKILL interp = getQtenv()->getInterp();
