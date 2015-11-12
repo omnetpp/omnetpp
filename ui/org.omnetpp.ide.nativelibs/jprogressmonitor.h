@@ -26,7 +26,7 @@ namespace omnetpp {
  * that delegates to an org.eclipse.core.runtime.IProgressMonitor
  * java object.
  */
-class JniProgressMonitor : public OPP::common::IProgressMonitor
+class JniProgressMonitor : public omnetpp::common::IProgressMonitor
 {
     private:
         JNIEnv *env;
