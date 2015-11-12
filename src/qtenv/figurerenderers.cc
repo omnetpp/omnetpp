@@ -26,6 +26,9 @@
 #include <QFontMetrics>
 #include <QGraphicsColorizeEffect>
 #include <QPainter>
+#include "common/stringutil.h"
+
+using namespace omnetpp::common;
 
 #ifndef M_PI
 #define M_PI    3.14159265358979323846
@@ -33,6 +36,22 @@
 
 namespace omnetpp {
 namespace qtenv {
+
+Register_Class(NullRenderer);
+Register_Class(LineFigureRenderer);
+Register_Class(ArcFigureRenderer);
+Register_Class(PolylineFigureRenderer);
+Register_Class(RectangleFigureRenderer);
+Register_Class(OvalFigureRenderer);
+Register_Class(RingFigureRenderer);
+Register_Class(PieSliceFigureRenderer);
+Register_Class(PolygonFigureRenderer);
+Register_Class(PathFigureRenderer);
+Register_Class(TextFigureRenderer);
+Register_Class(LabelFigureRenderer);
+Register_Class(ImageFigureRenderer);
+Register_Class(IconFigureRenderer);
+Register_Class(PixmapFigureRenderer);
 
 QPainterPath FigureRenderer::PathItem::shape() const {
     QPainterPath result;
@@ -71,57 +90,34 @@ void FigureRenderer::PathItem::paint(QPainter *painter, const QStyleOptionGraphi
 
 std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
 
-template<class T>
-FigureRenderer *FigureRenderer::searchInCache(std::string className)
+FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
     FigureRenderer *renderer;
-    auto it = rendererCache.find(className);
+    std::string className = figure->getClassNameForRenderer();
+    std::map<std::string, FigureRenderer *>::iterator it = rendererCache.find(className);
     if (it != rendererCache.end())
         renderer = it->second;
     else {
-        renderer = new T;
+        // create renderer and add to the cache
+        if (className == "")
+            renderer = new NullRenderer();
+        else {
+            // find registered class named "<type>Renderer"
+            std::string rendererClassName = className + "Renderer";
+            if (rendererClassName[0] == 'c')
+                rendererClassName.replace(0, 1, "qtenv::");
+            if (opp_stringbeginswith(rendererClassName.c_str(), "omnetpp::c"))
+                rendererClassName.replace(sizeof("omnetpp::c")-2, 1, "qtenv::");  // remove the "c"
+            cObjectFactory *factory = cObjectFactory::find(rendererClassName.c_str());
+            if (!factory)
+                throw cRuntimeError("No renderer class '%s' for figure class '%s'", rendererClassName.c_str(), figure->getClassName());
+            cObject *obj = factory->createOne();
+            renderer = dynamic_cast<FigureRenderer *>(obj);
+            if (!renderer)
+                throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
+        }
         rendererCache[className] = renderer;
     }
-
-    return renderer;
-}
-
-FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
-{
-    FigureRenderer *renderer = nullptr;
-    std::string className;
-
-    if (dynamic_cast<cArcFigure *>(figure))
-        renderer = searchInCache<ArcFigureRenderer>("ArcFigure");
-    else if (dynamic_cast<cLineFigure *>(figure))
-        renderer = searchInCache<LineFigureRenderer>("LineFigure");
-    else if (dynamic_cast<cPolylineFigure *>(figure))
-        renderer = searchInCache<PolylineFigureRenderer>("PolylineFigure");
-    else if (dynamic_cast<cRectangleFigure *>(figure))
-        renderer = searchInCache<RectangleFigureRenderer>("RectangleFigure");
-    else if (dynamic_cast<cOvalFigure *>(figure))
-        renderer = searchInCache<OvalFigureRenderer>("OvalFigure");
-    else if (dynamic_cast<cRingFigure *>(figure))
-        renderer = searchInCache<RingFigureRenderer>("RingFigure");
-    else if (dynamic_cast<cPieSliceFigure *>(figure))
-        renderer = searchInCache<PieSliceFigureRenderer>("PieSliceFigure");
-    else if (dynamic_cast<cPolygonFigure *>(figure))
-        renderer = searchInCache<PolygonFigureRenderer>("PolygonFigure");
-    else if (dynamic_cast<cPathFigure *>(figure))
-        renderer = searchInCache<PathFigureRenderer>("PathFigure");
-    else if (dynamic_cast<cTextFigure *>(figure))
-        renderer = searchInCache<TextFigureRenderer>("TextFigure");
-    else if (dynamic_cast<cLabelFigure *>(figure))
-        renderer = searchInCache<LabelFigureRenderer>("LabelFigure");
-    else if (dynamic_cast<cIconFigure *>(figure))
-        renderer = searchInCache<IconFigureRenderer>("IconFigure");
-    else if (dynamic_cast<cImageFigure *>(figure))
-        renderer = searchInCache<ImageFigureRenderer>("ImageFigure");
-    else if (dynamic_cast<cPixmapFigure *>(figure))
-        renderer = searchInCache<PixmapFigureRenderer>("PixmapFigure");
-    else
-        renderer = searchInCache<NullRenderer>("Null");
-
     return renderer;
 }
 

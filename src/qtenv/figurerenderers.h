@@ -51,7 +51,7 @@ struct FigureRenderingHints
             showSubmoduleLabels(true), showArrowHeads(true), showMessageLabels(true) {}
 };
 
-class FigureRenderer
+class FigureRenderer : public cObject // for because Register_Class() takes cObject*
 {
 protected:
     // This class should be used in place of every QGraphicsPathItem
@@ -80,9 +80,6 @@ private:
                                             double &rx, double &ry, double angle,
                                             double &centerX, double &centerY,
                                             double &startAngle, double &sweepLength) const;
-
-    template<class T>
-    static FigureRenderer *searchInCache(std::string className);
 
 protected:
 
