@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <cmath>
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -27,6 +28,7 @@
 #include "omnetpp/cmodule.h"
 #include "expryydefs.h"
 
+using namespace std;
 using namespace omnetpp::common;
 
 namespace omnetpp {

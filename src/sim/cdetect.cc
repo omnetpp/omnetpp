@@ -29,6 +29,8 @@
 #include "omnetpp/csimulation.h"  // simTime()
 #include "omnetpp/cdetect.h"
 
+using namespace std;
+
 namespace omnetpp {
 
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection(r)

@@ -31,9 +31,9 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
-namespace omnetpp {
+using namespace std;
 
-using std::ostream;
+namespace omnetpp {
 
 cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
 {
