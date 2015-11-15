@@ -25,9 +25,9 @@ namespace omnetpp {
 namespace common {
 
 struct rgb_t { // only used internally for easier map storage
-	uint8_t r, g, b;
-	rgb_t() : r(0), g(0), b(0) {}
-	rgb_t(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+    uint8_t r, g, b;
+    rgb_t() : r(0), g(0), b(0) {}
+    rgb_t(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 static std::map<std::string, rgb_t> colors;
 
@@ -118,40 +118,45 @@ void parseColor(const char *s, uint8_t &r, uint8_t &g, uint8_t &b)
 {
     if (s[0] == '#') {
         if (strlen(s) != 7)
-        	throw opp_runtime_error("wrong color syntax '%s': 6 hex digits expected after '#'", s);
+            throw opp_runtime_error("wrong color syntax '%s': 6 hex digits expected after '#'", s);
         r = h2d(s, 1) * 16 + h2d(s, 2);
         g = h2d(s, 3) * 16 + h2d(s, 4);
         b = h2d(s, 5) * 16 + h2d(s, 6);
     }
     else if (s[0] == '@') {
         if (strlen(s) != 7)
-        	throw opp_runtime_error("wrong color syntax '%s': 6 hex digits expected after '@'", s);
+            throw opp_runtime_error("wrong color syntax '%s': 6 hex digits expected after '@'", s);
         double hue = (h2d(s, 1) * 16 + h2d(s, 2)) / 255.0;
         double saturation = (h2d(s, 3) * 16 + h2d(s, 4)) / 255.0;
         double brightness = (h2d(s, 5) * 16 + h2d(s, 6)) / 255.0;
         double red, green, blue;
         hsbToRgb(hue, saturation, brightness, red, green, blue);
-        r = (uint8_t)round(red * 255);
-        g = (uint8_t)round(green * 255);
-        b = (uint8_t)round(blue * 255);
+        r = std::min(255, (int)floor(red * 255 + 0.5));
+        g = std::min(255, (int)floor(green * 255 + 0.5));
+        b = std::min(255, (int)floor(blue * 255 + 0.5));
     }
     else {
         if (colors.empty())
            fillColorsMap();
         std::map<std::string, rgb_t>::const_iterator it = colors.find(lc(s));
         if (it == colors.end())
-        	throw opp_runtime_error("No such color: %s", s);
+            throw opp_runtime_error("No such color: %s", s);
         r = (*it).second.r;
         g = (*it).second.g;
         b = (*it).second.b;
     }
 }
 
-// XXX there are 4 conflicting color names: green, grey, maroon and purple
-// SVG is preferred, so these have changed. (swap the order of the blocks to change this)
+//
+// Fill the table of recognized color names. This is a union of two sets:
+// X11 colors and SVG colors. Unfortunately there are four conflicting color
+// names: green, grey, maroon and purple. We prefer SVG, so these colors are
+// defined with their SVG meanings. This is achieved with the order of code
+// blocks inside the function.
+//
 static void fillColorsMap()
 {
-	// X11 colors from http://cgit.freedesktop.org/xorg/app/rgb/plain/rgb.txt at 2015. 08. 10.
+    // X11 colors from http://cgit.freedesktop.org/xorg/app/rgb/plain/rgb.txt, as of 10/08/2015.
 
     colors["aliceblue"] = rgb_t(240, 248, 255);
     colors["antiquewhite"] = rgb_t(250, 235, 215);
