@@ -177,8 +177,8 @@ class SIM_API SimTime
     const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
     const SimTime& operator*=(const cPar& p);
     const SimTime& operator/=(const cPar& p);
-    template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;}
-    template<typename T> const SimTime& operator/=(T d) {t/=d; return *this;}
+    template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;} // meant for integral T types; no overflow check
+    template<typename T> const SimTime& operator/=(T d) {t/=d; return *this;} // meant for integral T types
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
     bool operator!=(const SimTime& x) const  {return t!=x.t;}
@@ -201,6 +201,10 @@ class SIM_API SimTime
     friend const SimTime operator*(const SimTime& x, const cPar& p);
     friend const SimTime operator*(const cPar& p, const SimTime& x);
     friend const SimTime operator/(const SimTime& x, const cPar& p);
+
+    template<typename T> friend const SimTime operator*(const SimTime& x, T d) {SimTime tmp=x; return tmp*=d;} // meant for integral T types; no overflow check
+    template<typename T> friend const SimTime operator*(T d, const SimTime& x) {SimTime tmp=x; return tmp*=d;} // meant for integral T types; no overflow check
+    template<typename T> friend const SimTime operator/(const SimTime& x, T d) {SimTime tmp=x; return tmp/=d;} // meant for integral T types
     //@}
 
     /**
