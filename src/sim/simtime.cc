@@ -31,6 +31,7 @@ int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64_t SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
+bool SimTime::checkmul = true;
 
 const SimTime SimTime::ZERO;
 
@@ -89,6 +90,12 @@ void SimTime::overflowSubtracting(const SimTime& x)
             x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
+void SimTime::overflowNegating()
+{
+    throw cRuntimeError("Error negating simtime_t %s: it is internally represented with INT64_MIN "
+            "that has no positive equivalent, try decreasing precision", str().c_str());
+}
+
 #define MAX_POWER_OF_TEN  18
 static int64_t powersOfTen[MAX_POWER_OF_TEN+1];
 
@@ -122,11 +129,23 @@ SimTime::SimTime(int64_t significand, int exponent)
     }
     else if (expdiff > 0) {
         int64_t mul = exp10(expdiff);
-        if (mul == -1 || (t < 0 ? -t : t) >= INT64_MAX / mul)
+        t *= mul;
+        if (mul == -1 || t / mul != significand)
             throw cRuntimeError("simtime_t overflow: cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
                     significand, exponent, range().c_str(), scaleexp);
-        t *= mul;
     }
+}
+
+void SimTime::checkedMul(int64_t x)
+{
+    int64_t tmp = t * x;
+    if (x == 0 || tmp / x == t) {
+        t = tmp;
+        return;
+    }
+
+    throw cRuntimeError("simtime_t overflow multiplying %s by %" LL "d: result is out of range %s, allowed by scale exponent %d",
+        str().c_str(), x, range().c_str(), scaleexp);
 }
 
 int64_t SimTime::inUnit(int exponent) const

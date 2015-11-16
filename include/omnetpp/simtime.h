@@ -67,6 +67,7 @@ class SIM_API SimTime
     static int64_t dscale;   // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
+    static bool checkmul;    // when true, multiplications are checked for integer overflow
 
   public:
     static const SimTime ZERO;
@@ -105,9 +106,11 @@ class SIM_API SimTime
             overflowSubtracting(x);
     }
 
+    void checkedMul(int64_t x);
     void rangeError(double i64);
     void overflowAdding(const SimTime& x);
     void overflowSubtracting(const SimTime& x);
+    void overflowNegating();
 
   public:
     static const int SCALEEXP_UNINITIALIZED = 0xffff;
@@ -177,7 +180,7 @@ class SIM_API SimTime
     const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
     const SimTime& operator*=(const cPar& p);
     const SimTime& operator/=(const cPar& p);
-    template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;} // meant for integral T types; no overflow check
+    template<typename T> const SimTime& operator*=(T d) {if (checkmul) checkedMul(d); else t*=d; return *this;} // meant for integral T types
     template<typename T> const SimTime& operator/=(T d) {t/=d; return *this;} // meant for integral T types
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
@@ -187,7 +190,7 @@ class SIM_API SimTime
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
 
-    SimTime operator-() const {SimTime x; x.t = -t; return x;}
+    SimTime operator-() const {SimTime x; x.t = -t; if (x.t==INT64_MIN) x.overflowNegating(); return x;}
 
     friend const SimTime operator+(const SimTime& x, const SimTime& y);
     friend const SimTime operator-(const SimTime& x, const SimTime& y);
