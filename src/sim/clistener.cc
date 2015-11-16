@@ -98,6 +98,8 @@ void cListener::unsupportedType(simsignal_t signalID, const char *dataType)
             opp_typename(typeid(*this)), dataType, signalName, (int)signalID);
 }
 
+#ifndef WITH_OMNETPP4x_LISTENER_SUPPORT
+
 void cListener::receiveSignal(cComponent *, simsignal_t signalID, bool, cObject *)
 {
     unsupportedType(signalID, "bool");
@@ -132,6 +134,23 @@ void cListener::receiveSignal(cComponent *, simsignal_t signalID, cObject *, cOb
 {
     unsupportedType(signalID, "cObject *");
 }
+
+#else // WITH_OMNETPP4x_LISTENER_SUPPORT
+
+// Support for OMNeT++ 4.x listeners:
+#define LISTENER(TYPE) \
+    void cListener::receiveSignal(cComponent *, simsignal_t signalID, TYPE) { unsupportedType(signalID, #TYPE); } \
+    void cListener::receiveSignal(cComponent *source, simsignal_t signalID, TYPE d, cObject *) { receiveSignal(source, signalID, d); }
+LISTENER(bool);
+LISTENER(long);
+LISTENER(unsigned long);
+LISTENER(double);
+LISTENER(const SimTime&);
+LISTENER(const char *);
+LISTENER(cObject *);
+#undef LISTENER
+
+#endif  // WITH_OMNETPP4x_LISTENER_SUPPORT
 
 }  // namespace omnetpp
 

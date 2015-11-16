@@ -160,6 +160,17 @@ class SIM_API cListener : public cIListener
   protected:
     /** Utility function, throws a "data type not supported" error. */
     virtual void unsupportedType(simsignal_t signalID, const char *dataType);
+
+#ifdef WITH_OMNETPP4x_LISTENER_SUPPORT
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, double d);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& t);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, const char *s);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+#endif
+
   public:
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details) override;
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l, cObject *details) override;
