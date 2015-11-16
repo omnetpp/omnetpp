@@ -75,15 +75,42 @@ inline const SimTime ceil(const SimTime& x, const SimTime& unit, const SimTime& 
 }
 
 /**
- * simtime_t version of fabs(double) from math.h.
+ * Returns the absolute value of the simulation time x.
  */
 inline const SimTime fabs(const SimTime& x)
 {
-    return x.raw()<0 ? SimTime().setRaw(-x.raw()) : x;
+    return x.raw()<0 ? -x : x;
 }
 
 /**
- * simtime_t version of fmod(double,double) from math.h.
+ * Computes the quotient of the simulation times x and y. The quotient is the
+ * algebraic quotient with any fractional part discarded (truncated towards zero).
+ * The function internally relies on the standard C/C++ integer division (/) operation.
+ *
+ * The handling of division by zero (i.e. when y==0) is platform dependent;
+ * on most platforms it causes a runtime error of some sort.
+ *
+ * @see fmod()
+ */
+inline int64_t div(const SimTime& x, const SimTime& y)
+{
+    return x.raw() / y.raw();
+}
+
+/**
+ * Computes the remainder of the division of two simulation times.
+ *
+ * The function internally relies on the standard C/C++ integer modulo (%)
+ * operation. This has implications regarding the sign of the result:
+ * If both operands are nonnegative then the remainder is nonnegative;
+ * if not, the sign of the remainder is implementation-defined. However,
+ * the following is always true (substitute div() for / and fmod() for %):
+ * <tt>(x/y) * y + x%y == x</tt>
+ *
+ * The handling of division by zero (i.e. when y==0) is platform dependent;
+ * on most platforms it causes a runtime error of some sort.
+ *
+ * @see div()
  */
 inline const SimTime fmod(const SimTime& x, const SimTime& y)
 {
