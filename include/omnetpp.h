@@ -54,6 +54,7 @@
 #include "omnetpp/clongparimpl.h"
 #include "omnetpp/cmersennetwister.h"
 #include "omnetpp/simtime.h"
+#include "omnetpp/simtimemath.h"
 #include "omnetpp/simtime_t.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cmessageprinter.h"
