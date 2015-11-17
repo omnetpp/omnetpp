@@ -173,6 +173,8 @@ class SIM_API SimTime
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
     template<typename T> const SimTime& operator=(T d) {check(d); t=toInt64(dscale*d); return *this;}
 
+    SimTime operator-() const {SimTime x; x.t = -t; if (x.t==INT64_MIN) x.overflowNegating(); return x;}
+
     const SimTime& operator+=(const SimTime& x) {checkedAdd(x); return *this;}
     const SimTime& operator-=(const SimTime& x) {checkedSub(x); return *this;}
 
@@ -190,24 +192,20 @@ class SIM_API SimTime
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
 
-    SimTime operator-() const {SimTime x; x.t = -t; if (x.t==INT64_MIN) x.overflowNegating(); return x;}
-
-    friend const SimTime operator+(const SimTime& x, const SimTime& y);
-    friend const SimTime operator-(const SimTime& x, const SimTime& y);
-
-    friend const SimTime operator*(const SimTime& x, double d);
-    friend const SimTime operator*(double d, const SimTime& x);
-    friend const SimTime operator/(const SimTime& x, double d);
-    friend double operator/(double d, const SimTime& x);
-    friend double operator/(const SimTime& x, const SimTime& y);
-
     friend const SimTime operator*(const SimTime& x, const cPar& p);
     friend const SimTime operator*(const cPar& p, const SimTime& x);
     friend const SimTime operator/(const SimTime& x, const cPar& p);
 
-    template<typename T> friend const SimTime operator*(const SimTime& x, T d) {SimTime tmp=x; return tmp*=d;} // meant for integral T types; no overflow check
-    template<typename T> friend const SimTime operator*(T d, const SimTime& x) {SimTime tmp=x; return tmp*=d;} // meant for integral T types; no overflow check
-    template<typename T> friend const SimTime operator/(const SimTime& x, T d) {SimTime tmp=x; return tmp/=d;} // meant for integral T types
+    friend const SimTime operator+(const SimTime& x, const SimTime& y)  { return SimTime(x)+=y; }
+    friend const SimTime operator-(const SimTime& x, const SimTime& y) { return SimTime(x)-=y; }
+    friend const SimTime operator*(const SimTime& x, double d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(double d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator/(const SimTime& x, double d) { return SimTime(x)/=d; }
+    friend double operator/(double d, const SimTime& x) { return d / x.dbl(); }
+    friend double operator/(const SimTime& x, const SimTime& y) { return (double)x.raw() / (double)y.raw(); }
+    template<typename T> friend const SimTime operator*(const SimTime& x, T d) { SimTime tmp=x; return tmp*=d; }
+    template<typename T> friend const SimTime operator*(T d, const SimTime& x) { SimTime tmp=x; return tmp*=d; }
+    template<typename T> friend const SimTime operator/(const SimTime& x, T d) { SimTime tmp=x; return tmp/=d; }
     //@}
 
     /**
@@ -361,41 +359,6 @@ class SIM_API SimTime
     m_value = static_cast<int64_t>( tmp );
     return *this;
 */
-
-inline const SimTime operator+(const SimTime& x, const SimTime& y)
-{
-    return SimTime(x)+=y;
-}
-
-inline const SimTime operator-(const SimTime& x, const SimTime& y)
-{
-    return SimTime(x)-=y;
-}
-
-inline const SimTime operator*(const SimTime& x, double d)
-{
-    return SimTime(x)*=d;
-}
-
-inline const SimTime operator*(double d, const SimTime& x)
-{
-    return SimTime(x)*=d;
-}
-
-inline const SimTime operator/(const SimTime& x, double d)
-{
-    return SimTime(x)/=d;
-}
-
-inline double operator/(double d, const SimTime& x)
-{
-    return d / x.dbl();
-}
-
-inline double operator/(const SimTime& x, const SimTime& y)
-{
-    return (double)x.raw() / (double)y.raw();
-}
 
 inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 {
