@@ -255,7 +255,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * TODO
      */
-    virtual void refreshDisplay();
+    virtual void refreshDisplay() const;
     //@}
 
   public:
