@@ -691,7 +691,8 @@ void ModuleInspector::exportToPdf()
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setColorMode(QPrinter::Color);
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export to pdf"), "./.pdf",
+    QString fileName = static_cast<cModule*>(object)->getName() + QString(".pdf");
+    fileName = QFileDialog::getSaveFileName(this, tr("Export to pdf"), fileName,
                                                     tr("pdf files (*.pdf)"));
     if(!fileName.endsWith(".pdf", Qt::CaseInsensitive))
         fileName += ".pdf";
