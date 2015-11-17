@@ -62,8 +62,7 @@ void SimTime::setScaleExp(int e)
     if (scaleexp != SCALEEXP_UNINITIALIZED)
         throw cRuntimeError("SimTime::setScaleExp(): Attempt to change the scale exponent after initialization");
     if (e < -18 || e > 0)
-        throw cRuntimeError("simtime_t scale exponent %d is out of accepted range -18..0; "
-                            "recommended value is -12 (picosecond resolution with range +-106 days)", e);
+        throw cRuntimeError("SimTime scale exponent %d is out of accepted range -18..0", e);
 
     fillPowersOfTen();
 

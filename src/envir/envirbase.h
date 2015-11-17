@@ -277,6 +277,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
     virtual void readOptions();
     virtual void readPerRunOptions();
+    void setSimtimePrecision(const char *precision);
 
     // Utility function; never returns nullptr
     cModuleType *resolveNetwork(const char *networkname);

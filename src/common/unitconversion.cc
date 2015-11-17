@@ -38,6 +38,8 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "us",   1e-6, "s",    "microsecond" },
     { "ns",   1e-9, "s",    "nanosecond" },
     { "ps",  1e-12, "s",    "picosecond" },
+    { "fs",  1e-15, "s",    "femtosecond" },
+    { "as",  1e-18, "s",    "attosecond" },
     { "bps",     1, "bps",  "bit/sec" },
     { "kbps",  1e3, "bps",  "kilobit/sec" },
     { "Mbps",  1e6, "bps",  "megabit/sec" },
