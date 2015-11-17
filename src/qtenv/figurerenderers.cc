@@ -638,7 +638,7 @@ void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *l
         setArrowStyle(lineFigure->getStartArrowHead(), startArrow);
         if(pen)
             startArrow->setPen(*pen);
-        startArrow->configureArrow(start, end);
+        startArrow->setEndPoints(start, end);
     }
     else
         startArrow->setVisible(false);
@@ -649,7 +649,7 @@ void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *l
         setArrowStyle(lineFigure->getEndArrowHead(), endArrow);
         if(pen)
             endArrow->setPen(*pen);
-        endArrow->configureArrow(end, start);
+        endArrow->setEndPoints(end, start);
     }
     else
         endArrow->setVisible(false);
@@ -727,7 +727,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         setArrowStyle(arcFigure->getStartArrowHead(), startArrow);
         if(pen)
             startArrow->setPen(*pen);
-        startArrow->configureArrow(end, start);
+        startArrow->setEndPoints(end, start);
     }
     else
         startArrow->setVisible(false);
@@ -741,7 +741,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         setArrowStyle(arcFigure->getEndArrowHead(), endArrow);
         if(pen)
             endArrow->setPen(*pen);
-        endArrow->configureArrow(start, end);
+        endArrow->setEndPoints(start, end);
     }
     else
         endArrow->setVisible(false);
@@ -800,7 +800,7 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
         setArrowStyle(polyFigure->getStartArrowHead(), startArrow);
         if(pen)
             startArrow->setPen(*pen);
-        startArrow->configureArrow(start, end);
+        startArrow->setEndPoints(start, end);
     }
     else
         startArrow->setVisible(false);
@@ -816,7 +816,7 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
         setArrowStyle(polyFigure->getEndArrowHead(), endArrow);
         if(pen)
             endArrow->setPen(*pen);
-        endArrow->configureArrow(end, start);
+        endArrow->setEndPoints(end, start);
     }
     else
         endArrow->setVisible(false);

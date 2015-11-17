@@ -25,6 +25,7 @@ GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent), arrowStyle(BARBED)
 {
     setVisible(false);
+    setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
     arrowDescrInit();
 }
 
@@ -36,7 +37,14 @@ void GraphicsPathArrowItem::arrowDescrInit()
     arrowDescr.arrowPointsPtr = QVector<QPointF>(PTS_IN_ARROW);
 }
 
-void GraphicsPathArrowItem::configureArrow(const QPointF &pf, const QPointF &pl)
+void GraphicsPathArrowItem::setEndPoints(const QPointF &pf, const QPointF &pl)
+{
+    first = pf;
+    last = pl;
+    arrowDescr.arrowPointsPtr = configureArrow(pf, pl);
+}
+
+QPolygonF GraphicsPathArrowItem::configureArrow(const QPointF &pf, const QPointF &pl) const
 {
     QPointF p0;
     double lineWidth = pen().widthF();
@@ -90,28 +98,47 @@ void GraphicsPathArrowItem::configureArrow(const QPointF &pf, const QPointF &pl)
     poly[3].setX(p0.x() + shapeWidth * sinTheta);
     poly[3].setY(p0.y() - shapeWidth * cosTheta);
 
-    arrowDescr.arrowPointsPtr = poly;
+    return poly;
 }
+
+QPolygonF GraphicsPathArrowItem::getTranslatePoints() const
+{
+    QTransform trans = parentItem()->transform();
+    QPointF pf(trans.m11()*first.x() + trans.m21()*first.y() + trans.dx(),
+              trans.m22()*first.y() + trans.m12()*first.x() + trans.dy());
+    QPointF pl(trans.m11()*last.x() + trans.m21()*last.y() + trans.dx(),
+              trans.m22()*last.y() + trans.m12()*last.x() + trans.dy());
+    if (!trans.isAffine())
+    {
+        qreal w = trans.m13()*first.x() + trans.m23()*first.y() + trans.m33();
+        pf.setX(pf.x() / w);
+        pf.setY(pf.y() / w);
+        w = trans.m13()*last.x() + trans.m23()*last.y() + trans.m33();
+        pl.setX(pl.x() / w);
+        pl.setY(pl.y() / w);
+    }
+    return configureArrow(pf, pl);
+}
+
 QRectF GraphicsPathArrowItem::boundingRect() const
 {
     if(!isVisible())
         return QRectF();
 
-    const double max = std::numeric_limits<qreal>::max();
+    QPolygonF points(arrowDescr.arrowPointsPtr);
+    if(QTransform() != parentItem()->transform())
+        points = getTranslatePoints();
+
+    const qreal max = std::numeric_limits<qreal>::max();
     QRectF rect(max, max, -max, -max);
     for (int i = 0; i < PTS_IN_ARROW; i++)
-        if (!std::isnan(arrowDescr.arrowPointsPtr[i].x()) && ! std::isnan(arrowDescr.arrowPointsPtr[i].y()))
+        if (!std::isnan(points[i].x()) && !std::isnan(points[i].y()))
         {
-            double x = arrowDescr.arrowPointsPtr[i].x();
-            double y = arrowDescr.arrowPointsPtr[i].y();
-            double rectX = rect.x() + rect.width();
-            double rectY = rect.y() + rect.height();
-            rect.setX(std::min(rect.x(), x));
-            rect.setY(std::min(rect.y(), y));
-            rectX = std::max(rectX, x);
-            rectY = std::max(rectY, y);
-            rect.setWidth(rect.x() + rectX);
-            rect.setHeight(rect.y() + rectY);
+            qreal x = std::min(points[i].x(), rect.x());
+            qreal y = std::min(points[i].y(), rect.y());
+            qreal right = std::max(points[i].x(), rect.right());
+            qreal bottom = std::max(points[i].y(), rect.bottom());
+            rect.setCoords(x, y, right, bottom);
         }
 
     return rect;
@@ -127,24 +154,27 @@ void GraphicsPathArrowItem::paint(QPainter *painter, const QStyleOptionGraphicsI
         painter->setPen(pen);
         painter->setBrush(brush);
 
+        QPolygonF points(arrowDescr.arrowPointsPtr);
+        if(QTransform() != parentItem()->transform())
+            points = getTranslatePoints();
+
         switch(arrowStyle)
         {
             case BARBED:
             {
-                QPolygonF points(arrowDescr.arrowPointsPtr);
                 points[0] = points.boundingRect().center();
                 painter->drawPolygon(points);
                 break;
             }
+            // if pen.width() == 0 the arrow disappear while zooming
             case SIMPLE:
             {
-                QPolygonF points(arrowDescr.arrowPointsPtr);
                 points.pop_front();
                 painter->drawPolyline(points);
                 break;
             }
             case TRIANGLE:
-                painter->drawPolygon(QPolygonF(arrowDescr.arrowPointsPtr));
+                painter->drawPolygon(points);
                 break;
             default:
                 break;

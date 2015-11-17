@@ -137,7 +137,7 @@ void ConnectionItem::updateArrowItem() {
     }
 
     arrowItem->setVisible(true);
-    arrowItem->configureArrow(dest, src);
+    arrowItem->setEndPoints(dest, src);
 }
 
 ConnectionItem::ConnectionItem(QGraphicsItem *parent) :

@@ -41,14 +41,12 @@ private:
     //-------------------------------------------------------------------------------------------
 
     ArrowDescr arrowDescr;
-    // cFigure::ArrowHead
+    QPointF first, last;
     int arrowStyle;
 
     void arrowDescrInit();
-
-    // any smaller width will be clamped to this, so the arrowhead
-    // will not be too small to notice even on thin lines
-    const double minimumWidth = 3.0;
+    QPolygonF configureArrow(const QPointF &pf, const QPointF &pl) const;
+    QPolygonF getTranslatePoints() const;
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
@@ -56,7 +54,7 @@ protected:
 public:
     GraphicsPathArrowItem(QGraphicsItem *parent = nullptr);
 
-    void configureArrow(const QPointF &pf, const QPointF &pl);
+    void setEndPoints(const QPointF &pf, const QPointF &pl);
     void setArrowStyle(const int style) { arrowStyle = style; }
 
     QRectF boundingRect() const;
