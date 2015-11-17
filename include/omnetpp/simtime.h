@@ -168,22 +168,10 @@ class SIM_API SimTime
 
     /** @name Arithmetic operations */
     //@{
-    const SimTime& operator=(double d) {check(d); t=toInt64(fscale*d); return *this;}
-    const SimTime& operator=(const cPar& d);
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
+    const SimTime& operator=(const cPar& d);
+    const SimTime& operator=(double d) {check(d); t=toInt64(fscale*d); return *this;}
     template<typename T> const SimTime& operator=(T d) {check(d); t=toInt64(dscale*d); return *this;}
-
-    SimTime operator-() const {SimTime x; x.t = -t; if (x.t==INT64_MIN) x.overflowNegating(); return x;}
-
-    const SimTime& operator+=(const SimTime& x) {checkedAdd(x); return *this;}
-    const SimTime& operator-=(const SimTime& x) {checkedSub(x); return *this;}
-
-    const SimTime& operator*=(double d) {t=toInt64(t*d); return *this;}
-    const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
-    const SimTime& operator*=(const cPar& p);
-    const SimTime& operator/=(const cPar& p);
-    template<typename T> const SimTime& operator*=(T d) {if (checkmul) checkedMul(d); else t*=d; return *this;} // meant for integral T types
-    template<typename T> const SimTime& operator/=(T d) {t/=d; return *this;} // meant for integral T types
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
     bool operator!=(const SimTime& x) const  {return t!=x.t;}
@@ -192,20 +180,70 @@ class SIM_API SimTime
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
 
-    friend const SimTime operator*(const SimTime& x, const cPar& p);
-    friend const SimTime operator*(const cPar& p, const SimTime& x);
-    friend const SimTime operator/(const SimTime& x, const cPar& p);
+    SimTime operator-() const {SimTime x; x.t = -t; if (x.t==INT64_MIN) x.overflowNegating(); return x;}
 
+    const SimTime& operator+=(const SimTime& x) {checkedAdd(x); return *this;}
+    const SimTime& operator-=(const SimTime& x) {checkedSub(x); return *this;}
     friend const SimTime operator+(const SimTime& x, const SimTime& y)  { return SimTime(x)+=y; }
     friend const SimTime operator-(const SimTime& x, const SimTime& y) { return SimTime(x)-=y; }
-    friend const SimTime operator*(const SimTime& x, double d) { return SimTime(x)*=d; }
-    friend const SimTime operator*(double d, const SimTime& x) { return SimTime(x)*=d; }
-    friend const SimTime operator/(const SimTime& x, double d) { return SimTime(x)/=d; }
-    friend double operator/(double d, const SimTime& x) { return d / x.dbl(); }
     friend double operator/(const SimTime& x, const SimTime& y) { return (double)x.raw() / (double)y.raw(); }
-    template<typename T> friend const SimTime operator*(const SimTime& x, T d) { SimTime tmp=x; return tmp*=d; }
-    template<typename T> friend const SimTime operator*(T d, const SimTime& x) { SimTime tmp=x; return tmp*=d; }
-    template<typename T> friend const SimTime operator/(const SimTime& x, T d) { SimTime tmp=x; return tmp/=d; }
+
+    const SimTime& operator*=(double d) {t=toInt64(t*d); return *this;}
+    const SimTime& operator*=(short d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(int d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(long long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(unsigned short d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(unsigned int d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(unsigned long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(unsigned long long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+
+    const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
+    const SimTime& operator/=(short d) {t/=d; return *this;}
+    const SimTime& operator/=(int d) {t/=d; return *this;}
+    const SimTime& operator/=(long d) {t/=d; return *this;}
+    const SimTime& operator/=(long long d) {t/=d; return *this;}
+    const SimTime& operator/=(unsigned short d) {t/=d; return *this;}
+    const SimTime& operator/=(unsigned int d) {t/=d; return *this;}
+    const SimTime& operator/=(unsigned long d) {t/=d; return *this;}
+    const SimTime& operator/=(unsigned long long d) {t/=d; return *this;}
+
+    friend const SimTime operator*(const SimTime& x, double d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, short d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, int d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, long d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, long long d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, unsigned short d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, unsigned int d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, unsigned long d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, unsigned long long d) { return SimTime(x)*=d; }
+
+    friend const SimTime operator*(double d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(short d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(int d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(long d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(long long d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(unsigned short d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(unsigned int d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(unsigned long d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(unsigned long long d, const SimTime& x) { return SimTime(x)*=d; }
+
+    friend const SimTime operator/(const SimTime& x, double d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, short d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, int d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, long d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, long long d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, unsigned short d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, unsigned int d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, unsigned long d) { return SimTime(x)/=d; }
+    friend const SimTime operator/(const SimTime& x, unsigned long long d) { return SimTime(x)/=d; }
+
+    const SimTime& operator*=(const cPar& p);
+    const SimTime& operator/=(const cPar& p);
+    friend const SimTime operator*(const SimTime& x, const cPar& p) { return SimTime(x)*=p; }
+    friend const SimTime operator*(const cPar& p, const SimTime& x) { return SimTime(x)*=p; }
+    friend const SimTime operator/(const SimTime& x, const cPar& p) { return SimTime(x)/=p; }
+
     //@}
 
     /**

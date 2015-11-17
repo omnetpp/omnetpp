@@ -186,20 +186,6 @@ const SimTime& SimTime::operator/=(const cPar& p)
     return operator/=((double)p);
 }
 
-const SimTime operator*(const SimTime& x, const cPar& p)
-{
-    return operator*(x, (double)p);
-}
-
-const SimTime operator*(const cPar& p, const SimTime& x)
-{
-    return operator*((double)p, x);
-}
-
-const SimTime operator/(const SimTime& x, const cPar& p)
-{
-    return operator/(x, (double)p);
-}
 
 std::string SimTime::str() const
 {
