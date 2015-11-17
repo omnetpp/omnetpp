@@ -1056,7 +1056,7 @@ bool cModule::checkInternalConnections() const
     return true;
 }
 
-int cModule::findSubmodule(const char *name, int index)
+int cModule::findSubmodule(const char *name, int index) const
 {
     for (SubmoduleIterator it(this); !it.end(); ++it) {
         cModule *submodule = *it;
@@ -1067,7 +1067,7 @@ int cModule::findSubmodule(const char *name, int index)
     return -1;
 }
 
-cModule *cModule::getSubmodule(const char *name, int index)
+cModule *cModule::getSubmodule(const char *name, int index) const
 {
     for (SubmoduleIterator it(this); !it.end(); ++it) {
         cModule *submodule = *it;
@@ -1089,14 +1089,14 @@ inline char *nextToken(char *& rest)
     return token;
 }
 
-cModule *cModule::getModuleByPath(const char *path)
+cModule *cModule::getModuleByPath(const char *path) const
 {
     if (!path || !path[0])
         return nullptr;
 
     // determine starting point
     bool isRelative = (path[0] == '.' || path[0] == '^');
-    cModule *module = isRelative ? this : getSimulation()->getSystemModule();
+    const cModule *module = isRelative ? this : getSimulation()->getSystemModule();
     if (path[0] == '.')
         path++;  // skip initial dot
 
@@ -1126,7 +1126,7 @@ cModule *cModule::getModuleByPath(const char *path)
         isFirst = false;
     }
 
-    return module;  // nullptr if not found
+    return const_cast<cModule*>(module);  // nullptr if not found
 }
 
 cPar& cModule::getAncestorPar(const char *name)
@@ -1276,24 +1276,24 @@ void cModule::changeParentTo(cModule *module)
     }
 }
 
-cCanvas *cModule::getCanvas()
+cCanvas *cModule::getCanvas() const
 {
     if (!canvas) {
         canvas = new cCanvas("canvas");
         canvas->addFigure(new cGroupFigure("submodules"));
-        take(canvas);
+        const_cast<cModule*>(this)->take(canvas);
     }
     return canvas;
 }
 
-cOsgCanvas *cModule::getOsgCanvas()
+cOsgCanvas *cModule::getOsgCanvas() const
 {
 #ifndef WITH_OSG
     throw cRuntimeError("cOsgCanvas is not available: OMNeT++ has been compiled without OpenSceneGraph support");
 #else
     if (!osgCanvas) {
         osgCanvas = new cOsgCanvas("osgCanvas");
-        take(osgCanvas);
+        const_cast<cModule*>(this)->take(osgCanvas);
     }
     return osgCanvas;
 #endif

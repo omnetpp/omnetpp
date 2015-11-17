@@ -304,8 +304,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     int version4ModuleId;   // OMNeT++ V4.x compatible module ID
 #endif
 
-    cCanvas *canvas;  // nullptr when unused
-    cOsgCanvas *osgCanvas;  // nullptr when unused
+    mutable cCanvas *canvas;  // nullptr when unused
+    mutable cOsgCanvas *osgCanvas;  // nullptr when unused
 
   public:
     // internal: currently used by init
@@ -605,14 +605,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * its module ID. If the submodule was not found, returns -1. Index
      * must be specified exactly if the module is member of a module vector.
      */
-    int findSubmodule(const char *name, int index=-1);
+    int findSubmodule(const char *name, int index=-1) const;
 
     /**
      * Finds a direct submodule with the given name and index, and returns
      * its pointer. If the submodule was not found, returns nullptr.
      * Index must be specified exactly if the module is member of a module vector.
      */
-    cModule *getSubmodule(const char *name, int index=-1);
+    cModule *getSubmodule(const char *name, int index=-1) const;
 
     /**
      * Finds a module in the module tree, given by its absolute or relative path.
@@ -632,7 +632,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      *  @see cSimulation::getModuleByPath()
      */
-    cModule *getModuleByPath(const char *path);
+    cModule *getModuleByPath(const char *path) const;
     //@}
 
     /** @name Gates. */
@@ -789,13 +789,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the default canvas for this module, creating it if it hasn't
      * existed before.
      */
-    virtual cCanvas *getCanvas();
+    virtual cCanvas *getCanvas() const;
 
     /**
      * Returns the default 3D (OpenSceneGraph) canvas for this module, creating
      * it if it hasn't existed before.
      */
-    virtual cOsgCanvas *getOsgCanvas();
+    virtual cOsgCanvas *getOsgCanvas() const;
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.

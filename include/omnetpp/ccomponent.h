@@ -74,7 +74,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     short parArraySize;
     cPar *parArray;  // array of cPar objects
 
-    cDisplayString *displayString; // display string (created on demand)
+    mutable cDisplayString *displayString; // created on demand
 
     struct SignalData
     {
@@ -971,7 +971,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Returns the display string which defines presentation when the module
      * is displayed as a submodule in a compound module graphics.
      */
-    cDisplayString& getDisplayString();
+    cDisplayString& getDisplayString() const;
 
     /**
      * Shortcut to <tt>getDisplayString().set(dispstr)</tt>.

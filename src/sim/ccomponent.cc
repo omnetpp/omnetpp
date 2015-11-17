@@ -252,7 +252,7 @@ bool cComponent::hasDisplayString()
     return result;
 }
 
-cDisplayString& cComponent::getDisplayString()
+cDisplayString& cComponent::getDisplayString() const
 {
     if (!displayString) {
         // set display string (it may depend on parameter values via "$param" references)
@@ -265,7 +265,7 @@ cDisplayString& cComponent::getDisplayString()
             displayString = new cDisplayString(propValue);
         else
             displayString = new cDisplayString();
-        displayString->setHostObject(this);
+        displayString->setHostObject(const_cast<cComponent*>(this));
     }
     return *displayString;
 }
