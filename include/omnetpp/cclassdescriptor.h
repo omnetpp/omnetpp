@@ -113,7 +113,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * descriptor for a base class, if there is no exact match.
      * The returned descriptor object must not be deleted.
      */
-    static cClassDescriptor *getDescriptorFor(cObject *object);
+    static cClassDescriptor *getDescriptorFor(const cObject *object);
     //@}
 
     /** @name Querying and setting fields of the client object. */

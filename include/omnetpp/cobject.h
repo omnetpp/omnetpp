@@ -71,7 +71,7 @@ class SIM_API cObject
 
   public:
     // internal: returns a descriptor object for this object
-    virtual cClassDescriptor *getDescriptor();
+    virtual cClassDescriptor *getDescriptor() const;
 
 #ifdef SIMFRONTEND_SUPPORT
     // internal: used by the UI to optimize refreshes

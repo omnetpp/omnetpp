@@ -40,7 +40,7 @@ const char *cObject::getClassName() const
     return opp_typename(typeid(*this));
 }
 
-cClassDescriptor *cObject::getDescriptor()
+cClassDescriptor *cObject::getDescriptor() const
 {
     return cClassDescriptor::getDescriptorFor(this);
 }

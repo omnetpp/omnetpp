@@ -157,7 +157,7 @@ std::string cStdVectorWatcherBase::detailedInfo() const
     return out.str();
 }
 
-cClassDescriptor *cStdVectorWatcherBase::getDescriptor()
+cClassDescriptor *cStdVectorWatcherBase::getDescriptor() const
 {
     if (!desc) {
         // try to find existing descriptor for this particular type (e.g. "std::vector<double>");

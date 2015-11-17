@@ -211,7 +211,7 @@ class SIM_API cWatch_cObject : public cWatchBase
     virtual const char *getClassName() const override {return r.getClassName();}
     virtual std::string info() const override {return r.info();}
     virtual bool supportsAssignment() const override {return false;}
-    virtual cClassDescriptor *getDescriptor() override {return r.getDescriptor();}
+    virtual cClassDescriptor *getDescriptor() const override {return r.getDescriptor();}
 };
 
 /**
@@ -227,7 +227,7 @@ class SIM_API cWatch_cObjectPtr : public cWatchBase
     virtual const char *getClassName() const override {return rp? rp->getClassName() : "n/a";}
     virtual std::string info() const override {return rp ? rp->info() : "<null>";}
     virtual bool supportsAssignment() const override {return false;}
-    virtual cClassDescriptor *getDescriptor() override {return rp ? rp->getDescriptor() : nullptr;}
+    virtual cClassDescriptor *getDescriptor() const override {return rp ? rp->getDescriptor() : nullptr;}
 };
 
 

@@ -278,7 +278,7 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(const char *classname)
     return dynamic_cast<cClassDescriptor *>(classDescriptors.getInstance()->lookup(classname));
 }
 
-cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
+cClassDescriptor *cClassDescriptor::getDescriptorFor(const cObject *object)
 {
     // find descriptor by class name
     cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(object->getClassName());
@@ -292,7 +292,7 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
     cRegistrationList *array = classDescriptors.getInstance();
     for (int i = 0; i < array->size(); i++) {
         cClassDescriptor *desc = dynamic_cast<cClassDescriptor *>(array->get(i));
-        if (!desc || !desc->doesSupport(object))
+        if (!desc || !desc->doesSupport(const_cast<cObject*>(object)))
             continue;  // skip holes
         int inheritanceChainLength = desc->getInheritanceChainLength();
         if (inheritanceChainLength > bestInheritanceChainLength) {

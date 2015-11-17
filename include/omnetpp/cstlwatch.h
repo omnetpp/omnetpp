@@ -34,7 +34,7 @@ namespace omnetpp {
 class SIM_API cStdVectorWatcherBase : public cWatchBase
 {
   private:
-    cClassDescriptor *desc;
+    mutable cClassDescriptor *desc;
   public:
     cStdVectorWatcherBase(const char *name) : cWatchBase(name) {desc = nullptr;}
 
@@ -45,7 +45,7 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
     virtual const char *getElemTypeName() const = 0;
     virtual int size() const = 0;
     virtual std::string at(int i) const = 0;
-    virtual cClassDescriptor *getDescriptor() override;
+    virtual cClassDescriptor *getDescriptor() const override;
 };
 
 
