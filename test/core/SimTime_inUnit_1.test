@@ -16,7 +16,7 @@ void test(simtime_t t, int exponent)
     double d = trunc(t.dbl() / pow(10.0, exponent));
     EV << t << "s in units of 10^" << exponent << "s = ~" << d << " -> ";
     try {
-        int64_t x = t.inUnit(exponent);
+        int64_t x = t.inUnit((SimTimeUnit)exponent);
         bool nearlyEqual = (x==0 && d==0) || fabs(x/d-1.0) < 0.001;
         EV << x << " " << (nearlyEqual?"ok":"WRONG") << "\n";
     } catch (std::exception& e) {

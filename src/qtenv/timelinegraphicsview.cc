@@ -249,7 +249,7 @@ QString TimeLineGraphicsView::getTickLabel(int mantissa, int exp) {
     else if (exp < -3) {unit = "us"; exp += 6;}
     else if (exp < 0) {unit = "ms"; exp += 3;}
     else unit = "s";
-    QString label = "+" + (abs(exp)<=3 ? simtime_t(mantissa, exp).str().c_str() : mantissa + QString("e") + exp) + unit;
+    QString label = "+" + (abs(exp)<=3 ? SimTime(mantissa, (SimTimeUnit)exp).str().c_str() : mantissa + QString("e") + exp) + unit;
     return label;
 }
 
@@ -503,7 +503,7 @@ void TimeLineGraphicsView::rebuildScene()
 
         if (drawMinorTicks)
             for (int i = 2; i <= 9; i++) {
-                int x = getXForTimeDelta(simtime_t(i,exp));
+                int x = getXForTimeDelta(SimTime(i,(SimTimeUnit)exp));
                 scene()->addLine(x, axisY-2, x, axisY+2);
             }
     }

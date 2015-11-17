@@ -114,9 +114,10 @@ inline int64_t exp10(int exponent)
     return powersOfTen[exponent];
 }
 
-SimTime::SimTime(int64_t significand, int exponent)
+SimTime::SimTime(int64_t value, SimTimeUnit unit)
 {
-    t = significand;
+    t = value;
+    int exponent = unit;
     int expdiff = exponent - scaleexp;
     if (expdiff < 0) {
         int64_t mul = exp10(-expdiff);
@@ -124,15 +125,15 @@ SimTime::SimTime(int64_t significand, int exponent)
         if (mul == -1 || tmp * mul != t)
             throw cRuntimeError("simtime_t error: %" LL "d*10^%d cannot be represented precisely using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
-                    significand, exponent, scaleexp);
+                    value, exponent, scaleexp);
         t = tmp;
     }
     else if (expdiff > 0) {
         int64_t mul = exp10(expdiff);
         t *= mul;
-        if (mul == -1 || t / mul != significand)
+        if (mul == -1 || t / mul != value)
             throw cRuntimeError("simtime_t overflow: cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
-                    significand, exponent, range().c_str(), scaleexp);
+                    value, exponent, range().c_str(), scaleexp);
     }
 }
 
@@ -148,9 +149,10 @@ void SimTime::checkedMul(int64_t x)
         str().c_str(), x, range().c_str(), scaleexp);
 }
 
-int64_t SimTime::inUnit(int exponent) const
+int64_t SimTime::inUnit(SimTimeUnit unit) const
 {
     int64_t x = t;
+    int exponent = unit;
     int expdiff = exponent - scaleexp;
     if (expdiff > 0) {
         int64_t mul = exp10(expdiff);
@@ -165,10 +167,10 @@ int64_t SimTime::inUnit(int exponent) const
     return x;
 }
 
-void SimTime::split(int exponent, int64_t& outValue, SimTime& outRemainder) const
+void SimTime::split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder) const
 {
-    outValue = inUnit(exponent);
-    outRemainder = *this - SimTime(outValue, exponent);
+    outValue = inUnit(unit);
+    outRemainder = *this - SimTime(outValue, unit);
 }
 
 const SimTime& SimTime::operator=(const cPar& p)
