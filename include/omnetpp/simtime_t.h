@@ -35,13 +35,10 @@ typedef omnetpp::SimTime   simtime_t;
 typedef const simtime_t& simtime_t_cref;  // in many configurations (e.g. debug builds), it is more efficient to return a SimTime from a function as a const ref than by value
 typedef const double   const_simtime_t;
 
-#define MAXTIME        omnetpp::SimTime::getMaxTime()
+#define SIMTIME_MAX    omnetpp::SimTime::getMaxTime()
 #define SIMTIME_ZERO   omnetpp::SimTime::ZERO
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())
-#define SIMTIME_RAW(t) ((t).raw())
-#define STR_SIMTIME(s) omnetpp::SimTime::parse(s)
-#define SIMTIME_TTOA(buf,t) ((t).str(buf))
 
 #endif
 

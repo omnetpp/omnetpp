@@ -216,7 +216,7 @@ while (<LISTFILE>)
           $warnings{"Variable might represent simulation time -- if so, change \"double\" to \"simtime_t\""} .= $lineinfo;
        }
        if ($line =~ /\b(simtimeToStr|strToSimtime)\b/) {
-          $warnings{"The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods, or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead)"} .= $lineinfo;
+          $warnings{"The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods like str() and parse() instead)"} .= $lineinfo;
        }
 
        # dup()

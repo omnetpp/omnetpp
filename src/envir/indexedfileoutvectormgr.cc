@@ -255,11 +255,11 @@ void cIndexedFileOutputVectorManager::writeBlock(Vector *vp)
 
     if (vp->recordEventNumbers) {
         for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+            CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, it->simtime.str(buff), prec, it->value), fname);
     }
     else {
         for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            CHECK(fprintf(f, "%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+            CHECK(fprintf(f, "%d\t%s\t%.*g\n", vp->id, it->simtime.str(buff), prec, it->value), fname);
     }
 
     currentBlock.size = opp_ftell(f) - currentBlock.offset;
@@ -278,7 +278,7 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
     Block& block = vp->currentBlock;
 
     if (block.count > 0) {
-        // make sure that the offsets refered by the index file are exists in the vector file
+        // make sure that the offsets referred by the index file are exists in the vector file
         // so the index can be used to access the vector file while it is being written
         fflush(f);
 
@@ -286,14 +286,14 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(Vector *vp)
             CHECK(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
                             vp->id, block.offset, block.size,
                             block.startEventNum, block.endEventNum,
-                            SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
+                            block.startTime.str(buff1), block.endTime.str(buff2),
                             block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)
                     , ifname);
         }
         else {
             CHECK(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
                             vp->id, block.offset, block.size,
-                            SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
+                            block.startTime.str(buff1), block.endTime.str(buff2),
                             block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr)
                     , ifname);
         }

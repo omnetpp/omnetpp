@@ -487,7 +487,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     cMessage *until_msg = nullptr;
     if (argc == 5) {
         if (!opp_isblank(argv[2]))
-            TRY(until_time = STR_SIMTIME(argv[2]));  // simtime overflow
+            TRY(until_time = SimTime::parse(argv[2]));  // simtime overflow
 
         char *e;
         until_eventnum = strtoll(argv[3], &e, 10);
@@ -537,7 +537,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     else {
         simtime_t until_time = 0;
         if (!opp_isblank(argv[1]))
-            TRY(until_time = STR_SIMTIME(argv[1]));  // simtime overflow
+            TRY(until_time = SimTime::parse(argv[1]));  // simtime overflow
 
         char *e;
         eventnumber_t until_eventnum = strtoll(argv[2], &e, 10);

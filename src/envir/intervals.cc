@@ -56,9 +56,9 @@ void Intervals::parse(const char *text)
         // add to vector
         Interval interval;
         if (startstr != ellipsis)
-            interval.startTime = STR_SIMTIME(std::string(startstr, ellipsis-startstr).c_str());
+            interval.startTime = SimTime::parse(std::string(startstr, ellipsis-startstr).c_str());
         if (*stopstr)
-            interval.stopTime = STR_SIMTIME(stopstr);
+            interval.stopTime = SimTime::parse(stopstr);
         parsedIntervals.push_back(interval);
     }
 

@@ -677,7 +677,7 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
     if (getHasher()) {
         // note: there's no value in adding getEventNumber()
         cHasher *hasher = getHasher();
-        hasher->add(SIMTIME_RAW(simTime()));
+        hasher->add(simTime().raw());
 #ifdef USE_OMNETPP4x_FINGERPRINTS
         hasher->add(module->getVersion4ModuleId());
 #else

@@ -90,7 +90,7 @@ void cLinkDelayLookahead::startRun()
     // if two partitions are not connected, the lookeahead is "infinity"
     for (int i = 0; i < numSeg; i++)
         if (i != myProcId && segInfo[i].minDelay == -1)
-            segInfo[i].minDelay = MAXTIME;
+            segInfo[i].minDelay = SIMTIME_MAX;
 
 
     for (int i = 0; i < numSeg; i++)

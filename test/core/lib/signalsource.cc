@@ -31,7 +31,7 @@ void SignalSource::initialize()
         }
         else {
             // schedule self-message
-            simtime_t t = STR_SIMTIME(atAttr);
+            simtime_t t = SimTime::parse(atAttr);
             cMessage *msg = new cMessage();
             msg->setContextPointer(elem);
             scheduleAt(t, msg);
@@ -87,7 +87,7 @@ void SignalSource::emitSignal(cXMLElement *elem)
             else if (strcmp(type, "double") == 0)
                 emit(signalID, strtod(value, nullptr));
             else if (strcmp(type, "simtime_t") == 0)
-                emit(signalID, STR_SIMTIME(value));
+                emit(signalID, SimTime::parse(value));
             else if (strcmp(type, "string") == 0)
                 emit(signalID, value);
             else if (strcmp(type, "nullptr") == 0)
@@ -96,7 +96,7 @@ void SignalSource::emitSignal(cXMLElement *elem)
                 emit(signalID, obj = createOne(type));
         }
         else {
-            simtime_t t = STR_SIMTIME(timestamp);
+            simtime_t t = SimTime::parse(timestamp);
             cTimestampedValue tsval;
             if (strcmp(type, "bool") == 0)
                 tsval.set(t, value[0] == 't');
@@ -107,7 +107,7 @@ void SignalSource::emitSignal(cXMLElement *elem)
             else if (strcmp(type, "double") == 0)
                 tsval.set(t, strtod(value, nullptr));
             else if (strcmp(type, "simtime_t") == 0)
-                tsval.set(t, STR_SIMTIME(value));
+                tsval.set(t, SimTime::parse(value));
             else if (strcmp(type, "string") == 0)
                 tsval.set(t, value);
             else if (strcmp(type, "nullptr") == 0)
