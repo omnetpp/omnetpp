@@ -240,8 +240,17 @@ class SIM_API SimTime
     friend const SimTime operator*(const SimTime& x, const cPar& p) { return SimTime(x)*=p; }
     friend const SimTime operator*(const cPar& p, const SimTime& x) { return SimTime(x)*=p; }
     friend const SimTime operator/(const SimTime& x, const cPar& p) { return SimTime(x)/=p; }
-
     //@}
+
+    /** @name Misc operations and utilities */
+    //@{
+
+    /**
+     * Returns true if this simulation time is zero, false otherwise. This is
+     * more efficient than comparing the variable to a (double) 0.0, and shorter
+     * than comparing against SimTime::ZERO.
+     */
+    bool isZero() const {return t==0;}
 
     /**
      * Converts simulation time (in seconds) to a double. Note that conversion to
@@ -378,15 +387,8 @@ class SIM_API SimTime
      * *somewhere* into the buffer, but NOT necessarily at the beginning.
      */
     static char *ttoa(char *buf, int64_t t, int scaleexp, char *&endp);
+    //@}
 };
-
-/*
- for *= and /=, we might need the following code:
-    // linux bug workaround; don't change next two lines
-    volatile double tmp = uint64_to_double( m_value ) * d;
-    m_value = static_cast<int64_t>( tmp );
-    return *this;
-*/
 
 inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 {
