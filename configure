@@ -4644,7 +4644,7 @@ rm -f core conftest.err conftest.$ac_objext \
 ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 #-----------------------------
-# Check for QT cflags and libs
+# Check for Qt cflags and libs
 #-----------------------------
 if test -z "$QT_VERSION"; then
     # skip building QT
@@ -4700,8 +4700,8 @@ done
 test -n "$QMAKE" || QMAKE="nope"
 
         if test "$QMAKE" = nope; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv is configured to use QT4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv" >&5
-$as_echo "$as_me: WARNING: Qtenv is configured to use QT4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv" >&2;}
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv is configured to use Qt4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv" >&5
+$as_echo "$as_me: WARNING: Qtenv is configured to use Qt4, but cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt4 qmake) - disabling Qtenv" >&2;}
             QTENV_IF_POSSIBLE=missing-dependency
         else
 
@@ -4855,7 +4855,7 @@ rm -f core conftest.err conftest.$ac_objext \
 
             fi
             if test $qt_ok = no; then
-                as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure qt developmet packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
+                as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
             fi
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
             QTENV_IF_POSSIBLE=qtenv
@@ -6771,8 +6771,8 @@ fi
 #-----------------------
 # add defines to cflags
 #-----------------------
-CFLAGS_DEBUG="$DEFINES $CFLAGS_DEBUG"
-CFLAGS_RELEASE="$DEFINES $CFLAGS_RELEASE"
+CFLAGS_DEBUG="\$(DEFINES) $CFLAGS_DEBUG"
+CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
 
 #----------------------
 # Files to be generated

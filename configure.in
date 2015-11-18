@@ -1195,8 +1195,8 @@ fi
 #-----------------------
 # add defines to cflags
 #-----------------------
-CFLAGS_DEBUG="$DEFINES $CFLAGS_DEBUG"
-CFLAGS_RELEASE="$DEFINES $CFLAGS_RELEASE"
+CFLAGS_DEBUG="\$(DEFINES) $CFLAGS_DEBUG"
+CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
 
 #----------------------
 # Files to be generated
