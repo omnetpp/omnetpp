@@ -147,7 +147,7 @@ Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-
 Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (@signal properties) in NED files. The default setting depends on the build type: 'true' in DEBUG, and 'false' in RELEASE mode.");
 
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
-Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_MODULE, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
+Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_MODULE, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The value may be an expression, with the index and ancestorIndex() operators being potentially very useful. The default is one-to-one mapping, i.e. RNG k of all modules refer to the global RNG k (for k=0..num-rngs-1).");
 Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the @statistic property matched by the wildcard. Special values: default, all: they select the modes listed in the record= key of @statistic; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
 
 // the following options are declared in other files
@@ -1693,29 +1693,40 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
         const char *suffix = suffixes[i];  // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
         const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), suffix);
         ASSERT(value != nullptr);
-        char *s1, *s2;
-        int modRng = strtol(suffix+strlen("rng-"), &s1, 10);
-        int physRng = strtol(value, &s2, 10);
-        if (*s1 != '\0' || *s2 != '\0')
-            throw cRuntimeError("Configuration error: %s=%s for module/channel %s: "
-                                "numeric RNG indices expected",
-                    suffix, value, component->getFullPath().c_str());
+        try {
+            char *endptr;
+            int modRng = strtol(suffix+strlen("rng-"), &endptr, 10);
+            if (*endptr != '\0')
+                throw opp_runtime_error("numeric RNG indices expected");
 
-        if (physRng > getNumRNGs())
-            throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
-                                "RNG index out of range (num-rngs=%d)",
-                    modRng, physRng, component->getFullPath().c_str(), getNumRNGs());
-        if (modRng >= mapsize) {
-            if (modRng >= 100)
-                throw cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
-                                    "local RNG index out of supported range 0..99",
-                        modRng, component->getFullPath().c_str());
-            while (mapsize <= modRng) {
-                tmpmap[mapsize] = mapsize;
-                mapsize++;
+            int physRng = strtol(value, &endptr, 10);
+            if (*endptr != '\0') {
+                // not a numeric constant, try parsing it as an expression
+                cDynamicExpression expr;
+                expr.parse(value);
+                cNEDValue tmp = expr.evaluate(component);
+                if (!tmp.isNumeric())
+                    throw opp_runtime_error("numeric constant or expression expected");
+                physRng = tmp.longValue();
             }
+
+            if (physRng > getNumRNGs())
+                throw cRuntimeError("RNG index %d out of range (num-rngs=%d)", physRng, getNumRNGs());
+            if (modRng >= mapsize) {
+                if (modRng >= 100)
+                    throw cRuntimeError("local RNG index %d out of supported range 0..99", modRng);
+                while (mapsize <= modRng) {
+                    tmpmap[mapsize] = mapsize;
+                    mapsize++;
+                }
+            }
+            tmpmap[modRng] = physRng;
         }
-        tmpmap[modRng] = physRng;
+        catch (std::exception& e) {
+            throw cRuntimeError("configuration entry *.%s = %s for module/channel %s: %s",
+                    suffix, value, component->getFullPath().c_str(), e.what());
+
+        }
     }
 
     // install map into the module
