@@ -15,9 +15,10 @@
 *--------------------------------------------------------------*/
 
 #include "graphicspatharrowitem.h"
+
+#include <cmath>
 #include <QPen>
 #include <QPainter>
-
 #include <QDebug>
 
 GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
