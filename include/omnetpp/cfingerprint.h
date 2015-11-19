@@ -169,7 +169,7 @@ class SIM_API cSingleFingerprint : public cFingerprint
 
   protected:
     std::string expectedFingerprints;
-    std::vector<FingerprintCategory> categories;
+    std::string categories;
     cMatchExpression *eventMatcher;
     cMatchExpression *moduleMatcher;
     cMatchExpression *resultMatcher;
@@ -181,7 +181,7 @@ class SIM_API cSingleFingerprint : public cFingerprint
     bool addExtraData_;
 
   protected:
-    virtual FingerprintCategory getCategory(char ch);
+    virtual FingerprintCategory validateCategory(char ch);
     virtual void parseCategories(const char *s);
     virtual void parseEventMatcher(const char *s);
     virtual void parseModuleMatcher(const char *s);
@@ -193,7 +193,7 @@ class SIM_API cSingleFingerprint : public cFingerprint
     virtual ~cSingleFingerprint();
 
     virtual cSingleFingerprint *dup() const override { return new cSingleFingerprint(); }
-    virtual std::string info() const override { return hasher->str(); }
+    virtual std::string info() const override;
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
