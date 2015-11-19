@@ -1710,7 +1710,7 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
                 physRng = tmp.longValue();
             }
 
-            if (physRng > getNumRNGs())
+            if (physRng >= getNumRNGs())
                 throw cRuntimeError("RNG index %d out of range (num-rngs=%d)", physRng, getNumRNGs());
             if (modRng >= mapsize) {
                 if (modRng >= 100)
