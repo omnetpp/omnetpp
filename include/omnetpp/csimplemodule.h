@@ -353,7 +353,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * you can schedule it again -- so you can reuse the same message
      * object for timeouts over and over during the whole simulation.
      */
-    int scheduleAt(simtime_t t, cMessage *msg);
+    void scheduleAt(simtime_t t, cMessage *msg);
 
     /**
      * Removes the given message from the future events. The message

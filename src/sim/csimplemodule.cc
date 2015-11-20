@@ -505,7 +505,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
     return 0;
 }
 
-int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
+void cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 {
     if (msg == nullptr)
         throw cRuntimeError("scheduleAt(): message pointer is nullptr");
@@ -546,7 +546,6 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     EVCB.messageSent_OBSOLETE(msg);  //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
     getSimulation()->insertEvent(msg);
-    return 0;
 }
 
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
