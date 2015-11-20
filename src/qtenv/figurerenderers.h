@@ -266,7 +266,14 @@ protected:
 
 class PixmapFigureRenderer : public ImageFigureRenderer
 {
+protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+};
+
+class IconFigureRenderer : public ImageFigureRenderer
+{
+protected:
+    virtual void setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset) const;
 };
 
 } // namespace qtenv

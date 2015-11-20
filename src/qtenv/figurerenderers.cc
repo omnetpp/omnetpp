@@ -113,6 +113,8 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
         renderer = searchInCache<TextFigureRenderer>("TextFigure");
     else if (dynamic_cast<cLabelFigure *>(figure))
         renderer = searchInCache<LabelFigureRenderer>("LabelFigure");
+    else if (dynamic_cast<cIconFigure *>(figure))
+        renderer = searchInCache<IconFigureRenderer>("IconFigure");
     else if (dynamic_cast<cImageFigure *>(figure))
         renderer = searchInCache<ImageFigureRenderer>("ImageFigure");
     else if (dynamic_cast<cPixmapFigure *>(figure))
@@ -1412,6 +1414,14 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
                 Qt::FastTransformation : Qt::SmoothTransformation;
     image = image.scaled(pixmapFigure->getWidth(), pixmapFigure->getHeight(), Qt::IgnoreAspectRatio, transMode);
     pixmapItem->setPixmap(QPixmap::fromImage(image));
+}
+
+void IconFigureRenderer::setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset) const
+{
+    //TODO It's similar to Tkenv but not exactly
+    QTransform qTrans;
+    qTrans.translate(transform.a*offset->x(), transform.d*offset->y());
+    item->setTransform(qTrans);
 }
 
 } // namespace qtenv
