@@ -34,6 +34,9 @@ public:
     explicit PreferencesDialog(int defaultPage = -1, QWidget *parent = 0);
     ~PreferencesDialog();
 
+private slots:
+    void restoreDefaultFonts();
+
 protected slots:
     // the slider was dragged by the user, setting the speed appropriately
     void onAnimationSliderMoved(int value);
@@ -47,6 +50,8 @@ private:
     Ui::PreferencesDialog *ui;
 
     void init();
+    void setFontsTabFonts(const QFont &interfaceFont, const QFont &timelineFont,
+                          const QFont &canvasFont, const QFont &logBoxFont);
 };
 
 } // namespace qtenv

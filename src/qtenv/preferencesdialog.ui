@@ -730,37 +730,27 @@
           <item row="0" column="1">
            <widget class="QFontComboBox" name="userInterfaceBox"/>
           </item>
+          <item row="3" column="1">
+           <widget class="QFontComboBox" name="logBox"/>
+          </item>
           <item row="1" column="1">
            <widget class="QFontComboBox" name="timeLineBox"/>
           </item>
           <item row="2" column="1">
            <widget class="QFontComboBox" name="canvasBox"/>
           </item>
-          <item row="3" column="1">
-           <widget class="QFontComboBox" name="logBox"/>
+          <item row="2" column="2">
+           <widget class="QSpinBox" name="canvasNumBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>70</number>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
            <widget class="QSpinBox" name="userInterfaceNumBox">
-            <property name="minimum">
-             <number>4</number>
-            </property>
-            <property name="maximum">
-             <number>70</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QSpinBox" name="timeLineNumBox">
-            <property name="minimum">
-             <number>4</number>
-            </property>
-            <property name="maximum">
-             <number>70</number>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QSpinBox" name="canvasNumBox">
             <property name="minimum">
              <number>4</number>
             </property>
@@ -779,8 +769,48 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="2">
+           <widget class="QSpinBox" name="timeLineNumBox">
+            <property name="minimum">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <number>70</number>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="restoreLayout">
+         <item>
+          <spacer name="restoreSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="restoreButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Restore Defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

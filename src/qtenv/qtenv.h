@@ -197,6 +197,14 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       QFont canvasFont;
       QFont logFont;
 
+      struct DefaultFonts
+      {
+          QFont boldFont;
+          QFont timelineFont;
+          QFont canvasFont;
+          QFont logFont;
+      } defaultFonts;
+
       // these only exist while doRun() runs
       QSettings *globalPrefs = nullptr;
       QSettings *localPrefs = nullptr;
@@ -366,6 +374,11 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       QFont getTimelineFont() {return timelineFont;}
       QFont getCanvasFont() {return canvasFont;}
       QFont getLogFont() {return logFont;}
+
+      QFont getDefaultBoldFont() {return defaultFonts.boldFont;}
+      QFont getDefaultTimelineFont() {return defaultFonts.timelineFont;}
+      QFont getDefaultCanvasFont() {return defaultFonts.canvasFont;}
+      QFont getDefaultLogFont() {return defaultFonts.logFont;}
 
       void setBoldFont(QFont &font) {boldFont = font;}
       void setTimelineFont(QFont &font) {timelineFont = font;}

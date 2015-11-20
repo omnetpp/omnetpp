@@ -2118,32 +2118,35 @@ void Qtenv::initFonts()
     // set up fonts
     #ifdef Q_WS_WIN
     // Windows
-    QFont normalFamily = getFirstAvailableFontFamily({"Segoe UI", "MS Sans Serif", "Arial"}, 9);
-    boldFont = getPref("font-bold", normalFamily).value<QFont>();
-    canvasFont = getPref("font-canvas", normalFamily).value<QFont>();
-    timelineFont = getPref("font-timeline", getFirstAvailableFontFamily({"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"},
-                                                                        normalFamily.pointSize(), normalFamily)).value<QFont>();
-    logFont = getPref("font-log", getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9)).value<QFont>();
-
+    defaultFonts.boldFont = getFirstAvailableFontFamily({"Segoe UI", "MS Sans Serif", "Arial"}, 9);
+    defaultFonts.canvasFont = defaultFonts.boldFont;
+    defaultFonts.timelineFont = getFirstAvailableFontFamily(
+                {"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"},
+                defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9);
     #elif defined(Q_WS_MAC)
     // Mac
-    QFont normalFamily = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
-    boldFont = getPref("font-bold", normalFamily).value<QFont>();
-    canvasFont = getPref("font-canvas", normalFamily).value<QFont>();
-    timelineFont = getPref("font-timeline", getFirstAvailableFontFamily({"Arial Narrow"}, normalFamily.pointSize(), normalFamily)).value<QFont>();
-    logFont = getPref("font-log", getFirstAvailableFontFamily({"Monaco", "Courier"}, 13)).value<QFont>();
-
+    defaultFonts.boldFont = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
+    defaultFonts.canvasFont = defaultFonts.boldFont;
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Arial Narrow"},
+                                                            defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily({"Monaco", "Courier"}, 13);
     #else
     // Linux and other systems
-    QFont normalFamily = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L",
+    defaultFonts.boldFont = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L",
                                                       "FreeSans", "Sans"}, 9);
-    boldFont = getPref("font-bold", normalFamily).value<QFont>();
-    canvasFont = getPref("font-canvas", normalFamily).value<QFont>();
-    timelineFont = getPref("font-timeline", getFirstAvailableFontFamily({"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"},
-                                                                        normalFamily.pointSize(), normalFamily)).value<QFont>();
-    logFont = getPref("font-log", getFirstAvailableFontFamily({"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"},
-                                                              9)).value<QFont>();
+    defaultFonts.canvasFont = defaultFonts.boldFont;
+    defaultFonts.timelineFont = getFirstAvailableFontFamily(
+                {"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"},
+                defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily(
+                {"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"}, 9);
     #endif
+
+    boldFont = getPref("font-bold", defaultFonts.boldFont).value<QFont>();
+    canvasFont = getPref("font-canvas", defaultFonts.canvasFont).value<QFont>();
+    timelineFont = getPref("font-timeline", defaultFonts.timelineFont).value<QFont>();
+    logFont = getPref("font-log", defaultFonts.logFont).value<QFont>();
 }
 
 // Returns the first font family from the given preference list that is

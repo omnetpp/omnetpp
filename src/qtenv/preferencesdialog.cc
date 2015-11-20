@@ -112,16 +112,33 @@ void PreferencesDialog::init()
     QFont interfaceFont = getQtenv()->getBoldFont();
     QFont timelineFont = getQtenv()->getTimelineFont();
     QFont canvasFont = getQtenv()->getCanvasFont();
-    QFont logBox = getQtenv()->getLogFont();
+    QFont logBoxFont = getQtenv()->getLogFont();
 
+    setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont);
+    connect(ui->restoreButton, SIGNAL(clicked()), this, SLOT(restoreDefaultFonts()));
+}
+
+void PreferencesDialog::setFontsTabFonts(const QFont &interfaceFont, const QFont &timelineFont,
+                                         const QFont &canvasFont, const QFont &logBoxFont)
+{
     ui->userInterfaceBox->setCurrentFont(interfaceFont);
     ui->userInterfaceNumBox->setValue(interfaceFont.pointSize());
     ui->timeLineBox->setCurrentFont(timelineFont);
     ui->timeLineNumBox->setValue(timelineFont.pointSize());
     ui->canvasBox->setCurrentFont(canvasFont);
     ui->canvasNumBox->setValue(canvasFont.pointSize());
-    ui->logBox->setCurrentFont(logBox);
-    ui->logNumBox->setValue(logBox.pointSize());
+    ui->logBox->setCurrentFont(logBoxFont);
+    ui->logNumBox->setValue(logBoxFont.pointSize());
+}
+
+void PreferencesDialog::restoreDefaultFonts()
+{
+    QFont interfaceFont = getQtenv()->getDefaultBoldFont();
+    QFont timelineFont = getQtenv()->getDefaultTimelineFont();
+    QFont canvasFont = getQtenv()->getDefaultCanvasFont();
+    QFont logBoxFont = getQtenv()->getDefaultLogFont();
+
+    setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont);
 }
 
 void PreferencesDialog::accept()
