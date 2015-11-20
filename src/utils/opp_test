@@ -419,7 +419,7 @@ sub testcase_generatesources
     }
 
     # execute pre-run commands
-    foreach $key (keys(%values))
+    foreach $key (sort keys(%values))
     {
         if ($key =~ /^prerun-command\(/)
         {
@@ -551,7 +551,7 @@ sub testcase_run()
     # execute post-run commands
     if ($mode eq 'run')
     {
-        foreach $key (keys(%values))
+        foreach $key (sort keys(%values))
         {
             if ($key =~ /^postrun-command\(/)
             {
