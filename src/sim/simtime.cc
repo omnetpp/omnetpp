@@ -35,26 +35,40 @@ bool SimTime::checkmul = true;
 
 const SimTime SimTime::ZERO;
 
+#define MAX_POWER_OF_TEN  18
+static int64_t powersOfTen[MAX_POWER_OF_TEN+1];
+
+static void fillPowersOfTen()
+{
+    int64_t power = 1;
+    for (int i = 0; i <= MAX_POWER_OF_TEN; i++) {
+        powersOfTen[i] = power;
+        power *= 10;
+    }
+}
+
+inline int64_t exp10(int exponent)
+{
+    if (exponent < 0 || exponent > MAX_POWER_OF_TEN)
+        return -1;  // error
+    return powersOfTen[exponent];
+}
+
 void SimTime::setScaleExp(int e)
 {
     if (e == scaleexp)
         return;
     if (scaleexp != SCALEEXP_UNINITIALIZED)
         throw cRuntimeError("SimTime::setScaleExp(): Attempt to change the scale exponent after initialization");
-
     if (e < -18 || e > 0)
         throw cRuntimeError("simtime_t scale exponent %d is out of accepted range -18..0; "
                             "recommended value is -12 (picosecond resolution with range +-106 days)", e);
 
-    // calculate 10^-e
-    scaleexp = e;
-    int64_t scale = 1;
-    while (e++ < 0)
-        scale *= 10;
+    fillPowersOfTen();
 
-    // store it in double too
-    dscale = scale;
-    fscale = (double)scale;
+    scaleexp = e;
+    dscale = exp10(-scaleexp);
+    fscale = (double)dscale;
     invfscale = 1.0 / fscale;
 }
 
@@ -94,24 +108,6 @@ void SimTime::overflowNegating()
 {
     throw cRuntimeError("Error negating simtime_t %s: it is internally represented with INT64_MIN "
             "that has no positive equivalent, try decreasing precision", str().c_str());
-}
-
-#define MAX_POWER_OF_TEN  18
-static int64_t powersOfTen[MAX_POWER_OF_TEN+1];
-
-EXECUTE_ON_STARTUP(
-    int64_t power = 1;
-    for (int i = 0; i <= MAX_POWER_OF_TEN; i++) {
-        powersOfTen[i] = power;
-        power *= 10;
-    }
-);
-
-inline int64_t exp10(int exponent)
-{
-    if (exponent < 0 || exponent > MAX_POWER_OF_TEN)
-        return -1;  // error
-    return powersOfTen[exponent];
 }
 
 SimTime::SimTime(int64_t value, SimTimeUnit unit)
