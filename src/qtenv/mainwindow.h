@@ -115,6 +115,7 @@ protected slots:
 
 private slots:
     void onSplitterMoved(int, int);
+    void on_actionLoadNEDFile_triggered();
 
 private:
     Ui::MainWindow *ui;

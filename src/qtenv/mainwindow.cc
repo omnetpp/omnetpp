@@ -23,6 +23,7 @@
 #include <QTimer>
 #include <QLineEdit>
 #include <QDialogButtonBox>
+#include <QFileDialog>
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
@@ -994,6 +995,22 @@ void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
     delete frameLayout;
     delete buttonBox;
     delete about;
+}
+
+void MainWindow::on_actionLoadNEDFile_triggered()
+{
+    QString lastNedFile = getQtenv()->getPref("last-nedfile", ".").value<QString>();
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Open NED file"), lastNedFile, tr("NED Files (*.ned);;All files (*)"));
+
+    if(!fileName.isNull())
+    {
+        getQtenv()->setPref("last-nedfile", fileName);
+        getQtenv()->loadNedFile(fileName.toStdString().c_str());
+
+        getQtenv()->refreshInspectors();
+    }
 }
 
 } // namespace qtenv
