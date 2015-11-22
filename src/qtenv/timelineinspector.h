@@ -28,7 +28,6 @@ class TimeLineInspector : public Inspector
 {
     Q_OBJECT
 private:
-
     TimeLineGraphicsView *timeLine;
 
 private slots:

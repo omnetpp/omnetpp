@@ -113,6 +113,9 @@ protected slots:
     // most likely the slider in the preferences window was moved
     void onAnimationSpeedChanged(float speed);
 
+private slots:
+    void onSplitterMoved(int, int);
+
 private:
     Ui::MainWindow *ui;
     Qtenv *env;
@@ -122,6 +125,7 @@ private:
     bool showStatusDetails;
     FilteredObjectListDialog *filteredObjectListDialog;
     static QString aboutText;
+    QList<int> defaultTimeLineSize;
 
     bool checkRunning();
     void runSimulation(eMode mode);

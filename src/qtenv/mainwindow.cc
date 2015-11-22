@@ -667,9 +667,11 @@ void MainWindow::restoreGeometry()
     // set timeline initial size if there is no qtenv.ini
     QList<int> sizes;
     TimeLineInspector *timeLineInsp = static_cast<TimeLineInspector*>(ui->timeLine->children()[0]);
+    connect(ui->mainSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved(int, int)));
     double timeLineHeight = timeLineInsp->getInitHeight();
     sizes.append(timeLineHeight);
     sizes.append(ui->mainSplitter->height() - timeLineHeight);
+    defaultTimeLineSize = sizes;
     ui->mainSplitter->setSizes(sizes);
 
     restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);
@@ -689,15 +691,13 @@ void MainWindow::restoreGeometry()
     }
 
     // initialize timeline
-    QVariant variant = getQtenv()->getPref("display-timeline");
-    bool isSunken = variant.isValid() ? variant.value<bool>() : true;
-    ui->timeLine->setVisible(isSunken);
-    ui->actionTimeline->setChecked(isSunken);
+    bool isSunken = getQtenv()->getPref("display-timeline", true).value<bool>();
     timeLineSize = ui->mainSplitter->sizes();
+    on_actionTimeline_toggled(isSunken);
+    ui->actionTimeline->setChecked(isSunken);
 
     // initialize status bar
-    variant = getQtenv()->getPref("display-statusdetails");
-    showStatusDetails = variant.isValid() ? variant.value<bool>() : true;
+    showStatusDetails = getQtenv()->getPref("display-statusdetails", true).value<bool>();
     ui->labelDisplay1->setVisible(showStatusDetails);
     ui->labelDisplay2->setVisible(showStatusDetails);
     ui->labelDisplay3->setVisible(showStatusDetails);
@@ -778,9 +778,26 @@ void MainWindow::on_actionPreferences_triggered()
 void MainWindow::on_actionTimeline_toggled(bool isSunken)
 {
     if(!isSunken)
-        timeLineSize = ui->mainSplitter->sizes();
+    {
+        timeLineSize = ui->mainSplitter->sizes().at(0) == 0 ? defaultTimeLineSize : ui->mainSplitter->sizes();
+        QList<int> sizes = timeLineSize;
+        sizes[0] = 0;
+        ui->mainSplitter->setSizes(sizes);
+    }
+    else
+        ui->mainSplitter->setSizes(timeLineSize);
 
-    ui->timeLine->setVisible(isSunken);
+
+}
+
+void MainWindow::onSplitterMoved(int, int)
+{
+    // It is needed in case when hide timeline with toolbar button and after
+    // is displayed by splitterMoved signal, thus it can be avoided glint.
+    if(ui->mainSplitter->sizes().at(0) != 0)
+        timeLineSize = defaultTimeLineSize;
+    ui->actionTimeline->setChecked(ui->mainSplitter->sizes().at(0) != 0);
+
 }
 
 void MainWindow::onAnimationSpeedChanged(float speed) {
@@ -948,7 +965,6 @@ void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
         on_actionVerticalLayout_triggered(true);
     }
 }
-
 
 void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
 {
