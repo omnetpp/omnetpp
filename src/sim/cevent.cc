@@ -35,6 +35,7 @@ using std::ostream;
 cEvent::cEvent(const cEvent& event) : cOwnedObject(event)
 {
     heapIndex = -1;
+    insertOrder = -1;
     previousEventNumber = -1;
     operator=(event);
 }
@@ -45,6 +46,7 @@ cEvent::cEvent(const char *name) : cOwnedObject(name, false)
     priority = 0;
     arrivalTime = 0;
     heapIndex = -1;
+    insertOrder = -1;
     previousEventNumber = -1;
 }
 
