@@ -31,6 +31,7 @@ int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64_t SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
+int64_t SimTime::maxseconds;
 bool SimTime::checkmul = true;
 
 const SimTime SimTime::ZERO;
@@ -70,6 +71,7 @@ void SimTime::setScaleExp(int e)
     dscale = exp10(-scaleexp);
     fscale = (double)dscale;
     invfscale = 1.0 / fscale;
+    maxseconds = INT64_MAX / dscale;
 }
 
 static std::string range()
@@ -80,14 +82,20 @@ static std::string range()
 void SimTime::initError(double d)
 {
     throw cRuntimeError("Global simtime_t variable found, with value %g. Global simtime_t variables are "
-                        "forbidden, because scale exponent is not yet known at the time they get initialized. "
+                        "forbidden, because scale exponent is not yet known at the time they are initialized. "
                         "Please use double or const_simtime_t instead", d);
 }
 
-void SimTime::rangeError(double i64)
+void SimTime::rangeErrorInt64(double i64)
 {
     throw cRuntimeError("Cannot convert %g to simtime_t: out of range %s, allowed by scale exponent %d",
-                        i64*invfscale, range().c_str(), scaleexp);
+            i64*invfscale, range().c_str(), scaleexp);
+}
+
+void SimTime::rangeErrorSeconds(int64_t sec)
+{
+    throw cRuntimeError("Cannot convert % " LL "d to simtime_t: out of range %s, allowed by scale exponent %d",
+            sec, range().c_str(), scaleexp);
 }
 
 void SimTime::overflowAdding(const SimTime& x)
@@ -112,6 +120,11 @@ void SimTime::overflowNegating()
 
 SimTime::SimTime(int64_t value, SimTimeUnit unit)
 {
+    if (scaleexp == SCALEEXP_UNINITIALIZED)
+        throw cRuntimeError("Global simtime_t variable found, initialized with SimTime(%" LL "d, %d). "
+                "Global simtime_t variables are forbidden, because scale exponent is not yet known "
+                "at the time they are initialized. Please use double or const_simtime_t instead", value, unit);
+
     t = value;
     int exponent = unit;
     int expdiff = exponent - scaleexp;

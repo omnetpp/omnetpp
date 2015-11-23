@@ -67,6 +67,7 @@ class SIM_API SimTime
     static int64_t dscale;   // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
+    static int64_t maxseconds; // the largest number in seconds that can be represented with this scaleexp
     static bool checkmul;    // when true, multiplications are checked for integer overflow
 
   public:
@@ -76,7 +77,7 @@ class SIM_API SimTime
     static void resetScale() {scaleexp = SCALEEXP_UNINITIALIZED;} // for unit tests only
 
   private:
-    template<typename T> void check(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
+    template<typename T> void assertInited(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
     void initError(double d);
 
     bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
@@ -86,8 +87,14 @@ class SIM_API SimTime
          i64 = floor(i64 + 0.5);
 #endif
          if (fabs(i64) > INT64_MAX_DBL)
-             rangeError(i64);
+             rangeErrorInt64(i64);
          return (int64_t)i64;
+    }
+
+    void setSeconds(int64_t sec) {
+        if (sec > maxseconds)
+            rangeErrorSeconds(sec);
+        t = dscale * sec;
     }
 
     void checkedAdd(const SimTime& x) {
@@ -107,7 +114,8 @@ class SIM_API SimTime
     }
 
     void checkedMul(int64_t x);
-    void rangeError(double i64);
+    void rangeErrorInt64(double i64);
+    void rangeErrorSeconds(int64_t x);
     void overflowAdding(const SimTime& x);
     void overflowSubtracting(const SimTime& x);
     void overflowNegating();
@@ -160,15 +168,22 @@ class SIM_API SimTime
     /**
      * Copy constructor.
      */
-    SimTime(const SimTime& x) { t=x.t; }
+    SimTime(const SimTime& x) {t=x.t;}
     //@}
 
     /** @name Arithmetic operations */
     //@{
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
     const SimTime& operator=(const cPar& d);
-    const SimTime& operator=(double d) {check(d); t=toInt64(fscale*d); return *this;}
-    template<typename T> const SimTime& operator=(T d) {check(d); t=toInt64(dscale*d); return *this;}
+    const SimTime& operator=(double d) {assertInited(d); t=toInt64(fscale*d); return *this;}
+    const SimTime& operator=(short d) {assertInited(d); setSeconds(d); return *this;}  //TODO check overflow
+    const SimTime& operator=(int d) {assertInited(d); setSeconds(d); return *this;}
+    const SimTime& operator=(long d) {assertInited(d); setSeconds(d); return *this;}
+    const SimTime& operator=(long long d) {assertInited(d); setSeconds(d); return *this;}
+    const SimTime& operator=(unsigned short d) {assertInited(d); setSeconds(d); return *this;}
+    const SimTime& operator=(unsigned int d) {assertInited(d); setSeconds(d); return *this;}
+    const SimTime& operator=(unsigned long d) {assertInited(d); setSeconds(d); return *this;}
+    const SimTime& operator=(unsigned long long d) {assertInited(d); setSeconds(d); return *this;}
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
     bool operator!=(const SimTime& x) const  {return t!=x.t;}
