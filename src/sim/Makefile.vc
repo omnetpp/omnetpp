@@ -34,7 +34,7 @@ OBJS_STD=\
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cevent.obj $O/cexception.obj $O/cfsm.obj $O/cnedmathfunction.obj $O/cgate.obj $O/chistogram.obj \
     $O/cksplit.obj $O/clcg32.obj $O/clistener.obj $O/clog.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
-    $O/cmessage.obj $O/cpacket.obj $O/cmsgpar.obj $O/cmodule.obj $O/ceventheap.obj $O/chasher.obj $O/ctimestampedvalue.obj \
+    $O/cmessage.obj $O/cpacket.obj $O/cmsgpar.obj $O/cmodule.obj $O/ceventheap.obj $O/chasher.obj $O/cfingerprint.obj $O/ctimestampedvalue.obj \
     $O/cmatchexpression.obj $O/cpatternmatcher.obj $O/cmessageprinter.obj $O/cnullenvir.obj $O/envirext.obj \
     $O/cnedfunction.obj $O/cnedvalue.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj $O/cosgcanvas.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj $O/crandom.obj \

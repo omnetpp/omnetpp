@@ -42,6 +42,7 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cexpression.h"
 #include "omnetpp/chasher.h"
+#include "omnetpp/cfingerprint.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cfsm.h"
 #include "omnetpp/cfutureeventset.h"

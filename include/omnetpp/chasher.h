@@ -27,9 +27,9 @@ namespace omnetpp {
 
 
 /**
- * Utility class to calculate the "fingerprint" of a simulation.
+ * Utility class to calculate the hash of some data.
  *
- * We are trying to achieve that the same simulation gives the same fingerprint
+ * We are trying to achieve that the same calls gives the same hash
  * on a 32-bit machine and on a 64-bit machine. Longs can be either 32-bit or
  * 64-bit, so we always convert them to 64 bits. We do not try to convert
  * endianness, it would be too costly.
@@ -83,16 +83,16 @@ class SIM_API cHasher : noncopyable
     uint32_t getHash() const {return value;}
 
     /**
-     * Converts the given string to a numeric fingerprint value. The object is
+     * Converts the given string to a numeric hash value. The object is
      * not changed. Throws an error if the string does not contain a valid
-     * fingerprint.
+     * hash.
      */
-    uint32_t parse(const char *fingerprint) const;
+    uint32_t parse(const char *hash) const;
 
     /**
-     * Parses the given fingerprint string, and compares it to the stored hash.
+     * Parses the given hash string, and compares it to the stored hash.
      */
-    bool equals(const char *fingerprint) const;
+    bool equals(const char *hash) const;
 
     /**
      * Returns the textual representation (hex string) of the stored hash.

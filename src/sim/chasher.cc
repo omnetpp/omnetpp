@@ -37,27 +37,27 @@ void cHasher::add(const char *p, size_t length)
     }
 }
 
-uint32_t cHasher::parse(const char *fingerprint) const
+uint32_t cHasher::parse(const char *hash) const
 {
     // remove spaces, hyphens and colons before parsing
     std::string s;
-    for (const char *p = fingerprint; *p; p++)
+    for (const char *p = hash; *p; p++)
         if (*p != ' ' && *p != '-' && *p != ':')
             s += *p;
 
     // parse
     char *e;
     unsigned long d = strtoul(s.c_str(), &e, 16);
-    uint32_t hash = (uint32_t)d;
-    if (*e || hash != d)
-        throw cRuntimeError("Error verifying fingerprint: invalid fingerprint text \"%s\"", fingerprint);
-    return hash;
+    uint32_t value = (uint32_t)d;
+    if (*e || value != d)
+        throw cRuntimeError("Error verifying hash: invalid hash text \"%s\"", hash);
+    return value;
 }
 
-bool cHasher::equals(const char *fingerprint) const
+bool cHasher::equals(const char *hash) const
 {
-    uint32_t hash = parse(fingerprint);
-    return getHash() == hash;
+    uint32_t value = parse(hash);
+    return getHash() == value;
 }
 
 std::string cHasher::str() const

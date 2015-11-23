@@ -35,7 +35,7 @@ OBJS_STD=\
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clistener.o $O/clog.o $O/clongparimpl.o $O/cmersennetwister.o \
-    $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/ceventheap.o $O/chasher.o $O/ctimestampedvalue.o \
+    $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/ceventheap.o $O/chasher.o $O/cfingerprint.o $O/ctimestampedvalue.o \
     $O/cmatchexpression.o $O/cpatternmatcher.o $O/cmessageprinter.o $O/cnullenvir.o $O/envirext.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o $O/cosgcanvas.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o $O/crandom.o \
@@ -1002,6 +1002,51 @@ $O/cexception.o: cexception.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/stringutil.h
+$O/cfingerprint.o: cfingerprint.cc \
+  ../../include/omnetpp/carray.h \
+  ../../include/omnetpp/ccomponent.h \
+  ../../include/omnetpp/ccomponenttype.h \
+  ../../include/omnetpp/cdefaultlist.h \
+  ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cevent.h \
+  ../../include/omnetpp/cexception.h \
+  ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
+  ../../include/omnetpp/cgate.h \
+  ../../include/omnetpp/chasher.h \
+  ../../include/omnetpp/clifecyclelistener.h \
+  ../../include/omnetpp/clistener.h \
+  ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
+  ../../include/omnetpp/cmessage.h \
+  ../../include/omnetpp/cmodule.h \
+  ../../include/omnetpp/cmsgpar.h \
+  ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedmathfunction.h \
+  ../../include/omnetpp/cnedvalue.h \
+  ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cobjectfactory.h \
+  ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cpacket.h \
+  ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/crng.h \
+  ../../include/omnetpp/csimulation.h \
+  ../../include/omnetpp/cstringpool.h \
+  ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
+  ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/globals.h \
+  ../../include/omnetpp/onstartup.h \
+  ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/regmacros.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../../include/omnetpp/simtime.h \
+  ../../include/omnetpp/simtime_t.h \
+  ../../include/omnetpp/simutil.h
 $O/cfsm.o: cfsm.cc \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cfsm.h \
@@ -2447,12 +2492,14 @@ $O/csimulation.o: csimulation.cc \
   ../../include/omnetpp/ceventheap.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chasher.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
   ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -3320,6 +3367,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/omnetpp/ceventheap.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cfsm.h \
   ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
