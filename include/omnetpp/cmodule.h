@@ -379,12 +379,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: builds submodules and internal connections for this module
     virtual void doBuildInside();
 
+  public:
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     // internal: returns OMNeT++ V4.x compatible module ID
     int getVersion4ModuleId() const { return version4ModuleId; }
 #endif
 
-  public:
     // internal: may only be called between simulations, when no modules exist
     static void clearNamePools();
 

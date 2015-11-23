@@ -678,6 +678,10 @@ class cHasher extends void
    string hash @getter(str) @hint("The current hash value");
 }
 
+class cFingerprint extends cObject
+{
+}
+
 class cSimulation extends cNoncopyableOwnedObject
 {
     @icon(container);
@@ -687,7 +691,7 @@ class cSimulation extends cNoncopyableOwnedObject
     int lastComponentId @group(components) @hint("The largest component ID issued so far");
     cModule *systemModule @group(components) @hint("The top-level module");
     cComponent *component[] @sizeGetter(getLastComponentId) @group(components) @label(components) @hint("List of components indexed by component ID");
-    cHasher *hasher @hint("Used for fingerprint calculation");
+    cFingerprint *fingerprint @hint("Used for fingerprint calculation");
 }
 
 class cScheduler extends cObject

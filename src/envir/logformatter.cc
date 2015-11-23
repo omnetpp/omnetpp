@@ -19,7 +19,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cconfiguration.h"
-#include "omnetpp/chasher.h"
+#include "omnetpp/cfingerprint.h"
 #include "omnetpp/simutil.h"
 #include "logformatter.h"
 
@@ -180,8 +180,8 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 break;
 
             case FINGERPRINT:
-                if (simulation->getHasher())
-                    stream << simulation->getHasher()->str().c_str();
+                if (simulation->getFingerprint())
+                    stream << simulation->getFingerprint()->info().c_str();
                 else
                     lastPartEmpty = true;
                 break;

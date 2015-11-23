@@ -37,7 +37,7 @@
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cparimpl.h"
-#include "omnetpp/chasher.h"
+#include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/clifecyclelistener.h"
@@ -110,7 +110,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
     componentv = nullptr;
 
     networkType = nullptr;
-    hasher = nullptr;
+    fingerprint = nullptr;
 
     currentSimtime = SIMTIME_ZERO;
     currentEventNumber = 0;
@@ -132,7 +132,7 @@ cSimulation::~cSimulation()
     deleteNetwork();
 
     delete envir;
-    delete hasher;
+    delete fingerprint;
     delete scheduler;
     dropAndDelete(fes);
 }
@@ -674,22 +674,8 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
     // give msg to module (set ownership)
     module->take(msg);
 
-    if (getHasher()) {
-        // note: there's no value in adding getEventNumber()
-        cHasher *hasher = getHasher();
-        hasher->add(simTime().raw());
-#ifdef USE_OMNETPP4x_FINGERPRINTS
-        hasher->add(module->getVersion4ModuleId());
-#else
-        hasher->add(module->getFullPath().c_str());
-        hasher->add(msg->getClassName());
-        hasher->add(msg->getKind());
-        if (msg->getControlInfo())
-            hasher->add(msg->getControlInfo()->getClassName());
-        if (msg->isPacket())
-            hasher->add(((cPacket *)msg)->getBitLength());
-#endif
-    }
+    if (getFingerprint())
+        getFingerprint()->addEvent(msg);
 
     if (!module->initialized())
         throw cRuntimeError(module, "Module not initialized (did you forget to invoke "
@@ -744,11 +730,11 @@ unsigned long cSimulation::getUniqueNumber()
     return getEnvir()->getUniqueNumber();
 }
 
-void cSimulation::setHasher(cHasher *h)
+void cSimulation::setFingerprint(cFingerprint *f)
 {
-    if (hasher)
-        delete hasher;
-    hasher = h;
+    if (fingerprint)
+        delete fingerprint;
+    fingerprint = f;
 }
 
 void cSimulation::insertEvent(cEvent *event)

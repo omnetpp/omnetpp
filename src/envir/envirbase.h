@@ -96,8 +96,6 @@ struct ENVIR_API EnvirOptions
     simtime_t simtimeLimit;
     long cpuTimeLimit;
     simtime_t warmupPeriod;
-
-    opp_string expectedFingerprint;
 };
 
 /**

@@ -317,6 +317,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                 builder.constant("Setting up ").module(1);
             }
             else {
+                String fingerprints = contextEvent.getEventEntry().getFingerprints();
+                if (fingerprints != null)
+                    builder.data(fingerprints + " ");
                 IMessageDependency cause = contextEvent.getCause();
 
                 builder.constant("Event in ")

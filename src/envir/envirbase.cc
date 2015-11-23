@@ -49,7 +49,7 @@
 #include "omnetpp/chistogram.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/checkandcast.h"
-#include "omnetpp/chasher.h"
+#include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
@@ -137,7 +137,12 @@ Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enabl
 Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", nullptr, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.result-recording-modes). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
-Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To obtain the initial fingerprint, enter a dummy value such as \"0000\"), and run the simulation.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To obtain the initial fingerprint, enter a dummy value (such as \"0000\"), and run the simulation.");
+Register_GlobalConfigOption(CFGID_FINGERPRINT_CLASS, "fingerprint-class", CFG_STRING, "omnetpp::cSingleFingerprint", "Part of the Envir plugin mechanism: selects the fingerprint class to be used to calculate the simulation fingerprint. The class has to implement the cFingerprint interface.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT_CATEGORIES, "fingerprint-categories", CFG_STRING, "ti", "The fingerprint calculator can be configured to take into account various data of the simulation events. Each character in the value specifies one kind of data to be included: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT_EVENTS, "fingerprint-events", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain events. The value is used to substring match against the event name by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in the calculated fingerprint.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT_MODULES, "fingerprint-modules", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain modules. The value is used to substring match against the module full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in all modules in the calculated fingerprint.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT_RESULTS, "fingerprint-results", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain results. The value is used to substring match against the result full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all results in all modules in the calculated fingerprint.");
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "omnetpp::cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
@@ -1543,7 +1548,6 @@ void EnvirBase::readPerRunOptions()
     opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt->cpuTimeLimit = (long)cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
-    opt->expectedFingerprint = cfg->getAsString(CFGID_FINGERPRINT);
     opt->numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt->rngClass = cfg->getAsString(CFGID_RNG_CLASS);
     opt->seedset = cfg->getAsInt(CFGID_SEED_SET);
@@ -1552,11 +1556,22 @@ void EnvirBase::readPerRunOptions()
 
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
-    // install hasher object
-    if (!opt->expectedFingerprint.empty())
-        getSimulation()->setHasher(new cHasher());
-    else
-        getSimulation()->setHasher(nullptr);
+    // install fingerprint object
+    cFingerprint *fingerprint = nullptr;
+    std::string expectedFingerprints = cfg->getAsString(CFGID_FINGERPRINT);
+    if (!expectedFingerprints.empty()) {
+        std::string fingerprintCategories = cfg->getAsString(CFGID_FINGERPRINT_CATEGORIES);
+        std::string fingerprintEventMatcher = cfg->getAsString(CFGID_FINGERPRINT_EVENTS);
+        std::string fingerprintModuleMatcher = cfg->getAsString(CFGID_FINGERPRINT_MODULES);
+        std::string fingerprintResultMatcher = cfg->getAsString(CFGID_FINGERPRINT_RESULTS);
+        // create calculator
+        std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINT_CLASS);
+        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprint, "fingerprint calculator");
+        if (expectedFingerprints.find(',') != expectedFingerprints.npos)
+            fingerprint = new cMultiFingerprint(fingerprint);
+        fingerprint->initialize(expectedFingerprints.c_str(), fingerprintCategories.c_str(), fingerprintEventMatcher.c_str(), fingerprintModuleMatcher.c_str(), fingerprintResultMatcher.c_str());
+    }
+    getSimulation()->setFingerprint(fingerprint);
 
     cComponent::setCheckSignals(opt->checkSignals);
 
@@ -1760,6 +1775,9 @@ void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     assert(outvectorManager);
+    if (getSimulation()->getFingerprint())
+        // TODO: determine component and result name if possible
+        getSimulation()->getFingerprint()->addVectorResult(nullptr, "", t, value);
     return outvectorManager->record(vechandle, t, value);
 }
 
@@ -1769,12 +1787,16 @@ void EnvirBase::recordScalar(cComponent *component, const char *name, double val
 {
     assert(outScalarManager);
     outScalarManager->recordScalar(component, name, value, attributes);
+    if (getSimulation()->getFingerprint())
+        getSimulation()->getFingerprint()->addScalarResult(component, name, value);
 }
 
 void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     assert(outScalarManager);
     outScalarManager->recordStatistic(component, name, statistic, attributes);
+    if (getSimulation()->getFingerprint())
+        getSimulation()->getFingerprint()->addStatisticResult(component, name, statistic);
 }
 
 //-------------------------------------------------------------
@@ -1983,23 +2005,15 @@ void EnvirBase::stoppedWithException(std::exception& e)
 
 void EnvirBase::checkFingerprint()
 {
-    if (opt->expectedFingerprint.empty() || !getSimulation()->getHasher())
+    cFingerprint *fingerprint = getSimulation()->getFingerprint();
+    if (!getSimulation()->getFingerprint())
         return;
 
-    int k = 0;
-    StringTokenizer tokenizer(opt->expectedFingerprint.c_str());
-    while (tokenizer.hasMoreTokens()) {
-        const char *fingerprint = tokenizer.nextToken();
-        if (getSimulation()->getHasher()->equals(fingerprint)) {
-            printfmsg("Fingerprint successfully verified: %s", fingerprint);
-            return;
-        }
-        k++;
-    }
-
-    printfmsg("Fingerprint mismatch! calculated: %s, expected: %s%s",
-            getSimulation()->getHasher()->str().c_str(),
-            (k >= 2 ? "one of: " : ""), opt->expectedFingerprint.c_str());
+    if (fingerprint->checkFingerprint())
+        printfmsg("Fingerprint successfully verified: %s", fingerprint->info().c_str());
+    else
+        printfmsg("Fingerprint mismatch! calculated: %s, expected: %s",
+                fingerprint->info().c_str(), cfg->getAsString(CFGID_FINGERPRINT).c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
