@@ -1,3 +1,0 @@
-<buildspec version="4.0">
-<dir makemake-options="--deep -O out --meta:recurse --meta:auto-include-path --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="." type="makemake"/>
-</buildspec>
