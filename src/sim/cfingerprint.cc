@@ -49,6 +49,15 @@ const char *cSingleFingerprint::MatchableObject::getAsString(const char *attribu
 
 cSingleFingerprint::cSingleFingerprint()
 {
+    eventMatcher = nullptr;
+    moduleMatcher = nullptr;
+    resultMatcher = nullptr;
+    hasher = nullptr;
+    addEvents = false;
+    addScalarResults = false;
+    addStatisticResults = false;
+    addVectorResults = false;
+    addExtraData_ = false;
 }
 
 cSingleFingerprint::~cSingleFingerprint()
@@ -147,7 +156,9 @@ void cSingleFingerprint::addEvent(cEvent *event)
 
             MatchableObject matchableModule(module);
             if (module == nullptr || moduleMatcher == nullptr || moduleMatcher->matches(&matchableModule)) {
-                for (auto category : categories) {
+                //for (auto category : categories) {
+                for (std::vector<FingerprintCategory>::iterator it = categories.begin(); it != categories.end(); ++it) {
+                    FingerprintCategory category = *it;
                     if (!addEventCategory(event, category)) {
                         switch (category) {
                             case EVENT_NUMBER:
@@ -281,6 +292,12 @@ bool cSingleFingerprint::checkFingerprint() const
     return false;
 }
 
+//----
+
+//XXX This is basically equivalent to "for (auto & element : elements)", but we don't want to rely on C++11 yet...
+#define for_each_element(CODE) for (std::vector<cFingerprint *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprint *element = *it; CODE; }
+#define for_each_element_const(CODE) for (std::vector<cFingerprint *>::const_iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprint *element = *it; CODE; }
+
 cMultiFingerprint::cMultiFingerprint(cFingerprint *prototype) :
     prototype(prototype)
 {
@@ -289,8 +306,9 @@ cMultiFingerprint::cMultiFingerprint(cFingerprint *prototype) :
 cMultiFingerprint::~cMultiFingerprint()
 {
     delete prototype;
-    for (auto & element : elements)
+    for_each_element(
         delete element;
+    )
 }
 
 void cMultiFingerprint::initialize(const char *expectedFingerprintsList, const char *categoriesList, const char *eventMatcherList, const char *moduleMatcherList, const char *resultMatcherList)
@@ -322,43 +340,51 @@ void cMultiFingerprint::initialize(const char *expectedFingerprintsList, const c
 
 void cMultiFingerprint::addEvent(cEvent *event)
 {
-    for (auto & element : elements)
+    for_each_element(
         element->addEvent(event);
+    )
 }
 
 void cMultiFingerprint::addScalarResult(const cComponent *component, const char *name, double value)
 {
-    for (auto & element : elements)
+    for_each_element(
         element->addScalarResult(component, name, value);
+    )
 }
 
 void cMultiFingerprint::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
 {
-    for (auto & element : elements)
+    for_each_element(
         element->addStatisticResult(component, name, value);
+    )
 }
 
 void cMultiFingerprint::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
 {
-    for (auto & element : elements)
+    for_each_element(
         element->addVectorResult(component, name, t, value);
+    )
 }
 
 bool cMultiFingerprint::checkFingerprint() const
 {
-    for (auto & element : elements)
+    for_each_element_const(
         if (!element->checkFingerprint())
             return false;
+    )
     return true;
 }
 
 std::string cMultiFingerprint::info() const
 {
     std::stringstream stream;
-    for (auto & element : elements)
+    for_each_element_const(
         stream << ", " << element->info();
+    );
     return stream.str().substr(2);
 }
+
+#undef for_each_element
 
 } // namespace omnetpp
 
