@@ -96,6 +96,7 @@ E EventEntry // an event that is processing a message
    m int moduleId                    // id of the processing module
    ce eventnumber_t causeEventNumber // event number from which the message being processed was sent, or -1 if the message was sent from initialize
    msg long messageId                // lifetime-unique id of the message being processed
+   f string fingerprints NULL        // current simulation fingerprints
 }
 
 KF KeyframeEntry

@@ -29,6 +29,7 @@
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cfutureeventset.h"
+#include "omnetpp/cfingerprint.h"
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
 #include "envirbase.h"
@@ -357,16 +358,18 @@ void EventlogFileManager::flush()
 void EventlogFileManager::simulationEvent(cEvent *event)
 {
     if (event->isMessage()) {
+        cSimulation *simulation = getSimulation();
         cMessage *msg = static_cast<cMessage *>(event);
         cModule *mod = msg->getArrivalModule();
-        eventNumber = getSimulation()->getEventNumber();
+        eventNumber = simulation->getEventNumber();
         bool isKeyframe = eventNumber % keyframeBlockSize == 0;
         isModuleEventLogRecordingEnabled = mod->isRecordEvents();
-        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(getSimulation()->getSimTime());
+        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation->getSimTime());
         isEventLogRecordingEnabled = isKeyframe || (isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled);
         if (isEventLogRecordingEnabled) {
             fprintf(feventlog, "\n");
-            EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, getSimulation()->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
+            cFingerprint *fp = simulation->getFingerprint();
+            EventLogWriter::recordEventEntry_e_t_m_ce_msg_f(feventlog, eventNumber, simulation->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId(), (fp ? fp->info().c_str() : nullptr));
             entryIndex = 0;
             removeBeginSendEntryReference(msg);
             recordKeyframe();
