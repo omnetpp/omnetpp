@@ -35,7 +35,7 @@ class SIM_API cFingerprint : public cObject
   public:
     virtual ~cFingerprint() {}
 
-    virtual void initialize(const char *expectedFingerprints, const char *categories, const char *eventMatcher, const char *moduleMatcher, const char *resultMatcher) = 0;
+    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) = 0;
 
     virtual void addEvent(cEvent *event) = 0;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) = 0;
@@ -59,9 +59,50 @@ class SIM_API cFingerprint : public cObject
     virtual bool checkFingerprint() const = 0;
 };
 
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+
+class SIM_API cOmnetpp4xFingerprint : public cFingerprint
+{
+  protected:
+    std::string expectedFingerprints;
+    cHasher *hasher;
+
+  public:
+    cOmnetpp4xFingerprint();
+    virtual ~cOmnetpp4xFingerprint();
+
+    virtual cOmnetpp4xFingerprint *dup() const override { return new cOmnetpp4xFingerprint(); }
+    virtual std::string info() const override { return hasher->str(); }
+    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
+
+    virtual void addEvent(cEvent *event) override;
+    virtual void addScalarResult(const cComponent *component, const char *name, double value) override {}
+    virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override {}
+    virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override {}
+
+    virtual void addExtraData(const char *buffer, size_t length) override { hasher->add(buffer, length); }
+    virtual void addExtraData(char data) override { hasher->add(data); }
+    virtual void addExtraData(short data) override { hasher->add(data); }
+    virtual void addExtraData(int data) override { hasher->add(data); }
+    virtual void addExtraData(long data) override { hasher->add(data); }
+    virtual void addExtraData(long long data) override { hasher->add(data); }
+    virtual void addExtraData(unsigned char data) override { hasher->add(data); }
+    virtual void addExtraData(unsigned short data) override { hasher->add(data); }
+    virtual void addExtraData(unsigned int data) override { hasher->add(data); }
+    virtual void addExtraData(unsigned long data) override { hasher->add(data); }
+    virtual void addExtraData(unsigned long long data) override { hasher->add(data); }
+    virtual void addExtraData(double data) override { hasher->add(data); }
+    virtual void addExtraData(const char *data) override { hasher->add(data); }
+
+    virtual bool checkFingerprint() const override;
+
+};
+
+#else // if !USE_OMNETPP4x_FINGERPRINTS
+
 /**
  * This class calculates the "fingerprint" of a simulation. The
- * fingerprint is a 32 bits hash value calculated from various data
+ * fingerprint is a 32-bit hash value calculated from various data
  * of the simulation events and simulation results. The calculator
  * can be configured to consider only certain events, modules, and
  * results using filter expressions.
@@ -151,8 +192,9 @@ class SIM_API cSingleFingerprint : public cFingerprint
     cSingleFingerprint();
     virtual ~cSingleFingerprint();
 
-    virtual cFingerprint *dup() const override { return new cSingleFingerprint(); }
-    virtual void initialize(const char *expectedFingerprints, const char *categories, const char *eventMatcher, const char *moduleMatcher, const char *resultMatcher) override;
+    virtual cSingleFingerprint *dup() const override { return new cSingleFingerprint(); }
+    virtual std::string info() const override { return hasher->str(); }
+    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
@@ -175,8 +217,8 @@ class SIM_API cSingleFingerprint : public cFingerprint
 
     virtual bool checkFingerprint() const override;
 
-    virtual std::string info() const override { return hasher->str(); }
 };
+
 
 /**
  * This class calculates multiple fingerprints simultaneously. The calculator
@@ -186,15 +228,16 @@ class SIM_API cSingleFingerprint : public cFingerprint
 class SIM_API cMultiFingerprint : public cFingerprint
 {
   protected:
-    cFingerprint *prototype = nullptr;
+    cFingerprint *prototype;
     std::vector<cFingerprint *> elements;
 
   public:
     cMultiFingerprint(cFingerprint *prototype);
     virtual ~cMultiFingerprint();
 
-    virtual cFingerprint *dup() const override { return new cMultiFingerprint(static_cast<cFingerprint *>(prototype->dup())); }
-    virtual void initialize(const char *expectedFingerprints, const char *categories, const char *eventMatcher, const char *moduleMatcher, const char *resultMatcher) override;
+    virtual cMultiFingerprint *dup() const override { return new cMultiFingerprint(static_cast<cFingerprint *>(prototype->dup())); }
+    virtual std::string info() const override;
+    virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
@@ -218,9 +261,10 @@ class SIM_API cMultiFingerprint : public cFingerprint
 #undef for_each_element
 
     virtual bool checkFingerprint() const override;
-
-    virtual std::string info() const override;
 };
+
+#endif // !USE_OMNETPP4x_FINGERPRINTS
+
 
 } // namespace omnetpp
 

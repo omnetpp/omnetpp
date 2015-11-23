@@ -296,6 +296,7 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "omnetpp/cfsm.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cvarhist.h"
+#include "omnetpp/cfingerprint.h"
 
 using namespace omnetpp::common;
 
@@ -344,6 +345,10 @@ void _sim_dummy_func()
     ov.info();
     cVarHistogram vh;
     vh.draw();
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+    cOmnetpp4xFingerprint fp;
+    fp.initialize(nullptr, nullptr);
+#endif
 
     nedfunctions_dummy();
     //_dummy_for_env();

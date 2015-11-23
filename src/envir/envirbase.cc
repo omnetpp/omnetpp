@@ -138,11 +138,9 @@ Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", nullpt
 Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.result-recording-modes). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To obtain the initial fingerprint, enter a dummy value (such as \"0000\"), and run the simulation.");
+#ifndef USE_OMNETPP4x_FINGERPRINTS
 Register_GlobalConfigOption(CFGID_FINGERPRINT_CLASS, "fingerprint-class", CFG_STRING, "omnetpp::cSingleFingerprint", "Part of the Envir plugin mechanism: selects the fingerprint class to be used to calculate the simulation fingerprint. The class has to implement the cFingerprint interface.");
-Register_PerRunConfigOption(CFGID_FINGERPRINT_CATEGORIES, "fingerprint-categories", CFG_STRING, "ti", "The fingerprint calculator can be configured to take into account various data of the simulation events. Each character in the value specifies one kind of data to be included: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules.");
-Register_PerRunConfigOption(CFGID_FINGERPRINT_EVENTS, "fingerprint-events", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain events. The value is used to substring match against the event name by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in the calculated fingerprint.");
-Register_PerRunConfigOption(CFGID_FINGERPRINT_MODULES, "fingerprint-modules", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain modules. The value is used to substring match against the module full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in all modules in the calculated fingerprint.");
-Register_PerRunConfigOption(CFGID_FINGERPRINT_RESULTS, "fingerprint-results", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain results. The value is used to substring match against the result full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all results in all modules in the calculated fingerprint.");
+#endif
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "omnetpp::cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_PerRunConfigOption(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
@@ -1560,16 +1558,17 @@ void EnvirBase::readPerRunOptions()
     cFingerprint *fingerprint = nullptr;
     std::string expectedFingerprints = cfg->getAsString(CFGID_FINGERPRINT);
     if (!expectedFingerprints.empty()) {
-        std::string fingerprintCategories = cfg->getAsString(CFGID_FINGERPRINT_CATEGORIES);
-        std::string fingerprintEventMatcher = cfg->getAsString(CFGID_FINGERPRINT_EVENTS);
-        std::string fingerprintModuleMatcher = cfg->getAsString(CFGID_FINGERPRINT_MODULES);
-        std::string fingerprintResultMatcher = cfg->getAsString(CFGID_FINGERPRINT_RESULTS);
         // create calculator
+#ifdef USE_OMNETPP4x_FINGERPRINTS
+        std::string fingerprintClass = "omnetpp::cOmnetpp4xFingerprint";
+        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprint, "fingerprint calculator");
+#else
         std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINT_CLASS);
         CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprint, "fingerprint calculator");
         if (expectedFingerprints.find(',') != expectedFingerprints.npos)
             fingerprint = new cMultiFingerprint(fingerprint);
-        fingerprint->initialize(expectedFingerprints.c_str(), fingerprintCategories.c_str(), fingerprintEventMatcher.c_str(), fingerprintModuleMatcher.c_str(), fingerprintResultMatcher.c_str());
+#endif
+        fingerprint->initialize(expectedFingerprints.c_str(), cfg);
     }
     getSimulation()->setFingerprint(fingerprint);
 
@@ -1582,14 +1581,13 @@ void EnvirBase::readPerRunOptions()
     delete testrng;
 
     // set up RNGs
-    int i;
-    for (i = 0; i < numRNGs; i++)
+    for (int i = 0; i < numRNGs; i++)
         delete rngs[i];
     delete[] rngs;
 
     numRNGs = opt->numRNGs;
     rngs = new cRNG *[numRNGs];
-    for (i = 0; i < numRNGs; i++) {
+    for (int i = 0; i < numRNGs; i++) {
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt->rngClass.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
