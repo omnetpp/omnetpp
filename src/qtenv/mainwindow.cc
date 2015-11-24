@@ -42,6 +42,7 @@
 #include "rununtildialog.h"
 #include "filteredobjectlistdialog.h"
 #include "comboselectiondialog.h"
+#include "fileeditor.h"
 
 #include <QDebug>
 
@@ -62,6 +63,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->setupUi(this);
 
     stopDialog = new StopDialog(this);
+    fileEditor = new FileEditor(this);
 
     slider = new QSlider();
     slider->setMinimum(50);
@@ -83,6 +85,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete fileEditor;
+    delete stopDialog;
     if(filteredObjectListDialog)
         delete filteredObjectListDialog;
 }
@@ -1011,6 +1015,20 @@ void MainWindow::on_actionLoadNEDFile_triggered()
 
         getQtenv()->refreshInspectors();
     }
+}
+
+void MainWindow::on_actionOpenPrimaryIniFile_triggered()
+{
+    QString fileName = getQtenv()->getIniFileName();
+    if(fileName.isEmpty())
+    {
+        QMessageBox::information(this, tr("Info"), tr("The current configuration manager doesn't use file input."),
+                QMessageBox::Ok);
+       return;
+    }
+
+    fileEditor->setFile(fileName);
+    fileEditor->show();
 }
 
 } // namespace qtenv

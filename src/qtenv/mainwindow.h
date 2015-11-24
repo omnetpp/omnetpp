@@ -46,6 +46,7 @@ class Qtenv;
 class Inspector;
 class StopDialog;
 class FilteredObjectListDialog;
+class FileEditor;
 
 class MainWindow : public QMainWindow
 {
@@ -116,6 +117,7 @@ protected slots:
 private slots:
     void onSplitterMoved(int, int);
     void on_actionLoadNEDFile_triggered();
+    void on_actionOpenPrimaryIniFile_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -127,6 +129,7 @@ private:
     FilteredObjectListDialog *filteredObjectListDialog;
     static QString aboutText;
     QList<int> defaultTimeLineSize;
+    FileEditor *fileEditor;
 
     bool checkRunning();
     void runSimulation(eMode mode);
