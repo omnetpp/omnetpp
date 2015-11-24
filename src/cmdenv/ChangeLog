@@ -1,3 +1,10 @@
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-16  Andras Varga
@@ -77,8 +84,6 @@
 
 	* Fire simulation lifecycle events; see related ChangeLog entry
 	in include/.
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 
@@ -238,7 +243,7 @@
 
 2004-12-15  Andras Varga
 
-        * extra-stack= option replaced with extra-stack-kb. (Default is 8K)
+	* extra-stack= option replaced with extra-stack-kb. (Default is 8K)
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
@@ -291,11 +296,11 @@
 	* cmdenv.cc: new omnetpp.ini option:
 	    event-banner-details= true/false (default: false).
 	It is in effect with normal mode (express-mode=false), and causes
-        elapsed time and number of messages (created,present, in FES) to be
-        printed in a second line below the event banner. Format:
-           Elapsed: 131s (2m 11s)  Messages: created: 45 present: 45 in FES: 18
-        Also changed the format of elapsed time display in express mode:
-        prints it in seconds as well.
+	elapsed time and number of messages (created,present, in FES) to be
+	printed in a second line below the event banner. Format:
+	   Elapsed: 131s (2m 11s)  Messages: created: 45 present: 45 in FES: 18
+	Also changed the format of elapsed time display in express mode:
+	prints it in seconds as well.
 
 2004-02-11  Andras Varga
 
@@ -402,9 +407,9 @@
 2002-01-13  Andras Varga
 
 	* Graceful handling of SIGTERM and SIGINT signals: calls finish()
-        for current simulation and exits. Works on Unix only (Win32 doesn't
-        support SIGTERM and SIGINT, among others). Based on suggestion and
-        patch from Michele Baresi.
+	for current simulation and exits. Works on Unix only (Win32 doesn't
+	support SIGTERM and SIGINT, among others). Based on suggestion and
+	patch from Michele Baresi.
 
 2000-06-06  Andras Varga
 
@@ -415,7 +420,6 @@
 	BC IDE), but they are completely unsupported at the moment. If
 	there's interest, it's possible that later I'll add makefiles for
 	the free command-line bc5.5 compiler.
-
 
 	* ------ omnetpp-2.0p1 released ------
 
@@ -442,7 +446,7 @@
 
 2000-05-07  Andras Varga
 
-       * Makefile.vc improvements from Balazs Kelemen
+	   * Makefile.vc improvements from Balazs Kelemen
 
 2000-04-10  Andrea Varga
 
@@ -476,14 +480,14 @@
 
 	* ------ omnetpp-2.0b3 released ------
 
-        * Makefile.vc added
+	* Makefile.vc added
 
 1999-12-04  Andras Varga
 
-        * compiled with MSVC. cmdenv.dsp added. NOTE: one has to rename
+	* compiled with MSVC. cmdenv.dsp added. NOTE: one has to rename
 	all .cc files to .cpp for compiling (ren *.cc *.cpp)!
 
-        * To Do: check heap.cc
+	* To Do: check heap.cc
 
 1999-09-20  Andras Varga
 
@@ -495,111 +499,111 @@
 
 	* ------ omnetpp-2.0b released ------
 
-        * _dummy_for_tkenv_inspect() bug fixed
+	* _dummy_for_tkenv_inspect() bug fixed
 
 1999-06-21  Andras Varga
 
-        * all sources checked in under CVS
+	* all sources checked in under CVS
 
-        * makefile.in modified for use with GNU Autoconf; also renamed to
+	* makefile.in modified for use with GNU Autoconf; also renamed to
 	Makefile.in
 
-        * version.log renamed to ChangeLog
+	* version.log renamed to ChangeLog
 
-        * removed support for DOS with BC3.1
+	* removed support for DOS with BC3.1
 
 1999-02-07  Andras Varga
 
-        * small fixes
+	* small fixes
 
 1999-01-25  Andras Varga
 
-        * updated for sim172d
+	* updated for sim172d
 
 1998-12-27  Andras Varga
 
-        * updated for sim170
+	* updated for sim170
 
-        * extraStackForEnvir() raised to 8K (was zero)
+	* extraStackForEnvir() raised to 8K (was zero)
 
-        * some bugs fixed in heap.cc
+	* some bugs fixed in heap.cc
 
-        * makefile renamed to makefile.in
+	* makefile renamed to makefile.in
 
-        * runningModule() corrected to contextModule()
+	* runningModule() corrected to contextModule()
 
 1998-08-14  Andras Varga
 
-        * makefile fix
+	* makefile fix
 
 1998-08-12  Andras Varga
 
-        * Borland C++ 5.0 project file added
+	* Borland C++ 5.0 project file added
 
-        * small fixes
+	* small fixes
 
 1998-07-15  Andras Varga
 
-        * small fixes
+	* small fixes
 
-        * callFinish() added
+	* callFinish() added
 
 1998-06-24  Andras Varga
 
-        * callFinish() added
+	* callFinish() added
 
 1998-05-18  Andras Varga
 
-        * inspectors made compatible with sim162
+	* inspectors made compatible with sim162
 
 1998-05-18  Andras Varga
 
-        * inspectors made compatible with sim160
+	* inspectors made compatible with sim160
 
 1998-05-12  Andras Varga
 
-        * makefile updated
+	* makefile updated
 
 1998-04-26  Andras Varga
 
-        * makefile can now create shared object (libcmdenv.so)
+	* makefile can now create shared object (libcmdenv.so)
 
 1998-02-15  Andras Varga
 
-        * makefile changed; cmdenv.a-->libcmdenv.a
+	* makefile changed; cmdenv.a-->libcmdenv.a
 
 1997-12-13  Andras Varga
 
-        * brought up-to-date with sim151
+	* brought up-to-date with sim151
 
 1997-10-06  Andras Varga
 
-        * further renaming; compatible with sim148
+	* further renaming; compatible with sim148
 
 1997-10-02  Andras Varga
 
-        * cleaned up & renamed several member functions; compatible with
+	* cleaned up & renamed several member functions; compatible with
 	sim147
 
 1997-08-17  Andras Varga
 
-        * "Network not found" msg improved
+	* "Network not found" msg improved
 
 1997-08-17  Andras Varga
 
-        * updated for sim146a
+	* updated for sim146a
 
 1997-08-07  Andras Varga
 
-        * cNetSimpleMod corrected to cNetMod
+	* cNetSimpleMod corrected to cNetMod
 
-        * [Cmdenv]/runs-to-execute default value changed: NULL-->""
+	* [Cmdenv]/runs-to-execute default value changed: NULL-->""
 
-        * compatibility: sim144a or up
+	* compatibility: sim144a or up
 
 1997-07-31  Andras Varga
 
-        * [General]/number-of-runs= ini file option was replaced by
+	* [General]/number-of-runs= ini file option was replaced by
 
 	  [Cmdenv]/runs-to-execute=.
 	  Now it's possible to say things like:
@@ -610,72 +614,72 @@
 	  that have an ini file section; if no runs are given in the ini file,
 	  does one run.
 
-        * compatibility: envir97 or newer
+	* compatibility: envir97 or newer
 
 1997-07-20  Andras Varga
 
-        * removed TCmdenv::foreignputs()
+	* removed TCmdenv::foreignputs()
 
 1997-07-10  Andras Varga
 
-        * makefile hacked upon to make it edible for Cygnus gcc
+	* makefile hacked upon to make it edible for Cygnus gcc
 
 1997-07-02  Andras Varga
 
-        * opt_verbose bug fixed
+	* opt_verbose bug fixed
 
-        * usage of cEnvir::disable_tracing added
+	* usage of cEnvir::disable_tracing added
 
 1997-07-01  Andras Varga
 
-        * small changes
+	* small changes
 
 1997-04-22  Andras Varga
 
-        * cSimulation's geteventnumber() and inc_eventnumber() introduced
+	* cSimulation's geteventnumber() and inc_eventnumber() introduced
 	instead of own event counting (compatible with sim130 and up)
 
 1997-04-11  Andras Varga
 
-        * opt_helponly moved from envir package to cmdenv
+	* opt_helponly moved from envir package to cmdenv
 
 1997-03-24  Andras Varga
 
-        * opt_networkname now explicitly casted from string to char* in
+	* opt_networkname now explicitly casted from string to char* in
 	printf()
 
 1997-03-15  Andras Varga
 
-        * adopted to sim120c
+	* adopted to sim120c
 
 1997-02-28  Andras Varga
 
-        * adopted to envir81 and sim109
+	* adopted to envir81 and sim109
 
 1997-02-28  Andras Varga
 
-        * adopted to sim105 & 'multiple runs' bug fixed
+	* adopted to sim105 & 'multiple runs' bug fixed
 
 	#75
 
-        * bugfixes
+	* bugfixes
 
 	#74
 
-        * heap.cc's alloctable[] made dynamic
+	* heap.cc's alloctable[] made dynamic
 
 	#72
 
-        * upgraded for sim102's
+	* upgraded for sim102's
 
-        * added periodic display update
+	* added periodic display update
 
 	#71
 
-        * improved alloctable[]
+	* improved alloctable[]
 
-        * better heap debugging messages
+	* better heap debugging messages
 
 	#23
 
-        * integrating VZ's stuff. Won't compile
+	* integrating VZ's stuff. Won't compile

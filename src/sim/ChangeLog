@@ -1,3 +1,61 @@
+2015-11-19  Andras Varga
+
+	* Implemented the new fingerprint mechanism. It adds the following
+	new configuration options:
+	- fingerprint-categories=<string> (default: "tpl")
+	- fingerprint-events=<string> (default: "*")
+	- fingerprint-modules=<string> (default: "*")
+	- fingerprint-results=<string> (default: "*")
+
+2015-11-23  Levente Meszaros
+
+	* cEvent: initialize insertOrder (not strictly needed, but cleaner)
+
+2015-11-20  Andras Varga
+
+	* cSimpleModule::scheduleAt() return type changed from int to void.
+	See include/ChangeLog for details.
+
+2015-11-17  Andras Varga
+
+	* Some cComponent/cModule methods made const. See include/ChangeLog
+	for details.
+
+2015-11-21  Andras Varga
+
+	* SimTime improvements:
+	- cPar operations now use the "long" conversion when appropriate
+	  (before it always used "double" conversion)
+	- Refactored powersOfTen[] and setScaleExp()
+
+2015-11-16  Andras Varga
+
+	* SimTime improvements. See See include/ChangeLog for details.
+
+2015-10-19  Andras Varga
+
+	* Added extra arg (cObject *details) to emit() and cIListener methods.
+	See include/ChangeLog for details.
+
+2015-11-12  Rudolf Hornig
+
+	* Fixed warnings.
+
+2015-11-09  Andras Varga
+
+	* Implemented refreshDisplay(). See include/ChangeLog for details.
+
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
+2015-07-24  Andras Varga
+
+	* Implemented cOsgCanvas. See include/ChangeLog for details.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-29  Andras Varga
@@ -362,7 +420,7 @@
 
 2013-10-31  Rudolf Hornig
 
-    * Fixed warnings when compiling with clang and -std=c++11 -Wall
+	* Fixed warnings when compiling with clang and -std=c++11 -Wall
 
 2013-10-24  Andras Varga
 
@@ -568,7 +626,7 @@
 2010-04-30  Rudolf Hornig
 
 	* added simTime() NED function to return the current simulation time
-          in NED expessions.
+	  in NED expessions.
 
 2010-04-27  Andras Varga
 
@@ -1030,12 +1088,12 @@
 
 2004-10-27  Andras Varga
 
-        * checked in MersenneTwister.h v1.0 (15 May 2003) from Richard J.Wagner
-        rjwagner@writeme.com; code is under the BSD license.
-        http://www-personal.engin.umich.edu/~wagnerr/MersenneTwister.html
+	* checked in MersenneTwister.h v1.0 (15 May 2003) from Richard J.Wagner
+	rjwagner@writeme.com; code is under the BSD license.
+	http://www-personal.engin.umich.edu/~wagnerr/MersenneTwister.html
 
-        * added cRNG implementations clcg32.cc/h (wraps old OMNeT++ RNG),
-        cmersennetwister.cc/h (wraps Mersenne Twister, MersenneTwister.h)
+	* added cRNG implementations clcg32.cc/h (wraps old OMNeT++ RNG),
+	cmersennetwister.cc/h (wraps Mersenne Twister, MersenneTwister.h)
 
 	* ctype.cc: added call to ev.getRNGMappingFor(mod) in cModuleType's
 	create() method.
@@ -1058,46 +1116,46 @@
 
 2004-09-15  Andras Varga
 
-        * ctopo.cc: implemented 2 new extractByModuleType() functions, see
-        include/ChangeLog.
+	* ctopo.cc: implemented 2 new extractByModuleType() functions, see
+	include/ChangeLog.
 
-        * cmodule.cc: support for zero-sized module gates. A gate vector
-        is zero size right after creation, and if there's no gatesize declared
-        in NED (and there's no manual setGateSize() call) it'll remain zero
-        size. A zero-sized gate vector is represented by a single gate object
-        whose size() method returns zero, and cannot be connected.
+	* cmodule.cc: support for zero-sized module gates. A gate vector
+	is zero size right after creation, and if there's no gatesize declared
+	in NED (and there's no manual setGateSize() call) it'll remain zero
+	size. A zero-sized gate vector is represented by a single gate object
+	whose size() method returns zero, and cannot be connected.
 
 2004-08-11   Andras Varga
 
-        * cchannel.cc: added check for negative delays
+	* cchannel.cc: added check for negative delays
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
 2004-07-15   Andras Varga
 
-        * csimul.cc: deleteNetwork(): moved flushing event queue after deleting
-        modules (because module destructors may contain delete cancelEvent(msg)
-        calls)
+	* csimul.cc: deleteNetwork(): moved flushing event queue after deleting
+	modules (because module destructors may contain delete cancelEvent(msg)
+	calls)
 
 2004-07-10   Andras Varga
 
-        * csimul.cc,cmodule.cc,util.cc: added cSimulation::contextType() stuff
+	* csimul.cc,cmodule.cc,util.cc: added cSimulation::contextType() stuff
 
 2004-07-05   Andras Varga
 
-        * csimplemodule.cc: recordScalar() functions for text and cStatistic
-        data removed. A cStatistic object can be recorded into the scalar file
-        by calling its recordScalar() method (below).
+	* csimplemodule.cc: recordScalar() functions for text and cStatistic
+	data removed. A cStatistic object can be recorded into the scalar file
+	by calling its recordScalar() method (below).
 
-        * cstat.cc: added recordScalar() method.
+	* cstat.cc: added recordScalar() method.
 
 2004-06-24  Andras Varga
 
-        * cpar.cc: implemented support for type M (XML element) in cPar.
+	* cpar.cc: implemented support for type M (XML element) in cPar.
 
 2004-06-22  Andras Varga
 
-        * added cxmlelement.cc
+	* added cxmlelement.cc
 
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
@@ -1105,17 +1163,17 @@
 
 2004-04-16  Andras Varga
 
-        * cpar.cc, cenum.cc: fixed two possible bugs after Johnny's valgrinding
+	* cpar.cc, cenum.cc: fixed two possible bugs after Johnny's valgrinding
 
 2004-04-13  Andras Varga
 
-        * cmessage.cc: implemented new cMessage methods setControlInfo(),
-        removeControlInfo(), controlInfo().
+	* cmessage.cc: implemented new cMessage methods setControlInfo(),
+	removeControlInfo(), controlInfo().
 
 2004-04-04  Andras Varga
 
-        * simplemodule.cc: cancelEvent(): don't throw error if message is not
-        currently scheduled, just return.
+	* simplemodule.cc: cancelEvent(): don't throw error if message is not
+	currently scheduled, just return.
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
@@ -1123,2373 +1181,2254 @@
 
 2004-02-23  Andras Varga
 
-        * cmodule.cc: added changeParentTo() to cModule.
+	* cmodule.cc: added changeParentTo() to cModule.
 
 2004-02-22  Andras Varga
 
-        * cmodule.cc: added gateSize() to cModule.
+	* cmodule.cc: added gateSize() to cModule.
 
 2004-02-21  Andras Varga
 
-        * cmodule.cc: setGateSize() made more tolerant; this is needed for
-        "gate++" NED feature (see nedxml/ChangeLog)
+	* cmodule.cc: setGateSize() made more tolerant; this is needed for
+	"gate++" NED feature (see nedxml/ChangeLog)
 
-        * cpar.cc: turned type character into English type names in cPar error
-        messages, e.g. "Cannot cast from type `D' to `S'" became
-        "Cannot cast from type double (D) to string (S)'".
+	* cpar.cc: turned type character into English type names in cPar error
+	messages, e.g. "Cannot cast from type `D' to `S'" became
+	"Cannot cast from type double (D) to string (S)'".
 
 2004-02-20  Andras Varga
 
-        * ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which
-        replaces cLinkType. See include/ChangeLog for more info.
+	* ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which
+	replaces cLinkType. See include/ChangeLog for more info.
 
 2004-02-12  Andras Varga
 
-        * cmodule.cc, cgate.cc, cchannel.cc: gave a bool return value to
-        deliver(), "false" meaning that message object should be deleted.
+	* cmodule.cc, cgate.cc, cchannel.cc: gave a bool return value to
+	deliver(), "false" meaning that message object should be deleted.
 
 2004-02-11  Andras Varga
 
-        * csimul.cc, cscheduler.cc: semantic change of getNextEvent()'s and
-        selectNextModule()'s return value (see include/ChangeLog)
+	* csimul.cc, cscheduler.cc: semantic change of getNextEvent()'s and
+	selectNextModule()'s return value (see include/ChangeLog)
 
 2004-02-10  Andras Varga
 
-        * cexception.cc: added storage of module class name (NED type name)
+	* cexception.cc: added storage of module class name (NED type name)
 
 2004-02-09  Andras Varga
 
-        * ctypes.cc: added methods to cModuleInterface so that it's possible
-        to dynamically assemble it (needed by networkbuilder)
+	* ctypes.cc: added methods to cModuleInterface so that it's possible
+	to dynamically assemble it (needed by networkbuilder)
 
 2004-02-07  Andras Varga
 
-        * ctypes.cc: added createOneIfClassIsKnown(const char *classname)
+	* ctypes.cc: added createOneIfClassIsKnown(const char *classname)
 
-        * cstruct.cc: fix createDescriptorFor() to prepare for missing
-        descriptor object
+	* cstruct.cc: fix createDescriptorFor() to prepare for missing
+	descriptor object
 
 2004-02-06  Andras Varga
 
-        * cgate.cc: implemented cGate::disconnect(); revised cGate::connectTo()
+	* cgate.cc: implemented cGate::disconnect(); revised cGate::connectTo()
 
-        * cchannel.cc: added setDelay(double), setError(double),
-        setDatarate(double) to cSimpleChannel
+	* cchannel.cc: added setDelay(double), setError(double),
+	setDatarate(double) to cSimpleChannel
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-09  Andras Varga
 
-        * cmodule.cc: implemented bubble()
+	* cmodule.cc: implemented bubble()
 
 2004-01-05  Andras Varga
 
-        * HEAVY CHANGES throughout the code, see include/ChangeLog entry with
-        same date.
+	* HEAVY CHANGES throughout the code, see include/ChangeLog entry with
+	same date.
 
-        * cDisplayStringParser:
-        - cDisplayStringParser renamed to cDisplayString
-        - backslash parsing improved (now recognizes backslash sequences
-          \t, \n, \r, \f, \b, \x0A with same meaning as in C/C++)
-        - notify() and assemble() only if needed (there is some change)
+	* cDisplayStringParser:
+	- cDisplayStringParser renamed to cDisplayString
+	- backslash parsing improved (now recognizes backslash sequences
+	  \t, \n, \r, \f, \b, \x0A with same meaning as in C/C++)
+	- notify() and assemble() only if needed (there is some change)
 
 2003-11-30  Andras Varga
 
-        * all files: info() no longer contains object name and class
+	* all files: info() no longer contains object name and class
 
 2003-11-22  Andras Varga
 
-        * carray.cc: fixed bug in cBag which caused crash under certain rare
-        circumstances [reported by Nicolas Betbeder-Matibet]
+	* carray.cc: fixed bug in cBag which caused crash under certain rare
+	circumstances [reported by Nicolas Betbeder-Matibet]
 
 2003-11-13  Andras Varga
 
-        * distrib.cc: added typecast for MSVC 7.0 compiler [reported by Bob
-        Scheffler]
+	* distrib.cc: added typecast for MSVC 7.0 compiler [reported by Bob
+	Scheffler]
 
 2003-11-13  Andras Varga
 
-        * Checked in parallel simulation code that was developed March-May 2003,
-        during my stay at Monash University. Changes:
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
 
-        2003-04-20  Andras Varga
-        * cmodule.cc: setGateSize(): added check for negative vector size
+	2003-04-20  Andras Varga
+	* cmodule.cc: setGateSize(): added check for negative vector size
 
-        2003-03-30  Andras Varga
-        * Makefile.vc uses implicit rules
+	2003-03-30  Andras Varga
+	* Makefile.vc uses implicit rules
 
-        2003-03-25  Andras Varga
-        * cmodule.cc: method isSimple() moved to base class cModule where it
-        uses dynamic_cast.
-        * ctypes.cc: cModuleType::create() methods reorganized (see
-        include/ChangeLog)
+	2003-03-25  Andras Varga
+	* cmodule.cc: method isSimple() moved to base class cModule where it
+	uses dynamic_cast.
+	* ctypes.cc: cModuleType::create() methods reorganized (see
+	include/ChangeLog)
 
-        2003-03-23  Andras Varga
-        * split cmodule.cc: cSimpleModule put into new file csimplemodule.cc
-        * cobject.cc: type of namestr member changed from char* to opp_string
-        * added cscheduler.cc, changed csimul.cc: cSimulation::nextModule()
-        now relies on a scheduler object, subclassed from cScheduler.
+	2003-03-23  Andras Varga
+	* split cmodule.cc: cSimpleModule put into new file csimplemodule.cc
+	* cobject.cc: type of namestr member changed from char* to opp_string
+	* added cscheduler.cc, changed csimul.cc: cSimulation::nextModule()
+	now relies on a scheduler object, subclassed from cScheduler.
 
-        2003-03-20  Andras Varga
-        * nearly all files: implementations of netPack()/netUnpack() moved
-        here from MPI/PVM directories. These functions now use the cCommBuffer
-        interface, so they're no longer specific to the communications library
-        (ie.MPI.PVM,..)
+	2003-03-20  Andras Varga
+	* nearly all files: implementations of netPack()/netUnpack() moved
+	here from MPI/PVM directories. These functions now use the cCommBuffer
+	interface, so they're no longer specific to the communications library
+	(ie.MPI.PVM,..)
 
 2003-11-09  Andras Varga
 
-        * csimul.cc: added optional support for dynamic loading of NED files.
-        If WITH_NETBUILDER was defined (e.g. via -D compiler option) when
-        compiling the sim. kernel, one can use the cSimulation::loadNedFile()
-        function to pull in compound modules, channels and network definitions
-        from NED files at runtime. If the sim. kernel was compiled without
-        WITH_NETBUILDER, the cSimulation::loadNedFile() throws an exception
-        when called.
-           cSimulation::loadNedFile() works by invoking code in src/netbuilder,
-        which in turn relies on the nedxml library. Thus, when WITH_NETBUILDER
-        is used, simulation executables must be linked with the nedxml library
-        (and thus also with an XML parser, if nedxml was compiled to support
-        XML input). When compiling without WITH_NETBUILDER, nedxml and also
-        the stuff in src/netbuilder can be left out from the link.
+	* csimul.cc: added optional support for dynamic loading of NED files.
+	If WITH_NETBUILDER was defined (e.g. via -D compiler option) when
+	compiling the sim. kernel, one can use the cSimulation::loadNedFile()
+	function to pull in compound modules, channels and network definitions
+	from NED files at runtime. If the sim. kernel was compiled without
+	WITH_NETBUILDER, the cSimulation::loadNedFile() throws an exception
+	when called.
+	   cSimulation::loadNedFile() works by invoking code in src/netbuilder,
+	which in turn relies on the nedxml library. Thus, when WITH_NETBUILDER
+	is used, simulation executables must be linked with the nedxml library
+	(and thus also with an XML parser, if nedxml was compiled to support
+	XML input). When compiling without WITH_NETBUILDER, nedxml and also
+	the stuff in src/netbuilder can be left out from the link.
 
 2003-11-01  Andras Varga
 
-        * cdispstr.cc: cDisplayString::setTagArg() now adds the tag if it
-        doesn't exist yet
+	* cdispstr.cc: cDisplayString::setTagArg() now adds the tag if it
+	doesn't exist yet
 
 2003-10-21  Andras Varga
 
-        * csimul.h: fixed simulation.moduleByPath(): it didn't work when
-        name of system module (the toplevel module) was included in the path
-        [reported by Andreas Koepke]
+	* csimul.h: fixed simulation.moduleByPath(): it didn't work when
+	name of system module (the toplevel module) was included in the path
+	[reported by Andreas Koepke]
 
 2003-10-02  Andras Varga
 
-        * util.h: added implementation of cContextSwitcher internal class,
-        needed by the new Enter_Method() and Enter_Method_Silent() macros.
+	* util.h: added implementation of cContextSwitcher internal class,
+	needed by the new Enter_Method() and Enter_Method_Silent() macros.
 
-        * ccoroutine.cc: bugfix: DeleteFiber(lpFiber) crashes if lpFiber==0
-        on Win2003 Server (maybe elsewhere too). [reported by Donald Von]
+	* ccoroutine.cc: bugfix: DeleteFiber(lpFiber) crashes if lpFiber==0
+	on Win2003 Server (maybe elsewhere too). [reported by Donald Von]
 
 2003-09-22  Andras Varga
 
-        * cmodule.cc: sendDirect() rules slightly modified, see header file.
+	* cmodule.cc: sendDirect() rules slightly modified, see header file.
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-06-16  Andras Varga
 
-        * cexception.cc: handle exceptions during initialization:
-        if cException ctor is invoked before main() has started, we print
-        the error message and call exit(1).
+	* cexception.cc: handle exceptions during initialization:
+	if cException ctor is invoked before main() has started, we print
+	the error message and call exit(1).
 
 2003-06-14  Andras Varga
 
-        * cmodule.cc: cModule's addGate(), addPar() return type changed from
-        void to cGate*/cPar*.
+	* cmodule.cc: cModule's addGate(), addPar() return type changed from
+	void to cGate*/cPar*.
 
 2003-04-15  Andras Varga
 
-        * cmodule.cc: fixed bug introduced in 2.3b1 in deleteModule()
-        which caused deleting another module (i.e. mod->deleteModule())
-        to crash.
+	* cmodule.cc: fixed bug introduced in 2.3b1 in deleteModule()
+	which caused deleting another module (i.e. mod->deleteModule())
+	to crash.
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
 2003-03-15  Andras Varga
 
-        * cchannel.cc, cgate.cc: refined channel attributes handling, isBusy(),
-        transmissionFinishes().
+	* cchannel.cc, cgate.cc: refined channel attributes handling, isBusy(),
+	transmissionFinishes().
 
 2003-03-10  Andras Varga
 
-        * ctype.cc: fixed bug (introduced in 2.3b1) in cLinkType constructor
-        which eventually caused NED channels not to work.
+	* ctype.cc: fixed bug (introduced in 2.3b1) in cLinkType constructor
+	which eventually caused NED channels not to work.
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-15  Andras Varga
 
-        * chist.cc: fix: clearResult() now doesn't reset num_cells.
+	* chist.cc: fix: clearResult() now doesn't reset num_cells.
 
-        * To be done in the future: observation count and histogram cell values
-        should be made unsigned long, and when obs. count would overflow,
-        issue a warning and ignore further collect() calls. Also TBD:
-        check for integer overflows in cKSplit and cPSquare.
+	* To be done in the future: observation count and histogram cell values
+	should be made unsigned long, and when obs. count would overflow,
+	issue a warning and ignore further collect() calls. Also TBD:
+	check for integer overflows in cKSplit and cPSquare.
 
 2003-02-14  Andras Varga
 
-        * cpar.cc: getAsText(): better handling of long string values
+	* cpar.cc: getAsText(): better handling of long string values
 
 2003-02-11  Andras Varga
 
-        * distrib.cc: bugfix in beta()
-        * cexception.h: added missing includes string.h and stdarg.h
+	* distrib.cc: bugfix in beta()
+	* cexception.h: added missing includes string.h and stdarg.h
 
 2003-02-10  Andras Varga
 
-        * chist.cc: cEqdHistogramBase: collectTransformed() and pdf() made
-        safer (floating-point rounding errors could cause addressing out
-        of cellv[] array)
+	* chist.cc: cEqdHistogramBase: collectTransformed() and pdf() made
+	safer (floating-point rounding errors could cause addressing out
+	of cellv[] array)
 
 2003-01-30  Andras Varga
 
-        * added handling of new MathFunc4Args where needed
+	* added handling of new MathFunc4Args where needed
 
 2003-01-23  Andras Varga
 
-        * NOTE about Fibers, the Win32 API used to implement activity()
-        on Windows. The number of fibers (that is, the number of modules
-        using activity() in a network) is limited by the available memory
-        and the available address space according to the following.
-        Each fiber has its own stack, by default 1MB (this is the "reserved"
-        stack space -- i.e. reserved in the address space, but not the full
-        1MB is actually "committed", i.e. has physical memory assigned to it).
-        This means that a 2GB address space will run out after 2048 fibers,
-        which is way too few. (In practice, you won't even be able to create
-        this many fibers, because physical memory is also a limiting factor).
-        Therefore, the 1MB reserved stack size (RSS) must be set to a smaller
-        value: the coroutine stack size requested for the module, plus
-        extra-stack-for-envir, the sum of the two typically around 32K.
-        Unfortunately, the CreateFiber() Win32 API doesn't allow the RSS to be
-        specified. The more advanced CreateFiberEx() API which accepts RSS as
-        parameter is only available from Windows XP!!!! The alternative is
-        the stacksize parameter stored in the EXE header, which can be set
-        via the STACKSIZE .def file parameter, via the /stack linker option,
-        or on an existing execuable using the editbin /stack utility.
-        This parameter specifies a common RSS for the main program stack,
-        fiber and thread stacks. 64K should be enough. This is the way
-        simulation executable should be created: linked with the /stack:65536
-        option, or the /stack:65536 parameter applied using editbin later.
-        For example, after applying the editbin /stacksize:65536 command to
-        dyna.exe, I was able to successfully run the Dyna sample with 8000
-        Client modules on my Win2K PC with 256M RAM (that means about 12000
-        modules at runtime, including about 4000 dynamically created modules.)
+	* NOTE about Fibers, the Win32 API used to implement activity()
+	on Windows. The number of fibers (that is, the number of modules
+	using activity() in a network) is limited by the available memory
+	and the available address space according to the following.
+	Each fiber has its own stack, by default 1MB (this is the "reserved"
+	stack space -- i.e. reserved in the address space, but not the full
+	1MB is actually "committed", i.e. has physical memory assigned to it).
+	This means that a 2GB address space will run out after 2048 fibers,
+	which is way too few. (In practice, you won't even be able to create
+	this many fibers, because physical memory is also a limiting factor).
+	Therefore, the 1MB reserved stack size (RSS) must be set to a smaller
+	value: the coroutine stack size requested for the module, plus
+	extra-stack-for-envir, the sum of the two typically around 32K.
+	Unfortunately, the CreateFiber() Win32 API doesn't allow the RSS to be
+	specified. The more advanced CreateFiberEx() API which accepts RSS as
+	parameter is only available from Windows XP!!!! The alternative is
+	the stacksize parameter stored in the EXE header, which can be set
+	via the STACKSIZE .def file parameter, via the /stack linker option,
+	or on an existing execuable using the editbin /stack utility.
+	This parameter specifies a common RSS for the main program stack,
+	fiber and thread stacks. 64K should be enough. This is the way
+	simulation executable should be created: linked with the /stack:65536
+	option, or the /stack:65536 parameter applied using editbin later.
+	For example, after applying the editbin /stacksize:65536 command to
+	dyna.exe, I was able to successfully run the Dyna sample with 8000
+	Client modules on my Win2K PC with 256M RAM (that means about 12000
+	modules at runtime, including about 4000 dynamically created modules.)
 
 2003-01-22  Andras Varga
 
-        * ctypes.cc: increased type safety of Register_Function() and
-        cFunctionType.
+	* ctypes.cc: increased type safety of Register_Function() and
+	cFunctionType.
 
 2003-01-20  Andras Varga
 
-        * removed obsolete file cstk.cc
+	* removed obsolete file cstk.cc
 
 2003-01-19  Andras Varga
 
-        * distrib.cc (new): contains implementations of distributions
-        contributed by Werner Sandmann (TU Bonn): continuous distributions
-        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
-        triang(),lognormal(), weibull(), pareto_shifted(), and discrete
-        distributions bernoulli(), binomial(), geometric(), negbinomial(),
-        hypergeometric(), poisson()
+	* distrib.cc (new): contains implementations of distributions
+	contributed by Werner Sandmann (TU Bonn): continuous distributions
+	gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
+	triang(),lognormal(), weibull(), pareto_shifted(), and discrete
+	distributions bernoulli(), binomial(), geometric(), negbinomial(),
+	hypergeometric(), poisson()
 
-        * random.cc (new), distrib.cc, util.cc: From util.cc, existing
-        distributions (uniform, normal, exponential, etc) were moved to
-        distrib.cc, and random number generator functions were moved to
-        new file random.cc.
+	* random.cc (new), distrib.cc, util.cc: From util.cc, existing
+	distributions (uniform, normal, exponential, etc) were moved to
+	distrib.cc, and random number generator functions were moved to
+	new file random.cc.
 
 2003-01-14  Andras Varga
 
-        * cwatch.cc: added support for 'bool'
+	* cwatch.cc: added support for 'bool'
 
-        * cmessage.cc: foreach(): include encapsulated msg in traversal
+	* cmessage.cc: foreach(): include encapsulated msg in traversal
 
-        * cmodule.h: implemented cSimpleModule::waitAndEnqueue(); putAsideQueue
-        (deprecated) prevented from being displayed in Tkenv.
+	* cmodule.h: implemented cSimpleModule::waitAndEnqueue(); putAsideQueue
+	(deprecated) prevented from being displayed in Tkenv.
 
 2002-12-21  Andras Varga
 
-        * cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info()
-        displays pointer value
+	* cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info()
+	displays pointer value
 
 2002-12-19  Andras Varga
 
-        * always use <iostream> instead of <iostream.h>
+	* always use <iostream> instead of <iostream.h>
 
-        * module id notation in info() strings changed from '#nnn' to 'id=nnn'
+	* module id notation in info() strings changed from '#nnn' to 'id=nnn'
 
 2002-12-07  Andras Varga
 
-        * cmessage.cc: info() now includes names of src/dest modules too;
-        useful when displayed in Tkenv scheduled events or message window
+	* cmessage.cc: info() now includes names of src/dest modules too;
+	useful when displayed in Tkenv scheduled events or message window
 
 2002-12-02  Andras Varga
 
-        * cmessage.cc: par() methods to throw cException when object cannot
-        be cast to cPar using dynamic_cast<cPar *>().
+	* cmessage.cc: par() methods to throw cException when object cannot
+	be cast to cPar using dynamic_cast<cPar *>().
 
 2002-11-14  Andras Varga
 
-        * cmodule.cc: cSimpleModule::end() and deleteModule() are now driven
-        by exceptions. This also means that activity() and handleMessage()
-        execution immediately ends after the end() or deleteModule() call.
-        (This fixes the bug that in previous versions, handleMessage() run
-        through even after these calls.)
+	* cmodule.cc: cSimpleModule::end() and deleteModule() are now driven
+	by exceptions. This also means that activity() and handleMessage()
+	execution immediately ends after the end() or deleteModule() call.
+	(This fixes the bug that in previous versions, handleMessage() run
+	through even after these calls.)
 
-        * csimul.cc: cSimulation::doOneStep() restructured
+	* csimul.cc: cSimulation::doOneStep() restructured
 
 2002-10-27  Andras Varga
 
-        * object.cc: className() implemented using typeid (C++ RTTI)
+	* object.cc: className() implemented using typeid (C++ RTTI)
 
-        * chead.cc, ctypes.cc: inspectorfactory stuff moved to Tkenv from here
+	* chead.cc, ctypes.cc: inspectorfactory stuff moved to Tkenv from here
 
-        * CRASH on Cygwin (gcc 2.95.3-5): if we transfer out (ie. by calling
-        transferToMain()) from a try{..} block inside a coroutine, the
-        program will crash during exiting (ie sometime on leaving main()).
-        This is kind of bad, because that's the way activity() can be handled
-        inside the simulation kernel, in cSimpleModule::activate()...
+	* CRASH on Cygwin (gcc 2.95.3-5): if we transfer out (ie. by calling
+	transferToMain()) from a try{..} block inside a coroutine, the
+	program will crash during exiting (ie sometime on leaving main()).
+	This is kind of bad, because that's the way activity() can be handled
+	inside the simulation kernel, in cSimpleModule::activate()...
 
-        To produce the bug, link with Tkenv any simulation that uses
-        activity() (I tried with Fifo1 and Token). Do one (or more) events
-        in Tkenv, then exit. Tkenv will crash right after printing
-        "End run of OMNeT++". Then try the same without doing an event,
-        or with pure handleMessage() simulation (ie Fifo2): neither will crash.
-        Strangely enough, there is also no immediate crash if you do
-        "Rebuild network" in Tkenv several times, crash is always delayed
-        until program exit.
+	To produce the bug, link with Tkenv any simulation that uses
+	activity() (I tried with Fifo1 and Token). Do one (or more) events
+	in Tkenv, then exit. Tkenv will crash right after printing
+	"End run of OMNeT++". Then try the same without doing an event,
+	or with pure handleMessage() simulation (ie Fifo2): neither will crash.
+	Strangely enough, there is also no immediate crash if you do
+	"Rebuild network" in Tkenv several times, crash is always delayed
+	until program exit.
 
-        To test it's really caused by the try block, modify cSimpleModule::
-        activate(void *p), around cmodule.cc#575:
-            try
-            {
-                smod->activity();
-        Insert simulation.transferToMain() just before the try block and
-        try to reproduce the bug (one step in Tkenv, then exit). Simulation
-        won't work, but no crash. Then move simulation.transferToMain()
-        just inside the try block: simulation will (not) work same way
-        as before, but crashes on exit.
+	To test it's really caused by the try block, modify cSimpleModule::
+	activate(void *p), around cmodule.cc#575:
+	    try
+	    {
+	        smod->activity();
+	Insert simulation.transferToMain() just before the try block and
+	try to reproduce the bug (one step in Tkenv, then exit). Simulation
+	won't work, but no crash. Then move simulation.transferToMain()
+	just inside the try block: simulation will (not) work same way
+	as before, but crashes on exit.
 
-        I only saw this on Cygwin: MSVC and gcc on Linux are OK. Web search
-        told me that exception handling in Cygwin isn't thread-safe, hence
-        the crash. According to some, recompiling *GCC* with --disable-shared
-        and --enable-threads should cure this. I didn't test, converted to
-        MinGW instead.
+	I only saw this on Cygwin: MSVC and gcc on Linux are OK. Web search
+	told me that exception handling in Cygwin isn't thread-safe, hence
+	the crash. According to some, recompiling *GCC* with --disable-shared
+	and --enable-threads should cure this. I didn't test, converted to
+	MinGW instead.
 
 2002-10-20  Andras Varga
 
-        * cgate.cc: added isConnectedOutside() and isConnectedInside() methods.
+	* cgate.cc: added isConnectedOutside() and isConnectedInside() methods.
 
 2002-10-19  Andras Varga
 
-        * cmodule.cc, ctypes.cc, csimul.cc: refactoring around buildInside(),
-        cNetworkType and Define_Network(), see include/ChangeLog.
+	* cmodule.cc, ctypes.cc, csimul.cc: refactoring around buildInside(),
+	cNetworkType and Define_Network(), see include/ChangeLog.
 
-        * cexception.cc, cmodule.cc, csimul.cc: introduced new cTermination-
-        Exception, cEndModuleException classes
+	* cexception.cc, cmodule.cc, csimul.cc: introduced new cTermination-
+	Exception, cEndModuleException classes
 
 2002-10-09  Andras Varga
 
-        * refactoring (see include/ChangeLog), cosmetics
+	* refactoring (see include/ChangeLog), cosmetics
 
 2002-10-07  Andras Varga
 
-        * cobject.cc, ctypes.cc, added onstartup.cc: refactoring: global
-        registration lists now use EXECUTE_ON_STARTUP macro, see
-        include/ChangeLog for more info.
+	* cobject.cc, ctypes.cc, added onstartup.cc: refactoring: global
+	registration lists now use EXECUTE_ON_STARTUP macro, see
+	include/ChangeLog for more info.
 
 2002-10-04  Andras Varga
 
-        * error handling with exceptions has been refined.
+	* error handling with exceptions has been refined.
 
-        * csimul.cc: incEventCount() removed, incrementing event count
-        was moved into doOneEvent()
+	* csimul.cc: incEventCount() removed, incrementing event count
+	was moved into doOneEvent()
 
-        * csimul.h: several methods removed from cSimulation and moved
-        into the Envir library: timeLimit(), simTimeLimit(), startClock(),
-        stopClock(), resetClock(), checkTimes().
+	* csimul.h: several methods removed from cSimulation and moved
+	into the Envir library: timeLimit(), simTimeLimit(), startClock(),
+	stopClock(), resetClock(), checkTimes().
 
 2002-09-07 Andras Varga
 
-        * added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc,
-        cmodule.cc, csimul.cc, mpimod.cc, mpipack.cc, netpack.cc, pvmmod.cc,
-        pvmpack.cc: introduced channel objects -- see include/ChangeLog for
-        more details
+	* added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc,
+	cmodule.cc, csimul.cc, mpimod.cc, mpipack.cc, netpack.cc, pvmmod.cc,
+	pvmpack.cc: introduced channel objects -- see include/ChangeLog for
+	more details
 
 2002-07-08  Andras Varga
 
-        * coutvect.cc (cOutVector methods): register vector as early as
-        possible. This is needed by the Akaroa output vector manager because
-        Akaroa needs to know the total number of parameters before recording
-        the first value. (This change has the side effect that empty vectors
-        also get declared in the output vector file, which is redundant.)
+	* coutvect.cc (cOutVector methods): register vector as early as
+	possible. This is needed by the Akaroa output vector manager because
+	Akaroa needs to know the total number of parameters before recording
+	the first value. (This change has the side effect that empty vectors
+	also get declared in the output vector file, which is redundant.)
 
 2002-07-04  Andras Varga
 
-        * cdispstr.h added: utility class cDisplayString
+	* cdispstr.h added: utility class cDisplayString
 
 2002-07-03  Andras Varga
 
-        * csimul.cc (doOneEvent()): bugfix: added missing ev.messageDelivered()
-        call that could cause a "phantom" message being animated in Tkenv with
-        handleMessage()-based simple modules
+	* csimul.cc (doOneEvent()): bugfix: added missing ev.messageDelivered()
+	call that could cause a "phantom" message being animated in Tkenv with
+	handleMessage()-based simple modules
 
 2002-06-27  Andras Varga
 
-        * cexception.cc/h added; most opp_error() calls replaced with
-        throw new cException(...). Exceptions are caught in
-        cSimpleModule::activate() (for activity()-based modules) and
-        in cSimulation::doOneEvent() (for handleMessage()-based modules),
-        and converted to 'conventional' opp_error().
+	* cexception.cc/h added; most opp_error() calls replaced with
+	throw new cException(...). Exceptions are caught in
+	cSimpleModule::activate() (for activity()-based modules) and
+	in cSimulation::doOneEvent() (for handleMessage()-based modules),
+	and converted to 'conventional' opp_error().
 
-        * TBD: rethink error handling wrt exceptions!
+	* TBD: rethink error handling wrt exceptions!
 
 2002-06-24  Andras Varga
 
-        * ccoroutine.h/cc: use Fiber API on Windows
+	* ccoroutine.h/cc: use Fiber API on Windows
 
 2002-06-17  Andras Varga
 
-        * cpar.cc: new feature: cPar can use compiled expressions subclassed
-        from cDoubleExpression (new class). This is needed for code generated
-        by the new, nedxml-based nedc.
+	* cpar.cc: new feature: cPar can use compiled expressions subclassed
+	from cDoubleExpression (new class). This is needed for code generated
+	by the new, nedxml-based nedc.
 
 2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
 
-        * cdensity.cc, chist.cc, cksplit.cc, cmodule.cc, cobject.cc,
-        cpar.cc, cpsquare.cc, csimul.cc, cstat.cc, ctypes.cc, cvarhist.cc:
-        do not include iostream.h et.al. directly (already included by
-        header files)
+	* cdensity.cc, chist.cc, cksplit.cc, cmodule.cc, cobject.cc,
+	cpar.cc, cpsquare.cc, csimul.cc, cstat.cc, ctypes.cc, cvarhist.cc:
+	do not include iostream.h et.al. directly (already included by
+	header files)
 
-        * cmessage.cc (decapsulate): added check for encapmsg==0 before
-        accessing encapmsg->len
+	* cmessage.cc (decapsulate): added check for encapmsg==0 before
+	accessing encapmsg->len
 
 2002-05-16  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * mpi/mpimod.h (class cNetGate): fixed className() declaration
-        (class cMpiMod): dito.
+	* mpi/mpimod.h (class cNetGate): fixed className() declaration
+	(class cMpiMod): dito.
 
-        * pvm/pvmmod.h (class cNetGate): fixed className() declaration
-        (class cPvmMod): dito.
+	* pvm/pvmmod.h (class cNetGate): fixed className() declaration
+	(class cPvmMod): dito.
 
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-07  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * pvm/pvmpack.cc (upack_object): compile fix: cast from (void*) to
-        (cObject*) in call to createOne()
+	* pvm/pvmpack.cc (upack_object): compile fix: cast from (void*) to
+	(cObject*) in call to createOne()
 
 2002-03-05  Andras Varga
 
-        * cgate.cc (setDisplayString): connection display string changes now
-        take effect immediately. Implementation: notify parent module's
-        inspector. (This is should not be the final solution though; it would
-        be better to add displayStringChanged() methods to cEnvir...)
+	* cgate.cc (setDisplayString): connection display string changes now
+	take effect immediately. Implementation: notify parent module's
+	inspector. (This is should not be the final solution though; it would
+	be better to add displayStringChanged() methods to cEnvir...)
 
 2002-03-04  Andras Varga
 
-        * cObject::free(cObject *) renamed to dealloc() throughout to avoid
-        misunderstandings
+	* cObject::free(cObject *) renamed to dealloc() throughout to avoid
+	misunderstandings
 
-        * coutvect.cc: vector registration made on-demand to allow initial
-        setName() calls
+	* coutvect.cc: vector registration made on-demand to allow initial
+	setName() calls
 
-        * cobject.cc, cmodule.cc, cgate.cc, cpar.cc, csimul.cc: fullPath2()
-        renamed to fullPath(); see include/ChangeLog for details. fullName()
-        methods in cGate and cModule also changed (no longer use static buffer).
-
-2002-03-03  Andras Varga
-
-        * several delete operators replaced with delete []. [suggestion by
-        Johnny Lai]
+	* cobject.cc, cmodule.cc, cgate.cc, cpar.cc, csimul.cc: fullPath2()
+	renamed to fullPath(); see include/ChangeLog for details. fullName()
+	methods in cGate and cModule also changed (no longer use static buffer).
 
 2002-03-03  Andras Varga
 
-        * ctypes.cc: cClassRegister can now be used to create instances of
-        non-cObject classes too; as part of this change, createOne() return
-        value changed from cObject* to void*. (See also include/ChangeLog)
+	* several delete operators replaced with delete []. [suggestion by
+	Johnny Lai]
 
-        * csimul.cc, coutvect.cc: management of various output files
-        (output vector file, output scalar file, snapshot file) was moved
-        from cSimulation to the user interface library (behind the ev facade).
-        Implementation of cOutVector changed completely. The cOutFileMgr
-        class was removed altogether. (See also include/ChangeLog)
+2002-03-03  Andras Varga
 
-        * cpar.cc: valueChanges() renamed to beforeChange(); corresponding
-        afterChange() method added. Removed parameter change logging code.
-        (See also include/ChangeLog)
+	* ctypes.cc: cClassRegister can now be used to create instances of
+	non-cObject classes too; as part of this change, createOne() return
+	value changed from cObject* to void*. (See also include/ChangeLog)
+
+	* csimul.cc, coutvect.cc: management of various output files
+	(output vector file, output scalar file, snapshot file) was moved
+	from cSimulation to the user interface library (behind the ev facade).
+	Implementation of cOutVector changed completely. The cOutFileMgr
+	class was removed altogether. (See also include/ChangeLog)
+
+	* cpar.cc: valueChanges() renamed to beforeChange(); corresponding
+	afterChange() method added. Removed parameter change logging code.
+	(See also include/ChangeLog)
 
 2002-02-24  Andras Varga
 
-        * cmodule.cc: bugfix: pause() was allowed for handleMessage() modules
-        too.
+	* cmodule.cc: bugfix: pause() was allowed for handleMessage() modules
+	too.
 
 2002-02-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cllist.cc (operator=): Same bugs as with cQueue (see items
-        2002-02-21 and 2001-10-25). Same bugfixes applied [reported by
-        #JIA KE# <P147125331@ntu.edu.sg>]
+	* cllist.cc (operator=): Same bugs as with cQueue (see items
+	2002-02-21 and 2001-10-25). Same bugfixes applied [reported by
+	#JIA KE# <P147125331@ntu.edu.sg>]
 
 2002-02-21  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cqueue.cc (operator=): Bugfix: iteration order changed from
-        head->tail to tail->head. Since unsorted insertion is performed at
-        the destination queue's head, this preserves element order. Fix
-        provided by Jos� Afonso <jaa@dei.uminho.pt>
+	* cqueue.cc (operator=): Bugfix: iteration order changed from
+	head->tail to tail->head. Since unsorted insertion is performed at
+	the destination queue's head, this preserves element order. Fix
+	provided by Jos� Afonso <jaa@dei.uminho.pt>
 
 2002-02-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cmodule.cc (moduleByRelativePath): use explicit constructor
-        instead of copy constructor for pathbuf (gcc-3 patch)
-        * csimul.cc (moduleByPath): ditto
+	* cmodule.cc (moduleByRelativePath): use explicit constructor
+	instead of copy constructor for pathbuf (gcc-3 patch)
+	* csimul.cc (moduleByPath): ditto
 
 2002-01-24  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cenum.cc (insert): Bugfix: iterating to the next larger
-        allocation table size failed. New table size was always 0
-        (insert): check that enum strings have different keys. Otherwise
-        abort
-        (insert): use opp_error instead of fprintf for error messages
+	* cenum.cc (insert): Bugfix: iterating to the next larger
+	allocation table size failed. New table size was always 0
+	(insert): check that enum strings have different keys. Otherwise
+	abort
+	(insert): use opp_error instead of fprintf for error messages
 
 2002-01-23 Andras Varga
 
-        * cmodule.cc: bugfix: send..() and scheduleAt() crashed if message
-        owner was set to NULL.
+	* cmodule.cc: bugfix: send..() and scheduleAt() crashed if message
+	owner was set to NULL.
 
-        * carray.cc: get() methods of cArray and cBag no longer give a warning
-        if the slot is empty, but simply return NULL pointer. Warnings remained
-        only in the remove() methods.
+	* carray.cc: get() methods of cArray and cBag no longer give a warning
+	if the slot is empty, but simply return NULL pointer. Warnings remained
+	only in the remove() methods.
 
 2001-11-06 Andras Varga
 
-        * csimul.cc: bugfix: startRun() unnecessarily disabled warnings
+	* csimul.cc: bugfix: startRun() unnecessarily disabled warnings
 
 2001-10-28 Andras Varga
 
-        * util.cc: opp_strprettytrunc() added; indexedname() renamed to
-        opp_mkindexedname() (old name still exists as macro)
-        * cobject.cc, cmodule.cc, csimul.cc, cgate.cc, cpar.cc: added
-        fullPath2(buffer,buflen) which produces the result in an external
-        buffer; cObject::fullPath() now relies on fullPath2().
+	* util.cc: opp_strprettytrunc() added; indexedname() renamed to
+	opp_mkindexedname() (old name still exists as macro)
+	* cobject.cc, cmodule.cc, csimul.cc, cgate.cc, cpar.cc: added
+	fullPath2(buffer,buflen) which produces the result in an external
+	buffer; cObject::fullPath() now relies on fullPath2().
 
 2001-10-25  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cqueue.cc (operator=): Bugfix for stop condition in iteration
-        loop
+	* cqueue.cc (operator=): Bugfix for stop condition in iteration
+	loop
 
 2001-09-14 Andras Varga
 
-        * utils.cc: added opp_nextrand(long& seed)
-        * cmodule.cc: display string methods reorganized
+	* utils.cc: added opp_nextrand(long& seed)
+	* cmodule.cc: display string methods reorganized
 
 2001-09-06 Andras Varga
 
-        * cleanup around object copying (see include/ChangeLog for details)
+	* cleanup around object copying (see include/ChangeLog for details)
 
 2001-09-01 Andras Varga
 
-        * _CONST patches made permanent: _CONST --> const, CONSTCAST() -->
-        const_cast<>() replacements
+	* _CONST patches made permanent: _CONST --> const, CONSTCAST() -->
+	const_cast<>() replacements
 
-        * Makefile.bc: cenum.cc, cstruct.cc added
+	* Makefile.bc: cenum.cc, cstruct.cc added
 
 2001-08-30 Andras Varga
 
-        * MPI targets added to Makefile.vc too
+	* MPI targets added to Makefile.vc too
 
 2001-08-11 Andras Varga
 
-        * added _CONSTs to all copy constructors, operator=()'s and dup()'s
+	* added _CONSTs to all copy constructors, operator=()'s and dup()'s
 
 2001-08-06  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cnetmod.cc (isLocalMachineIn): Compile-Fix: changed const to
-        _CONST in argument list.
+	* cnetmod.cc (isLocalMachineIn): Compile-Fix: changed const to
+	_CONST in argument list.
 
 2001-08-05 Andras Varga
 
-        * added a few dozen new _CONSTs; affects nearly all files
+	* added a few dozen new _CONSTs; affects nearly all files
 
 2001-07-29 Andras Varga
 
-        * added a bunch of _CONSTs (see changelog entry in include/)
+	* added a bunch of _CONSTs (see changelog entry in include/)
 
 2001-07-11 Andras Varga
 
-        * mpi/* added, Makefile.in: Eric Wu's Tru64/MPI port
+	* mpi/* added, Makefile.in: Eric Wu's Tru64/MPI port
 
 2001-07-02 Andras Varga
 
-        * cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc.
-        Dependencies to be updated in both makefiles! Code still untested.
+	* cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc.
+	Dependencies to be updated in both makefiles! Code still untested.
 
 2001-06-28  Andras Varga
 
-        * cstruct.cc added: classes to support self-describing data structures,
-        to be used for implementing message subclassing. UNTESTED. To be added
-        to the makefile.
+	* cstruct.cc added: classes to support self-describing data structures,
+	to be used for implementing message subclassing. UNTESTED. To be added
+	to the makefile.
 
-        * cenum.cc added: classes to support string mapping of enums. UNTESTED.
-        To be added to the makefile.
+	* cenum.cc added: classes to support string mapping of enums. UNTESTED.
+	To be added to the makefile.
 
 2001-06-20  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * Makefile.in (depend): added -I../../include
+	* Makefile.in (depend): added -I../../include
 
-        * carray.cc (): const patches
-        added functions:
-                const void *cBag::get(int m) const
-                const cObject *cArray::get(int m) const
-                const cObject *cArray::get(const char *objname) const
+	* carray.cc (): const patches
+	added functions:
+	        const void *cBag::get(int m) const
+	        const cObject *cArray::get(int m) const
+	        const cObject *cArray::get(const char *objname) const
 
-        * cgate.cc (): const patches
+	* cgate.cc (): const patches
 
-        * cmessage.cc (): const patches
+	* cmessage.cc (): const patches
 
-        * cmodule.cc (): const patches
-        added functions:
-                cGate *cModule::gate(const char *s, int sn) const
+	* cmodule.cc (): const patches
+	added functions:
+	        cGate *cModule::gate(const char *s, int sn) const
 
-        * cobject.cc (): const patches
+	* cobject.cc (): const patches
 
-        * cpar.cc (): const patches
-
+	* cpar.cc (): const patches
 
 2001-03-10 Andras Varga
 
-        * ------ omnetpp-2.1 released ------
+	* ------ omnetpp-2.1 released ------
 
-        * Borland C++ support removed: I deleted the project files
-        (*.ide). I added equivalent Makefile.bc files (generated from the
-        BC IDE), but they are completely unsupported at the moment. If
-        there's interest, it's possible that later I'll add makefiles for
-        the free command-line bc5.5 compiler.
-
+	* Borland C++ support removed: I deleted the project files
+	(*.ide). I added equivalent Makefile.bc files (generated from the
+	BC IDE), but they are completely unsupported at the moment. If
+	there's interest, it's possible that later I'll add makefiles for
+	the free command-line bc5.5 compiler.
 
 2001-02-27 Andras Varga
 
-        * fixed bug which prevented compiling with PVM
+	* fixed bug which prevented compiling with PVM
 
-        * ------ omnetpp-2.0p1 released ------
+	* ------ omnetpp-2.0p1 released ------
 
 2001-02-06 Andras Varga
 
-        * fix: Makefile.vc: 'clean' target didn't delete object files in std/ and pvm/
+	* fix: Makefile.vc: 'clean' target didn't delete object files in std/ and pvm/
 
-        * ------ omnetpp-2.0 released ------
+	* ------ omnetpp-2.0 released ------
 
 2001-02-05 Andras Varga
 
-        * ev<< and ev>> now supports cPar objects too [from Nicky van Foreest]
+	* ev<< and ev>> now supports cPar objects too [from Nicky van Foreest]
 
-        * old BC3.1 support removed from cenvir.h
+	* old BC3.1 support removed from cenvir.h
 
 2001-01-24 Andras Varga
 
-        * bugfix: cArray and cBag didn't work properly after clear()
+	* bugfix: cArray and cBag didn't work properly after clear()
 
-        * bugfix: makefile and makefile.vc didn't handle PVM properly
-        [reported by Ahmet Sekercioglu]
+	* bugfix: makefile and makefile.vc didn't handle PVM properly
+	[reported by Ahmet Sekercioglu]
 
 2001-01-16 Andras Varga
 
-        * added OMNETPP_VERSION to defs.h (0x0200 for OMNeT++ 2.0)
+	* added OMNETPP_VERSION to defs.h (0x0200 for OMNeT++ 2.0)
 
 2001-01-15 Andras Varga
 
-        * bugfix: cQueue::insertBefore() and cQueue::insertAfter() didn't
-        take the ownership of the inserted object [reported by Ulrich
-        Kaage]
+	* bugfix: cQueue::insertBefore() and cQueue::insertAfter() didn't
+	take the ownership of the inserted object [reported by Ulrich
+	Kaage]
 
 2001-01-03 Andras Varga
 
-        * number of cQueue methods made virtual to enable customizing
-        cQueue (e.g. adding statistics for maintaining average queue
-        length, etc.)  [suggested by Holger Karl]
+	* number of cQueue methods made virtual to enable customizing
+	cQueue (e.g. adding statistics for maintaining average queue
+	length, etc.)  [suggested by Holger Karl]
 
-        * added static counters to the cMessage class (total_msgs,
-        live_msgs); these variables are incremented/decremented by the
-        cMessage constructor and destructor, and displayed in Tkenv. They
-        can be very handy at checking for memory leaks.
+	* added static counters to the cMessage class (total_msgs,
+	live_msgs); these variables are incremented/decremented by the
+	cMessage constructor and destructor, and displayed in Tkenv. They
+	can be very handy at checking for memory leaks.
 
-        * changed the place where cSimpleModule's timeoutmsg is created:
-        from the constructor to scheduleStart() which is also mandatorily
-        called for activity() modules. Reason: "Total msgs" count in Tkenv
-        incorrectly displayed zero at the beginning of the simulation,
-        while the activation/timeout msg objects already existed)
+	* changed the place where cSimpleModule's timeoutmsg is created:
+	from the constructor to scheduleStart() which is also mandatorily
+	called for activity() modules. Reason: "Total msgs" count in Tkenv
+	incorrectly displayed zero at the beginning of the simulation,
+	while the activation/timeout msg objects already existed)
 
 2000-06-04 Andras Varga
 
-        * ------ omnetpp-2.0b5 released ------
+	* ------ omnetpp-2.0b5 released ------
 
-        * fix: cPar::setfunction() improved and made const-correct (for gcc 2.95.2)
+	* fix: cPar::setfunction() improved and made const-correct (for gcc 2.95.2)
 
-        * warnings eliminated from cllist.cc & coutvect.cc
+	* warnings eliminated from cllist.cc & coutvect.cc
 
 2000-05-21 Andras Varga
 
-        * ------ omnetpp-2.0b4 released ------
+	* ------ omnetpp-2.0b4 released ------
 
+	* added message sending functions which take cGate* pointers
+	[suggested by Mark Rahner]:
+	int send(cMessage *msg, cGate *outputgate);
+	int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
+	int sendDirect(cMessage *msg, double delay, cGate *inputgate);
 
-        * added message sending functions which take cGate* pointers
-        [suggested by Mark Rahner]:
-        int send(cMessage *msg, cGate *outputgate);
-        int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
-        int sendDirect(cMessage *msg, double delay, cGate *inputgate);
+	(Mark's original suggestion was to create a single generalized
+	send(cMessage *msg, double delay, cGate *gate) function which
+	would combine the functionality of all other
+	send()/sendDelayed()/sendDirect() variants, and mark other
+	functions as 'deprecated'. The gate passed to send() could be that
+	of another module [~sendDirect()] and either an input or an output
+	gate; the delay argument would be interpreted as propagation delay
+	until the msg reaches that gate. I didn't implement it for now
+	because I felt such a very general function would cause confusion
+	for simulation programmers, but I'd like to hear more opinions
+	about this...)
 
-        (Mark's original suggestion was to create a single generalized
-        send(cMessage *msg, double delay, cGate *gate) function which
-        would combine the functionality of all other
-        send()/sendDelayed()/sendDirect() variants, and mark other
-        functions as 'deprecated'. The gate passed to send() could be that
-        of another module [~sendDirect()] and either an input or an output
-        gate; the delay argument would be interpreted as propagation delay
-        until the msg reaches that gate. I didn't implement it for now
-        because I felt such a very general function would cause confusion
-        for simulation programmers, but I'd like to hear more opinions
-        about this...)
+	* multi-stage initialization support added. Modules have two new
+	functions which can be redefined by the user:
 
-        * multi-stage initialization support added. Modules have two new
-        functions which can be redefined by the user:
+	void initialize(int stage);
+	int numInitStages();
 
-        void initialize(int stage);
-        int numInitStages();
+	At the beginning of the simulation, initialize(0) is called for
+	all modules, then initialize(1), initialize(2), etc. For each
+	module, numInitStages() must be redefined to return the number of
+	init stages required, e.g. for a two-stage init, numInitStages()
+	should return 2, and initialize(int stage) must be implemented to
+	handle the stage=0 and stage=1 cases.  callInitialize() now
+	performs the full multi-stage initialization for that module and
+	all its submodules.
 
-        At the beginning of the simulation, initialize(0) is called for
-        all modules, then initialize(1), initialize(2), etc. For each
-        module, numInitStages() must be redefined to return the number of
-        init stages required, e.g. for a two-stage init, numInitStages()
-        should return 2, and initialize(int stage) must be implemented to
-        handle the stage=0 and stage=1 cases.  callInitialize() now
-        performs the full multi-stage initialization for that module and
-        all its submodules.
-
-        Multi-stage initialization defaults to the good old single-stage
-        initialize() function (without args): the default numInitStages()
-        returns 1, and the default initialize(int stage) simply calls
-        initialize().
+	Multi-stage initialization defaults to the good old single-stage
+	initialize() function (without args): the default numInitStages()
+	returns 1, and the default initialize(int stage) simply calls
+	initialize().
 
 2000-05-19 Andras Varga
 
-        * fixed a bug in cSimulation::snapshot() which caused segfault if
-        snapshot() was called with no 'label' parameter [reported by
-        Gy. Pongor]
+	* fixed a bug in cSimulation::snapshot() which caused segfault if
+	snapshot() was called with no 'label' parameter [reported by
+	Gy. Pongor]
 
-        * fixed a bug which caused double printing of the distribution
-        data in histogram classes when snapshot() was called
+	* fixed a bug which caused double printing of the distribution
+	data in histogram classes when snapshot() was called
 
 2000-05-07 Andras Varga
 
-        * Makefile.vc improvements [from Balazs Kelemen]
+	* Makefile.vc improvements [from Balazs Kelemen]
 
 2000-05-06 Andras Varga
 
-        * further char * --> const char * changes
+	* further char * --> const char * changes
 
-        * displayString() added to cMessage. By default it returns an
-        empty string; users have to subclass cMessage and redefine
-        displayString() to get messages with custom appearance in
-        Tkenv. (Not implemented yet in Tkenv!)
+	* displayString() added to cMessage. By default it returns an
+	empty string; users have to subclass cMessage and redefine
+	displayString() to get messages with custom appearance in
+	Tkenv. (Not implemented yet in Tkenv!)
 
 2000-05-05 Andras Varga
 
-        * setDisplayString() now works in Tkenv (sim/cmodule.cc also
-        affected)
+	* setDisplayString() now works in Tkenv (sim/cmodule.cc also
+	affected)
 
-        * setDisplayString() got a new argument, bool immediate.  It
-        specifies whether the display string change should take effect
-        immediately, or only after processing the current event (default
-        is immediate=true).  If several display string changes are going
-        to be done within one event, then immediate=false is useful
-        because it reduces the number of necessary
-        redraws. Immediate=false also uses less stack. But its drawback is
-        that a setDisplayString() followed by a send() would actually be
-        displayed in reverse order (message animation first), because
-        message animations are performed immediately (actually within the
-        send() call).
+	* setDisplayString() got a new argument, bool immediate.  It
+	specifies whether the display string change should take effect
+	immediately, or only after processing the current event (default
+	is immediate=true).  If several display string changes are going
+	to be done within one event, then immediate=false is useful
+	because it reduces the number of necessary
+	redraws. Immediate=false also uses less stack. But its drawback is
+	that a setDisplayString() followed by a send() would actually be
+	displayed in reverse order (message animation first), because
+	message animations are performed immediately (actually within the
+	send() call).
 
-        * once we have setDisplayString(), seems like we'll need a display
-        string parser/assembler object to be able to easily change
-        specific values within the display string without bothering the
-        rest of it. Maybe for the some next version; but if you want to
-        contribute one, go ahead :-)
+	* once we have setDisplayString(), seems like we'll need a display
+	string parser/assembler object to be able to easily change
+	specific values within the display string without bothering the
+	rest of it. Maybe for the some next version; but if you want to
+	contribute one, go ahead :-)
 
 2000-04-19 Andras Varga
 
-        * bugfix: when using datarate and propagation delay at the same
-        output gate, the gate's transmissionFinishes() function returned
-        incorrect value: one had to substract the propagation delay to get
-        the correct number.  Fixed in cGate::deliver(cMessage *msg):
-        transmission delay calculation should be done _before_ propagation
-        delay.
+	* bugfix: when using datarate and propagation delay at the same
+	output gate, the gate's transmissionFinishes() function returned
+	incorrect value: one had to substract the propagation delay to get
+	the correct number.  Fixed in cGate::deliver(cMessage *msg):
+	transmission delay calculation should be done _before_ propagation
+	delay.
 
-        * in util.h, fastconcat() renamed to opp_concat(); compatibility
-        #define added
+	* in util.h, fastconcat() renamed to opp_concat(); compatibility
+	#define added
 
 2000-04-10 Andras Varga
 
-        * TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+	* TRUE/FALSE (defines) replaced by true/false (C++ keywords)
 
-        * operator=(cXXX& other) functions now include this line: if
-        (this==&other) return *this;
+	* operator=(cXXX& other) functions now include this line: if
+	(this==&other) return *this;
 
-        * indentation canonized (4 spaces) in most files (where I had the patience)
+	* indentation canonized (4 spaces) in most files (where I had the patience)
 
-        * remove(cObject *) added to cArray
+	* remove(cObject *) added to cArray
 
-        * cArray error handling improved
+	* cArray error handling improved
 
-        * Improved on functions for traversing module hierarchy. [suggestion by Niko]
+	* Improved on functions for traversing module hierarchy. [suggestion by Niko]
 
-        These functions were removed from cSimulation:
-              int find(const char *modulename,int index=-1, int parentmod_id=-1);
-              cModule *module(const char *modulename,int index=-1,int parentmod_id=-1);
-              bool isUnique(const char *s);  // not needed
-              int find(cModule *mod);  // was equivalent to mod->id()
+	These functions were removed from cSimulation:
+	      int find(const char *modulename,int index=-1, int parentmod_id=-1);
+	      cModule *module(const char *modulename,int index=-1,int parentmod_id=-1);
+	      bool isUnique(const char *s);  // not needed
+	      int find(cModule *mod);  // was equivalent to mod->id()
 
-        The first two have been replaced by functions in cModule:
-              int findSubmodule(const char *submodname, int idx=-1); // moduleID (or -1)
-              cModule *submodule(const char *submodname, int idx=-1);
+	The first two have been replaced by functions in cModule:
+	      int findSubmodule(const char *submodname, int idx=-1); // moduleID (or -1)
+	      cModule *submodule(const char *submodname, int idx=-1);
 
-        New function in cModule:
-              cModule *moduleByRelativePath(const char *path);
+	New function in cModule:
+	      cModule *moduleByRelativePath(const char *path);
 
-        moduleByRelativePath() is similar to cSimulation::moduleByPath(),
-        except that it starts the search at that module
-        (e.g. mymod->moduleByRelativePath( "sub.subsub") returns the
-        "subsub" submodule of the "sub" submodule of mymod).
+	moduleByRelativePath() is similar to cSimulation::moduleByPath(),
+	except that it starts the search at that module
+	(e.g. mymod->moduleByRelativePath( "sub.subsub") returns the
+	"subsub" submodule of the "sub" submodule of mymod).
 
-        * in printf() statements, all "%lf","%lg","%le" were replaced by "%f","%g","%e"
+	* in printf() statements, all "%lf","%lg","%le" were replaced by "%f","%g","%e"
 
-        * in cmodule.h, the old NEW and DELETE macros (for raw memory
-        allocation) were renamed to opp_new and opp_free. (Beware when
-        using opp_free: it does NOT call the destructor of the passed
-        object!)
+	* in cmodule.h, the old NEW and DELETE macros (for raw memory
+	allocation) were renamed to opp_new and opp_free. (Beware when
+	using opp_free: it does NOT call the destructor of the passed
+	object!)
 
 2000-04-06 Andras Varga
 
-        * Changes to enable linking a Windows DLL from the library. Note
-        that the sim dll and envir.dll mutually depend on each other, so
-        first we must build an import library from one to be able to link
-        dlls from them. Thus, first we create envir.ilib [ilib=import
-        library], then we can link sim_std.dll, and using sim_std.ilib we
-        can link envir.dll...
+	* Changes to enable linking a Windows DLL from the library. Note
+	that the sim dll and envir.dll mutually depend on each other, so
+	first we must build an import library from one to be able to link
+	dlls from them. Thus, first we create envir.ilib [ilib=import
+	library], then we can link sim_std.dll, and using sim_std.ilib we
+	can link envir.dll...
 
-        On Unix we don't have this problem: .so files are not linked
-        against other libs (they are treated more like a collection of
-        object files), and the dynamic loader acts practically as a linker
-        and collects the symbols at runtime from the different .so files.
+	On Unix we don't have this problem: .so files are not linked
+	against other libs (they are treated more like a collection of
+	object files), and the dynamic loader acts practically as a linker
+	and collects the symbols at runtime from the different .so files.
 
-        * Remaining problem on Win32: user interface DLL cannot be loaded
-        dynamically
-        (e.g. with [General]/load-libs= ini file setting); the
-        LoadLibrary() call returns error code. The problem is [probably]
-        with the static objects in the DLL whose constructors are called
-        [probably] during LoadLibrary() from DllMain(); these constructors
-        want to write a global variable located outside the DLL. This was
-        no problem on Unix but seems like Windows doesn't like it. To be
-        verified that the error is really caused by this and not something
-        else!!!
+	* Remaining problem on Win32: user interface DLL cannot be loaded
+	dynamically
+	(e.g. with [General]/load-libs= ini file setting); the
+	LoadLibrary() call returns error code. The problem is [probably]
+	with the static objects in the DLL whose constructors are called
+	[probably] during LoadLibrary() from DllMain(); these constructors
+	want to write a global variable located outside the DLL. This was
+	no problem on Unix but seems like Windows doesn't like it. To be
+	verified that the error is really caused by this and not something
+	else!!!
 
 2000-03-28 Andras Varga
 
-        * SIM_API macro added to public classes and functions to export
-        them on Windows
+	* SIM_API macro added to public classes and functions to export
+	them on Windows
 
 2000-03-26 Andras Varga
 
-        * 'char *' pointers made const-correct (lots of 'char *' -->
-        'const char *' replacements throughout the code) -- this will
-        affect the UI libraries too
+	* 'char *' pointers made const-correct (lots of 'char *' -->
+	'const char *' replacements throughout the code) -- this will
+	affect the UI libraries too
 
-        * header files indentation uniformized; other little cleanups,
-        e.g. some method parameter names made mode descriptive
+	* header files indentation uniformized; other little cleanups,
+	e.g. some method parameter names made mode descriptive
 
 2000-03-12 Andras Varga
 
-        * pvm files really fixed. Debugging done by Gabor Lencse.
+	* pvm files really fixed. Debugging done by Gabor Lencse.
 
-        * sum() and sqrSum() members added to statistics classes (cStdDev& subclasses)
+	* sum() and sqrSum() members added to statistics classes (cStdDev& subclasses)
 
-        * cPar fix: boolValue(), longValue() and doubleValue() made rather
-        liberal: now they all allow conversion from all of B,L and the
-        double types D,T,X,F.  This is necessary because of the way
-        parameter assignments in NED are handled. For example, bool and
-        long expressions (e.g. "i==0 || i==n") are compiled into cPar X
-        expressions which will _need_ to be converted to bool/long after
-        evaluation.
+	* cPar fix: boolValue(), longValue() and doubleValue() made rather
+	liberal: now they all allow conversion from all of B,L and the
+	double types D,T,X,F.  This is necessary because of the way
+	parameter assignments in NED are handled. For example, bool and
+	long expressions (e.g. "i==0 || i==n") are compiled into cPar X
+	expressions which will _need_ to be converted to bool/long after
+	evaluation.
 
-        * isNumeric() added to cPar
+	* isNumeric() added to cPar
 
 2000-02-03 Andras Varga
 
-        * some pvm-related bugs fixed.
+	* some pvm-related bugs fixed.
 
 2000-01-25 Andras Varga
 
-        * ------ omnetpp-2.0b3 released ------
+	* ------ omnetpp-2.0b3 released ------
 
-        * cArray functions changed to take and return cArray* instead of
-        cArray&.  This affects add(), addAt(), remove(), get() and op[].
+	* cArray functions changed to take and return cArray* instead of
+	cArray&.  This affects add(), addAt(), remove(), get() and op[].
 
 2000-01-17 Andras Varga
 
-        * The +,-,*,/,... operators which take cPar plus a numeric type
-        (long/double) were removed from cpar.h. This affects some existing
-        code: expressions like msg->par("count")+1 which used to compile
-        now cause error ("too many possible conversions") and must be
-        disabiguated by adding explicit casts like this:
-        (int)msg->par("count")+1.
+	* The +,-,*,/,... operators which take cPar plus a numeric type
+	(long/double) were removed from cpar.h. This affects some existing
+	code: expressions like msg->par("count")+1 which used to compile
+	now cause error ("too many possible conversions") and must be
+	disabiguated by adding explicit casts like this:
+	(int)msg->par("count")+1.
 
-        Assigments (like: cPar p = 1; int i=p;) still work fine and don't
-        need to be changed.
+	Assigments (like: cPar p = 1; int i=p;) still work fine and don't
+	need to be changed.
 
-        The reason is that the ANSI C++ overload resolution rules have
-        changed a few years ago, and now that compilers begin to be more
-        compliant, it is difficult (~impossible) to write operator*/+-()
-        functions with which code will compile well under both the old and
-        the new resolution rules (which are likely to coexist for a few
-        years to come). Ambiguity comes because cPar supports many
-        conversions (double, int, long, unsigned int, unsigned long,
-        char * [char* + int is also legal!], void *, etc.)  I feel that it is
-        better(results in cleaner code) to use explicit type casts in
-        expressions with cPar.
+	The reason is that the ANSI C++ overload resolution rules have
+	changed a few years ago, and now that compilers begin to be more
+	compliant, it is difficult (~impossible) to write operator*/+-()
+	functions with which code will compile well under both the old and
+	the new resolution rules (which are likely to coexist for a few
+	years to come). Ambiguity comes because cPar supports many
+	conversions (double, int, long, unsigned int, unsigned long,
+	char * [char* + int is also legal!], void *, etc.)  I feel that it is
+	better(results in cleaner code) to use explicit type casts in
+	expressions with cPar.
 
-        This issue came up while porting to MSVC 6.0, see MSVC error C2666.
+	This issue came up while porting to MSVC 6.0, see MSVC error C2666.
 
 2000-01-15 Andras Varga
 
-        * the 'explicit' keyword was added to a number of constructors,
-        most notably cPar(char *name). The reason was that constructs like
+	* the 'explicit' keyword was added to a number of constructors,
+	most notably cPar(char *name). The reason was that constructs like
 
-        cPar p = "foo";
+	cPar p = "foo";
 
-        did NOT compile as one would expect (i.e. to a cPar() construction
-        followed by an assignment), but to a cPar p("foo") constructor
-        call, which is quite different! ("foo" becomes the object's NAME
-        instead of its value.)  The explicit keyword is supported to
-        prevent this from happening.
+	did NOT compile as one would expect (i.e. to a cPar() construction
+	followed by an assignment), but to a cPar p("foo") constructor
+	call, which is quite different! ("foo" becomes the object's NAME
+	instead of its value.)  The explicit keyword is supported to
+	prevent this from happening.
 
-        * minor change: cSimulation::setErrorCode() added (was needed in
-        Tkenv's startup code)
+	* minor change: cSimulation::setErrorCode() added (was needed in
+	Tkenv's startup code)
 
 2000-01-04 Andras Varga
 
-        * cPar::setStringValue() now accepts NULL (and treats it as "")
+	* cPar::setStringValue() now accepts NULL (and treats it as "")
 
 1999-12-19 Andras Varga
 
-        * cPar interface cleaned up:
+	* cPar interface cleaned up:
 
-        o overloaded setValue(..) functions were renamed to
-        setStringValue(..), setLongValue(..), setBoolValue(..), etc., and
-        the type character was deleted from their arg list. This was done
-        to be consistent with the getter functions which already had the
-        names stringValue(), longValue() etc., and to make client code
-        more readable by eliminating "magic constants" (the type
-        characters). This shouldn't affect much existing code, most users
-        prefer assignment operator to these functions.
+	o overloaded setValue(..) functions were renamed to
+	setStringValue(..), setLongValue(..), setBoolValue(..), etc., and
+	the type character was deleted from their arg list. This was done
+	to be consistent with the getter functions which already had the
+	names stringValue(), longValue() etc., and to make client code
+	more readable by eliminating "magic constants" (the type
+	characters). This shouldn't affect much existing code, most users
+	prefer assignment operator to these functions.
 
-        o redirection handling functions were changed to:
-        setRedirection(cPar*), isRedirected(), cPar* redirection(),
-        cancelRedirection(). This results in more readable client
-        code. These functions are hardly used in any user code.
+	o redirection handling functions were changed to:
+	setRedirection(cPar*), isRedirected(), cPar* redirection(),
+	cancelRedirection(). This results in more readable client
+	code. These functions are hardly used in any user code.
 
-        o the number of constructors was reduced to 3 by deleting the ones
-        which set an initial long,string,etc. value. Prior to this cPar
-        had 16 constructors which made subclassing very
-        cumbersome. Functionality is not lost because the user can write
-        code like
+	o the number of constructors was reduced to 3 by deleting the ones
+	which set an initial long,string,etc. value. Prior to this cPar
+	had 16 constructors which made subclassing very
+	cumbersome. Functionality is not lost because the user can write
+	code like
 
-          cPar par("par") = 5L;
-        Existing client code like
-          msg->addPar( *new cPar("dest", 'L', dest );
-        can be rewritten like
-          msg->addPar( *new cPar("dest") = dest );
-        or better like
-           msg->addPar("dest") = dest;
+	  cPar par("par") = 5L;
+	Existing client code like
+	  msg->addPar( *new cPar("dest", 'L', dest );
+	can be rewritten like
+	  msg->addPar( *new cPar("dest") = dest );
+	or better like
+	   msg->addPar("dest") = dest;
 
-        Note that the two new and better forms have been available for a
-        long time, so the change should not affect much existing code.
+	Note that the two new and better forms have been available for a
+	long time, so the change should not affect much existing code.
 
-        o  conversons to/from bool were not fully supported
+	o  conversons to/from bool were not fully supported
 
-        * convenience function hasPar(char*) added to cMessage
+	* convenience function hasPar(char*) added to cMessage
 
-        * convenience functions hasPar(char*) and hasGate(char*,int) added
-        to cModule
+	* convenience functions hasPar(char*) and hasGate(char*,int) added
+	to cModule
 
-        * cQueue and cLinkedList interfaces changed:
+	* cQueue and cLinkedList interfaces changed:
 
-        insertHead(a) --> insert(a) (the name was misleading: cQueue can
-        act as priority queue and inserted elements aren't necessarily put
-        at the head)
+	insertHead(a) --> insert(a) (the name was misleading: cQueue can
+	act as priority queue and inserted elements aren't necessarily put
+	at the head)
 
-        peekTail()    --> tail()
-        peekHead()    --> head()     (shorter names are preferred)
+	peekTail()    --> tail()
+	peekHead()    --> head()     (shorter names are preferred)
 
-        get(a)        --> remove(a)  (the "get" word was misleading as it didn't
+	get(a)        --> remove(a)  (the "get" word was misleading as it didn't
 
-        imply that the element is actually removed from the queue)
+	imply that the element is actually removed from the queue)
 
-        getTail()     --> pop()      ("get was misleading, see above;
+	getTail()     --> pop()      ("get was misleading, see above;
 
-        "pop" is used in other libs such as STL or Java for this operation)
+	"pop" is used in other libs such as STL or Java for this operation)
 
-        getHead() removed            (it can be expressed as q.remove(q.head()))
+	getHead() removed            (it can be expressed as q.remove(q.head()))
 
-        Compatibility #defines added to defs.h for insertHead(a),
-        peekTail(), peekHead(), getTail().
+	Compatibility #defines added to defs.h for insertHead(a),
+	peekTail(), peekHead(), getTail().
 
 1999-12-18 Andras Varga
 
-        * renamed isA() to className() in cObject and derived classes.  A
-        compatibility #define was temporarily added to defs.h to ease
-        migration.
+	* renamed isA() to className() in cObject and derived classes.  A
+	compatibility #define was temporarily added to defs.h to ease
+	migration.
 
-        * in cMessage, isbad() renamed to hasBitError(), isgood() removed,
-        and setError() renamed to setBitError()
+	* in cMessage, isbad() renamed to hasBitError(), isgood() removed,
+	and setError() renamed to setBitError()
 
-        * macro names in module interface declarations (Interface...End)
-        changed to reduce chance of name clashes. This is internal to
-        OMNeT++ and does not affect user code.
+	* macro names in module interface declarations (Interface...End)
+	changed to reduce chance of name clashes. This is internal to
+	OMNeT++ and does not affect user code.
 
 1999-12-05 Andras Varga
 
-        * Makefile.vc added
+	* Makefile.vc added
 
 1999-12-04 Andras Varga
 
-        * compiled with MSVC. Minor changes: changed int to bool, struct
-        to class in some places. sim_std.dsp added. NOTE: one has to
-        rename all .cc files to .cpp for compiling (ren *.cc *.cpp)!
+	* compiled with MSVC. Minor changes: changed int to bool, struct
+	to class in some places. sim_std.dsp added. NOTE: one has to
+	rename all .cc files to .cpp for compiling (ren *.cc *.cpp)!
 
 1999-11-09 Andras Varga
 
-        * iso c++ compatibility hack: in expressions like return s?s:""
-        the "" needs a cast to char* (to cast away constness). Added a
-        CONST_CAST() macro until the source is made fully const-correct,
-        hopefully in the near future.
+	* iso c++ compatibility hack: in expressions like return s?s:""
+	the "" needs a cast to char* (to cast away constness). Added a
+	CONST_CAST() macro until the source is made fully const-correct,
+	hopefully in the near future.
 
 1999-10-06 Andras Varga
 
-        * ------ omnetpp-2.0b2 released ------
+	* ------ omnetpp-2.0b2 released ------
 
-        * isSelfMessage() member function added to cMessage. It tells if
-        the message was sent (using a send..() function) or posted by a
-        scheduleAt() call.
+	* isSelfMessage() member function added to cMessage. It tells if
+	the message was sent (using a send..() function) or posted by a
+	scheduleAt() call.
 
-        * a new void* pointer was added to cMessage. The pointer is
-        set/returned by the setContextPointer(void *p) and
-        contextPointer() functions, and it can be used for any purpose by
-        the simulation programmer. It is not used by the simulation
-        kernel, and it is treated as a mere pointer (no memory mgmt is
-        done on it). Intended purpose: a module which schedules several
-        self-messages (timers) will need to identify a self-message when
-        it arrives back to the module, ie. the module will have to
-        determine which timer went off and what to do then. The context
-        pointer can be made to point at a data structure kept by the
-        module which can carry enough "context" information about the
-        event.
+	* a new void* pointer was added to cMessage. The pointer is
+	set/returned by the setContextPointer(void *p) and
+	contextPointer() functions, and it can be used for any purpose by
+	the simulation programmer. It is not used by the simulation
+	kernel, and it is treated as a mere pointer (no memory mgmt is
+	done on it). Intended purpose: a module which schedules several
+	self-messages (timers) will need to identify a self-message when
+	it arrives back to the module, ie. the module will have to
+	determine which timer went off and what to do then. The context
+	pointer can be made to point at a data structure kept by the
+	module which can carry enough "context" information about the
+	event.
 
-        * Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
+	* Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
 
 1999-09-23 Andras Varga
 
-        * callInitialize() and scheduleStart() swapped in cSimulation's
-        startRun() to support send()/scheduleAt() in initialize() to
-        modules with activity().
+	* callInitialize() and scheduleStart() swapped in cSimulation's
+	startRun() to support send()/scheduleAt() in initialize() to
+	modules with activity().
 
-        * same change made to createInitStart(), and it was renamed to
-        createScheduleInit() to reflect the new order of what it does.
+	* same change made to createInitStart(), and it was renamed to
+	createScheduleInit() to reflect the new order of what it does.
 
 1999-09-20 Andras Varga
 
-        * bug fixed in cWeightedStdDev::collect2(): cStdDev::collect() was
-        called with val instead of weight*val.
+	* bug fixed in cWeightedStdDev::collect2(): cStdDev::collect() was
+	called with val instead of weight*val.
 
-        * bug fixed with misplaced ev.messageDelivered() calls in the
-        receiveNewOn() function
+	* bug fixed with misplaced ev.messageDelivered() calls in the
+	receiveNewOn() function
 
-        * cOutVector::record() corrected: it should update the inspector
-        even if it doesn't write to file
+	* cOutVector::record() corrected: it should update the inspector
+	even if it doesn't write to file
 
 1999-09-07 Andras Varga
 
-        * ------ omnetpp-2.0b released ------
+	* ------ omnetpp-2.0b released ------
 
-        * initialize() and finish() moved to cModule, so you can define
-        them also for compound modules
+	* initialize() and finish() moved to cModule, so you can define
+	them also for compound modules
 
-        * callInitialize() and callFinish() are also in cModule; they are
-        defined in compound modules to recursively call themselves for
-        submodules.  callInitialize() for the compound module is called
-        _before_, callFinish() is called _after_ the call on submodules.
+	* callInitialize() and callFinish() are also in cModule; they are
+	defined in compound modules to recursively call themselves for
+	submodules.  callInitialize() for the compound module is called
+	_before_, callFinish() is called _after_ the call on submodules.
 
 1999-09-06 Andras Varga
 
-        * a couple of unsigned<-->signed changes (mostly in the statistics
-        classes) to reduce the number of "gcc -Wall" warnings
+	* a couple of unsigned<-->signed changes (mostly in the statistics
+	classes) to reduce the number of "gcc -Wall" warnings
 
 1999-09-05 Andras Varga
 
-        * cSimpleModule's initialize(), activity(), handleMessage(),
-        finish() made protected members so that they cannot be called
-        directly by user code.
+	* cSimpleModule's initialize(), activity(), handleMessage(),
+	finish() made protected members so that they cannot be called
+	directly by user code.
 
-        * callInitialize() was added to cSimpleModule to enable calling
-        initialize() from user code; callInitialize() was also added for
-        cModule and cCompoundModule so that it can be used
-        polimorphically.
+	* callInitialize() was added to cSimpleModule to enable calling
+	initialize() from user code; callInitialize() was also added for
+	cModule and cCompoundModule so that it can be used
+	polimorphically.
 
-        * added cModuleType::createInitStart(char *namestr, cModule
-        *parentmod) convenience function to get a module up and running in
-        one step.  Does
-        create()+buildInside()+callInitialize()+scheduleStart(now).
-        Should work for both simple and compound modules.
+	* added cModuleType::createInitStart(char *namestr, cModule
+	*parentmod) convenience function to get a module up and running in
+	one step.  Does
+	create()+buildInside()+callInitialize()+scheduleStart(now).
+	Should work for both simple and compound modules.
 
-        Not applicable if the module:
+	Not applicable if the module:
 
-        - has parameters to be set
-        - gate vector sizes to be set
-        - gates to be connected before initialize()
+	- has parameters to be set
+	- gate vector sizes to be set
+	- gates to be connected before initialize()
 
-        Now a simple module can be created on the fly by simply saying:
-          mod = modtype->createAndInit("name",this);
-          mod->scheduleStart( simTime() );
+	Now a simple module can be created on the fly by simply saying:
+	  mod = modtype->createAndInit("name",this);
+	  mod->scheduleStart( simTime() );
 
 1999-09-01 Andras Varga
 
-        * behavior of scheduleStart() changed: now it can be called (and
-        does nothing) for modules using handleMessage(). The benefit is
-        that this way code that creates simple modules dynamically doesn't
-        have to know whether the module is using activity() or
-        handleMessage(); the same code (which contains a call to
-        scheduleStart()) can be used for both.
+	* behavior of scheduleStart() changed: now it can be called (and
+	does nothing) for modules using handleMessage(). The benefit is
+	that this way code that creates simple modules dynamically doesn't
+	have to know whether the module is using activity() or
+	handleMessage(); the same code (which contains a call to
+	scheduleStart()) can be used for both.
 
-        * activate() [the boot procedure for simple module activity()] now
-        checks if the message that starts the module is really a starter
-        message (and not some other msg). This way, bugs caused by leaving
-        out scheduleStart() for dynamically created modules can be
-        detected.
+	* activate() [the boot procedure for simple module activity()] now
+	checks if the message that starts the module is really a starter
+	message (and not some other msg). This way, bugs caused by leaving
+	out scheduleStart() for dynamically created modules can be
+	detected.
 
-        * wait() now makes sure it is called for a module using activity()
-        and not handleMessage().
+	* wait() now makes sure it is called for a module using activity()
+	and not handleMessage().
 
-        * cModuleType now caches the cModuleInterface pointer. (Before it
-        looked up the interface each time, based on the interface name.)
+	* cModuleType now caches the cModuleInterface pointer. (Before it
+	looked up the interface each time, based on the interface name.)
 
 1999-08-30 Andras Varga
 
-        * bool isScheduled() member added to cMessage: can be used to
-        examine whether the message is in the Future Event Set
+	* bool isScheduled() member added to cMessage: can be used to
+	examine whether the message is in the Future Event Set
 
-        * cancelEvent() behaviour changed: now it causes an error if the
-        message is not in the Future Event Set. One should write code like
-        this:
+	* cancelEvent() behaviour changed: now it causes an error if the
+	message is not in the Future Event Set. One should write code like
+	this:
 
-        if (msg->isScheduled())
-             delete cancelEvent(msg);
-        else
-             // ???
+	if (msg->isScheduled())
+	     delete cancelEvent(msg);
+	else
+	     // ???
 
-        Or rather:
-         if (msg->isScheduled())
-             delete cancelEvent(msg);
-         else if (putAsideQueue.contains(msg))
-             delete putAsideQueue.get(msg);
-         else
-             // ???
+	Or rather:
+	 if (msg->isScheduled())
+	     delete cancelEvent(msg);
+	 else if (putAsideQueue.contains(msg))
+	     delete putAsideQueue.get(msg);
+	 else
+	     // ???
 
-        * cQueue::isEnqueued(cObject *) renamed to cQueue::contains(cObject *)
+	* cQueue::isEnqueued(cObject *) renamed to cQueue::contains(cObject *)
 
-        * cLinkedList::isInList(void *) renamed to cLinkedList::contains(void *)
+	* cLinkedList::isInList(void *) renamed to cLinkedList::contains(void *)
 
 1999-08-02 Andras Varga
 
-        * fixed the bug with randseed() [it was an error to call it
-        without an argument] and split randseed(long seed=0) into 2
-        functions: randseed() and randseed(long seed).
+	* fixed the bug with randseed() [it was an error to call it
+	without an argument] and split randseed(long seed=0) into 2
+	functions: randseed() and randseed(long seed).
 
-        * fixed the bug in intrand(r) and genk_intrand(r) that caused
-        division by zero if called with r==0; now r<=0 values cause
-        runtime error
+	* fixed the bug in intrand(r) and genk_intrand(r) that caused
+	division by zero if called with r==0; now r<=0 values cause
+	runtime error
 
-        * INTRAND_MAX corrected to 2**31-2
+	* INTRAND_MAX corrected to 2**31-2
 
 1999-07-10 Andras Varga
 
-        * fixed bug in cQueue and cLinkedList (didn't always increment
-        item count on insertion)
+	* fixed bug in cQueue and cLinkedList (didn't always increment
+	item count on insertion)
 
-        * fixed bug in cPar::info(): didn't handle boolean (B) type
-
+	* fixed bug in cPar::info(): didn't handle boolean (B) type
 
 1999-05-21  Andras Varga
 
-        * all sources checked in under CVS
+	* all sources checked in under CVS
 
-        * makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+	* makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
 
-        * version.log renamed to ChangeLog
+	* version.log renamed to ChangeLog
 
-        * removed support for DOS with BC3.1
-
+	* removed support for DOS with BC3.1
 
 1999-02-07  Andras Varga
 
-        * stable version
-
-
-1999-01-26  Andras Varga
-
-        * some cleanup
+	* stable version
 
 1999-01-26  Andras Varga
 
-        * calls to simulation.error() replaced by opp_error() to avoid
-        having to #include csimul.cc (and half the sim. kernel with it) in
-        each file; similar for opp_warning() and
-        opp_terminate(). opp_terminate() is similar to opp_error(), only
-        it does not include the word "error" in the message.
-
-        * requires updated Envir and user interface libraries
-
+	* some cleanup
 
 1999-01-26  Andras Varga
 
-        * recordScalar() for recording strings added
+	* calls to simulation.error() replaced by opp_error() to avoid
+	having to #include csimul.cc (and half the sim. kernel with it) in
+	each file; similar for opp_warning() and
+	opp_terminate(). opp_terminate() is similar to opp_error(), only
+	it does not include the word "error" in the message.
 
+	* requires updated Envir and user interface libraries
+
+1999-01-26  Andras Varga
+
+	* recordScalar() for recording strings added
 
 1999-01-25  Andras Varga
 
-        * inspector factories added
-
+	* inspector factories added
 
 1999-01-03  Andras Varga
 
-        * stable version
+	* stable version
 
 1999-01-01  Andras Varga (1-3)
 
-        * refinements on the coroutine library; stackSize() added to cCoroutine
+	* refinements on the coroutine library; stackSize() added to cCoroutine
 
-        * refinements on cPacket
+	* refinements on cPacket
 
-        * restart() of c[Simple]Module removed (was not used)
+	* restart() of c[Simple]Module removed (was not used)
 
-        * optimizations around timeoutmsg and receive()
+	* optimizations around timeoutmsg and receive()
 
-        * module state codes reduced to sREADY and sENDED
+	* module state codes reduced to sREADY and sENDED
 
-        * protocol.h added
+	* protocol.h added
 
-        * misc bugfixes
-
+	* misc bugfixes
 
 1998-12-30  Andras Varga
 
-        * makefile renamed to makefile.in
-
-
-1998-12-27  Andras Varga
-
-        * fixes on 170a
-
-        * missing bc3make.bat added back (although omnetpp is probably
-        _way_ too big for BC 3.1 and DOS real mode to handle...)
-
+	* makefile renamed to makefile.in
 
 1998-12-27  Andras Varga
 
-        Fixes:
+	* fixes on 170a
 
-        * ltoa() eliminated
+	* missing bc3make.bat added back (although omnetpp is probably
+	_way_ too big for BC 3.1 and DOS real mode to handle...)
 
-        * vsscanf() replaced by opp_vsscanf()
+1998-12-27  Andras Varga
 
-        * defs.h and funcs.cc split to defs.h, util.h+cc, errmsg.h+cc
+	Fixes:
 
-        * serious bug with stddev() corrected
+	* ltoa() eliminated
 
-        * writes to output vector file and parameter change file are now checked
+	* vsscanf() replaced by opp_vsscanf()
 
-        * string class renamed to opp_string to prevent name clashes with
-        other class libs (e.g. STL)
+	* defs.h and funcs.cc split to defs.h, util.h+cc, errmsg.h+cc
 
-        * cSimulation::doOneEvent() function introduced
+	* serious bug with stddev() corrected
 
-        * runningmod_deleter's stack increased from 8K to 16K
+	* writes to output vector file and parameter change file are now checked
 
-        * now cancelEvent won't hang if the message was not actually
-        scheduled Improvements:
+	* string class renamed to opp_string to prevent name clashes with
+	other class libs (e.g. STL)
 
-        * coroutine library now detects stack overflows and able to tell
-        actually used stack size (stackUsage())
+	* cSimulation::doOneEvent() function introduced
 
-        * new alternative message handling mechanism: handleMessage()
+	* runningmod_deleter's stack increased from 8K to 16K
 
-        * new file fsm.h: finite state machine for handleMessage()
+	* now cancelEvent won't hang if the message was not actually
+	scheduled Improvements:
 
-        * reserved negative message kind values
+	* coroutine library now detects stack overflows and able to tell
+	actually used stack size (stackUsage())
 
-        * cPacket class added
+	* new alternative message handling mechanism: handleMessage()
 
-        * MK_INFO and MK_PACKET message kind values defined for cPackets
+	* new file fsm.h: finite state machine for handleMessage()
 
-        * wait() and receive() with timeout made faster (now reuses
-        timeout message)
+	* reserved negative message kind values
 
+	* cPacket class added
+
+	* MK_INFO and MK_PACKET message kind values defined for cPackets
+
+	* wait() and receive() with timeout made faster (now reuses
+	timeout message)
 
 1998-08-22  Andras Varga
 
-        * cOutvector::collect() improved
-
+	* cOutvector::collect() improved
 
 1998-08-21  Andras Varga
 
-        * cStat::collect(double,double) renamed to collect2() (conflicted
-        with collect(double))
-
+	* cStat::collect(double,double) renamed to collect2() (conflicted
+	with collect(double))
 
 1998-08-19  Andras Varga
 
-        * some error messages improved
-
+	* some error messages improved
 
 1998-08-17  Andras Varga
 
-        * too many 'simulation cancelled' error msg fixed
-
+	* too many 'simulation cancelled' error msg fixed
 
 1998-08-14  Andras Varga
 
-        * linker bug with cWatch fixed
-
+	* linker bug with cWatch fixed
 
 1998-08-12  Andras Varga
 
-        * project file for Borland C++ 5.0 added (sim_std.ide)
+	* project file for Borland C++ 5.0 added (sim_std.ide)
 
-        * some code beautifying
+	* some code beautifying
 
-        * cenvir.h moved here from the envir package
-
+	* cenvir.h moved here from the envir package
 
 1998-07-24  Andras Varga
 
-        * ASSERT() bug fixed
+	* ASSERT() bug fixed
 
-        * display strings can be taken from ini file -- compatible with
-        envir120 up
-
+	* display strings can be taken from ini file -- compatible with
+	envir120 up
 
 1998-07-21  Andras Varga
 
-        * cOutVector support for 'probes'
+	* cOutVector support for 'probes'
 
-        * bug fixed in pvm/pvmmod.cc
-
+	* bug fixed in pvm/pvmmod.cc
 
 1998-07-15  Andras Varga
 
-        * eFINISH error code added; other small fixes
+	* eFINISH error code added; other small fixes
 
-        * WATCH() made dynamic (new cWatch(...)) instead of auto to
-        increase applicability. Old-style watch is retained as LWATCH().
+	* WATCH() made dynamic (new cWatch(...)) instead of auto to
+	increase applicability. Old-style watch is retained as LWATCH().
 
 1998-07-10  Andras Varga
 
-        * cGate::info() corrected
+	* cGate::info() corrected
 
-        * cPar::info() corrected (now doesn't silently truncate string
-        value)
+	* cPar::info() corrected (now doesn't silently truncate string
+	value)
 
-        * cMessage::findPar() added
+	* cMessage::findPar() added
 
-        * check for gate connectedness added to cModule::setGateSize()
+	* check for gate connectedness added to cModule::setGateSize()
 
-        * modules and gates: vectors of size 1 and scalars made distinct
-
+	* modules and gates: vectors of size 1 and scalars made distinct
 
 1998-07-02  Andras Varga
 
-        * improved error messages of send() variants; other small fixes
-
+	* improved error messages of send() variants; other small fixes
 
 1998-06-26  Andras Varga
 
-        * small fixes, adjustments
-
-
-1998-06-23  Andras Varga
-
-        * added bool cSimulation::normalTermination() which examines error
-        code
-
+	* small fixes, adjustments
 
 1998-06-23  Andras Varga
 
-        * new: cSimpleModule::error(): generates `user error'
+	* added bool cSimulation::normalTermination() which examines error
+	code
 
-        * cSimulation::callFinish() added
+1998-06-23  Andras Varga
 
-        * cSimulation's cModule& get() deleted, cModule *module(..) can be
-        used instead
+	* new: cSimpleModule::error(): generates `user error'
 
-        * cSimulation's findModuleByPath()-->moduleByPath()
+	* cSimulation::callFinish() added
 
-        * small fixes
+	* cSimulation's cModule& get() deleted, cModule *module(..) can be
+	used instead
 
+	* cSimulation's findModuleByPath()-->moduleByPath()
 
-1998-06-19  Andras Varga
-
-        * cMessage::creationTime() added
-
-        * mystr...() functions renamed to opp_str...()
-        (for compatibility, mystr... names are #defined to opp_str...)
-
-        * ASSERT() added (similar to the assert() macro, also disappears
-        with NDEBUG)
-
-        * scalar file behavior corrected (only writes file if there's
-        something to write)
-
-        * cPar: new type void* added ('P'), old 'P' type (cObject *) was
-        renamed to 'O'. Funcs: cObject *objectValue(), void
-        *pointerValue() Memory management of void*: configPointer(...)
-        func, similar to cLinkedList's method.
-
+	* small fixes
 
 1998-06-19  Andras Varga
 
-        * Now deleteModule() can also delete the currently executing
-        module.  The only remaining restriction is that a compound module
-        cannot be deleted from one of its submodules.
+	* cMessage::creationTime() added
 
+	* mystr...() functions renamed to opp_str...()
+	(for compatibility, mystr... names are #defined to opp_str...)
+
+	* ASSERT() added (similar to the assert() macro, also disappears
+	with NDEBUG)
+
+	* scalar file behavior corrected (only writes file if there's
+	something to write)
+
+	* cPar: new type void* added ('P'), old 'P' type (cObject *) was
+	renamed to 'O'. Funcs: cObject *objectValue(), void
+	*pointerValue() Memory management of void*: configPointer(...)
+	func, similar to cLinkedList's method.
+
+1998-06-19  Andras Varga
+
+	* Now deleteModule() can also delete the currently executing
+	module.  The only remaining restriction is that a compound module
+	cannot be deleted from one of its submodules.
 
 1998-06-17  Andras Varga
 
-        * bugfixes on 161k
+	* bugfixes on 161k
 
-        * cMessage::addPar(..) functions' return value changed to cPar&
+	* cMessage::addPar(..) functions' return value changed to cPar&
 
-        * setDisplayStringNotify() functions added to cGate and cModule
-
+	* setDisplayStringNotify() functions added to cGate and cModule
 
 1998-06-11  Andras Varga
 
-        * class cTopology added
+	* class cTopology added
 
-        * now gate vectors are guaranteed to be contiguous in the gatev
-        array; gate lookup made a lot faster. Note that there can be holes
-        in the gate vector.
+	* now gate vectors are guaranteed to be contiguous in the gatev
+	array; gate lookup made a lot faster. Note that there can be holes
+	in the gate vector.
 
-        * cMessage::addLen(long l) added
-
-
-1998-06-09  Andras Varga
-
-        * class cLinkedList added
-
+	* cMessage::addLen(long l) added
 
 1998-06-09  Andras Varga
 
-        * cModule::recordScalar(name,value) and
-        recordStats(name,statistic) added
-
-        * cSimpleModule::finish() bug fixed
-
-        * cPar::equalsTo(cPar *par) added
-
+	* class cLinkedList added
 
 1998-06-09  Andras Varga
 
-        * return type of cModule::gate(...) changed from cGate& to cGate*
+	* cModule::recordScalar(name,value) and
+	recordStats(name,statistic) added
 
-        * return type of cModule::moduleType(...) changed from
-        cModuleType& to cModuleType*
+	* cSimpleModule::finish() bug fixed
 
-        * cSimulation::find(cModule&) changed to
-        cSimulation::find(cModule*)
+	* cPar::equalsTo(cPar *par) added
 
-        * cMessage::addPar(char *parname) and cMessage::addPar(cPar *par)
-        added
+1998-06-09  Andras Varga
 
-        * class cWeightedStdDev added
+	* return type of cModule::gate(...) changed from cGate& to cGate*
 
+	* return type of cModule::moduleType(...) changed from
+	cModuleType& to cModuleType*
+
+	* cSimulation::find(cModule&) changed to
+	cSimulation::find(cModule*)
+
+	* cMessage::addPar(char *parname) and cMessage::addPar(cPar *par)
+	added
+
+	* class cWeightedStdDev added
 
 1998-06-04  Andras Varga
 
-        * bugfixes on histogram classes
+	* bugfixes on histogram classes
 
-        * cKSplit::rangeExtension() member function added
+	* cKSplit::rangeExtension() member function added
 
-        * cMessage::encapsulate(msg), decapsulate(), encapsulatedMsg()
-        member functions added
-
+	* cMessage::encapsulate(msg), decapsulate(), encapsulatedMsg()
+	member functions added
 
 1998-06-01  Andras Varga
 
-        * cDensityEstBase added; it greatly simplifies all density
-        estimation classes!
+	* cDensityEstBase added; it greatly simplifies all density
+	estimation classes!
 
-        * all density estimation classes rewritten with cDensityEstBase
+	* all density estimation classes rewritten with cDensityEstBase
 
-        * cVarHistogram added
+	* cVarHistogram added
 
-        * underflow/overflow cells removed (but underflow/overflow counts
-        still maintained)
+	* underflow/overflow cells removed (but underflow/overflow counts
+	still maintained)
 
-        * cKSplit cleaned up a little
+	* cKSplit cleaned up a little
 
-        * saveToFile()/loadFromFile() file formats cleaned up and loading
-        made safer. Occasional runtime errors may occur due to fprintf'ing
-        uninitialised double vars.
-
+	* saveToFile()/loadFromFile() file formats cleaned up and loading
+	made safer. Occasional runtime errors may occur due to fprintf'ing
+	uninitialised double vars.
 
 1998-05-11  Andras Varga
 
-        * small improvement on the ksplit files
-
+	* small improvement on the ksplit files
 
 1998-04-26  Andras Varga
 
-        * makefile can now create shared objects (libsim_std.so,
-        libsim_pvm.so)
-
+	* makefile can now create shared objects (libsim_std.so,
+	libsim_pvm.so)
 
 1998-04-24  Andras Varga
 
-        * 2 bugs fixed
-
+	* 2 bugs fixed
 
 1998-04-14  Andras Varga
 
-        * cModule: setDisplayString(type,str) and displayString(type)
-        added.  type: dispSUBMOD or dispENCLOSINGMOD cGate:
-        setDisplayString(str) and displayString() correspond to the
-        display string of the connection starting from that gate.  The
-        values of these strings will come from GNED through NED's
-        "display:" phrases, and they will hold information about how the
-        module should be displayed in Tkenv or other GUI
-        animation/interactive simulation tool.  The exact format of the
-        strings are documented in GNED's version.log.
+	* cModule: setDisplayString(type,str) and displayString(type)
+	added.  type: dispSUBMOD or dispENCLOSINGMOD cGate:
+	setDisplayString(str) and displayString() correspond to the
+	display string of the connection starting from that gate.  The
+	values of these strings will come from GNED through NED's
+	"display:" phrases, and they will hold information about how the
+	module should be displayed in Tkenv or other GUI
+	animation/interactive simulation tool.  The exact format of the
+	strings are documented in GNED's version.log.
 
-        * cModule: gatev, paramv made public (because of the
-        inspectors...)
-
+	* cModule: gatev, paramv made public (because of the
+	inspectors...)
 
 1998-02-15  Andras Varga
 
-        * cSimpleModule::finish() function added -- user can redefine it
-        and it will be called at the end of the simulation run
+	* cSimpleModule::finish() function added -- user can redefine it
+	and it will be called at the end of the simulation run
 
-        * makefile made compatible with new configure script
+	* makefile made compatible with new configure script
 
-        * 'lib' prepended to library names under Unix - now they can le
-        linked with
+	* 'lib' prepended to library names under Unix - now they can le
+	linked with
 
-          *lsim_std or -lsim_pvm option
+	  *lsim_std or -lsim_pvm option
 
-        * pvm3.h deleted from package
-
+	* pvm3.h deleted from package
 
 1998-02-08  Andras Varga
 
-        * some Define_Functions()'s added to support jar102-compiled
-        expressions
+	* some Define_Functions()'s added to support jar102-compiled
+	expressions
 
-        * char type, &|! sXElem operators removed from cPar, # sXElem op.
-        renamed to !.
-
-
-1997-12-29  Andras Varga
-
-        * 'cHead members' moved from cSimpleModule to cModule
-
-        * cModuleType::create() modified so that it automatically puts
-        member objects of module classes to the members list, so there's
-        no need to do setOwner(&members) calls from the constructor.
-        (However, they do no harm if they are there.)
-
-        * module IDs made unique during whole simulation: old IDs are no
-        longer reused.
-
+	* char type, &|! sXElem operators removed from cPar, # sXElem op.
+	renamed to !.
 
 1997-12-29  Andras Varga
 
-        * strToSimtime0() function added
+	* 'cHead members' moved from cSimpleModule to cModule
 
-        * cPar::setFromText() rewritten: better & more consistent error
-        handling, more informative error messages supports writing time
-        units in ini files: Net.Gen.stop_at = 1h 30m Net.Gen.ia_time =
-        uniform(10s,15s)
+	* cModuleType::create() modified so that it automatically puts
+	member objects of module classes to the members list, so there's
+	no need to do setOwner(&members) calls from the constructor.
+	(However, they do no harm if they are there.)
 
-        * comments added to ctypes.cc
+	* module IDs made unique during whole simulation: old IDs are no
+	longer reused.
 
+1997-12-29  Andras Varga
 
-1997-12-13  Andras Varga
+	* strToSimtime0() function added
 
-        * renamings for clarity:
+	* cPar::setFromText() rewritten: better & more consistent error
+	handling, more informative error messages supports writing time
+	units in ini files: Net.Gen.stop_at = 1h 30m Net.Gen.ia_time =
+	uniform(10s,15s)
 
-           cModule:
-             subscript() --> id()
-             setSubscript() --> setId()
-           cGate:
-             ownerGate --> id()
-             setlink --> setLink()
-           cMessage:
-             sentFromModule() --> senderModuleId()
-             sentFromGate() --> senderGateId()
-             arrivedInModule() --> arrivalModuleId()
-             arrivedOnGate() --> arrivalGateId()
-             new functions:
-             cGate *senderGate(), cGate *arrivalGate()
-
+	* comments added to ctypes.cc
 
 1997-12-13  Andras Varga
 
-        * cModuleType split into cModuleInterface and cModuleType;
+	* renamings for clarity:
 
-        * Module..End declaration no longer needed for simple module.
+	   cModule:
+	     subscript() --> id()
+	     setSubscript() --> setId()
+	   cGate:
+	     ownerGate --> id()
+	     setlink --> setLink()
+	   cMessage:
+	     sentFromModule() --> senderModuleId()
+	     sentFromGate() --> senderGateId()
+	     arrivedInModule() --> arrivalModuleId()
+	     arrivedOnGate() --> arrivalGateId()
+	     new functions:
+	     cGate *senderGate(), cGate *arrivalGate()
 
-        * joined Define_Simple_Module and Define_Compound_Module macros to
-        Define_Module macro.
+1997-12-13  Andras Varga
 
-        * Compatible with jar98 and up
+	* cModuleType split into cModuleInterface and cModuleType;
 
+	* Module..End declaration no longer needed for simple module.
+
+	* joined Define_Simple_Module and Define_Compound_Module macros to
+	Define_Module macro.
+
+	* Compatible with jar98 and up
 
 1997-11-23  Andras Varga
 
-        * bugs in cKSplit's copy constructor and ksplitInsert() fixed
+	* bugs in cKSplit's copy constructor and ksplitInsert() fixed
 
-        * LG's "Bad msg kind" bug fixed in selectNextModule()
+	* LG's "Bad msg kind" bug fixed in selectNextModule()
 
-        * selectNextModule() rewritten
+	* selectNextModule() rewritten
 
-        * table of error messages modified
+	* table of error messages modified
 
-        * "not owner of message" error msg improved
+	* "not owner of message" error msg improved
 
-        * error message for inconsistent module declarations made more
-        informative
+	* error message for inconsistent module declarations made more
+	informative
 
-        * cosmetics on pvmmod.cc
+	* cosmetics on pvmmod.cc
 
 1997-10-12  Andras Varga
 
-        * cKSplit::isa() corrected to isA(); fixed point shift increased to 10000
+	* cKSplit::isa() corrected to isA(); fixed point shift increased to 10000
 
-        * stat. classes: cell()'s return value changed from 'unsigned int'
-        to 'double'
+	* stat. classes: cell()'s return value changed from 'unsigned int'
+	to 'double'
 
-        * cKSplit::transform() added
+	* cKSplit::transform() added
 
-        * corrected cells() in all classes to return 0 if not transformed
-        yet
+	* corrected cells() in all classes to return 0 if not transformed
+	yet
 
 1994-10-06  Andras Varga
 
-        * small fixes
+	* small fixes
 
-        * To Do: cKSplit: netPack,netUnpack,saveToFile,loadFromFile; clean
-        up the rest
-
+	* To Do: cKSplit: netPack,netUnpack,saveToFile,loadFromFile; clean
+	up the rest
 
 1997-10-06  Andras Varga
 
-        * cKSplit added
+	* cKSplit added
 
-        * contains a new version of cPSquare
+	* contains a new version of cPSquare
 
-        * cleaned up & renamed several member functions and classes
+	* cleaned up & renamed several member functions and classes
 
-        * arg.list to snapshot() changed
+	* arg.list to snapshot() changed
 
-        * arg.list of constructor of histogram classes (cDoubleHistogram,
-        cLongHistogram, cHistogramBase) changed. OLD USER CODE WILL STILL
-        COMPILE BUT WONT'T WORK!
-
+	* arg.list of constructor of histogram classes (cDoubleHistogram,
+	cLongHistogram, cHistogramBase) changed. OLD USER CODE WILL STILL
+	COMPILE BUT WONT'T WORK!
 
 1997-10-02  Andras Varga
 
-        * cleaned up & renamed several member functions and classes
-        Changed class names:
+	* cleaned up & renamed several member functions and classes
+	Changed class names:
 
-         cObj             --> cObject
-         cMod             --> cModule
-         cSimpleMod       --> cSimpleModule
-         cCompoundMod     --> cCompoundModule
-         cMsg             --> cMessage
-         cMsgHeap         --> cMessageHeap
-         cPiSquare        --> cPSquare
-         cModPar          --> cModulePar
-         cSimpleStatistic --> cStdDev
-         cIter            --> cIterator
-         cSubmodIter      --> cSubModIterator
-         cQueueIter       --> cQueueIterator
-         cMsgHeapIter     --> cMessageHeapIterator
-         cTDResult        --> cTransientDetection
-         cRAResult        --> cAccuracyDetection
-         cTDAlg1          --> cTDExpandingWindows
-         cRAAlg1          --> cADByStddev
-
-
-1997-08-17  Andras Varga
-
-        * cMsg::info() changed; now it prints "(starter msg)" for msgs
-        that start simple modules at the beg. of simulation
-
+	 cObj             --> cObject
+	 cMod             --> cModule
+	 cSimpleMod       --> cSimpleModule
+	 cCompoundMod     --> cCompoundModule
+	 cMsg             --> cMessage
+	 cMsgHeap         --> cMessageHeap
+	 cPiSquare        --> cPSquare
+	 cModPar          --> cModulePar
+	 cSimpleStatistic --> cStdDev
+	 cIter            --> cIterator
+	 cSubmodIter      --> cSubModIterator
+	 cQueueIter       --> cQueueIterator
+	 cMsgHeapIter     --> cMessageHeapIterator
+	 cTDResult        --> cTransientDetection
+	 cRAResult        --> cAccuracyDetection
+	 cTDAlg1          --> cTDExpandingWindows
+	 cRAAlg1          --> cADByStddev
 
 1997-08-17  Andras Varga
 
-        * carray.cc/h split to: carray.cc/h, cqueue.cc/h, chead.cc/h,
-        cwatch.cc/h
-
-        * ev.extrastack() support
-
-        * compatibility: envir101 or later
-
+	* cMsg::info() changed; now it prints "(starter msg)" for msgs
+	that start simple modules at the beg. of simulation
 
 1997-08-17  Andras Varga
 
-        * cQueue interface changed:
-          bool isenqueued(cObj *obj)
-          void inserthead(cObj *obj)
-          void insertbefore(cObj *p, cObj *obj), void insertafter(cObj *p, cObj *obj);
-          cObj *peektail(), cObj *peekhead()
-          cObj *get(cObj *obj), cObj *gettail(), gethead()
+	* carray.cc/h split to: carray.cc/h, cqueue.cc/h, chead.cc/h,
+	cwatch.cc/h
 
+	* ev.extrastack() support
+
+	* compatibility: envir101 or later
 
 1997-08-17  Andras Varga
 
-        * insertordr added to cMsg and cMsgHeap. This way messages with
-        the same times and priorities can be retreived from the message
-        queue in their insertion order.
+	* cQueue interface changed:
+	  bool isenqueued(cObj *obj)
+	  void inserthead(cObj *obj)
+	  void insertbefore(cObj *p, cObj *obj), void insertafter(cObj *p, cObj *obj);
+	  cObj *peektail(), cObj *peekhead()
+	  cObj *get(cObj *obj), cObj *gettail(), gethead()
 
-        * netif_check_freq added to cSimulation and nextmodule()
+1997-08-17  Andras Varga
 
-        * cObj::lastchildp removed
+	* insertordr added to cMsg and cMsgHeap. This way messages with
+	the same times and priorities can be retreived from the message
+	queue in their insertion order.
 
+	* netif_check_freq added to cSimulation and nextmodule()
+
+	* cObj::lastchildp removed
 
 1997-08-15  Andras Varga
 
-        * cMsgHeap class added and installed as FES
-        (new files cmsgheap.h/cc, changes in cmod.cc, csimul.h/cc)
+	* cMsgHeap class added and installed as FES
+	(new files cmsgheap.h/cc, changes in cmod.cc, csimul.h/cc)
 
-        * a bug introduced in #143 into cArray::foreach() fixed
-
+	* a bug introduced in #143 into cArray::foreach() fixed
 
 1997-08-13  Andras Varga
 
-        * two bugs fixed in cHistogramBase::operator=()
+	* two bugs fixed in cHistogramBase::operator=()
 
-        * cancelsyncpoint() function added
-
+	* cancelsyncpoint() function added
 
 1997-08-09  Andras Varga
 
-        * bug removed from process_netmsg_blocking()
-
+	* bug removed from process_netmsg_blocking()
 
 1997-08-08  Andras Varga
 
-        * remaining active waits removed
+	* remaining active waits removed
 
-        * added process_netmsgs() calls to cSimulation::setupnetwork()
+	* added process_netmsgs() calls to cSimulation::setupnetwork()
 
-        * small improvements on PVM stuff
+	* small improvements on PVM stuff
 
-        * renamed functions:
-            signal_startofrun() --> send_runnumber()
-            wait_startofrun()   --> receive_runnumber()
+	* renamed functions:
+	    signal_startofrun() --> send_runnumber()
+	    wait_startofrun()   --> receive_runnumber()
 
-        * compatible with: envir100
-
-
-1997-08-07  Andras Varga
-
-        * DEBUG_PVM #define added to pvmmod.cc
-
-        * active wait removed from block_on_syncpoint
-
-        * several small improvements on PVM stuff
-
+	* compatible with: envir100
 
 1997-08-07  Andras Varga
 
-        * cleaned-up version of #144; must be tested still
+	* DEBUG_PVM #define added to pvmmod.cc
 
+	* active wait removed from block_on_syncpoint
+
+	* several small improvements on PVM stuff
+
+1997-08-07  Andras Varga
+
+	* cleaned-up version of #144; must be tested still
 
 1997-08-06  Andras Varga
 
-        * In defs.h, MAXTIME changed from 1eXXX to HUGE_VAL
-          Changed cNetSimpleMod's base class from cSimpleMod to cMod
-          Renamed: cNetSimpleMod --> cNetMod,  cPvmSimpleMod --> cPvmMod
-          Synchronization mechanism added to PVM stuff.
+	* In defs.h, MAXTIME changed from 1eXXX to HUGE_VAL
+	  Changed cNetSimpleMod's base class from cSimpleMod to cMod
+	  Renamed: cNetSimpleMod --> cNetMod,  cPvmSimpleMod --> cPvmMod
+	  Synchronization mechanism added to PVM stuff.
 
-        * new user function: cSimpleMod::syncpoint(t,gate) -- blocks
-        destination segment until a cMsg sent at t (or later) through
-        specified gate arrives.
+	* new user function: cSimpleMod::syncpoint(t,gate) -- blocks
+	destination segment until a cMsg sent at t (or later) through
+	specified gate arrives.
 
-        * several new functions and changes to cNetMod and cPvmMod to
-        implement the above
+	* several new functions and changes to cNetMod and cPvmMod to
+	implement the above
 
-        * cSimulation::nextmodule() rewritten NOT finished, NOT tested!!!
-
+	* cSimulation::nextmodule() rewritten NOT finished, NOT tested!!!
 
 1997-08-05  Andras Varga
 
-        * new function upack_object added to pvmpack.cc;
+	* new function upack_object added to pvmpack.cc;
 
-        * net_pack()/net_upack() functions improved
-
+	* net_pack()/net_upack() functions improved
 
 1997-08-04  Andras Varga
 
-        * PVM stuff: all segments of a distributed simulation stops correctly now.
-        Affected files:
+	* PVM stuff: all segments of a distributed simulation stops correctly now.
+	Affected files:
 
-          pvmmod.cc: cPVMSimpleMod's stopallsegments(), request_stopsimulation(),
-                     process_pvm_msg()
-          csimul.cc: cSimulation's error(), printmsg(), warnings() functions
-                     eSTOPSIMRCVD error message added
-
+	  pvmmod.cc: cPVMSimpleMod's stopallsegments(), request_stopsimulation(),
+	             process_pvm_msg()
+	  csimul.cc: cSimulation's error(), printmsg(), warnings() functions
+	             eSTOPSIMRCVD error message added
 
 1997-07-20  Andras Varga
 
-        * Changes in PVM stuff:
+	* Changes in PVM stuff:
 
-          - debugged by Gabor Lencse: fixes in csimul.cc and pvm/pvmmod.cc
+	  - debugged by Gabor Lencse: fixes in csimul.cc and pvm/pvmmod.cc
 
-          - SINGLE_HOST #define added to pvmmod.cc: if turned on, OMNeT++
-          runs all segments of a distributed simulation on the local host,
-          to facilitate debugging. (Needs PVM running though!)
+	  - SINGLE_HOST #define added to pvmmod.cc: if turned on, OMNeT++
+	  runs all segments of a distributed simulation on the local host,
+	  to facilitate debugging. (Needs PVM running though!)
 
-          - stopping a distributed simulation doesn't work yet
-
+	  - stopping a distributed simulation doesn't work yet
 
 1997-07-10  Andras Varga
 
-        * makefile modified to work with Cygnus gcc on Win95/NT
-
+	* makefile modified to work with Cygnus gcc on Win95/NT
 
 1997-07-06  Andras Varga
 
-        * ctype.h/cc changed: consistency check of different module
-        interfaces
+	* ctype.h/cc changed: consistency check of different module
+	interfaces
 
-        * handling of CONST module parameters placed in cModType
-
+	* handling of CONST module parameters placed in cModType
 
 1997-07-01  Andras Varga
 
-        * simtimeToStr() function modified
-
+	* simtimeToStr() function modified
 
 1997-06-30  Andras Varga
 
-        * cPar::gettext() bug fixed (didn't work with 'I' (indirection)
-        type)
+	* cPar::gettext() bug fixed (didn't work with 'I' (indirection)
+	type)
 
-        * loop in cQueue::foreach() changed direction (now: tail --> head)
+	* loop in cQueue::foreach() changed direction (now: tail --> head)
 
-        * simtimeToStr() function rewritten
-
+	* simtimeToStr() function rewritten
 
 1997-06-26  Andras Varga
 
-        * cMsg::info() changed
-
+	* cMsg::info() changed
 
 1997-06-23  Andras Varga
 
-        * cleaned up things in chist.cc
-
+	* cleaned up things in chist.cc
 
 1997-06-20  Andras Varga
 
-        * a bug in the coroutine package fixed
+	* a bug in the coroutine package fixed
 
-        * cSimpleStatistic::getstddev() changed
+	* cSimpleStatistic::getstddev() changed
 
-        * cMsg::info changed
-
+	* cMsg::info changed
 
 1997-05-22  Andras Varga
 
-        * carray.cc/h: cBag::addat(int, void*)
-                 cBag::cBag(..., int esiz=4, ...)
+	* carray.cc/h: cBag::addat(int, void*)
+	         cBag::cBag(..., int esiz=4, ...)
 
-        * chist.cc/h: virtual cHistogramBase::deletefirstvals() and other things ...
-                virtual cHistogramBase::recreatefirstvals()
-                virtual cHistogramBase::putinFirstVal(int, double)
-
+	* chist.cc/h: virtual cHistogramBase::deletefirstvals() and other things ...
+	        virtual cHistogramBase::recreatefirstvals()
+	        virtual cHistogramBase::putinFirstVal(int, double)
 
 1997-05-13  Andras Varga
 
-        * unsigned long cHistogramBase::getcell{under|over}() added
-
+	* unsigned long cHistogramBase::getcell{under|over}() added
 
 1997-05-09  Andras Varga
 
-        * double cHistogramBase::pdf(double x) probability density
-        function
-
+	* double cHistogramBase::pdf(double x) probability density
+	function
 
 1997-04-22  Andras Varga
 
-        * event_num, geteventnumber(), incr_eventnumber() added to
-        cSimulation
+	* event_num, geteventnumber(), incr_eventnumber() added to
+	cSimulation
 
-        * realtimewait() removed (commented out)
+	* realtimewait() removed (commented out)
 
-        * nextmodule() changed so that it does not have any side effects
-        (except for generating error messages)
+	* nextmodule() changed so that it does not have any side effects
+	(except for generating error messages)
 
-        * name of cMod::stepmode changed to cMod::pause_in_sendmsg which
-        is closer to what it does
+	* name of cMod::stepmode changed to cMod::pause_in_sendmsg which
+	is closer to what it does
 
-        * compatibility: at least envir90, tkenv30, tvenv79
-
+	* compatibility: at least envir90, tkenv30, tvenv79
 
 1997-04-18  Andras Varga
 
-        * histograms: underflowcell_rmin and overflowcell_rmax added to
-        pvmpack.cc too
-
+	* histograms: underflowcell_rmin and overflowcell_rmax added to
+	pvmpack.cc too
 
 1997-04-17  Andras Varga
 
-        * friend class TOutVectorWindow added to cOutVector
+	* friend class TOutVectorWindow added to cOutVector
 
-        * histograms: underflowcell_rmin and overflowcell_rmax introduced
-        (sizes of underflow/overflow cells are now multiples of cellsize)
-
+	* histograms: underflowcell_rmin and overflowcell_rmax introduced
+	(sizes of underflow/overflow cells are now multiples of cellsize)
 
 1997-04-12  Andras Varga
 
-        * more TInspector friend classes added to cMod
+	* more TInspector friend classes added to cMod
 
-        * meaningful cGate::info() implemented
+	* meaningful cGate::info() implemented
 
-        * DUMMY_INSPECTOR macro corrected
-
+	* DUMMY_INSPECTOR macro corrected
 
 1997-04-06  Andras Varga
 
-        * iterators (cIter, cQIter, cSubmodIter): added XXX *op() to be
-        used instead of XXX& op[0]. Old one kept for compatibility
+	* iterators (cIter, cQIter, cSubmodIter): added XXX *op() to be
+	used instead of XXX& op[0]. Old one kept for compatibility
 
-        * cOutVect: inspector support added (as a callback function)
+	* cOutVect: inspector support added (as a callback function)
 
-        * ev.messagedelivered( msg ) added to getnewmsg()
+	* ev.messagedelivered( msg ) added to getnewmsg()
 
-        * STARTUPERROR_MODE return value added to is_started_as_master()
+	* STARTUPERROR_MODE return value added to is_started_as_master()
 
-        * compatible with: envir88, tkenv21, tvenv77
-
+	* compatible with: envir88, tkenv21, tvenv77
 
 1997-04-01  Andras Varga
 
-        * added args to cObj::inspector(): inspector(int type, void *data)
-        change affects Tvenv & Tkenv
+	* added args to cObj::inspector(): inspector(int type, void *data)
+	change affects Tvenv & Tkenv
 
-        * fixed a bug in cPvmSimpleMod's start_segments()
-
-
-1997-03-25  Andras Varga
-
-        * bugfixes in cstat, chist and cpsquare
-
-        * exit() call after floating point exception was removed
-
+	* fixed a bug in cPvmSimpleMod's start_segments()
 
 1997-03-25  Andras Varga
 
-        * cPiSquare: basepoints(),counter() fixed; pdfx(), cdfx()
-        corrected
+	* bugfixes in cstat, chist and cpsquare
 
-        * cpvmmod.cc changed
+	* exit() call after floating point exception was removed
 
-        * (histogram interval upper limit...)
+1997-03-25  Andras Varga
 
-        * cSimulation::deletenetwork() should do nothing if no network
-        exists
+	* cPiSquare: basepoints(),counter() fixed; pdfx(), cdfx()
+	corrected
 
+	* cpvmmod.cc changed
 
-1997-03-24  Andras Varga
+	* (histogram interval upper limit...)
 
-        Bugfixes
-
-        * (histogram interval  upper limit...)
-
-        * cSimulation::deletenetwork() should do nothing if no network exists
-
+	* cSimulation::deletenetwork() should do nothing if no network
+	exists
 
 1997-03-24  Andras Varga
 
-        * range_ext_direction added to cHistogramBase
+	Bugfixes
 
-          -1: extend downwards
-          +1: extend upwards
-          0: symmetric extension (as it was before)
-          (also updated in pvm/pvmpack.cc)
+	* (histogram interval  upper limit...)
 
-        * cHistogramBase::fwrite()/fread bug fixes
-
+	* cSimulation::deletenetwork() should do nothing if no network exists
 
 1997-03-24  Andras Varga
 
-        * eliminated some warnings (implicit double->int conversions etc)
+	* range_ext_direction added to cHistogramBase
 
-        * pvmmod.cc improved: added further informative messages to slave
-        mode
+	  -1: extend downwards
+	  +1: extend upwards
+	  0: symmetric extension (as it was before)
+	  (also updated in pvm/pvmpack.cc)
 
-        * chist.cc added to makefile
+	* cHistogramBase::fwrite()/fread bug fixes
 
+1997-03-24  Andras Varga
+
+	* eliminated some warnings (implicit double->int conversions etc)
+
+	* pvmmod.cc improved: added further informative messages to slave
+	mode
+
+	* chist.cc added to makefile
 
 1997-03-21  Andras Varga
 
-        * is_started_as_master() function added
+	* is_started_as_master() function added
 
-        * pvmmod.cc improved
+	* pvmmod.cc improved
 
-        * compatible with envir86
-
+	* compatible with envir86
 
 1997-03-21  Andras Varga
 
-        * cGate::writecontents() added
+	* cGate::writecontents() added
 
-        * cGate::isconnected() corrected (now checks if module is local or
-        not)
+	* cGate::isconnected() corrected (now checks if module is local or
+	not)
 
-        * histogram basepoints() bug fixed
+	* histogram basepoints() bug fixed
 
-        * bool isslaveprocess() added to cnetmod.h/.cc, pvmmod.cc
-
-
-1997-03-18  Andras Varga
-
-        * cLongHistogram::transform() improved
-
+	* bool isslaveprocess() added to cnetmod.h/.cc, pvmmod.cc
 
 1997-03-18  Andras Varga
 
-        * random() written in histograms
+	* cLongHistogram::transform() improved
 
-        * class string bug fixed
+1997-03-18  Andras Varga
 
+	* random() written in histograms
 
-1997-03-17  Andras Varga
-
-        * bugfixes in histogram
-
+	* class string bug fixed
 
 1997-03-17  Andras Varga
 
-        * cLongHistogram::transform() rewritten
-
+	* bugfixes in histogram
 
 1997-03-17  Andras Varga
 
-        * separate cstat.h/cc and chist.h/cc files
+	* cLongHistogram::transform() rewritten
 
+1997-03-17  Andras Varga
+
+	* separate cstat.h/cc and chist.h/cc files
 
 1997-03-16  Andras Varga
 
-        * bugfixes
-
-
-1997-03-15  Andras Varga
-
-        * cPvmSimpleMod and cSimulation.setupnetwork() modified
-
+	* bugfixes
 
 1997-03-15  Andras Varga
 
-        Module parameter logging bug fixed.
-        Histogram classes:
+	* cPvmSimpleMod and cSimulation.setupnetwork() modified
 
-        * pvmpack.cc updated
+1997-03-15  Andras Varga
 
-        * changed names: categorynr --> num_cells
-                   precoll_samples_num --> num_firstvals
+	Module parameter logging bug fixed.
+	Histogram classes:
 
-        * basepts(), basepoint(k) finished
+	* pvmpack.cc updated
 
-        PiSquare also updated (because cStatistic interface has changed in #120)
+	* changed names: categorynr --> num_cells
+	           precoll_samples_num --> num_firstvals
 
-        * PiSquare's basepoint(), counter() are not correct!!!
+	* basepts(), basepoint(k) finished
 
+	PiSquare also updated (because cStatistic interface has changed in #120)
 
-1997-03-14  Andras Varga
-
-        The range of the Histogram will be NOT recalculated
-
-        * steps were taken towards this solution....
-
-        * cell_under/cell_over is saved/loaded,
-
-        * cDoubleHistogram::collectTransformed() is rewritten and may be
-        moved to cHistogramBase if everything seems to be OK. (only
-        transform() should be different)
-
+	* PiSquare's basepoint(), counter() are not correct!!!
 
 1997-03-14  Andras Varga
 
-        The hierarchy of the statistics collecting classes is completely rewritten
+	The range of the Histogram will be NOT recalculated
 
-        * cStatistic : abstract class
+	* steps were taken towards this solution....
 
-        * cSimpleStatistic replaces both cLongStat and cDoubleStat and is
-        like cDoubleStat was
+	* cell_under/cell_over is saved/loaded,
 
-        * cHistogramBase : abstract class, contains all the common parts
-        of cLongHistogram and cDoubleHistogram
+	* cDoubleHistogram::collectTransformed() is rewritten and may be
+	moved to cHistogramBase if everything seems to be OK. (only
+	transform() should be different)
 
+1997-03-14  Andras Varga
+
+	The hierarchy of the statistics collecting classes is completely rewritten
+
+	* cStatistic : abstract class
+
+	* cSimpleStatistic replaces both cLongStat and cDoubleStat and is
+	like cDoubleStat was
+
+	* cHistogramBase : abstract class, contains all the common parts
+	of cLongHistogram and cDoubleHistogram
 
 1997-03-13  Andras Varga
 
-        improvements on histograms:
+	improvements on histograms:
 
-        * precollect_sample_num introduced
+	* precollect_sample_num introduced
 
-        * cellwidth -> cellsize
+	* cellwidth -> cellsize
 
-        * 1/rangecoeff -> cellsize
-
+	* 1/rangecoeff -> cellsize
 
 1997-03-13  Andras Varga
 
-        improvements on histograms:
+	improvements on histograms:
 
-        * both histograms have a range_ext_factor
+	* both histograms have a range_ext_factor
 
-        * all range calculation and extension (if a sample falls out) are
-        rewritten
+	* all range calculation and extension (if a sample falls out) are
+	rewritten
 
-        * histogram calculates the c...Stat values if they are
-        missing. (see #109d)
+	* histogram calculates the c...Stat values if they are
+	missing. (see #109d)
 
 1997-03-11  Andras Varga
 
-        * improvement on statistics classes
-
-
-1997-03-10  Andras Varga
-
-        * Define_Simple_Module_Like() macro added
-
+	* improvement on statistics classes
 
 1997-03-10  Andras Varga
 
-        * cLongStat::fwrite/fwrite added
+	* Define_Simple_Module_Like() macro added
 
-        * cLongHistogram::fwrite/fread added
+1997-03-10  Andras Varga
 
-        * some bugfixes in cDoubleHistogram::fwrite/fread done
+	* cLongStat::fwrite/fwrite added
 
+	* cLongHistogram::fwrite/fread added
+
+	* some bugfixes in cDoubleHistogram::fwrite/fread done
 
 1997-03-09  Andras Varga
 
-        * Bug fixes
-
+	* Bug fixes
 
 1997-03-08  Andras Varga
 
-        * cModType adds missing "default" machine parameter
+	* cModType adds missing "default" machine parameter
 
-        * put cGate into separate header and cc files
+	* put cGate into separate header and cc files
 
-        * added: cGate::transm_finishes, busy(), restart() etc.
-
+	* added: cGate::transm_finishes, busy(), restart() etc.
 
 1997-03-07  Andras Varga
 
-        * minor improvements
+	* minor improvements
 
-        * PVM stuff updated; cPiSquare::pvm_pack()/upack() added
-
+	* PVM stuff updated; cPiSquare::pvm_pack()/upack() added
 
 1997-03-06  Andras Varga
 
+1997-03-05  Andras Varga
+
+	* cPiSquare::fwrite(FILE *f) added
+
+	* cPiSquare::fread(FILE *f) added
 
 1997-03-05  Andras Varga
 
-        * cPiSquare::fwrite(FILE *f) added
+	* cDoubleStat::fwrite(FILE *f) added
 
-        * cPiSquare::fread(FILE *f) added
+	* cDoubleStat::fread(FILE *f) added
 
+	* cDoubleHistogram::fwrite/fread functions use the functions above
 
-1997-03-05  Andras Varga
+	* cDoubleHistogram may read two different formats: cDoubleStat
+	included or not included. But it still does NOT calculate the
+	statistical values!
 
-        * cDoubleStat::fwrite(FILE *f) added
-
-        * cDoubleStat::fread(FILE *f) added
-
-        * cDoubleHistogram::fwrite/fread functions use the functions above
-
-        * cDoubleHistogram may read two different formats: cDoubleStat
-        included or not included. But it still does NOT calculate the
-        statistical values!
-
-        * some functions of cStatBase were made to be pure virtual
-
+	* some functions of cStatBase were made to be pure virtual
 
 1997-03-05  Andras Varga
 
-        * cPiSquare sources added
+	* cPiSquare sources added
 
-        * makelib corrected
-
+	* makelib corrected
 
 1997-03-04  Andras Varga
 
-        * cResult renamed to sStatBase
+	* cResult renamed to sStatBase
 
-        * cDoubleDistrResult renamed to cDoubleHistogram
+	* cDoubleDistrResult renamed to cDoubleHistogram
 
-        * cLintDistrResult renamed to cLongHistogram
+	* cLintDistrResult renamed to cLongHistogram
 
-        * cLintResult, cDoubleResult were commented out
+	* cLintResult, cDoubleResult were commented out
 
-        * cDoubleStatResult renamed to cDoubleStat
+	* cDoubleStatResult renamed to cDoubleStat
 
-        * cLintResult renamed to cLongStat
+	* cLintResult renamed to cLongStat
 
-        * cDoubleHistogram::fwrite(FILE *f) added
+	* cDoubleHistogram::fwrite(FILE *f) added
 
-        * cDoubleHistogram::fread(FILE *f) added
-
-
-1997-03-03  Andras Varga
-
-        * cVarShell renamed to cWatch
-
+	* cDoubleHistogram::fread(FILE *f) added
 
 1997-03-03  Andras Varga
 
-        * multiple random number generators (genk_xxx functions) added
+	* cVarShell renamed to cWatch
 
-        * added check for seed=0
+1997-03-03  Andras Varga
 
+	* multiple random number generators (genk_xxx functions) added
 
-1997-02-28  Andras Varga
-
-        * info() member functions fixed
-
+	* added check for seed=0
 
 1997-02-28  Andras Varga
 
-        * minor changes
-
+	* info() member functions fixed
 
 1997-02-28  Andras Varga
 
-        * cSimulation: cleaned up network setup/delete stuff
+	* minor changes
 
-           newnetwork() --renamed--> setupnetwork(cNetworkType n, int run_number)
-           clear() --renamed--> deletenetwork()
-           restart() --renamed--> startrun()
-           endrun(): new function
-           setsize(n), setrun(n): removed
-           getrun() --renamed--> getrunnumber()
-           getnetwork() --renamed--> getnetworktype()
+1997-02-28  Andras Varga
 
-        * cOutFileMgr: bugfixes
+	* cSimulation: cleaned up network setup/delete stuff
 
+	   newnetwork() --renamed--> setupnetwork(cNetworkType n, int run_number)
+	   clear() --renamed--> deletenetwork()
+	   restart() --renamed--> startrun()
+	   endrun(): new function
+	   setsize(n), setrun(n): removed
+	   getrun() --renamed--> getrunnumber()
+	   getnetwork() --renamed--> getnetworktype()
+
+	* cOutFileMgr: bugfixes
 
 1997-02-27  Andras Varga
 
-        * bugfixes on #103
+	* bugfixes on #103
 
-        * intuniform() distribution added
-
+	* intuniform() distribution added
 
 1997-02-20  Andras Varga
 
-        * bugfixes on #102
-
+	* bugfixes on #102
 
 1997-02-13  Andras Varga
 
-        * cPar cleaned up:
-            o  types U,N,E,B,I removed
-            o  truncate flag removed
-            o  list of allowed type removed
-            o  last value preserving removed
-            o  parchanges removed
-            o  modpar flag removed
-            o  in constructor, type string changed to type char
-            o  constructor no longer takes prompt as arg
-            o  valuechanged() ---renamed to---> valuechanges()
-            o  less default conversions (they caused confusion)
-            o  settext() simplified
+	* cPar cleaned up:
+	    o  types U,N,E,B,I removed
+	    o  truncate flag removed
+	    o  list of allowed type removed
+	    o  last value preserving removed
+	    o  parchanges removed
+	    o  modpar flag removed
+	    o  in constructor, type string changed to type char
+	    o  constructor no longer takes prompt as arg
+	    o  valuechanged() ---renamed to---> valuechanges()
+	    o  less default conversions (they caused confusion)
+	    o  settext() simplified
 
-        * features added to cPar:
-            o  MathFunc w/ 0,1,2,3 constant args added (new: F type)
-            o  indirection type (I)
-            o  sXElem changed (for example, referto() was removed)
+	* features added to cPar:
+	    o  MathFunc w/ 0,1,2,3 constant args added (new: F type)
+	    o  indirection type (I)
+	    o  sXElem changed (for example, referto() was removed)
 
-        * cModPar:
-            o  made to be a cPar descendant
-            o  "new" feature: module parameter logging (works thru valuechanges())
+	* cModPar:
+	    o  made to be a cPar descendant
+	    o  "new" feature: module parameter logging (works thru valuechanges())
 
-        * cVal, valuelist, findval() etc. removed
+	* cVal, valuelist, findval() etc. removed
 
-        * cMod:
-            o  iscompound(), cpd flag removed
-            o  issimple() now works through being virtual
-            o  precomp flag, isprecomp() removed (no one used it)
-            o  added: ancestorpar( char *s );
+	* cMod:
+	    o  iscompound(), cpd flag removed
+	    o  issimple() now works through being virtual
+	    o  precomp flag, isprecomp() removed (no one used it)
+	    o  added: ancestorpar( char *s );
 
-        * cCompMod renamed to cCompoundMod
+	* cCompMod renamed to cCompoundMod
 
-        * cMsg function names changed
-            o  setprior() --> setpriority()
-            o  setlen() --> setlength()
-            o  seterr() --> seterror()
+	* cMsg function names changed
+	    o  setprior() --> setpriority()
+	    o  setlen() --> setlength()
+	    o  seterr() --> seterror()
 
-        New field: timestamp
-         void settimestamp( [simtime_t t] );
-         simtime_t timestamp();
+	New field: timestamp
+	 void settimestamp( [simtime_t t] );
+	 simtime_t timestamp();
 
-        * cSimulation:
-            o new fields cOutFileMgr parchangefilemgr, bool logparchanges
-            o outfilemgr --renamed--> outvectfilemgr
+	* cSimulation:
+	    o new fields cOutFileMgr parchangefilemgr, bool logparchanges
+	    o outfilemgr --renamed--> outvectfilemgr
 
-        * cOutFileMgr:
-            o  interface changed
-            o  new: '##'-to-run-number substitution in file names
-            o  deletefile() added
+	* cOutFileMgr:
+	    o  interface changed
+	    o  new: '##'-to-run-number substitution in file names
+	    o  deletefile() added
 
-        * oObj::restore(), cHead::restore() functions deleted (were only used by cVal)
+	* oObj::restore(), cHead::restore() functions deleted (were only used by cVal)
 
-        * cObj constructor more optimized, cobj.h commented
+	* cObj constructor more optimized, cobj.h commented
 
-        * IMPORTANT: operator=() no longer copies object name!!!! It
-        should be done separately if needed. Copy constructor DOES copy
-        the name.
-
+	* IMPORTANT: operator=() no longer copies object name!!!! It
+	should be done separately if needed. Copy constructor DOES copy
+	the name.
 
 1997-02-12  Andras Varga
 
-        * data rate support added
+	* data rate support added
 
-        * sendmsgdelayed() added
-
+	* sendmsgdelayed() added
 
 1996-12-08  Andras Varga
 
-        * `members' added to cSimpleMod
+	* `members' added to cSimpleMod
 
-        * modified cLinkType
+	* modified cLinkType
 
-        * error fixed in cGate::setlink()
-
-
-1996-12-06  Andras Varga
-
-        * changed: cGate, cLinkType, connect()
-
+	* error fixed in cGate::setlink()
 
 1996-12-06  Andras Varga
 
-        * bug fixed which caused double delay on links
+	* changed: cGate, cLinkType, connect()
 
-        * deliver() moved from cMod to cGate
+1996-12-06  Andras Varga
 
+	* bug fixed which caused double delay on links
+
+	* deliver() moved from cMod to cGate

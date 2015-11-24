@@ -1,3 +1,33 @@
+2015-11-09  Andras Varga
+
+	* Added support for cComponent::refreshDisplay(), see include/ChangeLog
+	for details.
+
+2015-11-06  Andras Varga
+
+	* Refactoring: Tkenv class: runUtil data was turned into a struct
+
+2015-11-06  Andras Varga
+
+	* Cosmetics (camelization etc)
+
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
+2015-11-04  Rudolf Hornig
+
+	* Updated tkpath binary (fix for arrowhead problem) - tkpath repo
+	version: 596e4ac
+
+2015-07-24  Andras Varga
+
+	* Fix: Find/Inspect Object dialog was broken (object to search in was
+	not found)
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-26  Andras Varga
@@ -175,8 +205,6 @@
 
 	* Fire simulation lifecycle events; see related ChangeLog entry
 	in include/.
-
-////////////// fixes cherry-picked from 4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 
@@ -554,10 +582,10 @@
 
 2009-01-05  Rudolf Hornig
 
-        * fixed: display string for messages made consistent with module display
-        strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
+	* fixed: display string for messages made consistent with module display
+	strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
 
-        * New feature: A special color name "kind" can be used in message
+	* New feature: A special color name "kind" can be used in message
 	display strings (both in "i" and "b" tags)
 
 2008-12-14  Andras Varga
@@ -638,8 +666,8 @@
 	- tooltips got focus. solution: magic code from http://wiki.tcl.tk/3060
 	- focus problem in dialogs (no initial focus when dialog came up)
 	  solution: introduced proc setinitialdialogfocus
-        - some "(help)" links in dialogs didn't work due to focus problems
-          solution: introduced proc waitforfocus
+	- some "(help)" links in dialogs didn't work due to focus problems
+	  solution: introduced proc waitforfocus
 	- button 2 and 3 are reversed (compared to X11 and Windows)
 	  solution: use variables $B2 and $B3
 
@@ -984,52 +1012,52 @@
 
 2004-09-27  Andras Varga
 
-        * inspector.cc: display class name too on "inspect" buttons
-        (e.g. "encapsulated message" button in cMessage inspector)
+	* inspector.cc: display class name too on "inspect" buttons
+	(e.g. "encapsulated message" button in cMessage inspector)
 
 2004-09-26  Andras Varga
 
-        * modinsp2.tcl: graphical module windows: adjust window size to fit
-        size of graphics
+	* modinsp2.tcl: graphical module windows: adjust window size to fit
+	size of graphics
 
 2004-09-24  ------ omnetpp-3.0a7 released ------
 
 2004-09-08  Andras Varga
 
-        * widgets.tcl: updated Tcl/Tk version check
+	* widgets.tcl: updated Tcl/Tk version check
 
 2004-08-16  Andras Varga
 
-        * tkutil.cc: worked around compilation error in WinSCard.h when
-        compiling with MSVC .NET
+	* tkutil.cc: worked around compilation error in WinSCard.h when
+	compiling with MSVC .NET
 
 2004-08-14  Andras Varga
 
-        * tkapp.cc: new omnetpp.ini entry: [Tkenv]/bitmap-path=. Value should
-        be quoted; directories should be separated by ";". The contents of the
-        OMNETPP_BITMAP_PATH environment var (or if that's not set, the
-        compilation-time bitmap path) gets concatenated to this one.
-        Beware: if you don't quote the value, only the first dir will be
-        used and the rest ignored, because ";" denotes comments omnetpp.ini!
+	* tkapp.cc: new omnetpp.ini entry: [Tkenv]/bitmap-path=. Value should
+	be quoted; directories should be separated by ";". The contents of the
+	OMNETPP_BITMAP_PATH environment var (or if that's not set, the
+	compilation-time bitmap path) gets concatenated to this one.
+	Beware: if you don't quote the value, only the first dir will be
+	used and the rest ignored, because ";" denotes comments omnetpp.ini!
 
 2004-08-12  Andras Varga
 
-        * modinsp2.tcl: "t=" tag: center text by default
+	* modinsp2.tcl: "t=" tag: center text by default
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
 2004-07-17  Andras Varga
 
-        * tkapp.cc: enable output (set disable_tracing=false) before calling
-        finish()
+	* tkapp.cc: enable output (set disable_tracing=false) before calling
+	finish()
 
 2004-07-06  Andras Varga
 
-        * tkapp.cc: fixed Speedometer usage
+	* tkapp.cc: fixed Speedometer usage
 
 2004-06-21   Andras Varga
 
-        * visitor.cc/h: converted pattern matching to use new cPatternMatcher.
+	* visitor.cc/h: converted pattern matching to use new cPatternMatcher.
 
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
@@ -1039,1356 +1067,1355 @@
 
 2004-04-20  Andras Varga
 
-        * added "Control Info" page into cMessage inspector.
+	* added "Control Info" page into cMessage inspector.
 
 2004-03-18  Andras Varga
 
-        * structinsp.cc: display getFieldsAsString() also for structs (that is,
-        its operator<< is used to display a one-line brief of the struct)
+	* structinsp.cc: display getFieldsAsString() also for structs (that is,
+	its operator<< is used to display a one-line brief of the struct)
 
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-03  Andras Varga
 
-        * modinsp2.tcl, etc: implemented option to display className() of
-        animated messages. New omnetpp.ini option:
-          [Tkenv]/animation-msgclassnames=true/false (default is true)
+	* modinsp2.tcl, etc: implemented option to display className() of
+	animated messages. New omnetpp.ini option:
+	  [Tkenv]/animation-msgclassnames=true/false (default is true)
 
 2004-03-01  Andras Varga
 
-        * inspector.tcl/cc, etc: all inspector windows got an "Inspect owner"
-        toolbar button; on module inspectors this works as "Inspect parent
-        module".
+	* inspector.tcl/cc, etc: all inspector windows got an "Inspect owner"
+	toolbar button; on module inspectors this works as "Inspect parent
+	module".
 
-        * fix: Filtered Object List dialog ignored scheduled events list
+	* fix: Filtered Object List dialog ignored scheduled events list
 
-        * fix: cPacket inspector "Fields" page was always empty
+	* fix: cPacket inspector "Fields" page was always empty
 
 2004-02-23  Andras Varga
 
-        * tkapp.cc/h: added moduleReparented() cEnvir method
+	* tkapp.cc/h: added moduleReparented() cEnvir method
 
 2004-02-18  Andras Varga
 
-        * tkapp.cc/h, menuproc.tcl: on-the-fly switching from one runmode to
-        another (run,normal,express)
+	* tkapp.cc/h, menuproc.tcl: on-the-fly switching from one runmode to
+	another (run,normal,express)
 
-        * menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to
-        Simulation options dialog
+	* menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to
+	Simulation options dialog
 
-        * dialogs.tcl: express mode "STOP" dialog refined
+	* dialogs.tcl: express mode "STOP" dialog refined
 
-        * dialogs.tcl: Find dialog improved
+	* dialogs.tcl: Find dialog improved
 
 2004-02-11  Andras Varga
 
-        * tkapp.cc: propagated semantic change in getNextEvent()'s and
-        selectNextModule()'s return value (see include/ChangeLog)
+	* tkapp.cc: propagated semantic change in getNextEvent()'s and
+	selectNextModule()'s return value (see include/ChangeLog)
 
 2004-02-07  Andras Varga
 
-        * cstructinsp.cc: fix: prepare for missing descriptor object
-        [bug reported by Kurtis Kredo]
+	* cstructinsp.cc: fix: prepare for missing descriptor object
+	[bug reported by Kurtis Kredo]
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-20  Andras Varga
 
-        * added Edit|Copy to menu
+	* added Edit|Copy to menu
 
 2004-01-17  Andras Varga
 
-        * modinsp2.tcl: added two experimental submodule display string tags:
-        - "i2=" tag (with similar syntax to "i=") displays a small "modifier"
-        icon on top of the original one. Suggested icons are x_check, x_down,
-        x_up, x_exclamation, x_question, etc.
-        - "t=" tag displays a status string. t=<text>,<pos>,<color>.
-        <pos> is "l", "r" or "t" for left, right and top.
+	* modinsp2.tcl: added two experimental submodule display string tags:
+	- "i2=" tag (with similar syntax to "i=") displays a small "modifier"
+	icon on top of the original one. Suggested icons are x_check, x_down,
+	x_up, x_exclamation, x_question, etc.
+	- "t=" tag displays a status string. t=<text>,<pos>,<color>.
+	<pos> is "l", "r" or "t" for left, right and top.
 
 2004-01-09  Andras Varga
 
-        * modinsp.cc/h/tcl,tkapp.cc/h: implemented bubble() -- submodules
-        can display a bubble with a short message like "Queue full!".
-        Added [Tkenv]/show-bubbles=true/false omnetpp.ini entry.
-        TBD bubble() drawing could be a bit faster (too much Tcl code)
+	* modinsp.cc/h/tcl,tkapp.cc/h: implemented bubble() -- submodules
+	can display a bubble with a short message like "Queue full!".
+	Added [Tkenv]/show-bubbles=true/false omnetpp.ini entry.
+	TBD bubble() drawing could be a bit faster (too much Tcl code)
 
-        * added anim speed slider in main dialog and graphical module inspector
+	* added anim speed slider in main dialog and graphical module inspector
 
 2004-01-06  Andras Varga
 
-        * tkapp.h: added isGUI() (returns true)
+	* tkapp.h: added isGUI() (returns true)
 
 2004-01-01  Andras Varga
-        * tkapp.cc/h: handle new cEnvir notifications: moduleCreated(),
-        moduleDeleted(), connectionCreated(), connectionRemoved(),
-        displayStringChanged(cGate*), displayStringChanged(cModule*),
-        displayStringAsParentChanged()
+	* tkapp.cc/h: handle new cEnvir notifications: moduleCreated(),
+	moduleDeleted(), connectionCreated(), connectionRemoved(),
+	displayStringChanged(cGate*), displayStringChanged(cModule*),
+	displayStringAsParentChanged()
 
 2003-12-30  Andras Varga
 
-        * new omnetpp.ini entries:
-        [Tkenv]/methodcalls-delay: sets delay after method call animation
-        [Tkenv]/show-layouting: show layouting process of network graphics
+	* new omnetpp.ini entries:
+	[Tkenv]/methodcalls-delay: sets delay after method call animation
+	[Tkenv]/show-layouting: show layouting process of network graphics
 
 2003-12-21  Andras Varga
 
-        * graphlayout.cc/h, modinsp.cc: implemented automatic layouting, using
-        the SpringEmbedder algorithm. Modules which have no explicit positions
-        assigned (first two args of the "p=" tag are missing) will be
-        autolayouted. Predefined row, matrix, ring, etc arrangements (defined
-        via 3rd and further args of the "p=" tag) will be moved as one unit
-        (the full row/matrix/ring will be moved to an optimal place.)
-        - One tricky thing: if the full graph is too big after layouting,
-        it is scaled back so that it fits on the screen, UNLESS IT CONTAINS
-        ANY FIXED-POSITION MODULE. (For obvious reasons: if there's a module
-        with manually specified position, we don't want to move that one).
-        - Size is ignored by the present layouter, so longish modules (such as
-        an Ethernet segment) may produce funny results.
-        - Parameters to the layouter algoritm (repulsive/attractive forces,
-        number of iterations,random number seed) can be specified in the "l="
-        tag to the parent module, but this is experimental and may change.
-        Currently parameters (with their default values):
-        "l=<repulsion=10>,<attraction=0.3>,<edgelen=40>,<maxiter=200>,<seed>"
-        - Tip: to present rescaling, specify a bounding box for the parent
-        module module that is large enough, e.g. "b=2000,3000"
+	* graphlayout.cc/h, modinsp.cc: implemented automatic layouting, using
+	the SpringEmbedder algorithm. Modules which have no explicit positions
+	assigned (first two args of the "p=" tag are missing) will be
+	autolayouted. Predefined row, matrix, ring, etc arrangements (defined
+	via 3rd and further args of the "p=" tag) will be moved as one unit
+	(the full row/matrix/ring will be moved to an optimal place.)
+	- One tricky thing: if the full graph is too big after layouting,
+	it is scaled back so that it fits on the screen, UNLESS IT CONTAINS
+	ANY FIXED-POSITION MODULE. (For obvious reasons: if there's a module
+	with manually specified position, we don't want to move that one).
+	- Size is ignored by the present layouter, so longish modules (such as
+	an Ethernet segment) may produce funny results.
+	- Parameters to the layouter algoritm (repulsive/attractive forces,
+	number of iterations,random number seed) can be specified in the "l="
+	tag to the parent module, but this is experimental and may change.
+	Currently parameters (with their default values):
+	"l=<repulsion=10>,<attraction=0.3>,<edgelen=40>,<maxiter=200>,<seed>"
+	- Tip: to present rescaling, specify a bounding box for the parent
+	module module that is large enough, e.g. "b=2000,3000"
 
 2003-12-18  Andras Varga
 
-        * modinsp2.tcl: enhanced "i=" (icon) display string tag -- icon can
-        be colorized now. Syntax: i=<icon>,<target-color>,<percentage>.
-        Target-color can be any accepted color specification: English name
-        (blue,lightgray,wheat), RGB (#ff0000) or HSB (@40ff80; hue-saturation-
-        brightness), and percentage is the degree of colorization, 20% being
-        the default. Percentage has no effect if the target color is missing.
-        Brightness of icon is also affected -- to keep original brightness,
-        specify a color with about 50% brightness (e.g. #808080 mid-grey,
-        #008000 mid-green). Examples: "i=server1,gold" creates
-        a gold server icon; "i=earth2,#808080,100" makes icon grayscale;
-        "i=queue,white,100" gives "over-exposed" b&w icon. Colorization
-        works with both submodule and message icons.
+	* modinsp2.tcl: enhanced "i=" (icon) display string tag -- icon can
+	be colorized now. Syntax: i=<icon>,<target-color>,<percentage>.
+	Target-color can be any accepted color specification: English name
+	(blue,lightgray,wheat), RGB (#ff0000) or HSB (@40ff80; hue-saturation-
+	brightness), and percentage is the degree of colorization, 20% being
+	the default. Percentage has no effect if the target color is missing.
+	Brightness of icon is also affected -- to keep original brightness,
+	specify a color with about 50% brightness (e.g. #808080 mid-grey,
+	#008000 mid-green). Examples: "i=server1,gold" creates
+	a gold server icon; "i=earth2,#808080,100" makes icon grayscale;
+	"i=queue,white,100" gives "over-exposed" b&w icon. Colorization
+	works with both submodule and message icons.
 
-        * tkcmd.cc: added opp_colorizeimage command
+	* tkcmd.cc: added opp_colorizeimage command
 
 2003-12-11  Andras Varga
 
-        * all files: follow changes in sim/; C-style casts replaced with
-        static_cast<>
+	* all files: follow changes in sim/; C-style casts replaced with
+	static_cast<>
 
 2003-12-06  Andras Varga
 
-        * inspectors are no longer cObjects
+	* inspectors are no longer cObjects
 
-        * "putaside queue" tab removed from simple module inspector (putaside-
-        queue is being removed, see doc/API-changes.txt)
+	* "putaside queue" tab removed from simple module inspector (putaside-
+	queue is being removed, see doc/API-changes.txt)
 
-        * filtered object dialog enhanced (categories, etc)
+	* filtered object dialog enhanced (categories, etc)
 
 2003-11-29  Andras Varga
 
-        * insplist.tcl: added <pluginname>:inspectorUpdate Tkenv plugin
-        callback
+	* insplist.tcl: added <pluginname>:inspectorUpdate Tkenv plugin
+	callback
 
-        * widgets.tcl: added BLT support
+	* widgets.tcl: added BLT support
 
-        * inspector listboxes changed to multicolumn listboxes from BLT
+	* inspector listboxes changed to multicolumn listboxes from BLT
 
-        * .cc/.h files: some refactoring and cleanup; lots of obsolete code
-        removed
-
-2003-11-13  Andras Varga
-
-        * statinsp.cc: added typecast for MSVC 7.0 compiler [reported by Bob
-        Scheffler]
+	* .cc/.h files: some refactoring and cleanup; lots of obsolete code
+	removed
 
 2003-11-13  Andras Varga
 
-        * Checked in parallel simulation code that was developed March-May 2003,
-        during my stay at Monash University. Changes:
+	* statinsp.cc: added typecast for MSVC 7.0 compiler [reported by Bob
+	Scheffler]
 
-        2003-04-09  Andras Varga
-        * tkapp.cc: use new cSimulation method guessNextEvent() for updating
-        "Next module" display.
+2003-11-13  Andras Varga
+
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
+
+	2003-04-09  Andras Varga
+	* tkapp.cc: use new cSimulation method guessNextEvent() for updating
+	"Next module" display.
 
 2003-11-09  Andras Varga
 
-        * added toolbar icon and menu item for dynamically loading NED files.
-        (Only works if sim.kernel was compiled with the feature enabled,
-        see sim/ChangeLog entry from the same date.)
+	* added toolbar icon and menu item for dynamically loading NED files.
+	(Only works if sim.kernel was compiled with the feature enabled,
+	see sim/ChangeLog entry from the same date.)
 
 2003-11-07  Andras Varga
 
-        * started working on a Tkenv plugin API. It's still in embryonal state.
-        Plugins are any .tcl file found in directories of the plugin path
-        (OMNETPP_PLUGIN_PATH env.var, "./plugins" be default), and they are
-        loaded automatically when Tkenv starts. They may define Tcl procs,
-        create windows, widgets, meu items, etc.
-           The plugin may invoke the registerPlugin <pluginname> Tcl function,
-        which arranges certain plugin functions to be called on different
-        Tkenv events. As of now, the only such function is
-        <pluginname>:newNetwork, called after a network got set up.
-           As of now, plugins authors need to look at the Tkenv code to see
-        what they can do and how they can do it from within a plugin. This is
-        not very good since it makes plugins dependent on Tkenv internals.
-        Some time in the future a well-defined Tkenv API will have to be
-        created. Also, the plugin mechanism will probably be changed to
-        make use of the namespace and package mechanisms of Tcl.
-           An example plugin can be found in test/tkenv/plugin.
+	* started working on a Tkenv plugin API. It's still in embryonal state.
+	Plugins are any .tcl file found in directories of the plugin path
+	(OMNETPP_PLUGIN_PATH env.var, "./plugins" be default), and they are
+	loaded automatically when Tkenv starts. They may define Tcl procs,
+	create windows, widgets, meu items, etc.
+	   The plugin may invoke the registerPlugin <pluginname> Tcl function,
+	which arranges certain plugin functions to be called on different
+	Tkenv events. As of now, the only such function is
+	<pluginname>:newNetwork, called after a network got set up.
+	   As of now, plugins authors need to look at the Tkenv code to see
+	what they can do and how they can do it from within a plugin. This is
+	not very good since it makes plugins dependent on Tkenv internals.
+	Some time in the future a well-defined Tkenv API will have to be
+	created. Also, the plugin mechanism will probably be changed to
+	make use of the namespace and package mechanisms of Tcl.
+	   An example plugin can be found in test/tkenv/plugin.
 
-        * tkcmd.cc: implemented opp_modulebypath, opp_getmodulepar,
-        opp_setmodulepar commands (needed by Tkenv plugins)
+	* tkcmd.cc: implemented opp_modulebypath, opp_getmodulepar,
+	opp_setmodulepar commands (needed by Tkenv plugins)
 
 2003-10-19  Andras Varga
 
-        * slight change in submodule display strings: if both "b=" (box) and
-        "i=" (icon) occurs in the display string, *both* are displayed
-        (the icon on top of the box; prevoiusly, the icon took precedence).
-        This facilitates visualizing the state of a module: state can be coded
-        in the color (or size) of the underlying box or oval (or frame/circle,
-        because transparency is also supported, see below)
+	* slight change in submodule display strings: if both "b=" (box) and
+	"i=" (icon) occurs in the display string, *both* are displayed
+	(the icon on top of the box; prevoiusly, the icon took precedence).
+	This facilitates visualizing the state of a module: state can be coded
+	in the color (or size) of the underlying box or oval (or frame/circle,
+	because transparency is also supported, see below)
 
-        * enhancement in display strings: special color "-" means transparent;
-        @hhssbb (with h,s,b as hex digits) stands for a color given with
-        (hue,saturation,brightness) values -- this makes it easier to scale
-        colors e.g. from white to bright red
+	* enhancement in display strings: special color "-" means transparent;
+	@hhssbb (with h,s,b as hex digits) stands for a color given with
+	(hue,saturation,brightness) values -- this makes it easier to scale
+	colors e.g. from white to bright red
 
-        * tkcmd.cc: added opp_hsb_to_rgb command
+	* tkcmd.cc: added opp_hsb_to_rgb command
 
 2003-10-18  Andras Varga
 
-        * tkcmd.cc: added Tcl commands for working with the nedxml library
+	* tkcmd.cc: added Tcl commands for working with the nedxml library
 
 2003-10-06  Andras Varga
 
-        * modinsp2.tcl, modinsp.h/cc: new feature: queue size can be displayed
-        next to submodule icon. Add "q=<queue-name>" to the display string,
-        where queue-name is the name of the cQueue object, e.g. "q=sendQueue".
+	* modinsp2.tcl, modinsp.h/cc: new feature: queue size can be displayed
+	next to submodule icon. Add "q=<queue-name>" to the display string,
+	where queue-name is the name of the cQueue object, e.g. "q=sendQueue".
 
-        * tkenvrc now saves all options. Entries in the [Tkenv] section of
-        omnetpp.ini will be obsoleted -- anyway they only take effect if
-        there's no .tkenvrc!
+	* tkenvrc now saves all options. Entries in the [Tkenv] section of
+	omnetpp.ini will be obsoleted -- anyway they only take effect if
+	there's no .tkenvrc!
 
 2003-10-02  Andras Varga
 
-        * tkapp.cc/h, modinsp.cc/h, modinsp2.tcl: new features:
-        (1) animation of method calls across modules (for that to work,
-            module methods need the Enter_Method() macro to be added manually),
-            and
-        (2) displaying the location of the next event by putting a red frame
-            around the module icon.
-        Both features can be disabled from the Simulation Options dialog,
-        see checkboxes "Show next event markers" and "Animate method calls".
-        New ini file options in the [Tkenv] section:
-          next-event-markers = true/false, default is true
-          anim-methodcalls = true/false, default is true
+	* tkapp.cc/h, modinsp.cc/h, modinsp2.tcl: new features:
+	(1) animation of method calls across modules (for that to work,
+	    module methods need the Enter_Method() macro to be added manually),
+	    and
+	(2) displaying the location of the next event by putting a red frame
+	    around the module icon.
+	Both features can be disabled from the Simulation Options dialog,
+	see checkboxes "Show next event markers" and "Animate method calls".
+	New ini file options in the [Tkenv] section:
+	  next-event-markers = true/false, default is true
+	  anim-methodcalls = true/false, default is true
 
 2003-09-25  Andras Varga
 
-        * modinsp2.tcl: added support for "r" submodule display string tag.
-        It draws a circle (or a disc) around the submodule with the given
-        radius, and it can be used to visualize transmission range of
-        wireless nodes. Syntax: "r=<radius>,<fillcolor>,<color>,<width>",
-        the default is unfilled black circle with radius=100.
+	* modinsp2.tcl: added support for "r" submodule display string tag.
+	It draws a circle (or a disc) around the submodule with the given
+	radius, and it can be used to visualize transmission range of
+	wireless nodes. Syntax: "r=<radius>,<fillcolor>,<color>,<width>",
+	the default is unfilled black circle with radius=100.
 
-        * modinsp2.tcl: implemented message display strings. You can redefine
-        the displayString() method of cMessage, and make it return a display
-        string. Supported tags are: "b","i" and "o" tags which work just as
-        with submodules, with two exceptions:
-        - if color name is "kind", a message kind dependent colors is used
-          (like default behaviour)
-        - defaults are different: small red ball with size of 10 points
-        Try "i=penguin" or "b=15,15,rect;o=white,kind,5"
+	* modinsp2.tcl: implemented message display strings. You can redefine
+	the displayString() method of cMessage, and make it return a display
+	string. Supported tags are: "b","i" and "o" tags which work just as
+	with submodules, with two exceptions:
+	- if color name is "kind", a message kind dependent colors is used
+	  (like default behaviour)
+	- defaults are different: small red ball with size of 10 points
+	Try "i=penguin" or "b=15,15,rect;o=white,kind,5"
 
 2003-09-22  Andras Varga
 
-        * tkapp.cc, modinsp.cc, modinsp2.tcl: implemented animation of
-        sendDirect().
+	* tkapp.cc, modinsp.cc, modinsp2.tcl: implemented animation of
+	sendDirect().
 
 2003-09-01  Andras Varga
 
-        * tkapp.cc: default values for update-freq-fast and update-freq-express
-        changed to 50 and 10000
+	* tkapp.cc: default values for update-freq-fast and update-freq-express
+	changed to 50 and 10000
 
 2003-07-24  Andras Varga
 
-        * implemented Inspect|Find/Inspect objects dialog, a filtered-ordered
-        dialog of all objects.
+	* implemented Inspect|Find/Inspect objects dialog, a filtered-ordered
+	dialog of all objects.
 
 2003-07-22  Andras Varga
 
-        * structinsp.cc/h: "Fields" tab in message inspector now recursively
-        displays embedded structs (so far it only displayed "{...}")
+	* structinsp.cc/h: "Fields" tab in message inspector now recursively
+	displays embedded structs (so far it only displayed "{...}")
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-05-26  Andras Varga
 
-        * cOutVector inspector: added "autoscale" checkbox to Options dialog
+	* cOutVector inspector: added "autoscale" checkbox to Options dialog
 
 2003-04-17  Andras Varga
 
-        * objinsp.tcl: fixed bug which prevented cPackets (or objects
-        subclassed from it) from being inspected (Tcl error)
+	* objinsp.tcl: fixed bug which prevented cPackets (or objects
+	subclassed from it) from being inspected (Tcl error)
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
 2003-03-13  Andras Varga
 
-        * modinsp2.tcl: fixed occasional "conn_id: no such variable" error
+	* modinsp2.tcl: fixed occasional "conn_id: no such variable" error
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-05  Andras Varga
 
-        * modinsp2.tcl: bugfix
+	* modinsp2.tcl: bugfix
 
 2003-01-29  Andras Varga
 
-        * added "Finish" to main toolbar
+	* added "Finish" to main toolbar
 
-        * known bug: if one sets up the Token Ring sample with 120 nodes
-        (other numbers work as well), displayed ring will be broken at places.
+	* known bug: if one sets up the Token Ring sample with 120 nodes
+	(other numbers work as well), displayed ring will be broken at places.
 
 2003-01-23  Andras Varga
 
-        * "Step" button in module inspectors replaced with 3 buttons ("Run
-        until next local event", "Fast run until next local event", "Stop")
+	* "Step" button in module inspectors replaced with 3 buttons ("Run
+	until next local event", "Fast run until next local event", "Stop")
 
-        * Graphical module inspector: if there're too many submodules, drawing
-        may take very long, so the user is prompted if he/she really wants
-        see the graphics. Limit is currently 1000 submodules.
-        The object tree view is also usable until ~1000 objects displayed in
-        the tree.
+	* Graphical module inspector: if there're too many submodules, drawing
+	may take very long, so the user is prompted if he/she really wants
+	see the graphics. Limit is currently 1000 submodules.
+	The object tree view is also usable until ~1000 objects displayed in
+	the tree.
 
-        * Note: ad-hoc load tests: with Dyna, a 8000-client network could be set
-        up and run (~12500 modules, including ServerProcs) on Win2K, 256M RAM.
-        A modified version of Fifo2 (n independent Fifo networks, each with
-        3 modules using handleMessage()) could be set up with n=33300, that is,
-        ~100,000 modules. Process size was 280M, so it couldn't be run (too
-        less physical RAM). Both auto-inspectors (.tkenvrc) and displaying the
-        object tree view were very slow over a few thousand modules.
+	* Note: ad-hoc load tests: with Dyna, a 8000-client network could be set
+	up and run (~12500 modules, including ServerProcs) on Win2K, 256M RAM.
+	A modified version of Fifo2 (n independent Fifo networks, each with
+	3 modules using handleMessage()) could be set up with n=33300, that is,
+	~100,000 modules. Process size was 280M, so it couldn't be run (too
+	less physical RAM). Both auto-inspectors (.tkenvrc) and displaying the
+	object tree view were very slow over a few thousand modules.
 
 2003-01-19  Andras Varga
 
-        * Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
-        bindings) into widgets.tcl
+	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
+	bindings) into widgets.tcl
 
 2003-01-16  Andras Varga
 
-        * enhancement: inspectors: made buttons that open inspectors for other
-        objects (e.g. encapsulated message in message inspector) look like
-        other inspector fields (i.e. label+button).
+	* enhancement: inspectors: made buttons that open inspectors for other
+	objects (e.g. encapsulated message in message inspector) look like
+	other inspector fields (i.e. label+button).
 
 2003-01-14  Andras Varga
 
-        * enhancement: graphical module inspector: don't bug the user with
-        error dialogs if icon for a module is not found; just only display
-        the 'unknown' icon.
+	* enhancement: graphical module inspector: don't bug the user with
+	error dialogs if icon for a module is not found; just only display
+	the 'unknown' icon.
 
 2003-01-12  Andras Varga
 
-        * enhancement: usability fixes on the inspector type selection dialog
+	* enhancement: usability fixes on the inspector type selection dialog
 
 2003-01-11  Andras Varga
 
-        * enhancement: main.tcl: appearance of menus on Unix made more
-        contemporary (via option add's)
+	* enhancement: main.tcl: appearance of menus on Unix made more
+	contemporary (via option add's)
 
 2003-01-10  Andras Varga
 
-        * enhancement: implemented object tree view on left of main Tkenv
-        window
+	* enhancement: implemented object tree view on left of main Tkenv
+	window
 
 2003-01-06  Andras Varga
 
-        * misc enhancements: display string added to module inspectors
-        (editable); inspector toolbar improved; rest of Tcl_SetResult() fixed;
-        submodule drawing (interpretation of display strings) made entirely
-        consistent with GNED; subtle bug fixed which sometimes caused display
-        string updates not take effect.
+	* misc enhancements: display string added to module inspectors
+	(editable); inspector toolbar improved; rest of Tcl_SetResult() fixed;
+	submodule drawing (interpretation of display strings) made entirely
+	consistent with GNED; subtle bug fixed which sometimes caused display
+	string updates not take effect.
 
-        * layout handling rules slightly changed: "p=x,y" now ALWAYS means
-        "p=x,y,exact", even if the submodule is part of a vector for which
-        a "row" or "ring" autolayout is chosen automatically. (Before, "p=x,y"
-        meant "p=x,y,row" or "p=x,y,ring" if the submod was in a vector,
-        and this caused counterintuitive displacements because a (dx,dy) shift
-        coming from the layout was superponed onto the position (x,y)).
-        POTENTIAL INCOMPATIBILITY.
+	* layout handling rules slightly changed: "p=x,y" now ALWAYS means
+	"p=x,y,exact", even if the submodule is part of a vector for which
+	a "row" or "ring" autolayout is chosen automatically. (Before, "p=x,y"
+	meant "p=x,y,row" or "p=x,y,ring" if the submod was in a vector,
+	and this caused counterintuitive displacements because a (dx,dy) shift
+	coming from the layout was superponed onto the position (x,y)).
+	POTENTIAL INCOMPATIBILITY.
 
 2003-01-05  Andras Varga
 
-        * enhancements: New Run and New Network icons added to toolbar, etc.
+	* enhancements: New Run and New Network icons added to toolbar, etc.
 
 2002-12-21  Andras Varga
 
-        * all inspector windows: added a "name bar" which displays object
-        type, fullpath, with modules the module id, and the object pointer;
-        also added color coding so that different inspectors of the same object
-        are easier to match visually.
+	* all inspector windows: added a "name bar" which displays object
+	type, fullpath, with modules the module id, and the object pointer;
+	also added color coding so that different inspectors of the same object
+	are easier to match visually.
 
-        * File|Create snapshot now offers to open the snapshot file in a viewer
-        window.
+	* File|Create snapshot now offers to open the snapshot file in a viewer
+	window.
 
-        * added tooltips to graphical inspectors. I.e. if you position the
-        mouse over a module icon, its name, type and id will appear in a
-        tooltip.
+	* added tooltips to graphical inspectors. I.e. if you position the
+	mouse over a module icon, its name, type and id will appear in a
+	tooltip.
 
-        * added 'Simulation options' toolbar button; removed Tcl console from
-        Options menu; other small UI changes
+	* added 'Simulation options' toolbar button; removed Tcl console from
+	Options menu; other small UI changes
 
 2002-12-07  Andras Varga
 
-        * File|New network and File|New run dialogs now correctly offer choices
-        of all available networks and all available run numbers
+	* File|New network and File|New run dialogs now correctly offer choices
+	of all available networks and all available run numbers
 
-        * tkcmd.cc and other files: most direct assignments to interp->result
-        changed to Tcl_SetResult(); the ones left are tagged with FIXME comments
+	* tkcmd.cc and other files: most direct assignments to interp->result
+	changed to Tcl_SetResult(); the ones left are tagged with FIXME comments
 
 2002-12-06  Andras Varga
 
-        * main.tcl: added tooltips for gauges on toolbar
+	* main.tcl: added tooltips for gauges on toolbar
 
 2002-11-24 Andras Varga
 
-        * modinsp.tcl: with "ring" layout, changed order of modules
-        from clockwise to the more natural counter-clockwise
+	* modinsp.tcl: with "ring" layout, changed order of modules
+	from clockwise to the more natural counter-clockwise
 
-        * bugfix: cHead could not be inspected
+	* bugfix: cHead could not be inspected
 
 2002-11-12 Andras Varga
 
-        * ported to Tk8.4 (several 'char *' to 'const char *' changes)
+	* ported to Tk8.4 (several 'char *' to 'const char *' changes)
 
-        * renamed several internal methods in tklib.cc for clarity
+	* renamed several internal methods in tklib.cc for clarity
 
 2002-11-03  Andras Varga
 
-        * tkapp.cc: clear main window when simulation is restarted
+	* tkapp.cc: clear main window when simulation is restarted
 
 2002-10-27  Andras Varga
 
-        * inspect.cc, tkapp.cc,..: inspectorfactory registration moved here
-        from sim/
+	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here
+	from sim/
 
-        * reorganized source files (split large .cc and .h files)
+	* reorganized source files (split large .cc and .h files)
 
-        * reorganized the way inspectors are found and created
+	* reorganized the way inspectors are found and created
 
 2002-10-26  Andras Varga
 
-        * outvector inspectors: added basic labeling to axes
+	* outvector inspectors: added basic labeling to axes
 
-        * implemented that inspector windows are restored if you restart
-        the simulation, and even if you quit/restart Tkenv. List of open
-        inspectors is saved in ./tkenvrc which is automatically loaded
-        on startup and written on exit.
+	* implemented that inspector windows are restored if you restart
+	the simulation, and even if you quit/restart Tkenv. List of open
+	inspectors is saved in ./tkenvrc which is automatically loaded
+	on startup and written on exit.
 
-        In .tkenvrc, inspectors are identified by object name (obj->fullPath())
-        and class name (obj->className()), so make sure to use locally unique
-        names for variables you want to inspect.
+	In .tkenvrc, inspectors are identified by object name (obj->fullPath())
+	and class name (obj->className()), so make sure to use locally unique
+	names for variables you want to inspect.
 
-        Inspector windows usually cannot be opened immediately when .tkenvrc
-        is loaded (the corresponding objects don't exist yet), so Tkenv keeps
-        a "pending inspectors list" for the inspectors to be opened.
-        At each display update, Tkenv tries to find the corresponding objects
-        in the network and open inspectors for them. Be aware that this
-        object search is relatively expensive operation, so Tkenv performance
-        may degrade if there are too many pending inspectors. If the network
-        you're running under Tkenv changes often, it's a good idea to
-        delete .tkenvrc manually sometimes to clean it from garbage (i.e. from
-        obsolete entries).
+	Inspector windows usually cannot be opened immediately when .tkenvrc
+	is loaded (the corresponding objects don't exist yet), so Tkenv keeps
+	a "pending inspectors list" for the inspectors to be opened.
+	At each display update, Tkenv tries to find the corresponding objects
+	in the network and open inspectors for them. Be aware that this
+	object search is relatively expensive operation, so Tkenv performance
+	may degrade if there are too many pending inspectors. If the network
+	you're running under Tkenv changes often, it's a good idea to
+	delete .tkenvrc manually sometimes to clean it from garbage (i.e. from
+	obsolete entries).
 
 2002-10-04  Andras Varga
 
-        * error handling changed from simulation.ok() to exceptions.
+	* error handling changed from simulation.ok() to exceptions.
 
 2002-07-03  Andras Varga
 
-        * modinsp2.tcl (graphmodwin_animate): set upper limit to animation
-        steps (100) so that animation of a message sending finishes in
-        tolerable time period even on very long connections.
+	* modinsp2.tcl (graphmodwin_animate): set upper limit to animation
+	steps (100) so that animation of a message sending finishes in
+	tolerable time period even on very long connections.
 
 2002-05-27  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * main.tcl (create_omnetpp_window): increased event number status
-        bar field width by 3 digits - it was limited in size to 1.000.000
-        events.
+	* main.tcl (create_omnetpp_window): increased event number status
+	bar field width by 3 digits - it was limited in size to 1.000.000
+	events.
 
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-03-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * tkapp.h: define TKENV_EXTRASTACK dependent on the system
-        architecture. Currently SUNSPARC is known to need more stack space
-        with TCL/TK 8.3
+	* tkapp.h: define TKENV_EXTRASTACK dependent on the system
+	architecture. Currently SUNSPARC is known to need more stack space
+	with TCL/TK 8.3
 
 2002-03-08  Ulrich Kaage <kaage@int.uni-karlsruhe.de>
 
-        * structinsp.cc (flush_if_needed): Compile Fix for gcc versions
-        2.95.3 (complaints) and 3.0.x (errors): declare buf and s as non
-        const function call arguments.
+	* structinsp.cc (flush_if_needed): Compile Fix for gcc versions
+	2.95.3 (complaints) and 3.0.x (errors): declare buf and s as non
+	const function call arguments.
 
 2002-03-08  Andras Varga
 
-        * structinsp.cc (update()): keep buffer size low by periodically
-        flushing it to the text widget
+	* structinsp.cc (update()): keep buffer size low by periodically
+	flushing it to the text widget
 
 2002-03-05  Andras Varga
 
-        * modinsp.cc, modinsp2.tcl: Bugfix: each display string change had
-        the unwanted side effect of rearranging randomly placed submodules.
-        Basic idea of fix: start Tcl's RNG from the same seed value
-        at each redraw, thus we get identical results; seed is stored per
-        (and in the) inspector object. 'Rearrange' button changes the seed to
-        get a different arrangement.
+	* modinsp.cc, modinsp2.tcl: Bugfix: each display string change had
+	the unwanted side effect of rearranging randomly placed submodules.
+	Basic idea of fix: start Tcl's RNG from the same seed value
+	at each redraw, thus we get identical results; seed is stored per
+	(and in the) inspector object. 'Rearrange' button changes the seed to
+	get a different arrangement.
 
 2002-03-03  Andras Varga
 
-        * tkapp.cc, tkapp.h, tkcmd.cc: adopted to changes in the sim kernel.
-        (See include/ChangeLog)
+	* tkapp.cc, tkapp.h, tkcmd.cc: adopted to changes in the sim kernel.
+	(See include/ChangeLog)
 
-        * windows.tcl: cosmetics on file viewer dialog.
+	* windows.tcl: cosmetics on file viewer dialog.
 
-        * main.tcl, menuproc.tcl: refinements on implementation of the
-        View|Output vector file, Output scalar file, Snapshot file menu items.
+	* main.tcl, menuproc.tcl: refinements on implementation of the
+	View|Output vector file, Output scalar file, Snapshot file menu items.
 
 2002-02-29  Andras Varga
 
-        * dialogs.tcl: implemented backwards search/replace
+	* dialogs.tcl: implemented backwards search/replace
 
 2002-02-24  Andras Varga
 
-        * tkapp.cc: improvement on breakpoint handling.
+	* tkapp.cc: improvement on breakpoint handling.
 
 2002-02-06  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * objinsp.cc (update): fill in class info field with message's
-        classname
+	* objinsp.cc (update): fill in class info field with message's
+	classname
 
-        * objinsp.tcl (create_messageinspector): add class info
+	* objinsp.tcl (create_messageinspector): add class info
 
-        * structinsp.cc (update): display value and name of enums
+	* structinsp.cc (update): display value and name of enums
 
 2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * objinsp.tcl (create_structpanel): Added vertical scrollbars for
-        those who use a lot of message fields.
+	* objinsp.tcl (create_structpanel): Added vertical scrollbars for
+	those who use a lot of message fields.
 
-        * structinsp.cc (update): 4k as buf[] size is not enough
-        especially for large messages containing arrays. I have set it to
-        5M !!
+	* structinsp.cc (update): 4k as buf[] size is not enough
+	especially for large messages containing arrays. I have set it to
+	5M !!
 
 2001-11-25  Andras Varga
 
-        * implemented "message subclassing": message inspectors have now a
-        Fields page which displays fields exposed through the cStructDescriptor
-        interface. (If there's no cStructDescriptor for the object, the Fields
-        tab is missing.)
+	* implemented "message subclassing": message inspectors have now a
+	Fields page which displays fields exposed through the cStructDescriptor
+	interface. (If there's no cStructDescriptor for the object, the Fields
+	tab is missing.)
 
-        * the default object inspector has been improved; it also displays a
-        Fields page if there's a cStructDescriptor for the object.
+	* the default object inspector has been improved; it also displays a
+	Fields page if there's a cStructDescriptor for the object.
 
-        * TODO: Fields page will have to be refined (now it's a simple
-        multi-line text widget).
+	* TODO: Fields page will have to be refined (now it's a simple
+	multi-line text widget).
 
-        * widget.tcl: label texts created with label-sunkenlabel are now
-        justfied left
+	* widget.tcl: label texts created with label-sunkenlabel are now
+	justfied left
 
 2001-09-14  Andras Varga
 
-        * updated to cModule's new display string methods
+	* updated to cModule's new display string methods
 
 2001-09-11  Andras Varga
 
-        * improved plugin handling: reads plugins from OMNETPP_PLUGIN_PATH
-        which can be a list of directories (not just a single directory name).
-        OMNETPP_PLUGIN_PATH is currently set to ./plugins (hardcoded).
-        DLL file names that are looked for now correctly depend on the
-        platform (*.dll on windows, .so* on *nix).
+	* improved plugin handling: reads plugins from OMNETPP_PLUGIN_PATH
+	which can be a list of directories (not just a single directory name).
+	OMNETPP_PLUGIN_PATH is currently set to ./plugins (hardcoded).
+	DLL file names that are looked for now correctly depend on the
+	platform (*.dll on windows, .so* on *nix).
 
 2001-09-01 Andras Varga
 
-        * CONST_CAST() replaced by const_cast<>()
+	* CONST_CAST() replaced by const_cast<>()
 
 2001-07-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * tkcmd.cc (simulationOk_cmd): use macro CONST_CAST (defined at top of
-        file) to avoid compilation errors with gcc-2.95.3
-        (isRunning_cmd): CONST_CAST like above
+	* tkcmd.cc (simulationOk_cmd): use macro CONST_CAST (defined at top of
+	file) to avoid compilation errors with gcc-2.95.3
+	(isRunning_cmd): CONST_CAST like above
 
 2001-07-11 Andras Varga
 
-        * tkapp.cc: Eric Wu's Tru64/MPI port. Added a few const_cast<>s because
-        broken Tru64 compiler gave const errors with tcl.h.
+	* tkapp.cc: Eric Wu's Tru64/MPI port. Added a few const_cast<>s because
+	broken Tru64 compiler gave const errors with tcl.h.
 
 2001-03-27  Andras Varga
 
-        * ------ omnetpp-2.1 released ------
+	* ------ omnetpp-2.1 released ------
 
-        * Makefile.vc change: replaced $(TKENV_EMBED_SUFFIX) with $(TKENV_EMBED_TCL).
+	* Makefile.vc change: replaced $(TKENV_EMBED_SUFFIX) with $(TKENV_EMBED_TCL).
 
 2001-03-10  Andras Varga
 
-        * bugfix: setDisplayString() crashed Tkenv after the network
-        graphics window was closed [reported by Stefan Geisler]
+	* bugfix: setDisplayString() crashed Tkenv after the network
+	graphics window was closed [reported by Stefan Geisler]
 
-        * Borland C++ support removed: I deleted the project files
-        (*.ide). I added equivalent Makefile.bc files (generated from the
-        BC IDE), but they are completely unsupported at the moment. If
-        there's interest, it's possible that later I'll add makefiles for
-        the free command-line bc5.5 compiler.
+	* Borland C++ support removed: I deleted the project files
+	(*.ide). I added equivalent Makefile.bc files (generated from the
+	BC IDE), but they are completely unsupported at the moment. If
+	there's interest, it's possible that later I'll add makefiles for
+	the free command-line bc5.5 compiler.
 
 2001-02-06  Andras Varga
 
-        * ------ omnetpp-2.0p1 released ------
+	* ------ omnetpp-2.0p1 released ------
 
-        * ------ omnetpp-2.0 released ------
+	* ------ omnetpp-2.0 released ------
 
-        * make clean didn't delete tclcode.cc
+	* make clean didn't delete tclcode.cc
 
 2001-01-21  Andras Varga
 
-        * "find" and "find next" functionality improved and now it works
-        for all module output windows. Hotkeys: Ctrl-F Find, F3 or Ctrl-N
-        Find next.
+	* "find" and "find next" functionality improved and now it works
+	for all module output windows. Hotkeys: Ctrl-F Find, F3 or Ctrl-N
+	Find next.
 
-        * added hotkeys for step, run, etc commands: F4 Step, F5 Run, F6
-        Fast Run, F7 Express Run, F8 Stop, Ctrl-F4 Step within module
+	* added hotkeys for step, run, etc commands: F4 Step, F5 Run, F6
+	Fast Run, F7 Express Run, F8 Stop, Ctrl-F4 Step within module
 
 2001-01-16  Andras Varga
 
-        * fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization
-        code (needed by Cygwin 1.1)
+	* fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization
+	code (needed by Cygwin 1.1)
 
 2001-01-15  Andras Varga
 
-        * new feature: debug output window (for ev<< messages) can now be
-        opened for compound modules too: it accumulates messages from all
-        submodules.
-        [suggested by Ulrich Kaage]
+	* new feature: debug output window (for ev<< messages) can now be
+	opened for compound modules too: it accumulates messages from all
+	submodules.
+	[suggested by Ulrich Kaage]
 
-        * single-stepping within a module is now possible for compound
-        modules too
+	* single-stepping within a module is now possible for compound
+	modules too
 
-        * revised single-stepping within a module: now execution stops
-        both *before* and *after* events in that module, and events in
-        that module are done with "normal execution" (animation, etc),
-        while intervening events are done with "fast execution" (rare
-        inspector updates, animation disabled)
+	* revised single-stepping within a module: now execution stops
+	both *before* and *after* events in that module, and events in
+	that module are done with "normal execution" (animation, etc),
+	while intervening events are done with "fast execution" (rare
+	inspector updates, animation disabled)
 
 2001-01-13  Andras Varga
 
-        * added performance status bar (simsec/sec, events/sec, events/simsec gauges)
+	* added performance status bar (simsec/sec, events/sec, events/simsec gauges)
 
 2001-01-03  Andras Varga
 
-        * added 2nd status bar (containing: number of messages in the FES,
-        total number of messages created, number of currently existing
-        message objects)
+	* added 2nd status bar (containing: number of messages in the FES,
+	total number of messages created, number of currently existing
+	message objects)
 
 2000-09-29  Andras Varga
 
-        * fixed a bug which caused Tkenv NOT to report an error when the
-        'p' display string tag's 3rd arg (layout) was invalid
+	* fixed a bug which caused Tkenv NOT to report an error when the
+	'p' display string tag's 3rd arg (layout) was invalid
 
-        * the 'p' display string tag's 3rd arg (layout) can now be
-        abbreviated: r=row, c=col=column, m=matrix, i=ri=ring
+	* the 'p' display string tag's 3rd arg (layout) can now be
+	abbreviated: r=row, c=col=column, m=matrix, i=ri=ring
 
-        * added new layout to 'p' tag: exact (abbreviation: e or x); this
-        lets one position modules in a module vector one by one
+	* added new layout to 'p' tag: exact (abbreviation: e or x); this
+	lets one position modules in a module vector one by one
 
-        * submodule display strings may use the parent module's parameters
-        too
+	* submodule display strings may use the parent module's parameters
+	too
 
 2000-08-07  Andras Varga
 
-        * makefile changes for RPM support
+	* makefile changes for RPM support
 
 2000-07-26  Andras Varga
 
-        * fixed a bug which caused Tcl error when using ev<< or
-        ev.printf() with a string than contained curly braces [reported by
-        Nick van Foreest]
+	* fixed a bug which caused Tcl error when using ev<< or
+	ev.printf() with a string than contained curly braces [reported by
+	Nick van Foreest]
 
-        * added Edit|Find... to main menu.
+	* added Edit|Find... to main menu.
 
 2000-07-17 Andras Varga
 
-        * fixed bug in splitInspectorName()  [reported by Ulrich Kaage]
+	* fixed bug in splitInspectorName()  [reported by Ulrich Kaage]
 
 2000-06-02  Andras Varga
 
-        * ------ omnetpp-2.0b5 released ------
+	* ------ omnetpp-2.0b5 released ------
 
-        * minor fix in tkcmd.cc [reported by Richard Lyon]
+	* minor fix in tkcmd.cc [reported by Richard Lyon]
 
 2000-05-21  Andras Varga
 
-        * ------ omnetpp-2.0b4 released ------
+	* ------ omnetpp-2.0b4 released ------
 
-        * bugfix: 'Options|Load inspector list' now works again (you must
-        re-generate your existing inspect.lst files)
+	* bugfix: 'Options|Load inspector list' now works again (you must
+	re-generate your existing inspect.lst files)
 
 2000-05-10  Andras Varga
 
-        * [Tkenv]/extra-stack= option added, it specifies (in bytes) how
-        much extra stack each activity() module needs when executing under
-        Tkenv. This used to be hardcoded (16384), now users can fine-tune
-        it. [suggested by Niko]
+	* [Tkenv]/extra-stack= option added, it specifies (in bytes) how
+	much extra stack each activity() module needs when executing under
+	Tkenv. This used to be hardcoded (16384), now users can fine-tune
+	it. [suggested by Niko]
 
 2000-05-07  Andras Varga
 
-        * Makefile.vc improvements [from Balazs Kelemen]
+	* Makefile.vc improvements [from Balazs Kelemen]
 
-        * tk_PatchLevel check corrected (complained about Tk 8.0.5)
-        [reported by Ulrich Kaage]
+	* tk_PatchLevel check corrected (complained about Tk 8.0.5)
+	[reported by Ulrich Kaage]
 
 2000-05-05  Andras Varga
 
-        * implemented module parameter substitution in display strings
-        (like "p=$x_pos,$y_pos"). Substitution still not supported in
-        connection display strings.
+	* implemented module parameter substitution in display strings
+	(like "p=$x_pos,$y_pos"). Substitution still not supported in
+	connection display strings.
 
-        * setDisplayString() now takes effect during simulation
-        execution. Tkenv also handles the new 'immediate' argument to
-        setDisplayString().  Annoyance: setDisplayString() also does a
-        'Rearrange randomly placed submodules'. This is not so trivial to
-        change (module positions will need to be explicitly stored)...
+	* setDisplayString() now takes effect during simulation
+	execution. Tkenv also handles the new 'immediate' argument to
+	setDisplayString().  Annoyance: setDisplayString() also does a
+	'Rearrange randomly placed submodules'. This is not so trivial to
+	change (module positions will need to be explicitly stored)...
 
 2000-04-13  Andras Varga
 
-        * code for Express Run (runSimulationNoTracing()) modified so that
-        it prints module output (ev<<...) for the finish() functions
-        [suggested by Niko]
+	* code for Express Run (runSimulationNoTracing()) modified so that
+	it prints module output (ev<<...) for the finish() functions
+	[suggested by Niko]
 
 2000-04-10  Andras Varga
 
-        * TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+	* TRUE/FALSE (defines) replaced by true/false (C++ keywords)
 
-        * in printf() statements, all "%lf","%lg","%le" was replaced by
-        "%f","%g","%e" (eliminated a lot of gcc -Wall warnings)
+	* in printf() statements, all "%lf","%lg","%le" was replaced by
+	"%f","%g","%e" (eliminated a lot of gcc -Wall warnings)
 
 2000-04-10  Andras Varga (4-10)
 
-        * dynamic registration of user interface (TOmnetApp) classes
-        introduced: Register_OmnetApp() macro added to tkapp.cc
+	* dynamic registration of user interface (TOmnetApp) classes
+	introduced: Register_OmnetApp() macro added to tkapp.cc
 
-        * changes to enable linking a Windows DLL from the library
+	* changes to enable linking a Windows DLL from the library
 
-        * adjustments because of TOmnetApp constructor changes
+	* adjustments because of TOmnetApp constructor changes
 
-        * added tkenvDummy()/envirDummy(): functions which can/should be
-        called from Envir in order to force the linker to include the
-        Tkenv library into the executable. (These functions do absolutely
-        nothing.)
+	* added tkenvDummy()/envirDummy(): functions which can/should be
+	called from Envir in order to force the linker to include the
+	Tkenv library into the executable. (These functions do absolutely
+	nothing.)
 
 2000-03-26  Andras Varga
 
-        * 'char *' pointers made const-correct (lots of 'char *' -->
-        'const char *' replacements throughout the code)
+	* 'char *' pointers made const-correct (lots of 'char *' -->
+	'const char *' replacements throughout the code)
 
 2000-01-17  Andras Varga (17-18)
 
-        * ------ omnetpp-2.0b3 released ------
+	* ------ omnetpp-2.0b3 released ------
 
-        * bugfix in OmnetTkApp::objectDeleted() (tkapp.cc)
+	* bugfix in OmnetTkApp::objectDeleted() (tkapp.cc)
 
-        * edited error msgs in tkapp.cc
+	* edited error msgs in tkapp.cc
 
-        * font settins updated for Tk8.2/Win in main.tcl
+	* font settins updated for Tk8.2/Win in main.tcl
 
-        * in dialogs.tcl, added back the grab for the STOP dialog of
-        Express Run mode. (Those lines got commented out long ago for some
-        reason...) Under win32, the app menu is still accessible despite
-        the grab (Tk bug?).
+	* in dialogs.tcl, added back the grab for the STOP dialog of
+	Express Run mode. (Those lines got commented out long ago for some
+	reason...) Under win32, the app menu is still accessible despite
+	the grab (Tk bug?).
 
 2000-01-15  Andras Varga
 
-        * OmnetTkApp::setup() reorganized
+	* OmnetTkApp::setup() reorganized
 
 2000-01-09  Andras Varga
 
-        * small modification to TOmnetTkApp's constructor
+	* small modification to TOmnetTkApp's constructor
 
 1999-12-05  Andras Varga
 
-        * Makefile.vc added
+	* Makefile.vc added
 
-        * prints a banner line into main window before calling finish() on
-        modules TBD: should print it into per-module windows too
+	* prints a banner line into main window before calling finish() on
+	modules TBD: should print it into per-module windows too
 
 1999-12-04  Andras Varga
 
-        * compiled with MSVC. Minor changes: changed int to bool in some
-        places.  tkenv.dsp added. NOTE: one has to rename all .cc files to
-        .cpp for compiling (ren *.cc *.cpp)!
+	* compiled with MSVC. Minor changes: changed int to bool in some
+	places.  tkenv.dsp added. NOTE: one has to rename all .cc files to
+	.cpp for compiling (ren *.cc *.cpp)!
 
 1999-10-12  Andras Varga
 
-        * bugfix in balloon.tcl
+	* bugfix in balloon.tcl
 
 1999-09-05  Andras Varga
 
-        * ------ omnetpp-2.0b2 released ------
+	* ------ omnetpp-2.0b2 released ------
 
-        * main window renamed from ".omnetpp" to "."; now modal dialogs
-        cannot go behind the main window (including the big red "STOP!"
-        dialog).
+	* main window renamed from ".omnetpp" to "."; now modal dialogs
+	cannot go behind the main window (including the big red "STOP!"
+	dialog).
 
 1999-08-30  Andras Varga
 
-        * bugfix on the toolbar of graphical gate inspector
+	* bugfix on the toolbar of graphical gate inspector
 
 1999-08-13  Andras Varga
 
-        * default width of connection arrows changed from 2 to 1 pixels to
-        be consistent with GNED
+	* default width of connection arrows changed from 2 to 1 pixels to
+	be consistent with GNED
 
 1999-08-07 Andras Varga
 
-        * "inspect network", "inspect FES" buttons added to main toolbar
+	* "inspect network", "inspect FES" buttons added to main toolbar
 
 1999-08-02  Andras Varga
 
-        * OMNETPP_BITMAP_PATH turned into real path (a list of
-        directories). The separator char is ";" on Windows, and ":" or ";"
-        on Unix.
+	* OMNETPP_BITMAP_PATH turned into real path (a list of
+	directories). The separator char is ";" on Windows, and ":" or ";"
+	on Unix.
 
 1999-07-17  Andras Varga
 
-        * modinsp2.tcl: fixed bug in animdelay calibration
+	* modinsp2.tcl: fixed bug in animdelay calibration
 
-        * fixed a bug with inspector type selection in Inspect|By pattern
-        matching..
+	* fixed a bug with inspector type selection in Inspect|By pattern
+	matching..
 
 1999-07-11  Andras Varga
 
-        * icons.tcl added; textual toolbar icons replaced with graphics icons
+	* icons.tcl added; textual toolbar icons replaced with graphics icons
 
-        * note: because the name of each inspector window is unique, the
-        help_tips() array grows monotonously as one opens new and new
-        inspector windows. The array is NOT cleaned up after closing an
-        insp.  window. In everyday use this small memory leak cannot be a
-        problem.
+	* note: because the name of each inspector window is unique, the
+	help_tips() array grows monotonously as one opens new and new
+	inspector windows. The array is NOT cleaned up after closing an
+	insp.  window. In everyday use this small memory leak cannot be a
+	problem.
 
-        * TO DO: spaces to be added between icons
+	* TO DO: spaces to be added between icons
 
-        * widgets.tcl edited --> copy it to other subdirs
+	* widgets.tcl edited --> copy it to other subdirs
 1999-07-10  Andras Varga
 
-        * arrow.cc updated from GNED (enhancement: default value of
-        anchors are now 50%)
+	* arrow.cc updated from GNED (enhancement: default value of
+	anchors are now 50%)
 
-        * widgets.tcl updated from GNED
+	* widgets.tcl updated from GNED
 
-        * modinsp2.tcl: removed potential sources of division by zero
+	* modinsp2.tcl: removed potential sources of division by zero
 
-        * fixed a problem in printptr() [tklib.cc] which caused a crash on
-        Sun
+	* fixed a problem in printptr() [tklib.cc] which caused a crash on
+	Sun
 
-        * now demands at least Tcl/Tk 8.0 patchlevel 1
+	* now demands at least Tcl/Tk 8.0 patchlevel 1
 
 1999-06-21  Andras Varga
 
-        * all sources checked in under CVS
+	* all sources checked in under CVS
 
-        * makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+	* makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
 
-        * version.log renamed to ChangeLog
+	* version.log renamed to ChangeLog
 
-        * tcl2c.c moved to util/
+	* tcl2c.c moved to util/
 1999-02-07  Andras Varga
 
-        * stable version
+	* stable version
 
 1999-02-07  Andras Varga
 
-        * fixed bug in outvector-window (caused div by zero)
+	* fixed bug in outvector-window (caused div by zero)
 
-        * cMessage and cPacket inspector redesigned
+	* cMessage and cPacket inspector redesigned
 
-        * fixed minor bug with anim speed settings
+	* fixed minor bug with anim speed settings
 
 1999-01-25  Andras Varga
 
-        * inspector factories added
+	* inspector factories added
 
-        * updated for sim172b
+	* updated for sim172b
 
-        * plugin support: automatically loads .tcl and .so files placed in the
-        tkenv/plugins directory. Intended use: inspectors for custom classes.
+	* plugin support: automatically loads .tcl and .so files placed in the
+	tkenv/plugins directory. Intended use: inspectors for custom classes.
 
 1998-12-27  Andras Varga
 
-        * updated for sim170
+	* updated for sim170
 
-        * cPacket inspector added
+	* cPacket inspector added
 
-        * setType() moved to tklib.h/.cc for easy reuse
+	* setType() moved to tklib.h/.cc for easy reuse
 
-        * makefile renamed to makefile.in
+	* makefile renamed to makefile.in
 
-        * stack usage statistics added to simple module inspector
+	* stack usage statistics added to simple module inspector
 
-        *  runningModule() corrected to contextModule()
-
+	*  runningModule() corrected to contextModule()
 
 1998-08-23  Andras Varga
 
-        * small fixes; widgets.tcl updated
+	* small fixes; widgets.tcl updated
 
 1998-08-17  Andras Varga
 
-        * dialog centering and focus problems fixed (or alleviated) on Windows
+	* dialog centering and focus problems fixed (or alleviated) on Windows
 
-        * icon loading improved
+	* icon loading improved
 
 1998-08-14  Andras Varga
 
-        * bugfixes
+	* bugfixes
 
 1998-08-13  Andras Varga
 
-        * support for compiled-in TCL code added.  See the makefile for
-        more info and to turn it on/off.  Here's how it works: tcl2c.c
-        generates tclcode.cc from the .tcl files.  tclcode.cc is in turn
-        included into tkapp.cc. tkapp.cc includes tclcode.cc and uses
-        compiled-in TCL code if OMNETPP_TKENV_DIR is undefined at
-        compile-time.
+	* support for compiled-in TCL code added.  See the makefile for
+	more info and to turn it on/off.  Here's how it works: tcl2c.c
+	generates tclcode.cc from the .tcl files.  tclcode.cc is in turn
+	included into tkapp.cc. tkapp.cc includes tclcode.cc and uses
+	compiled-in TCL code if OMNETPP_TKENV_DIR is undefined at
+	compile-time.
 
 1998-08-12  Andras Varga
 
-        * Borland C++ 5.0 project file added (tkenv.ide)
+	* Borland C++ 5.0 project file added (tkenv.ide)
 
-        * fixes necessary to run Tkenv on Windows
+	* fixes necessary to run Tkenv on Windows
 
 1998-07-24  Andras Varga
 
-        * arrow.cc changed; display string for connections changed (see Manual)
+	* arrow.cc changed; display string for connections changed (see Manual)
 
-        * small fixes
+	* small fixes
 
 1998-07-15  Andras Varga
 
-        * small fixes
+	* small fixes
 
-        * small improvements on gate inspector
+	* small improvements on gate inspector
 
 1998-07-11  Andras Varga
 
-        * small improvements on gate inspector
+	* small improvements on gate inspector
 
 1998-07-10  Andras Varga
 
-        * module inspectors rewritten in notebook-style
+	* module inspectors rewritten in notebook-style
 
-        * graphical gate inspector (path inspector) added (cannot do animation yet)
+	* graphical gate inspector (path inspector) added (cannot do animation yet)
 
-        * [Tkenv]/default-run= option added
+	* [Tkenv]/default-run= option added
 
-        * cWatch inspector added
+	* cWatch inspector added
 
-        * Simulation|Restart changed to Rebuild (restart cannot be done properly)
+	* Simulation|Restart changed to Rebuild (restart cannot be done properly)
 
-        * several smaller improvements
+	* several smaller improvements
 
 1998-07-03  Andras Varga
 
-        * added right click support
+	* added right click support
 
-        * outvector time-range autoconfig
+	* outvector time-range autoconfig
 
-        * browsing can go on while simulation is executing
+	* browsing can go on while simulation is executing
 
-        * run until event number
+	* run until event number
 
-        * animation speed ([Tkenv]/animation-speed=0..3)
+	* animation speed ([Tkenv]/animation-speed=0..3)
 
 1998-07-01  Andras Varga
 
-        * Simulate|finish simulation run and |start all modules added
+	* Simulate|finish simulation run and |start all modules added
 
 1998-06-26  Andras Varga
 
-        * bugfixes; cMessage and cGate inspector improved
+	* bugfixes; cMessage and cGate inspector improved
 
 1998-06-25  Andras Varga
 
-        * callFinish() incorporated
+	* callFinish() incorporated
 
-        * msg insp fixed
+	* msg insp fixed
 
-        * othes fixes
+	* othes fixes
 
 1998-06-17  Andras Varga
 
-        * message names and message kind coloring during animation
+	* message names and message kind coloring during animation
 
-        * new ini file options:
-            [Tkenv]/animation-msgnames= 0/1
-            animation-msgcolors= 0/1
+	* new ini file options:
+	    [Tkenv]/animation-msgnames= 0/1
+	    animation-msgcolors= 0/1
 
 1998-06-11  Andras Varga
 
-        * made compatible with sim162 (gate vector stuff)
+	* made compatible with sim162 (gate vector stuff)
 
-        * small fix on output vector window tcl code
+	* small fix on output vector window tcl code
 
 1998-06-09  Andras Varga
 
-        * made compatible with sim162
+	* made compatible with sim162
 
-        * removed 'container' inspector type from many classes
+	* removed 'container' inspector type from many classes
 
 1998-06-05  Andras Varga
 
-        * two small but annoying bugs fixed
+	* two small but annoying bugs fixed
 
-        * made compatible with sim160
+	* made compatible with sim160
 
 1998-05-18  Andras Varga
 
-        * made compatible with sim160
+	* made compatible with sim160
 
 1998-05-12  Andras Varga
 
-        * makefile updated; timer calibration for animation; icon support;
-    small fixes
+	* makefile updated; timer calibration for animation; icon support;
+	small fixes
 
 1998-04-28  Andras Varga
 
-        * scrollbars added to graphical module inspector
+	* scrollbars added to graphical module inspector
 
-        * name field added to message inspector
+	* name field added to message inspector
 
-        * misc improvements and bugfixes
-
-1998-04-24  Andras Varga
-
-        * makefile can now create shared object (libtkenv.so)
-
-        * stuff from TOmnetTkApp's constructor move to its setup() function
+	* misc improvements and bugfixes
 
 1998-04-24  Andras Varga
 
-        NEW FEATURE: graphical module inspectors and animation
-          Modules are now displayed graphically. Submodules can be drawn as
-          color rectangles, ovals or icons. (Icons are stored in the new bitmaps/
-          directory.)
-          Placement, arrangement and appearance of submodules is controlled by
-          the modules' display strings, associated with the setDisplayString(),
-          displayString() members of cModule and cGate. If you use the new
-          'display:' phrases of the NED language, the corresponding
-          setDisplayString() calls will be automatically placed into the
-          nedc-compiled code. Read doc/dispstr.txt on how to write display strings.
-          Modules that don't have display strings are placed automatically.
-          Animation of message flow has also been added.
-        New ini file options:
-          [Tkenv]/animation-enabled= 0/1
-        Some of the Tcl code cleaned up.
-        Changes:
+	* makefile can now create shared object (libtkenv.so)
 
-          * TKENV_LIBPATH environment variable renamed to OMNETPP_TKENV_DIR.
+	* stuff from TOmnetTkApp's constructor move to its setup() function
 
-          * A new environment variable OMNETPP_BITMAP_DIR added.
+1998-04-24  Andras Varga
 
-        Requires sim156.
-        TO DO:
+	NEW FEATURE: graphical module inspectors and animation
+	  Modules are now displayed graphically. Submodules can be drawn as
+	  color rectangles, ovals or icons. (Icons are stored in the new bitmaps/
+	  directory.)
+	  Placement, arrangement and appearance of submodules is controlled by
+	  the modules' display strings, associated with the setDisplayString(),
+	  displayString() members of cModule and cGate. If you use the new
+	  'display:' phrases of the NED language, the corresponding
+	  setDisplayString() calls will be automatically placed into the
+	  nedc-compiled code. Read doc/dispstr.txt on how to write display strings.
+	  Modules that don't have display strings are placed automatically.
+	  Animation of message flow has also been added.
+	New ini file options:
+	  [Tkenv]/animation-enabled= 0/1
+	Some of the Tcl code cleaned up.
+	Changes:
 
-          * implement reference to module parameters in display strings
+	  * TKENV_LIBPATH environment variable renamed to OMNETPP_TKENV_DIR.
 
-          * graphical cGate inspector, showing whole path
+	  * A new environment variable OMNETPP_BITMAP_DIR added.
 
-          * graphical cQueue inspector
+	Requires sim156.
+	TO DO:
+
+	  * implement reference to module parameters in display strings
+
+	  * graphical cGate inspector, showing whole path
+
+	  * graphical cQueue inspector
 
 1998-04-15  Andras Varga (15-24)
 
-        * work versions, not released
+	* work versions, not released
 
 1998-03-26  Andras Varga
 
-        * "Inspect As" button only offers really existing inspector types as choice
+	* "Inspect As" button only offers really existing inspector types as choice
 
-        * container inspectors redesigned to make it more intuitive to use
+	* container inspectors redesigned to make it more intuitive to use
 
 1998-03-19  Andras Varga
 
-        * user interface beautifying, updating for Tk8.0
+	* user interface beautifying, updating for Tk8.0
 
 1998-02-15  Andras Varga
 
-        * makefile changed; tkenv.a-->libtkenv.a
+	* makefile changed; tkenv.a-->libtkenv.a
 
 1997-12-13  Andras Varga
 
-        * upgraded to sim151
+	* upgraded to sim151
 
-        * use file dialogs of Tk4.2 - requires Tcl7.6/Tk4.2 from now on
+	* use file dialogs of Tk4.2 - requires Tcl7.6/Tk4.2 from now on
 
-        * some Tk beautifying (correct wrong packing parameters etc)
+	* some Tk beautifying (correct wrong packing parameters etc)
 
 1997-10-06  Andras Varga
 
-        * further renaming; compatible with sim148
+	* further renaming; compatible with sim148
 
 1997-10-02  Andras Varga
 
-        * cleaned up & renamed several member functions; compatible with sim147
+	* cleaned up & renamed several member functions; compatible with sim147
 
 1997-08-17  Andras Varga
 
-        * updated for sim146a
-               cMsgHeap inspector added
-               extrastack() stuff added
+	* updated for sim146a
+	       cMsgHeap inspector added
+	       extrastack() stuff added
 
-        Still To Do:
+	Still To Do:
 
-           - "step over initialization messages"
+	   - "step over initialization messages"
 
-           - cGate graphical inspector: should show the route
+	   - cGate graphical inspector: should show the route
 
-           - filtered message window
+	   - filtered message window
 
-           - restart must be done decently: destroy+rebuild
+	   - restart must be done decently: destroy+rebuild
 
-           - implement breakpoints
+	   - implement breakpoints
 
-           - cCompoundMod graphical inspector
+	   - cCompoundMod graphical inspector
 
-           - outvector graphical inspector: add possibility to set base time
+	   - outvector graphical inspector: add possibility to set base time
 
-           - implement "run until event #243"
+	   - implement "run until event #243"
 
-           - objects should know what inspector types can be created for
-           them.  This can be done in the inspector(int type, void *data)
-           function: if type==QUERY_TYPES then it should put list of
-           possible types to memory pointed to by `data' ptr.
+	   - objects should know what inspector types can be created for
+	   them.  This can be done in the inspector(int type, void *data)
+	   function: if type==QUERY_TYPES then it should put list of
+	   possible types to memory pointed to by `data' ptr.
 
 1997-08-07  Andras Varga
 
-        * cNetSimpleMod corrected to cNetMod
+	* cNetSimpleMod corrected to cNetMod
 
-        * compatibility: sim144a or up
+	* compatibility: sim144a or up
 
 1997-07-10  Andras Varga
 
-        * makefile hacked to make it work with Cygnus gcc
+	* makefile hacked to make it work with Cygnus gcc
 
-        * 'darkblue' changed to 'blue' because Tk on Win95 didn't recognize it
+	* 'darkblue' changed to 'blue' because Tk on Win95 didn't recognize it
 
-        * default value of TKENV_LIBPATH changed and different for WinNT and Unices
+	* default value of TKENV_LIBPATH changed and different for WinNT and Unices
 
-        * known bugs on Win95/NT: some scrollbars are missing (??)
+	* known bugs on Win95/NT: some scrollbars are missing (??)
 
 1997-07-06  Andras Varga
 
-        * small fixes and improvements on #43
+	* small fixes and improvements on #43
 
 1997-07-01  Andras Varga
 
-        * bug fixes and improvements on #42
+	* bug fixes and improvements on #42
 
-        * gate inspector changed; "AsObject" and "AsGraph" icons added to
-        many inspectors
-
-1997-07-01  Andras Varga
-
-        * small fixes on #41
+	* gate inspector changed; "AsObject" and "AsGraph" icons added to
+	many inspectors
 
 1997-07-01  Andras Varga
 
-        * ini file entries renamed:
-          verbose-simulation --> print-banners
-          module-messages --> use-mainwindow
-
-        * some inspectors modified to use toolbars
+	* small fixes on #41
 
 1997-07-01  Andras Varga
 
-        * some bugs in #39 fixed
+	* ini file entries renamed:
+	  verbose-simulation --> print-banners
+	  module-messages --> use-mainwindow
 
-        * now prints event banners in module windows
+	* some inspectors modified to use toolbars
 
-        * "Inspect differently" button changed to "Inspect As.." on
-        inspector toolbar
+1997-07-01  Andras Varga
 
-        * added single stepping within a module
+	* some bugs in #39 fixed
 
-1997-06-27  Andras Varga
+	* now prints event banners in module windows
 
-        * idea that modal dialogs should stay on top isn't good: what if
-        there are two modal windows??
+	* "Inspect differently" button changed to "Inspect As.." on
+	inspector toolbar
 
-        * cMsg, cPar inspector enhanced
-
-        * View|Snapshot file etc. won't open window if file doesn't exist
-
-1997-06-27  Andras Varga
-
-        * 'Run until' dialog done; still to do: run until #(event number)
+	* added single stepping within a module
 
 1997-06-27  Andras Varga
 
-        * Express run added, Fast Run, Animate changed (compatibity: envir92 or up)
+	* idea that modal dialogs should stay on top isn't good: what if
+	there are two modal windows??
 
-        * the following ini file options were added (with default values):
-          animation-delay = 100
-          update-freq-fast = 10
-          update-freq-express = 1000
-          breakpoints-enabled = TRUE
-          verbose-simulation = TRUE
-          module-messages = TRUE
+	* cMsg, cPar inspector enhanced
+
+	* View|Snapshot file etc. won't open window if file doesn't exist
 
 1997-06-27  Andras Varga
 
-        * hardwired font definitions collected to create_font_bindings
-        (main.tcl) and thus they are a lot easier to customise
+	* 'Run until' dialog done; still to do: run until #(event number)
+
+1997-06-27  Andras Varga
+
+	* Express run added, Fast Run, Animate changed (compatibity: envir92 or up)
+
+	* the following ini file options were added (with default values):
+	  animation-delay = 100
+	  update-freq-fast = 10
+	  update-freq-express = 1000
+	  breakpoints-enabled = TRUE
+	  verbose-simulation = TRUE
+	  module-messages = TRUE
+
+1997-06-27  Andras Varga
+
+	* hardwired font definitions collected to create_font_bindings
+	(main.tcl) and thus they are a lot easier to customise
 
 1997-06-26  Andras Varga
 
-        * improved on cMsg inspector
+	* improved on cMsg inspector
 
 1997-06-26  Andras Varga
 
-        * 'simulation options' dialog, opp_getsimoption/setsimoption commands completed
+	* 'simulation options' dialog, opp_getsimoption/setsimoption commands completed
 
-        * prints event banners in main window (if turned on)
-
-1997-06-25  Andras Varga
-
-        * added 'event number' and 'next module' displays to status bar
-
-        * added opt_verbose_sim and opt_module_msgs options
-
-        * using main window like cmdenv output
-
-        * NOT COMPLETE:
-              'simulation options' dialog
-              opp_getsimoption/setsimoption commands
-              printing of event banners
+	* prints event banners in main window (if turned on)
 
 1997-06-25  Andras Varga
 
-        * menu building code in main.tcl reorganized, making it easier to
-        rearrange menus
+	* added 'event number' and 'next module' displays to status bar
 
-        * menus reorganized
+	* added opt_verbose_sim and opt_module_msgs options
 
-        * 'inspect differently' bar changed to ordinary button
+	* using main window like cmdenv output
 
-        * simple toolbar added
+	* NOT COMPLETE:
+	      'simulation options' dialog
+	      opp_getsimoption/setsimoption commands
+	      printing of event banners
+
+1997-06-25  Andras Varga
+
+	* menu building code in main.tcl reorganized, making it easier to
+	rearrange menus
+
+	* menus reorganized
+
+	* 'inspect differently' bar changed to ordinary button
+
+	* simple toolbar added
 
 1997-06-23  Andras Varga
 
-        * commented out XSynchronize(...) and Tk_SetWindowBackground(...)
-        lines from tklib.cc which caused problems on Win95/NT
+	* commented out XSynchronize(...) and Tk_SetWindowBackground(...)
+	lines from tklib.cc which caused problems on Win95/NT
 
-        * added TKENV_LIBPATH environment var to specify the location of
-        Tkenv script files if they are not in ~/omnetpp/envir/tkenv
+	* added TKENV_LIBPATH environment var to specify the location of
+	Tkenv script files if they are not in ~/omnetpp/envir/tkenv
 
-        * added View menu
+	* added View menu
 
-        * make histogram and output vector windows respond to resize events
+	* make histogram and output vector windows respond to resize events
 
 1997-04-22  Andras Varga
 
-        Bugfixes:
+	Bugfixes:
 
-           - THistogramWindow: missing cell #0 bug fixed
+	   - THistogramWindow: missing cell #0 bug fixed
 
-           - TOutvectInspector: unmatched drawing and labelling bug fixed
+	   - TOutvectInspector: unmatched drawing and labelling bug fixed
 
-           - cSimpleMod's container inspector bug fixed
-           opp_inspectorcommand implemented. This means that any inspector
-           can be implemented in the future without touching existing
-           Tkenv code!  New ToDo's:
+	   - cSimpleMod's container inspector bug fixed
+	   opp_inspectorcommand implemented. This means that any inspector
+	   can be implemented in the future without touching existing
+	   Tkenv code!  New ToDo's:
 
-           - print event number, time in sec, next module info into main window
-
-1997-04-17  Andras Varga
-
-        * bugs with inspector creation were fixed
-
-        * new TO DO list:
-
-           - check FDDI bug!!!
-
-           - filtered message window
-
-           - 'Express Run' option
-
-           - restart must be done decently
-
-           - options dialog (breakpoints enabled/disabled etc)
-
-           - implement breakpoints
-
-           - cCompundMod graphical inspector
-
-           - add [Tkenv]/tkenv-lib-path= option to ini file
-                (or) possibility to hardwire scripts into lib
+	   - print event number, time in sec, next module info into main window
 
 1997-04-17  Andras Varga
 
-        * CHK() macro added to every Tcl_Eval(), Tcl_VarEval(), Tcl_EvalFile()
+	* bugs with inspector creation were fixed
+
+	* new TO DO list:
+
+	   - check FDDI bug!!!
+
+	   - filtered message window
+
+	   - 'Express Run' option
+
+	   - restart must be done decently
+
+	   - options dialog (breakpoints enabled/disabled etc)
+
+	   - implement breakpoints
+
+	   - cCompundMod graphical inspector
+
+	   - add [Tkenv]/tkenv-lib-path= option to ini file
+	        (or) possibility to hardwire scripts into lib
 
 1997-04-17  Andras Varga
 
-        * Histogram, outvector windows are finished
+	* CHK() macro added to every Tcl_Eval(), Tcl_VarEval(), Tcl_EvalFile()
 
-        * cSimpleMod inspector done
+1997-04-17  Andras Varga
 
-        * to do: brush up TCompoundModInspector & TContainerInspector
-        check FDDI bug!!!
+	* Histogram, outvector windows are finished
+
+	* cSimpleMod inspector done
+
+	* to do: brush up TCompoundModInspector & TContainerInspector
+	check FDDI bug!!!
 
 1997-04-12  Andras Varga
 
-        * opp_histogramwindow_cell, opp_outvectorinspector_value,
-        opp_outvectorinspector_config commands implemented. Not compiled
-        yet.  The script part is to be done.
+	* opp_histogramwindow_cell, opp_outvectorinspector_value,
+	opp_outvectorinspector_config commands implemented. Not compiled
+	yet.  The script part is to be done.
 
 1997-04-11  Andras Varga
 
-        * cMsg inspector writeBack written; "From"/"To" buttons still missing
+	* cMsg inspector writeBack written; "From"/"To" buttons still missing
 
-        * cPar inspector added
+	* cPar inspector added
 
-        * cMod inspector added; not implemented yet
-
-1997-04-10  Andras Varga
-
-        * cStatistic inspector added
+	* cMod inspector added; not implemented yet
 
 1997-04-10  Andras Varga
 
-        * cMsg inspector quasi finished
+	* cStatistic inspector added
 
 1997-04-10  Andras Varga
 
-        * omnetpp.tcl split to 5 smaller scripts
+	* cMsg inspector quasi finished
 
 1997-04-10  Andras Varga
 
-        * 'Save inspector list' done
+	* omnetpp.tcl split to 5 smaller scripts
+
+1997-04-10  Andras Varga
+
+	* 'Save inspector list' done
 
 1997-04-09  Andras Varga
 
-        The first usable, reasonably bug-free version.
-        To complete:
+	The first usable, reasonably bug-free version.
+	To complete:
 
-           - implement 'Save inspector list'
+	   - implement 'Save inspector list'
 
-           - finish cMsg inspector
+	   - finish cMsg inspector
 
-           - histogram/outvector inspector: draw axes, labelling etc.
+	   - histogram/outvector inspector: draw axes, labelling etc.
 
-        To do in the future:
+	To do in the future:
 
-           - options dialog (breakpoints enabled/disabled etc)
+	   - options dialog (breakpoints enabled/disabled etc)
 
-           - filtered message window
+	   - filtered message window
 
-           - restart must be done decently
+	   - restart must be done decently
 
-           - implement concrete inspectors
+	   - implement concrete inspectors
 
-           - fast run
+	   - fast run

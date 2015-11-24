@@ -1,3 +1,10 @@
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-16  Andras Varga
@@ -148,8 +155,8 @@
 2009-xx-xx Andras Varga
 
 	* INCOMPATIBLE NED SEMANTICS CHANGE 4.0:
-            fixed parameter values CANNOT be overwritten from subclasses or submodule sections
-                 (this is for consistency with pattern assignments)
+	    fixed parameter values CANNOT be overwritten from subclasses or submodule sections
+	         (this is for consistency with pattern assignments)
 
 2009-03-12  ------ omnetpp-4.0 released ------
 

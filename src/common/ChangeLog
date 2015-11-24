@@ -1,3 +1,20 @@
+2015-11-17  Andras Varga
+
+	* UnitConversion: added femtosecond and attosecond, as they are needed
+	for the new simtime-precision config option.
+
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
+2015-08-10  Attila Torok
+
+	Added the colorutil files with SVG color names, currently used by
+	cCanvas and Qtenv.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-30  Andras Varga
@@ -73,8 +90,6 @@
 	opp_makedatetimestring(), opp_join()
 
 	* TRACE macro renamed to TRACE_CALL due to conflict with new module logging API
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 

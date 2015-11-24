@@ -1,3 +1,15 @@
+2015-11-23  Levente Meszaros
+
+	* Support for fingerprint recording: added 'fingerprint' to EventEntry,
+	see eventlogentries.txt.
+
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-16  Andras Varga

@@ -1,3 +1,22 @@
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
+2015-08-10  Andras Varga
+
+	* nedyylib.cc: more careful parsing of quoted strings in property
+	values (results in less exceptions)
+
+2015-08-06  Andras Varga
+
+	* MsgCppGenerator: more flexible syntax for @getter and other properties
+	that specify method names to call:
+	- accepted syntaxes: .foo(), ->foo, foo($), foo (equivalent to ->foo())
+	- applies to @getter, @sizeGetter, @tostring, @setter, @fromstring
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-16  Andras Varga
@@ -85,7 +104,6 @@
 	in order to make it work with OMNeT++ and model C++ namespaces.
 
 	* Modified the generated operator<< functions for the same reason (namespaces).
-
 
 2015-03-25  Andras Varga
 
@@ -903,7 +921,6 @@
 
 	* opp_msgc: remove output files (_m.cc,_m.h) if translation fails
 
-
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-03  Andras Varga
@@ -1255,7 +1272,6 @@
 	BC IDE), but they are completely unsupported at the moment. If
 	there's interest, it's possible that later I'll add makefiles for
 	the free command-line bc5.5 compiler.
-
 
 2001-01-16  Andras Varga
 
@@ -1769,4 +1785,3 @@
 1995
 	Initial version of JAR (the NED-to-C++ compiler) was written by
 	Alex Paalvast, Jan Heijmans and Robert van der Leij, during summer 1995.
-

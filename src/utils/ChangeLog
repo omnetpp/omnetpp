@@ -1,3 +1,10 @@
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-08  Andras Varga
@@ -22,8 +29,6 @@
 
 	* opp_makedep, opp_makemake: added support for state machine files,
 	in preparation for a future state machine compiler in OMNeT++
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 
@@ -854,8 +859,6 @@
 
 	* seedtool help text changed
 
-
-
 1999-06-21  Andras Varga
 
 	* all sources checked in under CVS
@@ -873,7 +876,6 @@
 
 	* minor changes
 
-
 1999-01-01  Andras Varga
 
 	* fifo2 sample added to install.bat; fifo renamed to fifo1
@@ -881,7 +883,6 @@
 	* misc fixes
 
 	* 'convert' script removed
-
 
 1998-12-30  Andras Varga
 
@@ -893,7 +894,6 @@
 
 	* makefile renamed to makefile.in
 
-
 1998-08-16  Andras Varga
 
 	* support for the models/ directory
@@ -901,16 +901,13 @@
 	* configure now puts OMNETPP_ROOT-relative paths into the
 	makefiles etc.
 
-
 1998-08-16  Andras Varga
 
 	* fixes on the install scripts
 
-
 1998-08-14  Andras Varga
 
 	* small fixes
-
 
 1998-07-15  Andras Varga
 
@@ -920,34 +917,28 @@
 
 	* several small fixes
 
-
 1998-07-02  Andras Varga
 
 	* makemake revisited; configure improved too
-
 
 1998-06-15  Andras Varga
 
 	* makemake rewritten. Accepts several command-line options, can
 	handle source trees etc.
 
-
 1998-06-04  Andras Varga
 
 	* small corrections on prephtml and configure
 
-
 1998-05-21  Andras Varga
 
 	* prephtml added
-
 
 1998-05-12  Andras Varga
 
 	* bugfixes
 
 	* mklinks added
-
 
 1998-05-11  Andras Varga
 
@@ -956,12 +947,10 @@
 	* sim, envir, nedc, plove, gned, utils placed into a src
 	subdirectory
 
-
 1998-04-29  Andras Varga
 
 	* makedist creates a lib/ directory with soft links to the
 	libraries
-
 
 1998-04-26  Andras Varga
 
@@ -971,20 +960,17 @@
 
 	* makedist creates bin/ directory will several soft links in it
 
-
 1998-04-22  Andras Varga
 
 	* bitmaps dir added to scripts
 
 	* dos2unix, configur etc scripts improved
 
-
 1998-03-10  Andras Varga
 
 	* Plove added to install etc scripts
 
 	* wrote readme file
-
 
 1998-02-26  Andras Varga
 
@@ -995,11 +981,9 @@
 
 	* configur script improved (now checks for gcc, bison etc.)
 
-
 1998-02-20  Andras Varga
 
 	* improved on scripts
-
 
 1998-02-15  Andras Varga
 
@@ -1011,28 +995,23 @@
 	   buildlib.bat-->makeall.bat
 	   jar_mkmk-->makemake
 
-
 1997-12-16  Andras Varga
 
 	* added GNED and FIFO example to installation scripts
 
 	* convert script upgraded for sim151
 
-
 1997-10-06  Andras Varga
 
 	* added convert that upgrades older OMNeT++ sources
-
 
 1997-07-10  Andras Varga
 
 	* jar_mkmk changed to generate makefiles edible for Cygnus gcc on Win95/NT
 
-
 1997-07-02  Andras Varga
 
 	* install.bat changed
-
 
 1997-06-26  Andras Varga
 
@@ -1042,7 +1021,6 @@
 
 	* bug: jar_mkmk gives an error if there's no ned file in the
 	directory
-
 
 1997-06-23  Andras Varga
 

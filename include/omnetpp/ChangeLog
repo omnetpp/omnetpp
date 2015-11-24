@@ -1,3 +1,165 @@
+2015-11-13  Levente Meszaros, Andras Varga
+
+	* Fingerprint computation re-thought: cHasher has been relegated to
+	a simple hash computing class, and fingerprint computation is now
+	performed by cFingerprint (which itself relies on a cHasher).
+	More precisely, cFingerprint is an abstract class interface from
+	which concrete fingerprint computing classes are derived, currently
+	cSingleFingerprint, cMultiFingerprint, and cOmnetpp4xFingerprint.
+
+	cSingleFingerprint allows selecting which data elements to include
+	in the fingerprint, and also allows filtering (by module, etc).
+	See sim/ChangeLog for a more detailed feature description.
+
+	* Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
+	OMNeT++ 4.x fingerprints. Note: using cOmnetpp4xFingerprint alone is
+	not enough, because SimTime operation has also changed in some details.
+	USE_OMNETPP4x_FINGERPRINT also restores the 4.x behavior of SimTime.
+
+	* API change: cSimulation no longer has getHasher()/setHasher();
+	getFingerprint() has been added instead.
+
+2015-11-20  Andras Varga
+
+	* API fix: cSimpleModule::scheduleAt() return type changed from int
+	(a dummy) to void.
+
+2015-11-17  Andras Varga
+
+	* API fix: cObject::getDescriptor() made const
+
+2015-11-17  Andras Varga
+
+	* Some cComponent/cModule methods were changed to const to facilitate
+	calling them from refreshDisplay():
+	- cComponent: getDisplayString()
+	- cModule: findSubmodule(), getSubmodule(), getModuleByPath(),
+	  getCanvas(), getOsgCanvas()
+
+2015-11-17  Andras Varga
+
+	* cComponent: added the refreshDisplay() method which is called by
+	graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
+	to be refreshed after processing some simulation events. Modules are
+	expected to override refreshDisplay() and move visualization code
+	(display string manipulation, canvas figures maintenance, OSG scene
+	graph update, etc) into it. Overriding refreshDisplay() allows for
+	a much more efficient screen update strategy than handleMessage(),
+	and also results in more consistent information being displayed.
+
+	Code in refreshDisplay() is not supposed to alter the state of the
+	model; to this end, the method is declared const.
+
+2015-11-18  Andras Varga
+
+	* Removed compatibility macros that were introduced in 4.0 to allow
+	writing models that work with both the then-new int64-based SimTime
+	class and the legacy "double" simtime_t: SIMTIME_RAW(), STR_SIMTIME(),
+	SIMTIME_TTOA(). MAXTIME was renamed to SIMTIME_MAX.
+
+	SIMTIME_ZERO, SIMTIME_DBL(), SIMTIME_STR() were left in place, as they
+	are either too broadly used to be removed and/or have some utility
+	value.
+
+2015-11-17  Andras Varga
+
+	* SimTime overhaul to increase accuracy (i.e. use integer arithmetic
+	where possible), improve the API, and add missing operations/functions.
+
+	Details:
+	- Added missing * and / operators for integral types. This causes
+	  integer multiplications/divisions to be computed with integer
+	  arithmetic instead of floating point, thus giving better accuracy
+	- Added overflow checking for integer multiplication and negation
+	- Use int64 arithmetc and overflow checking when assigning from integer types
+	- Added isZero()
+	- Replaced "int exponent" with "SimTimeUnit unit" in the two-argument
+	  constructor (value + unit) and several other methods, with the aim
+	  of making the API more user-friendly (and model code easier to read).
+	  Models that call affected methods with integers will need to be
+	  updated.
+	- Template operators expanded to 8 integer types (signed/unsigned
+	  short, int, long, long long). Reason: templates kicked in too often
+	  where the expression was not about SimTime at all but conversion was
+	  needed; e.g. for K*2 where K was defined as enum {K=2}. The compiler
+	  decided to convert K into SimTime then complained that it couldn't
+	  cast the result back to the desired type (int or double).
+	- Friend operations inlined for code readability
+	- Moved math functions like fabs(SimTime) into the omnetpp namespace
+	- Added div(SimTime, SimTime); also refined related fmod()'s documentation
+
+2015-10-19  Andras Varga
+
+	* Signal listener interface change: A cObject *details (default-nullptr)
+	argument has been added to emit() methods, and consequently, to
+	cIListener::receiveSignal() methods as well. The motivation was to
+	allow simulation models to provide some extra information with
+	primitive data types (double, long, etc) they emit, without the need
+	to switch over to emitting cObject altogether.
+
+	This is a non-backward-compatible change: users' listeners will need
+	to be updated (the extra argument added to their receiveSignal()
+	methods). To facilitate transition, compile OMNeT++ and models with
+	WITH_OMNETPP4x_LISTENER_SUPPORT defined; this will set up cIListener
+	to delegate to the old methods, so existing listeners will work.
+
+	* Result filter/recorder interface change: A similar change has been
+	applied to cResultFilter and cResultRecorder as well, so models that
+	contain custom result filters or recorders will need to be updated for
+	OMNeT++ 5.0. Defining WITH_OMNETPP4x_LISTENER_SUPPORT does NOT help
+	these classes.
+
+2015-11-06  Rudolf Hornig
+
+	* Fixes for mingw64: M_PI moved into platdep/platmisc.h
+
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
+2015-08-28  Andras Varga
+
+	* Fixed namespace bug in ASSERT() macro [reported by Rens van der
+	Heijden on the omnetpp mailing list]
+
+2015-08-10  Andras Varga
+
+	* Made OMNeT++ objects clickable (~picking) in OSG view.
+	To make an object clickable, add an OmnetppObjectNode above it
+	in the scene graph.
+
+	OmnetppObjectNode basically wraps a cObject pointer. In Qtenv,
+	the object inspector view (bottom-left corder of the main window)
+	will be set to the picked object.
+
+2015-07-24  Andras Varga
+
+	* Added cOsgCanvas, a class that supports 3D graphics support via
+	OpenSceneGraph. The 3D scene graph is to be built using the
+	OpenSceneGraph API (e.g. loaded from file via osgDB::readNodeFile()),
+	and then set onto a cOsgCanvas instance. There's one default cOsgCanvas
+	instance per module, accessible via cModule::getOsgCanvas(), but
+	the user can also create additional ones. The 3D scene(s) can be
+	visualized in the new Qtenv graphical runtime environment (Tkenv
+	cannot support it due to technical limitations.)
+
+	Note that cOsgCanvas is just an OMNeT++-aware wrapper for the scene
+	graph (plus some viewer hints), but the viewer itself (i.e. the widget)
+	is not accessible from simulation models. This is by design, to
+	de-couple the model from its user interface (i.e. a viewer may not be
+	open for any particular cOsgCanvas instance at any given time, or even,
+	the module may be running under Cmdenv or Tkenv that does not support
+	3D visualization at all.)
+
+	Code that uses the OpenSceneGraph API should be surrounded with #ifdef
+	WITH_OSG, so that the model can be compiled and used in OMNeT++
+	installations compiled without OpenSceneGraph support. The cOsgCanvas
+	class always exists, regardless of OpenSceneGraph being available or
+	not.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-24  Andras Varga
@@ -237,7 +399,6 @@
 	   static cObjectFactory *find(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
 	   static cObjectFactory *get(const char *className, const char *contextNamespace=NULL, bool fallbackToOmnetpp=true);
 
-
 2015-03-23  Andras Varga
 
 	* Cleanup: VoidDelFunc and VoidDupFunc became inner types of cMsgPar,
@@ -291,7 +452,7 @@
 	The following figure classes are available:
 	    cFigure - base class
 	      cGroupFigure - for grouping other figures, no visual appearance
-              cPanelFigure - non-zooming container, no visual appearance
+	      cPanelFigure - non-zooming container, no visual appearance
 	      cAbstractLineFigure - line, with optional arrowheads
 	        cLineFigure - a single line segment
 	        cArcFigure - arc
@@ -1815,7 +1976,6 @@
 	* cscheduler.h: added cRealTimeScheduler class, added startRun(),
 	endRun() virtual functions to cScheduler
 
-
 2004-12-29  ------ omnetpp-3.0 released ------
 
 2004-12-22  Andras Varga
@@ -1910,19 +2070,19 @@
 
 2004-10-25  Andras Varga
 
-        * all files: void info(char *buf) changed to std::string info() const
-        -- new signature is both safer (no danger of accidental buffer overrun)
-        and easier to use.
+	* all files: void info(char *buf) changed to std::string info() const
+	-- new signature is both safer (no danger of accidental buffer overrun)
+	and easier to use.
 
-        * cpolymorphic.h, cobject.h, cgate.h, cmodule.h, etc: fullPath()
-        return value changed from const char* to std::string. The previous
-        version produced the string in a static buffer which was inherently
-        dangerous. POTENTIAL INCOMPATIBILITY: fullPath() calls in sprintf(),
-        ev.printf(), new cException() etc calls should be changed to
-        fullPath().c_str(). (ev<< statements are not affected because ev can
-        handle std::string just as well as const char *).
+	* cpolymorphic.h, cobject.h, cgate.h, cmodule.h, etc: fullPath()
+	return value changed from const char* to std::string. The previous
+	version produced the string in a static buffer which was inherently
+	dangerous. POTENTIAL INCOMPATIBILITY: fullPath() calls in sprintf(),
+	ev.printf(), new cException() etc calls should be changed to
+	fullPath().c_str(). (ev<< statements are not affected because ev can
+	handle std::string just as well as const char *).
 
-        Note: fullPath(char *buffer, int maxlen) still exists.
+	Note: fullPath(char *buffer, int maxlen) still exists.
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
 
@@ -1930,52 +2090,52 @@
 
 2004-09-15  Andras Varga
 
-        * ctopo.h: added two utility functions to cTopology:
-        void extractByModuleType(const char **types)
-        void extractByModuleType(const std::vector<std::string> types)
+	* ctopo.h: added two utility functions to cTopology:
+	void extractByModuleType(const char **types)
+	void extractByModuleType(const std::vector<std::string> types)
 
 2004-08-11   Andras Varga
 
-        * cmessage.h: changed default length of cMessage to zero (was 1)
+	* cmessage.h: changed default length of cMessage to zero (was 1)
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
 2004-07-10   Andras Varga
 
-        * cmodule.cc: added ev_enabled to cModule -- this makes it possible
-        to select in Cmdenv which modules' output you want to see.
+	* cmodule.cc: added ev_enabled to cModule -- this makes it possible
+	to select in Cmdenv which modules' output you want to see.
 
-        * csimul.h,util.h: added cSimulation::contextType() to make it
-        available from Envir what a module's doing (CTX_INITALIZE, CTX_EVENT,
-        CTX_FINISH, etc)
+	* csimul.h,util.h: added cSimulation::contextType() to make it
+	available from Envir what a module's doing (CTX_INITALIZE, CTX_EVENT,
+	CTX_FINISH, etc)
 
 2004-07-05   Andras Varga
 
-        * csimplemodule.h, cenvir.h, envirext.h: recordScalar() functions for
-        text and cStatistic data removed. A cStatistic object can be recorded
-        into the scalar file by calling its recordScalar() method (below).
+	* csimplemodule.h, cenvir.h, envirext.h: recordScalar() functions for
+	text and cStatistic data removed. A cStatistic object can be recorded
+	into the scalar file by calling its recordScalar() method (below).
 
-        * cstat.h: added recordScalar() method.
+	* cstat.h: added recordScalar() method.
 
 2004-06-24  Andras Varga
 
-        * cpar.h: added type M (XML element) to cPar. New methods:
-        setXMLValue(cXMLElement*), cXMLElement *xmlValue(), op=(cXMLElement*),
-        op cXMLElement*().
+	* cpar.h: added type M (XML element) to cPar. New methods:
+	setXMLValue(cXMLElement*), cXMLElement *xmlValue(), op=(cXMLElement*),
+	op cXMLElement*().
 
 2004-06-22  Andras Varga
 
-        * added cxmlelement.cc
+	* added cxmlelement.cc
 
 2004-06-17  Andras Varga
 
-        * added cconfig.h: contains cConfiguration, an abstract base class
-        for configuration managers. cConfiguration makes it possible to
-        use different sources than omnetpp.ini, e.g. database or XML.
-        See ChangeLog in src/envir.
+	* added cconfig.h: contains cConfiguration, an abstract base class
+	for configuration managers. cConfiguration makes it possible to
+	use different sources than omnetpp.ini, e.g. database or XML.
+	See ChangeLog in src/envir.
 
-        * cenvir.h: added method cConfiguration *config(). This lets e.g.
-        scheduler classes (see cScheduler) have entries in omnetpp.ini.
+	* cenvir.h: added method cConfiguration *config(). This lets e.g.
+	scheduler classes (see cScheduler) have entries in omnetpp.ini.
 
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
@@ -1983,947 +2143,945 @@
 
 2004-05-10   Andras Varga
 
-        * carray.h,cllist.h: discouraged use of classes cBag and cLinkedList.
-        STL classes such as std::vector, std::list or std::deque are
-        recommended instead.
+	* carray.h,cllist.h: discouraged use of classes cBag and cLinkedList.
+	STL classes such as std::vector, std::list or std::deque are
+	recommended instead.
 
 2004-04-20   Andras Varga
 
-        * cobject.h, cpolymorphic.h: moved createDescriptor() into cPolymorphic
+	* cobject.h, cpolymorphic.h: moved createDescriptor() into cPolymorphic
 
 2004-04-13   Andras Varga
 
-        * cenvir.h: added method bool cEnvir::disabled(); returns true when
-        ev<< output is disabled (e.g. Express mode) so executing ev<< is
-        a waste of CPU cycles. To save CPU cycles, one can write code like:
-           if (!ev.disabled())
-               ev << "Packet " << msg->name() << " received\n";
-        or (not that ?: binds looser than <<!!!):
-           #define EV  ev.disabled()?ev:ev
-           EV << "Packet " << msg->name() << " received\n";
+	* cenvir.h: added method bool cEnvir::disabled(); returns true when
+	ev<< output is disabled (e.g. Express mode) so executing ev<< is
+	a waste of CPU cycles. To save CPU cycles, one can write code like:
+	   if (!ev.disabled())
+	       ev << "Packet " << msg->name() << " received\n";
+	or (not that ?: binds looser than <<!!!):
+	   #define EV  ev.disabled()?ev:ev
+	   EV << "Packet " << msg->name() << " received\n";
 
-        * cmessage.h: added possibility to attach a "control info" object
-        (cPolymorphic*) to cMessage. Purpose: communication between protocol
-        layers. New methods: setControlInfo(), removeControlInfo(),
-        controlInfo().
+	* cmessage.h: added possibility to attach a "control info" object
+	(cPolymorphic*) to cMessage. Purpose: communication between protocol
+	layers. New methods: setControlInfo(), removeControlInfo(),
+	controlInfo().
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
 2004-03-20   Andras Varga
 
-        * ccommbuffer.h, cparsimcomm.h: moved here from src/sim/parsim.
+	* ccommbuffer.h, cparsimcomm.h: moved here from src/sim/parsim.
 
 2004-03-10   Andras Varga
 
-        * cenvir.h: use std::ostream as base class for cEnvir. ev<< works
-        exactly as with any C++ stream now (stream manipulators can be used,
-        etc). Also, there are no bounded buffers along the data path, so
-        outputting arbitrarily long strings are supported. (Except in
-        ev.printf(), but as of 2004, one shouldn't feel much temptation to
-        use it.)
+	* cenvir.h: use std::ostream as base class for cEnvir. ev<< works
+	exactly as with any C++ stream now (stream manipulators can be used,
+	etc). Also, there are no bounded buffers along the data path, so
+	outputting arbitrarily long strings are supported. (Except in
+	ev.printf(), but as of 2004, one shouldn't feel much temptation to
+	use it.)
 
-        Users should change custom << operators written for cEnvir to use
-        std::ostream instead. Leaving cEnvir<< will continue to work,
-        but ostream<< is just more useful.
+	Users should change custom << operators written for cEnvir to use
+	std::ostream instead. Leaving cEnvir<< will continue to work,
+	but ostream<< is just more useful.
 
-        * cenvir.h: removed stream input ev>> operators, and also the methods
-        askf(), prompt(), setprompt(). gets() was retained for now, but added
-        an overloaded equivalent which stores input in std::string.
+	* cenvir.h: removed stream input ev>> operators, and also the methods
+	askf(), prompt(), setprompt(). gets() was retained for now, but added
+	an overloaded equivalent which stores input in std::string.
 
-        cpar.h: changed void getAsText(char *buf, int bufsize) functions to
-        std::string getAsText().
+	cpar.h: changed void getAsText(char *buf, int bufsize) functions to
+	std::string getAsText().
 
 2004-03-08   Andras Varga
 
-        * cobject.h, cpolymorphic.h: defined fullName() and fullPath() in
-        cPolymorhpic as empty virtual functions (return "") which cObject
-        redefines. check_and_cast<> argument type changed from cObject* to
-        cPolymorphic*.
+	* cobject.h, cpolymorphic.h: defined fullName() and fullPath() in
+	cPolymorhpic as empty virtual functions (return "") which cObject
+	redefines. check_and_cast<> argument type changed from cObject* to
+	cPolymorphic*.
 
 2004-03-06   Andras Varga
 
-        * cobject.h, cpolymorphic.h: several changes:
-        - info() method moved to cPolymorphic
-        - buffer size for info() now explicitly declared as MAX_OBJECTINFO
-        - new method detailedInfo() added to cPolymorphic -- this method
-          is allowed to produce a more verbose, multi-line description of
-          the object. Support for displaying it will be built into Tkenv.
-          Can be used to display internal tables (routing table, ARP cache,
-          etc) and other data structures.
-        - default writeContents() implementation changed to use detailedInfo()
-        - writeTo() method made "internal"
+	* cobject.h, cpolymorphic.h: several changes:
+	- info() method moved to cPolymorphic
+	- buffer size for info() now explicitly declared as MAX_OBJECTINFO
+	- new method detailedInfo() added to cPolymorphic -- this method
+	  is allowed to produce a more verbose, multi-line description of
+	  the object. Support for displaying it will be built into Tkenv.
+	  Can be used to display internal tables (routing table, ARP cache,
+	  etc) and other data structures.
+	- default writeContents() implementation changed to use detailedInfo()
+	- writeTo() method made "internal"
 
-        * util.h, opp_string.h: opp_string changes:
-        - created separate header opp_string.h
-        - added c_str(), empty() methods for similarity to std::string
-        - removed const char* conversion -- it was often tested against NULL
-          to see if string was empty, and caused confusion. c_str() never
-          returns NULL.
+	* util.h, opp_string.h: opp_string changes:
+	- created separate header opp_string.h
+	- added c_str(), empty() methods for similarity to std::string
+	- removed const char* conversion -- it was often tested against NULL
+	  to see if string was empty, and caused confusion. c_str() never
+	  returns NULL.
 
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-01  Andras Varga
 
-        * ctypes.h,macros.h: createOne() return value changed from void* to
-        cPolymorphic* so that it can be used with type safety. Only classes
-        derived from cPolymorphic can be registered using Register_Class().
+	* ctypes.h,macros.h: createOne() return value changed from void* to
+	cPolymorphic* so that it can be used with type safety. Only classes
+	derived from cPolymorphic can be registered using Register_Class().
 
-        * envirext.h: classes cScheduler, cOutputVectorManager,
-        cOutputScalarManager, cSnapshotManager are now subclassed from
-        cPolymorphic.
+	* envirext.h: classes cScheduler, cOutputVectorManager,
+	cOutputScalarManager, cSnapshotManager are now subclassed from
+	cPolymorphic.
 
-        * cobject.h, cpolymorphic.h: cPolymorphic removed from cobject.h and
-        placed into its own header file.
+	* cobject.h, cpolymorphic.h: cPolymorphic removed from cobject.h and
+	placed into its own header file.
 
 2004-02-23  Andras Varga
 
-        * cmodule.h: added changeParentTo() to cModule.
-        * cenvir.h: added moduleReparented() to cEnvir.
+	* cmodule.h: added changeParentTo() to cModule.
+	* cenvir.h: added moduleReparented() to cEnvir.
 
 2004-02-22  Andras Varga
 
-        * cmodule.h: added gateSize() to cModule.
+	* cmodule.h: added gateSize() to cModule.
 
 2004-02-20  Andras Varga
 
-        * ctype.h, cchannel.h, cgate.h: introduced cChannelType which replaces
-        cLinkType. cChannelType is a lot more flexible since its factory
-        method create() allows creating channels of any class, not just
-        cSimpleChannel. Custom channel behaviour can thus be implemented
-        by authoring an own channel class and registering it via an
-        appropriate cChannelType and the Define_Channel() macro.
+	* ctype.h, cchannel.h, cgate.h: introduced cChannelType which replaces
+	cLinkType. cChannelType is a lot more flexible since its factory
+	method create() allows creating channels of any class, not just
+	cSimpleChannel. Custom channel behaviour can thus be implemented
+	by authoring an own channel class and registering it via an
+	appropriate cChannelType and the Define_Channel() macro.
 
 2004-02-12  Andras Varga
 
-        * cgate.h, cchannel.h: gave a bool return value to deliver(), "false"
-        meaning that message object should be deleted.
+	* cgate.h, cchannel.h: gave a bool return value to deliver(), "false"
+	meaning that message object should be deleted.
 
 2004-02-11  Andras Varga
 
-        * csimul.h, cscheduler.h: semantic change in getNextEvent()'s and
-        selectNextModule()'s return value: NULL now means that the scheduler
-        got interrupted by the user while it was waiting (typically with parsim
-        or real-time sim).
+	* csimul.h, cscheduler.h: semantic change in getNextEvent()'s and
+	selectNextModule()'s return value: NULL now means that the scheduler
+	got interrupted by the user while it was waiting (typically with parsim
+	or real-time sim).
 
 2004-02-09  Andras Varga
 
-        * cexception.h: added storage of module class name (NED type name)
+	* cexception.h: added storage of module class name (NED type name)
 
 2004-02-09  Andras Varga
 
-        * ctypes.h: added methods to cModuleInterface so that it's possible
-        to dynamically assemble it (needed by networkbuilder)
+	* ctypes.h: added methods to cModuleInterface so that it's possible
+	to dynamically assemble it (needed by networkbuilder)
 
 2004-02-07  Andras Varga
 
-        * ctypes.h: added createOneIfClassIsKnown(const char *classname)
-        function
+	* ctypes.h: added createOneIfClassIsKnown(const char *classname)
+	function
 
 2004-02-06  Andras Varga
 
-        * cgate.h: added cGate::disconnect(); revised cGate::connectTo()
+	* cgate.h: added cGate::disconnect(); revised cGate::connectTo()
 
-        * cchannel.h: added setDelay(double), setError(double),
-        setDatarate(double) to cSimpleChannel
+	* cchannel.h: added setDelay(double), setError(double),
+	setDatarate(double) to cSimpleChannel
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-09  Andras Varga
 
-        * cenvir.h: added bubble() to cEnvir
+	* cenvir.h: added bubble() to cEnvir
 
-        * cenvir.h: added overloaded "<<" operator for printing object pointers
-        and references (cObject*, const cObject*, cObject&, const cObject&).
-        It prints the class name and the full name, like "(cMessage)hello".
+	* cenvir.h: added overloaded "<<" operator for printing object pointers
+	and references (cObject*, const cObject*, cObject&, const cObject&).
+	It prints the class name and the full name, like "(cMessage)hello".
 
 2004-01-06  Andras Varga
 
-        * cenvir.h: added isGUI()
+	* cenvir.h: added isGUI()
 
-        * display string manipulation made a lot easier: displayString() now
-        returns a cDisplayString which can be changed with its own member
-        functions: insertTag(), setTagArg(), removeTag(), etc.
-        Example: coloring the icon: displayString().setTagArg("i",1,"cyan").
-        setDisplayString() got deprecated -- there's really no need for it
-        any more.
+	* display string manipulation made a lot easier: displayString() now
+	returns a cDisplayString which can be changed with its own member
+	functions: insertTag(), setTagArg(), removeTag(), etc.
+	Example: coloring the icon: displayString().setTagArg("i",1,"cyan").
+	setDisplayString() got deprecated -- there's really no need for it
+	any more.
 
-        * cGate became 8 bytes (2 pointers) smaller: notify_inspector and
-        data_for_inspector members got eliminated (notification is now
-        in the cDisplayString class). Same for cModule.
+	* cGate became 8 bytes (2 pointers) smaller: notify_inspector and
+	data_for_inspector members got eliminated (notification is now
+	in the cDisplayString class). Same for cModule.
 
-        * cenvir.h: new notification methods: moduleCreated(),
-        moduleDeleted(), connectionCreated(), connectionRemoved(),
-        displayStringChanged(cGate*), displayStringChanged(cModule*),
-        displayStringAsParentChanged()
+	* cenvir.h: new notification methods: moduleCreated(),
+	moduleDeleted(), connectionCreated(), connectionRemoved(),
+	displayStringChanged(cGate*), displayStringChanged(cModule*),
+	displayStringAsParentChanged()
 
-        * backwards compatibility stuff collected in compat.h
+	* backwards compatibility stuff collected in compat.h
 
 2004-01-05  Andras Varga
 
-        * Heavy redesign of cObject and cModule internals with performance
-        and memory consumption improvements and cleaner code. Summary:
-        - new ownership mechanism reduces memory footprint from 20 to 8 bytes
-          per simulation object (cObject subclasses: cMessage, cGate, etc.).
-          Before it was 4 pointers (ownerp, firstchildp, nextp, prevp) plus
-          1 char (storage class) and 1 bool (tkownership), and now it's only
-          1 pointer (ownerp) plus 1 int (pos).
-        - faster: change of ownership was up to 6 comparisons and 9 assignments,
-          now it's 1 comparison, 3 assignments and 1 increment.
-        - catches more errors: it now detects attempts to delete or take
-          objects that are currently in a queue, array, or the FES. (in other
-          words, it's no longer possible to silently steal an object from its
-          legitimate owner.)
-        - cObject's custom 'operator new' could be eliminated, together with
-          determining the storage class.
-        - downside: container objects have to call drop() before deleting contained
-          objects (basically, 'delete obj' calls have to be changed to
-          'dropAndDelete(obj)'.
-        - tkownership was also removed also for lack of usefulness
-        - other optimization is that short object names (up to 11 chars) are
-          stored inside the object's memory (an object with 11-character name
-          doesn't allocate more than an object with no name assigned).
-        Details follow:
+	* Heavy redesign of cObject and cModule internals with performance
+	and memory consumption improvements and cleaner code. Summary:
+	- new ownership mechanism reduces memory footprint from 20 to 8 bytes
+	  per simulation object (cObject subclasses: cMessage, cGate, etc.).
+	  Before it was 4 pointers (ownerp, firstchildp, nextp, prevp) plus
+	  1 char (storage class) and 1 bool (tkownership), and now it's only
+	  1 pointer (ownerp) plus 1 int (pos).
+	- faster: change of ownership was up to 6 comparisons and 9 assignments,
+	  now it's 1 comparison, 3 assignments and 1 increment.
+	- catches more errors: it now detects attempts to delete or take
+	  objects that are currently in a queue, array, or the FES. (in other
+	  words, it's no longer possible to silently steal an object from its
+	  legitimate owner.)
+	- cObject's custom 'operator new' could be eliminated, together with
+	  determining the storage class.
+	- downside: container objects have to call drop() before deleting contained
+	  objects (basically, 'delete obj' calls have to be changed to
+	  'dropAndDelete(obj)'.
+	- tkownership was also removed also for lack of usefulness
+	- other optimization is that short object names (up to 11 chars) are
+	  stored inside the object's memory (an object with 11-character name
+	  doesn't allocate more than an object with no name assigned).
+	Details follow:
 
-        * in activity() modules, stack cleanup is now done by C++ exceptions
-        (utilizes stack unwinding). Implications: cObject's heapflag, stor
-        and operator new could all be thrown out (cleaner code, performance
-        improvement, plus reduces cObject size by 2 bytes)
+	* in activity() modules, stack cleanup is now done by C++ exceptions
+	(utilizes stack unwinding). Implications: cObject's heapflag, stor
+	and operator new could all be thrown out (cleaner code, performance
+	improvement, plus reduces cObject size by 2 bytes)
 
-        * short object name strings are stored inside cObject (that is,
-        cObject contains union {char *nameptr, char shortname[]} now)
-        --> short object names come for FREE (don't allocate extra
-        memory compared to nameless objects.) This results in memory savings
-        (on average) and performance improvent (less calls to 'new').
-        Names count as short up to 11 chars. (This might be extended to
-        15 chars if measurements show long names are popular.)
+	* short object name strings are stored inside cObject (that is,
+	cObject contains union {char *nameptr, char shortname[]} now)
+	--> short object names come for FREE (don't allocate extra
+	memory compared to nameless objects.) This results in memory savings
+	(on average) and performance improvent (less calls to 'new').
+	Names count as short up to 11 chars. (This might be extended to
+	15 chars if measurements show long names are popular.)
 
-        * Object ownership handling in cObject was redesigned, with *both*
-        performance improvement and memory saving, plus more protection against
-        programming errors (now any object which is stored in a Queue, cArray
-        etc cannot be "taken" by any other object -- it must be removed from
-        the container first). Basic idea: owned objects were previously stored
-        in every cObject via firstchildp, nextp, prevp pointers, every class
-        (cQueue, cArray etc) had its own (extra) pointers to contained objects;
-        Now it became every object's responsibility to keep ptrs to owned
-        objects. Consequences:
-        - setOwner() was removed (it caused a lot of misunderstandings)
-        - cDefaultList was introduced
-        - firstchildp, nextp, prevp got removed from cObject; ownerp was kept;
-          pos was added (necessary for storing things in cDefaultList).
-          --> reduces cObject size by 8 bytes (on 32-bit architectures)
-        - cHead, cIterator was removed
-        - removed cModule's `locals', `members' -- the owner is now the cModule
-          class itself (cModule became subclass of cDefaultList).
-        - defaultowner made a static in cObject
-        - added total_objs and live_objs counters (useful for tracing memory
-          leaks)
-        - isSoftOwner() introduced -- soft owner is an object which allows
-          other objects take away an owned object from it (e.g. cQueue and
-          cArray are hard owners, cDefaultList and cModul is soft owner)
+	* Object ownership handling in cObject was redesigned, with *both*
+	performance improvement and memory saving, plus more protection against
+	programming errors (now any object which is stored in a Queue, cArray
+	etc cannot be "taken" by any other object -- it must be removed from
+	the container first). Basic idea: owned objects were previously stored
+	in every cObject via firstchildp, nextp, prevp pointers, every class
+	(cQueue, cArray etc) had its own (extra) pointers to contained objects;
+	Now it became every object's responsibility to keep ptrs to owned
+	objects. Consequences:
+	- setOwner() was removed (it caused a lot of misunderstandings)
+	- cDefaultList was introduced
+	- firstchildp, nextp, prevp got removed from cObject; ownerp was kept;
+	  pos was added (necessary for storing things in cDefaultList).
+	  --> reduces cObject size by 8 bytes (on 32-bit architectures)
+	- cHead, cIterator was removed
+	- removed cModule's `locals', `members' -- the owner is now the cModule
+	  class itself (cModule became subclass of cDefaultList).
+	- defaultowner made a static in cObject
+	- added total_objs and live_objs counters (useful for tracing memory
+	  leaks)
+	- isSoftOwner() introduced -- soft owner is an object which allows
+	  other objects take away an owned object from it (e.g. cQueue and
+	  cArray are hard owners, cDefaultList and cModul is soft owner)
 
-        * takeownership flag removed from cObject, and put only into classes
-        where needed: cQueue, cArray and cPar (reduces cObject size by 2 bytes)
+	* takeownership flag removed from cObject, and put only into classes
+	where needed: cQueue, cArray and cPar (reduces cObject size by 2 bytes)
 
-        * cModule optimization:
-        - submodules are now kept via firstsubmodp, prevp, nextp pointers
-        - cSubmodIterator rewritten to use firstsubmodp, prevp, nextp (more
-          efficient!)
-        - also: modules are now owned by cSimulation (not the parent module)
+	* cModule optimization:
+	- submodules are now kept via firstsubmodp, prevp, nextp pointers
+	- cSubmodIterator rewritten to use firstsubmodp, prevp, nextp (more
+	  efficient!)
+	- also: modules are now owned by cSimulation (not the parent module)
 
-        * removed deprecated/obsolete methods: putasideQueue; receiveNew(),
-        receiveNewOn(), etc; cSimpleModule's memAlloc()+memFree();
+	* removed deprecated/obsolete methods: putasideQueue; receiveNew(),
+	receiveNewOn(), etc; cSimpleModule's memAlloc()+memFree();
 
-        * removed machine parameters from cModule and cModuleInterface (parsim
-        extension no longer uses them)
+	* removed machine parameters from cModule and cModuleInterface (parsim
+	extension no longer uses them)
 
-        * callInitialize(), callFinish() impl. moved to base class, cModule.
+	* callInitialize(), callFinish() impl. moved to base class, cModule.
 
-        * cDisplayStringParser renamed to cDisplayString (compatibility typedef added)
+	* cDisplayStringParser renamed to cDisplayString (compatibility typedef added)
 
-        * cArray::Iterator added
+	* cArray::Iterator added
 
-        * cenum.h: sEnumBuilder removed
+	* cenum.h: sEnumBuilder removed
 
-        * global registration lists moved to globals.h and transformed into
-        cArrays, accessed via new class cSingleton
+	* global registration lists moved to globals.h and transformed into
+	cArrays, accessed via new class cSingleton
 
 2003-12-09  Andras Varga
 
-        * distrib.h: fixed description of lognormal distribution -- the m,s
-        parameters referred to the underlying normal distribution, not
-        lognormal itself. [reported by Ian Grivell]
+	* distrib.h: fixed description of lognormal distribution -- the m,s
+	parameters referred to the underlying normal distribution, not
+	lognormal itself. [reported by Ian Grivell]
 
 2003-11-23  Andras Varga
 
-        * cdispstr.h: insertTag() return value changed from bool to int.
+	* cdispstr.h: insertTag() return value changed from bool to int.
 
-        * ccoroutine.h: MSVC version check fixed (#if _MSC_VER==1200 changed
-        to #if _MSC_VER>=1200)
+	* ccoroutine.h: MSVC version check fixed (#if _MSC_VER==1200 changed
+	to #if _MSC_VER>=1200)
 
 2003-11-13  Andras Varga
 
-        * Merged parallel simulation brach that was developed March-May 2003,
-        during my stay at Monash University. Changes in that branch:
+	* Merged parallel simulation brach that was developed March-May 2003,
+	during my stay at Monash University. Changes in that branch:
 
-        2003-05-21  Andras Varga
-        * cobject.h: introduced cPolymorphic base class for cObject,
-        with the purpose of strengthening type safety by using cPolymorphic
-        at places where normally void * pointers would have been used.
-        className() moved from cObject to cPolymorphic. cPolymorphic has
-        no data members and ctor/dtor doesn't do anything, so subclassing
-        from it comes for free.
+	2003-05-21  Andras Varga
+	* cobject.h: introduced cPolymorphic base class for cObject,
+	with the purpose of strengthening type safety by using cPolymorphic
+	at places where normally void * pointers would have been used.
+	className() moved from cObject to cPolymorphic. cPolymorphic has
+	no data members and ctor/dtor doesn't do anything, so subclassing
+	from it comes for free.
 
-        2003-04-18  Andras Varga
-        * cenvir.h: removed foreignPuts() method, no longer used by parallel
-        simulation.
+	2003-04-18  Andras Varga
+	* cenvir.h: removed foreignPuts() method, no longer used by parallel
+	simulation.
 
-        2003-04-09  Andras Varga
-        * csimul.h: added guessNextModule() method, to be used from Tkenv
-        in "next module" gauge.
+	2003-04-09  Andras Varga
+	* csimul.h: added guessNextModule() method, to be used from Tkenv
+	in "next module" gauge.
 
-        2003-04-01  Andras Varga
-        * cenvir.h: runningMode() removed (because of reorganization of
-        parallel simulation support)
+	2003-04-01  Andras Varga
+	* cenvir.h: runningMode() removed (because of reorganization of
+	parallel simulation support)
 
-        2003-03-31  Andras Varga
-        * omnetpp.h, csimul.h; removed cnetmod.h: cNetMod and all references
-        to it are removed -- parallel simulation is represented in cSimulation
-        via cParsimPartition.
-        * csimplemodule.h: syncpoint calls removed.
+	2003-03-31  Andras Varga
+	* omnetpp.h, csimul.h; removed cnetmod.h: cNetMod and all references
+	to it are removed -- parallel simulation is represented in cSimulation
+	via cParsimPartition.
+	* csimplemodule.h: syncpoint calls removed.
 
-        2003-03-25  Andras Varga
-        * cmodule.h, csimplemodule.h: method isSimple() moved to base class
-        cModule where it uses dynamic_cast.
-        * cenvir.h: getLocalMachineFor() has been replaced by isModuleLocal()
-        * ctypes.h: cModuleType::create(): last arg "bool local" removed
-        (it is now determined inside, by calling new method ev.isModuleLocal());
-        also added overloaded create() method which takes module index and
-        module vector size, and contains cModule::setIndex().
+	2003-03-25  Andras Varga
+	* cmodule.h, csimplemodule.h: method isSimple() moved to base class
+	cModule where it uses dynamic_cast.
+	* cenvir.h: getLocalMachineFor() has been replaced by isModuleLocal()
+	* ctypes.h: cModuleType::create(): last arg "bool local" removed
+	(it is now determined inside, by calling new method ev.isModuleLocal());
+	also added overloaded create() method which takes module index and
+	module vector size, and contains cModule::setIndex().
 
-        * cmodule.h: cModule methods setId(), setIndex(), setModuleType()
-        made protected. (They're called internally during the module creation
-        process, from cModuleType::create().)
+	* cmodule.h: cModule methods setId(), setIndex(), setModuleType()
+	made protected. (They're called internally during the module creation
+	process, from cModuleType::create().)
 
-        2003-03-24  Andras Varga
-        * csimul.h, cmsgheap.h: improved method documentation
+	2003-03-24  Andras Varga
+	* csimul.h, cmsgheap.h: improved method documentation
 
-        2003-03-23  Andras Varga
-        * split cmodule.h: cSimpleModule put into new file csimplemodule.h
-        * cobject.h: cObject::namestr private member changed from char* to
-        opp_string
-        * added cscheduler.h, changed csimul.h: cSimulation::nextModule()
-        now relies on a scheduler object, subclassed from cScheduler.
-        Normally (with sequential execution) the scheduler is
-        cSequentialScheduler which just returns msgQueue.peekFirst();
-        With parallel and/or real-time simulation, the scheduler is a
-        specialized class which also does synchronization with real time
-        and/or with other segments.
+	2003-03-23  Andras Varga
+	* split cmodule.h: cSimpleModule put into new file csimplemodule.h
+	* cobject.h: cObject::namestr private member changed from char* to
+	opp_string
+	* added cscheduler.h, changed csimul.h: cSimulation::nextModule()
+	now relies on a scheduler object, subclassed from cScheduler.
+	Normally (with sequential execution) the scheduler is
+	cSequentialScheduler which just returns msgQueue.peekFirst();
+	With parallel and/or real-time simulation, the scheduler is a
+	specialized class which also does synchronization with real time
+	and/or with other segments.
 
-        2003-03-20  Andras Varga
-        * nearly all files: changed signature of netPack()/netUnpack()
-        to use new cCommBuffer interface
-        * cgate.h: deliver() made virtual
+	2003-03-20  Andras Varga
+	* nearly all files: changed signature of netPack()/netUnpack()
+	to use new cCommBuffer interface
+	* cgate.h: deliver() made virtual
 
 2003-11-09  Andras Varga
 
-        * csimul.h: added cSimulation::loadNedFile() which can be used to
-        dynamically load NED files. See src/sim/ChangeLog for more info
-        on how to enable this feature and what other libraries it requires.
+	* csimul.h: added cSimulation::loadNedFile() which can be used to
+	dynamically load NED files. See src/sim/ChangeLog for more info
+	on how to enable this feature and what other libraries it requires.
 
 2003-10-02  Andras Varga
 
-        * util.h: added Enter_Method() and Enter_Method_Silent() macros
-        which should be added to top of module class methods, and do
-        context switching and animation of method calls. (Macros build on
-        cContextSwitcher internal class.)
+	* util.h: added Enter_Method() and Enter_Method_Silent() macros
+	which should be added to top of module class methods, and do
+	context switching and animation of method calls. (Macros build on
+	cContextSwitcher internal class.)
 
-        * cenvir.h: added method moduleMethodCalled(), needed for animating
-        method calls between modules
+	* cenvir.h: added method moduleMethodCalled(), needed for animating
+	method calls between modules
 
 2003-09-25  Andras Varga
 
-        * cmessage.h: support for message display strings. You have to
-        redefine cMessage's displayString() to return a valid display string
-        (by default it returns ""). See Tkenv for valid options.
+	* cmessage.h: support for message display strings. You have to
+	redefine cMessage's displayString() to return a valid display string
+	(by default it returns ""). See Tkenv for valid options.
 
 2003-09-22  Andras Varga
 
-        * cenvir.h: messageSent() signature modified, in order to be able to
-        animate sendDirect().
+	* cenvir.h: messageSent() signature modified, in order to be able to
+	animate sendDirect().
 
-        * cmodule.h: refined the rules for sendDirect(), and documented it.
-        Namely, fromGate()==NULL must hold for the destination gate, that is,
-        modules MUST have dedicated gates for receiving via sendDirect().
-        You cannot have a gate which receives messages via both a connection
-        and sendDirect().
+	* cmodule.h: refined the rules for sendDirect(), and documented it.
+	Namely, fromGate()==NULL must hold for the destination gate, that is,
+	modules MUST have dedicated gates for receiving via sendDirect().
+	You cannot have a gate which receives messages via both a connection
+	and sendDirect().
 
-        This restriction makes models cleaner (you must have dedicated gates
-        for receiving messages via sendDirect()), and it is also necessary
-        for proper animation in Tkenv.
+	This restriction makes models cleaner (you must have dedicated gates
+	for receiving messages via sendDirect()), and it is also necessary
+	for proper animation in Tkenv.
 
-        Soundly written existing models will not be affected.
+	Soundly written existing models will not be affected.
 
-        * cmessage.h: new fields added:
-            unsigned refcount : 7;     // reference count for encapsulated message (max 63)
-            unsigned char srcprocid;   // reserved for use by parallel exec.
-        Also made existing `bool error' a 1-bit bitfield (1 length).
-        The total size of cMessage didn't grow as probably earlier the compiler
-        used some padding to align fields after the "error" field to a 2-byte
-        boundary (at least), and we just filled up this space with useful data.
+	* cmessage.h: new fields added:
+	    unsigned refcount : 7;     // reference count for encapsulated message (max 63)
+	    unsigned char srcprocid;   // reserved for use by parallel exec.
+	Also made existing `bool error' a 1-bit bitfield (1 length).
+	The total size of cMessage didn't grow as probably earlier the compiler
+	used some padding to align fields after the "error" field to a 2-byte
+	boundary (at least), and we just filled up this space with useful data.
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-06-16  Andras Varga
 
-        * cpacket.h: deprecated cPacket class.
+	* cpacket.h: deprecated cPacket class.
 
 2003-06-14  Andras Varga
 
-        * cmodule.h: cModule's addGate(), addPar() return type changed from
-        void to cGate*/cPar*.
+	* cmodule.h: cModule's addGate(), addPar() return type changed from
+	void to cGate*/cPar*.
 
-        * cobject.h: added bool cStaticFlag::isSet()
+	* cobject.h: added bool cStaticFlag::isSet()
 
 2003-05-29  Andras Varga
 
-        * cfsm.h: FSM_Print(): improved output
+	* cfsm.h: FSM_Print(): improved output
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
 2003-03-15  Andras Varga
 
-        * cgate.h, cchannel.h: refined documentation on channel attributes,
-        isBusy() and transmissionFinishes().
+	* cgate.h, cchannel.h: refined documentation on channel attributes,
+	isBusy() and transmissionFinishes().
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-10  Andras Varga
 
-        * chist.h: cHistogramBase: added setNumCells() method
+	* chist.h: cHistogramBase: added setNumCells() method
 
 2003-01-30  Andras Varga
 
-        * defs.h: added MathFunc4Args (it was needed by triang() and other
-        distributions); also added its handling where needed
+	* defs.h: added MathFunc4Args (it was needed by triang() and other
+	distributions); also added its handling where needed
 
 2003-01-29  Andras Varga
 
-        * chead.h: added argcount paremeter to findFunction()
+	* chead.h: added argcount paremeter to findFunction()
 
 2003-01-22  Andras Varga
 
-        * ctypes.h, macros.h: increased type safety of Register_Function() and
-        cFunctionType
+	* ctypes.h, macros.h: increased type safety of Register_Function() and
+	cFunctionType
 
 2003-01-20  Andras Varga
 
-        * contents of obsolete header cstk.h removed
+	* contents of obsolete header cstk.h removed
 
 2003-01-19  Andras Varga
 
-        * distrib.h (new): contains function declarations for distributions
-        contributed by Werner Sandmann (TU Bonn): continuous distributions
-        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
-        triang(),lognormal(), weibull(), pareto_shifted(), and discrete
-        distributions bernoulli(), binomial(), geometric(), negbinomial(),
-        hypergeometric(), poisson()
+	* distrib.h (new): contains function declarations for distributions
+	contributed by Werner Sandmann (TU Bonn): continuous distributions
+	gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
+	triang(),lognormal(), weibull(), pareto_shifted(), and discrete
+	distributions bernoulli(), binomial(), geometric(), negbinomial(),
+	hypergeometric(), poisson()
 
-        * random.h (new), distrib.h; utils.h: From util.h, existing
-        distributions (uniform, normal, exponential, etc) were moved to
-        distrib.h, and random number generator functions were moved to new file
-        random.h.
+	* random.h (new), distrib.h; utils.h: From util.h, existing
+	distributions (uniform, normal, exponential, etc) were moved to
+	distrib.h, and random number generator functions were moved to new file
+	random.h.
 
-        * distrib.h: bugfix: 2nd arg to normal() is really the stddev, not
-        variance. Documentation fixed.
+	* distrib.h: bugfix: 2nd arg to normal() is really the stddev, not
+	variance. Documentation fixed.
 
 2003-01-14  Andras Varga
 
-        * cwatch.h: added support for 'bool'
+	* cwatch.h: added support for 'bool'
 
-        * index.h: cOutVector doc moved from group 'SimSupport' to 'Statistics'
+	* index.h: cOutVector doc moved from group 'SimSupport' to 'Statistics'
 
-        * cmodule.h: new method waitAndEnqueue() added to cSimpleModule.
+	* cmodule.h: new method waitAndEnqueue() added to cSimpleModule.
 
-        * cmodule.h: putAsideQueue was DEPRECATED. putAsideQueue is currently
-        used implicitly by the methods wait(), receiveOn() and receiveNewOn()
-        to insert messages that arrive during the wait period or not on the
-        specified gate. The receive() functions look first on the
-        putAsideQueue and only then at the future events.
+	* cmodule.h: putAsideQueue was DEPRECATED. putAsideQueue is currently
+	used implicitly by the methods wait(), receiveOn() and receiveNewOn()
+	to insert messages that arrive during the wait period or not on the
+	specified gate. The receive() functions look first on the
+	putAsideQueue and only then at the future events.
 
-        As practice has shown, the purpose of the putAsideQueue was very
-        often misunderstood, and its implicit use by wait() and the message
-        receiving functions was highly error-prone. On the other hand,
-        it is easy to emulate with waitAndEnqueue(), or a loop with receive().
-        putAsideQueue will be removed at some point in the future.
-        Be prepared: use wait() and receiveOn() if you do not expect other
-        messages to arrive at the module; use waitAndEnqueue() where you
-        mean it; do not use the receiveNew..() functions as they will be made
-        redundant when putAsideQueue goes away.
+	As practice has shown, the purpose of the putAsideQueue was very
+	often misunderstood, and its implicit use by wait() and the message
+	receiving functions was highly error-prone. On the other hand,
+	it is easy to emulate with waitAndEnqueue(), or a loop with receive().
+	putAsideQueue will be removed at some point in the future.
+	Be prepared: use wait() and receiveOn() if you do not expect other
+	messages to arrive at the module; use waitAndEnqueue() where you
+	mean it; do not use the receiveNew..() functions as they will be made
+	redundant when putAsideQueue goes away.
 
 2003-01-07  Andras Varga
 
-        * cenvir.h: added ev.flush()
+	* cenvir.h: added ev.flush()
 
-        * cmodule.h: deprecated phase() (nobody really used it)
+	* cmodule.h: deprecated phase() (nobody really used it)
 
 2003-01-05  Andras Varga
 
-        * macros.h: added macro Define_Function2
+	* macros.h: added macro Define_Function2
 
 2002-12-19  Andras Varga
 
-        * always use <iostream> instead of <iostream.h>
+	* always use <iostream> instead of <iostream.h>
 
 2002-12-17  Andras Varga
 
-        * cobject.h: check_and_cast<T>(cObject *p) template function added --
-        it can be used to assert that a pointer is of the given T type.
-        It does dynamic_cast<T> and throws exception if the result is NULL
-        (ie. pointer types are incompatible). Useful with message subclassing.
+	* cobject.h: check_and_cast<T>(cObject *p) template function added --
+	it can be used to assert that a pointer is of the given T type.
+	It does dynamic_cast<T> and throws exception if the result is NULL
+	(ie. pointer types are incompatible). Useful with message subclassing.
 
 2002-12-02  Andras Varga
 
-        * cmessage.h: added convenience methods: addObject(), getObject(),
-        hasObject(), removeObject(). Refined related documentation and
-        added hint to message subclassing to class description.
+	* cmessage.h: added convenience methods: addObject(), getObject(),
+	hasObject(), removeObject(). Refined related documentation and
+	added hint to message subclassing to class description.
 
 2002-11-03  Andras Varga
 
-        * namespace cleanup: several iterator and other small classes
-        made inner classes (cKSplitIterator changed to cKSplit::Iterator,
-        cQueueIterator to cQueue::Iterator, cLinkedListIterator to
-        cLinkedList::Iterator, cMessageHeapIterator to cMessageHeap::Iterator,
-        sXElem to cPar::ExprElem, sGrid to cKSplit::Grid, sTopoLink to
-        cTopology::Link, sTopoLinkIn to cTopology::LinkIn, sTopoLinkOut to
-        cTopology::LinkOut, sTopoNode to cTopology::Node). #defines for
-        backwards compatibility were added to defs.h.
+	* namespace cleanup: several iterator and other small classes
+	made inner classes (cKSplitIterator changed to cKSplit::Iterator,
+	cQueueIterator to cQueue::Iterator, cLinkedListIterator to
+	cLinkedList::Iterator, cMessageHeapIterator to cMessageHeap::Iterator,
+	sXElem to cPar::ExprElem, sGrid to cKSplit::Grid, sTopoLink to
+	cTopology::Link, sTopoLinkIn to cTopology::LinkIn, sTopoLinkOut to
+	cTopology::LinkOut, sTopoNode to cTopology::Node). #defines for
+	backwards compatibility were added to defs.h.
 
 2002-10-27  Andras Varga
 
-        * Started to use C++ RTTI. It is no longer necessary to redefine
-        className() in every cObject subclass. The class name string is now
-        produced in the base class (cObject::className()) using the typeid
-        operator.
+	* Started to use C++ RTTI. It is no longer necessary to redefine
+	className() in every cObject subclass. The class name string is now
+	produced in the base class (cObject::className()) using the typeid
+	operator.
 
-        Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs
-        to compile every source using /GR, otherwise Tkenv crashes (RTTI
-        exception)!
+	Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs
+	to compile every source using /GR, otherwise Tkenv crashes (RTTI
+	exception)!
 
-        * cobject.h: removed inspector() and inspectorFactoryName() methods
-        from cObject
+	* cobject.h: removed inspector() and inspectorFactoryName() methods
+	from cObject
 
-        * ctypes.h, macros.h: removed TInspector and the inspectorfactory
-        stuff altogether (they didn't really belong here). The whole stuff
-        was moved to Tkenv.
+	* ctypes.h, macros.h: removed TInspector and the inspectorfactory
+	stuff altogether (they didn't really belong here). The whole stuff
+	was moved to Tkenv.
 
 2002-10-20  Andras Varga
 
-        * cgate.h: added isConnectedOutside() and isConnectedInside()
-        utility methods.
+	* cgate.h: added isConnectedOutside() and isConnectedInside()
+	utility methods.
 
 2002-10-19  Andras Varga
 
-        * cmodule.h, ctype.h: refactoring on dynamic module creation: instead of
-        modtype->buildInside(mod), one should now write mod->buildInside(),
-        which is more logical.
-        (Former syntax still works -- a cModuleType::buildInside() is still
-        provided for backward compatibility). buildInside() delegates task
-        to doBuildInside() (a new method), so it's doBuildInside() which
-        should be redefined in subclasses, and also nedc generates now
-        doBuildInside() code.
+	* cmodule.h, ctype.h: refactoring on dynamic module creation: instead of
+	modtype->buildInside(mod), one should now write mod->buildInside(),
+	which is more logical.
+	(Former syntax still works -- a cModuleType::buildInside() is still
+	provided for backward compatibility). buildInside() delegates task
+	to doBuildInside() (a new method), so it's doBuildInside() which
+	should be redefined in subclasses, and also nedc generates now
+	doBuildInside() code.
 
-        * ctypes.h, macros.h: refactoring around cNetworkType and
-        Define_Network: subclass cNetworkType instead of using a naked
-        pointer to a network setup function.
+	* ctypes.h, macros.h: refactoring around cNetworkType and
+	Define_Network: subclass cNetworkType instead of using a naked
+	pointer to a network setup function.
 
-        * cexception.h: introduced cTerminationException, cEndModuleException;
-        added 2 new ctors to cException
+	* cexception.h: introduced cTerminationException, cEndModuleException;
+	added 2 new ctors to cException
 
-        * cenvir.h: return type of run() changed from void to int; now the
-        return value can be used in main() as application exit code.
+	* cenvir.h: return type of run() changed from void to int; now the
+	return value can be used in main() as application exit code.
 
 2002-10-16  Andras Varga
 
-        * csimul.h: cSimulation: methods warning(), setWarnings(bool),
-        warnings() removed from class. Warnings are no longer used by the
-        simulation library at all. opp_warning() remained (but its use
-        discouraged) -- it can further be used  to report non-fatal
-        discrepancies, but the user won't be offered the possibility
-        to stop the simulation. (In Cmdenv, warnings will be written
-        to the standard error, and in Tkenv it will probably pop up an
-        [OK] dialog.
+	* csimul.h: cSimulation: methods warning(), setWarnings(bool),
+	warnings() removed from class. Warnings are no longer used by the
+	simulation library at all. opp_warning() remained (but its use
+	discouraged) -- it can further be used  to report non-fatal
+	discrepancies, but the user won't be offered the possibility
+	to stop the simulation. (In Cmdenv, warnings will be written
+	to the standard error, and in Tkenv it will probably pop up an
+	[OK] dialog.
 
-        * Convention 1: methods returning an object reference (e.g. cPar&) now
-        always throw an exception if the object is not found. (Until now, some
-        methods issued a warning and returned null reference, i.e.
-        *(cPar*)NULL).
+	* Convention 1: methods returning an object reference (e.g. cPar&) now
+	always throw an exception if the object is not found. (Until now, some
+	methods issued a warning and returned null reference, i.e.
+	*(cPar*)NULL).
 
-        * Convention 2: methods returning a pointer (e.g. cGate*) return NULL
-        pointer if the object is not found. (Until now, some methods issued
-        a warning and returned NULL pointer.
+	* Convention 2: methods returning a pointer (e.g. cGate*) return NULL
+	pointer if the object is not found. (Until now, some methods issued
+	a warning and returned NULL pointer.
 
-        * csimul.h: cSimulation: lastModuleIndex() renamed to lastModuleId();
-        operator[] deprecated (use module(int) method instead)
+	* csimul.h: cSimulation: lastModuleIndex() renamed to lastModuleId();
+	operator[] deprecated (use module(int) method instead)
 
-        * cmodule.h: cSubModIterator: operator[] deprecated (use operator()(int)
-        method instead)
+	* cmodule.h: cSubModIterator: operator[] deprecated (use operator()(int)
+	method instead)
 
-        * cModule: cGate *gate() methods no longer issue a warning if the
-        gate is not found, just return NULL. (see Convention 2 above)
+	* cModule: cGate *gate() methods no longer issue a warning if the
+	gate is not found, just return NULL. (see Convention 2 above)
 
-        * cModule, cMessage: par() throws an exception if parameter was not
-        found. (see Convention 1 above)
+	* cModule, cMessage: par() throws an exception if parameter was not
+	found. (see Convention 1 above)
 
-        * cArray::remove(cObject *) and cQueue::remove(cObject *) methods
-        now return NULL instead of the original pointer if the object was
-        not found. see Convention 2 above)
+	* cArray::remove(cObject *) and cQueue::remove(cObject *) methods
+	now return NULL instead of the original pointer if the object was
+	not found. see Convention 2 above)
 
 2002-10-09  Andras Varga
 
-        * cobject.h: clarified and extended documentation of cObject.
+	* cobject.h: clarified and extended documentation of cObject.
 
-        * csimul.cc: refactoring in cSimulation: del() renamed to deleteModule(),
-        add() to addModule()
+	* csimul.cc: refactoring in cSimulation: del() renamed to deleteModule(),
+	add() to addModule()
 
-        * refactoring: NO(classname) macro (an alias to NULL) eliminated
+	* refactoring: NO(classname) macro (an alias to NULL) eliminated
 
 2002-10-08  Andras Varga
 
-        * chead.h: removed deleteChildren() from cHead destructor call.
+	* chead.h: removed deleteChildren() from cHead destructor call.
 
-        * cobject.h: refactoring/simplification: removed deleteChildren() and
-        destructChildren() methods; dealloc(cObject *) renamed to discard().
+	* cobject.h: refactoring/simplification: removed deleteChildren() and
+	destructChildren() methods; dealloc(cObject *) renamed to discard().
 
 2002-10-07  Andras Varga
 
-        * macros.h, cobject.h: refactoring of internal workings: way of
-        constructing global registration lists (module types, networks, etc)
-        have been reorganized. Now it uses a new EXECUTE_ON_STARTUP() macro
-        instead of having hardwired into global objects' constructor to
-        join lists. As a consequence, cObject constructors could be simplified.
+	* macros.h, cobject.h: refactoring of internal workings: way of
+	constructing global registration lists (module types, networks, etc)
+	have been reorganized. Now it uses a new EXECUTE_ON_STARTUP() macro
+	instead of having hardwired into global objects' constructor to
+	join lists. As a consequence, cObject constructors could be simplified.
 
-        * onstartup.h: new file, contains EXECUTE_ON_STARTUP() macro and
-        underlying object.
+	* onstartup.h: new file, contains EXECUTE_ON_STARTUP() macro and
+	underlying object.
 
-        * Interface() macro renamed to ModuleInterface() (name clashed with
-        COM stuff on Windows); Register_Interface() macro renamed to
-        Register_ModuleInterface().
+	* Interface() macro renamed to ModuleInterface() (name clashed with
+	COM stuff on Windows); Register_Interface() macro renamed to
+	Register_ModuleInterface().
 
 2002-10-04  Andras Varga
 
-        * csimul.h: refactoring on cSimulation object:
+	* csimul.h: refactoring on cSimulation object:
 
-        * incEventCount() removed, incrementing event count was moved into
-        doOneEvent()
+	* incEventCount() removed, incrementing event count was moved into
+	doOneEvent()
 
-        * responsibilities of startRun() and endRun() changed, see doc comment.
+	* responsibilities of startRun() and endRun() changed, see doc comment.
 
-        * several methods moved from cSimulation into the Envir library:
-        timeLimit(), simTimeLimit(), startClock(), stopClock(), resetClock(),
-        checkTimes(). Also, it is no longer the scheduler function's
-        responsibility to stop the simulation if sim/real time limits have
-        been reached
+	* several methods moved from cSimulation into the Envir library:
+	timeLimit(), simTimeLimit(), startClock(), stopClock(), resetClock(),
+	checkTimes(). Also, it is no longer the scheduler function's
+	responsibility to stop the simulation if sim/real time limits have
+	been reached
 
-        * cexception.h changed
+	* cexception.h changed
 
 2002-09-07  Andras Varga
 
-        * added cchannel.h: cChannel, cSimpleChannel introduced
+	* added cchannel.h: cChannel, cSimpleChannel introduced
 
-        * cGate: added setChannel(), channel()
+	* cGate: added setChannel(), channel()
 
-        * cGate: DEPRECATED setDelay(), setError(), setDatarate(), setLink()
-        methods. Channel objects should be used instead.
+	* cGate: DEPRECATED setDelay(), setError(), setDatarate(), setLink()
+	methods. Channel objects should be used instead.
 
-        * cGate: added connectTo() method; DEPRECATED setFrom() and setTo()
+	* cGate: added connectTo() method; DEPRECATED setFrom() and setTo()
 
-        * cMessage: refactoring: added setSentFrom() and setArrival() methods
-        instead of letting friend classes manipulate private data members
-        of cMessage, and reduced friend class list.
+	* cMessage: refactoring: added setSentFrom() and setArrival() methods
+	instead of letting friend classes manipulate private data members
+	of cMessage, and reduced friend class list.
 
-        * cModule, cGate: deliver(cMessage*) changed to
-        deliver(cMessage*, simtime_t); arrived() method signature changed
-        similarly
+	* cModule, cGate: deliver(cMessage*) changed to
+	deliver(cMessage*, simtime_t); arrived() method signature changed
+	similarly
 
-        * cArray: created set(cObject*) method to add optional hashtable-like
-        behaviour to cArray: this method replaces the object with the same
-        name in the array with the object passed.
+	* cArray: created set(cObject*) method to add optional hashtable-like
+	behaviour to cArray: this method replaces the object with the same
+	name in the array with the object passed.
 
-        * cArray: commented out opp_warning() calls from all remove() methods.
-        TBD: opp_warning() to be eliminated from EVERY class!!!
+	* cArray: commented out opp_warning() calls from all remove() methods.
+	TBD: opp_warning() to be eliminated from EVERY class!!!
 
 2002-07-04  Andras Varga
 
-        * cdispstr.h added: utility class cDisplayString
+	* cdispstr.h added: utility class cDisplayString
 
 2002-06-27  Andras Varga
 
-        * cexception.h added; methods that formerly called opp_error() now
-        throw exception: throw new cException(...).
+	* cexception.h added; methods that formerly called opp_error() now
+	throw exception: throw new cException(...).
 
 2002-06-17  Andras Varga
 
-        * cpar.cc: new feature: cPar can use compiled expressions subclassed
-        from cDoubleExpression (new class). This is needed for code generated
-        by the new, nedxml-based nedc.
+	* cpar.cc: new feature: cPar can use compiled expressions subclassed
+	from cDoubleExpression (new class). This is needed for code generated
+	by the new, nedxml-based nedc.
 
 2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * doxy.cfg (GENERATE_TAGFILE): ../doc/api/tags renamed to
-        ../doc/api/opptags.xml
+	* doxy.cfg (GENERATE_TAGFILE): ../doc/api/tags renamed to
+	../doc/api/opptags.xml
 
 2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * doxy.cfg (GENERATE_TAGFILE): generate ../doc/api/tags. This
-        tag file can be included when generating model documentation
+	* doxy.cfg (GENERATE_TAGFILE): generate ../doc/api/tags. This
+	tag file can be included when generating model documentation
 
 2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
 
-        * defs.h: added macro USE_STD_NAMESPACES for C++ compilers with
-        standard library and namespaces (currently GNU C++ >= 3.0)
+	* defs.h: added macro USE_STD_NAMESPACES for C++ compilers with
+	standard library and namespaces (currently GNU C++ >= 3.0)
 
-        * cdensity.h, cenvir.h, chist.h, cksplit.h, cmodule.h, cobject.h,
-        cpsquare.h, csimul.h, cstat.h, ctopo.h, ctypes.h, cvarhist.h,
-        envirext.h: Use standard headers and namespaces if
-        USE_STD_NAMESPACES is defined
+	* cdensity.h, cenvir.h, chist.h, cksplit.h, cmodule.h, cobject.h,
+	cpsquare.h, csimul.h, cstat.h, ctopo.h, ctypes.h, cvarhist.h,
+	envirext.h: Use standard headers and namespaces if
+	USE_STD_NAMESPACES is defined
 
-        * ctopo.h: check if INFINITY is already defined
+	* ctopo.h: check if INFINITY is already defined
 
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-06  Andras Varga
 
-        * defs.h: version number upped to 2.2
+	* defs.h: version number upped to 2.2
 
 2002-03-05  Andras Varga
 
-        * cgate.h: cGate::setDisplayString() got an optional second parameter,
-        bool immediate
+	* cgate.h: cGate::setDisplayString() got an optional second parameter,
+	bool immediate
 
 2002-03-04  Andras Varga
 
-        * cobject.h: cObject::free(cObject *) renamed to dealloc() to avoid
-        misunderstandings
+	* cobject.h: cObject::free(cObject *) renamed to dealloc() to avoid
+	misunderstandings
 
-        * coutvect.h: new methods: valuesReceived(), valuesStored()
+	* coutvect.h: new methods: valuesReceived(), valuesStored()
 
-        * cobject.h, cmodule.h, cgate.h, cpar.h, csimul.h:
-        fullPath2(buf,bufsize) renamed to fullPath(buf,bufsize). cObject's
-        fullPath() method (without arg) had to be duplicated in all affected
-        classes because a (seemingly meaningless) C++ rule says overloaded
-        virtual functions must be redefined together.
+	* cobject.h, cmodule.h, cgate.h, cpar.h, csimul.h:
+	fullPath2(buf,bufsize) renamed to fullPath(buf,bufsize). cObject's
+	fullPath() method (without arg) had to be duplicated in all affected
+	classes because a (seemingly meaningless) C++ rule says overloaded
+	virtual functions must be redefined together.
 
 2002-03-04  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * util.h (class opp_string): use delete[] in functions
-        ~opp_string, allocate and operator=
+	* util.h (class opp_string): use delete[] in functions
+	~opp_string, allocate and operator=
 
 2002-03-03  Andras Varga
 
-        * protocol.h: added constants: PR_ICMP, PR_UDP_APP. [suggested by
-        Johnny Lai]
+	* protocol.h: added constants: PR_ICMP, PR_UDP_APP. [suggested by
+	Johnny Lai]
 
 2002-03-03  Andras Varga
 
-        * cpar.h: valueChanges() renamed to beforeChange(); corresponding
-        afterChange() method added
+	* cpar.h: valueChanges() renamed to beforeChange(); corresponding
+	afterChange() method added
 
-        * macros.h, ctypes.h: Register_Class(), cClassRegister can now be used
-        to create instances of non-cObject classes too; as part of this change,
-        createOne() return value changed from cObject* to void*.
+	* macros.h, ctypes.h: Register_Class(), cClassRegister can now be used
+	to create instances of non-cObject classes too; as part of this change,
+	createOne() return value changed from cObject* to void*.
 
-        * csimul.h: management of various output files (output vector file,
-        output scalar file, snapshot file) was moved from cSimulation to the
-        user interface library (behind the ev facade); new methods were added
-        to cEnvir to support this. (See also following items.)
+	* csimul.h: management of various output files (output vector file,
+	output scalar file, snapshot file) was moved from cSimulation to the
+	user interface library (behind the ev facade); new methods were added
+	to cEnvir to support this. (See also following items.)
 
-        * cenvir.h: added new methods to cEnvir: registerOutputVector(),
-        deregisterOutputVector(), overloaded recordInOutputVector() methods,
-        overloaded recordScalar() methods, getStreamForSnapshot(),
-        releaseStreamForSnapshot().
+	* cenvir.h: added new methods to cEnvir: registerOutputVector(),
+	deregisterOutputVector(), overloaded recordInOutputVector() methods,
+	overloaded recordScalar() methods, getStreamForSnapshot(),
+	releaseStreamForSnapshot().
 
-        * coutvect.h: management of output vector file including start time
-        and stop time of vectors was completely moved to the user interface
-        library; startTime()/stopTime() methods were removed from cOutVector.
-        The cOutFileMgr class was removed altogether.
+	* coutvect.h: management of output vector file including start time
+	and stop time of vectors was completely moved to the user interface
+	library; startTime()/stopTime() methods were removed from cOutVector.
+	The cOutFileMgr class was removed altogether.
 
-        * envirext.h added: contains abstract classes that can be used to extend
-        the functionality of the standard user interface library (src/envir)
-        via a plugin mechanism: cOutputVectorManager, cOutputScalarManager,
-        cSnapshotManager.
+	* envirext.h added: contains abstract classes that can be used to extend
+	the functionality of the standard user interface library (src/envir)
+	via a plugin mechanism: cOutputVectorManager, cOutputScalarManager,
+	cSnapshotManager.
 
-        * index.h: EnvirExtensions doc group added (contains classes in envirext.h)
+	* index.h: EnvirExtensions doc group added (contains classes in envirext.h)
 
-        * cpar.cc: module parameter change logging feature removed for various
-        reasons. (If you miss it, let me know!)
+	* cpar.cc: module parameter change logging feature removed for various
+	reasons. (If you miss it, let me know!)
 
 2002-02-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cllist.h (cLinkedList): Doc-fix for cLinkedList::insert()
+	* cllist.h (cLinkedList): Doc-fix for cLinkedList::insert()
 
 2002-02-21  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cobject.h: extended description of CompareFunc regarding return values
+	* cobject.h: extended description of CompareFunc regarding return values
 
-        * cqueue.h (cQueue): fixed CompareFunc arguments in Queue class description
+	* cqueue.h (cQueue): fixed CompareFunc arguments in Queue class description
 
 2001-10-28 Andras Varga
 
-        * util.h: opp_string::allocate(), opp_strprettytrunc() added;
-        indexedname() renamed to opp_mkindexedname() (old name still exists
-        as macro)
+	* util.h: opp_string::allocate(), opp_strprettytrunc() added;
+	indexedname() renamed to opp_mkindexedname() (old name still exists
+	as macro)
 
-        * cobject.h, cmodule.h, csimul.h, cgate.h, cpar.h: added
-        fullPath2(buffer,buflen) which produces the result in an external
-        buffer; cObject::fullPath() now relies on fullPath2().
+	* cobject.h, cmodule.h, csimul.h, cgate.h, cpar.h: added
+	fullPath2(buffer,buflen) which produces the result in an external
+	buffer; cObject::fullPath() now relies on fullPath2().
 
 2001-10-06 Andras Varga
 
-        * cstruct.h: fixed bugs that came up while testing experimental msg
-        subclassing
+	* cstruct.h: fixed bugs that came up while testing experimental msg
+	subclassing
 
 2001-09-14 Andras Varga
 
-        * utils.h: added opp_nextrand(long& seed)
+	* utils.h: added opp_nextrand(long& seed)
 
-        * cmodule.cc: cModule's display string methods were reorganized:
-        displayString(type) method split into displayString() and
-        displayStringAsParent(), eliminating the type parameter. Similar change
-        to the set...() methods. Old methods remained but were made deprecated.
+	* cmodule.cc: cModule's display string methods were reorganized:
+	displayString(type) method split into displayString() and
+	displayStringAsParent(), eliminating the type parameter. Similar change
+	to the set...() methods. Old methods remained but were made deprecated.
 
-        * cwatch.h: added unsigned int/long, signed/unsigned char, etc.
-        constructors to cWatch.
+	* cwatch.h: added unsigned int/long, signed/unsigned char, etc.
+	constructors to cWatch.
 
 2001-09-06 Andras Varga
 
-        * cleanup around object copying: every class has now a copy constructor,
-        an assignment operator, and every non-abstract class has dup().
-        All dup()s call the copy constructor, and all copy constructors
-        call the assignment operator. In some classes the assignment operator
-        calls copyNotSupported().
+	* cleanup around object copying: every class has now a copy constructor,
+	an assignment operator, and every non-abstract class has dup().
+	All dup()s call the copy constructor, and all copy constructors
+	call the assignment operator. In some classes the assignment operator
+	calls copyNotSupported().
 
 2001-08-23 Andras Varga
 
-        * index.h: wrote doc comment about internal classes
+	* index.h: wrote doc comment about internal classes
 
-        * generated API doc for earlier 2.1 release (undoing API changes
-        introduced since 2.1 release on a local copy of the headers)
+	* generated API doc for earlier 2.1 release (undoing API changes
+	introduced since 2.1 release on a local copy of the headers)
 
 2001-08-12 Andras Varga
 
-        * documented all typedefs
+	* documented all typedefs
 
 2001-08-11 Andras Varga
 
-        * added _CONSTs to all copy constructors, operator=()'s and dup()'s
-        * improved doc comments in cnetmod.h, cdetect.h, index.h
+	* added _CONSTs to all copy constructors, operator=()'s and dup()'s
+	* improved doc comments in cnetmod.h, cdetect.h, index.h
 
 2001-08-05 Andras Varga
 
-        * added a few dozen new _CONSTs; affects nearly all files
+	* added a few dozen new _CONSTs; affects nearly all files
 
 2001-08-04 Andras Varga
 
-        * index.h: added doc comments
+	* index.h: added doc comments
 
 2001-08-03 Andras Varga
 
-        * ccor.h cdetect.h cgate.h cmodule.h cobject.h cpar.h csimul.h cstk.h:
-        improved/added documentation comments
+	* ccor.h cdetect.h cgate.h cmodule.h cobject.h cpar.h csimul.h cstk.h:
+	improved/added documentation comments
 
 2001-07-30  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * cenvir.h: operator<< definitions were broken. Introduced with
-        revision nr. 1.5. Reverted according to rev. 1.4
+	* cenvir.h: operator<< definitions were broken. Introduced with
+	revision nr. 1.5. Reverted according to rev. 1.4
 
 2001-07-29 Andras Varga
 
-        * made a lot of methods const (only experimental for now).
-        Used a _CONST macro defined in defs.h; _CONST has to be explicitly
-        enabled from the makefile (-D_CONST=const). After testing, _CONST
-        macros will be replaced by ordinary 'const'. Affects nearly all files.
+	* made a lot of methods const (only experimental for now).
+	Used a _CONST macro defined in defs.h; _CONST has to be explicitly
+	enabled from the makefile (-D_CONST=const). After testing, _CONST
+	macros will be replaced by ordinary 'const'. Affects nearly all files.
 
 2001-07-27 Andras Varga
 
-        * cenum.h cfsm.h cnetmod.h cpar.h cstruct.h cwatch.h macros.h util.h:
-        improved/added documentation comments
+	* cenum.h cfsm.h cnetmod.h cpar.h cstruct.h cwatch.h macros.h util.h:
+	improved/added documentation comments
 
 2001-07-24 Andras Varga
 
-        * misc documentation improvements
+	* misc documentation improvements
 
 2001-07-19 Andras Varga
 
-        * added index.h which defines groups for the documentation; updated
-        a lot of classes with @ingroup directives.
+	* added index.h which defines groups for the documentation; updated
+	a lot of classes with @ingroup directives.
 
-        * cdensity.h chist.h cksplit.h cpsquare.h cqueue.h cstat.h ctopo.h
-        cvarhist.h chead.h ctypes.h cwatch.h: added/cleaned up DOC++ comments
+	* cdensity.h chist.h cksplit.h cpsquare.h cqueue.h cstat.h ctopo.h
+	cvarhist.h chead.h ctypes.h cwatch.h: added/cleaned up DOC++ comments
 
 2001-07-15 Andras Varga
 
-        * added documentation for redefined cObject methods. Affects nearly all
-        headers.
+	* added documentation for redefined cObject methods. Affects nearly all
+	headers.
 
 2001-07-13 Andras Varga
 
-        * switched to DoxyGen for generating documentation: doxy.cfg added
+	* switched to DoxyGen for generating documentation: doxy.cfg added
 
-        * cmsgheap.h coutvect.h cpacket.h ctopo.h: added/cleaned up DOC++
-        comments
+	* cmsgheap.h coutvect.h cpacket.h ctopo.h: added/cleaned up DOC++
+	comments
 
 2001-07-11 Andras Varga
 
-        * carray.h cgate.h cllist.h cpar.h cqueue.h csimul.h: added/cleaned up
-        DOC++ comments
+	* carray.h cgate.h cllist.h cpar.h cqueue.h csimul.h: added/cleaned up
+	DOC++ comments
 
 2001-07-07 Andras Varga
 
-        * cmessage.h,cmodule.h,util.h: added/cleaned up DOC++ comments
+	* cmessage.h,cmodule.h,util.h: added/cleaned up DOC++ comments
 
 2001-07-02 Andras Varga
 
-        * cenum.h,cstruct.h: DOC++ comments added (not yet complete)
+	* cenum.h,cstruct.h: DOC++ comments added (not yet complete)
 
 2001-06-28  Andras Varga
 
-        * utils.h: added DOC++ comments (not yet complete!).
+	* utils.h: added DOC++ comments (not yet complete!).
 
-        * cstruct.h added: classes to support self-describing data structures,
-        to be used for implementing message subclassing. UNTESTED. To be added
-        to the makefile.
+	* cstruct.h added: classes to support self-describing data structures,
+	to be used for implementing message subclassing. UNTESTED. To be added
+	to the makefile.
 
-        * cenum.h added: classes to support string mapping of enums. UNTESTED.
-        To be added to the makefile.
+	* cenum.h added: classes to support string mapping of enums. UNTESTED.
+	To be added to the makefile.
 
 2001-06-23  Andras Varga
 
-        * cobject.h: cleaned up DOC++ comments
+	* cobject.h: cleaned up DOC++ comments
 
-        * Class comments fixed in all files. Comments for methods, functions,
-        and macros yet to be done.
+	* Class comments fixed in all files. Comments for methods, functions,
+	and macros yet to be done.
 
 2001-06-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * Some fixes to errors produced by opp_docify.pl: missing #endif at
-        bottom of file added, replaced /* */ statements inside comments
-        with // //.
+	* Some fixes to errors produced by opp_docify.pl: missing #endif at
+	bottom of file added, replaced /* */ statements inside comments
+	with // //.
 
-        * Merged in documentation from refman.html into header files using
-        Andras' helper script opp_docify.pl (affects all files).  unused.txt
-        contains doc entries extracted from opp_docify that did not fit into
-        the header files.
-
+	* Merged in documentation from refman.html into header files using
+	Andras' helper script opp_docify.pl (affects all files).  unused.txt
+	contains doc entries extracted from opp_docify that did not fit into
+	the header files.
 
 2001-06-20  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-        * const patches applied (affects almost all files)
-
+	* const patches applied (affects almost all files)
 
 2001-03-10 Andras Varga
 
-        * ------ omnetpp-2.1 released ------
+	* ------ omnetpp-2.1 released ------
 
-        * The include/ directory was created. (Header files were formerly
-        in src/sim; if you're interested in earlier changes, refer to
-        src/sim/ChangeLog.)
+	* The include/ directory was created. (Header files were formerly
+	in src/sim; if you're interested in earlier changes, refer to
+	src/sim/ChangeLog.)

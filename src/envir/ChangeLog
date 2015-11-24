@@ -1,3 +1,49 @@
+2015-11-23  Levente Meszaros, Andras Varga
+
+	* Fingerprint computation made more powerful/flexible; see sim/ChangeLog
+	for more details. The envir library contributes to this feature
+	by providing the fingerprint-class configuration option, and support
+	for the USE_OMNETPP4x_FINGERPRINT compatibility compile-time option.
+
+2015-11-19  Andras Varga
+
+	* Made RNG-to-module mapping more flexible: the *.rng-<N> config option
+	now allows expressions as well. Limitation: only parameters of modules
+	that have been already created may be referenced (i.e. parent, and
+	generally, ancestor modules, and preceding sibling modules). Parameters
+	of the same module cannot be accessed (i.e. this.<paramname> is not
+	allowed), because they not yet exist when the RNG mapping is set up.
+
+	Hint: index, parentIndex, and ancestorIndex(level) may also be used
+	in the expression. This allows things like assigning a separate RNG
+	to each element of a module vector.
+
+2015-11-17  Andras Varga
+
+	* Added the simtime-precision config option, more user-friendly
+	replacement for the now-deprecated simtime-scale. simtime-precision
+	accepts time units (s, ms, us, ns, ps, fs, as), power-of-ten multiples
+	of such a unit (e.g. 100ms), and also base-10 scale exponents in the
+	-18..0 range (mostly for backward compatiblity with simtime-scale).
+
+	Examples:
+	   simtime-precision = ms
+	   simtime-precision = 10ns
+	   simtime-precision = -6  (==microseconds)
+
+2015-11-09  Andras Varga
+
+	* Eventlog recording: when recording method calls where the caller
+	or callee is a channel, record the channelId. Until now only IDs of
+	modules have been recorded.
+
+2015-10-16  Andras Varga
+
+	* omnetpp namespace made permanent (cannot be turned off):
+	- removed configure option and preprocessor symbol USE_NAMESPACE
+	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
+	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
 2015-06-16  Andras Varga
@@ -113,8 +159,6 @@
 	* Follow through with the introduction of cEvent; see related ChangeLog
 	entry in include/.
 
-////////////// fixes taken from omnetpp-4.x come here /////////////////
-
 2014-11-27  ------ omnetpp-4.6 released ------
 
 2014-11-28  Andras Varga
@@ -199,12 +243,12 @@
 
 2011-07-17 Rudolf Hornig
 
-      * opp_run: Changed how opp_run is used to start debug and release models.
+	  * opp_run: Changed how opp_run is used to start debug and release models.
 
-      There are two programs now to start models built as shared libs:
-      - 'opp_run_release' is built using release opp libraries and starts any release
+	  There are two programs now to start models built as shared libs:
+	  - 'opp_run_release' is built using release opp libraries and starts any release
 	model directly by invoking evMain.
-      - 'opp_run' is linked against debug opp libs. It first loads all libraries
+	  - 'opp_run' is linked against debug opp libs. It first loads all libraries
 	into the address space dynamically and check for the simbol __is_release_opp_sim__
 	(that is present only in release builds). If it does not find it, the
 	model is debug and proceeds normally by invoking evMain. If it decides that
@@ -1008,7 +1052,6 @@
 	     processed.
 	  6. Then everything goes on as normal, using the new config object.
 
-
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
 2004-05-15  ------ omnetpp-3.0a4 released ------
@@ -1279,7 +1322,6 @@
 
 	* patch to prevent Unix linkers (falsely) report Speedometer as
 	missing symbol
-
 
 2001-02-06  Andras Varga
 
