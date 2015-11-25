@@ -437,7 +437,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionSetUpConfiguration"/>
     <addaction name="separator"/>
@@ -454,7 +454,7 @@
    </widget>
    <widget class="QMenu" name="menuSimulate">
     <property name="title">
-     <string>Simulate</string>
+     <string>&amp;Simulate</string>
     </property>
     <addaction name="actionOneStep"/>
     <addaction name="separator"/>
@@ -474,11 +474,11 @@
    </widget>
    <widget class="QMenu" name="menuInspect">
     <property name="title">
-     <string>Inspect</string>
+     <string>&amp;Inspect</string>
     </property>
     <widget class="QMenu" name="menuAvailable_Components">
      <property name="title">
-      <string>Available Components</string>
+      <string>Available &amp;Components</string>
      </property>
      <addaction name="actionNEDComponentTypes"/>
      <addaction name="actionRegisteredClasses"/>
@@ -497,7 +497,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="actionStatusDetails"/>
     <addaction name="actionTimeline"/>
@@ -506,7 +506,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout_OMNeT_Qtenv"/>
    </widget>
@@ -559,7 +559,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
    <property name="text">
-    <string>Exit</string>
+    <string>E&amp;xit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -577,7 +577,7 @@
      <normaloff>:/tools/icons/tools/step.png</normaloff>:/tools/icons/tools/step.png</iconset>
    </property>
    <property name="text">
-    <string>One Step</string>
+    <string>One &amp;Step</string>
    </property>
    <property name="toolTip">
     <string>Execute one event (F4)</string>
@@ -598,7 +598,7 @@
      <normaloff>:/tools/icons/tools/run.png</normaloff>:/tools/icons/tools/run.png</iconset>
    </property>
    <property name="text">
-    <string>Run</string>
+    <string>&amp;Run</string>
    </property>
    <property name="toolTip">
     <string>Run with full animation (F5)</string>
@@ -616,7 +616,7 @@
      <normaloff>:/tools/icons/tools/newrun.png</normaloff>:/tools/icons/tools/newrun.png</iconset>
    </property>
    <property name="text">
-    <string>Set Up a Configuration...</string>
+    <string>&amp;Set Up a Configuration...</string>
    </property>
    <property name="toolTip">
     <string>Set up an inifile configuration</string>
@@ -628,7 +628,7 @@
      <normaloff>:/tools/icons/tools/stop.png</normaloff>:/tools/icons/tools/stop.png</iconset>
    </property>
    <property name="text">
-    <string>Stop Execution</string>
+    <string>S&amp;top Execution</string>
    </property>
    <property name="toolTip">
     <string>Stop running simulation (F8)</string>
@@ -649,7 +649,7 @@
      <normaloff>:/tools/icons/tools/fast.png</normaloff>:/tools/icons/tools/fast.png</iconset>
    </property>
    <property name="text">
-    <string>Fast Run (rare display updates)</string>
+    <string>&amp;Fast Run (rare display updates)</string>
    </property>
    <property name="toolTip">
     <string>Run faster: no animation and rare inspector updates (F6)</string>
@@ -670,7 +670,7 @@
      <normaloff>:/tools/icons/tools/express.png</normaloff>:/tools/icons/tools/express.png</iconset>
    </property>
    <property name="text">
-    <string>Express Run (tracing off)</string>
+    <string>E&amp;xpress Run (tracing off)</string>
    </property>
    <property name="toolTip">
     <string>Run at full speed: no text output, animation or inspector updates (F7)</string>
@@ -691,7 +691,7 @@
      <normaloff>:/tools/icons/tools/until.png</normaloff>:/tools/icons/tools/until.png</iconset>
    </property>
    <property name="text">
-    <string>Run Until...</string>
+    <string>Run &amp;Until...</string>
    </property>
    <property name="toolTip">
     <string>Run until time or event number (Ctrl+F5)</string>
@@ -709,7 +709,7 @@
      <normaloff>:/tools/icons/tools/loadned.png</normaloff>:/tools/icons/tools/loadned.png</iconset>
    </property>
    <property name="text">
-    <string>Load NED File...</string>
+    <string>&amp;Load NED File...</string>
    </property>
    <property name="toolTip">
     <string>Load NED file for compound module definitions</string>
@@ -721,7 +721,7 @@
      <normaloff>:/tools/icons/tools/finish.png</normaloff>:/tools/icons/tools/finish.png</iconset>
    </property>
    <property name="text">
-    <string>Conclude Simulation</string>
+    <string>&amp;Conclude Simulation</string>
    </property>
    <property name="toolTip">
     <string>Conclude simulation</string>
@@ -736,7 +736,7 @@
      <normaloff>:/tools/icons/tools/recordeventlog.png</normaloff>:/tools/icons/tools/recordeventlog.png</iconset>
    </property>
    <property name="text">
-    <string>Start/Stop Eventlog Recording</string>
+    <string>S&amp;tart/Stop Eventlog Recording</string>
    </property>
    <property name="toolTip">
     <string>Eventlog recording on/off (Ctrl+G)</string>
@@ -751,7 +751,7 @@
      <normaloff>:/tools/icons/tools/findobj.png</normaloff>:/tools/icons/tools/findobj.png</iconset>
    </property>
    <property name="text">
-    <string>Find/Inspect Objects...</string>
+    <string>&amp;Find/Inspect Objects...</string>
    </property>
    <property name="toolTip">
     <string>Find and inspect modules, messages, queues and other objects (Ctrl+S)</string>
@@ -817,7 +817,7 @@
      <normaloff>:/objects/icons/objects/fes.png</normaloff>:/objects/icons/objects/fes.png</iconset>
    </property>
    <property name="text">
-    <string>Timeline</string>
+    <string>&amp;Timeline</string>
    </property>
    <property name="toolTip">
     <string>Show/hide timeline (Ctrl+T)</string>
@@ -832,27 +832,27 @@
      <normaloff>:/tools/icons/tools/config.png</normaloff>:/tools/icons/tools/config.png</iconset>
    </property>
    <property name="text">
-    <string>Preferences...</string>
+    <string>&amp;Preferences...</string>
    </property>
   </action>
   <action name="actionSetUpUnconfiguredNetwork">
    <property name="text">
-    <string>Set Up an Unconfigured Network...</string>
+    <string>Set Up an &amp;Unconfigured Network...</string>
    </property>
   </action>
   <action name="actionOpenPrimaryIniFile">
    <property name="text">
-    <string>Open Primary Ini File</string>
+    <string>Open Primary &amp;Ini File</string>
    </property>
   </action>
   <action name="actionCreate_Snapshot">
    <property name="text">
-    <string>Create Snapshot...</string>
+    <string>&amp;Create Snapshot...</string>
    </property>
   </action>
   <action name="actionDebugNextEvent">
    <property name="text">
-    <string>Debug Next Event</string>
+    <string>D&amp;ebug Next Event</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F9</string>
@@ -860,22 +860,22 @@
   </action>
   <action name="actionRebuildNetwork">
    <property name="text">
-    <string>Rebuild Network</string>
+    <string>Re&amp;build Network</string>
    </property>
   </action>
   <action name="actionNetwork">
    <property name="text">
-    <string>Network</string>
+    <string>&amp;Network</string>
    </property>
   </action>
   <action name="actionScheduledEvents">
    <property name="text">
-    <string>Scheduled Events (FES)</string>
+    <string>&amp;Scheduled Events (FES)</string>
    </property>
   </action>
   <action name="actionSimulation">
    <property name="text">
-    <string>Simulation</string>
+    <string>S&amp;imulation</string>
    </property>
   </action>
   <action name="actionNEDComponentTypes">
@@ -905,12 +905,12 @@
   </action>
   <action name="actionInspectByPointer">
    <property name="text">
-    <string>Inspect by Pointer...</string>
+    <string>Ins&amp;pect by Pointer...</string>
    </property>
   </action>
   <action name="actionStatusDetails">
    <property name="text">
-    <string>Status Details</string>
+    <string>&amp;Status Details</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -918,12 +918,12 @@
   </action>
   <action name="actionFlipWindowLayout">
    <property name="text">
-    <string>Flip Window Layout</string>
+    <string>&amp;Flip Window Layout</string>
    </property>
   </action>
   <action name="actionAbout_OMNeT_Qtenv">
    <property name="text">
-    <string>About OMNeT++/Qtenv</string>
+    <string>&amp;About OMNeT++/Qtenv</string>
    </property>
   </action>
  </widget>
