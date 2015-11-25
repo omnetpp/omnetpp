@@ -24,6 +24,8 @@ namespace Ui {
 class fileEditor;
 }
 
+class QMenu;
+
 namespace omnetpp {
 namespace qtenv {
 
@@ -36,6 +38,9 @@ class FileEditor : public QDialog
 private slots:
     void save();
     void find();
+    void onCustomContextMenuRequested(const QPoint &pos);
+    void wrapLines();
+    void findNext();
 
 public:
     explicit FileEditor(QWidget *parent = 0);
@@ -48,6 +53,10 @@ public:
 private:
     Ui::fileEditor *ui;
     QFile file;
+    QMenu *contextMenu;
+    QAction *wrapLinesAction;
+    QString searchString;
+    int findOptions;
 
     void addToolBar();
 };
