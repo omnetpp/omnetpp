@@ -21,6 +21,85 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.0b3
+~~~~~~~~~~~~~
+
+(!!!)   Compared to the previous beta: The omnetpp namespace was made permanent
+        (cannot be turned off): removed configure option and preprocessor
+        symbol USE_NAMESPACE, and related macros NAMESPACE_BEGIN, NAMESPACE_END,
+        USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc. have been permanently
+        expanded.
+
+(+)     Added cOsgCanvas, a class that supports 3D graphics support via
+        OpenSceneGraph. Also added OmnetppObjectNode (requires #include
+        <omnetpp/osgutil.h>).
+
+(+)     cComponent: added the refreshDisplay() method which is called by
+        graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
+        to be refreshed after processing some simulation events.
+
+(!!!)   Signal listener interface change: A cObject *details (default-nullptr)
+        argument has been added to emit() methods, and consequently, to
+        cIListener::receiveSignal() methods as well. The motivation was to
+        allow simulation models to provide some extra information with
+        primitive data types (double, long, etc) they emit, without the need
+        to switch over to emitting cObject altogether.
+
+        Compiling OMNeT++ and models with WITH_OMNETPP4x_LISTENER_SUPPORT
+        defined will set up cIListener to delegate to the old methods, so
+        existing listeners will work.
+
+(!!!)   Result filter/recorder interface change: Related to the listener
+        interface change, a cObject *details argument has been added to
+        several cResultFilter and cResultRecorder methods as well.
+
+(!)     The following macros were removed: SIMTIME_RAW(), STR_SIMTIME(),
+        SIMTIME_TTOA(). They were compatibility macros that had been
+        introduced in 4.0 to allow writing models that work with both the
+        then-new int64-based SimTime class and the legacy "double" simtime_t.
+
+(!)     MAXTIME was renamed to SIMTIME_MAX.
+
+(!)     SimTime change: Replaced "int exponent" with "SimTimeUnit unit" in
+        the two-argument constructor and several other methods, with the aim
+        of making the API more user-friendly, and model code easier to read.
+        Affected SimTime methods:
+        - SimTime(int64_t value, SimTimeUnit unit)
+        - int64_t inUnit(SimTimeUnit unit) const
+        - SimTime trunc(SimTimeUnit unit) const
+        - SimTime remainderForUnit(SimTimeUnit unit) const
+        - void split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder)
+          const
+
+(+)     The *, /, *=, /= operations involving a SimTime and an integer type
+        now do the computation using integer arithmetic (instead of double),
+        and also check for overflow.
+
+(+)     Added SimTime::isZero()
+
+(+)     Added div(SimTime, SimTime)
+
+(+)     Added cFingerprint and subclasses.
+
+(!)     Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
+        OMNeT++ 4.x fingerprints.
+
+(!)     cSimulation: removed getHasher() and setHasher(), added
+        getFingerprint() and setFingerprint().
+
+(!)     cSimpleModule::scheduleAt() return type changed from int (a dummy)
+        to void.
+
+(!)     cObject::getDescriptor() was changed to const
+
+(!)     Some cComponent/cModule methods were changed to const to facilitate
+        calling them from refreshDisplay():
+        - cComponent: getDisplayString()
+        - cModule: findSubmodule(), getSubmodule(), getModuleByPath(),
+          getCanvas(), getOsgCanvas()
+
+(!)     M_PI has been added to <omnetpp/platdep/platmisc.h>
+
 OMNeT++ 5.0b2
 ~~~~~~~~~~~~~
 
