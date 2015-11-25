@@ -1031,5 +1031,39 @@ void MainWindow::on_actionOpenPrimaryIniFile_triggered()
     fileEditor->show();
 }
 
+// implements File|Create snapshot
+void MainWindow::on_actionCreate_Snapshot_triggered()
+{
+    if(!networkPresent())
+        return;
+
+    QDialog *dialog = new QDialog(this);
+    QVBoxLayout *layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+    dialog->setWindowTitle("Snapshot");
+
+    // Add widget
+    layout->addWidget(new QLabel("Enter label for current simulation snapshot:"));
+    QLineEdit *lineEdit = new QLineEdit();
+    layout->addWidget(lineEdit);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    dialog->layout()->addWidget(buttonBox);
+
+    if(dialog->exec() == QDialog::Accepted)
+    {
+        getQtenv()->createSnapshot(lineEdit->text().toStdString().c_str());
+
+        QString msg = QString(getQtenv()->getSnapshotFileName()).isEmpty()
+                ? "Current state of simulation has been saved."
+                : QString("Current state of simulation has been saved into \"") + getQtenv()->getSnapshotFileName() + "\".";
+
+        QMessageBox::information(this, tr("Snapshot created"), msg, QMessageBox::Ok);
+    }
+    delete dialog;
+}
+
 } // namespace qtenv
 } // namespace omnetpp

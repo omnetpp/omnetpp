@@ -118,6 +118,7 @@ private slots:
     void onSplitterMoved(int, int);
     void on_actionLoadNEDFile_triggered();
     void on_actionOpenPrimaryIniFile_triggered();
+    void on_actionCreate_Snapshot_triggered();
 
 private:
     Ui::MainWindow *ui;
