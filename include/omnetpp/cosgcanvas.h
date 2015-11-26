@@ -27,8 +27,6 @@ namespace osgEarth { class Viewpoint; }
 
 namespace omnetpp {
 
-#define OMNETPP_OSGCANVAS_VERSION  0x20150721  //XXX identifies canvas code version until API stabilizes
-
 /**
  * Wraps an OpenSceneGraph scene, allowing 3D visualization in graphical user
  * interfaces that support it (currently Qtenv). This class only wraps an OSG

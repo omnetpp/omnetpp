@@ -24,9 +24,6 @@ class cCanvas;
 class cProperty;
 class cProperties;
 
-#define OMNETPP_CANVAS_VERSION  0x20150217  //XXX identifies canvas code version until API stabilizes
-
-
 /**
  * A lightweight graphical object. Figures are rendered on a canvas (see cCanvas).
  * Figures can be composed to create complex graphics.
