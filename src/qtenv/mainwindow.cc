@@ -250,10 +250,8 @@ void MainWindow::runSimulation(eMode mode)
         setGuiForRunmode(mode);
         env->runSimulation(mode);
         setGuiForRunmode(NOT_RUNNING);
-    }
-
-    if(runMode == Qtenv::eRunMode::RUNMODE_EXPRESS)
         closeStopDialog();
+    }
 }
 
 // runNormal
@@ -334,8 +332,8 @@ void MainWindow::on_actionRunUntil_triggered()
         setGuiForRunmode(runModeToMode(mode), untilMode);
         getQtenv()->runSimulation(mode, time, event, msg);
         setGuiForRunmode(NOT_RUNNING);
+        closeStopDialog();
     }
-    closeStopDialog();
 }
 
 void MainWindow::onSliderValueChanged(int value) {
