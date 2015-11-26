@@ -121,6 +121,7 @@ private slots:
     void on_actionCreate_Snapshot_triggered();
     void on_actionConcludeSimulation_triggered();
     void on_actionNetwork_triggered();
+    void on_actionScheduledEvents_triggered();
 
 private:
     Ui::MainWindow *ui;

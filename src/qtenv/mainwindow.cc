@@ -1119,5 +1119,12 @@ void MainWindow::on_actionNetwork_triggered()
     getQtenv()->inspect(getSimulation()->getSystemModule(), INSP_DEFAULT, true);
 }
 
+//inspectMessageQueue
+void MainWindow::on_actionScheduledEvents_triggered()
+{
+    // implements Inspect|Message queue...
+    getQtenv()->inspect(getSimulation()->getFES(), INSP_DEFAULT, true);
+}
+
 } // namespace qtenv
 } // namespace omnetpp
