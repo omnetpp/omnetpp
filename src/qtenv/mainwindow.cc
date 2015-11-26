@@ -1109,5 +1109,15 @@ void MainWindow::on_actionConcludeSimulation_triggered()
     busy();
 }
 
+//inspectSystemModule
+void MainWindow::on_actionNetwork_triggered()
+{
+    // implements Inspect|Toplevel modules...
+    if(!networkPresent())
+        return;
+
+    getQtenv()->inspect(getSimulation()->getSystemModule(), INSP_DEFAULT, true);
+}
+
 } // namespace qtenv
 } // namespace omnetpp
