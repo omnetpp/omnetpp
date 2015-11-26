@@ -208,6 +208,10 @@ const SimTime& SimTime::operator/=(const cPar& p)
     }
 }
 
+double operator/(const cPar& p, const SimTime& x)
+{
+    return p.doubleValue() / x.dbl();
+}
 
 std::string SimTime::str() const
 {

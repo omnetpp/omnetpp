@@ -198,7 +198,6 @@ class SIM_API SimTime
     const SimTime& operator-=(const SimTime& x) {checkedSub(x); return *this;}
     friend const SimTime operator+(const SimTime& x, const SimTime& y)  { return SimTime(x)+=y; }
     friend const SimTime operator-(const SimTime& x, const SimTime& y) { return SimTime(x)-=y; }
-    friend double operator/(const SimTime& x, const SimTime& y) { return (double)x.raw() / (double)y.raw(); }
 
     const SimTime& operator*=(double d) {t=toInt64(t*d); return *this;}
     const SimTime& operator*=(short d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
@@ -209,6 +208,7 @@ class SIM_API SimTime
     const SimTime& operator*=(unsigned int d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
     const SimTime& operator*=(unsigned long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
     const SimTime& operator*=(unsigned long long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(const cPar& p);
 
     const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
     const SimTime& operator/=(short d) {t/=d; return *this;}
@@ -219,6 +219,7 @@ class SIM_API SimTime
     const SimTime& operator/=(unsigned int d) {t/=d; return *this;}
     const SimTime& operator/=(unsigned long d) {t/=d; return *this;}
     const SimTime& operator/=(unsigned long long d) {t/=d; return *this;}
+    const SimTime& operator/=(const cPar& p);
 
     friend const SimTime operator*(const SimTime& x, double d) { return SimTime(x)*=d; }
     friend const SimTime operator*(const SimTime& x, short d) { return SimTime(x)*=d; }
@@ -229,6 +230,7 @@ class SIM_API SimTime
     friend const SimTime operator*(const SimTime& x, unsigned int d) { return SimTime(x)*=d; }
     friend const SimTime operator*(const SimTime& x, unsigned long d) { return SimTime(x)*=d; }
     friend const SimTime operator*(const SimTime& x, unsigned long long d) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const SimTime& x, const cPar& p) { return SimTime(x)*=p; }
 
     friend const SimTime operator*(double d, const SimTime& x) { return SimTime(x)*=d; }
     friend const SimTime operator*(short d, const SimTime& x) { return SimTime(x)*=d; }
@@ -239,6 +241,7 @@ class SIM_API SimTime
     friend const SimTime operator*(unsigned int d, const SimTime& x) { return SimTime(x)*=d; }
     friend const SimTime operator*(unsigned long d, const SimTime& x) { return SimTime(x)*=d; }
     friend const SimTime operator*(unsigned long long d, const SimTime& x) { return SimTime(x)*=d; }
+    friend const SimTime operator*(const cPar& p, const SimTime& x) { return SimTime(x)*=p; }
 
     friend const SimTime operator/(const SimTime& x, double d) { return SimTime(x)/=d; }
     friend const SimTime operator/(const SimTime& x, short d) { return SimTime(x)/=d; }
@@ -249,12 +252,20 @@ class SIM_API SimTime
     friend const SimTime operator/(const SimTime& x, unsigned int d) { return SimTime(x)/=d; }
     friend const SimTime operator/(const SimTime& x, unsigned long d) { return SimTime(x)/=d; }
     friend const SimTime operator/(const SimTime& x, unsigned long long d) { return SimTime(x)/=d; }
-
-    const SimTime& operator*=(const cPar& p);
-    const SimTime& operator/=(const cPar& p);
-    friend const SimTime operator*(const SimTime& x, const cPar& p) { return SimTime(x)*=p; }
-    friend const SimTime operator*(const cPar& p, const SimTime& x) { return SimTime(x)*=p; }
     friend const SimTime operator/(const SimTime& x, const cPar& p) { return SimTime(x)/=p; }
+
+    friend double operator/(const SimTime& x, const SimTime& y) { return (double)x.raw() / (double)y.raw(); }
+
+    friend double operator/(double x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(short x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(int x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(long x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(long long x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(unsigned short x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(unsigned int x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(unsigned long x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(unsigned long long x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(const cPar& p, const SimTime& x);
     //@}
 
     /** @name Misc operations and utilities */
