@@ -128,6 +128,7 @@ private slots:
     void on_actionNED_Functions_triggered();
     void on_actionRegistered_Enums_triggered();
     void on_actionSupportedConfigurationOption_triggered();
+    void on_actionInspectByPointer_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -164,6 +165,8 @@ private:
 
     void showStopDialog();
     void closeStopDialog();
+
+    int inputBox(const QString &title, const QString &prompt, QString &variable);
 };
 
 } // namespace qtenv

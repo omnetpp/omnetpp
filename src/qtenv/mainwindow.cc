@@ -1031,20 +1031,17 @@ void MainWindow::on_actionOpenPrimaryIniFile_triggered()
     fileEditor->show();
 }
 
-// implements File|Create snapshot
-void MainWindow::on_actionCreate_Snapshot_triggered()
+int MainWindow::inputBox(const QString &title, const QString &prompt, QString &variable)
 {
-    if(!networkPresent())
-        return;
-
     QDialog *dialog = new QDialog(this);
     QVBoxLayout *layout = new QVBoxLayout();
     dialog->setLayout(layout);
-    dialog->setWindowTitle("Snapshot");
+    dialog->setWindowTitle(title);
 
     // Add widget
-    layout->addWidget(new QLabel("Enter label for current simulation snapshot:"));
+    layout->addWidget(new QLabel(prompt));
     QLineEdit *lineEdit = new QLineEdit();
+    lineEdit->setText(variable);
     layout->addWidget(lineEdit);
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1052,9 +1049,25 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
     connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
     dialog->layout()->addWidget(buttonBox);
 
-    if(dialog->exec() == QDialog::Accepted)
+    int code = dialog->exec();
+    variable = lineEdit->text();
+
+    delete dialog;
+
+    return code;
+}
+
+// implements File|Create snapshot
+void MainWindow::on_actionCreate_Snapshot_triggered()
+{
+    if(!networkPresent())
+        return;
+
+    QString variable = "";
+
+    if(inputBox("Snapshot", "Enter label for current simulation snapshot:", variable) == QDialog::Accepted)
     {
-        getQtenv()->createSnapshot(lineEdit->text().toStdString().c_str());
+        getQtenv()->createSnapshot(variable.toStdString().c_str());
 
         QString msg = QString(getQtenv()->getSnapshotFileName()).isEmpty()
                 ? "Current state of simulation has been saved."
@@ -1062,7 +1075,6 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
 
         QMessageBox::information(this, tr("Snapshot created"), msg, QMessageBox::Ok);
     }
-    delete dialog;
 }
 
 void MainWindow::on_actionConcludeSimulation_triggered()
@@ -1109,7 +1121,7 @@ void MainWindow::on_actionConcludeSimulation_triggered()
     busy();
 }
 
-//inspectSystemModule
+// inspectSystemModule
 void MainWindow::on_actionNetwork_triggered()
 {
     // implements Inspect|Toplevel modules...
@@ -1119,48 +1131,58 @@ void MainWindow::on_actionNetwork_triggered()
     getQtenv()->inspect(getSimulation()->getSystemModule(), INSP_DEFAULT, true);
 }
 
-//inspectMessageQueue
+// inspectMessageQueue
 void MainWindow::on_actionScheduledEvents_triggered()
 {
     // implements Inspect|Message queue...
     getQtenv()->inspect(getSimulation()->getFES(), INSP_DEFAULT, true);
 }
 
-//inspectSimulation
+// inspectSimulation
 void MainWindow::on_actionSimulation_triggered()
 {
     // implements Inspect|Simulation...
     getQtenv()->inspect(getSimulation(), INSP_DEFAULT, true);
 }
 
-//inspectComponentTypes
+// inspectComponentTypes
 void MainWindow::on_actionNEDComponentTypes_triggered()
 {
     getQtenv()->inspect(componentTypes.getInstance(), INSP_DEFAULT, true);
 }
 
-//inspectClasses
+// inspectClasses
 void MainWindow::on_actionRegisteredClasses_triggered()
 {
     getQtenv()->inspect(classes.getInstance(), INSP_DEFAULT, true);
 }
 
-//inspectFunctions
+// inspectFunctions
 void MainWindow::on_actionNED_Functions_triggered()
 {
     getQtenv()->inspect(nedFunctions.getInstance(), INSP_DEFAULT, true);
 }
 
-//inspectEnums
+// inspectEnums
 void MainWindow::on_actionRegistered_Enums_triggered()
 {
     getQtenv()->inspect(enums.getInstance(), INSP_DEFAULT, true);
 }
 
-//inspectConfigEntries
+// inspectConfigEntries
 void MainWindow::on_actionSupportedConfigurationOption_triggered()
 {
     getQtenv()->inspect(configOptions.getInstance(), INSP_DEFAULT, true);
+}
+
+// inspectBypointer
+void MainWindow::on_actionInspectByPointer_triggered()
+{
+    // implements Inspect|By pointer...
+    QString pointer = "ptr";
+    int ok = inputBox("Inspect by pointer...", "Enter pointer (invalid pointer may cause segmentation fault!):", pointer);
+    if(ok == QDialog::Accepted)
+        getQtenv()->inspect(strToPtr(pointer.toStdString().c_str()), INSP_DEFAULT, true);
 }
 
 } // namespace qtenv
