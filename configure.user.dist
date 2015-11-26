@@ -120,6 +120,11 @@ SHARED_LIBS=yes
 #  NO_TCL=true
 # below lets you build just the non-GUI components.
 
+# Select whether the defaut graphical runtime envirnment should be Qtenv (instead of Tkenv)
+# Set to "yes" to use Qtenv by default
+#
+PREFER_QTENV=no
+
 # Select which QT version you prefer to use.
 # Possible values: 4, 5 or leave it empty (comment out) to disable QT support
 QT_VERSION=4
