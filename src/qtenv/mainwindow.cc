@@ -1065,5 +1065,49 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
     delete dialog;
 }
 
+void MainWindow::on_actionConcludeSimulation_triggered()
+{
+    // check state is not SIM_RUNNING
+    if(checkRunning())
+        return;
+
+    // check state is not SIM_NONET
+    if(!networkPresent())
+        return;
+
+    // check state is not SIM_FINISHCALLED
+    if(getQtenv()->getSimulationState() == Qtenv::SIM_FINISHCALLED)
+    {
+       QMessageBox::information(this, tr("Error"), tr("finish() has been invoked already."), QMessageBox::Ok);
+       return;
+    }
+
+    // check state is not SIM_ERROR
+    if(getQtenv()->getSimulationState() == Qtenv::SIM_ERROR)
+    {
+       QMessageBox::StandardButton ans =
+               QMessageBox::question(this, tr("Warning"),
+                                    "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
+                                    QMessageBox::Yes | QMessageBox::No);
+
+       if(ans == QMessageBox::No)
+           return;
+    }
+    else
+    {
+       QMessageBox::StandardButton ans =
+               QMessageBox::question(this, tr("Question"),
+                                     "Do you want to conclude this simulation run and invoke finish() on all modules?",
+                                     QMessageBox::Yes | QMessageBox::No);
+
+       if(ans == QMessageBox::No)
+           return;
+    }
+
+    busy("Invoking finish() on all modules...");
+    getQtenv()->finishSimulation();
+    busy();
+}
+
 } // namespace qtenv
 } // namespace omnetpp

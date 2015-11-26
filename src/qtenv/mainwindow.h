@@ -119,6 +119,7 @@ private slots:
     void on_actionLoadNEDFile_triggered();
     void on_actionOpenPrimaryIniFile_triggered();
     void on_actionCreate_Snapshot_triggered();
+    void on_actionConcludeSimulation_triggered();
 
 private:
     Ui::MainWindow *ui;
