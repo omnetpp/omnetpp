@@ -950,11 +950,6 @@ void MainWindow::on_actionVerticalLayout_triggered(bool checked)
         ui->actionHorizontalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Vertical);
     }
-    else
-    {
-        ui->actionVerticalLayout->setChecked(false);
-        on_actionHorizontalLayout_triggered(true);
-    }
 }
 
 void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
@@ -963,11 +958,6 @@ void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
     {
         ui->actionVerticalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Horizontal);
-    }
-    else
-    {
-        ui->actionHorizontalLayout->setChecked(false);
-        on_actionVerticalLayout_triggered(true);
     }
 }
 
@@ -1183,6 +1173,20 @@ void MainWindow::on_actionInspectByPointer_triggered()
     int ok = inputBox("Inspect by pointer...", "Enter pointer (invalid pointer may cause segmentation fault!):", pointer);
     if(ok == QDialog::Accepted)
         getQtenv()->inspect(strToPtr(pointer.toStdString().c_str()), INSP_DEFAULT, true);
+}
+
+void MainWindow::on_actionFlipWindowLayout_triggered()
+{
+    if(ui->actionHorizontalLayout->isChecked())
+    {
+        on_actionVerticalLayout_triggered(true);
+        ui->actionVerticalLayout->setChecked(true);
+    }
+    else
+    {
+        on_actionHorizontalLayout_triggered(true);
+        ui->actionHorizontalLayout->setChecked(true);
+    }
 }
 
 } // namespace qtenv

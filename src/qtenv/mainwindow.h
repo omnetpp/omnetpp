@@ -129,6 +129,7 @@ private slots:
     void on_actionRegistered_Enums_triggered();
     void on_actionSupportedConfigurationOption_triggered();
     void on_actionInspectByPointer_triggered();
+    void on_actionFlipWindowLayout_triggered();
 
 private:
     Ui::MainWindow *ui;
