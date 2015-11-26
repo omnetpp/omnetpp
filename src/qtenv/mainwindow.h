@@ -122,6 +122,7 @@ private slots:
     void on_actionConcludeSimulation_triggered();
     void on_actionNetwork_triggered();
     void on_actionScheduledEvents_triggered();
+    void on_actionSimulation_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -1126,5 +1126,12 @@ void MainWindow::on_actionScheduledEvents_triggered()
     getQtenv()->inspect(getSimulation()->getFES(), INSP_DEFAULT, true);
 }
 
+//inspectSimulation
+void MainWindow::on_actionSimulation_triggered()
+{
+    // implements Inspect|Simulation...
+    getQtenv()->inspect(getSimulation(), INSP_DEFAULT, true);
+}
+
 } // namespace qtenv
 } // namespace omnetpp
