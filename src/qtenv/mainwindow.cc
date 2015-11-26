@@ -1133,5 +1133,35 @@ void MainWindow::on_actionSimulation_triggered()
     getQtenv()->inspect(getSimulation(), INSP_DEFAULT, true);
 }
 
+//inspectComponentTypes
+void MainWindow::on_actionNEDComponentTypes_triggered()
+{
+    getQtenv()->inspect(componentTypes.getInstance(), INSP_DEFAULT, true);
+}
+
+//inspectClasses
+void MainWindow::on_actionRegisteredClasses_triggered()
+{
+    getQtenv()->inspect(classes.getInstance(), INSP_DEFAULT, true);
+}
+
+//inspectFunctions
+void MainWindow::on_actionNED_Functions_triggered()
+{
+    getQtenv()->inspect(nedFunctions.getInstance(), INSP_DEFAULT, true);
+}
+
+//inspectEnums
+void MainWindow::on_actionRegistered_Enums_triggered()
+{
+    getQtenv()->inspect(enums.getInstance(), INSP_DEFAULT, true);
+}
+
+//inspectConfigEntries
+void MainWindow::on_actionSupportedConfigurationOption_triggered()
+{
+    getQtenv()->inspect(configOptions.getInstance(), INSP_DEFAULT, true);
+}
+
 } // namespace qtenv
 } // namespace omnetpp

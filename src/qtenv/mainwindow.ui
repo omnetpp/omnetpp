@@ -880,27 +880,27 @@
   </action>
   <action name="actionNEDComponentTypes">
    <property name="text">
-    <string>NED Component Types</string>
+    <string>&amp;NED Component Types</string>
    </property>
   </action>
   <action name="actionRegisteredClasses">
    <property name="text">
-    <string>Registered Classes</string>
+    <string>&amp;Registered Classes</string>
    </property>
   </action>
   <action name="actionNED_Functions">
    <property name="text">
-    <string>NEDFunctions</string>
+    <string>NED &amp;Functions</string>
    </property>
   </action>
   <action name="actionRegistered_Enums">
    <property name="text">
-    <string>RegisteredEnums</string>
+    <string>Registered &amp;Enums</string>
    </property>
   </action>
   <action name="actionSupportedConfigurationOption">
    <property name="text">
-    <string>Supported Configuration Options</string>
+    <string>&amp;Supported Configuration Options</string>
    </property>
   </action>
   <action name="actionInspectByPointer">

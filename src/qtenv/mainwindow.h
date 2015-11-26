@@ -123,6 +123,11 @@ private slots:
     void on_actionNetwork_triggered();
     void on_actionScheduledEvents_triggered();
     void on_actionSimulation_triggered();
+    void on_actionNEDComponentTypes_triggered();
+    void on_actionRegisteredClasses_triggered();
+    void on_actionNED_Functions_triggered();
+    void on_actionRegistered_Enums_triggered();
+    void on_actionSupportedConfigurationOption_triggered();
 
 private:
     Ui::MainWindow *ui;
