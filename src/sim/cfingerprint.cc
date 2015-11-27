@@ -77,7 +77,7 @@ bool cOmnetpp4xFingerprint::checkFingerprint() const
 
 Register_Class(cSingleFingerprint);
 
-Register_PerRunConfigOption(CFGID_FINGERPRINT_CATEGORIES, "fingerprint-categories", CFG_STRING, "tpl", "The fingerprint calculator can be configured to take into account various data of the simulation events. Each character in the value specifies one kind of data to be included: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT_CATEGORIES, "fingerprint-categories", CFG_STRING, "tplx", "The fingerprint calculator can be configured to take into account various data of the simulation events. Each character in the value specifies one kind of data to be included: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_EVENTS, "fingerprint-events", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain events. The value is a pattern that will be matched against the event name by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in the calculated fingerprint.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_MODULES, "fingerprint-modules", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain modules. The value is a pattern that will be matched against the module full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in all modules in the calculated fingerprint.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_RESULTS, "fingerprint-results", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain results. The value is a pattern that will be matched against the result full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all results in all modules in the calculated fingerprint.");
@@ -284,8 +284,14 @@ void cSingleFingerprint::addEvent(cEvent *event)
                             case CLEAN_HASHER:
                                 hasher->reset();
                                 break;
+                            case RESULT_SCALAR:
+                            case RESULT_STATISTIC:
+                            case RESULT_VECTOR:
+                            case EXTRA_DATA:
+                                // not processed here
+                                break;
                             default:
-                                throw cRuntimeError("Unknown fingerprint category '%d'", category);
+                                throw cRuntimeError("Unknown fingerprint category '%c' (%d)", category, category);
                         }
                     }
                 }
