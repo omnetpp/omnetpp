@@ -23,6 +23,7 @@ network CanvasTest
         submods: Submodules  { @display("p=700,150"); }
         transform: Transform { @display("p=800,150"); }
         pixmap: Pixmap       { @display("p=900,150"); }
+        icon: Icon           { @display("p=1000,150"); }
 
         polygon2: Polygon2   { @display("p=100,250"); }
 }
