@@ -515,12 +515,6 @@ QLineF ModuleInspector::getConnectionLine(cGate *gate)
     return canvasViewer->getConnectionLine(gate);
 }
 
-/*TCLKILL
-int ModuleInspector::inspectorCommand(int argc, const char **argv)
-{
-    return Inspector::inspectorCommand(argc, argv);
-}
-*/
 int ModuleInspector::getDefaultLayoutSeed()
 {
     const cDisplayString blank;

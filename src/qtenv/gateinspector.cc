@@ -163,22 +163,7 @@ void GateInspector::refresh()
         }
     }
 }
-/*TCLKILL
-int GateInspector::inspectorCommand(int argc, const char **argv)
-{
-    if (argc < 1) {
-        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        //TCLKILL return TCL_ERROR;
-    }
 
-    if (strcmp(argv[0], "redraw") == 0) {
-        redraw();
-        //TCLKILL return TCL_OK;
-    }
-
-    return Inspector::inspectorCommand(argc, argv);
-}
-*/
 void GateInspector::displayStringChanged(cGate *gate)
 {
     // XXX should defer redraw (via redraw_needed) to avoid "flickering"

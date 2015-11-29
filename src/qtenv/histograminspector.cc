@@ -148,32 +148,7 @@ void HistogramInspector::getCellInfo(char *buf, int cell)
             count / (double)(d->getCount()) / (cell_upper-cell_lower)
             );
 }
-/*TCLKILL
-int HistogramInspector::inspectorCommand(int argc, const char **argv)
-{
-    if (argc < 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-        return TCL_ERROR;
-    }
 
-    if (strcmp(argv[0], "cell") == 0) {  // 'opp_inspectorcommand <inspector> cell ...'
-        if (argc > 2) {
-            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-
-        char buf[128];
-        if (argc == 1)
-            generalInfo(buf);
-        else
-            getCellInfo(buf, atoi(argv[1]));
-        Tcl_SetResult(interp, buf, TCL_VOLATILE);
-        return TCL_OK;
-    }
-
-    return Inspector::inspectorCommand(argc, argv);
-}
-*/
 } // namespace qtenv
 } // namespace omnetpp
 

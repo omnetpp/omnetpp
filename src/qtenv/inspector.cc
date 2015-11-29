@@ -247,30 +247,8 @@ void Inspector::inspectParent()
     else
         getQtenv()->inspect(parentPtr);
 }
-/*TCLKILL
-int Inspector::inspectorCommand(int argc, const char **argv)
-{
-    if (argc != 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
-    }
 
-    if (strcmp(argv[0], "cangoback") == 0)
-        Tcl_SetResult(interp, TCLCONST(canGoBack() ? "1" : "0"), TCL_STATIC);
-    else if (strcmp(argv[0], "cangoforward") == 0)
-        Tcl_SetResult(interp, TCLCONST(canGoForward() ? "1" : "0"), TCL_STATIC);
-    else if (strcmp(argv[0], "goback") == 0)
-        goBack();
-    else if (strcmp(argv[0], "goforward") == 0)
-        goForward();
-    else {
-        Tcl_SetResult(interp, TCLCONST("unknown inspector command"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    return TCL_OK;
-}
-*/
-void Inspector::goUpInto()
+void Inspector::goUpInto() //XXX weird name
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {

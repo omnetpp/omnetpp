@@ -55,7 +55,6 @@ class QTENV_API CanvasInspector : public Inspector
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
-      //TCLKILL virtual int inspectorCommand(int argc, const char **argv) override;
 };
 
 } // namespace qtenv

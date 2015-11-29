@@ -197,8 +197,6 @@ class QTENV_API Inspector : public QWidget
 
       virtual void clearObjectChangeFlags() {}
 
-      //TCLKILL virtual int inspectorCommand(int, const char **);
-
       virtual void objectDeleted(cObject *);
 };
 

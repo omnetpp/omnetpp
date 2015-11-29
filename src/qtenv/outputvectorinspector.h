@@ -66,7 +66,6 @@ class QTENV_API OutputVectorInspector : public Inspector
       ~OutputVectorInspector();
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
-      //TCLKILL virtual int inspectorCommand(int argc, const char **argv) override;
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );

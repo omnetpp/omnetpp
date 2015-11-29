@@ -371,49 +371,7 @@ void OutputVectorInspector::setConfig(bool autosc, double timefac, double min_y,
     if (i != NUM_DRAWINGMODES)
         drawingMode = i;
 }
-/*TCLKILL
-int OutputVectorInspector::inspectorCommand(int argc, const char **argv)
-{
-    if (argc < 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-        return TCL_ERROR;
-    }
 
-    if (strcmp(argv[0], "value") == 0) {  // 'opp_inspectorcommand <inspector> value ...'
-        if (argc > 2) {
-            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-
-        char buf[128];
-        if (argc == 1)
-            generalInfo(buf);
-        else
-            valueInfo(buf, atoi(argv[1]));
-        Tcl_SetResult(interp, buf, TCL_VOLATILE);
-        return TCL_OK;
-    }
-    else if (strcmp(argv[0], "config") == 0) {  // 'opp_inspectorcommand <inspector> config ...'
-        if (argc != 6 && argc != 1) {
-            Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-
-        // get/set configuration: "timefactor miny maxy drawingmode"
-        if (argc == 1) {
-            char buf[128];
-            getConfig(buf);
-            Tcl_SetResult(interp, buf, TCL_VOLATILE);
-        }
-        else {
-            setConfig(atoi(argv[1]), atof(argv[2]), atof(argv[3]), atof(argv[4]), argv[5]);
-        }
-        return TCL_OK;
-    }
-
-    return Inspector::inspectorCommand(argc, argv);
-}
-*/
 } // namespace qtenv
 } // namespace omnetpp
 

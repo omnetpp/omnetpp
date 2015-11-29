@@ -210,52 +210,6 @@ void CanvasInspector::onContextMenuRequested(QContextMenuEvent *event)
 
 }
 
-/*TCLKILL
-int CanvasInspector::inspectorCommand(int argc, const char **argv)
-{
-    if (argc < 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-
-    E_TRY
-    if (strcmp(argv[0], "redraw") == 0) {
-        redraw();
-        return TCL_OK;
-    }
-    if (strcmp(argv[0], "getalltags") == 0) {
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->getAllTags().c_str()), TCL_VOLATILE);
-        return TCL_OK;
-    }
-    if (strcmp(argv[0], "getenabledtags") == 0) {
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->getEnabledTags().c_str()), TCL_VOLATILE);
-        return TCL_OK;
-    }
-    if (strcmp(argv[0], "getexcepttags") == 0) {
-        Tcl_SetResult(interp, TCLCONST(canvasRenderer->getExceptTags().c_str()), TCL_VOLATILE);
-        return TCL_OK;
-    }
-    if (strcmp(argv[0], "setenabledtags") == 0) {
-        if (argc != 2) {
-            Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-        canvasRenderer->setEnabledTags(argv[1]);
-        return TCL_OK;
-    }
-    if (strcmp(argv[0], "setexcepttags") == 0) {
-        if (argc != 2) {
-            Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-            return TCL_ERROR;
-        }
-        canvasRenderer->setExceptTags(argv[1]);
-        return TCL_OK;
-    }
-    E_CATCH
-
-    return Inspector::inspectorCommand(argc, argv);
-}
-*/
 } // namespace omnetpp
 } // namespace omnetpp
 

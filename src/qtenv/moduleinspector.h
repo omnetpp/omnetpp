@@ -120,7 +120,6 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
-      //TCLKILL virtual int inspectorCommand(int argc, const char **argv) override;
 
       bool needsRedraw();
 

@@ -31,7 +31,6 @@ class QTENV_API HistogramInspector : public Inspector
       HistogramInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual void refresh() override;
       virtual void commit() override {}
-      //TCLKILL virtual int inspectorCommand(int argc, const char **argv) override;
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );
