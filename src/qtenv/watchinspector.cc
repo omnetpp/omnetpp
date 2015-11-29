@@ -24,7 +24,6 @@
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cstlwatch.h"
 #include "qtenv.h"
-#include "tklib.h"
 #include "inspectorfactory.h"
 #include "watchinspector.h"
 

@@ -22,7 +22,6 @@
 #include "common/stringutil.h"
 #include "canvasinspector.h"
 #include "figurerenderers.h"
-#include "tklib.h"
 #include "qtutil.h"
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"

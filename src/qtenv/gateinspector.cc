@@ -26,7 +26,6 @@
 #include "omnetpp/cfutureeventset.h"
 #include "gateinspector.h"
 #include "qtenv.h"
-#include "tklib.h"
 #include "qtutil.h"
 #include "inspectorfactory.h"
 

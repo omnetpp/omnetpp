@@ -29,7 +29,6 @@
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
-#include "tklib.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"

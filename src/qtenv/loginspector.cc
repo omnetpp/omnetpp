@@ -30,7 +30,6 @@
 #include "common/stringtokenizer.h"
 #include "loginspector.h"
 #include "qtenv.h"
-#include "tklib.h"
 #include "qtutil.h"
 #include "mainwindow.h"
 #include "inspectorfactory.h"

@@ -18,7 +18,6 @@
 #include <cmath>
 #include "omnetpp/coutvector.h"
 #include "qtenv.h"
-#include "tklib.h"
 #include "inspectorfactory.h"
 #include "outputvectorinspector.h"
 

@@ -26,7 +26,6 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "layouterenv.h"
-#include "tklib.h"
 #include "qtutil.h"
 
 namespace omnetpp {

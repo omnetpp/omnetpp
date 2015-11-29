@@ -18,7 +18,6 @@
 #include <cmath>
 #include "omnetpp/cdensityestbase.h"
 #include "qtenv.h"
-#include "tklib.h"
 #include "inspectorfactory.h"
 #include "histograminspector.h"
 
