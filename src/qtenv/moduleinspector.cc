@@ -678,8 +678,8 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         action->setData(InspectorUtil::TAB_FILTERING);
 
         menu->addSeparator();
-        menu->addAction("Export to pdf", this, SLOT(exportToPdf()));
-        menu->addAction("Print", this, SLOT(print()));
+        menu->addAction("Export to PDF...", this, SLOT(exportToPdf()));
+        menu->addAction("Print...", this, SLOT(print()));
 
         menu->exec(event->globalPos());
         delete menu;
@@ -692,9 +692,9 @@ void ModuleInspector::exportToPdf()
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setColorMode(QPrinter::Color);
 
-    QString fileName = static_cast<cModule*>(object)->getName() + QString(".pdf");
-    fileName = QFileDialog::getSaveFileName(this, tr("Export to pdf"), fileName,
-                                                    tr("pdf files (*.pdf)"));
+    QString fileName = getObjectShortTypeName(object) + QString(".pdf");
+    fileName = QFileDialog::getSaveFileName(this, tr("Export to PDF"), fileName,
+                                                    tr("PDF files (*.pdf)"));
     if(!fileName.endsWith(".pdf", Qt::CaseInsensitive))
         fileName += ".pdf";
 
