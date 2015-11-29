@@ -311,51 +311,7 @@ QColor parseColor(const QString &name, const QColor &fallbackColor) {
 
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
-/*TCLKILL
-TclQuotedString::TclQuotedString()
-{
-    quotedstr = nullptr;
-    buf[0] = '\0';
-}
 
-TclQuotedString::TclQuotedString(const char *s)
-{
-    int flags;
-    int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
-    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
-}
-
-TclQuotedString::TclQuotedString(const char *s, int n)
-{
-    int flags;
-    int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
-    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
-}
-
-void TclQuotedString::set(const char *s)
-{
-    int flags;
-    int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
-    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
-}
-
-void TclQuotedString::set(const char *s, int n)
-{
-    int flags;
-    int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
-    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
-}
-
-TclQuotedString::~TclQuotedString()
-{
-    if (quotedstr!=buf)
-        Tcl_Free(quotedstr);
-}
-*/
 //----------------------------------------------------------------------
 
 void cFindByPathVisitor::visit(cObject *obj)
@@ -467,24 +423,7 @@ void *strToVoidPtr(const char *s)
     sscanf(s, "%p", &ptr);
     return ptr;
 }
-/*TCLKILL
-void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
-{
-    int n = visitor->getArraySize();
-    cObject **objs = visitor->getArray();
-    const int ptrsize = 21;  // one ptr should be max 20 chars (good for even 64bit-ptrs)
-    char *buf = Tcl_Alloc(ptrsize*n+1);
-    char *s = buf;
-    for (int i = 0; i < n; i++) {
-        ptrToStr(objs[i], s);
-        assert(strlen(s) <= 20);
-        s += strlen(s);
-        *s++ = ' ';
-    }
-    *s = '\0';
-    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
-}
-*/
+
 // -----------------------------------------------------------------------
 
 QString getObjectIcon(cObject *object)
@@ -594,51 +533,7 @@ const char *getMessageShortInfoString(cMessage *msg)
 
     return out.str().c_str();
 }
-/*TCLKILL
-void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
-{
-    const char *ptr = ptrToStr(obj);
-    CHK(Tcl_VarEval(interp, listbox, " insert {} end "
-                    //"-image ", getObjectIcon(interp, obj).c_str(), " "
-                    "-text {", "  ", getObjectShortTypeName(obj), "} ",
-                    "-values {",
-                    TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
-                    TclQuotedString(obj->info().c_str()).get(), " ", ptr,
-                    "}",
-                    TCL_NULL));
-}
 
-void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
-{
-    int n = visitor->getArraySize();
-    cObject **objs = visitor->getArray();
-
-    for (int i = 0; i < n; i++) {
-        // insert into listbox
-        insertIntoInspectorListbox(interp, listbox, objs[i], fullpath);
-    }
-}
-
-int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
-{
-    int n;
-    if (deep) {
-        cCollectObjectsVisitor visitor;
-        visitor.setSizeLimit(INSPECTORLISTBOX_MAX_ITEMS);
-        visitor.process(object);
-        n = visitor.getArraySize();
-        feedCollectionIntoInspectorListbox(&visitor, interp, listbox, true);
-    }
-    else {
-        cCollectChildrenVisitor visitor(object);
-        visitor.setSizeLimit(INSPECTORLISTBOX_MAX_ITEMS);
-        visitor.process(object);
-        n = visitor.getArraySize();
-        feedCollectionIntoInspectorListbox(&visitor, interp, listbox, false);
-    }
-    return n;
-}
-*/
 cModule *findCommonAncestor(cModule *src, cModule *dest)
 {
     cModule *candidate = src;

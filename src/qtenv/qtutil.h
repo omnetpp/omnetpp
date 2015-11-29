@@ -12,7 +12,6 @@
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
-
 *--------------------------------------------------------------*/
 
 #ifndef __OMNETPP_QTENV_QTUTIL_H
@@ -182,15 +181,7 @@ QString getObjectIcon(cObject *object);
 const char *getObjectBaseClass(cObject *object);
 
 const char *getMessageShortInfoString(cMessage *msg);
-/*TCLKILL
-void setObjectListResult(Tcl_Interp *interp, omnetpp::envir::cCollectObjectsVisitor *visitor);
 
-void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
-
-void feedCollectionIntoInspectorListbox(omnetpp::envir::cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
-
-int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
-*/
 /**
  * Looks up the given parameter
  */
