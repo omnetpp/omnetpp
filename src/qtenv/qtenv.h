@@ -325,7 +325,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void setStopSimulationFlag() {stopSimulationFlag = true;}
       bool getStopSimulationFlag() {return stopSimulationFlag;}
       Speedometer& getSpeedometer() {return speedometer;}
-      //TCLKILL Tcl_Interp *getInterp() {return interp;}
       LogBuffer *getLogBuffer() {return &logBuffer;}
       ComponentHistory *getComponentHistory() {return &componentHistory;}
       const char *getSilentEventFilters() const {return silentEventFilterLines.c_str();}

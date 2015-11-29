@@ -341,7 +341,6 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
 
-    //TCLKILL interp = nullptr;  // Tcl/Tk not set up yet
     simulationState = SIM_NONET;
     stopSimulationFlag = false;
     animating = false;
@@ -443,9 +442,9 @@ void Qtenv::doRun()
         QApplication::exec();
     }
     catch (std::exception& e) {
-        //TCLKILL interp = nullptr;
         throw;
     }
+
     //
     // SHUTDOWN
     //
@@ -629,8 +628,6 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
 void Qtenv::setSimulationRunMode(int mode)
 {
-    // This function (and the next one too) is called while runSimulation() is
-    // underway, from Tcl code that gets a chance to run via Tcl_Eval(interp, "update") commands
     runMode = mode;
 }
 
@@ -796,7 +793,6 @@ bool Qtenv::doRunSimulationExpress()
             }
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
                 speedometer.beginNewInterval();
-            // Qt: Tcl_Eval(interp, "update");
             QCoreApplication::processEvents();
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
             if (runMode != RUNMODE_EXPRESS) {
@@ -1902,14 +1898,6 @@ void Qtenv::log(cLogEntry *entry)
     std::string prefix = logFormatter.formatPrefix(entry);
     const char *s = entry->text;
     int n = entry->textLength;
-
-    /*
-    if (!interp) {
-        // fallback in case Tkenv didn't fire up correctly
-        ::fputs(prefix.c_str(), stdout);
-        (void)::fwrite(s, 1, n, stdout);
-        return;
-    }*/
 
     // rough guard against forgotten "\n"'s in the code
     const int maxLen = 5000;

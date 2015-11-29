@@ -73,7 +73,6 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget)
 {
     factory = f;
-    //TCLKILL interp = getQtenv()->getInterp();
     object = nullptr;
     type = f->getInspectorType();
     isToplevelWindow = isTopLevel;

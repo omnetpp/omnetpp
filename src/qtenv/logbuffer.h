@@ -38,8 +38,8 @@ class QTENV_API LogBuffer : public QObject
   public:
     struct Line {
         int contextComponentId;
-        const char *prefix; // Tcl quoted
-        const char *line;  // including newline; Tcl quoted
+        const char *prefix;
+        const char *line;  // including newline
         Line(int contextComponentId, const char *prefix, const char *line) :
             contextComponentId(contextComponentId), prefix(prefix), line(line) {}
     };

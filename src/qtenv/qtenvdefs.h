@@ -18,10 +18,9 @@
 #ifndef __OMNETPP_QTENV_QTENVDEFS_H
 #define __OMNETPP_QTENV_QTENVDEFS_H
 
-#include "tk-dummy.h"
 #include "omnetpp/platdep/platdefs.h"
-#include "omnetpp/platdep/platmisc.h"   // must precede tk.h otherwise Visual Studio 2013 fails to compile
-#include "omnetpp/platdep/timeutil.h"   // must precede <tk.h>, due to collision with <windows.h>
+#include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/platdep/timeutil.h"
 
 // a simple "class cObject;" is not enough for Q_DECLARE_METATYPE, it has to be fully defined
 #include "omnetpp/cobject.h"
@@ -58,6 +57,5 @@ Q_DECLARE_METATYPE(omnetpp::cMessage*)
 #  define QTENV_API
 #endif
 
-#define TCL_NULL  (void*)nullptr  // workaround: gcc 4.8.2 on a 64-bit architecture pushed a 32-bit 0 on the stack as last arg for Tcl_VarEval(), causing it to crash
-
 #endif
+

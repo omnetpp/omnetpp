@@ -523,13 +523,6 @@ void MainWindow::setupConfiguration(bool forceDialog)
         env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
         reflectRecordEventlog();
         busy();
-
-        if (getSimulation()->getSystemModule() != nullptr) {
-            // tell plugins about it
-            busy("Notifying Tcl plugins...");
-            // TODO notifyPlugins newNetwork
-            busy();
-        }
     }
 
     delete dialog;
@@ -930,15 +923,6 @@ void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
         getQtenv()->newNetwork(comboDialog.getSelectedNetName().toStdString().c_str());
         reflectRecordEventlog();
         busy();
-
-        if(getSimulation()->getSystemModule())
-        {
-            // tell plugins about it
-            busy("Notifying Tcl plugins...");
-            //TODO
-            //notifyPlugins newNetwork
-            busy();
-       }
     }
 }
 
