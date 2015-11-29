@@ -3,7 +3,7 @@
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
-//  General defines for the Tkenv library
+//  General defines for the Qtenv library
 //
 //==========================================================================
 
@@ -50,9 +50,9 @@ Q_DECLARE_METATYPE(ActionDataTriplet)
 Q_DECLARE_METATYPE(omnetpp::cMessage*)
 
 
-#if defined(TKENV_EXPORT)
+#if defined(QTENV_EXPORT)
 #  define QTENV_API OPP_DLLEXPORT
-#elif defined(TKENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#elif defined(QTENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
 #  define QTENV_API OPP_DLLIMPORT
 #else
 #  define QTENV_API

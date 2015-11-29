@@ -1,10 +1,10 @@
 //==========================================================================
-//  TKENV.CC - part of
+//  QTENV.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  contains:  Tkenv member functions
+//  contains:  Qtenv member functions
 //
 //==========================================================================
 
@@ -100,11 +100,11 @@ extern "C" QTENV_API void _qtenv_lib() {}
 
 #define SPEEDOMETER_UPDATEMILLISECS    1000
 
-Register_GlobalConfigOptionU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Tkenv.");
-Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, nullptr, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigOption(CFGID_TKENV_IMAGE_PATH, "tkenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
-Register_GlobalConfigOption(CFGID_TKENV_PLUGIN_PATH, "tkenv-plugin-path", CFG_PATH, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
+Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Qtenv.");
+Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see qtenv-default-config) Qtenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_QTENV_IMAGE_PATH, "qtenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
+Register_GlobalConfigOption(CFGID_QTENV_PLUGIN_PATH, "qtenv-plugin-path", CFG_PATH, "", "Specifies the search path for Qtenv plugins. Currently unused.");
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
@@ -508,7 +508,7 @@ void Qtenv::doRun()
 
 void Qtenv::printUISpecificHelp()
 {
-    std::cout << "Tkenv-specific options:\n";
+    std::cout << "Qtenv-specific options:\n";
     std::cout << "  -c <configname>\n";
     std::cout << "                Select a given configuration for execution. With inifile-based\n";
     std::cout << "                configuration database, this selects the [Config <configname>]\n";
@@ -574,7 +574,7 @@ void Qtenv::doOneStep()
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
         // called yet, because we want to allow the user to force finish() from
         // the GUI -- and finish() has to precede endRun(). endRun() will be called
-        // just before a new network gets set up, or on Tkenv shutdown.
+        // just before a new network gets set up, or on Qtenv shutdown.
         //
         finishSimulation();
     }
@@ -636,7 +636,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
         // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
         // called yet, because we want to allow the user to force finish() from
         // the GUI -- and finish() has to precede endRun(). endRun() will be called
-        // just before a new network gets set up, or on Tkenv shutdown.
+        // just before a new network gets set up, or on Qtenv shutdown.
         //
         finishSimulation();
     }
@@ -1272,16 +1272,16 @@ void Qtenv::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt->extraStack = (size_t)cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
+    opt->extraStack = (size_t)cfg->getAsDouble(CFGID_QTENV_EXTRA_STACK);
 
     const char *s = args->optionValue('c');
-    opt->defaultConfig = s ? s : cfg->getAsString(CFGID_TKENV_DEFAULT_CONFIG);
+    opt->defaultConfig = s ? s : cfg->getAsString(CFGID_QTENV_DEFAULT_CONFIG);
 
     const char *r = args->optionValue('r');
-    opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_TKENV_DEFAULT_RUN);
+    opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_QTENV_DEFAULT_RUN);
 
-    opt->imagePath = cfg->getAsPath(CFGID_TKENV_IMAGE_PATH).c_str();
-    opt->pluginPath = cfg->getAsPath(CFGID_TKENV_PLUGIN_PATH).c_str();
+    opt->imagePath = cfg->getAsPath(CFGID_QTENV_IMAGE_PATH).c_str();
+    opt->pluginPath = cfg->getAsPath(CFGID_QTENV_PLUGIN_PATH).c_str();
 }
 
 void Qtenv::readPerRunOptions()

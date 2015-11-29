@@ -1,5 +1,5 @@
 //==========================================================================
-//  TKENV.H - part of
+//  QTENV.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -249,7 +249,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       virtual bool idle() override;
 
-      // with Tkenv, activity() modules need extra stack
+      // with Qtenv, activity() modules need extra stack
       virtual unsigned getExtraStackForEnvir() const override;
 
       /*TCLKILL virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
