@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef FILEEDITOR_H
-#define FILEEDITOR_H
+#ifndef __OMNETPP_QTENV_FILEEDITOR_H
+#define __OMNETPP_QTENV_FILEEDITOR_H
 
 #include <QDialog>
 #include <QFile>
@@ -64,4 +64,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // FILEEDITOR_H
+#endif // __OMNETPP_QTENV_FILEEDITOR_H

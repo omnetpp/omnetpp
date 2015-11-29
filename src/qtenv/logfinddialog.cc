@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 #include "logfinddialog.h"
 #include "ui_logfinddialog.h"
 #include "qtenv.h"

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef TIMELINEGRAPHICSVIEW_H
-#define TIMELINEGRAPHICSVIEW_H
+#ifndef __OMNETPP_QTENV_TIMELINEGRAPHICSVIEW_H
+#define __OMNETPP_QTENV_TIMELINEGRAPHICSVIEW_H
 
 #include <QGraphicsView>
 #include "omnetpp/simtime_t.h"
@@ -121,4 +121,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // TIMELINEGRAPHICSVIEW_H
+#endif // __OMNETPP_QTENV_TIMELINEGRAPHICSVIEW_H

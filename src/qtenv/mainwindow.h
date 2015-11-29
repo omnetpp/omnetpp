@@ -173,4 +173,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // MAINWINDOW_H
+#endif // __OMNETPP_QTENV_MAINWINDOW_H

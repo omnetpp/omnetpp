@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef INSPECTORLISTBOXVIEW_H
-#define INSPECTORLISTBOXVIEW_H
+#ifndef __OMNETPP_QTENV_INSPECTORLISTBOXVIEW_H
+#define __OMNETPP_QTENV_INSPECTORLISTBOXVIEW_H
 
 #include <QTableView>
 
@@ -48,4 +48,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // INSPECTORLISTBOXVIEW_H
+#endif // __OMNETPP_QTENV_INSPECTORLISTBOXVIEW_H

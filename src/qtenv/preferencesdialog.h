@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef PREFERENCESDIALOG_H
-#define PREFERENCESDIALOG_H
+#ifndef __OMNETPP_QTENV_PREFERENCESDIALOG_H
+#define __OMNETPP_QTENV_PREFERENCESDIALOG_H
 
 #include <QDialog>
 
@@ -57,4 +57,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // PREFERENCESDIALOG_H
+#endif // __OMNETPP_QTENV_PREFERENCESDIALOG_H

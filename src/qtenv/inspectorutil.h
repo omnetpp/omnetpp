@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef INSPECTORUTIL_H
-#define INSPECTORUTIL_H
+#ifndef __OMNETPP_QTENV_INSPECTORUTIL_H
+#define __OMNETPP_QTENV_INSPECTORUTIL_H
 
 #include <QVector>
 #include "qtenvdefs.h"
@@ -51,4 +51,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // INSPECTORUTIL_H
+#endif // __OMNETPP_QTENV_INSPECTORUTIL_H

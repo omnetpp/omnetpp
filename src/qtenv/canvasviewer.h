@@ -14,9 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
-#ifndef CANVASVIEWER_H
-#define CANVASVIEWER_H
+#ifndef __OMNETPP_QTENV_CANVASVIEWER_H
+#define __OMNETPP_QTENV_CANVASVIEWER_H
 
 #include <QGraphicsView>
 
@@ -79,4 +78,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // CANVASVIEWER_H
+#endif // __OMNETPP_QTENV_CANVASVIEWER_H

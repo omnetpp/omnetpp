@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef LAYERSDIALOG_H
-#define LAYERSDIALOG_H
+#ifndef __OMNETPP_QTENV_LAYERSDIALOG_H
+#define __OMNETPP_QTENV_LAYERSDIALOG_H
 
 #include <QDialog>
 
@@ -52,4 +52,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // LAYERSDIALOG_H
+#endif // __OMNETPP_QTENV_LAYERSDIALOG_H

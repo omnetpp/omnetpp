@@ -56,4 +56,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // IMAGECACHE_H
+#endif // __OMNETPP_QTENV_IMAGECACHE_H

@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef INSPECTORLISTBOX_H
-#define INSPECTORLISTBOX_H
+#ifndef __OMNETPP_QTENV_INSPECTORLISTBOX_H
+#define __OMNETPP_QTENV_INSPECTORLISTBOX_H
 
 #include <QAbstractTableModel>
 #include <QVector>
@@ -47,4 +47,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // INSPECTORLISTBOX_H
+#endif // __OMNETPP_QTENV_INSPECTORLISTBOX_H

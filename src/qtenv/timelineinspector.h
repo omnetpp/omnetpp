@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef TIMELINEINSPECTOR_H
-#define TIMELINEINSPECTOR_H
+#ifndef __OMNETPP_QTENV_TIMELINEINSPECTOR_H
+#define __OMNETPP_QTENV_TIMELINEINSPECTOR_H
 
 #include "inspector.h"
 
@@ -49,4 +49,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // TIMELINEINSPECTOR_H
+#endif // __OMNETPP_QTENV_TIMELINEINSPECTOR_H

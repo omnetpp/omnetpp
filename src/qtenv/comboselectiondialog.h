@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef COMBOSELECTIONDIALOG_H
-#define COMBOSELECTIONDIALOG_H
+#ifndef __OMNETPP_QTENV_COMBOSELECTIONDIALOG_H
+#define __OMNETPP_QTENV_COMBOSELECTIONDIALOG_H
 
 #include <QDialog>
 
@@ -43,4 +43,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // COMBOSELECTIONDIALOG_H
+#endif // __OMNETPP_QTENV_COMBOSELECTIONDIALOG_H

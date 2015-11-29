@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef OBJECTTREEINSPECTOR_H
-#define OBJECTTREEINSPECTOR_H
+#ifndef __OMNETPP_QTENV_OBJECTTREEINSPECTOR_H
+#define __OMNETPP_QTENV_OBJECTTREEINSPECTOR_H
 
 #include "inspector.h"
 #include <QModelIndex>
@@ -50,4 +50,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // OBJECTTREEINSPECTOR_H
+#endif // __OMNETPP_QTENV_OBJECTTREEINSPECTOR_H

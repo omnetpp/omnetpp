@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef RUNUNTILDIALOG_H
-#define RUNUNTILDIALOG_H
+#ifndef __OMNETPP_QTENV_RUNUNTILDIALOG_H
+#define __OMNETPP_QTENV_RUNUNTILDIALOG_H
 
 #include <QDialog>
 #include "qtenv.h"
@@ -55,4 +55,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // RUNUNTILDIALOG_H
+#endif // __OMNETPP_QTENV_RUNUNTILDIALOG_H

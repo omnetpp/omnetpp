@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef FILTEREDOBJECTLISTDIALOG_H
-#define FILTEREDOBJECTLISTDIALOG_H
+#ifndef __OMNETPP_QTENV_FILTEREDOBJECTLISTDIALOG_H
+#define __OMNETPP_QTENV_FILTEREDOBJECTLISTDIALOG_H
 
 #include <QDialog>
 #include <QItemSelection>
@@ -67,4 +67,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // FILTEREDOBJECTLISTDIALOG_H
+#endif // __OMNETPP_QTENV_FILTEREDOBJECTLISTDIALOG_H

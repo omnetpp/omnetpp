@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef TREEITEMMODEL_H
-#define TREEITEMMODEL_H
+#ifndef __OMNETPP_QTENV_TREEITEMMODEL_H
+#define __OMNETPP_QTENV_TREEITEMMODEL_H
 
 #include <QAbstractItemModel>
 #include <QMenu>
