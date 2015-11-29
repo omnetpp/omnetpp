@@ -70,19 +70,12 @@
 
 #define emit
 
-#define emit
-
-// default plugin path -- allow overriding it via compiler option (-D)
-// (default image path comes from makefile)
-#ifndef OMNETPP_PLUGIN_PATH
-#define OMNETPP_PLUGIN_PATH    "./plugins"
-#endif
-
 using namespace omnetpp::common;
 using namespace omnetpp::envir;
 
 namespace omnetpp {
 namespace qtenv {
+
 //
 // Register the Qtenv user interface
 //
@@ -104,7 +97,6 @@ Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", 
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see qtenv-default-config) Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_IMAGE_PATH, "qtenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
-Register_GlobalConfigOption(CFGID_QTENV_PLUGIN_PATH, "qtenv-plugin-path", CFG_PATH, "", "Specifies the search path for Qtenv plugins. Currently unused.");
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
@@ -153,9 +145,6 @@ void Qtenv::storeOptsInPrefs() {
     /* // I guess these are not needed anyways
     size_t extraStack;        // per-module extra stack for activity() modules
     opp_string imagePath;     // directory of module icon files
-
-    // this one is sure not
-    opp_string pluginPath;    // path for loading Tcl and binary plugins
     */
 
     setPref("default-configname", opt->defaultConfig.c_str());
@@ -405,12 +394,6 @@ void Qtenv::doRun()
 
         if (!opt->imagePath.empty())
             image_path = std::string(opt->imagePath.c_str()) + ";" + image_path;
-
-        // path for plugins
-        const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
-        std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
-        if (!opt->pluginPath.empty())
-            plugin_path = std::string(opt->pluginPath.c_str()) + ";" + plugin_path;
 
         icons.loadImages(image_path.c_str());
 
@@ -1281,7 +1264,6 @@ void Qtenv::readOptions()
     opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_QTENV_DEFAULT_RUN);
 
     opt->imagePath = cfg->getAsPath(CFGID_QTENV_IMAGE_PATH).c_str();
-    opt->pluginPath = cfg->getAsPath(CFGID_QTENV_PLUGIN_PATH).c_str();
 }
 
 void Qtenv::readPerRunOptions()

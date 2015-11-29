@@ -74,7 +74,6 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     QtenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
     opp_string imagePath;     // directory of module icon files
-    opp_string pluginPath;    // path for loading Tcl and binary plugins
     opp_string defaultConfig; // automatically set up this config at startup
     int  defaultRun;          // automatically set up this run (of the default config) at startup
     bool printInitBanners;    // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
