@@ -342,7 +342,6 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     // printUISpecificHelp() on it
 
     //TCLKILL interp = nullptr;  // Tcl/Tk not set up yet
-    ferrorlog = nullptr;
     simulationState = SIM_NONET;
     stopSimulationFlag = false;
     animating = false;
@@ -1990,32 +1989,7 @@ unsigned Qtenv::getExtraStackForEnvir() const
 {
     return opt->extraStack;
 }
-/*TCLKILL
-void Qtenv::logTclError(const char *file, int line, Tcl_Interp *interp)
-{
-    logTclError(file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
-}
 
-void Qtenv::logTclError(const char *file, int line, const char *text)
-{
-    openTkenvlogIfNeeded();
-    FILE *f = ferrorlog ? ferrorlog : stderr;
-    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n", file, line, text);
-    ::fflush(f);
-}
-
-void Qtenv::openTkenvlogIfNeeded()
-{
-    if (!ferrorlog) {
-        ferrorlog = fopen(".tkenvlog", "a");
-        if (!ferrorlog) {
-            ::fprintf(stderr, "Tkenv: could not open .tkenvlog for append\n");
-            return;
-        }
-        ::fprintf(ferrorlog, "---- %s ---------------------------------------------------------\n\n\n", opp_makedatetimestring().c_str());
-    }
-}
-*/
 void Qtenv::setPref(const QString &key, const QVariant &value) {
     (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->setValue(key, value);
 }

@@ -139,63 +139,7 @@ public:
 // wraps the one in common to be more convenient, also adds support for a fallback color
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
 QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
-/*TCLKILL
-//
-// In some installations Tcl headers files have 'char*' without 'const char*'
-// in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
-//
-#define TCLCONST(x)   const_cast<char*>(x)
 
-//
-// Print error message on console if Tcl code returns error
-//
-#ifdef _NDEBUG
-#define CHK(tcl_eval_statement)   tcl_eval_statement
-#else
-#define CHK(tcl_eval_statement)    \
-  do { if (tcl_eval_statement==TCL_ERROR) \
-        logTclError(__FILE__,__LINE__, interp); \
-  } while(0)
-#endif
-
-//
-// Turns exceptions into Tcl errors
-//
-#define TRY(code) \
-  try {code;} catch (std::exception& e) { \
-      Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
-      return TCL_ERROR; \
-  }
-
-#define E_TRY   try {
-
-#define E_CATCH \
-  } catch (std::exception& e) { \
-      Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
-      return TCL_ERROR; \
-  }
-
-
-
-//TCLKILL  Quoting strings for Tcl_Eval
-class QTENV_API TclQuotedString
-{
-  private:
-    char buf[80];  // used only if string is short, to spare alloc/dealloc
-    char *quotedstr;
-  public:
-    TclQuotedString();
-    TclQuotedString(const char *s);
-    TclQuotedString(const char *s, int n);
-
-    void set(const char *s);
-    void set(const char *s, int n);
-
-    ~TclQuotedString();
-    const char *get() {return quotedstr;}
-    operator const char *() {return quotedstr;}
-};
-*/
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
@@ -274,14 +218,7 @@ const char *substituteDisplayStringParamRefs(const char *dispstr, std::string& b
 bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue);
 long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
-/*TCLKILL
-void logTclError(const char *file, int line, Tcl_Interp *interp);
 
-
-typedef int (*TclCmdProc)(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-
-void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[]);
-*/
 } // namespace qtenv
 } // namespace omnetpp
 

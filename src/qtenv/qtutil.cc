@@ -824,27 +824,7 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
     return atof(arg2);
 }
-/*TCLKILL
-void logTclError(const char *file, int line, Tcl_Interp *interp)
-{
-    getQtenv()->logTclError(file, line, interp);
-}
 
-void invokeTclCommand(Tcl_Interp *interp, Tcl_CmdInfo *cmd, int argc, const char *argv[])
-{
-    TclCmdProc cmdProc = (TclCmdProc)cmd->proc;
-    if (cmdProc(cmd->clientData, interp, argc, (char**)argv) == TCL_ERROR) {
-        std::stringstream os;
-        os << Tcl_GetStringResult(interp) << "\n";
-        os << "  while directly invoking Tcl command proc at " << cmdProc << "\n";
-        os << "  with args: ";
-        for (int i = 0; i < argc; i++)
-            os << " '" << argv[i] << "'";
-        os << "\n";
-        getTkenv()->logTclError(__FILE__, __LINE__, os.str().c_str());
-    }
-}
-*/
 } // namespace qtenv
 } // namespace omnetpp
 

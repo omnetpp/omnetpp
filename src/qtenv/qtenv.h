@@ -189,8 +189,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
 
-      FILE *ferrorlog;             // .tkenvlog file; nullptr if not yet open
-
       QFont boldFont;
       QFont timelineFont;
       QFont canvasFont;
@@ -250,10 +248,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       // with Qtenv, activity() modules need extra stack
       virtual unsigned getExtraStackForEnvir() const override;
-
-      /*TCLKILL virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
-      virtual void logTclError(const char *file, int line, const char *text);
-      virtual void openTkenvlogIfNeeded();*/
 
       MainWindow *getMainWindow() { return mainWindow; }
       Animator *getAnimator() { return animator; }
