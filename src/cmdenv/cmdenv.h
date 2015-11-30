@@ -81,7 +81,8 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) override;
      virtual void simulationEvent(cEvent *event) override;
 
-     virtual bool isGUI() const override;
+     virtual bool isGUI() const override {return false;}
+     virtual bool isExpressMode() const override {return false;}
      virtual std::string gets(const char *prompt, const char *defaultReply) override;
      virtual bool idle() override;
      virtual unsigned getExtraStackForEnvir() const override;

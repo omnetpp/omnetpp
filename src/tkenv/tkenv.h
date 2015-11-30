@@ -199,6 +199,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       virtual void displayStringChanged(cComponent *component) override;
 
       virtual bool isGUI() const override {return true;}
+      virtual bool isExpressMode() const override {return runMode == RUNMODE_EXPRESS;}
       virtual void bubble(cComponent *component, const char *text) override;
 
       virtual void log(cLogEntry *entry) override;

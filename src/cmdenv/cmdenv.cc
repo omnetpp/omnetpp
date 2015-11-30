@@ -568,11 +568,6 @@ void Cmdenv::deinstallSignalHandler()
     signal(SIGTERM, SIG_DFL);
 }
 
-bool Cmdenv::isGUI() const
-{
-    return false;
-}
-
 //-----------------------------------------------------
 
 void Cmdenv::askParameter(cPar *par, bool unassigned)

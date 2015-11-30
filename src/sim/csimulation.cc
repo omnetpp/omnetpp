@@ -819,6 +819,7 @@ class StaticEnv : public cEnvir
     virtual unsigned getExtraStackForEnvir() const override  { return 0; }
     virtual cConfiguration *getConfig() override  { unsupported(); return nullptr; }
     virtual bool isGUI() const override  { return false; }
+    virtual bool isExpressMode() const override  { return false; }
 
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text) override  {}
