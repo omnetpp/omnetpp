@@ -7,14 +7,16 @@
 // `license' for details on this and other legal matters.
 //
 
-simple Model3d
+simple OsgScene
 {
+    string scene;
+    bool earthViewer = default(false);  // use normal (trackpoint) viewer by default
 }
 
 network OsgIntro
 {
     submodules:
-        model3d: Model3d {
+        osgScene: OsgScene {
             @display("p=147,96");
         }
 }
