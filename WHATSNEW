@@ -6,8 +6,189 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.0 beta 3 (November 2015)
+----------------------------------
+
+Core:
+
+ - Use of the omnetpp namespace was made permanent. The following defines
+   no longer exist: USE_NAMESPACE, NAMESPACE_BEGIN, NAMESPACE_END,
+   USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX.
+
+	* Added the simtime-precision config option, more user-friendly
+	replacement for the now-deprecated simtime-scale. simtime-precision
+	accepts time units (s, ms, us, ns, ps, fs, as), power-of-ten multiples
+	of such a unit (e.g. 100ms), and also base-10 scale exponents in the
+	-18..0 range (mostly for backward compatiblity with simtime-scale).
+
+	Examples:
+	   simtime-precision = ms
+	   simtime-precision = 10ns
+	   simtime-precision = -6  (==microseconds)
+
+	* Made RNG-to-module mapping more flexible: the *.rng-<N> config option
+	now allows expressions as well. Limitation: only parameters of modules
+	that have been already created may be referenced (i.e. parent, and
+	generally, ancestor modules, and preceding sibling modules). Parameters
+	of the same module cannot be accessed (i.e. this.<paramname> is not
+	allowed), because they not yet exist when the RNG mapping is set up.
+
+	Hint: index, parentIndex, and ancestorIndex(level) may also be used
+	in the expression. This allows things like assigning a separate RNG
+	to each element of a module vector.
+
+ - Added cOsgCanvas, a class that supports 3D graphics support via
+   OpenSceneGraph. The 3D scene graph is to be built using the
+   OpenSceneGraph API (e.g. loaded from file via osgDB::readNodeFile()),
+   and then set onto a cOsgCanvas instance. There's one default cOsgCanvas
+   instance per module, accessible via cModule::getOsgCanvas(), but
+   the user can also create additional ones. The 3D scene(s) can be
+   visualized in the new Qtenv graphical runtime environment (Tkenv
+   cannot support it due to technical limitations.)
+
+   Note that cOsgCanvas is just an OMNeT++-aware wrapper for the scene
+   graph (plus some viewer hints), but the viewer itself (i.e. the widget)
+   is not accessible from simulation models. This is by design, to
+   de-couple the model from its user interface (i.e. a viewer may not be
+   open for any particular cOsgCanvas instance at any given time, or even,
+   the module may be running under Cmdenv or Tkenv that does not support
+   3D visualization at all.)
+
+   Code that uses the OpenSceneGraph API should be surrounded with #ifdef
+   WITH_OSG, so that the model can be compiled and used in OMNeT++
+   installations compiled without OpenSceneGraph support. The cOsgCanvas
+   class always exists, regardless of OpenSceneGraph being available or
+   not.
+
+ - Fingerprint computation re-thought: cHasher has been relegated to
+   a simple hash computing class, and fingerprint computation is now
+   performed by cFingerprint (which itself relies on a cHasher).
+   More precisely, cFingerprint is an abstract class interface from
+   which concrete fingerprint computing classes are derived, currently
+   cSingleFingerprint, cMultiFingerprint, and cOmnetpp4xFingerprint.
+
+   cSingleFingerprint allows selecting which data elements to include
+   in the fingerprint, and also allows filtering (by module, etc).
+   See sim/ChangeLog for a more detailed feature description.
+
+   TODO how to use! categories etc. sim/ChangeLog
+
+	* Fingerprint computation made more powerful/flexible; see sim/ChangeLog
+	for more details. The envir library contributes to this feature
+	by providing the fingerprint-class configuration option, and support
+	for the USE_OMNETPP4x_FINGERPRINT compatibility compile-time option.
+
+	new configuration options:
+	- fingerprint-categories=<string> (default: "tpl")
+	- fingerprint-events=<string> (default: "*")
+	- fingerprint-modules=<string> (default: "*")
+	- fingerprint-results=<string> (default: "*")
+
+
+ - Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
+   OMNeT++ 4.x fingerprints. Note: using cOmnetpp4xFingerprint alone is
+   not enough, because SimTime operation has also changed in some details.
+   USE_OMNETPP4x_FINGERPRINT also restores the 4.x behavior of SimTime.
+
+ - API change: cSimulation no longer has getHasher()/setHasher();
+   getFingerprint() has been added instead.
+
+ - cComponent: added the refreshDisplay() method which is called by
+   graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
+   to be refreshed after processing some simulation events. Modules are
+   expected to override refreshDisplay() and move visualization code
+   (display string manipulation, canvas figures maintenance, OSG scene
+   graph update, etc) into it. Overriding refreshDisplay() allows for
+   a much more efficient screen update strategy than handleMessage(),
+   and also results in more consistent information being displayed.
+
+   Code in refreshDisplay() is not supposed to alter the state of the
+   model; to this end, the method is declared const.
+
+ - Signal listener interface change: A cObject *details (default-nullptr)
+   argument has been added to emit() methods, and consequently, to
+   cIListener::receiveSignal() methods as well. The motivation was to
+   allow simulation models to provide some extra information with
+   primitive data types (double, long, etc) they emit, without the need
+   to switch over to emitting cObject altogether.
+
+   This is a non-backward-compatible change: users' listeners will need
+   to be updated (the extra argument added to their receiveSignal()
+   methods). To facilitate transition, compile OMNeT++ and models with
+   WITH_OMNETPP4x_LISTENER_SUPPORT defined; this will set up cIListener
+   to delegate to the old methods, so existing listeners will work.
+
+ - Result filter/recorder interface change: A similar change has been
+   applied to cResultFilter and cResultRecorder as well, so models that
+   contain custom result filters or recorders will need to be updated for
+   OMNeT++ 5.0. Defining WITH_OMNETPP4x_LISTENER_SUPPORT does NOT help
+   these classes.
+
+ - SimTime overhaul to increase accuracy (i.e. use integer arithmetic
+   where possible), improve the API, and add missing operations/functions.
+
+   Details:
+   - Added missing * and / operators for integral types. This causes
+     integer multiplications/divisions to be computed with integer
+     arithmetic instead of floating point, thus giving better accuracy
+   - Added overflow checking for integer multiplication and negation
+   - Use int64 arithmetc and overflow checking when assigning from integer types
+   - Added isZero()
+   - Replaced "int exponent" with "SimTimeUnit unit" in the two-argument
+     constructor (value + unit) and several other methods, with the aim
+     of making the API more user-friendly (and model code easier to read).
+     Models that call affected methods with integers will need to be
+     updated.
+   - Template operators expanded to 8 integer types (signed/unsigned
+     short, int, long, long long). Reason: templates kicked in too often
+     where the expression was not about SimTime at all but conversion was
+     needed; e.g. for K*2 where K was defined as enum {K=2}. The compiler
+     decided to convert K into SimTime then complained that it couldn't
+     cast the result back to the desired type (int or double).
+   - Friend operations inlined for code readability
+   - Moved math functions like fabs(SimTime) into the omnetpp namespace
+   - Added div(SimTime, SimTime); also refined related fmod()'s documentation
+
+ - Removed compatibility macros that were introduced in 4.0 to allow
+   writing models that work with both the then-new int64-based SimTime
+   class and the legacy "double" simtime_t: SIMTIME_RAW(), STR_SIMTIME(),
+   SIMTIME_TTOA(). MAXTIME was renamed to SIMTIME_MAX.
+
+   SIMTIME_ZERO, SIMTIME_DBL(), SIMTIME_STR() were left in place, as they
+   are either too broadly used to be removed and/or have some utility
+   value.
+
+more:
+ - Fixes for mingw64: M_PI moved into platdep/platmisc.h
+ - API fix: cSimpleModule::scheduleAt() return type changed from int
+   (a dummy) to void.
+ - API fix: cObject::getDescriptor() made const
+ - Some cComponent/cModule methods were changed to const to facilitate
+   calling them from refreshDisplay():
+   - cComponent: getDisplayString()
+   - cModule: findSubmodule(), getSubmodule(), getModuleByPath(),
+     getCanvas(), getOsgCanvas()
+
+
+Qtenv:
+
+   Added!
+
+Examples:
+
+  OSG examples
+
+Tools:
+   opp_featuretool
+
+Build:
+   Qt, OSG dependencies
+   unpacking tools.zip
+   separate download for OS X
+
+
 OMNeT++ 5.0 beta 2 (July 2015)
------------------------------
+------------------------------
 
 Core:
 
