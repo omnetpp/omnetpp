@@ -595,7 +595,7 @@ public class ConfigRegistry {
         "Expressions are allowed. Items prefixed with '-' get removed from the list. " +
         "Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
     public static final ConfigOption CFGID_RNG_n = addPerObjectOption(
-        "rng-%", KIND_MODULE, CFG_INT, null,
+        "rng-%", KIND_MODULE, CFG_CUSTOM /*Note: HAND-EDITED to allow expressions*/, null,
         "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 " +
         "maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The " +
         "value may be an expression, with the index and ancestorIndex() operators " +
