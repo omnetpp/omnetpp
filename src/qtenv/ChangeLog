@@ -1,1 +1,22 @@
-TODO :)
+2015-12-02  Andras Varga
+
+	* Qtenv is ready for the OMNeT++ 5.0 beta 3 release.
+
+	Most of Qtenv was implemented by Attila Torok and Mihaly Palenik
+	between April and August 2015, using Tkenv code as scaffolding.
+	It was then refined by them during fall 2015.
+
+	OpenSceneGraph integration was mostly coded by Andras Varga.
+	The build system is largely the work of Rudolf Hornig.
+
+2015-04-21  Andras Varga
+
+	* Qtenv: Added defunct Tkenv code as scaffolding for the code.
+	(Tcl_VarEval() and other Tcl API functions have been replaced with
+	dummy functions, so the original Tkenv code compiles but does
+	nothing for the moment.)
+
+2015-03-16  Rudolf Hornig
+
+	* Qtenv development started: Initial Qt code by Attila Torok.
+

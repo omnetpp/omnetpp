@@ -1,9 +1,7 @@
-2015-10-16  Andras Varga
+2015-11-20  Zoltan Bojthe
 
-	* omnetpp namespace made permanent (cannot be turned off):
-	- removed configure option and preprocessor symbol USE_NAMESPACE
-	- removed related macros: NAMESPACE_BEGIN, NAMESPACE_END,
-	  USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc.
+	* opp_test: pre-run and post-run scripts (%prerun-command, %postrun-command)
+	are now executed in the order they occur in the .test file
 
 2015-07-20  ------ omnetpp-5.0b2 released ------
 
