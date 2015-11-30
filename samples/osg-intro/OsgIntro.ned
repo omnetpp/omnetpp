@@ -11,7 +11,7 @@ simple Model3d
 {
 }
 
-network Canvas3d
+network OsgIntro
 {
     submodules:
         model3d: Model3d {
