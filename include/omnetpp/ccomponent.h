@@ -187,7 +187,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     static bool getCheckSignals() {return checkSignals;}
 
   protected:
-    /** @name Initialization, finish and parameter change hooks.
+    /** @name Initialization, finalization, and various other hooks.
      *
      * Initialize and finish functions may be provided by the user,
      * to perform special tasks at the beginning and the end of the simulation.
@@ -227,25 +227,25 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void initialize();
 
     /**
-     * Finish hook. finish() is called after end of simulation, if it
+     * Finish hook. finish() is called after end of simulation if it
      * terminated without error. This default implementation does nothing.
      */
     virtual void finish();
 
     /**
      * This method is called by the simulation kernel to notify the module or
-     * channel that the value of an existing parameter got changed.
-     * Redefining this method allows simple modules and channels to be react on
-     * parameter changes, for example by re-reading the value.
-     * This default implementation does nothing.
+     * channel that the value of an existing parameter has changed. Redefining
+     * this method allows simple modules and channels to be react on parameter
+     * changes, for example by re-reading the value. This default implementation
+     * does nothing.
      *
-     * The parameter name can be nullptr if more than one parameter has changed.
+     * The parameter name is nullptr if more than one parameter has changed.
      *
-     * To make it easier to write predictable components, the function does
-     * NOT get called on uninitialized components (i.e. when initialized() returns
-     * false). For each component the function is called (with nullptr as a parname)
-     * after the last stage of the initialization so the module gets a chance to
-     * update its cached parameters.
+     * To make it easier to write predictable components, the function is NOT
+     * called on uninitialized components (i.e. when initialized() returns
+     * false). For each component, the function is called (with nullptr as a
+     * parname) after the last stage of the initialization, so that the module
+     * gets a chance to update its cached parameters.
      *
      * Also, one must be extremely careful when changing parameters from inside
      * handleParameterChange(), to avoid creating an infinite notification loop.
@@ -253,7 +253,30 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void handleParameterChange(const char *parname);
 
     /**
-     * TODO
+     * This method is called on all components of the simulation by graphical
+     * user interfaces (Qtenv, Tkenv) whenever GUI contents need to be refreshed
+     * after processing some simulation events. Components that contain
+     * visualization-related code are expected to override refreshDisplay(),
+     * and move visualization code display string manipulation, canvas figures
+     * maintenance, OSG scene graph update, etc.) into it.
+     *
+     * As it is unpredictable when and whether this method is invoked, the
+     * simulation logic should not depend on it. It is advisable that code in
+     * refreshDisplay() does not alter the state of the model at all. This
+     * behavior is gently encouraged by having this method declared as const.
+     * (Data members that do need to be updated inside refreshDisplay(), i.e.
+     * those related to visualization, may be declared mutable to allow that).
+     *
+     * Tkenv and Qtenv invoke refreshDisplay() with similar strategies: in Step
+     * and Run mode, after each event; in Fast Run and Express Run mode, every
+     * time the screen is refereshed, which is typically on the order of once
+     * per second. Cmdenv does not invoke refreshDisplay() at all.
+     *
+     * Note that overriding refreshDisplay() is generally preferable to doing
+     * display updates as part of event handling: it results in essentially
+     * zero per-event runtime overhead, and potentially more consistent
+     * information being displayed (as all components refresh their visualization,
+     * not only the one which has just processed an event.)
      */
     virtual void refreshDisplay() const;
     //@}
@@ -338,7 +361,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual const char *getNedTypeName() const;
 
     /**
-     * TODO
+     * Returns the kind of tke component.
+     *
+     * @see isModule(), isChannel()
      */
     virtual ComponentKind getComponentKind() const = 0;
 

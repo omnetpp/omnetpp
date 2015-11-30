@@ -53,8 +53,10 @@ class SIM_API cEnum : public cOwnedObject
     explicit cEnum(const char *name=nullptr);
 
     /**
-     * FIXME document properly:
-     * arglist: (enumname, string1, value1, string2, value2, ..., nullptr)
+     * Constructor that allows adding several values to the enum, in a way
+     * similar to bulkInsert(). The argument list begins with the object name,
+     * which should be followed by an alternating list of names and values,
+     * terminated by a nullptr: name1, value1, name2, value2, ..., nullptr.
      *
      * Example:
      * <pre>

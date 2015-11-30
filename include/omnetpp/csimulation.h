@@ -374,7 +374,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Returns the sequence number of current event. Between events it returns
-     * the time of the next executed event.  FIXME this is inconsistent with getSimTime()!!!!! TODO also check what Tkenv and Cmdenv displays!!!!!
+     * the sequence number of the next event.
      */
     eventnumber_t getEventNumber() const  {return currentEventNumber;}
 
