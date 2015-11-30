@@ -44,6 +44,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_SCENARIO = "Scenarios";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
     public static final String CAT_RESULTRECORDING = "Result Recording";
+    public static final String CAT_DEBUGGING = "Debugging";
     public static final String CAT_EVENTLOG = "Event Log";
     public static final String CAT_CMDENV = "Cmdenv";
     public static final String CAT_TKENV = "Tkenv";
@@ -58,6 +59,7 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_SCENARIO,
                 CAT_RANDOMNUMBERS,
                 CAT_RESULTRECORDING,
+                CAT_DEBUGGING,
                 CAT_EVENTLOG,
                 CAT_ADVANCED,
                 CAT_CMDENV,
@@ -111,20 +113,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group01 = createGroup(form, "Logging");
             addTextFieldEditor(group01, CFGID_LOG_LEVEL, "Per-module log level", c("Module", "Log level")); //TODO combo
             addSpacer(form);
-            Group group2 = createGroup(form, "Debugging");
-            addCheckboxFieldEditor(group2, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
-            addCheckboxFieldEditor(group2, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
-            addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
-            addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
-            addCheckboxFieldEditor(group2, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
-            addSpacer(form);
-            Group group3 = createGroup(form, "External Debugger");
-            addTextFieldEditor(group3, CFGID_DEBUGGER_ATTACH_COMMAND, "Debugger command");
-            addCheckboxFieldEditor(group3, CFGID_DEBUGGER_ATTACH_ON_ERROR, "Attach debugger on errors");
-            addCheckboxFieldEditor(group3, CFGID_DEBUGGER_ATTACH_ON_STARTUP, "Attach debugger on startup");
-            addTextFieldEditor(group3, CFGID_DEBUGGER_ATTACH_WAIT_TIME, "Attach timeout");
-            addLabel(group3, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu.");
-            addSpacer(form);
             Group group4 = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
             addCheckboxFieldEditor(group4, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", null));
@@ -176,7 +164,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group0 = createGroup(form, "Statistic Recording");
             addTextFieldEditor(group0, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Warm-up Period"));
             addTextFieldEditor(group0, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
-            addCheckboxFieldEditor(group0, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
             addSpacer(form);
             Group group1 = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
@@ -186,7 +173,25 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group2 = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
             addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", null));
-            addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars", c("Parameter (module-path.paramname pattern)", null));
+            addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars", c("Parameter (module-path.paramname pattern)", null));
+            addSpacer(form);
+        }
+        else if (category.equals(CAT_DEBUGGING)) {
+            Group group0 = createGroup(form, "General");
+            addCheckboxFieldEditor(group0, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
+            addSpacer(form);
+            Group group1 = createGroup(form, "External Debugger");
+            addCheckboxFieldEditor(group1, CFGID_DEBUGGER_ATTACH_ON_STARTUP, "Attach debugger on startup");
+            addCheckboxFieldEditor(group1, CFGID_DEBUGGER_ATTACH_ON_ERROR, "Attach debugger on error");
+            addTextFieldEditor(group1, CFGID_DEBUGGER_ATTACH_COMMAND, "Debugger command");
+            addTextFieldEditor(group1, CFGID_DEBUGGER_ATTACH_WAIT_TIME, "Attach timeout");
+            addLabel(group1, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu (hint: \"ptrace_scope\").");
+            addSpacer(form);
+            Group group2 = createGroup(form, "Related Options");
+            addCheckboxFieldEditor(group2, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
+            addCheckboxFieldEditor(group2, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
+            addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
+            addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
             addSpacer(form);
         }
         else if (category.equals(CAT_EVENTLOG)) {
@@ -196,6 +201,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
             addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record", c(null, "Pattern Expression"));
             addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module", null));
+            addLabel(group0, "Event log files (.elog) can be visualized in the Sequence Chart Tool.");
             addSpacer(form);
             Group group3 = createGroup(form, "Snapshots");
             addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file", c(null, "Filename"));
