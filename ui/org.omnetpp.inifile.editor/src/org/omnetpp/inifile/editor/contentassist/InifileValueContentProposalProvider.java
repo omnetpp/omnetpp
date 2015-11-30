@@ -7,14 +7,7 @@
 
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.text.templates.Template;
@@ -67,6 +61,12 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
     private IReadonlyInifileDocument doc;
     private InifileAnalyzer analyzer;
 
+    private ConfigOption[] assistedOptions = {
+            CFGID_EXTENDS, CFGID_NETWORK, CFGID_USER_INTERFACE, CFGID_CMDENV_CONFIG_NAME, 
+            CFGID_TKENV_DEFAULT_CONFIG, CFGID_CONSTRAINT,
+            CFGID_SIMTIME_PRECISION,CFGID_SIMTIME_SCALE
+    };
+
     public InifileValueContentProposalProvider(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, boolean replace) {
         super(false, replace);
         this.section = section;
@@ -88,12 +88,12 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
         KeyType keyType = (key == null) ? KeyType.CONFIG : KeyType.getKeyType(key);
         if (keyType == KeyType.CONFIG) {
             // we call this for each edit field during form editor creation, so it should be reasonably fast
-            ConfigOption entry = ConfigRegistry.getOption(key);
-            if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE ||
-                    entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG ||
-                    entry==CFGID_CONSTRAINT)
+            ConfigOption option = ConfigRegistry.getOption(key);
+            if (option == null)
+                return false;
+            if (ArrayUtils.contains(assistedOptions, option))
                 return true;
-            if (entry != null && entry.getDataType()==ConfigOption.DataType.CFG_BOOL)
+            if (option.getDataType() == ConfigOption.DataType.CFG_BOOL)
                 return true;
             return false;
         }
@@ -187,6 +187,12 @@ s    * before getting presented to the user.
             // offer variable names after "$"
             if (prefix.matches(".*\\$[A-Za-z0-9_]*"))
                 addConfigVariableProposals(p);
+        }
+        else if (entry==CFGID_SIMTIME_PRECISION) {
+            p.addAll(toProposals(SIMTIME_PRECISION_CHOICES));
+        }
+        else if (entry==CFGID_SIMTIME_SCALE) {
+            p.addAll(toProposals(SIMTIME_SCALE_CHOICES));
         }
         else if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {
             p.addAll(toProposals(new String[] {"true", "false"}));

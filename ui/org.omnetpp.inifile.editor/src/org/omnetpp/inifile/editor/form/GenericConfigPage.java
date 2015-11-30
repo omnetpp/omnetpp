@@ -7,100 +7,7 @@
 
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CHECK_SIGNALS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_AUTOFLUSH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNERS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EV_OUTPUT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXTRA_STACK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_INTERACTIVE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_LOG_FORMAT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_LOG_LEVEL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MESSAGE_TRACE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MODULE_MESSAGES;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_OUTPUT_FILE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_PERFORMANCE_DISPLAY;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_RUNS_TO_EXECUTE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_STATUS_FREQUENCY;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATION_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_COMMAND;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_ON_ERROR;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_ON_STARTUP;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUGGER_ATTACH_WAIT_TIME;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_STATISTICS_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVALS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FUTUREEVENTSET_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOG_LEVEL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_MODULE_NESTING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENTLOG_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTSCALARMANAGER_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTVECTORMANAGER_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_FILE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_FILE_APPEND;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_PRECISION;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTORS_MEMORY_LIMIT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_FILE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_PRECISION;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARALLEL_SIMULATION;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARAM_RECORD_AS_SCALAR;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_COMMUNICATIONS_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_DEBUG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMMUNICATIONS_PREFIX;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMMUNICATIONS_PRESERVE_READ;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMMUNICATIONS_READ_PREFIX;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NAMEDPIPECOMMUNICATIONS_PREFIX;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCHRONIZATION_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARTITION_ID;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_RECORDING_MODES;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RUNNUMBER_WIDTH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIM_TIME_LIMIT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOTMANAGER_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOT_FILE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_RUN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXTRA_STACK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_IMAGE_PATH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_PLUGIN_PATH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TOTAL_STACK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_MAX_BUFFERED_VALUES;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORD_EVENTNUMBERS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARMUP_PERIOD;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,14 +49,6 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_TKENV = "Tkenv";
     public static final String CAT_EXTENSIONS = "Extensions";
     public static final String CAT_PARSIM = "Parallel Simulation";
-
-    public static final String[] SIMTIME_SCALE_CHOICES = new String[] {
-        "0", "-3", "-6", "-9", "-12", "-15", "-18",  //TODO add (s),(ms),(us),(ns),(ps),(fs),(as) once combo supports it
-    };
-
-    public static final String[] LOGLEVEL_CHOICES = new String[] {
-        "FATAL", "ERROR", "WARN", "INFO", "DETAILS", "DEBUG", "TRACE"
-    };
 
     public static final Image ICON_WARNING = UIUtils.ICON_WARNING;
 
@@ -201,7 +100,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "CPU Time Limit"));
             addSpacer(form);
             Group group3 = createGroup(form, "Other");
-            addComboboxFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision");
+            addComboboxFieldEditor(group3, CFGID_SIMTIME_PRECISION, "Simulation time precision");
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
             addSpacer(form);
         }
@@ -382,9 +281,9 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
 
         // initialize combo boxes with static content
-        FieldEditor simtimeScaleEditor = getFieldEditorFor(CFGID_SIMTIME_SCALE);
-        if (simtimeScaleEditor != null)
-            simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
+        FieldEditor simtimePrecisionEditor = getFieldEditorFor(CFGID_SIMTIME_PRECISION);
+        if (simtimePrecisionEditor != null)
+            simtimePrecisionEditor.setComboContents(Arrays.asList(SIMTIME_PRECISION_CHOICES));
         FieldEditor cmdenvLoglevelEditor = getFieldEditorFor(CFGID_CMDENV_LOG_LEVEL);
         if (cmdenvLoglevelEditor != null)
             cmdenvLoglevelEditor.setComboContents(Arrays.asList(LOGLEVEL_CHOICES));

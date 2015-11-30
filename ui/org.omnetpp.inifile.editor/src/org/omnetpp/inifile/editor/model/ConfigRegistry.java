@@ -759,4 +759,22 @@ public class ConfigRegistry {
         EXTENDS = CFGID_EXTENDS.getName();
         TYPENAME = CFGID_TYPENAME.getName();
     }
+
+    public static final String[] SIMTIME_SCALE_CHOICES = new String[] {
+        "0", "-3", "-6", "-9", "-12", "-15", "-18"
+    };
+
+    public static final String[] SIMTIME_PRECISION_CHOICES = new String[] {
+        "s",
+        "100ms", "10ms", "ms",
+        "100us", "10us", "us",
+        "100ns", "10ns", "ns",
+        "100ps", "10ps", "ps",
+        "100fs", "10fs", "fs",
+        "100as", "10as", "as",
+    };
+
+    public static final String[] LOGLEVEL_CHOICES = new String[] {
+        "FATAL", "ERROR", "WARN", "INFO", "DETAILS", "DEBUG", "TRACE"
+    };
 }

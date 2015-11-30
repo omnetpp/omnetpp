@@ -9,6 +9,8 @@ package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_PRECISION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
@@ -565,6 +567,9 @@ public final class InifileAnalyzer {
             else
                 markers.addError(section, key, "Unknown configuration option: "+key);
             return;
+        }
+        else if (e == CFGID_SIMTIME_SCALE) {
+            markers.addWarning(section, key, "Option \""+key+"\" is deprecated, use \"" + CFGID_SIMTIME_PRECISION.getName() + "\" instead");
         }
         else if (e.isGlobal() && !section.equals(GENERAL)) {
             markers.addError(section, key, "Option \""+key+"\" can only be specified globally, in the [General] section");
