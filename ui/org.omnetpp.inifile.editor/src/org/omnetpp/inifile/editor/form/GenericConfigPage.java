@@ -61,11 +61,11 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_RESULTRECORDING,
                 CAT_DEBUGGING,
                 CAT_EVENTLOG,
-                CAT_ADVANCED,
                 CAT_CMDENV,
                 CAT_TKENV,
                 CAT_EXTENSIONS,
                 CAT_PARSIM,
+                CAT_ADVANCED,
         };
     }
 
@@ -109,6 +109,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         else if (category.equals(CAT_ADVANCED)) {
             Group group0 = createGroup(form, "Regression");
             addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify", c(null, "Fingerprint (Hex)"));
+            addLabel(group0, "Further options allow controlling the ingredients of the fingerprint, filtering by modules/events, etc.");
             addSpacer(form);
             Group group01 = createGroup(form, "Logging");
             addTextFieldEditor(group01, CFGID_LOG_LEVEL, "Per-module log level", c("Module", "Log level")); //TODO combo
@@ -136,6 +137,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group1 = createGroup(form, "Random Number Generators");
             addTextFieldEditor(group1, CFGID_NUM_RNGS, "Number of RNGs", c(null, "Number of RNGs"));
             addTextFieldEditor(group1, CFGID_RNG_CLASS, "RNG class", c(null, "RNG Class"));
+            addLabel(group1, "Further options allow mapping of the global RNGs to module-local RNGs.");
             addSpacer(form);
             Group group2 = createGroup(form, "Automatic Seeds");
             addTextFieldEditor(group2, CFGID_SEED_SET, "Seed set", c(null, "Index of Seed Set"));
@@ -178,7 +180,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_DEBUGGING)) {
             Group group0 = createGroup(form, "General");
-            addCheckboxFieldEditor(group0, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
+            addCheckboxFieldEditor(group0, CFGID_DEBUG_ON_ERRORS, "Generate debug trap on errors");
             addSpacer(form);
             Group group1 = createGroup(form, "External Debugger");
             addCheckboxFieldEditor(group1, CFGID_DEBUGGER_ATTACH_ON_STARTUP, "Attach debugger on startup");
