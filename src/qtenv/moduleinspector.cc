@@ -614,7 +614,8 @@ void ModuleInspector::doubleClick(QMouseEvent *event) {
     auto objects = canvasViewer->getObjectsAt(event->pos());
 
     if (!objects.empty()) {
-        setObject(objects.front());
+        if (supportsObject(objects.front()))
+            setObject(objects.front());
         emit objectDoubleClicked(objects.front());
     }
 }

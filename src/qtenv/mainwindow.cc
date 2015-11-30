@@ -141,6 +141,7 @@ void MainWindow::showStopDialog()
     stopDialog->show();
     setEnabled(false);
     stopDialog->setEnabled(true);
+    QApplication::processEvents(); // so the dialog will show up immediately
 }
 
 void MainWindow::closeStopDialog()
