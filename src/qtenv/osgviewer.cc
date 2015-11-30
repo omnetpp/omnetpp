@@ -312,12 +312,14 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type)
 
     const cOsgCanvas::Viewpoint &viewpoint = osgCanvas->getGenericViewpoint();
 
-    osg::Vec3d eye(viewpoint.eye.x, viewpoint.eye.y, viewpoint.eye.z);
-    osg::Vec3d center(viewpoint.center.x, viewpoint.center.y, viewpoint.center.z);
-    osg::Vec3d up(viewpoint.up.x, viewpoint.up.y, viewpoint.up.z);
+    if (viewpoint.valid) {
+        osg::Vec3d eye(viewpoint.eye.x, viewpoint.eye.y, viewpoint.eye.z);
+        osg::Vec3d center(viewpoint.center.x, viewpoint.center.y, viewpoint.center.z);
+        osg::Vec3d up(viewpoint.up.x, viewpoint.up.y, viewpoint.up.z);
 
-    manipulator->setHomePosition(eye, center, up);
-    manipulator->home(0);
+        manipulator->setHomePosition(eye, center, up);
+        manipulator->home(0);
+    }
 
     view->setCameraManipulator(manipulator);
 }

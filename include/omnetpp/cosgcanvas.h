@@ -50,12 +50,15 @@ class SIM_API cOsgCanvas : public cOwnedObject
         // this is only needed to simplify the Viewpoint hint
         struct Vec3d {
             double x, y, z;
+            Vec3d() : x(0), y(0), z(0) {}
             Vec3d(double x, double y, double z): x(x), y(y), z(z) {}
         };
 
         struct Viewpoint {
             Vec3d eye, center, up; // see OpenGL gluLookAt
-            Viewpoint(const Vec3d &eye, const Vec3d &center, const Vec3d &up): eye(eye), center(center), up(up) {}
+            bool valid;
+            Viewpoint() : valid(false) {}
+            Viewpoint(const Vec3d &eye, const Vec3d &center, const Vec3d &up): eye(eye), center(center), up(up), valid(true) {}
         };
 
     protected:
