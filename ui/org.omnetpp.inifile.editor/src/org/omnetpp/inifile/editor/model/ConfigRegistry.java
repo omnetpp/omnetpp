@@ -198,7 +198,7 @@ public class ConfigRegistry {
         "parameters. In interactive mode, it asks the user. In non-interactive mode " +
         "(which is more suitable for batch execution), Cmdenv stops with an error.");
     public static final ConfigOption CFGID_CMDENV_LOG_FORMAT = addPerRunOption(
-        "cmdenv-log-format", CFG_STRING, "[%l]    ",
+        "cmdenv-log-format", CFG_STRING, "[%l]  ",
         "Specifies the format string that determines the prefix of each log line. " +
         "The format string may contain format directives in the syntax '%x' (a '%' " +
         "followed by a single format character).  For example '%l' stands for log " +
@@ -345,8 +345,44 @@ public class ConfigRegistry {
         "suitable for crude regression tests. As fingerprints occasionally differ " +
         "across platforms, more than one fingerprint values can be specified here, " +
         "separated by spaces, and a match with any of them will be accepted. To " +
-        "obtain the initial fingerprint, enter a dummy value such as \"0000\"), and " +
+        "obtain the initial fingerprint, enter a dummy value (such as \"0000\"), and " +
         "run the simulation.");
+    public static final ConfigOption CFGID_FINGERPRINT_CATEGORIES = addPerRunOption(
+        "fingerprint-categories", CFG_STRING, "tplx",
+        "The fingerprint calculator can be configured to take into account various " +
+        "data of the simulation events. Each character in the value specifies one " +
+        "kind of data to be included: 'e' event number, 't' simulation time, 'n' " +
+        "message (event) full name, 'c' message (event) class name, 'k' message " +
+        "kind, 'l' message bit length, 'o' message control info class name, 'd' " +
+        "message data, 'i' module id, 'm' module full name, 'p' module full path, " +
+        "'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' " +
+        "statistic results, 'v' vector results, 'x' extra data provided by modules.");
+    public static final ConfigOption CFGID_FINGERPRINT_CLASS = addGlobalOption(
+        "fingerprint-class", CFG_STRING, "omnetpp::cSingleFingerprint",
+        "Part of the Envir plugin mechanism: selects the fingerprint class to be " +
+        "used to calculate the simulation fingerprint. The class has to implement " +
+        "the cFingerprint interface.");
+    public static final ConfigOption CFGID_FINGERPRINT_EVENTS = addPerRunOption(
+        "fingerprint-events", CFG_STRING, "*",
+        "Configures the fingerprint calculator to consider only certain events. The " +
+        "value is a pattern that will be matched against the event name by default. " +
+        "It may also be an expression containing pattern matching characters, field " +
+        "access, and logical operators. The default setting is '*' which includes " +
+        "all events in the calculated fingerprint.");
+    public static final ConfigOption CFGID_FINGERPRINT_MODULES = addPerRunOption(
+        "fingerprint-modules", CFG_STRING, "*",
+        "Configures the fingerprint calculator to consider only certain modules. The " +
+        "value is a pattern that will be matched against the module full path by " +
+        "default. It may also be an expression containing pattern matching " +
+        "characters, field access, and logical operators. The default setting is '*' " +
+        "which includes all events in all modules in the calculated fingerprint.");
+    public static final ConfigOption CFGID_FINGERPRINT_RESULTS = addPerRunOption(
+        "fingerprint-results", CFG_STRING, "*",
+        "Configures the fingerprint calculator to consider only certain results. The " +
+        "value is a pattern that will be matched against the result full path by " +
+        "default. It may also be an expression containing pattern matching " +
+        "characters, field access, and logical operators. The default setting is '*' " +
+        "which includes all results in all modules in the calculated fingerprint.");
     public static final ConfigOption CFGID_FNAME_APPEND_HOST = addGlobalOption(
         "fname-append-host", CFG_BOOL, null,
         "Turning it on will cause the host name and process Id to be appended to the " +
@@ -508,6 +544,21 @@ public class ConfigRegistry {
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +
         "destructors) after network cleanup.");
+    public static final ConfigOption CFGID_QTENV_DEFAULT_CONFIG = addGlobalOption(
+        "qtenv-default-config", CFG_STRING, null,
+        "Specifies which config Qtenv should set up automatically on startup. The " +
+        "default is to ask the user.");
+    public static final ConfigOption CFGID_QTENV_DEFAULT_RUN = addGlobalOption(
+        "qtenv-default-run", CFG_INT, "0",
+        "Specifies which run (of the default config, see qtenv-default-config) Qtenv " +
+        "should set up automatically on startup. The default is to ask the user.");
+    public static final ConfigOption CFGID_QTENV_EXTRA_STACK = addGlobalOptionU(
+        "qtenv-extra-stack", "B", "48KiB",
+        "Specifies the extra amount of stack that is reserved for each activity() " +
+        "simple module when the simulation is run under Qtenv.");
+    public static final ConfigOption CFGID_QTENV_IMAGE_PATH = addGlobalOption(
+        "qtenv-image-path", CFG_PATH, null,
+        "Specifies the path for loading module icons.");
     public static final ConfigOption CFGID_REALTIMESCHEDULER_SCALING = addGlobalOption(
         "realtimescheduler-scaling", CFG_DOUBLE, null,
         "When cRealTimeScheduler is selected as scheduler class: ratio of simulation " +
@@ -547,7 +598,9 @@ public class ConfigRegistry {
         "rng-%", KIND_MODULE, CFG_INT, null,
         "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 " +
         "maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The " +
-        "default is one-to-one mapping.");
+        "value may be an expression, with the index and ancestorIndex() operators " +
+        "being potentially very useful. The default is one-to-one mapping, i.e. RNG " +
+        "k of all modules refer to the global RNG k (for k=0..num-rngs-1).");
     public static final ConfigOption CFGID_RNG_CLASS = addPerRunOption(
         "rng-class", CFG_STRING, "omnetpp::cMersenneTwister",
         "The random number generator class to be used. It can be `cMersenneTwister', " +
@@ -595,12 +648,21 @@ public class ConfigRegistry {
         "sim-time-limit", "s", null,
         "Stops the simulation when simulation time reaches the given limit. The " +
         "default is no limit.");
+    public static final ConfigOption CFGID_SIMTIME_PRECISION = addGlobalOption(
+        "simtime-precision", CFG_CUSTOM, "ps",
+        "Sets the resolution for the 64-bit fixed-point simulation time " +
+        "representation. Accepted values are: second-or-smaller time units (s, ms, " +
+        "us, ns, ps, fs or as), power-of-ten multiples of such units (e.g. 100ms), " +
+        "and base-10 scale exponents in the -18..0 range. The maximum representable " +
+        "simulation time depends on the resolution. The default is picosecond " +
+        "resolution, which offers a range of ~110 days.");
     public static final ConfigOption CFGID_SIMTIME_SCALE = addGlobalOption(
         "simtime-scale", CFG_INT, "-12",
-        "Sets the scale exponent, and thus the resolution of time for the 64-bit " +
-        "fixed-point simulation time representation. Accepted values are -18..0; for " +
-        "example, -6 selects microsecond resolution. -12 means picosecond " +
-        "resolution, with a maximum simtime of ~110 days.");
+        "DEPRECATED in favor of simtime-precision. Sets the scale exponent, and thus " +
+        "the resolution of time for the 64-bit fixed-point simulation time " +
+        "representation. Accepted values are -18..0; for example, -6 selects " +
+        "microsecond resolution. -12 means picosecond resolution, with a maximum " +
+        "simtime of ~110 days.");
     public static final ConfigOption CFGID_SNAPSHOT_FILE = addPerRunOption(
         "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sna",
         "Name of the snapshot file.");
