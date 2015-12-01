@@ -69,23 +69,23 @@ struct ENVIR_API EnvirOptions
 
     size_t totalStack;
     bool parsim;
-    opp_string networkName;
-    opp_string inifileNetworkDir; // dir of the inifile containing "network="
-    opp_string imagePath;         // directory of module icon files
+    std::string networkName;
+    std::string inifileNetworkDir;
+    std::string imagePath;
     std::string nedPath;
 
     int numRNGs;
-    opp_string rngClass;
+    std::string rngClass;
     int seedset; // which set of seeds to use
 
-    opp_string schedulerClass;
-    opp_string outputVectorManagerClass;
-    opp_string outputScalarManagerClass;
-    opp_string snapshotmanagerClass;
-    opp_string futureeventsetClass;
+    std::string schedulerClass;
+    std::string outputVectorManagerClass;
+    std::string outputScalarManagerClass;
+    std::string snapshotmanagerClass;
+    std::string futureeventsetClass;
 #ifdef WITH_PARSIM
-    opp_string parsimcommClass; // if parsim: cParsimCommunications class to use
-    opp_string parsimsynchClass; // if parsim: cParsimSynchronizer class to use
+    std::string parsimcommClass; // if parsim: cParsimCommunications class to use
+    std::string parsimsynchClass; // if parsim: cParsimSynchronizer class to use
 #endif
 
     bool debugStatisticsRecording;
@@ -169,7 +169,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void setLogFormat(const char *logFormat);
 
     // Utility function: optionally appends host name to fname
-    virtual void processFileName(opp_string& fname);
+    virtual void processFileName(std::string& fname);
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;

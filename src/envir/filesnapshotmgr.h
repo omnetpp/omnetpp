@@ -34,7 +34,7 @@ namespace envir {
 class ENVIR_API cFileSnapshotManager : public cISnapshotManager
 {
   protected:
-    opp_string fname;  // output file name
+    std::string fname;  // output file name
 
   public:
     /** @name Constructor, destructor */

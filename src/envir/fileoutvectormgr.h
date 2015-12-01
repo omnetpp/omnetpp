@@ -54,9 +54,9 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
        virtual ~VectorData() {}
     };
 
-    RunData run;      // holds data of the current run
+    RunData run;       // holds data of the current run
     int nextid;        // holds next free ID for output vectors
-    opp_string fname;  // output file name
+    std::string fname; // output file name
     FILE *f;           // file ptr of output file
     int prec;          // number of significant digits when writing doubles (time, value)
 

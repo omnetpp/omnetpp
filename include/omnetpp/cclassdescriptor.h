@@ -19,6 +19,7 @@
 #include <string>
 #include "cownedobject.h"
 #include "simtime.h"
+#include "opp_string.h"
 
 namespace omnetpp {
 

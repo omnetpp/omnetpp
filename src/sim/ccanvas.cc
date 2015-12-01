@@ -24,6 +24,7 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/opp_string.h"
 
 using namespace omnetpp::common;
 

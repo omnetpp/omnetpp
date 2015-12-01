@@ -42,7 +42,7 @@ namespace envir {
 class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
 {
   private:
-    opp_string filename;
+    std::string filename;
     FILE *feventlog;
     ObjectPrinter *objectPrinter;
     Intervals *recordingIntervals;

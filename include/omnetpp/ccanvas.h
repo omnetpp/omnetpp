@@ -16,6 +16,9 @@
 #ifndef __OMNETPP_CCANVAS_H
 #define __OMNETPP_CCANVAS_H
 
+#include <string>
+#include <map>
+#include <vector>
 #include "cownedobject.h"
 
 namespace omnetpp {

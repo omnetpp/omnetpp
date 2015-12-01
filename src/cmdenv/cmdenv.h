@@ -31,10 +31,10 @@ using namespace omnetpp::envir;
 struct CMDENV_API CmdenvOptions : public EnvirOptions
 {
     CmdenvOptions();
-    opp_string configName;
-    opp_string runsToExec;
+    std::string configName;
+    std::string runsToExec;
     size_t extraStack;
-    opp_string outputFile;
+    std::string outputFile;
     bool expressMode;
     bool interactive;
     bool autoflush; // all modes

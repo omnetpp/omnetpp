@@ -21,6 +21,7 @@
 #include "omnetpp/cnamedobject.h"
 #include "omnetpp/cownedobject.h"
 #include "omnetpp/globals.h"
+#include "omnetpp/opp_string.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

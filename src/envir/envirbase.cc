@@ -1495,31 +1495,27 @@ void EnvirBase::undisposedObject(cObject *obj)
 
 //-------------------------------------------------------------
 
-void EnvirBase::processFileName(opp_string& fname)
+void EnvirBase::processFileName(std::string& fname)
 {
-    std::string text = fname.c_str();
-
     // insert ".<hostname>.<pid>" if requested before file extension
     // (note: parsimProcId cannot be appended because of initialization order)
     if (opt->fnameAppendHost) {
         std::string extension = "";
-        std::string::size_type index = text.rfind('.');
+        std::string::size_type index = fname.rfind('.');
         if (index != std::string::npos) {
-            extension = std::string(text, index);
-            text.erase(index);
+            extension = std::string(fname, index);
+            fname.erase(index);
         }
 
         const char *hostname = opp_gethostname();
         if (!hostname)
             throw cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
-                                "or COMPUTERNAME (Windows) environment variable",
-                    fname.c_str());
+                                "or COMPUTERNAME (Windows) environment variable", fname.c_str());
         int pid = getpid();
 
         // append
-        text += opp_stringf(".%s.%d%s", hostname, pid, extension.c_str());
+        fname += opp_stringf(".%s.%d%s", hostname, pid, extension.c_str());
     }
-    fname = text.c_str();
 }
 
 void EnvirBase::readOptions()

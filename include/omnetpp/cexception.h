@@ -22,7 +22,6 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "errmsg.h"
-#include "opp_string.h"
 
 namespace omnetpp {
 

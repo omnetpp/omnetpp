@@ -39,6 +39,12 @@ inline bool opp_isempty(const char *s)  {return !s || !s[0];}
 inline const char *opp_nulltoempty(const char *s)  {return s ? s : "";}
 
 /**
+ * Returns the pointer passed as argument unchanged, except that if it was empty,
+ * it returns the second argument.
+ */
+inline const char *opp_emptytodefault(const char *s, const char *defaultString)  {return opp_isempty(s) ? defaultString : s;}
+
+/**
  * Returns true if the string only contains whitespace.
  */
 COMMON_API bool opp_isblank(const char *txt);

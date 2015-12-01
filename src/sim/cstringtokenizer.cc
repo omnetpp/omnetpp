@@ -17,6 +17,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <cstring>
 #include <cstdlib>
 #include <cerrno>
 #include <climits>  // LONG_MAX

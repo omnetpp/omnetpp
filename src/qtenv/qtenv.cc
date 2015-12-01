@@ -399,8 +399,9 @@ void Qtenv::doRun()
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
-            windowTitlePrefix.reserve(24);
-            sprintf(windowTitlePrefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            char tmp[32];
+            sprintf(tmp, "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            windowTitlePrefix = tmp;
         }
 
         mainWindow = new MainWindow(this);

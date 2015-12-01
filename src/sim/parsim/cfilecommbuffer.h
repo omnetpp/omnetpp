@@ -22,6 +22,7 @@
 #define __OMNETPP_CFILECOMMBUFFER_H
 
 #include "ccommbufferbase.h"
+#include "omnetpp/opp_string.h"
 
 namespace omnetpp {
 

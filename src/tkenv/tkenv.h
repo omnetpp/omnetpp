@@ -59,8 +59,8 @@ struct TkenvOptions : public omnetpp::envir::EnvirOptions
 {
     TkenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
-    opp_string pluginPath;    // path for loading Tcl and binary plugins
-    opp_string defaultConfig; // automatically set up this config at startup
+    std::string pluginPath;   // path for loading Tcl and binary plugins
+    std::string defaultConfig;// automatically set up this config at startup
     int  defaultRun;          // automatically set up this run (of the default config) at startup
     bool printInitBanners;    // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
     bool printEventBanners;   // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
@@ -85,7 +85,7 @@ struct TkenvOptions : public omnetpp::envir::EnvirOptions
     bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
     bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
     StripNamespace stripNamespace; // whether to display type names with full C++ namespace prefix or not
-    opp_string logFormat;     // format of the log prefix, see the LogFormatter class
+    std::string logFormat;    // format of the log prefix, see the LogFormatter class
     LogLevel logLevel;        // global log level
     int scrollbackLimit;      // global setting for all LogInspectors
 };
@@ -134,9 +134,9 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
 
    protected:
       Tcl_Interp *interp;          // Tcl interpreter
-      opp_string windowTitlePrefix;// contains "procId=.." when using parsim
+      std::string windowTitlePrefix;// contains "procId=.." when using parsim
 
-      opp_string tkenvDir;         // directory of Tkenv's *.tcl files
+      std::string tkenvDir;        // directory of Tkenv's *.tcl files
 
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run

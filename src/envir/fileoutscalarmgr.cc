@@ -87,7 +87,7 @@ void cFileOutputScalarManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old output scalar file");

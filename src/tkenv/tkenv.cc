@@ -181,16 +181,13 @@ void Tkenv::doRun()
 #endif
         // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
-        tkenvDir = getenv("OMNETPP_TKENV_DIR");
-        if (tkenvDir.empty())
-            tkenvDir = OMNETPP_TKENV_DIR;
+        tkenvDir = opp_emptytodefault(getenv("OMNETPP_TKENV_DIR"), OMNETPP_TKENV_DIR);
 #endif
 
         // path for plugins
-        const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
-        std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
+        std::string pluginPath = opp_emptytodefault(getenv("OMNETPP_PLUGIN_PATH"), OMNETPP_PLUGIN_PATH);
         if (!opt->pluginPath.empty())
-            plugin_path = std::string(opt->pluginPath.c_str()) + ";" + plugin_path;
+            pluginPath = opt->pluginPath + ";" + pluginPath;
 
         // set up Tcl/Tk
         interp = initTk(args->getArgCount(), args->getArgVector());
@@ -201,7 +198,7 @@ void Tkenv::doRun()
         createTkCommands(interp, tcl_commands);
 
         Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(opt->imagePath.c_str()), TCL_GLOBAL_ONLY);
-        Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(pluginPath.c_str()), TCL_GLOBAL_ONLY);
         Tcl_SetVar(interp, "OMNETPP_LIB_DIR", OMNETPP_LIB_DIR, TCL_GLOBAL_ONLY);
 
         Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
@@ -249,8 +246,9 @@ void Tkenv::doRun()
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
-            windowTitlePrefix.reserve(24);
-            sprintf(windowTitlePrefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            char tmp[32];
+            sprintf(tmp, "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            windowTitlePrefix = tmp;
         }
 
         mainInspector = (GenericObjectInspector *)InspectorFactory::get("GenericObjectInspectorFactory")->createInspector();

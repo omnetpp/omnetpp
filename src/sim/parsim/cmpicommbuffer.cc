@@ -24,6 +24,7 @@
 #include <mpi.h>
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/opp_string.h"
 #include "cmpicommbuffer.h"
 
 namespace omnetpp {

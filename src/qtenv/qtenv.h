@@ -73,7 +73,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
 {
     QtenvOptions();
     size_t extraStack;        // per-module extra stack for activity() modules
-    opp_string defaultConfig; // automatically set up this config at startup
+    std::string defaultConfig; // automatically set up this config at startup
     int  defaultRun;          // automatically set up this run (of the default config) at startup
     bool printInitBanners;    // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
     bool printEventBanners;   // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
@@ -98,7 +98,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
     bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
     StripNamespace stripNamespace; // whether to display type names with full C++ namespace prefix or not
-    opp_string logFormat;     // format of the log prefix, see the LogFormatter class
+    std::string logFormat;    // format of the log prefix, see the LogFormatter class
     LogLevel logLevel;        // global log level
     int scrollbackLimit;      // global setting for all LogInspectors
 };
@@ -150,7 +150,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
    protected:
       QApplication *app = nullptr;
       MainWindow *mainWindow = nullptr;
-      opp_string windowTitlePrefix;// contains "procId=.." when using parsim
+      std::string windowTitlePrefix;// contains "procId=.." when using parsim
 
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run

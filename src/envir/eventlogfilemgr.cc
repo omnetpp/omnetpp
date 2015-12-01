@@ -145,7 +145,7 @@ void EventlogFileManager::configure()
     }
 
     // setup filename
-    filename = getEnvir()->getConfig()->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
+    filename = getEnvir()->getConfig()->getAsFilename(CFGID_EVENTLOG_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(filename);
 }
 
