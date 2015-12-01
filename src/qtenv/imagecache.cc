@@ -22,6 +22,7 @@
 #include <QRegExp>
 #include <QDebug>
 
+#include "common/fileutil.h"
 #include "common/stringtokenizer.h"
 #include "imagecache.h"
 
@@ -50,7 +51,7 @@ void ImageCache::loadImages(const char *path)
     //# Unix separator) would cause trouble with dirs containing drive letter
     //# (like "c:\bitmaps"). Using a space is also not an option (think of
     //# "C:\Program Files\...").
-    StringTokenizer dir(path, ":;");
+    StringTokenizer dir(path, PATH_SEPARATOR);
     while(dir.hasMoreTokens())
     {
         //TODO

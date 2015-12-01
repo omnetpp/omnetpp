@@ -111,6 +111,12 @@ std::string cDynamicChannelType::getCxxNamespace() const
     return decl->getCxxNamespace();
 }
 
+const char *cDynamicChannelType::getSourceFileName() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->getSourceFileName();
+}
+
 bool cDynamicChannelType::isInnerType() const
 {
     cNEDDeclaration *decl = getDecl();

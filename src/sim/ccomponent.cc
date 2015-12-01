@@ -280,6 +280,11 @@ void cComponent::bubble(const char *text) const
     getEnvir()->bubble(const_cast<cComponent*>(this), text);
 }
 
+std::string cComponent::resolveResourcePath(const char *fileName) const
+{
+    return getEnvir()->resolveResourcePath(fileName, getComponentType());
+}
+
 void cComponent::recordParametersAsScalars()
 {
     int n = getNumParams();

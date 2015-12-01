@@ -102,7 +102,6 @@ extern "C" QTENV_API void _qtenv_lib() {}
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see qtenv-default-config) Qtenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigOption(CFGID_QTENV_IMAGE_PATH, "qtenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
@@ -147,12 +146,6 @@ QtenvOptions::QtenvOptions()
 }
 
 void Qtenv::storeOptsInPrefs() {
-
-    /* // I guess these are not needed anyways
-    size_t extraStack;        // per-module extra stack for activity() modules
-    opp_string imagePath;     // directory of module icon files
-    */
-
     setPref("default-configname", opt->defaultConfig.c_str());
     setPref("default-runnumber", opt->defaultRun);
 
@@ -386,20 +379,7 @@ void Qtenv::doRun()
         signal(SIGINT, signalHandler);
         signal(SIGTERM, signalHandler);
 
-        // path for icon directories
-        const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
-        if (image_path_env == nullptr && getenv("OMNETPP_BITMAP_PATH") != nullptr)
-            fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
-                            "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
-        std::string image_path = opp_isempty(image_path_env) ? OMNETPP_IMAGE_PATH : image_path_env;
-        // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
-        if (image_path.find("/;") == 0)
-            image_path.erase(0, 2);
-
-        if (!opt->imagePath.empty())
-            image_path = std::string(opt->imagePath.c_str()) + ";" + image_path;
-
-        icons.loadImages(image_path.c_str());
+        icons.loadImages(opt->imagePath.c_str());
 
         // we need to flush streams, otherwise output written from Tcl tends to overtake
         // output written from C++ so far, at least in the IDE's console view
@@ -1263,8 +1243,6 @@ void Qtenv::readOptions()
 
     const char *r = args->optionValue('r');
     opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_QTENV_DEFAULT_RUN);
-
-    opt->imagePath = cfg->getAsPath(CFGID_QTENV_IMAGE_PATH).c_str();
 }
 
 void Qtenv::readPerRunOptions()

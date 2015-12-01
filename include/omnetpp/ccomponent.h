@@ -1008,6 +1008,20 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * text in the network graphics, as a bubble above the module's icon.
      */
     void bubble(const char *text) const;
+
+    /**
+     * Searches a number of folders for a resource given with its file name or
+     * relative path, and returns the path for the first match. If the resource
+     * is not found, the empty string is returned.
+     *
+     * The list of the search folders includes the current working directory,
+     * the folder of the main ini file, the folder this component's NED file
+     * was loaded from, folders in the NED path, and folders in the image path
+     * (OMNETPP_IMAGE_PATH).
+     *
+     * @see cEnvir::resolveResourcePath()
+     */
+    std::string resolveResourcePath(const char *fileName) const;
     //@}
 
     /** @name Statistics collection */

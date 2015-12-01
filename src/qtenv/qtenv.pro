@@ -94,7 +94,27 @@ SOURCES += mainwindow.cc \
     fileeditor.cc \
     cameramanipulators.cc
 
-HEADERS += mainwindow.h arrow.h componenthistory.h graphicspatharrowitem.h layouterenv.h moduleinspector.h qtenv.h watchinspector.h canvasinspector.h figurerenderers.h histograminspector.h logbuffer.h outputvectorinspector.h tk-dummy.h canvasrenderer.h gateinspector.h inspectorfactory.h loginspector.h circularbuffer.h genericobjectinspector.h inspector.h qtenvdefs.h \
+HEADERS += mainwindow.h \
+    arrow.h \
+    componenthistory.h \
+    graphicspatharrowitem.h \
+    layouterenv.h \
+    moduleinspector.h \
+    qtenv.h \
+    watchinspector.h \
+    canvasinspector.h \
+    figurerenderers.h \
+    histograminspector.h \
+    logbuffer.h \
+    outputvectorinspector.h \
+    canvasrenderer.h \
+    gateinspector.h \
+    inspectorfactory.h \
+    loginspector.h \
+    circularbuffer.h \
+    genericobjectinspector.h \
+    inspector.h \
+    qtenvdefs.h \
     runselectiondialog.h \
     treeitemmodel.h \
     stopdialog.h \

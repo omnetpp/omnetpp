@@ -1,0 +1,59 @@
+%description:
+Test cEnvir::resolveResourcePath()
+
+%file: test.ned
+
+import testlib.*;
+
+simple Foo
+{
+}
+
+network Test
+{
+    submodules:
+        foo: Foo;
+        sink: Sink;
+    connections allowunconnected:
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Foo : public cSimpleModule
+{
+  public:
+    Foo() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Foo);
+
+#define P(x)     EV << x << " --> \"" << sink->resolveResourcePath(x) << "\"\n";
+
+void Foo::activity()
+{
+    cModule *sink = getParentModule()->getSubmodule("sink");
+
+    P("nonsense.foo");      // nonexistent file -> ""
+    P("test.cc");           // in current working dir or omnetpp.ini's dir
+    P("sink.cc");           // context module NED file's dir
+    P("block/process.png"); // image path
+    EV << ".\n";
+}
+
+} //namespace
+
+%subst: !\\!/!
+
+%contains-regex: stdout
+nonsense.foo --> ""
+test.cc --> "test.cc"
+sink.cc --> ".*/test/core/work/lib/sink.cc"
+block/process.png --> ".*/images/block/process.png"
+.

@@ -35,7 +35,7 @@ qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 qmake:
 	@echo Invoking $(QMAKE) and building qtenv using qt$(QT_VERSION)
 	@mkdir -p $O
-	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS) -DOMNETPP_IMAGE_PATH=\"\\\"$(OMNETPP_IMAGE_PATH)\\\"\"" OPP_DEFINES="$(DEFINES)" $(QMAKE) "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "QMAKE_AR=$(AR)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
+	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS)" OPP_DEFINES="$(DEFINES)" $(QMAKE) "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "QMAKE_AR=$(AR)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : qmake
 	@mkdir -p $L

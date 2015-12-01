@@ -34,6 +34,7 @@ class cMessage;
 class cPar;
 class cGate;
 class cComponent;
+class cComponentType;
 class cModule;
 class cSimpleModule;
 class cStatistic;
@@ -452,6 +453,18 @@ class SIM_API cEnvir
      * This method should not be used from the simulation kernel or model code.
      */
     virtual cConfigurationEx *getConfigEx();
+
+    /**
+     * Searches a number of folders for a resource given with its file name or
+     * relative path, and returns the path for the first match. If the resource
+     * is not found, the empty string is returned.
+     *
+     * The list of the search folders includes the current working directory,
+     * the folder of the main ini file, the folder that the NED file of the given
+     * "context" type was loaded from, folders in the NED path, and folders
+     * in the image path (OMNETPP_IMAGE_PATH).
+     */
+    virtual std::string resolveResourcePath(const char *fileName, cComponentType *context=nullptr) = 0;
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */

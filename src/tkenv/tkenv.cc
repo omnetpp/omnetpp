@@ -91,7 +91,6 @@ extern "C" TKENV_API void _tkenv_lib() {}
 Register_GlobalConfigOptionU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Tkenv.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, nullptr, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigOption(CFGID_TKENV_IMAGE_PATH, "tkenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
 Register_GlobalConfigOption(CFGID_TKENV_PLUGIN_PATH, "tkenv-plugin-path", CFG_PATH, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
 
 // utility function
@@ -187,19 +186,6 @@ void Tkenv::doRun()
             tkenvDir = OMNETPP_TKENV_DIR;
 #endif
 
-        // path for icon directories
-        const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
-        if (image_path_env == nullptr && getenv("OMNETPP_BITMAP_PATH") != nullptr)
-            fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
-                            "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
-        std::string image_path = opp_isempty(image_path_env) ? OMNETPP_IMAGE_PATH : image_path_env;
-        // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
-        if (image_path.find("/;") == 0)
-            image_path.erase(0, 2);
-
-        if (!opt->imagePath.empty())
-            image_path = std::string(opt->imagePath.c_str()) + ";" + image_path;
-
         // path for plugins
         const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
         std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
@@ -214,7 +200,7 @@ void Tkenv::doRun()
         // add OMNeT++'s commands to Tcl
         createTkCommands(interp, tcl_commands);
 
-        Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(opt->imagePath.c_str()), TCL_GLOBAL_ONLY);
         Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
         Tcl_SetVar(interp, "OMNETPP_LIB_DIR", OMNETPP_LIB_DIR, TCL_GLOBAL_ONLY);
 
@@ -1087,7 +1073,6 @@ void Tkenv::readOptions()
     const char *r = args->optionValue('r');
     opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_TKENV_DEFAULT_RUN);
 
-    opt->imagePath = cfg->getAsPath(CFGID_TKENV_IMAGE_PATH).c_str();
     opt->pluginPath = cfg->getAsPath(CFGID_TKENV_PLUGIN_PATH).c_str();
 }
 

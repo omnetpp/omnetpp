@@ -30,7 +30,7 @@ namespace omnetpp {
  * with the "unsupported method" text.
  *
  * This class is not used by \opp, it is provided for convenience of
- * writing standlone programs that embed the simulation kernel as a library.
+ * writing standalone programs that embed the simulation kernel as a library.
  *
  * You may want to subclass from cNullEnvir, and redefine some the following
  * methods:
@@ -107,6 +107,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void flushXMLParsedContentCache() override {}
     virtual unsigned getExtraStackForEnvir() const override  {return 0;}
     virtual cConfiguration *getConfig() override  {return cfg;}
+    virtual std::string resolveResourcePath(const char *fileName, cComponentType *context) override {return fileName;}
     virtual bool isGUI() const override  {return false;}
     virtual bool isExpressMode() const override {return false;}
 

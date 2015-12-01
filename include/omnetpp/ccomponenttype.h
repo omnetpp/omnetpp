@@ -118,6 +118,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: return the default C++ namespace at this NED type (for NED it's the @namespace package property)
     virtual std::string getCxxNamespace() const {return "";}
 
+    // internal: return the path of the source file this declaration has been loaded from, or nullptr if not available
+    virtual const char *getSourceFileName() const {return nullptr;}
+
     // internal: used by cComponent::emit() methods to validate signals
     virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = nullptr);
 

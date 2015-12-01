@@ -121,6 +121,7 @@ Register_GlobalConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanage
 Register_GlobalConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, "omnetpp::envir::cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
 Register_GlobalConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "omnetpp::envir::cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
 Register_GlobalConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the cFutureEventSet interface.");
+Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "", "A semicolon-separated list of directories that contain module icons and other resources. This list with be concatenated with OMNETPP_IMAGE_PATH.");
 Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
@@ -455,28 +456,16 @@ bool EnvirBase::setup()
 #endif
         }
 
-        // load NED files from folders on the NED path. Note: NED path is taken
-        // from the "-n" command-line option or the NEDPATH variable ("-n" takes
-        // precedence), and the "ned-path=" config entry gets appended to it.
-        // If the result is still empty, we fall back to "." -- this is needed
-        // for single-directory models to work
-        const char *nedpath1 = args->optionValue('n', 0);
-        if (!nedpath1)
-            nedpath1 = getenv("NEDPATH");
-        std::string nedpath2 = getConfig()->getAsPath(CFGID_NED_PATH);
-        std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
-        if (nedpath.empty())
-            nedpath = ".";
-
-        StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
-        std::set<std::string> foldersloaded;
+        // load NED files from folders on the NED path
+        StringTokenizer tokenizer(opt->nedPath.c_str(), PATH_SEPARATOR);
+        std::set<std::string> foldersLoaded;
         while (tokenizer.hasMoreTokens()) {
             const char *folder = tokenizer.nextToken();
-            if (foldersloaded.find(folder) == foldersloaded.end()) {
+            if (foldersLoaded.find(folder) == foldersLoaded.end()) {
                 std::cout << "Loading NED files from " << folder << ": ";
                 int count = getSimulation()->loadNedSourceFolder(folder);
                 std::cout << " " << count << endl;
-                foldersloaded.insert(folder);
+                foldersLoaded.insert(folder);
             }
         }
         getSimulation()->doneLoadingNedFiles();
@@ -1302,6 +1291,51 @@ cConfigurationEx *EnvirBase::getConfigEx()
     return cfg;
 }
 
+std::string EnvirBase::resolveResourcePath(const char *fileName, cComponentType *context)
+{
+    // search in current directory (or with absolute path)
+    if (fileExists(fileName))
+        return fileName;
+
+    // search folder of the primary ini file
+    const char *inifile = cfg->getFileName();
+    if (!opp_isempty(inifile)) {
+        std::string iniDir = directoryOf(inifile);
+        std::string path = concatDirAndFile(iniDir.c_str(), fileName);
+        if (fileExists(path.c_str()))
+            return tidyFilename(path.c_str());
+    }
+
+    // search in the NED folder of the context component type
+    const char *nedFile = context ? context->getSourceFileName() : nullptr;
+    if (nedFile) {
+        std::string dir = directoryOf(nedFile);
+        std::string path = concatDirAndFile(dir.c_str(), fileName);
+        if (fileExists(path.c_str()))
+            return tidyFilename(path.c_str());
+    }
+
+    // search the NED path
+    StringTokenizer nedTokenizer(opt->nedPath.c_str(), PATH_SEPARATOR);
+    while (nedTokenizer.hasMoreTokens()) {
+        const char *dir = nedTokenizer.nextToken();
+        std::string path = concatDirAndFile(dir, fileName);
+        if (fileExists(path.c_str()))
+            return tidyFilename(path.c_str());
+    }
+
+    // search the image path
+    StringTokenizer imgTokenizer(opt->imagePath.c_str(), PATH_SEPARATOR);
+    while (imgTokenizer.hasMoreTokens()) {
+        const char *dir = imgTokenizer.nextToken();
+        std::string path = concatDirAndFile(dir, fileName);
+        if (fileExists(path.c_str()))
+            return tidyFilename(path.c_str());
+    }
+
+    return ""; // not found
+}
+
 //-------------------------------------------------------------
 
 void EnvirBase::bubble(cComponent *component, const char *text)
@@ -1531,6 +1565,29 @@ void EnvirBase::readOptions()
 
     // note: this is read per run as well, but Tkenv needs its value on startup too
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
+
+    // path for images and other resources
+    std::string imagePath = opp_emptytodefault(getenv("OMNETPP_IMAGE_PATH"), OMNETPP_IMAGE_PATH);
+    // strip away the /; sequence from the beginning (a workaround for MinGW path conversion). See #785
+    if (imagePath.find("/;") == 0)
+        imagePath.erase(0, 2);
+    std::string configImagePath = cfg->getAsPath(CFGID_IMAGE_PATH);
+    if (!configImagePath.empty())
+        imagePath = configImagePath + ";" + imagePath;
+    opt->imagePath = imagePath;
+
+    // NED path. It is taken from the "-n" command-line option or the NEDPATH variable
+    // ("-n" takes precedence), and the "ned-path=" config entry gets appended to it.
+    // If the result is still empty, we fall back to "." -- this is needed for
+    // single-directory models to work
+    const char *nedPath1 = args->optionValue('n', 0);
+    if (!nedPath1)
+        nedPath1 = getenv("NEDPATH");
+    std::string nedPath2 = getConfig()->getAsPath(CFGID_NED_PATH);
+    std::string nedPath = opp_join(";", nedPath1, nedPath2.c_str());
+    if (nedPath.empty())
+        nedPath = ".";
+    opt->nedPath = nedPath;
 
     // other options are read on per-run basis
 }

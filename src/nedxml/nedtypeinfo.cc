@@ -156,6 +156,12 @@ NEDElement *NEDTypeInfo::getTree() const
     return tree;
 }
 
+const char *NEDTypeInfo::getSourceFileName() const
+{
+    NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
+    return nedFile ? nedFile->getFilename() : nullptr;
+}
+
 std::string NEDTypeInfo::getPackage() const
 {
     NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);

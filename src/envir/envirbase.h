@@ -71,6 +71,8 @@ struct ENVIR_API EnvirOptions
     bool parsim;
     opp_string networkName;
     opp_string inifileNetworkDir; // dir of the inifile containing "network="
+    opp_string imagePath;         // directory of module icon files
+    std::string nedPath;
 
     int numRNGs;
     opp_string rngClass;
@@ -213,6 +215,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // leave to subclasses: virtual unsigned getExtraStackForEnvir();
     virtual cConfiguration *getConfig() override;
     virtual cConfigurationEx *getConfigEx() override;
+    virtual std::string resolveResourcePath(const char *fileName, cComponentType *context) override;
 
     // UI functions
     virtual void bubble(cComponent *component, const char *text) override;

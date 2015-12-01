@@ -137,6 +137,12 @@ std::string cDynamicModuleType::getCxxNamespace() const
     return decl->getCxxNamespace();
 }
 
+const char *cDynamicModuleType::getSourceFileName() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->getSourceFileName();
+}
+
 bool cDynamicModuleType::isInnerType() const
 {
     cNEDDeclaration *decl = getDecl();

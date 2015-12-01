@@ -818,6 +818,7 @@ class StaticEnv : public cEnvir
     virtual void flushXMLParsedContentCache() override {}
     virtual unsigned getExtraStackForEnvir() const override  { return 0; }
     virtual cConfiguration *getConfig() override  { unsupported(); return nullptr; }
+    virtual std::string resolveResourcePath(const char *fileName, cComponentType *context) override {return "";}
     virtual bool isGUI() const override  { return false; }
     virtual bool isExpressMode() const override  { return false; }
 

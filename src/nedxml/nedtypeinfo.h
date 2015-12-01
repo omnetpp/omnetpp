@@ -96,8 +96,13 @@ class NEDXML_API NEDTypeInfo
     virtual Type getType() const {return type;}
 
     /**
+     * Returns the name of the file this NED type was loaded from.
+     */
+    virtual const char *getSourceFileName() const;
+
+    /**
      * Returns the package name (from the package declaration of the containing
-     * NED file
+     * NED file.)
      */
     virtual std::string getPackage() const;
 
