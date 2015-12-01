@@ -46,7 +46,7 @@ std::string cDynamicChannelType::info() const
 
 std::string cDynamicChannelType::detailedInfo() const
 {
-    return getDecl()->nedSource();
+    return getDecl()->getNedSource();
 }
 
 cChannel *cDynamicChannelType::createChannelObject()

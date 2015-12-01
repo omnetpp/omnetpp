@@ -114,7 +114,7 @@ class NEDXML_API NEDTypeInfo
     /**
      * Returns the NED declaration.
      */
-    virtual std::string nedSource() const;
+    virtual std::string getNedSource() const;
 
     /**
      * Returns the number of "extends" names. This includes indirect
@@ -126,7 +126,7 @@ class NEDXML_API NEDTypeInfo
      * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1),
      * resolved to fully qualified name.
      */
-    virtual const char *extendsName(int k) const;
+    virtual const char *getExtendsName(int k) const;
 
     /**
      * Returns the number of interfaces. This includes indirectly implemented
@@ -140,7 +140,7 @@ class NEDXML_API NEDTypeInfo
      * Returns the name of the kth interface (k=0..numInterfaceNames()-1),
      * resolved to fully qualified name.
      */
-    virtual const char *interfaceName(int k) const;
+    virtual const char *getInterfaceName(int k) const;
 
     /**
      * Returns true if this NED type extends/"is like" the given module interface
@@ -220,7 +220,7 @@ class NEDXML_API NEDTypeInfo
     //@}
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

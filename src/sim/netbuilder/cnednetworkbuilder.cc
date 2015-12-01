@@ -107,7 +107,7 @@ void cNEDNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNEDDe
 
     // recursively add and assign super types' parameters
     if (decl->numExtendsNames() > 0) {
-        const char *superName = decl->extendsName(0);
+        const char *superName = decl->getExtendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
         doAddParametersAndGatesTo(component, superDecl);
     }
@@ -407,7 +407,7 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *module, cNEDDeclaration *decl
 {
     // recursively add super types' gates
     if (decl->numExtendsNames() > 0) {
-        const char *superName = decl->extendsName(0);
+        const char *superName = decl->getExtendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
         setupGateVectors(module, superDecl);
     }
@@ -456,7 +456,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 {
     // recursively add super types' submodules and connections
     if (decl->numExtendsNames() > 0) {
-        const char *superName = decl->extendsName(0);
+        const char *superName = decl->getExtendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
         buildRecursively(modp, superDecl);
     }
@@ -486,7 +486,7 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected(cNEDDeclaration *decl) const
 {
     // follow through the inheritance chain, and return true if we find an "allowunconnected" anywhere
     while (decl->numExtendsNames() > 0) {
-        const char *superName = decl->extendsName(0);
+        const char *superName = decl->getExtendsName(0);
         decl = cNEDLoader::getInstance()->getDecl(superName);
         ASSERT(decl);  // all super classes must be loaded before we start building
         ConnectionsElement *conns = decl->getConnectionsElement();

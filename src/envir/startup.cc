@@ -88,10 +88,10 @@ int setupUserInterface(int argc, char *argv[])
     //
     // SETUP
     //
-    cSimulation *simulationobject = nullptr;
+    cSimulation *simulation = nullptr;
     cRunnableEnvir *app = nullptr;
-    SectionBasedConfiguration *bootconfig = nullptr;
-    cConfigurationEx *configobject = nullptr;
+    SectionBasedConfiguration *bootConfig = nullptr;
+    cConfigurationEx *config = nullptr;
     int exitcode = 0;
     try {
         // construct global lists
@@ -126,54 +126,54 @@ int setupUserInterface(int argc, char *argv[])
             inifile->readFile(fname);
 
         // activate [General] section so that we can read global settings from it
-        bootconfig = new SectionBasedConfiguration();
-        bootconfig->setConfigurationReader(inifile);
-        bootconfig->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
-        bootconfig->activateConfig("General", 0);
+        bootConfig = new SectionBasedConfiguration();
+        bootConfig->setConfigurationReader(inifile);
+        bootConfig->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
+        bootConfig->activateConfig("General", 0);
 
         //
         // Load all libraries specified on the command line ('-l' options),
         // and in the configuration [General]/load-libs=.
         // (The user interface library also might be among them.)
         //
-        const char *libname;
-        for (int k = 0; (libname = args.optionValue('l', k)) != nullptr; k++)
-            loadExtensionLibrary(libname);
-        std::vector<std::string> libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
+        const char *libName;
+        for (int k = 0; (libName = args.optionValue('l', k)) != nullptr; k++)
+            loadExtensionLibrary(libName);
+        std::vector<std::string> libs = bootConfig->getAsFilenames(CFGID_LOAD_LIBS);
         for (int k = 0; k < (int)libs.size(); k++)
             loadExtensionLibrary(libs[k].c_str());
 
         //
         // Create custom configuration object, if needed.
         //
-        std::string configclass = bootconfig->getAsString(CFGID_CONFIGURATION_CLASS);
-        if (configclass.empty()) {
-            configobject = bootconfig;
+        std::string configClass = bootConfig->getAsString(CFGID_CONFIGURATION_CLASS);
+        if (configClass.empty()) {
+            config = bootConfig;
         }
         else {
             // create custom configuration object
-            CREATE_BY_CLASSNAME(configobject, configclass.c_str(), cConfigurationEx, "configuration");
-            configobject->initializeFrom(bootconfig);
-            configobject->activateConfig("General", 0);
-            delete bootconfig;
-            bootconfig = nullptr;
+            CREATE_BY_CLASSNAME(config, configClass.c_str(), cConfigurationEx, "configuration");
+            config->initializeFrom(bootConfig);
+            config->activateConfig("General", 0);
+            delete bootConfig;
+            bootConfig = nullptr;
 
             // load libs from this config as well
-            std::vector<std::string> libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
+            std::vector<std::string> libs = config->getAsFilenames(CFGID_LOAD_LIBS);
             for (int k = 0; k < (int)libs.size(); k++)
                 loadExtensionLibrary(libs[k].c_str());
         }
 
         // validate the configuration, but make sure we don't report cmdenv-* keys
         // as errors if Cmdenv is absent; same for Tkenv.
-        std::string ignorablekeys;
+        std::string ignorableKeys;
         if (omnetapps.getInstance()->lookup("Cmdenv") == nullptr)
-            ignorablekeys += " cmdenv-*";
+            ignorableKeys += " cmdenv-*";
         if (omnetapps.getInstance()->lookup("Tkenv") == nullptr)
-            ignorablekeys += " tkenv-*";
+            ignorableKeys += " tkenv-*";
         if (omnetapps.getInstance()->lookup("Qtenv")==NULL)
-            ignorablekeys += " qtenv-*";
-        configobject->validate(ignorablekeys.c_str());
+            ignorableKeys += " qtenv-*";
+        config->validate(ignorableKeys.c_str());
 
         //
         // Choose and set up user interface (EnvirBase subclass). Everything else
@@ -181,37 +181,37 @@ int setupUserInterface(int argc, char *argv[])
         //
 
         // was it specified explicitly which one to use?
-        std::string appname = opp_nulltoempty(args.optionValue('u', 0));  // 1st '-u name' option
-        if (appname.empty())
-            appname = configobject->getAsString(CFGID_USER_INTERFACE);
+        std::string appName = opp_nulltoempty(args.optionValue('u', 0));  // 1st '-u name' option
+        if (appName.empty())
+            appName = config->getAsString(CFGID_USER_INTERFACE);
 
-        cOmnetAppRegistration *appreg = nullptr;
-        if (!appname.empty()) {
+        cOmnetAppRegistration *appReg = nullptr;
+        if (!appName.empty()) {
             // look up specified user interface
-            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appname.c_str()));
-            if (!appreg) {
+            appReg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appName.c_str()));
+            if (!appReg) {
                 ::printf("\n"
                          "User interface '%s' not found (not linked in or loaded dynamically).\n"
-                         "Available ones are:\n", appname.c_str());
+                         "Available ones are:\n", appName.c_str());
                 cRegistrationList *a = omnetapps.getInstance();
                 for (int i = 0; i < a->size(); i++)
                     ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->info().c_str());
 
-                throw cRuntimeError("Could not start user interface '%s'", appname.c_str());
+                throw cRuntimeError("Could not start user interface '%s'", appName.c_str());
             }
         }
         else {
             // user interface not explicitly selected: pick one from what we have
-            appreg = cOmnetAppRegistration::chooseBest();
-            if (!appreg)
+            appReg = cOmnetAppRegistration::chooseBest();
+            if (!appReg)
                 throw cRuntimeError("No user interface (Cmdenv, Tkenv, etc.) found");
         }
 
         //
         // Create interface object.
         //
-        ::printf("Setting up %s...\n", appreg->getName());
-        app = appreg->createOne();
+        ::printf("Setting up %s...\n", appReg->getName());
+        app = appReg->createOne();
     }
     catch (std::exception& e) {
         ::fprintf(stderr, "\n<!> Error during startup: %s.\n", e.what());
@@ -221,7 +221,7 @@ int setupUserInterface(int argc, char *argv[])
         }
         else {
             // normally, this is deleted by app
-            delete bootconfig;
+            delete bootConfig;
         }
     }
     //
@@ -229,9 +229,9 @@ int setupUserInterface(int argc, char *argv[])
     //
     try {
         if (app) {
-            simulationobject = new cSimulation("simulation", app);
-            cSimulation::setActiveSimulation(simulationobject);
-            exitcode = app->run(argc, argv, configobject);
+            simulation = new cSimulation("simulation", app);
+            cSimulation::setActiveSimulation(simulation);
+            exitcode = app->run(argc, argv, config);
         }
         else {
             exitcode = 1;
@@ -241,11 +241,12 @@ int setupUserInterface(int argc, char *argv[])
         ::fprintf(stderr, "\n<!> %s.\n", e.what());
         exitcode = 1;
     }
+
     //
     // SHUTDOWN
     //
     cSimulation::setActiveSimulation(nullptr);
-    delete simulationobject;  // will delete app as well
+    delete simulation;  // will delete app as well
 
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
 

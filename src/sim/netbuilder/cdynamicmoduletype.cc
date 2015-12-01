@@ -37,7 +37,7 @@ std::string cDynamicModuleType::info() const
 
 std::string cDynamicModuleType::detailedInfo() const
 {
-    return getDecl()->nedSource();
+    return getDecl()->getNedSource();
 }
 
 cNEDDeclaration *cDynamicModuleType::getDecl() const

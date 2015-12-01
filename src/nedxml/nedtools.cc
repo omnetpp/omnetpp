@@ -29,19 +29,19 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
     while (true) {
         // try DTD validation, and find first problem
         NEDErrorStore errors;
-        NEDDTDValidator dtdvalidator(&errors);
-        dtdvalidator.validate(tree);
+        NEDDTDValidator dtdValidator(&errors);
+        dtdValidator.validate(tree);
         if (errors.empty())
             break;  // we're done
-        NEDElement *errnode = errors.errorContext(0);
-        if (!errnode)
+        NEDElement *errorNode = errors.errorContext(0);
+        if (!errorNode)
             break;  // this shouldn't happen, but if it does we can't go on
-        if (!errnode->getParent())
+        if (!errorNode->getParent())
             break;  // we can't help if root node is wrong
 
         // throw out problem node, and try again
         // printf("DBG: repairNEDElementTree: discarding <%s>\n", errnode->getTagName());
-        errnode->getParent()->removeChild(errnode);
+        errorNode->getParent()->removeChild(errorNode);
     }
 }
 

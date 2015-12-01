@@ -52,44 +52,44 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
     for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getTagCode() == NED_EXTENDS) {
             // resolve and store base type name
-            const char *extendsname = ((ExtendsElement *)child)->getName();
-            std::string extendsqname = getResolver()->resolveNedType(context, extendsname);
-            Assert(!extendsqname.empty());
-            extendsNames.push_back(extendsqname);
+            const char *extendsName = ((ExtendsElement *)child)->getName();
+            std::string extendsQName = getResolver()->resolveNedType(context, extendsName);
+            Assert(!extendsQName.empty());
+            extendsNames.push_back(extendsQName);
 
             // check the type
-            NEDTypeInfo *decl = getResolver()->lookup(extendsqname.c_str());
+            NEDTypeInfo *decl = getResolver()->lookup(extendsQName.c_str());
             Assert(decl);
             bool moduleExtendsSimple = (getType() == COMPOUND_MODULE) && (decl->getType() == SIMPLE_MODULE);
             if (getType() != decl->getType() && !moduleExtendsSimple)
-                throw NEDException(getTree(), "a %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
+                throw NEDException(getTree(), "a %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsQName.c_str());
 
             // collect interfaces from our base types
             if (isInterface)
                 for (int i = 0; i < decl->numExtendsNames(); i++)
-                    extendsNames.push_back(decl->extendsName(i));
+                    extendsNames.push_back(decl->getExtendsName(i));
 
             else
                 for (int i = 0; i < decl->numInterfaceNames(); i++)
-                    interfaceNames.push_back(decl->interfaceName(i));
+                    interfaceNames.push_back(decl->getInterfaceName(i));
 
         }
         if (child->getTagCode() == NED_INTERFACE_NAME) {
             // resolve and store base type
-            const char *interfacename = ((InterfaceNameElement *)child)->getName();
-            std::string interfaceqname = getResolver()->resolveNedType(context, interfacename);
-            Assert(!interfaceqname.empty());
-            interfaceNames.push_back(interfaceqname);
+            const char *interfaceName = ((InterfaceNameElement *)child)->getName();
+            std::string interfaceQName = getResolver()->resolveNedType(context, interfaceName);
+            Assert(!interfaceQName.empty());
+            interfaceNames.push_back(interfaceQName);
 
             // check the type (must be an interface)
-            NEDTypeInfo *decl = getResolver()->lookup(interfaceqname.c_str());
+            NEDTypeInfo *decl = getResolver()->lookup(interfaceQName.c_str());
             Assert(decl);
             if (decl->getType() != (getType() == CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
-                throw NEDException(getTree(), "base type %s is expected to be a %s interface", interfaceqname.c_str(), (getType() == CHANNEL ? "channel" : "module"));
+                throw NEDException(getTree(), "base type %s is expected to be a %s interface", interfaceQName.c_str(), (getType() == CHANNEL ? "channel" : "module"));
 
             // we support all interfaces that our base interfaces extend
             for (int i = 0; i < decl->numExtendsNames(); i++)
-                interfaceNames.push_back(decl->extendsName(i));
+                interfaceNames.push_back(decl->getExtendsName(i));
         }
     }
 
@@ -164,19 +164,19 @@ const char *NEDTypeInfo::getSourceFileName() const
 
 std::string NEDTypeInfo::getPackage() const
 {
-    NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
-    PackageElement *packageDecl = nedfile ? (PackageElement *)nedfile->getFirstChildWithTag(NED_PACKAGE) : nullptr;
+    NEDElement *nedFile = getTree()->getParentWithTag(NED_NED_FILE);
+    PackageElement *packageDecl = nedFile ? (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE) : nullptr;
     return packageDecl ? packageDecl->getName() : "";
 }
 
 std::string NEDTypeInfo::getPackageProperty(const char *propertyName) const
 {
     // find first such property in the current file, then in package.ned of this package and parent packages
-    for (NedFileElement *nedfile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
-         nedfile != nullptr;
-         nedfile = getResolver()->getParentPackageNedFile(nedfile))
+    for (NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
+         nedFile != nullptr;
+         nedFile = getResolver()->getParentPackageNedFile(nedFile))
     {
-        const char *propertyValue = NEDElementUtil::getLocalStringProperty(nedfile, propertyName);
+        const char *propertyValue = NEDElementUtil::getLocalStringProperty(nedFile, propertyName);
         if (propertyValue)
             return propertyValue;
     }
@@ -194,14 +194,14 @@ std::string NEDTypeInfo::info() const
     if (numExtendsNames() > 0) {
         out << "extends ";
         for (int i = 0; i < numExtendsNames(); i++)
-            out << (i ? ", " : "") << extendsName(i);
+            out << (i ? ", " : "") << getExtendsName(i);
         out << "  ";
     }
 
     if (numInterfaceNames() > 0) {
         out << "like ";
         for (int i = 0; i < numInterfaceNames(); i++)
-            out << (i ? ", " : "") << interfaceName(i);
+            out << (i ? ", " : "") << getInterfaceName(i);
         out << "  ";
     }
 
@@ -211,7 +211,7 @@ std::string NEDTypeInfo::info() const
     return out.str();
 }
 
-std::string NEDTypeInfo::nedSource() const
+std::string NEDTypeInfo::getNedSource() const
 {
     std::stringstream out;
     NEDErrorStore errors;
@@ -219,7 +219,7 @@ std::string NEDTypeInfo::nedSource() const
     return out.str();
 }
 
-const char *NEDTypeInfo::interfaceName(int k) const
+const char *NEDTypeInfo::getInterfaceName(int k) const
 {
     if (k < 0 || k >= (int)interfaceNames.size())
         throw NEDException("NEDTypeInfo: interface index %d out of range 0..%d", k, interfaceNames.size()-1);
@@ -236,7 +236,7 @@ bool NEDTypeInfo::supportsInterface(const char *qname)
     return false;
 }
 
-const char *NEDTypeInfo::extendsName(int k) const
+const char *NEDTypeInfo::getExtendsName(int k) const
 {
     if (k < 0 || k >= (int)extendsNames.size())
         throw NEDException("NEDTypeInfo: extendsName(): index %d out of range 0..%d", k, extendsNames.size()-1);
@@ -255,7 +255,7 @@ const char *NEDTypeInfo::getImplementationClassName() const
 
 NEDTypeInfo *NEDTypeInfo::getSuperDecl() const
 {
-    const char *superName = extendsName(0);
+    const char *superName = getExtendsName(0);
     return getResolver()->getDecl(superName);
 }
 
@@ -325,7 +325,7 @@ SubmoduleElement *NEDTypeInfo::getSubmoduleElement(const char *name) const
     if (submodule)
         return submodule;
     for (int i = 0; i < numExtendsNames(); i++)
-        if ((submodule = getResolver()->lookup(extendsName(i))->getSubmoduleElement(name)) != nullptr)
+        if ((submodule = getResolver()->lookup(getExtendsName(i))->getSubmoduleElement(name)) != nullptr)
             return submodule;
 
     return nullptr;
@@ -337,7 +337,7 @@ ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
     if (conn)
         return conn;
     for (int i = 0; i < numExtendsNames(); i++)
-        if ((conn = getResolver()->lookup(extendsName(i))->getConnectionElement(id)) != nullptr)
+        if ((conn = getResolver()->lookup(getExtendsName(i))->getConnectionElement(id)) != nullptr)
             return conn;
 
     return nullptr;
@@ -360,7 +360,7 @@ ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
     if (param)
         return param;
     for (int i = 0; i < numExtendsNames(); i++)
-        if ((param = getResolver()->lookup(extendsName(i))->findParamDecl(name)) != nullptr)
+        if ((param = getResolver()->lookup(getExtendsName(i))->findParamDecl(name)) != nullptr)
             return param;
 
     return nullptr;
@@ -383,7 +383,7 @@ GateElement *NEDTypeInfo::findGateDecl(const char *name) const
     if (gate)
         return gate;
     for (int i = 0; i < numExtendsNames(); i++)
-        if ((gate = getResolver()->lookup(extendsName(i))->findGateDecl(name)) != nullptr)
+        if ((gate = getResolver()->lookup(getExtendsName(i))->findGateDecl(name)) != nullptr)
             return gate;
 
     return nullptr;
