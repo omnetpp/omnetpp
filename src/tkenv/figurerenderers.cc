@@ -17,6 +17,7 @@
 #include "common/stringutil.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/checkandcast.h"
+#include "omnetpp/platdep/platmisc.h"
 #include "tkutil.h"
 #include "figurerenderers.h"
 #include "tkenv.h"
@@ -43,10 +44,6 @@ Register_Class(LabelFigureRenderer);
 Register_Class(ImageFigureRenderer);
 Register_Class(IconFigureRenderer);
 Register_Class(PixmapFigureRenderer);
-
-#ifndef M_PI
-#define M_PI    3.14159265358979323846
-#endif
 
 #define MAXARGC  40
 

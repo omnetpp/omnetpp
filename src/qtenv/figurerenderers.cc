@@ -27,12 +27,9 @@
 #include <QGraphicsColorizeEffect>
 #include <QPainter>
 #include "common/stringutil.h"
+#include "omnetpp/platdep/platmisc.h"
 
 using namespace omnetpp::common;
-
-#ifndef M_PI
-#define M_PI    3.14159265358979323846
-#endif
 
 namespace omnetpp {
 namespace qtenv {

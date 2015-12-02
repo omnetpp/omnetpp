@@ -23,13 +23,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/ccomponent.h"
 #include "omnetpp/cexception.h"
-
-//
-// Linux - <math.h> supplies a PI, MS does not...
-//
-#ifndef M_PI
-#define M_PI    3.1415926535897932384626433832795
-#endif
+#include "omnetpp/platdep/platmisc.h"
 
 #ifndef M_E
 #define M_E     2.7182818284590452353602874713527
