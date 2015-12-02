@@ -17,6 +17,8 @@
 #ifndef __OMNETPP_QTENV_CAMERAMANIPULATORS_H
 #define __OMNETPP_QTENV_CAMERAMANIPULATORS_H
 
+#ifdef WITH_OSG
+
 #include "inspector.h"
 
 #include <osgGA/OrbitManipulator>
@@ -50,5 +52,7 @@ protected:
 
 } // namespace qtenv
 } // namespace omnetpp
+
+#endif
 
 #endif // __OMNETPP_QTENV_CAMERAMANIPULATORS_H

@@ -109,11 +109,6 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
-#ifdef WITH_OSG
-    osgViewer = new OsgViewer();
-    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(onObjectsPicked(const std::vector<cObject*>&)));
-#endif
-
     QToolBar *toolbar = createToolbar(isTopLevel);
     if(isTopLevel)
     {
@@ -131,10 +126,14 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
         toolbarLayout->addWidget(toolbar);
         stackedLayout = new QStackedLayout(contentArea);
     }
+
+    stackedLayout->addWidget(canvasViewer);
+
 #ifdef WITH_OSG
+    osgViewer = new OsgViewer();
+    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(onObjectsPicked(const std::vector<cObject*>&)));
     stackedLayout->addWidget(osgViewer);
 #endif
-    stackedLayout->addWidget(canvasViewer);
 }
 
 void ModuleInspector::onFontChanged()

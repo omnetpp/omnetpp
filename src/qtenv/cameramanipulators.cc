@@ -16,6 +16,8 @@
 
 #include "cameramanipulators.h"
 
+#ifdef WITH_OSG
+
 namespace omnetpp {
 namespace qtenv {
 
@@ -163,3 +165,5 @@ bool OverviewManipulator::performMovementRightMouseButton(const double eventTime
 
 } // namespace omnetpp
 } // namespace omnetpp
+
+#endif
