@@ -2043,33 +2043,25 @@ void Qtenv::utilitiesSubMenu()
 
 void Qtenv::initFonts()
 {
-    // set up fonts
-    #ifdef Q_WS_WIN
+#ifdef Q_WS_WIN
     // Windows
     defaultFonts.boldFont = getFirstAvailableFontFamily({"Segoe UI", "MS Sans Serif", "Arial"}, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
-    defaultFonts.timelineFont = getFirstAvailableFontFamily(
-                {"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"},
-                defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
     defaultFonts.logFont = getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9);
-    #elif defined(Q_WS_MAC)
+#elif defined(Q_WS_MAC)
     // Mac
     defaultFonts.boldFont = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
     defaultFonts.canvasFont = defaultFonts.boldFont;
-    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Arial Narrow"},
-                                                            defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Arial Narrow"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
     defaultFonts.logFont = getFirstAvailableFontFamily({"Monaco", "Courier"}, 13);
-    #else
+#else
     // Linux and other systems
-    defaultFonts.boldFont = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L",
-                                                      "FreeSans", "Sans"}, 9);
+    defaultFonts.boldFont = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L", "FreeSans", "Sans"}, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
-    defaultFonts.timelineFont = getFirstAvailableFontFamily(
-                {"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"},
-                defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily(
-                {"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"}, 9);
-    #endif
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily({"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"}, 9);
+#endif
 
     boldFont = getPref("font-bold", defaultFonts.boldFont).value<QFont>();
     canvasFont = getPref("font-canvas", defaultFonts.canvasFont).value<QFont>();
