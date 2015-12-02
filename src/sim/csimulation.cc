@@ -82,7 +82,7 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
     }
     virtual cEvent *dup() const override { copyNotSupported(); return nullptr; }
     virtual cObject *getTargetObject() const override { return nullptr; }
-    virtual void execute() override { throw cTerminationException(E_SIMTIME); }
+    virtual void execute() override { delete this; throw cTerminationException(E_SIMTIME); }
 };
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
