@@ -985,7 +985,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     //@{
     /**
      * Returns true if the current environment is a graphical user interface.
-     * (For example, it returns true if the simulation is running over Tkenv,
+     * (For example, it returns true if the simulation is running over Tkenv/Qtenv,
      * and false if it's running over Cmdenv.) Modules can examine this flag
      * to decide whether or not they need to bother with visualization, e.g.
      * dynamically update display strings or draw on canvases.
@@ -1004,10 +1004,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void setDisplayString(const char *dispstr);
 
     /**
-     * When the models is running under Tkenv, it displays the given text
-     * in the network graphics, as a bubble above the module's icon.
+     * When the models is running under Tkenv or Qtenv, it displays the given
+     * text in the network graphics, as a bubble above the module's icon.
      */
-    void bubble(const char *text);
+    void bubble(const char *text) const;
     //@}
 
     /** @name Statistics collection */

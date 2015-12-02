@@ -275,9 +275,9 @@ void cComponent::setDisplayString(const char *s)
     getDisplayString().parse(s);
 }
 
-void cComponent::bubble(const char *text)
+void cComponent::bubble(const char *text) const
 {
-    getEnvir()->bubble(this, text);
+    getEnvir()->bubble(const_cast<cComponent*>(this), text);
 }
 
 void cComponent::recordParametersAsScalars()
