@@ -48,6 +48,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_EVENTLOG = "Event Log";
     public static final String CAT_CMDENV = "Cmdenv";
     public static final String CAT_TKENV = "Tkenv";
+    public static final String CAT_QTENV = "Qtenv";
     public static final String CAT_EXTENSIONS = "Extensions";
     public static final String CAT_PARSIM = "Parallel Simulation";
 
@@ -63,6 +64,7 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_EVENTLOG,
                 CAT_CMDENV,
                 CAT_TKENV,
+                CAT_QTENV,
                 CAT_EXTENSIONS,
                 CAT_PARSIM,
                 CAT_ADVANCED,
@@ -259,6 +261,15 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Other");
             addTextFieldEditor(group, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
             addTextFieldEditor(group, CFGID_TKENV_EXTRA_STACK, "Extra coroutine stack");
+            addSpacer(form);
+        }
+        else if (category.equals(CAT_QTENV)) {
+            group = createGroup(form, "On startup, set up the following simulation:");
+            addTextFieldEditor(group, CFGID_QTENV_DEFAULT_CONFIG, "Config name");
+            addTextFieldEditor(group, CFGID_QTENV_DEFAULT_RUN, "Run number");
+            addSpacer(form);
+            group = createGroup(form, "Other");
+            addTextFieldEditor(form, CFGID_QTENV_EXTRA_STACK, "Extra coroutine stack");
             addSpacer(form);
         }
         else if (category.equals(CAT_PARSIM)) {

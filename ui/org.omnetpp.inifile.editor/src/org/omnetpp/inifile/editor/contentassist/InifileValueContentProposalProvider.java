@@ -36,7 +36,6 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
 import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 import org.omnetpp.inifile.editor.model.Timeout;
-import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -63,7 +62,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 
     private ConfigOption[] assistedOptions = {
             CFGID_EXTENDS, CFGID_NETWORK, CFGID_USER_INTERFACE, CFGID_CMDENV_CONFIG_NAME, 
-            CFGID_TKENV_DEFAULT_CONFIG, CFGID_CONSTRAINT,
+            CFGID_TKENV_DEFAULT_CONFIG, CFGID_QTENV_DEFAULT_CONFIG, CFGID_CONSTRAINT,
             CFGID_SIMTIME_PRECISION,CFGID_SIMTIME_SCALE
     };
 
@@ -175,9 +174,9 @@ s    * before getting presented to the user.
 
         }
         else if (entry==CFGID_USER_INTERFACE) {
-            p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv"}));
+            p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv", "Qtenv"}));
         }
-        else if (entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG) {
+        else if (entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG || entry==CFGID_QTENV_DEFAULT_CONFIG) {
             ArrayList<String> names = new ArrayList<String>();
             for (String section : doc.getSectionNames())
                 names.add(InifileUtils.removeSectionNamePrefix(section));
