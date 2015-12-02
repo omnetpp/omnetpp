@@ -382,7 +382,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void initFonts();
       void saveFonts();
-      QFont getFirstAvailableFontFamily(QStringList preferenceList, int pointSize, QFont defaultValue = QString());
+      QFont getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue = QString());
 
       void runSimulationLocal(int runMode, cObject *object = nullptr, Inspector *insp = nullptr);
 };

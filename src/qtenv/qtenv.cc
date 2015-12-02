@@ -2079,7 +2079,7 @@ void Qtenv::initFonts()
 
 // Returns the first font family from the given preference list that is
 // available on the system. If none are available, returns defaultValue.
-QFont Qtenv::getFirstAvailableFontFamily(QStringList preferenceList, int pointSize, QFont defaultValue)
+QFont Qtenv::getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue)
 {
     for(QString str : preferenceList)
     {
