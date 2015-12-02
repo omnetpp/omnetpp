@@ -130,7 +130,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             Group group6 = createGroup(form, "Other");
             addTextFieldEditor(group6, CFGID_RUNNUMBER_WIDTH, "Run number width", c(null, "Width"));
-            addTextFieldEditor(group6, CFGID_NED_PATH, "NED file path");
+            addTextFieldEditor(group6, CFGID_NED_PATH, "Additional NED path folders");
+            addTextFieldEditor(group6, CFGID_IMAGE_PATH, "Additional image path folders");
             addTextFieldEditor(group6, CFGID_USER_INTERFACE, "User interface");
         }
         else if (category.equals(CAT_RANDOMNUMBERS)) {
@@ -243,22 +244,20 @@ public class GenericConfigPage extends ScrolledFormPage {
             addComboboxFieldEditor(group2, CFGID_CMDENV_LOG_LEVEL, "Log level");
             addTextFieldEditor(group2, CFGID_CMDENV_LOG_FORMAT, "Log prefix");
             addSpacer(form);
-            Group group3 = createGroup(form, "Miscellaneus");
-            addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Interactive mode");
+            Group group3 = createGroup(form, "Other");
+            addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");
             addCheckboxFieldEditor(group3, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
             addTextFieldEditor(group3, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
-            addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK, "Cmdenv extra stack");
+            addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK, "Extra coroutine stack");
         }
         else if (category.equals(CAT_TKENV)) {
             Group group0 = createGroup(form, "On startup, set up the following simulation:");
             addTextFieldEditor(group0, CFGID_TKENV_DEFAULT_CONFIG, "Config name");
             addTextFieldEditor(group0, CFGID_TKENV_DEFAULT_RUN, "Run number");
             addSpacer(form);
-            Group group4 = createGroup(form, "Paths");
-            addTextFieldEditor(group4, CFGID_TKENV_IMAGE_PATH, "Image path");
+            Group group4 = createGroup(form, "Other");
             addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
-            addSpacer(form);
-            addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK, "Tkenv extra stack");
+            addTextFieldEditor(group4, CFGID_TKENV_EXTRA_STACK, "Extra coroutine stack");
             addSpacer(form);
         }
         else if (category.equals(CAT_PARSIM)) {
