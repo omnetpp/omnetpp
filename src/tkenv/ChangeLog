@@ -1,3 +1,12 @@
+2015-12-02  Andras Varga
+
+	* Removed the "tkenv-image-path" option, it is replaced by "image-path"
+	that is part of the envir library.
+
+2015-11-30  Andras Varga
+
+	* Implemented cEnvir::isExpressMode()
+
 2015-11-09  Andras Varga
 
 	* Added support for cComponent::refreshDisplay(), see include/ChangeLog

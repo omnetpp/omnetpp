@@ -1,3 +1,9 @@
+2015-12-02  Andras Varga
+
+	* EnvirBase: implemented cEnvir::resolveResourcePath()
+
+	* Added the "image-path" config option that replaces tkenv-image-path.
+
 2015-11-23  Levente Meszaros, Andras Varga
 
 	* Fingerprint computation made more powerful/flexible; see sim/ChangeLog

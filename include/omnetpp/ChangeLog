@@ -1,3 +1,22 @@
+2015-12-02  Andras Varga
+
+	* Added cEnvir::resolveResourcePath() that searches a number of folders
+	for a resource given with its file name or relative path, and returns 
+	the path for the first match. It can useful for locating various data 
+	files for models, OSG model files, and other files.
+
+	* Added cComponent::resolveResourcePath() that delegates to the cEnvir
+	method of the same name.
+
+2015-11-30  Andras Varga
+
+	* Added cEnvir::isExpressMode() that returns true if the simulation is
+	running under a GUI in Express mode. This can be used to tailor the
+	operation of refreshDisplay() code.
+
+	* cComponent::bubble() made const so that it can be called from
+	refreshDisplay() as well.
+
 2015-11-13  Levente Meszaros, Andras Varga
 
 	* Fingerprint computation re-thought: cHasher has been relegated to

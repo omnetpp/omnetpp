@@ -38,6 +38,15 @@ OMNeT++ 5.0b3
         graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
         to be refreshed after processing some simulation events.
 
+(+)	cEnvir: added isExpressMode() that can be used to tailor the operation
+	of refreshDisplay().
+
+(+)	cEnvir: added resolveResourcePath() for finding data or other files
+	needed by the model.
+
+(+)	ccComponent: added resolveResourcePath(). It delegates to cEnvir's
+	similar method.
+
 (!!!)   Signal listener interface change: A cObject *details (default-nullptr)
         argument has been added to emit() methods, and consequently, to
         cIListener::receiveSignal() methods as well. The motivation was to
