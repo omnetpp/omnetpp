@@ -401,7 +401,7 @@ public class OmnetppLaunchUtils {
                 args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
         }
 
-        // Tkenv image path
+        // image path
         String imagePathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim();
         imagePathStr = StringUtils.substituteVariables(imagePathStr);
         if (StringUtils.isNotBlank(imagePathStr)) {
@@ -410,7 +410,7 @@ public class OmnetppLaunchUtils {
                 imagePaths[i] = makeRelativePathTo(getLocationForWorkspacePath(imagePaths[i], workingdirStr, false), workingdirLocation).toString();
             // always create image path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
             if (imagePaths.length>1 || !".".equals(imagePaths[0]))
-                args += " --tkenv-image-path=" + StringUtils.join(imagePaths, pathSep)+" ";
+                args += " --" + ConfigRegistry.CFGID_IMAGE_PATH.getName() + "=" + StringUtils.join(imagePaths, pathSep) + " ";
         }
 
         // shared libraries

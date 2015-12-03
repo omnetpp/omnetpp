@@ -118,7 +118,7 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_NED_PATH = OMNETPP_LAUNCH_ID + ".NED_PATH";
 
     /**
-     * The Tkenv image path used to start the executable (--tkenv-image-path option)
+     * The image path used to start the executable (--image-path option)
      */
     public static final String OPP_IMAGE_PATH = OMNETPP_LAUNCH_ID + ".IMAGE_PATH";
 
