@@ -66,8 +66,10 @@ bool cOmnetpp4xFingerprint::checkFingerprint() const
 {
     cStringTokenizer tokenizer(expectedFingerprints.c_str());
     while (tokenizer.hasMoreTokens()) {
-        const char *fingerprint = tokenizer.nextToken();
-        if (hasher->equals(fingerprint))
+        std::string fingerprint = tokenizer.nextToken();
+        if (fingerprint.find('/') != std::string::npos)
+            continue;   // skip omnetpp 5.0 fingerprints
+        if (hasher->equals(fingerprint.c_str()))
             return true;
     }
     return false;
