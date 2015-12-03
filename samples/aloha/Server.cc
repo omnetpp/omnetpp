@@ -43,9 +43,6 @@ void Server::initialize()
 
     emit(receiveSignal, 0L);
     emit(receiveBeginSignal, 0L);
-
-    if (hasGUI())
-        getDisplayString().setTagArg("i2", 0, "status/off");
 }
 
 void Server::handleMessage(cMessage *msg)
@@ -75,12 +72,6 @@ void Server::handleMessage(cMessage *msg)
         currentCollisionNumFrames = 0;
         receiveCounter = 0;
         emit(receiveBeginSignal, receiveCounter);
-
-        // update network graphics
-        if (hasGUI()) {
-            getDisplayString().setTagArg("i2", 0, "status/off");
-            getDisplayString().setTagArg("t", 0, "");
-        }
     }
     else {
         cPacket *pkt = check_and_cast<cPacket *>(msg);
@@ -96,12 +87,6 @@ void Server::handleMessage(cMessage *msg)
             channelBusy = true;
             emit(channelStateSignal, TRANSMISSION);
             scheduleAt(endReceptionTime, endRxEvent);
-
-            if (hasGUI()) {
-                getDisplayString().setTagArg("i2", 0, "status/yellow");
-                getDisplayString().setTagArg("t", 0, "RECEIVE");
-                getDisplayString().setTagArg("t", 2, "#808000");
-            }
         }
         else {
             EV << "another frame arrived while receiving -- collision!\n";
@@ -119,9 +104,6 @@ void Server::handleMessage(cMessage *msg)
 
             // update network graphics
             if (hasGUI()) {
-                getDisplayString().setTagArg("i2", 0, "status/red");
-                getDisplayString().setTagArg("t", 0, "COLLISION");
-                getDisplayString().setTagArg("t", 2, "#800000");
                 char buf[32];
                 sprintf(buf, "Collision! (%ld frames)", currentCollisionNumFrames);
                 bubble(buf);
@@ -129,6 +111,24 @@ void Server::handleMessage(cMessage *msg)
         }
         channelBusy = true;
         delete pkt;
+    }
+}
+
+void Server::refreshDisplay() const
+{
+    if (!channelBusy) {
+        getDisplayString().setTagArg("i2", 0, "status/off");
+        getDisplayString().setTagArg("t", 0, "");
+    }
+    else if (currentCollisionNumFrames == 0) {
+        getDisplayString().setTagArg("i2", 0, "status/yellow");
+        getDisplayString().setTagArg("t", 0, "RECEIVE");
+        getDisplayString().setTagArg("t", 2, "#808000");
+    }
+    else {
+        getDisplayString().setTagArg("i2", 0, "status/red");
+        getDisplayString().setTagArg("t", 0, "COLLISION");
+        getDisplayString().setTagArg("t", 2, "#800000");
     }
 }
 

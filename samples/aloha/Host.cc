@@ -47,9 +47,6 @@ void Host::initialize()
     WATCH((int&)state);
     WATCH(pkCounter);
 
-    if (hasGUI())
-        getDisplayString().setTagArg("t", 2, "#808000");
-
     scheduleAt(getNextTransmissionTime(), endTxEvent);
 }
 
@@ -66,12 +63,6 @@ void Host::handleMessage(cMessage *msg)
         state = TRANSMIT;
         emit(stateSignal, state);
 
-        // update network graphics
-        if (hasGUI()) {
-            getDisplayString().setTagArg("i", 1, "yellow");
-            getDisplayString().setTagArg("t", 0, "TRANSMIT");
-        }
-
         cPacket *pk = new cPacket(pkname);
         pk->setBitLength(pkLenBits->longValue());
         simtime_t duration = pk->getBitLength() / txRate;
@@ -86,12 +77,6 @@ void Host::handleMessage(cMessage *msg)
 
         // schedule next sending
         scheduleAt(getNextTransmissionTime(), endTxEvent);
-
-        // update network graphics
-        if (hasGUI()) {
-            getDisplayString().setTagArg("i", 1, "");
-            getDisplayString().setTagArg("t", 0, "");
-        }
     }
     else {
         throw cRuntimeError("invalid state");
@@ -100,7 +85,7 @@ void Host::handleMessage(cMessage *msg)
 
 simtime_t Host::getNextTransmissionTime()
 {
-    simtime_t t = simTime()+iaTime->doubleValue();
+    simtime_t t = simTime() + iaTime->doubleValue();
 
     if (!isSlotted)
         return t;
@@ -108,5 +93,19 @@ simtime_t Host::getNextTransmissionTime()
         // align time of next transmission to a slot boundary
         return slotTime * ceil(t/slotTime);
 }
+
+void Host::refreshDisplay() const
+{
+    getDisplayString().setTagArg("t", 2, "#808000");
+    if (state == IDLE) {
+        getDisplayString().setTagArg("i", 1, "");
+        getDisplayString().setTagArg("t", 0, "");
+    }
+    else if (state == TRANSMIT) {
+        getDisplayString().setTagArg("i", 1, "yellow");
+        getDisplayString().setTagArg("t", 0, "TRANSMIT");
+    }
+}
+
 
 }; //namespace

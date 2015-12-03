@@ -46,6 +46,7 @@ class Server : public cSimpleModule
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
     virtual void finish() override;
+    virtual void refreshDisplay() const override;
 };
 
 }; //namespace
