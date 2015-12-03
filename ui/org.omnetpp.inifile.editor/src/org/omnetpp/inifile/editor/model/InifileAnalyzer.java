@@ -607,20 +607,61 @@ public final class InifileAnalyzer {
             // note: we do not validate "extends=" here -- that's all done in validateSections()!
         }
         else if (e==CFGID_NETWORK) {
-            INedTypeInfo network = resolveNetwork(ned, value);
-            if (network == null) {
-                markers.addError(section, key, "No such NED type: "+value);
-                return;
+            validateNetwork(section, key, ned, value);
+        }
+        else if (e == CFGID_SIMTIME_PRECISION) {
+            validateSimtimePrecision(section, key, value);
+        }
+    }
+
+    private void validateNetwork(String section, String key, INedTypeResolver ned, String value) {
+        INedTypeInfo network = resolveNetwork(ned, value);
+        if (network == null) {
+            markers.addError(section, key, "No such NED type: "+value);
+            return;
+        }
+        INedTypeElement node = network.getNedElement();
+        if (!(node instanceof IModuleTypeElement)) {
+            markers.addError(section, key, "Not a module type: "+value);
+            return;
+        }
+        if (!((IModuleTypeElement)node).isNetwork()) {
+            markers.addError(section, key, "Module type '"+value+"' was not declared to be a network");
+            return;
+        }
+        return;
+    }
+
+    private void validateSimtimePrecision(String section, String key, String value) {
+        try {
+            double d = Double.parseDouble(value);
+            if (d != Math.floor(d) || d > 0 || d < -18)
+                markers.addError(section, key, "Base-10 exponent must be a -18..0 integer");
+            return;
+        } 
+        catch (RuntimeException ex) {}
+
+        if (value.matches("[a-zA-Z]+")) {
+            try {
+                double d = UnitConversion.parseQuantity("1" + value, "s");
+                if (d > 1)
+                    markers.addError(section, key, "Time unit must be second or smaller");
             }
-            INedTypeElement node = network.getNedElement();
-            if (!(node instanceof IModuleTypeElement)) {
-                markers.addError(section, key, "Not a module type: "+value);
-                return;
+            catch (RuntimeException ex) {
+                markers.addError(section, key, ex.getMessage());
             }
-            if (!((IModuleTypeElement)node).isNetwork()) {
-                markers.addError(section, key, "Module type '"+value+"' was not declared to be a network");
-                return;
-            }
+            return;
+        }
+
+        try {
+            double d = UnitConversion.parseQuantity(value, "s");
+            if (d > 1 || d < 1e-18)
+                markers.addError(section, key, "Value out of range 1s..1e-18s");
+            if (Math.log10(d) != Math.floor(Math.log10(d)))
+                markers.addError(section, key, "Value must be a power-of-ten multiple of a time unit");
+        }
+        catch (RuntimeException ex) {
+            markers.addError(section, key, ex.getMessage());
         }
     }
 
