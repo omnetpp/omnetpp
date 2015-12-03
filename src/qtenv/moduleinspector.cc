@@ -110,6 +110,9 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     QToolBar *toolbar = createToolbar(isTopLevel);
+#ifdef __APPLE__
+    isTopLevel = true;  // FIXME this is a workaround for a bug on MAC OS X where the floating toolbar is not properly repainted on scrolling
+#endif
     if(isTopLevel)
     {
         auto layout = new QVBoxLayout(parent);
