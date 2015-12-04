@@ -19,7 +19,7 @@ network RandomGraph
         node[n]: Node {
             parameters:
                 address = index;
-                @display("p=,,ring");
+                @display("p=100,100,ring");
             gates:
                 port[n];
         }
