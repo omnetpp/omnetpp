@@ -172,23 +172,47 @@ more:
 
 SystemC:
 
-  - Updated the bundled System C reference implementation to version 2.3.1
+  - Updated the bundled SystemC reference implementation to version 2.3.1
 
 Qtenv:
 
-   Added!
+ - A brand new Qt based runtime environment (Qtenv) has been added to OMNeT++
+   as a preview. Tkenv is still the default runtime, but Qtenv can be invoked
+   using the '-u Qtenv' command-line switch. Specifying 'PREFER_QTENV=yes' in
+   configure.user allows you to use Qtenv by default. Note that 3D visiualization
+   support is available only in Qtenv.
 
 Examples:
 
-  OSG examples
+ - Several new examples (osg-intro, osg-earth, osg-indoor, osg-satellites) have
+   been added to the 'samples' folder to demonstarte the new 3D visualization
+   capabilities in Qtenv.
 
 Tools:
-   opp_featuretool
+
+ - Added 'opp_featuretool' to enable/disable features defined in an OMNeT++ project.
 
 Build:
-   Qt, OSG dependencies
-   unpacking tools.zip
-   separate download for OS X
+
+ - Because of the new Qtenv runtime environment, OMNeT++ now has several additional
+   dependencies: Qt4 is mandatory, while OpenSceneGraph and osgEarth is optional.
+   Qtenv can be fully disabled by commenting out the QT_VERSION= variable in the
+   configure.user file and then re-running ./configure. Building Qtenv without
+   the OpenSceneGraph libraries will disable 3D visulaization support in Qtenv.
+ - On systems that have both the 'gcc' and 'clang' compilers installed, OMNeT++
+   will pick 'clang' by default. This behavior can be changed by the PREFER_CLANG
+   variable in the configure.user file.
+ - The bundled toolchain on Windows has been updated to use MinGW-w64 (32-bit)
+   containing both the 'gcc' and 'clang' compilers. The bundle contains all the
+   dependencies needed to build OMNeT++ (including Tcl/Tk, Qt4, OpenSceneGraph,
+   osgEarth etc.)
+ - Because of the extra dependencies (Qt, OpenSceneGraph), the tools directory
+   is now distributed as a highly compressed archive file inside the Windows installation
+   bundle. It is extracted to its final location when mingwenv.cmd first started.
+ - A separate MAC OS X specific installation bundle was created that contains
+   the binary files for all the external dependencies (Tcl/Tk, Qt, OSG, osgEarth etc.)
+   As a consequence you no longer have to manually install Quartz before installing
+   OMNeT++. We have now seperate installation bundles for Linux/MAC/Windows.
 
 
 OMNeT++ 5.0 beta 2 (July 2015)
