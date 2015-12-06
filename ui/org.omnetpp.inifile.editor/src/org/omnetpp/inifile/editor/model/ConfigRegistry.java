@@ -346,16 +346,18 @@ public class ConfigRegistry {
         "separated by spaces, and a match with any of them will be accepted. To " +
         "obtain the initial fingerprint, enter a dummy value (such as \"0000\"), and " +
         "run the simulation.");
-    public static final ConfigOption CFGID_FINGERPRINT_CATEGORIES = addPerRunOption(
-        "fingerprint-categories", CFG_STRING, "tplx",
-        "The fingerprint calculator can be configured to take into account various " +
-        "data of the simulation events. Each character in the value specifies one " +
-        "kind of data to be included: 'e' event number, 't' simulation time, 'n' " +
-        "message (event) full name, 'c' message (event) class name, 'k' message " +
-        "kind, 'l' message bit length, 'o' message control info class name, 'd' " +
-        "message data, 'i' module id, 'm' module full name, 'p' module full path, " +
-        "'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' " +
-        "statistic results, 'v' vector results, 'x' extra data provided by modules.");
+    public static final ConfigOption CFGID_FINGERPRINT_INGREDIENTS = addPerRunOption(
+        "fingerprint-ingredients", CFG_STRING, "tplx",
+        "Specifies the list of ingredients to be taken into account for fingerprint " +
+        "computation. Each character corresponds to one ingredient: 'e' event " +
+        "number, 't' simulation time, 'n' message (event) full name, 'c' message " +
+        "(event) class name, 'k' message kind, 'l' message bit length, 'o' message " +
+        "control info class name, 'd' message data, 'i' module id, 'm' module full " +
+        "name, 'p' module full path, 'a' module class name, 'r' random numbers " +
+        "drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' " +
+        "extra data provided by modules. Note: ingredients specified in an expected " +
+        "fingerprint (characters after the '/' in the fingerprint value) take " +
+        "precedence over this setting.");
     public static final ConfigOption CFGID_FINGERPRINT_CLASS = addGlobalOption(
         "fingerprint-class", CFG_STRING, "omnetpp::cSingleFingerprint",
         "Part of the Envir plugin mechanism: selects the fingerprint class to be " +

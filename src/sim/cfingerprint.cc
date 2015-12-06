@@ -79,7 +79,7 @@ bool cOmnetpp4xFingerprint::checkFingerprint() const
 
 Register_Class(cSingleFingerprint);
 
-Register_PerRunConfigOption(CFGID_FINGERPRINT_CATEGORIES, "fingerprint-categories", CFG_STRING, "tplx", "The fingerprint calculator can be configured to take into account various data of the simulation events. Each character in the value specifies one kind of data to be included: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules.");
+Register_PerRunConfigOption(CFGID_FINGERPRINT_INGREDIENTS, "fingerprint-ingredients", CFG_STRING, "tplx", "Specifies the list of ingredients to be taken into account for fingerprint computation. Each character corresponds to one ingredient: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules. Note: ingredients specified in an expected fingerprint (characters after the '/' in the fingerprint value) take precedence over this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_EVENTS, "fingerprint-events", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain events. The value is a pattern that will be matched against the event name by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in the calculated fingerprint.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_MODULES, "fingerprint-modules", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain modules. The value is a pattern that will be matched against the module full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in all modules in the calculated fingerprint.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_RESULTS, "fingerprint-results", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain results. The value is a pattern that will be matched against the result full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all results in all modules in the calculated fingerprint.");
@@ -133,8 +133,8 @@ void cSingleFingerprint::initialize(const char *expectedFingerprints, cConfigura
     this->expectedFingerprints = expectedFingerprints;
     hasher = new cHasher();
 
-    // fingerprints may have a categories string embedded in them after a "/" character;
-    // if so, that overrides the fingerprint-categories configuration option.
+    // fingerprints may have an ingredients string embedded in them after a "/" character;
+    // if so, that overrides the fingerprint-ingredients configuration option.
     std::string options;
     cStringTokenizer tokenizer(expectedFingerprints);
     while (tokenizer.hasMoreTokens()) {
@@ -152,7 +152,7 @@ void cSingleFingerprint::initialize(const char *expectedFingerprints, cConfigura
     // parse configuration
     if (index == -1)
         index = 0;
-    parseCategories(!options.empty() ? options.c_str() : getListItem(cfg->getAsString(CFGID_FINGERPRINT_CATEGORIES), index).c_str());
+    parseIngredients(!options.empty() ? options.c_str() : getListItem(cfg->getAsString(CFGID_FINGERPRINT_INGREDIENTS), index).c_str());
     parseEventMatcher(getListItem(cfg->getAsString(CFGID_FINGERPRINT_EVENTS), index).c_str());
     parseModuleMatcher(getListItem(cfg->getAsString(CFGID_FINGERPRINT_MODULES), index).c_str());
     parseResultMatcher(getListItem(cfg->getAsString(CFGID_FINGERPRINT_RESULTS), index).c_str());
@@ -160,22 +160,22 @@ void cSingleFingerprint::initialize(const char *expectedFingerprints, cConfigura
 
 std::string cSingleFingerprint::info() const
 {
-    return hasher->str() + "/" + categories;
+    return hasher->str() + "/" + ingredients;
 }
 
-cSingleFingerprint::FingerprintCategory cSingleFingerprint::validateCategory(char ch)
+cSingleFingerprint::FingerprintIngredient cSingleFingerprint::validateIngredient(char ch)
 {
     if (strchr("etncklodimparszvx0", ch) == nullptr)
-        throw cRuntimeError("Unknown fingerprint category character '%c'", ch);
-    return (FingerprintCategory) ch;
+        throw cRuntimeError("Unknown fingerprint ingredient character '%c'", ch);
+    return (FingerprintIngredient) ch;
 }
 
-void cSingleFingerprint::parseCategories(const char *s)
+void cSingleFingerprint::parseIngredients(const char *s)
 {
-    categories = s;
+    ingredients = s;
     for (; *s; s++) {
         char ch = *s;
-        switch (validateCategory(ch)) {
+        switch (validateIngredient(ch)) {
             case RESULT_SCALAR: addScalarResults = true; break;
             case RESULT_STATISTIC: addStatisticResults = true; break;
             case RESULT_VECTOR: addVectorResults = true; break;
@@ -228,10 +228,10 @@ void cSingleFingerprint::addEvent(cEvent *event)
 
             MatchableObject matchableModule(module);
             if (module == nullptr || moduleMatcher == nullptr || moduleMatcher->matches(&matchableModule)) {
-                for (std::string::iterator it = categories.begin(); it != categories.end(); ++it) {
-                    FingerprintCategory category = (FingerprintCategory) *it;
-                    if (!addEventCategory(event, category)) {
-                        switch (category) {
+                for (std::string::iterator it = ingredients.begin(); it != ingredients.end(); ++it) {
+                    FingerprintIngredient ingredient = (FingerprintIngredient) *it;
+                    if (!addEventIngredient(event, ingredient)) {
+                        switch (ingredient) {
                             case EVENT_NUMBER:
                                 hasher->add(getSimulation()->getEventNumber()); break;
                             case SIMULATION_TIME:
@@ -293,7 +293,7 @@ void cSingleFingerprint::addEvent(cEvent *event)
                                 // not processed here
                                 break;
                             default:
-                                throw cRuntimeError("Unknown fingerprint category '%c' (%d)", category, category);
+                                throw cRuntimeError("Unknown fingerprint ingredient '%c' (%d)", ingredient, ingredient);
                         }
                     }
                 }
@@ -302,7 +302,7 @@ void cSingleFingerprint::addEvent(cEvent *event)
     }
 }
 
-bool cSingleFingerprint::addEventCategory(cEvent *event, FingerprintCategory category)
+bool cSingleFingerprint::addEventIngredient(cEvent *event, FingerprintIngredient ingredient)
 {
     return false;
 }

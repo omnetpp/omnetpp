@@ -107,7 +107,7 @@ class SIM_API cOmnetpp4xFingerprint : public cFingerprint
  * can be configured to consider only certain events, modules, and
  * results using filter expressions.
  *
- * The available categories are:
+ * The available ingredients are:
  *  - 'e' event number
  *  - 't' simulation time
  *
@@ -133,7 +133,7 @@ class SIM_API cOmnetpp4xFingerprint : public cFingerprint
 class SIM_API cSingleFingerprint : public cFingerprint
 {
   protected:
-    enum FingerprintCategory {
+    enum FingerprintIngredient {
         EVENT_NUMBER         = 'e',
         SIMULATION_TIME      = 't',
         MESSAGE_FULL_NAME    = 'n',
@@ -169,7 +169,7 @@ class SIM_API cSingleFingerprint : public cFingerprint
 
   protected:
     std::string expectedFingerprints;
-    std::string categories;
+    std::string ingredients;
     cMatchExpression *eventMatcher;
     cMatchExpression *moduleMatcher;
     cMatchExpression *resultMatcher;
@@ -181,12 +181,12 @@ class SIM_API cSingleFingerprint : public cFingerprint
     bool addExtraData_;
 
   protected:
-    virtual FingerprintCategory validateCategory(char ch);
-    virtual void parseCategories(const char *s);
+    virtual FingerprintIngredient validateIngredient(char ch);
+    virtual void parseIngredients(const char *s);
     virtual void parseEventMatcher(const char *s);
     virtual void parseModuleMatcher(const char *s);
     virtual void parseResultMatcher(const char *s);
-    virtual bool addEventCategory(cEvent *event, FingerprintCategory category);
+    virtual bool addEventIngredient(cEvent *event, FingerprintIngredient ingredient);
 
   public:
     cSingleFingerprint();
