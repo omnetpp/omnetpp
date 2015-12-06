@@ -6,131 +6,80 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 5.0 beta 3 (November 2015)
+OMNeT++ 5.0 beta 3 (December 2015)
 ----------------------------------
+
+The highlights of this release are the experimental version of Qtenv (which is
+a Qt-based runtime environment that will eventually replace Tkenv), support
+for 3D graphics using OpenSceneGraph, and the addition of the much-requested
+opp_featuretool utility. The full list follows:
 
 Core:
 
- - Use of the omnetpp namespace was made permanent. The following defines
-   no longer exist: USE_NAMESPACE, NAMESPACE_BEGIN, NAMESPACE_END,
-   USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX.
+ - Use of the omnetpp namespace was made permanent. The recommended way of
+   porting models is to add the "using namespace omnetpp;" like to header
+   files. To compile models without change, add -DAUTOIMPORT_OMNETPP_NAMESPACE
+   to the compiler command line.
 
-	* Added the simtime-precision config option, more user-friendly
-	replacement for the now-deprecated simtime-scale. simtime-precision
-	accepts time units (s, ms, us, ns, ps, fs, as), power-of-ten multiples
-	of such a unit (e.g. 100ms), and also base-10 scale exponents in the
-	-18..0 range (mostly for backward compatiblity with simtime-scale).
+ - Added 3D graphics support via OpenSceneGraph. The 3D scene graph is to
+   be built using the OpenSceneGraph API (e.g. loaded from file via osgDB::
+   readNodeFile()), and then set onto a cOsgCanvas instance. 3D scene(s)
+   can be visualized in the new Qtenv runtime GUI. (There is no 3D support
+   in Tkenv, due to technical limitations.)
 
-	Examples:
-	   simtime-precision = ms
-	   simtime-precision = 10ns
-	   simtime-precision = -6  (==microseconds)
+ - Added resolveResourcePath() to cEnvir and cComponent. The method searches
+   a number of folders for a resource given with its file name or relative
+   path, and returns the path for the first match. It can useful for locating
+   various data files for models, OSG model files, and other files.
 
-	* Made RNG-to-module mapping more flexible: the *.rng-<N> config option
-	now allows expressions as well. Limitation: only parameters of modules
-	that have been already created may be referenced (i.e. parent, and
-	generally, ancestor modules, and preceding sibling modules). Parameters
-	of the same module cannot be accessed (i.e. this.<paramname> is not
-	allowed), because they not yet exist when the RNG mapping is set up.
+ - Visualization: added a method to the base class of modules and channels to
+   serve as a container of visualization-related code. refreshDisplay() is
+   invoked by graphical user interfaces (Qtenv, Tkenv) whenever GUI contents
+   need to be refreshed. Display string updates, canvas figures maintenance,
+   and OSG scene graph updates are probably best done inside refreshDisplay()
+   methods, as it can result in significant performance gain and, in some
+   cases, also in more consistent information being displayed.
 
-	Hint: index, parentIndex, and ancestorIndex(level) may also be used
-	in the expression. This allows things like assigning a separate RNG
-	to each element of a module vector.
+ - An isExpressMode() method has been added to cEnvir to query whether the
+   simulation runs in Express mode under a GUI. This information can be useful
+   additional input for refreshDisplay() code.
 
- - Added cOsgCanvas, a class that supports 3D graphics support via
-   OpenSceneGraph. The 3D scene graph is to be built using the
-   OpenSceneGraph API (e.g. loaded from file via osgDB::readNodeFile()),
-   and then set onto a cOsgCanvas instance. There's one default cOsgCanvas
-   instance per module, accessible via cModule::getOsgCanvas(), but
-   the user can also create additional ones. The 3D scene(s) can be
-   visualized in the new Qtenv graphical runtime environment (Tkenv
-   cannot support it due to technical limitations.)
+ - The simtime-scale config option has been replaced by simtime-precision,
+   a more user-friendly incarnation. simtime-precision accepts time units
+   (s, ms, us, ns, ps, fs, as), power-of-ten multiples of such a unit (e.g.
+   100ms), and also base-10 scale exponents in the -18..0 range (mostly for
+   backward compatiblity with simtime-scale).
 
-   Note that cOsgCanvas is just an OMNeT++-aware wrapper for the scene
-   graph (plus some viewer hints), but the viewer itself (i.e. the widget)
-   is not accessible from simulation models. This is by design, to
-   de-couple the model from its user interface (i.e. a viewer may not be
-   open for any particular cOsgCanvas instance at any given time, or even,
-   the module may be running under Cmdenv or Tkenv that does not support
-   3D visualization at all.)
+ - RNG-to-module mapping made more flexible: the *.rng-<N> config option now
+   allows expressions, including those containing index, parentIndex, and
+   ancestorIndex(level). This change allows things like assigning a separate
+   RNG to each element of a module vector.
 
-   Code that uses the OpenSceneGraph API should be surrounded with #ifdef
-   WITH_OSG, so that the model can be compiled and used in OMNeT++
-   installations compiled without OpenSceneGraph support. The cOsgCanvas
-   class always exists, regardless of OpenSceneGraph being available or
-   not.
+ - Fingerprint computation has changed. It was also made more flexible,
+   e.g. it is now possible to control which ingredients are added into the
+   fingerprint computation. Define USE_OMNETPP4x_FINGERPRINT at compile-time
+   to get back OMNeT++ 4.x fingerprints.
 
- - Fingerprint computation re-thought: cHasher has been relegated to
-   a simple hash computing class, and fingerprint computation is now
-   performed by cFingerprint (which itself relies on a cHasher).
-   More precisely, cFingerprint is an abstract class interface from
-   which concrete fingerprint computing classes are derived, currently
-   cSingleFingerprint, cMultiFingerprint, and cOmnetpp4xFingerprint.
-
-   cSingleFingerprint allows selecting which data elements to include
-   in the fingerprint, and also allows filtering (by module, etc).
-   See sim/ChangeLog for a more detailed feature description.
-
-   TODO how to use! categories etc. sim/ChangeLog
-
-	* Fingerprint computation made more powerful/flexible; see sim/ChangeLog
-	for more details. The envir library contributes to this feature
-	by providing the fingerprint-class configuration option, and support
-	for the USE_OMNETPP4x_FINGERPRINT compatibility compile-time option.
-
-	new configuration options:
-	- fingerprint-categories=<string> (default: "tpl")
-	- fingerprint-events=<string> (default: "*")
-	- fingerprint-modules=<string> (default: "*")
-	- fingerprint-results=<string> (default: "*")
-
-
- - Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
-   OMNeT++ 4.x fingerprints. Note: using cOmnetpp4xFingerprint alone is
-   not enough, because SimTime operation has also changed in some details.
-   USE_OMNETPP4x_FINGERPRINT also restores the 4.x behavior of SimTime.
-
- - API change: cSimulation no longer has getHasher()/setHasher();
-   getFingerprint() has been added instead.
-
- - cComponent: added the refreshDisplay() method which is called by
-   graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
-   to be refreshed after processing some simulation events. Modules are
-   expected to override refreshDisplay() and move visualization code
-   (display string manipulation, canvas figures maintenance, OSG scene
-   graph update, etc) into it. Overriding refreshDisplay() allows for
-   a much more efficient screen update strategy than handleMessage(),
-   and also results in more consistent information being displayed.
-
-   Code in refreshDisplay() is not supposed to alter the state of the
-   model; to this end, the method is declared const.
-
- - Signal listener interface change: A cObject *details (default-nullptr)
-   argument has been added to emit() methods, and consequently, to
-   cIListener::receiveSignal() methods as well. The motivation was to
-   allow simulation models to provide some extra information with
-   primitive data types (double, long, etc) they emit, without the need
-   to switch over to emitting cObject altogether.
-
-   This is a non-backward-compatible change: users' listeners will need
-   to be updated (the extra argument added to their receiveSignal()
-   methods). To facilitate transition, compile OMNeT++ and models with
+ - Signal listener interface change: A cObject *details argument has been
+   added to emit() methods to allow simulation models provide extra information
+   with primitive data types (double, long, etc) they emit, without the need
+   to switch over to emitting cObject altogether. This is a non-backward-
+   compatible change: signal listeners will need to be updated with the extra
+   argument. To facilitate transition, you can compile OMNeT++ and models with
    WITH_OMNETPP4x_LISTENER_SUPPORT defined; this will set up cIListener
    to delegate to the old methods, so existing listeners will work.
 
- - Result filter/recorder interface change: A similar change has been
-   applied to cResultFilter and cResultRecorder as well, so models that
-   contain custom result filters or recorders will need to be updated for
-   OMNeT++ 5.0. Defining WITH_OMNETPP4x_LISTENER_SUPPORT does NOT help
-   these classes.
+ - Result filter/recorder interfaces, being based on signal listeners, have
+   undergone a similar change. Models containing custom result filters or
+   recorders will need to be updated.
 
  - SimTime overhaul to increase accuracy (i.e. use integer arithmetic
    where possible), improve the API, and add missing operations/functions.
 
    Details:
    - Added missing * and / operators for integral types. This causes
-     integer multiplications/divisions to be computed with integer
-     arithmetic instead of floating point, thus giving better accuracy
+     integer multiplications/divisions to be computed with integer arithmetic
+     instead of floating point, resulting in better accuracy.
    - Added overflow checking for integer multiplication and negation
    - Use int64 arithmetc and overflow checking when assigning from integer types
    - Added isZero()
@@ -139,58 +88,45 @@ Core:
      of making the API more user-friendly (and model code easier to read).
      Models that call affected methods with integers will need to be
      updated.
-   - Template operators expanded to 8 integer types (signed/unsigned
-     short, int, long, long long). Reason: templates kicked in too often
-     where the expression was not about SimTime at all but conversion was
-     needed; e.g. for K*2 where K was defined as enum {K=2}. The compiler
-     decided to convert K into SimTime then complained that it couldn't
-     cast the result back to the desired type (int or double).
-   - Friend operations inlined for code readability
    - Moved math functions like fabs(SimTime) into the omnetpp namespace
    - Added div(SimTime, SimTime); also refined related fmod()'s documentation
 
- - Removed compatibility macros that were introduced in 4.0 to allow
-   writing models that work with both the then-new int64-based SimTime
-   class and the legacy "double" simtime_t: SIMTIME_RAW(), STR_SIMTIME(),
-   SIMTIME_TTOA(). MAXTIME was renamed to SIMTIME_MAX.
+ - Removed SIMTIME_RAW(), STR_SIMTIME(), and SIMTIME_TTOA(). These macros are
+   no longer needed, as were introduced in OMNeT++ 4.0 to assist porting models
+   from version 3.x where simulation time was stored in double. Also, MAXTIME
+   was renamed to SIMTIME_MAX.
 
-   SIMTIME_ZERO, SIMTIME_DBL(), SIMTIME_STR() were left in place, as they
-   are either too broadly used to be removed and/or have some utility
-   value.
+ - The tkenv-image-path config option has been replaced with image-path.
 
-more:
- - Fixes for mingw64: M_PI moved into platdep/platmisc.h
- - API fix: cSimpleModule::scheduleAt() return type changed from int
-   (a dummy) to void.
- - API fix: cObject::getDescriptor() made const
- - Some cComponent/cModule methods were changed to const to facilitate
-   calling them from refreshDisplay():
-   - cComponent: getDisplayString()
-   - cModule: findSubmodule(), getSubmodule(), getModuleByPath(),
-     getCanvas(), getOsgCanvas()
-
-
-SystemC:
-
-  - Updated the bundled SystemC reference implementation to version 2.3.1
+ - NOTE: The above descriptions have been edited for brevity. More information
+   is available in the ChangeLog files (e.g. include/omnetpp/ChangeLog and
+   src/sim/ChangeLog), and in doc/API-changes.txt.
 
 Qtenv:
 
- - A brand new Qt based runtime environment (Qtenv) has been added to OMNeT++
-   as a preview. Tkenv is still the default runtime, but Qtenv can be invoked
-   using the '-u Qtenv' command-line switch. Specifying 'PREFER_QTENV=yes' in
-   configure.user allows you to use Qtenv by default. Note that 3D visiualization
-   support is available only in Qtenv.
+ - Qtenv, the Qt-based runtime environment is currently in preview status,
+   Tkenv is still the default runtime. Qtenv can be activated by adding the
+   '-u Qtenv' switch to simulation command lines. Alternatively, specify
+   'PREFER_QTENV=yes' in configure.user to make Qtenv the default GUI.
+   Note that 3D visualization is only available in Qtenv.
+
+SystemC:
+
+ - Updated the bundled SystemC reference implementation to version 2.3.1
 
 Examples:
 
  - Several new examples (osg-intro, osg-earth, osg-indoor, osg-satellites) have
-   been added to the 'samples' folder to demonstarte the new 3D visualization
+   been added to the 'samples' folder to demonstrate the new 3D visualization
    capabilities in Qtenv.
+
+ - Aloha has been updated to use the new refreshDisplay() method.
 
 Tools:
 
- - Added 'opp_featuretool' to enable/disable features defined in an OMNeT++ project.
+ - Added 'opp_featuretool', which is basically the command-line equivalent of
+   the Project Features dialog in the IDE: it allows one to enable/disable
+   project features defined for an OMNeT++ project, e.g. the INET Framework.
 
 Build:
 
@@ -198,21 +134,26 @@ Build:
    dependencies: Qt4 is mandatory, while OpenSceneGraph and osgEarth is optional.
    Qtenv can be fully disabled by commenting out the QT_VERSION= variable in the
    configure.user file and then re-running ./configure. Building Qtenv without
-   the OpenSceneGraph libraries will disable 3D visulaization support in Qtenv.
- - On systems that have both the 'gcc' and 'clang' compilers installed, OMNeT++
-   will pick 'clang' by default. This behavior can be changed by the PREFER_CLANG
-   variable in the configure.user file.
+   the OpenSceneGraph libraries will disable 3D visualization support in Qtenv.
+
+ - A separate Mac OS X specific installation bundle was created that contains
+   the binary files for all the external dependencies (Tcl/Tk, Qt, OSG, osgEarth etc.)
+   As a consequence you no longer have to manually install Quartz before installing
+   OMNeT++. We have now seperate installation bundles for Linux/Mac/Windows.
+
  - The bundled toolchain on Windows has been updated to use MinGW-w64 (32-bit)
    containing both the 'gcc' and 'clang' compilers. The bundle contains all the
    dependencies needed to build OMNeT++ (including Tcl/Tk, Qt4, OpenSceneGraph,
    osgEarth etc.)
- - Because of the extra dependencies (Qt, OpenSceneGraph), the tools directory
-   is now distributed as a highly compressed archive file inside the Windows installation
-   bundle. It is extracted to its final location when mingwenv.cmd first started.
- - A separate MAC OS X specific installation bundle was created that contains
-   the binary files for all the external dependencies (Tcl/Tk, Qt, OSG, osgEarth etc.)
-   As a consequence you no longer have to manually install Quartz before installing
-   OMNeT++. We have now seperate installation bundles for Linux/MAC/Windows.
+
+ - Because of the large size of the extra dependencies (Qt, OpenSceneGraph), the
+   tools directory is now distributed as a highly compressed archive file inside
+   the Windows installation bundle. It is extracted to its final location when
+   mingwenv.cmd is first started.
+
+ - On systems that have both the 'gcc' and 'clang' compilers installed, OMNeT++
+   will pick 'clang' by default. This behavior can be changed by the PREFER_CLANG
+   variable in the configure.user file.
 
 
 OMNeT++ 5.0 beta 2 (July 2015)

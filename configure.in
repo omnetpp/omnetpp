@@ -303,7 +303,7 @@ else
     esac
 fi
 
-# check if the user wants to use QTEnv by default instead of Tkenv
+# check if the user wants to use Qtenv by default instead of Tkenv
 if test "$PREFER_QTENV" = "yes"; then
     DEFINES="$DEFINES -DPREFER_QTENV"
 fi
