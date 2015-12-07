@@ -48,7 +48,7 @@ Core:
    a more user-friendly incarnation. simtime-precision accepts time units
    (s, ms, us, ns, ps, fs, as), power-of-ten multiples of such a unit (e.g.
    100ms), and also base-10 scale exponents in the -18..0 range (mostly for
-   backward compatiblity with simtime-scale).
+   backward compatibility with simtime-scale).
 
  - RNG-to-module mapping made more flexible: the *.rng-<N> config option now
    allows expressions, including those containing index, parentIndex, and
@@ -81,7 +81,7 @@ Core:
      integer multiplications/divisions to be computed with integer arithmetic
      instead of floating point, resulting in better accuracy.
    - Added overflow checking for integer multiplication and negation
-   - Use int64 arithmetc and overflow checking when assigning from integer types
+   - Use int64 arithmetic and overflow checking when assigning from integer types
    - Added isZero()
    - Replaced "int exponent" with "SimTimeUnit unit" in the two-argument
      constructor (value + unit) and several other methods, with the aim
@@ -139,7 +139,7 @@ Build:
  - A separate Mac OS X specific installation bundle was created that contains
    the binary files for all the external dependencies (Tcl/Tk, Qt, OSG, osgEarth etc.)
    As a consequence you no longer have to manually install Quartz before installing
-   OMNeT++. We have now seperate installation bundles for Linux/Mac/Windows.
+   OMNeT++. We have now separate installation bundles for Linux/Mac/Windows.
 
  - The bundled toolchain on Windows has been updated to use MinGW-w64 (32-bit)
    containing both the 'gcc' and 'clang' compilers. The bundle contains all the
@@ -327,7 +327,7 @@ Core:
    not intended for use in simulation models; the primary motivation is to
    allow implementing simulation time limit with an "end-simulation" event,
    and to encapsulate foreign events (e.g. SystemC events and crunching)
-   for seemless integration with the simulation event loop.
+   for seamless integration with the simulation event loop.
 
  - Added support for simulation lifecycle listeners. Listeners are called back
    before and after network setup, on network initialization, before and after
@@ -358,7 +358,7 @@ Core:
  - cClassDescriptor interface changes (method renaming and arg list changes)
 
  - Code cleanup, including:
-   - removal of 3.x backward compatilibity features (WITH_DOUBLE_SIMTIME,
+   - removal of 3.x backward compatibility features (WITH_DOUBLE_SIMTIME,
      WITHOUT_CPACKET)
    - removal of deprecated classes, functions and macros (cLinkedList,
      cSimulation::operator[], Define_Function(), etc.)
