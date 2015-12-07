@@ -14,8 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QStyledItemDelegate>
@@ -24,6 +22,8 @@
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
