@@ -2,8 +2,7 @@
 
 === Supported Windows Versions
 
-The supported Windows versions are the Intel 32-bit versions of Windows XP,
-and later versions such as Windows 7 and 8.
+@OMNETPP@ supports the Intel 32-bit versions of Windows 7 and 10.
 
 [NOTE]
 ===============================================================
@@ -103,9 +102,7 @@ to the path.
 
 First, open the 'Environment Variables' dialog.
 
-* On Windows XP and Vista: Right-click 'My Computer', and choose 'Properties > Advanced > Environment variables'.
-
-* On Windows 7: Click the Start button, then start typing `environment variables`
+Click the Start button, then start typing `environment variables`
 into the search box. Choose 'Edit environment variables for your account' when it
 appears in the list. The  dialog comes up.
 
@@ -152,8 +149,8 @@ to the `lib/` and `bin/` subdirs.
 
 === Portability Issues
 
-@OMNETPP@ has been tested with the MinGW gcc compiler. The current distribution
-contains gcc version 4.7.
+@OMNETPP@ has been tested with both the gcc and the clang compiler from
+the MinGW-w64 package.
 
 Microsoft Visual C++ is not supported in the Academic Edition.
 
@@ -193,5 +190,3 @@ compiler and linker options for models in case they need it.
 Akaroa 2.7.9, which is the latest version at the time of writing, does not
 support Windows. You may try to port it using the porting guide from the
 Akaroa distribution.
-
-

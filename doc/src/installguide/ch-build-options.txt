@@ -17,7 +17,7 @@ After this step, you have to remove all previous libraries and recompile @OMNETP
 
 Options:
 
-`PREFER_CLANG=no`::
+`PREFER_CLANG=yes`::
   If both `gcc` and `clang` are installed on your system, setting this variable to `yes`
   will force the configure script to use `clang` as C++ compiler.
 
@@ -49,6 +49,13 @@ endif::OMNEST[]
   This will prevent the build system to link with Tcl/Tk libraries. Use this option
   if your platform does not have a suitable Tcl/Tk package and you will run the simulation
   only in command line mode. (i.e. You want to run @OMNETPP@ in a remote terminal session.)
+
+`QT_VERSION=4`::
+  Specifies the major Qt version that Qtenv runtime is using (at the moment only Qt4 is
+  supported.) Commenting out this line will disable the Qtenv component. 
+
+`PREFER_QTENV=yes`::
+  Use Qtenv as the default graphical runtime instead of Tkenv.
 
 `EMBED_TCL_CODE=no`::
   Tcl/Tk is a script language and the source of the graphical
@@ -165,4 +172,3 @@ The major differences are:
  * The build process is initiated with the command `nmake -f Makefile.vc` instead of `make`.
 
 endif::OMNEST[]
-

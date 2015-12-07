@@ -5,7 +5,7 @@
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
-* Ubuntu 12.04 LTS, 13.04
+* Ubuntu 14.04 LTS, 15.10
 * Fedora Core 18
 * Red Hat Enterprise Linux Desktop Workstation 6.4
 * OpenSUSE 12.3
@@ -39,7 +39,7 @@ Some Fedora-based distros (Fedora instructions may apply):
 === Installing the Prerequisite Packages
 
 @OMNETPP@ requires several packages to be installed on the computer. These packages
-include the C++ compiler (gcc), the Java runtime, and several other libraries and
+include the C++ compiler (gcc or clang), the Java runtime, and several other libraries and
 programs. These packages can be installed from the software repositories of your
 Linux distribution.
 
@@ -152,7 +152,7 @@ image::pictures/terminal-make.png[title="Building @OMNETPP@",align="center",scal
 
 [TIP]
 ===============================================================
-To take advantage of multiple processor cores, add the `-j2` option to the
+To take advantage of multiple processor cores, add the `-j4` option to the
 `make` command line.
 ===============================================================
 
@@ -253,6 +253,12 @@ NOTE: For detailed description of all options please read the 'Build Options' ch
 === Additional Packages
 
 Note that at this point, MPI, Doxygen and GraphViz have been installed as part of the prerequisites.
+
+==== Qtenv
+
+@OMNETPP@ 5 comes with a new Qt based runtime environment that supports also 3D visualization.
+The new environment can be disabled by commenting out the QT_VERSION variable in the configure.user
+file and then running `./configure`.
 
 ==== Akaroa
 

@@ -8,8 +8,8 @@ in the 'Linux' chapter.
 
 The following Ubuntu releases are covered:
 
-* Ubuntu 12.04 LTS
-* Ubuntu 13.10
+* Ubuntu 14.04 LTS
+* Ubuntu 15.10
 
 They were tested on the following architectures:
 
@@ -38,10 +38,25 @@ Type in the terminal:
 
 To install the required packages, type in the terminal:
 
- $ sudo apt-get install build-essential gcc g++ bison flex perl \
+  $ sudo apt-get install build-essential gcc g++ bison flex perl \
        tcl-dev tk-dev libxml2-dev zlib1g-dev default-jre \
-       doxygen graphviz libwebkitgtk-1.0-0 openmpi-bin \
-       libopenmpi-dev libpcap-dev
+       doxygen graphviz libwebkitgtk-1.0-0
+
+[NOTE]
+=====================================================
+You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+=====================================================
+
+To use Qtenv and the new 3D visualization support, install Qt4, OpenSceneGraph
+and the osgEarth packages (recommended):
+
+  $ sudo apt-get install qt4-qmake libqt4-dev libqt4-opengl-dev openscenegraph \
+       libopenscenegraph-dev openscenegraph-plugin-osgearth osgearth \
+       osgearth-data libosgearth-dev
+
+To enable the optional parallel simulation support you will need to install the MPI packages:
+
+  $ sudo apt-get install openmpi-bin libopenmpi-dev
 
 At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 
@@ -63,9 +78,11 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 
 The packages:
 
-* build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, libxml2-dev,
-zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-1.0-0, openmpi-bin,
-libopenmpi-dev, libpcap-dev
+* required: build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, libxml2-dev,
+zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-1.0-0
+* recommended: qt4-qmake, libqt4-dev, libqt4-opengl-dev, openscenegraph,
+libopenscenegraph-dev, openscenegraph-plugin-osgearth, osgearth,
+osgearth-data, libosgearth-dev, openmpi-bin, libopenmpi-dev
 
 image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
 
@@ -120,4 +137,3 @@ Note that the default debugger for @OMNETPP@ just-in-time debugging is 'Nemiver'
 so it also needs to be installed:
 
   $ sudo apt-get install nemiver
-

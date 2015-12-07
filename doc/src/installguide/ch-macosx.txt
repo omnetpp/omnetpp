@@ -7,26 +7,21 @@ Mac OS X.
 
 The following releases are covered:
 
-* Mac OS X 10.7 ('Lion')
-* Mac OS X 10.8 ('Mountain Lion')
-* Mac OS X 10.9 ('Mavericks')
-* Mac OS X 10.10 ('Yosemite')
+* Mac OS X 10.10 ('Yosemite') or later
 
 === Installing the Prerequisite Packages
 
  * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
    OS X does not provide it by default. Additionally you must install the latest
-   version of Java Runtime Environment from http://java.com (version 1.7 or later.)
+   version of Java Runtime Environment from http://java.com (version 8 or later.)
  * Install the command line developer tools for OS X from
    http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
    (you will need a free Apple Developer Account for the download.)
- * Install the quartz project from http://xquartz.macosforge.org/ .
-   Quartz will provide some X headers required by the simulation runtime environment.
 
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
-=== Additional Steps Required on Mac OS X 10.9 or Later
+=== Additional Steps Required on Mac OS X 10 to use gdb as the debugger.
 
 The Command Line Tools package on Mac OS X 10.9 no longer contains gcc and gdb;
 instead it contains the Clang compiler and lldb. (The `gcc` and `g++` commands
@@ -72,13 +67,13 @@ in the IDE, and change the executable name from `gdb` to `ggdb`.
 === Downloading and Unpacking @OMNETPP@
 
 Download @OMNETPP@ from {DOWNLOADSITE}. Make sure you select to download
-the generic archive, `@omnetpp@-@version@-src.tgz`.
+the generic archive, `@omnetpp@-@version@-src-macosx.tgz`.
 
 Copy the archive to the directory where you want to install it. This is usually
 your home directory, `/Users/<you>`. Open a terminal, and extract the archive
 using the following command:
 
-    $ tar zxvf @omnetpp@-@version@-src.tgz
+    $ tar zxvf @omnetpp@-@version@-src-macosx.tgz
 
 A subdirectory called `@omnetpp@-@version@` will be created, containing the simulator
 files.
@@ -366,7 +361,6 @@ ifdef::OMNEST[]
 ==== SystemC
 
 SystemC integration is not available on Mac OS X, because the bundled
-SystemC reference implementation does not support Mac OS X 10.7.
+SystemC reference implementation does not support Mac OS X 10.10.
 
 endif::OMNEST[]
-
