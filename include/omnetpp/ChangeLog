@@ -1,3 +1,5 @@
+2015-12-07  ------ omnetpp-5.0b3 released ------
+
 2015-12-02  Andras Varga
 
 	* Added cEnvir::resolveResourcePath() that searches a number of folders

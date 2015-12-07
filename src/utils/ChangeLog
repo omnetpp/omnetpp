@@ -1,3 +1,5 @@
+2015-12-07  ------ omnetpp-5.0b3 released ------
+
 2015-11-20  Zoltan Bojthe
 
 	* opp_test: pre-run and post-run scripts (%prerun-command, %postrun-command)
