@@ -52,12 +52,12 @@ Define_Module(TestModule);
 }
 
 %contains: stdout
-0s Foo 7c6f-d7b5 : Received Foo
-0.9s Bar ba73-dc66 : Received Bar
-0.999s Foobar cb95-3002 : Received Foobar
-1s     Fubar  41ae-12bb : Received Fubar
-1.9999s Bazz  5c05-ad35 : Received Bazz
-2.1s    Foo   5525-ae92 : Received Foo
-3s      Foobar edde-30eb : Received Foobar
-3.23s   Foo    8f5d-68f7 : Received Foo
-3.999s  Bazz   72f7-2d94 : Received Bazz
+0s Foo 3b05-2ea7/tplx : Received Foo
+0.9s Bar 9942-7cc0/tplx : Received Bar
+0.999s Foobar 83ee-d1fd/tplx : Received Foobar
+1s     Fubar  0c8e-165a/tplx : Received Fubar
+1.9999s Bazz  9f84-1b64/tplx : Received Bazz
+2.1s    Foo   d796-cd7b/tplx : Received Foo
+3s      Foobar 172f-940a/tplx : Received Foobar
+3.23s   Foo    6efd-7865/tplx : Received Foo
+3.999s  Bazz   8b3d-5f13/tplx : Received Bazz
