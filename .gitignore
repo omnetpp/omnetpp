@@ -40,10 +40,10 @@ Thumbs.db
 /include/systemc
 /include/systemcdefs.h
 /include/tlm.h
+/include/tlm
 /include/sysc
-/include/tlm_1
-/include/tlm_h
 /include/tlm_utils
+/include/tlm_core
 /src/common/ver.h
 /src/utils/opp_configfilepath
 /src/envir/eventlogwriter.cc
@@ -81,6 +81,10 @@ Thumbs.db
 /samples/routing/routing
 /samples/sockets/sockets
 /samples/tictoc/tictoc
+/samples/osg-earth/data/
+/samples/osg-intro/osg-intro
+/samples/osg-indoor/osg-indoor
+/samples/osg-satellites/osg-satellites
 /samples/rundemo.bat
 /samples/*/results/
 /samples/*/results.*/
