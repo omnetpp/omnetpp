@@ -3,7 +3,7 @@
 
 \section{Configuration Options}
 
-%% To bring this chapter up to date, run opp_run -h configdetails, and paste
+%% To bring this chapter up to date, run opp_run -h latexconfig, and paste
 %% the result. When committing, make sure no option gets lost (e.g parsim
 %% or MPI-related options; opp_run can only print options from code that
 %% enabled at compile time!)
@@ -12,131 +12,120 @@ This section lists all configuration options that are available in ini files.
 A similar list can be obtained from any simulation executable by running it
 with the \ttt{-h configdetails} option.
 
-\begin{verbatim}
-check-signals=<bool>, default:false; per-run setting
+\begin{description}
+\item[check-signals] = \textit{<bool>}, default: \ttt{true}; per-run setting \\
     Controls whether the simulation kernel will validate signals emitted by
     modules and channels against signal declarations (@signal properties) in
-    NED files.
-
-cmdenv-autoflush=<bool>, default:false; per-run setting
+    NED files. The default setting depends on the build type: 'true' in DEBUG,
+    and 'false' in RELEASE mode.
+\item[cmdenv-autoflush] = \textit{<bool>}, default: \ttt{false}; per-run setting \\
     Call fflush(stdout) after each event banner or status update; affects both
     express and normal mode. Turning on autoflush may have a performance
     penalty, but it can be useful with printf-style debugging for tracking down
     program crashes.
-
-cmdenv-config-name=<string>; global setting
+\item[cmdenv-config-name] = \textit{<string>}; global setting \\
     Specifies the name of the configuration to be run (for a value `Foo',
     section [Config Foo] will be used from the ini file). See also
     cmdenv-runs-to-execute=. The -c command line option overrides this setting.
-
-<object-full-path>.cmdenv-ev-output=<bool>, default:true; per-object setting
-    When cmdenv-express-mode=false: whether Cmdenv should print debug messages
-    (ev<<) from the selected modules.
-
-cmdenv-event-banner-details=<bool>, default:false; per-run setting
+\item[<object-full-path>.cmdenv-ev-output] = \textit{<bool>}, default: \ttt{true}; per-object setting \\
+    When cmdenv-express-mode=false: whether Cmdenv should print log messages
+    (EV<<, EV\_INFO, etc.) from the selected modules.
+\item[cmdenv-event-banner-details] = \textit{<bool>}, default: \ttt{false}; per-run setting \\
     When cmdenv-express-mode=false: print extra information after event
     banners.
-
-cmdenv-event-banners=<bool>, default:true; per-run setting
+\item[cmdenv-event-banners] = \textit{<bool>}, default: \ttt{true}; per-run setting \\
     When cmdenv-express-mode=false: turns printing event banners on/off.
-
-cmdenv-express-mode=<bool>, default:true; per-run setting
+\item[cmdenv-express-mode] = \textit{<bool>}, default: \ttt{true}; per-run setting \\
     Selects ``normal'' (debug/trace) or ``express'' mode.
-
-cmdenv-extra-stack=<double>, unit="B", default:8KiB; global setting
+\item[cmdenv-extra-stack] = \textit{<double>}, unit=\ttt{B}, default: \ttt{8KiB}; global setting \\
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Cmdenv.
-
-cmdenv-interactive=<bool>, default:false; global setting
+\item[cmdenv-interactive] = \textit{<bool>}, default: \ttt{false}; global setting \\
     Defines what Cmdenv should do when the model contains unassigned
     parameters. In interactive mode, it asks the user. In non-interactive mode
     (which is more suitable for batch execution), Cmdenv stops with an error.
-
-cmdenv-message-trace=<bool>, default:false; per-run setting
+\item[cmdenv-log-format] = \textit{<string>}, default: \ttt{[\%l]	}; per-run setting \\
+    Specifies the format string that determines the prefix of each log line.
+    The format string may contain format directives in the syntax '\%x' (a '\%'
+    followed by a single format character).  For example '\%l' stands for log
+    level, and '\%J' for source component. See the manual for the list of
+    available format characters.
+\item[cmdenv-log-level] = \textit{<string>}, default: \ttt{DEBUG}; per-run setting \\
+    Specifies the level of detail recorded by log statements, output below the
+    specified level is omitted. This setting is with AND relationship with
+    per-component log level settings. Available values are (case insensitive):
+    fatal, error, warn, info, detail, debug or trace. Note that the level of
+    detail is also controlled by the specified per component log levels and the
+    GLOBAL\_COMPILETIME\_LOGLEVEL macro that is used to completely remove log
+    statements from the executable.
+\item[cmdenv-message-trace] = \textit{<bool>}, default: \ttt{false}; per-run setting \\
     When cmdenv-express-mode=false: print a line per message sending (by
     send(),scheduleAt(), etc) and delivery on the standard output.
-
-cmdenv-module-messages=<bool>, default:true; per-run setting
-    When cmdenv-express-mode=false: turns printing module ev<< output on/off.
-
-cmdenv-output-file=<filename>; global setting
+\item[cmdenv-module-messages] = \textit{<bool>}, default: \ttt{true}; per-run setting \\
+    When cmdenv-express-mode=false: turns printing module EV<< output on/off.
+\item[cmdenv-output-file] = \textit{<filename>}; global setting \\
     When a filename is specified, Cmdenv redirects standard output into the
     given file. This is especially useful with parallel simulation. See the
     `fname-append-host' option as well.
-
-cmdenv-performance-display=<bool>, default:true; per-run setting
+\item[cmdenv-performance-display] = \textit{<bool>}, default: \ttt{true}; per-run setting \\
     When cmdenv-express-mode=true: print detailed performance information.
     Turning it on results in a 3-line entry printed on each update, containing
     ev/sec, simsec/sec, ev/simsec, number of messages created/still
     present/currently scheduled in FES.
-
-cmdenv-runs-to-execute=<string>; global setting
+\item[cmdenv-runs-to-execute] = \textit{<string>}; global setting \\
     Specifies which runs to execute from the selected configuration (see
     cmdenv-config-name=). It accepts a comma-separated list of run numbers or
     run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv
     executes all runs in the selected configuration. The -r command line option
     overrides this setting.
-
-cmdenv-status-frequency=<double>, unit="s", default:2s; per-run setting
+\item[cmdenv-status-frequency] = \textit{<double>}, unit=\ttt{s}, default: \ttt{2s}; per-run setting \\
     When cmdenv-express-mode=true: print status update every n seconds.
-
-configuration-class=<string>; global setting
+\item[configuration-class] = \textit{<string>}; global setting \\
     Part of the Envir plugin mechanism: selects the class from which all
     configuration information will be obtained. This option lets you replace
     omnetpp.ini with some other implementation, e.g. database input. The
     simulation program still has to bootstrap from an omnetpp.ini (which
     contains the configuration-class setting). The class should implement the
     cConfigurationEx interface.
-
-constraint=<string>; per-run setting
-    For scenarios. Contains an expression that iteration variables (${} syntax)
-    must satisfy for that simulation to run. Example: $i < $j+1.
-
-cpu-time-limit=<double>, unit="s"; per-run setting
+\item[constraint] = \textit{<string>}; per-run setting \\
+    For scenarios. Contains an expression that iteration variables (\$\{\}
+    syntax) must satisfy for that simulation to run. Example: \$i < \$j+1.
+\item[cpu-time-limit] = \textit{<double>}, unit=\ttt{s}; per-run setting \\
     Stops the simulation when CPU usage has reached the given limit. The
     default is no limit.
-
-debug-on-errors=<bool>, default:false; global setting
+\item[debug-on-errors] = \textit{<bool>}, default: \ttt{false}; global setting \\
     When set to true, runtime errors will cause the simulation program to break
     into the C++ debugger (if the simulation is running under one, or
     just-in-time debugging is activated). Once in the debugger, you can view
     the stack trace or examine variables.
-
-debug-statistics-recording=<bool>, default:false; per-run setting
+\item[debug-statistics-recording] = \textit{<bool>}, default: \ttt{false}; per-run setting \\
     Turns on the printing of debugging information related to statistics
     recording (@statistic properties)
-
-debugger-attach-command=<string>, default:nemiver --attach=%u &; global setting
+\item[debugger-attach-command] = \textit{<string>}, default: \ttt{nemiver --attach=\%u \&}; global setting \\
     Command line to launch the debugger. It must contain exactly one percent
-    sign, as '%u', which will be replaced by the PID of this process. The
-    command must not block (i.e. it should end in '&' on Unix-like systems).
-
-debugger-attach-on-error=<bool>, default:false; global setting
+    sign, as '\%u', which will be replaced by the PID of this process. The
+    command must not block (i.e. it should end in '\&' on Unix-like systems).
+\item[debugger-attach-on-error] = \textit{<bool>}, default: \ttt{false}; global setting \\
     When set to true, runtime errors and crashes will trigger an external
     debugger to be launched, allowing you to perform just-in-time debugging on
     the simulation process. The debugger command is configurable. Note that
     debugging (i.e. attaching to) a non-child process needs to be explicitly
     enabled on some systems, e.g. Ubuntu.
-
-debugger-attach-on-startup=<bool>, default:false; global setting
+\item[debugger-attach-on-startup] = \textit{<bool>}, default: \ttt{false}; global setting \\
     When set to true, the simulation program will launch an external debugger
     attached to it, allowing you to set breakpoints before proceeding. The
     debugger command is configurable.  Note that debugging (i.e. attaching to)
     a non-child process needs to be explicitly enabled on some systems, e.g.
     Ubuntu.
-
-debugger-attach-wait-time=<double>, unit="s", default:20s; global setting
+\item[debugger-attach-wait-time] = \textit{<double>}, unit=\ttt{s}, default: \ttt{20s}; global setting \\
     An interval to wait after launching the external debugger, to give the
     debugger time to start up and attach to the simulation process.
-
-description=<string>; per-run setting
+\item[description] = \textit{<string>}; per-run setting \\
     Descriptive name for the given simulation configuration. Descriptions get
     displayed in the run selection dialog.
-
-eventlog-file=<filename>, default:${resultdir}/${configname}-${runnumber}.elog; per-run setting
+\item[eventlog-file] = \textit{<filename>}, default: \ttt{\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.elog}; per-run setting \\
     Name of the eventlog file to generate.
-
-eventlog-message-detail-pattern=<custom>; per-run setting
+\item[eventlog-message-detail-pattern] = \textit{<custom>}; per-run setting \\
     A list of patterns separated by '|' character which will be used to write
     message detail information into the eventlog for each message sent during
     the simulation. The message detail will be presented in the sequence chart
@@ -145,10 +134,11 @@ eventlog-message-detail-pattern=<custom>; per-run setting
     and/or/not/* and various field match expressions can be used. The object
     pattern matches to class name, the field pattern matches to field name by
     default.
-      EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN
+      EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )*
+    DETAIL\_PATTERN
       DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]
       OBJECT-PATTERN := MATCH-EXPRESSION
-      FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN
+      FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD\_PATTERN
       FIELD-PATTERN := MATCH-EXPRESSION
     Examples (enter them without quotes):
       "*": captures all fields of all messages
@@ -158,207 +148,222 @@ eventlog-message-detail-pattern=<custom>; per-run setting
     recording the fields declared on the MyMessage class
       "*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not
     declaredOn(cObject))": records user-defined fields from all messages
-
-eventlog-recording-intervals=<custom>; per-run setting
+\item[eventlog-recording-intervals] = \textit{<custom>}; per-run setting \\
     Simulation time interval(s) when events should be recorded. Syntax:
     [<from>]..[<to>],... That is, both start and end of an interval are
     optional, and intervals are separated by comma. Example: ..10.2, 22.2..100,
     233.3..
-
-experiment-label=<string>, default:${configname}; per-run setting
+\item[experiment-label] = \textit{<string>}, default: \ttt{\$\{configname\}}; per-run setting \\
     Identifies the simulation experiment (which consists of several,
     potentially repeated measurements). This string gets recorded into result
     files, and may be referred to during result analysis.
-
-extends=<string>; per-run setting
+\item[extends] = \textit{<string>}; per-run setting \\
     Name of the configuration this section is based on. Entries from that
     section will be inherited and can be overridden. In other words,
     configuration lookups will fall back to the base section.
-
-fingerprint=<string>; per-run setting
+\item[fingerprint] = \textit{<string>}; per-run setting \\
     The expected fingerprint of the simulation. When provided, a fingerprint
     will be calculated from the simulation event times and other quantities
     during simulation, and checked against the given one. Fingerprints are
     suitable for crude regression tests. As fingerprints occasionally differ
     across platforms, more than one fingerprint values can be specified here,
     separated by spaces, and a match with any of them will be accepted. To
-    obtain the initial fingerprint, enter a dummy value such as \"0000\"),
-    and run the simulation.
-
-fname-append-host=<bool>; global setting
+    obtain the initial fingerprint, enter a dummy value (such as "0000"), and
+    run the simulation.
+\item[fingerprint-class] = \textit{<string>}, default: \ttt{omnetpp::cSingleFingerprint}; global setting \\
+    Part of the Envir plugin mechanism: selects the fingerprint class to be
+    used to calculate the simulation fingerprint. The class has to implement
+    the cFingerprint interface.
+\item[fingerprint-events] = \textit{<string>}, default: \ttt{*}; per-run setting \\
+    Configures the fingerprint calculator to consider only certain events. The
+    value is a pattern that will be matched against the event name by default.
+    It may also be an expression containing pattern matching characters, field
+    access, and logical operators. The default setting is '*' which includes
+    all events in the calculated fingerprint.
+\item[fingerprint-ingredients] = \textit{<string>}, default: \ttt{tplx}; per-run setting \\
+    Specifies the list of ingredients to be taken into account for fingerprint
+    computation. Each character corresponds to one ingredient: 'e' event
+    number, 't' simulation time, 'n' message (event) full name, 'c' message
+    (event) class name, 'k' message kind, 'l' message bit length, 'o' message
+    control info class name, 'd' message data, 'i' module id, 'm' module full
+    name, 'p' module full path, 'a' module class name, 'r' random numbers
+    drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x'
+    extra data provided by modules. Note: ingredients specified in an expected
+    fingerprint (characters after the '/' in the fingerprint value) take
+    precedence over this setting.
+\item[fingerprint-modules] = \textit{<string>}, default: \ttt{*}; per-run setting \\
+    Configures the fingerprint calculator to consider only certain modules. The
+    value is a pattern that will be matched against the module full path by
+    default. It may also be an expression containing pattern matching
+    characters, field access, and logical operators. The default setting is '*'
+    which includes all events in all modules in the calculated fingerprint.
+\item[fingerprint-results] = \textit{<string>}, default: \ttt{*}; per-run setting \\
+    Configures the fingerprint calculator to consider only certain results. The
+    value is a pattern that will be matched against the result full path by
+    default. It may also be an expression containing pattern matching
+    characters, field access, and logical operators. The default setting is '*'
+    which includes all results in all modules in the calculated fingerprint.
+\item[fname-append-host] = \textit{<bool>}; global setting \\
     Turning it on will cause the host name and process Id to be appended to the
     names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially
     useful with distributed simulation. The default value is true if parallel
     simulation is enabled, false otherwise.
-
-load-libs=<filenames>; global setting
+\item[futureeventset-class] = \textit{<string>}, default: \ttt{omnetpp::cEventHeap}; global setting \\
+    Part of the Envir plugin mechanism: selects the class for storing the
+    future events in the simulation. The class has to implement the
+    cFutureEventSet interface.
+\item[image-path] = \textit{<path>}; global setting \\
+    A semicolon-separated list of directories that contain module icons and
+    other resources. This list with be concatenated with OMNETPP\_IMAGE\_PATH.
+\item[load-libs] = \textit{<filenames>}; global setting \\
     A space-separated list of dynamic libraries to be loaded on startup. The
     libraries should be given without the `.dll' or `.so' suffix -- that will
     be automatically appended.
-
-max-module-nesting=<int>, default:50; per-run setting
+\item[<object-full-path>.log-level] = \textit{<string>}, default: \ttt{TRACE}; per-object setting \\
+    Specifies the per-component level of detail recorded by log statements,
+    output below the specified level is omitted. Available values are (case
+    insensitive): fatal, error, warn, info, detail, debug or trace. Note that
+    the level of detail is also controlled by the globally specified runtime
+    log level and the GLOBAL\_COMPILETIME\_LOGLEVEL macro that is used to
+    completely remove log statements from the executable.
+\item[max-module-nesting] = \textit{<int>}, default: \ttt{50}; per-run setting \\
     The maximum allowed depth of submodule nesting. This is used to catch
     accidental infinite recursions in NED.
-
-measurement-label=<string>, default:${iterationvars}; per-run setting
+\item[measurement-label] = \textit{<string>}, default: \ttt{\$\{iterationvars\}}; per-run setting \\
     Identifies the measurement within the experiment. This string gets recorded
     into result files, and may be referred to during result analysis.
-
-<object-full-path>.module-eventlog-recording=<bool>, default:true; per-object setting
+\item[<object-full-path>.module-eventlog-recording] = \textit{<bool>}, default: \ttt{true}; per-object setting \\
     Enables recording events on a per module basis. This is meaningful for
-    simple modules only.
+    simple modules only. 
     Example:
      **.router[10..20].**.module-eventlog-recording = true
      **.module-eventlog-recording = false
-
-ned-path=<path>; global setting
+\item[ned-path] = \textit{<path>}; global setting \\
     A semicolon-separated list of directories. The directories will be regarded
     as roots of the NED package hierarchy, and all NED files will be loaded
     from their subdirectory trees. This option is normally left empty, as the
     OMNeT++ IDE sets the NED path automatically, and for simulations started
     outside the IDE it is more convenient to specify it via a command-line
     option or the NEDPATH environment variable.
-
-network=<string>; per-run setting
+\item[network] = \textit{<string>}; per-run setting \\
     The name of the network to be simulated.  The package name can be omitted
     if the ini file is in the same directory as the NED file that contains the
     network.
-
-num-rngs=<int>, default:1; per-run setting
+\item[num-rngs] = \textit{<int>}, default: \ttt{1}; per-run setting \\
     The number of random number generators.
-
-output-scalar-file=<filename>, default:${resultdir}/${configname}-${runnumber}.sca; per-run setting
+\item[output-scalar-file] = \textit{<filename>}, default: \ttt{\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.sca}; per-run setting \\
     Name for the output scalar file.
-
-output-scalar-file-append=<bool>, default:false; per-run setting
+\item[output-scalar-file-append] = \textit{<bool>}, default: \ttt{false}; per-run setting \\
     What to do when the output scalar file already exists: append to it
     (OMNeT++ 3.x behavior), or delete it and begin a new file (default).
-
-output-scalar-precision=<int>, default:14; per-run setting
+\item[output-scalar-precision] = \textit{<int>}, default: \ttt{14}; per-run setting \\
     The number of significant digits for recording data into the output scalar
     file. The maximum value is ~15 (IEEE double precision).
-
-output-vector-file=<filename>, default:${resultdir}/${configname}-${runnumber}.vec; per-run setting
+\item[output-vector-file] = \textit{<filename>}, default: \ttt{\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.vec}; per-run setting \\
     Name for the output vector file.
-
-output-vector-precision=<int>, default:14; per-run setting
+\item[output-vector-precision] = \textit{<int>}, default: \ttt{14}; per-run setting \\
     The number of significant digits for recording data into the output vector
     file. The maximum value is ~15 (IEEE double precision). This setting has no
     effect on the "time" column of output vectors, which are represented as
     fixed-point numbers and always get recorded precisely.
-
-output-vectors-memory-limit=<double>, unit="B", default:16MiB; per-run setting
+\item[output-vectors-memory-limit] = \textit{<double>}, unit=\ttt{B}, default: \ttt{16MiB}; per-run setting \\
     Total memory that can be used for buffering output vectors. Larger values
     produce less fragmented vector files (i.e. cause vector data to be grouped
     into larger chunks), and therefore allow more efficient processing later.
-
-outputscalarmanager-class=<string>, default:cFileOutputScalarManager; global setting
+\item[outputscalarmanager-class] = \textit{<string>}, default: \ttt{omnetpp::envir::cFileOutputScalarManager}; global setting \\
     Part of the Envir plugin mechanism: selects the output scalar manager class
     to be used to record data passed to recordScalar(). The class has to
     implement the cIOutputScalarManager interface.
-
-outputvectormanager-class=<string>, default:cIndexedFileOutputVectorManager; global setting
+\item[outputvectormanager-class] = \textit{<string>}, default: \ttt{omnetpp::envir::cIndexedFileOutputVectorManager}; global setting \\
     Part of the Envir plugin mechanism: selects the output vector manager class
     to be used to record data from output vectors. The class has to implement
     the cIOutputVectorManager interface.
-
-parallel-simulation=<bool>, default:false; global setting
+\item[parallel-simulation] = \textit{<bool>}, default: \ttt{false}; global setting \\
     Enables parallel distributed simulation.
-
-<object-full-path>.param-record-as-scalar=<bool>, default:false; per-object setting
+\item[<object-full-path>.param-record-as-scalar] = \textit{<bool>}, default: \ttt{false}; per-object setting \\
     Applicable to module parameters: specifies whether the module parameter
     should be recorded into the output scalar file. Set it for parameters whose
     value you'll need for result analysis.
-
-parsim-communications-class=<string>, default:cFileCommunications; global setting
+\item[parsim-communications-class] = \textit{<string>}, default: \ttt{omnetpp::cFileCommunications}; global setting \\
     If parallel-simulation=true, it selects the class that implements
     communication between partitions. The class must implement the
     cParsimCommunications interface.
-
-parsim-debug=<bool>, default:true; global setting
+\item[parsim-debug] = \textit{<bool>}, default: \ttt{true}; global setting \\
     With parallel-simulation=true: turns on printing of log messages from the
     parallel simulation code.
-
-parsim-filecommunications-prefix=<string>, default:comm/; global setting
+\item[parsim-filecommunications-prefix] = \textit{<string>}, default: \ttt{comm/}; global setting \\
     When cFileCommunications is selected as parsim communications class:
     specifies the prefix (directory+potential filename prefix) for creating the
     files for cross-partition messages.
-
-parsim-filecommunications-preserve-read=<bool>, default:false; global setting
+\item[parsim-filecommunications-preserve-read] = \textit{<bool>}, default: \ttt{false}; global setting \\
     When cFileCommunications is selected as parsim communications class:
     specifies that consumed files should be moved into another directory
     instead of being deleted.
-
-parsim-filecommunications-read-prefix=<string>, default:comm/read/; global setting
+\item[parsim-filecommunications-read-prefix] = \textit{<string>}, default: \ttt{comm/read/}; global setting \\
     When cFileCommunications is selected as parsim communications class:
     specifies the prefix (directory) where files will be moved after having
     been consumed.
-
-parsim-idealsimulationprotocol-tablesize=<int>, default:100000; global setting
+\item[parsim-idealsimulationprotocol-tablesize] = \textit{<int>}, default: \ttt{100000}; global setting \\
     When cIdealSimulationProtocol is selected as parsim synchronization class:
     specifies the memory buffer size for reading the ISP event trace file.
-
-parsim-mpicommunications-mpibuffer=<int>; global setting
+\item[parsim-mpicommunications-mpibuffer] = \textit{<int>}; global setting \\
     When cMPICommunications is selected as parsim communications class:
     specifies the size of the MPI communications buffer. The default is to
     calculate a buffer size based on the number of partitions.
-
-parsim-namedpipecommunications-prefix=<string>, default:comm/; global setting
+\item[parsim-namedpipecommunications-prefix] = \textit{<string>}, default: \ttt{comm/}; global setting \\
     When cNamedPipeCommunications is selected as parsim communications class:
     selects the prefix (directory+potential filename prefix) where name pipes
     are created in the file system.
-
-parsim-nullmessageprotocol-laziness=<double>, default:0.5; global setting
+\item[parsim-nullmessageprotocol-laziness] = \textit{<double>}, default: \ttt{0.5}; global setting \\
     When cNullMessageProtocol is selected as parsim synchronization class:
     specifies the laziness of sending null messages. Values in the range [0,1)
     are accepted. Laziness=0 causes null messages to be sent out immediately as
     a new EOT is learned, which may result in excessive null message traffic.
-
-parsim-nullmessageprotocol-lookahead-class=<string>, default:cLinkDelayLookahead; global setting
+\item[parsim-nullmessageprotocol-lookahead-class] = \textit{<string>}, default: \ttt{cLinkDelayLookahead}; global setting \\
     When cNullMessageProtocol is selected as parsim synchronization class:
     specifies the C++ class that calculates lookahead. The class should
     subclass from cNMPLookahead.
-
-parsim-synchronization-class=<string>, default:cNullMessageProtocol; global setting
+\item[parsim-synchronization-class] = \textit{<string>}, default: \ttt{omnetpp::cNullMessageProtocol}; global setting \\
     If parallel-simulation=true, it selects the parallel simulation algorithm.
     The class must implement the cParsimSynchronizer interface.
-
-<object-full-path>.partition-id=<string>; per-object setting
+\item[<object-full-path>.partition-id] = \textit{<string>}; per-object setting \\
     With parallel simulation: in which partition the module should be
     instantiated. Specify numeric partition ID, or a comma-separated list of
     partition IDs for compound modules that span across multiple partitions.
     Ranges ("5..9") and "*" (=all) are accepted too.
-
-print-undisposed=<bool>, default:true; global setting
+\item[print-undisposed] = \textit{<bool>}, default: \ttt{true}; global setting \\
     Whether to report objects left (that is, not deallocated by simple module
     destructors) after network cleanup.
-
-realtimescheduler-scaling=<double>; global setting
+\item[qtenv-default-config] = \textit{<string>}; global setting \\
+    Specifies which config Qtenv should set up automatically on startup. The
+    default is to ask the user.
+\item[qtenv-default-run] = \textit{<int>}, default: \ttt{0}; global setting \\
+    Specifies which run (of the default config, see qtenv-default-config) Qtenv
+    should set up automatically on startup. The default is to ask the user.
+\item[qtenv-extra-stack] = \textit{<double>}, unit=\ttt{B}, default: \ttt{48KiB}; global setting \\
+    Specifies the extra amount of stack that is reserved for each activity()
+    simple module when the simulation is run under Qtenv.
+\item[realtimescheduler-scaling] = \textit{<double>}; global setting \\
     When cRealTimeScheduler is selected as scheduler class: ratio of simulation
     time to real time. For example, scaling=2 will cause simulation time to
     progress twice as fast as runtime.
-
-record-eventlog=<bool>, default:false; per-run setting
+\item[record-eventlog] = \textit{<bool>}, default: \ttt{false}; per-run setting \\
     Enables recording an eventlog file, which can be later visualized on a
     sequence chart. See eventlog-file= option too.
-
-repeat=<int>, default:1; per-run setting
+\item[repeat] = \textit{<int>}, default: \ttt{1}; per-run setting \\
     For scenarios. Specifies how many replications should be done with the same
     parameters (iteration variables). This is typically used to perform
     multiple runs with different random number seeds. The loop variable is
-    available as ${repetition}. See also: seed-set= key.
-
-replication-label=<string>, default:#${repetition}; per-run setting
+    available as \$\{repetition\}. See also: seed-set= key.
+\item[replication-label] = \textit{<string>}, default: \ttt{\#\$\{repetition\}}; per-run setting \\
     Identifies one replication of a measurement (see repeat= and
     measurement-label= as well). This string gets recorded into result files,
     and may be referred to during result analysis.
-
-result-dir=<string>, default:results; per-run setting
-    Value for the ${resultdir} variable, which is used as the default directory
-    for result files (output vector file, output scalar file, eventlog file,
-    etc.)
-
-<object-full-path>.result-recording-modes=<string>, default:default; per-object setting
+\item[result-dir] = \textit{<string>}, default: \ttt{results}; per-run setting \\
+    Value for the \$\{resultdir\} variable, which is used as the default
+    directory for result files (output vector file, output scalar file,
+    eventlog file, etc.)
+\item[<object-full-path>.result-recording-modes] = \textit{<string>}, default: \ttt{default}; per-object setting \\
     Defines how to calculate results from the @statistic property matched by
     the wildcard. Special values: default, all: they select the modes listed in
     the record= key of @statistic; all selects all of them, default selects the
@@ -367,126 +372,107 @@ result-dir=<string>, default:results; per-run setting
     histogram. More than one values are accepted, separated by commas.
     Expressions are allowed. Items prefixed with '-' get removed from the list.
     Example: **.queueLength.result-recording-modes=default,-vector,+timeavg
-
-<object-full-path>.rng-%=<int>; per-object setting
+\item[<object-full-path>.rng-\%] = \textit{<int>}; per-object setting \\
     Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3
     maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The
-    default is one-to-one mapping.
-
-rng-class=<string>, default:cMersenneTwister; per-run setting
+    value may be an expression, with the index and ancestorIndex() operators
+    being potentially very useful. The default is one-to-one mapping, i.e. RNG
+    k of all modules refer to the global RNG k (for k=0..num-rngs-1).
+\item[rng-class] = \textit{<string>}, default: \ttt{omnetpp::cMersenneTwister}; per-run setting \\
     The random number generator class to be used. It can be `cMersenneTwister',
     `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be
     subclassed from cRNG).
-
-runnumber-width=<int>, default:0; per-run setting
-    Setting a nonzero value will cause the $runnumber variable to get padded
+\item[runnumber-width] = \textit{<int>}, default: \ttt{0}; per-run setting \\
+    Setting a nonzero value will cause the \$runnumber variable to get padded
     with leading zeroes to the given length.
-
-<object-full-path>.scalar-recording=<bool>, default:true; per-object setting
+\item[<object-full-path>.scalar-recording] = \textit{<bool>}, default: \ttt{true}; per-object setting \\
     Whether the matching output scalars should be recorded. Syntax:
     <module-full-path>.<scalar-name>.scalar-recording=true/false. Example:
     **.queue.packetsDropped.scalar-recording=true
-
-scheduler-class=<string>, default:cSequentialScheduler; global setting
+\item[scheduler-class] = \textit{<string>}, default: \ttt{omnetpp::cSequentialScheduler}; global setting \\
     Part of the Envir plugin mechanism: selects the scheduler class. This
     plugin interface allows for implementing real-time, hardware-in-the-loop,
     distributed and distributed parallel simulation. The class has to implement
     the cScheduler interface.
-
-sectionbasedconfig-configreader-class=<string>; global setting
+\item[sectionbasedconfig-configreader-class] = \textit{<string>}; global setting \\
     When configuration-class=SectionBasedConfiguration: selects the
     configuration reader C++ class, which must subclass from
     cConfigurationReader.
-
-seed-%-lcg32=<int>; per-run setting
+\item[seed-\%-lcg32] = \textit{<int>}; per-run setting \\
     When cLCG32 is selected as random number generator: seed for the kth RNG.
-    (Substitute k for '%' in the key.)
-
-seed-%-mt=<int>; per-run setting
+    (Substitute k for '\%' in the key.)
+\item[seed-\%-mt] = \textit{<int>}; per-run setting \\
     When Mersenne Twister is selected as random number generator (default):
-    seed for RNG number k. (Substitute k for '%' in the key.)
-
-seed-%-mt-p%=<int>; per-run setting
+    seed for RNG number k. (Substitute k for '\%' in the key.)
+\item[seed-\%-mt-p\%] = \textit{<int>}; per-run setting \\
     With parallel simulation: When Mersenne Twister is selected as random
     number generator (default): seed for RNG number k in partition number p.
-    (Substitute k for the first '%' in the key, and p for the second.)
-
-seed-set=<int>, default:${runnumber}; per-run setting
+    (Substitute k for the first '\%' in the key, and p for the second.)
+\item[seed-set] = \textit{<int>}, default: \ttt{\$\{runnumber\}}; per-run setting \\
     Selects the kth set of automatic random number seeds for the simulation.
-    Meaningful values include ${repetition} which is the repeat loop counter
-    (see repeat= key), and ${runnumber}.
-
-sim-time-limit=<double>, unit="s"; per-run setting
+    Meaningful values include \$\{repetition\} which is the repeat loop counter
+    (see repeat= key), and \$\{runnumber\}.
+\item[sim-time-limit] = \textit{<double>}, unit=\ttt{s}; per-run setting \\
     Stops the simulation when simulation time reaches the given limit. The
     default is no limit.
-
-simtime-scale=<int>, default:-12; global setting
-    Sets the scale exponent, and thus the resolution of time for the 64-bit
-    fixed-point simulation time representation. Accepted values are -18..0; for
-    example, -6 selects microsecond resolution. -12 means picosecond
-    resolution, with a maximum simtime of ~110 days.
-
-snapshot-file=<filename>, default:${resultdir}/${configname}-${runnumber}.sna; per-run setting
+\item[simtime-precision] = \textit{<custom>}, default: \ttt{ps}; global setting \\
+    Sets the resolution for the 64-bit fixed-point simulation time
+    representation. Accepted values are: second-or-smaller time units (s, ms,
+    us, ns, ps, fs or as), power-of-ten multiples of such units (e.g. 100ms),
+    and base-10 scale exponents in the -18..0 range. The maximum representable
+    simulation time depends on the resolution. The default is picosecond
+    resolution, which offers a range of ~110 days.
+\item[simtime-scale] = \textit{<int>}, default: \ttt{-12}; global setting \\
+    DEPRECATED in favor of simtime-precision. Sets the scale exponent, and thus
+    the resolution of time for the 64-bit fixed-point simulation time
+    representation. Accepted values are -18..0; for example, -6 selects
+    microsecond resolution. -12 means picosecond resolution, with a maximum
+    simtime of ~110 days.
+\item[snapshot-file] = \textit{<filename>}, default: \ttt{\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.sna}; per-run setting \\
     Name of the snapshot file.
-
-snapshotmanager-class=<string>, default:cFileSnapshotManager; global setting
+\item[snapshotmanager-class] = \textit{<string>}, default: \ttt{omnetpp::envir::cFileSnapshotManager}; global setting \\
     Part of the Envir plugin mechanism: selects the class to handle streams to
     which snapshot() writes its output. The class has to implement the
     cISnapshotManager interface.
-
-tkenv-default-config=<string>; global setting
+\item[tkenv-default-config] = \textit{<string>}; global setting \\
     Specifies which config Tkenv should set up automatically on startup. The
     default is to ask the user.
-
-tkenv-default-run=<int>, default:0; global setting
+\item[tkenv-default-run] = \textit{<int>}, default: \ttt{0}; global setting \\
     Specifies which run (of the default config, see tkenv-default-config) Tkenv
     should set up automatically on startup. The default is to ask the user.
-
-tkenv-extra-stack=<double>, unit="B", default:48KiB; global setting
+\item[tkenv-extra-stack] = \textit{<double>}, unit=\ttt{B}, default: \ttt{48KiB}; global setting \\
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Tkenv.
-
-tkenv-image-path=<path>; global setting
-    Specifies the path for loading module icons.
-
-tkenv-plugin-path=<path>; global setting
+\item[tkenv-plugin-path] = \textit{<path>}; global setting \\
     Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
     that get evaluated on startup.
-
-total-stack=<double>, unit="B"; global setting
+\item[total-stack] = \textit{<double>}, unit=\ttt{B}; global setting \\
     Specifies the maximum memory for activity() simple module stacks. You need
     to increase this value if you get a ``Cannot allocate coroutine stack''
     error.
-
-<object-full-path>.typename=<string>; per-object setting
+\item[<object-full-path>.typename] = \textit{<string>}; per-object setting \\
     Specifies type for submodules and channels declared with 'like <>'.
-
-user-interface=<string>; global setting
+\item[user-interface] = \textit{<string>}; global setting \\
     Selects the user interface to be started. Possible values are Cmdenv and
     Tkenv. This option is normally left empty, as it is more convenient to
     specify the user interface via a command-line option or the IDE's Run and
     Debug dialogs. New user interfaces can be defined by subclassing
     cRunnableEnvir.
-
-<object-full-path>.vector-max-buffered-values=<int>; per-object setting
+\item[<object-full-path>.vector-max-buffered-values] = \textit{<int>}; per-object setting \\
     For output vectors: the maximum number of values to buffer per vector,
     before writing out a block into the output vector file. The default is no
     per-vector limit (i.e. only the total memory limit is in effect)
-
-<object-full-path>.vector-record-eventnumbers=<bool>, default:true; per-object setting
+\item[<object-full-path>.vector-record-eventnumbers] = \textit{<bool>}, default: \ttt{true}; per-object setting \\
     Whether to record event numbers for an output vector. Simulation time and
     value are always recorded. Event numbers are needed by the Sequence Chart
     Tool, for example.
-
-<object-full-path>.vector-recording=<bool>, default:true; per-object setting
+\item[<object-full-path>.vector-recording] = \textit{<bool>}, default: \ttt{true}; per-object setting \\
     Whether data written into an output vector should be recorded.
-
-<object-full-path>.vector-recording-intervals=<custom>; per-object setting
+\item[<object-full-path>.vector-recording-intervals] = \textit{<custom>}; per-object setting \\
     Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],...
     That is, both start and end of an interval are optional, and intervals are
     separated by comma. Example: ..100, 200..400, 900..
-
-warmup-period=<double>, unit="s"; per-run setting
+\item[warmup-period] = \textit{<double>}, unit=\ttt{s}; per-run setting \\
     Length of the initial warm-up period. When set, results belonging to the
     first x seconds of the simulation will not be recorded into output vectors,
     and will not be counted into output scalars (see option
@@ -494,55 +480,48 @@ warmup-period=<double>, unit="s"; per-run setting
     simulations. The default is 0s (no warmup period). Note that models that
     compute and record scalar results manually (via recordScalar()) will not
     automatically obey this setting.
-
-warnings=<bool>, default:true; per-run setting
+\item[warnings] = \textit{<bool>}, default: \ttt{true}; per-run setting \\
     Enables warnings.
-
-<object-full-path>.with-akaroa=<bool>, default:false; per-object setting
-    Whether to the output vector should be under Akaroa control.
-\end{verbatim}
-
-
-\section{Predefined Configuration Variables}
+\end{description}
 
 Predefined variables that can be used in config values:
 
-\begin{verbatim}
-${runid}
+\begin{description}
+\item[\$\{runid\}] : \\
     A reasonably globally unique identifier for the run, produced by
     concatenating the configuration name, run number, date/time, etc.
-${inifile}
+\item[\$\{inifile\}] : \\
     Name of the (primary) inifile
-${configname}
+\item[\$\{configname\}] : \\
     Name of the active configuration
-${runnumber}
+\item[\$\{runnumber\}] : \\
     Sequence number of the current run within all runs in the active
     configuration
-${network}
+\item[\$\{network\}] : \\
     Value of the "network" configuration option
-${experiment}
+\item[\$\{experiment\}] : \\
     Value of the "experiment-label" configuration option
-${measurement}
+\item[\$\{measurement\}] : \\
     Value of the "measurement-label" configuration option
-${replication}
+\item[\$\{replication\}] : \\
     Value of the "replication-label" configuration option
-${processid}
+\item[\$\{processid\}] : \\
     PID of the simulation process
-${datetime}
+\item[\$\{datetime\}] : \\
     Date and time the simulation run was started
-${resultdir}
+\item[\$\{resultdir\}] : \\
     Value of the "result-dir" configuration option
-${repetition}
+\item[\$\{repetition\}] : \\
     The iteration number in 0..N-1, where N is the value of the "repeat"
     configuration option
-${seedset}
+\item[\$\{seedset\}] : \\
     Value of the "seed-set" configuration option
-${iterationvars}
+\item[\$\{iterationvars\}] : \\
     Concatenation of all user-defined iteration variables in name=value form
-${iterationvars2}
+\item[\$\{iterationvars2\}] : \\
     Concatenation of all user-defined iteration variables in name=value form,
-    plus ${repetition}
-\end{verbatim}
+    plus \$\{repetition\}
+\end{description}
 
 %%% Local Variables:
 %%% mode: latex
