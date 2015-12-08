@@ -331,51 +331,6 @@ is bound more loosely than the conditional operator (\ttt{?:}).
 %FIXME add tale about debug channels etc.
 
 
-\section{Simulation Time Conversion}
-
-Simulation time is represented by the type \ttt{simtime\_t}.
-\ttt{simtime\_t} which is a typedef to a class that stores simulation time
-in a 64-bit integer using a fixed-point representation.
-{\opp} provides utility functions to convert \ttt{simtime\_t}
-to a printable string and vica versa.
-
-The \ffunc{simtimeToStr()} function converts a \cclass{simtime\_t}
-(passed in the first argument) to textual form. The result is placed into
-the \ttt{char} array pointed to by the second argument. If the second argument is omitted
-or it is \ttt{nullptr}, \ffunc{simtimeToStr()} will place the result into a
-static buffer which is overwritten with each call. An example:
-
-\begin{cpp}
-char buf[32];
-EV << "t1=" << simtimeToStr(t1) << ", t2=" << simTimeToStr(t2,buf)) << endl;
-\end{cpp}
-
-The \ffunc{simtimeToStrShort()} is similar to \ffunc{simtimeToStr()},
-but its output is more concise.
-
-The \ffunc{strToSimtime()} function parses a time specification passed
-in a string, and returns a \cclass{simtime\_t}. If the string cannot
-be entirely interpreted, -1 is returned.
-
-\begin{cpp}
-simtime_t t = strToSimtime("30s 152ms");
-\end{cpp}
-
-Another variant, \ffunc{strToSimtime0()} can be used if the time
-string is a substring in a larger string. Instead of taking a \ttt{char*},
-it takes a reference to \ttt{char*} (\ttt{char*\&}) as the first argument.  The
-function sets the pointer to the first character that could not be
-interpreted as part of the time string, and returns the value. It
-never returns -1; if nothing at the beginning of the string looked
-like simulation time, it returns 0.
-
-\begin{cpp}
-const char *s = "30s 152ms and something extra";
-
-simtime_t t = strToSimtime0(s); // now s points to "and something extra"
-\end{cpp}
-
-
 \section{Generating Random Numbers}
 \label{cha:sim-lib:generating-random-numbers}
 
