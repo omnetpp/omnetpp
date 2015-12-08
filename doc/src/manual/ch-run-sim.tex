@@ -1022,26 +1022,6 @@ On Windows, you are out of luck -- commercial products may help, or,
 port your simulation to Linux. The latter goes usually much more smoothly
 than one would expect.
 
-
-%
-%Use a profiler! KCachegrind.
-%
-%EV trick.
-%
-%Here are a few tips that can help you make the simulation faster:
-%\begin{itemize}
-%  \item{Use message subclassing instead of adding \ffunc{cPar}'s to messages.}
-%  \item{Try to minimize message creations and deletions. Reuse
-%    messages if possible.}
-%  \item{Turn off the display of screen messages when you run the
-%    simulation.  You can do this in the ini file. Alternatively, you
-%    can place \ttt{\#ifdef}s around your \ttt{EV<<} and
-%    \index{ev.printf()} calls and turn off the define when compiling
-%    the simulation for speed.}
-%  \item{Store the module parameters in local variables to avoid
-%    calling \cclass{cPar} member functions every time.}
-%\end{itemize}
-
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"

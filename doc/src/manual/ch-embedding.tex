@@ -3,35 +3,34 @@
 
 \section{Architecture}
 
-{\opp} has a modular architecture. The following diagram illustrates  the
-high-level architecture of the {\opp} simulations:
+{\opp} has a modular architecture. The following diagram illustrates the
+high-level architecture of {\opp} simulations:
 
 \begin{figure}[htbp]
   \begin{center}
     \includegraphics[width=4.757in, height=2.412in]{figures/embed-architecture}
-    \caption{Architecture of {\opp} simulation programs}
+    \caption{The architecture of {\opp} simulations}
   \end{center}
 \end{figure}
 
-The rectangles in the picture represent the following components:
+The blocks represent the following components:
 
 \begin{itemize}
   \item{\textbf{Sim} is the simulation kernel and class
     library\index{simulation!kernel}. Sim is a library linked to
     your simulation program.}
-  \item{\textbf{Envir} is another library containing all the code
-    that is common to all the user interfaces. \ffunc{main()} also exists in the Envir library.
-    Envir provides services, like ini file handling for specific user interface
-    implementations. Envir presents itself towards Sim and the executing model
-    via the \ttt{ev} facade object, hiding all other user interface internals.
-    Some aspects of the Envir library can be customized\index{customization} using plugin
-    interfaces. Embedding {\opp} into applications\index{embedding} can
-    be achieved by implementing a new user interface in addition to Cmdenv
-    and Tkenv, or by replacing Envir with another implementation of \ttt{ev}
-    (see sections \ref{sec:plugin-exts:userinterface} and
-    \ref{sec:ch-embedding:embedding}.)}
-  \item{\textbf{Cmdenv and Tkenv} are specific user interface
-    implementations. The simulation is linked either to the  Cmdenv or Tkenv user interfaces, or to both.}
+  \item{\textbf{Envir} is another library that contains all code
+    that is common to all the user interfaces. \ffunc{main()} also resides
+    in the Envir library. Envir presents itself towards Sim and the executing model
+    as an instance of the \cclass{cEnvir} facade class. Some aspects of the
+    Envir library like result recording can be customized\index{customization}
+    using plugin interfaces. Embedding {\opp} into applications\index{embedding}
+    usually involves writing a custom \cclass{cEnvir} subclass (see sections
+    \ref{sec:plugin-exts:userinterface} and \ref{sec:ch-embedding:embedding}.)}
+  \item{\textbf{Cmdenv, Tkenv and Qtenv} are Envir-based libraries that contain
+    specific user interface implementations. A simulation program
+    is linked with one or more of them; in the latter case, one of the UI libraries
+    is chosen and instantiated either explicitly or automatically when the program starts.}
   \item{The \textbf{Model Component Library} includes simple module definitions and
     their C++ implementations, compound module types, channels, networks,
     message types, and everything belonging to models that
@@ -58,9 +57,9 @@ each other:
     to the component library when dynamic module creation is used.
     The mechanisms for registering and looking up components in the model
     component library are implemented as part of Sim.}
-  \item{\textbf{Executing Model $\Leftrightarrow$ Envir}. The \ttt{ev} object,
-    logically part of Envir, is the facade of the user interface towards the
-    executing model. The model uses \ttt{ev} to write debug logs (\ttt{EV<<}).}
+  \item{\textbf{Executing Model $\Leftrightarrow$ Envir}. The Envir presents itself
+    as a facade object towards the executing model. Model code directly accesses Envir
+    e.g. for logging (\ttt{EV<<}).}
   \item{\textbf{Sim $\Leftrightarrow$ Envir}. Envir is in full command of what
     happens in the simulation program. Envir contains the \ttt{main()} function
     where execution begins. Envir determines which models should be set up
@@ -70,14 +69,13 @@ each other:
     functionality (event scheduling and event execution are implemented in Sim).
     Envir catches and handles errors and exceptions that occur
     in the simulation kernel or in the library classes during execution.
-    Envir presents a single facade object (\ttt{ev}) that represents
-    the environment (user interface) toward Sim -- no Envir
+    Envir presents a single facade object toward Sim -- no Envir
     internals are visible to Sim or the executing model.
-    During simulation model setup, Envir supplies parameter values for
+    During simulation model setup, Envir supplies module parameter values for
     Sim when Sim asks for them. Sim writes output vectors via Envir,
     so one can redefine the output vector storing mechanism by changing Envir.
     Sim and its classes use Envir to print debug information.}
-  \item{\textbf{Envir $\Leftrightarrow$ Tkenv/Cmdenv}. Tkenv and Cmdenv
+  \item{\textbf{Envir $\Leftrightarrow$ Cmdenv/Tkenv/Qtenv}. Cmdenv, Tkenv and Qtenv
     are concrete user interface implementations. When a simulation program
     is started, the \ttt{main()} function (which is part of Envir) determines
     the appropriate user interface class, creates an instance and runs it
@@ -96,7 +94,7 @@ do not just want to change one or two aspects of the simulator
 such as Cmdenv or Tkenv -- if so, see chapter \ref{cha:plugin-exts}.
 
 For the following section, we assume that you will write the embedding
-program from scratch. Meaning, starting from a \ffunc{main()} function.
+program from scratch, that is, starting from a \ffunc{main()} function.
 
 \subsection{The main() Function}
 
@@ -217,17 +215,21 @@ In the first few lines the system looks up the network name among the modules th
 have been loaded from the  NED files, and an error message is printed if it is not found.
 
 Then it is required to create and activate a simulation manager object
-(\cclass{cSimulation}).
-The simulation manager requires another object, called the environment object. This environment object is used by the simulation manager
-to read the configuration. In addition, the results produced by the simulation manager are written to this environment object.
+(\cclass{cSimulation}). The simulation manager requires another object,
+called the environment object. This environment object is used by the
+simulation manager to read the configuration. In addition, the results
+produced by the simulation manager are written to this environment object.
 
 The environment object (\ttt{CustomSimulationEnv} in the above code) must
 be provided by the programmer; this is described in detail in a later section.
 
 \begin{note}
-Before version 4.0, \ttt{simulation} and \ttt{ev} were global variables;
-In the current version they are macros that refer to  \ttt{*cSimulation::getActiveSimulation()}
-and \ttt{*cSimulation::getActiveSimulation()->getEnvir()}.
+In versions 4.x and earlier, the simulation manager and the
+environment object could be accessed as \fmac{simulation} and \fmac{ev}
+(which were global variables in 3.x and macros in 4.x). In 5.x they can be
+accessed with the \ffunc{getSimulation()} and \ffunc{getEnvir()} functions,
+which are basically aliases to \ttt{cSimulation::getActiveSimulation()} and
+\ttt{cSimulation::getActiveSimulation()->getEnvir()}.
 \end{note}
 
 The network is then set up in the simulation manager. The
@@ -537,16 +539,7 @@ and also to set up and simulate a network in each instance. However, this
 requires frequent use of \ffunc{cSimulation::set\-Active\-Simulation()}.
 Before invoking any \cclass{cSimulation} method or module method,
 the corresponding \cclass{cSimulation} instance needs to be designated
-as the active simulation manager. This is necessary because several models
-and simulation kernel methods refer to the active simulation manager
-instance via the \fmac{simulation} macro, and it is similar with the
-\fmac{ev} macro.
-
-\begin{note}
-Before the 4.0 version, \ttt{simulation} and \ttt{ev} were global variables;
-in the current version they are macros that refer to \ttt{*cSimulation::getActiveSimulation()}
-and \ttt{*cSimulation::getActiveSimulation()->getEnvir()}.
-\end{note}
+as the active simulation manager.
 
 Every \cclass{cSimulation} instance should have its own associated
 environment object (\cclass{cEnvir}). Environment objects may not be

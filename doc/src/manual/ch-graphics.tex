@@ -729,13 +729,13 @@ bubble("Collision! (2 frames)");
 
 If the module contains a lot of code that modifies the display string or
 displays bubbles, it is recommended to make these calls conditional
-on \ttt{ev.isGUI()}. The \ttt{ev.isGUI()} call returns \textit{false}
-when the simulation is run under Cmdenv, so one can make the code skip
+on \ffunc{hasGUI()}. The \ffunc{hasGUI()} method returns \textit{false}
+if the simulation is run under Cmdenv, so one can make the code skip
 potentially expensive display string manipulation.
 
 Better:
 \begin{cpp}
-if (ev.isGUI())
+if (hasGUI())
     bubble("Going down!");
 \end{cpp}
 

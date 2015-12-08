@@ -299,7 +299,7 @@ The configuration is accessible via the \ffunc{getConfig()} method of \cclass{cE
 It returns a pointer to the configuration object (\cclass{cConfiguration}):
 
 \begin{cpp}
-cConfiguration *config = ev.getConfig();
+cConfiguration *config = getEnvir()->getConfig();
 \end{cpp}
 
 \cclass{cConfiguration} provides several methods for querying the configuration.
@@ -327,7 +327,7 @@ std::string getAsPath(cConfigOption *entry);
 and there is no default value.
 
 \begin{cpp}
-bool debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
+bool debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 \end{cpp}
 
 
