@@ -174,9 +174,9 @@ That is, if the \ttt{node[3]} module above is in the compound module
 \ttt{"net.subnet1.node[3]"}.
 
 \begin{cpp}
-ev << this->getName();     // --> "node"
-ev << this->getFullName(); // --> "node[3]"
-ev << this->getFullPath(); // --> "net.subnet1.node[3]"
+EV << this->getName();     // --> "node"
+EV << this->getFullName(); // --> "node[3]"
+EV << this->getFullPath(); // --> "net.subnet1.node[3]"
 \end{cpp}
 
 \ffunc{getClassName()}, \ffunc{getFullName()} and \ffunc{getFullPath()}
@@ -185,7 +185,7 @@ and also appear in error messages.
 
 \ffunc{getName()} and \ffunc{getFullName()} return \ttt{const char *} pointers,
 and \ffunc{getFullPath()} returns \ttt{std::string}. This makes no difference
-with \ttt{ev<<}, but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument
+with \ttt{EV<<}, but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument
 to \ffunc{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
 
 \begin{cpp}
@@ -287,8 +287,8 @@ simulation.  You can send debugging output to \ttt{ev} with the C++-style
 output operators:
 
 \begin{cpp}
-ev << "packet received, sequence number is " << seqNum << endl;
-ev << "queue full, discarding packet\n";
+EV << "packet received, sequence number is " << seqNum << endl;
+EV << "queue full, discarding packet\n";
 \end{cpp}
 
 An alternative solution is \ffunc{ev.printf()}:
@@ -309,13 +309,13 @@ from \ffilename{omnetpp.ini} and it is more convenient to view, using Tkenv.
 
 One can save CPU cycles by making logging statements conditional
 on whether the output is actually being displayed or recorded anywhere.
-The \ttt{ev.isDisabled()} call returns true when \ttt{ev<<} output is disabled,
+The \ttt{ev.isDisabled()} call returns true when \ttt{EV<<} output is disabled,
 such as in Tkenv or Cmdenv ``express'' mode. Thus, one can write code like
 this:
 
 \begin{cpp}
 if (!ev.isDisabled())
-    ev << "Packet " << msg->getName() << " received\n";
+    EV << "Packet " << msg->getName() << " received\n";
 \end{cpp}
 
 A more sophisticated implementation of the same idea is to the \fmac{EV}
@@ -793,7 +793,7 @@ for (int i=0; i<array.size(); i++)
     if (array[i]) // is this position used?
     {
         cObject *obj = array[i];
-        ev << obj->getName() << endl;
+        EV << obj->getName() << endl;
     }
 }
 \end{cpp}
@@ -923,16 +923,16 @@ it. Consider the following code (we'll explain it shortly):
 for (int i=0; i<topo.getNumNodes(); i++)
 {
   cTopology::Node *node = topo.getNode(i);
-  ev << "Node i=" << i << " is " << node->getModule()->getFullPath() << endl;
-  ev << " It has " << node->getNumOutLinks() << " conns to other nodes\n";
-  ev << " and " << node->getNumInLinks() << " conns from other nodes\n";
+  EV << "Node i=" << i << " is " << node->getModule()->getFullPath() << endl;
+  EV << " It has " << node->getNumOutLinks() << " conns to other nodes\n";
+  EV << " and " << node->getNumInLinks() << " conns from other nodes\n";
 
-  ev << " Connections to other modules are:\n";
+  EV << " Connections to other modules are:\n";
   for (int j=0; j<node->getNumOutLinks(); j++)
   {
     cTopology::Node *neighbour = node->getLinkOut(j)->getRemoteNode();
     cGate *gate = node->getLinkOut(j)->getLocalGate();
-    ev << " " << neighbour->getModule()->getFullPath()
+    EV << " " << neighbour->getModule()->getFullPath()
        << " through gate " << gate->getFullName() << endl;
   }
 }
@@ -1016,18 +1016,18 @@ if (node == nullptr)
 }
 else if (node->getNumPaths()==0)
 {
-  ev << "No path to destination.\n";
+  EV << "No path to destination.\n";
 }
 else
 {
   while (node != topo.getTargetNode())
   {
-    ev << "We are in " << node->getModule()->getFullPath() << endl;
-    ev << node->getDistanceToTarget() << " hops to go\n";
-    ev << "There are " << node->getNumPaths()
+    EV << "We are in " << node->getModule()->getFullPath() << endl;
+    EV << node->getDistanceToTarget() << " hops to go\n";
+    EV << "There are " << node->getNumPaths()
        << " equally good directions, taking the first one\n";
     cTopology::LinkOut *path = node->getPath(0);
-    ev << "Taking gate " << path->getLocalGate()->getFullName()
+    EV << "Taking gate " << path->getLocalGate()->getFullName()
        << " we arrive in " << path->getRemoteNode()->getModule()->getFullPath()
        << " on its gate " << path->getRemoteGate()->getFullName() << endl;
     node = path->getRemoteNode();
@@ -1073,7 +1073,7 @@ thisnode->enable();
 for (int j=0; j<thisnode->getNumOutLinks(); j++)
 {
   cTopology::LinkOut *link = thisnode->getLinkOut(i);
-  ev << "Through gate " << link->getLocalGate()->getFullName() << " : "
+  EV << "Through gate " << link->getLocalGate()->getFullName() << " : "
      << 1 + link->getRemoteNode()->getDistanceToTarget() << " hops" << endl;
 }
 \end{cpp}
@@ -1192,10 +1192,10 @@ Example:
 
 \begin{cpp}
 cPatternMatcher matcher("**.host[*]", true, true, true);
-ev << matcher.matches("Net.host[0]") << endl;  // -> true
-ev << matcher.matches("Net.area1.host[0]") << endl;  // -> true
-ev << matcher.matches("Net.host") << endl;  // -> false
-ev << matcher.matches("Net.host[0].tcp") << endl;  // -> false
+EV << matcher.matches("Net.host[0]") << endl;  // -> true
+EV << matcher.matches("Net.area1.host[0]") << endl;  // -> true
+EV << matcher.matches("Net.host") << endl;  // -> false
+EV << matcher.matches("Net.host[0].tcp") << endl;  // -> false
 \end{cpp}
 
 
@@ -1303,15 +1303,15 @@ An example:
 cMatchExpression expr("foo* or bar*", true, true, true);
 cMatchableString str1("this is a foo");
 cMatchableString str2("something else");
-ev << expr.matches(&str1) << endl; // -> true
-ev << expr.matches(&str2) << endl; // -> false
+EV << expr.matches(&str1) << endl; // -> true
+EV << expr.matches(&str2) << endl; // -> false
 \end{cpp}
 
 Or, by using temporaries:
 
 \begin{cpp}
-ev << expr.matches(&cMatchableString("this is a foo")) << endl; // -> true
-ev << expr.matches(&cMatchableString("something else")) << endl; // -> false
+EV << expr.matches(&cMatchableString("this is a foo")) << endl; // -> true
+EV << expr.matches(&cMatchableString("something else")) << endl; // -> false
 \end{cpp}
 
 
@@ -2304,7 +2304,7 @@ actually uses. It is most conveniently called from \ffunc{finish()}:
 \begin{cpp}
 void FooModule::finish()
 {
-  ev << getStackUsage() << " bytes of stack used\n";
+  EV << getStackUsage() << " bytes of stack used\n";
 }
 \end{cpp}
 
@@ -2595,7 +2595,7 @@ respectively.
 \begin{cpp}
 cNEDValue value = 5.0;
 cNEDValue::Type type = value.getType(); // ==> DBL
-ev << cNEDValue::getTypeName(type) << endl; // ==> "double"
+EV << cNEDValue::getTypeName(type) << endl; // ==> "double"
 \end{cpp}
 
 We have already seen that the \ttt{DBL} type serves both the
@@ -3088,7 +3088,7 @@ owner of the object:
 
 \begin{cpp}
 cOwnedObject *o = msg->getOwner();
-ev << "Owner of " << msg->getName() << " is: " <<
+EV << "Owner of " << msg->getName() << " is: " <<
    << "(" << o->getClassName() << ") " << o->getFullPath() << endl;
 \end{cpp}
 

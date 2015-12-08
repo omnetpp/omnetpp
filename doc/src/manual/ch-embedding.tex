@@ -60,8 +60,7 @@ each other:
     component library are implemented as part of Sim.}
   \item{\textbf{Executing Model $\Leftrightarrow$ Envir}. The \ttt{ev} object,
     logically part of Envir, is the facade of the user interface towards the
-    executing model. The model uses \ttt{ev} to write debug logs (\ttt{ev<<},
-    \ttt{ev.printf()}).}
+    executing model. The model uses \ttt{ev} to write debug logs (\ttt{EV<<}).}
   \item{\textbf{Sim $\Leftrightarrow$ Envir}. Envir is in full command of what
     happens in the simulation program. Envir contains the \ttt{main()} function
     where execution begins. Envir determines which models should be set up

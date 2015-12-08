@@ -374,7 +374,7 @@ Define_Module(HelloModule);
 
 void HelloModule::initialize()
 {
-    ev << "Hello World!\n";
+    EV << "Hello World!\n";
 }
 
 void HelloModule::handleMessage(cMessage *msg)
@@ -1542,9 +1542,9 @@ int n = getNumParams();
 for (int i=0; i<n; i++)
 {
     cPar& p = par(i);
-    ev << "parameter: " << p.getName() << "\n";
-    ev << "  type:" << cPar::getTypeName(p.getType()) << "\n";
-    ev << "  contains:" << p.str() << "\n";
+    EV << "parameter: " << p.getName() << "\n";
+    EV << "  type:" << cPar::getTypeName(p.getType()) << "\n";
+    EV << "  contains:" << p.str() << "\n";
 }
 \end{cpp}
 
@@ -1908,16 +1908,16 @@ to print some information about each gate:
 \begin{cpp}
 for (cModule::GateIterator i(this); !i.end(); i++) {
     cGate *gate = i();
-    ev << gate->getFullName() << ": ";
-    ev << "id=" << gate->getId() << ", ";
+    EV << gate->getFullName() << ": ";
+    EV << "id=" << gate->getId() << ", ";
     if (!gate->isVector())
-        ev << "scalar gate, ";
+        EV << "scalar gate, ";
     else
-        ev << "gate " << gate->getIndex()
+        EV << "gate " << gate->getIndex()
            << " in vector " << gate->getName()
            << " of size " << gate->getVectorSize() << ", ";
-    ev << "type:" << cGate::getTypeName(gate->getType());
-    ev << "\n";
+    EV << "type:" << cGate::getTypeName(gate->getType());
+    EV << "\n";
 }
 \end{cpp}
 
@@ -1979,9 +1979,9 @@ cGate *gate = gate("somegate");
 cGate *otherGate = gate->getType()==cGate::OUTPUT ? gate->getNextGate() :
                                                     gate->getPreviousGate();
 if (otherGate)
-  ev << "gate is connected to: " << otherGate->getFullPath() << endl;
+  EV << "gate is connected to: " << otherGate->getFullPath() << endl;
 else
-  ev << "gate not connected" << endl;
+  EV << "gate not connected" << endl;
 \end{cpp}
 
 
@@ -2570,7 +2570,7 @@ else
     endTime = pkt->getArrivalTime(); // or: simTime();
     startTime = endTime - pkt->getDuration();
 }
-ev << "interval: " << startTime << ".." << endTime << "\n";
+EV << "interval: " << startTime << ".." << endTime << "\n";
 \end{cpp}
 
 Note that this works with wireless connections (\ffunc{sendDirect()})
@@ -3121,7 +3121,7 @@ output format by undefining \ttt{FSM\_Print()} after including
 
 \begin{cpp}
 #define FSM_Print(fsm,exiting)
-  (ev << "FSM " << (fsm).getName()
+  (EV << "FSM " << (fsm).getName()
       << ((exiting) ? ": leaving state " : ": entering state ")
       << (fsm).getStateName() << endl)
 \end{cpp}
@@ -3241,7 +3241,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
        // generate and send out job
        char msgname[32];
        sprintf( msgname, "job-%d", ++i);
-       ev << "Generating " << msgname << endl;
+       EV << "Generating " << msgname << endl;
        cMessage *job = new cMessage(msgname);
        job->setBitLength( (long) *msgLength );
        job->setTimestamp();
@@ -3268,7 +3268,7 @@ If a module is part of a module vector\index{module!vector}, the
 query its index and the vector size:
 
 \begin{cpp}
-ev << "This is module [" << module->getIndex() <<
+EV << "This is module [" << module->getIndex() <<
       "] in a vector of size [" << module->size() << "].\n";
 \end{cpp}
 
@@ -3364,7 +3364,7 @@ For example:
 \begin{cpp}
 for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 {
-  ev << iter()->getFullName();
+  EV << iter()->getFullName();
 }
 \end{cpp}
 

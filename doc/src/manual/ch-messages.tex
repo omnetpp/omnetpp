@@ -458,7 +458,7 @@ UDPPacket *udp = new UDPPacket("udp"); // subclassed from cPacket
 udp->setByteLength(8);
 
 udp->encapsulate(data);
-ev << udp->getByteLength() << endl; // --> 8+1024 = 1032
+EV << udp->getByteLength() << endl; // --> 8+1024 = 1032
 \end{cpp}
 
 And the corresponding decapsulation code:
