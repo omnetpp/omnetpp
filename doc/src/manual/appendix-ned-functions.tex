@@ -69,10 +69,10 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \begin{description}
 \item[firstAvailable]: \ttt{string firstAvailable(...)} \\
     Accepts any number of strings, interprets them as NED type names (qualified or unqualified), and returns the first one that exists and its C++ implementation class is also available. Throws an error if none of the types are available.
-\item[simTime]: \ttt{quantity simTime()} \\
-    Returns the current simulation time.
 \item[select]: \ttt{any select(int index, ...)} \\
     Returns the <index>th item from the rest of the argument list; numbering starts from 0.
+\item[simTime]: \ttt{quantity simTime()} \\
+    Returns the current simulation time.
 \end{description}
 
 \subsubsection{Category "ned":}

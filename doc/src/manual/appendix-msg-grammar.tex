@@ -23,7 +23,7 @@ Notation:
 \end{itemize}
 
 Nonterminals ending in \ttt{\_old} are present so that message files
-from the previous versions of {\opp} (3.x) can be parsed.
+from {\opp} (3.x) can be parsed.
 
 %
 % Note: the following has been extracted directly from msg2.y,
@@ -44,6 +44,7 @@ definitions
 
 definition
         : namespace\_decl
+        | fileproperty
         | cplusplus
         | struct\_decl
         | class\_decl
@@ -68,6 +69,10 @@ qname0
 qname
         : DOUBLECOLON qname0
         | qname0
+        ;
+
+fileproperty
+        : property\_namevalue ';'
         ;
 
 cplusplus
@@ -190,8 +195,12 @@ fieldmodifiers
         ;
 
 fielddatatype
+        : fieldsimpledatatype
+        | fieldsimpledatatype '*'
+        ;
+
+fieldsimpledatatype
         : qname
-        | qname '*'
         | CHAR
         | SHORT
         | INT
