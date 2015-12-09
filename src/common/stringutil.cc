@@ -729,6 +729,21 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
     return nullptr;
 }
 
+std::string opp_latexQuote(const char *s)
+{
+    std::string tmp = s;
+    tmp = opp_replacesubstring(tmp.c_str(), "\\", "\b", true);  // temporarily
+    tmp = opp_replacesubstring(tmp.c_str(), "{", "\\{", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "}", "\\}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "_", "\\_", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "$", "\\$", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "%", "\\%", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "&", "\\&", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "#", "\\#", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "\b", "{\\textbackslash}", true);
+    return tmp;
+}
+
 }  // namespace common
 }  // namespace omnetpp
 

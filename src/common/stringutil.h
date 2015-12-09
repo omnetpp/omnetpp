@@ -348,6 +348,11 @@ COMMON_API std::string opp_urldecode(const std::string& src);
  */
 COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
 
+/**
+ * Rudimentary quoting for LaTeX. Escape underscores, backslashes, dollar signs, etc.
+ */
+COMMON_API std::string opp_latexQuote(const char *s);
+
 } // namespace common
 }  // namespace omnetpp
 

@@ -594,6 +594,36 @@ void EnvirBase::dumpComponentList(const char *category)
         }
         std::cout << "\n";
     }
+    if (!strcmp(category, "latexconfig")) {  // internal undocumented option, for maintenance purposes
+        // generate LaTeX code for the appendix in the User Manual
+        processed = true;
+        cRegistrationList *table = configOptions.getInstance();
+        table->sort();
+        std::cout << "\\begin{description}\n";
+        for (int i = 0; i < table->size(); i++) {
+            cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
+            ASSERT(obj);
+            std::cout << "\\item[" << (obj->isPerObject() ? "<object-full-path>." : "") << opp_latexQuote(obj->getName()) << "] = ";
+            std::cout << "\\textit{<" << cConfigOption::getTypeName(obj->getType()) << ">}";
+            if (obj->getUnit())
+                std::cout << ", unit=\\ttt{" << obj->getUnit() << "}";
+            if (obj->getDefaultValue())
+                std::cout << ", default: \\ttt{" << opp_latexQuote(obj->getDefaultValue()) << "}";
+            std::cout << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting \\\\\n";
+            std::cout << opp_indentlines(opp_breaklines(opp_latexQuote(obj->getDescription()).c_str(), 75).c_str(), "    ") << "\n";
+        }
+        std::cout << "\\end{description}\n\n";
+
+        std::cout << "Predefined variables that can be used in config values:\n\n";
+        std::vector<const char *> v = getConfigEx()->getPredefinedVariableNames();
+        std::cout << "\\begin{description}\n";
+        for (int i = 0; i < (int)v.size(); i++) {
+            std::cout << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
+            const char *desc = getConfigEx()->getVariableDescription(v[i]);
+            std::cout << opp_indentlines(opp_breaklines(opp_latexQuote(desc).c_str(), 75).c_str(), "    ") << "\n";
+        }
+        std::cout << "\\end{description}\n\n";
+    }
     if (!strcmp(category, "jconfig")) {  // internal undocumented option, for maintenance purposes
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
