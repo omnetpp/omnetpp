@@ -7,7 +7,7 @@ Mac OS X.
 
 The following releases are covered:
 
-* Mac OS X 10.10 ('Yosemite') or later
+* Mac OS X 10.10 and 10.11
 
 === Installing the Prerequisite Packages
 
@@ -21,9 +21,9 @@ The following releases are covered:
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
-=== Additional Steps Required on Mac OS X 10 to use gdb as the debugger.
+=== Additional Steps Required on Mac OS X 10 to Use GDB as the Debugger.
 
-The Command Line Tools package on Mac OS X 10.9 no longer contains gcc and gdb;
+The Command Line Tools package on Mac OS X 10.10 no longer contains gcc and gdb;
 instead it contains the Clang compiler and lldb. (The `gcc` and `g++` commands
 actually run `clang`.) @OMNETPP@ will use Clang automatically. However, the
 @OMNETPP@ IDE can only use gdb as the underlying debugger, but not lldb.
@@ -36,7 +36,7 @@ you can install gdb:
 
     $ sudo port install gdb
 
-OS X 10.9 and later requires that you sign the `ggdb` executable with a self-signed
+OS X 10.10 and later requires that you sign the `ggdb` executable with a self-signed
 certificate (or with your own certificate, if you have one.)
 
 Start the 'Keychain Access' application. Choose 'Keychain Access > Certificate
