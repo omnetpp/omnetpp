@@ -65,7 +65,7 @@ foreach line {
    {color6  "OpenSceneGraph Intro"         "osg-intro"         "./osg-intro"      "osg-intro"}
    {color6  "OpenSceneGraph Earth"     "osg-earth"     "./osg-earth" "osg-earth"}
    {color6  "OpenSceneGraph Indoor"     "osg-indoor"     "./osg-indoor" "osg-indoor"}
-   {color6  "OpenSceneGraph Satellites"     "osg-satellites"     "./osg-setellites" "osg-satellites"}
+   {color6  "OpenSceneGraph Satellites"     "osg-satellites"     "./osg-satellites" "osg-satellites"}
    {color6  "CQN/ParSim"       "cqn/parsim"       "./runparsim"     "runparsim"}
    {color6  "Routing/Parsim"   "routing/parsim"   "./runparsim -c Net60-parsim" "runparsim -c Net60-parsim"}
    {color6  "Dyna/RealTime"    "dyna/realtime"    "./run"           "run"}
