@@ -1,4 +1,4 @@
-This sample demonstrates how to load and display simple 3D models and
+This sample requires Qtenv and demonstrates how to load and display simple 3D models and
 3rd party mapping data in OMNeT++ (with different projections),
 using OpenSceneGraph (http://www.osgearth.org) and osgEarth (http://osgearth.org/).
 OpenSceneGraph is an open source high-performance 3D graphics toolkit, used

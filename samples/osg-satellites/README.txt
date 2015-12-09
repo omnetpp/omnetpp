@@ -1,4 +1,4 @@
-This sample demonstrates how to render 3rd party mapping data in OMNeT++,
+This sample requires Qtenv and demonstrates how to render 3rd party mapping data in OMNeT++,
 using OpenSceneGraph (http://www.osgearth.org) and osgEarth (http://osgearth.org/).
 OpenSceneGraph is an open source high-performance 3D graphics toolkit, used
 by application developers in fields such as visual simulation, games, virtual
