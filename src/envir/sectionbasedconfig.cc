@@ -1027,7 +1027,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
     const char *tkenvNames[] = {
         "anim-methodcalls", "animation-enabled", "animation-msgclassnames",
         "animation-msgcolors", "animation-msgnames", "animation-speed",
-        "default-run", "expressmode-autoupdate", "image-path", "methodcalls-delay",
+        "default-run", "expressmode-autoupdate", "methodcalls-delay",
         "next-event-markers", "penguin-mode", "plugin-path", "print-banners",
         "senddirect-arrows", "show-bubbles", "show-layouting", "slowexec-delay",
         "update-freq-express", "update-freq-fast", "use-mainwindow",
