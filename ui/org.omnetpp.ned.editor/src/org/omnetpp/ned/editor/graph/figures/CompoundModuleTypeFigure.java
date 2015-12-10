@@ -99,11 +99,11 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
     }
 
     @Override
-    public void setDisplayString(IDisplayString displayString, IProject project) {
+    public void setDisplayString(IDisplayString displayString, IProject project, float scale) {
         // set the properties for the submodules compartment
-        getSubmoduleArea().setDisplayString(displayString);
+        getSubmoduleArea().setDisplayString(displayString, scale);
         // set the properties for the icon in the title
-        super.setDisplayString(displayString, project);
+        super.setDisplayString(displayString, project, scale);
     }
 
     /**

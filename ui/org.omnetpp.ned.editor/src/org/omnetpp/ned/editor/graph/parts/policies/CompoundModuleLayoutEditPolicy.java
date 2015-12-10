@@ -29,7 +29,10 @@ import org.eclipse.gef.editpolicies.LayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.PointF;
+import org.omnetpp.common.displaymodel.RectangleF;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -71,17 +74,19 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         super();
     }
 
+    public CompoundModuleEditPart getHost() {
+        return (CompoundModuleEditPart) super.getHost(); // may be installed only on compound modules
+    }
+
     /**
      * Checks if the provided type is allowed to be inserted into the current
      * edit part. Inner types are allowed only in top level types.
      */
     protected boolean isInsertable(INedElement element) {
         // no inner types are allowed if we are already an inner type (no more than 1 level of nesting)
-        if (getHost() instanceof CompoundModuleEditPart) {
-            CompoundModuleElementEx compModule = ((CompoundModuleEditPart)getHost()).getModel();
-            if (compModule.getNedTypeInfo().isInnerType())  // the host is already an inner type
-                return false;
-        }
+        CompoundModuleElementEx compModule = getHost().getModel();
+        if (compModule.getNedTypeInfo().isInnerType())  // the host is already an inner type
+            return false;
 
         // check if the dropped element has inner types. in this case it should not be added as an inner-type
         if (element instanceof CompoundModuleElementEx &&
@@ -135,14 +140,16 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
 
         // allow submodule cloning only INSIDE the submodule area
         Point p = request.getLocation();
-        if (!((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y)) {
+        if (!getHost().isOnBorder(p.x, p.y)) {
             // create a direct clone command for all submodule parts
-            CloneSubmoduleCommand cloneCmd
-            = new CloneSubmoduleCommand((CompoundModuleElementEx)getHost().getModel(), ((ModuleEditPart)getHost()).getScale());
+            CloneSubmoduleCommand cloneCmd = new CloneSubmoduleCommand(getHost().getModel());
 
             for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
-                if (currPart.getModel() instanceof SubmoduleElementEx)
-                    cloneCmd.addModule((SubmoduleElementEx)currPart.getModel(), (Rectangle)getConstraintForClone(currPart, request));
+                if (currPart.getModel() instanceof SubmoduleElementEx) {
+                    Rectangle rect = (Rectangle)getConstraintForClone(currPart, request);
+                    RectangleF bounds = RectangleF.fromPixels(rect, getHost().getScale());
+                    cloneCmd.addModule((SubmoduleElementEx)currPart.getModel(), bounds);
+                }
 
             if (cloneCmd.canExecute())
                 compoundCmd.add(cloneCmd);
@@ -154,18 +161,19 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     @Override
     protected Command getCreateCommand(CreateRequest request) {
         INedElement element = (INedElement)request.getNewObject();
-        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
+        CompoundModuleElementEx compoundModule = getHost().getModel();
         // submodule creation
         if (element instanceof SubmoduleElementEx) {
             // do no allow dropping a submodule on the compound module title
             Point p = request.getLocation();
-            if (((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
+            if (getHost().isOnBorder(p.x, p.y))
                 return UnexecutableCommand.INSTANCE;
 
-            CreateSubmoduleCommand create = new CreateSubmoduleCommand(compoundModule, (SubmoduleElementEx)element);
-            create.setConstraint((Rectangle)getConstraintFor(request));
-            create.setLabel("Create submodule");
-            return create;
+            CreateSubmoduleCommand createCommand = new CreateSubmoduleCommand(compoundModule, (SubmoduleElementEx)element);
+            Rectangle constraint = (Rectangle)getConstraintFor(request);
+            createCommand.setConstraint(RectangleF.fromPixels(constraint, getHost().getScale()));
+            createCommand.setLabel("Create submodule");
+            return createCommand;
         }
 
         // inner type creation
@@ -199,14 +207,14 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         // create a new submodule with that type instead of creating an inner type
         // (CloneCommand does this exactly so we reuse it)
         Point p = ((ChangeBoundsRequest)currentRequest).getLocation();
-        if (isAllowedType(element) && !((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
+        if (isAllowedType(element) && !getHost().isOnBorder(p.x, p.y))
             return getCloneCommand((ChangeBoundsRequest)currentRequest);
 
         if (!isAllowedType(element) || !isInsertable(element)) // do not allow networks or nesting of inner types
             return UnexecutableCommand.INSTANCE;
 
         // move the type to the new compound module
-        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
+        CompoundModuleElementEx compoundModule = getHost().getModel();
         CompoundCommand command = new CompoundCommand("Move type");
         command.add(new RemoveCommand(element));
         TypesElement typesElement = compoundModule.getFirstTypesChild();
@@ -265,9 +273,9 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         else {
             // move or resize operation
             float scale = ((ModuleEditPart)child).getScale();
-            SetConstraintCommand constrCmd = new SetConstraintCommand(submodule, scale, oldBounds);
-            constrCmd.setConstraint(modelConstraint);
-            return constrCmd;
+            SetConstraintCommand constraintCmd = new SetConstraintCommand(submodule, RectangleF.fromPixels(oldBounds, scale));
+            constraintCmd.setConstraint(RectangleF.fromPixels(modelConstraint, scale));
+            return constraintCmd;
         }
     }
 
@@ -340,7 +348,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         figure.translateToAbsolute(bounds);
         bounds = request.getTransformedRectangle(bounds);
 
-        ((GraphicalEditPart)getHost()).getContentPane().translateToRelative(bounds);
+        getHost().getContentPane().translateToRelative(bounds);
         bounds.translate(getLayoutOrigin().getNegated());
         return getConstraintFor(bounds);
     }

@@ -70,10 +70,10 @@ public class CompoundModuleFigure extends LayeredPane
     protected CompoundModuleLayout layouter;
 
     // TODO implement ruler
-    protected float scale = 1.0f;
-    protected String unit = "px";
+    protected float lastScale = -1;
+    protected String unit = "m";
     private int seed = 0;
-    private int oldCumulativeHashCode;
+    private int lastCumulativeHashCode;
     private boolean isSelected;
 
     // background layer to provide background coloring, images and grid drawing
@@ -288,35 +288,22 @@ public class CompoundModuleFigure extends LayeredPane
         this.gridColor = gridColor;
     }
 
-    /**
-     * Scaling and unit support.
-     * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
-     * @param unit the unit of the dimension
-     */
-    protected void setScale(float scale, String unit) {
-        this.scale = scale;
+    protected void setDistanceUnit(String unit) {
         this.unit = unit;
-        invalidate();
-    }
-
-    /**
-     * Returns the scale from the display string.
-     */
-    public float getScale() {
-        return scale;
     }
 
     /**
      * Adjusts the figure properties using a displayString object
      * @param dps The display string object containing the properties
      */
-    public void setDisplayString(IDisplayString dps) {
+    public void setDisplayString(IDisplayString dps, float scale) {
         // OPTIMIZATION: do not change anything if the display string has not changed
         int newCumulativeHashCode = dps.cumulativeHashCode();
-        if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
+        if (lastScale == scale && lastCumulativeHashCode != 0 && newCumulativeHashCode == lastCumulativeHashCode)
             return;
 
-        this.oldCumulativeHashCode = newCumulativeHashCode;
+        this.lastCumulativeHashCode = newCumulativeHashCode;
+        this.lastScale = scale;
 
         // background color / image
         Image imgback = ImageFactory.global().getImage(
@@ -333,14 +320,12 @@ public class CompoundModuleFigure extends LayeredPane
                 ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDER_COLOR)),
                 dps.getAsInt(IDisplayString.Prop.MODULE_BORDER_WIDTH, -1));
 
-        // scaling support
-        setScale(
-                1.0f, //FIXME
-                dps.getAsString(IDisplayString.Prop.MODULE_UNIT));
+        // distance unit
+        setDistanceUnit(dps.getAsString(IDisplayString.Prop.MODULE_UNIT));
 
         // grid support
         setGrid(
-                dps.unitToPixel(dps.getAsInt(IDisplayString.Prop.MODULE_GRID_DISTANCE, -1), null),
+                unitToPixel(dps.getAsFloat(IDisplayString.Prop.MODULE_GRID_DISTANCE, -1), scale),
                 dps.getAsInt(IDisplayString.Prop.MODULE_GRID_SUBDIVISION, -1),
                 ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
 
@@ -349,7 +334,7 @@ public class CompoundModuleFigure extends LayeredPane
         // otherwise getPreferredSize should return the size calculated from the children
         // we call the resizing last time because other parameters like the icon size or the border width
         // can affect the size of bounding box
-        backgroundSize = dps.getCompoundSize(null);
+        backgroundSize = dps.getCompoundSize().toPixels(scale);
 
         int newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
@@ -417,4 +402,7 @@ public class CompoundModuleFigure extends LayeredPane
         super.setBorder(border);
     }
 
+    static int unitToPixel(float f, float scale) {
+        return (int)(f * scale);
+    }
 }

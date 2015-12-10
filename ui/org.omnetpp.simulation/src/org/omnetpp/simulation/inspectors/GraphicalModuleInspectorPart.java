@@ -80,6 +80,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected ScrollPane scrollPane; // child of the inspector figure
     protected ScalableFigure scalableFigure; // child (content) of scrollPane
     protected CompoundModuleFigure compoundModuleFigure; // child of scalableFigure
+    protected float scale = 1.0f;  // zoom level
 
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
@@ -210,7 +211,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // set an initial display string, otherwise bad things (NPE, red background, etc) will happen
         // due to poor CompoundModuleFigure defaults if a HTTP error occurs before we set the proper
         // display string in refreshVisuals()
-        compoundModuleFigure.setDisplayString(new DisplayString(""));
+        compoundModuleFigure.setDisplayString(new DisplayString(""), scale);
 
         // work around slightly odd default behavior of scrollPane (scrollbars don't appear immediately when you shrink the window)
         scrollPane.addLayoutListener(new LayoutListener.Stub() {
@@ -557,15 +558,13 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     protected void refreshVisuals() throws CommunicationException {
         cModule parentModule = (cModule) object;
-        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule));
-
-        float scale = compoundModuleFigure.getScale();
+        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule), scale);
 
         // refresh submodules
         for (cModule submodule : submodules.keySet()) {
             submodule.loadIfUnfilled();
             SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
-            submoduleFigure.setDisplayString(scale, getDisplayStringFrom(submodule), null);
+            submoduleFigure.setDisplayString(getDisplayStringFrom(submodule), scale, null);
             submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
             submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
             submoduleFigure.setImageSizePercentage(imageSizePercentage);

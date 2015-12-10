@@ -10,6 +10,7 @@ package org.omnetpp.figures;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Layer;
@@ -21,10 +22,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
+import org.omnetpp.figures.layout.VectorArrangementParameters;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.figures.misc.ISelectableFigure;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
@@ -51,13 +54,14 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     protected static final Image IMG_DEFAULT = ImageFactory.global().getImage(ImageFactory.DEFAULT);
 
     // input for the layouting
-    protected float scale = 1.0f;
+    protected float lastScale = 1.0f;
     protected Point baseLoc;
     protected Object vectorIdentifier;
     protected int vectorSize;
     protected int vectorIndex;
     protected VectorArrangement vectorArrangement;
-    protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+    protected String vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+    protected VectorArrangementParameters vectorArrangementParams; // processed form of the above (par1, par2, par3)
     protected Layer rangeFigureLayer;
 
     // result of layouting
@@ -85,7 +89,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     protected Color textColor;
     protected String queueText;
     protected RangeFigure rangeFigure = null;
-    private int oldCumulativeHashCode;
+    private int lastCumulativeHashCode;
     private boolean isSelected;
 
     public SubmoduleFigure() {
@@ -104,26 +108,34 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         }
     }
 
+    protected int unitToPixel(float d, float scale) {
+        return (int)(scale * d);
+    }
+
+    protected float pixelToUnit(int x, float scale) {
+        return x / scale;
+    }
+
     /**
      * Adjust the properties using a display string object
      */
-    public void setDisplayString(float scale, IDisplayString displayString, IProject project) {
+    public void setDisplayString(IDisplayString displayString, float scale, IProject project) {
         // optimization: do not change anything if the display string has not changed
         int newCumulativeHashCode = displayString.cumulativeHashCode();
-        if (this.scale == scale && oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
+        if (this.lastScale == scale && lastCumulativeHashCode != 0 && newCumulativeHashCode == lastCumulativeHashCode)
             return;
 
         // font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
         setFont(getFont());
 
-        this.scale = scale;
-        this.oldCumulativeHashCode = newCumulativeHashCode;
+        this.lastScale = scale;
+        this.lastCumulativeHashCode = newCumulativeHashCode;
 
         Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
 
         // range support
         setRange(
-                displayString.getRange(scale),
+                unitToPixel(displayString.getRange(), scale),
                 ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGE_FILL_COLOR)),
                 ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGE_BORDER_COLOR)),
                 displayString.getAsInt(IDisplayString.Prop.RANGE_BORDER_WIDTH, -1));
@@ -145,7 +157,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
                 displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
 
         // rectangle ("b" tag)
-        Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
+        Dimension size = displayString.getSize().toPixels(scale);  // falls back to size in EMPTY_DEFAULTS
         boolean widthExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_WIDTH);
         boolean heightExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_HEIGHT);
 
@@ -182,11 +194,11 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
                 arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
         }
         setBaseLocation(
-                displayString.getLocation(scale),
+                displayString.getLocation() == null ? null : displayString.getLocation().toPixels(scale),
                 arrangement,
-                displayString.unitToPixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, Integer.MIN_VALUE), scale),
-                displayString.unitToPixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, Integer.MIN_VALUE), scale),
-                displayString.unitToPixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, Integer.MIN_VALUE), scale)
+                displayString.getAsString(IDisplayString.Prop.LAYOUT_PAR1),
+                displayString.getAsString(IDisplayString.Prop.LAYOUT_PAR2),
+                displayString.getAsString(IDisplayString.Prop.LAYOUT_PAR3)
         );
 
         // if the shapeBounds has changed, we should trigger the layouting
@@ -322,18 +334,20 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     }
 
     protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement,
-            int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
+            String vectorArrangementPar1, String vectorArrangementPar2, String vectorArrangementPar3) {
         // clear centerLoc iff something's changed
         if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) ||
                 this.vectorArrangement != vectorArrangement ||
-                this.vectorArrangementPar1 != vectorArrangementPar1 ||
-                this.vectorArrangementPar2 != vectorArrangementPar2 ||
-                this.vectorArrangementPar3 != vectorArrangementPar3) {
+                !ObjectUtils.equals(this.vectorArrangementPar1, vectorArrangementPar1) ||
+                !ObjectUtils.equals(this.vectorArrangementPar2, vectorArrangementPar2) ||
+                !ObjectUtils.equals(this.vectorArrangementPar3, vectorArrangementPar3)) {
             this.baseLoc = loc;
             this.vectorArrangement = vectorArrangement;
+
             this.vectorArrangementPar1 = vectorArrangementPar1;
             this.vectorArrangementPar2 = vectorArrangementPar2;
             this.vectorArrangementPar3 = vectorArrangementPar3;
+            this.vectorArrangementParams = null; // invalidate
 
             // If the module position is set, we do not need the temporary position (centerLoc)
             // used by the layouter as a temporary position. If we just unpinned
@@ -638,16 +652,54 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         return vectorSize;
     }
 
-    public int getVectorArrangementPar1() {
-        return vectorArrangementPar1;
+    public VectorArrangementParameters getVectorArrangementParameters() {
+        if (vectorArrangementParams == null) {
+            VectorArrangementParameters p = new VectorArrangementParameters();
+            switch (vectorArrangement) {
+            case none:
+                break;
+            case exact:
+                p.x = parseFloat(vectorArrangementPar1);
+                p.y = parseFloat(vectorArrangementPar2);
+                break;
+            case row:
+                p.dx = parseFloat(vectorArrangementPar1);
+                break;
+            case column:
+                p.dy = parseFloat(vectorArrangementPar1);
+                break;
+            case matrix:
+                p.n = parseInt(vectorArrangementPar1);
+                p.dx = parseFloat(vectorArrangementPar2);
+                p.dy = parseFloat(vectorArrangementPar3);
+                break;
+            case ring:
+                p.dx = parseFloat(vectorArrangementPar1);
+                p.dy = parseFloat(vectorArrangementPar2);
+                break;
+            default:
+                throw new AssertionFailedException("unhandled vector arrangement");
+            }
+            vectorArrangementParams = p;
+        }
+        vectorArrangementParams.scale = lastScale;
+        return vectorArrangementParams;
     }
 
-    public int getVectorArrangementPar2() {
-        return vectorArrangementPar2;
+    private float parseFloat(String value) {
+        try {
+            if (!StringUtils.isBlank(value))
+                return Float.valueOf(value);
+        } catch (NumberFormatException e) { }
+        return Float.NaN;
     }
 
-    public int getVectorArrangementPar3() {
-        return vectorArrangementPar3;
+    private int parseInt(String value) {
+        try {
+            if (!StringUtils.isBlank(value))
+                return Integer.valueOf(value);
+        } catch (NumberFormatException e) { }
+        return -1;
     }
 
     @Override

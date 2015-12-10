@@ -13,8 +13,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -434,61 +432,29 @@ public interface IDisplayString {
     public float getAsFloat(Prop propName, float defValue);
 
     /**
-     * The scaling to be applied on the element. Uses fallback if not specified locally.
-     * Returns 1.0 if not specified. NOTE: scaling factor is available ONLY in compound module
-     * display strings.
+     * Returns the location for the module ("p" tag). Uses fallback if not specified locally. 
+     * If either location property is missing, it returns null (meaning the module is unpinned).
      */
-    public float getScale();
+    public PointF getLocation();
 
     /**
-     * Returns the pixel based location for the module. Converts the unit based values of P tag to pixel.
-     * Uses fallback if not specified locally. If either location property is missing it returns null
-     * (meaning the module is unpinned)
-     * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
-     *              factor stored in the display string will be used
+     * Returns the size of submodule ("b" tag). Uses fallback if not specified locally.
+     * Missing width or height values are represented by NaN.
      */
-    public Point getLocation(Float scale);
+    public DimensionF getSize();
 
     /**
-     * Returns The size of submodule (B tag) (in pixels). Uses fallback if not specified locally.
-     * If width or height is missing returns -1 instead.
-     * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
-     *              factor stored in the display string will be used
-     */
-    public Dimension getSize(Float scale);
-
-    /**
-     * The size of module (in pixels) if represented as a compound module (BGB tag).
+     * Returns the size of module if represented as a compound module ("bgb" tag).
      * Uses fallback if the property is not specified locally.
      * If width or height is missing, the function returns -1.
-     * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
-     *              factor stored in the display string will be used
      */
-    public Dimension getCompoundSize(Float scale);
+    public DimensionF getCompoundSize();
 
     /**
-     * Returns the range converted to pixels. Uses fallback if the property is not specified locally.
-     * Returns -1 if no range was specified.
-     * @param scale A scaling parameter to convert to and from unit. If it's null, the local scaling
-     *              factor stored in the display string will be used
+     * Returns the radius of the 1st transmission range indicator ("r" tag). Uses fallback 
+     * if the property is not specified locally. Returns NaN if no range was specified.
      */
-    public int getRange(Float scale);
-
-    /**
-     * Converts the provided value (in pixel) to unit
-     * @param pixel
-     * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
-     * @return Value in units
-     */
-    public float pixelToUnit(int pixel, Float overrideScale);
-
-    /**
-     * Converts the provided value (in unit) to pixel
-     * @param unit
-     * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
-     * @return Value in pixels
-     */
-    public int unitToPixel(float unit, Float overrideScale);
+    public float getRange();
 
     /**
      * Sets the content of the display string.

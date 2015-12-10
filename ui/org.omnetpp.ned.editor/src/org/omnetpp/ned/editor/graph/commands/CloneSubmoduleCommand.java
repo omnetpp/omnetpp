@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
+import org.omnetpp.common.displaymodel.RectangleF;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -38,31 +38,27 @@ public class CloneSubmoduleCommand extends Command {
     private ConnectionsElement newConnectionsElement; // set this only, if this element was created by the redo() function (so it must be undone)
     private SubmodulesElement newSubmodulesElement; // set this only, if this element was created by the redo() function (so it must be undone)
     private CompoundModuleElementEx parent;
-    private Map<SubmoduleElementEx, Rectangle> bounds;
+    private Map<SubmoduleElementEx, RectangleF> bounds;
     private Map<SubmoduleElementEx, Integer> indices;
     private Map<String, SubmoduleElementEx> old2newMapping;
-    private float scale = 1.0f;
 
-    public CloneSubmoduleCommand(CompoundModuleElementEx parent, float scale) {
+    public CloneSubmoduleCommand(CompoundModuleElementEx parent) {
         super("Clone");
-        this.scale = scale;
         this.parent = parent;
         modules = new LinkedList<SubmoduleElementEx> ();
     }
 
-    public void addModule(SubmoduleElementEx mod, Rectangle newBounds) {
+    public void addModule(SubmoduleElementEx mod, RectangleF newBounds) {
         modules.add(mod);
-        if (bounds == null) {
-            bounds = new HashMap<SubmoduleElementEx, Rectangle>();
-        }
+        if (bounds == null)
+            bounds = new HashMap<SubmoduleElementEx, RectangleF>();
         bounds.put(mod, newBounds);
     }
 
     public void addModule(SubmoduleElementEx mod, int index) {
         modules.add(mod);
-        if (indices == null) {
+        if (indices == null)
             indices = new HashMap<SubmoduleElementEx, Integer>();
-        }
         indices.put(mod, index);
     }
 
@@ -71,7 +67,7 @@ public class CloneSubmoduleCommand extends Command {
         return modules.size() > 0;
     }
 
-    protected SubmoduleElementEx cloneModule(SubmoduleElementEx oldModule, Rectangle newBounds, int index) {
+    protected SubmoduleElementEx cloneModule(SubmoduleElementEx oldModule, RectangleF newBounds, int index) {
         SubmoduleElementEx newModule = null;
 
         // duplicate the subtree but do not add to the new parent yet
@@ -86,14 +82,12 @@ public class CloneSubmoduleCommand extends Command {
         if (parent.getFirstSubmodulesChild() == null)
             newSubmodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_SUBMODULES, parent);
 
-        if (index < 0) {
+        if (index < 0)
             parent.addSubmodule(newModule);
-        }
-        else {
+        else
             parent.insertSubmodule(index, newModule);
-        }
 
-        newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
+        newModule.getDisplayString().setLocation(newBounds.getLocation());
 
         // keep track of the new modules so we can delete them in undo
         newModules.add(newModule);

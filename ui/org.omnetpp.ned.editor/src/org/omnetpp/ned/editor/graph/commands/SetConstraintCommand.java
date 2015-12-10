@@ -7,11 +7,10 @@
 
 package org.omnetpp.ned.editor.graph.commands;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-
+import org.omnetpp.common.displaymodel.DimensionF;
+import org.omnetpp.common.displaymodel.PointF;
+import org.omnetpp.common.displaymodel.RectangleF;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 
 /**
@@ -23,16 +22,14 @@ public class SetConstraintCommand extends Command {
 
     String oldDisplayString;
     String newDisplayString;
-    private Rectangle oldBounds;
-    private Point newPos;
-    private Dimension newSize;
+    private RectangleF oldBounds;
+    private PointF newPos;
+    private DimensionF newSize;
     private boolean pinOperation = false;
     private final IConnectableElement module;
-    private float scale = 1.0f;
 
-    public SetConstraintCommand(IConnectableElement newModule, float scale, Rectangle oldBounds) {
+    public SetConstraintCommand(IConnectableElement newModule, RectangleF oldBounds) {
         super();
-        this.scale = scale;
         this.oldBounds = oldBounds;
         module = newModule;
     }
@@ -45,24 +42,26 @@ public class SetConstraintCommand extends Command {
         boolean posChanged = (newPos != null) && (oldBounds != null) && !newPos.equals(oldBounds.getLocation());
 
         if (pinOperation) {
-            module.getDisplayString().setLocation(newPos, scale);
+            module.getDisplayString().setLocation(newPos);
             setLabel((newPos == null ? "Unpin " :"Pin ") + module.getName());
         }
         else {
             // move or resize operation
             if (sizeChanged && posChanged) {
-                module.getDisplayString().setConstraint(newPos, newSize, scale);
+                module.getDisplayString().setLocation(newPos);
+                module.getDisplayString().setSize(newSize);
                 setLabel("Resize " + module.getName());
             }
             else if (sizeChanged) {
-                module.getDisplayString().setSize(newSize, scale);
+                module.getDisplayString().setSize(newSize);
                 setLabel("Resize " + module.getName());
             }
             else if (posChanged) {
-                module.getDisplayString().setLocation(newPos, scale);
+                module.getDisplayString().setLocation(newPos);
                 setLabel("Move " + module.getName());
             }
         }
+        
         // store for later redo operation
         newDisplayString = module.getDisplayString().toString();
     }
@@ -80,15 +79,15 @@ public class SetConstraintCommand extends Command {
     /**
      * Sets both the location and size
      */
-    public void setConstraint(Rectangle r) {
-        setNewLocation(r.getLocation());
-        setNewSize(r.getSize());
+    public void setConstraint(RectangleF bounds) {
+        setNewLocation(bounds.getLocation());
+        setNewSize(bounds.getSize());
     }
 
     /**
      * Sets the new location (should be used for move operation)
      */
-    public void setNewLocation(Point p) {
+    public void setNewLocation(PointF p) {
         pinOperation = false;
         newPos = p;
     }
@@ -96,7 +95,7 @@ public class SetConstraintCommand extends Command {
     /**
      * Sets the new size of the module (for resize operation only)
      */
-    public void setNewSize(Dimension p) {
+    public void setNewSize(DimensionF p) {
         pinOperation = false;
         newSize = p;
     }
@@ -105,7 +104,7 @@ public class SetConstraintCommand extends Command {
      * Sets the pinned location of module (or null if unpin is requested)
      * Should be used ONLY for pin/unpin operation
      */
-    public void setPinLocation(Point p) {
+    public void setPinLocation(PointF p) {
         pinOperation = true;
         newPos = p;
     }

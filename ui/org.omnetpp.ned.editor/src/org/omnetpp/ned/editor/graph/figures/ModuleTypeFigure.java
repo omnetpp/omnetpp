@@ -40,14 +40,14 @@ public class ModuleTypeFigure extends NedTypeFigure {
     /**
      * Adjusts the figure properties using a displayString object
      */
-    public void setDisplayString(IDisplayString displayString, IProject project) {
+    public void setDisplayString(IDisplayString displayString, IProject project, float scale) {
         if (isInnerType())
             iconFigure.setTargetSize(24, 24);  // "s" icons
         else
             iconFigure.setTargetSize(40, 40); // normal icons
 
         // shape
-        Dimension size = displayString.getSize(1.0f);
+        Dimension size = displayString.getSize().toPixels(scale);
         boolean widthExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_WIDTH);
         boolean heightExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_HEIGHT);
 

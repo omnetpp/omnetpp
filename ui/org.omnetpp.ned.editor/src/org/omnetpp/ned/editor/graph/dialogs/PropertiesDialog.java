@@ -152,6 +152,7 @@ public class PropertiesDialog extends TrayDialog {
     private Composite previewComposite;
     private IFigure previewFigure[];  // actually SubmoduleFigure, ConnectionFigure, etc; max 10 figures
     private ScrollPane previewScrollPane;
+    private float scale = 1.0f; //TODO value
 
     private Composite bgPreviewComposite;
     private CompoundModuleFigure bgPreviewFigure;
@@ -1816,8 +1817,8 @@ public class PropertiesDialog extends TrayDialog {
 
             updatePreviewDisplayString(displayString);
 
-            bgPreviewFigure.setDisplayString(displayString);
-            Dimension compoundModuleSize = displayString.getCompoundSize(displayString.getScale());
+            bgPreviewFigure.setDisplayString(displayString, scale);
+            Dimension compoundModuleSize = displayString.getCompoundSize().toPixels(scale);
             if (compoundModuleSize.height == -1)
                 compoundModuleSize.height = 200;
             if (compoundModuleSize.width == -1)
@@ -1843,7 +1844,6 @@ public class PropertiesDialog extends TrayDialog {
             if (previewFigure != null) {
                 if (e instanceof SubmoduleElement || e instanceof IModuleKindTypeElement) {
                     SubmoduleFigure submoduleFigure = (SubmoduleFigure)previewFigure[i];
-                    float scale = 1.0f;
                     String name = (nameField.isEnabled() && !nameField.isGrayed()) ? nameField.getText() : ((IHasName)e).getName();
 
                     if (e instanceof SubmoduleElement) {
@@ -1851,13 +1851,11 @@ public class PropertiesDialog extends TrayDialog {
                         String vectorSize = (vectorSizeField.isEnabled() && !vectorSizeField.isGrayed()) ? vectorSizeField.getText() : ((SubmoduleElement)e).getVectorSize();
                         if (StringUtils.isNotBlank(vectorSize))
                             name = name + "[" + vectorSize + "]";
-                        DisplayString parentDisplayString = submodule.getCompoundModule().getDisplayString();
-                        scale = parentDisplayString.getScale();
                     }
 
                     IProject project = e.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
                     submoduleFigure.setName(name);
-                    submoduleFigure.setDisplayString(scale, displayString, project);
+                    submoduleFigure.setDisplayString(displayString, scale, project);
                     int width = submoduleFigure.getSize().width;
                     submoduleFigure.setCenterLocation(new Point(x+width/2, 50));
                     x += width + 10;

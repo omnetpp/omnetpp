@@ -8,8 +8,10 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
+import org.omnetpp.common.displaymodel.DimensionF;
+import org.omnetpp.common.displaymodel.PointF;
+import org.omnetpp.common.displaymodel.RectangleF;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
@@ -25,7 +27,7 @@ import org.omnetpp.ned.model.pojo.ImportElement;
 public class CreateSubmoduleCommand extends Command {
     private String fullyQualifiedTypeName;
     private SubmoduleElementEx child;
-    private Rectangle rect;
+    private RectangleF rect;
     private CompoundModuleElementEx parent;
     private ImportElement importElement;
 
@@ -51,12 +53,11 @@ public class CreateSubmoduleCommand extends Command {
         redo();
 
         if (rect != null) {
-            // get the scaling factor from the container module
-            float scale = parent.getDisplayString().getScale();
-            if (rect.width<0 || rect.height<0)
-                child.getDisplayString().setLocation(rect.getLocation(), scale);
-            else
-                child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize(), scale);
+            PointF pos = rect.getLocation();
+            DimensionF size = rect.getSize();
+            child.getDisplayString().setLocation(pos);
+            if (size.width >= 0 && size.height >= 0)
+                child.getDisplayString().setSize(size);
         }
     }
 
@@ -80,7 +81,7 @@ public class CreateSubmoduleCommand extends Command {
             importElement.removeFromParent();
     }
 
-    public void setConstraint(Rectangle r) {
-        rect = r;
+    public void setConstraint(RectangleF rect) {
+        this.rect = rect;
     }
 }

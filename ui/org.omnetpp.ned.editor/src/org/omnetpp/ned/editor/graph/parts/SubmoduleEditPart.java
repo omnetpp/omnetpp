@@ -51,7 +51,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // set the pin decoration image for the image (The compound module requests an auto-layout
         // if we add an figure without pin. ie. submodule created in the text editor without
         // a display string
-        fig.setPinVisible(getModel().getDisplayString().getLocation(1.0f) != null);
+        fig.setPinVisible(getModel().getDisplayString().getLocation() != null);
 
         // range figure should appear on the background decoration layer
         fig.setRangeFigureLayer(getCompoundModulePart().getFigure().
@@ -137,12 +137,12 @@ public class SubmoduleEditPart extends ModuleEditPart {
         IProject project = getModel().getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
 
         // set the rest of the display properties
-        submoduleFigure.setDisplayString(scale, dps, project);
+        submoduleFigure.setDisplayString(dps, scale, project);
 
         submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE_NAME)) ? "#" : "");
 
         // show/hide the pin marker
-        submoduleFigure.setPinVisible(dps.getLocation(scale) != null);
+        submoduleFigure.setPinVisible(dps.getLocation() != null);
     }
 
     @Override

@@ -154,55 +154,58 @@ public class CompoundModuleLayout extends AbstractLayout {
 
     protected Point getArrangementOffset(ISubmoduleConstraint constr, int spacing) {
         int x, y;
+        VectorArrangementParameters p = constr.getVectorArrangementParameters();
         switch (constr.getVectorArrangement()) {
-        case none: {
-            x = 0;
-            y = 0;
-            break;
-        }
-        case exact: {
-            x = fallback(constr.getVectorArrangementPar1(), 0);
-            y = fallback(constr.getVectorArrangementPar2(), 0);
-            break;
-        }
-        case row: {
-            int dx = fallback(constr.getVectorArrangementPar1(), spacing);
-            x = constr.getVectorIndex() * dx;
-            y = 0;
-            break;
-        }
-        case column: {
-            int dy = fallback(constr.getVectorArrangementPar1(), spacing);
-            x = 0;
-            y = constr.getVectorIndex() * dy;
-            break;
-        }
-        case matrix: {
-            int numCols = fallback(constr.getVectorArrangementPar1(), 5);
-            int dx = fallback(constr.getVectorArrangementPar2(), spacing);
-            int dy = fallback(constr.getVectorArrangementPar3(), spacing);
-            int index = constr.getVectorIndex();
-            x = (index % numCols)*dx;
-            y = (index / numCols)*dy;
-            break;
-        }
-        case ring: {
-            int rx = fallback(constr.getVectorArrangementPar1(), (int)(spacing*constr.getVectorSize()/(2*Math.PI)));
-            int ry = fallback(constr.getVectorArrangementPar2(), rx);
-            double alpha = constr.getVectorIndex() * 2 * Math.PI / constr.getVectorSize();
-            x = (int)(rx - rx*Math.sin(alpha));
-            y = (int)(ry - ry*Math.cos(alpha));
-            break;
-        }
-        default: {
-            throw new AssertionFailedException("unhandled vector arrangement " + constr.getVectorArrangement());
-        }
+            case none: {
+                x = 0;
+                y = 0;
+                break;
+            }
+            case exact: {
+                x = toPixels(p.x, p.scale, 0);
+                y = toPixels(p.y, p.scale, 0);
+                break;
+            }
+            case row: {
+                int dx = toPixels(p.dx, p.scale, spacing);
+                x = constr.getVectorIndex() * dx;
+                y = 0;
+                break;
+            }
+            case column: {
+                int dy = toPixels(p.dy, p.scale, spacing);
+                x = 0;
+                y = constr.getVectorIndex() * dy;
+                break;
+            }
+            case matrix: {
+                int numCols = (p.n == -1) ? 5 : p.n;
+                int dx = toPixels(p.dx, p.scale, spacing);
+                int dy = toPixels(p.dy, p.scale, spacing);
+                int index = constr.getVectorIndex();
+                x = (index % numCols)*dx;
+                y = (index / numCols)*dy;
+                break;
+            }
+            case ring: {
+                int rx = toPixels(p.dx, p.scale, (int)(spacing*constr.getVectorSize()/(2*Math.PI)));
+                int ry = toPixels(p.dy, p.scale, rx);
+                double alpha = constr.getVectorIndex() * 2 * Math.PI / constr.getVectorSize();
+                x = (int)(rx - rx*Math.sin(alpha));
+                y = (int)(ry - ry*Math.cos(alpha));
+                break;
+            }
+            default: {
+                throw new AssertionFailedException("unhandled vector arrangement " + constr.getVectorArrangement());
+            }
         }
         return new Point(x, y);
     }
 
-    private static int fallback(int vectorArrangementPar, int fallbackValue) {
-        return vectorArrangementPar == Integer.MIN_VALUE ? fallbackValue : vectorArrangementPar;
+    private static int toPixels(float d, float scale, int fallbackValue) {
+        if (Float.isNaN(d))
+            return fallbackValue;
+        return (int)(d * scale);
     }
 
     /**

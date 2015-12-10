@@ -9,6 +9,7 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.commands.Command;
+import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**
@@ -18,8 +19,8 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
  */
 public class SetCompoundModuleConstraintCommand extends Command {
 
-    private Dimension newSize;
-    private Dimension oldSize;
+    private DimensionF newSize;
+    private DimensionF oldSize;
     private CompoundModuleElementEx module;
 
     public SetCompoundModuleConstraintCommand(CompoundModuleElementEx newModule) {
@@ -34,21 +35,21 @@ public class SetCompoundModuleConstraintCommand extends Command {
 
     @Override
     public void execute() {
-        oldSize = module.getDisplayString().getCompoundSize(null);
+        oldSize = module.getDisplayString().getCompoundSize();
         redo();
     }
 
     @Override
     public void redo() {
-        module.getDisplayString().setCompoundSize(newSize, null);
+        module.getDisplayString().setCompoundSize(newSize);
     }
 
     @Override
     public void undo() {
-        module.getDisplayString().setCompoundSize(oldSize, null);
+        module.getDisplayString().setCompoundSize(oldSize);
     }
 
-    public void setSize(Dimension p) {
+    public void setSize(DimensionF p) {
         newSize = p;
     }
 }

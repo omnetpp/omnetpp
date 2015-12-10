@@ -13,10 +13,10 @@ import java.util.Scanner;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -418,31 +418,12 @@ public class DisplayString implements IDisplayString {
         updateNedElement();
     }
 
-    public float getScale() {
-        return 1.0f; //FIXME
+    public float getRange() {
+        float value = getAsFloat(DisplayString.Prop.RANGE, -1.0f);
+        return value <= 0 ? -1 : value;
     }
 
-    // helper functions for setting and getting the location and size properties
-    public final float pixelToUnit(int pixel, Float overrideScale) {
-        if (overrideScale != null)
-            return pixel / overrideScale;
-
-        return  pixel / getScale();
-    }
-
-    public final int unitToPixel(float unit, Float overrideScale) {
-        if (overrideScale != null)
-            return (int)(unit * overrideScale);
-
-        return (int)(unit * getScale());
-    }
-
-    public int getRange(Float scale) {
-        float floatvalue = getAsFloat(DisplayString.Prop.RANGE, -1.0f);
-        return (floatvalue <= 0) ? -1 : unitToPixel(floatvalue, scale);
-    }
-
-    public Point getLocation(Float scale) {
+    public PointF getLocation() {
         // return NaN to signal that the property is missing
         Float x = getAsFloat(Prop.X, Float.NaN);
         Float y = getAsFloat(Prop.Y, Float.NaN);
@@ -451,7 +432,7 @@ public class DisplayString implements IDisplayString {
         if (x.equals(Float.NaN) || y.equals(Float.NaN))
             return null;
 
-        return new Point (unitToPixel(x, scale), unitToPixel(y, scale));
+        return new PointF(x, y);
     }
 
     /**
@@ -459,81 +440,70 @@ public class DisplayString implements IDisplayString {
      * meaning the module is unpinned and can be freely moved by the layouter.
      * It fires a single property change notification for Prop.X
      */
-    public void setLocation(Point location, Float scale) {
+    public void setLocation(PointF location) {
         // if location is not specified, remove the constraint from the display string
         if (location == null) {
             set(Prop.X, null);
             set(Prop.Y, null);
         }
         else {
-            set(Prop.X, floatToString(pixelToUnit(location.x, scale)));
-            set(Prop.Y, floatToString(pixelToUnit(location.y, scale)));
+            set(Prop.X, floatToString(location.x));
+            set(Prop.Y, floatToString(location.y));
         }
     }
 
-    public Dimension getSize(Float scale) {
-        int width = unitToPixel(getAsFloat(Prop.SHAPE_WIDTH, -1.0f), scale);
+    public DimensionF getSize() {
+        float width = getAsFloat(Prop.SHAPE_WIDTH, -1.0f);
         width = width > 0 ? width : -1;
-        int height = unitToPixel(getAsFloat(Prop.SHAPE_HEIGHT, -1.0f), scale);
+        float height = getAsFloat(Prop.SHAPE_HEIGHT, -1.0f);
         height = height > 0 ? height : -1;
-        return new Dimension(width, height);
+        return new DimensionF(width, height);
     }
 
     /**
-     * Converts the size given in pixels to unit based size and sets the size of the element (B tag).
+     * Sets the size of the submodule shape ("b" tag).
      * If negative number is given as width or height the corresponding property is deleted.
      * It fires property change notification for Prop.SHAPE_WIDTH
      */
-    public void setSize(Dimension size, Float scale) {
+    public void setSize(DimensionF size) {
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 )
             set(Prop.SHAPE_WIDTH, null);
         else
-            set(Prop.SHAPE_WIDTH, floatToString(pixelToUnit(size.width, scale)));
+            set(Prop.SHAPE_WIDTH, floatToString(size.width));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
             set(Prop.SHAPE_HEIGHT, null);
         else
-            set(Prop.SHAPE_HEIGHT, floatToString(pixelToUnit(size.height, scale)));
+            set(Prop.SHAPE_HEIGHT, floatToString(size.height));
     }
 
-    public Dimension getCompoundSize(Float scale) {
-        int width = unitToPixel(getAsFloat(Prop.MODULE_WIDTH, -1.0f), scale);
+    public DimensionF getCompoundSize() {
+        float width = getAsFloat(Prop.MODULE_WIDTH, -1.0f); //TODO use NaN! (everywhere!)
         width = width > 0 ? width : -1;
-        int height = unitToPixel(getAsFloat(Prop.MODULE_HEIGHT, -1.0f), scale);
+        float height = getAsFloat(Prop.MODULE_HEIGHT, -1.0f);
         height = height > 0 ? height : -1;
-
-        return new Dimension(width, height);
+        return new DimensionF(width, height);
     }
 
     /**
-     * Converts the size given in pixels to unit based size and
-     * sets the size of the element (BGB tag). If negative number is given as width or height
-     * the corresponding property is deleted.
+     * Sets the size of the compuond module background ("bgb" tag). If a negative number 
+     * is given as width or height, the corresponding property is deleted.
      * It fires property change notification for Prop.MODULE_WIDTH
      */
-    public void setCompoundSize(Dimension size, Float scale) {
+    public void setCompoundSize(DimensionF size) {
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 )
             set(Prop.MODULE_WIDTH, null);
         else
-            set(Prop.MODULE_WIDTH, floatToString(pixelToUnit(size.width, scale)));
+            set(Prop.MODULE_WIDTH, floatToString(size.width));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
             set(Prop.MODULE_HEIGHT, null);
         else
-            set(Prop.MODULE_HEIGHT, floatToString(pixelToUnit(size.height, scale)));
-    }
-
-    /**
-     * Sets both the size and the location (B and P tag), but sends out only a SINGLE X position change property change notification.
-     * It fires property change notification for Prop.X
-     */
-    public void setConstraint(Point loc, Dimension size, Float scale) {
-        setLocation(loc, scale);
-        setSize(size, scale);
+            set(Prop.MODULE_HEIGHT, floatToString(size.height));
     }
 
     /**

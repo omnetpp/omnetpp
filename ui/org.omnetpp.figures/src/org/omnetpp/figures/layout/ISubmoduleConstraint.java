@@ -47,19 +47,9 @@ public interface ISubmoduleConstraint {
     public VectorArrangement getVectorArrangement();
 
     /**
-     * First argument to the vector arrangement.
+     * Parameters for the vector arrangement.
      */
-    public int getVectorArrangementPar1();
-
-    /**
-     * Second argument to the vector arrangement.
-     */
-    public int getVectorArrangementPar2();
-
-    /**
-     * Third argument to the vector arrangement.
-     */
-    public int getVectorArrangementPar3();
+    public VectorArrangementParameters getVectorArrangementParameters();
 
     /**
      * Sets the location of a submodule (the center point of its main area icon/shape).

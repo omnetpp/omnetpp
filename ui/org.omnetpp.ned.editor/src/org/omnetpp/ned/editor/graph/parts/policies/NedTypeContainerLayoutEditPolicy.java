@@ -25,6 +25,7 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.InsertCommand;
@@ -186,14 +187,18 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
         // CenteredXYLayout's transformation
         Rectangle figureBounds = ((GraphicalEditPart)child).getFigure().getBounds();
         Rectangle modelConstraint = (Rectangle)constraint;
-        if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
-        if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
+        if (modelConstraint.width < 0) 
+            modelConstraint.x += figureBounds.width / 2;
+        if (modelConstraint.height < 0) 
+            modelConstraint.y += figureBounds.height / 2;
 
         // create the constraint change command
-        if (child.getModel() instanceof CompoundModuleElementEx) {
-            CompoundModuleElementEx module = (CompoundModuleElementEx) child.getModel();
+        if (child instanceof CompoundModuleEditPart) {
+            CompoundModuleEditPart compoundModuleEditPart = (CompoundModuleEditPart) child;
+            CompoundModuleElementEx module = compoundModuleEditPart.getModel();
             CompoundModuleTypeFigure cfigure = (CompoundModuleTypeFigure)((GraphicalEditPart)child).getFigure();
             SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
+            float scale = compoundModuleEditPart.getScale();
             // from the constraint size subtract the difference between the whole figure size and
             // the selection rectangle
             Dimension newSize = modelConstraint.getSize().expand(cfigure.getHandleBounds().getSize());
@@ -201,11 +206,11 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
             // reduce the size with the module border
             Insets inset = cfigure.getSubmoduleArea().getBorder().getInsets(cfigure);
             newSize.shrink(inset.getWidth(), inset.getHeight());
-            cmd.setSize(newSize);
+            cmd.setSize(DimensionF.fromPixels(newSize, scale));
 
             // if size constraint is not specified, then remove it from the model too
             // TODO is this needed?
-            if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize(null) == null)
+            if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize() == null)
                 cmd.setSize(null);
             return cmd;
         }

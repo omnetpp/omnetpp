@@ -15,11 +15,13 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 
@@ -62,11 +64,11 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
         int size = getSelectedObjects().size();
         if (size > 0) {
             Object primarySelection = getSelectedObjects().get(size-1);
-            Point loc = null;
+            PointF loc = null;
             if (primarySelection instanceof GraphicalEditPart) {
                 Object model = ((GraphicalEditPart)primarySelection).getModel();
                 if (model instanceof IConnectableElement)
-                    loc = ((IConnectableElement)model).getDisplayString().getLocation(null);
+                    loc = ((IConnectableElement)model).getDisplayString().getLocation();
             }
             setChecked(loc != null);
         }
@@ -109,15 +111,23 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
      * @return The created ConstraintCommand
      */
     protected SetConstraintCommand createTogglePinCommand(GraphicalEditPart child) {
-        if (child.getModel() instanceof SubmoduleElementEx) {
-            SubmoduleElementEx smodule = (SubmoduleElementEx) child.getModel();
-            // get the compound module scaling factor
-            float scale = ((ModuleEditPart)child).getScale();
-            // otherwise create a command that deletes the location from the display string
-            SetConstraintCommand cmd = new SetConstraintCommand(smodule, scale, null);
-            // pin the module at the current temporary location if it is not fixed
-            Point loc = ((SubmoduleFigure)child.getFigure()).getCenterLocation();
-            cmd.setPinLocation(isChecked() ? loc : null);
+        if (child instanceof SubmoduleEditPart) {
+            SubmoduleEditPart submoduleEditPart = (SubmoduleEditPart) child;
+            SubmoduleElementEx submodule = submoduleEditPart.getModel();
+            float scale = submoduleEditPart.getScale();
+
+            // create a command that deletes the location from the display string
+            SetConstraintCommand cmd = new SetConstraintCommand(submodule, null);  //FIXME gyanus!!!!
+
+            if (isChecked()) {
+                // pin the module at the current temporary location if it is not fixed
+                Point loc = ((SubmoduleFigure)child.getFigure()).getCenterLocation();
+                PointF pos = PointF.fromPixels(loc, scale);
+                cmd.setPinLocation(pos);
+            }
+            else {
+                cmd.setPinLocation(null);
+            }
             return cmd;
         }
 
