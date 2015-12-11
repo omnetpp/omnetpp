@@ -33,6 +33,8 @@ all: $O/opp_lcg32_seedtool.exe $O/ln.exe $O/opp_pefileversion.exe
 	$(Q)copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_makemake.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_makemake $(OMNETPP_BIN_DIR:/=\) 1>nul
+	$(Q)copy opp_featuretool.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
+	$(Q)copy opp_featuretool $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_makedep $(OMNETPP_BIN_DIR:/=\) 1>nul
 	$(Q)copy opp_runall.cmd $(OMNETPP_BIN_DIR:/=\) 1>nul

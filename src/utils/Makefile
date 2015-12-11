@@ -43,6 +43,7 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	fi
 	$(Q)cp opp_configfilepath $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_makemake $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_featuretool $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_test $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_makedep $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_shlib_postprocess $(OMNETPP_BIN_DIR)
