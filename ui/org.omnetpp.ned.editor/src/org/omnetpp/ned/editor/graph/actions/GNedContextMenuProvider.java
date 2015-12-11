@@ -24,8 +24,6 @@ import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_UNDO;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_VIEW;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.MATCH_HEIGHT;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.MATCH_WIDTH;
-import static org.eclipse.gef.ui.actions.GEFActionConstants.ZOOM_IN;
-import static org.eclipse.gef.ui.actions.GEFActionConstants.ZOOM_OUT;
 import static org.eclipse.ui.IWorkbenchActionConstants.GROUP_ADD;
 import static org.eclipse.ui.IWorkbenchActionConstants.MB_ADDITIONS;
 
@@ -143,11 +141,21 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         if (action.isEnabled())
             manager.appendToGroup(GROUP_REST, action);
 
-        action = ar.getAction(ZOOM_IN);
-        manager.appendToGroup(GROUP_REST, action);
+        action = ar.getAction(ZoomInAction.ID);
+        if (action.isEnabled())
+            manager.appendToGroup(GROUP_REST, action);
 
-        action = ar.getAction(ZOOM_OUT);
-        manager.appendToGroup(GROUP_REST, action);
+        action = ar.getAction(ZoomOutAction.ID);
+        if (action.isEnabled())
+            manager.appendToGroup(GROUP_REST, action);
+
+        action = ar.getAction(ScaleUpIconsAction.ID);
+        if (action.isEnabled())
+            manager.appendToGroup(GROUP_REST, action);
+
+        action = ar.getAction(ScaleDownIconsAction.ID);
+        if (action.isEnabled())
+            manager.appendToGroup(GROUP_REST, action);
 
         action = ar.getAction(ExportImageAction.ID);
         if (action != null && action.isEnabled())

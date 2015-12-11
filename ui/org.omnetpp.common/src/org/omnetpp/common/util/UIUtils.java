@@ -36,11 +36,9 @@ public class UIUtils {
     public static IDialogSettings getDialogSettings(AbstractUIPlugin plugin, String name) {
         IDialogSettings pluginDialogSettings = plugin.getDialogSettings();
         IDialogSettings dialogSettings = pluginDialogSettings.getSection(name);
-
         if (dialogSettings == null)
-            return pluginDialogSettings.addNewSection(name);
-        else
-            return dialogSettings;
+            dialogSettings = pluginDialogSettings.addNewSection(name);
+        return dialogSettings;
     }
 
     public static void updateProblemDecoration(ControlDecoration decoration, int severity, String text) {

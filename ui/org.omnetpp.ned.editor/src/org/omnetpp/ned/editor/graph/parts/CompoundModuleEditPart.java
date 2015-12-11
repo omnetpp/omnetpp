@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.ConnectionEditPart;
@@ -27,9 +28,12 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
@@ -44,11 +48,17 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  * Edit part controlling the appearance of the compound module figure. Note that this
  * editpart handles its own connection part registry and does not use the global registry
  *
- * @author rhornig
+ * @author rhornig, andras
  */
+//TODO zoom doesn't work on Aloha
+//TODO layout parameters are currently commented out
 public class CompoundModuleEditPart extends ModuleEditPart {
-    private float scale = 1.0f;
-    private float iconScale = 1.0f;
+    private static final String PREF_SECTION = "ViewerSettings";
+    private static final String PREF_SCALE = ":scale";
+    private static final String PREF_ICONSCALE = ":iconScale";
+    private float scale = Float.NaN;
+    private float zoomByFactor = 1.3f;
+    private float iconScale = Float.NaN;
 
     // stores  the connection model - connection editPart mapping for the compound module
     private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
@@ -72,6 +82,11 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected IFigure createFigure() {
         return new CompoundModuleTypeFigure();
+    }
+
+    protected IDialogSettings getSettings() {
+        IDialogSettings settings = UIUtils.getDialogSettings(NedEditorPlugin.getDefault(), PREF_SECTION);
+        return settings;
     }
 
     /**
@@ -175,6 +190,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected void refreshVisuals() {
         super.refreshVisuals();
+
         // define the properties that determine the visual appearance
         CompoundModuleTypeFigure compoundModuleFigure = getFigure();
         CompoundModuleElementEx compoundModuleModel = getModel();
@@ -183,7 +199,57 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         compoundModuleFigure.setNetwork(compoundModuleModel.isNetwork());
         compoundModuleFigure.setInterface(compoundModuleModel instanceof IInterfaceTypeElement);
         compoundModuleFigure.setInnerType(compoundModuleModel.getEnclosingTypeElement() != null);
+
+        if (Float.isNaN(scale)) {
+            // determine initial scale before refreshing submodule area
+            compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString(), project, 1.0f, 1.0f);
+            Dimension unscaledSize = compoundModuleFigure.getSubmoduleArea().getPreferredSize();
+            scale = getInitialScale(unscaledSize);
+        }
+
+        if (Float.isNaN(iconScale))
+            iconScale = getInitialIconScale();
+
         compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString(), project, scale, iconScale);
+    }
+
+    protected float getInitialScale(Dimension unscaledSize) {
+        try {
+            return getSettings().getFloat(getModel().getNedTypeInfo().getFullyQualifiedName()+PREF_SCALE);
+        } catch (NumberFormatException e) {} // not found
+
+        // No saved preference; compute a default scale.
+        // Note: we use constants for maximum sizes because editor area dimensions
+        // are probably not available here yet (getViewer().getControl().getSize()).
+        final int MAX_WIDTH = 800;
+        final int MAX_HEIGHT = 500;
+        final int MIN_WIDTH = 300;
+        final int MIN_HEIGHT = 200;
+
+        // zoomOutScale: max zoom so that module still fits into the window (MAX_WIDTH, MAX_HEIGHT)
+        float zoomOutScale = Math.min(MAX_WIDTH / (float)unscaledSize.width, MAX_HEIGHT / (float)unscaledSize.height);
+
+        // zoomInScale: minimum zoom so that both dimensions of the module are larger than some minimum size
+        float zoomInScale = Math.max(MIN_WIDTH / (float)unscaledSize.width, MIN_HEIGHT / (float)unscaledSize.height);
+
+        // try using 1.0, if it is in the acceptable interval, otherwise the one closest to 1.0
+        if (zoomOutScale < zoomInScale)
+            return zoomOutScale;  // conflicting requirements: zoomOutScale wins (we want the module to fit into the window)
+        else if (zoomInScale <= 1.0f && zoomOutScale >= 1.0f)
+            return 1.0f;
+        else if (zoomOutScale <= 1.0f)
+            return zoomOutScale;
+        else
+            return zoomInScale;
+    }
+
+    protected float getInitialIconScale() {
+        try {
+            return getSettings().getFloat(getModel().getNedTypeInfo().getFullyQualifiedName()+PREF_ICONSCALE);
+        }
+        catch (NumberFormatException e) { // not found
+            return 1.0f;
+        }
     }
 
     /**
@@ -244,6 +310,69 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     public void setScale(float scale) {
         this.scale = scale;
+        getSettings().put(getModel().getNedTypeInfo().getFullyQualifiedName()+PREF_SCALE, scale);
+    }
+
+    public void zoomIn() {
+        if (canZoomIn())
+            setScale(snapScaleTo1(getScale() * zoomByFactor));
+    }
+
+    public void zoomOut() {
+        if (canZoomOut())
+            setScale(snapScaleTo1(getScale() / zoomByFactor));
+    }
+
+    private float snapScaleTo1(float scale) {
+        // snap to 1 if it's close to 1.0
+        return (scale > 1.0f/zoomByFactor && scale < zoomByFactor) ? 1.0f : scale;
+    }
+
+    public boolean canZoomIn() {
+        // safety measure: prevent scale overflowing into infinity in any case
+        if (scale > 1e10f)
+            return false;
+
+        Dimension currentSize = getFigure().getSubmoduleArea().getSize();
+        if (currentSize.width == 0 && currentSize.height == 0)  // not layouted yet
+            return true;
+
+        // Limit zooming in, because at large sizes integer overflows kick in
+        // in the drawing library and produce weird artifacts
+        final int MAXSIZE = 15000;
+        return currentSize.width*zoomByFactor <= MAXSIZE && currentSize.height*zoomByFactor <= MAXSIZE;
+    }
+
+    public boolean canZoomOut() {
+        // safety measure: prevent scale underflowing into 0 in any case
+        if (scale < 1e-10f)
+            return false;
+
+        Dimension currentSize = getFigure().getSubmoduleArea().getSize();
+        if (currentSize.width == 0 && currentSize.height == 0) // not layouted yet
+            return true;
+
+        // In practice, figure will often refuse to shrink below a certain size (say ~50 pixels)
+        // due to contained icons and labels, regardless of scale being arbitrarily small.
+        // Put a reasonable lower limit to scale to prevent it from getting unnecessarily
+        // (and ineffectively) very small.
+        if (scale/zoomByFactor < 1e-3 && currentSize.width < 800 && currentSize.height < 600)
+            return false;
+
+        // Makes no sense to have both dimensions smaller than this (if it could at all, see above)
+        final int MINSIZE = 100;
+        return currentSize.width/zoomByFactor >= MINSIZE || currentSize.height/zoomByFactor >= MINSIZE;
+    }
+
+    public float getIconScale() {
+        return iconScale;
+    }
+
+    public void setIconScale(float iconScale) {
+        if (Math.abs(iconScale-1.0f) < 0.05f)  // snap to 1
+            iconScale = 1.0f;
+        this.iconScale = iconScale;
+        getSettings().put(getModel().getNedTypeInfo().getFullyQualifiedName()+PREF_ICONSCALE, iconScale);
     }
 
     @Override
@@ -256,11 +385,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     public Map<Object, ConnectionEditPart> getModelToConnectionPartsRegistry() {
         return modelToConnectionPartsRegistry;
-    }
-
-    @Override
-    public float getIconScale() {
-        return iconScale;
     }
 
     /* (non-Javadoc)

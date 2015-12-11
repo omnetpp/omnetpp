@@ -38,14 +38,11 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
-import org.eclipse.gef.MouseWheelHandler;
-import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.SelectionManager;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
-import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.internal.ui.palette.editparts.DrawerEditPart;
 import org.eclipse.gef.internal.ui.palette.editparts.DrawerFigure;
 import org.eclipse.gef.internal.ui.palette.editparts.GroupEditPart;
@@ -58,8 +55,6 @@ import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.PrintAction;
-import org.eclipse.gef.ui.actions.ZoomInAction;
-import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
 import org.eclipse.gef.ui.palette.PaletteEditPartFactory;
 import org.eclipse.gef.ui.palette.PaletteViewer;
@@ -127,8 +122,12 @@ import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
 import org.omnetpp.ned.editor.graph.actions.PasteAction;
 import org.omnetpp.ned.editor.graph.actions.PropertiesAction;
 import org.omnetpp.ned.editor.graph.actions.RelayoutAction;
+import org.omnetpp.ned.editor.graph.actions.ScaleDownIconsAction;
+import org.omnetpp.ned.editor.graph.actions.ScaleUpIconsAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.actions.ToggleSnapToGeometryAction;
+import org.omnetpp.ned.editor.graph.actions.ZoomInAction;
+import org.omnetpp.ned.editor.graph.actions.ZoomOutAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
@@ -358,17 +357,6 @@ public class GraphicalNedEditor
 
         ScalableRootEditPart root = new ScalableRootEditPart();
 
-        List<String> zoomLevels = new ArrayList<String>(3);
-        zoomLevels.add(ZoomManager.FIT_ALL);
-        zoomLevels.add(ZoomManager.FIT_WIDTH);
-        zoomLevels.add(ZoomManager.FIT_HEIGHT);
-        root.getZoomManager().setZoomLevelContributions(zoomLevels);
-
-        IAction zoomIn = new ZoomInAction(root.getZoomManager());
-        getActionRegistry().registerAction(zoomIn);
-        IAction zoomOut = new ZoomOutAction(root.getZoomManager());
-        getActionRegistry().registerAction(zoomOut);
-
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);
 
@@ -428,7 +416,6 @@ public class GraphicalNedEditor
         getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
         id = ActionFactory.PASTE.getId();
         getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
-
     }
 
     @Override
@@ -450,7 +437,7 @@ public class GraphicalNedEditor
 
     /* (non-Javadoc)
      * @see org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette#getAdapter(java.lang.Class)
-     * Adds content outline and zoom support
+     * Adds content outline
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -466,9 +453,6 @@ public class GraphicalNedEditor
                 outlinePage = new NedOutlinePage(this, new TreeViewer());
             return outlinePage;
         }
-        if (type == ZoomManager.class)
-            return getGraphicalViewer().getProperty(ZoomManager.class.toString());
-
         return super.getAdapter(type);
     }
 
@@ -479,12 +463,13 @@ public class GraphicalNedEditor
     protected KeyHandler getCommonKeyHandler() {
         if (sharedKeyHandler == null) {
             sharedKeyHandler = new KeyHandler();
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F6, 0),
-                    getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F3, 0),
-                    getActionRegistry().getAction(OpenTypeAction.ID));
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.CR, SWT.CR, SWT.CONTROL),
-                    getActionRegistry().getAction(PropertiesAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F6, 0), getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F3, 0), getActionRegistry().getAction(OpenTypeAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.CR, SWT.CR, SWT.CTRL), getActionRegistry().getAction(PropertiesAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, SWT.CTRL), getActionRegistry().getAction(ZoomInAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, SWT.CTRL), getActionRegistry().getAction(ZoomOutAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed((char)('I'-64), 'i', SWT.CTRL), getActionRegistry().getAction(ScaleUpIconsAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed((char)('O'-64), 'o', SWT.CTRL), getActionRegistry().getAction(ScaleDownIconsAction.ID));
         }
         return sharedKeyHandler;
     }
@@ -555,6 +540,22 @@ public class GraphicalNedEditor
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
+        action = new ZoomInAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new ZoomOutAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new ScaleUpIconsAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new ScaleDownIconsAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
         action = new CopyAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
@@ -616,8 +617,7 @@ public class GraphicalNedEditor
 
     protected void loadProperties() {
         // Scroll-wheel Zoom support
-        getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
-                MouseWheelZoomHandler.SINGLETON);
+//TODO        getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1), MouseWheelZoomHandler.SINGLETON);
     }
 
     @Override

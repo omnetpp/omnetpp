@@ -15,6 +15,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.TextUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -357,11 +358,22 @@ public class CompoundModuleFigure extends LayeredPane
     @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
+
+        if (lastScale != 1.0f)
+            paintZoomInfo(graphics);
+
         if (isSelected) {
-            graphics.setForegroundColor(ColorFactory.RED);
             Rectangle r = getHandleBounds();
+            graphics.setForegroundColor(ColorFactory.RED);
             graphics.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
         }
+    }
+
+    protected void paintZoomInfo(Graphics graphics) {
+        String zoomInfo = String.format("%.2fx", lastScale);
+        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(zoomInfo, getFont());
+        Rectangle r = getHandleBounds();
+        graphics.drawText(zoomInfo, r.right() - textSize.width-5, r.bottom()-textSize.height-5);
     }
 
     public Dimension getBackgroundSize() {
