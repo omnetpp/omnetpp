@@ -131,11 +131,11 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
                 String instanceName = StringUtils.toInstanceName(typeElement.getName());
                 String fullyQualifiedTypeName = typeElement.getNedTypeInfo().getFullyQualifiedName();
                 ModelFactory factory = new ModelFactory(NedElementTags.NED_SUBMODULE, instanceName, fullyQualifiedTypeName, typeElement instanceof ModuleInterfaceElement);
-                CreateRequest cReq = new CreateRequest();
-                cReq.setFactory(factory);
-                cReq.setLocation(request.getLocation());
+                CreateRequest createRequest = new CreateRequest();
+                createRequest.setFactory(factory);
+                createRequest.setLocation(request.getLocation());
                 // get a submodule creation command
-                compoundCmd.add(getCreateCommand(cReq));
+                compoundCmd.add(getCreateCommand(createRequest));
             }
 
         // allow submodule cloning only INSIDE the submodule area

@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.displaymodel;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Dimension;
 
 /**
@@ -24,13 +25,18 @@ public class DimensionF {
     }
 
     public Dimension toPixels(float scale) {
-        return new Dimension(width == -1 ? -1 : (int)(width*scale), height == -1 ? -1 : (int)(height*scale)); //TODO use NaN -> -1 instead...
+        return new Dimension(Float.isNaN(width) ? -1 : (int)(width*scale), Float.isNaN(height) ? -1 : (int)(height*scale));
     }
 
     public static DimensionF fromPixels(Dimension dim, float scale) {
-        return dim == null ? null : new DimensionF(dim.width / scale, dim.height / scale);
+        return dim == null ? null : new DimensionF(fromPixels(dim.width, scale), fromPixels(dim.height, scale));
     }
-    
+
+    private static float fromPixels(int size, float scale) {
+        Assert.isTrue(size > 0 || size == -1); 
+        return size == -1 ? Float.NaN : size / scale;
+    }
+
     @Override
     public int hashCode() {
         return Float.floatToIntBits(width) * 31 + Float.floatToIntBits(height);
@@ -43,7 +49,11 @@ public class DimensionF {
         if (obj == null || getClass() != obj.getClass())
             return false;
         DimensionF other = (DimensionF) obj;
-        return width == other.width && height == other.height;
+        return eq(width, other.width) && eq(height, other.height);
+    }
+
+    private static boolean eq(float a, float b) {
+        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too 
     }
 
 }

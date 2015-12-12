@@ -27,7 +27,7 @@ public interface IDisplayString {
     /**
      *  Property types used in the display string
      */
-    public enum PropType { READONLY, STRING, INTEGER, UNIT, COLOR, IMAGE }
+    public enum PropType { STRING, INTEGER, DISTANCE, COORDINATE, COLOR, IMAGE }
 
     /**
      *  Tag types
@@ -201,16 +201,16 @@ public interface IDisplayString {
         // START submodule / simple module properties
         // NOTE: Do NOT change the first and last elements of property groups!
         // P tag
-        X(Tag.p, 0, PropType.UNIT , PropGroup.Position , "x", "X position of the center of the icon/shape; defaults to automatic graph layouting", null),
-        Y(Tag.p, 1, PropType.UNIT, PropGroup.Position, "y", "Y position of the center of the icon/shape; defaults to automatic graph layouting", null),
+        X(Tag.p, 0, PropType.COORDINATE , PropGroup.Position , "x", "X position of the center of the icon/shape; defaults to automatic graph layouting", null),
+        Y(Tag.p, 1, PropType.COORDINATE, PropGroup.Position, "y", "Y position of the center of the icon/shape; defaults to automatic graph layouting", null),
         LAYOUT(Tag.p, 2, PropType.STRING, PropGroup.Position, "arrangement", "Arrangement of submodule vectors. Defaults to row or ring. (X,Y) coordinates correspond to the upper left corner of the bounding rectangle", "row=r.*,r; column=c.*,c; matrix=m.*,m; ring=ri.*,ri; exact=e.*|x.*,x"),
         LAYOUT_PAR1(Tag.p, 3, PropType.STRING, PropGroup.Position, "arr. par1", "Depends on arrangement: matrix => ncols, ring => rx, exact => dx, row => dx, column => dy", null),
         LAYOUT_PAR2(Tag.p, 4, PropType.STRING, PropGroup.Position, "arr. par2", "Depends on arrangement: matrix => dx, ring => ry, exact => dy", null),
         LAYOUT_PAR3(Tag.p, 5, PropType.STRING, PropGroup.Position, "arr. par3", "Depends on arrangement: matrix => dy", null),
 
         // B tag and former O tag
-        SHAPE_WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width", null),
-        SHAPE_HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height", null),
+        SHAPE_WIDTH(Tag.b, 0, PropType.DISTANCE, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width", null),
+        SHAPE_HEIGHT(Tag.b, 1, PropType.DISTANCE, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height", null),
         SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object", "rectangle=r.*,rect; oval=o.*,oval"),
         SHAPE_FILL_COLOR(Tag.b, 3, PropType.COLOR, PropGroup.Polygon, "fill color", "Fill color of the object (color name, #RRGGBB or @HHSSBB)", null),
         SHAPE_BORDER_COLOR(Tag.b, 4, PropType.COLOR, PropGroup.Polygon, "border color", "Border color of the object (color name, #RRGGBB or @HHSSBB)", null),
@@ -230,7 +230,7 @@ public interface IDisplayString {
         IMAGE2_COLOR_PERCENTAGE(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon tint %", "Amount of tinting in percent", null),
 
         // R tag
-        RANGE(Tag.r, 0, PropType.UNIT, PropGroup.Range, "range", "Radius of the range indicator", null),
+        RANGE(Tag.r, 0, PropType.DISTANCE, PropGroup.Range, "range", "Radius of the range indicator", null),
         RANGE_FILL_COLOR(Tag.r, 1, PropType.COLOR, PropGroup.Range, "range fill color", "Fill color of the range indicator (color name, #RRGGBB or @HHSSBB)", null),
         RANGE_BORDER_COLOR(Tag.r, 2, PropType.COLOR, PropGroup.Range, "range border color", "Border color of the range indicator (color name, #RRGGBB or @HHSSBB)", null),
         RANGE_BORDER_WIDTH(Tag.r, 3, PropType.INTEGER, PropGroup.Range, "range border width", "Border width of the range indicator", null),
@@ -250,12 +250,12 @@ public interface IDisplayString {
         // START of compound module properties
         // NOTE: Do NOT change the first and last elements of property groups!
         // BGP tag
-        MODULE_X(Tag.bgp, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg x", "Module background horizontal offset", null),
-        MODULE_Y(Tag.bgp, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg y", "Module background vertical offset", null),
+        MODULE_X(Tag.bgp, 0, PropType.COORDINATE, PropGroup.BackgroundPosition, "bg x", "Module background horizontal offset", null),
+        MODULE_Y(Tag.bgp, 1, PropType.COORDINATE, PropGroup.BackgroundPosition, "bg y", "Module background vertical offset", null),
 
         // BGB tag
-        MODULE_WIDTH(Tag.bgb, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match the contents", null),
-        MODULE_HEIGHT(Tag.bgb, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match the contents", null),
+        MODULE_WIDTH(Tag.bgb, 0, PropType.DISTANCE, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match the contents", null),
+        MODULE_HEIGHT(Tag.bgb, 1, PropType.DISTANCE, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match the contents", null),
         MODULE_FILL_COLOR(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (color name, #RRGGBB or @HHSSBB)", null),
         MODULE_BORDER_COLOR(Tag.bgb, 3, PropType.COLOR, PropGroup.BackgroundStyle, "bg border color", "Border color of the module background rectangle (color name, #RRGGBB or @HHSSBB)", null),
         MODULE_BORDER_WIDTH(Tag.bgb, 4, PropType.INTEGER, PropGroup.BackgroundStyle, "bg border width", "Border width of the module background rectangle", null),
@@ -268,7 +268,7 @@ public interface IDisplayString {
         MODULE_IMAGE_ARRANGEMENT(Tag.bgi, 1, PropType.STRING, PropGroup.Background, "bg image mode", "How to arrange the module's background image", "fix=f.*,f; tile=t.*,t; stretch=s.*,s; center=c.*,c"),
 
         // BGG tag
-        MODULE_GRID_DISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Background, "grid distance", "Distance between two major gridlines, in units", null),
+        MODULE_GRID_DISTANCE(Tag.bgg, 0, PropType.DISTANCE, PropGroup.Background, "grid distance", "Distance between two major gridlines, in units", null),
         MODULE_GRID_SUBDIVISION(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid subdivision", "Minor gridlines per major gridlines", null),
         MODULE_GRID_COLOR(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (color name, #RRGGBB or @HHSSBB)", null),
 
@@ -421,18 +421,26 @@ public interface IDisplayString {
 
     /**
      * The value of the property. If the property is empty looks for default values and fallback
-     * values in ancestor types. If nothing found, returns <code>defValue</code>.
+     * values in ancestor types. If nothing found, returns defaultValue.
      */
-    public int getAsInt(Prop propName, int defValue);
+    public int getAsInt(Prop propName, int defaultValue);
 
     /**
-     * The value of the property. If the property is empty looks for default values and fallback
-     * values in ancestor types. If nothing found, returns <code>defValue</code>.
+     * The value of the property, which must be of type DISTANCE. The result is guaranteed
+     * to be positive, or NaN. If the property is empty, it looks for default values and
+     * fallback values in ancestor types. If nothing is found, returns NaN.
      */
-    public float getAsFloat(Prop propName, float defValue);
+    public float getAsDistance(Prop propName);
 
     /**
-     * Returns the location for the module ("p" tag). Uses fallback if not specified locally. 
+     * The value of the property, which must be of type COORDINATE. If the property is empty,
+     * it looks for default values and fallback values in ancestor types. If nothing is found,
+     * returns NaN.
+     */
+    public float getAsCoordinate(Prop propName);
+
+    /**
+     * Returns the location for the module ("p" tag). Uses fallback if not specified locally.
      * If either location property is missing, it returns null (meaning the module is unpinned).
      */
     public PointF getLocation();
@@ -446,12 +454,12 @@ public interface IDisplayString {
     /**
      * Returns the size of module if represented as a compound module ("bgb" tag).
      * Uses fallback if the property is not specified locally.
-     * If width or height is missing, the function returns -1.
+     * Missing width or height values are represented by NaN.
      */
     public DimensionF getCompoundSize();
 
     /**
-     * Returns the radius of the 1st transmission range indicator ("r" tag). Uses fallback 
+     * Returns the radius of the 1st transmission range indicator ("r" tag). Uses fallback
      * if the property is not specified locally. Returns NaN if no range was specified.
      */
     public float getRange();

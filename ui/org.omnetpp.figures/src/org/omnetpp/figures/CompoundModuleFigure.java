@@ -325,7 +325,7 @@ public class CompoundModuleFigure extends LayeredPane
 
         // grid support
         setGrid(
-                unitToPixel(dps.getAsFloat(IDisplayString.Prop.MODULE_GRID_DISTANCE, -1), scale),
+                unitToPixel(dps.getAsDistance(IDisplayString.Prop.MODULE_GRID_DISTANCE), scale),
                 dps.getAsInt(IDisplayString.Prop.MODULE_GRID_SUBDIVISION, -1),
                 ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
 

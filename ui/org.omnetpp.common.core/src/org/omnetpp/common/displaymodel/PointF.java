@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.displaymodel;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Point;
 
 
@@ -29,9 +30,10 @@ public class PointF {
     }
 
     public Point toPixels(float scale) {
+        Assert.isTrue(!Float.isNaN(x) && !Float.isNaN(y));
         return new Point((int)(x*scale), (int)(y*scale));
     }
-    
+
     @Override
     public int hashCode() {
         return Float.floatToIntBits(x) * 31 + Float.floatToIntBits(y);
@@ -44,6 +46,11 @@ public class PointF {
         if (obj == null || getClass() != obj.getClass())
             return false;
         PointF other = (PointF) obj;
-        return x == other.x && y == other.y;
+        return eq(x, other.x) && eq(y, other.y);
     }
+
+    private static boolean eq(float a, float b) {
+        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too 
+    }
+
 }

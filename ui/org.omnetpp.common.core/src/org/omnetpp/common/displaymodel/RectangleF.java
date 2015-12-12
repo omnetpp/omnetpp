@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.displaymodel;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
@@ -36,11 +37,19 @@ public class RectangleF {
     }
 
     public Rectangle toPixels(float scale) {
-        return new Rectangle((int)(x*scale), (int)(y*scale), (int)(width*scale), (int)(height*scale));
+        Assert.isTrue(!Float.isNaN(x) && !Float.isNaN(y));
+        Assert.isTrue(Float.isNaN(width) || width > 0);
+        Assert.isTrue(Float.isNaN(height) || height > 0);
+        return new Rectangle((int)(x*scale), (int)(y*scale), Float.isNaN(width) ? -1 : (int)(width*scale), Float.isNaN(height) ? -1 : (int)(height*scale));
     }
 
     public static RectangleF fromPixels(Rectangle rect, float scale) {
-        return rect == null ? null : new RectangleF(rect.x / scale, rect.y / scale, rect.width / scale, rect.height / scale);
+        return rect == null ? null : new RectangleF(rect.x / scale, rect.y / scale, fromPixels(rect.width, scale), fromPixels(rect.height, scale));
+    }
+
+    private static float fromPixels(int size, float scale) {
+        Assert.isTrue(size > 0 || size == -1); 
+        return size == -1 ? Float.NaN : size / scale;
     }
 
     @Override
@@ -55,7 +64,11 @@ public class RectangleF {
         if (obj == null || getClass() != obj.getClass())
             return false;
         RectangleF other = (RectangleF) obj;
-        return x == other.x && y == other.y && width == other.width && height == other.height;
+        return eq(x, other.x) && eq(y, other.y) && eq(width, other.width) && eq(height, other.height);
+    }
+
+    private static boolean eq(float a, float b) {
+        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too 
     }
 
 }

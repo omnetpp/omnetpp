@@ -50,13 +50,14 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
             pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getName(), prop.getEnumSpec());
         else if (prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getName());
-        else if (prop.getType() == DisplayString.PropType.UNIT)
+        else if (prop.getType() == DisplayString.PropType.DISTANCE)
+            pdesc = new TextPropertyDescriptor(prop, prop.getName());
+        else if (prop.getType() == DisplayString.PropType.COORDINATE)
             pdesc = new TextPropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.INTEGER)
             pdesc = new TextPropertyDescriptor(prop, prop.getName());
-        else if (prop.getType() == DisplayString.PropType.IMAGE) {
+        else if (prop.getType() == DisplayString.PropType.IMAGE)
             pdesc = new ImagePropertyDescriptor(prop, prop.getName(), project);
-        }
         else if (prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getName());
         else

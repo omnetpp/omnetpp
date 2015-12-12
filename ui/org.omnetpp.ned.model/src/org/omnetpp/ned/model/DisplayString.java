@@ -33,7 +33,6 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
  *
  * @author rhornig, andras (cleanup)
  */
-//XXX use of the Point and Dimension classes force this plugin to depend on draw2d!
 public class DisplayString implements IDisplayString {
 
     // contains the default fallback values for the different tags if a variable is used in that position
@@ -159,19 +158,21 @@ public class DisplayString implements IDisplayString {
         // parse a single tag and its values into a string vector
         private void parseTag(String tagStr) {
             args = new Vector<String>(2);
-            Scanner scr = new Scanner(tagStr);
+            Scanner scanner = new Scanner(tagStr);
 
             // TODO string literal and escaping must be correctly handled
             // StreamParser can handle comments too, maybe it would be a better choice
-            scr.useDelimiter("=|,");
+            scanner.useDelimiter("=|,");
 
             // parse for the tag name
-            if (scr.hasNext())
-                name = scr.next().trim();
+            if (scanner.hasNext())
+                name = scanner.next().trim();
 
             // parse for the tag values with a new tokenizer
-            while (scr.hasNext())
-                args.add(scr.next().trim());
+            while (scanner.hasNext())
+                args.add(scanner.next().trim());
+
+            scanner.close();
         }
     }
 
@@ -327,12 +328,13 @@ public class DisplayString implements IDisplayString {
         tagMap.clear();
         if (text != null) {
             // parse the display string into tags along ";"
-            Scanner scr = new Scanner(text);
-            scr.useDelimiter(";");
-            while (scr.hasNext()) {
-                TagInstance parsedTag = new TagInstance(scr.next().trim());
+            Scanner scanner = new Scanner(text);
+            scanner.useDelimiter(";");
+            while (scanner.hasNext()) {
+                TagInstance parsedTag = new TagInstance(scanner.next().trim());
                 tagMap.put(parsedTag.getName(), parsedTag);  //FIXME must resolve escaped ";" and "," ??? --Andras
             }
+            scanner.close();
         }
         return tagMap;
     }
@@ -394,19 +396,36 @@ public class DisplayString implements IDisplayString {
     }
 
     public int getAsInt(Prop propName, int defaultValue) {
+        Assert.isTrue(propName.getType() == PropType.INTEGER);
         try {
-            String propValue = getAsString(propName);
-            return propValue == null ? defaultValue : Integer.valueOf(propValue);
+            String value = getAsString(propName);
+            if (!StringUtils.isBlank(value))
+                return Integer.valueOf(value);
         } catch (NumberFormatException e) { }
         return defaultValue;
     }
 
-    public float getAsFloat(Prop propName, float defaultValue) {
+    public float getAsDistance(Prop propName) {
+        Assert.isTrue(propName.getType() == PropType.DISTANCE);
         try {
-            String propValue = getAsString(propName);
-            return StringUtils.isEmpty(propValue) ? defaultValue : Float.valueOf(propValue);
+            String value = getAsString(propName);
+            if (!StringUtils.isBlank(value)) {
+                float floatValue = Float.valueOf(value);
+                if (floatValue > 0)
+                    return floatValue;
+            }
         } catch (NumberFormatException e) { }
-        return defaultValue;
+        return Float.NaN;
+    }
+
+    public float getAsCoordinate(Prop propName) {
+        Assert.isTrue(propName.getType() == PropType.COORDINATE);
+        try {
+            String value = getAsString(propName);
+            if (!StringUtils.isBlank(value))
+                return Float.valueOf(value);
+        } catch (NumberFormatException e) { }
+        return Float.NaN;
     }
 
     /**
@@ -419,17 +438,17 @@ public class DisplayString implements IDisplayString {
     }
 
     public float getRange() {
-        float value = getAsFloat(DisplayString.Prop.RANGE, -1.0f);
-        return value <= 0 ? -1 : value;
+        float value = getAsDistance(DisplayString.Prop.RANGE);
+        return value <= 0 ? Float.NaN : value;
     }
 
     public PointF getLocation() {
         // return NaN to signal that the property is missing
-        Float x = getAsFloat(Prop.X, Float.NaN);
-        Float y = getAsFloat(Prop.Y, Float.NaN);
+        Float x = getAsCoordinate(Prop.X);
+        Float y = getAsCoordinate(Prop.Y);
 
         // if it's unspecified in any direction, we should return a NULL constraint
-        if (x.equals(Float.NaN) || y.equals(Float.NaN))
+        if (Float.isNaN(x) || Float.isNaN(y))
             return null;
 
         return new PointF(x, y);
@@ -437,7 +456,7 @@ public class DisplayString implements IDisplayString {
 
     /**
      * Sets the location properties (P tag). If NULL is given both location property is cleared
-     * meaning the module is unpinned and can be freely moved by the layouter.
+     * to indicate that the module is unpinned and can be freely moved by the layouter.
      * It fires a single property change notification for Prop.X
      */
     public void setLocation(PointF location) {
@@ -447,70 +466,69 @@ public class DisplayString implements IDisplayString {
             set(Prop.Y, null);
         }
         else {
-            set(Prop.X, floatToString(location.x));
-            set(Prop.Y, floatToString(location.y));
+            set(Prop.X, validFloatToString(location.x));
+            set(Prop.Y, validFloatToString(location.y));
         }
     }
 
     public DimensionF getSize() {
-        float width = getAsFloat(Prop.SHAPE_WIDTH, -1.0f);
-        width = width > 0 ? width : -1;
-        float height = getAsFloat(Prop.SHAPE_HEIGHT, -1.0f);
-        height = height > 0 ? height : -1;
+        float width = getAsDistance(Prop.SHAPE_WIDTH);
+        float height = getAsDistance(Prop.SHAPE_HEIGHT);
         return new DimensionF(width, height);
     }
 
     /**
-     * Sets the size of the submodule shape ("b" tag).
-     * If negative number is given as width or height the corresponding property is deleted.
+     * Sets the size of the submodule shape ("b" tag). If Nan or a negative number
+     * is given as width or height, the corresponding property is deleted.
      * It fires property change notification for Prop.SHAPE_WIDTH
      */
     public void setSize(DimensionF size) {
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.width < 0 )
+        if (size == null || Float.isNaN(size.width))
             set(Prop.SHAPE_WIDTH, null);
         else
-            set(Prop.SHAPE_WIDTH, floatToString(size.width));
+            set(Prop.SHAPE_WIDTH, positiveFloatToString(size.width));
 
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.height < 0)
+        if (size == null || Float.isNaN(size.height))
             set(Prop.SHAPE_HEIGHT, null);
         else
-            set(Prop.SHAPE_HEIGHT, floatToString(size.height));
+            set(Prop.SHAPE_HEIGHT, positiveFloatToString(size.height));
     }
 
     public DimensionF getCompoundSize() {
-        float width = getAsFloat(Prop.MODULE_WIDTH, -1.0f); //TODO use NaN! (everywhere!)
-        width = width > 0 ? width : -1;
-        float height = getAsFloat(Prop.MODULE_HEIGHT, -1.0f);
-        height = height > 0 ? height : -1;
+        float width = getAsDistance(Prop.MODULE_WIDTH);
+        float height = getAsDistance(Prop.MODULE_HEIGHT);
         return new DimensionF(width, height);
     }
 
     /**
-     * Sets the size of the compuond module background ("bgb" tag). If a negative number 
+     * Sets the size of the compound module background ("bgb" tag). If NaN
      * is given as width or height, the corresponding property is deleted.
      * It fires property change notification for Prop.MODULE_WIDTH
      */
     public void setCompoundSize(DimensionF size) {
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.width < 0 )
+        if (size == null || Float.isNaN(size.width))
             set(Prop.MODULE_WIDTH, null);
         else
-            set(Prop.MODULE_WIDTH, floatToString(size.width));
+            set(Prop.MODULE_WIDTH, positiveFloatToString(size.width));
 
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.height < 0)
+        if (size == null || Float.isNaN(size.height))
             set(Prop.MODULE_HEIGHT, null);
         else
-            set(Prop.MODULE_HEIGHT, floatToString(size.height));
+            set(Prop.MODULE_HEIGHT, positiveFloatToString(size.height));
     }
 
-    /**
-     * Converts a float number to string (without trailing ".0" if it's an integer)
-     */
-    private static String floatToString(float value) {
-        return StringUtils.chomp(String.valueOf(value), ".0");
+    private static String positiveFloatToString(float value) {
+        Assert.isTrue(value > 0);
+        return validFloatToString(value);
+    }
+
+    private static String validFloatToString(float value) {
+        Assert.isTrue(!Float.isNaN(value));
+        return StringUtils.removeEnd(String.valueOf(value), ".0");
     }
 
     /**
