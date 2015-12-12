@@ -39,8 +39,7 @@ import org.omnetpp.ned.editor.graph.misc.LabelCellEditorLocator;
  *
  * @author rhornig
  */
-abstract public class NedTypeFigure extends Figure implements IDirectEditSupport,
-                IProblemDecorationSupport, ITooltipTextProvider {
+abstract public class NedTypeFigure extends Figure implements IDirectEditSupport, IProblemDecorationSupport, ITooltipTextProvider {
 
     // This is a global hack to increase the text size returned by the textExtents function
     // on Windows, because it is too small if anti aliased fonts are used. Once
@@ -99,10 +98,6 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
 
     /**
      * Stores the display string, and updates the figure accordingly.
-     * @param dps
-     * @param project the icons are searched in this project
-     * @param scale TODO
-     * @param iconScale TODO
      */
     abstract public void setDisplayString(IDisplayString dps, IProject project, float scale, float iconScale);
 
@@ -161,16 +156,17 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
         nameFigure.setText(text);
     }
 
-    // Direct edit support
-
+    @Override
     public String getName() {
         return nameFigure.getText();
     }
 
+    @Override
     public CellEditorLocator getDirectEditCellEditorLocator() {
         return new LabelCellEditorLocator(nameFigure);
     }
 
+    @Override
     public void showLabelUnderCellEditor(boolean visible) {
         // HACK to hide the text part only of the label
         if (!visible) {

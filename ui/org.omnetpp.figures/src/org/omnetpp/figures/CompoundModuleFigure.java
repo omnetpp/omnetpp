@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.StackLayout;
@@ -40,14 +39,11 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // TODO layouting could be further optimized. If the compound module size is not defined the layouter
 // always recalculates the preferred size of the submoduleLayer whenever invalidate() is called because
 // invalidate() internally calls layout.invalidate() too.
-// mabe we should remove layout.invalidate() from the invalidate() method and call it ONLY if some
+// maybe we should remove layout.invalidate() from the invalidate() method and call it ONLY if some
 // property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
-
-// FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
-// FIXME module size is not calculated again if we relayout the content
-public class CompoundModuleFigure extends LayeredPane
-                implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
-
+// TODO implement ruler
+// TODO zoom info: maybe display unit too, e.g. like "1m=3.14px" -- but then in Tkenv/Qtenv too!
+public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
     protected static final int ERROR_BORDER_WIDTH = 2;
@@ -56,29 +52,32 @@ public class CompoundModuleFigure extends LayeredPane
     protected Image backgroundImage;
     protected String backgroundImageArrangement = "fix";
     protected Dimension backgroundSize;
-    protected int gridTickDistance;
-    protected int gridNoOfMinorTics;
+    protected int gridTickDistance; // maximum distance between two grid lines (in pixels)
+    protected int gridNoOfMinorTics; // number of minor ticks between two major ones
     protected Color gridColor;
     protected Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
     protected Color moduleBorderColor = ERROR_BORDER_COLOR;
     protected int moduleBorderWidth;
-    protected BackgroundLayer backgroundLayer;
-    protected Layer backDecorationLayer;
-    protected SubmoduleLayer submoduleLayer;
-    protected Layer frontDecorationLayer;
-    protected ConnectionLayer connectionLayer;
-    protected Layer messageLayer;
+    protected String unit = "m";
+
+    protected BackgroundLayer backgroundLayer; // compound module background: images, colors, grid, etc.
+    protected Layer backDecorationLayer; // submodule background decoration (range indicators, etc), non-extensible
+    protected SubmoduleLayer submoduleLayer; // layer to display submodules - size is automatically calculated from children sizes and positions
+    protected Layer frontDecorationLayer; // foreground decorations: text messages, decorator icons, etc.
+    protected ConnectionLayer connectionLayer; // connections inside a compound module
+    protected Layer messageLayer; // layer for message animation effects - not used in the editor
+
     protected CompoundModuleLayout layouter;
 
-    // TODO implement ruler
-    protected float lastScale = -1;
-    protected float lastIconScale = -1;
-    protected String unit = "m";
-    private int seed = 0;
+    private float lastScale = -1;
+    private float lastIconScale = -1;
     private int lastCumulativeHashCode;
+    private int seed = 0;
     private boolean isSelected;
 
-    // background layer to provide background coloring, images and grid drawing
+    /**
+     * Background layer to provide background coloring, images and grid drawing
+     */
     class BackgroundLayer extends Layer {
         @Override
         protected void paintFigure(Graphics graphics) {
@@ -90,6 +89,7 @@ public class CompoundModuleFigure extends LayeredPane
 
             // get the size of the viewport (which is actually the module size)
             Rectangle viewportRect = new Rectangle(new Point(0,0), this.getSize());
+
             // draw a solid background
             graphics.setBackgroundColor(moduleBackgroundColor);
             graphics.fillRectangle(viewportRect);
@@ -111,50 +111,44 @@ public class CompoundModuleFigure extends LayeredPane
                     graphics.drawImage(backgroundImage, viewportRect.getLocation());
             }
 
-            // =============================================================================
             // draw the grid
             if (gridTickDistance > 0 && gridColor != null) {
 
                 graphics.setForegroundColor(gridColor);
-                double minorTickDistance = 0;
+                float minorTickDistance = 0;
                 if (gridNoOfMinorTics > 1)
-                    minorTickDistance = (double)gridTickDistance / gridNoOfMinorTics;
+                    minorTickDistance = (float)gridTickDistance / gridNoOfMinorTics;
 
                 // horizontal grid
-                for (int y = viewportRect.y; y<viewportRect.bottom(); y += gridTickDistance) {
+                for (int y = viewportRect.y; y < viewportRect.bottom(); y += gridTickDistance) {
                     graphics.setLineStyle(SWT.LINE_SOLID);
                     graphics.drawLine(viewportRect.x, y, viewportRect.right(), y);
                     // minor ticks
                     graphics.setLineStyle(SWT.LINE_DOT);
-                    for (double my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
+                    for (float my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
                         graphics.drawLine(viewportRect.x, (int)my, viewportRect.right(), (int)my);
                 }
+
                 // vertical grid
-                for (int x = viewportRect.x; x<viewportRect.right(); x += gridTickDistance) {
+                for (int x = viewportRect.x; x < viewportRect.right(); x += gridTickDistance) {
                     graphics.setLineStyle(SWT.LINE_SOLID);
                     graphics.drawLine(x, viewportRect.y, x, viewportRect.bottom());
                     // minor ticks
                     graphics.setLineStyle(SWT.LINE_DOT);
-                    for (double mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
-                        graphics.drawLine((int)mx, viewportRect.y, (int)mx,viewportRect.bottom());
+                    for (float mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
+                        graphics.drawLine((int)mx, viewportRect.y, (int)mx, viewportRect.bottom());
                 }
             }
+
             // restore the graphics state
             graphics.popState();
         }
     }
 
-    // main layer used to display submodules
+    /**
+     * Main layer used to display submodules
+     */
     public class SubmoduleLayer extends Layer {
-
-        @Override
-        public void add(IFigure child, Object constraint, int index) {
-            // request an auto-layout whenever an unpinned submodule is added (added from the text editor)
-//XXX            if (child instanceof SubmoduleFigure && !((SubmoduleFigure)child).isPinVisible())
-//                layouter.requestFullLayout();
-            super.add(child, constraint, index);
-        }
-
         @Override
         public Dimension getPreferredSize(int wHint, int hHint) {
             return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
@@ -171,25 +165,19 @@ public class CompoundModuleFigure extends LayeredPane
 
         setLayoutManager(new StackLayout());
 
-        // compound module background: images, colors, grid, etc.
         add(backgroundLayer = new BackgroundLayer());
-        // submodule background decoration (range indicator etc), non-extensible
         add(backDecorationLayer = new Layer());
-        // plain layer used to display submodules - size is automatically calculated from children sizes and positions
         add(submoduleLayer = new SubmoduleLayer());
-        // foregroundDecorationLayer (text messages, decorator icons etc)
         add(frontDecorationLayer = new Layer());
-        // connections inside a compound module
         add(connectionLayer = new ConnectionLayer());
-        // add layer for message animation effects - not used in the editor
         add(messageLayer = new Layer());
 
         // add a compound module border
         setBorder(new CompoundModuleLineBorder());
 
-        // set up the layouter. Preferred sizes should be set to 0 so the mainContainer
+        // Set up the layouter. Preferred sizes should be set to 0 so the main container
         // can follow the size of the submoduleLayer which uses the layouter to calculate the
-        // preferred size
+        // preferred size.
         submoduleLayer.setLayoutManager(layouter = new CompoundModuleLayout(this));
         messageLayer.setPreferredSize(0, 0);
         connectionLayer.setPreferredSize(0, 0);
@@ -219,30 +207,26 @@ public class CompoundModuleFigure extends LayeredPane
         return true;
     }
 
+    @Override
     public boolean isSelected() {
         return isSelected;
     }
 
+    @Override
     public void setSelected(boolean isSelected) {
         if (isSelected == this.isSelected)
             return;
-        else {
-            this.isSelected = isSelected;
-            repaint();
-        }
+        this.isSelected = isSelected;
+        repaint();
     }
 
-    /**
-     * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
-     */
+    @Override
     public Rectangle getHandleBounds() {
         Rectangle result = getBounds().getCopy();
         return result;
     }
 
-    /**
-     * Returns the bounds where the anchors should be placed in parent coordinate system.
-     */
+    @Override
     public Rectangle getAnchorBounds() {
         Rectangle box = getClientArea().shrink(BORDER_SNAP_WIDTH, BORDER_SNAP_WIDTH);
         translateToParent(box);
@@ -280,9 +264,6 @@ public class CompoundModuleFigure extends LayeredPane
 
     /**
      * Adjusts grid parameters.
-     * @param tickDistance Maximum distance between two ticks measured in pixels
-     * @param noOfTics Number of minor ticks between two major one
-     * @param gridColor Grid color
      */
     protected void setGrid(int tickDistance, int noOfTics, Color gridColor) {
         this.gridTickDistance = tickDistance;
@@ -298,7 +279,7 @@ public class CompoundModuleFigure extends LayeredPane
      * Adjusts the figure properties using a displayString object
      */
     public void setDisplayString(IDisplayString dps, float scale, float iconScale) {
-        // OPTIMIZATION: do not change anything if the display string has not changed
+        // Optimization: do not change anything if the display string has not changed
         int cumulativeHashCode = dps.cumulativeHashCode();
         if (lastScale == scale && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
             return;
@@ -307,16 +288,11 @@ public class CompoundModuleFigure extends LayeredPane
         this.lastScale = scale;
         this.lastIconScale = iconScale;
 
-        // background color / image
-        Image imgback = ImageFactory.global().getImage(
-                dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
-
-        // decode the image arrangement
+        // background color and image
+        Image backgroundImage = ImageFactory.global().getImage(dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
         String imageArrangementStr = dps.getAsString(IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT);
-
-        // set the background
         setBackground(
-                imgback,
+                backgroundImage,
                 imageArrangementStr,
                 ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_FILL_COLOR)),
                 ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDER_COLOR)),
@@ -339,8 +315,8 @@ public class CompoundModuleFigure extends LayeredPane
         backgroundSize = dps.getCompoundSize().toPixels(scale);
 
         int newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
-        // if the seed changed we explicitly have to force a re-layout
 
+        // if the seed changed, we explicitly have to force a re-layout
         if (seed != newSeed) {
             seed  = newSeed;
             layouter.setSeed(seed);
@@ -411,7 +387,7 @@ public class CompoundModuleFigure extends LayeredPane
 
     @Override
     public void setBorder(Border border) {
-        Assert.isTrue(border instanceof CompoundModuleLineBorder,"Only CompoundModuleBorder is supported");
+        Assert.isTrue(border instanceof CompoundModuleLineBorder, "Only CompoundModuleBorder is supported");
         super.setBorder(border);
     }
 
