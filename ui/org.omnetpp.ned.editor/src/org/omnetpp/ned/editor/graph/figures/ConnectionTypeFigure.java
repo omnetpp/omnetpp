@@ -31,7 +31,7 @@ public class ConnectionTypeFigure extends NedTypeFigure {
     /**
      * Adjusts the figure properties using a displayString object
      */
-    public void setDisplayString(IDisplayString dps, IProject project, float scale) {
+    public void setDisplayString(IDisplayString dps, IProject project, float scale, float iconScale) {
 
         // we currently ignore the display strings of interfaces
         int lineWidth = isInterface() ? 1 : dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1);

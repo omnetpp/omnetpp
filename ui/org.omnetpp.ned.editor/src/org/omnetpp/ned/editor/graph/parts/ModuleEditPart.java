@@ -71,6 +71,11 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
     public abstract float getScale();
 
     /**
+     * Returns the icon scale factor of the module
+     */
+    public abstract float getIconScale();
+
+    /**
      * Returns the compound module itself, or the compound module editpart
      * which contains this editpart
      */

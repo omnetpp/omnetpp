@@ -102,8 +102,9 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
      * @param dps
      * @param project the icons are searched in this project
      * @param scale TODO
+     * @param iconScale TODO
      */
-    abstract public void setDisplayString(IDisplayString dps, IProject project, float scale);
+    abstract public void setDisplayString(IDisplayString dps, IProject project, float scale, float iconScale);
 
     public boolean isInterface() {
         return isInterface;

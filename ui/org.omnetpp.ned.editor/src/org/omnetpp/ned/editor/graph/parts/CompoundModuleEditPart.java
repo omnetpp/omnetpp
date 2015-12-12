@@ -48,6 +48,7 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  */
 public class CompoundModuleEditPart extends ModuleEditPart {
     private float scale = 1.0f;
+    private float iconScale = 1.0f;
 
     // stores  the connection model - connection editPart mapping for the compound module
     private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
@@ -182,7 +183,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         compoundModuleFigure.setNetwork(compoundModuleModel.isNetwork());
         compoundModuleFigure.setInterface(compoundModuleModel instanceof IInterfaceTypeElement);
         compoundModuleFigure.setInnerType(compoundModuleModel.getEnclosingTypeElement() != null);
-        compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString(), project, scale);
+        compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString(), project, scale, iconScale);
     }
 
     /**
@@ -255,6 +256,11 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     public Map<Object, ConnectionEditPart> getModelToConnectionPartsRegistry() {
         return modelToConnectionPartsRegistry;
+    }
+
+    @Override
+    public float getIconScale() {
+        return iconScale;
     }
 
     /* (non-Javadoc)

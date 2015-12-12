@@ -118,7 +118,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected void refreshVisuals() {
         super.refreshVisuals();
-        // define the properties that determine the visual appearance
 
         // set module name and vector size
         SubmoduleFigure submoduleFigure = getFigure();
@@ -132,12 +131,13 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // get the scale factor for this submodule (coming from the containing compound module's display string)
         // set it in the figure, so size and range indicator can use it
         float scale = getScale();
+        float iconScale = getIconScale();
 
         // get the project for image path resolution
         IProject project = getModel().getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
 
         // set the rest of the display properties
-        submoduleFigure.setDisplayString(dps, scale, project);
+        submoduleFigure.setDisplayString(dps, scale, iconScale, project);
 
         submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE_NAME)) ? "#" : "");
 
@@ -149,6 +149,11 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public float getScale() {
         // get the container compound module's scaling factor
         return getCompoundModulePart().getScale();
+    }
+
+    @Override
+    public float getIconScale() {
+        return getCompoundModulePart().getIconScale();
     }
 
     @Override

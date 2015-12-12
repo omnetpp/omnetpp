@@ -8,6 +8,7 @@
 package org.omnetpp.figures;
 
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
@@ -22,7 +23,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
@@ -55,6 +55,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 
     // input for the layouting
     protected float lastScale = 1.0f;
+    protected float lastIconScale = 1.0f;
     protected Point baseLoc;
     protected Object vectorIdentifier;
     protected int vectorSize;
@@ -119,17 +120,18 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     /**
      * Adjust the properties using a display string object
      */
-    public void setDisplayString(IDisplayString displayString, float scale, IProject project) {
+    public void setDisplayString(IDisplayString displayString, float scale, float iconScale, IProject project) {
         // optimization: do not change anything if the display string has not changed
-        int newCumulativeHashCode = displayString.cumulativeHashCode();
-        if (this.lastScale == scale && lastCumulativeHashCode != 0 && newCumulativeHashCode == lastCumulativeHashCode)
+        int cumulativeHashCode = displayString.cumulativeHashCode();
+        if (lastScale == scale && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
             return;
 
         // font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
         setFont(getFont());
 
         this.lastScale = scale;
-        this.lastCumulativeHashCode = newCumulativeHashCode;
+        this.lastIconScale = iconScale;
+        this.lastCumulativeHashCode = cumulativeHashCode;
 
         Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
 
@@ -148,8 +150,9 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
                 displayString.getAsString(IDisplayString.Prop.TEXT_POS),
                 ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXT_COLOR), ColorFactory.RED));
 
-        // shape support
+        // image support
         String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGE_SIZE);
+        imageSizePercentage = (int)(100.0f * iconScale);
         Image img = ImageFactory.of(project).getImage(
                 displayString.getAsString(IDisplayString.Prop.IMAGE),
                 imageSize,

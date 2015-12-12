@@ -81,6 +81,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected ScalableFigure scalableFigure; // child (content) of scrollPane
     protected CompoundModuleFigure compoundModuleFigure; // child of scalableFigure
     protected float scale = 1.0f;  // zoom level
+    protected float iconScale = 1.0f;  // icon scaling
 
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
@@ -211,7 +212,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // set an initial display string, otherwise bad things (NPE, red background, etc) will happen
         // due to poor CompoundModuleFigure defaults if a HTTP error occurs before we set the proper
         // display string in refreshVisuals()
-        compoundModuleFigure.setDisplayString(new DisplayString(""), scale);
+        compoundModuleFigure.setDisplayString(new DisplayString(""), scale, iconScale);
 
         // work around slightly odd default behavior of scrollPane (scrollbars don't appear immediately when you shrink the window)
         scrollPane.addLayoutListener(new LayoutListener.Stub() {
@@ -558,13 +559,13 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     protected void refreshVisuals() throws CommunicationException {
         cModule parentModule = (cModule) object;
-        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule), scale);
+        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule), scale, iconScale);
 
         // refresh submodules
         for (cModule submodule : submodules.keySet()) {
             submodule.loadIfUnfilled();
             SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
-            submoduleFigure.setDisplayString(getDisplayStringFrom(submodule), scale, null);
+            submoduleFigure.setDisplayString(getDisplayStringFrom(submodule), scale, iconScale, null);
             submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
             submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
             submoduleFigure.setImageSizePercentage(imageSizePercentage);

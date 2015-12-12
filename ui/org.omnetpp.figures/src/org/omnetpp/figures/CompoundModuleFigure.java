@@ -71,6 +71,7 @@ public class CompoundModuleFigure extends LayeredPane
 
     // TODO implement ruler
     protected float lastScale = -1;
+    protected float lastIconScale = -1;
     protected String unit = "m";
     private int seed = 0;
     private int lastCumulativeHashCode;
@@ -294,16 +295,16 @@ public class CompoundModuleFigure extends LayeredPane
 
     /**
      * Adjusts the figure properties using a displayString object
-     * @param dps The display string object containing the properties
      */
-    public void setDisplayString(IDisplayString dps, float scale) {
+    public void setDisplayString(IDisplayString dps, float scale, float iconScale) {
         // OPTIMIZATION: do not change anything if the display string has not changed
-        int newCumulativeHashCode = dps.cumulativeHashCode();
-        if (lastScale == scale && lastCumulativeHashCode != 0 && newCumulativeHashCode == lastCumulativeHashCode)
+        int cumulativeHashCode = dps.cumulativeHashCode();
+        if (lastScale == scale && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
             return;
 
-        this.lastCumulativeHashCode = newCumulativeHashCode;
+        this.lastCumulativeHashCode = cumulativeHashCode;
         this.lastScale = scale;
+        this.lastIconScale = iconScale;
 
         // background color / image
         Image imgback = ImageFactory.global().getImage(

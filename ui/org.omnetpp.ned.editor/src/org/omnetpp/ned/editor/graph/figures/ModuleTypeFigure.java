@@ -40,7 +40,7 @@ public class ModuleTypeFigure extends NedTypeFigure {
     /**
      * Adjusts the figure properties using a displayString object
      */
-    public void setDisplayString(IDisplayString displayString, IProject project, float scale) {
+    public void setDisplayString(IDisplayString displayString, IProject project, float scale, float iconScale) {
         if (isInnerType())
             iconFigure.setTargetSize(24, 24);  // "s" icons
         else

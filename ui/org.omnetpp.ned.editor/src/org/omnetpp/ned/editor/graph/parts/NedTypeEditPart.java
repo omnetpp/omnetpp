@@ -55,7 +55,7 @@ public class NedTypeEditPart extends NedEditPart {
         getFigure().setInnerType(getModel().getEnclosingTypeElement() != null);
         DisplayString displayString = getModel().getDisplayString();
         IProject project = getModel().getNedTypeInfo().getProject();
-        getFigure().setDisplayString(displayString, project, 1.0f);
+        getFigure().setDisplayString(displayString, project, 1.0f, 1.0f);
     }
 
     @Override

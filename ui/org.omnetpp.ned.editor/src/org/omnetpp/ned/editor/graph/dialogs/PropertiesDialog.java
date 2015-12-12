@@ -153,6 +153,7 @@ public class PropertiesDialog extends TrayDialog {
     private IFigure previewFigure[];  // actually SubmoduleFigure, ConnectionFigure, etc; max 10 figures
     private ScrollPane previewScrollPane;
     private float scale = 1.0f; //TODO value
+    private float iconScale = 1.0f; //TODO value
 
     private Composite bgPreviewComposite;
     private CompoundModuleFigure bgPreviewFigure;
@@ -1817,7 +1818,7 @@ public class PropertiesDialog extends TrayDialog {
 
             updatePreviewDisplayString(displayString);
 
-            bgPreviewFigure.setDisplayString(displayString, scale);
+            bgPreviewFigure.setDisplayString(displayString, scale, iconScale);
             Dimension compoundModuleSize = displayString.getCompoundSize().toPixels(scale);
             if (compoundModuleSize.height == -1)
                 compoundModuleSize.height = 200;
@@ -1855,7 +1856,7 @@ public class PropertiesDialog extends TrayDialog {
 
                     IProject project = e.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
                     submoduleFigure.setName(name);
-                    submoduleFigure.setDisplayString(displayString, scale, project);
+                    submoduleFigure.setDisplayString(displayString, scale, iconScale, project);
                     int width = submoduleFigure.getSize().width;
                     submoduleFigure.setCenterLocation(new Point(x+width/2, 50));
                     x += width + 10;
