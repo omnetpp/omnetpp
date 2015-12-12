@@ -418,11 +418,8 @@ public class DisplayString implements IDisplayString {
         updateNedElement();
     }
 
-    /* (non-Javadoc)
-     * @see org.omnetpp.ned2.model.IDisplayString#getScale()
-     */
     public float getScale() {
-        return getAsFloat(Prop.MODULE_SCALE, 1.0f);
+        return 1.0f; //FIXME
     }
 
     // helper functions for setting and getting the location and size properties

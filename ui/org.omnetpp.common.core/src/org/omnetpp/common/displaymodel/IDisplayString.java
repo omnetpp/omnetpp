@@ -48,7 +48,7 @@ public interface IDisplayString {
         bgtt(COMPOUNDMODULE, "Background tooltip"),
         bgg(COMPOUNDMODULE, "Background grid"),
         bgl(COMPOUNDMODULE, "Layout parameters"),
-        bgs(COMPOUNDMODULE, "Layout seed"),
+        bgu(COMPOUNDMODULE, "Distance unit"),
 
         p(COMPOUNDMODULE | SUBMODULE, "Position"),
         b(COMPOUNDMODULE | SUBMODULE, "box"),
@@ -84,10 +84,10 @@ public interface IDisplayString {
     }
 
     // default value used if the tag exists but the property contains no value
-    public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
+    public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid;bgu=m";
 
     // example values used if the property contains a $variable
-    public static final String VARIABLE_DEFAULTS_STR = "i=abstract/server,red,50;i2=status/execute,red,50;b=40,24,rect,#8080ff,black,2;t=Sample text,t,blue;r=100,white,black,3;bgb=300,200,white,black,5;bgg=100,2,black;bgi=,center;ls=green,3,dashed";
+    public static final String VARIABLE_DEFAULTS_STR = "i=abstract/server,red,50;i2=status/execute,red,50;b=40,24,rect,#8080ff,black,2;t=Sample text,t,blue;r=100,white,black,3;bgb=300,200,white,black,5;bgg=100,2,black;bgi=,center;ls=green,3,dashed;bgu=km";
 
     /**
      * Defines all tag groups
@@ -278,9 +278,8 @@ public interface IDisplayString {
         MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.BackgroundLayout, "layout seed","Seed value for layout algorithm", null),
         MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.BackgroundLayout, "layout algorithm","Algorithm for child layouting", null),
 
-        // BGS tag (module scaling, pixel per unit)
-        MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Background, "pixels per unit", "Number of pixels per distance unit. Coordinates are measured in units", null),
-        MODULE_UNIT(Tag.bgs, 1, PropType.STRING, PropGroup.Background, "unit name", "Name of distance unit", null),
+        // BGU tag (distance unit)
+        MODULE_UNIT(Tag.bgu, 0, PropType.STRING, PropGroup.Background, "distance unit", "Name of distance unit", null),
         // END of compound module properties
 
         // START of connection properties

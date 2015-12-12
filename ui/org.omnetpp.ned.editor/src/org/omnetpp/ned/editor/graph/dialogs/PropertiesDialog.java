@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.NedImageDescriptor;
 import org.omnetpp.common.ui.TristateButton;
@@ -217,8 +218,6 @@ public class PropertiesDialog extends TrayDialog {
     private SpinnerFieldEditor connectionWidthField;
     private ComboFieldEditor connectionStyleField;
 
-    private TextFieldEditor bgScaleField;
-    private Label bgScaleLabel;
     private TextFieldEditor bgUnitField;
     private Label bgNoteLabel;
     private TextFieldEditor bgWidthField;
@@ -936,17 +935,12 @@ public class PropertiesDialog extends TrayDialog {
         bgHeightField = createText(group, 10);
         createUnitLabel(group);
 
-        group = createGroup(page, "Unit and Scale", 1);
+        group = createGroup(page, "Other", 1);
         comp = createComposite(group, 2);
-        createLabel(comp, "Measurement unit:", false);
+        createLabel(comp, "Distance unit:", false);
         bgUnitField = createText(comp, 10);
-        comp = createComposite(group, 3);
-        bgScaleLabel = createLabel(comp, "One unit corresponds to:", false); // text is updated from updateLabelsWithUnit()
-        bgScaleField = createText(comp, 10);
-        createLabel(comp, "pixel(s)", false);
 
-        bgNoteLabel = createLabel(page, "Note: ...", false); // text will be set in updateUnit()
-        ((GridData)bgNoteLabel.getLayoutData()).horizontalSpan = 2;
+        bgNoteLabel = createWrappingLabel(comp, "Note: ...", false, 2); // text will be set in updateUnit()
         bgUnitField.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 updateLabelsWithUnit();
@@ -1297,7 +1291,7 @@ public class PropertiesDialog extends TrayDialog {
     protected Group createGroup(Composite parent, String text, int numColumns, int horizSpanInParent) {
         Group group = new Group(parent, SWT.NONE);
         group.setText(text);
-        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         ((GridData)group.getLayoutData()).horizontalSpan = horizSpanInParent;
         group.setLayout(new GridLayout(numColumns,false));
         return group;
@@ -1477,8 +1471,6 @@ public class PropertiesDialog extends TrayDialog {
 
         // module layouting
         populateField(bgLayoutSeedField, IDisplayString.Prop.MODULE_LAYOUT_SEED);
-        //populateField(bgLayoutAlgorithmField, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM);
-        populateField(bgScaleField, IDisplayString.Prop.MODULE_SCALE);
         populateField(bgUnitField, IDisplayString.Prop.MODULE_UNIT);
     }
 
@@ -1575,12 +1567,8 @@ public class PropertiesDialog extends TrayDialog {
             unit = bgUnitField.getText();
 
             // update texts with embedded units
-            bgScaleLabel.setText("One " + StringUtils.defaultIfEmpty(unit, "unit")+ " corresponds to:");
-            bgScaleLabel.getParent().layout(true);
-
-            bgNoteLabel.setText("Note: all sizes and distances in the compound module are understood in units"
-                    + (unit.equals("") ? "" : " (" + unit + ")")
-                    + ", not pixels");
+            bgNoteLabel.setText("Note: simulation models should understand all sizes and distances in the compound module as in "
+                    + (unit.equals("") ? "meters" : " the given unit (" + unit + ")"));
         }
 
         else if (elements[0] instanceof ISubmoduleOrConnection) {
@@ -1985,7 +1973,6 @@ public class PropertiesDialog extends TrayDialog {
         // module layouting
         updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField);
         //updatePreviewDisplayProperty(IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField);
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_SCALE, bgScaleField);
         updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_UNIT, bgUnitField);
     }
 
@@ -2172,7 +2159,6 @@ public class PropertiesDialog extends TrayDialog {
         // module layouting
         addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField);
         //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField);
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_SCALE, bgScaleField);
         addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_UNIT, bgUnitField);
 
         resultCommand = compoundCommand;
@@ -2312,6 +2298,12 @@ public class PropertiesDialog extends TrayDialog {
             }
         }
 
+        if (bgUnitField != null && !StringUtils.isBlank(bgUnitField.getText())) {
+            String unit = bgUnitField.getText();
+            if (UnitConversion.getConversionFactor(unit, "m") == 0)
+                addErrorIfNotNull(errors, bgUnitField, "Distance unit", unit + " is not a recognized distance unit");
+        }
+
         validateNumericField(errors, "X coordinate", xField);
         validateNumericField(errors, "Y coordinate", yField);
         validateComboField(errors, "Layout", layoutField);
@@ -2340,7 +2332,6 @@ public class PropertiesDialog extends TrayDialog {
         validateColorField(errors, "Line color", connectionColorField);
         validateIntegerField(errors, "Line width", connectionWidthField);
         validateComboField(errors, "Line style", connectionStyleField);
-        validateNumericField(errors, "Scale", bgScaleField);
         validateNumericField(errors, "Width", bgWidthField);
         validateNumericField(errors, "Height", bgHeightField);
         validateColorField(errors, "Fill color", bgFillColorField);

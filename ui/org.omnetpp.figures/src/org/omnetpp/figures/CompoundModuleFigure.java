@@ -335,7 +335,7 @@ public class CompoundModuleFigure extends LayeredPane
 
         // scaling support
         setScale(
-                dps.getAsFloat(IDisplayString.Prop.MODULE_SCALE, 1),
+                1.0f, //FIXME
                 dps.getAsString(IDisplayString.Prop.MODULE_UNIT));
 
         // grid support
