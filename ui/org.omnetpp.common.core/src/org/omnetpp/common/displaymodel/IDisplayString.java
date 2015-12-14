@@ -447,7 +447,7 @@ public interface IDisplayString {
 
     /**
      * Returns the size of submodule ("b" tag). Uses fallback if not specified locally.
-     * Missing width or height values are represented by NaN.
+     * Fallback rules apply if either or both dimensions are missing.
      */
     public DimensionF getSize();
 

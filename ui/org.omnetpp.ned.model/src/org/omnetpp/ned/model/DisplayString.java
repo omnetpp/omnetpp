@@ -472,8 +472,18 @@ public class DisplayString implements IDisplayString {
     }
 
     public DimensionF getSize() {
+        // the following getters use EMPTY_DEFAULTS
         float width = getAsDistance(Prop.SHAPE_WIDTH);
         float height = getAsDistance(Prop.SHAPE_HEIGHT);
+
+        // if one of the dimensions is missing, use the other dimension instead
+        boolean widthExist = containsProperty(IDisplayString.Prop.SHAPE_WIDTH);
+        boolean heightExist = containsProperty(IDisplayString.Prop.SHAPE_HEIGHT);
+        if (!widthExist && heightExist)
+            width = height;
+        else if (widthExist && !heightExist)
+            height = width;
+
         return new DimensionF(width, height);
     }
 

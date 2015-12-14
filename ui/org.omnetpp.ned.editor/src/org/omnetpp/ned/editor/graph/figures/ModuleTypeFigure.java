@@ -48,15 +48,6 @@ public class ModuleTypeFigure extends NedTypeFigure {
 
         // shape
         Dimension size = displayString.getSize().toPixels(scale);
-        boolean widthExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_WIDTH);
-        boolean heightExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_HEIGHT);
-
-        // if one of the dimensions is missing use the other dimension instead
-        if (!widthExist && heightExist)
-            size.width = size.height;
-        else if (widthExist && !heightExist)
-            size.height = size.width;
-
         String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
         if (!displayString.containsTag(IDisplayString.Tag.b))
             shape = null;

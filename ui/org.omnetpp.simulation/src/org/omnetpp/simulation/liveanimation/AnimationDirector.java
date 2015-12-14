@@ -156,8 +156,8 @@ public class AnimationDirector {
                 GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
                 Layer layer = moduleInspector.getCompoundModuleFigure().getMessageLayer();
                 double duration = 1.0; // seconds; XXX for now
-                Point startPos = step.src==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.src).getCenterLocation();
-                Point endPos = step.dest==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.dest).getCenterLocation();
+                Point startPos = step.src==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.src).getCenterPosition();
+                Point endPos = step.dest==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.dest).getCenterPosition();
                 String label = makeMessageLabel(state.messageBeingSent);
                 animationPrimitives.add(new MessageMoveAnimation(layer, label, startPos, endPos, state.time, state.time+duration));
                 state.time += duration; // this serializes the animations
@@ -188,8 +188,8 @@ public class AnimationDirector {
                     if (debug) Debug.println("Animating on inspector " + inspector.getObject().getFullPath());
                     GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
                     Layer layer = moduleInspector.getCompoundModuleFigure().getMessageLayer();
-                    Point startPos = step.src==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.src).getCenterLocation();
-                    Point endPos = step.dest==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.dest).getCenterLocation();
+                    Point startPos = step.src==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.src).getCenterPosition();
+                    Point endPos = step.dest==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.dest).getCenterPosition();
                     MethodCallAnimation methodCallAnimation = new MethodCallAnimation(layer, e.txt, startPos, endPos, state.time);
                     methodCallAnimationList.add(methodCallAnimation);
                     animationPrimitives.add(methodCallAnimation);

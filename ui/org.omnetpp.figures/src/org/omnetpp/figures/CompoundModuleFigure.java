@@ -314,11 +314,13 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
         // can affect the size of bounding box
         backgroundSize = dps.getCompoundSize().toPixels(scale);
 
+        layouter.setScale(scale);
+
         int newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
 
         // if the seed changed, we explicitly have to force a re-layout
         if (seed != newSeed) {
-            seed  = newSeed;
+            seed = newSeed;
             layouter.setSeed(seed);
             layouter.requestFullLayout();
             // a full new layout must be executed before any repainting occurs otherwise

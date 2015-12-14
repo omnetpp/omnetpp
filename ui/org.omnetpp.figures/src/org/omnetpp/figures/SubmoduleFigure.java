@@ -8,7 +8,6 @@
 package org.omnetpp.figures;
 
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
@@ -22,11 +21,15 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.DimensionF;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
+import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.figures.layout.ISubmoduleConstraint.VectorArrangement;
 import org.omnetpp.figures.layout.VectorArrangementParameters;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.figures.misc.ISelectableFigure;
@@ -39,8 +42,7 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME alignment of multi-line text
-public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds,
-ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelectableFigure {
+public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelectableFigure {
     // supported shape types
     protected static final int SHAPE_NONE = 0;
     protected static final int SHAPE_OVAL = 1;
@@ -53,22 +55,13 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     protected static final Image IMG_PIN = ImageFactory.global().getImage(ImageFactory.DEFAULT_PIN);
     protected static final Image IMG_DEFAULT = ImageFactory.global().getImage(ImageFactory.DEFAULT);
 
-    // input for the layouting
+    protected SubmoduleConstraint constraint = new SubmoduleConstraint();
+
     protected float lastScale = 1.0f;
     protected float lastIconScale = 1.0f;
-    protected Point baseLoc;
-    protected Object vectorIdentifier;
-    protected int vectorSize;
-    protected int vectorIndex;
-    protected VectorArrangement vectorArrangement;
-    protected String vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
-    protected VectorArrangementParameters vectorArrangementParams; // processed form of the above (par1, par2, par3)
-    protected Layer rangeFigureLayer;
-
-    // result of layouting
-    protected Point centerLoc;
 
     // appearance
+    protected Point centerPos;
     protected int alpha = 255;
     protected String nameText;
     protected String tooltipText;
@@ -89,11 +82,16 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     protected int textPos;
     protected Color textColor;
     protected String queueText;
+    protected Layer rangeFigureLayer;
     protected RangeFigure rangeFigure = null;
     private int lastCumulativeHashCode;
     private boolean isSelected;
 
     public SubmoduleFigure() {
+    }
+
+    public ISubmoduleConstraint getLayoutConstraint() {
+        return constraint;
     }
 
     public boolean isSelected() {
@@ -111,10 +109,6 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 
     protected int unitToPixel(float d, float scale) {
         return (int)(scale * d);
-    }
-
-    protected float pixelToUnit(int x, float scale) {
-        return x / scale;
     }
 
     /**
@@ -153,29 +147,21 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         // image support
         String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGE_SIZE);
         imageSizePercentage = (int)(100.0f * iconScale);
-        Image img = ImageFactory.of(project).getImage(
+        Image image = ImageFactory.of(project).getImage(
                 displayString.getAsString(IDisplayString.Prop.IMAGE),
                 imageSize,
                 ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
                 displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
 
         // rectangle ("b" tag)
-        Dimension size = displayString.getSize().toPixels(scale);  // falls back to size in EMPTY_DEFAULTS
-        boolean widthExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_WIDTH);
-        boolean heightExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_HEIGHT);
-
-        // if one of the dimensions is missing use the other dimension instead
-        if (!widthExist && heightExist)
-            size.width = size.height;
-        else if (widthExist && !heightExist)
-            size.height = size.width;
-
+        DimensionF size = displayString.getSize();
         String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
         if (!displayString.containsTag(IDisplayString.Tag.b))
             shape = null;
-        setShape(img, shape,
-                size.width,
-                size.height,
+        constraint.setShapeSize(shape == null ? null : size);
+        setShape(image, shape,
+                (int)(size.width * scale),
+                (int)(size.height * scale),
                 ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.SHAPE_FILL_COLOR), ColorFactory.RED),
                 ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.SHAPE_BORDER_COLOR), ColorFactory.RED),
                 displayString.getAsInt(IDisplayString.Prop.SHAPE_BORDER_WIDTH, -1));
@@ -196,9 +182,9 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
             if (StringUtils.isNotEmpty(layout))
                 arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
         }
-        setBaseLocation(
-                displayString.getLocation() == null ? null : displayString.getLocation().toPixels(scale),
-                arrangement,
+
+        setBaseLocation(displayString.getLocation());
+        setVectorArrangement(arrangement,
                 displayString.getAsString(IDisplayString.Prop.LAYOUT_PAR1),
                 displayString.getAsString(IDisplayString.Prop.LAYOUT_PAR2),
                 displayString.getAsString(IDisplayString.Prop.LAYOUT_PAR3)
@@ -208,7 +194,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         if (!getShapeBounds().equals(oldShapeBounds))
             revalidate();
         // update the bounds, so that repaint works correctly (nothing gets clipped off)
-        if (centerLoc != null)
+        if (centerPos != null)
             updateBounds();  // note: re-layouting does not guarantee that updateBounds() gets called!
         repaint();
     }
@@ -255,8 +241,8 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
             rangeFigure.setForegroundColor(borderColor);
             rangeFigure.setLineWidth(borderWidth);
 
-            if (centerLoc != null)
-                rangeFigure.setBounds(new Rectangle(centerLoc.x, centerLoc.y, 0, 0).expand(radius,radius));
+            if (centerPos != null)
+                rangeFigure.setBounds(new Rectangle(centerPos.x, centerPos.y, 0, 0).expand(radius,radius));
             else
                 rangeFigure.setBounds(new Rectangle(0, 0, 0, 0).expand(radius,radius));
 
@@ -267,7 +253,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         problemMarkerImage = FigureUtils.getProblemImageFor(maxSeverity);
         problemMarkerTextProvider = textProvider;
-        if (centerLoc != null)
+        if (centerPos != null)
             updateBounds();
         repaint();
     }
@@ -275,7 +261,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     public void setQueueText(String queueText) {
         if (!StringUtils.equals(this.queueText, queueText)) {
             this.queueText = queueText;
-            if (centerLoc != null)
+            if (centerPos != null)
                 updateBounds();
             repaint();
         }
@@ -325,43 +311,76 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     }
 
     public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
-        // clear centerLoc iff something's changed
-        if ((this.vectorIdentifier==null ? vectorIdentifier!=null : !this.vectorIdentifier.equals(vectorIdentifier)) ||
-                this.vectorSize != vectorSize || this.vectorIndex != vectorIndex) {
-            this.vectorIdentifier = vectorIdentifier;
-            this.vectorSize = vectorSize;
-            this.vectorIndex = vectorIndex;
-            centerLoc = null;
-            revalidate();  // invalidate() not enough here. Layout must be triggered
-        }
+        if (constraint.setSubmoduleVectorIndex(vectorIdentifier, vectorSize, vectorIndex))
+            invalidateLocation();
     }
 
-    protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement,
-            String vectorArrangementPar1, String vectorArrangementPar2, String vectorArrangementPar3) {
-        // clear centerLoc iff something's changed
-        if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) ||
-                this.vectorArrangement != vectorArrangement ||
-                !ObjectUtils.equals(this.vectorArrangementPar1, vectorArrangementPar1) ||
-                !ObjectUtils.equals(this.vectorArrangementPar2, vectorArrangementPar2) ||
-                !ObjectUtils.equals(this.vectorArrangementPar3, vectorArrangementPar3)) {
-            this.baseLoc = loc;
-            this.vectorArrangement = vectorArrangement;
-
-            this.vectorArrangementPar1 = vectorArrangementPar1;
-            this.vectorArrangementPar2 = vectorArrangementPar2;
-            this.vectorArrangementPar3 = vectorArrangementPar3;
-            this.vectorArrangementParams = null; // invalidate
-
+    protected void setBaseLocation(PointF loc) {
+        if (constraint.setBaseLocation(loc)) {
             // If the module position is set, we do not need the temporary position (centerLoc)
             // used by the layouter as a temporary position. If we just unpinned
             // this module (loc == null) we have to keep the current position. The layouter will
             // use that as the current position (this will ensure that the module will not 'jump away'
             // when we unpin it.
             if (loc != null)
-                centerLoc = null;
-
-            revalidate();  // invalidate() not enough here
+                invalidateLocation();
+            revalidate();
         }
+    }
+
+    protected void setVectorArrangement(VectorArrangement vectorArrangement, String par1, String par2, String par3) {
+        VectorArrangementParameters pars = makeVectorArrangementParameters(vectorArrangement, par1, par2, par3);
+        if (constraint.setVectorArragement(vectorArrangement, pars))
+            revalidate();
+    }
+
+    protected VectorArrangementParameters makeVectorArrangementParameters(VectorArrangement vectorArrangement, String par1, String par2, String par3) {
+        if (vectorArrangement == VectorArrangement.none)
+            return null;
+
+        VectorArrangementParameters p = new VectorArrangementParameters();
+        switch (vectorArrangement) {
+        case none:
+            break; // handled above
+        case exact:
+            p.x = parseFloat(par1);
+            p.y = parseFloat(par2);
+            break;
+        case row:
+            p.dx = parseFloat(par1);
+            break;
+        case column:
+            p.dy = parseFloat(par1);
+            break;
+        case matrix:
+            p.n = parseInt(par1);
+            p.dx = parseFloat(par2);
+            p.dy = parseFloat(par3);
+            break;
+        case ring:
+            p.dx = parseFloat(par1);
+            p.dy = parseFloat(par2);
+            break;
+        default:
+            throw new AssertionFailedException("unhandled vector arrangement");
+        }
+        return p;
+    }
+
+    private float parseFloat(String value) {
+        try {
+            if (!StringUtils.isBlank(value))
+                return Float.valueOf(value);
+        } catch (NumberFormatException e) { }
+        return Float.NaN;
+    }
+
+    private int parseInt(String value) {
+        try {
+            if (!StringUtils.isBlank(value))
+                return Integer.valueOf(value);
+        } catch (NumberFormatException e) { }
+        return -1;
     }
 
     protected Rectangle computeBounds(Rectangle shapeBounds) {
@@ -392,7 +411,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
             width = Math.max(width, imageSizePercentage * imageBounds.width / 100);
             height = Math.max(height, imageSizePercentage * imageBounds.height / 100);
         }
-        return centerLoc==null ? new Rectangle(0,0,width,height) : new Rectangle(centerLoc.x-width/2, centerLoc.y-height/2, width, height);
+        return centerPos==null ? new Rectangle(0,0,width,height) : new Rectangle(centerPos.x-width/2, centerPos.y-height/2, width, height);
     }
 
     /**
@@ -480,27 +499,27 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 
     @Override
     public void setBounds(Rectangle rect) {
-        throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+        throw new UnsupportedOperationException(); // call setCenterPosition/setShape instead
     }
 
     @Override
     public void setLocation(Point p) {
-        throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+        throw new UnsupportedOperationException(); // call setCenterPosition/setShape instead
     }
 
     @Override
     public void setSize(int w, int h) {
-        throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+        throw new UnsupportedOperationException(); // call setCenterPosition/setShape instead
     }
 
     @Override
     public void setPreferredSize(Dimension size) {
-        throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+        throw new UnsupportedOperationException(); // call setCenterPosition/setShape instead
     }
 
     @Override
     public Dimension getPreferredSize(int hint, int hint2) {
-        throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+        throw new UnsupportedOperationException(); // call setCenterPosition/setShape instead
     }
 
     public Rectangle getHandleBounds() {
@@ -528,7 +547,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     public void setName(String text) {
         if (!StringUtils.equals(this.nameText, text)) {
             nameText = text;
-            if (centerLoc != null)
+            if (centerPos != null)
                 updateBounds();
             repaint();
         }
@@ -567,7 +586,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     public void setPinVisible(boolean visible) {
         if (pinVisible != visible) {
             pinVisible = visible;
-            if (centerLoc != null)
+            if (centerPos != null)
                 updateBounds();
             repaint();
         }
@@ -589,7 +608,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     public void setNameVisible(boolean visible) {
         if (nameVisible != visible) {
             nameVisible = visible;
-            if (centerLoc != null)
+            if (centerPos != null)
                 updateBounds();
             repaint();
         }
@@ -602,7 +621,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     public void setImageSizePercentage(int imageSizePercentage) {
         if (this.imageSizePercentage != imageSizePercentage) {
             this.imageSizePercentage = imageSizePercentage;
-            if (centerLoc != null)
+            if (centerPos != null)
                 updateBounds();
             repaint();
         }
@@ -612,109 +631,41 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         return imageSizePercentage;
     }
 
-    public Point getCenterLocation() {
-        return centerLoc;
+    public Point getCenterPosition() {
+        return centerPos;
     }
 
-    public void setCenterLocation(Point loc) {
-        // set the center of the image, and update bounds if changed.
-        // note: this method may ONLY be called from the layouter!
-        if (loc == null) {
-            centerLoc = null;
+    /**
+     * Set the center of the main area (icon/shape) of if the figure, and
+     * update bounds if changed. Pass null to invalidate the position.
+     */
+    public void setCenterPosition(Point pos) {
+        if (pos == null) {
+            centerPos = null;
         }
-        else if (!loc.equals(centerLoc)) {
-            this.centerLoc = loc;
+        else if (!pos.equals(centerPos)) {
+            this.centerPos = pos;
             updateBounds();
             if (rangeFigure != null)
-                rangeFigure.setBounds(rangeFigure.getBounds().setLocation(centerLoc.x-rangeFigure.getSize().width/2,
-                        centerLoc.y - rangeFigure.getSize().height/2));
+                rangeFigure.setBounds(rangeFigure.getBounds().setLocation(centerPos.x-rangeFigure.getSize().width/2,
+                        centerPos.y - rangeFigure.getSize().height/2));
         }
+    }
+
+    protected void invalidateLocation() {
+        constraint.setLayoutedLocation(null);
+        setCenterPosition(null);
     }
 
     protected void updateBounds() {
         super.setBounds(computeBounds(getShapeBounds()));
     }
 
-    public Point getBaseLocation() {
-        return baseLoc;
-    }
-
-    public Object getVectorIdentifier() {
-        return vectorIdentifier;
-    }
-
-    public VectorArrangement getVectorArrangement() {
-        return vectorArrangement;
-    }
-
-    public int getVectorIndex() {
-        return vectorIndex;
-    }
-
-    public int getVectorSize() {
-        return vectorSize;
-    }
-
-    public VectorArrangementParameters getVectorArrangementParameters() {
-        if (vectorArrangementParams == null) {
-            VectorArrangementParameters p = new VectorArrangementParameters();
-            switch (vectorArrangement) {
-            case none:
-                break;
-            case exact:
-                p.x = parseFloat(vectorArrangementPar1);
-                p.y = parseFloat(vectorArrangementPar2);
-                break;
-            case row:
-                p.dx = parseFloat(vectorArrangementPar1);
-                break;
-            case column:
-                p.dy = parseFloat(vectorArrangementPar1);
-                break;
-            case matrix:
-                p.n = parseInt(vectorArrangementPar1);
-                p.dx = parseFloat(vectorArrangementPar2);
-                p.dy = parseFloat(vectorArrangementPar3);
-                break;
-            case ring:
-                p.dx = parseFloat(vectorArrangementPar1);
-                p.dy = parseFloat(vectorArrangementPar2);
-                break;
-            default:
-                throw new AssertionFailedException("unhandled vector arrangement");
-            }
-            vectorArrangementParams = p;
-        }
-        vectorArrangementParams.scale = lastScale;
-        return vectorArrangementParams;
-    }
-
-    private float parseFloat(String value) {
-        try {
-            if (!StringUtils.isBlank(value))
-                return Float.valueOf(value);
-        } catch (NumberFormatException e) { }
-        return Float.NaN;
-    }
-
-    private int parseInt(String value) {
-        try {
-            if (!StringUtils.isBlank(value))
-                return Integer.valueOf(value);
-        } catch (NumberFormatException e) { }
-        return -1;
-    }
-
-    @Override
-    public Dimension getShapeSize() {
-        return new Dimension(shapeHeight, shapeWidth);
-    }
-
     @Override
     public void paint(Graphics graphics) {
         graphics.setAlpha(alpha);
         super.paint(graphics);
-        Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
+        Assert.isNotNull(centerPos, "setCenterPos() must be called before painting");
         Assert.isNotNull(rangeFigureLayer, "setRangeFigureLayer() must be called before painting");
 
         // draw shape
@@ -723,9 +674,9 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
             graphics.setForegroundColor(shapeBorderColor);
             graphics.setBackgroundColor(shapeFillColor);
             graphics.setLineWidthFloat(shapeBorderWidth*(float)graphics.getAbsoluteScale());
-            int left = centerLoc.x - shapeWidth/2;
-            int top = centerLoc.y - shapeHeight/2;
-            // expand the clipping a bit so the anti-alised sides would not be clipped
+            int left = centerPos.x - shapeWidth/2;
+            int top = centerPos.y - shapeHeight/2;
+            // expand the clipping a bit so the anti-aliased sides would not be clipped
             graphics.setClip(graphics.getClip(Rectangle.SINGLETON).getExpanded(1, 1));
             if (shape == SHAPE_OVAL) {
                 if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
@@ -769,12 +720,12 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
         if (image != null) {
             org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
             if (imageSizePercentage == 100)
-                graphics.drawImage(image, centerLoc.x - imageBounds.width/2, centerLoc.y - imageBounds.height/2);
+                graphics.drawImage(image, centerPos.x - imageBounds.width/2, centerPos.y - imageBounds.height/2);
             else {
                 int scaledWidth = imageSizePercentage * imageBounds.width / 100;
                 int scaledHeight = imageSizePercentage * imageBounds.height / 100;
                 graphics.drawImage(image, 0, 0, imageBounds.width, imageBounds.height,
-                        centerLoc.x - scaledWidth/2, centerLoc.y - scaledHeight/2, scaledWidth, scaledHeight);
+                        centerPos.x - scaledWidth/2, centerPos.y - scaledHeight/2, scaledWidth, scaledHeight);
             }
         }
 

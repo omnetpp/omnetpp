@@ -50,8 +50,6 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  *
  * @author rhornig, andras
  */
-//TODO zoom doesn't work on Aloha
-//TODO layout parameters are currently commented out
 public class CompoundModuleEditPart extends ModuleEditPart {
     private static final String PREF_SECTION = "ViewerSettings";
     private static final String PREF_SCALE = ":scale";

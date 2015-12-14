@@ -2,6 +2,7 @@ package org.omnetpp.figures.layout;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
+import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.layout.engine.BasicSpringEmbedderLayout;
 import org.omnetpp.layout.engine.GraphLayouterEnvironment;
 
@@ -12,8 +13,8 @@ public class NativeBasicSpringEmbedderLayoutAlgorithm extends BasicSpringEmbedde
         setEnvironment(environment);
     }
 
-    public PrecisionPoint getNodePosition(int mod) {
-        return new PrecisionPoint(super.getNodePositionX(mod), super.getNodePositionY(mod));
+    public PointF getNodePosition(int mod) {
+        return new PointF((float)super.getNodePositionX(mod), (float)super.getNodePositionY(mod));
     }
 
     public PrecisionPoint getAnchorPosition(String anchor) {

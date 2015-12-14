@@ -1,6 +1,7 @@
 package org.omnetpp.figures.layout;
 
 import org.eclipse.draw2d.geometry.PrecisionPoint;
+import org.omnetpp.common.displaymodel.PointF;
 
 public interface ILayoutAlgorithm {
     /**
@@ -66,7 +67,7 @@ public interface ILayoutAlgorithm {
     /**
      * Extract the results after layouting
      */
-    PrecisionPoint getNodePosition(int nodeId);
+    PointF getNodePosition(int nodeId);
 
     /**
      * Returns the position of the given anchor after layouting

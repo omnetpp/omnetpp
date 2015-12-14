@@ -7,15 +7,18 @@
 
 package org.omnetpp.figures.layout;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.displaymodel.DimensionF;
+import org.omnetpp.common.displaymodel.PointF;
 
 /**
  * Submodule layout is using this interface
  * @author andras
  */
 public interface ISubmoduleConstraint {
-    enum VectorArrangement {none, exact, row, column, matrix, ring}; // names must match IDisplayString.Prop.LAYOUT names
+    /**
+     * Vector arrangement. Names must match IDisplayString.Prop.LAYOUT names.
+     */
+    public enum VectorArrangement {none, exact, row, column, matrix, ring};
 
     /**
      * Returns the position that occurs in the display string, or null. For non-vector
@@ -23,7 +26,14 @@ public interface ISubmoduleConstraint {
      * will be this location plus an offset calculated from vectorArrangement, vectorSize,
      * vectorIndex and vector arrangement parameters.
      */
-    public Point getBaseLocation();
+    public PointF getBaseLocation();
+
+    /**
+     * The size of the main shape of submodule; the layout algorithm may take this into
+     * account. Return null or (0,0) if size is not specified or is to be ignored
+     * during layouting.
+     */
+    public DimensionF getShapeSize();
 
     /**
      * Identifies the vector this submodule belongs to, or null if the submodule
@@ -52,27 +62,15 @@ public interface ISubmoduleConstraint {
     public VectorArrangementParameters getVectorArrangementParameters();
 
     /**
-     * Sets the location of a submodule (the center point of its main area icon/shape).
-     * This method must store the currently set value which can be later returned by
-     * {@link #getCenterLocation()}. Setting it to <code>null</code> is allowed meaning
-     * that the submodule location must be determined by the layouting algorithm.
-     * In addition this function MUST set the bounds of the figure correctly based on the
-     * size of the figure and the currently set center point.
+     * Sets the layouted location of a submodule (the center point of its
+     * main area icon/shape). Pass null to invalidate the currrent location;
+     * this will cause the submodule to be layouted next time the layouter
+     * is invoked.
      */
-    public void setCenterLocation(Point loc);
+    public void setLayoutedLocation(PointF loc);
 
     /**
-     * The center point of the main area (icon/shape) of a submodule figure.
-     * Returns <code>null</code> if setCenterLocation() was not called before. This
-     * means that the submodule was added to the parent recently and an auto-layout
-     * should be executed to place the submodule inside the compound module.
+     * Returns the layouted location of the submodule, or null if it was not yet layouted.
      */
-    public Point getCenterLocation();
-
-    /**
-     * The size of the main shape of submodule; the layout algorithm may take this into
-     * account. Return null or (0,0) if size is not specified or is to be ignored
-     * during layouting.
-     */
-    public Dimension getShapeSize();
+    public PointF getLayoutedLocation();
 }

@@ -1858,7 +1858,7 @@ public class PropertiesDialog extends TrayDialog {
                     submoduleFigure.setName(name);
                     submoduleFigure.setDisplayString(displayString, scale, iconScale, project);
                     int width = submoduleFigure.getSize().width;
-                    submoduleFigure.setCenterLocation(new Point(x+width/2, 50));
+                    submoduleFigure.setCenterPosition(new Point(x+width/2, 50));
                     x += width + 10;
                 }
                 else {

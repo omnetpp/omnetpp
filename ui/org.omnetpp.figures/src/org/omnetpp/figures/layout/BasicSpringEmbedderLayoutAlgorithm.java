@@ -16,6 +16,7 @@ import java.util.Stack;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.displaymodel.PointF;
 
 /**
  * Implementation of the Spring Embedder algorithm.
@@ -362,12 +363,12 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
         }
     }
 
-    public PrecisionPoint getNodePosition(int nodeId) {
+    public PointF getNodePosition(int nodeId) {
         Node n = findNode(nodeId);
         if (n == null)
             return null;
 
-        return new PrecisionPoint(n.x, n.y);
+        return new PointF((float)n.x, (float)n.y);
     }
 
     public PrecisionPoint getAnchorPosition(String anchor) {

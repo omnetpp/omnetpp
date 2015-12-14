@@ -121,7 +121,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
 
             if (isChecked()) {
                 // pin the module at the current temporary location if it is not fixed
-                Point loc = ((SubmoduleFigure)child.getFigure()).getCenterLocation();
+                Point loc = ((SubmoduleFigure)child.getFigure()).getCenterPosition();
                 PointF pos = PointF.fromPixels(loc, scale);
                 cmd.setPinLocation(pos);
             }
