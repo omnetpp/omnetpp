@@ -7,6 +7,8 @@
 
 package org.omnetpp.cdt.build;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +23,11 @@ import java.util.Stack;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,13 +43,11 @@ import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.QualifiedName;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.Debug;
@@ -58,17 +63,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Stores the contents of an ".oppfeatures" as ProjectFeature objects, and provides
- * functionality to enable/disable features, to read and validate ".oppfeatures",
+ * Loads the contents of an ".oppfeatures" file into ProjectFeature objects, and
+ * provides functionality to enable/disable features, to validate ".oppfeatures",
  * to check the project state, and other related functions.
+ *
+ * Feature enablements are stored in the ".oppfeaturestate" file.
+ *
+ * IMPORTANT: File names and formats need to be kept compatible with opp_featuretool.
  *
  * @author Andras
  */
 public class ProjectFeaturesManager {
     public static final String PROJECTFEATURES_FILENAME = ".oppfeatures";
-    public static final QualifiedName PROP_FEATUREENABLEMENT = new QualifiedName(Activator.PLUGIN_ID, "featureEnablement");
+    public static final String PROJECTFEATURESTATE_FILENAME = ".oppfeaturestate";
 
-    // XML element and attribute names for ".oppfeatures"
+    // XML element and attribute names for ".oppfeatures" and ".oppfeaturestates"
+    private static final String ELMNT_FEATURES = "featurestates"; //TODO rename to "features"
     private static final String ELMNT_FEATURE = "feature";
     protected static final String ATT_ID = "id";
     private static final String ATT_NAME = "name";
@@ -81,6 +91,7 @@ public class ProjectFeaturesManager {
     private static final String ATT_COMPILEFLAGS = "compileFlags";
     private static final String ATT_LINKERFLAGS = "linkerFlags";
     private static final String ATT_CPPSOURCEROOTS = "cppSourceRoots"; // attribute of root element
+    private static final String ATT_ENABLED = "enabled"; // in ".oppfeaturestates"
 
     private static final String[] ALL_FEATURE_ATTRS = new String[] {
         ATT_ID, ATT_NAME, ATT_DESCRIPTION, ATT_INITIALLYENABLED, ATT_LABELS, ATT_REQUIRES,
@@ -142,16 +153,7 @@ public class ProjectFeaturesManager {
      * For features that have no enablement state saved, it uses their getInitiallyEnabled() method.
      */
     public List<ProjectFeature> getEnabledFeatures() throws CoreException {
-        String value = project.getPersistentProperty(PROP_FEATUREENABLEMENT);
-        Map<String, Boolean> featureEnablements = new HashMap<String, Boolean>();
-        if (value != null) {
-            for (String s : value.split("\\s+")) {
-                if (s.endsWith(":0") || s.endsWith(":1"))
-                    featureEnablements.put(s.substring(0, s.length()-2), s.charAt(s.length()-1)=='1');
-                else
-                    Activator.log(IMarker.SEVERITY_WARNING, "Invalid item in " + PROP_FEATUREENABLEMENT + " project property: " + s);
-            }
-        }
+        Map<String, Boolean> featureEnablements = loadFeatureEnablements();
         List<ProjectFeature> result = new ArrayList<ProjectFeature>();
         for (ProjectFeature f : getFeatures()) {
             Boolean savedEnabled = featureEnablements.get(f.getId());
@@ -162,14 +164,59 @@ public class ProjectFeaturesManager {
         return result;
     }
 
+    protected Map<String, Boolean> loadFeatureEnablements() throws CoreException {
+        Document doc = readXmlFile(getFeatureStatesFile());
+        if (doc == null)
+            return null;
+        Map<String, Boolean> result = new HashMap<String, Boolean>();
+        Element root = doc.getDocumentElement();
+        NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
+        for (int i = 0; i < featureElements.getLength(); i++) {
+            Element e = (Element)featureElements.item(i);
+            String id = getAttribute(e, ATT_ID);
+            boolean enabled = "true".equals(getAttribute(e, ATT_ENABLED));
+            result.put(id, enabled);
+        }
+        return result;
+    }
+
     /**
      * Stores the enablement state of project features for this project.
      */
     public void saveFeatureEnablement(List<ProjectFeature> enabledFeatures) throws CoreException {
-        String value = "";
-        for (ProjectFeature f : getFeatures())
-            value += f.getId() + ":" + (enabledFeatures.contains(f) ? "1" : "0") + " ";
-        project.setPersistentProperty(PROP_FEATUREENABLEMENT, value.trim());
+        try {
+            // build DOM tree
+            DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+            Element root = doc.createElement(ELMNT_FEATURES);
+            doc.appendChild(root);
+
+            for (ProjectFeature f : getFeatures()) {
+                boolean enabled = enabledFeatures.contains(f);
+                Element e = doc.createElement(ELMNT_FEATURE);
+                e.setAttribute(ATT_ID, f.getId());
+                e.setAttribute(ATT_ENABLED, enabled ? "true" : "false");
+                root.appendChild(e);
+            }
+
+            // serialize
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(doc), new StreamResult(writer));
+            String content = writer.toString();
+
+            // save it
+            IFile file = getFeatureStatesFile();
+            if (!file.exists())
+                file.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+            else
+                file.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+        }
+        catch (Exception e) {  // catches: ParserConfigurationException,ClassCastException,ClassNotFoundException,InstantiationException,IllegalAccessException
+            throw Activator.wrapIntoCoreException("Cannot save project feature enablements: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -179,7 +226,7 @@ public class ProjectFeaturesManager {
      * but could not be read or parsed, it throws an exception.
      */
     public boolean loadFeaturesFile() throws CoreException {
-        doc = readFeaturesFile();
+        doc = readXmlFile(getFeatureDescriptionFile());
         if (doc == null)
             return false;
         this.features = extractFeatures(doc);
@@ -194,24 +241,30 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Reads the feature description file from the project into an XML document,
-     * without interpreting it. Returns null if the file does not exist.
-     * Throws CoreException on parse error, file read error, etc.
+     * Returns the handle for the feature state file of the given project.
      */
-    protected Document readFeaturesFile() throws CoreException {
-        IFile featuresFile = getFeatureDescriptionFile();
-        if (!featuresFile.exists()) {
+    public IFile getFeatureStatesFile() {
+        return project.getFile(PROJECTFEATURESTATE_FILENAME);
+    }
+
+    /**
+     * Reads the given file into an XML document, without interpreting it.
+     * Returns null if the file does not exist. Throws CoreException on
+     * parse error, file read error, etc.
+     */
+    protected Document readXmlFile(IFile file) throws CoreException {
+        if (!file.exists()) {
             return null;
         }
         else {
             try {
                 if (!project.getWorkspace().isTreeLocked())
-                    featuresFile.refreshLocal(IResource.DEPTH_ZERO, null);
+                    file.refreshLocal(IResource.DEPTH_ZERO, null);
                 DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                return docBuilder.parse(featuresFile.getContents());
+                return docBuilder.parse(file.getContents());
             }
             catch (Exception e) { // catches ParserConfigurationException, SAXException, IOException
-                throw Activator.wrapIntoCoreException(featuresFile.getFullPath() + ": " + e.getMessage(), e);
+                throw Activator.wrapIntoCoreException(file.getFullPath() + ": " + e.getMessage(), e);
             }
         }
     }
