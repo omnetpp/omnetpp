@@ -678,7 +678,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     // for substituteIntoTemplate()
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)

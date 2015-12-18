@@ -8,7 +8,6 @@
 package org.omnetpp.cdt.build;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,12 +22,6 @@ import java.util.Stack;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -54,6 +47,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.w3c.dom.Document;
@@ -199,16 +193,9 @@ public class ProjectFeaturesManager {
                 root.appendChild(e);
             }
 
-            // serialize
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            StringWriter writer = new StringWriter();
-            transformer.transform(new DOMSource(doc), new StreamResult(writer));
-            String content = writer.toString();
-
             // save it
             IFile file = getFeatureStatesFile();
+            String content = XmlUtils.serialize(doc);
             if (!file.exists())
                 file.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
             else

@@ -8,7 +8,6 @@
 package org.omnetpp.cdt.build;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +17,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -34,6 +27,7 @@ import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -266,16 +260,9 @@ public class BuildSpecification implements Cloneable {
                 root.appendChild(dirElement);
             }
 
-            // serialize
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            StringWriter writer = new StringWriter();
-            transformer.transform(new DOMSource(doc), new StreamResult(writer));
-            String content = writer.toString();
-
             // save it
             IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
+            String content = XmlUtils.serialize(doc);
             if (!buildSpecFile.exists())
                 buildSpecFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
             else
