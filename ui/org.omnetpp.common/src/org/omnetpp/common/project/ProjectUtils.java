@@ -46,6 +46,7 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class ProjectUtils {
     public static final String NEDFOLDERS_FILENAME = ".nedfolders";
+    public static final String NEDEXCLUSIONS_FILENAME = ".nedexclusions";
 
     /**
      * Checks whether the provided project is open, has the OMNeT++ nature,
@@ -279,9 +280,8 @@ public class ProjectUtils {
     }
 
     public static boolean isNedFoldersFile(IResource resource) {
-        return (resource instanceof IFile &&
-                resource.getParent() instanceof IProject &&
-                resource.getName().equals(NEDFOLDERS_FILENAME));
+        return resource instanceof IFile && resource.getParent() instanceof IProject &&
+                (resource.getName().equals(NEDFOLDERS_FILENAME) || resource.getName().equals(NEDEXCLUSIONS_FILENAME));
     }
 
     /**
@@ -290,6 +290,8 @@ public class ProjectUtils {
     public static NedSourceFoldersConfiguration readNedFoldersFile(IProject project) throws CoreException {
         List<IContainer> folders = new ArrayList<IContainer>();
         List<String> excludedPackages = new ArrayList<String>();
+
+        // read .nedfolders if exists
         IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
         if (!project.getWorkspace().isTreeLocked())
             nedFoldersFile.refreshLocal(IResource.DEPTH_ZERO, null);
@@ -307,12 +309,32 @@ public class ProjectUtils {
                     excludedPackages.add(line.substring(1).trim());
                 else if (line.equals("."))
                     folders.add(project);
-                else if (line.length()>0)
+                else if (!line.isEmpty())
                     folders.add(project.getFolder(line));
             }
         }
         if (folders.isEmpty())
             folders.add(project); // this is the default
+
+        // read .nedexclusions if exists
+        IFile nedExclusionsFile = project.getFile(NEDEXCLUSIONS_FILENAME);
+        if (!project.getWorkspace().isTreeLocked())
+            nedExclusionsFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        if (nedExclusionsFile.exists()) {
+            String contents;
+            try {
+                contents = FileUtils.readTextFile(nedExclusionsFile.getContents(), null);
+            }
+            catch (IOException e) {
+                throw CommonPlugin.wrapIntoCoreException("Cannot read " + nedExclusionsFile.getFullPath(), e);
+            }
+            for (String line : StringUtils.splitToLines(contents)) {
+                line = line.trim();
+                if (!line.isEmpty())
+                    excludedPackages.add(line);
+            }
+        }
+
         return new NedSourceFoldersConfiguration(folders.toArray(new IContainer[]{}), excludedPackages.toArray(new String[]{}));
     }
 
@@ -320,19 +342,25 @@ public class ProjectUtils {
      * Saves the ".nedfolders" file in the given OMNeT++ project.
      */
     public static void saveNedFoldersFile(IProject project, NedSourceFoldersConfiguration config) throws CoreException {
-        // assemble file content to save
+        // save .nedfolders
         String content = "";
         for (IContainer folder : config.getSourceFolders())
             content += getProjectRelativePathOf(project, folder) + "\n";
-        for (String packageName : config.getExcludedPackages())
-            content += "-" + packageName + "\n";
-
-        // save it
-        IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
-        if (!nedpathFile.exists())
-            nedpathFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+        IFile nedfoldersFile = project.getFile(NEDFOLDERS_FILENAME);
+        if (!nedfoldersFile.exists())
+            nedfoldersFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
         else
-            nedpathFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+            nedfoldersFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+
+        // save .nedexclusions
+        content = "";
+        for (String packageName : config.getExcludedPackages())
+            content += packageName + "\n";
+        IFile nedexclusionsFile = project.getFile(NEDEXCLUSIONS_FILENAME);
+        if (!nedexclusionsFile.exists())
+            nedexclusionsFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+        else
+            nedexclusionsFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
     }
 
     private static String getProjectRelativePathOf(IProject project, IContainer container) {
