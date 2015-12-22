@@ -219,8 +219,8 @@ object instance, as opposed to being considered as part of its contents.
 \begin{note}
     Since the {\opp} 4.0 version, \ffunc{dup()} returns a pointer to
     the same type as the object itself, and not a \ttt{cObject*}.
-    This is made possible by a relatively new C++ feature called
-    \textit{covariant return types}.
+    This is made possible by a C++ feature called \textit{covariant
+    return types}.
 \end{note}
 
 \subsection{Iterators}
@@ -236,10 +236,10 @@ For example:
 \begin{cpp}
 cQueue queue;
 
-//..
-for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
-{
+//...
+for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++) {
     cOwnedObject *containedObject = queueIter();
+    //...
 }
 \end{cpp}
 
@@ -269,7 +269,7 @@ filled in using subsequent arguments.
 An example:
 
 \begin{cpp}
-if (msg->getControlInfo()==nullptr)
+if (msg->getControlInfo() == nullptr)
     opp_error("message (%s)%s has no control info attached",
               msg->getClassName(), msg->getName());
 \end{cpp}
@@ -568,17 +568,15 @@ cQueue queue("my-queue");
 cMessage *msg;
 
 // insert messages
-for (int i=0; i<10; i++)
-{
-  msg = new cMessage;
-  queue.insert(msg);
+for (int i = 0; i < 10; i++) {
+    msg = new cMessage;
+    queue.insert(msg);
 }
 
 // remove messages
-while(!queue.empty())
-{
-  msg = (cMessage *)queue.pop();
-  delete msg;
+while(!queue.empty()) {
+    msg = (cMessage *)queue.pop();
+    delete msg;
 }
 \end{cpp}
 
@@ -742,13 +740,11 @@ indices with an integer variable. The \ffunc{size()} member function
 returns the largest index plus one.
 
 \begin{cpp}
-for (int i=0; i<array.size(); i++)
-{
-    if (array[i]) // is this position used?
-    {
-        cObject *obj = array[i];
-        EV << obj->getName() << endl;
-    }
+for (int i = 0; i < array.size(); i++) {
+  if (array[i]) { // is this position used?
+    cObject *obj = array[i];
+    EV << obj->getName() << endl;
+  }
 }
 \end{cpp}
 
@@ -874,16 +870,14 @@ Once you have the topology extracted, you can start exploring
 it. Consider the following code (we'll explain it shortly):
 
 \begin{cpp}
-for (int i=0; i<topo.getNumNodes(); i++)
-{
+for (int i = 0; i < topo.getNumNodes(); i++) {
   cTopology::Node *node = topo.getNode(i);
   EV << "Node i=" << i << " is " << node->getModule()->getFullPath() << endl;
   EV << " It has " << node->getNumOutLinks() << " conns to other nodes\n";
   EV << " and " << node->getNumInLinks() << " conns from other nodes\n";
 
   EV << " Connections to other modules are:\n";
-  for (int j=0; j<node->getNumOutLinks(); j++)
-  {
+  for (int j = 0; j < node->getNumOutLinks(); j++) {
     cTopology::Node *neighbour = node->getLinkOut(j)->getRemoteNode();
     cGate *gate = node->getLinkOut(j)->getLocalGate();
     EV << " " << neighbour->getModule()->getFullPath()
@@ -901,7 +895,7 @@ The correspondence between a graph node and a module can be obtained
 by:
 
 \begin{cpp}
-cTopology::Node *node = topo.getNodeFor( module );
+cTopology::Node *node = topo.getNodeFor(module);
 cModule *module = node->getModule();
 \end{cpp}
 
@@ -964,18 +958,14 @@ Walking along the path from our module to the target node:
 \begin{cpp}
 cTopology::Node *node = topo.getNodeFor( this );
 
-if (node == nullptr)
-{
+if (node == nullptr) {
   ev < "We (" << getFullPath() << ") are not included in the topology.\n";
 }
-else if (node->getNumPaths()==0)
-{
+else if (node->getNumPaths()==0) {
   EV << "No path to destination.\n";
 }
-else
-{
-  while (node != topo.getTargetNode())
-  {
+else {
+  while (node != topo.getTargetNode()) {
     EV << "We are in " << node->getModule()->getFullPath() << endl;
     EV << node->getDistanceToTarget() << " hops to go\n";
     EV << "There are " << node->getNumPaths()
@@ -988,7 +978,6 @@ else
   }
 }
 \end{cpp}
-
 
 The purpose of the \ffunc{getDistanceToTarget()} member function of a
 node is self-explanatory. In the unweighted case, it returns the
@@ -1019,13 +1008,12 @@ disabling the current node to prevent the shortest paths
 from going through it:
 
 \begin{cpp}
-cTopology::Node *thisnode = topo.getNodeFor( this );
+cTopology::Node *thisnode = topo.getNodeFor(this);
 thisnode->disable();
-topo.calculateUnweightedSingleShortestPathsTo( targetnode );
+topo.calculateUnweightedSingleShortestPathsTo(targetnode);
 thisnode->enable();
 
-for (int j=0; j<thisnode->getNumOutLinks(); j++)
-{
+for (int j = 0; j < thisnode->getNumOutLinks(); j++) {
   cTopology::LinkOut *link = thisnode->getLinkOut(i);
   EV << "Through gate " << link->getLocalGate()->getFullName() << " : "
      << 1 + link->getRemoteNode()->getDistanceToTarget() << " hops" << endl;
@@ -1318,7 +1306,7 @@ usage for \cclass{cStdDev}:
 \begin{cpp}
 cStdDev stat("stat");
 
-for (int i=0; i<10; i++)
+for (int i = 0; i < 10; i++)
   stat.collect( normal(0,1) );
 
 long numSamples = stat.getCount();
@@ -1441,8 +1429,7 @@ An example:
 
 \begin{cpp}
 long n = histogram.getCount();
-for (int i=0; i<histogram.getNumCells(); i++)
-{
+for (int i = 0; i < histogram.getNumCells(); i++) {
   double cellWidth = histogram.getBasepoint(i+1)-histogram.getBasepoint(i);
   int count = histogram.getCellValue(i);
   double pdf = histogram.getCellPDF(i);

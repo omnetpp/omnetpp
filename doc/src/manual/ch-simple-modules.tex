@@ -922,14 +922,12 @@ void BurstyGenerator::handleMessage(cMessage *msg)
     cMessage *pkt = new cMessage;
     send(pkt, "out");
     // if this was the last packet of the burst
-    if (--burstCounter == 0)
-    {
+    if (--burstCounter == 0) {
         // schedule next burst
         burstCounter = burstLength;
         scheduleAt(simTime()+exponential(5.0), msg);
     }
-    else
-    {
+    else {
         // schedule next sending within burst
         scheduleAt(simTime()+exponential(1.0), msg);
     }
@@ -1082,8 +1080,7 @@ Example:
 \begin{cpp}
 void Sink::activity()
 {
-    while(true)
-    {
+    while(true) {
         msg = receive();
         delete msg;
     }
@@ -1539,7 +1536,7 @@ An example usage of the above methods:
 
 \begin{cpp}
 int n = getNumParams();
-for (int i=0; i<n; i++)
+for (int i = 0; i < n; i++)
 {
     cPar& p = par(i);
     EV << "parameter: " << p.getName() << "\n";
@@ -1662,7 +1659,7 @@ workaround is to explicitly call \ffunc{handleParameterChange()}
 from the \ffunc{initialize()} or \ffunc{finish()} function:
 
 \begin{cpp}
-for (int i=0; i<getNumParams(); i++)
+for (int i = 0; i < getNumParams(); i++)
     handleParameterChange(par(i).getName());
 \end{cpp}
 
@@ -1748,7 +1745,7 @@ method. The following example iterates through all elements in the
 gate vector:
 
 \begin{cpp}
-for (int i=0; i<gateSize("out"); i++) {
+for (int i = 0; i < gateSize("out"); i++) {
     cGate *gate = gate("out", i);
     //...
 }
@@ -1803,7 +1800,7 @@ The following example iterates through a gate vector, using IDs:
 \begin{cpp}
 int baseId = gateBaseId("out");
 int size = gateSize("out");
-for (int i=0; i<size; i++) {
+for (int i = 0; i < size; i++) {
     cGate *gate = gate(baseId + i);
     //...
 }
@@ -2253,7 +2250,7 @@ create copies (duplicates) of the message object and send them.
 Example:
 
 \begin{cpp}
-for (int i=0; i<n; i++)
+for (int i = 0; i < n; i++)
 {
     cMessage *copy = msg->dup();
     send(copy, "out", i);
@@ -2270,7 +2267,7 @@ The optimized version of the code looks like this:
 
 \begin{cpp}
 int outGateBaseId = gateBaseId("out");
-for (int i=0; i<n; i++)
+for (int i = 0; i < n; i++)
     send(i==n-1 ? msg : msg->dup(), outGateBaseId+i);
 \end{cpp}
 
@@ -2933,8 +2930,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     result.delay = delay;
 
     // bit error modeling
-    if ((ber!=0 || per!=0) && msg->isPacket())
-    {
+    if ((ber!=0 || per!=0) && msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
         if (ber!=0 && dblrand() < 1.0 - pow(1.0-ber, (double)pkt->getBitLength())
             pkt->setBitError(true);
@@ -3236,8 +3232,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
          error("invalid event in state ACTIVE");
        }
        break;
-     case FSM_Exit(SEND):
-     {
+     case FSM_Exit(SEND): {
        // generate and send out job
        char msgname[32];
        sprintf( msgname, "job-%d", ++i);
@@ -4285,8 +4280,7 @@ class MyListener : public cListener
 
 void MyListener::receiveSignal(cComponent *src, simsignal_t id, cObject *obj)
 {
-    if (dynamic_cast<cPreModuleDeleteNotification *>(obj))
-    {
+    if (dynamic_cast<cPreModuleDeleteNotification *>(obj)) {
         cPreModuleDeleteNotification *data = (cPreModuleDeleteNotification *)obj;
         EV << "Module " << data->module->getFullPath() << " is about to be deleted\n";
     }
