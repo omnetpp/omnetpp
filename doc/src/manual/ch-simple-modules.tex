@@ -3084,8 +3084,7 @@ is conventionally named INIT.
 
 \subsubsection{Debugging FSMs}
 
-FSMs can log their state transitions \ttt{ev}\index{ev},
-with the output looking like this:
+FSMs can log their state transitions, with the output looking like this:
 
 \begin{filelisting}
 ...
@@ -3782,21 +3781,21 @@ Simulation signals can be used for:
         custom animation effects
 \end{itemize}
 
-Signals are emitted by components (modules and channels). Signals propagate
-on the module hierarchy up to the root. At any level, one can register
-listeners (callback objects); these listeners will be notified (called
-back) whenever a signal value is emitted. The result of upwards propagation
-is that listeners registered at a compound module can receive signals from
-all components in that submodule tree. A listener registered at the system
-module can receive signals from the whole simulation.
+Signals are emitted by components (modules and channels). Signals propagate on
+the module hierarchy up to the root. At any level, one can register listeners,
+that is, objects with callback methods. These listeners will be notified (their
+appropriate methods called) whenever a signal value is emitted. The result of
+upwards propagation is that listeners registered at a compound module can
+receive signals from all components in that submodule tree. A listener
+registered at the system module can receive signals from the whole simulation.
 
 \begin{note}
     A channel's parent is the (compound) module that contains the connection,
     not the owner of either gate the channel is connected to.
 \end{note}
 
-Signals are identified by signal names (i.e. strings), but for efficiency reasons
-at runtime we use dynamically assigned numeric identifiers (signal IDs,
+Signals are identified by signal \textit{names} (i.e. strings), but for efficiency,
+at runtime we use dynamically assigned numeric identifiers (\textit{signal IDs},
 typedef'd as \ttt{simsignal\_t}). The mapping of signal names to signal IDs is
 global, so all modules and channels asking to resolve a particular signal name
 will get back the same numeric signal ID.
@@ -3819,11 +3818,17 @@ feature.
   accidentally have the same name but represent different things.
 \end{note}
 
-When a signal is emitted, it can carry a value with it. This is realized via
-overloaded \ffunc{emit()} methods in components, and overloaded \ffunc{receiveSignal()}
-methods in listeners. The signal value can be of selected primitive types, or an
-object pointer; anything that is not feasible to emit as a primitive type may be
-wrapped into an object, and emitted as such.
+When a signal is emitted, it can carry a \textit{value} with it. There are
+multiple overloaded versions of the \ffunc{emit()} method for different
+data types, and also overloaded \ffunc{receiveSignal()} methods in
+listeners. The signal value can be of selected primitive types, or an
+object pointer; anything that is not feasible to emit as a primitive type
+may be wrapped into an object, and emitted as such.
+
+Even when the signal value is of a primitive type, it is possible to convey
+extra information to listeners via an additional \textit{details} object,
+also an (optional) argument of \ffunc{emit()}.
+
 
 \subsection{Design Considerations and Rationale}
 
@@ -3898,8 +3903,8 @@ const char *signalName = getSignalName(lengthSignalId); // --> "length"
 \subsubsection{Emitting Signals}
 
 The \ffunc{emit()} family of functions emit a signal from the module or
-channel. They take two parameters, the signal ID (\ttt{simsignal\_t}) and
-the value:
+channel. \ffunc{emit()} takes a signal ID (\ttt{simsignal\_t}) and
+a value as parameters:
 
 \begin{cpp}
 emit(lengthSignalId, queue.length());
@@ -3907,7 +3912,15 @@ emit(lengthSignalId, queue.length());
 
 The value can be of type \ttt{bool}, \ttt{long}, \ttt{double}, \ttt{simtime\_t},
 \ttt{const char *}, or \ttt{(const) cObject *}. Other types can be cast into
-one of these types, or wrapped into an object subclassed from \ttt{cObject}.
+one of these types, or wrapped into an object subclassed from \cclass{cObject}.
+
+\ffunc{emit()} also has an extra, optional object pointer argument named
+\ttt{details}, with the type \ttt{cObject*}. This argument may be used
+to convey to listeners extra information.
+
+\begin{note}
+  The \textit{details} parameter was added in {\opp} 5.0.
+\end{note}
 
 When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal.
 However, if producing a value has a significant runtime cost, then the
@@ -4150,12 +4163,18 @@ class cIListener
 {
   public:
     virtual ~cIListener() {}
-    virtual void receiveSignal(cComponent *src, simsignal_t id, bool b) = 0;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, long l) = 0;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, double d) = 0;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, simtime_t t) = 0;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, const char *s) = 0;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, cObject *obj) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               bool b, cObject *details) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               long l, cObject *details) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               double d, cObject *details) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               simtime_t t, cObject *details) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               const char *s, cObject *details) = 0;
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               cObject *obj, cObject *details) = 0;
     virtual void finish(cComponent *component, simsignal_t id) {}
     virtual void subscribedTo(cComponent *component, simsignal_t id) {}
     virtual void unsubscribedFrom(cComponent *component, simsignal_t id) {}
@@ -4166,14 +4185,13 @@ This class has a number of virtual methods:
 
 \begin{itemize}
   \item Several overloaded \ffunc{receiveSignal()} methods, one for each
-    data type. Whenever a signal is emitted (via \ffunc{emit()}),
-    the matching \ffunc{receiveSignal()} methods of subscribed listeners
-    are invoked.
+    data type. Whenever a signal is emitted (via \ffunc{emit()}), the matching
+    \ffunc{receiveSignal()} method is invoked on the subscribed listeners.
   \item \ffunc{finish()} is called by a component on its local listeners
     after the component's \ffunc{finish()} method was called. If the listener
     is subscribed to multiple signals or at multiple components, the method
     will be called multiple times. Note that \ffunc{finish()} methods in general
-    are not invoked if the simulation terminates with an error, so this method
+    are not invoked if the simulation terminates with an error, so that method
     is not a place for doing cleanup.
   \item \ffunc{subscribedTo()}, \ffunc{unsubscribedFrom()} are called
     when this listener object is subscribed/unsubscribed to (from) a signal.
