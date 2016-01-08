@@ -957,16 +957,8 @@ void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
 void MainWindow::on_actionFlipWindowLayout_triggered()
 {
     switch (ui->splitter_2->orientation()) {
-    case Qt::Horizontal:
-        ui->splitter_2->setOrientation(Qt::Vertical);
-        ui->actionHorizontalLayout->setChecked(false);
-        ui->actionVerticalLayout->setChecked(true);
-        break;
-    case Qt::Vertical:
-        ui->splitter_2->setOrientation(Qt::Horizontal);
-        ui->actionHorizontalLayout->setChecked(true);
-        ui->actionVerticalLayout->setChecked(false);
-        break;
+    case Qt::Horizontal: ui->actionVerticalLayout->trigger(); break;
+    case Qt::Vertical: ui->actionHorizontalLayout->trigger(); break;
     }
 }
 
