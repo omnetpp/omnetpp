@@ -1952,10 +1952,15 @@ std::string Qtenv::gets(const char *promt, const char *defaultReply)
 
 bool Qtenv::askyesno(const char *question)
 {
-    // should return -1 when CANCEL is pressed
-    //TCLKILL CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ", TclQuotedString(question).get(), " question yesno", TCL_NULL));
-    //TCLKILL return Tcl_GetStringResult(interp)[0] == 'y';
-    return false;
+    cModule *mod = getSimulation()->getContextModule();
+    std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
+
+    switch (QMessageBox::question(getMainWindow(), title.c_str(), question,
+                                  QMessageBox::Yes | QMessageBox::No)) { // XXX: should allow cancel?
+        case QMessageBox::Yes: return true;
+        case QMessageBox::No:  return false;
+        default:               throw cRuntimeError(E_CANCEL);
+    }
 }
 
 unsigned Qtenv::getExtraStackForEnvir() const
