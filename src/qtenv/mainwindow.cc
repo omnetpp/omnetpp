@@ -928,9 +928,13 @@ void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
 
 void MainWindow::on_actionVerticalLayout_triggered(bool checked)
 {
+    if (ui->splitter_2->orientation() == Qt::Horizontal)
+        saveSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
+
     if (checked) { // it just got pressed
         ui->actionHorizontalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Vertical);
+        restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
     } else { // not letting the user uncheck the action
         ui->actionVerticalLayout->setChecked(true);
     }
@@ -938,9 +942,13 @@ void MainWindow::on_actionVerticalLayout_triggered(bool checked)
 
 void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
 {
+    if (ui->splitter_2->orientation() == Qt::Vertical)
+        saveSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
+
     if (checked) { // it just got pressed
         ui->actionVerticalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Horizontal);
+        restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
     } else { // not letting the user uncheck the action
         ui->actionHorizontalLayout->setChecked(true);
     }
