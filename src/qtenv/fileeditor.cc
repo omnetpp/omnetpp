@@ -37,9 +37,35 @@ FileEditor::FileEditor(QWidget *parent) :
     findOptions(0)
 {
     ui->setupUi(this);
+
     ui->plainTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->plainTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    connect(ui->plainTextEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenuRequested(const QPoint&)));
+
+    connect(ui->plainTextEdit, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(onCustomContextMenuRequested(const QPoint&)));
+
+    copySelectionAction = new QAction(QIcon(":/tools/icons/tools/copy.png"), "&Copy", this);
+    copySelectionAction->setToolTip("Copy selected text to clipboard");
+    copySelectionAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+    connect(copySelectionAction, SIGNAL(triggered(bool)), ui->plainTextEdit, SLOT(copy()));
+    addAction(copySelectionAction);
+
+    findAction = new QAction(QIcon(":/tools/icons/tools/find.png"), "&Find...", this);
+    findAction->setToolTip("Find string in window");
+    findAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+    connect(findAction, SIGNAL(triggered(bool)), this, SLOT(find()));
+    addAction(findAction);
+
+    findNextAction = new QAction("Find &Next", this);
+    findNextAction->setShortcut(QKeySequence(Qt::Key_F3));
+    connect(findNextAction, SIGNAL(triggered(bool)), this, SLOT(findNext()));
+    addAction(findNextAction);
+
+    saveAction = new QAction(QIcon(":/tools/icons/tools/save.png"), "&Save", this);
+    saveAction->setToolTip("Save window contents to file");
+    saveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+    connect(saveAction, SIGNAL(triggered(bool)), this, SLOT(save()));
+    addAction(saveAction);
 
     addToolBar();
 }
@@ -55,10 +81,10 @@ void FileEditor::onCustomContextMenuRequested(const QPoint &pos)
     {
         contextMenu = new QMenu();
 
-        contextMenu->addAction("&Copy", ui->plainTextEdit, SLOT(copy()))->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+        contextMenu->addAction(copySelectionAction);
         contextMenu->addSeparator();
-        contextMenu->addAction("&Find...", this, SLOT(find()))->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-        contextMenu->addAction("Find &Next", this, SLOT(findNext()))->setShortcut(QKeySequence(Qt::Key_F3));
+        contextMenu->addAction(findAction);
+        contextMenu->addAction(findNextAction);
         contextMenu->addSeparator();
 
         wrapLinesAction = contextMenu->addAction("&Wrap Lines", this, SLOT(wrapLines()));
@@ -75,12 +101,10 @@ void FileEditor::addToolBar()
 {
     QToolBar *toolbar = new QToolBar();
 
-    toolbar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard",
-                       ui->plainTextEdit, SLOT(copy()))->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-    toolbar->addAction(QIcon(":/tools/icons/tools/find.png"), "Find string in window",
-                       this, SLOT(find()))->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+    toolbar->addAction(copySelectionAction);
+    toolbar->addAction(findAction);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/tools/icons/tools/save.png"), "Save window contents to file", this, SLOT(save()));
+    toolbar->addAction(saveAction);
 
     // Insert toolbar to first place in vertical layout.
     static_cast<QBoxLayout*>(this->layout())->insertWidget(0, toolbar);

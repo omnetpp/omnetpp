@@ -54,7 +54,13 @@ private:
     Ui::fileEditor *ui;
     QFile file;
     QMenu *contextMenu;
+
     QAction *wrapLinesAction;
+    QAction *copySelectionAction;
+    QAction *findAction;
+    QAction *findNextAction;
+    QAction *saveAction;
+
     QString searchString;
     int findOptions;
 
