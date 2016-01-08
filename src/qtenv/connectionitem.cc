@@ -133,6 +133,8 @@ void ConnectionItem::updateArrowItem() {
     }
 
     arrowItem->setVisible(true);
+    arrowItem->setBrush(lineColor);
+    arrowItem->setPen(lineColor);
     arrowItem->setEndPoints(dest, src);
 }
 

@@ -208,8 +208,11 @@ OutlinedTextItem::~OutlinedTextItem() {
 }
 
 void OutlinedTextItem::setText(const QString &text) {
-    fillItem->setText(text);
-    outlineItem->setText(text);
+    if (text != fillItem->text()) {
+        fillItem->setText(text);
+        outlineItem->setText(text);
+        update();
+    }
 }
 
 QRectF OutlinedTextItem::boundingRect() const {
@@ -222,11 +225,17 @@ void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 }
 
 void OutlinedTextItem::setPen(const QPen &pen) {
-    outlineItem->setPen(pen);
+    if (pen != outlineItem->pen()) {
+        outlineItem->setPen(pen);
+        update();
+    }
 }
 
 void OutlinedTextItem::setBrush(const QBrush &brush) {
-    fillItem->setBrush(brush);
+    if (brush != fillItem->brush()) {
+        fillItem->setBrush(brush);
+        update();
+    }
 }
 
 // ---- end of OutlinedTextItem ----
