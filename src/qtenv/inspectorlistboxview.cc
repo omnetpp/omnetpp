@@ -51,7 +51,7 @@ InspectorListBoxView::~InspectorListBoxView()
 {
 }
 
-void InspectorListBoxView::setModel(InspectorListBox *model)
+void InspectorListBoxView::setModel(QAbstractItemModel *model)
 {
     QTableView::setModel(model);
 

@@ -110,7 +110,7 @@ std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
     leaves.insert(leaves.end(), hasderivedconfig.begin(),
             hasderivedconfig.end());
 
-    return std::move(leaves);
+    return leaves; // it will be implicitly moved
 }
 
 std::string RunSelectionDialog::getConfigName()

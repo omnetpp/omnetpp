@@ -85,12 +85,12 @@ public:
 };
 
 class SuperClassNode : public TreeNode {
-    int superClassIndex; // in the inheritance chain, 0 is the object itself, and cObject has the highest
     cClassDescriptor *superDesc;
 protected:
     void fill();
 
 public:
+    // superClassIndex: up in the inheritance chain, 0 is the most specialized class, and cObject is at the highest level
     SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex);
     QVariant data(int role);
     QString getNodeIdentifier();
@@ -417,7 +417,7 @@ TreeNode::~TreeNode() {
 
 
 SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex)
-    : TreeNode(parent, indexInParent, contObject, contDesc), superClassIndex(superClassIndex) {
+    : TreeNode(parent, indexInParent, contObject, contDesc) {
     superDesc = containingDesc;
     for (int i = 0; i < superClassIndex; ++i)
         superDesc = superDesc->getBaseClassDescriptor();

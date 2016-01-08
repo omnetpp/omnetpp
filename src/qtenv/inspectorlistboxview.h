@@ -42,7 +42,7 @@ public:
     InspectorListBoxView(QWidget *parent = nullptr);
     ~InspectorListBoxView();
 
-    void setModel(InspectorListBox *model);
+    void setModel(QAbstractItemModel *model) override;
 };
 
 } // namespace qtenv
