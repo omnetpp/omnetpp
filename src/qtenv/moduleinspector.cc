@@ -83,6 +83,16 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
 
     createViews(this, isTopLevel);
     parent->setMinimumSize(20, 20);
+    switchToCanvasView();
+
+    increaseIconSizeAction = new QAction("Increase Icon Size", this);
+    increaseIconSizeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+    connect(increaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(increaseIconSize()));
+    addAction(increaseIconSizeAction);
+    decreaseIconSizeAction = new QAction("Decrease Icon Size", this);
+    decreaseIconSizeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+    connect(decreaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(decreaseIconSize()));
+    addAction(decreaseIconSizeAction);
 }
 
 ModuleInspector::~ModuleInspector()
@@ -402,6 +412,9 @@ void ModuleInspector::decreaseIconSize() {
 
 void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 {
+    if (!object)
+        return;
+
     QString objName = object->getFullName();
     QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
     QVariant variant = getQtenv()->getPref(prefName);
@@ -657,8 +670,9 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         action->setChecked(showArrowHeads);
 
         menu->addSeparator();
-        addAction(menu->addAction("Increase Icon Size", this, SLOT(increaseIconSize()), QKeySequence(Qt::CTRL + Qt::Key_I)));
-        addAction(menu->addAction("Decrease Icon Size", this, SLOT(decreaseIconSize()), QKeySequence(Qt::CTRL + Qt::Key_O)));
+
+        menu->addAction(increaseIconSizeAction);
+        menu->addAction(decreaseIconSizeAction);
 
         menu->addSeparator();
         menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_Plus));
@@ -758,6 +772,9 @@ void ModuleInspector::layers()
 
 void ModuleInspector::toggleLabels()
 {
+    if (!object)
+        return;
+
     QString objName = object->getFullName();
     QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
     QVariant variant = getQtenv()->getPref(prefName);
@@ -769,6 +786,9 @@ void ModuleInspector::toggleLabels()
 
 void ModuleInspector::toggleArrowheads()
 {
+    if (!object)
+        return;
+
     QString objName = object->getFullName();
     QString prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
     QVariant variant = getQtenv()->getPref(prefName);
@@ -779,6 +799,9 @@ void ModuleInspector::toggleArrowheads()
 }
 
 void ModuleInspector::zoomIconsBy(double mult) {
+    if (!object)
+        return;
+
     QString objName = object->getFullName();
     QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
     QVariant variant = getQtenv()->getPref(prefName);

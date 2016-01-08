@@ -169,7 +169,8 @@ void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent * event)
 
 void ModuleCanvasViewer::relayoutAndRedrawAll()
 {
-    ASSERT(object != nullptr);
+    if (!object)
+        return;
 
     cModule *mod = object;
     int submoduleCount = 0;

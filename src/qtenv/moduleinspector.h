@@ -87,6 +87,9 @@ class QTENV_API ModuleInspector : public Inspector
       QAction *canvasZoomInAction;
       QAction *canvasZoomOutAction;
       QAction *resetOsgViewAction;
+      QAction *increaseIconSizeAction;
+      QAction *decreaseIconSizeAction;
+
 
       QStackedLayout *stackedLayout;
       FloatingToolbarLayout *toolbarLayout = nullptr; // not used in toplevel mode

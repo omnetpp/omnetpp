@@ -137,10 +137,13 @@ void Inspector::refresh()
         goBackAction->setEnabled(canGoBack());
     if(goForwardAction)
         goForwardAction->setEnabled(canGoForward());
-    if(object && goUpAction)
-    {
-        cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
-        goUpAction->setEnabled(parent);
+    if(goUpAction) {
+        if (object) {
+            cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
+            goUpAction->setEnabled(parent);
+        } else {
+            goUpAction->setEnabled(false);
+        }
     }
 }
 
