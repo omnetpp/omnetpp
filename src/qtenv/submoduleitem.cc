@@ -77,8 +77,8 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
         const char *imageColor = ds.getTagArg("i", 1);
         si->setImageColor(parseColor(imageColor));
-        si->setImageColorPercentage((ds.getNumArgs("i") == 2) // color given, but no percentage
-                                      ? 30
+        si->setImageColorPercentage((ds.getNumArgs("i") == 2 && strlen(ds.getTagArg("i", 1)) > 0)
+                                      ? 30 // color given, but no percentage
                                       : QString(ds.getTagArg("i", 2)).toDouble());
     } else {
         si->setImage(nullptr);
@@ -92,8 +92,8 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
         const char *decoratorImageColor = ds.getTagArg("i2", 1);
         si->setDecoratorImageColor(parseColor(decoratorImageColor));
-        si->setDecoratorImageColorPercentage((ds.getNumArgs("i2") == 2) // color given, but no percentage
-                                               ? 30
+        si->setDecoratorImageColorPercentage((ds.getNumArgs("i2") == 2 && strlen(ds.getTagArg("i2", 1)) > 0)
+                                             ? 30 // color given, but no percentage
                                                : QString(ds.getTagArg("i2", 2)).toDouble());
     } else {
         si->setDecoratorImage(nullptr);
