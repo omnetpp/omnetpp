@@ -83,7 +83,15 @@ void ConnectionItem::updateLineItem() {
         return;
     }
 
-    lineItem->setLine(QLineF(src, dest));
+    if (arrowItem && arrowItem->isVisible()) {
+        // making the end not stick out of the arrowhead
+        // the line itself has to be shorter
+        QPointF dir = dest - src;
+        double length = std::sqrt(dir.x() * dir.x() + dir.y() * dir.y());
+        lineItem->setLine(QLineF(src, dest - dir / length * lineWidth * 2));
+    } else {
+        lineItem->setLine(QLineF(src, dest));
+    }
     QPen pen(lineColor, lineWidth);
     pen.setCapStyle(Qt::FlatCap);
 
@@ -133,9 +141,10 @@ void ConnectionItem::updateArrowItem() {
     }
 
     arrowItem->setVisible(true);
-    arrowItem->setBrush(lineColor);
-    arrowItem->setPen(lineColor);
-    arrowItem->setEndPoints(dest, src);
+    arrowItem->setColor(lineColor);
+    arrowItem->setEndPoints(src, dest);
+    arrowItem->setArrowWidth(std::max(4.0, lineWidth * 4));
+    arrowItem->setArrowLength(std::max(6.0, lineWidth * 6));
 }
 
 ConnectionItem::ConnectionItem(QGraphicsItem *parent) :

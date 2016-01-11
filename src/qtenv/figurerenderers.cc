@@ -458,8 +458,13 @@ void FigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, cons
 QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure, FigureRenderingHints *hints)
 {
     QGraphicsItem *item = newItem();
-    setItemGeometryProperties(figure, item, hints);
-    item->setData(1, QVariant::fromValue((cObject*)figure));
+    if (item) {
+        setItemGeometryProperties(figure, item, hints);
+        item->setData(1, QVariant::fromValue((cObject*)figure));
+        for (auto c : item->childItems())
+            if (c)
+                c->setData(1, QVariant::fromValue((cObject*)figure));
+    }
     return item;
 }
 
@@ -618,52 +623,31 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsIte
 
 void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, QPen *pen)
 {
-    if(lineFigure->getStartArrowHead() == cFigure::ARROW_NONE &&
-            lineFigure->getEndArrowHead() == cFigure::ARROW_NONE)
-        return;
+    GraphicsPathArrowItem *startArrow = dynamic_cast<GraphicsPathArrowItem*>(lineItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = dynamic_cast<GraphicsPathArrowItem*>(lineItem->childItems()[1]);
 
-    QPointF start(lineFigure->getStart().x, lineFigure->getStart().y);
-    QPointF end(lineFigure->getEnd().x, lineFigure->getEnd().y);
-    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(lineItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(lineItem->childItems()[1]);
+    const auto &start = lineFigure->getStart();
+    const auto &end = lineFigure->getEnd();
 
-    if(lineFigure->getStartArrowHead() != cFigure::ARROW_NONE)
-    {
-        startArrow->setVisible(true);
-        setArrowStyle(lineFigure->getStartArrowHead(), startArrow);
-        if(pen)
-            startArrow->setPen(*pen);
-        startArrow->setEndPoints(start, end);
-    }
-    else
-        startArrow->setVisible(false);
+    setArrowStyle(lineFigure->getStartArrowHead(), startArrow, pen);
+    startArrow->setEndPoints(QPointF(end.x, end.y), QPointF(start.x, start.y));
 
-    if(lineFigure->getEndArrowHead() != cFigure::ARROW_NONE)
-    {
-        endArrow->setVisible(true);
-        setArrowStyle(lineFigure->getEndArrowHead(), endArrow);
-        if(pen)
-            endArrow->setPen(*pen);
-        endArrow->setEndPoints(end, start);
-    }
-    else
-        endArrow->setVisible(false);
+    setArrowStyle(lineFigure->getEndArrowHead(), endArrow, pen);
+    endArrow->setEndPoints(QPointF(start.x, start.y), QPointF(end.x, end.y));
 }
 
-void AbstractLineFigureRenderer::setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem)
+void AbstractLineFigureRenderer::setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem, QPen *pen)
 {
-    switch (style) {
-        case cFigure::ARROW_BARBED:
-            arrowItem->setArrowStyle(GraphicsPathArrowItem::BARBED);
-            break;
-        case cFigure::ARROW_SIMPLE:
-            arrowItem->setArrowStyle(GraphicsPathArrowItem::SIMPLE);
-            break;
-        case cFigure::ARROW_TRIANGLE:
-            arrowItem->setArrowStyle(GraphicsPathArrowItem::TRIANGLE);
-            break;
-    default:
-        break;
+    arrowItem->setVisible(style != cFigure::ARROW_NONE);
+    arrowItem->setFillRatio(style == cFigure::ARROW_BARBED ? 0.75
+                            : style == cFigure::ARROW_SIMPLE ? 0
+                            : 1);
+
+    if(pen) {
+        arrowItem->setColor(pen->color());
+        arrowItem->setLineWidth(pen->widthF());
+        arrowItem->setArrowWidth(std::max(4.0, pen->widthF() * 4));
+        arrowItem->setArrowLength(std::max(4.0, pen->widthF() * 4));
     }
 }
 
@@ -697,32 +681,35 @@ QGraphicsItem *LineFigureRenderer::newItem()
 
 void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, QPen *pen)
 {
-    if(arcFigure->getStartArrowHead() == cFigure::ARROW_NONE &&
-            arcFigure->getEndArrowHead() == cFigure::ARROW_NONE)
-        return;
-
-    QPainterPath painter = arcItem->path();
-    QPolygonF polygon = painter.toFillPolygon();
-
-    // First and last points are the first point of arc and penult point is last point of arc
-    if(polygon.size() < 3)
-    {
-        qDebug() << "Error in ArcFigureRenderer::setArrows: there is no separate start and end point.";
-        return;
-    }
-
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[1]);
 
     if(arcFigure->getStartArrowHead() != cFigure::ARROW_NONE)
     {
-        QPointF start(polygon[polygon.size() - 3]);
-        QPointF end(painter.currentPosition());
+        auto b = arcFigure->getBounds();
+        cFigure::Point center = b.getCenter();
+        cFigure::Point radii = b.getSize() / 2;
+
+        double angle = arcFigure->getStartAngle();
+
+        // this is from the center towards the end of the arc
+        cFigure::Point delta(cos(angle) * radii.x, -sin(angle) * radii.y);
+
+        // this is the direction in which the arc ends
+        cFigure::Point tangent(-sin(angle) * radii.x, -cos(angle) * radii.y);
+
         startArrow->setVisible(true);
-        setArrowStyle(arcFigure->getStartArrowHead(), startArrow);
-        if(pen)
-            startArrow->setPen(*pen);
-        startArrow->setEndPoints(end, start);
+        setArrowStyle(arcFigure->getStartArrowHead(), startArrow, pen);
+
+        cFigure::Point start = center + delta + tangent;
+        cFigure::Point end = center + delta;
+
+        startArrow->setEndPoints(QPointF(start.x, start.y), QPointF(end.x, end.y));
+        // use these two instead of the one above to make the arrowheads keep their
+        // shapes even if the line they are on is transformed heavily (incomplete)
+        // (also see the similar comment in graphicspatharrowitem.cc)
+        //cFigure::Point transfDir = arcFigure->getTransform().applyTo(end) - arcFigure->getTransform().applyTo(start);
+        //startArrow->setEndPoints(QPointF(end.x - transfDir.x, end.y - transfDir.y), QPointF(end.x, end.y));
     }
     else
         startArrow->setVisible(false);
@@ -730,13 +717,22 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
 
     if(arcFigure->getEndArrowHead() != cFigure::ARROW_NONE)
     {
-        QPointF start(painter.elementAt(0).x, painter.elementAt(0).y);
-        QPointF end(polygon[1]);
+        auto b = arcFigure->getBounds();
+        QPointF center(b.getCenter().x, b.getCenter().y);
+
+        QPointF radii(b.width/2, b.height/2);
+
+        double angle = arcFigure->getEndAngle();
+
+        // this is from the center towards the start of the arc
+        QPointF delta(cos(angle) * radii.x(), -sin(angle) * radii.y());
+
+        // this is the direction in which the arc begins
+        QPointF tangent(-sin(angle) * radii.x(), -cos(angle) * radii.y());
+
         endArrow->setVisible(true);
-        setArrowStyle(arcFigure->getEndArrowHead(), endArrow);
-        if(pen)
-            endArrow->setPen(*pen);
-        endArrow->setEndPoints(start, end);
+        setArrowStyle(arcFigure->getEndArrowHead(), endArrow, pen);
+        endArrow->setEndPoints(center + delta - tangent, center + delta);
     }
     else
         endArrow->setVisible(false);
@@ -776,10 +772,6 @@ QGraphicsItem *ArcFigureRenderer::newItem()
 
 void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, QPen *pen)
 {
-    if(polyFigure->getStartArrowHead() == cFigure::ARROW_NONE &&
-            polyFigure->getEndArrowHead() == cFigure::ARROW_NONE)
-        return;
-
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[1]);
 
@@ -792,10 +784,8 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
         QPointF end(element.x, element.y);
 
         startArrow->setVisible(true);
-        setArrowStyle(polyFigure->getStartArrowHead(), startArrow);
-        if(pen)
-            startArrow->setPen(*pen);
-        startArrow->setEndPoints(start, end);
+        setArrowStyle(polyFigure->getStartArrowHead(), startArrow, pen);
+        startArrow->setEndPoints(end, start);
     }
     else
         startArrow->setVisible(false);
@@ -808,10 +798,8 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
         QPointF end(painter.currentPosition());
 
         endArrow->setVisible(true);
-        setArrowStyle(polyFigure->getEndArrowHead(), endArrow);
-        if(pen)
-            endArrow->setPen(*pen);
-        endArrow->setEndPoints(end, start);
+        setArrowStyle(polyFigure->getEndArrowHead(), endArrow, pen);
+        endArrow->setEndPoints(start, end);
     }
     else
         endArrow->setVisible(false);
@@ -859,22 +847,10 @@ void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, 
         setItemGeometryProperties(polyFigure, polyItem, hints);
 
     QPen pen = createPen(polyFigure, hints);
-    Qt::PenJoinStyle joinStyle;
-
-    switch (polyFigure->getJoinStyle()) {
-        case cFigure::JOIN_BEVEL:
-            joinStyle = Qt::BevelJoin;
-            break;
-
-        case cFigure::JOIN_MITER:
-            joinStyle = Qt::MiterJoin;
-            break;
-
-        case cFigure::JOIN_ROUND:
-            joinStyle = Qt::RoundJoin;
-            break;
-    }
-    pen.setJoinStyle(joinStyle);
+    auto joinStyle = polyFigure->getJoinStyle();
+    pen.setJoinStyle(joinStyle == cFigure::JOIN_BEVEL ? Qt::BevelJoin
+                      : joinStyle == cFigure::JOIN_MITER ? Qt::MiterJoin
+                      : Qt::RoundJoin);
 
     polyItem->setPen(pen);
 
@@ -1009,31 +985,19 @@ void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, F
 
     QPainterPath painter = polyItem->path();
 
-    if (polyFigure->getFillRule() == cFigure::FILL_EVENODD)
-        painter.setFillRule(Qt::OddEvenFill);
-    else
-        painter.setFillRule(Qt::WindingFill);
+    painter.setFillRule(polyFigure->getFillRule() == cFigure::FILL_EVENODD
+                         ? Qt::OddEvenFill
+                         : Qt::WindingFill);
 
     polyItem->setPath(painter);
 
     QPen pen = createPen(polyFigure, hints);
-    Qt::PenJoinStyle joinStyle;
 
-    switch (polyFigure->getJoinStyle()) {
-        case cFigure::JOIN_BEVEL:
-            joinStyle = Qt::BevelJoin;
-            break;
+    auto joinStyle = polyFigure->getJoinStyle();
+    pen.setJoinStyle(joinStyle == cFigure::JOIN_BEVEL ? Qt::BevelJoin
+                      : joinStyle == cFigure::JOIN_MITER ? Qt::MiterJoin
+                      : Qt::RoundJoin);
 
-        case cFigure::JOIN_MITER:
-            joinStyle = Qt::MiterJoin;
-            break;
-
-        case cFigure::JOIN_ROUND:
-            joinStyle = Qt::RoundJoin;
-            break;
-    }
-
-    pen.setJoinStyle(joinStyle);
     polyItem->setPen(pen);
     polyItem->setBrush(createBrush(polyFigure));
 }
@@ -1211,38 +1175,16 @@ void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figu
     shapeItem->setPath(painter);
 
     QPen pen = createPen(pathFigure, hints);
-    Qt::PenJoinStyle joinStyle;
 
-    switch (pathFigure->getJoinStyle()) {
-        case cFigure::JOIN_BEVEL:
-            joinStyle = Qt::BevelJoin;
-            break;
+    auto joinStyle = pathFigure->getJoinStyle();
+    pen.setJoinStyle(joinStyle == cFigure::JOIN_BEVEL ? Qt::BevelJoin
+                      : joinStyle == cFigure::JOIN_MITER ? Qt::MiterJoin
+                      : Qt::RoundJoin);
 
-        case cFigure::JOIN_MITER:
-            joinStyle = Qt::MiterJoin;
-            break;
-
-        case cFigure::JOIN_ROUND:
-            joinStyle = Qt::RoundJoin;
-            break;
-    }
-    pen.setJoinStyle(joinStyle);
-
-    Qt::PenCapStyle cap;
-    switch (pathFigure->getCapStyle()) {
-        case cFigure::CAP_BUTT:
-            cap = Qt::FlatCap;
-            break;
-
-        case cFigure::CAP_SQUARE:
-            cap = Qt::SquareCap;
-            break;
-
-        case cFigure::CAP_ROUND:
-            cap = Qt::RoundCap;
-            break;
-    }
-    pen.setCapStyle(cap);
+    auto capStyle = pathFigure->getCapStyle();
+    pen.setCapStyle(capStyle == cFigure::CAP_ROUND ? Qt::RoundCap
+                      : capStyle == cFigure::CAP_SQUARE ? Qt::SquareCap
+                      : Qt::FlatCap);
 
     shapeItem->setPen(pen);
     shapeItem->setBrush(createBrush(pathFigure));

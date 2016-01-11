@@ -157,7 +157,7 @@ protected:
 class AbstractLineFigureRenderer : public FigureRenderer
 {
 protected:
-    void setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem);
+    void setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem, QPen *pen);
 };
 
 class LineFigureRenderer : public AbstractLineFigureRenderer
