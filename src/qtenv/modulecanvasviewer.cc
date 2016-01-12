@@ -783,6 +783,7 @@ void ModuleCanvasViewer::refresh()
         needs_redraw = false;
         redraw();
     } else {
+        drawEnclosingModule(object);
         refreshFigures();
         redrawNextEventMarker();
         refreshSubmodules();
