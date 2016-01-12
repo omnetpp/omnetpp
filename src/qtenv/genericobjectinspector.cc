@@ -148,7 +148,7 @@ void GenericObjectInspector::createContextMenu(QPoint pos) {
         QVector<cObject*> objects;
         objects.push_back(object);
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
-        menu->exec(mapToGlobal(pos));
+        menu->exec(treeView->mapToGlobal(pos));
         delete menu;
     }
 }

@@ -87,7 +87,7 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 }
 
                 menu->addMenu(viewer->createCameraManipulatorMenu());
-                menu->exec(viewer->mapToGlobal(QPoint(ea.getX(), viewer->height() - ea.getY())));
+                menu->exec(viewer->mapToGlobal(QPoint(ea.getX(), viewer->childrenRect().height() - ea.getY())));
             }
             break;
         case osgGA::GUIEventAdapter::KEYDOWN:
