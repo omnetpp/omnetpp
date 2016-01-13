@@ -285,9 +285,11 @@ bool arrivedOn(const char *gatename, int gateindex) const;
 
 \subsection{Display String}
 
-\textit{Display strings} affect the message's visualization on animating user interfaces, e.g. Tkenv.
-Message objects do not store a display string by default, but contain a \ffunc{getDisplayString()}
-method that can be overridden in subclasses to return a desired string.  The method:
+\textit{Display strings} affect the message's visualization in graphical
+user interfaces like Tkenv and Qtenv. Message objects do not store a
+display string by default, but contain a \ffunc{getDisplayString()} method
+that can be overridden in subclasses to return a desired string.  The
+method:
 
 \begin{cpp}
 const char *getDisplayString() const;

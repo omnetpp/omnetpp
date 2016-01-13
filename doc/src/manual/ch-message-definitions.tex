@@ -70,10 +70,11 @@ pkt->setSrcAddress(localAddr);
 ...
 \end{cpp}
 
-The \ttt{MyPacket\_m.cc} file will contain implementation of the generated \ttt{MyPacket}
-class as well as ``reflection'' code that allows you to inspect these data
-structures in the Tkenv GUI. The \ttt{MyPacket\_m.cc} file should be compiled and
-linked into your simulation; this is normally taken care of automatically.
+The \ttt{MyPacket\_m.cc} file will contain implementation of the generated
+\ttt{MyPacket} class as well as ``reflection'' code that allows you to
+inspect these data structures under graphical user interfaces. The
+\ttt{MyPacket\_m.cc} file should be compiled and linked into your
+simulation; this is normally taken care of automatically.
 
 The following sections describe the message syntax and features in detail.
 
@@ -228,7 +229,7 @@ generated class.
 
 You can declare that an \fkeyword{int} (or other integral type) field
 takes values from an enum. The message compiler can then generate code
-that allows Tkenv display the symbolic value of the field.
+that allows graphical user interfaces display the symbolic value of the field.
 
 Example:
 
@@ -256,7 +257,7 @@ Enum values need to be unique.
 
 The message compiler translates an enum into a normal C++ enum, plus
 creates an object which stores text representations of the constants. The
-latter makes it possible to display symbolic names in Tkenv.
+latter makes it possible for Tkenv and Qtenv to display symbolic names.
 
 If the enum to be associated with a field comes from a different message file,
 then the enum must be announced and its generated header file be included.
@@ -955,9 +956,9 @@ void FooPacket::setPayloadLength(int newlength)
 \subsection{Abstract Fields}
 \label{sec:ch-msg-defs:abstract-fields}
 
-The purpose of abstract fields is to let you to override
-the way the value is stored inside the class,
-and still benefit from inspectability in Tkenv.
+The purpose of abstract fields is to let you to override the way the value
+is stored inside the class, and still benefit from inspectability in
+graphical user interfaces.
 
 For example, this is the situation when you want to store a bitfield
 in a single \fkeyword{int} or \fkeyword{short}, and yet you want

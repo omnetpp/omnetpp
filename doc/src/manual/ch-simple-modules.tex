@@ -1323,7 +1323,7 @@ Coroutines are used by a number of other simulation packages:
 If possible, avoid using global variables, including
 static class members. They are prone to cause several problems.
 First, they are not reset to their initial values (to zero)
-when you rebuild the simulation in Tkenv, or start another run
+when you rebuild the simulation in Tkenv/Qtenv, or start another run
 in Cmdenv. This may produce surprising results.
 Second, they prevent you from running your simulation in parallel.
 When using parallel simulation, each partition of your model
@@ -3449,9 +3449,9 @@ The second issue is how to let the simulation kernel know that
 a method call across modules is taking place. Why is this necessary
 in the first place? First, the simulation kernel always has to know which
 module's code is currently executing, in order for ownership handling
-and other internal mechanisms to work correctly. Second, the Tkenv
-simulation GUI can animate method calls, but to be able to do that,
-it has to know about them. Third, method calls are also recorded
+and other internal mechanisms to work correctly. Second, the Tkenv and
+Qtenv simulation GUIs can animate method calls, but to be able to do that,
+they has to know about them. Third, method calls are also recorded
 in the event log.
 
 The solution is to add the \ttt{Enter\_Method()} or \ttt{Enter\_Method\_Silent()}

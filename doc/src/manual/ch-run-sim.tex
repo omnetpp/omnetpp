@@ -78,14 +78,15 @@ NED path resolution rules are as follows:
 Currently the following user interfaces are supported:
 
 \begin{itemize}
-  \item Tkenv: Tcl/Tk-based graphical, windowing user interface
+  \item Tkenv: the traditional, Tcl/Tk-based graphical user interface
+  \item Qtenv: the new, Qt-based graphical user interface
   \item Cmdenv: command-line user interface for batch execution
 \end{itemize}
 
-You would typically test and debug your simulation under Tkenv,
-then run actual simulation experiments from the command line or
-shell script, using Cmdenv. Tkenv is also better suited for educational or
-demonstration purposes.
+You would typically test and debug your simulation under Tkenv or Qtenv,
+then run actual simulation experiments from the command line or shell
+script, using Cmdenv. Tkenv and Qtenv are also better suited for
+educational and demonstration purposes.
 
 Both Tkenv and Cmdenv are provided in the form of a library, and
 you may choose between them by linking one or both into your
@@ -425,10 +426,10 @@ most common way of leaking memory in a simulation is by not deleting messages.
 
 
 
-\section{Tkenv: the Graphical User Interface}
+\section{The Tkenv Graphical User Interface}
 
 Tkenv\index{Tkenv} is a portable graphical windowing user interface.
-Tkenv supports interactive execution of the simulation, tracing and
+Tkenv supports interactive simulation execution, tracing and
 debugging\index{simulation!debugging}. Tkenv is recommended in the
 development stage of a simulation and for presentation purposes,
 since it allows one to get a detailed picture of the state
@@ -450,25 +451,27 @@ that is, these options suppress the initial run selection dialog.
 
 Tkenv configuration options:
 \begin{itemize}
-  \item{\fconfig{tkenv-default-config}:
+  \item \fconfig{tkenv-default-config}:
     Specifies which config Tkenv should set up automatically on startup. The
     default is to ask the user. This option is equivalent to the \ttt{-c}
-    command-line option.}
+    command-line option.
 
-  \item{\fconfig{tkenv-default-run}: Specifies which run (of the default
+  \item \fconfig{tkenv-default-run}: Specifies which run (of the default
     config, see tkenv-default-config) Tkenv should set up automatically on startup.
     The default is to ask the user. This option is equivalent to the \ttt{-r}
-    command-line option.}
+    command-line option.
 
-  \item{\fconfig{tkenv-extra-stack}:
+  \item \fconfig{tkenv-extra-stack}:
     Specifies the extra amount of stack that is reserved for each activity()
-    simple module when the simulation is run under Tkenv.}
+    simple module when the simulation is run under Tkenv.
 
-  \item{\fconfig{tkenv-image-path}: Specifies the path for loading module icons.}
+  \item \fconfig{image-path}: Specifies the path for loading module icons.
+    This one was named \ttt{tkenv-image-path} in {\opp} 4.x and renamed,
+    because from version 5.0 it is shared between Tkenv and Qtenv.
 
-  \item{\fconfig{tkenv-plugin-path}:
+  \item \fconfig{tkenv-plugin-path}:
     Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
-    that get evaluated on startup.}
+    that get evaluated on startup.
 \end{itemize}
 
 Tkenv-specific configuration options can also be specified on the command line
