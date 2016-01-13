@@ -1,5 +1,5 @@
 #PERL=$(TOOLS_DIR)\perl\bin\perl.exe
-PERL=E:\omnest-4.3\msys\bin\perl.exe
+PERL=E:\omnetpp-4.6\tools\win32\usr\bin\perl.exe
 INKSCAPE="C:\Progra~1\inkscape\inkscape.exe"
 DOT=$(TOOLS_DIR)\Graphviz\bin\dot.exe
 PDFTK=$(TOOLS_DIR)\pdftk\pdftk
