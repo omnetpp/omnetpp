@@ -221,13 +221,17 @@ bool MainWindow::on_actionQuit_triggered()
 
     if(filteredObjectListDialog)
         filteredObjectListDialog->close();
+
     close();
     return true;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (!on_actionQuit_triggered())
+    // will only pop up the dialog in on_actionQuit_triggered
+    // if the sim is running and has not been asked yet to stop
+    if (isRunning() && !env->getStopSimulationFlag()
+            && !on_actionQuit_triggered())
         event->ignore();
 }
 
