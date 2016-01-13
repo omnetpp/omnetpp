@@ -320,7 +320,7 @@ cFigure::Transform& cFigure::Transform::multiply(const Transform& other)
     return *this;
 }
 
-cFigure::Transform& cFigure::Transform::leftMultiply(const Transform& other)
+cFigure::Transform& cFigure::Transform::rightMultiply(const Transform& other)
 {
     double a_ = other.a*a + other.b*c;
     double b_ = other.a*b + other.b*d;
@@ -459,6 +459,11 @@ std::string cFigure::Pixmap::str() const
 }
 
 //----
+
+cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId), visible(true),
+        tags(nullptr), tagBits(0), localChanges(0), subtreeChanges(0)
+{
+}
 
 cFigure::Point cFigure::parsePoint(cProperty *property, const char *key, int index)
 {
@@ -1186,7 +1191,7 @@ void cPanelFigure::updateParentTransform(Transform& transform)
     transform = Transform().translate(origin.x, origin.y);
 
     // then apply our own transform in the normal way (like all other figures do)
-    transform.leftMultiply(getTransform());
+    transform.rightMultiply(getTransform());
 }
 #endif
 

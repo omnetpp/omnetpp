@@ -138,12 +138,13 @@ class SIM_API cFigure : public cOwnedObject
         //enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
 
         /**
-         * Homogeneous 2D transformation matrix (last column is not stored).
+         * Homogeneous 2D transformation matrix (last row is not stored).
          * <pre>
-         *  | a  b  0 |
-         *  | c  d  0 |
-         *  | t1 t2 1 |
+         *  | a  c  t1 |
+         *  | b  d  t2 |
+         *  | 0  0   1 |
          * </pre>
+         *
          * @ingroup Canvas
          */
         struct SIM_API Transform {
@@ -164,8 +165,8 @@ class SIM_API cFigure : public cOwnedObject
                 Transform& skewy(double phi);
                 Transform& skewx(double phi, double cy);
                 Transform& skewy(double phi, double cx);
-                Transform& multiply(const Transform& t);
-                Transform& leftMultiply(const Transform& t);
+                Transform& multiply(const Transform& t); // left-multiply: *this = t * (*this)
+                Transform& rightMultiply(const Transform& t); // *this = (*this) * t
                 Point applyTo(const Point& p) const;
                 bool operator==(const Transform& o) const {return a == o.a && b == o.b && c == o.c && d == o.d && t1 == o.t1 && t2 == o.t2;}
                 std::string str() const;
@@ -290,7 +291,7 @@ class SIM_API cFigure : public cOwnedObject
     public:
         /** @name Constructors, destructor, assignment */
         //@{
-        cFigure(const char *name=nullptr) : cOwnedObject(name), id(++lastId), visible(true), tags(nullptr), tagBits(0), localChanges(0), subtreeChanges(0) {}
+        cFigure(const char *name=nullptr);
         cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
         virtual ~cFigure();
         cFigure& operator=(const cFigure& other);
@@ -307,7 +308,7 @@ class SIM_API cFigure : public cOwnedObject
         //@{
         virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
-        virtual void updateParentTransform(Transform& transform) {transform.leftMultiply(getTransform());}
+        virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
 
         virtual void move(double x, double y) = 0;
         virtual cCanvas *getCanvas() const;
@@ -523,7 +524,6 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setEndArrowHead(ArrowHead endArrowHead);
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
         virtual void setZoomLineWidth(bool zoomLineWidth);
-        _OPPDEPRECATED void setScaleLineWidth(bool scale) {setZoomLineWidth(scale);}  //TODO remove in 5.0 final
         //@}
 };
 
@@ -741,7 +741,6 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void setFillOpacity(double fillOpacity);
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
         virtual void setZoomLineWidth(bool zoomLineWidth);
-        _OPPDEPRECATED void setScaleLineWidth(bool scale) {setZoomLineWidth(scale);}  //TODO remove in 5.0 final
         //@}
 };
 
