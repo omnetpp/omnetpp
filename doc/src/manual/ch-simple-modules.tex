@@ -338,6 +338,17 @@ The behavior of channels can also be modified by redefining member functions.
 However, the channel API is slightly more complicated than that of simple
 modules, so we'll describe it in a later section (\ref{sec:simple-modules:channels}).
 
+Last, let us mention \ffunc{refreshDisplay()}, which is related to updating
+the visual appearance of the simulation when run under a graphical user
+interface. \ffunc{refreshDisplay()} is covered in the chapter that deals
+with simulation visualization (\ref{sec:ch-graphics:refreshdisplay}).
+
+\begin{note}
+    \ffunc{refreshDisplay()} has been added in {\opp} 5.0. Until then,
+    visualization-related tasks were usually implemented as part of
+    \ffunc{handleMessage()}; however, \ffunc{refreshDisplay()} provides
+    a far superior and more efficient solution.
+\end{note}
 
 
 \section{Defining Simple Module Types}
@@ -596,8 +607,8 @@ initialization\index{initialization!multi-stage}.  Modules have two
 functions which can be redefined by the user:
 
 \begin{cpp}
-void initialize(int stage);
-int numInitStages() const;
+virtual void initialize(int stage);
+virtual int numInitStages() const;
 \end{cpp}
 
 At the beginning of the simulation, \ttt{initialize(0)}
@@ -643,12 +654,9 @@ end-of-simulation events were dropped in favour of \ffunc{finish()}
 \section{Adding Functionality to cSimpleModule}
 \label{sec:simple-modules:adding-functionality-to-csimplemodule}
 
-This section discusses \cclass{cSimpleModule}'s four previously
-mentioned member functions, intended to be redefined by the user:
-\ffunc{initialize()}, \ffunc{handleMessage()}, \ffunc{activity()}
-and \ffunc{finish()}. A fifth, less frequently used method,
-\ffunc{handleParameterChange}, is described in section
-\ref{sec:simple-modules:handleParameterChange}.
+This section discusses \cclass{cSimpleModule}'s previously mentioned
+\ffunc{handleMessage()} and \ffunc{activity()} member functions, intended
+to be redefined by the user.
 
 
 \subsection{handleMessage()}
@@ -3475,7 +3483,7 @@ void Callee::doSomething()
 \label{sec:simple-modules:dynamic-module-creation}
 \index{module!dynamic creation}
 
-\subsection{When Do You Need Dynamic Module Creation}
+\subsection{When To Use}
 
 In some situations you need to dynamically create and maybe destroy
 modules. For example, when simulating a mobile network,
@@ -3487,7 +3495,7 @@ protocol, it might be convenient to dynamically create modules
 to serve new connections, and dispose of them when the connection
 is closed. (You would write a manager module that receives connection
 requests and creates a module for each connection.
-The Dyna example simulation does something like this.)
+The Dyna example simulation does something like that.)
 
 Both simple and compound modules can be created dynamically.
 If you create a compound module, all its submodules will be created
@@ -4038,10 +4046,10 @@ then you don't need to write a copy constructor, assignment operator, and
 can create a temporary object, and pass its pointer to the \ffunc{emit()}
 function.
 
-An example of custom notification classes is the firing of model change notifications
-(see \ref{sec:ch-simple-modules:model-change}). The data class
-that accompanies a signal that announces that a gate or gate vector is
-about to be created looks like this:
+An example of custom notification classes are the ones associated with
+model change notifications (see \ref{sec:ch-simple-modules:model-change}).
+For example, the data class that accompanies a signal that announces that a
+gate or gate vector is about to be created looks like this:
 
 \begin{cpp}
 class cPreGateAddNotification : public cObject, noncopyable
