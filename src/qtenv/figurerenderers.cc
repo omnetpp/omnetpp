@@ -775,31 +775,33 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[1]);
 
+    const auto &points = polyFigure->getPoints();
+
+    if (points.size() < 2) {
+        // can't display arrow on a polyline without at least two points
+        startArrow->setVisible(false);
+        endArrow->setVisible(false);
+        return;
+    }
+
     if(polyFigure->getStartArrowHead() != cFigure::ARROW_NONE)
     {
-        QPainterPath painter = polyItem->path();
-        QPainterPath::Element element = painter.elementAt(0);
-        QPointF start(element.x, element.y);
-        element = painter.elementAt(1);
-        QPointF end(element.x, element.y);
-
         startArrow->setVisible(true);
         setArrowStyle(polyFigure->getStartArrowHead(), startArrow, pen);
-        startArrow->setEndPoints(end, start);
+        const auto &from = points[1];
+        const auto &to = points[0];
+        startArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
     }
     else
         startArrow->setVisible(false);
 
     if(polyFigure->getEndArrowHead() != cFigure::ARROW_NONE)
     {
-        QPainterPath painter = polyItem->path();
-        QPainterPath::Element element = painter.elementAt(painter.elementCount() - 2);
-        QPointF start(element.x, element.y);
-        QPointF end(painter.currentPosition());
-
         endArrow->setVisible(true);
         setArrowStyle(polyFigure->getEndArrowHead(), endArrow, pen);
-        endArrow->setEndPoints(start, end);
+        const auto &from = points[points.size() - 2];
+        const auto &to = points[points.size() - 1];
+        endArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
     }
     else
         endArrow->setVisible(false);
@@ -810,11 +812,13 @@ void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
     cPolylineFigure *polyFigure = static_cast<cPolylineFigure *>(figure);
     PathItem *polyItem = static_cast<PathItem *>(item);
 
-    std::vector<cFigure::Point> points = polyFigure->getPoints();
-    if (points.size() < 2)
-        return;  // throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
-
     QPainterPath painter;
+
+    std::vector<cFigure::Point> points = polyFigure->getPoints();
+    if (points.size() < 2) {
+        polyItem->setPath(painter);
+        return;  // throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
+    }
 
     painter.moveTo(points[0].x, points[0].y);
 
@@ -943,6 +947,8 @@ void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphics
 
     std::vector<cFigure::Point> points = polyFigure->getPoints();
     if (points.size() < 2) {
+        polyItem->setPath(painter);
+        return;
     }  // throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
 
     if (points.size() == 2) {

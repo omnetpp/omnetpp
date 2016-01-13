@@ -563,25 +563,26 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
 {
     if (compoundModuleItem) {
         auto rect = compoundModuleItem->boundingRect()
-                      .united(getSubmodulesRect())
-                      .united(figureLayer->childrenBoundingRect())
-                      .adjusted(-10, -10, 10, 10); // leaving a bit of a margin on top of the outline
+                      .united(getSubmodulesRect());
 
         // how much additional space we need to show both ways in each direction
+        // so the compound module can be moved in the viewport even if it is small
         double horizExcess = std::max(0.0, viewport()->width() - rect.width());
         double vertExcess = std::max(0.0, viewport()->height() - rect.height());
-        setSceneRect(rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess));
+
+        rect = rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess)
+                .united(figureLayer->childrenBoundingRect()) // including figures
+                .adjusted(-10, -10, 10, 10); // leaving a bit of a margin
+
+        setSceneRect(rect);
 
         if (alignTopLeft) {
-            horizontalScrollBar()->setValue(
-                        (horizExcess > 0)
-                          ? horizontalScrollBar()->maximum()
-                          : horizontalScrollBar()->minimum());
-
-            verticalScrollBar()->setValue(
-                        (vertExcess > 0)
-                          ? verticalScrollBar()->maximum()
-                          : verticalScrollBar()->minimum());
+            horizontalScrollBar()->setValue(horizontalScrollBar()->maximum());
+            verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+            // making sure the viewpoint is scrolled so the top left
+            // corners of the viewport and the compound module are aligned
+            auto corner = compoundModuleItem->boundingRect().topLeft();
+            ensureVisible(corner.x(), corner.y(), 1, 1, 10, 10);
         }
     }
 }
