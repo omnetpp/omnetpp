@@ -1,0 +1,264 @@
+\appendixchapter{Figure Definitions}
+\label{cha:figure-definitions}
+
+This appendix provides a reference to defining figures in NED files.
+
+\section{Figure Types}
+
+The
+
+\begin{longtable}{|l|l|}
+\hline
+\tabheadcol
+\tbf{C++ class}           &  \tbf{@figure type} \\\hline
+\cclass{cLineFigure}      &  \tbf{line}       \\\hline
+\cclass{cArcFigure}       &  \tbf{arc}        \\\hline
+\cclass{cPolylineFigure}  &  \tbf{polyline}   \\\hline
+\cclass{cRectangleFigure} &  \tbf{rectangle}  \\\hline
+\cclass{cOvalFigure}      &  \tbf{oval}       \\\hline
+\cclass{cRingFigure}      &  \tbf{ring}       \\\hline
+\cclass{cPieSliceFigure}  &  \tbf{pieslice}   \\\hline
+\cclass{cPolygonFigure}   &  \tbf{polygon}    \\\hline
+\cclass{cPathFigure}      &  \tbf{path}       \\\hline
+\cclass{cTextFigure}      &  \tbf{text}       \\\hline
+\cclass{cLabelFigure}     &  \tbf{label}      \\\hline
+\cclass{cImageFigure}     &  \tbf{image}      \\\hline
+\cclass{cIconFigure}      &  \tbf{icon}       \\\hline
+\cclass{cPixmapFigure}    &  \tbf{pixmap}     \\\hline
+\cclass{cGroupFigure}     &  \tbf{group}      \\\hline
+\end{longtable}
+
+TODO other
+
+\section{Attribute Types}
+
+This section lists what attribute types exist and their value syntaxes.
+
+\subsubsection{Transform}
+
+translate(x,y)
+
+rotate(deg)
+
+rotate(deg, x, y,)
+
+scale(c)
+
+scale(cx, cy)
+
+skewx(deg)
+
+skewx(deg, y)
+
+skewy(deg)
+
+skewy(deg, x)
+
+
+\subsubsection{Font}
+
+typeface, size, style
+
+style is space-sparated list of zero or more of the following words:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}     &  \tbf{Meaning}         \\ \hline
+\tbf{normal}    &  \ttt{0}               \\ \hline
+\tbf{bold}      &  \ttt{FONT\_BOLD}      \\ \hline
+\tbf{italic}    &  \ttt{FONT\_ITALIC}    \\ \hline
+\tbf{underline} &  \ttt{FONT\_UNDERLINE} \\ \hline
+\end{longtable}
+
+
+\subsubsection{bool}
+
+Accepted values are \tbf{true} and \tbf{false}.
+
+\subsubsection{Color}
+
+TODO
+
+common::parseColor(s, color.red, color.green, color.blue);
+
+\subsubsection{LineStyle}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}    &  \tbf{Meaning}        \\ \hline
+\tbf{solid}    &  \ttt{LINE\_SOLID}    \\ \hline
+\tbf{dotted}   &  \ttt{LINE\_DOTTED}   \\ \hline
+\tbf{dashed}   &  \ttt{LINE\_DASHED}   \\ \hline
+\end{longtable}
+
+\subsubsection{CapStyle}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}    &  \tbf{Meaning}        \\ \hline
+\tbf{butt}     &  \ttt{CAP\_BUTT}      \\ \hline
+\tbf{square}   &  \ttt{CAP\_SQUARE}    \\ \hline
+\tbf{round}    &  \ttt{CAP\_ROUND}     \\ \hline
+\end{longtable}
+
+\subsubsection{JoinStyle}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}    &  \tbf{Meaning}        \\ \hline
+\tbf{bevel}    &  \ttt{JOIN\_BEVEL}    \\ \hline
+\tbf{miter}    &  \ttt{JOIN\_MITER}    \\ \hline
+\tbf{round}    &  \ttt{JOIN\_ROUND}    \\ \hline
+\end{longtable}
+
+\subsubsection{FillRule}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}    &  \tbf{Meaning}        \\ \hline
+\tbf{evenodd}  &  \ttt{FILL\_EVENODD}  \\ \hline
+\tbf{nonzero}  &  \ttt{FILL\_NONZERO}  \\ \hline
+\end{longtable}
+
+\subsubsection{ArrowHead}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}    &  \tbf{Meaning}         \\ \hline
+\tbf{none}     &  \ttt{ARROW\_NONE}     \\ \hline
+\tbf{simple}   &  \ttt{ARROW\_SIMPLE}   \\ \hline
+\tbf{triangle} &  \ttt{ARROW\_TRIANGLE} \\ \hline
+\tbf{barbed}   &  \ttt{ARROW\_BARBED}   \\ \hline
+\end{longtable}
+
+\subsubsection{Interpolation}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}   &  \tbf{Meaning}              \\ \hline
+\tbf{none}    &  \ttt{INTERPOLATION\_NONE}  \\ \hline
+\tbf{fast}    &  \ttt{INTERPOLATION\_FAST}  \\ \hline
+\tbf{best}    &  \ttt{INTERPOLATION\_BEST}  \\ \hline
+\end{longtable}
+
+\subsubsection{Anchor}
+
+Accepted values:
+
+\begin{longtable}{|p{4cm}|p{4cm}|}
+\hline
+\tabheadcol
+\tbf{Value}    &  \tbf{Meaning}                  \\ \hline
+\tbf{c}        &  \ttt{ANCHOR\_CENTER}           \\ \hline
+\tbf{center}   &  \ttt{ANCHOR\_CENTER}           \\ \hline
+\tbf{n}        &  \ttt{ANCHOR\_N}                \\ \hline
+\tbf{e}        &  \ttt{ANCHOR\_E}                \\ \hline
+\tbf{s}        &  \ttt{ANCHOR\_S}                \\ \hline
+\tbf{w}        &  \ttt{ANCHOR\_W}                \\ \hline
+\tbf{nw}       &  \ttt{ANCHOR\_NW}               \\ \hline
+\tbf{ne}       &  \ttt{ANCHOR\_NE}               \\ \hline
+\tbf{se}       &  \ttt{ANCHOR\_SE}               \\ \hline
+\tbf{sw}       &  \ttt{ANCHOR\_SW}               \\ \hline
+\tbf{start}    &  \ttt{ANCHOR\_BASELINE\_START}  \\ \hline
+\tbf{middle}   &  \ttt{ANCHOR\_BASELINE\_MIDDLE} \\ \hline
+\tbf{end}      &  \ttt{ANCHOR\_BASELINE\_END}    \\ \hline
+\end{longtable}
+
+\section{Figure Attributes}
+
+This section lists what attributes are accepted by individual figure classes.
+
+
+\tbf{figure}
+    type, visible, tags, childz, transform
+
+\tbf{panel}
+        pos
+        plus: Figure
+
+\tbf{abstractLine}
+        linecolor, linestyle, linewidth, lineopacity, capstyle, startarrowhead, endarrowhead, zoomlinewidth
+        plus: Figure
+
+\tbf{line}
+        points
+        plus: AbstractLineFigure
+
+\tbf{arc}
+        pos, size, anchor, startangle, endangle
+        plus: AbstractLineFigure
+
+\tbf{polyline}
+        points, smooth, joinstyle
+        plus: AbstractLineFigure
+
+\tbf{abstractShape}
+        linecolor, fillcolor, linestyle, linewidth, lineopacity, fillopacity, zoomlinewidth
+        plus: Figure
+
+\tbf{rectangle}
+        pos, size, anchor, cornerradius
+        plus: AbstractShapeFigure
+
+\tbf{oval}
+        pos, size, anchor
+        plus: AbstractShapeFigure
+
+\tbf{ring}
+        pos, size, anchor, innersize
+        plus: AbstractShapeFigure
+
+\tbf{pieSlice}
+        pos, size, anchor, startangle, endangle
+        plus: AbstractShapeFigure
+
+\tbf{polygon}
+        points, smooth, joinstyle, fillrule
+        plus: AbstractShapeFigure
+
+\tbf{path}
+        path, offset, joinstyle, capstyle, fillrule
+        plus: AbstractShapeFigure
+
+\tbf{abstractText}
+        pos, text, color, opacity, font, anchor
+        plus: Figure
+
+\tbf{abstractImage}
+        pos, anchor, size, interpolation, opacity, tint
+        plus: Figure
+
+\tbf{image}
+        image
+        plus: AbstractImageFigure
+
+\tbf{pixmap}
+        resolution
+        plus: AbstractImageFigure
+
+TODO
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End:

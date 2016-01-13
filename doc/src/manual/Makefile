@@ -38,7 +38,8 @@ TEXCHAPTERS = \
 	 appendix-display-strings.tex \
 	 appendix-config-options.tex \
 	 appendix-result-file-formats.tex \
-	 appendix-eventlog-file-format.tex
+	 appendix-eventlog-file-format.tex \
+	 appendix-figure-definitions.tex
 ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
 HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
