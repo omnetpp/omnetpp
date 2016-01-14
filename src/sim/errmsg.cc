@@ -47,6 +47,7 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_GATEID:    return "Invalid gate Id %d";
         case E_INFLOOP:   return "FSM: infinite loop of transient states (now in state %s)";
         case E_LOCKED:    return "Object is locked against modifications, try unlockProperties() on parent object";
+        case E_MISSINGTAG:return "Mandatory tag `%s' missing from message or packet";
         case E_MODFIN:    return "Message sent to already terminated module `%s'";
         case E_MODINI:    return "Module initialization error";
         case E_NEGTIME:   return "wait(): negative delay";

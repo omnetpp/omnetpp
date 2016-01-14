@@ -1,0 +1,104 @@
+%description:
+Test basic tags usage
+
+%file: tags.msg
+namespace @TESTNAME@;
+
+class FooTag extends cObject {
+    int foo = 0;
+}
+
+class FooTag2 extends FooTag {
+    int foo2 = 0;
+}
+
+class BarTag extends cOwnedObject {
+    int bar = 0;
+}
+
+%inifile: x.ini
+#debugger-attach-on-startup = true
+debugger-attach-on-error = true
+
+%includes:
+#include "tags_m.h"
+using namespace @TESTNAME@;
+
+%global:
+
+void printTags(cMessage *msg)
+{
+    int n = msg->getNumTags();
+    EV << msg->getName() << " tags: {";
+    for (int i = 0; i < n; i++)
+        EV << " " << msg->getTag(i)->getClassName();
+    EV << " }\n";
+}
+
+%activity:
+cMessage *msg = new cMessage("msg");
+printTags(msg);
+EV << "has FooTag: " << (msg->getTag<FooTag>() != NULL) << endl;
+
+// getTag<T> should NOT return subclasses of T
+EV << "adding FooTag2\n";
+msg->ensureTag<FooTag2>();
+printTags(msg);
+EV << "has FooTag2: " << (msg->getTag<FooTag2>() != NULL) << endl;
+EV << "has FooTag: " << (msg->getTag<FooTag>() != NULL) << endl;
+
+// clearTags()
+EV << "clearing tags\n";
+msg->clearTags();
+printTags(msg);
+
+// multiple ensure() calls should still add 1 object only
+EV << "adding FooTag and BarTag\n";
+FooTag *foo = msg->ensureTag<FooTag>();
+FooTag *foo2 = msg->ensureTag<FooTag>();
+BarTag *bar = msg->ensureTag<BarTag>();
+FooTag *foo3 = msg->ensureTag<FooTag>();
+BarTag *bar2 = msg->ensureTag<BarTag>();
+printTags(msg);
+ASSERT(foo == foo2 && foo == foo3 && bar == bar2);
+
+// removeTag()
+EV << "removing FooTag\n";
+FooTag *foo4 = msg->removeTag<FooTag>();
+printTags(msg);
+ASSERT(foo == foo4);
+
+// dup()
+EV << "checking dup\n";
+msg->ensureTag<FooTag>();
+cMessage *copy = msg->dup();
+copy->setName("copy");
+printTags(msg);
+printTags(copy);
+ASSERT(msg->getTag<FooTag>() != copy->getTag<FooTag>());
+ASSERT(msg->getTag<BarTag>() != copy->getTag<BarTag>());
+
+// destructor
+delete msg;
+delete copy;
+
+EV << ".\n";
+
+%contains: stdout
+msg tags: { }
+has FooTag: 0
+adding FooTag2
+msg tags: { cMessage_tags_1::FooTag2 }
+has FooTag2: 1
+has FooTag: 0
+clearing tags
+msg tags: { }
+adding FooTag and BarTag
+msg tags: { cMessage_tags_1::FooTag cMessage_tags_1::BarTag }
+removing FooTag
+msg tags: { cMessage_tags_1::BarTag }
+checking dup
+msg tags: { cMessage_tags_1::BarTag cMessage_tags_1::FooTag }
+copy tags: { cMessage_tags_1::BarTag cMessage_tags_1::FooTag }
+.
+

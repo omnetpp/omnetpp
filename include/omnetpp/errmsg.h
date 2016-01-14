@@ -47,6 +47,7 @@ enum OppErrorCode
     E_GATEID,
     E_INFLOOP,
     E_LOCKED,
+    E_MISSINGTAG,
     E_MODFIN,
     E_MODINI,
     E_NEGTIME,
