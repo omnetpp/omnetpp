@@ -158,7 +158,7 @@ which is by default a typedef to the \ttt{SimTime} class.
 using decimal fixed-point representation. The resolution is controlled
 by the \textit{scale exponent} global configuration variable; that is,
 \ttt{SimTime} instances have the same resolution. The exponent can be
-between chosen between -18 (attosecond resolution) and 0 (seconds).
+chosen between -18 (attosecond resolution) and 0 (seconds).
 Some exponents with the ranges they provide are shown in the following table.
 
 \begin{center}
@@ -180,55 +180,34 @@ Note that although simulation time cannot be negative, it is still useful to
 be able to represent negative numbers, because they often arise
 during the evaluation of arithmetic expressions.
 
-The \ttt{SimTime} class performs additions and subtractions as 64-bit integer
-operations. Integer overflows are checked, and will cause the simulation to
-stop with an error message. Other operations (multiplication, division, etc)
-are performed in \ttt{double}, then converted back to integer.
-
 There is no implicit conversion from \ttt{SimTime} to \ttt{double}, mostly
 because it would conflict with overloaded arithmetic operations of \ttt{SimTime};
-use the \ffunc{dbl()} method of \ttt{Simtime} to convert. To reduce the
-need for \ffunc{dbl()}, several functions and methods have overloaded variants
-that directly accept \ttt{SimTime}, for example \ffunc{fabs()}, \ffunc{fmod()},
-\ffunc{ceil()}, \ffunc{floor()}, \ffunc{uniform()}, \ffunc{exponential()}, and
-\ffunc{normal()}.
-
-\begin{note}
-   Converting a \ttt{SimTime} to \ttt{double} may lose precision, because
-   \ttt{double} only has a 52-bit mantissa.
-\end{note}
+use the \ffunc{dbl()} method of \ttt{SimTime} or the \ffunc{SIMTIME\_DBL()} macro
+to convert. To reduce the need for \ffunc{dbl()}, several functions and methods
+have overloaded variants that directly accept \ttt{SimTime}, for example
+\ffunc{fabs()}, \ffunc{fmod()}, \ffunc{div()}, \ffunc{ceil()}, \ffunc{floor()},
+\ffunc{uniform()}, \ffunc{exponential()}, and \ffunc{normal()}.
 
 Other useful methods of \ttt{SimTime} include \ffunc{str()},
 which returns the value as a string; \ffunc{parse()}, which converts a
 string to \ttt{SimTime}; \ffunc{raw()}, which returns the
 underlying \ttt{int64} value; \ffunc{getScaleExp()}, which returns the
-global scale exponent; and \ffunc{getMaxTime}, which returns the
-maximum simulation time that can be represented at the current
-scale exponent.
+global scale exponent; \ffunc{isZero()}, which tests whether the
+simulation time is 0; and \ffunc{getMaxTime()}, which returns the maximum 
+simulation time that can be represented at the current scale exponent. 
+Zero and the maximum simulation time are also accessible
+via the \fmac{SIMTIME\_ZERO} and \fmac{SIMTIME\_MAX} macros.
 
-\subsubsection{Compatibility}
-
-Earlier versions of {\opp} used \ttt{double} for simulation time. To facilitate
-porting existing models to {\opp} 4.0 or later, {\opp} can be compiled to use
-\ttt{double} for \ttt{simtime\_t}. To enable this mode, define the
-\ttt{USE\_DOUBLE\_SIMTIME} preprocessor macro during compiling {\opp}
-and the simulation models.
-
-There are several macros that can be used in simulation models to make
-them compile with both \ttt{double} and \ttt{SimTime} simulation time:
-\fmac{SIMTIME\_STR()} converts simulation time to a \ttt{const char *}
-(can be used in \ttt{printf} argument lists);
-\fmac{SIMTIME\_DBL(t)} converts simulation time to \ttt{double};
-\fmac{SIMTIME\_RAW(t)} returns the underlying \ttt{int64} or \ttt{double};
-\fmac{STR\_SIMTIME(s)} converts string to simulation time; and
-\fmac{SIMTIME\_TTOA(buf,t)} converts simulation time to string,
-and places the result into the given buffer. \fmac{MAXTIME} is
-also defined correctly for both \ttt{simtime\_t} types.
+\begin{cpp}
+// 340 microseconds in the future, truncated to millisecond boundary
+simtime_t timeout = (simTime() + SimTime(340, SIMTIME_US)).trunc(SIMTIME_MS);
+\end{cpp}
 
 \begin{note}
-   Why did {\opp} switch to \ttt{int64}-based simulation time?
-   \ttt{double}'s mantissa is only 52 bits long, and this caused
-   problems in long simulations that relied on fine-grained timing,
+   Converting a \ttt{SimTime} to \ttt{double} may lose precision, because
+   \ttt{double} only has a 52-bit mantissa.
+   Earlier versions of {\opp} used \ttt{double} for the simulation
+   time, but that caused problems in long simulations that relied on fine-grained timing,
    for example MAC protocols. Other problems were the accumulation of
    rounding errors, and non-associativity (often $(x+y)+z \neq x+(y+z)$, see
    ~\cite{Goldberg91what}) which meant that two \ttt{double} simulation
@@ -3930,7 +3909,9 @@ one of these types, or wrapped into an object subclassed from \cclass{cObject}.
 to convey to listeners extra information.
 
 \begin{note}
-  The \textit{details} parameter was added in {\opp} 5.0.
+  The \textit{details} parameter was added in {\opp} 5.0. You should update
+  your models to use the new listener interface or as a temporary solution, compile
+  {\opp} with the \ttt{WITH\_OMNETPP4x\_LISTENER\_SUPPORT} macro.
 \end{note}
 
 When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal.
