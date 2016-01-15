@@ -4156,17 +4156,17 @@ class cIListener
   public:
     virtual ~cIListener() {}
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               bool b, cObject *details) = 0;
+                               bool value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               long l, cObject *details) = 0;
+                               long value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               double d, cObject *details) = 0;
+                               double value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               simtime_t t, cObject *details) = 0;
+                               simtime_t value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               const char *s, cObject *details) = 0;
+                               const char *value, cObject *details) = 0;
     virtual void receiveSignal(cComponent *src, simsignal_t id,
-                               cObject *obj, cObject *details) = 0;
+                               cObject *value, cObject *details) = 0;
     virtual void finish(cComponent *component, simsignal_t id) {}
     virtual void subscribedTo(cComponent *component, simsignal_t id) {}
     virtual void unsubscribedFrom(cComponent *component, simsignal_t id) {}
@@ -4288,10 +4288,11 @@ class MyListener : public cListener
    ...
 };
 
-void MyListener::receiveSignal(cComponent *src, simsignal_t id, cObject *obj)
+void MyListener::receiveSignal(cComponent *src, simsignal_t id, cObject *value,
+                               cObject *details)
 {
-    if (dynamic_cast<cPreModuleDeleteNotification *>(obj)) {
-        cPreModuleDeleteNotification *data = (cPreModuleDeleteNotification *)obj;
+    if (dynamic_cast<cPreModuleDeleteNotification *>(value)) {
+        cPreModuleDeleteNotification *data = (cPreModuleDeleteNotification *)value;
         EV << "Module " << data->module->getFullPath() << " is about to be deleted\n";
     }
 }
