@@ -11,4 +11,4 @@ digraph g {
         cChannel -> cIdealChannel;
         cChannel -> cDelayChannel;
         cChannel -> cDatarateChannel;
-};
+}

@@ -12,4 +12,4 @@ graph g {
         node5 -- node6;
         node2 -- node5;
         node3 -- node4;
-};
+}

@@ -16,4 +16,4 @@ digraph g {
         cObjectResultFilter -> "PacketBitsFilter,\nPacketBytesFilter,\n...";
         cResultRecorder -> "CountRecorder,\n...";
         cNumericResultRecorder -> "VectorRecorder,\nLastValueRecorder,\nHistogramRecorder,\nSumRecorder,\nMinRecorder,\nMaxRecorder,\nTimeAverageRecorder,\n...";
-};
+}
