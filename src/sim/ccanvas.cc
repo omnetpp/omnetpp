@@ -94,6 +94,7 @@ static const char *PKEY_VISIBLE = "visible";
 static const char *PKEY_TAGS = "tags";
 static const char *PKEY_TRANSFORM = "transform";
 static const char *PKEY_CHILDZ = "childZ";
+static const char *PKEY_BOUNDS = "bounds";
 static const char *PKEY_POS = "pos";
 static const char *PKEY_POINTS = "points";
 static const char *PKEY_ANCHOR = "anchor";
@@ -479,92 +480,98 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
     return points;
 }
 
-void cFigure::parseBounds(cProperty *property, Point& p1, Point& p2)
-{
-    int numCoords = property->getNumValues(PKEY_POS);
-    if (numCoords != 2)
-        throw cRuntimeError("position: two coordinates expected");
-    Point p = parsePoint(property, PKEY_POS, 0);
-    Point size = parsePoint(property, PKEY_SIZE, 0);
-    const char *anchorStr = property->getValue(PKEY_ANCHOR);
-    Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
-    switch (anchor) {
-        case cFigure::ANCHOR_CENTER:
-            p1.x = p.x - size.x / 2;
-            p1.y = p.y - size.y / 2;
-            p2.x = p.x + size.x / 2;
-            p2.y = p.y + size.y / 2;
-            break;
-
-        case cFigure::ANCHOR_N:
-            p1.x = p.x - size.x / 2;
-            p1.y = p.y;
-            p2.x = p.x + size.x / 2;
-            p2.y = p.y + size.y;
-            break;
-
-        case cFigure::ANCHOR_E:
-            p1.x = p.x;
-            p1.y = p.y - size.y / 2;
-            p2.x = p.x + size.x;
-            p2.y = p.y + size.y / 2;
-            break;
-
-        case cFigure::ANCHOR_S:
-        case cFigure::ANCHOR_BASELINE_MIDDLE:
-            p1.x = p.x - size.x / 2;
-            p1.y = p.y - size.y;
-            p2.x = p.x + size.x / 2;
-            p2.y = p.y;
-            break;
-
-        case cFigure::ANCHOR_W:
-            p1.x = p.x - size.x;
-            p1.y = p.y - size.y / 2;
-            p2.x = p.x;
-            p2.y = p.y + size.y / 2;
-            break;
-
-        case cFigure::ANCHOR_NW:
-            p1.x = p.x;
-            p1.y = p.y;
-            p2.x = p.x + size.x;
-            p2.y = p.y + size.y;
-            break;
-
-        case cFigure::ANCHOR_NE:
-            p1.x = p.x - size.x;
-            p1.y = p.y;
-            p2.x = p.x;
-            p2.y = p.y + size.y;
-            break;
-
-        case cFigure::ANCHOR_SE:
-        case cFigure::ANCHOR_BASELINE_END:
-            p1.x = p.x - size.x;
-            p1.y = p.y - size.y;
-            p2.x = p.x;
-            p2.y = p.y;
-            break;
-
-        case cFigure::ANCHOR_SW:
-        case cFigure::ANCHOR_BASELINE_START:
-            p1.x = p.x;
-            p1.y = p.y - size.y;
-            p2.x = p.x + size.x;
-            p2.y = p.y;
-            break;
-
-        default:
-            throw cRuntimeError("Unexpected anchor %d", anchor);
-    }
-}
-
 cFigure::Rectangle cFigure::parseBounds(cProperty *property)
 {
-    Point p1, p2;
-    parseBounds(property, p1, p2);
-    return Rectangle(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+    if (property->containsKey(PKEY_BOUNDS)) {
+        if (property->containsKey(PKEY_POS) || property->containsKey(PKEY_SIZE) || property->containsKey(PKEY_ANCHOR))
+            throw cRuntimeError("%s, %s and %s are not allowed when %s is present", PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_BOUNDS);
+        if (property->getNumValues(PKEY_BOUNDS) != 4)
+            throw cRuntimeError("%s: x, y, width, height expected", PKEY_BOUNDS);
+        Point p = parsePoint(property, PKEY_BOUNDS, 0);
+        Point size = parsePoint(property, PKEY_BOUNDS, 2);
+        return Rectangle(p.x, p.y, size.x, size.y);
+    }
+    else {
+        int numCoords = property->getNumValues(PKEY_POS);
+        if (numCoords != 2)
+            throw cRuntimeError("%s: two coordinates expected", PKEY_POS);
+        Point p = parsePoint(property, PKEY_POS, 0);
+        Point size = parsePoint(property, PKEY_SIZE, 0);
+        const char *anchorStr = property->getValue(PKEY_ANCHOR);
+        Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
+        Point p1, p2;
+        switch (anchor) {
+            case cFigure::ANCHOR_CENTER:
+                p1.x = p.x - size.x / 2;
+                p1.y = p.y - size.y / 2;
+                p2.x = p.x + size.x / 2;
+                p2.y = p.y + size.y / 2;
+                break;
+
+            case cFigure::ANCHOR_N:
+                p1.x = p.x - size.x / 2;
+                p1.y = p.y;
+                p2.x = p.x + size.x / 2;
+                p2.y = p.y + size.y;
+                break;
+
+            case cFigure::ANCHOR_E:
+                p1.x = p.x;
+                p1.y = p.y - size.y / 2;
+                p2.x = p.x + size.x;
+                p2.y = p.y + size.y / 2;
+                break;
+
+            case cFigure::ANCHOR_S:
+            case cFigure::ANCHOR_BASELINE_MIDDLE:
+                p1.x = p.x - size.x / 2;
+                p1.y = p.y - size.y;
+                p2.x = p.x + size.x / 2;
+                p2.y = p.y;
+                break;
+
+            case cFigure::ANCHOR_W:
+                p1.x = p.x - size.x;
+                p1.y = p.y - size.y / 2;
+                p2.x = p.x;
+                p2.y = p.y + size.y / 2;
+                break;
+
+            case cFigure::ANCHOR_NW:
+                p1.x = p.x;
+                p1.y = p.y;
+                p2.x = p.x + size.x;
+                p2.y = p.y + size.y;
+                break;
+
+            case cFigure::ANCHOR_NE:
+                p1.x = p.x - size.x;
+                p1.y = p.y;
+                p2.x = p.x;
+                p2.y = p.y + size.y;
+                break;
+
+            case cFigure::ANCHOR_SE:
+            case cFigure::ANCHOR_BASELINE_END:
+                p1.x = p.x - size.x;
+                p1.y = p.y - size.y;
+                p2.x = p.x;
+                p2.y = p.y;
+                break;
+
+            case cFigure::ANCHOR_SW:
+            case cFigure::ANCHOR_BASELINE_START:
+                p1.x = p.x;
+                p1.y = p.y - size.y;
+                p2.x = p.x + size.x;
+                p2.y = p.y;
+                break;
+
+            default:
+                throw cRuntimeError("Unexpected anchor %d", anchor);
+        }
+        return Rectangle(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+    }
 }
 
 inline bool contains(const std::string& str, const std::string& substr)
@@ -1482,7 +1489,7 @@ const char **cArcFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, nullptr};
+        const char *localKeys[] = { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, nullptr};
         concatArrays(keys, cAbstractLineFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1826,7 +1833,7 @@ const char **cRectangleFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, nullptr};
+        const char *localKeys[] = { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_CORNERRADIUS, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1901,7 +1908,7 @@ const char **cOvalFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, nullptr};
+        const char *localKeys[] = { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1967,7 +1974,7 @@ const char **cRingFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, nullptr};
+        const char *localKeys[] = { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INNERSIZE, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2050,7 +2057,7 @@ const char **cPieSliceFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, nullptr};
+        const char *localKeys[] = { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_STARTANGLE, PKEY_ENDANGLE, nullptr};
         concatArrays(keys, cAbstractShapeFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2940,12 +2947,26 @@ void cAbstractImageFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    setPosition(parsePoint(property, PKEY_POS, 0));
-    if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
-        setAnchor(parseAnchor(s));
-    Point size = parsePoint(property, PKEY_SIZE, 0);
-    setWidth(size.x);
-    setHeight(size.y);
+    if (property->containsKey(PKEY_BOUNDS)) {
+        if (property->containsKey(PKEY_POS) || property->containsKey(PKEY_SIZE) || property->containsKey(PKEY_ANCHOR))
+            throw cRuntimeError("%s, %s and %s are not allowed when %s is present", PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_BOUNDS);
+        if (property->getNumValues(PKEY_BOUNDS) != 4)
+            throw cRuntimeError("%s: x, y, width, height expected", PKEY_BOUNDS);
+        Point p = parsePoint(property, PKEY_BOUNDS, 0);
+        Point size = parsePoint(property, PKEY_BOUNDS, 2);
+        setPosition(p);
+        setAnchor(ANCHOR_NW);
+        setWidth(size.x);
+        setHeight(size.y);
+    }
+    else {
+        setPosition(parsePoint(property, PKEY_POS, 0));
+        if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
+            setAnchor(parseAnchor(s));
+        Point size = parsePoint(property, PKEY_SIZE, 0);
+        setWidth(size.x);
+        setHeight(size.y);
+    }
     if ((s = property->getValue(PKEY_INTERPOLATION)) != nullptr)
         setInterpolation(parseInterpolation(s));
     if ((s = property->getValue(PKEY_OPACITY)) != nullptr)
@@ -2962,7 +2983,7 @@ const char **cAbstractImageFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_ANCHOR, PKEY_SIZE, PKEY_INTERPOLATION, PKEY_OPACITY, PKEY_TINT, nullptr};
+        const char *localKeys[] = { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR, PKEY_INTERPOLATION, PKEY_OPACITY, PKEY_TINT, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
