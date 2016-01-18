@@ -298,7 +298,7 @@ class SIM_API cFigure : public cOwnedObject
     public:
         /** @name Constructors, destructor, assignment */
         //@{
-        cFigure(const char *name=nullptr);
+        explicit cFigure(const char *name=nullptr);
         cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
         virtual ~cFigure();
         cFigure& operator=(const cFigure& other);
@@ -408,7 +408,7 @@ class SIM_API cGroupFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cGroupFigure(const char *name=nullptr) : cFigure(name) {}
+        explicit cGroupFigure(const char *name=nullptr) : cFigure(name) {}
         cGroupFigure(const cGroupFigure& other) : cFigure(other) {copy(other);}
         cGroupFigure& operator=(const cGroupFigure& other);
         //@}
@@ -447,7 +447,7 @@ class SIM_API cPanelFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPanelFigure(const char *name=nullptr) : cFigure(name) {}
+        explicit cPanelFigure(const char *name=nullptr) : cFigure(name) {}
         cPanelFigure(const cPanelFigure& other) : cFigure(other) {copy(other);}
         cPanelFigure& operator=(const cPanelFigure& other);
         //@}
@@ -501,7 +501,7 @@ class SIM_API cAbstractLineFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE), zoomLineWidth(false) {}
+        explicit cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE), zoomLineWidth(false) {}
         cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
         cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
         //@}
@@ -552,7 +552,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cLineFigure(const char *name=nullptr) : cAbstractLineFigure(name) {}
+        explicit cLineFigure(const char *name=nullptr) : cAbstractLineFigure(name) {}
         cLineFigure(const cLineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cLineFigure& operator=(const cLineFigure& other);
         //@}
@@ -594,7 +594,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cArcFigure(const char *name=nullptr) : cAbstractLineFigure(name), startAngle(0), endAngle(0) {}
+        explicit cArcFigure(const char *name=nullptr) : cAbstractLineFigure(name), startAngle(0), endAngle(0) {}
         cArcFigure(const cArcFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cArcFigure& operator=(const cArcFigure& other);
         //@}
@@ -648,7 +648,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPolylineFigure(const char *name=nullptr) : cAbstractLineFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
+        explicit cPolylineFigure(const char *name=nullptr) : cAbstractLineFigure(name), smooth(false), joinStyle(JOIN_MITER) {}
         cPolylineFigure(const cPolylineFigure& other) : cAbstractLineFigure(other) {copy(other);}
         cPolylineFigure& operator=(const cPolylineFigure& other);
         //@}
@@ -716,7 +716,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cAbstractShapeFigure(const char *name=nullptr) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), fillOpacity(1), zoomLineWidth(false) {}
+        explicit cAbstractShapeFigure(const char *name=nullptr) : cFigure(name), outlined(true), filled(false), lineColor(BLACK), fillColor(BLUE), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), fillOpacity(1), zoomLineWidth(false) {}
         cAbstractShapeFigure(const cAbstractShapeFigure& other) : cFigure(other) {copy(other);}
         cAbstractShapeFigure& operator=(const cAbstractShapeFigure& other);
         //@}
@@ -771,7 +771,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cRectangleFigure(const char *name=nullptr) : cAbstractShapeFigure(name), cornerRx(0), cornerRy(0) {}
+        explicit cRectangleFigure(const char *name=nullptr) : cAbstractShapeFigure(name), cornerRx(0), cornerRy(0) {}
         cRectangleFigure(const cRectangleFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cRectangleFigure& operator=(const cRectangleFigure& other);
         //@}
@@ -817,7 +817,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cOvalFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
+        explicit cOvalFigure(const char *name=nullptr) : cAbstractShapeFigure(name) {}
         cOvalFigure(const cOvalFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cOvalFigure& operator=(const cOvalFigure& other);
         //@}
@@ -858,7 +858,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cRingFigure(const char *name=nullptr) : cAbstractShapeFigure(name), innerRx(0), innerRy(0) {}
+        explicit cRingFigure(const char *name=nullptr) : cAbstractShapeFigure(name), innerRx(0), innerRy(0) {}
         cRingFigure(const cRingFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cRingFigure& operator=(const cRingFigure& other);
         //@}
@@ -905,7 +905,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPieSliceFigure(const char *name=nullptr) : cAbstractShapeFigure(name), startAngle(0), endAngle(0) {}
+        explicit cPieSliceFigure(const char *name=nullptr) : cAbstractShapeFigure(name), startAngle(0), endAngle(0) {}
         cPieSliceFigure(const cPieSliceFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPieSliceFigure& operator=(const cPieSliceFigure& other);
         //@}
@@ -957,7 +957,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPolygonFigure(const char *name=nullptr) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER), fillRule(FILL_EVENODD) {}
+        explicit cPolygonFigure(const char *name=nullptr) : cAbstractShapeFigure(name), smooth(false), joinStyle(JOIN_MITER), fillRule(FILL_EVENODD) {}
         cPolygonFigure(const cPolygonFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPolygonFigure& operator=(const cPolygonFigure& other);
         //@}
@@ -1046,7 +1046,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPathFigure(const char *name=nullptr) : cAbstractShapeFigure(name), joinStyle(JOIN_MITER), capStyle(CAP_BUTT), fillRule(FILL_EVENODD) {}
+        explicit cPathFigure(const char *name=nullptr) : cAbstractShapeFigure(name), joinStyle(JOIN_MITER), capStyle(CAP_BUTT), fillRule(FILL_EVENODD) {}
         cPathFigure(const cPathFigure& other) : cAbstractShapeFigure(other) {copy(other);}
         cPathFigure& operator=(const cPathFigure& other);
         //@}
@@ -1141,7 +1141,7 @@ class SIM_API cAbstractTextFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cAbstractTextFigure(const char *name=nullptr) : cFigure(name), color(BLACK), opacity(1), anchor(ANCHOR_NW) {}
+        explicit cAbstractTextFigure(const char *name=nullptr) : cFigure(name), color(BLACK), opacity(1), anchor(ANCHOR_NW) {}
         cAbstractTextFigure(const cAbstractTextFigure& other) : cFigure(other) {copy(other);}
         cAbstractTextFigure& operator=(const cAbstractTextFigure& other);
         //@}
@@ -1188,7 +1188,7 @@ class SIM_API cTextFigure : public cAbstractTextFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cTextFigure(const char *name=nullptr) : cAbstractTextFigure(name) {}
+        explicit cTextFigure(const char *name=nullptr) : cAbstractTextFigure(name) {}
         cTextFigure(const cTextFigure& other) : cAbstractTextFigure(other) {copy(other);}
         cTextFigure& operator=(const cTextFigure& other);
         //@}
@@ -1214,7 +1214,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cLabelFigure(const char *name=nullptr) : cAbstractTextFigure(name) {}
+        explicit cLabelFigure(const char *name=nullptr) : cAbstractTextFigure(name) {}
         cLabelFigure(const cLabelFigure& other) : cAbstractTextFigure(other) {copy(other);}
         cLabelFigure& operator=(const cLabelFigure& other);
         //@}
@@ -1267,7 +1267,7 @@ class SIM_API cAbstractImageFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cAbstractImageFigure(const char *name=nullptr) : cFigure(name), anchor(ANCHOR_CENTER), width(0), height(0), interpolation(INTERPOLATION_FAST), opacity(1), tintColor(BLUE), tintAmount(0) { }
+        explicit cAbstractImageFigure(const char *name=nullptr) : cFigure(name), anchor(ANCHOR_CENTER), width(0), height(0), interpolation(INTERPOLATION_FAST), opacity(1), tintColor(BLUE), tintAmount(0) { }
         cAbstractImageFigure(const cAbstractImageFigure& other) : cFigure(other) {copy(other);}
         cAbstractImageFigure& operator=(const cAbstractImageFigure& other);
         //@}
@@ -1322,7 +1322,7 @@ class SIM_API cImageFigure : public cAbstractImageFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cImageFigure(const char *name=nullptr) : cAbstractImageFigure(name) {}
+        explicit cImageFigure(const char *name=nullptr) : cAbstractImageFigure(name) {}
         cImageFigure(const cImageFigure& other) : cAbstractImageFigure(other) {copy(other);}
         cImageFigure& operator=(const cImageFigure& other);
         //@}
@@ -1358,7 +1358,7 @@ class SIM_API cIconFigure : public cImageFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cIconFigure(const char *name=nullptr) : cImageFigure(name) {}
+        explicit cIconFigure(const char *name=nullptr) : cImageFigure(name) {}
         cIconFigure(const cIconFigure& other) : cImageFigure(other) {copy(other);}
         cIconFigure& operator=(const cIconFigure& other);
         //@}
@@ -1388,7 +1388,7 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cPixmapFigure(const char *name=nullptr) : cAbstractImageFigure(name) {}
+        explicit cPixmapFigure(const char *name=nullptr) : cAbstractImageFigure(name) {}
         cPixmapFigure(const cPixmapFigure& other) : cAbstractImageFigure(other) {copy(other);}
         virtual ~cPixmapFigure() {}
         cPixmapFigure& operator=(const cPixmapFigure& other);
@@ -1460,7 +1460,7 @@ class SIM_API cCanvas : public cOwnedObject
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        cCanvas(const char *name = nullptr);
+        explicit cCanvas(const char *name = nullptr);
         cCanvas(const cCanvas& other) : cOwnedObject(other) {copy(other);}
         virtual ~cCanvas();
         cCanvas& operator=(const cCanvas& other);
