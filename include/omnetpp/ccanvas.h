@@ -161,10 +161,10 @@ class SIM_API cFigure : public cOwnedObject
                 Transform& rotate(double phi);
                 Transform& rotate(double phi, double cx, double cy);
                 Transform& rotate(double phi, const Point& c) {return rotate(phi, c.x, c.y);}
-                Transform& skewx(double phi);
-                Transform& skewy(double phi);
-                Transform& skewx(double phi, double cy);
-                Transform& skewy(double phi, double cx);
+                Transform& skewx(double coeff); // note: if you want to skew by an angle, use coeff = tan(phi)
+                Transform& skewy(double coeff);
+                Transform& skewx(double coeff, double cy);
+                Transform& skewy(double coeff, double cx);
                 Transform& multiply(const Transform& t); // left-multiply: *this = t * (*this)
                 Transform& rightMultiply(const Transform& t); // *this = (*this) * t
                 Point applyTo(const Point& p) const;

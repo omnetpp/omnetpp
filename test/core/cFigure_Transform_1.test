@@ -39,14 +39,14 @@ P(Transform().rotate(M_PI/2,2,3).applyTo(Point(1,2)));
 P(Transform().translate(-2,-3).rotate(M_PI/2).translate(2,3).applyTo(Point(1,2))); // expanded form of previous one
 EV << endl;
 
-P(Transform().skewx(M_PI/6).applyTo(Point(1,0)));
-P(Transform().skewx(M_PI/6).applyTo(Point(1,1)));
-P(Transform().skewx(M_PI/6).applyTo(Point(1,2)));
+P(Transform().skewx(0.5).applyTo(Point(1,0)));
+P(Transform().skewx(0.5).applyTo(Point(1,1)));
+P(Transform().skewx(0.5).applyTo(Point(1,2)));
 EV << endl;
 
-P(Transform().skewy(M_PI/6).applyTo(Point(0,1)));
-P(Transform().skewy(M_PI/6).applyTo(Point(1,1)));
-P(Transform().skewy(M_PI/6).applyTo(Point(2,1)));
+P(Transform().skewy(0.5).applyTo(Point(0,1)));
+P(Transform().skewy(0.5).applyTo(Point(1,1)));
+P(Transform().skewy(0.5).applyTo(Point(2,1)));
 EV << ".\n";
 
 
@@ -68,12 +68,12 @@ Transform().rotate(M_PI/2,1,2).applyTo(Point(1,2)) --> (1, 2)
 Transform().rotate(M_PI/2,2,3).applyTo(Point(1,2)) --> (3, 2)
 Transform().translate(-2,-3).rotate(M_PI/2).translate(2,3).applyTo(Point(1,2)) --> (3, 2)
 
-Transform().skewx(M_PI/6).applyTo(Point(1,0)) --> (1, 0)
-Transform().skewx(M_PI/6).applyTo(Point(1,1)) --> (1.57735, 1)
-Transform().skewx(M_PI/6).applyTo(Point(1,2)) --> (2.1547, 2)
+Transform().skewx(0.5).applyTo(Point(1,0)) --> (1, 0)
+Transform().skewx(0.5).applyTo(Point(1,1)) --> (1.5, 1)
+Transform().skewx(0.5).applyTo(Point(1,2)) --> (2, 2)
 
-Transform().skewy(M_PI/6).applyTo(Point(0,1)) --> (0, 1)
-Transform().skewy(M_PI/6).applyTo(Point(1,1)) --> (1, 1.57735)
-Transform().skewy(M_PI/6).applyTo(Point(2,1)) --> (2, 2.1547)
+Transform().skewy(0.5).applyTo(Point(0,1)) --> (0, 1)
+Transform().skewy(0.5).applyTo(Point(1,1)) --> (1, 1.5)
+Transform().skewy(0.5).applyTo(Point(2,1)) --> (2, 2)
 .
 

@@ -264,42 +264,38 @@ cFigure::Transform& cFigure::Transform::rotate(double phi, double cx, double cy)
     return *this;
 }
 
-cFigure::Transform& cFigure::Transform::skewx(double phi)
+cFigure::Transform& cFigure::Transform::skewx(double coeff)
 {
-    double tanPhy = tan(phi);
-    double a_ = b*tanPhy+a;
-    double c_ = d*tanPhy+c;
-    double t1_ = t2*tanPhy+t1;
+    double a_ = b*coeff+a;
+    double c_ = d*coeff+c;
+    double t1_ = t2*coeff+t1;
     a = a_; c = c_; t1 = t1_;
     return *this;
 }
 
-cFigure::Transform& cFigure::Transform::skewy(double phi)
+cFigure::Transform& cFigure::Transform::skewy(double coeff)
 {
-    double tanPhy = tan(phi);
-    double b_ = a*tanPhy+b;
-    double d_ = c*tanPhy+d;
-    double t2_ = t1*tanPhy+t2;
+    double b_ = a*coeff+b;
+    double d_ = c*coeff+d;
+    double t2_ = t1*coeff+t2;
     b = b_; d = d_; t2 = t2_;
     return *this;
 }
 
-cFigure::Transform& cFigure::Transform::skewx(double phi, double cy)
+cFigure::Transform& cFigure::Transform::skewx(double coeff, double cy)
 {
-    double tanPhy = tan(phi);
-    double a_ = b*tanPhy+a;
-    double c_ = d*tanPhy+c;
-    double t1_ = t2*tanPhy-cy*tanPhy+t1;
+    double a_ = b*coeff+a;
+    double c_ = d*coeff+c;
+    double t1_ = t2*coeff-cy*coeff+t1;
     a = a_; c = c_; t1 = t1_;
     return *this;
 }
 
-cFigure::Transform& cFigure::Transform::skewy(double phi, double cx)
+cFigure::Transform& cFigure::Transform::skewy(double coeff, double cx)
 {
-    double tanPhy = tan(phi);
-    double b_ = a*tanPhy+b;
-    double d_ = c*tanPhy+d;
-    double t2_ = t1*tanPhy-cx*tanPhy+t2;
+    double b_ = a*coeff+b;
+    double d_ = c*coeff+d;
+    double t2_ = t1*coeff-cx*coeff+t2;
     b = b_; d = d_; t2 = t2_;
     return *this;
 }
@@ -617,19 +613,19 @@ cFigure::Transform cFigure::parseTransform(cProperty *property, const char *key)
         }
         else if (operation == "skewx") {
             if (args.size() == 1)
-                transform.skewx(deg2rad(args[0]));
+                transform.skewx(args[0]);
             else if (args.size() == 2)
-                transform.skewx(deg2rad(args[0]), args[1]);
+                transform.skewx(args[0], args[1]);
             else
-                throw cRuntimeError("Wrong number of args in '%s', skewx(deg) or skewx(deg,cy) expected", step);
+                throw cRuntimeError("Wrong number of args in '%s', skewx(coeff) or skewx(coeff,cy) expected", step);
         }
         else if (operation == "skewy") {
             if (args.size() == 1)
-                transform.skewy(deg2rad(args[0]));
+                transform.skewy(args[0]);
             else if (args.size() == 2)
-                transform.skewy(deg2rad(args[0]), args[1]);
+                transform.skewy(args[0], args[1]);
             else
-                throw cRuntimeError("Wrong number of args in '%s', skewy(deg) or skewy(deg,cx) expected", step);
+                throw cRuntimeError("Wrong number of args in '%s', skewy(coeff) or skewy(coeff,cx) expected", step);
         }
         else {
             throw cRuntimeError("Invalid operation %s, translate, rotate, scale, skewx or skewy expected: '%s'", operation.c_str(), step);
