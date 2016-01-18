@@ -784,6 +784,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds);
+        virtual void setCornerRadius(double r)  {setCornerRx(r);setCornerRy(r);}
         virtual double getCornerRx() const  {return cornerRx;}
         virtual void setCornerRx(double rx);
         virtual double getCornerRy() const  {return cornerRy;}
@@ -867,6 +868,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         //@{
         virtual const Rectangle& getBounds() const  {return bounds;}
         virtual void setBounds(const Rectangle& bounds);
+        virtual void setInnerRadius(double r)   {setInnerRx(r);setInnerRy(r);}
         virtual double getInnerRx() const  {return innerRx;}
         virtual void setInnerRx(double rx);
         virtual double getInnerRy() const  {return innerRy;}
@@ -1078,30 +1080,41 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual const PathItem *getPathItem(int k) const {return path[k];}
         virtual void clearPath();
         virtual void addMoveTo(double x, double y);  // M x y
-        virtual void addMoveRel(double dx, double dy);  // m x y
+        virtual void addMoveRel(double dx, double dy);  // m dx dy
         virtual void addLineTo(double x, double y);  // L x y
-        virtual void addLineRel(double dx, double dy);  // l x y
+        virtual void addLineRel(double dx, double dy);  // l dx dy
         virtual void addHorizontalLineTo(double x);  // H x
         virtual void addHorizontalLineRel(double dx);  // h dx
         virtual void addVerticalLineTo(double y);  // V y
         virtual void addVerticalLineRel(double dy);  // v dy
         virtual void addArcTo(double rx, double ry, double phi, bool largeArc, bool sweep, double x, double y); // A rx ry phi largeArc sweep x y
-        virtual void addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy); // a rx ry phi largeArc sweep x y
+        virtual void addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy); // a rx ry phi largeArc sweep dx dy
         virtual void addCurveTo(double x1, double y1, double x, double y); // Q x1 y1 x y
-        virtual void addCurveRel(double dx1, double dy1, double dx, double dy); // q x1 y1 x y
+        virtual void addCurveRel(double dx1, double dy1, double dx, double dy); // q x1 y1 dx dy
         virtual void addSmoothCurveTo(double x, double y); // T x y
-        virtual void addSmoothCurveRel(double dx, double dy); // t x y
+        virtual void addSmoothCurveRel(double dx, double dy); // t dx dy
         virtual void addCubicBezierCurveTo(double x1, double y1, double x2, double y2, double x, double y); // C x1 y1 x2 y2 x y
-        virtual void addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy); // c x1 y1 x2 y2 x y
+        virtual void addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy); // c x1 y1 x2 y2 dx dy
         virtual void addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y); // S x2 y2 x y
-        virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s x2 y2 x y
+        virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s x2 y2 dx dy
         virtual void addClosePath(); // Z
         //@}
 };
 
 /**
  * Abstract base class for figures that display text. Text may be multi-line.
- * Font, color, opacity, position and anchoring are specified in this class.
+ *
+ * The location of the text on the canvas is determined jointly by the
+ * <i>position</i> and <i>anchor</i> properties. The anchor tells how to
+ * position the text relative to the positioning point. For example,
+ * if anchor is ANCHOR_CENTER then the text is centered on the point;
+ * if anchor is ANCHOR_N then the text will be drawn so that its top center
+ * is at the positioning point. The values ANCHOR_BASELINE_START,
+ * ANCHOR_BASELINE_MIDDLE, ANCHOR_BASELINE_END refer to the beginning,
+ * middle and end of the baseline of the (first line of the) text as
+ * anchor point. Anchor defaults to ANCHOR_CENTER.
+ *
+ * Other properties in this class define the font, color and opacity of the text.
  *
  * @ingroup Canvas
  */
@@ -1269,9 +1282,9 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor);
         virtual double getWidth() const  {return width;}
-        virtual void setWidth(double width);
+        virtual void setWidth(double width);  // zero means "unset"
         virtual double getHeight() const  {return height;}
-        virtual void setHeight(double height);
+        virtual void setHeight(double height); // zero means "unset"
         virtual Interpolation getInterpolation() const {return interpolation;}
         virtual void setInterpolation(Interpolation interpolation);
         virtual double getOpacity() const  {return opacity;}
