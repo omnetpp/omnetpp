@@ -623,8 +623,12 @@ cFigure::Transform cFigure::parseTransform(const char *s)
             transform.scale(args[0]);
         else if (args.size() == 2)
             transform.scale(args[0], args[1]);
+        else if (args.size() == 3)
+            transform.scale(args[0], args[0], args[1], args[2]);
+        else if (args.size() == 4)
+            transform.scale(args[0], args[1], args[2], args[3]);
         else
-            throw cRuntimeError("Wrong number of args in '%s', scale(s) or scale(sx,sy) expected", s);
+            throw cRuntimeError("Wrong number of args in '%s', scale(s), scale(sx,sy), scale(s,cx,cy), or scale(sx,sy,cx,cy) expected", s);
     }
     else if (operation == "skewx") {
         if (args.size() == 1)
