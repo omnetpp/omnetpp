@@ -207,8 +207,8 @@ class SIM_API cFigure : public cOwnedObject
                 Pixmap(const Pixmap& other);
                 ~Pixmap();
                 Pixmap& operator=(const Pixmap& other);
-                void resize(int width, int height, const RGBA& fill_);  //TODO rename setSize()??? makes more sense, esp. for the figure!
-                void resize(int width, int height, const Color& color, double opacity);
+                void setSize(int width, int height, const RGBA& fill_);  // nondestructive
+                void setSize(int width, int height, const Color& color, double opacity);  // nondestructive
                 void fill(const RGBA& fill_);
                 void fill(const Color& color, double opacity);
                 int getWidth() const {return width;}
@@ -239,7 +239,7 @@ class SIM_API cFigure : public cOwnedObject
         static cStringPool stringPool;
         int id;
         bool visible; // treated as structural change, for simpler handling
-        Transform transform;  // TODO make it optional (nullptr = identity transform)
+        Transform transform;
         std::vector<cFigure*> children;
         const char *tags; // stringpool'd
         uint64_t tagBits;  // bit-to-tagname mapping is stored in cCanvas. Note: change to std::bitset if 64 tags are not enough
@@ -418,7 +418,7 @@ class SIM_API cGroupFigure : public cFigure
         virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
         virtual std::string info() const override;
         virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
-        virtual void move(double x, double y) override {} //TODO
+        virtual void move(double x, double y) override {}
         //@}
 };
 
@@ -1070,11 +1070,6 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual void setCapStyle(CapStyle capStyle);
         virtual FillRule getFillRule() const {return fillRule;}
         virtual void setFillRule(FillRule fillRule);
-        /**
-         * TODO. This field exists to simplify the implementation and decrease
-         * the cost of the move() operation, which would otherwise have to update
-         * modify all path items.
-         */
         virtual const Point& getOffset() const {return offset;}
         virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange(); fireTransformChange();}
         //@}
@@ -1407,8 +1402,8 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual void setPixmap(const Pixmap& pixmap);
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
         virtual int getPixmapWidth() const {return pixmap.getWidth();}
-        virtual void resize(int width, int height, const RGBA& fill); // set *newly added* pixels with this color and opacity
-        virtual void resize(int width, int height, const Color& color, double opacity);  // fills *newly added* pixels with this color and opacity
+        virtual void setSize(int width, int height, const RGBA& fill); // nondestructive, set *newly added* pixels with this color and opacity
+        virtual void setSize(int width, int height, const Color& color, double opacity);  // nondestructive, fills *newly added* pixels with this color and opacity
         virtual void fill(const RGBA& fill);
         virtual void fill(const Color& color, double opacity);
         virtual const RGBA getPixel(int x, int y) const {return pixmap.pixel(x, y);}

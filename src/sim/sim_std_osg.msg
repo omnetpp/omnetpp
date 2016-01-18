@@ -25,8 +25,6 @@ typedef cFigure::Color Color;
 Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC, cOsgCanvas::STYLE_EARTH));
 Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL, cOsgCanvas::CAM_EARTH));
 
-cFigure::Color parseColor(const char *s);
-
 } // namespace omnetpp
 
 #include <osg/Node>
@@ -83,7 +81,7 @@ class cOsgCanvas extends cOwnedObject
 {
     osg::Node *scene;
     int viewerStyle @editable @enum(omnetpp::cOsgCanvas::ViewerStyle) @group(viewer hints);
-    Color clearColor @editable @tostring(.str()) @fromstring(parseColor($)) @group(viewer hints);
+    Color clearColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($)) @group(viewer hints);
     int cameraManipulatorType @editable @enum(omnetpp::cOsgCanvas::CameraManipulatorType) @group(viewer hints);
     double fieldOfViewAngle @editable @group(viewer hints);
     double zNear @editable @group(viewer hints);

@@ -392,7 +392,7 @@ void cFigure::Pixmap::allocate(int newWidth, int newHeight)
     data = new RGBA[newWidth * newHeight];
 }
 
-void cFigure::Pixmap::resize(int newWidth, int newHeight, const RGBA& fill_)
+void cFigure::Pixmap::setSize(int newWidth, int newHeight, const RGBA& fill_)
 {
     if (newWidth == width && newHeight == height)
         return; // no change
@@ -413,10 +413,10 @@ void cFigure::Pixmap::resize(int newWidth, int newHeight, const RGBA& fill_)
     data = newData;
 }
 
-void cFigure::Pixmap::resize(int width, int height, const Color& color, double opacity)
+void cFigure::Pixmap::setSize(int width, int height, const Color& color, double opacity)
 {
     RGBA rgba(color.red, color.green, color.blue, alpha(opacity));
-    resize(width, height, rgba);
+    setSize(width, height, rgba);
 }
 
 void cFigure::Pixmap::fill(const RGBA& rgba)
@@ -3155,18 +3155,18 @@ void cPixmapFigure::setPixmap(const Pixmap& pixmap)
     fireInputDataChange(); // always notify, as content may have changed
 }
 
-void cPixmapFigure::resize(int width, int height, const RGBA& fill)
+void cPixmapFigure::setSize(int width, int height, const RGBA& fill)
 {
-    pixmap.resize(width, height, fill);
+    pixmap.setSize(width, height, fill);
     fireInputDataChange();
 }
 
-void cPixmapFigure::resize(int width, int height, const Color& color, double opacity)
+void cPixmapFigure::setSize(int width, int height, const Color& color, double opacity)
 {
     if (pixmap.getWidth() == width && pixmap.getHeight() == height)
         return;
     ENSURE_RANGE01(opacity);
-    pixmap.resize(width, height, color, opacity);
+    pixmap.setSize(width, height, color, opacity);
     fireInputDataChange();
 }
 
