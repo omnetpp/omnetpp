@@ -196,9 +196,9 @@ cFigure::Point cFigure::Rectangle::getSize() const
 
 std::string cFigure::Color::str() const
 {
-    std::stringstream os;
-    os << "(" << (int)red << ", " << (int)green << ", " << (int)blue << ")";
-    return os.str();
+    char buf[16];
+    sprintf(buf, "#%2.2x%2.2x%2.2x", red, green, blue);
+    return buf;
 }
 
 std::string cFigure::Font::str() const
@@ -575,61 +575,78 @@ inline bool contains(const std::string& str, const std::string& substr)
 inline double deg2rad(double deg) { return deg * M_PI / 180; }
 inline double rad2deg(double rad) { return rad / M_PI * 180; }
 
+cFigure::Transform cFigure::parseTransform(const char *s)
+{
+    std::string operation = opp_trim(opp_substringbefore(s, "(").c_str());
+    if (operation == "") {
+        cFigure::Transform t;
+        int parsedChars = 0;
+        int count = sscanf(s, " ( ( %lf %lf ) ( %lf %lf ) ( %lf %lf ) ) %n",
+                &t.a, &t.b, &t.c, &t.d, &t.t1, &t.t2, &parsedChars);
+        if (count != 6 || s[parsedChars] != 0)
+            throw cRuntimeError("Invalid transform syntax, ((a b) (c d) (t1 t2)) or operation(...) expected");
+        return t;
+    }
+
+    std::string rest = opp_trim(opp_substringafter(s, "(").c_str());
+    bool missingRParen = !contains(rest, ")");
+    std::string argsStr = opp_trim(opp_substringbefore(rest, ")").c_str());
+    std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")").c_str());
+    if (operation == "" || missingRParen || trailingGarbage.size() != 0)
+        throw cRuntimeError("Syntax error in '%s', 'operation(arg1,arg2...)' expected", s);
+    std::vector<double> args = cStringTokenizer(argsStr.c_str(), ",").asDoubleVector();
+
+    Transform transform;
+    if (operation == "translate") {
+        if (args.size() == 2)
+            transform.translate(args[0], args[1]);
+        else
+            throw cRuntimeError("Wrong number of args in '%s', translate(dx,dxy) expected", s);
+    }
+    else if (operation == "rotate") {
+        if (args.size() == 1)
+            transform.rotate(deg2rad(args[0]));
+        else if (args.size() == 3)
+            transform.rotate(deg2rad(args[0]), args[1], args[2]);
+        else
+            throw cRuntimeError("Wrong number of args in '%s', rotate(deg) or rotate(deg,cx,cy) expected", s);
+    }
+    else if (operation == "scale") {
+        if (args.size() == 1)
+            transform.scale(args[0]);
+        else if (args.size() == 2)
+            transform.scale(args[0], args[1]);
+        else
+            throw cRuntimeError("Wrong number of args in '%s', scale(s) or scale(sx,sy) expected", s);
+    }
+    else if (operation == "skewx") {
+        if (args.size() == 1)
+            transform.skewx(args[0]);
+        else if (args.size() == 2)
+            transform.skewx(args[0], args[1]);
+        else
+            throw cRuntimeError("Wrong number of args in '%s', skewx(coeff) or skewx(coeff,cy) expected", s);
+    }
+    else if (operation == "skewy") {
+        if (args.size() == 1)
+            transform.skewy(args[0]);
+        else if (args.size() == 2)
+            transform.skewy(args[0], args[1]);
+        else
+            throw cRuntimeError("Wrong number of args in '%s', skewy(coeff) or skewy(coeff,cx) expected", s);
+    }
+    else {
+        throw cRuntimeError("Invalid operation %s, translate, rotate, scale, skewx or skewy expected: '%s'", operation.c_str(), s);
+    }
+    return transform;
+}
+
 cFigure::Transform cFigure::parseTransform(cProperty *property, const char *key)
 {
     Transform transform;
     for (int index = 0; index < property->getNumValues(key); index++) {
         const char *step = property->getValue(key, index);
-        std::string operation = opp_trim(opp_substringbefore(step, "(").c_str());
-        std::string rest = opp_trim(opp_substringafter(step, "(").c_str());
-        bool missingRParen = !contains(rest, ")");
-        std::string argsStr = opp_trim(opp_substringbefore(rest, ")").c_str());
-        std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")").c_str());
-        if (operation == "" || missingRParen || trailingGarbage.size() != 0)
-            throw cRuntimeError("Syntax error in '%s', 'operation(arg1,arg2...)' expected", step);
-        std::vector<double> args = cStringTokenizer(argsStr.c_str(), ",").asDoubleVector();
-
-        if (operation == "translate") {
-            if (args.size() == 2)
-                transform.translate(args[0], args[1]);
-            else
-                throw cRuntimeError("Wrong number of args in '%s', translate(dx,dxy) expected", step);
-        }
-        else if (operation == "rotate") {
-            if (args.size() == 1)
-                transform.rotate(deg2rad(args[0]));
-            else if (args.size() == 3)
-                transform.rotate(deg2rad(args[0]), args[1], args[2]);
-            else
-                throw cRuntimeError("Wrong number of args in '%s', rotate(deg) or rotate(deg,cx,cy) expected", step);
-        }
-        else if (operation == "scale") {
-            if (args.size() == 1)
-                transform.scale(args[0]);
-            else if (args.size() == 2)
-                transform.scale(args[0], args[1]);
-            else
-                throw cRuntimeError("Wrong number of args in '%s', scale(s) or scale(sx,sy) expected", step);
-        }
-        else if (operation == "skewx") {
-            if (args.size() == 1)
-                transform.skewx(args[0]);
-            else if (args.size() == 2)
-                transform.skewx(args[0], args[1]);
-            else
-                throw cRuntimeError("Wrong number of args in '%s', skewx(coeff) or skewx(coeff,cy) expected", step);
-        }
-        else if (operation == "skewy") {
-            if (args.size() == 1)
-                transform.skewy(args[0]);
-            else if (args.size() == 2)
-                transform.skewy(args[0], args[1]);
-            else
-                throw cRuntimeError("Wrong number of args in '%s', skewy(coeff) or skewy(coeff,cx) expected", step);
-        }
-        else {
-            throw cRuntimeError("Invalid operation %s, translate, rotate, scale, skewx or skewy expected: '%s'", operation.c_str(), step);
-        }
+        transform.multiply(parseTransform(step));
     }
     return transform;
 }
@@ -657,6 +674,46 @@ cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
     return Font(opp_nulltoempty(typeface), size, flags);
 }
 
+cFigure::Point cFigure::parsePoint(const char *s)
+{
+    cFigure::Point p;
+    int parsedChars = 0;
+    int count = sscanf(s, " ( %lf , %lf ) %n", &p.x, &p.y, &parsedChars);
+    if (count != 2 || s[parsedChars] != 0)
+        throw cRuntimeError("Invalid point syntax, (x,y) expected");
+    return p;
+}
+
+cFigure::Rectangle cFigure::parseRectangle(const char *s)
+{
+    cFigure::Rectangle r;
+    int parsedChars = 0;
+    int count = sscanf(s, " ( %lf , %lf , w = %lf , h = %lf ) %n", &r.x, &r.y, &r.width, &r.height, &parsedChars);
+    if (count != 4 || s[parsedChars] != 0)
+        throw cRuntimeError("Invalid rectangle syntax, (x,y,w=n,h=m) expected");
+    return r;
+}
+
+cFigure::Font cFigure::parseFont(const char *s)
+{
+    // syntax: (<default>, 8pt, bold italic underline)
+    cFigure::Font font;
+    std::vector<std::string> tokens = cStringTokenizer(s, "(), ").asVector();
+    if (tokens.size() == 0)
+        return font;
+    if (tokens[0] != "<default>")
+        font.typeface = tokens[0];
+    if (tokens.size() >= 2)
+        font.pointSize = strtol(tokens[1].c_str(), nullptr, 10);
+    for (int i = 2; i < (int)tokens.size(); i++) {
+        if (tokens[i] == "bold") font.style |= cFigure::FONT_BOLD;
+        else if (tokens[i] == "italic") font.style |= cFigure::FONT_ITALIC;
+        else if (tokens[i] == "underline") font.style |= cFigure::FONT_UNDERLINE;
+        else throw cRuntimeError("Invalid font style '%s'", tokens[i].c_str());
+    }
+    return font;
+}
+
 bool cFigure::parseBool(const char *s)
 {
     if (!strcmp(s, "true"))
@@ -668,9 +725,9 @@ bool cFigure::parseBool(const char *s)
 
 cFigure::Color cFigure::parseColor(const char *s)
 {
-	Color color;
-	common::parseColor(s, color.red, color.green, color.blue);
-	return color;
+    Color color;
+    common::parseColor(s, color.red, color.green, color.blue);
+    return color;
 }
 
 cFigure::LineStyle cFigure::parseLineStyle(const char *s)

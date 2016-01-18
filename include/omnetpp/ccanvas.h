@@ -207,7 +207,7 @@ class SIM_API cFigure : public cOwnedObject
                 Pixmap(const Pixmap& other);
                 ~Pixmap();
                 Pixmap& operator=(const Pixmap& other);
-                void resize(int width, int height, const RGBA& fill_);
+                void resize(int width, int height, const RGBA& fill_);  //TODO rename setSize()??? makes more sense, esp. for the figure!
                 void resize(int width, int height, const Color& color, double opacity);
                 void fill(const RGBA& fill_);
                 void fill(const Color& color, double opacity);
@@ -262,8 +262,16 @@ class SIM_API cFigure : public cOwnedObject
         static Rectangle parseBounds(cProperty *property);
         static Transform parseTransform(cProperty *property, const char *key);
         static Font parseFont(cProperty *property, const char *key);
-        static bool parseBool(const char *s);
+        static void concatArrays(const char **dest, const char **first, const char **second);
+
+    public:
+        // internal::
+        static Point parsePoint(const char *s); // parse Point::str() format
+        static Rectangle parseRectangle(const char *s); // parse Rectangle::str() format
+        static Transform parseTransform(const char *s);  // parse Transform::str() format
+        static Font parseFont(const char *s);  // parse Font::str() format
         static Color parseColor(const char *s);
+        static bool parseBool(const char *s);
         static LineStyle parseLineStyle(const char *s);
         static CapStyle parseCapStyle(const char *s);
         static JoinStyle parseJoinStyle(const char *s);
@@ -271,7 +279,6 @@ class SIM_API cFigure : public cOwnedObject
         static ArrowHead parseArrowHead(const char *s);
         static Interpolation parseInterpolation(const char *s);
         static Anchor parseAnchor(const char *s);
-        static void concatArrays(const char **dest, const char **first, const char **second);
 
     public:
         // internal:
