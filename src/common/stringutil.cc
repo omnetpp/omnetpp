@@ -403,6 +403,18 @@ std::string opp_substringafter(const std::string& str, const std::string& substr
     return pos == std::string::npos ? "" : str.substr(pos+substr.size());
 }
 
+std::string opp_substringbeforelast(const std::string& str, const std::string& substr)
+{
+    size_t pos = str.rfind(substr);
+    return pos == std::string::npos ? "" : str.substr(0, pos);
+}
+
+std::string opp_substringafterlast(const std::string& str, const std::string& substr)
+{
+    size_t pos = str.rfind(substr);
+    return pos == std::string::npos ? "" : str.substr(pos+substr.size());
+}
+
 char *opp_concat(const char *s1,
                  const char *s2,
                  const char *s3,

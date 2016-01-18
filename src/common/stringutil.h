@@ -212,6 +212,16 @@ COMMON_API std::string opp_substringbefore(const std::string& str, const std::st
 COMMON_API std::string opp_substringafter(const std::string& str, const std::string& substr);
 
 /**
+ * Returns the substring up to the last occurrence of the given substring, or "".
+ */
+COMMON_API std::string opp_substringbeforelast(const std::string& str, const std::string& substr);
+
+/**
+ * Returns the substring after the last occurrence of the given substring, or "".
+ */
+COMMON_API std::string opp_substringafterlast(const std::string& str, const std::string& substr);
+
+/**
  * Concatenates up to four strings. Returns a pointer to a static buffer
  * of length 256. If the result length would exceed 256, it is truncated.
  */
