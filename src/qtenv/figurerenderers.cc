@@ -1351,7 +1351,7 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
             image.setPixel(x, y, qRgba(rgba.red, rgba.green, rgba.blue, rgba.alpha));
         }
 
-    Qt::TransformationMode transMode = pixmapFigure->getInterpolation() == cFigure::INTERPOLATION_BEST ?
+    Qt::TransformationMode transMode = pixmapFigure->getInterpolation() == cFigure::INTERPOLATION_NONE ?
                 Qt::FastTransformation : Qt::SmoothTransformation;
     image = image.scaled(pixmapFigure->getWidth(), pixmapFigure->getHeight(), Qt::IgnoreAspectRatio, transMode);
     pixmapItem->setPixmap(QPixmap::fromImage(image));
