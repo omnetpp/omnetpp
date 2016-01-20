@@ -89,13 +89,13 @@ ZoomLabel::ZoomLabel()
 
 void ZoomLabel::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+    QFont f = font();
+    f.setBold(true);
+    painter->setFont(f);
     painter->setBrush(Qt::lightGray);
     painter->setPen(Qt::lightGray);
     painter->drawRect(boundingRect());
 
-    QFont f = font();
-    f.setBold(true);
-    setFont(f);
     QGraphicsSimpleTextItem::paint(painter, option, widget);
 }
 

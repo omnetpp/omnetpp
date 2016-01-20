@@ -54,7 +54,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     notDrawn(false),
     needs_redraw(false)
 {
-    font = getQtenv()->getCanvasFont();
+    setFont(font = getQtenv()->getCanvasFont());
 
     backgroundLayer = new GraphicsLayer();
     rangeLayer = new GraphicsLayer();
@@ -78,6 +78,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     zoomLabel = new ZoomLabel();
     zoomLabelLayer->addItem(zoomLabel);
     zoomLabel->setZoomFactor(zoomFactor);
+    zoomLabel->setFont(getQtenv()->getCanvasFont());
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr, networkLayer);
@@ -199,6 +200,9 @@ void ModuleCanvasViewer::relayoutAndRedrawAll()
             return;
         }
     }
+
+    zoomLabel->setFont(getQtenv()->getCanvasFont());
+    updateZoomLabelPos();
 
     clear();
     recalculateLayout();
@@ -737,6 +741,9 @@ void ModuleCanvasViewer::redraw()
     canvasRenderer->redraw(&hints);
 
     updateBackgroundColor();
+
+    zoomLabel->setFont(getQtenv()->getCanvasFont());
+    updateZoomLabelPos();
 
     refreshLayout();
     redrawModules();
