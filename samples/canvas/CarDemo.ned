@@ -12,8 +12,8 @@ network CarDemo
 {
     parameters:
        @display("bgb=800,500");
-       @figure[road] (type=polygon; points=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=60; lineColor=grey);
-       @figure[paint](type=polygon; points=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=3; lineColor=white; lineStyle=dashed);
+       @figure[road] (type=polygon; points=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=60; zoomLineWidth=true; lineColor=grey);
+       @figure[paint](type=polygon; points=100,200, 200,100, 300,50, 500,50, 650,100, 700,200, 600,300, 500,350, 400,350, 200,350, 100,300; smooth=true; lineWidth=3; zoomLineWidth=true; lineColor=white; lineStyle=dashed);
        @figure[trail](type=polyline; lineWidth=5; lineOpacity=0.6; lineColor=orange);
        @figure[car](type=image; image="car-top-view"; pos=0,0; anchor=c);
        @figure[car.antenna](type=image; image="antenna"; pos=-10,-40; anchor=nw);
