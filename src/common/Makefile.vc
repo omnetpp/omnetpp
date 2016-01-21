@@ -120,6 +120,11 @@ $O/bigdecimal.obj: bigdecimal.cc \
   commonutil.h \
   exception.h \
   opp_ctype.h
+$O/colorutil.obj: colorutil.cc \
+  ../../include/omnetpp/platdep/platdefs.h \
+  colorutil.h \
+  commondefs.h \
+  exception.h
 $O/commonutil.obj: commonutil.cc \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \

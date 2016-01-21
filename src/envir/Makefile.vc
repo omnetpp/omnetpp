@@ -306,6 +306,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chasher.h \
@@ -314,6 +315,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
   ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -405,11 +407,14 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
+  ../../include/omnetpp/chasher.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
   ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -508,7 +513,6 @@ $O/evmain.obj: evmain.cc \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -706,7 +710,6 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/onstartup.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -785,7 +788,6 @@ $O/inifilereader.obj: inifilereader.cc \
   ../../include/omnetpp/cconfigreader.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -852,20 +854,27 @@ $O/intervals.obj: intervals.cc \
   logformatter.h \
   objectprinter.h
 $O/logformatter.obj: logformatter.cc \
+  ../../include/omnetpp/carray.h \
   ../../include/omnetpp/ccomponent.h \
   ../../include/omnetpp/ccomponenttype.h \
   ../../include/omnetpp/cconfiguration.h \
   ../../include/omnetpp/cdefaultlist.h \
   ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chasher.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
+  ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
+  ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedmathfunction.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cobjectfactory.h \
@@ -1057,7 +1066,6 @@ $O/scenario.obj: scenario.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -1092,7 +1100,6 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -1244,14 +1251,11 @@ $O/statisticparser.obj: statisticparser.cc \
 $O/valueiterator.obj: valueiterator.cc \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
-  ../../include/omnetpp/platdep/platmisc.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
-  ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
