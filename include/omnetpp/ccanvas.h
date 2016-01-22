@@ -298,7 +298,7 @@ class SIM_API cFigure : public cOwnedObject
         /** @name Constructors, destructor, assignment */
         //@{
         explicit cFigure(const char *name=nullptr);
-        cFigure(const cFigure& other) : cOwnedObject(other) {copy(other);}
+        cFigure(const cFigure& other) : cOwnedObject(other), tags(nullptr) {copy(other);}
         virtual ~cFigure();
         cFigure& operator=(const cFigure& other);
         //@}
@@ -1455,7 +1455,7 @@ class SIM_API cCanvas : public cOwnedObject
         /** @name Constructors, destructor, assignment. */
         //@{
         explicit cCanvas(const char *name = nullptr);
-        cCanvas(const cCanvas& other) : cOwnedObject(other) {copy(other);}
+        cCanvas(const cCanvas& other) : cOwnedObject(other), rootFigure(nullptr) {copy(other);}
         virtual ~cCanvas();
         cCanvas& operator=(const cCanvas& other);
         //@}
