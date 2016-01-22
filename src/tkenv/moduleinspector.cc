@@ -685,7 +685,7 @@ void ModuleInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
 
     // read $inspectordata($c:showarrowheads)
     s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":showarrowheads").c_str()), TCL_GLOBAL_ONLY);
-    hints->showArrowHeads = opp_atol(s) != 0;
+    hints->showArrowheads = opp_atol(s) != 0;
 
     Tcl_Eval(interp, "font actual CanvasFont -family");
     hints->defaultFont = Tcl_GetStringResult(interp);

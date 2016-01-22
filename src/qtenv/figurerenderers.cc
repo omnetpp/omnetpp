@@ -629,14 +629,14 @@ void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *l
     const auto &start = lineFigure->getStart();
     const auto &end = lineFigure->getEnd();
 
-    setArrowStyle(lineFigure->getStartArrowHead(), startArrow, pen);
+    setArrowStyle(lineFigure->getStartArrowhead(), startArrow, pen);
     startArrow->setEndPoints(QPointF(end.x, end.y), QPointF(start.x, start.y));
 
-    setArrowStyle(lineFigure->getEndArrowHead(), endArrow, pen);
+    setArrowStyle(lineFigure->getEndArrowhead(), endArrow, pen);
     endArrow->setEndPoints(QPointF(start.x, start.y), QPointF(end.x, end.y));
 }
 
-void AbstractLineFigureRenderer::setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem, QPen *pen)
+void AbstractLineFigureRenderer::setArrowStyle(cFigure::Arrowhead style, GraphicsPathArrowItem *arrowItem, QPen *pen)
 {
     arrowItem->setVisible(style != cFigure::ARROW_NONE);
     arrowItem->setFillRatio(style == cFigure::ARROW_BARBED ? 0.75
@@ -684,7 +684,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[1]);
 
-    if(arcFigure->getStartArrowHead() != cFigure::ARROW_NONE)
+    if(arcFigure->getStartArrowhead() != cFigure::ARROW_NONE)
     {
         auto b = arcFigure->getBounds();
         cFigure::Point center = b.getCenter();
@@ -699,7 +699,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         cFigure::Point tangent(-sin(angle) * radii.x, -cos(angle) * radii.y);
 
         startArrow->setVisible(true);
-        setArrowStyle(arcFigure->getStartArrowHead(), startArrow, pen);
+        setArrowStyle(arcFigure->getStartArrowhead(), startArrow, pen);
 
         cFigure::Point start = center + delta + tangent;
         cFigure::Point end = center + delta;
@@ -715,7 +715,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         startArrow->setVisible(false);
 
 
-    if(arcFigure->getEndArrowHead() != cFigure::ARROW_NONE)
+    if(arcFigure->getEndArrowhead() != cFigure::ARROW_NONE)
     {
         auto b = arcFigure->getBounds();
         QPointF center(b.getCenter().x, b.getCenter().y);
@@ -731,7 +731,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         QPointF tangent(-sin(angle) * radii.x(), -cos(angle) * radii.y());
 
         endArrow->setVisible(true);
-        setArrowStyle(arcFigure->getEndArrowHead(), endArrow, pen);
+        setArrowStyle(arcFigure->getEndArrowhead(), endArrow, pen);
         endArrow->setEndPoints(center + delta - tangent, center + delta);
     }
     else
@@ -784,10 +784,10 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
         return;
     }
 
-    if(polyFigure->getStartArrowHead() != cFigure::ARROW_NONE)
+    if(polyFigure->getStartArrowhead() != cFigure::ARROW_NONE)
     {
         startArrow->setVisible(true);
-        setArrowStyle(polyFigure->getStartArrowHead(), startArrow, pen);
+        setArrowStyle(polyFigure->getStartArrowhead(), startArrow, pen);
         const auto &from = points[1];
         const auto &to = points[0];
         startArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
@@ -795,10 +795,10 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
     else
         startArrow->setVisible(false);
 
-    if(polyFigure->getEndArrowHead() != cFigure::ARROW_NONE)
+    if(polyFigure->getEndArrowhead() != cFigure::ARROW_NONE)
     {
         endArrow->setVisible(true);
-        setArrowStyle(polyFigure->getEndArrowHead(), endArrow, pen);
+        setArrowStyle(polyFigure->getEndArrowhead(), endArrow, pen);
         const auto &from = points[points.size() - 2];
         const auto &to = points[points.size() - 1];
         endArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));

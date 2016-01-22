@@ -43,12 +43,12 @@ struct FigureRenderingHints
         std::string defaultFont;
         int defaultFontSize;
         bool showSubmoduleLabels;
-        bool showArrowHeads;
+        bool showArrowheads;
         bool showMessageLabels;
 
         FigureRenderingHints() :
             zoom(1), iconMagnification(1), defaultFont("Arial"), defaultFontSize(12),
-            showSubmoduleLabels(true), showArrowHeads(true), showMessageLabels(true) {}
+            showSubmoduleLabels(true), showArrowheads(true), showMessageLabels(true) {}
 };
 
 class FigureRenderer : public cObject // for because Register_Class() takes cObject*
@@ -157,7 +157,7 @@ protected:
 class AbstractLineFigureRenderer : public FigureRenderer
 {
 protected:
-    void setArrowStyle(cFigure::ArrowHead style, GraphicsPathArrowItem *arrowItem, QPen *pen);
+    void setArrowStyle(cFigure::Arrowhead style, GraphicsPathArrowItem *arrowItem, QPen *pen);
 };
 
 class LineFigureRenderer : public AbstractLineFigureRenderer

@@ -134,7 +134,7 @@ class SIM_API cFigure : public cOwnedObject
         enum CapStyle { CAP_BUTT, CAP_SQUARE, CAP_ROUND };
         enum JoinStyle { JOIN_BEVEL, JOIN_MITER, JOIN_ROUND };
         enum FillRule { FILL_EVENODD, FILL_NONZERO };
-        enum ArrowHead { ARROW_NONE, ARROW_SIMPLE, ARROW_TRIANGLE, ARROW_BARBED };
+        enum Arrowhead { ARROW_NONE, ARROW_SIMPLE, ARROW_TRIANGLE, ARROW_BARBED };
         enum Interpolation { INTERPOLATION_NONE, INTERPOLATION_FAST, INTERPOLATION_BEST };
         enum Anchor {ANCHOR_CENTER, ANCHOR_N, ANCHOR_E, ANCHOR_S, ANCHOR_W, ANCHOR_NW, ANCHOR_NE, ANCHOR_SE, ANCHOR_SW, ANCHOR_BASELINE_START, ANCHOR_BASELINE_MIDDLE, ANCHOR_BASELINE_END };
         //enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
@@ -277,7 +277,7 @@ class SIM_API cFigure : public cOwnedObject
         static CapStyle parseCapStyle(const char *s);
         static JoinStyle parseJoinStyle(const char *s);
         static FillRule parseFillRule(const char *s);
-        static ArrowHead parseArrowHead(const char *s);
+        static Arrowhead parseArrowhead(const char *s);
         static Interpolation parseInterpolation(const char *s);
         static Anchor parseAnchor(const char *s);
 
@@ -494,7 +494,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         double lineWidth;
         double lineOpacity;
         CapStyle capStyle;
-        ArrowHead startArrowHead, endArrowHead;
+        Arrowhead startArrowhead, endArrowhead;
         bool zoomLineWidth;
     private:
         void copy(const cAbstractLineFigure& other);
@@ -503,7 +503,7 @@ class SIM_API cAbstractLineFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowHead(ARROW_NONE), endArrowHead(ARROW_NONE), zoomLineWidth(false) {}
+        explicit cAbstractLineFigure(const char *name=nullptr) : cFigure(name), lineColor(BLACK), lineStyle(LINE_SOLID), lineWidth(1), lineOpacity(1), capStyle(CAP_BUTT), startArrowhead(ARROW_NONE), endArrowhead(ARROW_NONE), zoomLineWidth(false) {}
         cAbstractLineFigure(const cAbstractLineFigure& other) : cFigure(other) {copy(other);}
         cAbstractLineFigure& operator=(const cAbstractLineFigure& other);
         //@}
@@ -527,10 +527,10 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setLineStyle(LineStyle lineStyle);
         virtual CapStyle getCapStyle() const {return capStyle;}
         virtual void setCapStyle(CapStyle capStyle);
-        virtual ArrowHead getStartArrowHead() const  {return startArrowHead;}
-        virtual void setStartArrowHead(ArrowHead startArrowHead);
-        virtual ArrowHead getEndArrowHead() const  {return endArrowHead;}
-        virtual void setEndArrowHead(ArrowHead endArrowHead);
+        virtual Arrowhead getStartArrowhead() const  {return startArrowhead;}  //FIXME should be lowercase "h", as "arrowhead" is one word!
+        virtual void setStartArrowhead(Arrowhead startArrowhead);
+        virtual Arrowhead getEndArrowhead() const  {return endArrowhead;}
+        virtual void setEndArrowhead(Arrowhead endArrowhead);
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
         virtual void setZoomLineWidth(bool zoomLineWidth);
         //@}

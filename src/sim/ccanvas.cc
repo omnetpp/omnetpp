@@ -781,7 +781,7 @@ cFigure::FillRule cFigure::parseFillRule(const char *s)
     throw cRuntimeError("invalid fill rule '%s'", s);
 }
 
-cFigure::ArrowHead cFigure::parseArrowHead(const char *s)
+cFigure::Arrowhead cFigure::parseArrowhead(const char *s)
 {
     if (!strcmp(s,"none")) return ARROW_NONE;
     if (!strcmp(s,"simple")) return ARROW_SIMPLE;
@@ -1284,8 +1284,8 @@ void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
     setLineWidth(other.getLineWidth());
     setLineOpacity(other.getLineOpacity());
     setCapStyle(other.getCapStyle());
-    setStartArrowHead(other.getStartArrowHead());
-    setEndArrowHead(other.getEndArrowHead());
+    setStartArrowhead(other.getStartArrowhead());
+    setEndArrowhead(other.getEndArrowhead());
 }
 
 cAbstractLineFigure& cAbstractLineFigure::operator=(const cAbstractLineFigure& other)
@@ -1317,9 +1317,9 @@ void cAbstractLineFigure::parse(cProperty *property)
     if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != nullptr)
         setCapStyle(parseCapStyle(s));
     if ((s = property->getValue(PKEY_STARTARROWHEAD)) != nullptr)
-        setStartArrowHead(parseArrowHead(s));
+        setStartArrowhead(parseArrowhead(s));
     if ((s = property->getValue(PKEY_ENDARROWHEAD)) != nullptr)
-        setEndArrowHead(parseArrowHead(s));
+        setEndArrowhead(parseArrowhead(s));
     if ((s = property->getValue(PKEY_ZOOMLINEWIDTH)) != nullptr)
         setZoomLineWidth(parseBool(s));
 }
@@ -1376,19 +1376,19 @@ void cAbstractLineFigure::setCapStyle(CapStyle capStyle)
     fireVisualChange();
 }
 
-void cAbstractLineFigure::setStartArrowHead(ArrowHead startArrowHead)
+void cAbstractLineFigure::setStartArrowhead(Arrowhead startArrowhead)
 {
-    if (startArrowHead == this->startArrowHead)
+    if (startArrowhead == this->startArrowhead)
         return;
-    this->startArrowHead = startArrowHead;
+    this->startArrowhead = startArrowhead;
     fireVisualChange();
 }
 
-void cAbstractLineFigure::setEndArrowHead(ArrowHead endArrowHead)
+void cAbstractLineFigure::setEndArrowhead(Arrowhead endArrowhead)
 {
-    if (endArrowHead == this->endArrowHead)
+    if (endArrowhead == this->endArrowhead)
         return;
-    this->endArrowHead = endArrowHead;
+    this->endArrowhead = endArrowhead;
     fireVisualChange();
 }
 

@@ -481,7 +481,7 @@ void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 
     prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showarrowheads";
     variant = getQtenv()->getPref(prefName);
-    hints->showArrowHeads = variant.isValid() ? variant.value<bool>() : false;
+    hints->showArrowheads = variant.isValid() ? variant.value<bool>() : false;
 
     hints->defaultFont = font.family().toStdString();
     hints->defaultFontSize = font.pixelSize();

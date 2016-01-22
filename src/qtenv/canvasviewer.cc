@@ -111,7 +111,7 @@ void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 
     prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showarrowheads";
     variant = getQtenv()->getPref(prefName);
-    hints->showArrowHeads = variant.isValid() ? variant.value<bool>() : false;
+    hints->showArrowheads = variant.isValid() ? variant.value<bool>() : false;
 
     hints->defaultFont = scene()->font().family().toStdString();
 

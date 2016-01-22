@@ -25,7 +25,7 @@ enum omnetpp::cFigure::LineStyle;
 enum omnetpp::cFigure::CapStyle;
 enum omnetpp::cFigure::JoinStyle;
 enum omnetpp::cFigure::FillRule;
-enum omnetpp::cFigure::ArrowHead;
+enum omnetpp::cFigure::Arrowhead;
 enum omnetpp::cFigure::Anchor;
 enum omnetpp::cFigure::Interpolation;
 
@@ -52,7 +52,7 @@ Register_Enum(cFigure::LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DAS
 Register_Enum(cFigure::CapStyle,  (cF::CAP_BUTT, cF::CAP_SQUARE, cF::CAP_ROUND));
 Register_Enum(cFigure::JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUND));
 Register_Enum(cFigure::FillRule,  (cF::FILL_EVENODD, cF::FILL_NONZERO));
-Register_Enum(cFigure::ArrowHead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
+Register_Enum(cFigure::Arrowhead, (cF::ARROW_NONE, cF::ARROW_SIMPLE, cF::ARROW_TRIANGLE, cF::ARROW_BARBED));
 Register_Enum(cFigure::Anchor,    (cF::ANCHOR_CENTER, cF::ANCHOR_N, cF::ANCHOR_E, cF::ANCHOR_S, cF::ANCHOR_W, cF::ANCHOR_NW, cF::ANCHOR_NE, cF::ANCHOR_SE, cF::ANCHOR_SW));
 Register_Enum(cFigure::Interpolation, (cF::INTERPOLATION_NONE, cF::INTERPOLATION_FAST, cF::INTERPOLATION_BEST));
 #undef cF
@@ -722,8 +722,8 @@ class cAbstractLineFigure extends cFigure
     double lineWidth @editable;
     double lineOpacity @editable;
     int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
-    int startArrowHead @editable @enum(omnetpp::cFigure::ArrowHead);
-    int endArrowHead @editable @enum(omnetpp::cFigure::ArrowHead);
+    int startArrowhead @editable @enum(omnetpp::cFigure::Arrowhead);
+    int endArrowhead @editable @enum(omnetpp::cFigure::Arrowhead);
     bool zoomLineWidth @editable;
 }
 

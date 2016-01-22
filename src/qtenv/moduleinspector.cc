@@ -655,7 +655,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
         bool showLabels = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
         prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
-        bool showArrowHeads = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
+        bool showArrowheads = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
 
         menu->addSeparator();
         menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
@@ -667,7 +667,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
         action->setChecked(showLabels);
         action = menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
         action->setCheckable(true);
-        action->setChecked(showArrowHeads);
+        action->setChecked(showArrowheads);
 
         menu->addSeparator();
 

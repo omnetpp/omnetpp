@@ -30,12 +30,12 @@ struct TKENV_API FigureRenderingHints
         std::string defaultFont;
         int defaultFontSize;
         bool showSubmoduleLabels;
-        bool showArrowHeads;
+        bool showArrowheads;
         bool showMessageLabels;
 
         FigureRenderingHints() :
             zoom(1), iconMagnification(1), defaultFont("Arial"), defaultFontSize(12),
-            showSubmoduleLabels(true), showArrowHeads(true), showMessageLabels(true) {}
+            showSubmoduleLabels(true), showArrowheads(true), showMessageLabels(true) {}
 };
 
 class TKENV_API FigureRenderer : public cObject // for because Register_Class() takes cObject*
@@ -58,7 +58,7 @@ class TKENV_API FigureRenderer : public cObject // for because Register_Class() 
         void lineStyle(cFigure::LineStyle style, int& argc, const char *argv[]);
         void capStyle(cFigure::CapStyle style, int& argc, const char *argv[]);
         void joinStyle(cFigure::JoinStyle style, int& argc, const char *argv[]);
-        void arrowHead(bool isStart, cFigure::ArrowHead arrowHead, int lineWidth, double zoom, int& argc, const char *argv[]);
+        void arrowHead(bool isStart, cFigure::Arrowhead arrowHead, int lineWidth, double zoom, int& argc, const char *argv[]);
         void fillRule(cFigure::FillRule fill, int& argc, const char *argv[]);
         void interpolation(cFigure::Interpolation interpolation, int& argc, const char *argv[]);
         void anchor(cFigure::Anchor anchor, int& argc, const char *argv[]);
