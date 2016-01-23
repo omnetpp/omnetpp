@@ -89,6 +89,9 @@ const cFigure::Color cFigure::GOOD_LIGHT_COLORS[] = {
     cFigure::parseColor("mediumPurple"),
 };
 
+const int cFigure::NUM_GOOD_DARK_COLORS = sizeof(GOOD_DARK_COLORS) / sizeof(GOOD_DARK_COLORS[0]);
+const int cFigure::NUM_GOOD_LIGHT_COLORS = sizeof(GOOD_LIGHT_COLORS) / sizeof(GOOD_LIGHT_COLORS[0]);
+
 static const char *PKEY_TYPE = "type";
 static const char *PKEY_VISIBLE = "visible";
 static const char *PKEY_TAGS = "tags";

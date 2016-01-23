@@ -110,6 +110,8 @@ class SIM_API cFigure : public cOwnedObject
         static const Color CYAN;
         static const Color MAGENTA;
 
+        static const int NUM_GOOD_DARK_COLORS;
+        static const int NUM_GOOD_LIGHT_COLORS;
         static const Color GOOD_DARK_COLORS[14];
         static const Color GOOD_LIGHT_COLORS[10];
 
