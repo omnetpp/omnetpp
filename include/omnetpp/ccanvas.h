@@ -318,7 +318,8 @@ class SIM_API cFigure : public cOwnedObject
         virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
 
-        virtual void move(double x, double y) = 0;
+        virtual void moveLocal(double x, double y) = 0;
+        virtual void move(double x, double y);  // recursive
         virtual cCanvas *getCanvas() const;
         //@}
 
@@ -419,7 +420,7 @@ class SIM_API cGroupFigure : public cFigure
         virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
         virtual std::string info() const override;
         virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
-        virtual void move(double x, double y) override {}
+        virtual void moveLocal(double x, double y) override {}
         //@}
 };
 
@@ -459,7 +460,7 @@ class SIM_API cPanelFigure : public cFigure
         virtual std::string info() const override;
         virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
         virtual void updateParentTransform(Transform& transform) override;
-        virtual void move(double x, double y) override {position.translate(x,y); fireTransformChange();}
+        virtual void moveLocal(double x, double y) override {position.translate(x,y); fireTransformChange();}
         //@}
 
         /** @name Figure attributes */
@@ -563,7 +564,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual cLineFigure *dup() const override  {return new cLineFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -605,7 +606,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual cArcFigure *dup() const override  {return new cArcFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -659,7 +660,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual cPolylineFigure *dup() const override  {return new cPolylineFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -785,7 +786,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         /**
          * Translates the bounding rectangle, see getBounds().
          */
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -828,7 +829,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         virtual cOvalFigure *dup() const override  {return new cOvalFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -869,7 +870,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         virtual cRingFigure *dup() const override  {return new cRingFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -916,7 +917,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         virtual cPieSliceFigure *dup() const override  {return new cPieSliceFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -968,7 +969,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual cPolygonFigure *dup() const override  {return new cPolygonFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -1060,7 +1061,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         /**
          * The move operation modifies the offset field (see getOffset()).
          */
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -1150,7 +1151,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         /**
          * Updates the position of the text, see getPosition().
          */
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */
@@ -1275,7 +1276,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         /**
          * Updates the position of the image, see getPosition().
          */
-        virtual void move(double x, double y) override;
+        virtual void moveLocal(double x, double y) override;
         //@}
 
         /** @name Figure attributes */

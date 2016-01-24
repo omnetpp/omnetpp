@@ -1200,6 +1200,13 @@ void cFigure::lowerToBottom()
     }
 }
 
+void cFigure::move(double x, double y)
+{
+    moveLocal(x, y);
+    for (int i = 0; i < (int)children.size(); i++)
+        children[i]->move(x, y);
+}
+
 //----
 
 cGroupFigure& cGroupFigure::operator=(const cGroupFigure& other)
@@ -1435,7 +1442,7 @@ const char **cLineFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cLineFigure::move(double x, double y)
+void cLineFigure::moveLocal(double x, double y)
 {
     start.x += x;
     start.y += y;
@@ -1508,7 +1515,7 @@ const char **cArcFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cArcFigure::move(double x, double y)
+void cArcFigure::moveLocal(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
@@ -1601,7 +1608,7 @@ const char **cPolylineFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPolylineFigure::move(double x, double y)
+void cPolylineFigure::moveLocal(double x, double y)
 {
     for (int i = 0; i < (int)points.size(); i++) {
         points[i].x += x;
@@ -1852,7 +1859,7 @@ const char **cRectangleFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cRectangleFigure::move(double x, double y)
+void cRectangleFigure::moveLocal(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
@@ -1927,7 +1934,7 @@ const char **cOvalFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cOvalFigure::move(double x, double y)
+void cOvalFigure::moveLocal(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
@@ -1993,7 +2000,7 @@ const char **cRingFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cRingFigure::move(double x, double y)
+void cRingFigure::moveLocal(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
@@ -2076,7 +2083,7 @@ const char **cPieSliceFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPieSliceFigure::move(double x, double y)
+void cPieSliceFigure::moveLocal(double x, double y)
 {
     bounds.x += x;
     bounds.y += y;
@@ -2171,7 +2178,7 @@ const char **cPolygonFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPolygonFigure::move(double x, double y)
+void cPolygonFigure::moveLocal(double x, double y)
 {
     for (int i = 0; i < (int)points.size(); i++) {
         points[i].x += x;
@@ -2770,7 +2777,7 @@ void cPathFigure::addClosePath()
     addItem(item);
 }
 
-void cPathFigure::move(double x, double y)
+void cPathFigure::moveLocal(double x, double y)
 {
     setOffset(Point(getOffset()).translate(x, y));
 }
@@ -2854,7 +2861,7 @@ const char **cAbstractTextFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cAbstractTextFigure::move(double x, double y)
+void cAbstractTextFigure::moveLocal(double x, double y)
 {
     position.x += x;
     position.y += y;
@@ -3002,7 +3009,7 @@ const char **cAbstractImageFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cAbstractImageFigure::move(double x, double y)
+void cAbstractImageFigure::moveLocal(double x, double y)
 {
     position.x += x;
     position.y += y;
