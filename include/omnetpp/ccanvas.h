@@ -1289,6 +1289,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual void setWidth(double width);  // zero means "unset"
         virtual double getHeight() const  {return height;}
         virtual void setHeight(double height); // zero means "unset"
+        virtual void setSize(double width, double height) {setWidth(width); setHeight(height);}
         virtual Interpolation getInterpolation() const {return interpolation;}
         virtual void setInterpolation(Interpolation interpolation);
         virtual double getOpacity() const  {return opacity;}
@@ -1404,10 +1405,10 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual void setPixmap(const Pixmap& pixmap);
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
         virtual int getPixmapWidth() const {return pixmap.getWidth();}
-        virtual void setSize(int width, int height, const RGBA& fill); // nondestructive, set *newly added* pixels with this color and opacity
-        virtual void setSize(int width, int height, const Color& color, double opacity);  // nondestructive, fills *newly added* pixels with this color and opacity
-        virtual void fill(const RGBA& fill);
-        virtual void fill(const Color& color, double opacity);
+        virtual void setPixmapSize(int width, int height, const RGBA& fill); // nondestructive, set *newly added* pixels with this color and opacity
+        virtual void setPixmapSize(int width, int height, const Color& color, double opacity);  // nondestructive, fills *newly added* pixels with this color and opacity
+        virtual void fillPixmap(const RGBA& fill);
+        virtual void fillPixmap(const Color& color, double opacity);
         virtual const RGBA getPixel(int x, int y) const {return pixmap.pixel(x, y);}
         virtual void setPixel(int x, int y, const RGBA& argb);
         virtual void setPixel(int x, int y, const Color& color, double opacity = 1.0);

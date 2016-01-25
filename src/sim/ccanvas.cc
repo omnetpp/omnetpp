@@ -3196,13 +3196,13 @@ void cPixmapFigure::setPixmap(const Pixmap& pixmap)
     fireInputDataChange(); // always notify, as content may have changed
 }
 
-void cPixmapFigure::setSize(int width, int height, const RGBA& fill)
+void cPixmapFigure::setPixmapSize(int width, int height, const RGBA& fill)
 {
     pixmap.setSize(width, height, fill);
     fireInputDataChange();
 }
 
-void cPixmapFigure::setSize(int width, int height, const Color& color, double opacity)
+void cPixmapFigure::setPixmapSize(int width, int height, const Color& color, double opacity)
 {
     if (pixmap.getWidth() == width && pixmap.getHeight() == height)
         return;
@@ -3211,13 +3211,13 @@ void cPixmapFigure::setSize(int width, int height, const Color& color, double op
     fireInputDataChange();
 }
 
-void cPixmapFigure::fill(const RGBA& fill)
+void cPixmapFigure::fillPixmap(const RGBA& fill)
 {
     pixmap.fill(fill);
     fireInputDataChange();
 }
 
-void cPixmapFigure::fill(const Color& color, double opacity)
+void cPixmapFigure::fillPixmap(const Color& color, double opacity)
 {
     ENSURE_RANGE01(opacity);
     pixmap.fill(color, opacity);
