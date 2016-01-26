@@ -83,7 +83,7 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * Represents an RGB color. Conversion from string exists, and accepts HTML colors (#rrggbb),
-         * HSB colors in a similar notation (@hhssbb), and English color names (X11 color names,
+         * HSB colors in a similar notation (@hhssbb), and English color names (SVG color names,
          * to be more precise.) Predefined constants for the basic colors (see BLACK, WHITE,
          * GREY, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA), as well as a collection of good dark and
          * light colors, suitable for e.g. chart drawing (see GOOD_DARK_COLORS and GOOD_LIGHT_COLORS)
@@ -315,7 +315,7 @@ class SIM_API cFigure : public cOwnedObject
         /** @name Miscellaneous. */
         //@{
         virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
-        virtual const char *getClassNameForRenderer() const {return getClassName();} // denotes renderer of which figure class to use; override if you want to subclass a figure while reusing renderer of the base class
+        virtual const char *getRendererClassName() const = 0;
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
 
         virtual void moveLocal(double x, double y) = 0;
@@ -419,7 +419,7 @@ class SIM_API cGroupFigure : public cFigure
         //@{
         virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
         virtual std::string info() const override;
-        virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
+        virtual const char *getRendererClassName() const override {return "";} // non-visual figure
         virtual void moveLocal(double x, double y) override {}
         //@}
 };
@@ -458,7 +458,7 @@ class SIM_API cPanelFigure : public cFigure
         //@{
         virtual cPanelFigure *dup() const override  {return new cPanelFigure(*this);}
         virtual std::string info() const override;
-        virtual const char *getClassNameForRenderer() const override {return "";} // non-visual figure
+        virtual const char *getRendererClassName() const override {return "";} // non-visual figure
         virtual void updateParentTransform(Transform& transform) override;
         virtual void moveLocal(double x, double y) override {position.translate(x,y); fireTransformChange();}
         //@}
@@ -565,6 +565,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "LineFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -607,6 +608,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "ArcFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -661,6 +663,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "PolylineFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -783,10 +786,8 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         virtual cRectangleFigure *dup() const override  {return new cRectangleFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        /**
-         * Translates the bounding rectangle, see getBounds().
-         */
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "RectangleFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -830,6 +831,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "OvalFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -871,6 +873,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "RingFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -918,6 +921,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "PieSliceFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -970,6 +974,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "PolygonFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -1062,6 +1067,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
          * The move operation modifies the offset field (see getOffset()).
          */
         virtual void moveLocal(double x, double y) override;
+        virtual const char *getRendererClassName() const override {return "PathFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -1193,6 +1199,7 @@ class SIM_API cTextFigure : public cAbstractTextFigure
         /** @name Redefined cObject and cFigure member functions. */
         //@{
         virtual cTextFigure *dup() const override  {return new cTextFigure(*this);}
+        virtual const char *getRendererClassName() const override {return "TextFigureRenderer";}
         //@}
 };
 
@@ -1219,6 +1226,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
         /** @name Redefined cObject and cFigure member functions. */
         //@{
         virtual cLabelFigure *dup() const override  {return new cLabelFigure(*this);}
+        virtual const char *getRendererClassName() const override {return "LabelFigureRenderer";}
         //@}
 };
 
@@ -1330,6 +1338,7 @@ class SIM_API cImageFigure : public cAbstractImageFigure
         virtual cImageFigure *dup() const override  {return new cImageFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
+        virtual const char *getRendererClassName() const override {return "ImageFigureRenderer";}
         //@}
 
         /** @name Figure attributes */
@@ -1364,6 +1373,7 @@ class SIM_API cIconFigure : public cImageFigure
         /** @name Redefined cObject and cFigure member functions. */
         //@{
         virtual cIconFigure *dup() const override  {return new cIconFigure(*this);}
+        virtual const char *getRendererClassName() const override {return "IconFigureRenderer";}
         //@}
 };
 
@@ -1397,6 +1407,7 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual cPixmapFigure *dup() const override  {return new cPixmapFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
+        virtual const char *getRendererClassName() const override {return "PixmapFigureRenderer";}
         //@}
 
         /** @name Figure attributes */

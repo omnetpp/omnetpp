@@ -90,21 +90,17 @@ std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
 FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
     FigureRenderer *renderer;
-    std::string className = figure->getClassNameForRenderer();
-    std::map<std::string, FigureRenderer *>::iterator it = rendererCache.find(className);
+    std::string rendererClassName = figure->getRendererClassName();
+    std::map<std::string, FigureRenderer *>::iterator it = rendererCache.find(rendererClassName);
     if (it != rendererCache.end())
         renderer = it->second;
     else {
         // create renderer and add to the cache
-        if (className == "")
+        if (rendererClassName == "")
             renderer = new NullRenderer();
         else {
-            // find registered class named "<type>Renderer"
-            std::string rendererClassName = className + "Renderer";
-            if (rendererClassName[0] == 'c')
-                rendererClassName.replace(0, 1, "qtenv::");
-            if (opp_stringbeginswith(rendererClassName.c_str(), "omnetpp::c"))
-                rendererClassName.replace(sizeof("omnetpp::c")-2, 1, "qtenv::");  // remove the "c"
+            if (rendererClassName.find(':') == std::string::npos)
+                rendererClassName = "omnetpp::qtenv::" + rendererClassName;
             cObjectFactory *factory = cObjectFactory::find(rendererClassName.c_str());
             if (!factory)
                 throw cRuntimeError("No renderer class '%s' for figure class '%s'", rendererClassName.c_str(), figure->getClassName());
@@ -113,7 +109,7 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
             if (!renderer)
                 throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
         }
-        rendererCache[className] = renderer;
+        rendererCache[rendererClassName] = renderer;
     }
     return renderer;
 }
