@@ -1286,6 +1286,7 @@ void cAbstractLineFigure::copy(const cAbstractLineFigure& other)
     setCapStyle(other.getCapStyle());
     setStartArrowhead(other.getStartArrowhead());
     setEndArrowhead(other.getEndArrowhead());
+    setZoomLineWidth(other.getZoomLineWidth());
 }
 
 cAbstractLineFigure& cAbstractLineFigure::operator=(const cAbstractLineFigure& other)
@@ -1682,6 +1683,7 @@ void cAbstractShapeFigure::copy(const cAbstractShapeFigure& other)
     setLineWidth(other.getLineWidth());
     setLineOpacity(other.getLineOpacity());
     setFillOpacity(other.getFillOpacity());
+    setZoomLineWidth(other.getZoomLineWidth());
 }
 
 cAbstractShapeFigure& cAbstractShapeFigure::operator=(const cAbstractShapeFigure& other)
@@ -2123,6 +2125,7 @@ void cPolygonFigure::copy(const cPolygonFigure& other)
     setPoints(other.getPoints());
     setSmooth(other.getSmooth());
     setJoinStyle(other.getJoinStyle());
+    setFillRule(other.getFillRule());
 }
 
 void cPolygonFigure::checkIndex(int i) const
@@ -2255,6 +2258,8 @@ void cPathFigure::copy(const cPathFigure& other)
     setPath(other.getPath()); //FIXME do deep copy of structs instead!!!
     setJoinStyle(other.getJoinStyle());
     setCapStyle(other.getCapStyle());
+    setOffset(other.getOffset());
+    setFillRule(other.getFillRule());
 }
 
 cPathFigure& cPathFigure::operator=(const cPathFigure& other)
