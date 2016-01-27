@@ -34,6 +34,9 @@ class QTENV_API GenericObjectInspector : public Inspector
 {
     Q_OBJECT
 
+    // The default mode for these types should be CHILDREN
+    static const std::vector<std::string> containerTypes;
+
 public:
     enum Mode {
         GROUPED,

@@ -68,6 +68,10 @@ public:
 
 // ---- GenericObjectInspector implementation ----
 
+const std::vector<std::string> GenericObjectInspector::containerTypes =
+  {"cArray", "cQueue", "cFutureEventSet", "cSimpleModule",
+   "cModule", "cChannel", "cRegistrationList", "cCanvas"};
+
 GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f) {
     treeView = new QTreeView(this);
     treeView->setHeaderHidden(true);
@@ -173,6 +177,14 @@ void GenericObjectInspector::setMode(Mode mode)
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj) {
+
+    if (obj
+         && obj != getObject()
+         && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))
+         && mode != CHILDREN) {
+            setMode(CHILDREN);
+    }
+
     Inspector::doSetObject(obj);
 
     GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode == GROUPED, mode == INHERITANCE, mode == CHILDREN, this);
