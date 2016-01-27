@@ -646,8 +646,14 @@ cFigure::Transform cFigure::parseTransform(const char *s)
         else
             throw cRuntimeError("Wrong number of args in '%s', skewy(coeff) or skewy(coeff,cx) expected", s);
     }
+    else if (operation == "matrix") {
+        if (args.size() == 6)
+            transform.multiply(Transform(args[0], args[1], args[2], args[3], args[4], args[5]));
+        else
+            throw cRuntimeError("Wrong number of args in '%s', matrix(a,b,c,d,t1,t2) expected", s);
+    }
     else {
-        throw cRuntimeError("Invalid operation %s, translate, rotate, scale, skewx or skewy expected: '%s'", operation.c_str(), s);
+        throw cRuntimeError("Invalid operation %s, translate, rotate, scale, skewx, skewy or matrix expected: '%s'", operation.c_str(), s);
     }
     return transform;
 }
