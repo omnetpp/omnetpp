@@ -163,6 +163,14 @@ void ModuleCanvasViewer::resizeEvent(QResizeEvent *event)
     updateZoomLabelPos();
 }
 
+bool ModuleCanvasViewer::event(QEvent *event)
+{
+    if (event->type() == QEvent::Polish || event->type() == QEvent::PolishRequest)
+        recalcSceneRect(true);
+
+    return QGraphicsView::event(event);
+}
+
 void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent * event)
 {
     emit contextMenuRequested(event);
@@ -565,9 +573,11 @@ QRectF ModuleCanvasViewer::getSubmodulesRect()
 
 void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
 {
+    const int margin = 10;
     if (compoundModuleItem) {
         auto rect = compoundModuleItem->boundingRect()
-                      .united(getSubmodulesRect());
+                      .united(getSubmodulesRect())
+                      .adjusted(-margin, -margin, margin, margin); // leaving a bit of a margin
 
         // how much additional space we need to show both ways in each direction
         // so the compound module can be moved in the viewport even if it is small
@@ -575,8 +585,8 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
         double vertExcess = std::max(0.0, viewport()->height() - rect.height());
 
         rect = rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess)
-                .united(figureLayer->childrenBoundingRect()) // including figures
-                .adjusted(-10, -10, 10, 10); // leaving a bit of a margin
+                 .united(figureLayer->childrenBoundingRect() // including canvas figures
+                           .adjusted(-margin, -margin, margin, margin)); // leaving a bit of a margin
 
         setSceneRect(rect);
 
@@ -586,7 +596,7 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
             // making sure the viewpoint is scrolled so the top left
             // corners of the viewport and the compound module are aligned
             auto corner = compoundModuleItem->boundingRect().topLeft();
-            ensureVisible(corner.x(), corner.y(), 1, 1, 10, 10);
+            ensureVisible(corner.x(), corner.y(), 1, 1, margin, margin);
         }
     }
 }

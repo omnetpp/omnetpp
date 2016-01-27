@@ -105,6 +105,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    bool event(QEvent *event) override; // for the alignTopLeft call in the PolishEvent
     void contextMenuEvent(QContextMenuEvent * event) override;
     void scrollContentsBy(int dx, int dy) override;
 

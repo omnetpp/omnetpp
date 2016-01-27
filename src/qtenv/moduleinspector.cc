@@ -645,55 +645,58 @@ void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)
 
 void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 {
+    if (!object)
+        return;
+
     std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
 
-    if(objects.size())
-    {
-        QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
+    if (objects.empty())
+        objects.push_back(object);
 
-        QString objName = object->getFullName();
-        QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
-        bool showLabels = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
-        prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
-        bool showArrowheads = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
+    QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
 
-        menu->addSeparator();
-        menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
+    QString objName = object->getFullName();
+    QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
+    bool showLabels = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
+    prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
+    bool showArrowHeads = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
 
-        menu->addSeparator();
-        //TODO not working these "Show" menu points
-        QAction *action = menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
-        action->setCheckable(true);
-        action->setChecked(showLabels);
-        action = menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
-        action->setCheckable(true);
-        action->setChecked(showArrowheads);
+    menu->addSeparator();
+    menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
 
-        menu->addSeparator();
+    menu->addSeparator();
+    //TODO not working these "Show" menu points
+    QAction *action = menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
+    action->setCheckable(true);
+    action->setChecked(showLabels);
+    action = menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
+    action->setCheckable(true);
+    action->setChecked(showArrowHeads);
 
-        menu->addAction(increaseIconSizeAction);
-        menu->addAction(decreaseIconSizeAction);
+    menu->addSeparator();
 
-        menu->addSeparator();
-        menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_Plus));
-        menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_Minus));
-        menu->addAction("Re-Layout", canvasViewer, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
+    menu->addAction(increaseIconSizeAction);
+    menu->addAction(decreaseIconSizeAction);
 
-        menu->addSeparator();
-        action = menu->addAction("Layouting Settings...", this, SLOT(runPreferencesDialog()));
-        action->setData(InspectorUtil::TAB_LAYOUTING);
-        action = menu->addAction("Animation Settings...", this, SLOT(runPreferencesDialog()));
-        action->setData(InspectorUtil::TAB_ANIMATION);
-        action = menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()));
-        action->setData(InspectorUtil::TAB_FILTERING);
+    menu->addSeparator();
+    menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_Plus));
+    menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_Minus));
+    menu->addAction("Re-Layout", canvasViewer, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
 
-        menu->addSeparator();
-        menu->addAction("Export to PDF...", this, SLOT(exportToPdf()));
-        menu->addAction("Print...", this, SLOT(print()));
+    menu->addSeparator();
+    action = menu->addAction("Layouting Settings...", this, SLOT(runPreferencesDialog()));
+    action->setData(InspectorUtil::TAB_LAYOUTING);
+    action = menu->addAction("Animation Settings...", this, SLOT(runPreferencesDialog()));
+    action->setData(InspectorUtil::TAB_ANIMATION);
+    action = menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()));
+    action->setData(InspectorUtil::TAB_FILTERING);
 
-        menu->exec(event->globalPos());
-        delete menu;
-    }
+    menu->addSeparator();
+    menu->addAction("Export to PDF...", this, SLOT(exportToPdf()));
+    menu->addAction("Print...", this, SLOT(print()));
+
+    menu->exec(event->globalPos());
+    delete menu;
 }
 
 void ModuleInspector::exportToPdf()
