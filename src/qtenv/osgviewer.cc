@@ -190,6 +190,7 @@ QWidget *OsgViewer::addViewWidget()
     camera->setClearColor(osg::Vec4(0.9, 0.9, 0.9, 1.0));
     camera->setViewport(new osg::Viewport(0, 0, 100, 100));
     camera->setProjectionResizePolicy(osg::Camera::FIXED);
+    camera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
 
     view->addEventHandler(new PickHandler(this));
     view->addEventHandler(new osgViewer::StatsHandler);
