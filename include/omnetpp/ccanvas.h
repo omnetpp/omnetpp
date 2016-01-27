@@ -122,7 +122,7 @@ class SIM_API cFigure : public cOwnedObject
             int pointSize;  // zero or negative value means default size
             uint8_t style;  // binary OR of FontStyle constants
             Font() : pointSize(0), style(FONT_NONE) {}
-            Font(std::string typeface, int pointSize, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
+            Font(std::string typeface, int pointSize=-1, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
             bool operator==(const Font& other) const {return typeface == other.typeface && pointSize == other.pointSize && style == other.style;}
             std::string str() const;
         };
