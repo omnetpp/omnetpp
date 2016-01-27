@@ -44,6 +44,20 @@ HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
 # must list all SVGs because nmake is broken and has no wildcard functionality
 SVGPICS = \
+        figures\figure-arc.svg \
+        figures\figure-group.svg \
+        figures\figure-icon.svg \
+        figures\figure-inheritance.svg \
+        figures\figure-label.svg \
+        figures\figure-line.svg \
+        figures\figure-oval.svg \
+        figures\figure-pieslice.svg \
+        figures\figure-pixmap.svg \
+        figures\figure-polygons.svg \
+        figures\figure-polylines.svg \
+        figures\figure-rectangle.svg \
+        figures\figure-ring.svg \
+        figures\figure-text.svg \
         figures\embed-architecture.svg \
         figures\parsim-cqn-model.svg \
         figures\simlib-ksplit1.svg \
@@ -61,7 +75,6 @@ SVGPICS = \
         figures\transmission.svg \
         figures\parsim-arch.svg \
         figures\simlib-histogramsetup.svg
-
 
 DOTPICS = \
 	figures\build-workflow.dot \

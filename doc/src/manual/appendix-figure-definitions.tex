@@ -3,262 +3,286 @@
 
 This appendix provides a reference to defining figures in NED files.
 
-\section{Figure Types}
+\section{Built-in Figure Types}
 
-The
+The following table lists the figure types supported by {\opp}.
 
 \begin{longtable}{|l|l|}
 \hline
 \tabheadcol
-\tbf{C++ class}           &  \tbf{@figure type} \\\hline
-\cclass{cLineFigure}      &  \tbf{line}       \\\hline
-\cclass{cArcFigure}       &  \tbf{arc}        \\\hline
-\cclass{cPolylineFigure}  &  \tbf{polyline}   \\\hline
-\cclass{cRectangleFigure} &  \tbf{rectangle}  \\\hline
-\cclass{cOvalFigure}      &  \tbf{oval}       \\\hline
-\cclass{cRingFigure}      &  \tbf{ring}       \\\hline
-\cclass{cPieSliceFigure}  &  \tbf{pieslice}   \\\hline
-\cclass{cPolygonFigure}   &  \tbf{polygon}    \\\hline
-\cclass{cPathFigure}      &  \tbf{path}       \\\hline
-\cclass{cTextFigure}      &  \tbf{text}       \\\hline
-\cclass{cLabelFigure}     &  \tbf{label}      \\\hline
-\cclass{cImageFigure}     &  \tbf{image}      \\\hline
-\cclass{cIconFigure}      &  \tbf{icon}       \\\hline
-\cclass{cPixmapFigure}    &  \tbf{pixmap}     \\\hline
-\cclass{cGroupFigure}     &  \tbf{group}      \\\hline
+\tbf{@figure type} & \tbf{C++ class}            \\\hline
+\tbf{line}         & \cclass{cLineFigure}       \\\hline
+\tbf{arc}          & \cclass{cArcFigure}        \\\hline
+\tbf{polyline}     & \cclass{cPolylineFigure}   \\\hline
+\tbf{rectangle}    & \cclass{cRectangleFigure}  \\\hline
+\tbf{oval}         & \cclass{cOvalFigure}       \\\hline
+\tbf{ring}         & \cclass{cRingFigure}       \\\hline
+\tbf{pieslice}     & \cclass{cPieSliceFigure}   \\\hline
+\tbf{polygon}      & \cclass{cPolygonFigure}    \\\hline
+\tbf{path}         & \cclass{cPathFigure}       \\\hline
+\tbf{text}         & \cclass{cTextFigure}       \\\hline
+\tbf{label}        & \cclass{cLabelFigure}      \\\hline
+\tbf{image}        & \cclass{cImageFigure}      \\\hline
+\tbf{icon}         & \cclass{cIconFigure}       \\\hline
+\tbf{pixmap}       & \cclass{cPixmapFigure}     \\\hline
+\tbf{group}        & \cclass{cGroupFigure}      \\\hline
 \end{longtable}
 
-TODO other
+Additional figure types can be defined with the
+\ttt{custom:\textit{<type>}} syntax; see \textit{FigureType} below.
 
 \section{Attribute Types}
 
 This section lists what attribute types exist and their value syntaxes.
 
-\subsubsection{Transform}
+\begin{description}
 
-translate(x,y)
+\item[bool]: \\
+\ttt{true} or \ttt{false}.
 
-rotate(deg)
+\item[int]: \\
+An integer.
 
-rotate(deg, x, y,)
+\item[double]: \\
+A real number.
 
-scale(c)
+\item[double01]: \\
+A real number in the [0,1] interval.
 
-scale(cx, cy)
+\item[degrees]: \\
+A real number that will be interpreted as degrees.
 
-skewx(deg)
+\item[string]: \\
+A string. It only needs to be enclosed in quotes if it contains comma,
+semicolon, unmatched close parenthesis or other character that prevents
+it from being parsed properly as a property value.
 
-skewx(deg, y)
+\item[Anchor]: \\
+\ttt{c}, \ttt{center}, \ttt{n}, \ttt{e}, \ttt{s}, \ttt{w}, \ttt{nw},
+\ttt{ne}, \ttt{se}, \ttt{sw}, \ttt{start}, \ttt{middle}, or \ttt{end}.
+The last three are only valid for text figures.
 
-skewy(deg)
+\item[Arrowhead]: \\
+\ttt{none}, \ttt{simple}, \ttt{triangle}, or \ttt{barbed}.
 
-skewy(deg, x)
+\item[CapStyle]: \\
+\ttt{butt}, \ttt{square}, or \ttt{round}.
+
+\item[Color]: \\
+A color in HTML format (\textit{\#rrggbb}), a color in
+HSB format (\textit{@hhssbb}), or a valid SVG color name.
+
+\item[Dimensions]: \textit{width, height} \\
+Size given as width and height.
+
+\item[FigureType]: \\
+One of the built-in figure types (\ttt{line}, \ttt{arc}, etc.), or
+\ttt{custom:\textit{<type>}}. In the latter case, {\opp} looks for
+a registered C++ class named \ttt{\textit{<type>}Figure} or
+\ttt{c\textit{<type>}Figure} to instantiate.
+
+\item[FillRule]: \\
+\ttt{evenodd} or \ttt{nonzero}.
+
+\item[Font]: \textit{typeface, size, style} \\
+All three items are optional. \textit{size} is the font size in points.
+\textit{style} is space-sparated list of zero or more of the following
+words: \ttt{normal}, \ttt{bold}, \ttt{italic}, \ttt{underline}.
+
+\item[ImageName]: \\
+The name of an image.
+
+\item[Interpolation]: \\
+\ttt{none}, \ttt{fast}, or \ttt{best}.
+
+\item[JoinStyle]: \\
+\ttt{bevel}, \ttt{miter}, or \ttt{round}.
+
+\item[LineStyle]: \\
+\ttt{solid}, \ttt{dotted}, or \ttt{dashed}.
+
+\item[Point]: \textit{x, y} \\
+A point with $(x,y)$ coordinates.
+
+\item[Point2]: \textit{x1, y1, x2, y2} \\
+Two points: $(x1,y1)$ and $(x2,y2)$.
+
+\item[PointList]: \textit{x1, y1, x2, y2, x3, y3...} \\
+A list of the $(x1,y1)$, $(x2,y2)$, $(x3,y3)$, etc. points.
+
+\item[Rectangle]: \textit{x, y, width, height} \\
+A rectangle given with its top-left corner and dimensions.
+
+\item[TagList]: \textit{tag1, tag2, tag3...} \\
+A list of string tags.
+
+\item[Tint]: \textit{Color, double01} \\
+Specifies tint color and the amount of tinting for images.
+
+\item[Transform]: \\
+One or more transform steps. A step is one of: \\
+\ttt{translate($x$, $y$)}, \\
+\ttt{rotate($deg$)}, \\
+\ttt{rotate($deg$, $centerx$, $centery$)}, \\
+\ttt{scale($s$)}, \ttt{scale($sx$, $sy$)}, \\
+\ttt{scale($s$, $centerx$, $centery$)}, \\
+\ttt{scale($sx$, $sy$, $centerx$, $centery$)}, \\
+\ttt{skewx($coeff$)}, \\
+\ttt{skewx($coeff$, $centery$)}, \\
+\ttt{skewy($coeff$)}, \\
+\ttt{skewy($coeff$, $centerx$)}, \\
+\ttt{matrix($a$, $b$, $c$, $d$, $t1$, $t2$)}
+
+\end{description}
 
 
-\subsubsection{Font}
-
-typeface, size, style
-
-style is space-sparated list of zero or more of the following words:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}     &  \tbf{Meaning}         \\ \hline
-\tbf{normal}    &  \ttt{0}               \\ \hline
-\tbf{bold}      &  \ttt{FONT\_BOLD}      \\ \hline
-\tbf{italic}    &  \ttt{FONT\_ITALIC}    \\ \hline
-\tbf{underline} &  \ttt{FONT\_UNDERLINE} \\ \hline
-\end{longtable}
-
-
-\subsubsection{bool}
-
-Accepted values are \tbf{true} and \tbf{false}.
-
-\subsubsection{Color}
-
-TODO
-
-common::parseColor(s, color.red, color.green, color.blue);
-
-\subsubsection{LineStyle}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}    &  \tbf{Meaning}        \\ \hline
-\tbf{solid}    &  \ttt{LINE\_SOLID}    \\ \hline
-\tbf{dotted}   &  \ttt{LINE\_DOTTED}   \\ \hline
-\tbf{dashed}   &  \ttt{LINE\_DASHED}   \\ \hline
-\end{longtable}
-
-\subsubsection{CapStyle}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}    &  \tbf{Meaning}        \\ \hline
-\tbf{butt}     &  \ttt{CAP\_BUTT}      \\ \hline
-\tbf{square}   &  \ttt{CAP\_SQUARE}    \\ \hline
-\tbf{round}    &  \ttt{CAP\_ROUND}     \\ \hline
-\end{longtable}
-
-\subsubsection{JoinStyle}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}    &  \tbf{Meaning}        \\ \hline
-\tbf{bevel}    &  \ttt{JOIN\_BEVEL}    \\ \hline
-\tbf{miter}    &  \ttt{JOIN\_MITER}    \\ \hline
-\tbf{round}    &  \ttt{JOIN\_ROUND}    \\ \hline
-\end{longtable}
-
-\subsubsection{FillRule}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}    &  \tbf{Meaning}        \\ \hline
-\tbf{evenodd}  &  \ttt{FILL\_EVENODD}  \\ \hline
-\tbf{nonzero}  &  \ttt{FILL\_NONZERO}  \\ \hline
-\end{longtable}
-
-\subsubsection{ArrowHead}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}    &  \tbf{Meaning}         \\ \hline
-\tbf{none}     &  \ttt{ARROW\_NONE}     \\ \hline
-\tbf{simple}   &  \ttt{ARROW\_SIMPLE}   \\ \hline
-\tbf{triangle} &  \ttt{ARROW\_TRIANGLE} \\ \hline
-\tbf{barbed}   &  \ttt{ARROW\_BARBED}   \\ \hline
-\end{longtable}
-
-\subsubsection{Interpolation}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}   &  \tbf{Meaning}              \\ \hline
-\tbf{none}    &  \ttt{INTERPOLATION\_NONE}  \\ \hline
-\tbf{fast}    &  \ttt{INTERPOLATION\_FAST}  \\ \hline
-\tbf{best}    &  \ttt{INTERPOLATION\_BEST}  \\ \hline
-\end{longtable}
-
-\subsubsection{Anchor}
-
-Accepted values:
-
-\begin{longtable}{|p{4cm}|p{4cm}|}
-\hline
-\tabheadcol
-\tbf{Value}    &  \tbf{Meaning}                  \\ \hline
-\tbf{c}        &  \ttt{ANCHOR\_CENTER}           \\ \hline
-\tbf{center}   &  \ttt{ANCHOR\_CENTER}           \\ \hline
-\tbf{n}        &  \ttt{ANCHOR\_N}                \\ \hline
-\tbf{e}        &  \ttt{ANCHOR\_E}                \\ \hline
-\tbf{s}        &  \ttt{ANCHOR\_S}                \\ \hline
-\tbf{w}        &  \ttt{ANCHOR\_W}                \\ \hline
-\tbf{nw}       &  \ttt{ANCHOR\_NW}               \\ \hline
-\tbf{ne}       &  \ttt{ANCHOR\_NE}               \\ \hline
-\tbf{se}       &  \ttt{ANCHOR\_SE}               \\ \hline
-\tbf{sw}       &  \ttt{ANCHOR\_SW}               \\ \hline
-\tbf{start}    &  \ttt{ANCHOR\_BASELINE\_START}  \\ \hline
-\tbf{middle}   &  \ttt{ANCHOR\_BASELINE\_MIDDLE} \\ \hline
-\tbf{end}      &  \ttt{ANCHOR\_BASELINE\_END}    \\ \hline
-\end{longtable}
 
 \section{Figure Attributes}
 
-This section lists what attributes are accepted by individual figure classes.
+This section lists what attributes are accepted by individual figure types.
+Types enclosed in parentheses are abstract types which cannot be used
+directly; their sole purpose is to provide a base for more specialized
+types.
 
+\begin{description}
 
-\tbf{figure}
-    type, visible, tags, childz, transform
+\item[(figure)]: \\
+    \ttt{type}=\textit{<FigureType>};
+    \ttt{visible}=\textit{<bool>};
+    \ttt{tags}=\textit{<TagList>};
+    \ttt{childZ}=\textit{<int>};
+    \ttt{transform}=\textit{<Transform>};
 
-\tbf{panel}
-        pos
-        plus: Figure
+\item[(abstractLine)]: figure \\
+    \ttt{lineColor}=\textit{<Color>};
+    \ttt{lineStyle}=\textit{<LineStyle>};
+    \ttt{lineWidth}=\textit{<double>};
+    \ttt{lineOpacity}=\textit{<double>};
+    \ttt{capStyle}=\textit{<CapStyle>};
+    \ttt{startArrowhead}=\textit{<Arrowhead>};
+    \ttt{endArrowhead}=\textit{<Arrowhead>};
+    \ttt{zoomLineWidth}=\textit{<bool>};
 
-\tbf{abstractLine}
-        linecolor, linestyle, linewidth, lineopacity, capstyle, startarrowhead, endarrowhead, zoomlinewidth
-        plus: Figure
+\item[line]: abstractLine \\
+    \ttt{points}=\textit{<Point2>}
 
-\tbf{line}
-        points
-        plus: AbstractLineFigure
+\item[arc]: abstractLine \\
+    \ttt{bounds}=\textit{<Rectangle>}
+    \ttt{pos}=\textit{<Point>};
+    \ttt{size}=\textit{<Dimensions>};
+    \ttt{anchor}=\textit{<Anchor>};
+    \ttt{startAngle}=\textit{<degrees>};
+    \ttt{endAngle}=\textit{<degrees>}
 
-\tbf{arc}
-        pos, size, anchor, startangle, endangle
-        plus: AbstractLineFigure
+\item[polyline]: abstractLine \\
+    \ttt{points}=\textit{<PointList>};
+    \ttt{smooth}=\textit{<bool>};
+    \ttt{joinstyle}=\textit{<JoinStyle>}
 
-\tbf{polyline}
-        points, smooth, joinstyle
-        plus: AbstractLineFigure
+\item[(abstractShape)]: figure \\
+    \ttt{lineColor}=\textit{<Color>};
+    \ttt{fillColor}=\textit{<Color>};
+    \ttt{lineStyle}=\textit{<LineStyle>};
+    \ttt{lineWidth}=\textit{<double>};
+    \ttt{lineOpacity}=\textit{<double01>};
+    \ttt{fillOpacity}=\textit{<double01>};
+    \ttt{zoomLineWidth}=\textit{<bool>}
 
-\tbf{abstractShape}
-        linecolor, fillcolor, linestyle, linewidth, lineopacity, fillopacity, zoomlinewidth
-        plus: Figure
+\item[rectangle]: abstractShape \\
+    \ttt{bounds}=\textit{<Rectangle>}
+    \ttt{pos}=\textit{<Point>};
+    \ttt{size}=\textit{<Dimensions>};
+    \ttt{anchor}=\textit{<Anchor>};
+    \ttt{cornerRadius}=\textit{<double>|<Dimensions>}
 
-\tbf{rectangle}
-        pos, size, anchor, cornerradius
-        plus: AbstractShapeFigure
+\item[oval]: abstractShape \\
+    \ttt{bounds}=\textit{<Rectangle>}
+    \ttt{pos}=\textit{<Point>};
+    \ttt{size}=\textit{<Dimensions>};
+    \ttt{anchor}=\textit{<Anchor>}
 
-\tbf{oval}
-        pos, size, anchor
-        plus: AbstractShapeFigure
+\item[ring]: abstractShape \\
+    \ttt{bounds}=\textit{<Rectangle>}
+    \ttt{pos}=\textit{<Point>};
+    \ttt{size}=\textit{<Dimensions>};
+    \ttt{anchor}=\textit{<Anchor>};
+    \ttt{innerSize}=\textit{<Dimensions>}
 
-\tbf{ring}
-        pos, size, anchor, innersize
-        plus: AbstractShapeFigure
+\item[pieslice]: abstractShape \\
+    \ttt{bounds}=\textit{<Rectangle>}
+    \ttt{pos}=\textit{<Point>};
+    \ttt{size}=\textit{<Dimensions>};
+    \ttt{anchor}=\textit{<Anchor>};
+    \ttt{startAngle}=\textit{<degrees>};
+    \ttt{endAngle}=\textit{<degrees>}
 
-\tbf{pieSlice}
-        pos, size, anchor, startangle, endangle
-        plus: AbstractShapeFigure
+\item[polygon]: abstractShape \\
+    \ttt{points}=\textit{<PointList>};
+    \ttt{smooth}=\textit{<bool>};
+    \ttt{joinStyle}=\textit{<JoinStyle>};
+    \ttt{fillRule}=\textit{<FillRule>}
 
-\tbf{polygon}
-        points, smooth, joinstyle, fillrule
-        plus: AbstractShapeFigure
+\item[path]: abstractShape \\
+    \ttt{path}=\textit{<string>};
+    \ttt{offset}=\textit{<Point>};
+    \ttt{joinStyle}=\textit{<JoinStyle>};
+    \ttt{capStyle}=\textit{<CapStyle>};
+    \ttt{fillRule}=\textit{<FillRule>}
 
-\tbf{path}
-        path, offset, joinstyle, capstyle, fillrule
-        plus: AbstractShapeFigure
+\item[(abstractText)]: figure \\
+    \ttt{pos}=\textit{<Point>};
+    \ttt{anchor}=\textit{<Anchor>}
+    \ttt{text}=\textit{<string>};
+    \ttt{font}=\textit{<Font>};
+    \ttt{opacity}=\textit{<double01>};
+    \ttt{color}=\textit{<Color>};
 
-\tbf{abstractText}
-        pos, text, color, opacity, font, anchor
-        plus: Figure
+\item[label]: abstractText
 
-\tbf{abstractImage}
-        pos, anchor, size, interpolation, opacity, tint
-        plus: Figure
+\item[text]: abstractText
 
-\tbf{image}
-        image
-        plus: AbstractImageFigure
+\item[(abstractImage)]: figure \\
+    \ttt{bounds}=\textit{<Rectangle>}
+    \ttt{pos}=\textit{<Point>};
+    \ttt{size}=\textit{<Dimensions>};
+    \ttt{anchor}=\textit{<Anchor>};
+    \ttt{interpolation}=\textit{<Interpolation>};
+    \ttt{opacity}=\textit{<double01>};
+    \ttt{tint}=\textit{<Tint>}
 
-\tbf{pixmap}
-        resolution
-        plus: AbstractImageFigure
+\item[image]: abstractImage \\
+    \ttt{image}=\textit{<ImageName>}
 
-TODO
+\item[icon]: abstractImage \\
+    \ttt{image}=\textit{<ImageName>}
+
+\item[pixmap]: abstractImage \\
+    \ttt{resolution}=\textit{<Dimensions>}
+
+\end{description}
 
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
