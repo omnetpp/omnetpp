@@ -199,6 +199,10 @@ static const char *buildOptions = ""
     " WITH_NETBUILDER"
     #endif
 
+    #ifdef WITH_OSG
+    " WITH_OSG"
+    #endif
+
     #ifdef WITH_AKAROA
     " WITH_AKAROA"
     #endif
