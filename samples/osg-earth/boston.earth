@@ -7,7 +7,7 @@ to extruded buildings.
 
 <map name="Boston Demo" type="geocentric" version="2">
 
-    <options elevation_tile_size="15" overlay_resolution_ratio = "1">
+    <options elevation_tile_size="15" overlay_resolution_ratio="1">
         <terrain lighting="false"/>
         <cache type="filesystem">
             <path>cache</path>
