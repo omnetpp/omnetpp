@@ -42,7 +42,7 @@ class WaypointTrackerNode : public MobileNode
     WaypointVector waypoints;
 
     double speed;
-    double  wayponitProximity;
+    double  waypointProximity;
     double angularSpeed;
     int targetPointIndex;
 

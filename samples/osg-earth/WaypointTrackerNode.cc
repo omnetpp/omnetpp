@@ -38,7 +38,7 @@ void WaypointTrackerNode::initialize(int stage)
         x = waypoints[targetPointIndex].x;
         y = waypoints[targetPointIndex].y;
         speed = par("speed");
-        wayponitProximity = par("waypointProximity");
+        waypointProximity = par("waypointProximity");
         heading = 0;
         angularSpeed = 0;
         break;
@@ -63,7 +63,7 @@ void WaypointTrackerNode::move()
     Waypoint target = waypoints[targetPointIndex];
     double dx = target.x - x;
     double dy = target.y - y;
-    if (dx*dx + dy*dy < wayponitProximity*wayponitProximity)  // reached so change to next (within the predefined proximity of the waypoint)
+    if (dx*dx + dy*dy < waypointProximity*waypointProximity)  // reached so change to next (within the predefined proximity of the waypoint)
         targetPointIndex = (targetPointIndex+1) % waypoints.size();
 
     double targetDirection = atan2(dx, -dy) / M_PI * 180;

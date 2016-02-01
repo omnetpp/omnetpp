@@ -81,8 +81,8 @@ void ChannelController::initialize(int stage)
 
         if (showConnections) {
             connectionGraphNode = new FeatureNode(mapNode.get(), nullptr);
+            connectionGraphNode->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
             mapNode->getModelLayerGroup()->addChild(connectionGraphNode);
-
         }
         break;
     }
