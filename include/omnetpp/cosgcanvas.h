@@ -174,12 +174,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
          * Return the distance from the viewer to the far clipping plane.
          */
         double getZFar() const {return zFar;}
-
-        /**
-         * Set all perspective-related viewer hints together.
-         * @see setFieldOfViewAngle(), setZNear(), setZFar()
-         */
-        void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
         //@}
 
         /** @name Viewer hints for the generic style. */
