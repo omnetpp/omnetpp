@@ -48,7 +48,7 @@ class Satellite : public cSimpleModule
     osg::Vec3d orbitX, orbitY; // the base of the orbit plane, orthogonal, and both are unit length, computed from the normal
 
   public:
-    osg::Vec3d getPosition() { return getPositionAtPhase(phase); }
+    osg::Vec3d getPosition() const { return getPositionAtPhase(phase); }
     osg::Node *getLocatorNode() { return locatorNode; };
 
   protected:
@@ -56,14 +56,14 @@ class Satellite : public cSimpleModule
     double getOmega() { return std::sqrt(mu / std::pow(altitude + earthRadius, 3)); }
 
     // in world coordinates, units is meters, phase is the angle on the orbit in radians
-    osg::Vec3 getPositionAtPhase(double alpha) {
+    osg::Vec3 getPositionAtPhase(double alpha) const {
         return (orbitX * std::cos(alpha) + orbitY * std::sin(alpha)) * (earthRadius + altitude /* km */) * 1000;
     }
 
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override { return 2; }
     virtual void handleMessage(cMessage *msg) override;
-    virtual void refreshVisuals();
+    virtual void refreshDisplay() const override;
     virtual void move();
 };
 

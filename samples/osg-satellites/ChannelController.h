@@ -71,7 +71,7 @@ protected:
 
     virtual void addGroundStation(GroundStation *p);
     virtual void removeGroundStation(GroundStation *p);
-    virtual void updateConnectionGraph();
+    virtual void refreshDisplay() const override;
 };
 
 #endif

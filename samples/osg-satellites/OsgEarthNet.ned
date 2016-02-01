@@ -22,11 +22,11 @@ network OsgEarthNet
         osgEarthScene: OsgEarthScene {
             @display("is=vl;p=300,300");
         }
-        channelController: ChannelController {
-            @display("p=243,31");
-        }
         sat[numSats]: Satellite {
             @display("p=204,150");
+        }
+        channelController: ChannelController {
+            @display("p=243,31");
         }
         stat[numStats]: GroundStation {
             @display("p=250,250");

@@ -53,9 +53,6 @@ void Person::initialize(int stage)
 
         ((osg::Group *)scene)->addChild(patNode);
 
-        // position the nodes, so we will see them at correct position right after initialization
-        refreshVisuals();
-
         // schedule first move
         cMessage *timer = new cMessage("move");
         scheduleAt(par("startTime"), timer);
@@ -63,7 +60,7 @@ void Person::initialize(int stage)
     }
 }
 
-void Person::refreshVisuals()
+void Person::refreshDisplay() const
 {
     double modelheading = fmod((360 + 90 + heading), 360) - 180;
 
@@ -80,9 +77,6 @@ void Person::handleMessage(cMessage *msg)
 {
     // update the node position
     move();
-
-    // synchronize the OSG node positions to the module position
-    refreshVisuals();
 
     // schedule next movement
     scheduleAt(simTime() + timeStep, msg);

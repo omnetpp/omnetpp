@@ -53,7 +53,7 @@ class ChannelController : public cSimpleModule
     static ChannelController *getInstance();
     virtual void addMobileNode(IMobileNode *p);
     virtual void removeMobileNode(IMobileNode *p);
-    virtual void updateConnectionGraph();
+    virtual void refreshDisplay() const override;
 };
 
 #endif

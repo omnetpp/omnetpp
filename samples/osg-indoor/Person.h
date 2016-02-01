@@ -63,7 +63,7 @@ class Person : public cSimpleModule
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override { return 2; }
     virtual void handleMessage(cMessage *msg) override;
-    virtual void refreshVisuals();
+    virtual void refreshDisplay() const override;
     virtual void move();
     void readWaypointsFromFile(const char *fileName);
 };

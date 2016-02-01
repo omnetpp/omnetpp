@@ -181,9 +181,6 @@ void Satellite::initialize(int stage)
             locatorNode->addChild(coneGeode);
         }
 
-        // position the nodes, so we will see them at correct position right after initialization
-        refreshVisuals();
-
         // schedule first move
         cMessage *timer = new cMessage("move");
         scheduleAt(0, timer);
@@ -196,22 +193,17 @@ void Satellite::handleMessage(cMessage *msg)
     // update the node position
     move();
 
-    // synchronize the OSG node positions to the module position
-    refreshVisuals();
-
     // schedule next movement
     scheduleAt(simTime() + timeStep, msg);
 }
 
-void Satellite::refreshVisuals()
+void Satellite::refreshDisplay() const
 {
     osg::Vec3d pos = getPosition();
 
-	osg::Vec3d v;
+    osg::Vec3d v;
     mapNode->getMap()->getSRS()->transformFromWorld(pos, v);
     locatorNode->getLocator()->setPosition(v);
-
-    ChannelController::getInstance()->updateConnectionGraph();
 
     // update the position on the 2D canvas, too*/
     getDisplayString().setTagArg("p", 0, 300 + pos.x() / 100000);

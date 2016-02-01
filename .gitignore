@@ -33,6 +33,7 @@ out/
 Thumbs.db
 backups
 Thumbs.db
+/ide
 /Makefile.inc
 /makeui
 /mingwenv.cmd

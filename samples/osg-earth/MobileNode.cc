@@ -103,9 +103,6 @@ void MobileNode::initialize(int stage)
         // add the locator node to the scene
         mapNode->getModelLayerGroup()->addChild(locatorNode);
 
-        // position the nodes, so we will see them at correct position right after initialization
-        refreshVisuals();
-
         // schedule first move
         cMessage *timer = new cMessage("move");
         scheduleAt(par("startTime"), timer);
@@ -113,7 +110,7 @@ void MobileNode::initialize(int stage)
     }
 }
 
-void MobileNode::refreshVisuals()
+void MobileNode::refreshDisplay() const
 {
     auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
     double modelheading = fmod((360 + 90 + heading), 360) - 180;
@@ -130,23 +127,12 @@ void MobileNode::refreshVisuals()
 
     // if we are showing the model's track, update geometry in the trackNode
     if (trailNode) {
-        // store the new position to be able to create a track later
-        trail.push_back(osg::Vec3d(longitude, latitude, 0));
-
-        // if trail is at max length, remove the oldest point to keep it at "trailLength"
-        if (trail.size() > trailLength)
-            trail.erase(trail.begin());
-
         // create and assign a new feature containing the updated geometry
         // representing the movement trail as continuous line segments
         auto trailFeature = new Feature(new LineString(&trail), geoSRS, trailStyle);
         trailFeature->geoInterp() = GEOINTERP_GREAT_CIRCLE;
         trailNode->setFeature(trailFeature);
     }
-
-    // as we have updated our position, update the connection graph too.
-    // FIXME make this optional if instance returns NULL
-    ChannelController::getInstance()->updateConnectionGraph();
 
     // update the position on the 2D canvas, too
     getDisplayString().setTagArg("p", 0, x);
@@ -158,8 +144,15 @@ void MobileNode::handleMessage(cMessage *msg)
     // update the node position
     move();
 
-    // synchronize the OSG node positions to the module position
-    refreshVisuals();
+    // update the trail data based on the new position
+    if (trailNode) {
+        // store the new position to be able to create a track later
+        trail.push_back(osg::Vec3d(getLongitude(), getLatitude(), 0));
+
+        // if trail is at max length, remove the oldest point to keep it at "trailLength"
+        if (trail.size() > trailLength)
+            trail.erase(trail.begin());
+    }
 
     // schedule next movement
     scheduleAt(simTime() + timeStep, msg);

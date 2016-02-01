@@ -39,8 +39,6 @@ OsgEarthScene::~OsgEarthScene()
 
 void OsgEarthScene::initialize()
 {
-    timeStep = par("timeStep");
-
     auto mapNode = dynamic_cast<osgEarth::MapNode*>(osgDB::readNodeFile(par("scene")));
     if (!mapNode)
         throw cRuntimeError("Could not read scene file \"%s\"", par("scene").stringValue());
@@ -52,6 +50,8 @@ void OsgEarthScene::initialize()
     // set up viewer
     builtinOsgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);
     builtinOsgCanvas->setClearColor(cOsgCanvas::Color("black"));
+    builtinOsgCanvas->setZNear(100000);
+    builtinOsgCanvas->setZFar(1000000000);
 
     earthRotator = new osg::PositionAttitudeTransform();
     earthRotator->addChild(mapNode);
@@ -68,9 +68,6 @@ void OsgEarthScene::initialize()
     mapNode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
     builtinOsgCanvas->setScene(scene);
-
-    cMessage *timer = new cMessage("move");
-    scheduleAt(0, timer);
 }
 
 OsgEarthScene *OsgEarthScene::getInstance()
@@ -80,13 +77,9 @@ OsgEarthScene *OsgEarthScene::getInstance()
     return instance;
 }
 
-void OsgEarthScene::handleMessage(cMessage *msg)
+void OsgEarthScene::refreshDisplay() const
 {
     double angle = simTime().inUnit(SIMTIME_S) / 60.0 / 60 / 24 * 2 * M_PI;
     earthRotator->setAttitude(osg::Quat(angle, osg::Vec3d(0, 0, 1)));
-
-    ChannelController::getInstance()->updateConnectionGraph();
-    scheduleAt(simTime() + SimTime(timeStep, SIMTIME_S), msg);
 }
-
 #endif // WITH_OSG

@@ -27,11 +27,11 @@ using namespace omnetpp;
 class IMobileNode
 {
   public:
-    virtual double getX() = 0;
-    virtual double getY() = 0;
-    virtual double getLatitude() = 0;
-    virtual double getLongitude() = 0;
-    virtual double getTxRange() = 0;
+    virtual double getX() const  = 0;
+    virtual double getY() const  = 0;
+    virtual double getLatitude() const  = 0;
+    virtual double getLongitude() const = 0;
+    virtual double getTxRange() const  = 0;
 };
 
 /**
@@ -70,17 +70,17 @@ class MobileNode : public cSimpleModule, public IMobileNode
     MobileNode();
     virtual ~MobileNode();
 
-    double getX() override { return x; }
-    double getY() override { return y; }
-    double getLatitude() override { return OsgEarthScene::getInstance()->toLatitude(y); }
-    double getLongitude() override { return OsgEarthScene::getInstance()->toLongitude(x); }
-    double getTxRange() override { return txRange; }
+    double getX() const override { return x; }
+    double getY() const override { return y; }
+    double getLatitude() const override { return OsgEarthScene::getInstance()->toLatitude(y); }
+    double getLongitude() const override { return OsgEarthScene::getInstance()->toLongitude(x); }
+    double getTxRange() const override { return txRange; }
 
   protected:
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override { return 2; }
     virtual void handleMessage(cMessage *msg) override;
-    virtual void refreshVisuals();
+    virtual void refreshDisplay() const override;
     virtual void move() = 0;
 };
 

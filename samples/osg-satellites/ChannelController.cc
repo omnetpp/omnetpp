@@ -113,7 +113,7 @@ void ChannelController::addSatellite(Satellite *p)
 {
     if (findSatellite(p) == -1)
         satellites.push_back(p);
-    updateConnectionGraph();
+    refreshDisplay();
 }
 
 void ChannelController::removeSatellite(Satellite *p)
@@ -128,7 +128,7 @@ void ChannelController::addGroundStation(GroundStation *p)
 {
     if (findGroundStation(p) == -1)
         stations.push_back(p);
-    updateConnectionGraph();
+    refreshDisplay();
 }
 
 void ChannelController::removeGroundStation(GroundStation *p)
@@ -146,9 +146,9 @@ void ChannelController::initialize(int stage)
         satToSatWidth = par("satToSatWidth").doubleValue();
         satToGroundColor = par("satToGroundColor").stringValue();
         satToGroundWidth = par("satToGroundWidth").doubleValue();
+        connections = new osg::Geode();
         break;
     case 1:
-        connections = new osg::Geode();
         scene = OsgEarthScene::getInstance()->getScene()->asGroup();
         scene->addChild(connections);
         break;
@@ -164,7 +164,7 @@ void ChannelController::initialize(int stage)
     }
 }
 
-void ChannelController::updateConnectionGraph()
+void ChannelController::refreshDisplay() const
 {
     connections->removeDrawables(0, connections->getNumDrawables());
 

@@ -88,7 +88,7 @@ void ChannelController::initialize(int stage)
     }
 }
 
-void ChannelController::updateConnectionGraph()
+void ChannelController::refreshDisplay() const
 {
     if (!showConnections)
         return;

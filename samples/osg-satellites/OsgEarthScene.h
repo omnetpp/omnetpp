@@ -22,7 +22,6 @@ using namespace omnetpp;
 class OsgEarthScene : public cSimpleModule
 {
   protected:
-    double timeStep = 60; // for earth rotation
     static OsgEarthScene *instance;
     osg::ref_ptr<osg::Node> scene;
     osg::PositionAttitudeTransform *earthRotator = nullptr;
@@ -35,7 +34,7 @@ class OsgEarthScene : public cSimpleModule
     virtual osg::Node *getScene() { return scene; }
   protected:
     virtual void initialize() override;
-    virtual void handleMessage(cMessage *msg) override;
+    virtual void refreshDisplay() const override;
 };
 
 #endif
