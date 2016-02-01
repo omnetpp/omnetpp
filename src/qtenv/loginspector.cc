@@ -117,6 +117,10 @@ void LogInspector::onFontChanged()
     textWidget->setFont(getQtenv()->getLogFont());
 }
 
+const QString LogInspector::PREF_COLUMNWIDTHS = "columnwidths";
+const QString LogInspector::PREF_MODE = "mode";
+const QString LogInspector::PREF_SAVE_FILENAME = "savefilename";
+
 QToolBar *LogInspector::createToolbar(bool isTopLevel)
 {
     QToolBar *toolBar = new QToolBar();
@@ -212,17 +216,24 @@ void LogInspector::setMode(Mode m) {
     if (mode == MESSAGES) {
         restoreColumnWidths();
     }
+
+    setPref(PREF_MODE, mode);
 }
 
 void LogInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
-    setMode(getMode());
+    setMode((Mode)getPref(PREF_MODE, getMode()).toInt());
 }
 
 cComponent *LogInspector::getInspectedObject()
 {
     return static_cast<cComponent*>(object);
+}
+
+QSize LogInspector::sizeHint() const
+{
+    return QSize(700, 300);
 }
 
 void LogInspector::runUntil()
@@ -308,19 +319,17 @@ void LogInspector::saveColumnWidths() {
     auto widths = textWidget->getColumnWidths();
     if (!widths.isEmpty() && std::all_of(widths.begin(), widths.end(),
                                          [](const QVariant &v){ return v.isValid(); } )) {
-        getQtenv()->setPref("loginspector_columnwidths", widths);
+        setPref(PREF_COLUMNWIDTHS, widths);
     }
 }
 
 void LogInspector::restoreColumnWidths() {
-    auto widths = getQtenv()->getPref("loginspector_columnwidths");
-    if (widths.isValid())
-        textWidget->setColumnWidths(widths.toList());
+        textWidget->setColumnWidths(getPref(PREF_COLUMNWIDTHS, QList<QVariant>()).toList());
 }
 
 void LogInspector::saveContent()
 {
-    QString fileName = getQtenv()->getPref("log-save-filename", "omnetpp.out").value<QString>();
+    QString fileName = getPref(PREF_SAVE_FILENAME, "omnetpp.out").toString();
     fileName = QFileDialog::getSaveFileName(this, tr("Save Log Window Contents"), "/home/jana/" + fileName,
                                                     tr("Log files (*.out);;All files (*)"));
 
@@ -336,7 +345,7 @@ void LogInspector::saveContent()
         out << textWidget->getContentProvider()->getLineText(i);
 
     file.close();
-    getQtenv()->setPref("log-save-filename", fileName.split(QDir::separator()).last());
+    setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());
 }
 
 } // namespace qtenv

@@ -100,7 +100,7 @@ public:
         else return QSize(0,0);
     }
 
-    void setGeometry(const QRect &rect) {
+    void setGeometry(const QRect &rect) override {
         if (child)
             child->setGeometry(rect); // margin?
         if (toolbar) {
@@ -130,6 +130,10 @@ class QTENV_API Inspector : public QWidget
 {
    Q_OBJECT
 
+      // The first setObject will set this to false.
+      // Needed to perform one-off initializations.
+      bool isNew = true;
+
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
       cObject *object;        // the inspected object or nullptr if inspector is empty
@@ -143,12 +147,21 @@ class QTENV_API Inspector : public QWidget
       QAction *goUpAction = nullptr;
       QAction *findObjects = nullptr;
 
+      static const QString PREF_GEOM;
+
+      QString getFullPrefKey(const QString &pref);
+      QVariant getPref(const QString &pref, const QVariant &defaultValue);
+      void setPref(const QString &pref, const QVariant &value);
+
    protected:
       virtual void refreshTitle();
 
       virtual void doSetObject(cObject *obj);
       virtual void removeFromToHistory(cObject *obj);
+      // override this to perform any initialization after the first setObject()
+      virtual void firstObjectSet(cObject *obj);
 
+      QSize sizeHint() const override;
       void closeEvent(QCloseEvent *) override;
 
       void addTopLevelToolBarActions(QToolBar *toolbar);
@@ -178,10 +191,7 @@ class QTENV_API Inspector : public QWidget
       virtual const char *getClassName() const;
       virtual bool supportsObject(cObject *object) const;
 
-      static std::string makeWindowName();
-
       virtual int getType() const {return type;}
-      virtual const char *getWindowName() const {return "";} //TODO obsolete, remove! returned inspector's Tk widget
       virtual bool isToplevel() const {return isToplevelWindow;}
 
       virtual cObject *getObject() const {return object;}

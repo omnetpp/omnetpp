@@ -50,6 +50,10 @@ class QTENV_API LogInspector : public Inspector
       enum Mode {LOG, MESSAGES};
 
    protected:
+      static const QString PREF_COLUMNWIDTHS;
+      static const QString PREF_MODE;
+      static const QString PREF_SAVE_FILENAME;
+
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
       TextViewerWidget *textWidget;
@@ -66,6 +70,8 @@ class QTENV_API LogInspector : public Inspector
 
       QAction *toMessagesModeAction;
       QAction *toLogModeAction;
+
+      QSize sizeHint() const override;
 
 signals:
       void selectionChanged(cObject*);

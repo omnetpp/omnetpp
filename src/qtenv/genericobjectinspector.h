@@ -36,6 +36,7 @@ class QTENV_API GenericObjectInspector : public Inspector
 
     // The default mode for these types should be CHILDREN
     static const std::vector<std::string> containerTypes;
+    static const QString PREF_MODE;
 
 public:
     enum Mode {
@@ -51,7 +52,9 @@ protected:
       GenericObjectTreeModel *model = nullptr;
 
       void mousePressEvent(QMouseEvent *) override;
+      void closeEvent(QCloseEvent *event) override;
       void addModeActions(QToolBar *toolbar);
+      void recreateModel();
 
       Mode mode = GROUPED;
       QAction *toGroupedModeAction;

@@ -76,6 +76,14 @@ class ModuleInspectorFactory : public InspectorFactory
 
 Register_InspectorFactory(ModuleInspectorFactory);
 
+const QString ModuleInspector::PREF_MODE = "mode";
+const QString ModuleInspector::PREF_CENTER = "center";
+const QString ModuleInspector::PREF_ZOOMFACTOR = "zoomfactor";
+const QString ModuleInspector::PREF_ZOOMBYFACTOR = "zoombyfactor";
+const QString ModuleInspector::PREF_ICONSCALE = "iconscale";
+const QString ModuleInspector::PREF_SHOWLABELS = "showlabels";
+const QString ModuleInspector::PREF_SHOWARROWHEADS = "showarrowheads";
+
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
     switchToOsgViewAction = nullptr;
@@ -116,6 +124,7 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(canvasViewer, SIGNAL(forward()), this, SLOT(goForward()));
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
+    connect(canvasViewer, SIGNAL(dragged(QPointF)), this, SLOT(onViewerDragged(QPointF)));
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
@@ -205,7 +214,6 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     return toolbar;
 }
 
-
 void ModuleInspector::doSetObject(cObject *obj)
 {
     if (obj == object)
@@ -222,21 +230,11 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     if (object) {
         canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
-        // TODO
-        //    ModuleInspector:recallPreferences $insp
-
         try {
             canvasViewer->relayoutAndRedrawAll();
 
-            // XXX TODO this is the recallPreferences part from above, but there might be a prettier solution
-            QString objName = object->getFullName();
-            QVariant zoomFactorVariant = getQtenv()->getPref(objName + ":" + INSP_DEFAULT + ":zoomfactor");
-            double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
-            canvasViewer->setZoomFactor(zoomFactor);
-
-            QVariant imageSizeVariant = getQtenv()->getPref(objName + ":" + INSP_DEFAULT + ":imagesizefactor");
-            double imageSizeFactor = imageSizeVariant.isValid() ? imageSizeVariant.value<double>() : 1;
-            canvasViewer->setImageSizeFactor(imageSizeFactor);
+            canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
+            canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -249,9 +247,15 @@ void ModuleInspector::doSetObject(cObject *obj)
 #ifdef WITH_OSG
     cOsgCanvas *osgCanvas = getOsgCanvas();
     setOsgCanvas(osgCanvas);
-#endif
 
-    canvasViewer->recalcSceneRect(true);
+    bool enabled = ((getPref(PREF_MODE, 1).toInt() == 1));
+    if (osgCanvas != nullptr && enabled)
+        switchToOsgView();
+    else
+        switchToCanvasView();
+#else
+    switchToCanvasView();
+#endif
 }
 
 #ifdef WITH_OSG
@@ -265,15 +269,14 @@ cOsgCanvas *ModuleInspector::getOsgCanvas()
 void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
 {
     osgViewer->setOsgCanvas(osgCanvas);
-
     switchToOsgViewAction->setEnabled(osgCanvas != nullptr);
-
-    if (osgCanvas != nullptr)
-        switchToOsgView();
-    else
-        switchToCanvasView();
 }
 #endif // WITH_OSG
+
+QSize ModuleInspector::sizeHint() const
+{
+    return QSize(600, 500);
+}
 
 void ModuleInspector::updateToolbarLayout() {
     if (!toolbarLayout)
@@ -388,16 +391,12 @@ void ModuleInspector::relayout()
 
 void ModuleInspector::zoomIn(int x, int y)
 {
-    QVariant variant = getQtenv()->getPref("zoomby-factor");
-    double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
-    zoomBy(zoomByFactor, true, x, y);
+    zoomBy(getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble(), true, x, y);
 }
 
 void ModuleInspector::zoomOut(int x, int y)
 {
-    QVariant variant = getQtenv()->getPref("zoomby-factor");
-    double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
-    zoomBy(1.0 / zoomByFactor, true, x, y);
+    zoomBy(1.0 / getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble(), true, x, y);
 }
 
 void ModuleInspector::increaseIconSize() {
@@ -413,10 +412,7 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
     if (!object)
         return;
 
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
-    QVariant variant = getQtenv()->getPref(prefName);
-    double zoomFactor = variant.isValid() ? variant.value<double>() : 1;
+    double zoomFactor = getZoomFactor();
 
     if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
     {
@@ -433,23 +429,35 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         double newZoomFactor = zoomFactor * mult;
 
         //snap to true (note: this is not desirable when zoom is set programmatically to fit network into window)
-        /*if(snaptoone)
-        { // this code constantly kept the factor at 1...
+        if(snaptoone) {
             double m = mult < 1 ? 1.0/mult : mult;
             double a = 1 - 0.9*(1 - 1.0/m);
             double b = 1 + 0.9*(m - 1);
-            if(zoomFactor > a && zoomFactor < b)
+            if(newZoomFactor > a && newZoomFactor < b)
                 newZoomFactor = 1;
-        }*/
+        }
 
-        getQtenv()->setPref(prefName, newZoomFactor);
+
         // so animations will not wander around at the old module positions
         getQtenv()->getAnimator()->clearInspector(this);
         canvasViewer->setZoomFactor(newZoomFactor);
         getQtenv()->getAnimator()->redrawMessages();
 
-        canvasViewer->centerOn(oldModulePos * newZoomFactor - QPointF(x - cx, y - cy));
+        auto center = oldModulePos * newZoomFactor - QPointF(x - cx, y - cy);
+        canvasViewer->centerOn(center);
+
+        setPref(PREF_ZOOMFACTOR, newZoomFactor);
+        setPref(PREF_CENTER, center.toPoint());
     }
+}
+
+void ModuleInspector::firstObjectSet(cObject *obj)
+{
+    Inspector::firstObjectSet(obj);
+#ifdef WITH_OSG
+    if (getOsgCanvas())
+        resetOsgView();
+#endif
 }
 
 void ModuleInspector::resetOsgView()
@@ -460,17 +468,11 @@ void ModuleInspector::resetOsgView()
 }
 
 double ModuleInspector::getZoomFactor() {
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":zoomfactor";
-    QVariant variant = getQtenv()->getPref(prefName);
-    return variant.isValid() ? variant.value<double>() : 1;
+    return getPref(PREF_ZOOMFACTOR, 1).toDouble();
 }
 
 double ModuleInspector::getImageSizeFactor() {
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
-    QVariant variant = getQtenv()->getPref(prefName);
-    return variant.isValid() ? variant.value<double>() : 1;
+    return getPref(PREF_ICONSCALE, 1).toDouble();
 }
 
 GraphicsLayer *ModuleInspector::getAnimationLayer()
@@ -627,6 +629,10 @@ void ModuleInspector::doubleClick(QMouseEvent *event) {
     }
 }
 
+void ModuleInspector::onViewerDragged(QPointF center) {
+    setPref(PREF_CENTER, center.toPoint());
+}
+
 void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)
 {
     cObject *object = nullptr;
@@ -653,11 +659,8 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
 
     QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
 
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
-    bool showLabels = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
-    prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
-    bool showArrowHeads = getQtenv()->getPref(prefName, QVariant::fromValue(true)).value<bool>();
+    bool showLabels = getPref(PREF_SHOWLABELS, true).toBool();
+    bool showArrowHeads = getPref(PREF_SHOWARROWHEADS, true).toBool();
 
     menu->addSeparator();
     menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
@@ -776,12 +779,7 @@ void ModuleInspector::toggleLabels()
     if (!object)
         return;
 
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":showlabels";
-    QVariant variant = getQtenv()->getPref(prefName);
-    bool showLabels = variant.isValid() ? variant.value<bool>() : false;
-
-    getQtenv()->setPref(prefName, !showLabels);
+    setPref(PREF_SHOWLABELS, !getPref(PREF_SHOWLABELS, true).toBool());
     redraw();
 }
 
@@ -790,12 +788,7 @@ void ModuleInspector::toggleArrowheads()
     if (!object)
         return;
 
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":showarrowheads";
-    QVariant variant = getQtenv()->getPref(prefName);
-    bool showArrowheads = variant.isValid() ? variant.value<bool>() : false;
-
-    getQtenv()->setPref(prefName, !showArrowheads);
+    setPref(PREF_SHOWARROWHEADS, !getPref(PREF_SHOWARROWHEADS, true).toBool());
     redraw();
 }
 
@@ -803,14 +796,12 @@ void ModuleInspector::zoomIconsBy(double mult) {
     if (!object)
         return;
 
-    QString objName = object->getFullName();
-    QString prefName = objName + ":" + INSP_DEFAULT + ":imagesizefactor";
-    QVariant variant = getQtenv()->getPref(prefName);
-    double imageSizeFactor = variant.isValid() ? variant.value<double>() : 1;
+    double imageSizeFactor = getPref(PREF_ICONSCALE, 1.0).toDouble();
+
     if((mult < 1 && imageSizeFactor>0.1) || (mult > 1 && imageSizeFactor < 5))
     {
         double newImageSizeFactor = imageSizeFactor * mult;
-        getQtenv()->setPref(prefName, newImageSizeFactor);
+        setPref(PREF_ICONSCALE, newImageSizeFactor);
         canvasViewer->setImageSizeFactor(newImageSizeFactor);
         getQtenv()->getAnimator()->redrawMessages();
     }
@@ -830,6 +821,8 @@ void ModuleInspector::switchToOsgView()
     canvasZoomInAction->setVisible(false);
     canvasZoomOutAction->setVisible(false);
     resetOsgViewAction->setVisible(true);
+
+    setPref(PREF_MODE, 1);
 #endif
 }
 
@@ -846,6 +839,17 @@ void ModuleInspector::switchToCanvasView()
     canvasZoomInAction->setVisible(true);
     canvasZoomOutAction->setVisible(true);
     resetOsgViewAction->setVisible(false);
+
+    QPointF center = getPref(PREF_CENTER, QPointF()).toPointF();
+
+    // if couldn't read a valid center pref, aligning the top left corners
+    // (but if yes, it still has to be called, just with false)
+    canvasViewer->recalcSceneRect(center.isNull());
+    //otherwise restoring the viewport
+    if (!center.isNull())
+        canvasViewer->centerOn(center);
+
+    setPref(PREF_MODE, 0);
 }
 
 } // namespace qtenv

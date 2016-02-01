@@ -77,6 +77,9 @@ public:
     void storeGeometry();
     void restoreGeometry();
 
+    QSize sizeHint() const override;
+    bool event(QEvent *event) override;
+
     static int modeToRunMode(eMode mode);
     static eMode runModeToMode(int runMode);
 
@@ -174,7 +177,7 @@ private:
     void copyToClipboard(cObject *object, int what);
 
     void saveSplitter(QString prefName, QSplitter *splitter);
-    void restoreSplitter(QString prefName, QSplitter *splitter);
+    void restoreSplitter(QString prefName, QSplitter *splitter, const QList<int> &defaultSizes = QList<int>());
 
     void reflectRecordEventlog();
 

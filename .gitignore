@@ -56,6 +56,8 @@ Thumbs.db
 /src/guienv/registernatives.cc
 /src/guienv/simkernel_wrap.cxx
 /src/tkenv/tclcode.cc
+/src/tkenv/tclcode.inc
+/src/qtenv/qtenv.pro.user
 /src/utils/opp_configfilepath.cmd
 /src/nedxml/nedelements.*
 /src/nedxml/nedvalidator.*

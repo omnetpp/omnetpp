@@ -29,6 +29,7 @@
 #include "common/stringutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
+#include "qtutil.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"
@@ -78,7 +79,7 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     isToplevelWindow = isTopLevel;
 
     if (isTopLevel) {
-        show();
+        //show();
     } else {
         auto layout = new QGridLayout(parent);
         parent->setLayout(layout);
@@ -89,6 +90,8 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
 
 Inspector::~Inspector()
 {
+    if (isToplevelWindow)
+        setPref(PREF_GEOM, geometry());
 }
 
 const char *Inspector::getClassName() const
@@ -99,12 +102,6 @@ const char *Inspector::getClassName() const
 bool Inspector::supportsObject(cObject *object) const
 {
     return factory->supportsObject(object);
-}
-
-std::string Inspector::makeWindowName()
-{
-    static int counter = 0;
-    return opp_stringf(".inspector%d", counter++);
 }
 
 void Inspector::doSetObject(cObject *obj)
@@ -147,6 +144,23 @@ void Inspector::refresh()
     }
 }
 
+const QString Inspector::PREF_GEOM = "geom";
+
+QString Inspector::getFullPrefKey(const QString &pref)
+{
+    return "Inspector_" + QString::number(type) + "/" + pref + "_" + (object ? getObjectShortTypeName(object) : "NULL");
+}
+
+QVariant Inspector::getPref(const QString &pref, const QVariant &defaultValue)
+{
+    return getQtenv()->getPref(getFullPrefKey(pref), defaultValue);
+}
+
+void Inspector::setPref(const QString &pref, const QVariant &value)
+{
+    getQtenv()->setPref(getFullPrefKey(pref), value);
+}
+
 void Inspector::refreshTitle()
 {
     // update window title (only if changed -- always updating the title produces
@@ -186,6 +200,11 @@ void Inspector::setObject(cObject *obj)
             historyForward.clear();
         }
         doSetObject(obj);
+        if (obj && isNew) {
+            firstObjectSet(obj);
+            showWindow();
+            isNew = false;
+        }
         refresh();
     }
 }
@@ -200,6 +219,22 @@ void Inspector::removeFromToHistory(cObject *obj)
 {
     removeFromVector(historyBack, obj);
     removeFromVector(historyForward, obj);
+}
+
+void Inspector::firstObjectSet(cObject *obj)
+{
+    if (isToplevelWindow) {
+       auto geom = getPref(PREF_GEOM, QRect()).toRect();
+
+       adjustSize();
+       if (!geom.isNull()) {
+           setGeometry(geom);
+       }
+    }
+}
+
+QSize Inspector::sizeHint() const {
+    return QSize(400, 300);
 }
 
 bool Inspector::canGoForward()
@@ -260,6 +295,8 @@ void Inspector::goUpInto() //XXX weird name
 }
 
 void Inspector::closeEvent(QCloseEvent *) {
+    if (isToplevelWindow)
+        setPref(PREF_GEOM, geometry());
     getQtenv()->deleteInspector(this);
 }
 

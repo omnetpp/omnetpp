@@ -117,6 +117,9 @@ signals:
     void forward();
     void doubleClick(QMouseEvent*);
     void contextMenuRequested(QContextMenuEvent*);
+    // the parameter will be the center of the view rectangle
+    // (in scene coords, not in compound module coords, so scales with zoom)
+    void dragged(QPointF);
 
 public slots:
     void relayoutAndRedrawAll();

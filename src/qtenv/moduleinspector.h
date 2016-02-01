@@ -59,6 +59,7 @@ class QTENV_API ModuleInspector : public Inspector
 
       void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);
+      void onViewerDragged(QPointF center);
       void createContextMenu(QContextMenuEvent *event);
       void onObjectsPicked(const std::vector<cObject*>&);
 
@@ -78,6 +79,14 @@ class QTENV_API ModuleInspector : public Inspector
       void print();
 
    protected:
+      static const QString PREF_MODE; // 0 is 2D, 1 is OSG
+      static const QString PREF_CENTER; // of the viewport in the 2D scene
+      static const QString PREF_ZOOMFACTOR;
+      static const QString PREF_ZOOMBYFACTOR;
+      static const QString PREF_ICONSCALE;
+      static const QString PREF_SHOWLABELS;
+      static const QString PREF_SHOWARROWHEADS;
+
       const int toolbarSpacing = 10; // from the edges, in pixels, the scrollbar size will be added to this
 
       QAction *switchToOsgViewAction;
@@ -111,9 +120,12 @@ class QTENV_API ModuleInspector : public Inspector
       cOsgCanvas *getOsgCanvas();
       void setOsgCanvas(cOsgCanvas *osgCanvas);
 #endif
+
+      QSize sizeHint() const override;
       void wheelEvent(QWheelEvent *event) override;
       void resizeEvent(QResizeEvent *event) override;
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
+      void firstObjectSet(cObject *obj) override;
 
       void renderToPrinter(QPrinter &printer);
 

@@ -39,16 +39,11 @@ namespace qtenv {
 struct FigureRenderingHints
 {
         double zoom;
-        double iconMagnification;
         std::string defaultFont;
         int defaultFontSize;
-        bool showSubmoduleLabels;
-        bool showArrowheads;
-        bool showMessageLabels;
 
         FigureRenderingHints() :
-            zoom(1), iconMagnification(1), defaultFont("Arial"), defaultFontSize(12),
-            showSubmoduleLabels(true), showArrowheads(true), showMessageLabels(true) {}
+            zoom(1), defaultFont("Arial"), defaultFontSize(12){}
 };
 
 class FigureRenderer : public cObject // for because Register_Class() takes cObject*

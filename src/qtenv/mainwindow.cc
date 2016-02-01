@@ -690,14 +690,19 @@ void MainWindow::storeGeometry()
     getQtenv()->setPref("display-statusdetails", showStatusDetails);
 }
 
-void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter)
+void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QList<int> &defaultSizes)
 {
-    QList<QVariant> sizes;
-    sizes = env->getPref(prefName).value<QList<QVariant >>();
+    QList<QVariant> sizes = env->getPref(prefName).value<QList<QVariant >>();
+    QList<int> intSizes;
+
     if (sizes.size() >= 2) {
-        QList<int> intSizes;
         intSizes.append(sizes[0].toInt());
         intSizes.append(sizes[1].toInt());
+    } else {
+        intSizes = defaultSizes;
+    }
+
+    if (intSizes.size() >= 2) {
         splitter->setSizes(intSizes);
     }
 }
@@ -715,10 +720,13 @@ void MainWindow::restoreGeometry()
     sizes.append(timeLineHeight);
     sizes.append(ui->mainSplitter->height() - timeLineHeight);
     defaultTimeLineSize = sizes;
-    ui->mainSplitter->setSizes(sizes);
 
-    restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter);
-    restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3);
+    QList<int> defaultSizes;
+    defaultSizes.append(ui->splitter_3->width() / 3);
+    defaultSizes.append(ui->splitter_3->width() / 3 * 2);
+
+    restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter, sizes);
+    restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3, defaultSizes);
     restoreSplitter("mainwin-left-splittersizes", ui->splitter);
 
     QVariant orient = env->getPref("mainwin-right-splitter-orientation");
@@ -726,7 +734,7 @@ void MainWindow::restoreGeometry()
     if (orient == "horiz") {
         ui->splitter_2->setOrientation(Qt::Horizontal);
         ui->actionHorizontalLayout->setChecked(true);
-        restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
+        restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2, defaultSizes);
     } else if (orient == "vert") {
         ui->splitter_2->setOrientation(Qt::Vertical);
         ui->actionVerticalLayout->setChecked(true);
@@ -744,6 +752,19 @@ void MainWindow::restoreGeometry()
     ui->labelDisplay1->setVisible(showStatusDetails);
     ui->labelDisplay2->setVisible(showStatusDetails);
     ui->labelDisplay3->setVisible(showStatusDetails);
+}
+
+QSize MainWindow::sizeHint() const
+{
+    return QSize(1200, 600);
+}
+
+bool MainWindow::event(QEvent *event)
+{
+    if (event->type() == QEvent::Polish || event->type() == QEvent::PolishRequest) {
+        restoreGeometry();
+    }
+    return QMainWindow::event(event);
 }
 
 int MainWindow::modeToRunMode(eMode mode)

@@ -405,7 +405,6 @@ void Qtenv::doRun()
         }
 
         mainWindow = new MainWindow(this);
-        mainWindow->show();
 
         initFonts();
 
@@ -417,7 +416,7 @@ void Qtenv::doRun()
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
         mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
 
-        mainWindow->restoreGeometry();
+        mainWindow->show();
 
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject*)), mainLogView, SLOT(setObject(cObject*)));
 
@@ -884,7 +883,12 @@ void Qtenv::newNetwork(const char *networkname)
         displayException(e);
         simulationState = SIM_ERROR;
     }
+
     // update GUI
+    auto module = getSimulation()->getSystemModule();
+    mainNetworkView->setObject(module);
+    mainInspector->setObject(module);
+
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
@@ -926,7 +930,12 @@ void Qtenv::newRun(const char *configname, int runnumber)
         displayException(e);
         simulationState = SIM_ERROR;
     }
+
     // update GUI
+    auto module = getSimulation()->getSystemModule();
+    mainNetworkView->setObject(module);
+    mainInspector->setObject(module);
+
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
@@ -940,9 +949,6 @@ void Qtenv::setupNetwork(cModuleType *network)
 
     EnvirBase::setupNetwork(network);
 
-    mainNetworkView->doSetObject(getSimulation()->getSystemModule());
-    mainLogView->doSetObject(getSimulation()->getSystemModule());
-    mainInspector->doSetObject(getSimulation()->getSystemModule());
 
     // collapsing all nodes in the object tree, because even if a new network is
     // loaded, there is a chance that some objects will be on the same place
@@ -1974,7 +1980,7 @@ void Qtenv::setPref(const QString &key, const QVariant &value) {
 
 QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
     QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
-    return settings->contains(key) ? settings->value(key) : defaultValue;
+    return settings->value(key, defaultValue);
 }
 
 void Qtenv::runSimulationLocal(int runMode, cObject *object, Inspector *insp)

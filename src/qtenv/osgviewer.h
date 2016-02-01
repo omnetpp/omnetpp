@@ -73,13 +73,15 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
   protected slots:
     void setCameraManipulator(QAction *sender); // will get the type from the QAction data
 
+  public slots:
+    void applyViewerHints();
+
   public:
     OsgViewer(QWidget *parent=nullptr);
     virtual ~OsgViewer();
     void setOsgCanvas(cOsgCanvas *canvas);
     cOsgCanvas *getOsgCanvas() const {return osgCanvas;}
     void refresh();
-    void applyViewerHints();
     void resetViewer();
 
   signals:

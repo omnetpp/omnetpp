@@ -72,6 +72,8 @@ const std::vector<std::string> GenericObjectInspector::containerTypes =
   {"cArray", "cQueue", "cFutureEventSet", "cSimpleModule",
    "cModule", "cChannel", "cRegistrationList", "cCanvas"};
 
+const QString GenericObjectInspector::PREF_MODE = "mode";
+
 GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f) {
     treeView = new QTreeView(this);
     treeView->setHeaderHidden(true);
@@ -128,12 +130,33 @@ void GenericObjectInspector::addModeActions(QToolBar *toolbar) {
     toInheritanceModeAction->setCheckable(true);
 }
 
+void GenericObjectInspector::recreateModel()
+{
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(object, mode == GROUPED, mode == INHERITANCE, mode == CHILDREN, this);
+    treeView->setModel(newModel);
+    treeView->reset();
+
+    // expanding the top level item
+    treeView->expand(newModel->index(0, 0, QModelIndex()));
+
+    delete model;
+    model = newModel;
+
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
+}
+
 void GenericObjectInspector::mousePressEvent(QMouseEvent *event) {
     switch (event->button()) {
     case Qt::XButton1: goBack();      break;
     case Qt::XButton2: goForward();   break;
     default: /* shut up, compiler! */ break;
     }
+}
+
+void GenericObjectInspector::closeEvent(QCloseEvent *event)
+{
+    Inspector::closeEvent(event);
+    setPref(PREF_MODE, mode);
 }
 
 void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
@@ -173,31 +196,24 @@ void GenericObjectInspector::setMode(Mode mode)
     case INHERITANCE: toInheritanceModeAction->setChecked(true);break;
     }
 
-    doSetObject(object);
+    recreateModel();
+    setPref(PREF_MODE, mode);
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj) {
 
-    if (obj
-         && obj != getObject()
-         && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))
-         && mode != CHILDREN) {
-            setMode(CHILDREN);
-    }
-
     Inspector::doSetObject(obj);
 
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(obj, mode == GROUPED, mode == INHERITANCE, mode == CHILDREN, this);
-    treeView->setModel(newModel);
-    treeView->reset();
+    auto defaultMode = GROUPED;
 
-    // expanding the top level item
-    treeView->expand(newModel->index(0, 0, QModelIndex()));
+    if (obj
+         && obj != getObject()
+         && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))) {
+            defaultMode = CHILDREN;
+    }
 
-    delete model;
-    model = newModel;
-
-    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
+    // will recreate the model for the new object
+    setMode((Mode)getPref(PREF_MODE, defaultMode).toInt());
 }
 
 void GenericObjectInspector::refresh() {

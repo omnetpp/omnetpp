@@ -151,6 +151,7 @@ void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
     viewport()->setCursor(Qt::ArrowCursor);
+    emit dragged(mapToScene(viewport()->rect().center()));
 }
 
 void ModuleCanvasViewer::wheelEvent(QWheelEvent *event)
@@ -515,24 +516,9 @@ void ModuleCanvasViewer::refreshFigures()
 
 void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
-    QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
-    QVariant variant = getQtenv()->getPref(prefName);
-    hints->zoom = variant.isValid() ? variant.value<double>() : 1;
-
-    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":imagesizefactor";
-    variant = getQtenv()->getPref(prefName);
-    hints->iconMagnification = variant.isValid() ? variant.value<double>() : 1;
-
-    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showlabels";
-    variant = getQtenv()->getPref(prefName);
-    hints->showSubmoduleLabels = variant.isValid() ? variant.value<bool>() : true;
-
-    prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":showarrowheads";
-    variant = getQtenv()->getPref(prefName);
-    hints->showArrowheads = variant.isValid() ? variant.value<bool>() : false;
-
     hints->defaultFont = font.family().toStdString();
     hints->defaultFontSize = font.pixelSize();
+    hints->zoom = zoomFactor;
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!
