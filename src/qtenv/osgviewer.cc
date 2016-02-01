@@ -84,7 +84,7 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 auto objects = pick(view, ea);
                 Inspector *insp = dynamic_cast<Inspector*>(viewer->parentWidget()->parentWidget());
                 QMenu *menu;
-                if (!objects.empty()) {
+                if (!objects.empty() && insp && insp->supportsObject(objects.front())) {
                     menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), insp);
                     menu->addSeparator();
                 } else {
@@ -102,6 +102,14 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 event->setY((ea.getYmin()+ea.getYmax())*0.5);
                 if (view)
                     emit viewer->objectsPicked(pick(view, *event));
+            }
+            break;
+        case osgGA::GUIEventAdapter::DOUBLECLICK: {
+                auto objects = pick(view, ea);
+                Inspector *insp = dynamic_cast<Inspector*>(viewer->parentWidget()->parentWidget());
+                if (!objects.empty() && insp && insp->supportsObject(objects.front())) {
+                    insp->setObject(objects.front());
+                }
             }
             break;
         default:;

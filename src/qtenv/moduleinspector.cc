@@ -398,7 +398,6 @@ void ModuleInspector::zoomOut(int x, int y)
     QVariant variant = getQtenv()->getPref("zoomby-factor");
     double zoomByFactor = variant.isValid() ? variant.value<double>() : 1.3;
     zoomBy(1.0 / zoomByFactor, true, x, y);
-
 }
 
 void ModuleInspector::increaseIconSize() {
