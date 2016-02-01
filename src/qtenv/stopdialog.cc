@@ -70,6 +70,11 @@ void StopDialog::keyPressEvent(QKeyEvent *e)
     }
 }
 
+void StopDialog::closeEvent(QCloseEvent *event) {
+    getQtenv()->setStopSimulationFlag();
+    QDialog::closeEvent(event);
+}
+
 void StopDialog::show()
 {
     setFont(getQtenv()->getBoldFont());

@@ -42,6 +42,7 @@ public slots:
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
+    virtual void closeEvent(QCloseEvent *event);
 
 private:
     Ui::StopDialog *ui;
