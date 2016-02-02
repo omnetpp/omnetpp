@@ -2,58 +2,86 @@
                 THIRD PARTY SOFTWARE
 
 
-The Win32 binary distribution of OMNeT++/OMNEST contains several open
-source components which are covered by their own licenses. These components
-are listed below, together with their web sites where you can find more
-information and the source code.
+The OMNeT++/OMNEST distribution contains several open source components
+which are covered by their own licenses. These components are listed below,
+together with their web sites where you can find more information and the
+source code.
 
 We'd like to thank the open source community for developing and making
 these packages available. OMNeT++/OMNEST would not have been possible
 without them.
 
-
-Eclipse
-
-The OMNeT++/OMNEST IDE is based on the Eclipse Platform and additional
-platform features and plug-ins, distributed under the EPL (Eclipse Public
-License). http://www.eclipse.org.
-
-Tcl/Tk
-
-The Tkenv simulation execution environment is based on Tcl/Tk, an open-source
-script language and GUI toolkit, written by James Ousterhout and many others.
-Tcl/Tk is currently available from http://tcltk.sourceforge.net, under a
-BSD-like license.
-
-BLT
-
-BLT is an extension to the Tk toolkit, adding new widgets and miscellaneous
-commands. It does not require any patching of the Tcl or Tk source files.
-OMNeT++/OMNEST uses BLT mainly for its table (multi-column
-listbox) and tabbed notebook widgets. BLT is available from
-http://blt.sourceforge.net, and it is distributed under a BSD-like license.
+1. Simulations built with the OMNeT++/OMNEST runtime are using the following
+   *optional* open source components (i.e. it is possible to build a simulation
+   without them, but with reduced functionality.)
 
 LibXML2
+-------
+LibXML2 (xmlsoft.org) is an open-source XML parser, written by Daniel Veillard
+for the GNOME project. LibXML and ICONV (also a needed component) are distributed
+under the GNU Lesser General Public License (LGPL). http://www.gnu.org/licenses/
 
-LibXML2 is an open-source XML parser, written by Daniel Veillard for the GNOME
-project. The source is available from http://www.xmlsoft.org. OMNeT++/OMNEST
-is bundled with Win32 binaries maintained by Igor Zlatkovic, and currently
-available from http://www.zlatkovic.com. LibXML and ICONV (also a needed
-component) are distributed under the GNU Lesser General Public License (LGPL).
+Tcl/Tk
+------
+The Tkenv simulation execution environment is based on Tcl/Tk, an open-source
+script language and GUI toolkit, written by James Ousterhout and many others.
+Tcl/Tk is currently available from http://www.tcl.tk/, under a BSD-style
+open source license: Tcl/Tk license (http://www.tcl.tk/software/tcltk/license.html)
+
+Tkpath
+------
+SVG-like rendering for the TK canvas (http://wiki.tcl.tk/14545) is distributed
+under BSD License.
+
+Qt4
+---
+The Qtenv (www.qt.io) simulation execution environment is based on Qt version 4,
+an open-source cross platform widget toolkit distributed under LGPLv2.1 and LGPLv3.
+http://www.gnu.org/licenses/
+
+OpenSceneGraph
+--------------
+The OpenSceneGraph (openscenegraph.org) is an open source high performance 3D
+graphics toolkit, used by Qtenv to provide 3D visualization.
+
+OpenSceneGraph is distributed under the terms of the OpenSceneGraph Public License
+(OSGPL). The OpenSceneGraph Public License is based on the Lesser GNU Public
+License (LGPL) and includes the wxWidgets additions to LGPL which provide a
+clear statement that distribution with proprietary applications is accepted.
+http://www.openscenegraph.org/index.php/about/licensing
+
+osgEarth
+--------
+osgEarth (osgearth.org) is a C++ geospatial SDK and terrain engine distributed
+under the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation; version 2 of the License. http://www.gnu.org/licenses/
 
 
-The following components have been bundled with OMNeT++:
+2. The OMNeT++/OMNEST IDE is using the following open source components:
 
-MinGW and MSYS
+Eclipse
+-------
+The OMNeT++/OMNEST IDE is based on the Eclipse Platform and additional
+platform features and plug-ins, distributed under the EPL (Eclipse Public
+License). https://www.eclipse.org/org/documents/epl-v10.php
 
+Java Runtime Environment
+------------------------
+The IDE is using the Java Runtime Environment distributed under the
+GNU General Public License, version 2, with the Classpath Exception:
+http://openjdk.java.net/legal/gplv2+ce.html
+
+
+3. On Windows, the following components have been bundled with OMNeT++/OMNEST as
+   part of the compiler tool-chain:
+
+MinGW-w64 (required)
+---------
 A Windows port of gcc, and a minimal Unix-like environment in which typical
-makefiles can execute. License: GNU General Public License.
+makefiles can execute (mingw-w64.org). License: GNU General Public License.
+http://www.gnu.org/licenses/
 
-GIT
-
-A Windows port of the GIT version control system.
-License: GNU General Public License.
-
-WinPcap
-
-Windows Packet Capture Library.
+WinPcap (optional)
+-------
+Windows Packet Capture Library (www.winpcap.org) distributed under its own
+license: https://www.winpcap.org/misc/copyright.htm
