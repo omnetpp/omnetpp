@@ -158,15 +158,18 @@ enum SimulationLifecycleEventType
  * to cEnvir with its addLifecycleListener() method, and removed with
  * removeLifecycleListener().
  *
- * Simulation listeners are mainly intended for use by plug-in
- * objects extending the simulator's functionality: schedulers,
- * output vector/scalar managers, parallel simulation algorithms
- * and so on.
+ * Simulation lifecycle listeners are mainly intended for use by plug-in
+ * classes that extend the simulator's functionality: schedulers, output
+ * vector/scalar managers, parallel simulation algorithms and so on. The
+ * lifecycle of a such plug-in class is managed by \opp, so one can use
+ * their constructor to add the listener to cEnvir, and the destructor
+ * to remove it.
  *
  * Notifications always refer to the active simulation (see
  * cSimulation::getActiveSimulation()).
  *
- * Use the <tt>EXECUTE_ON_STARTUP(code)</tt> macro to automatically add a
+ * For standalone listeners that have no other way to be invoked, one can
+ * use the <tt>EXECUTE_ON_STARTUP(code)</tt> macro to automatically add a
  * listener when the program starts:
  *
  * <pre>

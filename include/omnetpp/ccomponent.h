@@ -989,6 +989,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * and false if it's running over Cmdenv.) Modules can examine this flag
      * to decide whether or not they need to bother with visualization, e.g.
      * dynamically update display strings or draw on canvases.
+     *
+     * This method delegates to cEnvir::isGUI().
      */
     bool hasGUI() const;
 

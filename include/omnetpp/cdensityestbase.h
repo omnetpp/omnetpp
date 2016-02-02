@@ -317,7 +317,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Returns the kth histogram cell boundary. Legal values for k are 0 through
      * getNumCells(), that is, there's one more basepoint than the number of cells.
      * getBasepoint(0) returns the lower bound of the first cell, and
-     * getBasepoint(getNumCells()) returns the upped bound of the last cell.
+     * getBasepoint(getNumCells()) returns the upper bound of the last cell.
      * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double getBasepoint(int k) const = 0;

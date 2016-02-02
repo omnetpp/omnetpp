@@ -41,7 +41,7 @@ namespace omnetpp {
 class SIM_API cEvent : public cOwnedObject
 {
     friend class cMessage;     // getArrivalTime()
-    friend class cEventHeap; // heapIndex
+    friend class cEventHeap;   // heapIndex
   private:
     simtime_t arrivalTime;     // time of delivery -- set internally
     short priority;            // priority -- used for scheduling events with equal arrival times

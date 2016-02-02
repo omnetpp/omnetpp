@@ -29,14 +29,25 @@ namespace omnetpp {
 
 /**
  * This class defines the interface for fingerprint calculators.
+ *
+ * @see cSimulation::getFingerprint()
+ * @ingroup EnvirExtensions
  */
-class SIM_API cFingerprint : public cObject
+class SIM_API cFingerprint : public cObject, noncopyable
 {
   public:
+    /** @name Constructor, destructor. */
+    //@{
     virtual ~cFingerprint() {}
+    //@}
 
+    /**
+     * Initialization.
+     */
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) = 0;
 
+    /** @name Updating the fingerprint value */
+    //@{
     virtual void addEvent(cEvent *event) = 0;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) = 0;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) = 0;
@@ -55,12 +66,26 @@ class SIM_API cFingerprint : public cObject
     virtual void addExtraData(unsigned long long data) = 0;
     virtual void addExtraData(double data) = 0;
     virtual void addExtraData(const char *data) = 0;
+    //@}
 
+    /**
+     * Compare computed fingerprint with the expected one, and throw
+     * error if it doesn't match.
+     */
     virtual bool checkFingerprint() const = 0;
 };
 
 #ifdef USE_OMNETPP4x_FINGERPRINTS
 
+/**
+ * Computes \opp 4.x compatible fingerprints. This class is only
+ * available when \opp was compiled with USE_OMNETPP4x_FINGERPRINTS
+ * defined. Note that USE_OMNETPP4x_FINGERPRINTS affects other parts
+ * of the \opp codebase as well (e.g. SimTime), not only the availability
+ * of this class.
+ *
+ * @ingroup EnvirExtensions
+ */
 class SIM_API cOmnetpp4xFingerprint : public cFingerprint
 {
   protected:
@@ -110,25 +135,23 @@ class SIM_API cOmnetpp4xFingerprint : public cFingerprint
  * The available ingredients are:
  *  - 'e' event number
  *  - 't' simulation time
- *
  *  - 'n' message (event) full name
  *  - 'c' message (event) class name
  *  - 'k' message kind
  *  - 'l' message bit length
  *  - 'o' message control info class name
  *  - 'd' message data (uses parsimPack() by default but can be overridden)
- *
  *  - 'i' module id
  *  - 'm' module full name
  *  - 'p' module full path
  *  - 'a' module class name
- *
  *  - 'r' random numbers drawn
  *  - 's' scalar results
  *  - 'z' statistic results
  *  - 'v' vector results
- *
  *  - 'x' extra data provided by modules
+ *
+ * @ingroup EnvirExtensions
  */
 class SIM_API cSingleFingerprint : public cFingerprint
 {
@@ -224,6 +247,8 @@ class SIM_API cSingleFingerprint : public cFingerprint
  * This class calculates multiple fingerprints simultaneously. The calculator
  * can be configured similarly to the cSingleFingerprint class, but in this case
  * each option is a comma separated list.
+ *
+ * @ingroup EnvirExtensions
  */
 class SIM_API cMultiFingerprint : public cFingerprint
 {
