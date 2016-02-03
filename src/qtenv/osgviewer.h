@@ -75,7 +75,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
 
   public:
     OsgViewer(QWidget *parent=nullptr);
-    virtual ~OsgViewer() {}
+    virtual ~OsgViewer();
     void setOsgCanvas(cOsgCanvas *canvas);
     cOsgCanvas *getOsgCanvas() const {return osgCanvas;}
     void refresh();

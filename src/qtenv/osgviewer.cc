@@ -191,6 +191,11 @@ OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
     toEarthManipulatorAction->setCheckable(true);
 }
 
+OsgViewer::~OsgViewer()
+{
+    removeView(view);
+}
+
 QWidget *OsgViewer::addViewWidget()
 {
     // create an OSG viewer (NOT part of the Qt widget tree!)
