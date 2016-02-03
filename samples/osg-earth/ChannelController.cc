@@ -80,7 +80,8 @@ void ChannelController::initialize(int stage)
         connectionStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
 
         if (showConnections) {
-            connectionGraphNode = new FeatureNode(mapNode.get(), nullptr);
+            auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
+            connectionGraphNode = new FeatureNode(mapNode.get(), new Feature(new LineString(), geoSRS));
             connectionGraphNode->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
             mapNode->getModelLayerGroup()->addChild(connectionGraphNode);
         }

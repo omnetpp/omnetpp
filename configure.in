@@ -806,6 +806,7 @@ else
                 AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
             fi
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
+            QT_CFLAGS+=' -I/usr/include/QtOpenGL' # we need this because of a bug in qmake that prevents correctly detecting the include directory of the QtOpenGL library (on MinGW-64 and on Fedora 23)
             QTENV_IF_POSSIBLE=qtenv
         fi
     fi

@@ -96,7 +96,8 @@ void MobileNode::initialize(int stage)
             trailStyle.getOrCreate<LineSymbol>()->stroke()->width() = 50.0f;
             trailStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_RELATIVE_TO_TERRAIN;
             trailStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
-            trailNode = new FeatureNode(mapNode.get(), nullptr);
+            auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
+            trailNode = new FeatureNode(mapNode.get(), new Feature(new LineString(), geoSRS));
             locatorNode->addChild(trailNode);
         }
 

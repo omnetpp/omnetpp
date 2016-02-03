@@ -18,8 +18,13 @@
 
 #include <QDebug>
 #include <QResizeEvent>
+#include <osgEarth/Version>
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
+    #include <osgEarthUtil/Sky>
+#else
+    #include <osgEarthUtil/SkyNode>
+#endif
 #include <osgEarthUtil/EarthManipulator>
-#include <osgEarthUtil/SkyNode>
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/TerrainManipulator>
 #include <osgGA/TrackballManipulator>

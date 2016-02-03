@@ -14,7 +14,13 @@
 #include <osgEarth/MapNode>
 #include <osgEarth/Capabilities>
 #include <osgEarthAnnotation/RectangleNode>
-#include <osgEarthUtil/SkyNode>
+#include <osgEarth/Version>
+#if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
+    #include <osgEarthUtil/Sky>
+#else
+    #include <osgEarthUtil/SkyNode>
+#endif
+
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
 
@@ -58,8 +64,11 @@ void OsgEarthScene::initialize()
 
     scene = new osg::Group();
     scene->asGroup()->addChild(earthRotator);
-    scene->asGroup()->addChild(new osgEarth::Util::SkyNode(mapNode->getMap()));
-
+    #if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
+        scene->asGroup()->addChild(osgEarth::Util::SkyNode::create(mapNode));
+    #else
+        scene->asGroup()->addChild(new osgEarth::Util::SkyNode(mapNode->getMap()));
+    #endif
     auto stateSet = scene->getOrCreateStateSet();
     stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateSet->setMode(GL_CULL_FACE, osg::StateAttribute::ON);
