@@ -1,4 +1,4 @@
-== Fedora 18
+== Fedora 23
 
 === Supported Releases
 
@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following Fedora release is covered:
 
-* Fedora 18
+* Fedora 23
 
 It was tested on the following architectures:
 
@@ -33,6 +33,11 @@ To install the required packages, type in the terminal:
 
 then follow the instruction on the console.
 
+[NOTE]
+=====================================================
+You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+=====================================================
+
 Note that 'openmpi' will not be available by default, it needs to be
 activated in every session with the
 
@@ -42,6 +47,11 @@ command, where `<arch>` is your architecture (usually `i386` or `x86_64`).
 When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).
+
+To use Qtenv and the new 3D visualization support, install Qt4, OpenSceneGraph
+and the osgEarth packages (recommended):
+
+  $ su -c 'yum install qt-devel OpenSceneGraph-devel osgearth-devel'
 
 ==== Graphical Installation
 
@@ -60,4 +70,3 @@ zlib-devel, webkitgtk, make, java,
 doxygen, graphviz, openmpi-devel, libpcap-devel
 
 Click 'Apply', then follow the instructions.
-
