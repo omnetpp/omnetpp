@@ -14,7 +14,7 @@ if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
 else
     omnetpp_root=`pwd`
     echo $omnetpp_root
-    if [ `uname` == "Darwin" ]; then
+    if [ `uname` = "Darwin" ]; then
       if [ ! -d $omnetpp_root/tools/macosx ]; then
           echo "WARNING!!! We are on MAC OS X, but it seems that you have downloaded the Linux version of the installation package!"
       fi
