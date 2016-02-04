@@ -20,6 +20,7 @@
 #include <cassert>
 #include <QMessageBox>
 #include <QBoxLayout>
+#include <QScrollBar>
 #include <QToolBar>
 #include <QAction>
 #include <QMouseEvent>
@@ -89,7 +90,7 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     switchToOsgViewAction = nullptr;
     switchToCanvasViewAction = nullptr;
 
-    createViews(this, isTopLevel);
+    createViews(isTopLevel);
     parent->setMinimumSize(20, 20);
     switchToCanvasView();
 
@@ -111,7 +112,7 @@ ModuleInspector::~ModuleInspector()
     getQtenv()->getAnimator()->clearInspector(this);
 }
 
-void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
+void ModuleInspector::createViews(bool isTopLevel)
 {
     canvasViewer = new ModuleCanvasViewer();
     canvasViewer->setRenderHints(QPainter::Antialiasing);
@@ -129,25 +130,7 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     QToolBar *toolbar = createToolbar(isTopLevel);
-#ifdef __APPLE__
-    isTopLevel = true;  // FIXME this is a workaround for a bug on MAC OS X where the floating toolbar is not properly repainted on scrolling
-#endif
-    if(isTopLevel)
-    {
-        auto layout = new QVBoxLayout(parent);
-        layout->setMargin(1);
-        stackedLayout = new QStackedLayout();
-        layout->addWidget(toolbar);
-        layout->addLayout(stackedLayout);
-    }
-    else
-    {
-        QWidget *contentArea = new QWidget();
-        toolbarLayout = new FloatingToolbarLayout(parent);
-        toolbarLayout->addWidget(contentArea);
-        toolbarLayout->addWidget(toolbar);
-        stackedLayout = new QStackedLayout(contentArea);
-    }
+    stackedLayout = new QStackedLayout();
 
     stackedLayout->addWidget(canvasViewer);
 
@@ -156,6 +139,26 @@ void ModuleInspector::createViews(QWidget *parent, bool isTopLevel)
     connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(onObjectsPicked(const std::vector<cObject*>&)));
     stackedLayout->addWidget(osgViewer);
 #endif
+
+    auto layout = new QVBoxLayout(this);
+    layout->setMargin(1);
+    layout->setSpacing(0);
+
+    bool onApple = false;
+#ifdef Q_WS_MAC
+    onApple = true; // couldn't get the toolbar to paint over the OsgViewer on Mac, maybe it will work with Qt5
+#endif
+
+    if (isTopLevel || onApple) {
+        layout->addWidget(toolbar, 0, (onApple && !isTopLevel) ? Qt::AlignRight : (Qt::Alignment)0);
+        layout->addLayout(stackedLayout);
+    } else {
+        toolbarLayout = new QGridLayout(canvasViewer);
+        canvasViewer->setLayout(toolbarLayout);
+        toolbarLayout->addWidget(toolbar, 0, 0, Qt::AlignRight | Qt::AlignTop);
+
+        layout->addLayout(stackedLayout);
+    }
 }
 
 void ModuleInspector::onFontChanged()
@@ -167,7 +170,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 {
     QToolBar *toolbar = new QToolBar();
 
-    if(isTopLevel)
+    if (isTopLevel)
         addTopLevelToolBarActions(toolbar);
     else
     {
@@ -195,6 +198,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
     canvasZoomOutAction = action;
 
+#ifdef WITH_OSG
     // osg-specific
     action = toolbar->addAction(QIcon(":/tools/icons/tools/reset.png"), "Reset view", this, SLOT(resetOsgView()));
     resetOsgViewAction = action;
@@ -208,6 +212,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     action = toolbar->addAction(QIcon(":/tools/icons/tools/modulegraphics.png"), "Module", this, SLOT(switchToCanvasView()));
     action->setCheckable(true);
     switchToCanvasViewAction = action;
+#endif
 
     toolbar->setAutoFillBackground(true);
 
@@ -283,20 +288,17 @@ void ModuleInspector::updateToolbarLayout() {
         return;
 
     if (stackedLayout->currentWidget() == canvasViewer) {
-        // this includes the scrollbars
-        auto viewerRect = canvasViewer->contentsRect();
-        // this doesn't
-        auto viewportRect = canvasViewer->viewport()->contentsRect();
-        // placing them in the same coordinate system
-        viewportRect.setTopLeft(canvasViewer->viewport()->mapToParent(viewportRect.topLeft()));
-        // calculating the margins required to place the toolbar inside the scrolling viewport
-        toolbarLayout->setToolbarMargins(QMargins(viewportRect.left() - viewerRect.left()     + toolbarSpacing,
-                                                viewportRect.top()  - viewerRect.top()      + toolbarSpacing,
-                                                viewerRect.right()  - viewportRect.right()  + toolbarSpacing,
-                                                viewerRect.bottom() - viewportRect.bottom() + toolbarSpacing));
+        canvasViewer->setLayout(toolbarLayout);
+
+        toolbarLayout->setContentsMargins(
+                    toolbarSpacing, toolbarSpacing,
+                    canvasViewer->verticalScrollBar()->width() + toolbarSpacing,
+                    canvasViewer->horizontalScrollBar()->height() + toolbarSpacing);
     } else {
+        osgViewer->getGLWidget()->setLayout(toolbarLayout);
+
         // the osg mode never displays scrollbars.
-        toolbarLayout->setToolbarMargins(QMargins(toolbarSpacing, toolbarSpacing, toolbarSpacing, toolbarSpacing));
+        toolbarLayout->setMargin(toolbarSpacing);
     }
 }
 

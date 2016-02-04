@@ -73,7 +73,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     slider->setValue(getQtenv()->opt->animationSpeed * 100);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
-    ui->toolBar->addWidget(slider);
+    ui->mainToolBar->addWidget(slider);
 
     connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
 
@@ -823,16 +823,10 @@ void MainWindow::on_actionRebuildNetwork_triggered()
     busy();
 }
 
+// XXX The message is ignored now that the status bar got rid of
 void MainWindow::busy(QString msg)
 {
-    if (!msg.isEmpty()) {
-        ui->statusBar->showMessage(msg);
-        this->setCursor(QCursor(Qt::WaitCursor));
-    }
-    else {
-        ui->statusBar->showMessage("Ready");
-        this->setCursor(QCursor(Qt::ArrowCursor));
-    }
+    setCursor(QCursor(msg.isEmpty() ? Qt::ArrowCursor : Qt::WaitCursor));
 }
 
 void MainWindow::on_actionPreferences_triggered()

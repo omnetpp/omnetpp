@@ -20,6 +20,12 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -34,11 +40,14 @@
     </size>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>-1</number>
+    </property>
     <property name="leftMargin">
      <number>6</number>
     </property>
     <property name="topMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="rightMargin">
      <number>6</number>
@@ -47,261 +56,111 @@
      <number>6</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="statusPanel">
       <property name="spacing">
-       <number>0</number>
+       <number>1</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="topStatusRow">
         <property name="spacing">
-         <number>0</number>
+         <number>1</number>
         </property>
         <item>
-         <widget class="QFrame" name="frame">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelConfigName">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>(No network set up)</string>
           </property>
-          <property name="lineWidth">
+          <property name="margin">
            <number>1</number>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelConfigName">
-             <property name="text">
-              <string>(No network set up)</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="frame_2">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelEvent">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>Event #0</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelEvent">
-             <property name="text">
-              <string>Event #0</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="margin">
+           <number>1</number>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="frame_3">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelTime">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>t=0</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_10">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelTime">
-             <property name="text">
-              <string>t=0</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="margin">
+           <number>1</number>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="frame_4">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelMessageStats">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>Msg stats: 0 scheduled / 0 existing / 0 created</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelMessageStats">
-             <property name="text">
-              <string>Msg stats: 0 scheduled / 0 existing / 0 created</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="margin">
+           <number>1</number>
+          </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutDisplay">
+       <layout class="QHBoxLayout" name="bottomStatusRow">
         <property name="spacing">
-         <number>0</number>
+         <number>1</number>
         </property>
         <item>
-         <widget class="QFrame" name="frame_5">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelDisplay1">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>Next: n/a</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelDisplay1">
-             <property name="text">
-              <string>Next: n/a</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="margin">
+           <number>1</number>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="frame_6">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelDisplay2">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>In: n/a</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_13">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelDisplay2">
-             <property name="text">
-              <string>In: n/a</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="margin">
+           <number>1</number>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="frame_7">
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+         <widget class="QLabel" name="labelDisplay3">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid palette(mid);</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="text">
+           <string>At: last event + 0s</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_14">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelDisplay3">
-             <property name="text">
-              <string>At: last event + 0s</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="margin">
+           <number>1</number>
+          </property>
          </widget>
         </item>
        </layout>
@@ -441,7 +300,7 @@
      <x>0</x>
      <y>0</y>
      <width>939</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -525,9 +384,9 @@
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Qtenv toolbar</string>
    </property>
    <property name="iconSize">
     <size>
@@ -565,7 +424,6 @@
    <addaction name="actionPreferences"/>
    <addaction name="separator"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
    <property name="text">
     <string>E&amp;xit</string>

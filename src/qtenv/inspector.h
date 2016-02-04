@@ -51,79 +51,6 @@ const char *insptypeNameFromCode(int code);
 int insptypeCodeFromName(const char *namestr);
 
 /**
- * Layout that manages two children: a client that completely fills the
- * parent; and a toolbar that flots over the client in the top-right corner.
- */
-class FloatingToolbarLayout : public QLayout
-{
-public:
-    FloatingToolbarLayout(): QLayout(), child(nullptr), toolbar(nullptr) {}
-    FloatingToolbarLayout(QWidget *parent): QLayout(parent), child(nullptr), toolbar(nullptr) {}
-    ~FloatingToolbarLayout() {
-        delete child;
-        delete toolbar;
-    }
-
-    void addItem(QLayoutItem *item) {
-        if (!child) child = item;
-        else if (!toolbar) toolbar = item;
-        else throw std::runtime_error("only two items are accepted");
-    }
-
-    int count() const {
-        if (!child) return 0;
-        else if (!toolbar) return 1;
-        else return 2;
-    }
-
-    QLayoutItem *itemAt(int i) const {
-        if (i==0) return child;
-        else if (i==1) return toolbar;
-        else return nullptr;
-    }
-
-    QLayoutItem *takeAt(int i) {
-        QLayoutItem *result = nullptr;
-        if (i==1) {result = toolbar; toolbar = nullptr;}
-        else if (i==0) {result = child; child = toolbar; toolbar = nullptr;}
-        else throw std::runtime_error("illegal index, must be 0 or 1");
-        return result;
-    }
-
-    QSize sizeHint() const {
-        if (child) return child->sizeHint();
-        else return QSize(100,100);
-    }
-
-    QSize minimumSize() const {
-        if (child) return child->minimumSize();
-        else return QSize(0,0);
-    }
-
-    void setGeometry(const QRect &rect) override {
-        if (child)
-            child->setGeometry(rect); // margin?
-        if (toolbar) {
-            QSize size = toolbar->widget()->sizeHint();
-            int x = std::max(toolbarMargins.left(), rect.width() - size.width() - toolbarMargins.right());
-            int width = std::min(rect.width() - toolbarMargins.left() - toolbarMargins.right(), size.width());
-            int height = std::min(rect.height() - toolbarMargins.top() - toolbarMargins.bottom(), size.height());
-            toolbar->setGeometry(QRect(x, toolbarMargins.top(), width, height));
-        }
-    }
-
-    void setToolbarMargins(const QMargins &margins) {
-        toolbarMargins = margins;
-        invalidate();
-    }
-
-protected:
-    QLayoutItem *child;
-    QLayoutItem *toolbar;
-    QMargins toolbarMargins;
-};
-
-/**
  * Base class for inspectors.
  */
 class QTENV_API Inspector : public QWidget
@@ -153,7 +80,6 @@ class QTENV_API Inspector : public QWidget
       QVariant getPref(const QString &pref, const QVariant &defaultValue);
       void setPref(const QString &pref, const QVariant &value);
 
-   protected:
       virtual void refreshTitle();
 
       virtual void doSetObject(cObject *obj);

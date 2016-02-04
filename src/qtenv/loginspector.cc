@@ -67,6 +67,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     auto layout = new QGridLayout(this);
     layout->setMargin(0);
+    layout->setSpacing(0);
 
     textWidget = new TextViewerWidget(this);
     textWidget->setFont(getQtenv()->getLogFont());

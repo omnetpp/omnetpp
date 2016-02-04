@@ -78,6 +78,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     treeView = new QTreeView(this);
     treeView->setHeaderHidden(true);
     treeView->setItemDelegate(new HighlighterItemDelegate());
+    treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     QToolBar *toolbar = new QToolBar();
@@ -105,6 +106,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     layout->addWidget(toolbar);
     layout->addWidget(treeView, 1);
     layout->setMargin(0);
+    layout->setSpacing(0);
     parent->setMinimumSize(20, 20);
 
     setMode(mode);
@@ -233,6 +235,8 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     // drawing the selection background and focus rectangle, but no text
     QStyledItemDelegate::paint(painter, option, QModelIndex());
 
+    const int spacing = 3;
+
     // selecting the palette to use, depending on the item state
     QPalette::ColorGroup group = option.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
     if (group == QPalette::Normal && !(option.state & QStyle::State_Active))
@@ -241,21 +245,21 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     painter->save();
 
     // getting the icon for the object, and if found, offsetting the text and drawing the icon
-    int textOffset = 0;
+    int textOffset = spacing;
     auto iconData = index.data(Qt::DecorationRole);
     if (iconData.isValid()) {
-        textOffset += option.decorationSize.width();
+        textOffset += option.decorationSize.width() + spacing * 2;
         QIcon icon = iconData.value<QIcon>();
         painter->drawImage(option.rect.topLeft()
-                             + QPointF(0, option.rect.height() / 2.0
-                                          - option.decorationSize.height() / 2.0),
+                             + QPoint(spacing, option.rect.height() / 2
+                                               - option.decorationSize.height() / 2),
                            icon.pixmap(option.decorationSize).toImage());
     }
 
     //Text from item
     QString text = index.data(Qt::DisplayRole).toString();
     QTextLayout layout;
-    layout.setFont(getQtenv()->getBoldFont());
+    layout.setFont(painter->font());
     layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
     // this is the standard layout procedure in a single line case
     layout.beginLayout();
@@ -290,7 +294,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     layout.setAdditionalFormats(formats);
 
     // the layout is complete, now we just draw it on the appropriate position
-    layout.draw(painter, option.rect.translated(3 + textOffset, 1).topLeft());
+    layout.draw(painter, option.rect.bottomLeft() + QPoint(textOffset, -option.fontMetrics.height()));
     painter->restore();
 }
 

@@ -78,9 +78,7 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     type = f->getInspectorType();
     isToplevelWindow = isTopLevel;
 
-    if (isTopLevel) {
-        //show();
-    } else {
+    if (!isTopLevel) {
         auto layout = new QGridLayout(parent);
         parent->setLayout(layout);
         layout->setMargin(0);

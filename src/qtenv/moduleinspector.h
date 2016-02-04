@@ -39,7 +39,6 @@ namespace qtenv {
 class CanvasRenderer;
 class ModuleCanvasViewer;
 class OsgViewer;
-class FloatingToolbarLayout;
 
 
 class QTENV_API ModuleInspector : public Inspector
@@ -99,9 +98,8 @@ class QTENV_API ModuleInspector : public Inspector
       QAction *increaseIconSizeAction;
       QAction *decreaseIconSizeAction;
 
-
       QStackedLayout *stackedLayout;
-      FloatingToolbarLayout *toolbarLayout = nullptr; // not used in toplevel mode
+      QGridLayout *toolbarLayout = nullptr; // not used in topLevel mode
 
       ModuleCanvasViewer *canvasViewer;
 
@@ -113,7 +111,7 @@ class QTENV_API ModuleInspector : public Inspector
       cCanvas *getCanvas();
       static const char *animModeToStr(SendAnimMode mode);
 
-      void createViews(QWidget *parent, bool isTopLevel);
+      void createViews(bool isTopLevel);
       QToolBar *createToolbar(bool isTopLevel);
       void refreshOsgViewer();
 #ifdef WITH_OSG

@@ -51,6 +51,7 @@ ObjectTreeInspector::ObjectTreeInspector(QWidget *parent, bool isTopLevel, Inspe
     model->setRootObject(getSimulation());
     view->setModel(model);
     view->setHeaderHidden(true);
+    view->setAttribute(Qt::WA_MacShowFocusRect, false);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     parent->setMinimumSize(20, 20);
 

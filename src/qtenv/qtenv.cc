@@ -392,6 +392,9 @@ void Qtenv::doRun()
         static char *argv[] = { arg, nullptr };
         app = new QApplication(argc, argv);
 
+        // needs to be set here too, the setting in the Designer wasn't enough on Mac
+        app->setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
+
         globalPrefs = new QSettings(QDir::homePath() + "/.qtenv.ini", QSettings::IniFormat);
         localPrefs = new QSettings(".qtenv.ini", QSettings::IniFormat);
 
@@ -407,8 +410,7 @@ void Qtenv::doRun()
         mainWindow = new MainWindow(this);
 
         initFonts();
-
-        mainWindow->setFont(boldFont);
+        updateQtFonts();
 
         mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
         mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
@@ -2105,7 +2107,23 @@ void Qtenv::saveFonts()
 void Qtenv::updateQtFonts()
 {
     emit fontChanged();
-    mainWindow->setFont(boldFont);
+
+    mainWindow->setStyleSheet(
+                // if we dont reapply the font here, it will be overwritten with the default, because Qt.
+                "* { font: " + QString::number(boldFont.pointSize()) + "pt " + boldFont.family() + "; } "
+                // avoids too tall toolbars on Mac
+                "QToolButton { height: 19px; margin: 0px; }"
+                // makes tool buttons tighty packed
+                "QToolBar { spacing: 0px; }"
+                // all toolbars except the main one at the top of the window need this to paint their background
+                "#centralWidget QToolBar { background: palette(window);  }"
+          #ifdef Q_WS_MAC // Mac-specific workarounds
+                // as a workaround to a Qt4 bug, should be unnecessary with Qt5
+                // (vertical splitter handles had white background without this,
+                // but this makes the little dots on them disappear...)
+                "QSplitter::handle { background-color: palette(window); }"
+          #endif
+        );
 }
 
 // ======================================================================
