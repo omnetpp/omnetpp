@@ -36,14 +36,17 @@ LibXML2 or Expat::
   Either one of these XML parsers are needed for @OMNETPP@ to be able
   to read XML files. The 'devel' packages (that include the header files)
   are needed. LibXML2 is the preferred one.
-SUN JRE or OpenJDK, version 7.0 or later::
+OpenJDK, version 7.0 or later::
   The Java runtime is required to run the Eclipse-based Simulation IDE.
   Other implementations, for example Kaffe, have been found to have problems
   running the IDE. You do not need this package if you do not plan
   to use the Simulation IDE.
-xulrunner::
-  This package is part of Firefox, and is needed by the IDE to display
-  documentation, styled tooltips and other items.
+Qt 4::
+  Required by the Qtenv simulation runtime environment.
+  You need the 'devel' packages that include header files as well.
+OpenSceneGraph and osgEarth::
+  These packages will enable 3D visualization in Qtenv.
+  You need the 'devel' packages that include header files as well.
 
 The following packages are required if you want to take advantage of some advanced
 @OMNETPP@ features:
@@ -61,9 +64,9 @@ Akaroa::
   from the project's website.
 
 Pcap::
-   Allows simulation models to capture and transmit network packets bypassing 
-   the operating system's protocol stack. It is not used directly by @OMNETPP@, 
-   but @OMNETPP@ detects the necessary compiler and linker options for models 
+   Allows simulation models to capture and transmit network packets bypassing
+   the operating system's protocol stack. It is not used directly by @OMNETPP@,
+   but @OMNETPP@ detects the necessary compiler and linker options for models
    in case they need it.
 
 The exact names of these packages may differ across distributions.
@@ -125,7 +128,7 @@ The IDE is not supported on Unix platforms other than Linux, so JRE is not requi
 either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and
 the IDE does not work well with them.
 
-Java version 6.0 (i.e. JRE 1.6) or later is required and 7.0 is recommended.
+Java version 1.7 (i.e. JRE 1.7) or later is required and 8.0 is recommended.
 
 ==== MPI
 
@@ -310,9 +313,9 @@ automatically detected if you installed it to the default location.
 
 ==== PCAP
 
-The optional Pcap library allows simulation models to capture and 
-transmit network packets bypassing the operating system's protocol stack. 
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary 
+The optional Pcap library allows simulation models to capture and
+transmit network packets bypassing the operating system's protocol stack.
+It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
 compiler and linker options for models in case they need it.
 
 ifdef::OMNEST[]
@@ -324,5 +327,3 @@ file, run 'configure' and then rebuild your project. You can check the
 systemc examples in the samples/systemc-embedding directory.
 
 endif::OMNEST[]
-
-

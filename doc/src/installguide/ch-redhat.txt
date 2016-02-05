@@ -3,12 +3,12 @@
 === Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
-Red Hat Enterprise Linux installations. The overall installation procedure 
+Red Hat Enterprise Linux installations. The overall installation procedure
 is described in the 'Linux' chapter.
 
 The following Red Hat release is covered:
 
-* Red Hat Enterprise Linux Desktop Workstation 6.4
+* Red Hat Enterprise Linux Desktop Workstation 7.x
 
 It was tested on the following architectures:
 
@@ -33,34 +33,19 @@ The 'Desktop Client' version does not contain development tools.
 
 To install the required packages, type in the terminal:
 
-  $ su -c 'yum install make devtoolset-1.1 bison flex perl \
-      tcl-devel tk-devel libxml2-devel zlib-devel \
-      java doxygen graphviz openmpi-devel libpcap'
+  $ su -c 'yum install make gcc gcc-c++ bison flex perl \
+      tcl-devel tk-devel qt-devel libxml2-devel zlib-devel \
+      java doxygen graphviz openmpi-devel libpcap-devel'
 
-After installing the 'devtoolset-1.1' package you must make it available to
-@OMNETPP@:
-
-  $ scl enable devtoolset-1.1 'bash'
-
-This command will open a new shell configured to use the newest available version
-of the GCC toolchain. Follow the general Linux installation instructions
-using this shell.
+To use 3D visualization support in Qtenv  (recommended), you should
+install the OpenSceneGraph-devel (3.2) and osgEarth-devel (2.5 or later) packages.
+These packages are not available from the official RedHat repository so you
+may need to get them from different sources (e.g. rpmfind.net).
 
 [NOTE]
-==============================================================
-Activate the devtoolset package in the terminal each time when
-you work with @OMNETPP@ and start the IDE from that shell.
-==============================================================
-
-[NOTE]
-==============================================================
-RedHat contains two separate GCC toolchains. The 'devtoolset' package
-contains the latest available version of GCC while the system default 
-gcc and gcc-c++ packages are using a much older version.
-You may opt to use the system default GCC toolchain by installing the 
-gcc and gcc-c++ packages instead of 'devtools-1.1'. In this case
-you don't have to use the above 'scl' command.
-==============================================================
+=====================================================
+You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+=====================================================
 
 To install additional (optional) packages for parallel simulation and
 packet capture support, type:
@@ -88,8 +73,9 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* devtoolset-1.1, bison, flex, perl, tcl-devel, tk-devel, libxml2-devel,
-zlib-devel, make, java, doxygen, graphviz, openmpi-devel, libpcap
+* make gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, qt-devel,
+libxml2-devel, zlib-devel, make, java, doxygen, graphviz, openmpi-devel,
+libpcap-devel
 
 Click 'Apply', then follow the instructions.
 
@@ -110,4 +96,3 @@ security context for the library. This should prevent the SELinux-related
 occurring, unless you have a shared library which was built using an obsolete
 or hand-crafted makefile that does not contain the `chcon` command.
 ===============================================================
-

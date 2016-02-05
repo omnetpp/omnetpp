@@ -42,17 +42,17 @@ To install the required packages, type in the terminal:
        tcl-dev tk-dev libxml2-dev zlib1g-dev default-jre \
        doxygen graphviz libwebkitgtk-1.0-0
 
+To use Qtenv with 3D visualization support, install the development packages
+for Qt4, OpenSceneGraph and the osgEarth packages:
+
+  $ sudo apt-get install qt4-qmake libqt4-dev libqt4-opengl-dev \
+       openscenegraph libopenscenegraph-dev openscenegraph-plugin-osgearth \
+       osgearth osgearth-data libosgearth-dev
+
 [NOTE]
 =====================================================
 You may opt to use clang and clang++ instead of the gcc and g++ compilers.
 =====================================================
-
-To use Qtenv and the new 3D visualization support, install Qt4, OpenSceneGraph
-and the osgEarth packages (recommended):
-
-  $ sudo apt-get install qt4-qmake libqt4-dev libqt4-opengl-dev openscenegraph \
-       libopenscenegraph-dev openscenegraph-plugin-osgearth osgearth \
-       osgearth-data libosgearth-dev
 
 To enable the optional parallel simulation support you will need to install the MPI packages:
 

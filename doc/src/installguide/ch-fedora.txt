@@ -28,10 +28,13 @@ from the terminal, whichever you prefer.
 To install the required packages, type in the terminal:
 
   $ su -c 'yum install make gcc gcc-c++ bison flex perl \
-      tcl-devel tk-devel libxml2-devel zlib-devel \
+      tcl-devel tk-devel qt-devel libxml2-devel zlib-devel \
       java doxygen graphviz webkitgtk openmpi-devel libpcap-devel'
 
-then follow the instruction on the console.
+To use 3D visualization support in Qtenv, you should install 
+OpenSceneGraph 3.2 and osgEarth 2.5 or later (recommended):
+
+  $ su -c 'yum install OpenSceneGraph-devel osgearth-devel'
 
 [NOTE]
 =====================================================
@@ -48,11 +51,6 @@ When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).
 
-To use Qtenv and the new 3D visualization support, install Qt4, OpenSceneGraph
-and the osgEarth packages (recommended):
-
-  $ su -c 'yum install qt-devel OpenSceneGraph-devel osgearth-devel'
-
 ==== Graphical Installation
 
 The graphical installer can be launched by choosing
@@ -65,8 +63,8 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, libxml2-devel,
+* bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, qt-devel, libxml2-devel,
 zlib-devel, webkitgtk, make, java,
-doxygen, graphviz, openmpi-devel, libpcap-devel
+doxygen, graphviz, openmpi-devel, libpcap-devel, OpenSceneGraph-devel, osgearth-devel
 
 Click 'Apply', then follow the instructions.

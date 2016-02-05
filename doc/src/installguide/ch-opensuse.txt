@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following openSUSE release is covered:
 
-* openSUSE 12.3
+* openSUSE 42.1
 
 It was tested on the following architectures:
 
@@ -28,11 +28,14 @@ from the terminal, whichever you prefer.
 To install the required packages, type in the terminal:
 
   $ sudo zypper install make gcc gcc-c++ bison flex perl \
-      tcl-devel tk-devel libxml2-devel zlib-devel \
-      java-1_7_0-openjdk doxygen graphviz openmpi-devel libpcap-devel \
+      tcl-devel tk-devel libqt4-devel libxml2-devel zlib-devel \
+      java-1_8_0-openjdk doxygen graphviz openmpi-devel libpcap-devel \
       libwebkitgtk-1_0-0
 
-then follow the instruction on the console.
+To use 3D visualization support in Qtenv  (recommended), you should
+install the OpenSceneGraph-devel (3.2) and osgEarth-devel (2.5 or later) packages.
+These packages are not available from the official RedHat repository so you
+may need to get them from different sources (e.g. rpmfind.net).
 
 Note that 'openmpi' will not be available by default, first you need to
 log out and log in again, or source your `.profile` script:
@@ -51,12 +54,8 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel,
+* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, libqt4-devel
 libxml2-devel, zlib-devel, java-1_7_0-openjdk, doxygen, graphviz, libwebkitgtk-1_0-0,
 openmpi-devel, libpcap-devel
 
 Click 'Accept', then follow the instructions.
-
-
-
-
