@@ -310,14 +310,14 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     // put the object members of the new module to their place
     module->takeAllObjectsFrom(tmpList);
 
-    // restore defaultowner (must precede parameters)
+    // restore default owner (must precede parameters)
     cOwnedObject::setDefaultOwner(oldList);
 
     // register with cSimulation
     getSimulation()->registerComponent(module);
 
-    // set up RNG mapping
-    getEnvir()->getRNGMappingFor(module);
+    // set up RNG mapping, etc.
+    getEnvir()->preconfigure(module);
 
     // should be called before any gateCreated calls on this module
     EVCB.moduleCreated(module);
@@ -330,7 +330,7 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
     if (cCanvas::containsCanvasItems(module->getProperties()))
         module->getCanvas()->addFiguresFrom(module->getProperties());
 
-    // notify envir
+    // add result recorders, etc
     getEnvir()->configure(module);
 
     // notify post-change listeners
@@ -449,14 +449,14 @@ cChannel *cChannelType::create(const char *name)
     oldlist->take(channel);
     channel->takeAllObjectsFrom(tmplist);
 
-    // restore defaultowner
+    // restore default owner
     cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
     getSimulation()->registerComponent(channel);
 
-    // set up RNG mapping
-    getEnvir()->getRNGMappingFor(channel);
+    // set up RNG mapping, etc.
+    getEnvir()->preconfigure(channel);
 
     // add parameters to the new module
     addParametersTo(channel);

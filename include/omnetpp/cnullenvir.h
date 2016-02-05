@@ -96,6 +96,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void log(cLogEntry *entry) override {}
 
     // configuration, model parameters
+    virtual void preconfigure(cComponent *component) override  {}
     virtual void configure(cComponent *component) override {}
     virtual void readParameter(cPar *par) override  {unsupported();}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  {return true;}
@@ -119,7 +120,6 @@ class SIM_API cNullEnvir : public cEnvir
     // RNGs
     virtual int getNumRNGs() const override {return 1;}
     virtual cRNG *getRNG(int k) override  {return rng;}
-    virtual void getRNGMappingFor(cComponent *component) override  {component->setRNGMap(0,nullptr);}
 
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  {return (void *)1;}

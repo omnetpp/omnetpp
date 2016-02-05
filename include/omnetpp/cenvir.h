@@ -310,8 +310,17 @@ class SIM_API cEnvir
     //@{
 
     /**
-     * Called when a module or channel has been created and installed in the model,
-     * and lets the environment perform extra setup. One use is to add signal
+     * Called when a module or channel object has been created and added
+     * to the model, but no parameters or gates have been set up yet.
+     * It allows the environment perform extra configuration. One use is
+     * to set up RNG mapping.
+     */
+    virtual void preconfigure(cComponent *component) = 0;
+
+    /**
+     * Called when a module or channel has been created and installed in the
+     * model, with parameters and gates set up. It lets the environment
+     * perform extra configuration. One use is to add signal
      * listeners for result recording.
      */
     virtual void configure(cComponent *component) = 0;
@@ -519,7 +528,6 @@ class SIM_API cEnvir
      * in printf() format (format string + arguments). The return value
      * is true for "yes", and false for "no".
      */
-    // note: non-virtual, delegates to askyesno()
     virtual bool askYesNo(const char *fmt,...);
     //@}
 
@@ -536,12 +544,6 @@ class SIM_API cEnvir
      * Returns pointer to "physical" RNG k (0 <= k < getNumRNGs()).
      */
     virtual cRNG *getRNG(int k) = 0;
-
-    /**
-     * Sets up RNG mapping (which maps module-local RNG numbers to "physical"
-     * RNGs) for the given module or channel, by calling its setRNGMap() function.
-     */
-    virtual void getRNGMappingFor(cComponent *component) = 0;
     //@}
 
     /** @name Methods for recording data from output vectors.

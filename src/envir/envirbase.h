@@ -203,6 +203,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual cModule *getCurrentEventModule() override { return currentModuleId != -1 ? getSimulation()->getModule(currentModuleId) : nullptr; }
 
     // configuration, model parameters
+    virtual void preconfigure(cComponent *component) override;
     virtual void configure(cComponent *component) override;
     virtual void readParameter(cPar *parameter) override;
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override;
@@ -225,7 +226,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // RNGs
     virtual int getNumRNGs() const override;
     virtual cRNG *getRNG(int k) override;
-    virtual void getRNGMappingFor(cComponent *component) override;
 
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override;
@@ -291,6 +291,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
+
+    // Set up RNG mapping for the component
+    virtual void setupRNGMapping(cComponent *component);
 
     // Called from configure(component); adds result recording listeners
     // for each declared signal (@statistic property) in the component.

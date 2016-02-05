@@ -922,6 +922,11 @@ void EnvirBase::endRun()  // FIXME eliminate???
 
 //-------------------------------------------------------------
 
+void EnvirBase::preconfigure(cComponent *component)
+{
+    setupRNGMapping(component);
+}
+
 void EnvirBase::configure(cComponent *component)
 {
     addResultRecorders(component);
@@ -932,7 +937,6 @@ static int search_(std::vector<std::string>& v, const char *s)
     for (int i = 0; i < (int)v.size(); i++)
         if (strcmp(v[i].c_str(), s) == 0)
             return i;
-
     return -1;
 }
 
@@ -1778,7 +1782,7 @@ cRNG *EnvirBase::getRNG(int k)
     return rngs[k];
 }
 
-void EnvirBase::getRNGMappingFor(cComponent *component)
+void EnvirBase::setupRNGMapping(cComponent *component)
 {
     cConfigurationEx *cfg = getConfigEx();
     std::string componentFullPath = component->getFullPath();

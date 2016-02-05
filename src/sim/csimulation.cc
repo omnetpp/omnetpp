@@ -807,6 +807,7 @@ class StaticEnv : public cEnvir
     virtual void log(cLogEntry *entry) override {}
 
     // configuration, model parameters
+    virtual void preconfigure(cComponent *component) override  {}
     virtual void configure(cComponent *component) override {}
     virtual void readParameter(cPar *parameter) override  { unsupported(); }
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) override  { return true; }
@@ -830,7 +831,6 @@ class StaticEnv : public cEnvir
     // RNGs
     virtual int getNumRNGs() const override { return 0; }
     virtual cRNG *getRNG(int k) override  { unsupported(); return nullptr; }
-    virtual void getRNGMappingFor(cComponent *component) override  { component->setRNGMap(0, nullptr); }
 
     // output vectors
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  { return nullptr; }
