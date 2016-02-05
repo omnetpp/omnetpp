@@ -165,6 +165,11 @@ public interface IOmnetppLaunchConstants {
     public static final String UI_TKENV = "Tkenv";
 
     /**
+     * Value for OPP_USER_INTERFACE: launch the simulation program with -u Qtenv
+     */
+    public static final String UI_QTENV = "Qtenv";
+
+    /**
      * If OPP_USER_INTERFACE is empty (missing, "", or all whitespace), use this value instead
      */
     public static final String UI_FALLBACKVALUE = UI_DEFAULTEXTERNAL; //UI_IDE; <-- TODO restore this once IDE simfrontend becomes fully usable

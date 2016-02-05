@@ -95,6 +95,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     protected Button fDefaultExternalEnvButton;
     protected Button fCmdenvButton;
     protected Button fTkenvButton;
+    protected Button fQtenvButton;
     protected Button fOtherEnvButton;
     protected Text fOtherEnvText;
     protected Text fLibraryText;
@@ -186,7 +187,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             fDefaultExternalEnvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL));
             fCmdenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_CMDENV));
             fTkenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_TKENV));
-            boolean isOther = !fDefaultExternalEnvButton.getSelection() && !fCmdenvButton.getSelection() && !fTkenvButton.getSelection();
+            fQtenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_QTENV));
+            boolean isOther = !fDefaultExternalEnvButton.getSelection() && !fCmdenvButton.getSelection() && !fTkenvButton.getSelection() && !fQtenvButton.getSelection();
             fOtherEnvButton.setSelection(isOther);
             fOtherEnvText.setText(isOther ? uiArg.trim() : "");
 
@@ -245,6 +247,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_CMDENV);
         else if (fTkenvButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_TKENV);
+        else if (fQtenvButton.getSelection())
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_QTENV);
         else if (fOtherEnvButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, fOtherEnvText.getText());
         else
@@ -280,7 +284,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
                 assocRes.addAll(Arrays.asList(configuration.getMappedResources()));
             if (getIniFiles() != null)
                 assocRes.addAll(Arrays.asList(getIniFiles()));
-            configuration.setMappedResources((IResource[]) assocRes.toArray(new IResource[assocRes.size()]));
+            configuration.setMappedResources(assocRes.toArray(new IResource[assocRes.size()]));
         } catch (CoreException e) {
             LaunchPlugin.logError(e);
         }
@@ -829,7 +833,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         "Use ${opp_ned_path:/workingdir} for automatic setting.");
         fNedPathText.addModifyListener(this);
 
-        SWTFactory.createLabel(composite, "Tkenv Image Path:", 1);
+        SWTFactory.createLabel(composite, "Image Path:", 1);
         fImagePathText = SWTFactory.createSingleText(composite, 2);
         fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). " +
         "Use ${opp_image_path:/workingdir} for automatic setting.");
@@ -852,7 +856,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     }
 
     protected void createUIRadioButtons(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
+        Composite comp = SWTFactory.createComposite(parent, 7, colSpan, GridData.FILL_HORIZONTAL);
         ((GridLayout)comp.getLayout()).marginWidth = 0;
         ((GridLayout)comp.getLayout()).marginHeight = 0;
 
@@ -860,6 +864,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fDefaultExternalEnvButton = createRadioButton(comp, "Default");
         fCmdenvButton = createRadioButton(comp, "Cmdenv");
         fTkenvButton = createRadioButton(comp, "Tkenv");
+        fQtenvButton = createRadioButton(comp, "Qtenv");
         fOtherEnvButton = createRadioButton(comp, "Other:");
         fOtherEnvText = SWTFactory.createSingleText(comp, 1);
         fOtherEnvText.addModifyListener(this);
@@ -867,6 +872,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fDefaultExternalEnvButton.setToolTipText("Let the ini file setting or the default take effect");
         fCmdenvButton.setToolTipText("Launch the simulation with the -u Cmdenv option");
         fTkenvButton.setToolTipText("Launch the simulation with the -u Tkenv option");
+        fQtenvButton.setToolTipText("Launch the simulation with the -u Qtenv option");
         fOtherEnvButton.setToolTipText("Launch the simulation with the -u <custom> option");
     }
 

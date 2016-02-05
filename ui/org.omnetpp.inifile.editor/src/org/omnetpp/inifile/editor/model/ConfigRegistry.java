@@ -699,7 +699,7 @@ public class ConfigRegistry {
         "Specifies type for submodules and channels declared with 'like <>'.");
     public static final ConfigOption CFGID_USER_INTERFACE = addGlobalOption(
         "user-interface", CFG_STRING, null,
-        "Selects the user interface to be started. Possible values are Cmdenv and " +
+        "Selects the user interface to be started. Possible values are Cmdenv, Qtenv and " +
         "Tkenv. This option is normally left empty, as it is more convenient to " +
         "specify the user interface via a command-line option or the IDE's Run and " +
         "Debug dialogs. New user interfaces can be defined by subclassing " +

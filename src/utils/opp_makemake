@@ -105,7 +105,7 @@ $progname [options] [object files or libraries]
                           or add them to the created library. OBSOLETE.
     -u name, --userinterface name
                           Selects the user interface libraries to link with.
-                          Possible values are "all", "Cmdenv", and "Tkenv".
+                          Possible values are "all", "Cmdenv", "Tkenv", "Qtenv".
                           Defaults to "all".
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
@@ -288,8 +288,8 @@ sub makemake()
         elsif ($arg eq "-u" || $arg eq "--userinterface") {
             $userInterface = shift @ARGV;
             $userInterface = uc($userInterface);
-            if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
-                error("$progname: -u: specify All, Cmdenv or Tkenv");
+            if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV" && $userInterface ne "QTENV") {
+                error("$progname: -u: specify All, Cmdenv, Tkenv or Qtenv");
             }
         }
         elsif ($arg eq "-i" || $arg eq "--includefragment") {
@@ -652,6 +652,7 @@ sub makemake()
         "allenv" => ($userInterface =~ /^A/) ne "",
         "cmdenv" =>  ($userInterface =~ /^C/) ne "",
         "tkenv" =>  ($userInterface =~ /^T/) ne "",
+        "qtenv" =>  ($userInterface =~ /^Q/) ne "",
         "extraobjs" =>  quoteJoin(\@extraObjs),
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
         "libpathdirs" =>  \@libDirs,
@@ -1121,9 +1122,10 @@ sub template()
 {~nolink:}TARGET = {targetprefix}{target}{targetsuffix}
 {~nolink:}
 {exe:}# User interface (uncomment one) (-u option)
-{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
+{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LIBS)
 {exe:}{~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
 {exe:}{~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
+{exe:}{~qtenv?#}USERIF_LIBS = $(QTENV_LIBS)
 {exe:}
 {sourcedirs:}# C++ include paths (with -I)
 {sourcedirs:}INCLUDE_PATH = {includepath}

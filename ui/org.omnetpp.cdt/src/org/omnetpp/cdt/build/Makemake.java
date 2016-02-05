@@ -388,6 +388,7 @@ public class Makemake {
         m.put("allenv", options.userInterface.startsWith("A"));
         m.put("cmdenv", options.userInterface.startsWith("C"));
         m.put("tkenv", options.userInterface.startsWith("T"));
+        m.put("qtenv", options.userInterface.startsWith("Q"));
         m.put("extraobjs", quoteJoin(extraObjs));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpathdirs", libDirs);
