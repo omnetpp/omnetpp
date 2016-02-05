@@ -76,9 +76,11 @@ Register_PerRunConfigOption(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOO
 Register_PerRunConfigOptionU(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When cmdenv-express-mode=true: print status update every n seconds.")
 Register_PerRunConfigOption(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When cmdenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 Register_PerRunConfigOption(CFGID_LOG_FORMAT, "cmdenv-log-format", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. The format string may contain format directives in the syntax '%x' (a '%' followed by a single format character).  For example '%l' stands for log level, and '%J' for source component. See the manual for the list of available format characters.");
-Register_PerRunConfigOption(CFGID_GLOBAL_LOGLEVEL, "cmdenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
+Register_PerRunConfigOption(CFGID_LOGLEVEL, "cmdenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
 
+//TODO ezeket atnevezni:
 Register_PerObjectConfigOption(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print log messages (EV<<, EV_INFO, etc.) from the selected modules.")
+Register_PerObjectConfigOption(CFGID_CMDENV_LOGLEVEL2, "log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the globally specified runtime log level and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
 //
 // Register the Cmdenv user interface
@@ -192,7 +194,7 @@ void Cmdenv::readPerRunOptions()
     opt->messageTrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
-    setLogLevel(cLogLevel::getLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str()));
+    setLogLevel(cLogLevel::getLevel(getConfig()->getAsString(CFGID_LOGLEVEL).c_str()));
     setLogFormat(getConfig()->getAsString(CFGID_LOG_FORMAT).c_str());
 }
 
@@ -569,6 +571,14 @@ void Cmdenv::deinstallSignalHandler()
 }
 
 //-----------------------------------------------------
+
+void Cmdenv::configure(cComponent *component)
+{
+    EnvirBase::configure(component);
+
+    LogLevel level = cLogLevel::getLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL2).c_str());
+    component->setLoglevel(level);
+}
 
 void Cmdenv::askParameter(cPar *par, bool unassigned)
 {

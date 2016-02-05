@@ -23,8 +23,6 @@
 
 namespace omnetpp {
 
-Register_PerObjectConfigOption(CFGID_COMPONENT_LOGLEVEL, "log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the globally specified runtime log level and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
-
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::globalStream(&cLogProxy::buffer);
 LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
@@ -131,26 +129,22 @@ cLogProxy::~cLogProxy()
     previousCategory = currentEntry.category;
 }
 
-bool cLogProxy::isEnabled(const void *sourceObject, const char *category, LogLevel loglevel)
+bool cLogProxy::isEnabled(const void *, const char *category, LogLevel loglevel)
 {
+    // log called from outside cComponent methods, use context component to decide enablement
     const cModule *contextModule = getSimulation()->getContextModule();
     return !contextModule || isComponentEnabled(contextModule, category, loglevel);
 }
 
 bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *category, LogLevel loglevel)
 {
+    // log called from a cComponent method, check whether logging for that component is enabled
     return isComponentEnabled(sourceComponent, category, loglevel);
 }
 
 bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel)
 {
-    LogLevel componentLoglevel = component->getLoglevel();
-    if ((int)componentLoglevel == -1) {
-        componentLoglevel = cLogLevel::getLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_COMPONENT_LOGLEVEL).c_str());
-        // NOTE: this is just a cache
-        const_cast<cComponent *>(component)->setLoglevel(componentLoglevel);
-    }
-    return loglevel <= componentLoglevel;
+    return loglevel <= component->getLoglevel(); //TODO use category
 }
 
 void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)

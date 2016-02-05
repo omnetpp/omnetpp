@@ -193,7 +193,7 @@ inline const char *getClassName() {return nullptr;}
  * @defgroup LoggingDefault Logging with default category
  */
 //@{
-#define EV        EV_INFO                        ///< Short for EV_INFO
+#define EV        EV_INFO                           ///< Short for EV_INFO
 #define EV_FATAL  OPP_LOG(LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
 #define EV_ERROR  OPP_LOG(LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
 #define EV_WARN   OPP_LOG(LOGLEVEL_WARN, nullptr)   ///< Log warnings
@@ -226,6 +226,7 @@ inline const char *getClassName() {return nullptr;}
 /**
  * This class holds various data that is captured when a particular log statement
  * executes. It also contains the text written to the log stream.
+ *
  * @ingroup Internals
  */
 class SIM_API cLogEntry
@@ -253,12 +254,10 @@ class SIM_API cLogEntry
 };
 
 
-/**
- * This class captures the context where the log statement appears.
- * NOTE: This class is internal to the logging infrastructure.
- *
- * @ingroup Internals
- */
+//
+// This class captures the context where the log statement appears.
+// NOTE: This class is internal to the logging infrastructure.
+//
 class SIM_API cLogProxy
 {
   private:
@@ -290,21 +289,22 @@ class SIM_API cLogProxy
     static LogLevel previousLoglevel; // log level of the previous log statement
     static const char *previousCategory; // category of the previous log statement
 
+  private:
+    static bool isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel);
+    void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+
   public:
     cLogProxy(const void *sourcePointer, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     cLogProxy(const cObject *sourceObject, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     cLogProxy(const cComponent *sourceComponent, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     ~cLogProxy();
 
-    static bool isEnabled(const void *sourceObject, const char *category, LogLevel loglevel);
-    static bool isEnabled(const cComponent *sourceComponent, const char *category, LogLevel loglevel);
-    static bool isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel);
+    // invoked from OPP_LOGPROXY(), compiler selects one based on return type of selected getThisPtr()
+    static bool isEnabled(const void *thisPtr, const char *category, LogLevel loglevel);
+    static bool isEnabled(const cComponent *thisPtr, const char *category, LogLevel loglevel);
 
     std::ostream& getStream() { return globalStream; }
     static void flushLastLine();
-
-  protected:
-    void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 };
 
 }  // namespace omnetpp

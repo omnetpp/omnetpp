@@ -96,6 +96,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual EnvirOptions *createOptions() override {return new CmdenvOptions();}
      virtual void readOptions() override;
      virtual void readPerRunOptions() override;
+     virtual void configure(cComponent *component) override;
      virtual void askParameter(cPar *par, bool unassigned) override;
 
      void help();

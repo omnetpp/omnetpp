@@ -135,7 +135,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     bool isEvEnabled() const  {return flags&FL_EVLOGENABLED;}
 
     // internal: used by log mechanism
-    LogLevel getLoglevel() const { return (LogLevel)(((flags >> FL_LOGLEVEL_SHIFT) & 0x7) - 1); }
+    LogLevel getLoglevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
     void setLoglevel(LogLevel loglevel);
 
     // internal: invoked from within cEnvir::getRNGMappingFor(component)
