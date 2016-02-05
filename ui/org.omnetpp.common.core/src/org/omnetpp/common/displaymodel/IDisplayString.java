@@ -40,7 +40,6 @@ public interface IDisplayString {
      * Tag names used in the display string
      */
     public enum Tag {
-        bgp(COMPOUNDMODULE, "Background position"),
         bgb(COMPOUNDMODULE, "Background box"),
         bgi(COMPOUNDMODULE, "Background image"),
         bgtt(COMPOUNDMODULE, "Background tooltip"),
@@ -249,10 +248,6 @@ public interface IDisplayString {
 
         // START of compound module properties
         // NOTE: Do NOT change the first and last elements of property groups!
-        // BGP tag
-        MODULE_X(Tag.bgp, 0, PropType.COORDINATE, PropGroup.BackgroundPosition, "bg x", "Module background horizontal offset", null),
-        MODULE_Y(Tag.bgp, 1, PropType.COORDINATE, PropGroup.BackgroundPosition, "bg y", "Module background vertical offset", null),
-
         // BGB tag
         MODULE_WIDTH(Tag.bgb, 0, PropType.DISTANCE, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match the contents", null),
         MODULE_HEIGHT(Tag.bgb, 1, PropType.DISTANCE, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match the contents", null),

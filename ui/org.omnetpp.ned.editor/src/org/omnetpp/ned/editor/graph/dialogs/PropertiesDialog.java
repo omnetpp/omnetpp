@@ -929,7 +929,7 @@ public class PropertiesDialog extends TrayDialog {
         // (coordinate offset??) and are ignored by the graphical editor anyway
 
         group = createGroup(page, "Area", 3);
-        // BGP tag
+        // BGB tag/1 (size)
         createLabel(group, "Width:", false);
         bgWidthField = createText(group, 10);
         createUnitLabel(group);
@@ -937,6 +937,7 @@ public class PropertiesDialog extends TrayDialog {
         bgHeightField = createText(group, 10);
         createUnitLabel(group);
 
+        // BGU tag
         group = createGroup(page, "Other", 1);
         comp = createComposite(group, 2);
         createLabel(comp, "Distance unit:", false);
@@ -950,7 +951,7 @@ public class PropertiesDialog extends TrayDialog {
         });
 
         group = createGroup(page, "Background", 1, 2);
-        // BGB tag
+        // BGB tag/2 (border width and color)
         comp = createComposite(group, 7);
         createLabel(comp, "Color:", false);
         bgFillColorField = createColorSelector(comp);

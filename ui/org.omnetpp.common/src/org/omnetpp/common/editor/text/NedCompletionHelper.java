@@ -81,7 +81,6 @@ public final class NedCompletionHelper {
 
             int shortParameterCount = -1;
             switch (tag) {
-                case bgp: break;
                 case bgb: shortParameterCount = 2; break;
                 case bgi: break;
                 case bgtt: break;
