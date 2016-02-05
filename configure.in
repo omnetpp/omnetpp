@@ -393,6 +393,12 @@ if test "$TOOLCHAIN_NAME" = ""; then
     fi
 fi
 
+# FIXME: this is a temporary workaround for mingw/clang 3.7. The optimizer crashes if an optimization
+# higher than -O0 is specified. This should be removed once clang 3.8 fixes this.
+if test "$mingw" = yes -a "$CC" = clang; then
+  CFLAGS_RELEASE="$CFLAGS_RELEASE -O0"
+fi
+
 #----------------------
 # check whether the compiler supports the C++11 standard (gcc/clang specific option)
 #----------------------
