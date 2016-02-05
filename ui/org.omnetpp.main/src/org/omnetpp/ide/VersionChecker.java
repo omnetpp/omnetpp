@@ -38,7 +38,7 @@ import org.omnetpp.ide.views.NewVersionView;
 @SuppressWarnings("restriction")
 public class VersionChecker {
     protected long VERSIONCHECK_INTERVAL_MILLIS = 3*24*3600*1000L;  // 3 days
-    public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest" : "omnetpp");
+    public static final String BASE_URL = "https://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest" : "omnetpp");
     public static final String VERSIONCHECK_URL = BASE_URL + "/versioncheck/"; // used in OmnetppStartup
 
 
