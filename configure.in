@@ -270,7 +270,7 @@ else
         # /usr/include directories as they are not added by default, but they are needed
         # to properly find the Tcl/Tk, LibXML2 libraries.
         if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include -I/mingw32/include"
+            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
@@ -291,7 +291,7 @@ else
         ;;
     *darwin*)
         OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
-        CFLAGS_ARCH="$CFLAGS_ARCH -I$OMNETPP_TOOLS_DIR/include"
+        CFLAGS_ARCH="$CFLAGS_ARCH -isystem $OMNETPP_TOOLS_DIR/include"
         LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
         jni_platform=
         PLATFORM=macosx
