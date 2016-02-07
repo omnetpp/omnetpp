@@ -387,7 +387,9 @@ void MainWindow::updateStatusDisplay()
     updateSimtimeDisplay();
 
     if (showStatusDetails) {
-        if (env->getSimulationState() == Qtenv::SIM_RUNNING)
+        if (env->getSimulationState() == Qtenv::SIM_RUNNING
+                && (env->getSimulationRunMode() == Qtenv::RUNMODE_FAST
+                    || env->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS))
             updatePerformanceDisplay();
         else
             updateNextModuleDisplay();
@@ -416,7 +418,7 @@ void MainWindow::updateNextModuleDisplay()
     cEvent *msgptr = nullptr;
 
     int state = env->getSimulationState();
-    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY) {
+    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING) {
         modptr = getSimulation()->guessNextModule();
         msgptr = getSimulation()->guessNextEvent();
     }
