@@ -1303,8 +1303,12 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
         qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
 
+    auto transMode = imageFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
+            ? Qt::FastTransformation : Qt::SmoothTransformation;
+
     if (imageFigure->getWidth() != 0 && imageFigure->getHeight() != 0)
-        imageItem->setPixmap(QPixmap::fromImage(image->scaled(imageFigure->getWidth(), imageFigure->getHeight())));
+        imageItem->setPixmap(QPixmap::fromImage(image->scaled(imageFigure->getWidth(), imageFigure->getHeight(),
+            Qt::IgnoreAspectRatio, transMode)));
     else
         imageItem->setPixmap(QPixmap::fromImage(*image));
 }
@@ -1314,11 +1318,9 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
 
-    //TODO not working with QTransform
-    if (imageFigure->getInterpolation() == cFigure::INTERPOLATION_BEST)
-        imageItem->setTransformationMode(Qt::SmoothTransformation);
-    else
-        imageItem->setTransformationMode(Qt::FastTransformation);
+    imageItem->setTransformationMode(
+        imageFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
+        ? Qt::FastTransformation : Qt::SmoothTransformation);
 
     imageItem->setOpacity(imageFigure->getOpacity());
 
@@ -1347,8 +1349,9 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
             image.setPixel(x, y, qRgba(rgba.red, rgba.green, rgba.blue, rgba.alpha));
         }
 
-    Qt::TransformationMode transMode = pixmapFigure->getInterpolation() == cFigure::INTERPOLATION_NONE ?
-                Qt::FastTransformation : Qt::SmoothTransformation;
+    Qt::TransformationMode transMode =
+        pixmapFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
+            ? Qt::FastTransformation : Qt::SmoothTransformation;
     image = image.scaled(pixmapFigure->getWidth(), pixmapFigure->getHeight(), Qt::IgnoreAspectRatio, transMode);
     pixmapItem->setPixmap(QPixmap::fromImage(image));
 }
