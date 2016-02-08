@@ -2058,7 +2058,7 @@ void EnvirBase::checkTimeLimits()
 #endif
     if (opt->cpuTimeLimit == 0)  // no limit
         return;
-    if (disableTracing && (getSimulation()->getEventNumber()&0xFF) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
+    if (!loggingEnabled && (getSimulation()->getEventNumber()&0xFF) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
         return;
     timeval now;
     gettimeofday(&now, nullptr);

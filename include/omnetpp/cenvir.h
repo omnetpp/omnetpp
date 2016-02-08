@@ -75,7 +75,7 @@ class SIM_API cEnvir
     friend class evbuf;
   public:
     // Internal flag for express mode.
-    bool disableTracing;
+    bool loggingEnabled;
 
     // Indicates whether eventlog recording is currently enabled
     bool recordEventlog;  //FIXME remove!!!! use flag inside eventlogmgr
@@ -492,7 +492,7 @@ class SIM_API cEnvir
      * where output from <tt>EV&lt;&lt;</tt> statements is not printed or logged
      * anywhere but discarded. The <tt>EV</tt> macro already makes use of this function.
      */
-    bool isDisabled() const {return disableTracing && !recordEventlog;}
+    bool isDisabled() const {return !loggingEnabled && !recordEventlog;}
 
     /**
      * Returns true if the simulation is running under a GUI in Express mode.

@@ -419,7 +419,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     stopSimulationFlag = false;
 
     animating = true;
-    disableTracing = false;
+    loggingEnabled = true;
     runUntil.msg = nullptr;
 
     if (simulationState == SIM_TERMINATED) {
@@ -483,7 +483,7 @@ bool Tkenv::doRunSimulation()
     //  - stopsimulation_flag
     //
     speedometer.start(getSimulation()->getSimTime());
-    disableTracing = false;
+    loggingEnabled = true;
     bool firstevent = true;
 
     struct timeval last_update;
@@ -577,7 +577,7 @@ bool Tkenv::doRunSimulationExpress()
 
     // OK, let's begin
     speedometer.start(getSimulation()->getSimTime());
-    disableTracing = true;
+    loggingEnabled = false;
     animating = false;
 
     struct timeval last_update;
@@ -1236,7 +1236,7 @@ void Tkenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
 
-    if (!disableTracing)
+    if (loggingEnabled)
         logBuffer.beginSend(msg);
 }
 
@@ -1244,7 +1244,7 @@ void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagatio
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 
-    if (!disableTracing)
+    if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
@@ -1252,7 +1252,7 @@ void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
 
-    if (!disableTracing)
+    if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate);
 }
 
@@ -1260,7 +1260,7 @@ void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationD
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 
-    if (!disableTracing)
+    if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
@@ -1268,7 +1268,7 @@ void Tkenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
 
-    if (!disableTracing)
+    if (loggingEnabled)
         logBuffer.endSend(msg);
 }
 
@@ -1692,7 +1692,7 @@ void Tkenv::bubble(cComponent *component, const char *text)
 {
     EnvirBase::bubble(component, text);
 
-    if (disableTracing)
+    if (!loggingEnabled)
         return;
 
     if (!opt->showBubbles)
@@ -1725,7 +1725,7 @@ void Tkenv::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
-    if (disableTracing)
+    if (!loggingEnabled)
         return;
 
     std::string prefix = logFormatter.formatPrefix(entry);

@@ -266,7 +266,7 @@ void Cmdenv::doRun()
                 ::fprintf(fout, "Initializing...\n");
                 ::fflush(fout);
 
-                disableTracing = opt->expressMode;
+                loggingEnabled = !opt->expressMode;
                 startRun();
                 startrunDone = true;
 
@@ -278,7 +278,7 @@ void Cmdenv::doRun()
                 // finish() should not be called.
                 notifyLifecycleListeners(LF_ON_SIMULATION_START);
                 simulate();
-                disableTracing = false;
+                loggingEnabled = true;
 
                 ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
                 ::fflush(fout);
@@ -291,7 +291,7 @@ void Cmdenv::doRun()
             }
             catch (std::exception& e) {
                 hadError = true;
-                disableTracing = false;
+                loggingEnabled = true;
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
@@ -356,7 +356,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
 
     try {
         if (!opt->expressMode) {
-            disableTracing = false;
+            loggingEnabled = true;
             while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
@@ -385,7 +385,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
             }
         }
         else {
-            disableTracing = true;
+            loggingEnabled = false;
             speedometer.start(getSimulation()->getSimTime());
 
             struct timeval last_update;
@@ -416,7 +416,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
     catch (cTerminationException& e) {
         if (opt->expressMode)
             doStatusUpdate(speedometer);
-        disableTracing = false;
+        loggingEnabled = true;
         stopClock();
         deinstallSignalHandler();
 
@@ -427,7 +427,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
     catch (std::exception& e) {
         if (opt->expressMode)
             doStatusUpdate(speedometer);
-        disableTracing = false;
+        loggingEnabled = true;
         stopClock();
         deinstallSignalHandler();
         throw;
@@ -435,7 +435,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
     // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
     if (opt->expressMode)
         doStatusUpdate(speedometer);
-    disableTracing = false;
+    loggingEnabled = true;
     stopClock();
     deinstallSignalHandler();
 }
@@ -609,7 +609,7 @@ void Cmdenv::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
-    if (disableTracing)
+    if (!loggingEnabled)
         return;
 
     cComponent *ctx = getSimulation()->getContext();
