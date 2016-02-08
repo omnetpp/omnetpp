@@ -331,32 +331,48 @@ is bound more loosely than the conditional operator (\ttt{?:}).
 %FIXME add tale about debug channels etc.
 
 
-\section{Generating Random Numbers}
-\label{cha:sim-lib:generating-random-numbers}
+\section{Random Number Generators}
+\label{cha:sim-lib:random-number-generators}
 
-Random numbers in simulation are never random. Rather, they are
-produced using deterministic algorithms. Algorithms take a \textit{seed} value
-and perform some deterministic calculations on them to produce
-a ``random'' number and the next seed. Such algorithms and their
-implementations are called \textit{random number generators} or RNGs,
-or sometimes pseudo random number generators or PRNGs to highlight
-their deterministic nature.
-  \footnote{There are real random numbers as well, see e.g.
-  http://www.random.org/, http://www.comscire.com, or the Linux
-  \textit{/dev/random} device. For non-random numbers, try www.noentropy.net.}
+Random numbers in simulation are usually not really random. Rather, they
+are produced using deterministic algorithms. Based on some internal state,
+the algorithm performs some deterministic computation to produce a
+``random'' number and the next state. Such algorithms and their
+implementations are called \textit{random number generators} or RNGs, or
+sometimes pseudo random number generators or PRNGs to highlight their
+deterministic nature. The algorithm's internal state is usually initialized
+from a smaller \textit{seed} value.
 
-Starting from the same seed, RNGs always produce the same sequence
-of random numbers. This is a useful property and of great importance,
-because it makes simulation runs repeatable.
+Starting from the same seed, RNGs always produce the same sequence of
+random numbers. This is a useful property and of great importance, because
+it makes simulation runs repeatable.
 
-RNGs produce uniformly distributed integers in some range,
-usually between 0 or 1 and $2^{32}$ or so. Mathematical transformations
-are used to produce random variates from them that correspond to
-specific distributions.
+RNGs are rarely used directly, because they produce uniformly distributed
+random numbers. When non-uniform random numbers are needed, mathematical
+transformations are used to produce random numbers from RNG input that
+correspond to specific distributions. This is called random variate
+generation, and it will be covered in the next section,
+\ref{cha:sim-lib:random-variate-generation}.
 
-\subsection{Random Number Generators}
+It is often advantageous for simulations to use random numbers from
+multiple RNG instances. For example, a wireless network simulation may use
+one RNG for generating traffic, and another RNG for simulating transmission
+errors in the noisy wireless channel. Since seeds for individual RNGs can
+be configured independently, this arrangement allows one e.g. to perform
+several simulation runs with the same traffic but with bit errors occurring
+in different places. A simulation technique called \textit{variance
+reduction} is also related to the use of different random number streams.
+{\opp} makes it easy to use multiple RNGs in various flexible configurations.
+
+When assigning seeds, it is important that different RNGs and also
+different simulation runs use non-overlapping series of random numbers.
+Overlap in the generated random number sequences can introduce unwanted
+correlation in the simulation results.
+
+\subsection{RNG Implementations}
 \label{sec:sim-lib:rngs}
-\index{random number generator}
+
+{\opp} comes with the following RNG implementations.
 
 \subsubsection{Mersenne Twister}
 
@@ -398,127 +414,212 @@ which has a period of about $2^{191}$ and can provide a large
 number of \textit{guaranteed} independent streams.
 
 
-\subsection{Random Number Streams, RNG Mapping}
+\subsection{Global and Component-Local RNGs}
 
-Simulation programs may consume random numbers from several streams,
-that is, from several independent RNG instances. For example, if a
-network simulation uses random numbers for generating packets and
-for simulating bit errors in the transmission, it might be a good
-idea to use different random streams for both. Since the seeds
-for each stream can be configured independently, this arrangement
-would allow you to perform several simulation runs with the same traffic
-but with bit errors occurring in different places.
-A simulation technique called \textit{variance reduction} is
-also related to the use of different random number streams.
+{\opp} can be configured to make several RNGs available for the simulation
+model. These \textit{global} or \textit{physical} RNGs are numbered from
+$0$ to $numRNGs-1$, and can be seeded independently.
 
-It is also important that different streams and also different
-simulation runs use non-overlapping series of random numbers.
-Overlap in the generated random number sequences can introduce
-unwanted correlation in your results.
+However, usually model code doesn't directly work with those RNGs. Instead,
+there is an indirection step introduced for additional flexibility. When
+random numbers are drawn in a model, the code usually refers to
+\textit{component-local} or \textit{logical} RNG numbers. These
+local RNG numbers are mapped to global RNG indices to arrive at
+actual RNG instances. This mapping occurs on per-component basis. That is,
+each module and channel object contains a mapping table similar to the
+following:
 
-The number of random number streams as well as seeds for the individual
-streams can be configured in \ffilename{omnetpp.ini}
-(section \ref{sec:ch-config-sim:rng-config}).
-For the "minimal standard RNG", the \fprog{seedtool} program can be
-used for selecting good seeds (section \ref{sec:ch-config-sim:seedtool}).
+\begin{tabular}{ c c c }
+Local RNG index &               & Global RNG \\ \hline
+              0 & $\rightarrow$ & 0 \\
+              1 & $\rightarrow$ & 0 \\
+              2 & $\rightarrow$ & 2 \\
+              3 & $\rightarrow$ & 1 \\
+              4 & $\rightarrow$ & 1 \\
+              5 & $\rightarrow$ & 3 \\
+\end{tabular}
 
-In {\opp}, streams are identified with RNG numbers. The RNG numbers
-used in simple modules may be \textit{arbitrarily mapped} to the actual
-random number streams (actual RNG instances) from \ffilename{omnetpp.ini}
-(section \ref{sec:ch-config-sim:rng-config}). The mapping allows
-for great flexibility in RNG usage and random number streams
-configuration -- even for simulation models which were not written
-with RNG awareness.
+In the example, the module or channel in question has 6 local (logical)
+RNGs that map to 4 global (physical) RNGs.
+
+\begin{note}
+Local RNG number 0 is special in the sense that all random number functions
+use that RNG, unless explicitly told otherwise by specifying an \textit{rng=k}
+argument.
+\end{note}
+
+The local-to-global mapping, as well as the number of number of global
+RNGs and their seeding can be configured in \ffilename{omnetpp.ini} (see
+section \ref{sec:ch-config-sim:rng-config}).
+
+The mapping can be set up arbitrarily, with the default being identity
+mapping (that is, local RNG $k$ refers to global RNG $k$.) The mapping
+allows for flexibility in RNG and random number streams configuration
+-- even for simulation models which were not written with RNG awareness.
+For example, even if modules in a simulation only use the default, local
+RNG number 0, one can set up mapping so that different groups of modules
+use different physical RNGs.
+
+In theory, RNGs could also be instantiated and used directly from C++ model
+code. However, doing so is not recommended, because the model would lose
+configurability via \ffilename{omnetpp.ini}.
+
+\subsection{Accessing the RNGs}
+
+RNGs are represented with subclasses of the abstract class \cclass{cRNG}.
+In addition to random number generation methods like \ffunc{intRand()} and
+\ffunc{doubleRand()}, the \cclass{cRNG} interface also includes methods like
+\ffunc{selfTest()} for basic integrity checking and \ffunc{getNumbersDrawn()}
+to query the number of random numbers generated.
+
+RNGs can be accessed by local RNG number via \cclass{cComponent}'s
+\ffunc{getRNG(k)} method. To access global global RNGs directly by their
+indices, one can use \cclass{cEnvir}'s \ffunc{getRNG(k)} method.
+However, RNGs rarely need to be accessed directly. Most simulations will
+only use them via random variate generation functions, described in the
+next section.
 
 
-\subsection{Accessing The RNGs}
+\section{Generating Random Variates}
+\label{cha:sim-lib:random-variate-generation}
 
-The \ffunc{intrand(n)} function generates random integers in the range $[0, n-1]$, and
-\ffunc{dblrand()} generates a random double on $[0,1)$. These functions
-simply wrap the underlying RNG objects. Examples:
+Random numbers produced by RNGs are uniformly distributed. This section
+describes how to obtain streams of non-uniformly distributed random numbers
+from various distributions.
 
-\begin{cpp}
-int dice = 1 + intrand(6); // result of intrand(6) is in the range 0..5
-double p = dblrand();      // dblrand() produces numbers in [0,1)
-\end{cpp}
+The simulation library supports the following distributions:
 
-They also have a counterparts that use generator \textit{k}:
-
-\begin{cpp}
-int dice = 1 + intrand(k,6); // uses generator k
-double prob = dblrand(k);    // ""
-\end{cpp}
-
-The underlying RNG objects are subclassed from \cclass{cRNG},
-and they can be accessed via \cclass{cModule}'s \ffunc{getRNG()} method.
-The argument to \ffunc{getRNG()} is a local RNG number which will undergo
-RNG mapping.
-
-\begin{cpp}
-cRNG *rng1 = getRNG(1);
-\end{cpp}
-
-\cclass{cRNG} contains the methods implementing the above \ffunc{intrand()}
-and \ffunc{dblrand()} functions. The \cclass{cRNG} interface also allows
-you to access the ``raw'' 32-bit random numbers generated by the RNG
-and to learn their ranges (\ttt{intRand()}, \ttt{intRandMax()}) as well as
-to query the number of random numbers generated (\ttt{getNumbersDrawn()}).
-
-
-\subsection{Random Variates}
-
-The following functions are based on \ffunc{dblrand()} and return
-random variables of different distributions\index{distribution!random variables}\index{random!numbers from distributions}:
-
-Random variate functions use one of the random number generators (RNGs)
-provided by {\opp}. By default this is generator 0, but you can specify
-which one to be used.
-
-{\opp} has the following predefined distributions\index{distribution!predefined}:
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
+\begin{longtable}{|p{5cm}|p{9cm}|}
 \hline
-\tbf{Function} & \tbf{Description}\\\hline
 \multicolumn{2}{|c|}{\tbf{Continuous distributions}}\\\hline
-\ffunc{uniform(a, b, \textit{rng=0})} & uniform distribution in the range [a,b) \\\hline
-\ffunc{exponential(mean, \textit{rng=0})} & exponential distribution with the given mean \\\hline
-\ffunc{normal(mean, stddev, \textit{rng=0})} & normal distribution with the given mean and standard deviation \\\hline
-\ffunc{truncnormal(mean, stddev, \textit{rng=0})} & normal distribution truncated to nonnegative values \\\hline
-\ffunc{gamma\_d(alpha, beta, \textit{rng=0})} & gamma distribution with parameters alpha>0, beta>0 \\\hline
-\ffunc{beta(alpha1, alpha2, \textit{rng=0})} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
-\ffunc{erlang\_k(k, mean, \textit{rng=0})} & Erlang distribution with k>0 phases and the given mean \\\hline
-\ffunc{chi\_square(k, \textit{rng=0})} & chi-square distribution with k>0 degrees of freedom \\\hline
-\ffunc{student\_t(i, \textit{rng=0})} & student-t distribution with i>0 degrees of freedom \\\hline
-\ffunc{cauchy(a, b, \textit{rng=0})} & Cauchy distribution with parameters a,b where b>0 \\\hline
-\ffunc{triang(a, b, c, \textit{rng=0})} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
-\ffunc{lognormal(m, s, rng=0)} & lognormal distribution with mean m and variance s>0 \\\hline
-\ffunc{weibull(a, b, \textit{rng=0})} & Weibull distribution with parameters a>0, b>0 \\\hline
-\ffunc{pareto\_shifted(a, b, c, \textit{rng=0})} & generalized Pareto distribution with parameters a, b and shift c \\\hline
+\textit{\tbf{uniform}(a, b)} & uniform distribution in the range [a,b) \\\hline
+\textit{\tbf{exponential}(mean)} & exponential distribution with the given mean \\\hline
+\textit{\tbf{normal}(mean, stddev)} & normal distribution with the given mean and standard deviation \\\hline
+\textit{\tbf{truncnormal}(mean, stddev)} & normal distribution truncated to nonnegative values \\\hline
+\textit{\tbf{gamma\_d}(alpha, beta)} & gamma distribution with parameters alpha>0, beta>0 \\\hline
+\textit{\tbf{beta}(alpha1, alpha2)} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
+\textit{\tbf{erlang\_k}(k, mean)} & Erlang distribution with k>0 phases and the given mean \\\hline
+\textit{\tbf{chi\_square}(k)} & chi-square distribution with k>0 degrees of freedom \\\hline
+\textit{\tbf{student\_t}(i)} & student-t distribution with i>0 degrees of freedom \\\hline
+\textit{\tbf{cauchy}(a, b)} & Cauchy distribution with parameters a,b where b>0 \\\hline
+\textit{\tbf{triang}(a, b, c)} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
+\textit{\tbf{lognormal}(m, s)} & lognormal distribution with mean m and variance s>0 \\\hline
+\textit{\tbf{weibull}(a, b)} & Weibull distribution with parameters a>0, b>0 \\\hline
+\textit{\tbf{pareto\_shifted}(a, b, c)} & generalized Pareto distribution with parameters a, b and shift c \\\hline
 \multicolumn{2}{|c|}{\tbf{Discrete distributions}} \\\hline
-\ffunc{intuniform(a, b, \textit{rng=0})} & uniform integer from a..b \\\hline
-\ffunc{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
-\ffunc{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
-\ffunc{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
-\ffunc{negbinomial(n, p, \textit{rng=0})} & negative binomial distribution with parameters n>0 and 0<=p<=1\\\hline
-\ffunc{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
-
+\textit{\tbf{intuniform}(a, b)} & uniform integer from a..b \\\hline
+\textit{\tbf{bernoulli}(p)} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
+\textit{\tbf{binomial}(n, p)} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
+\textit{\tbf{geometric}(p)} & geometric distribution with parameter 0<=p<=1 \\\hline
+\textit{\tbf{negbinomial}(n, p)} & negative binomial distribution with parameters n>0 and 0<=p<=1\\\hline
+\textit{\tbf{poisson}(lambda)} & Poisson distribution with parameter lambda \\\hline
 \end{longtable}
 
+Some notes:
 
-They are the same functions that can be used in NED files.
-\ffunc{intuniform()} generates integers including both the lower and
-upper limit, so for example the outcome of tossing a coin could be
-written as intuniform(1,2).  \ffunc{truncnormal()} is the normal
-distribution truncated to nonnegative values; its implementation
-generates a number with normal distribution and if the result is
-negative, it keeps generating other numbers until the outcome is
-nonnegative.
+\begin{itemize}
+\item \textit{intuniform()} generates integers including both the lower and upper
+    limit, so for example the outcome of tossing a coin could be written as
+    \ttt{intuniform(1,2)}.
+\item \textit{truncnormal()} is the normal distribution truncated to nonnegative
+    values; its implementation generates a number with normal distribution and
+    if the result is negative, it keeps generating other numbers until the
+    outcome is nonnegative.
+\end{itemize}
 
-If the above distributions don't suffice, you can write your own
-functions\index{distribution!custom}. If you register your functions
-with the \fmac{Define\_NED\_Function()} macro, you can use them in NED
-files and ini files too.
+There are several ways to generate random numbers from these distributions,
+as described in the next sections.
 
+\subsection{Component Methods}
+
+The preferred way is to use methods defined on \cclass{cComponent}, the
+common base class of modules and channels:
+
+\begin{cpp}
+double uniform(double a, double b, int rng=0) const;
+double exponential(double mean, int rng=0) const;
+double normal(double mean, double stddev, int rng=0) const;
+...
+\end{cpp}
+
+These methods work with the component's local RNGs, and accept the RNG
+index (default 0) in their extra \ttt{int} parameter.
+
+Since most simulation code is located in methods of simple modules, these
+methods can be usually called in a concise way, without an explicit module
+or channel pointer. An example:
+
+\begin{cpp}
+scheduleAt(simTime() + exponential(1.0), msg);
+\end{cpp}
+
+There are two additional methods, \ffunc{intrand()} and \ffunc{dblrand()}.
+\ffunc{intrand(n)} generates random integers in the range $[0, n-1]$, and
+\ffunc{dblrand()} generates a random double on $[0,1)$. They also accept
+an additional local RNG index that defaults to 0.
+
+\subsection{Random Number Stream Classes}
+
+It is sometimes useful to be able to pass around random variate generators
+as objects. The classes \cclass{cUniform}, \cclass{cExponential},
+\cclass{cNormal}, etc. fulfill this need.
+
+These classes subclass from the \cclass{cRandom} abstract class.
+\cclass{cRandom} was designed to encapsulate random number streams. Its
+most important method is \ffunc{draw()} that returns a new random number
+from the stream. \cclass{cUniform}, \cclass{cExponential} and other classes
+essentially bind the distribution's parameters and an RNG to the generation
+function.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/crandom-inheritance}
+    \caption{Random number stream classes}
+  \end{center}
+\end{figure}
+
+Let us see for example \cclass{cNormal}. The constructor expects an RNG
+(\cclass{cRNG} pointer) and the parameters of the distribution, mean and
+standard deviation. It also has a default constructor, as it is a
+requirement for \fmac{Register\_Class()}. When the default constructor
+is used, the parameters can be set with \ffunc{setRNG()}, \ffunc{setMean()}
+and \ffunc{setStddev()}. \ffunc{setRNG()} is defined on \cclass{cRandom}.
+The \ffunc{draw()} method, of course, is redefined to return a random
+number from the normal distribution.
+
+An example that shows the use of a random number stream as an object:
+
+\begin{cpp}
+cNormal *normal = new cNormal(getRNG(0), 0, 1); // unit normal distr.
+printRandomNumbers(normal, 10);
+...
+
+void printRandomNumbers(cRandom *rand, int n)
+{
+    EV << "Some numbers from a " << rand->getClassName() << ":" << endl;
+    for (int i = 0; i < n; i++)
+        EV << rand->draw() << endl;
+}
+\end{cpp}
+
+Another important property of \cclass{cRandom} is that it can encapsulate
+state. That is, subclasses can be implemented that, for example, return
+autocorrelated numbers, numbers from a stochastic process, or simply
+elements of a stored sequence (e.g. one loaded from a trace file).
+
+\subsection{Generator Functions}
+
+Both the \cclass{cComponent} methods and the random number stream classes
+described above have been implemented with the help of standalone generator
+functions. These functions take a \cclass{cRNG} pointer as their first
+argument.
+
+\begin{cpp}
+double uniform(cRNG *rng, double a, double b);
+double exponential(cRNG *rng, double mean);
+double normal(cRNG *rng, double mean, double stddev);
+...
+\end{cpp}
 
 \subsection{Random Numbers from Histograms}
 
@@ -530,8 +631,18 @@ are there to generate random numbers from equi\-dis\-tant-cell or
 equiprobable-cell histograms.  This feature is documented later, with
 the statistical classes.
 
+\subsection{Adding New Distributions}
 
+One can easily add support for new distributions. We recommend that
+you write a standalone generator function first. Then you can add
+a \cclass{cRandom} subclass that wraps it, and/or module (channel)
+methods that invoke it with the module's local RNG.
+If you register the function with the \fmac{Define\_NED\_Function()}
+macro (see \ref{sec:ch-sim-lib:defining-ned-functions}), it will be
+possible to use the new distribution in NED files and ini files too.
 
+If you need a random number stream that has state, you need to
+subclass from \cclass{cRandom}.
 
 
 \section{Container Classes}
