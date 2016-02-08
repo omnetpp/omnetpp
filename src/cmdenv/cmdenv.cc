@@ -609,11 +609,7 @@ void Cmdenv::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
-    if (!loggingEnabled)
-        return;
-
-    cComponent *ctx = getSimulation()->getContext();
-    if (!ctx || ctx->getLoglevel() != LOGLEVEL_OFF || getSimulation()->getContextType() == CTX_FINISH) {
+    if (loggingEnabled || getSimulation()->getContextType() == CTX_FINISH) {
         std::string prefix = logFormatter.formatPrefix(entry);
         ::fputs(prefix.c_str(), fout);
         ::fwrite(entry->text, 1, entry->textLength, fout);
