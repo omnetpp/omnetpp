@@ -69,7 +69,6 @@ Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_
 Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, nullptr, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
 Register_PerRunConfigOption(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
-Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing module EV<< output on/off.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing event banners on/off.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When cmdenv-express-mode=false: print extra information after event banners.")
 Register_PerRunConfigOptionU(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When cmdenv-express-mode=true: print status update every n seconds.")
@@ -125,7 +124,6 @@ CmdenvOptions::CmdenvOptions()
     autoflush = true;
     expressMode = false;
     interactive = false;
-    printModuleMsgs = true;
     printEventBanners = true;
     detailedEventBanners = false;
     statusFrequencyMs = 2000;
@@ -186,7 +184,6 @@ void Cmdenv::readPerRunOptions()
     opt->expressMode = cfg->getAsBool(CFGID_EXPRESS_MODE);
     opt->interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
     opt->autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
-    opt->printModuleMsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
     opt->printEventBanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
     opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
@@ -618,7 +615,7 @@ void Cmdenv::log(cLogEntry *entry)
         return;
 
     cComponent *ctx = getSimulation()->getContext();
-    if (!ctx || (opt->printModuleMsgs && ctx->isEvEnabled()) || getSimulation()->getContextType() == CTX_FINISH) {
+    if (!ctx || (ctx->isEvEnabled()) || getSimulation()->getContextType() == CTX_FINISH) {
         std::string prefix = logFormatter.formatPrefix(entry);
         ::fputs(prefix.c_str(), fout);
         ::fwrite(entry->text, 1, entry->textLength, fout);
