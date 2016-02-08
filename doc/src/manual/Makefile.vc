@@ -46,13 +46,11 @@ HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 SVGPICS = \
         figures\figure-arc.svg \
         figures\figure-group.svg \
-        figures\figure-icon.svg \
-        figures\figure-inheritance.svg \
         figures\figure-label.svg \
         figures\figure-line.svg \
         figures\figure-oval.svg \
+        figures\figure-path.svg \
         figures\figure-pieslice.svg \
-        figures\figure-pixmap.svg \
         figures\figure-polygons.svg \
         figures\figure-polylines.svg \
         figures\figure-rectangle.svg \

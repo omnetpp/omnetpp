@@ -20,7 +20,7 @@ void Animator::initialize()
 
     //--------------------------
     cArcFigure *arc = new cArcFigure("arc");
-    arc->setBounds(cFigure::Rectangle(100,100,100,100));
+    arc->setBounds(cFigure::Rectangle(10,10,100,100));
     arc->setStartAngle(0);
     arc->setEndAngle(M_PI/2);
     arc->setLineColor(cFigure::BLUE);
@@ -28,7 +28,7 @@ void Animator::initialize()
 
     //--------------------------
     cPolylineFigure *polyline = new cPolylineFigure("polyline");
-    const double C=1.1;
+    const double C = 1.1;
     for (int i = 0; i < 10; i++)
         polyline->addPoint(cFigure::Point(5*i*cos(C*i), 5*i*sin(C*i)));
     polyline->move(100, 100);
@@ -81,7 +81,7 @@ void Animator::initialize()
     //--------------------------
     // In the first example, the path is given as a string:
     cPathFigure *path = new cPathFigure("path");
-    path->setPath("M 0 150 L 50 50 L 100 150 Z");
+    path->setPath("M 0 150 L 50 50 Q 20 120 100 150 Z");
     path->setFilled(true);
     path->setLineColor(cFigure::BLUE);
     path->setFillColor(cFigure::YELLOW);
@@ -91,13 +91,11 @@ void Animator::initialize()
     cPathFigure *path2 = new cPathFigure("path2");
     path2->addMoveTo(0,150);
     path2->addLineTo(50,50);
-    path2->addLineTo(100,150);
+    path2->addCurveTo(20,120,100,150);
     path2->addClosePath();
     path2->setFilled(true);
     path2->setLineColor(cFigure::BLUE);
     path2->setFillColor(cFigure::YELLOW);
-
-    // TODO example that draws several disjoint items in one path: a rect, zigzag curve, etc.
 
     //--------------------------
     cTextFigure *text = new cTextFigure("text");
@@ -135,10 +133,10 @@ void Animator::initialize()
     cPixmapFigure *pixmapFigure = new cPixmapFigure("pixmap");
     pixmapFigure->setPosition(cFigure::Point(100,100));
     pixmapFigure->setSize(100, 100);
-    pixmapFigure->setPixmapSize(20, 20, cFigure::GREEN, 1);
+    pixmapFigure->setPixmapSize(9, 9, cFigure::BLUE, 1);
     for (int y = 0; y < pixmapFigure->getPixmapHeight(); y++) {
         for (int x = 0; x < pixmapFigure->getPixmapWidth(); x++) {
-            double opacity = 1 - sqrt((x-10)*(x-10)/100.0 + (y-10)*(y-10)/100.0);
+            double opacity = 1 - sqrt((x-4)*(x-4) + (y-4)*(y-4))/4;
             if (opacity < 0) opacity = 0;
             pixmapFigure->setPixelOpacity(x, y, opacity);
         }
@@ -151,16 +149,18 @@ void Animator::initialize()
     //--------------------------
     cGroupFigure *group = new cGroupFigure("group");
 
-    cImageFigure *image2 = new cImageFigure("img");
-    image2->setPosition(cFigure::Point(0,0));
-    image2->setAnchor(cFigure::ANCHOR_S);
-    image2->setImageName("block/sink");
+    cRectangleFigure *rect2 = new cRectangleFigure("rect");
+    rect2->setBounds(cFigure::Rectangle(-50,0,100,40));
+    rect2->setCornerRadius(5);
+    rect2->setFilled(true);
+    rect2->setFillColor(cFigure::YELLOW);
 
-    cLineFigure *line2 = new cLineFigure("line");
-    line2->setStart(cFigure::Point(-50,10));
-    line2->setEnd(cFigure::Point(50,10));
+    cLineFigure *line2 = new cLineFigure("line2");
+    line2->setStart(cFigure::Point(-80,50));
+    line2->setEnd(cFigure::Point(80,50));
+    line2->setLineWidth(3);
 
-    group->addFigure(image2);
+    group->addFigure(rect2);
     group->addFigure(line2);
     group->translate(100, 100);
     group->rotate(M_PI/6, 100, 100);
@@ -179,6 +179,7 @@ void Animator::initialize()
         polygon,
         polygon2,
         path,
+        path2,
         text,
         label,
         image,
@@ -189,14 +190,12 @@ void Animator::initialize()
         nullptr
     };
 
-    int dx = 0;
+    int dx = 100;
     cCanvas *canvas = getParentModule()->getCanvas();
     for (cFigure **p = figures; *p; p++) {
         cFigure *figure = *p;
-        figure->move(dx,0);
+        figure->move(dx, 50);
         canvas->addFigure(figure);
         dx += 100;
     }
 }
-
-//TODO move() should be recursive

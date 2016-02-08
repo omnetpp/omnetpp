@@ -31,5 +31,5 @@ digraph g {
     }
 
     cRectangleFigure -> cFigure2 [style=invis]; /* hack to place the 2nd subgraph below the first */
-};
+}
 
