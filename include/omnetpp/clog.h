@@ -150,7 +150,6 @@ class SIM_API cLogLevel
 //
 #define OPP_LOGPROXY(object, classname, loglevel, category) \
         ((void)0, !(loglevel >= GLOBAL_COMPILETIME_LOGLEVEL && \
-         !getEnvir()->isDisabled() && \
          loglevel >= omnetpp::cLogLevel::globalRuntimeLoglevel && \
          omnetpp::cLogProxy::isEnabled(object, category, loglevel))) ? \
          omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)

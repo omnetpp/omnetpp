@@ -55,7 +55,7 @@ using std::endl;
  * The active cEnvir object can be accessed via cSimulation::getActiveEnvir()
  * or the getEnvir() global function.
  *
- * Methods useful for simulation models include isGUI() and isDisabled().
+ * Methods useful for simulation models include isGUI() and isExpressMode().
  * Most other cEnvir methods are internal for communication between
  * the simulation kernel and the environment.
  *
@@ -486,13 +486,6 @@ class SIM_API cEnvir
      * e.g. dynamically updating display strings or drawing on canvases.
      */
     virtual bool isGUI() const = 0;
-
-    /**
-     * Returns true if the simulation is running in an Express or Express-like mode
-     * where output from <tt>EV&lt;&lt;</tt> statements is not printed or logged
-     * anywhere but discarded. The <tt>EV</tt> macro already makes use of this function.
-     */
-    bool isDisabled() const {return !loggingEnabled && !recordEventlog;}
 
     /**
      * Returns true if the simulation is running under a GUI in Express mode.
