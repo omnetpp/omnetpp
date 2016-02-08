@@ -153,7 +153,7 @@ class SIM_API cEnvir
      * the message will additionally travel through a series of connections
      * before it arrives in a simple module.)
      */
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr) = 0;
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=nullptr) { }
 
     /**
      * Notifies the environment that a message was scheduled.

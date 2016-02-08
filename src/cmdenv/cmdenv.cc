@@ -72,7 +72,6 @@ Register_PerRunConfigOption(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "fals
 Register_PerRunConfigOption(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing module EV<< output on/off.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing event banners on/off.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When cmdenv-express-mode=false: print extra information after event banners.")
-Register_PerRunConfigOption(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOOL, "false", "When cmdenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
 Register_PerRunConfigOptionU(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When cmdenv-express-mode=true: print status update every n seconds.")
 Register_PerRunConfigOption(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When cmdenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 Register_PerRunConfigOption(CFGID_LOG_FORMAT, "cmdenv-log-format", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. The format string may contain format directives in the syntax '%x' (a '%' followed by a single format character).  For example '%l' stands for log level, and '%J' for source component. See the manual for the list of available format characters.");
@@ -129,7 +128,6 @@ CmdenvOptions::CmdenvOptions()
     printModuleMsgs = true;
     printEventBanners = true;
     detailedEventBanners = false;
-    messageTrace = false;
     statusFrequencyMs = 2000;
     printPerformanceData = false;
 }
@@ -191,7 +189,6 @@ void Cmdenv::readPerRunOptions()
     opt->printModuleMsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
     opt->printEventBanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
     opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
-    opt->messageTrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
     setLogLevel(cLogLevel::getLevel(getConfig()->getAsString(CFGID_LOGLEVEL).c_str()));
@@ -705,28 +702,6 @@ void Cmdenv::moduleCreated(cModule *mod)
 
     bool ev_enabled = getConfig()->getAsBool(mod->getFullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
     mod->setEvEnabled(ev_enabled);
-}
-
-void Cmdenv::messageSent_OBSOLETE(cMessage *msg, cGate *)
-{
-    if (!opt->expressMode && opt->messageTrace) {
-        ::fprintf(fout, "SENT:   %s\n", msg->info().c_str());
-        if (opt->autoflush)
-            ::fflush(fout);
-    }
-}
-
-void Cmdenv::simulationEvent(cEvent *event)
-{
-    EnvirBase::simulationEvent(event);
-
-    if (!disableTracing) {
-        if (opt->messageTrace) {
-            ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  // TODO can go out!
-            if (opt->autoflush)
-                ::fflush(fout);
-        }
-    }
 }
 
 void Cmdenv::printUISpecificHelp()
