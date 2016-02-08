@@ -1,0 +1,28 @@
+#! /bin/sh
+#
+# usage: runtest [<testfile>...]
+# without args, runs all *.test files in the current directory
+#
+failure() {
+    echo "FAILED: $1"
+    exit 1
+}
+
+MAKE=make
+TESTFILES=$*
+
+if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
+if [ ! -d work ];  then mkdir work; fi
+opp_test gen $OPT -v $TESTFILES || exit 1
+
+cd work || exit 1
+echo > .project
+
+# Run the tests
+echo
+cd ..
+
+PATH=.:$PATH opp_test run $OPT -v $TESTFILES || exit 1
+
+echo
+echo Results can be found in ./work

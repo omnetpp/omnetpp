@@ -1,0 +1,49 @@
+%description:
+Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders only
+Repair .oppfeaturestate and .nedexclusions files
+
+%prerun-command: cp ../../.nedfolders .
+%prerun-command: cp ../../.oppfeatures .
+%prerun-command: rm -f .oppfeaturestate
+%prerun-command: rm -f .nedexclusions
+
+%testprog: opp_featuretool repair
+
+#%ignore-exitcode: 1
+
+%postrun-command: ../../fileExistingCheck
+
+%contains: postrun-command(1).out
+'.oppfeatures' found.
+'.oppfeaturestate' found.
+'.nedfolders' found.
+'.nedexclusions' found.
+
+%contains: stdout
+opp_featuretool: .featurestate file updated.
+opp_featuretool: .nedexclusions file updated.
+
+%contains: .oppfeaturestate
+<?xml version="1.0" ?>
+<featurestates>
+    <feature enabled="true" id="F_A"/>
+    <feature enabled="false" id="F_B"/>
+    <feature enabled="false" id="F_C"/>
+    <feature enabled="false" id="F_D"/>
+    <feature enabled="true" id="F_E"/>
+</featurestates>
+
+%not-contains: .nedexclusions
+feature_a_folder
+
+%contains: .nedexclusions
+feature_b_folder
+
+%contains: .nedexclusions
+feature_c_folder
+
+%contains: .nedexclusions
+feature_d_folder
+
+%not-contains: .nedexclusions
+feature_e_folder

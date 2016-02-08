@@ -1,0 +1,62 @@
+<features cppSourceRoots="src">
+    <feature
+        id="F_A"
+        name="FeatureA"
+        description = "Feature A"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "feature_a_folder"
+        extraSourceFolders = ""
+        compileFlags = "-DF_A"
+        linkerFlags = "-llibA"
+        />
+    <feature
+        id="F_B"
+        name="FeatureB"
+        description = "Feature B"
+        initiallyEnabled = "false"
+        requires = ""
+        labels = ""
+        nedPackages = "feature_b_folder"
+        extraSourceFolders = ""
+        compileFlags = "-DF_B"
+        linkerFlags = "-llibB"
+        />
+    <feature
+        id="F_C"
+        name="FeatureC"
+        description = "Feature C (depends on A,B)"
+        initiallyEnabled = "false"
+        requires = "F_A F_B"
+        labels = ""
+        nedPackages = "feature_c_folder"
+        extraSourceFolders = ""
+        compileFlags = "-DF_C"
+        linkerFlags = "-llibC"
+        />
+    <feature
+        id="F_D"
+        name="FeatureD"
+        description = "Feature D (Depends on C)"
+        initiallyEnabled = "false"
+        requires = "F_C"
+        labels = ""
+        nedPackages = "feature_d_folder"
+        extraSourceFolders = ""
+        compileFlags = "-DF_D"
+        linkerFlags = "-llibD"
+        />
+    <feature
+        id="F_E"
+        name="FeatureE"
+        description = "Feature E"
+        initiallyEnabled = "true"
+        requires = "F_A"
+        labels = ""
+        nedPackages = "feature_e_folder"
+        extraSourceFolders = ""
+        compileFlags = "-DF_E"
+        linkerFlags = "-llibE"
+        />
+</features>

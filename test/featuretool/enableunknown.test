@@ -1,0 +1,66 @@
+%description:
+Testing opp_feature
+Try enable an unknown feature
+
+%prerun-command: cp ../../.nedfolders .
+%prerun-command: cp ../../.oppfeatures .
+
+%file: .oppfeaturestate_in
+<?xml version="1.0" ?>
+<featurestates>
+    <feature enabled="true" id="F_A"/>
+    <feature enabled="false" id="F_B"/>
+    <feature enabled="false" id="F_C"/>
+    <feature enabled="false" id="F_D"/>
+    <feature enabled="true" id="F_E"/>
+</featurestates>
+%prerun-command: cp .oppfeaturestate_in .oppfeaturestate
+
+%file: .nedexclusions_in
+feature_b_folder
+feature_c_folder
+feature_d_folder
+%prerun-command: cp .nedexclusions_in .nedexclusions
+
+%testprog: opp_featuretool enable --with-dependencies F_UNKNOWN && echo return: OK || echo return: ERROR
+
+#%ignore-exitcode: 1
+
+%postrun-command: ../../fileExistingCheck
+
+%contains: postrun-command(1).out
+'.oppfeatures' found.
+'.oppfeaturestate' found.
+'.nedfolders' found.
+'.nedexclusions' found.
+
+%contains: stdout
+return: ERROR
+
+%contains: test.err
+opp_featuretool: Error: unknown feature 'F_UNKNOWN'.
+
+%contains: .oppfeaturestate
+<?xml version="1.0" ?>
+<featurestates>
+    <feature enabled="true" id="F_A"/>
+    <feature enabled="false" id="F_B"/>
+    <feature enabled="false" id="F_C"/>
+    <feature enabled="false" id="F_D"/>
+    <feature enabled="true" id="F_E"/>
+</featurestates>
+
+%not-contains: .nedexclusions
+feature_a_folder
+
+%contains: .nedexclusions
+feature_b_folder
+
+%contains: .nedexclusions
+feature_c_folder
+
+%contains: .nedexclusions
+feature_d_folder
+
+%not-contains: .nedexclusions
+feature_e_folder

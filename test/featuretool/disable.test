@@ -1,0 +1,72 @@
+%description:
+Testing opp_feature
+Disable feature with dependencies
+
+%prerun-command: cp ../../.nedfolders .
+%prerun-command: cp ../../.oppfeatures .
+
+%file: .oppfeaturestate_in
+<?xml version="1.0" ?>
+<featurestates>
+    <feature enabled="true" id="F_A"/>
+    <feature enabled="false" id="F_B"/>
+    <feature enabled="false" id="F_C"/>
+    <feature enabled="false" id="F_D"/>
+    <feature enabled="true" id="F_E"/>
+</featurestates>
+%prerun-command: cp .oppfeaturestate_in .oppfeaturestate
+
+%file: .nedexclusions_in
+feature_b_folder
+feature_c_folder
+feature_d_folder
+%prerun-command: cp .nedexclusions_in .nedexclusions
+
+%testprog: opp_featuretool disable --with-dependencies F_A
+
+#%ignore-exitcode: 1
+
+%postrun-command: ../../fileExistingCheck
+
+%contains: postrun-command(1).out
+'.oppfeatures' found.
+'.oppfeaturestate' found.
+'.nedfolders' found.
+'.nedexclusions' found.
+
+%contains: stdout
+Disabling feature(s):  F_A
+Dependent features that are disabled, too:  F_E
+opp_featuretool: .featurestate file updated.
+opp_featuretool: .nedexclusions file updated.
+
+%not-contains: test.err
+Error:
+
+%not-contains: test.err
+Warning:
+
+%contains: .oppfeaturestate
+<?xml version="1.0" ?>
+<featurestates>
+    <feature enabled="false" id="F_A"/>
+    <feature enabled="false" id="F_B"/>
+    <feature enabled="false" id="F_C"/>
+    <feature enabled="false" id="F_D"/>
+    <feature enabled="false" id="F_E"/>
+</featurestates>
+
+%contains: .nedexclusions
+feature_a_folder
+
+%contains: .nedexclusions
+feature_b_folder
+
+%contains: .nedexclusions
+feature_c_folder
+
+%contains: .nedexclusions
+feature_d_folder
+
+%contains: .nedexclusions
+feature_e_folder

@@ -1,0 +1,23 @@
+%description:
+Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders only
+Validate .oppfeaturestate and .nedexclusions
+
+%prerun-command: cp ../../.nedfolders .
+%prerun-command: cp ../../.oppfeatures .
+%prerun-command: rm -f .oppfeaturestate
+%prerun-command: rm -f .nedexclusions
+
+%testprog: opp_featuretool validate
+
+%ignore-exitcode: 1
+
+%postrun-command: ../../fileExistingCheck
+
+%contains: postrun-command(1).out
+'.oppfeatures' found.
+'.oppfeaturestate' not found.
+'.nedfolders' found.
+'.nedexclusions' not found.
+
+%contains: test.err
+opp_featuretool: Error: the .featurestate file does not exists.

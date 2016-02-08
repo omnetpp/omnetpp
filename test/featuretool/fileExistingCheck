@@ -1,0 +1,10 @@
+#!/bin/bash
+for i in .oppfeatures .oppfeaturestate .nedfolders .nedexclusions
+do
+    if [ -f "$i" ]
+    then
+        echo "'$i' found."
+    else
+        echo "'$i' not found."
+    fi
+done
