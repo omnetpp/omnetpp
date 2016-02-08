@@ -1,140 +1,110 @@
 \chapter{The Simulation Library}
 \label{cha:the-simulation-library}
 
-{\opp} has an extensive C++ class library which you can use when implementing
-simple modules. Parts of the class library have already been covered in the
-previous chapters:
+{\opp} has an extensive C++ class library available to the user for
+implementing simulation models and model components. Part of the class
+library's functionality has already been covered in the previous chapters,
+including discrete event simulation basics, the simple module programming
+model, module parameters and gates, scheduling events, sending and
+receiving messages, channel operation and programming model, finite state
+machines, dynamic module creation, signals, and more.
 
-\begin{itemize}
-  \item{the message class \cclass{cMessage} (chapter \ref{cha:messages})}
-  \item{sending and receiving messages, scheduling and canceling
-    events, terminating the module or the simulation
-    (section \ref{sec:simple-modules:sending-and-receiving})}
-  \item{access to module gates and parameters via \cclass{cModule} member functions
-    (sections \ref{sec:simple-modules:parameters} and \ref{sec:simple-modules:gates})}
-  \item{accessing other modules in the network (section \ref{sec:simple-modules:walking-module-hierarchy})}
-  \item{dynamic module creation (section \ref{sec:simple-modules:dynamic-module-creation})}
-\end{itemize}
-
-This chapter discusses the rest of the simulation library:
-
-\begin{itemize}
-  \item{random number generation: \ffunc{normal()},
-    \ffunc{exponential()}, etc.}
-  \item{module parameters: \cclass{cPar} class}
-  \item{containers: the \cclass{cArray} and \cclass{cQueue} classes}
-  \item{routing support and discovery of network topology: \cclass{cTopology} class}
-  \item{recording statistics: \cclass{cOutVector} class}
-  \item{collecting simple statistics: \cclass{cStdDev} and \cclass{cWeightedStddev} classes}
-  \item{distribution estimation: \cclass{cLongHistogram},
-    \cclass{cDoubleHistogram}, \cclass{cVarHistogram}, \cclass{cPSquare},
-    \cclass{cKSplit} classes}
-  \item{making variables inspectable in the graphical user interfaces:
-    the \fmac{WATCH()} family of macros}
-  \item{logging debug output (\ttt{EV}, \ttt{EV\_INFO} and other log streams; \cclass{cEnvir})}
-\end{itemize}
+This chapter discusses the rest of the simulation library. Topics will
+include logging, random number generation, queues, topology discovery and
+routing support, and statistics and result collection. This chapter also
+covers some of the conventions and internal mechanisms of the simulation
+library to allow one extending it and using it to its full potential.
 
 
+\section{Fundamentals}
 
+\subsection{Using the Library}
+\label{sec:ch-sim-lib:using-omnetpp}
 
+Classes in the {\opp} simulation library are part of the \ttt{omnetpp}
+namespace. To use the {\opp} API, you must include the \ttt{omnetpp.h}
+header file and either import the namespace with \ttt{using namespace
+omnetpp}, or qualify names with the \ttt{omnetpp::} prefix.
 
-\section{Class Library Conventions}
-
-\subsection{Base Class}
+\subsection{The cObject Base Class}
 \label{sec:ch-sim-lib:cobject}
 
+Most classes in the simulation library are derived from \cclass{cObject},
+or its subclasses \cclass{cNamedObject} and \cclass {cOwnedObject}.
+\cclass{cObject} defines several virtual member functions that are either
+inherited or redefined by subclasses. Otherwise, \cclass{cObject} is a
+zero-overhead class as far as memory consumption goes: it purely defines an
+interface but has no data members. Thus, having \cclass{cObject} a base
+class does not add anything to the size of a class if it already has at
+least one virtual member function.
 
-Classes in the {\opp} simulation library are derived from \cclass{cObject}
-or its subclass \cclass{cOwnedObject}. Functionality and conventions that
-come from \cclass{cObject}:
-\begin{itemize}
-  \item{name attribute}
-  \item{\ffunc{getClassName()} member and other member functions giving textual
-    information about the object}
-  \item{conventions for assignment, copying, duplicating the object}
-  \item{ownership\index{ownership} control for containers derived from \cclass{cOwnedObject}}
-  \item{support for traversing the object tree}
-  \item{support for inspecting the object in graphical user interfaces (Tkenv)}
-\end{itemize}
+\begin{figure}[htbp]
+ \begin{center}
+   \includegraphics[height=6cm]{figures/cobject-inheritance}
+   \caption{cObject is the base class for most of the simulation library}
+  \end{center}
+\end{figure}
 
-Classes inherit and redefine several \cclass{cObject} member functions;
-in the following we'll discuss some of the practically important
-ones.
+The subclasses \cclass{cNamedObject} and \cclass {cOwnedObject} add data
+members to implement more functionality. The following sections discuss
+some of the practically important functonality defined by \cclass{cObject}.
 
 
-\subsection{Setting and Getting Attributes}
+\subsubsection{Name and Full Name}
+\label{sec:sim-lib:name}
+\index{object!name}
 
-Member functions that set and query object attributes follow
-a naming convention; the setter member function begins with
-\ttt{set}, and the getter begins with \ttt{get} (or in the case of
-boolean attributes, with \ttt{is} or \ttt{has}, whichever is more
-appropriate). For example, the \textit{length} attribute of the
-\cclass{cPacket} class can be set and read like this:
+The most useful and most visible member functions of \cclass{cObject} are
+\ffunc{getName()} and \ffunc{getFullName()}. The idea behind them is that
+many objects in {\opp} have names by default (for example, modules,
+parameters and gates), and even for other objects, having a printable name
+is a huge gain when it comes to logging and debugging.
+
+\ffunc{getFullName()} is important for gates and modules, which may be part
+of gate or module vectors. For them, \ffunc{getFullName()} returns the name
+with the index in brackets, while \ffunc{getName()} only returns the name
+of the module or gate vector. That is, for a gate \ttt{out[3]} in the gate
+vector \ttt{out[10]}, \ffunc{getName()} returns \ttt{"out"}, and
+\ffunc{getFullName()} returns \ttt{"out[3]"}. For other objects,
+\ffunc{getFullName()} simply returns the same string as \ffunc{getName()}.
+An example:
 
 \begin{cpp}
-pk->setBitLength(1024);
-length = pk->getBitLength();
+cGate *gate = gate("out", 3);  // out[3]
+EV << gate->getName();  // prints "out"
+EV << gate->getFullName();  // prints "out[3]"
 \end{cpp}
 
 \begin{note}
-    {\opp} 3.x and earlier versions did not have the \ttt{get} verb
-    in the name of getter methods. There are scripts to port old source
-    code to {\opp} 4.0; these tools and the suggested porting produre
-    are described in the \textit{Migration Guide}.
+If you don't know the runtime type of an object, prefer \ffunc{getFullName()}
+when printing its name, so you don't miss out the index if the object has one.
 \end{note}
 
-\subsection{getClassName()}
-\label{sec:sim-lib:classname}
-
-
-For each class, the \ffunc{getClassName()} member function returns the class
-name as a string:
-
-\begin{cpp}
-const char *className = msg->getClassName(); // returns "cMessage"
-\end{cpp}
-
-
-\subsection{Object Names}
-\label{sec:sim-lib:name}
-
-Gates, parameters and modules all have names in the NED files. At runtime,
-those names are stored in the corresponding C++ objects, and are available
-for the code with the \ffunc{getName()} method. Other objects such as messages,
-queues, result collection objects, etc. may also have names.
-  \footnote{Object name is inherited from \cclass{cObject} (which defines
-  \ffunc{getName()}), and from its subclass \cclass{cNamedObject} (which
-  defines \ffunc{setName()} and actually stores the name string).}
-Object names are generally very useful when you are tracing, debugging or
-demonstrating a simulation model.
-
-For example, you can get the name of a message object like this:
-
-\begin{cpp}
-const char *name = msg->getName();
-\end{cpp}
-
-The \ffunc{getName()} method will never return \ttt{nullptr}, the absence
-of name string is always returned as the empty string (\ttt{""}).
+\cclass{cObject} merely defines these member functions, but they return an
+empty string. Actual storage for a name string is provided by the class
+\cclass{cNamedObject}, which also has a \ffunc{setName()} method. Since
+most library classes are derived from \cclass{cNamedObject}, you can assign
+arbitrary names to objects if {\opp} does not already provides them with
+one.
 
 By convention, the object name is the first argument to the constructor
 of every class, and it defaults to the empty string. To create an object with
-a name, pass the name string (a \ttt{const char *} pointer) as the first
-argument of the constructor:
+a name, pass the name string (a \ttt{const char*} pointer) as the first
+argument of the constructor. For example:
 
 \begin{cpp}
 cMessage *timeoutMsg = new cMessage("timeout");
 \end{cpp}
 
-You can also change the name of an existing object:
+To change the name of an object, use \cclass{setName()}:
 
 \begin{cpp}
 timeoutMsg->setName("timeout");
 \end{cpp}
 
 Both the constructor and \ffunc{setName()} make an internal copy of the string,
-instead of just storing the pointer passed to them.
-  \footnote{In a simulation, there are usually many objects with the same name:
+instead of just storing the pointer passed to them.\footnote{
+  In a simulation, there are usually many objects with the same name:
   modules, parameters, gates, etc. To conserve memory, several classes
   keep names in a shared, reference-counted \textit{name pool} instead of
   making separate copies for each object. The runtime cost of looking up an
@@ -148,44 +118,35 @@ If you create a message object with either \ttt{nullptr}
 or \ttt{""} as its name string, it will be stored as \ttt{nullptr}
 and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
-\begin{cpp}
-cMessage *msg = new cMessage(nullptr, <additional args>);
-const char *str = msg->getName(); // --> returns ""
-\end{cpp}
 
+\subsubsection{Hierarchical Name}
+\label{sec:sim-lib:fullpath}
+\index{object!fullpath}
 
-\subsection{Object Full Name and Full Path}
-\label{sec:sim-lib:fullname-and-fullpath}
-
-
-Objects have two additional member functions that return strings
-based on the object name: \ffunc{getFullName()} and \ffunc{getFullPath()}.
-For gates and modules which are part of gate or module vectors,
-\ffunc{getFullName()} returns the name with the index in brackets.
-That is, for a module \ttt{node[3]} in the submodule vector \ttt{node[10]}
-\ffunc{getName()} returns \ttt{"node"}, and \ffunc{getFullName()} returns \ttt{"node[3]"}.
-For other objects, \ffunc{getFullName()} is the same as \ffunc{getName()}.
-
-\ffunc{getFullPath()} returns \ffunc{getFullName()}, prepended with the
-parent or owner object's \ffunc{getFullPath()} and separated by a dot.
-That is, if the \ttt{node[3]} module above is in the compound module
-\ttt{"net.subnet1"}, its \ffunc{getFullPath()} method will return
-\ttt{"net.subnet1.node[3]"}.
+\ffunc{getFullPath()} returns the object's hierarchical name. This name is
+produced by prepending the \textit{full name} (\ffunc{getFullName()}) with
+the parent or owner object's \ffunc{getFullPath()}, separated by a dot. For
+example, if the \ttt{out[3]} gate in the previous example belongs to a
+module named \ttt{classifier}, which in turn is part of a network called
+\ttt{Queueing}, then the gate's \ffunc{getFullPath()} method will return
+\ttt{"Queueing.classifier.out[3]"}.
 
 \begin{cpp}
-EV << this->getName();     // --> "node"
-EV << this->getFullName(); // --> "node[3]"
-EV << this->getFullPath(); // --> "net.subnet1.node[3]"
+cGate *gate = gate("out", 3);  // out[3]
+EV << gate->getName();  // prints "out"
+EV << gate->getFullName();  // prints "out[3]"
+EV << gate->getFullPath();  // prints "Queueing.classifier.out[3]"
 \end{cpp}
 
-\ffunc{getClassName()}, \ffunc{getFullName()} and \ffunc{getFullPath()}
-are extensively used on the graphical runtime environment Tkenv,
-and also appear in error messages.
+The \ffunc{getFullName()} and \ffunc{getFullPath()} methods are
+extensively used in graphical runtime environments (Tkenv, Qtenv),
+and also when assembling runtime error messages.
 
-\ffunc{getName()} and \ffunc{getFullName()} return \ttt{const char *} pointers,
-and \ffunc{getFullPath()} returns \ttt{std::string}. This makes no difference
-with \ttt{EV<<}, but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument
-to \ffunc{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
+In contrast to \ffunc{getName()} and \ffunc{getFullName()} which return
+\ttt{const char *} pointers, \ffunc{getFullPath()} returns
+\ttt{std::string}. This makes no difference when logging via \ttt{EV<<},
+but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument to
+\ffunc{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
 
 \begin{cpp}
 char buf[100];
@@ -193,8 +154,26 @@ sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
 \end{cpp}
 
 
-\subsection{Copying and Duplicating Objects}
+\subsubsection{Class Name}
+\label{sec:sim-lib:classname}
 
+The \ffunc{getClassName()} member function returns the class
+name as a string, including the namespace. \ffunc{getClassName()} internally
+relies on C++ RTTI.
+
+An example:
+
+\begin{cpp}
+const char *className = msg->getClassName(); // returns "omnetpp::cMessage"
+\end{cpp}
+
+%% \subsubsection{Owner}
+%% \label{sec:sim-lib:owner}
+%%
+%% TODO
+
+\subsubsection{Cloning Objects}
+\label{sec:sim-lib:dup}
 
 The \ffunc{dup()} member function creates an exact copy of the
 object\index{object!copy}, duplicating\index{object!duplication}
@@ -216,15 +195,12 @@ copy the object's name string, i.e. does not invoke \ffunc{setName()}.
 The rationale is that the name string is often used for identifying the particular
 object instance, as opposed to being considered as part of its contents.
 
-\begin{note}
-    Since the {\opp} 4.0 version, \ffunc{dup()} returns a pointer to
-    the same type as the object itself, and not a \ttt{cObject*}.
-    This is made possible by a C++ feature called \textit{covariant
-    return types}.
-\end{note}
+%% \subsubsection{Foreach}
+%% \label{sec:sim-lib:foreach}
+%%
+%% TODO
 
 \subsection{Iterators}
-
 
 There are several container classes in the library (\cclass{cQueue},
 \cclass{cArray} etc.) For many of them, there is a corresponding
@@ -237,43 +213,24 @@ For example:
 cQueue queue;
 
 //...
-for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++) {
-    cOwnedObject *containedObject = queueIter();
+for (cQueue::Iterator it(queue); !it.end(); ++it) {
+    cObject *containedObject = *it;
     //...
 }
 \end{cpp}
 
-
-
-\subsection{Error Handling}
-
+\subsection{Runtime Errors}
 
 When library objects detect an error condition, they throw a C++ exception.
-%% NOTE we don't want to expose the actual C++ exception type, because
-%% then people would start writing try-catch statements that'd make everything messy.
 This exception is then caught by the simulation environment which pops up
 an error dialog or displays the error message.
 
-At times it can be useful to be able stop the simulation at the place of the error
-(just before the exception is thrown) and use a C++ debugger to look
-at the stack trace and examine variables. Enabling the \ttt{debug-on-errors}
+At times it can be useful to be able stop the simulation at the place of
+the error (just before the exception is thrown) and use a C++ debugger to
+look at the stack trace and examine variables. Enabling the
+\fconfig{debug-on-errors} or the \fconfig{debugger-attach-on-error}
 configuration option lets you do that -- check it in section
-\ref{sec:ch-config-sim:general-section}  .
-
-If you detect an error condition in your code, you can stop the
-simulation with an error message using the \ffunc{opp\_error()} function.
-\ttt{opp\_error()}'s argument list works like \ttt{printf()}: the
-first argument is a format string which can contain \ttt{"\%s"}, \ttt{"\%d"} etc,
-filled in using subsequent arguments.
-
-An example:
-
-\begin{cpp}
-if (msg->getControlInfo() == nullptr)
-    opp_error("message (%s)%s has no control info attached",
-              msg->getClassName(), msg->getName());
-\end{cpp}
-
+\ref{sec:ch-run-sim:controlling}.
 
 
 \section{Logging from Modules}
