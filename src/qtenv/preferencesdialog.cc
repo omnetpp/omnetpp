@@ -168,6 +168,7 @@ void PreferencesDialog::accept()
     getQtenv()->setLogFormat(logFormat.c_str());
     getQtenv()->opt->logFormat = logFormat.c_str();
 
+    // TODO: this conversion is fragile, it depends on the order of the enum which might change
     LogLevel logLevel = LogLevel(ui->logLevel->currentIndex());
     getQtenv()->opt->logLevel = logLevel;
     getQtenv()->setLogLevel(logLevel);
