@@ -12,101 +12,114 @@ cmdenv-log-format = "[%l]%9"
 cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
+#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_OFF
+EV_FATAL  << "OFF" << endl;
+EV_ERROR  << "OFF" << endl;
+EV_WARN   << "OFF" << endl;
+EV_INFO   << "OFF" << endl;
+EV_DETAIL << "OFF" << endl;
+EV_DEBUG  << "OFF" << endl;
+EV_TRACE  << "OFF" << endl;
+
+#undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_FATAL
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "FATAL" << endl;
+EV_ERROR  << "FATAL" << endl;
+EV_WARN   << "FATAL" << endl;
+EV_INFO   << "FATAL" << endl;
+EV_DETAIL << "FATAL" << endl;
+EV_DEBUG  << "FATAL" << endl;
+EV_TRACE  << "FATAL" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_ERROR
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "ERROR" << endl;
+EV_ERROR  << "ERROR" << endl;
+EV_WARN   << "ERROR" << endl;
+EV_INFO   << "ERROR" << endl;
+EV_DETAIL << "ERROR" << endl;
+EV_DEBUG  << "ERROR" << endl;
+EV_TRACE  << "ERROR" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_WARN
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "WARN" << endl;
+EV_ERROR  << "WARN" << endl;
+EV_WARN   << "WARN" << endl;
+EV_INFO   << "WARN" << endl;
+EV_DETAIL << "WARN" << endl;
+EV_DEBUG  << "WARN" << endl;
+EV_TRACE  << "WARN" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_INFO
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "INFO" << endl;
+EV_ERROR  << "INFO" << endl;
+EV_WARN   << "INFO" << endl;
+EV_INFO   << "INFO" << endl;
+EV_DETAIL << "INFO" << endl;
+EV_DEBUG  << "INFO" << endl;
+EV_TRACE  << "INFO" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_DETAIL
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "DETAIL" << endl;
+EV_ERROR  << "DETAIL" << endl;
+EV_WARN   << "DETAIL" << endl;
+EV_INFO   << "DETAIL" << endl;
+EV_DETAIL << "DETAIL" << endl;
+EV_DEBUG  << "DETAIL" << endl;
+EV_TRACE  << "DETAIL" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_DEBUG
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "DEBUG" << endl;
+EV_ERROR  << "DEBUG" << endl;
+EV_WARN   << "DEBUG" << endl;
+EV_INFO   << "DEBUG" << endl;
+EV_DETAIL << "DEBUG" << endl;
+EV_DEBUG  << "DEBUG" << endl;
+EV_TRACE  << "DEBUG" << endl;
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
-EV_FATAL  << "Hello" << endl;
-EV_ERROR  << "Hello" << endl;
-EV_WARN   << "Hello" << endl;
-EV_INFO   << "Hello" << endl;
-EV_DETAIL << "Hello" << endl;
-EV_DEBUG  << "Hello" << endl;
-EV_TRACE  << "Hello" << endl;
+EV_FATAL  << "TRACE" << endl;
+EV_ERROR  << "TRACE" << endl;
+EV_WARN   << "TRACE" << endl;
+EV_INFO   << "TRACE" << endl;
+EV_DETAIL << "TRACE" << endl;
+EV_DEBUG  << "TRACE" << endl;
+EV_TRACE  << "TRACE" << endl;
+
+%not-contains-regex: stdout
+.*OFF
 
 %contains: stdout
-[FATAL]  Hello
-[FATAL]  Hello
-[ERROR]  Hello
-[FATAL]  Hello
-[ERROR]  Hello
-[WARN]   Hello
-[FATAL]  Hello
-[ERROR]  Hello
-[WARN]   Hello
-[INFO]   Hello
-[FATAL]  Hello
-[ERROR]  Hello
-[WARN]   Hello
-[INFO]   Hello
-[DETAIL] Hello
-[FATAL]  Hello
-[ERROR]  Hello
-[WARN]   Hello
-[INFO]   Hello
-[DETAIL] Hello
-[DEBUG]  Hello
-[FATAL]  Hello
-[ERROR]  Hello
-[WARN]   Hello
-[INFO]   Hello
-[DETAIL] Hello
-[DEBUG]  Hello
-[TRACE]  Hello
+[FATAL]  FATAL
+[FATAL]  ERROR
+[ERROR]  ERROR
+[FATAL]  WARN
+[ERROR]  WARN
+[WARN]   WARN
+[FATAL]  INFO
+[ERROR]  INFO
+[WARN]   INFO
+[INFO]   INFO
+[FATAL]  DETAIL
+[ERROR]  DETAIL
+[WARN]   DETAIL
+[INFO]   DETAIL
+[DETAIL] DETAIL
+[FATAL]  DEBUG
+[ERROR]  DEBUG
+[WARN]   DEBUG
+[INFO]   DEBUG
+[DETAIL] DEBUG
+[DEBUG]  DEBUG
+[FATAL]  TRACE
+[ERROR]  TRACE
+[WARN]   TRACE
+[INFO]   TRACE
+[DETAIL] TRACE
+[DEBUG]  TRACE
+[TRACE]  TRACE
