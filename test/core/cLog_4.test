@@ -6,13 +6,13 @@ Test per module runtime log level setting.
 [General]
 network = TestNetwork
 cmdenv-log-format = "[%l]%9"
-**.fatal.log-level  = fatal
-**.error.log-level  = error
-**.warn.log-level   = warn
-**.info.log-level   = info
-**.detail.log-level = detail
-**.debug.log-level  = debug
-**.trace.log-level  = trace
+**.fatal.cmdenv-log-level  = fatal
+**.error.cmdenv-log-level  = error
+**.warn.cmdenv-log-level   = warn
+**.info.cmdenv-log-level   = info
+**.detail.cmdenv-log-level = detail
+**.debug.cmdenv-log-level  = debug
+**.trace.cmdenv-log-level  = trace
 
 %file: test.ned
 
