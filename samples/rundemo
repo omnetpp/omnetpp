@@ -61,7 +61,6 @@ foreach line {
    {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube"}
    {color5  "Routing"          "routing"          "./routing"       "routing"}
    {color6  "Canvas"           "canvas"           "./canvas"        "canvas"}
-   {color6  "Google Earth"     "google-earth"     "./google-earth-demo" "google-earth-demo"}
    {color6  "OpenSceneGraph Intro"         "osg-intro"         "./osg-intro"      "osg-intro"}
    {color6  "OpenSceneGraph Earth"     "osg-earth"     "./osg-earth" "osg-earth"}
    {color6  "OpenSceneGraph Indoor"     "osg-indoor"     "./osg-indoor" "osg-indoor"}

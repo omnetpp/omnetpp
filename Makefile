@@ -52,7 +52,7 @@ endif
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv utils
-SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo google-earth osg-intro osg-earth osg-indoor osg-satellites hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
+SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo osg-intro osg-earth osg-indoor osg-satellites hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 # add systemc optionally
@@ -207,7 +207,6 @@ makefiles:
 	done
 	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (opp_makemake -f --deep --nolink))
 	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/google-earth && (opp_makemake -f -o google-earth-demo))
 	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
 	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
 	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))

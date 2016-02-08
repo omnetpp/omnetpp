@@ -5,6 +5,13 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 5.0 (February 2016)
+---------------------------
+
+Samples:
+
+ - Removed google-earth demo in favor of the osg-earth sample.
+
 
 OMNeT++ 5.0 beta 3 (December 2015)
 ----------------------------------
