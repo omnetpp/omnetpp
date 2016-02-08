@@ -540,28 +540,22 @@ the statistical classes.
 
 \subsubsection{Basic Usage}
 
-
 \cclass{cQueue} is a container class that acts as a queue.
 \cclass{cQueue} can hold objects of type derived from \cclass{cObject}
 (almost all classes from the {\opp} library), such as
-\cclass{cMessage}, \cclass{cPar}, etc. Internally, \cclass{cQueue}
-uses a double-linked list to store the elements.
-
-A queue object has a head and a tail. Normally, new elements
-are inserted at its head and elements are removed at its tail.
-
+\cclass{cMessage}, \cclass{cPar}, etc. Normally, new elements
+are inserted at the back, and removed from the front.
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics{figures/simlib-queue}
+    \includegraphics[scale=0.8]{figures/simlib-queue}
     \caption{cQueue: insertion and removal}
     \label{fig:ch-sim-lib:cqueue}
   \end{center}
 \end{figure}
 
-The basic \cclass{cQueue} member functions dealing with insertion and removal
-are \ffunc{insert()} and \ffunc{pop()}. They are used
-like this:
+The member functions dealing with insertion and removal are
+\ffunc{insert()} and \ffunc{pop()}.
 
 \begin{cpp}
 cQueue queue("my-queue");
@@ -579,7 +573,6 @@ while(!queue.empty()) {
     delete msg;
 }
 \end{cpp}
-
 
 The \ffunc{length()} member function returns the number of items in the
 queue, and \ffunc{empty()} tells whether there is anything in the queue.
@@ -1293,6 +1286,13 @@ There are several statistic and result collection classes:
     adaptive histogram-like algorithm.}
 \end{itemize}
 
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[height=6cm]{figures/cstatistic-inheritance}
+    \caption{Statistics classes}
+  \end{center}
+\end{figure}
+
 \subsubsection{Basic Usage}
 
 One can insert an observation into a statistic object with the
@@ -1332,23 +1332,23 @@ The distribution estimation\index{distribution!estimation} classes
 \cclass{cPSquare} and \cclass{cKSplit}) are derived from
 \cclass{cDensityEstBase}. Distribution estimation classes (except for
 \cclass{cPSquare}) assume that the observations are within a range.
-You may specify the range explicitly (based on some a-priori info
-about the distribution), or you may let the object collect the first
-few observations and determine the range from them.
+You may specify the range explicitly (based on some a-priori information
+about the distribution), or you may let the object precollect a number
+of observations and determine the range from them.
 
 The following member functions exist for setting up the range
 and to specify how many observations should be used for automatically
 determining the range (these methods are part of \cclass{cDensityEstBase}):
 
 \begin{cpp}
-setRange(lower,upper);
-setRangeAuto(numFirstvals, rangeExtFactor);
-setRangeAutoLower(upper, numFirstvals, rangeExtFactor);
-setRangeAutoUpper(lower, numFirstvals, rangeExtFactor);
+setRange(lowerBound, upperBound);
+setRangeAuto(numPrecollect, rangeExtFactor);
+setRangeAutoLower(upperBound, numPrecollect, rangeExtensionFactor);
+setRangeAutoUpper(lowerBound, numPrecollect, rangeExtensionFactor);
 \end{cpp}
 
 \begin{cpp}
-setNumFirstVals(numFirstvals);
+setNumPrecollectedValues(numPrecollect);
 \end{cpp}
 
 The following example creates a histogram with 20 cells and automatic
@@ -1358,7 +1358,6 @@ range estimation\index{histogram!range estimation}:
 cDoubleHistogram histogram("histogram", 20);
 histogram.setRangeAuto(100,1.5);
 \end{cpp}
-
 
 Here, 20 is the number of cells (not including the underflow/overflow
 cells, see later), and 100 is the number of observations to be
@@ -1371,8 +1370,8 @@ range.
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[width=3.215in, height=0.930in]{figures/simlib-histogramrange}
-    \caption{Setting up a histogram's range}
+    \includegraphics{figures/simlib-histogramrange}
+    \caption{Setting up a histogram's range using \ffunc{setRangeAuto()}}
   \end{center}
 \end{figure}
 
@@ -1387,12 +1386,18 @@ member functions.
 
 \begin{figure}[htbp]
 \begin{center}
-  \includegraphics[width=3.310in, height=0.467in]{figures/simlib-histogramsetup}
+  \includegraphics{figures/simlib-histogramsetup}
   \caption{Histogram structure after setting up the cells}
 \end{center}
 \end{figure}
 
-You create a $P^{2}$ object by specifying the number of cells:
+One exception is the \cclass{cPSquare} class that implements the $P^{2}$
+algorithm: it does not use automatic range estimation. The $P^{2}$
+algorithm operates by adaptively shifting cell boundaries as observations
+arrive, thus, it needs no fixed histogram range. The \ttt{setRange...()}
+methods throw an error in \cclass{cPSquare}, and \ffunc{isTransformed()}
+always returns \ttt{true}. \cclass{cPSquare} only needs the number of cells
+given in, for example in the constructor:
 
 \begin{cpp}
 cPSquare psquare("interarrival-times", 20);
@@ -1402,8 +1407,7 @@ Afterwards, a \cclass{cPSquare} can be used with the same member functions
 as a histogram.
 
 
-\subsubsection{Getting Histogram Data}
-
+\subsubsection{Querying Histogram Cells}
 
 There are three member functions to explicitly return cell boundaries
 and the number of observations in each cell. \ffunc{getNumCells()} returns
@@ -1420,8 +1424,8 @@ and \cclass{cKSplit}.
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[width=2.615in, height=2.001in]{figures/simlib-histogramcells}
-    \caption{base points and cells}
+    \includegraphics{figures/simlib-histogramcells}
+    \caption{Base points and histogram cells}
   \end{center}
 \end{figure}
 
@@ -1529,7 +1533,7 @@ void addBinBound(double x);
 \end{cpp}
 
 Rangemin and rangemax is chosen after collecting the
-\texttt{numFirstVals} initial observations. One cannot add cell
+\texttt{numPrecollect} initial observations. One cannot add cell
 boundaries when the histogram has already been transformed.
 
 
@@ -1860,7 +1864,7 @@ simulation time intervals (section \ref{sec:ana-sim:vector-config}).
 
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \ffunc{record()} doesn't write
-anything to the output file. However, if you have a Tkenv inspector
+anything to the output file. However, if you have a Tkenv or Qtenv inspector
 window open for the output vector object\index{output!vector object},
 the values will be displayed there, regardless of the state of the
 output vector object.
@@ -1944,13 +1948,13 @@ The format and processing of output vector files is described in chapter
 \subsection{Basic Watches}
 
 Unfortunately, variables of type \ttt{int}, \ttt{long}, \ttt{double}
-do not show up by default in Tkenv; neither do STL classes
+do not show up by default in Tkenv/Qtenv; neither do STL classes
 (\ttt{std::string}, \ttt{std::vector}, etc.) or your own structs and
 classes. This is because the simulation kernel, being a library, knows
 nothing about types and variables in your source code.
 
 {\opp} provides \fmac{WATCH()} and a set of other macros to
-allow variables to be inspectable in Tkenv and to be output into the snapshot
+allow variables to be inspectable in Tkenv/Qtenv and to be output into the snapshot
 file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
 \ffunc{initialize()} (to watch instance variables) or to the top of the
 \ffunc{activity()} function (to watch its local variables); the point being
@@ -1970,10 +1974,8 @@ Of course, members of classes and structs can also be watched:
 WATCH(config.maxRetries);
 \end{cpp}
 
-When you open an inspector for the simple module in Tkenv and click
-the Objects/Watches tab in it, you will see your watched variables
-and their values there. Tkenv also lets you change the value of a
-watched variable.
+The Tkenv and Qtenv runtime environments let you inspect and also change
+the values of inspected variables.
 
 The \fmac{WATCH()} macro can be used with any type that has a
 stream output operator (\ttt{operator<<}) defined. By default,
@@ -2121,8 +2123,8 @@ The arguments: label is a string that will appear in the output
 file; obj is the object whose inside is of interest. By default,
 the whole simulation (all modules etc) will be written out.
 
-If you run the simulation with Tkenv, you can also create a snapshot
-from the menu.
+If you run the simulation with Tkenv or Qtenv, you can also create a
+snapshot from the menu.
 
 An example snapshot file (some abbreviations have been applied):
 
@@ -2663,50 +2665,49 @@ Define_NED_Math_Function3(pow, 2, "math", "Power-of function; see <math.h>");
 \section{Deriving New Classes}
 \label{sec:ch-sim-lib:deriving-new-classes}
 
-\subsection{cOwnedObject or Not?}
+\subsection{cObject or Not?}
 
 If you plan to implement a completely new class (as opposed to
 subclassing something already present in {\opp}), you have
 to ask yourself whether you want the new class to be based
-on \cclass{cOwnedObject} or not.
+on \cclass{cObject} or not.
 Note that we are \textit{not} saying you should always
-subclass from \cclass{cOwnedObject}.
+subclass from \cclass{cObject}.
 Both solutions have advantages and disadvantages, which you
 have to consider individually for each class.
 
-\cclass{cOwnedObject} already carries (or provides a framework for)
+\cclass{cObject} already carries (or provides a framework for)
 significant functionality that is either relevant to
-your particular purpose or not. Subclassing \cclass{cOwnedObject}
+your particular purpose or not. Subclassing \cclass{cObject}
 generally means you have more code to write (as you \textit{have to}
 redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
 However, if you need to store your objects in {\opp} objects like \cclass{cQueue}
 or you want to store {\opp} classes in your object,
-then you \textit{must} subclass from \cclass{cOwnedObject}.
+then you \textit{must} subclass from \cclass{cObject}.
   \footnote{For simplicity, in these sections ``{\opp} object''
   should be understood as ``object of a class subclassed from
-  \cclass{cOwnedObject}''}
+  \cclass{cObject}''}
 
-The most significant features of \cclass{cOwnedObject} are
+The most significant features of \cclass{cObject} are
 the name string (which has to be stored somewhere, so it has
 its overhead) and ownership management (see section
 \ref{sec:ch-sim-lib:ownership-management}), which
 also provides advantages at some cost.
 
-As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress},
-\ttt{MACAddress}, \ttt{RoutingTableEntry}, \ttt{TCPConnectionDescriptor}, etc.
-are better \textit{not} subclassed from \cclass{cOwnedObject}.
+As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress} or
+\ttt{MACAddress} are better \textit{not} subclassed from \cclass{cObject}.
 If your class has at least one virtual member function, consider
 subclassing from \cclass{cObject}, which does not impose any
 extra cost because it doesn't have data members at all, only
 virtual functions.
 
 
-\subsection{cOwnedObject Virtual Methods}
+\subsection{cObject Virtual Methods}
 
 Most classes in the simulation class library are descendants of
-\cclass{cOwnedObject}. If you want to derive a new class from
-\cclass{cOwnedObject} or a \cclass{cOwnedObject} descendant, you must redefine
+\cclass{cObject}. If you want to derive a new class from
+\cclass{cObject} or a \cclass{cObject} descendant, you must redefine
 some member functions so that objects of the new type can fully
 co-operate with other parts of the simulation system. A more or less
 complete list of these functions is presented here. You don't need to
@@ -2734,7 +2735,7 @@ The following methods \textbf{must} be implemented:
         if the object contains pointers to other objects.}
 \end{itemize}
 
-If your class contains other objects subclassed from \cclass{cOwnedObject},
+If your class contains other objects subclassed from \cclass{cObject},
 either via pointers or as a data member, the following function \textbf{should}
 be implemented:
 
@@ -2742,9 +2743,9 @@ be implemented:
   \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor *v)}.
         The implementation should call the function passed
         for each object it contains via pointer or as a data member;
-        see the API Reference on \cclass{cOwnedObject} on how to implement
+        see the API Reference on \cclass{cObject} on how to implement
         \ttt{forEachChild()}. \ffunc{forEachChild()} makes it possible
-        for Tkenv to display the object tree to you, to perform searches on it, etc.
+        for Tkenv and Qtenv to display the object tree to you, to perform searches on it, etc.
         It is also used by \ffunc{snapshot()} and some other library functions.}
 \end{itemize}
 
@@ -2753,11 +2754,11 @@ Implementation of the following methods is \textbf{recommended}:
 \begin{itemize}
   \item{\textit{Object info,} \ffunc{std::string info()}. The \ttt{info()} function
         should return a one-line string describing the object's contents or state.
-        \ttt{info()} is displayed at several places in Tkenv.}
+        \ttt{info()} is displayed at several places in Tkenv and Qtenv.}
   \item{\textit{Detailed object info,} \ffunc{std::string detailedInfo()}.
         This method may potentially be implemented in addition to \ttt{info()};
         it can return a multi-line description. \ttt{detailedInfo()} is also
-        displayed by Tkenv in the object's inspector.}
+        displayed by Tkenv ad Qtenv in the object's inspector.}
   \item{\textit{Serialization}, \ffunc{parsimPack()} and \ffunc{parsimUnpack()} methods.
         These methods are needed for parallel simulation, if you want
         objects of this type to be transmitted across partitions.}
@@ -2803,11 +2804,11 @@ on the receiving side.
 \subsection{Details}
 
 We'll go through the details using an example. We create a new
-class \ttt{NewClass}, redefine all above mentioned \cclass{cOwnedObject}
+class \ttt{NewClass}, redefine all above mentioned \cclass{cObject}
 member functions, and explain the conventions, rules and tips
 associated with them.
 To demonstrate as much as possible, the class will contain
-an \ttt{int} data member, dynamically allocated non-\cclass{cOwnedObject} data
+an \ttt{int} data member, dynamically allocated non-\cclass{cObject} data
 (an array of \cclass{double}s),
 an {\opp} object as data member (a \ttt{cQueue}), and
 a dynamically allocated {\opp} object (a \ttt{cMessage}).
@@ -2821,7 +2822,7 @@ of all methods discussed in the previous section.
 //
 #include <omnetpp.h>
 
-class NewClass : public cOwnedObject
+class NewClass : public cObject
 {
   protected:
     int size;
@@ -2858,7 +2859,7 @@ Here is the top of the \ttt{.cc} file:
 Register_Class( NewClass );
 
 
-NewClass::NewClass(const char *name, int sz) : cOwnedObject(name)
+NewClass::NewClass(const char *name, int sz) : cObject(name)
 {
     size = sz;
     array = new double[size];
@@ -2872,7 +2873,7 @@ the name of the object, then initializes its own data members.
 You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
 \begin{cpp}
-NewClass::NewClass(const NewClass& other) : cOwnedObject(other)
+NewClass::NewClass(const NewClass& other) : cObject(other)
 {
     size = -1; // needed by copy()
     array = nullptr;
@@ -3010,7 +3011,7 @@ Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
 {\opp} has a built-in ownership management mechanism which
 is used for sanity checks, and as part of the infrastructure
-supporting Tkenv inspectors.
+supporting Tkenv/Qtenv inspectors.
 
 Container classes like \cclass{cQueue} own the objects inserted
 into them, but this is not limited to objects inserted into a container:
@@ -3024,7 +3025,7 @@ the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
 simple module becomes the owner.
 
-The \ffunc{getOwner()} method, defined in \cclass{cOwnedObject}, returns the
+The \ffunc{getOwner()} method, defined in \cclass{cObject}, returns the
 owner of the object:
 
 \begin{cpp}
@@ -3050,7 +3051,7 @@ serves other purposes in {\opp}:
     \item{prevents certain types of programming errors, namely,
     those associated with wrong ownership handling.}
 
-    \item{enables Tkenv to display the list of simulation objects
+    \item{enables Tkenv and Qtenv to display the list of simulation objects
     present within a simple module. This is extremely useful for finding
     memory leaks caused by forgetting to delete messages that are
     no longer needed.}
@@ -3155,8 +3156,8 @@ When you remove an object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
 This is accomplished by the \ffunc{drop()} function, which transfers the
 ownership to the object's default owner.
-\ffunc{getDefaultOwner()} is a virtual method returning \ttt{cOwnedObject*}
-defined in \cclass{cOwnedObject}, and its implementation returns
+\ffunc{getDefaultOwner()} is a virtual method defined in \cclass{cOwnedObject},
+and its implementation returns
 the currently executing simple module's local object list.
 
 As an example, the \ffunc{remove()} method of \cclass{cQueue} is

@@ -1,0 +1,15 @@
+digraph g {
+        fontsize=12; size="5,5";
+
+        node [shape = "rectangle"];
+        edge [dir = "back"];
+
+        cRandom -> cUniform;
+        cRandom -> cExponential;
+        cRandom -> cNormal;
+        cRandom -> cTruncNormal;
+        cRandom -> cGamma;
+        cRandom -> cBeta;
+        cRandom -> others;
+        others [label = "..."];
+}

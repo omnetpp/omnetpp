@@ -78,6 +78,9 @@ DOTPICS = \
 	figures\build-workflow.dot \
 	figures\ned-net6-topology.dot \
 	figures\component-inheritance.dot \
+	figures\cobject-inheritance.dot \
+	figures\crandom-inheritance.dot \
+        figures\cstatistic-inheritance.dot \
 	figures\resultlistener-inheritance.dot \
 	figures\figure-inheritance.dot \
 	figures\statisticrecording.dot

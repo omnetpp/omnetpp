@@ -1,0 +1,15 @@
+digraph g {
+        fontsize=12;
+
+        node [shape = "rectangle"];
+        edge [dir = "back"];
+
+        cStatistic -> cStdDev;
+        cStdDev -> cWeightedStdDev;
+        cStdDev -> cDensityEstBase;
+        cDensityEstBase -> cLongHistogram [label="..."];
+        cDensityEstBase -> cDoubleHistogram [label="..."];
+        cDensityEstBase -> cVarHistogram [label="..."];
+        cDensityEstBase -> cPSquare [label="..."];
+        cDensityEstBase -> cKSplit [label="..."];
+}

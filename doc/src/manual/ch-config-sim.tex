@@ -1040,14 +1040,14 @@ replications.
 \label{sec:ch-config-sim:rng-config}
 
 The random number architecture of {\opp} was already outlined
-in section \ref{cha:sim-lib:generating-random-numbers}. Here
+in section \ref{cha:sim-lib:random-number-generators}. Here
 we'll cover the configuration of RNGs in \ffilename{omnetpp.ini}.
 
 \subsection{Number of RNGs}
 
 The \fconfig{num-rngs} configuration option sets the number of
 random number generator instances (i.e. random number streams)
-available for the simulation model (see \ref{cha:sim-lib:generating-random-numbers}).
+available for the simulation model (see \ref{cha:sim-lib:random-number-generators}).
 Referencing an RNG number greater or equal to this number
 (from a simple module or NED file) will cause a runtime error.
 
