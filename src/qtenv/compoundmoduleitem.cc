@@ -296,40 +296,31 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     std::string buffer;
     ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
 
+    QRectF border = submodulesRect;
+
+    if (border.top() < 0) border.setTop(0);
+    if (border.left() < 0) border.setLeft(0);
+
+    // making the margin symmetric
+    auto top = border.top();
+    if (top >= 0) {
+        border.setTop(0);
+        border.setBottom(border.bottom() + top);
+    }
+
+    auto left = border.left();
+    if (left >= 0) {
+        border.setLeft(0);
+        border.setRight(border.right() + left);
+    }
+
     bool widthOk, heightOk;
     double width, height;
     width = QString(ds.getTagArg("bgb", 0)).toDouble(&widthOk) * zoomFactor;
     height = QString(ds.getTagArg("bgb", 1)).toDouble(&heightOk) * zoomFactor;
 
-    if (!widthOk) width = height;
-    if (!heightOk) height = width;
-
-    QRectF border(0, 0, width, height);
-
-    if (!widthOk && !heightOk) {
-        // In this branch we don't need to care about zooming,
-        // the scaled submodule positioning and symmetricizing is enough.
-
-        // XXX should we enforce to have the top-left corner always at (0;0)?
-        // Because this way zooming can make the submodules slide areound a bit
-        // relative to the compound module background (if it does not have
-        // a fixed size specified by the bgb tag...).
-
-        border = submodulesRect;
-
-        // making the margin symmetric
-        auto top = border.top();
-        if (top >= 0) {
-            border.setTop(0);
-            border.setBottom(border.bottom() + top);
-        }
-
-        auto left = border.left();
-        if (left >= 0) {
-            border.setLeft(0);
-            border.setRight(border.right() + left);
-        }
-    }
+    if (widthOk) border.setWidth(width);
+    if (heightOk) border.setHeight(height);
 
     cmi->setZoomFactor(zoomFactor);
     cmi->setArea(border);
