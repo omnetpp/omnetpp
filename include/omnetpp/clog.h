@@ -34,37 +34,22 @@ class cComponent;
 enum LogLevel
 {
     /**
-     * The highest log level; it should be used for fatal (unrecoverable) errors
-     * that prevent the component from further operation. It doesn't mean that
-     * the simulation must stop immediately (because in such cases the code should
-     * throw a cRuntimeError), but rather that the a component is unable to continue
-     * normal operation. For example, a special purpose recording component may be
-     * unable to continue recording due to the disk being full.
+     * The lowest log level; it should be used for low-level implementation-specific
+     * technical details that are mostly useful for the developers/maintainers of the
+     * component. For example, a MAC layer protocol component could log control flow
+     * in loops and if statements, entering/leaving methods and code blocks using this
+     * log level.
      */
-    LOGLEVEL_FATAL,
+    LOGLEVEL_TRACE,
 
     /**
-     * This log level should be used for recoverable (non-fatal) errors that allow
-     * the component to continue normal operation. For example, a MAC layer protocol
-     * component could log unsuccessful packet receptions and unsuccessful packet
-     * transmissions using this level.
+     * This log level should be used for high-level implementation-specific technical
+     * details that are most likely important for the developers/maintainers of the
+     * component. These messages may help to debug various issues when one is looking
+     * at the code. For example, a MAC layer protocol component could log updates to
+     * internal state variables, updates to complex data structures using this log level.
      */
-    LOGLEVEL_ERROR,
-
-    /**
-     * This log level should be used for exceptional (non-error) situations that
-     * may be important for users and rarely occur in the component. For example,
-     * a MAC layer protocol component could log detected bit errors using this level.
-     */
-    LOGLEVEL_WARN,
-
-    /**
-     * This log level should be used for high-level protocol specific details that
-     * are most likely important for the users of the component. For example, a MAC
-     * layer protocol component could log successful packet receptions and successful
-     * packet transmissions using this level.
-     */
-    LOGLEVEL_INFO,
+    LOGLEVEL_DEBUG,
 
     /**
      * This log level should be used for low-level protocol-specific details that
@@ -77,22 +62,37 @@ enum LogLevel
     LOGLEVEL_DETAIL,
 
     /**
-     * This log level should be used for high-level implementation-specific technical
-     * details that are most likely important for the developers/maintainers of the
-     * component. These messages may help to debug various issues when one is looking
-     * at the code. For example, a MAC layer protocol component could log updates to
-     * internal state variables, updates to complex data structures using this log level.
+     * This log level should be used for high-level protocol specific details that
+     * are most likely important for the users of the component. For example, a MAC
+     * layer protocol component could log successful packet receptions and successful
+     * packet transmissions using this level.
      */
-    LOGLEVEL_DEBUG,
+    LOGLEVEL_INFO,
 
     /**
-     * The lowest log level; it should be used for low-level implementation-specific
-     * technical details that are mostly useful for the developers/maintainers of the
-     * component. For example, a MAC layer protocol component could log control flow
-     * in loops and if statements, entering/leaving methods and code blocks using this
-     * log level.
+     * This log level should be used for exceptional (non-error) situations that
+     * may be important for users and rarely occur in the component. For example,
+     * a MAC layer protocol component could log detected bit errors using this level.
      */
-    LOGLEVEL_TRACE
+    LOGLEVEL_WARN,
+
+    /**
+     * This log level should be used for recoverable (non-fatal) errors that allow
+     * the component to continue normal operation. For example, a MAC layer protocol
+     * component could log unsuccessful packet receptions and unsuccessful packet
+     * transmissions using this level.
+     */
+    LOGLEVEL_ERROR,
+
+    /**
+     * The highest log level; it should be used for fatal (unrecoverable) errors
+     * that prevent the component from further operation. It doesn't mean that
+     * the simulation must stop immediately (because in such cases the code should
+     * throw a cRuntimeError), but rather that the a component is unable to continue
+     * normal operation. For example, a special purpose recording component may be
+     * unable to continue recording due to the disk being full.
+     */
+    LOGLEVEL_FATAL,
 };
 
 
@@ -144,9 +144,9 @@ class SIM_API cLogLevel
 // for compile time disabled log statements.
 //
 #define OPP_LOGPROXY(object, classname, loglevel, category) \
-        ((void)0, !(loglevel <= GLOBAL_COMPILETIME_LOGLEVEL && \
+        ((void)0, !(loglevel >= GLOBAL_COMPILETIME_LOGLEVEL && \
          !getEnvir()->isDisabled() && \
-         loglevel <= omnetpp::cLogLevel::globalRuntimeLoglevel && \
+         loglevel >= omnetpp::cLogLevel::globalRuntimeLoglevel && \
          omnetpp::cLogProxy::isEnabled(object, category, loglevel))) ? \
          omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
 

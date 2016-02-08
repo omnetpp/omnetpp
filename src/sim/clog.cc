@@ -144,7 +144,7 @@ bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *categor
 
 bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel)
 {
-    return loglevel <= component->getLoglevel(); //TODO use category
+    return loglevel >= component->getLoglevel(); //TODO use category
 }
 
 void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
