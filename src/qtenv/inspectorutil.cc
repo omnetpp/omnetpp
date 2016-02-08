@@ -52,6 +52,17 @@ QVector<int> InspectorUtil::supportedInspTypes(cObject *object)
     return insp_types;
 }
 
+Inspector *InspectorUtil::getContainingInspector(QWidget *widget) {
+    QWidget *curr = widget;
+    while (curr) {
+        Inspector *insp = dynamic_cast<Inspector *>(curr);
+        if (insp)
+            return insp;
+        curr = curr->parentWidget();
+    }
+    return nullptr;
+}
+
 void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp)
 {
     // add "Go Info" if applicable
@@ -142,7 +153,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(cObject* object, Inspector *ins
 QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Inspector *insp)
 {
     QMenu *menu = new QMenu();
-
+    menu->setFont(getQtenv()->getBoldFont());
     //TODO Is it needed?
     // If there are more than one ptrs, remove the inspector object's own ptr:
     // when someone right-clicks a submodule icon, we don't want the compound

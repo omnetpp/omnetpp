@@ -57,6 +57,10 @@ PickHandler::~PickHandler()
 bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
+    if (!view)
+        return false;
+
+    auto eventType = ea.getEventType();
 
     // keeping track of where the right button has been pressed down so we can
     // show the context menu upon release only if it hasn't been moved much
@@ -66,11 +70,21 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
     // only showing the context menu if the drag was shorter than this many pixels
     const int rightDragThreshold = 3;
 
-    switch(ea.getEventType())
-    {
+    // this second little hack is necessary because if we setObject while handling the DOUBLECLICK
+    // event, and the next object is shown in 2D mode, OSG will not get the release event, and
+    // upon coming back to the module in which the doubleclick happened, OSG will think the button
+    // is still held down while it is not.
+    static bool lastEventWasDoubleClick = false; // ignoring FRAME events
+
+    switch(eventType) {
         case osgGA::GUIEventAdapter::PUSH:
-            if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-                emit viewer->objectsPicked(pick(view, ea));
+            if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON) {
+                auto objects = pick(view, ea);
+                if (!objects.empty()) {
+                    emit viewer->objectsPicked(objects);
+                    return true;
+                }
+            }
             if (ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
                 rightClickX = ea.getX();
                 rightClickY = ea.getY();
@@ -79,10 +93,10 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
         // context menus can't be opened on push, because then only the QMenu would receive
         // the release event, osg wouldn't, and it would think it's stuck in the "down" position
         case osgGA::GUIEventAdapter::RELEASE:
-            if (view && ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON
+            if (ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON
                     && osg::Vec2d(ea.getX() - rightClickX, ea.getY() - rightClickY).length() < rightDragThreshold) {
                 auto objects = pick(view, ea);
-                Inspector *insp = dynamic_cast<Inspector*>(viewer->parentWidget()->parentWidget());
+                Inspector *insp = InspectorUtil::getContainingInspector(viewer);
                 QMenu *menu;
                 if (!objects.empty() && insp && insp->supportsObject(objects.front())) {
                     menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), insp);
@@ -93,6 +107,15 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
 
                 menu->addMenu(viewer->createCameraManipulatorMenu());
                 menu->exec(viewer->mapToGlobal(QPoint(ea.getX(), viewer->childrenRect().height() - ea.getY())));
+                return true;
+            }
+            if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && lastEventWasDoubleClick) {
+                auto objects = pick(view, ea);
+                Inspector *insp = InspectorUtil::getContainingInspector(viewer);
+                if (!objects.empty() && insp && insp->supportsObject(objects.front())) {
+                    insp->setObject(objects.front());
+                    return true;
+                }
             }
             break;
         case osgGA::GUIEventAdapter::KEYDOWN:
@@ -100,20 +123,20 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 osg::ref_ptr<osgGA::GUIEventAdapter> event = new osgGA::GUIEventAdapter(ea);
                 event->setX((ea.getXmin()+ea.getXmax())*0.5);
                 event->setY((ea.getYmin()+ea.getYmax())*0.5);
-                if (view)
-                    emit viewer->objectsPicked(pick(view, *event));
-            }
-            break;
-        case osgGA::GUIEventAdapter::DOUBLECLICK: {
-                auto objects = pick(view, ea);
-                Inspector *insp = dynamic_cast<Inspector*>(viewer->parentWidget()->parentWidget());
-                if (!objects.empty() && insp && insp->supportsObject(objects.front())) {
-                    insp->setObject(objects.front());
+                auto objects = pick(view, *event);
+                if (!objects.empty()) {
+                    emit viewer->objectsPicked(objects);
+                    return true;
                 }
             }
             break;
         default:;
     }
+
+    lastEventWasDoubleClick = eventType == osgGA::GUIEventAdapter::DOUBLECLICK
+            // not letting the frame events reset this flag
+            || (lastEventWasDoubleClick && eventType == osgGA::GUIEventAdapter::FRAME);
+
     return false;
 }
 
