@@ -93,6 +93,11 @@ enum LogLevel
      * unable to continue recording due to the disk being full.
      */
     LOGLEVEL_FATAL,
+
+    /**
+     * Not a real log level. TODO
+     */
+    LOGLEVEL_OFF,
 };
 
 

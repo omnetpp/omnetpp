@@ -36,6 +36,7 @@ cLogProxy::nullstream cLogProxy::dummyStream;
 const char *cLogLevel::getName(LogLevel loglevel)
 {
     switch (loglevel) {
+        case LOGLEVEL_OFF: return "OFF";
         case LOGLEVEL_FATAL: return "FATAL";
         case LOGLEVEL_ERROR: return "ERROR";
         case LOGLEVEL_WARN:  return "WARN";
@@ -49,7 +50,9 @@ const char *cLogLevel::getName(LogLevel loglevel)
 
 LogLevel cLogLevel::getLevel(const char *name)
 {
-    if (!strcasecmp(name, "FATAL"))
+    if (!strcasecmp(name, "OFF"))
+        return LOGLEVEL_OFF;
+    else if (!strcasecmp(name, "FATAL"))
         return LOGLEVEL_FATAL;
     else if (!strcasecmp(name, "ERROR"))
         return LOGLEVEL_ERROR;
