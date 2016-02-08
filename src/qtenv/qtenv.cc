@@ -193,6 +193,7 @@ void Qtenv::storeOptsInPrefs() {
 
     QString logLevelString;
     switch (opt->logLevel) {
+    case LOGLEVEL_OFF:  logLevelString = "off";  break;
     case LOGLEVEL_FATAL:  logLevelString = "fatal";  break;
     case LOGLEVEL_ERROR:  logLevelString = "error";  break;
     case LOGLEVEL_WARN:   logLevelString = "warn";   break;
@@ -310,7 +311,9 @@ void Qtenv::restoreOptsFromPrefs() {
     pref = getPref("loglevel");
     if (pref.isValid()) {
         QString logLevelString = pref.toString();
-        if (logLevelString == "fatal") {
+        if (logLevelString == "off") {
+            opt->logLevel = LOGLEVEL_OFF;
+        } else if (logLevelString == "fatal") {
             opt->logLevel = LOGLEVEL_FATAL;
         } else if (logLevelString == "error") {
             opt->logLevel = LOGLEVEL_ERROR;
