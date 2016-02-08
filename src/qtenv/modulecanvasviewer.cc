@@ -59,7 +59,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     notDrawn(false),
     needs_redraw(false)
 {
-    setFont(font = getQtenv()->getCanvasFont());
+    setFont(getQtenv()->getCanvasFont());
 
     backgroundLayer = new GraphicsLayer();
     rangeLayer = new GraphicsLayer();
@@ -95,6 +95,11 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     // otherwise it would be a hand, that's why this is in mousePressEvent and mouseReleaseEvent too
     viewport()->setCursor(Qt::ArrowCursor);
     setResizeAnchor(AnchorViewCenter);
+
+#ifdef Q_WS_MAC
+    // the zoom label was not correctly drawn without this
+    setViewportUpdateMode(FullViewportUpdate);
+#endif
 }
 
 ModuleCanvasViewer::~ModuleCanvasViewer()
@@ -516,8 +521,8 @@ void ModuleCanvasViewer::refreshFigures()
 
 void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
-    hints->defaultFont = font.family().toStdString();
-    hints->defaultFontSize = font.pixelSize();
+    hints->defaultFont = font().family().toStdString();
+    hints->defaultFontSize = font().pixelSize();
     hints->zoom = zoomFactor;
 }
 

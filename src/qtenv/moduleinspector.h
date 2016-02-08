@@ -86,7 +86,7 @@ class QTENV_API ModuleInspector : public Inspector
       static const QString PREF_SHOWLABELS;
       static const QString PREF_SHOWARROWHEADS;
 
-      const int toolbarSpacing = 10; // from the edges, in pixels, the scrollbar size will be added to this
+      const int toolbarSpacing = 4; // from the edges, in pixels, the scrollbar size will be added to this
 
       QAction *switchToOsgViewAction;
       QAction *switchToCanvasViewAction;

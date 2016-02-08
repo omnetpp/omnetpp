@@ -68,8 +68,6 @@ private:
     double zoomFactor = 1;
     double imageSizeFactor = 1;
 
-    QFont font;
-
     ZoomLabel *zoomLabel;
 
     // does full layouting, stores results in submodPosMap
@@ -153,9 +151,6 @@ public:
     void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
     void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
     void incLayoutSeed() { ++layoutSeed; }
-
-    QFont getFont() {return font;}
-    void setFont(const QFont &font) {this->font = font;}
 
     void setZoomLabelVisible(bool visible);
 };

@@ -43,6 +43,8 @@ class ColorizeEffect : public QGraphicsEffect {
     bool changed = true;
     // we store the colorized pixels here, so we won't have to colorize every frame
     QImage cachedImage;
+    QPoint offset;
+    bool smooth = false;
 
 public:
     QColor getColor();
@@ -50,6 +52,9 @@ public:
 
     double getWeight();
     void setWeight(double weight);
+
+    bool getSmooth();
+    void setSmooth(double smooth);
 
 protected:
     void draw(QPainter *painter) override;

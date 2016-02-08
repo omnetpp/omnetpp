@@ -24,7 +24,6 @@
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QFontMetrics>
-#include <QGraphicsColorizeEffect>
 #include <QPainter>
 #include "common/stringutil.h"
 #include "omnetpp/platdep/platmisc.h"
@@ -1324,10 +1323,11 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
 
     imageItem->setOpacity(imageFigure->getOpacity());
 
-    QGraphicsColorizeEffect *colorizeEffect = new QGraphicsColorizeEffect();
+    ColorizeEffect *colorizeEffect = new ColorizeEffect();
     cFigure::Color color = imageFigure->getTintColor();
     colorizeEffect->setColor(QColor(color.red, color.green, color.blue));
-    colorizeEffect->setStrength(imageFigure->getTintAmount());
+    colorizeEffect->setWeight(imageFigure->getTintAmount());
+    colorizeEffect->setSmooth(imageFigure->getInterpolation() != cFigure::INTERPOLATION_NONE);
     imageItem->setGraphicsEffect(colorizeEffect);
 }
 

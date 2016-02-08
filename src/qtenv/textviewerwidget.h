@@ -90,6 +90,7 @@ protected:
     QColor foregroundColor;
     QColor selectionBackgroundColor;
     QColor selectionForegroundColor;
+    int toolbarSpacing = 4;
     int leftMargin = 5;
     int lineHeight, averageCharWidth; // measured from font
     bool isMonospaceFont;

@@ -137,41 +137,61 @@ void ColorizeEffect::setWeight(double weight) {
     }
 }
 
+bool ColorizeEffect::getSmooth() {
+    return smooth;
+}
+
+void ColorizeEffect::setSmooth(double smooth) {
+    if (this->smooth != smooth) {
+        this->smooth = smooth;
+        smooth = true;
+        update();
+    }
+}
+
 void ColorizeEffect::draw(QPainter *painter) {
     if (changed) {
-        cachedImage = sourcePixmap(Qt::DeviceCoordinates, 0, NoPad).toImage();
+        cachedImage = sourcePixmap(Qt::LogicalCoordinates, &offset, NoPad).toImage();
 
-        double rdest = color.redF();
-        double gdest = color.greenF();
-        double bdest = color.blueF();
+        if (weight > 0) {
+            double rdest = color.redF();
+            double gdest = color.greenF();
+            double bdest = color.blueF();
 
-        for (int y = 0; y < cachedImage.height(); y++) {
-            QRgb *scanLine = reinterpret_cast<QRgb*>(cachedImage.scanLine(y));
-            for (int x = 0; x < cachedImage.width(); x++) {
-                QRgb &pixel = scanLine[x];
+            for (int y = 0; y < cachedImage.height(); y++) {
+                QRgb *scanLine = reinterpret_cast<QRgb*>(cachedImage.scanLine(y));
+                for (int x = 0; x < cachedImage.width(); x++) {
+                    QRgb &pixel = scanLine[x];
 
-                int r = qRed(pixel);
-                int g = qGreen(pixel);
-                int b = qBlue(pixel);
+                    int r = qRed(pixel);
+                    int g = qGreen(pixel);
+                    int b = qBlue(pixel);
 
-                // transform - code taken from tkenv/tkcmd.cc (colorizeImage_cmd)
-                int lum = (int)(0.2126*r + 0.7152*g + 0.0722*b);
-                r = (int)((1-weight)*r + weight*lum*rdest);
-                g = (int)((1-weight)*g + weight*lum*gdest);
-                b = (int)((1-weight)*b + weight*lum*bdest);
+                    // transform - code taken from tkenv/tkcmd.cc (colorizeImage_cmd)
+                    int lum = (int)(0.2126*r + 0.7152*g + 0.0722*b);
+                    r = (int)((1-weight)*r + weight*lum*rdest);
+                    g = (int)((1-weight)*g + weight*lum*gdest);
+                    b = (int)((1-weight)*b + weight*lum*bdest);
 
-                pixel = qRgba(r, g, b, qAlpha(pixel));
+                    pixel = qRgba(r, g, b, qAlpha(pixel));
+                }
             }
         }
 
         changed = false;
     }
 
-    painter->drawImage(sourceBoundingRect(Qt::LogicalCoordinates).toRect(), cachedImage);
+    painter->save();
+    painter->setRenderHint(QPainter::SmoothPixmapTransform, smooth);
+    painter->drawImage(cachedImage.rect().translated(offset), cachedImage);
+    painter->restore();
 }
 
-void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags) {
-    changed = true;
+void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags flags) {
+    if (flags.testFlag(SourceAttached)
+            || flags.testFlag(SourceDetached)
+            || flags.testFlag(SourceBoundingRectChanged))
+        changed = true;
     update();
 }
 

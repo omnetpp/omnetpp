@@ -105,15 +105,12 @@ void TextViewerWidget::setFont(QFont font) {
 void TextViewerWidget::setToolBar(QToolBar *toolBar) {
     this->toolBar = toolBar;
     if (toolBar) {
-        QHBoxLayout *horizontalLayout = new QHBoxLayout();
-        QVBoxLayout *verticalLayout = new QVBoxLayout();
-        horizontalLayout->addLayout(verticalLayout);
-        horizontalLayout->insertStretch(0);
         delete viewport()->layout();
-        viewport()->setLayout(horizontalLayout);
+        QGridLayout *layout = new QGridLayout(viewport());
+        viewport()->setLayout(layout);
 
-        verticalLayout->addWidget(toolBar);
-        verticalLayout->insertStretch(1);
+        layout->addWidget(toolBar, 0, 0, Qt::Alignment(Qt::AlignRight | Qt::AlignTop));
+        layout->setMargin(toolbarSpacing);
 
         toolBar->setAutoFillBackground(true);
     }
