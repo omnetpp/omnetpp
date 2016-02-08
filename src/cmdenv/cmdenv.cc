@@ -77,7 +77,6 @@ Register_PerRunConfigOption(CFGID_LOG_FORMAT, "cmdenv-log-format", CFG_STRING, "
 Register_PerRunConfigOption(CFGID_LOGLEVEL, "cmdenv-log-level", CFG_STRING, "DEBUG", "Specifies the level of detail recorded by log statements, output below the specified level is omitted. This setting is with AND relationship with per-component log level settings. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the specified per component log levels and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.");
 
 //TODO ezeket atnevezni:
-Register_PerObjectConfigOption(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print log messages (EV<<, EV_INFO, etc.) from the selected modules.")
 Register_PerObjectConfigOption(CFGID_CMDENV_LOGLEVEL2, "log-level", KIND_MODULE, CFG_STRING, "TRACE", "Specifies the per-component level of detail recorded by log statements, output below the specified level is omitted. Available values are (case insensitive): fatal, error, warn, info, detail, debug or trace. Note that the level of detail is also controlled by the globally specified runtime log level and the GLOBAL_COMPILETIME_LOGLEVEL macro that is used to completely remove log statements from the executable.")
 
 //
@@ -367,7 +366,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
 
                 // print event banner if necessary
                 if (opt->printEventBanners)
-                    if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->isEvEnabled())
+                    if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->getLoglevel() != LOGLEVEL_OFF)
                         printEventBanner(event);
 
 
@@ -541,7 +540,8 @@ void Cmdenv::displayException(std::exception& ex)
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
-    if (!opt->expressMode && opt->printEventBanners && component->isEvEnabled())
+    // TODO: make this an EV_INFO in the component?
+    if (!opt->expressMode && opt->printEventBanners && component->getLoglevel() != LOGLEVEL_OFF)
         ::fprintf(fout, "Initializing %s %s, stage %d\n",
                 component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 }
@@ -615,7 +615,7 @@ void Cmdenv::log(cLogEntry *entry)
         return;
 
     cComponent *ctx = getSimulation()->getContext();
-    if (!ctx || (ctx->isEvEnabled()) || getSimulation()->getContextType() == CTX_FINISH) {
+    if (!ctx || ctx->getLoglevel() != LOGLEVEL_OFF || getSimulation()->getContextType() == CTX_FINISH) {
         std::string prefix = logFormatter.formatPrefix(entry);
         ::fputs(prefix.c_str(), fout);
         ::fwrite(entry->text, 1, entry->textLength, fout);
@@ -691,14 +691,6 @@ void Cmdenv::debug(const char *fmt, ...)
 bool Cmdenv::idle()
 {
     return sigintReceived;
-}
-
-void Cmdenv::moduleCreated(cModule *mod)
-{
-    EnvirBase::moduleCreated(mod);
-
-    bool ev_enabled = getConfig()->getAsBool(mod->getFullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
-    mod->setEvEnabled(ev_enabled);
 }
 
 void Cmdenv::printUISpecificHelp()

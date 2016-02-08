@@ -68,7 +68,6 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
     parArray = nullptr;
 
     displayString = nullptr;
-    setEvEnabled(true);
 
     signalTable = nullptr;
     signalHasLocalListeners = signalHasAncestorListeners = 0;

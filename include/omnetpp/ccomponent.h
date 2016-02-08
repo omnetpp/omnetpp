@@ -57,10 +57,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     enum {
       FL_PARAMSFINALIZED  = 1 << 2, // whether finalizeParameters() has been called
       FL_INITIALIZED      = 1 << 3, // whether initialize() has been called
-      FL_EVLOGENABLED     = 1 << 4, // whether logging via EV<< is enabled
-      FL_DISPSTR_CHECKED  = 1 << 5, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
-      FL_DISPSTR_NOTEMPTY = 1 << 6, // for hasDisplayString(): whether the display string is not empty
-      FL_LOGLEVEL_SHIFT   = 7,      // 3 bits wide (loglevel + 1), because 0 means unspecified (note: don't use << here)
+      FL_DISPSTR_CHECKED  = 1 << 4, // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
+      FL_DISPSTR_NOTEMPTY = 1 << 5, // for hasDisplayString(): whether the display string is not empty
+      FL_LOGLEVEL_SHIFT   = 6,      // 3 bits wide
     };
 
   private:
@@ -130,10 +129,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void releaseLocalListeners();
 
   public:
-    // internal: currently used by Cmdenv
-    void setEvEnabled(bool e)  {setFlag(FL_EVLOGENABLED,e);}
-    bool isEvEnabled() const  {return flags&FL_EVLOGENABLED;}
-
     // internal: used by log mechanism
     LogLevel getLoglevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
     void setLoglevel(LogLevel loglevel);
