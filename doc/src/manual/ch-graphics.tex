@@ -2526,36 +2526,66 @@ The {\opp} object should exist as long as the wrapper node exists. Otherwise,
 clicking child nodes with the mouse is likely to result in a crash.
 \end{note}
 
-TODO
+\subsubsection{Conditional Compilation}
 
-\subsubsection{Conditional compilation}
+OSG and osgEarth are optional in {\opp}, and may not be available in all
+installations. However, one probably wants simulation models to compile
+even if the particular {\opp} installation doesn't contain the OSG and
+osgEarth libraries. This can be achieved by conditional compilation.
 
-Model code should surround OSG-specific code with \fmac{\#ifdef HAVE\_OSG}.
+{\opp} detects the OSG and osgEarth libraries and defines the \fmac{WITH\_OSG} macro
+if they are present. OSG-specific code needs to be surrounded with \ttt{\#ifdef WITH\_OSG}.
 
-A complete example:
+An example:
 
 \begin{cpp}
-#include <osgDB/ReadFile>
-#include <omnetpp.h>
 ...
-TODO #ifdef HAVE_OSG
+#ifdef WITH_OSG
+#include <osgDB/ReadFile>
+#endif
+
 void DemoModule::initialize()
 {
+#ifdef WITH_OSG
     cOsgCanvas *osgCanvas = getParentModule()->getOsgCanvas();
     osg::Node *scene = ... // assemble scene graph here
     osgCanvas->setScene(scene);
     osgCanvas->setClearColor(cOsgCanvas::Color(0,0,64)); // hint
+#endif
 }
 \end{cpp}
 
+\subsubsection{Using Additional Libraries}
 
-\subsection{Practical Advice to 3D Visualization}
+OSG and osgEarth are comprised of several libraries. By default, {\opp}
+links only a subset of them to your model: \ttt{osg}, \ttt{osgGA},
+\ttt{osgViewer}, \ttt{osgQt}, \ttt{osgEarth}, \ttt{osgEarthUtil}. If you
+need additional OSG and osgEarth libraries, you need to ensure that those
+libraries are linked to your model as well. The best way to achieve this is
+to use the following code fragment in the \ttt{makefrag} file of your
+project:
 
-there are numerous sources to get information and practical help in using OSG.
+\begin{filelisting}
+ifneq ($(OSG_LIBS),)
+LIBS += $(OSG_LIBS) -losgDB -losgAnimation ... # additional OSG libs
+endif
+ifneq ($(OSGEARTH_LIBS),)
+LIBS += $(OSGEARTH_LIBS) -losgEarthFeatures -losgEarthSymbology ...
+endif
+\end{filelisting}
 
-the intent of the next sections is just to give you enough material to get started.
+The \ttt{ifneq()} statements ensure that \ttt{LIBS} is only updated if {\opp} has detected
+the presence of OSG/osgEarth in the first place.
 
-after that you are advised to refer to the material listed in the section "OSG programming resources"
+
+\subsection{Using OSG}
+
+TODO
+
+There are numerous sources to get information and practical help in using OSG.
+The intent of the next sections are just to give you enough material to get started.
+After that you are advised to refer to the material listed in the section
+"OSG programming resources".
 
 \subsubsection{Loading Models}
 
@@ -2563,13 +2593,11 @@ To display a 3D model in the canvas of a compound module, an \cclass{osg::Node} 
 to be provided as the root of the scene.
 
 One method of getting such a \ttt{Node} is to load it from a file containing the
-model. [1]
-
-This can be done with the \ffunc{osgDB::readNodeFile()} method (or with one
+model. This can be done with the \ffunc{osgDB::readNodeFile()} method (or with one
 of its variants). This method takes a string as argument, and based on the
 protocol specification and extension(s), finds a suitable loader for it,
 loads it, finally returns with a pointer to the newly created \cclass{osg::Node}
-instance. [2]
+instance.
 
 This node can now be set on the canvas for display with the \ffunc{setScene()}
 method, as seen in the osg-intro sample (among others):
@@ -2585,7 +2613,7 @@ load a wide range of formats, many 3D modeling tools can also export the
 edited scene or part of it in OSG's native file format, osgt, with the
 help of exporter plugins. One such plugin for Blender has been used to
 develop some of the OSG demos for {\opp}, and it was found to be working
-well. [3]
+well.
 \end{note}
 
 There is support for so-called "pseudo loaders" in OSG, which provide
@@ -2609,17 +2637,28 @@ number as those are already used as operator and parameter separators.
 Note that these modifiers operate directly on the model data and are
 independent of any further dynamic transformations applied to the node when
 it is placed in the scene. For further information refer to the OSG
-knowledge base. [4]
+knowledge base.
 
-\subsubsection{Building the Scene}
+\subsubsection{Creating Shapes}
 
-Alternatively, the whole scene can be built entirely from scratch using the
-\cclass{osg::Geode}, \cclass{osg::ShapeDrawable} and \cclass{osg::Shape}
-classes. This eliminates the need for separate model files in the
-simulation.
+Alternatively, shapes can be built entirely from scratch using the
+\cclass{osg::Geode}, \cclass{osg::Shape\-Drawable} and \cclass{osg::Shape}
+classes.
 
-For an example of this see the Satellite.cc file in the osg-satellites
-sample:
+To create a shape, one first needs to create an \cclass{osg::Shape}.
+\cclass{osg::Shape} is an abstract class and it has several subclasses, like
+\cclass{osg::Box}, \cclass{osg::Sphere}, \cclass{osg::Cone},
+\cclass{osg::Cylinder} or \cclass{osg::Capsule}. That object is only an abstract
+definition of the shape, and cannot be drawn on its own. To make it drawable,
+one needs to create an \cclass{osg::Shape\-Drawable} for it. However, an
+\cclass{osg::Shape\-Drawable} still cannot be attached to the scene, as it is still
+not an \cclass{osg::Node}. The \cclass{osg::Shape\-Drawable} must be added to an
+\cclass{osg::Geode} (\textit{geometry node}) to be able to insert it into the
+scene. This object can then be added to the scene and positioned and oriented
+freely, just like any other \cclass{osg::Node}.
+
+For an example of this see the following snippet from the osg-satellites
+sample. This code creates an \cclass{osg::Cone} and adds it to the scene.
 
 \begin{cpp}
 auto cone = new osg::Cone(osg::Vec3(0, 0, -coneRadius*0.75), coneHeight, coneRadius);
@@ -2629,42 +2668,338 @@ coneGeode->addDrawable(coneDrawable);
 locatorNode->addChild(coneGeode);
 \end{cpp}
 
+Note that a single \cclass{ost::Shape} instance can be used to construct many
+\cclass{osg::Shape\-Drawable}s, and a single \cclass{osg::Shape\-Drawable} can be
+added to any number of \cclass{osg::Geode}s to make it appear in multiple
+places or sizes in the scene. This can in fact improve rendering performance.
+
+\subsubsection{Placing and Orienting Models in a Scene}
+
+One way to position and orient nodes is by making them children of an
+\cclass{osg::Position\-Attitude\-Transform}. This node provides methods to
+set the position, orientation and scale of its children. Orientation is done
+with quaternions (\cclass{osg::Quat}). Quaternions can be constructed from
+an axis of rotation and a rotation angle around the axis.
+
+The following example places a node at the (x, y, z) coordinates and rotates it
+around the Z axis by \ttt{heading} radians to make it point in the right
+direction.
+
+\begin{cpp}
+osg::Node *objectNode = ...;
+auto transformNode = new osg::PositionAttitudeTransform();
+transformNode->addChild(objectNode);
+transformNode->setPosition(osg::Vec3d(x, y, z));
+double heading = ...; // (in radians)
+transformNode->setAttitude(osg::Quat(heading, osg::Vec3d(0, 0, 1)));
+\end{cpp}
+
+\subsubsection{Adding Labels and Annotations}
+
+OSG makes it possible to display text or image labels in the scene. Labels
+are rotated to be always parallel to the screen, and scaled to appear in a
+constant size. In the following we'll show an example where we create
+a label and display it relative to an arbitrary node.
+
+First, the label has to be created:
+
+\begin{cpp}
+auto label = new osgText::Text();
+label->setCharacterSize(18);
+label->setBoundingBoxColor(osg::Vec4(1.0, 1.0, 1.0, 0.5)); // RGBA
+label->setColor(osg::Vec4(0.0, 0.0, 0.0, 1.0)); // RGBA
+label->setAlignment(osgText::Text::CENTER_BOTTOM);
+label->setText("Hello World");
+label->setDrawMode(osgText::Text::FILLEDBOUNDINGBOX | osgText::Text::TEXT);
+\end{cpp}
+
+Or if desired, a textured rectangle with an image:
+
+\begin{cpp}
+auto image = osgDB::readImageFile("myicon.png");
+auto texture = new osg::Texture2D();
+texture->setImage(image);
+auto icon = osg::createTexturedQuadGeometry(osg::Vec3(0.0, 0.0, 0.0),
+    osg::Vec3(image->s(), 0.0, 0.0), osg::Vec3(0.0, image->t(), 0.0),
+    0.0, 0.0, 1.0, 1.0);
+icon->getOrCreateStateSet()->setTextureAttributeAndModes(0, texture);
+icon->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+\end{cpp}
+
+If the image has transparent parts, you also need the following lines:\footnote{These lines
+enable blending, and places \ttt{icon} in the \ttt{TRANSPARENT\_BIN}. Normally there are
+two bins, \textit{opaque} and \textit{transparent}. When a scene is rendered, OSG first
+renders the objects in the opaque bin, then the objects in the transparent bin. More bits
+can be created, but that is rarely necessary.}
+
+\begin{cpp}
+icon->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+icon->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+\end{cpp}
+
+The icon and/or label needs an \cclass{osg::Geode} to be placed in the scene.
+Lighting is best disabled for the label.
+
+\begin{cpp}
+auto geode = new osg::Geode();
+geode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF |
+                                                   osg::StateAttribute::OVERRIDE);
+double labelSpacing = 2;
+label->setPosition(osg::Vec3(0.0, labelSpacing, 0.0));
+geode->addDrawable(label);
+geode->addDrawable(icon);
+\end{cpp}
+
+This \cclass{osg::Geode} should be made a child of an \cclass{osg::AutoTransform}
+node, which applies the correct transformations to it for the label-like behaviour
+to happen:
+
+\begin{cpp}
+auto autoTransform = new osg::AutoTransform();
+autoTransform->setAutoScaleToScreen(true);
+autoTransform->setAutoRotateMode(osg::AutoTransform::ROTATE_TO_SCREEN);
+autoTransform->addChild(geode);
+\end{cpp}
+
+This \ttt{autoTransform} can now be made a child of the \ttt{modelToTransform},
+and moved with it.Alternatively, both can be added to a new \cclass{osg::Group},
+as siblings, and handled together using that.
+
+We want the label to appear relative to an object called \ttt{modelNode}.
+One way would be to make \ttt{autoTransform} the child of \ttt{modelNode},
+but here we rather place both of them under an \cclass{osg::Group}. The group should
+be inserted
+
+\begin{cpp}
+auto modelNode = ... ;
+auto group = new osg::Group();
+group->addChild(modelNode);
+group->addChild(autoTransform);
+\end{cpp}
+
+To place the label above the object, we set its position to $(0,0,z)$, where $z$
+is the radius of the object's bounding sphere.
+
+\begin{cpp}
+auto boundingSphere = modelNode->getBound();
+autoTransform->setPosition(osg::Vec3d(0.0, 0.0, boundingSphere.radius()));
+\end{cpp}
+
+
+
+\subsubsection{Drawing Lines}
+
+To draw a line between two points in the scene, first the two points
+have to be added into an \cclass{osg::Vec3Array}. Then an \cclass{osg::DrawArrays}
+should be created to specify which part of the array needs to be drawn.
+In this case, it is obviously two points, starting from the one at index 0.
+Finally, an \cclass{osg::Geometry} is necessary to join the two together.
+
+\begin{cpp}
+auto vertices = new osg::Vec3Array();
+vertices->push_back(osg::Vec3(begin_x, begin_y, begin_z));
+vertices->push_back(osg::Vec3(end_x, end_y, end_z));
+
+auto drawArrays = new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP);
+drawArrays->setFirst(0);
+drawArrays->setCount(vertices->size());
+
+auto geometry = new osg::Geometry();
+geometry->setVertexArray(vertices);
+geometry->addPrimitiveSet(drawArrays);
+\end{cpp}
+
+The resulting \cclass{osg::Geometry} must be added to an \cclass{osg::Geode}
+(\textit{geometry node}), which makes it possible to add it to the scene.
+
+\begin{cpp}
+auto geode = new osg::Geode();
+geode->addDrawable(geometry);
+\end{cpp}
+
+To change some visual properties of the line, the \cclass{osg::StateSet} of the
+\cclass{osg::Geode} has to be modified. The width of the line, for example, is
+controlled by a \cclass{osg::StateAttribute} called \cclass{osg::LineWidth}.
+
+\begin{cpp}
+float width = ...;
+auto stateSet = geode->getOrCreateStateSet();
+auto lineWidth = new osg::LineWidth();
+lineWidth->setWidth(width);
+stateSet->setAttributeAndModes(lineWidth, osg::StateAttribute::ON);
+\end{cpp}
+
+Because of how \cclass{osg::Geometry} is rendered, the specified line width
+will always be constant on the screen (measured in pixels), and will not vary
+based on the distance from the camera. To achieve that effect, a long and thin
+\cclass{osg::Cylinder} could be used instead.
+
+Changing the color of the line can be achieved by setting an appropriate
+\cclass{osg::Material} on the \cclass{osg::StateSet}. It is recommended to
+disable lighting for the line, otherwise it might appear in a different color,
+depending on where it is viewed from or what was rendered just before
+it.\footnote{Since no normals were specified for the vertices upon creation,
+they are undefined (and wouldn't make much sense for a one-dimensional object),
+but still would be used for lighting.}
+
+\begin{cpp}
+auto material = new osg::Material();
+osg::Vec4 colorVec(red, green, blue, opacity); // all between 0.0 and 1.0
+material->setAmbient(Material::FRONT_AND_BACK, colorVec);
+material->setDiffuse(Material::FRONT_AND_BACK, colorVec);
+material->setAlpha(Material::FRONT_AND_BACK, opacity);
+stateSet->setAttribute(material);
+stateSet->setMode(GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
+\end{cpp}
+
+\subsubsection{How to Organize a Scene}
+
 Independent of how the scene has been constructed, it is always important
 to keep track of how the individual nodes are related to each other in the
-scene graph. This is because every modification of an osg::Node is by
+scene graph. This is because every modification of an \cclass{osg::Node} is by
 default propagated to all of its children, let it be a transformation, a
 render state variable, or some other flag.
 
-For really simple scenes it might be enough to have an osg::Group as the
+For really simple scenes it might be enough to have an \cclass{osg::Group} as the
 root node, and make every other object a direct child of that. This reduces
 the complications and avoids any strange surprises regarding state
 inheritance. For more complex scenes it is advisable to follow the logical
 hierarchy of the displayed objects in the scene graph.
 
-Once the desired object is created and added to the scene, it can be easily
+Once the desired object has been created and added to the scene, it can be easily
 moved and oriented to represent the state of the simulation by making it a
-child of an osg::PositionAttitudeTransform node.
+child of an \cclass{osg::Position\-Attitude\-Transform} node.
 
-\subsubsection{Earth Files}
+\subsubsection{Using Animations}
 
-TODO example: substitute "boston.earth"
-
-
-\subsubsection{Transforms}
-
-TODO
-
-\subsubsection{Animation Playback}
-
+\iffalse
+% this is the early draft version
 For more sophisticated animation it is also possible to play back stored
 motion sequences from the model file, as seen in the osg-indoor sample or
 the BostonPark scenario of the osg-earth sample. The former demonstrates
 explicit control over which animation is being played when and in what way,
 while the latter contains a really simple looping clip (the box people)
 requiring no control from the model code.
+\fi
+
+If the node loaded by \ffunc{readNodeFile()} contains animations (sometimes called
+actions), the \ttt{osgAnimation} module is capable of playing them back.
+
+In simple cases, when there is only a single animation, and it is set up to play
+in a loop automatically (like the walking man in the osg-indoor sample simulation),
+there is no need to explicitly control it (provided it is the desired behaviour.)
+
+Otherwise, the individual actions can be controlled by an
+\cclass{osgAnimation::AnimationManager}, with methods like \ffunc{playAnimation()},
+\ffunc{stopAnimation()}, \ffunc{isPlaying()}, etc. Animation managers can be
+found among the descendants of the loaded \cclass{osg::Node}s which are animated,
+for example using a custom \cclass{osg::NodeVisitor}:
+
+\begin{cpp}
+osg::Node *objectNode = osgDB::readNodeFile( ... );
+
+struct AnimationManagerFinder : public osg::NodeVisitor {
+    osgAnimation::BasicAnimationManager *result = nullptr;
+    AnimationManagerFinder()
+      : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+    void apply(osg::Node& node) {
+        if (result) return; // already found it
+        if (osgAnimation::AnimationManagerBase* b =
+              dynamic_cast<osgAnimation::AnimationManagerBase*>(
+                node.getUpdateCallback())) {
+            result = new osgAnimation::BasicAnimationManager(*b); // here it is!
+            return;
+        }
+        traverse(node);
+    }
+} finder;
+
+objectNode->accept(finder);
+animationManager = finder.result;
+\end{cpp}
+
+This visitor simply finds the first node in the subtree which has an update
+callback of type \cclass{osgAnimation::AnimationManagerBase}. Its result is
+a new \cclass{osgAnimation::BasicAnimation\-Manager} created from the
+base.
+
+This new \ttt{animationManager} now has to be set as an update callback on the
+\ttt{objectNode} to be able to actually drive the animations.
+Then any animation in the list returned by \ffunc{getAnimationList()} can be set
+up as needed and played.
+
+\begin{cpp}
+objectNode->setUpdateCallback(animationManager);
+auto animation = animationManager->getAnimationList().front();
+animation->setPlayMode(osgAnimation::Animation::STAY);
+animation->setDuration(2);
+animationManager->playAnimation(animation);
+\end{cpp}
+
+\subsubsection{State Sets}
+
+Every \cclass{osg::Drawable} can have an \cclass{osg::StateSet} attached to it.
+An easy way of accessing it is via the \ffunc{getOrCreateStateSet()} method of
+the drawable node. An \cclass{osg::StateSet} encapsulates a subset of the OpenGL
+state, and can be used to modify various rendering parameters, for example the
+used textures, shader programs and their parameters, color and material,
+face culling, depth and stencil options, and many more
+\cclass{osg::StateAttributes}.
+
+The following example enables blending for a node and sets up a
+transparent, colored material to be used for rendering it, through its
+\cclass{osg::StateSet}.
+
+\begin{cpp}
+auto stateSet = node->getOrCreateStateSet();
+stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
+auto matColor = osg::Vec4(red, green, blue, alpha); // all between 0.0 and 1.0
+auto material = new osg::Material;
+material->setEmission(osg::Material::FRONT, matColor);
+material->setDiffuse(osg::Material::FRONT, matColor);
+material->setAmbient(osg::Material::FRONT, matColor);
+material->setAlpha(osg::Material::FRONT, alpha);
+stateSet->setAttributeAndModes(material, osg::StateAttribute::OVERRIDE);
+\end{cpp}
+
+To help OSG with the correct rendering of objects with transparency, they
+should be placed in the \ttt{TRANSPARENT\_BIN} by setting up a rendering hint
+on their \cclass{osg::StateSet}. This ensures that they will be drawn after all
+fully opaque objects, and in decreasing order of their distance from the camera.
+When there are multiple transparent objects intersecting each other in the scene
+(like the transmission ``bubbles'' in the BostonPark configuration of the
+osg-earth sample simulation), there is no order in which they would appear correctly. A
+solution for these cases is to disable writing to the depth buffer during their
+rendering using the \cclass{osg::Depth} attribute.
+
+\begin{cpp}
+stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+osg::Depth* depth = new osg::Depth;
+depth->setWriteMask(false);
+stateSet->setAttributeAndModes(depth, osg::StateAttribute::ON);
+\end{cpp}
+
+Please note that this still does not guarentee a completely physically accurate
+look, since that is a much harder problem to solve, but at least minimizes the
+obvious visual artifacts. Also, too many transparent objects might decrease
+performance, so wildly overusing them is to be avoided.
+
+
+\subsection{Using osgEarth}
+
+TODO:
+
+- "using osgEarth" basically means that you load an .earth file via loadModel()
+
+- everything that's true for OSG is also true for osgEarth, but it introduces additional APIs. they are in the osgEarth namespace
+
+- here we give some hints on what's possible with osgEarth, and some tips/code fragments to access them
 
 \subsubsection{Earth Files}
 
+\iffalse
+% this is the early draft version
 When using the Earth-style viewer for a module, the displayed globe is
 specified by a .earth file. This can be as simple as a single image
 textured over a sphere or as complex as realistic terrain data and
@@ -2676,27 +3011,169 @@ reference [5] or one of the sample simulations.
 To place objects on the terrain easily, using natural geographic coordinate
 systems, the osgEarth::Util::ObjectLocatorNode can be used, as seen in the
 osg-satellites sample for instance.
+\fi
 
-\subsubsection{Looking at the Sample Simulations}
+When the osgEarth plugin is used to display a map as the visual environment
+of the simulation, its appearance can be described in a .earth file. This is a
+really versatile, XML based format.
 
-TODO
+It can be loaded using the \ffunc{osgDB::readNodeFile()} method, just like any
+other regular model. The resulting \cclass{osg::Node} will have a descendant of
+type \cclass{osgEarth::MapNode}, which can be easily found using the
+\ffunc{osgEarth::MapNode::findMapNode()} function. This serves as the "view" part
+of an underlying \cclass{osgEarth::Map} which is the "data model".
 
-[1]: http://trac.openscenegraph.org/projects/osg//wiki/Support/Tutorials/FileLoadingAndTransforms
-[2]: http://trac.openscenegraph.org/projects/osg//wiki/Support/UserGuides/Plugins
-[3]: https://github.com/cedricpinson/osgexport
-[4]: http://trac.openscenegraph.org/projects/osg//wiki/Support/KnowledgeBase/PseudoLoader
-[5]: http://docs.osgearth.org/en/latest/references/earthfile.html
+\begin{cpp}
+auto earth = osgDB::readNodeFile("example.earth");
+auto mapNode = osgEarth::MapNode::findMapNode(earth);
+\end{cpp}
+
+An .earth file can specify a wide variety of options. The \ttt{type} attribute
+of the \ttt{map} tag (which is always the root of the document) lets the user
+select whether the terrain should be projected onto a flat plane, or rendered as
+a true geoid.
+
+Where the texture of the terrain is acquired from is specified by \ttt{image}
+tags. Many different kinds of sources are supported, including local files and
+popular online map sources with open access like MapQuest or OpenStreetMap.
+These can display different kinds of imagery, like real satellite photos, plain
+rendering of the streets and other landmarks with their names, or any other
+
+
+The following example .earth file will set up a spherical rendering of Earth
+with textures from openstreetmap.org:
+
+% XXX no xml environment?
+\begin{filelisting}
+<map name="OpenStreetMap" type="geocentric" version="2" >
+    <image name="osm_mapnik" driver="xyz" >
+        <url>http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+    </image>
+</map>
+\end{filelisting}
+
+Elevation can also be streamed in a similarly simple fashion using the
+\ttt{elevation} tag. The next snippet demonstrates this:
+
+\begin{filelisting}
+<map name="readymap.org" type="geocentric" version="2" >
+    <image name="readymap_imagery" driver="tms" >
+        <url>http://readymap.org/readymap/tiles/1.0.0/7/</url>
+    </image>
+    <elevation name="readymap_elevation" driver="tms" >
+        <url>http://readymap.org/readymap/tiles/1.0.0/9/</url>
+    </elevation>
+</map>
+\end{filelisting}
+
+For a detailed description of the available image and elevation source drivers,
+refer to the online references of osgEarth, or use one of the sample .earth
+files shipped with it.
+
+To display additional information on top of the terrain, annotations can be
+used. These are special objects that can adapt to the shape of the surface.
+Annotations can be of many kinds, for example simple geometry like circles,
+ellipses, rectangles, lines, polygons (which can be extruded upwards to make
+solids); text or labels, arbitrary 3D models, or images projected onto the
+surface. Some style elements are
+
+The following partial .earth file places a label over Los Angeles, an extruded
+ellipse (a hollow cylinder) next to it, and a big red flag nearby.
+
+\begin{filelisting}
+<map ... >
+    ...
+    <external>
+        <annotations>
+            <label text="Los Angeles" >
+                <position lat="34.051" long="-117.974" alt="100" mode="relative"/>
+            </label>
+
+            <ellipse name="ellipse extruded" >
+                <position lat="32.73" long="-119.0"/>
+                <radius_major value="50" units="km"/>
+                <radius_minor value="20" units="km"/>
+                <style type="text/css" >
+                    fill:             #ff7f007f;
+                    stroke:           #ff0000ff;
+                    extrusion-height: 5000;
+                </style>
+            </ellipse>
+
+            <model name="flag model" >
+                <url>flag.osg.18000.scale</url>
+                <position lat="33" long="-117.75" hat="0"/>
+            </model>
+        </annotations>
+    </external>
+</map>
+\end{filelisting}
+
+\subsubsection{Placing Objects on Terrain}
+
+To easily position a part of the scene together on a given geographical location,
+an \cclass{osgEarth::Util::ObjectLocatorNode} is of great help. It can take
+traditional longitude/latitude/altitude coordinates and orientation in the form
+of Euler angles. It creates a simple Cartesian coordinate system on the given
+location, in which all of its children can be positioned painlessly, without
+having to worry about further coordinate transformations between linear and
+spherical systems:
+
+\begin{cpp}
+objectLocatorNode *locatorNode =
+    new osgEarth::Util::ObjectLocatorNode(mapNode->getMap());
+locatorNode->addChild(objectNode);
+mapNode->getModelLayerGroup()->addChild(locatorNode);
+locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, altitude));
+locatorNode->getLocator()->setOrientation(osg::Vec3d(heading, 0, 0));
+\end{cpp}
+
+\subsubsection{Adding Annotations on Terrain}
+
+All the annotations that can be created declaratively from an .earth file,
+can also be programatically generated at runtime.
+
+This example shows how the circular transmission ranges of the cows in the
+osg-earth sample are created in the form of a
+\cclass{osgEarth::Annotation::CircleNode} annotation. Some basic styling is
+applied to it using an \cclass{osgEarth::Style}, and the rendering technique to
+be used is specified.
+
+\begin{cpp}
+auto scene = ...;
+auto mapNode = osgEarth::MapNode::findMapNode(scene);
+auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
+osgEarth::Style rangeStyle;
+rangeStyle.getOrCreate<PolygonSymbol>()->fill()->color() =
+                                        osgEarth::Color(rangeColor);
+rangeStyle.getOrCreate<AltitudeSymbol>()->clamping() =
+                                        AltitudeSymbol::CLAMP_TO_TERRAIN;
+rangeStyle.getOrCreate<AltitudeSymbol>()->technique() =
+                                        AltitudeSymbol::TECHNIQUE_DRAPE;
+rangeNode = new osgEarth::Annotation::CircleNode(mapNode.get(),
+    osgEarth::GeoPoint:(geoSRS, longitude, latitude),
+    osgEarth::Linear(radius, osgEarth::Units::METERS), rangeStyle);
+mapNode->getModelLayerGroup()->addChild(rangeNode);
+\end{cpp}
 
 
 \subsection{OpenSceneGraph Programming Resources}
 
 \subsubsection{Online resources}
 
-TODO
+\begin{itemize}
+\item http://trac.openscenegraph.org/projects/osg//wiki/Support/Tutorials/FileLoadingAndTransforms
+\item http://trac.openscenegraph.org/projects/osg//wiki/Support/UserGuides/Plugins
+\item https://github.com/cedricpinson/osgexport
+\item http://trac.openscenegraph.org/projects/osg//wiki/Support/KnowledgeBase/PseudoLoader
+\item http://docs.osgearth.org/en/latest/references/earthfile.html
+\item http://docs.osgearth.org/en/latest/index.html
+\end{itemize}
 
 \subsubsection{Books}
 
 The following OpenSceneGraph books have been available at the time of writing:
+
 
 \begin{itemize}
 \item \textit{OpenSceneGraph Quick Start Guide}, by Paul Martz.
@@ -2725,4 +3202,3 @@ animations, effects, terrain building, data management, GUI integration.
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
-
