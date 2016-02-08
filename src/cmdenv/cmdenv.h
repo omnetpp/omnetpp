@@ -79,7 +79,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void componentInitBegin(cComponent *component, int stage) override;
 
      virtual bool isGUI() const override {return false;}
-     virtual bool isExpressMode() const override {return false;}
+     virtual bool isExpressMode() const override {return opt->expressMode;}
      virtual std::string gets(const char *prompt, const char *defaultReply) override;
      virtual bool idle() override;
      virtual unsigned getExtraStackForEnvir() const override;

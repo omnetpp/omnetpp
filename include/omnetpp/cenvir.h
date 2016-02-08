@@ -488,6 +488,12 @@ class SIM_API cEnvir
     virtual bool isGUI() const = 0;
 
     /**
+     * Returns true if logging is enabled. This is false in Express mode while
+     * the simulation is actually running.
+     */
+    bool isLoggingEnabled() const { return loggingEnabled; }
+
+    /**
      * Returns true if the simulation is running under a GUI in Express mode.
      * Visualization code (e.g. inside module refreshDisplay() methods) may
      * check this flag and adapt the visualization accordingly.

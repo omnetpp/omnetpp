@@ -356,7 +356,6 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
 
     try {
         if (!opt->expressMode) {
-            loggingEnabled = true;
             while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
@@ -385,7 +384,6 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
             }
         }
         else {
-            loggingEnabled = false;
             speedometer.start(getSimulation()->getSimTime());
 
             struct timeval last_update;
@@ -609,13 +607,11 @@ void Cmdenv::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
-    if (loggingEnabled || getSimulation()->getContextType() == CTX_FINISH) {
-        std::string prefix = logFormatter.formatPrefix(entry);
-        ::fputs(prefix.c_str(), fout);
-        ::fwrite(entry->text, 1, entry->textLength, fout);
-        if (opt->autoflush)
-            ::fflush(fout);
-    }
+    std::string prefix = logFormatter.formatPrefix(entry);
+    ::fputs(prefix.c_str(), fout);
+    ::fwrite(entry->text, 1, entry->textLength, fout);
+    if (opt->autoflush)
+        ::fflush(fout);
 }
 
 std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
