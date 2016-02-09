@@ -119,9 +119,11 @@ will typically want to record statistics into output files.
 \label{sec:simple-modules:events-in-opp}
 
 {\opp} uses messages\index{message} to represent
-events\index{events}. Each event is represented by an instance of the
-\cclass{cMessage} class or one its subclasses; there is no separate
-event class. Messages are sent from one module to another -- this
+events\index{events}.\footnote{For all practical purposes. Note that there
+is a class called \cclass{cEvent} that \cclass{cMessage} subclasses from,
+but it is only used internal to the simulation kernel.}
+Messages are represented by instances of the \cclass{cMessage} class
+and its subclasses. Messages are sent from one module to another -- this
 means that the place where the ``event will occur'' is the
 \textit{message's destination module}, and the model time when the
 event occurs is the \textit{arrival time}\index{arrival time} of the
@@ -131,12 +133,13 @@ module sending a message to itself.
 Events are consumed from the FES\index{FES} in arrival time order, to
 maintain causality. More precisely, given two messages, the following
 rules apply:
+
 \begin{enumerate}
-\item{the message with the \textbf{earlier arrival time} is executed
-    first.  If arrival times are equal,}
-\item{the one with the \textbf{smaller scheduling priority value} is
-    executed first. If priorities are the same,}
-\item{the one \textbf{scheduled or sent earlier} is executed first.}
+\item The message with the \tbf{earlier arrival time} is executed
+    first. If arrival times are equal,
+\item the one with the \tbf{higher scheduling priority} (smaller
+    numeric value) is executed first. If priorities are the same,
+\item the one \tbf{scheduled/sent earlier} is executed first.
 \end{enumerate}
 
 \textit{Scheduling priority}\index{message!priority} is a user-assigned integer
@@ -3456,17 +3459,17 @@ Qtenv simulation GUIs can animate method calls, but to be able to do that,
 they has to know about them. Third, method calls are also recorded
 in the event log.
 
-The solution is to add the \ttt{Enter\_Method()} or \ttt{Enter\_Method\_Silent()}
+The solution is to add the \fmac{Enter\_Method()} or \fmac{Enter\_Method\_Silent()}
 macro at the top of the methods that may be invoked from other
 modules. These calls perform context switching, and, in case of
-\ttt{Enter\_Method()}, notify the simulation GUI so that animation
-of the method call can take place. \ttt{Enter\_Method\_Silent()}
+\fmac{Enter\_Method()}, notify the simulation GUI so that animation
+of the method call can take place. \fmac{Enter\_Method\_Silent()}
 does not animate the method call, but otherwise it is equivalent
-\ttt{Enter\_Method()}. Both macros accept a \ttt{printf()}-like
-argument list (it is optional for \ttt{Enter\_Method\_Silent()}),
+\fmac{Enter\_Method()}. Both macros accept a \ttt{printf()}-like
+argument list (it is optional for \fmac{Enter\_Method\_Silent()}),
 which should produce a string with the method name and the
 actual arguments as much as practical. The string is displayed in
-the animation (\ttt{Enter\_Method()} only) and recorded into the event log.
+the animation (\fmac{Enter\_Method()} only) and recorded into the event log.
 
 
 \begin{cpp}
@@ -4684,6 +4687,7 @@ on the command line.
 
 
 \subsection{Statistics Recording for Dynamically Registered Signals}
+\label{sec:simple-modules:statistic-recording-dynamic-signals}
 
 It is often convenient to have a module record statistics per session, per
 connection, per client, etc. One way of handling this use case is registering
@@ -4740,6 +4744,7 @@ and the title is \ttt{"bytes sent in connection \$namePart2"}, it will become
 
 
 \subsection{Adding Result Filters and Recorders Programmatically}
+\label{sec:simple-modules:statistic-recording-programmatically}
 
 As an alternative to \fprop{@statisticTemplate} and \ffunc{ev.addResultRecorders()},
 it is also possible to set up result recording programmatically, by creating and
@@ -4775,6 +4780,7 @@ removeRepeatsFilter->addDelegate(vectorRecorder);
 
 
 \subsection{Emitting Signals}
+\label{sec:simple-modules:emitting-statistic-signals}
 
 Emitting signals for statistical purposes does not differ much from
 emitting signals for any other purpose. Statistic signals are primarily
@@ -4861,6 +4867,7 @@ different values for each).
 
 
 \subsection{Writing Result Filters and Recorders}
+\label{sec:simple-modules:writing-result-filters}
 
 You can define your own result filters and recorders in addition to the
 built-in ones. Similar to defining modules and new NED functions, you have
