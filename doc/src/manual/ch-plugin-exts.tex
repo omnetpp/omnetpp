@@ -1,230 +1,86 @@
-\chapter{Plug-in Extensions}
+\chapter{Customizing and Extending {\opp}}
 \label{cha:plugin-exts}
 
 \section{Overview}
 
-{\opp} is an open system, and several details of its operation
-can be customized via plug-ins. To create a plug-in, you generally
-need to write a C++ class that implements a certain interface
-(i.e. subclasses from a C++ abstract class), and register it in {\opp}.
-The plug-in class can be activated for a particular simulation
-with a corresponding configuration option.
-
-The following plug-in interfaces are supported:
+{\opp} is an open system, and several details of its operation can be
+customized and extended by writing C++ code. Some extension interfaces
+have already been covered in other chapters:
 
 \begin{itemize}
-   \item{\cclass{cRNG}. Interface for random number generators.}
-   \item{\cclass{cScheduler}. The scheduler class. This plug-in interface
-     allows for implementing real-time, hardware-in-the-loop, distributed
-     and distributed parallel simulation.}
-   \item{\cclass{cConfigurationEx}. Configuration provider plug-in.
-     This plug-in interface lets you replace \ffilename{omnetpp.ini}
-     with some other implementation, for example a database.}
-   \item{\cclass{cIOutputScalarManager}. It handles recording the scalar output data.
-     The default output scalar manager is \cclass{cFileOutputScalarManager},
-     defined in the Envir library.}
-   \item{\cclass{cIOutputVectorManager}. It handles recording the output
-     from \cclass{cOutVector} objects. The default output vector manager is
-     \cclass{cIndexedFileOutputVectorManager}, defined in the Envir library.}
-   \item{\cclass{cISnapshotManager}. It provides an output stream to which
-     snapshots are written (see section \ref{sec:ch-sim-lib:snapshots}).
-     The default snapshot manager is \cclass{cFileSnapshotManager},
-     defined in the Envir library.}
+   \item \textit{Defining new NED functions} was described in
+     \ref{sec:ch-sim-lib:defining-ned-functions}
+   \item \textit{Defining new result filters and recorders} was described
+     in \ref{sec:simple-modules:writing-result-filters}
 \end{itemize}
 
-\label{sec:ch-plugin-exts:customization}
+This chapter will begin by introducing some infrastructure features that
+are useful for extensions:
 
-The classes (\cclass{cRNG}, \cclass{cScheduler}, etc.) are documented in
-the API Reference.
+\begin{itemize}
+   \item \textit{Config options}. This facility lets other extensions classes
+     define their own configuration options.
+   \item \textit{Simulation lifecycle listeners} allow extensions to get
+     notified when a network is set up, simulation is started, paused or resumed,
+     the simulation ended successfully or with an error, and so on.
+   \item \cclass{cEvent} lets extensions schedule actions for certain simulation
+     times. This is especially useful for custom event schedulers that we'll
+     cover later in this chapter.
+\end{itemize}
 
-To actually implement and select a plug-in for use:
+Then we will continue with the descriptions of the following extension
+interfaces:
 
-\begin{enumerate}
-   \item Subclass the given interface class (e.g. for a custom RNG, \cclass{cRNG})
-     to create your own version.
-   \item Register the class by putting the \fmac{Register\_Class(MyRNGClass)}
-     line into the C++ source.
-   \item Compile and link your interface class into the {\opp} simulation
-     executable. IMPORTANT: make sure the executable actually contains
-     the code of your class! Over-optimizing linkers (esp. on Unix)
-     tend to leave out code to which there seem to be no external reference.
-   \item Add an entry to \ffilename{omnetpp.ini} to tell Envir use your class
-     instead of the default class. For RNGs, this setting is \ttt{rng-class}
-     in the \ttt{[General]} section.
-\end{enumerate}
+\begin{itemize}
+   \item \cclass{cRNG} lets one add new random number generator algorithms.
+   \item \cclass{cScheduler} is an interface for event schedulers.
+     This extension interface allows for implementing real-time,
+     hardware-in-the-loop, distributed and distributed parallel simulation.
+   \item \cclass{cFutureEventSet}. This extension interface allows one to
+     replace the data structure used for storing future events during
+     simulation, i.e. the FES. This may make sense for specialized
+     workloads.
+   \item \cclass{cFingerprint}. This extension interface allows one
+     to replace or extend the fingerprint computation algorithm.
+   \item \cclass{cIOutputScalarManager}. This extension interface allows
+     one to create additional means of saving scalar results, for example
+     database or CSV output.
+   \item \cclass{cIOutputVectorManager}. This extension interface allows
+     one to create additional means of saving vector results, for example
+     database or CSV output.
+   \item \cclass{cISnapshotManager}. It provides an output stream to which
+     snapshots are written.
+   \item \cclass{cConfigurationEx}. Configuration provider extension.
+     This extension interface lets one replace \ffilename{omnetpp.ini}
+     with some other implementation, for example a database.
+   \item \textit{User interfaces}. When existing runtime user interfaces
+     (Cmdenv, Tkenv, Qtenv) don't suffice, one can create a new one,
+     reusing the infrastructure provided by the common base of the three.
+\end{itemize}
 
+Many extension interfaces follow a common pattern: one needs to implement a
+given interface class (e.g. \cclass{cRNG} for random number generators),
+let {\opp} know about it by registering the class with the
+\fmac{Register\_Class()} macro, and finally activate it by the appropriate
+configuration option (e.g. \ttt{rng-class=MyRNG}). The interface classes
+(\cclass{cRNG}, \cclass{cScheduler}, etc.) are documented in the API
+Reference.
 
-\section{Plug-in Descriptions}
+\begin{note}
+A common error is that {\opp} cannot find the class at runtime. When that
+happens, make sure the executable actually contains the code of the class.
+When linking with a library, over-optimizing linkers (esp. on Unix) tend to
+leave out code which seems to be unreferenced by other parts of the
+program.
+\end{note}
 
-
-\subsection{Defining a New Random Number Generator}
-\label{sec:plugin-exts:rng}
-
-% TODO
-The new RNG C++ class must implement the \cclass{cRNG} interface,
-and can be activated with the \fconfig{rng-class} configuration option.
-
-
-\subsection{Defining a New Scheduler}
-\label{sec:plugin-exts:scheduler}
-
-The scheduler plug-in interface allows for implementing real-time,
-hardware-in-the-loop, distributed and distributed parallel simulation.
-%FIXME cScheduler usage
-
-The scheduler C++ class must implement the \cclass{cScheduler} interface,
-and can be activated with the \fconfig{scheduler-class} configuration option.
-
-To see examples of scheduler classes, check the \cclass{cRealTimeScheduler}
-class in the simulation kernel, and \ttt{cSocketRTScheduler} which is part
-of the \textit{Sockets} sample simulation.
-
-
-\subsection{Defining a New Configuration Provider}
-\label{sec:plugin-exts:configuration}
-
-\subsubsection{Overview}
-
-The configuration provider plug-in lets you replace ini files
-with some other storage implementation, for example a database.
-The configuration provider C++ class must implement the
-\cclass{cConfigurationEx} interface, and can be activated with
-the \fconfig{configuration-class} configuration option.
-
-The \cclass{cConfigurationEx} interface abstracts the inifile-based
-data model to some degree. It assumes that the configuration data
-consists of several \textit{named configurations}. Before every
-simulation run, one of the \textit{named configurations} is
-activated, and from then on, all queries into the configuration
-operate on the \textit{active named configuration} only.
-
-It practice, you will probably use the \cclass{SectionBasedConfiguration}
-class (in \ttt{src/envir}) or subclass from it, because it already
-implements a lot of functionality that you would otherwise have to.
-
-\cclass{SectionBasedConfiguration} does not assume ini files or
-any other particular storage format; instead, it accepts
-an object that implements the \cclass{cConfigurationReader}
-interface to provide the data in raw form to it.
-The default implementation of \cclass{cConfigurationReader} is
-\cclass{InifileReader}.
-
-\subsubsection{The Startup Sequence}
-
-From the configuration plug-in's point of view, the startup sequence
-looks like the following (see \ttt{src/envir/startup.cc} in the source code):
-
-\begin{enumerate}
-  \item First, ini files specified on the command-line are read into a
-     \textit{boot-time configuration object}. The boot-time configuration
-     is always a \cclass{SectionBasedConfiguration} with
-     \cclass{InifileReader}.
-  \item Shared libraries are loaded (see the \ttt{-l} command-line option,
-     and the \ttt{load-libs} configuration option). This allows
-     configuration classes to come from shared libraries.
-  \item The \ttt{configuration-class} configuration option is examined.
-     If it is present, a configuration object of the given class
-     is instantiated, and replaces the boot-time configuration.
-     The new configuration object is initialized from the boot-time
-     configuration, so that it can read parameters (e.g. database
-     connection parameters, XML file name, etc) from it.
-     Then the boot-time configuration object is deallocated.
-  \item The \ttt{load-libs} option from the new configuration object is
-     processed.
-  \item Then everything goes on as normally, using the new configuration
-     object.
-\end{enumerate}
-
-\subsubsection{Providing a Custom Configuration Class}
-
-To replace the configuration object with your custom implementation,
-you would write the class:
-
-\begin{cpp}
-#include "cconfiguration.h"
-
-class CustomConfiguration : public cConfigurationEx
-{
-   ...
-};
-
-Register_Class(CustomConfiguration);
-\end{cpp}
-
-and then activate it in the boot-time configuration:
-
-\begin{inifile}
-[General]
-configuration-class = CustomConfiguration
-\end{inifile}
+The following sections elaborate on the various extension interfaces.
 
 
-\subsubsection{Providing a Custom Reader for SectionBasedConfiguration}
-
-As said already, writing a configuration class from scratch can
-be a lot of work, and it may be more practical to reuse
-\cclass{SectionBasedConfiguration} with a different configuration
-reader class. This can be done with \ttt{sectionbasedconfig-configreader-class}
-config option, interpreted by \cclass{SectionBasedConfiguration}.
-Specify the following in your boot-time ini file:
-
-\begin{inifile}
-[General]
-configuration-class = SectionBasedConfiguration
-sectionbasedconfig-configreader-class = <my new reader class>
-\end{inifile}
-
-The configuration reader class should look like this:
-
-\begin{cpp}
-#include "cconfigreader.h"
-
-class DatabaseConfigurationReader : public cConfigurationReader
-{
-   ...
-};
-
-Register_Class(DatabaseConfigurationReader);
-\end{cpp}
-
-
-\subsection{Defining a New Output Scalar Manager}
-\label{sec:plugin-exts:outputscalarmanager}
-
-\cclass{cIOutputScalarManager} handles recording the scalar output data.
-The default output scalar manager is \cclass{cFileOutputScalarManager},
-defined in the Envir library.
-
-The new class can be activated with the \fconfig{outputscalarmanager-class}
-configuration option.
-
-
-\subsection{Defining a New Output Vector Manager}
-\label{sec:plugin-exts:outputvectormanager}
-
-\cclass{cIOutputVectorManager} handles recording the output from \cclass{cOutVector} objects.
-The default output vector manager is \cclass{cIndexedFileOutputVectorManager},
-defined in the Envir library.
-
-The new class can be activated with the \fconfig{outputvectormanager-class}
-configuration option.
-
-
-\subsection{Defining a New Snapshot Manager}
-\label{sec:plugin-exts:snapshotmanager}
-
-\cclass{cISnapshotManager} provides an output stream to which snapshots are written
-(see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
-is \cclass{cFileSnapshotManager}, defined in the Envir library.
-
-The new class can be activated with the \fconfig{snapshotmanager-class}
-configuration option.
-
-
-\section{Accessing the Configuration}
+\section{Adding a New Configuration Option}
 \label{sec:plugin-exts:accessing-config}
 
-\subsection{Defining New Configuration Options}
+\subsection{Registration}
 
 New configuration options need to be declared with one of the appropriate
 registration macros. These macros are:
@@ -281,19 +137,16 @@ The macro arguments are as follows:
 For example, the \ttt{debug-on-errors} option is declared in the following way:
 
 \begin{cpp}
-Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS,
-                            "debug-on-errors", CFG_BOOL, "false",
-                            "When enabled, runtime errors will etc etc...");
+Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors",
+    CFG_BOOL, "false", "When enabled, runtime errors will cause...");
 \end{cpp}
 
-\begin{note}
-Registration is necessary because from the 4.0 version, {\opp} validates
-the configuration on startup, in order to be able to report invalid or
-mistyped option names and other errors.
-\end{note}
+The macro will register the option, and also declare the
+\ttt{CFGID\_DEBUG\_ON\_ERRORS} variable as pointer to a
+\cclass{cConfigOption}. The variable can be used later as a ``handle'' when
+reading the option value from the configuration database.
 
-
-\subsection{Reading Values from the Configuration}
+\subsection{Reading the Value}
 
 The configuration is accessible via the \ffunc{getConfig()} method of \cclass{cEnvir}.
 It returns a pointer to the configuration object (\cclass{cConfiguration}):
@@ -331,13 +184,365 @@ bool debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 \end{cpp}
 
 
+\section{Simulation Lifetime Listeners}
+\label{sec:plugin-exts:simulation-lifetime-listeners}
+
+\cclass{cISimulationLifecycleListener} is a callback interface for
+receiving notifications at various stages of simulations: setting up,
+running, tearing down, etc. Extension classes such as custom event
+schedulers often need this functionality for performing initalization
+and various other tasks.
+
+Listeners of the type \cclass{cISimulationLifecycleListener} need to be
+added to \cclass{cEnvir} with its \ffunc{addLifecycleListener()} method,
+and removed with \ffunc{removeLifecycleListener()}.
+
+\begin{cpp}
+cISimulationLifecycleListener *listener = ...;
+getEnvir()->addLifecycleListener(listener);
+// and finally:
+getEnvir()->removeLifecycleListener(listener);
+\end{cpp}
+
+To implement a simulation lifecycle listener, subclass from
+\cclass{cISimulationLifecycleListener}, and override its
+\ffunc{lifecycleEvent()} method. It has the following signature:
+
+\begin{cpp}
+virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) = 0;
+\end{cpp}
+
+%% TODO names too long? cISimulationLifecycleListener, SimulationLifecycleEventType... remove "Simulation"?
+
+Event type is one of the following. Their names are fairly self-describing,
+but the API documentation contains more precise information.
+
+\begin{itemize}[noitemsep]
+  \item \ttt{LF\_ON\_STARTUP}
+  \item \ttt{LF\_PRE\_NETWORK\_SETUP}, \ttt{LF\_POST\_NETWORK\_SETUP}
+  \item \ttt{LF\_PRE\_NETWORK\_INITIALIZE}, \ttt{LF\_POST\_NETWORK\_INITIALIZE}
+  \item \ttt{LF\_ON\_SIMULATION\_START}
+  \item \ttt{LF\_ON\_SIMULATION\_PAUSE}, \ttt{LF\_ON\_SIMULATION\_RESUME}
+  \item \ttt{LF\_ON\_SIMULATION\_SUCCESS}, \ttt{LF\_ON\_SIMULATION\_ERROR}
+  \item \ttt{LF\_PRE\_NETWORK\_FINISH}, \ttt{LF\_POST\_NETWORK\_FINISH}
+  \item \ttt{LF\_ON\_RUN\_END}
+  \item \ttt{LF\_PRE\_NETWORK\_DELETE}, \ttt{LF\_POST\_NETWORK\_DELETE}
+  \item \ttt{LF\_ON\_SHUTDOWN}
+\end{itemize}
+
+The \textit{details} argument is currently \ttt{nullptr}; further {\opp}
+versions may pass extra information in it. Notifications always refer to
+the active simulation in case there're more (see \cclass{cSimulation}'s
+\ffunc{getActiveSimulation()}).
+
+Simulation lifecycle listeners are mainly intended for use by classes that
+extend the simulator's functionality, for example custom event schedulers
+and output vector/scalar managers. The lifecycle of such an extension
+object is managed by {\opp}, so one can use their constructor to create and
+add the listener object to \cclass{cEnvir}, and the destructor to remove
+and delete it. The code is further simplified if the extension object
+itself implements \cclass{cISimulationLifecycleListener}:
+
+\begin{cpp}
+class CustomScheduler : public cScheduler, public cISimulationLifecycleListener
+{
+  public:
+    CustomScheduler() { getEnvir()->addLifecycleListener(this); }
+    ~CustomScheduler() { getEnvir()->removeLifecycleListener(this); }
+    //...
+};
+\end{cpp}
+
+
+\section{cEvent}
+\label{sec:plugin-exts:cevent}
+
+\cclass{cEvent} represents an event in the discrete event simulator. (The
+concepts were introduced in section \ref{sec:simple-modules:simulation-concepts}).
+When events are scheduled, they are inserted into the future events set
+(FES) where they are (conceptually) stored in timestamp. Events are removed
+from the FES one by one, and their \ffunc{execute()} member functions are
+called. \ffunc{execute()} should be overridden in subclasses to carry out
+the actions associated with the event. For example, \cclass{cMessage} is
+also a subclass of \cclass{cEvent}, where \ffunc{execute()} ends up calling
+the \ffunc{handleMessage()} method of the destination module, or switches
+to the coroutine of its \ffunc{activity()} method.
+
+\ffunc{execute()} has the following signature:
+
+\begin{cpp}
+virtual void execute() = 0;
+\end{cpp}
+
+Raw (non-message) event objects are an internal mechanism of the {\opp}
+simulation kernel, and should not used in programming simulation models.
+However, they can be very useful when implementing custom event schedulers.
+For example, in co-simulation, events that occur in the other simulator may
+be represented with a \cclass{cEvent} in {\opp}. Simulation time limit
+is also implemented with a custom \cclass{cEvent}.
+
+
+\section{Defining a New Random Number Generator}
+\label{sec:plugin-exts:rng}
+
+This interface lets one add new RNG implementations (see section
+\ref{cha:sim-lib:random-number-generators}) to {\opp}.
+The motivation might be achieving integration with external software (for
+example something like Akaroa), or exactly replicating the trajectory of a
+simulation ported from another simulation framework that uses a different
+RNG.
+
+The new RNG C++ class must implement the \cclass{cRNG} interface,
+and can be activated with the \fconfig{rng-class} configuration option.
+
+
+\section{Defining a New Event Scheduler}
+\label{sec:plugin-exts:scheduler}
+
+This extension interface lets one replace the event scheduler class with a
+custom one, which is the key for implementing many features including
+cosimulation, real-time simulation, network or device emulation, and
+distributed simulation.
+
+The job of the event scheduler is to always return the next event to be
+processed by the simulator. The default implementation returns the first
+event in the future events list. Other variants:
+
+\begin{itemize}
+\item For real-time simulation, this scheduler is replaced with one augmented
+    with \textit{wait} calls (e.g. \texttt{usleep()}) that synchronize the
+    simulation time to the system clock. There are several options on what
+    should happen if the simulation time has already fallen behind: one may
+    re-adjust the reference time, leave it unchanged in the hope of catching up
+    later, or stop with an error message.
+
+\item For emulation, the real-time scheduler is augmented with code that captures
+    packets from real network devices, and inserts them into the simulation.
+    INET Framework, the main protocol simulation package for {\opp}, contains
+    an emulation scheduler. It uses the \textit{pcap} library to capture
+    packets, and raw sockets to send packets to a real network device.
+    Emulation in INET also involves \textit{header serializer} classes that
+    convert between protocol headers and their C++ object representations used
+    within the simulation.
+
+\item For parallel simulation (see chapter \ref{cha:parallel-execution}), the
+    scheduler is modified to listen for messages arriving from other logical
+    processes (LPs), and inserts them into the simulation. The scheduler also
+    blocks the simulation when it is not safe to execute the next event due to
+    potential causality violation, until clearance arrives from other LPs to
+    continue in the form of a null message.
+
+\item {\opp} supports distributed simulation using HLA (IEEE 1516) \footnote{The
+    source code for the HLA and SystemC integration features are not open
+    source, but they are available to researchers on request free of charge.}
+    as well. The scheduler plays the role of the HLA Federate Ambassador, is
+    responsible for exchanging messages (interactions, change notifications,
+    etc.) with other federates, and performs time regulation.
+
+\item {\opp} also supports mixing SystemC (IEEE 1666-2005) modules with {\opp}
+    modules in the simulation. When this feature is enabled, there are two
+    future event lists in the simulation, {\opp}'s and SystemC's, and a
+    special scheduler takes care that events are consumed from both lists in
+    increasing timestamp order. This method of performing mixed simulations is
+    orders of magnitude faster and also more flexible than letting the two
+    simulators execute in separate processes and communicate over a pipe or
+    socket connection.
+\end{itemize}
+
+The scheduler C++ class must implement the \cclass{cScheduler} interface,
+and can be activated with the \fconfig{scheduler-class} configuration option.
+
+Simulation lifetime listeners and the \cclass{cEvent} class can be extremely
+useful when implementing certain types of event schedulers.
+
+To see examples of scheduler classes, check the
+\cclass{cSequentialScheduler} and \cclass{cRealTimeScheduler} classes in
+the simulation kernel, \ttt{cSocketRTScheduler} which is part of the
+\textit{Sockets} sample simulation, or \cclass{cParsimSynchronizer} and its
+subclasses that are part of the parallel simulation support of {\opp}.
+
+
+\section{Defining a New FES Data Structure}
+\label{sec:plugin-exts:fes}
+
+This extension interface allows one to replace the data structure used for
+storing future events during simulation, i.e. the FES. Replacing the FES
+may make sense for specialized workloads, or for the purpose of performance
+comparison of various FES algorithms. (The default, binary heap based FES
+implementation is a good choice for general workloads.)
+
+The FES C++ class must implement the \cclass{cFutureEventSet} interface,
+and can be activated with the \fconfig{futureeventset-class} configuration option.
+
+
+\section{Defining a New Fingerprint Algorithm}
+\label{sec:plugin-exts:fingerprint}
+
+This extension interface allows one to replace or extend the fingerprint
+computation algorithm (see section \ref{ch-testing:sec:fingerprint-tests}).
+
+% TODO \cclass{cFingerprint}
+
+The fingerprint computation class must implement the \cclass{cFingerprint} interface,
+and can be activated with the \fconfig{fingerprint-class} configuration option.
+
+
+\section{Defining a New Output Scalar Manager}
+\label{sec:plugin-exts:outputscalarmanager}
+
+An output scalar manager handles the recording the scalar and histogram
+output data. The default output scalar manager is
+\cclass{cFileOutputScalarManager} that saves data into \ttt{.sca} files.
+This extension interface allows one to create additional means of saving
+scalar and histogram results, for example database or CSV output.
+
+The new class must implement \cclass{cIOutputScalarManager}, and can be
+activated with the \fconfig{outputscalarmanager-class} configuration
+option.
+
+
+\section{Defining a New Output Vector Manager}
+\label{sec:plugin-exts:outputvectormanager}
+
+An output vector manager handles the recording output vectors, produced
+for example by \cclass{cOutVector} objects. The default output vector
+manager is \cclass{cIndexedFileOutputVectorManager} that saves data into
+\ttt{.vec} files, indexed in separate \ttt{.vci} files. This extension
+interface allows one to create additional means of saving vector results,
+for example database or CSV output.
+
+The new class must implement the \cclass{cIOutputVectorManager} interface,
+and can be activated with the \fconfig{outputvectormanager-class}
+configuration option.
+
+
+\section{Defining a New Snapshot Manager}
+\label{sec:plugin-exts:snapshotmanager}
+
+A snapshot manager provides an output stream to which snapshots are written
+(see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
+is \cclass{cFileSnapshotManager}.
+
+The new class must implement the \cclass{cISnapshotManager} interface, and
+can be activated with the \fconfig{snapshotmanager-class} configuration
+option.
+
+
+\section{Defining a New Configuration Provider}
+\label{sec:plugin-exts:configuration}
+
+\subsection{Overview}
+
+The configuration provider extension lets you replace ini files
+with some other storage implementation, for example a database.
+The configuration provider C++ class must implement the
+\cclass{cConfigurationEx} interface, and can be activated with
+the \fconfig{configuration-class} configuration option.
+
+The \cclass{cConfigurationEx} interface abstracts the inifile-based
+data model to some degree. It assumes that the configuration data
+consists of several \textit{named configurations}. Before every
+simulation run, one of the \textit{named configurations} is
+activated, and from then on, all queries into the configuration
+operate on the \textit{active named configuration} only.
+
+It practice, you will probably use the \cclass{SectionBasedConfiguration}
+class (in \ttt{src/envir}) or subclass from it, because it already
+implements a lot of functionality that you would otherwise have to.
+
+\cclass{SectionBasedConfiguration} does not assume ini files or
+any other particular storage format; instead, it accepts
+an object that implements the \cclass{cConfigurationReader}
+interface to provide the data in raw form to it.
+The default implementation of \cclass{cConfigurationReader} is
+\cclass{InifileReader}.
+
+\subsection{The Startup Sequence}
+
+From the configuration extension's point of view, the startup sequence
+looks like the following (see \ttt{src/envir/startup.cc} in the source code):
+
+\begin{enumerate}
+  \item First, ini files specified on the command-line are read into a
+     \textit{boot-time configuration object}. The boot-time configuration
+     is always a \cclass{SectionBasedConfiguration} with
+     \cclass{InifileReader}.
+  \item Shared libraries are loaded (see the \ttt{-l} command-line option,
+     and the \ttt{load-libs} configuration option). This allows
+     configuration classes to come from shared libraries.
+  \item The \ttt{configuration-class} configuration option is examined.
+     If it is present, a configuration object of the given class
+     is instantiated, and replaces the boot-time configuration.
+     The new configuration object is initialized from the boot-time
+     configuration, so that it can read parameters (e.g. database
+     connection parameters, XML file name, etc) from it.
+     Then the boot-time configuration object is deallocated.
+  \item The \ttt{load-libs} option from the new configuration object is
+     processed.
+  \item Then everything goes on as normally, using the new configuration
+     object.
+\end{enumerate}
+
+\subsection{Providing a Custom Configuration Class}
+
+To replace the configuration object with your custom implementation,
+you would write the class:
+
+\begin{cpp}
+#include "cconfiguration.h"
+
+class CustomConfiguration : public cConfigurationEx
+{
+   ...
+};
+
+Register_Class(CustomConfiguration);
+\end{cpp}
+
+and then activate it in the boot-time configuration:
+
+\begin{inifile}
+[General]
+configuration-class = CustomConfiguration
+\end{inifile}
+
+
+\subsection{Providing a Custom Reader for SectionBasedConfiguration}
+
+As said already, writing a configuration class from scratch can
+be a lot of work, and it may be more practical to reuse
+\cclass{SectionBasedConfiguration} with a different configuration
+reader class. This can be done with \ttt{sectionbasedconfig-configreader-class}
+config option, interpreted by \cclass{SectionBasedConfiguration}.
+Specify the following in your boot-time ini file:
+
+\begin{inifile}
+[General]
+configuration-class = SectionBasedConfiguration
+sectionbasedconfig-configreader-class = <my new reader class>
+\end{inifile}
+
+The configuration reader class should look like this:
+
+\begin{cpp}
+#include "cconfigreader.h"
+
+class DatabaseConfigurationReader : public cConfigurationReader
+{
+   ...
+};
+
+Register_Class(DatabaseConfigurationReader);
+\end{cpp}
+
+
 \section{Implementing a New User Interface}
 \label{sec:plugin-exts:userinterface}
 
 It is possible to extend {\opp} with a new user interface. The new
 user interface will have fully equal rights to Cmdenv, Tkenv and Qtenv;
 that is, it can be activated by starting the simulation executable with the
-\ttt{-u} \textit{<name>} command-line or the \ttt{user-interface}
+\ttt{-u} \textit{<name>} command-line or the \fconfig{user-interface}
 configuration option, it can be made the default user interface,
 it can define new command-line options and configuration options,
 and so on.
