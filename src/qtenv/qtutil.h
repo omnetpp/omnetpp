@@ -147,7 +147,7 @@ QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
-class QTENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
+class cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
 {
   private:
     const char *fullPath;
@@ -160,6 +160,22 @@ class QTENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisit
     cFindByPathVisitor(const char *fullPath, const char *className=nullptr, long objectId=-1) :
         fullPath(fullPath), className(className), objectId(objectId) {}
     ~cFindByPathVisitor() {}
+};
+
+/*
+ * Visitor to collect the descendants of an object which are of type T.
+ * T must be a subclass of cObject, and the resulting array should be safely casted to T**.
+ */
+template<typename T>
+class cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectObjectsVisitor {
+  protected:
+    void visit(cObject *obj) override {
+        if (dynamic_cast<T*>(obj))
+            addPointer(obj);
+
+        // go to children
+        obj->forEachChild(this);
+    }
 };
 
 //

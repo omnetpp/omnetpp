@@ -1192,6 +1192,11 @@ void Qtenv::displayException(std::exception& ex)
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
+    auto logLevel = getPref(QString("ComponentLogLevels/") + component->getFullPath().c_str());
+    if (logLevel.isValid() && logLevel.canConvert(QVariant::Int)) {
+        setComponentLogLevel(component, (LogLevel)logLevel.toInt());
+    }
+
     if (!opt->printInitBanners || runMode == RUNMODE_EXPRESS)
         return;
 
@@ -2050,10 +2055,41 @@ void Qtenv::excludeMessage()
 
 void Qtenv::utilitiesSubMenu()
 {
-    QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        InspectorUtil::copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+    auto action = dynamic_cast<QAction *>(sender());
+    if (action) {
+        auto data = action->data();
+        if (data.isValid()) {
+            ActionDataPair objTypePair = data.value<ActionDataPair>();
+            InspectorUtil::copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+        }
+    }
+}
+
+void Qtenv::setComponentLogLevel()
+{
+    auto action = dynamic_cast<QAction *>(sender());
+    if (action) {
+        auto data = action->data();
+        if (data.isValid() && data.canConvert(QVariant::Int)) {
+            auto pair = data.value<ActionDataPair>();
+            auto component = dynamic_cast<cComponent *>(pair.first);
+            setComponentLogLevel(component, (LogLevel)pair.second);
+        }
+    }
+}
+
+void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level)
+{
+    cCollectObjectsOfTypeVisitor<cComponent> v; // should include the component itself
+    v.process(component);
+    cComponent **objs = (cComponent**)v.getArray();
+
+    // only saving the pref for the one which got explicitly set, the restoring
+    // part will take care of the descendants (and the ini file won't grow too much)
+    setPref(QString("ComponentLogLevels/") + component->getFullPath().c_str(), level);
+
+    for (int i = 0; i < v.getArraySize(); ++i) {
+        objs[i]->setLoglevel(level);
     }
 }
 

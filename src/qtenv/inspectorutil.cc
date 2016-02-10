@@ -132,6 +132,34 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         action->setData(QVariant::fromValue(object));
     }
 
+    cComponent *comp = dynamic_cast<cComponent *>(object);
+    if (comp) {
+        menu->addSeparator();
+        QMenu *subMenu = menu->addMenu(QString("Set LogLevel for '") + name + "' and children...");
+
+        QAction *action;
+        QActionGroup *logLevelActionGroup = new QActionGroup(menu);
+
+        #define INSPECTORUTIL_ADD_LOGLEVEL(LEVEL) \
+            action = subMenu->addAction(#LEVEL, getQtenv(), SLOT(setComponentLogLevel())); \
+            action->setData(QVariant::fromValue(ActionDataPair(comp, LOGLEVEL_ ## LEVEL))); \
+            action->setCheckable(true); \
+            action->setChecked(comp->getLoglevel() == LOGLEVEL_ ## LEVEL); \
+            action->setActionGroup(logLevelActionGroup);
+
+        INSPECTORUTIL_ADD_LOGLEVEL(TRACE);
+        INSPECTORUTIL_ADD_LOGLEVEL(DEBUG);
+        INSPECTORUTIL_ADD_LOGLEVEL(DETAIL);
+        INSPECTORUTIL_ADD_LOGLEVEL(INFO);
+        INSPECTORUTIL_ADD_LOGLEVEL(WARN);
+        INSPECTORUTIL_ADD_LOGLEVEL(ERROR);
+        INSPECTORUTIL_ADD_LOGLEVEL(FATAL);
+        subMenu->addSeparator();
+        INSPECTORUTIL_ADD_LOGLEVEL(OFF);
+
+        #undef INSPECTORUTIL_ADD_LOGLEVEL
+    }
+
     // add utilities menu
     menu->addSeparator();
     QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");

@@ -278,6 +278,11 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void excludeMessage();
       void utilitiesSubMenu();
 
+      // will get the cComponent pointer and LogLevel in an
+      // ActionDataPair from the data of the sender QAction
+      void setComponentLogLevel();
+      void setComponentLogLevel(cComponent *component, LogLevel level);
+
   protected:
       // redefined virtual functions from EnvirBase
       virtual void doRun() override;
