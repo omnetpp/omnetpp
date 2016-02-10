@@ -69,10 +69,12 @@ void PassiveQueue::handleMessage(cMessage *msg)
     }
     else
         throw cRuntimeError("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
+}
 
+void PassiveQueue::refreshDisplay() const
+{
     // change the icon color
-    if (hasGUI())
-        getDisplayString().setTagArg("i", 1, queue.isEmpty() ? "" : "cyan3");
+    getDisplayString().setTagArg("i", 1, queue.isEmpty() ? "" : "cyan");
 }
 
 int PassiveQueue::length()
@@ -103,9 +105,6 @@ void PassiveQueue::request(int gateIndex)
     emit(queueingTimeSignal, d);
 
     send(job, "out", gateIndex);
-
-    if (hasGUI())
-        getDisplayString().setTagArg("i", 1, queue.isEmpty() ? "" : "cyan");
 }
 
 }; //namespace

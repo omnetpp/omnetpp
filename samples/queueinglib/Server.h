@@ -41,6 +41,7 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
         virtual void initialize() override;
         virtual int numInitStages() const override {return 2;}
         virtual void handleMessage(cMessage *msg) override;
+        virtual void refreshDisplay() const override;
         virtual void finish() override;
 
     public:

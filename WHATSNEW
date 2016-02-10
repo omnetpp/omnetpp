@@ -11,6 +11,7 @@ OMNeT++ 5.0 (February 2016)
 Samples:
 
  - Removed google-earth demo in favor of the osg-earth sample.
+ - Updated visualization in samples to use the new refreshDisplay() callback.
 
 
 OMNeT++ 5.0 beta 3 (December 2015)

@@ -24,6 +24,7 @@ class L2Queue : public cSimpleModule
 
     cQueue queue;
     cMessage *endTransmissionEvent;
+    bool isBusy;
 
     simsignal_t qlenSignal;
     simsignal_t busySignal;
@@ -39,10 +40,8 @@ class L2Queue : public cSimpleModule
   protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
-
+    virtual void refreshDisplay() const override;
     virtual void startTransmitting(cMessage *msg);
-
-    virtual void displayStatus(bool isBusy);
 };
 
 Define_Module(L2Queue);
@@ -73,14 +72,13 @@ void L2Queue::initialize()
 
     emit(qlenSignal, queue.getLength());
     emit(busySignal, false);
+    isBusy = false;
 }
 
 void L2Queue::startTransmitting(cMessage *msg)
 {
-    if (hasGUI())
-        displayStatus(true);
-
     EV << "Starting transmission of " << msg << endl;
+    isBusy = true;
     int64_t numBytes = check_and_cast<cPacket *>(msg)->getByteLength();
     send(msg, "line$o");
 
@@ -96,8 +94,7 @@ void L2Queue::handleMessage(cMessage *msg)
     if (msg == endTransmissionEvent) {
         // Transmission finished, we can start next one.
         EV << "Transmission finished.\n";
-        if (hasGUI())
-            displayStatus(false);
+        isBusy = false;
         if (queue.isEmpty()) {
             emit(busySignal, false);
         }
@@ -138,7 +135,7 @@ void L2Queue::handleMessage(cMessage *msg)
     }
 }
 
-void L2Queue::displayStatus(bool isBusy)
+void L2Queue::refreshDisplay() const
 {
     getDisplayString().setTagArg("t", 0, isBusy ? "transmitting" : "idle");
     getDisplayString().setTagArg("i", 1, isBusy ? (queue.getLength() >= 3 ? "red" : "yellow") : "");

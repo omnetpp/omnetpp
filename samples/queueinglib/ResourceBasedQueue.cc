@@ -93,9 +93,12 @@ void ResourceBasedQueue::handleMessage(cMessage *msg)
             job->setQueueCount(job->getQueueCount() + 1);
         }
     }
+}
 
-    if (hasGUI())
-        getDisplayString().setTagArg("i", 1, !jobServiced ? "" : "cyan3");
+void ResourceBasedQueue::refreshDisplay() const
+{
+    getDisplayString().setTagArg("i2", 0, jobServiced ? "status/execute" : "");
+    getDisplayString().setTagArg("i", 1, queue.isEmpty() ? "" : "cyan");
 }
 
 Job *ResourceBasedQueue::getFromQueue()

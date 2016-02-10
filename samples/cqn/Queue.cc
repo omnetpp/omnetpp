@@ -37,6 +37,7 @@ class AbstractQueue : public cSimpleModule
     virtual void arrival(cMessage *msg) {}
     virtual simtime_t startService(cMessage *msg) = 0;
     virtual void endService(cMessage *msg) = 0;
+    virtual void refreshDisplay() const override;
 };
 
 AbstractQueue::AbstractQueue()
@@ -64,8 +65,6 @@ void AbstractQueue::handleMessage(cMessage *msg)
         endService(msgServiced);
         if (queue.isEmpty()) {
             msgServiced = nullptr;
-            if (hasGUI())
-                getDisplayString().setTagArg("i", 1, "");
         }
         else {
             msgServiced = (cMessage *)queue.pop();
@@ -76,9 +75,6 @@ void AbstractQueue::handleMessage(cMessage *msg)
         }
     }
     else if (!msgServiced) {
-        if (hasGUI())
-            getDisplayString().setTagArg("i", 1, "gold3");
-
         arrival(msg);
         msgServiced = msg;
         simtime_t serviceTime = startService(msgServiced);
@@ -90,6 +86,11 @@ void AbstractQueue::handleMessage(cMessage *msg)
         queue.insert(msg);
         queueLength.record(queue.getLength());
     }
+}
+
+void AbstractQueue::refreshDisplay() const
+{
+    getDisplayString().setTagArg("i2", 0, msgServiced ? "status/execute" : "");
 }
 
 //------------------------------------------------
@@ -124,9 +125,6 @@ void Queue::initialize()
         queueLength.record(queue.getLength());
         simtime_t serviceTime = startService(msgServiced);
         scheduleAt(simTime()+serviceTime, endServiceMsg);
-
-        if (hasGUI())
-            getDisplayString().setTagArg("i", 1, "gold3");
     }
 }
 

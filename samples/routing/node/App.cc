@@ -115,10 +115,8 @@ void App::handleMessage(cMessage *msg)
         emit(sourceAddressSignal, pk->getSrcAddr());
         delete pk;
 
-        if (hasGUI()) {
-            getParentModule()->getDisplayString().setTagArg("i", 1, "green");
+        if (hasGUI())
             getParentModule()->bubble("Arrived!");
-        }
     }
 }
 

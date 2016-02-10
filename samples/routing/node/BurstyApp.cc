@@ -55,12 +55,12 @@ class BurstyApp : public cSimpleModule
     // redefined cSimpleModule methods
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
+    virtual void refreshDisplay() const override;
 
     // new methods
     virtual void processTimer(cMessage *msg);
     virtual void processPacket(Packet *pk);
     virtual void generatePacket();
-    virtual void updateDisplayString();
 };
 
 Define_Module(BurstyApp);
@@ -110,10 +110,6 @@ void BurstyApp::handleMessage(cMessage *msg)
         processTimer(msg);
     else
         processPacket(check_and_cast<Packet *>(msg));
-
-    // update visual appearance of the module
-    if (hasGUI())
-        updateDisplayString();
 }
 
 void BurstyApp::processTimer(cMessage *msg)
@@ -210,7 +206,7 @@ void BurstyApp::processPacket(Packet *pk)
     delete pk;
 }
 
-void BurstyApp::updateDisplayString()
+void BurstyApp::refreshDisplay() const
 {
     // update status string above icon
     char txt[64];

@@ -34,8 +34,6 @@ void ResourcePool::initialize()
     amount = par("amount");
     amountSignal = registerSignal("amount");
     emit(amountSignal, amount);
-    if (hasGUI())
-        updateDisplayString();
 }
 
 bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority)
@@ -44,8 +42,6 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
     if (amount >= amountToAllocate) {
         amount -= amountToAllocate;
         emit(amountSignal, amount);
-        if (hasGUI())
-            updateDisplayString();
         return true;
     }
     else {
@@ -55,8 +51,6 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
         req.amountToAllocate = amountToAllocate;
         req.allocator = allocator;
         add(req);
-        if (hasGUI())
-            updateDisplayString();
         return false;
     }
 }
@@ -73,8 +67,6 @@ void ResourcePool::release(long amountToRelease)
         allocatorList.pop_front();
     }
     emit(amountSignal, amount);
-    if (hasGUI())
-        updateDisplayString();
 }
 
 void ResourcePool::add(AllocationRequest& request)
@@ -93,7 +85,7 @@ void ResourcePool::add(AllocationRequest& request)
     allocatorList.push_front(request);
 }
 
-void ResourcePool::updateDisplayString()
+void ResourcePool::refreshDisplay() const
 {
     char buf[80];
     sprintf(buf, "amount: %ld\nrequests: %d", amount, (int)allocatorList.size());

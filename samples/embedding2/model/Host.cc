@@ -44,9 +44,6 @@ void Host::initialize()
     WATCH((int&)state);
     WATCH(pkCounter);
 
-    if (hasGUI())
-        getDisplayString().setTagArg("t", 2, "#808000");
-
     scheduleAt(getNextTransmissionTime(), endTxEvent);
 }
 
@@ -62,12 +59,6 @@ void Host::handleMessage(cMessage *msg)
 
         state = TRANSMIT;
 
-        // update network graphics
-        if (hasGUI()) {
-            getDisplayString().setTagArg("i", 1, "yellow");
-            getDisplayString().setTagArg("t", 0, "TRANSMIT");
-        }
-
         cPacket *pk = new cPacket(pkname);
         pk->setBitLength(pkLenBits->longValue());
         simtime_t duration = pk->getBitLength() / txRate;
@@ -82,11 +73,6 @@ void Host::handleMessage(cMessage *msg)
         // schedule next sending
         scheduleAt(getNextTransmissionTime(), endTxEvent);
 
-        // update network graphics
-        if (hasGUI()) {
-            getDisplayString().setTagArg("i", 1, "");
-            getDisplayString().setTagArg("t", 0, "");
-        }
     }
     else {
         throw cRuntimeError("invalid state");

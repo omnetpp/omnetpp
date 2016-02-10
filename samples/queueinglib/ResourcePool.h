@@ -36,7 +36,6 @@ class QUEUEING_API ResourcePool : public cSimpleModule, public IResourcePool
         AllocationRequestList allocatorList;
 
         void add(AllocationRequest& request);
-        void updateDisplayString();
 
     protected:
         virtual void initialize() override;
@@ -44,6 +43,7 @@ class QUEUEING_API ResourcePool : public cSimpleModule, public IResourcePool
     public:
         ResourcePool();
         virtual ~ResourcePool();
+        virtual void refreshDisplay() const override;
         virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority) override;
         virtual void release(long amountToRelease) override;
 };

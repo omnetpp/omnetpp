@@ -25,6 +25,7 @@ class SinkExt : public queueing::Sink
 
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
+    virtual void refreshDisplay() const override;
 };
 
 #endif

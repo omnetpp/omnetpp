@@ -52,9 +52,6 @@ void Server::handleMessage(cMessage *msg)
         jobServiced = nullptr;
         emit(busySignal, false);
 
-        if (hasGUI())
-            getDisplayString().setTagArg("i", 1, "");
-
         // examine all input queues, and request a new job from a non empty queue
         int k = selectionStrategy->select();
         if (k >= 0) {
@@ -71,10 +68,12 @@ void Server::handleMessage(cMessage *msg)
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
         emit(busySignal, true);
-
-        if (hasGUI())
-            getDisplayString().setTagArg("i", 1, "cyan");
     }
+}
+
+void Server::refreshDisplay() const
+{
+    getDisplayString().setTagArg("i2", 0, jobServiced ? "status/execute" : "");
 }
 
 void Server::finish()

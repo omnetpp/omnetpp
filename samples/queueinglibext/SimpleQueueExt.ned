@@ -18,10 +18,10 @@ import org.omnetpp.queueing.Source;
 network SimpleQueueExt
 {
     parameters:
-        @display("i=block/network2");
+        @display("i=block/network2;bgb=371,217");
     submodules:
         sink: SinkExt {
-            @display("p=273,101");
+            @display("p=293,127");
         }
         queue: Queue {
             @display("p=165.0,79.0");

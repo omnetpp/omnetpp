@@ -62,5 +62,11 @@ void Join::handleMessage(cMessage *msg)
     }
 }
 
+void Join::refreshDisplay() const
+{
+    getDisplayString().setTagArg("i2", 0, jobsHeld.size()>0 ? "status/hourglass" : "");
+}
+
+
 }; // namespace
 

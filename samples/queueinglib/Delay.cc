@@ -43,9 +43,13 @@ void Delay::handleMessage(cMessage *msg)
     }
     emit(delayedJobsSignal, currentlyStored);
 
-    if (hasGUI())
-        getDisplayString().setTagArg("i", 1, currentlyStored == 0 ? "" : "cyan4");
 }
+
+void Delay::refreshDisplay() const
+{
+    getDisplayString().setTagArg("i", 1, currentlyStored == 0 ? "" : "cyan");
+}
+
 
 }; //namespace
 

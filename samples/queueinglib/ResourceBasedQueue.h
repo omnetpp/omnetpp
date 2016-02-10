@@ -67,6 +67,7 @@ class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAl
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
+        virtual void refreshDisplay() const override;
 
         // hook functions to (re)define behavior
         virtual void arrival(Job *job);

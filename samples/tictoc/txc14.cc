@@ -28,7 +28,7 @@ class Txc14 : public cSimpleModule
   protected:
     virtual TicTocMsg14 *generateMessage();
     virtual void forwardMessage(TicTocMsg14 *msg);
-    virtual void updateDisplay();
+    virtual void refreshDisplay() const override;
 
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
@@ -48,6 +48,7 @@ void Txc14::initialize()
     if (getIndex() == 0) {
         // Boot the process scheduling the initial message as a self-message.
         TicTocMsg14 *msg = generateMessage();
+        numSent++;
         scheduleAt(0.0, msg);
     }
 }
@@ -70,9 +71,6 @@ void Txc14::handleMessage(cMessage *msg)
         EV << newmsg << endl;
         forwardMessage(newmsg);
         numSent++;
-
-        if (hasGUI())
-            updateDisplay();
     }
     else {
         // We need to forward the message.
@@ -112,10 +110,9 @@ void Txc14::forwardMessage(TicTocMsg14 *msg)
     send(msg, "gate$o", k);
 }
 
-void Txc14::updateDisplay()
+void Txc14::refreshDisplay() const
 {
     char buf[40];
     sprintf(buf, "rcvd: %ld sent: %ld", numReceived, numSent);
     getDisplayString().setTagArg("t", 0, buf);
 }
-

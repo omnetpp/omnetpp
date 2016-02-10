@@ -38,6 +38,7 @@ class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
+        virtual void refreshDisplay() const override;
 
     public:
         PassiveQueue();

@@ -61,8 +61,6 @@ void Server::initialize()
     collisionLengthHistogram.setName("collision length");
     collisionLengthHistogram.setRangeAutoUpper(0.0);
 
-    if (hasGUI())
-        getDisplayString().setTagArg("i2", 0, "status/off");
 }
 
 void Server::handleMessage(cMessage *msg)
@@ -87,12 +85,6 @@ void Server::handleMessage(cMessage *msg)
         channelUtilizationVector.record(currentChannelUtilization);
 
         currentCollisionNumFrames = 0;
-
-        // update network graphics
-        if (hasGUI()) {
-            getDisplayString().setTagArg("i2", 0, "status/off");
-            getDisplayString().setTagArg("t", 0, "");
-        }
     }
     else {
         cPacket *pkt = check_and_cast<cPacket *>(msg);
@@ -105,11 +97,6 @@ void Server::handleMessage(cMessage *msg)
             recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReceptionTime, endRxEvent);
-            if (hasGUI()) {
-                getDisplayString().setTagArg("i2", 0, "status/yellow");
-                getDisplayString().setTagArg("t", 0, "RECEIVE");
-                getDisplayString().setTagArg("t", 2, "#808000");
-            }
         }
         else {
             EV << "another frame arrived while receiving -- collision!\n";
@@ -123,16 +110,6 @@ void Server::handleMessage(cMessage *msg)
             if (endReceptionTime > endRxEvent->getArrivalTime()) {
                 cancelEvent(endRxEvent);
                 scheduleAt(endReceptionTime, endRxEvent);
-            }
-
-            // update network graphics
-            if (hasGUI()) {
-                getDisplayString().setTagArg("i2", 0, "status/red");
-                getDisplayString().setTagArg("t", 0, "COLLISION");
-                getDisplayString().setTagArg("t", 2, "#800000");
-                char buf[32];
-                sprintf(buf, "Collision! (%ld frames)", currentCollisionNumFrames);
-                bubble(buf);
             }
         }
         channelBusy = true;
