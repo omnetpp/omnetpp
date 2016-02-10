@@ -28,13 +28,8 @@
        <height>73</height>
       </size>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-      </font>
-     </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(248, 48, 48);</string>
+      <string notr="true">background-color: rgb(248, 48, 48); font-size: 20pt; font-weight: bold;</string>
      </property>
      <property name="text">
       <string>STOP!</string>
