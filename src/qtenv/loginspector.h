@@ -84,6 +84,7 @@ signals:
       void onFilterButton();
       // displays the selected message in the object inspector if in messages mode
       void onCaretMoved(int lineIndex, int column);
+      void onRightClicked(QPoint globalPos, int lineIndex, int column);
 
       void toMessagesMode();
       void toLogMode();

@@ -204,6 +204,7 @@ public slots:
 
 signals:
     void caretMoved(int lineIndex, int column);
+    void rightClicked(QPoint globalPos, int lineIndex, int column);
 
 public:
     explicit TextViewerWidget(QWidget *parent = 0);

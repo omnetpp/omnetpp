@@ -115,13 +115,18 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, Qtenv::RUNMODE_FAST), insp)));
     }
 
-    if (dynamic_cast<cMessage *>(object)) {
-        menu->addSeparator();
-        QAction *action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
-        action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
-        action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
+    cMessage *msg = dynamic_cast<cMessage *>(object);
+    if (msg) {
+        QAction *action;
+        if (msg->isScheduled()) {
+            menu->addSeparator();
+            action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
+            action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
+            action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
+            action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
+            action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
+            action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_EXPRESS)));
+        }
         menu->addSeparator();
         action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", getQtenv(), SLOT(excludeMessage()));
         action->setData(QVariant::fromValue(object));

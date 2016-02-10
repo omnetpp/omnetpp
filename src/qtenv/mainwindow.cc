@@ -126,13 +126,17 @@ void MainWindow::setGuiForRunmode(eMode mode, bool untilMode)
 
         case EXPRESS:
             ui->actionExpressRun->setChecked(true);
-            showStopDialog();
             break;
 
         case NOT_RUNNING:
             ui->actionRunUntil->setChecked(false);
             break;
     }
+
+    if (mode == EXPRESS)
+        showStopDialog();
+    else
+        closeStopDialog();
 
     ui->actionRunUntil->setChecked(untilMode);
 }
@@ -581,17 +585,9 @@ void MainWindow::runUntilMsg(cMessage *msg, int runMode)
     if (!networkReady())
         return;
 
-    // mode must be "normal", "fast" or "express"
-    if (isRunning()) {
-        setGuiForRunmode(runModeToMode(runMode), true);
-        env->setSimulationRunMode(runMode);
-        env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
-    }
-    else {
-        setGuiForRunmode(runModeToMode(runMode), true);
-        env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
-        setGuiForRunmode(NOT_RUNNING);
-    }
+    setGuiForRunmode(runModeToMode(runMode), true);
+    env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
+    setGuiForRunmode(NOT_RUNNING);
 }
 
 // opp_set_run_until_module

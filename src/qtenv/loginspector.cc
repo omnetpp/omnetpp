@@ -26,11 +26,13 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QDebug>
+#include <QMenu>
 
 #include "common/stringtokenizer.h"
 #include "loginspector.h"
 #include "qtenv.h"
 #include "qtutil.h"
+#include "inspectorutil.h"
 #include "mainwindow.h"
 #include "inspectorfactory.h"
 #include "logfinddialog.h"
@@ -77,6 +79,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     layout->addWidget(textWidget);
     connect(textWidget, SIGNAL(caretMoved(int,int)), this, SLOT(onCaretMoved(int, int)));
+    connect(textWidget, SIGNAL(rightClicked(QPoint,int,int)), this, SLOT(onRightClicked(QPoint,int, int)));
     parent->setMinimumSize(100, 50); // caution: too small widget height with heading displayed may cause notification loop!
 
     /*
@@ -291,11 +294,18 @@ void LogInspector::onFilterButton() {
     delete dialog;
 }
 
-void LogInspector::onCaretMoved(int lineIndex, int column)
-{
+void LogInspector::onCaretMoved(int lineIndex, int column) {
     auto msg = (cMessage*)textWidget->getContentProvider()->getUserData(lineIndex);
     if (msg)
         emit selectionChanged(msg);
+}
+
+void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column) {
+    auto msg = (cMessage*)textWidget->getContentProvider()->getUserData(lineIndex);
+    if (msg) {
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(msg, this);
+        menu->exec(globalPos);
+    }
 }
 
 void LogInspector::findAgain() {

@@ -693,29 +693,42 @@ void TextViewerWidget::mouseReleaseEvent(QMouseEvent *event) {
 void TextViewerWidget::mousePressEvent(QMouseEvent *event) {
     Pos lineColumn = getLineColumnAt(event->x(), event->y());
 
-    if (timeSinceLastDoubleClick.isValid() // triple click event emulation
-            && timeSinceLastDoubleClick.elapsed() < TRIPLE_CLICK_THRESHOLD_MS) {
-        // selecting the whole line
-        doLineStart(false);
-        doLineEnd(true);
-
-        clickCount = 3;
-        timeSinceLastDoubleClick.invalidate();
-    } else { // it is really a single click
-        caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
-        caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
-        clickCount = 1;
-
-        bool select = event->modifiers() & Qt::ShiftModifier;
-        if (!select)
-            clearSelection();
-        emit caretMoved(caretLineIndex, caretColumn);
-    }
-
     caretShown = true;
     caretBlinkTimer.start();
-    revealCaret();
-    viewport()->update();
+
+    if (event->buttons() & Qt::LeftButton) {
+        if (timeSinceLastDoubleClick.isValid() // triple click event emulation
+                && timeSinceLastDoubleClick.elapsed() < TRIPLE_CLICK_THRESHOLD_MS) {
+            // selecting the whole line
+            doLineStart(false);
+            doLineEnd(true);
+
+            clickCount = 3;
+            timeSinceLastDoubleClick.invalidate();
+        } else { // it is really a single click
+            caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
+            caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
+            clickCount = 1;
+
+            bool select = event->modifiers() & Qt::ShiftModifier;
+            if (!select)
+                clearSelection();
+            emit caretMoved(caretLineIndex, caretColumn);
+        }
+
+        revealCaret();
+        viewport()->update();
+
+    } else if (event->buttons() & Qt::RightButton){
+        caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
+        caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
+        clearSelection();
+
+        revealCaret();
+        viewport()->update();
+
+        emit rightClicked(event->globalPos(), caretLineIndex, caretColumn);
+    }
 }
 
 void TextViewerWidget::mouseDoubleClickEvent(QMouseEvent *event) {
