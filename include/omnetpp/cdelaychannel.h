@@ -34,8 +34,8 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
 
   private:
     enum {
-      FL_ISDISABLED = 128,
-      FL_DELAY_NONZERO = 256,
+      FL_ISDISABLED = 1 << 9,
+      FL_DELAY_NONZERO = 1 << 10,
     };
 
     simtime_t delay; // cached value of propagation delay parameter
