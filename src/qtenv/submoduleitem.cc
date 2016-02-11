@@ -317,9 +317,9 @@ void SubmoduleItem::setShape(Shape shape) {
         shapeItem = nullptr;
 
         switch (shape) {
-        case SHAPE_NONE: /* nothing to do here */                             break;
-        case SHAPE_OVAL: shapeItem = new QGraphicsEllipseItem(this, scene()); break;
-        case SHAPE_RECT: shapeItem = new QGraphicsRectItem(this, scene());    break;
+        case SHAPE_NONE: /* nothing to do here */                    break;
+        case SHAPE_OVAL: shapeItem = new QGraphicsEllipseItem(this); break;
+        case SHAPE_RECT: shapeItem = new QGraphicsRectItem(this);    break;
         }
 
         updateShapeItem();
@@ -368,7 +368,7 @@ void SubmoduleItem::setImage(QImage *image) {
         imageItem = nullptr;
         colorizeEffect = nullptr;
         if (image) {
-            imageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*image), this, scene());
+            imageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*image), this);
             imageItem->setOffset(-image->width() / 2.0f, -image->height() / 2.0f);
             colorizeEffect = new ColorizeEffect();
             imageItem->setGraphicsEffect(colorizeEffect);
@@ -399,7 +399,7 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
         decoratorImageItem = nullptr;
         decoratorColorizeEffect = nullptr;
         if (decoratorImage) {
-            decoratorImageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*decoratorImage), this, scene());
+            decoratorImageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*decoratorImage), this);
             // It is easier to position using its (almost) upper right corner.
             // The 2 pixel offset moves it a bit to the right and up.
             decoratorImageItem->setOffset(-decoratorImage->width() + 2, -2);

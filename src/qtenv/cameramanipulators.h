@@ -53,6 +53,6 @@ protected:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif
+#endif // WITH_OSG
 
 #endif // __OMNETPP_QTENV_CAMERAMANIPULATORS_H

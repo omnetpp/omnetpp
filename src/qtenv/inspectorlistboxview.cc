@@ -40,7 +40,11 @@ InspectorListBoxView::InspectorListBoxView(QWidget *parent)
     setHorizontalScrollMode(ScrollPerPixel);
 
     verticalHeader()->setVisible(false);
-    verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    #if QT_VERSION >= 0x050000
+        verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    #else
+        verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    #endif
 
     setShowGrid(false);
     setSortingEnabled(true);

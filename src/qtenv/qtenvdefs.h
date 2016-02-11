@@ -34,20 +34,28 @@
 
 #include <QMetaType>
 #include <QPair>
-namespace omnetpp{
-namespace qtenv{
-    class Inspector;
-} // namespace qtenv
-} // namespace omnetpp
+
+namespace omnetpp {
+namespace qtenv {
+class Inspector;
+}
+}
+
+Q_DECLARE_METATYPE(omnetpp::cObject*)
+Q_DECLARE_METATYPE(omnetpp::cMessage*)
+
+#if QT_VERSION >= 0x050000
+// for Q_DECLARE_METATYPE in Qt5, omnetpp::qtenv::Inspector would have to be fully defined, which we don't want here
+    Q_DECLARE_OPAQUE_POINTER(omnetpp::qtenv::Inspector*)
+#else
+    Q_DECLARE_METATYPE(omnetpp::qtenv::Inspector*)
+#endif
 
 typedef QPair<omnetpp::cObject*, int> ActionDataPair;
 typedef QPair<ActionDataPair, omnetpp::qtenv::Inspector*> ActionDataTriplet;
 
-Q_DECLARE_METATYPE(omnetpp::cObject*)
 Q_DECLARE_METATYPE(ActionDataPair)
 Q_DECLARE_METATYPE(ActionDataTriplet)
-Q_DECLARE_METATYPE(omnetpp::cMessage*)
-
 
 #if defined(QTENV_EXPORT)
 #  define QTENV_API OPP_DLLEXPORT

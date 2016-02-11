@@ -61,11 +61,12 @@ void CompoundModuleItem::updateImage() {
             imageItem->setTransformationMode(Qt::SmoothTransformation);
 
             switch (imageMode) {
-            case MODE_STRETCH:
+            case MODE_STRETCH: {
                 imageItem->setScale(1); // undoing the regular zoom scaling
-                imageItem->scale(area.width() / image->width(), // Stretching to correct size.
-                                 area.height() / image->height());
-                break;
+                QTransform transf; // Stretching to correct size.
+                transf.scale(area.width() / image->width(), area.height() / image->height());
+                imageItem->setTransform(transf);
+                } break;
             case MODE_TILE:
                 Q_ASSERT(false);
                 // Already handled in the other branch above, this should never execute.

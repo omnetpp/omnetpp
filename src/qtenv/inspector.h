@@ -139,5 +139,3 @@ class QTENV_API Inspector : public QWidget
 } // namespace omnetpp
 
 #endif
-
-

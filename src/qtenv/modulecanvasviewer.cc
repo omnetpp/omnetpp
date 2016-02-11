@@ -748,7 +748,7 @@ void ModuleCanvasViewer::redrawNextEventMarker() {
 
     if (nextModParent) {
         // XXX maybe move this to the animation layer?
-        nextEventMarker = new QGraphicsRectItem(submoduleLayer, scene());
+        nextEventMarker = new QGraphicsRectItem(submoduleLayer);
 
         auto item = submoduleGraphicsItems[nextModParent];
         if (item) {

@@ -201,7 +201,7 @@ void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags flags) {
 // ---- OutlinedTextItem implementation ----
 
 OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
-    : QGraphicsItem(parent, scene)
+    : QGraphicsItem(parent)
 {
     outlineItem = new QGraphicsSimpleTextItem();
     outlineItem->setFont(getQtenv()->getCanvasFont());
