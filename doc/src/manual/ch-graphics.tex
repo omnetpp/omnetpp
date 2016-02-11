@@ -2359,7 +2359,7 @@ of OpenSceneGraph, not quite unlike Google Earth. It has many attractive feature
 In \opp, osgEarth can be very useful for simulations involving maps, terrain,
 or satellites.
 
-\subsection{The {\opp} API for OSG}
+\subsection{The {\opp} API for OpenSceneGraph}
 
 For 3D visualization, {\opp} basically exposes the OpenSceneGraph API.
 You assemble an OSG scene graph in the model, and give it to {\opp} for
@@ -2526,6 +2526,39 @@ The {\opp} object should exist as long as the wrapper node exists. Otherwise,
 clicking child nodes with the mouse is likely to result in a crash.
 \end{note}
 
+\subsubsection{Finding Resources}
+
+3D visualizations often need to load external resources from disk, for
+example images or 3D models. By default, OSG tries to load these files
+from the current working directory (unless they are given with absolute path).
+However, loading from the folder of the current {\opp} module, from the folder
+of the ini file, or from the image path would often be more convenient.
+{\opp} contains a function that lets you do just that.
+
+The \ffunc{resolveResourcePath()} method of modules and channels accepts a
+file name (or relative path) as input, and looks into a number of convenient
+locations to find the file. The list of the search folders includes
+the current working directory, the folder of the main ini file, and the folder
+of the NED file that defined the module or channel.
+If the resource is found, the function returns the full path; otherwise
+it returns the empty string.
+
+The function also looks into folders on the NED path and the image
+path, i.e. the roots of the NED and image folder trees. These search
+locations allow one to load files by full NED package name (but using
+slashes instead of dots), or access an icon with its full name (e.g.
+\ttt{block/sink}).
+
+An example that attempts to load a \ttt{car.osgb} model file:
+
+\begin{cpp}
+std::string fileLoc = resolveResourcePath("car.osgb");
+if (fileLoc == "")
+    throw cRuntimeError("car.osgb not found");
+auto node = osgDB::readNodeFile(fileLoc); // use the resolved path
+\end{cpp}
+
+
 \subsubsection{Conditional Compilation}
 
 OSG and osgEarth are optional in {\opp}, and may not be available in all
@@ -2580,12 +2613,13 @@ the presence of OSG/osgEarth in the first place.
 
 \subsection{Using OSG}
 
-TODO
-
-There are numerous sources to get information and practical help in using OSG.
-The intent of the next sections are just to give you enough material to get started.
-After that you are advised to refer to the material listed in the section
-"OSG programming resources".
+OpenScenegraph is a sizable library with 16+ namespaces and 40+ \cclass{osg::Node}
+subclasses, and we cannot fully document it here due to size constraints. Instead, 
+in the next sections we have collected some practical advice and useful code snippets 
+to quickly get you started. More information can be found on the openscenegraph.org
+web site, in dedicated OpenSceneGraph books (some of which are freely available), 
+and in other online resources. You will find a list of OSG-related resources
+at the end of this chapter.
 
 \subsubsection{Loading Models}
 
@@ -2988,13 +3022,22 @@ performance, so wildly overusing them is to be avoided.
 
 \subsection{Using osgEarth}
 
-TODO:
+osgEarth is a cross-platform terrain and mapping SDK built on top of OpenSceneGraph.
+The most visible feature of osgEarth is that it adds support for loading \ttt{.earth}
+files to \ttt{osgDB::readNodeFile()}. An \ttt{.earth} file specifies contents and 
+appearance of the displayed globe. This can be as simple as a single image
+textured over a sphere or as complex as realistic terrain data and
+satellite images complete with street and building information dynamically
+streamed over the internet from a publicly available provider, thanks to
+the flexibility of osgEarth. osgEarth also defines additional APIs
+to help with coodinate systems and other tasks. Other than that,
+one's OSG knowledge is also applicable when building osgEarth scenes.
 
-- "using osgEarth" basically means that you load an .earth file via loadModel()
+The next sections contain some tips and code fragments to help you get
+started with osgEarth. As with OSG, there are numerous other sources of
+information, both printed and online, when the info contained herein
+is insufficient.
 
-- everything that's true for OSG is also true for osgEarth, but it introduces additional APIs. they are in the osgEarth namespace
-
-- here we give some hints on what's possible with osgEarth, and some tips/code fragments to access them
 
 \subsubsection{Earth Files}
 
