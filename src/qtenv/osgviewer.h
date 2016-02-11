@@ -65,9 +65,8 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     void resizeEvent(QResizeEvent *event) override;
 
     void setClearColor(float r, float g, float b, float alpha);
-    void setCameraManipulator(cOsgCanvas::CameraManipulatorType type);
+    void setCameraManipulator(cOsgCanvas::CameraManipulatorType type, bool keepView = false);
     void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
-    void setEarthViewpoint(const osgEarth::Viewpoint& viewpoint);
     QMenu *createCameraManipulatorMenu();
 
   protected slots:

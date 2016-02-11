@@ -22,7 +22,7 @@
 #ifdef WITH_OSG
 
 // don't include OSG headers yet
-namespace osg { class Node; class Group; }
+namespace osg { class Node; class Group; class Vec3d; }
 namespace osgEarth { class Viewpoint; }
 
 namespace omnetpp {
@@ -52,6 +52,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
             double x, y, z;
             Vec3d() : x(0), y(0), z(0) {}
             Vec3d(double x, double y, double z): x(x), y(y), z(z) {}
+            operator osg::Vec3d() const;
         };
 
         struct Viewpoint {

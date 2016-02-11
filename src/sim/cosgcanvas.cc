@@ -126,6 +126,10 @@ cObject *cOsgCanvas::getOmnetppObject(osg::Group *omnetppObjectNode)
     return node->getObject();
 }
 
+cOsgCanvas::Vec3d::operator osg::Vec3d() const {
+    return osg::Vec3d(x, y, z);
+}
+
 } // namespace omnetpp
 
 #else

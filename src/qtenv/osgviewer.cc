@@ -24,6 +24,7 @@
 #else
     #include <osgEarthUtil/SkyNode>
 #endif
+#include <osgEarth/MapNode>
 #include <osgEarthUtil/EarthManipulator>
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/TerrainManipulator>
@@ -306,9 +307,6 @@ void OsgViewer::applyViewerHints()
     setCameraManipulator(osgCanvas->getCameraManipulatorType());
 
     setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
-
-    if (osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_EARTH)
-        setEarthViewpoint(osgCanvas->getEarthViewpoint());
 }
 
 void OsgViewer::resetViewer()
@@ -325,8 +323,27 @@ void OsgViewer::setClearColor(float r, float g, float b, float alpha)
     camera->setClearColor(osg::Vec4(r, g, b, alpha));
 }
 
-void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type)
+void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, bool keepView)
 {
+    // saving the current viewpoint
+
+    // all of these are in world coordinates, so expect large-values when using osgEarth
+    osg::Vec3d eye, center, up;
+    float distance = 1; // how far the center is from the eye.
+
+    // all of the generic manipulators are OrbitManipulators
+    if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator*>(view->getCameraManipulator()))
+        distance = orbitManip->getDistance();
+
+    // EarthManipulator just happens to have a similar behaviour and a method with the same name
+    if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(view->getCameraManipulator()))
+        distance = earthManip->getDistance();
+
+    view->getCamera()->getViewMatrixAsLookAt(eye, center, up, distance);
+
+
+    // setting up the new manipulator
+
     osgGA::CameraManipulator *manipulator = nullptr;
 
     if (type == cOsgCanvas::CAM_AUTO)
@@ -352,18 +369,59 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type)
         case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
     }
 
-    const cOsgCanvas::Viewpoint &viewpoint = osgCanvas->getGenericViewpoint();
+    view->setCameraManipulator(manipulator);
 
-    if (viewpoint.valid) {
-        osg::Vec3d eye(viewpoint.eye.x, viewpoint.eye.y, viewpoint.eye.z);
-        osg::Vec3d center(viewpoint.center.x, viewpoint.center.y, viewpoint.center.z);
-        osg::Vec3d up(viewpoint.up.x, viewpoint.up.y, viewpoint.up.z);
 
-        manipulator->setHomePosition(eye, center, up);
-        manipulator->home(0);
+    // restoring the viewpoint into the new manipulator
+
+    if (keepView) {
+        if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator*>(manipulator)) {
+            // this was the simplest way to force all kinds of manipulators to the viewpoint
+            orbitManip->setHomePosition(eye, center, up);
+            orbitManip->home(0);
+            orbitManip->setDistance(distance);
+        }
+
+        // and EarthManipulator is a different story as always
+        if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(manipulator)) {
+            auto srs = osgEarth::MapNode::findMapNode(osgCanvas->getScene())->getMap()->getSRS();
+
+            osg::Vec3d geoCenter; // should be longitude, latitude and absolute altitude
+            srs->transformFromWorld(center, geoCenter);
+
+            auto gc = osgEarth::GeoPoint(srs, geoCenter, osgEarth::ALTMODE_ABSOLUTE);
+            // this transforms into a little local Descartian space around the point the camera is looking at
+            osg::Matrixd worldToLocal;
+            gc.createWorldToLocal(worldToLocal);
+
+            // localCenter would be zero (even if imprecisely)
+            osg::Vec3d localEye = eye * worldToLocal;
+            osg::Vec3d localUp = (eye + up) * worldToLocal - localEye;
+
+            double heading = - atan2(localEye.y(), localEye.x()) * 180.0 / M_PI - 90;
+            double pitch = atan2(localUp.z(), osg::Vec2d(localUp.x(), localUp.y()).length()) * 180.0 / M_PI - 90;
+
+            osgEarth::Viewpoint vp(geoCenter, heading, pitch, distance);
+            earthManip->setViewpoint(vp);
+        }
     }
 
-    view->setCameraManipulator(manipulator);
+
+    // setting the home viewpoint if found
+
+    if (type == cOsgCanvas::CAM_EARTH) {
+        const osgEarth::Viewpoint &homeViewpoint = osgCanvas->getEarthViewpoint();
+        if (homeViewpoint.isValid())
+            ((osgEarth::Util::EarthManipulator*)manipulator)->setHomeViewpoint(homeViewpoint);
+    } else {
+        const cOsgCanvas::Viewpoint &homeViewpoint = osgCanvas->getGenericViewpoint();
+        if (homeViewpoint.valid)
+            manipulator->setHomePosition(homeViewpoint.eye, homeViewpoint.center, homeViewpoint.up);
+    }
+
+    // and going home if needed
+    if (!keepView)
+        manipulator->home(0);
 }
 
 void OsgViewer::setPerspective(double fieldOfViewAngle, double zNear, double zFar)
@@ -371,17 +429,6 @@ void OsgViewer::setPerspective(double fieldOfViewAngle, double zNear, double zFa
     osg::Camera *camera = view->getCamera();
     double widgetAspect = glWidget->geometry().width() / (double) glWidget->geometry().height();
     camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, widgetAspect, zNear, zFar);
-}
-
-void OsgViewer::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
-{
-    if (viewpoint.isValid()) {
-        osgGA::CameraManipulator *manip = view->getCameraManipulator();
-        if (osgEarth::Util::EarthManipulator *earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(manip)) {
-            double duration = 0.0; //XXX make configurable (or viewer hint in cOsgCanvas
-            earthManip->setViewpoint(viewpoint, duration);
-        }
-    }
 }
 
 QMenu *OsgViewer::createCameraManipulatorMenu()
@@ -396,7 +443,7 @@ QMenu *OsgViewer::createCameraManipulatorMenu()
 
 void OsgViewer::setCameraManipulator(QAction *sender)
 {
-    setCameraManipulator((cOsgCanvas::CameraManipulatorType)sender->data().value<int>());
+    setCameraManipulator((cOsgCanvas::CameraManipulatorType)sender->data().value<int>(), true);
 }
 
 } // qtenv
