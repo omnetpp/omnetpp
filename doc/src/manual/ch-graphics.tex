@@ -2502,7 +2502,7 @@ osgCanvas->setGenericViewpoint(cOsgCanvas::Viewpoint(
 \end{cpp}
 
 
-\subsubsection{Making Nodes Clickable}
+\subsubsection{Making Nodes Selectable}
 
 If an OSG node represents an object in your simulation, it is very convenient
 if you can select that object for inspection by clicking on the node in the 3D scene.
@@ -2614,10 +2614,10 @@ the presence of OSG/osgEarth in the first place.
 \subsection{Using OSG}
 
 OpenScenegraph is a sizable library with 16+ namespaces and 40+ \cclass{osg::Node}
-subclasses, and we cannot fully document it here due to size constraints. Instead, 
-in the next sections we have collected some practical advice and useful code snippets 
+subclasses, and we cannot fully document it here due to size constraints. Instead,
+in the next sections we have collected some practical advice and useful code snippets
 to quickly get you started. More information can be found on the openscenegraph.org
-web site, in dedicated OpenSceneGraph books (some of which are freely available), 
+web site, in dedicated OpenSceneGraph books (some of which are freely available),
 and in other online resources. You will find a list of OSG-related resources
 at the end of this chapter.
 
@@ -2675,7 +2675,7 @@ knowledge base.
 
 \subsubsection{Creating Shapes}
 
-Alternatively, shapes can be built entirely from scratch using the
+Shapes can also be built programatically. For that, one needs to use the
 \cclass{osg::Geode}, \cclass{osg::Shape\-Drawable} and \cclass{osg::Shape}
 classes.
 
@@ -2695,7 +2695,8 @@ For an example of this see the following snippet from the osg-satellites
 sample. This code creates an \cclass{osg::Cone} and adds it to the scene.
 
 \begin{cpp}
-auto cone = new osg::Cone(osg::Vec3(0, 0, -coneRadius*0.75), coneHeight, coneRadius);
+auto cone = new osg::Cone(osg::Vec3(0, 0, -coneRadius*0.75),
+                          coneHeight, coneRadius);
 auto coneDrawable = new osg::ShapeDrawable(cone);
 auto coneGeode = new osg::Geode;
 coneGeode->addDrawable(coneDrawable);
@@ -2776,8 +2777,8 @@ Lighting is best disabled for the label.
 
 \begin{cpp}
 auto geode = new osg::Geode();
-geode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF |
-                                                   osg::StateAttribute::OVERRIDE);
+geode->getOrCreateStateSet()->setMode(GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
 double labelSpacing = 2;
 label->setPosition(osg::Vec3(0.0, labelSpacing, 0.0));
 geode->addDrawable(label);
@@ -2942,7 +2943,7 @@ struct AnimationManagerFinder : public osg::NodeVisitor {
         if (osgAnimation::AnimationManagerBase* b =
               dynamic_cast<osgAnimation::AnimationManagerBase*>(
                 node.getUpdateCallback())) {
-            result = new osgAnimation::BasicAnimationManager(*b); // here it is!
+            result = new osgAnimation::BasicAnimationManager(*b);
             return;
         }
         traverse(node);
@@ -3024,13 +3025,13 @@ performance, so wildly overusing them is to be avoided.
 
 osgEarth is a cross-platform terrain and mapping SDK built on top of OpenSceneGraph.
 The most visible feature of osgEarth is that it adds support for loading \ttt{.earth}
-files to \ttt{osgDB::readNodeFile()}. An \ttt{.earth} file specifies contents and 
+files to \ttt{osgDB::readNodeFile()}. An \ttt{.earth} file specifies contents and
 appearance of the displayed globe. This can be as simple as a single image
 textured over a sphere or as complex as realistic terrain data and
 satellite images complete with street and building information dynamically
 streamed over the internet from a publicly available provider, thanks to
 the flexibility of osgEarth. osgEarth also defines additional APIs
-to help with coodinate systems and other tasks. Other than that,
+to help with coordinate conversions and other tasks. Other than that,
 one's OSG knowledge is also applicable when building osgEarth scenes.
 
 The next sections contain some tips and code fragments to help you get
@@ -3041,30 +3042,14 @@ is insufficient.
 
 \subsubsection{Earth Files}
 
-\iffalse
-% this is the early draft version
-When using the Earth-style viewer for a module, the displayed globe is
-specified by a .earth file. This can be as simple as a single image
-textured over a sphere or as complex as realistic terrain data and
-satellite images complete with street and building information dynamically
-streamed over the internet from a publicly available provider, thanks to
-the flexibility of osgEarth. For more information on .earth files see the
-reference [5] or one of the sample simulations.
-
-To place objects on the terrain easily, using natural geographic coordinate
-systems, the osgEarth::Util::ObjectLocatorNode can be used, as seen in the
-osg-satellites sample for instance.
-\fi
-
 When the osgEarth plugin is used to display a map as the visual environment
-of the simulation, its appearance can be described in a .earth file. This is a
-really versatile, XML based format.
+of the simulation, its appearance can be described in a .earth file.
 
 It can be loaded using the \ffunc{osgDB::readNodeFile()} method, just like any
-other regular model. The resulting \cclass{osg::Node} will have a descendant of
-type \cclass{osgEarth::MapNode}, which can be easily found using the
-\ffunc{osgEarth::MapNode::findMapNode()} function. This serves as the "view" part
-of an underlying \cclass{osgEarth::Map} which is the "data model".
+other regular model. The resulting \cclass{osg::Node} will contain a node with a
+type of \cclass{osgEarth::MapNode}, which can be easily found using the
+\ffunc{osgEarth::MapNode::findMapNode()} function. This node serves as the
+data model that contains all the data specified in the \ttt{.earth} file.
 
 \begin{cpp}
 auto earth = osgDB::readNodeFile("example.earth");
@@ -3073,15 +3058,14 @@ auto mapNode = osgEarth::MapNode::findMapNode(earth);
 
 An .earth file can specify a wide variety of options. The \ttt{type} attribute
 of the \ttt{map} tag (which is always the root of the document) lets the user
-select whether the terrain should be projected onto a flat plane, or rendered as
-a true geoid.
+select whether the terrain should be projected onto a flat plane (\ttt{projected}),
+or rendered as a geoid (\ttt{geocentric}).
 
 Where the texture of the terrain is acquired from is specified by \ttt{image}
 tags. Many different kinds of sources are supported, including local files and
 popular online map sources with open access like MapQuest or OpenStreetMap.
-These can display different kinds of imagery, like real satellite photos, plain
-rendering of the streets and other landmarks with their names, or any other
-
+These can display different kinds of graphics, like satellite imagery, street
+or terrain maps, or other features the given on-line service provides.
 
 The following example .earth file will set up a spherical rendering of Earth
 with textures from openstreetmap.org:
@@ -3095,7 +3079,7 @@ with textures from openstreetmap.org:
 </map>
 \end{filelisting}
 
-Elevation can also be streamed in a similarly simple fashion using the
+Elevation data can also be acquired in a similarly simple fashion using the
 \ttt{elevation} tag. The next snippet demonstrates this:
 
 \begin{filelisting}
@@ -3112,13 +3096,6 @@ Elevation can also be streamed in a similarly simple fashion using the
 For a detailed description of the available image and elevation source drivers,
 refer to the online references of osgEarth, or use one of the sample .earth
 files shipped with it.
-
-To display additional information on top of the terrain, annotations can be
-used. These are special objects that can adapt to the shape of the surface.
-Annotations can be of many kinds, for example simple geometry like circles,
-ellipses, rectangles, lines, polygons (which can be extruded upwards to make
-solids); text or labels, arbitrary 3D models, or images projected onto the
-surface. Some style elements are
 
 The following partial .earth file places a label over Los Angeles, an extruded
 ellipse (a hollow cylinder) next to it, and a big red flag nearby.
@@ -3152,7 +3129,7 @@ ellipse (a hollow cylinder) next to it, and a big red flag nearby.
 </map>
 \end{filelisting}
 
-\subsubsection{Placing Objects on Terrain}
+\subsubsection{Placing Objects on a Map}
 
 To easily position a part of the scene together on a given geographical location,
 an \cclass{osgEarth::Util::ObjectLocatorNode} is of great help. It can take
@@ -3171,7 +3148,14 @@ locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, altitude)
 locatorNode->getLocator()->setOrientation(osg::Vec3d(heading, 0, 0));
 \end{cpp}
 
-\subsubsection{Adding Annotations on Terrain}
+\subsubsection{Adding Annotations on a Map}
+
+To display additional information on top of the terrain, annotations can be
+used. These are special objects that can adapt to the shape of the surface.
+Annotations can be of many kinds, for example simple geometric shapes like circles,
+ellipses, rectangles, lines, polygons (which can be extruded upwards to make
+solids); texts or labels, arbitrary 3D models, or images projected onto the
+surface.
 
 All the annotations that can be created declaratively from an .earth file,
 can also be programatically generated at runtime.
@@ -3200,23 +3184,39 @@ mapNode->getModelLayerGroup()->addChild(rangeNode);
 \end{cpp}
 
 
-\subsection{OpenSceneGraph Programming Resources}
+\subsection{OpenSceneGraph/osgEarth Programming Resources}
 
 \subsubsection{Online resources}
 
+Loading and manipulating OSG models:
 \begin{itemize}
-\item http://trac.openscenegraph.org/projects/osg//wiki/Support/Tutorials/FileLoadingAndTransforms
-\item http://trac.openscenegraph.org/projects/osg//wiki/Support/UserGuides/Plugins
+\item http://trac.openscenegraph.org/projects/osg/wiki/Support/UserGuides/Plugins
+\item http://trac.openscenegraph.org/projects/osg/wiki/Support/Tutorials/FileLoadingAndTransforms
+\item http://trac.openscenegraph.org/projects/osg/wiki/Support/KnowledgeBase/PseudoLoader
+\end{itemize}
+
+Creating 3D models for OpenSceneGraph using Blender:
+\begin{itemize}
 \item https://github.com/cedricpinson/osgexport
-\item http://trac.openscenegraph.org/projects/osg//wiki/Support/KnowledgeBase/PseudoLoader
+\end{itemize}
+
+osgEarth online documentation:
+\begin{itemize}
 \item http://docs.osgearth.org/en/latest/references/earthfile.html
 \item http://docs.osgearth.org/en/latest/index.html
 \end{itemize}
 
+\subsubsection{Samples}
+Be sure to check the samples coming with your OpenSceneGraph installation as
+they contain invaluable information.
+\begin{itemize}
+\item https://github.com/openscenegraph/osg/tree/master/examples
+\item https://github.com/openscenegraph/osg-data
+\end{itemize}
+
 \subsubsection{Books}
 
-The following OpenSceneGraph books have been available at the time of writing:
-
+The following books can be useful for more complex visualization tasks:
 
 \begin{itemize}
 \item \textit{OpenSceneGraph Quick Start Guide}, by Paul Martz.
