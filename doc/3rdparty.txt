@@ -15,6 +15,12 @@ without them.
    *optional* open source components (i.e. it is possible to build a simulation
    without them, but with reduced functionality.)
 
+
+MersenneTwister.h
+-----------------
+Mersenne Twister random number generator. Based on code by Makoto Matsumoto, 
+Takuji Nishimura, and Shawn Cokus, Richard J. Wagner under BSD license.
+
 LibXML2
 -------
 LibXML2 (xmlsoft.org) is an open-source XML parser, written by Daniel Veillard
