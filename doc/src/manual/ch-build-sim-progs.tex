@@ -12,7 +12,7 @@ the following parts:
   \item{Message definitions\index{message definitions}, in files
       with \ttt{.msg} extension.}
   \item{Simple module implementations and other C++ code, in \ttt{.cc}
-        files (or \ttt{.cpp}, on Windows)}
+        files.}
 \end{itemize}
 
 
@@ -21,38 +21,33 @@ you first need to translate the MSG files\index{msg!files}
 into C++, using the message compiler (\ttt{opp\_msgc}).
 After this step, the process is the same as building any C/C++
 program from source: all C++ sources need to be compiled into object files
-(\ttt{.o} files (using gcc on Mac, Linux) or mingw on Windows)
+(\ttt{.o} files (using gcc or clang)
 \ifcommercial or \ttt{.obj} (using MSVC on Windows)) \fi
 and all object files need to be linked with the necessary libraries to get
 an executable or shared library.
 
-\begin{note}
-Compiling NED files directly to C++ code is no longer supported in
-{\opp} 4.0. NED files are always dynamically loaded.
-\end{note}
-
-File names for libraries differ depending on the platform, whether it is 
+File names for libraries differ depending on the platform, whether it is
 a static or shared library, and whether it is a debug or release version.
-Let us suppose you have a library called \ttt{common}: 
+Let us suppose you have a library called \ttt{common}:
 \begin{itemize}
   \item{The \ttt{opp} prefix is always prepended to all library names to avoid name clashes with other programs.}
-  \item{For all platforms, where the gcc (or mingw) compiler is used the static library filename has a ".a" extension 
+  \item{For all platforms, where the gcc (or mingw) compiler is used the static library filename has a ".a" extension
          and the \ttt{lib} prefix is prepended to the name (e.g. \ttt{liboppfoo[d].a}).}
-  \item{For all platforms, the debug version filename has a "d" inserted 
+  \item{For all platforms, the debug version filename has a "d" inserted
             at the end of the library name  (e.g. \ttt{liboppcommond.ext}).}
-  \item{For the Unix/Linux platform, the shared library filename has a ".so"  
+  \item{For the Unix/Linux platform, the shared library filename has a ".so"
          extension (e.g. \ttt{liboppcommon[d].so}).}
-  \item{For the Mac OS X platform, the shared library filename has a ".dylib"  
+  \item{For the Mac OS X platform, the shared library filename has a ".dylib"
          extension (e.g. \ttt{liboppcommon[d].dylib}).}
-  \item{For the Windows platform, the shared library filename has a ".dll"  
+  \item{For the Windows platform, the shared library filename has a ".dll"
          extension (e.g. \ttt{liboppfoo[d].dll}).}
-  \ifcommercial 
+  \ifcommercial
      \item{With Microsoft Visual C++, the \ttt{lib} prefix is not prepended to the name
-     and the static library filename has a ".lib" extension. (e.g. \ttt{oppcommon.lib} and \ttt{oppcommon.dll}).} 
+     and the static library filename has a ".lib" extension. (e.g. \ttt{oppcommon.lib} and \ttt{oppcommon.dll}).}
   \fi
 \end{itemize}
 
-In {\opp} 4.0 we recommend that you use shared libraries whenever it is possible.
+We recommend that you use shared libraries whenever it is possible.
 You will need to link with the following libraries:
 
 \begin{itemize}
@@ -60,10 +55,13 @@ You will need to link with the following libraries:
     called \textit{oppsim} (file \ttt{liboppsim.[so|dll|dylib]} etc).}
   \item{User interfaces. The common part of all user interfaces is
     the \textit{oppenvir} library (file \texttt{liboppenvir.[so|dll|dylib]}, etc),
-    and the specific user interfaces are \textit{opptkenv} and \textit{oppcmdenv}
-    (\ttt{libopptkenv.[so|dll|dylib]}, \ttt{liboppcmdenv.[so|dll|dylib]}, etc).
-    You have to link with \textit{oppenvir}, plus \textit{opptkenv} or
-    \textit{oppcmdenv} or both.}
+    and the specific user interfaces are \textit{opptkenv}, \textit{oppqtenv}
+    and \textit{oppcmdenv} (\ttt{libopptkenv.[so|dll|dylib]},
+    \ttt{liboppqtenv.[so|dll|dylib]}, \ttt{liboppcmdenv.[so|dll|dylib]}, etc).
+    You have to link with \textit{oppenvir}, plus one or more of \textit{opptkenv},
+    \textit{oppqtenv} or \textit{oppcmdenv} .}
+  \item{Additionally, \ttt{liboppmain.[a|lib]} needs to be linked in if you are
+    building a standalone executable file.}
 \end{itemize}
 
 Luckily, you do not have to worry about the above details, because
@@ -80,24 +78,14 @@ and running simulation programs.
   \end{center}
 \end{figure}
 
-
-This chapter discusses how to use the simulation system on the
-following platforms:
-\begin{itemize}
-  \item{Unix (Linux/Mac OS X) with gcc}
-  \item{Windows with the included MinGW compiler}
-  \ifcommercial\item{Windows with Microsoft Visual C++}\fi
-\end{itemize}
-
-
-\section{Using gcc}
+\section{Using gcc or clang}
 
 The following section applies to using {\opp} on Linux, Solaris, Mac OS X, FreeBSD and
 other Unix derivatives, and also to MinGW on Windows.
 
 \begin{note}
-The \ttt{doc/} directory of your {\opp} installation contains
-\ttt{Readme.}\textit{<platform>} files that provide more detailed platform specific instructions.
+The \ttt{doc/InstallGuide.pdf} file in your {\opp} installation
+provides more detailed platform specific instructions.
 \end{note}
 
 
@@ -125,8 +113,8 @@ The most important options are:
     \item{\ttt{-X directory, -Xdirectory, -{}-except directory} :
                           With \ttt{-r} and \ttt{-{}-deep} option: ignore the given directory.}
     \item{\ttt{-dsubdir, -d subdir, -{}-subdir subdir} :
-                          Causes make to recursively descend into the given
-                          directory.}
+                          Causes make to switch to the given directory and invoke
+                          a Makefile in that directory.}
     \item{\ttt{-n, -{}-nolink} :  Produce object files but do not create executable or
                           library.}
     \item{\ttt{-s, -{}-make-so} : Build shared library (.so, .dll or .dylib).}
@@ -198,8 +186,8 @@ $ opp_makemake --mode release ...
 \subsection{Debugging the Makefile}
 
 \fprog{opp\_makemake} generates a makefile that prints only minimal information
-during the build process (only the name of the compiled file.) If you want to 
-see the full compiler commands executed by the makefile, specify \ttt{V=1} as 
+during the build process (only the name of the compiled file.) If you want to
+see the full compiler commands executed by the makefile, specify \ttt{V=1} as
 a command line parameter for the \fprog{make} command.
 
 \begin{commandline}
@@ -258,6 +246,13 @@ files, one in subdir1 and the other in subdir2 specify \ttt{\#include
 "subdir1/common.h"} instead of \ttt{\#include "common.h"}. If you want to
 include a directory which is outside of your source directory tree you
 always must specify it with the \ttt{-I external/include/dir} option.
+
+\begin{note}
+With bigger projects or with projects that are intended to be used by other
+3rd party projects, we recommend not to use this feature. You can never be sure
+what include file names the dependent project will use and this can lead to
+unexpected errors in the build process.
+\end{note}
 
 
 \subsection{Dependency Handling}
@@ -381,9 +376,9 @@ Motivation for recursive builds:
 
 It is possible to add rules or otherwise customize the generated makefile
 by providing a \ttt{makefrag} file. When you run \fprog{opp\_makemake}, it
-will automatically insert \ttt{makefrag} into the resulting \ttt{Makefile}.
-With the \ttt{-i} option, you can also name other files to be included into the
-\ttt{Makefile}.
+will automatically insert the content of the \ttt{makefrag} file into the
+resulting \ttt{Makefile}. With the \ttt{-i} option, you can also name other
+files to be included into the \ttt{Makefile}.
 
 \ttt{makefrag} will be inserted after the definitions but before the first
 rule, so it is possible to override existing definitions and add new
@@ -394,6 +389,10 @@ from other files (for example, you use generated NED files), or you need
 additional targets in your makefile or just simply want to override the
 default target in the makefile.
 
+\begin{note}
+If you change the content of the \ttt{makefrag} file, you must recreate the
+makefile using the \ttt{opp\_makemake} command.
+\end{note}
 
 \subsection{Projects with Multiple Source Trees}
 
@@ -415,7 +414,7 @@ project's directory structure and find the directories that should be used as
 source trees:
 
 \begin{verbatim}
-mobility-framework
+project
     bitmaps
     contrib <-- source tree (build libmfcontrib.so from this dir)
     core <-- source tree (build libmfcore.so from this dir)
@@ -455,7 +454,7 @@ $ cd testSuite && opp_makemake -f --deep -o testSuite -O out
     -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
 \end{commandline}
 
-Now let us specify the dependencies between the above directories. 
+Now let us specify the dependencies between the above directories.
 Add the lines below to the \ttt{makefrag} file in the project directory root.
 
 \begin{filelisting}
@@ -490,6 +489,157 @@ is handled. The main differences are:
 Required compiler settings: turn on exception handling and RTTI, and
 set stack size to as low as 64K.
 \fi
+
+\section{Using Project Features}
+
+Long compile times are often an inconvenience when working with large
+{\opp}-based model frameworks. Project features lets you
+reduce build times by excluding or disabling parts of the model framework that
+you do not use for your simulation study. The word feature refers
+to a piece of the project codebase that can be turned off as a whole.
+
+Additional benefits of project features include a less cluttered model palette
+in the NED editor, being able to exclude code that does not compile on your system,
+and enforcing cleaner separation of unrelated parts in the model framework.
+
+\begin{note}
+  A similar effect could also achieved via breaking up the model framework
+  into several smaller projects, but that would cause other kinds of inconveniences for
+  model developers and users alike.
+\end{note}
+
+\subsection{What is a Project Feature}
+
+Features can be defined per project. As already mentioned, a feature is a piece of the
+project codebase that can be turned off as a whole, that is, excluded from the C++ sources
+(and thus from the build) and also from NED. Feature definitions are typically written
+and distributed by the author of the project; end users are only presented with the
+option of enabling/disabling those features. A feature definition contains:
+
+\begin{itemize}
+  \item{Feature name; for example "UDP" or "Mobility examples".}
+  \item{Feature description; This is a few sentences of text describing what the feature
+    is or does; for example "Implementation of the UDP protocol".}
+  \item{Labels; This is a list of labels or keywords that facilitate grouping or finding features.}
+  \item{Initially enabled. This is a boolean flag that determines the initial enablement
+    of the feature.}
+\item{Required features; Some features may be built on top of others; for example, a HMIPv6
+    protocol implementation relies on MIPv6, which in turn relies on IPv6. Thus, HMIPv6 can
+    only be enabled if MIPv6 and IPv6 are enabled as well.}
+\item{NED packages; This is a list of NED package names that identify the code that implements
+    the feature. When you disable the feature, NED types defined in those packages and their
+    subpackages will be excluded; also, C++ code in the folders that correspond to the packages
+    (i.e. in the same folders as excluded NED files) will also be excluded.}
+\item{Extra C++ source folders; If the feature contains C++ code that lives outside NED source
+    folders (nontypical), those folders are listed here.}
+\item{Compile options, for example \ttt{-DWITH\_IPv6}. When the feature is enabled, the compiler
+    options listed here are added to the compiler command line of all C++ files in the project.
+    A typical use of this field is defining symbols (\ttt{WITH\_xxx}) that allows you to write conditional code
+    that only compiles when a given feature is enabled. Currently only the \ttt{-D} option
+    (define symbol) is supported here.}
+\item{Linker options. When the feature is enabled, the linker options listed here are added
+    to the linker command line. A typical use of this field is linking with additional
+    libraries that the feature's code requires, for example libavcodec.
+    Currently only the \ttt{-l} option (\ttt{link with library}) is supported here.}
+\end{itemize}
+
+\subsection{The \ttt{.oppfeatures} File}
+Project features are defined in the \ttt{.oppfeatures} file in your project's
+root directory. This is an XML file, and it has to be written by hand
+(there is no specialized editor for it).
+
+The root element is \ttt{<features>}, and it may have several \ttt{<feature>}
+child elements, each defining a project feature. The fields of a feature
+are represented with XML attributes; attribute names are \ttt{id, name,
+description, initiallyEnabled, requires, labels, nedPackages,
+extraSourceFolders, compileFlags} and \ttt{linkerFlags}. Items within attributes
+that represent lists (\ttt{requires}, \ttt{labels}, etc.) are separated by spaces.
+
+Here is an example feature from the INET Framework:
+\begin{filelisting}
+<feature
+  id="TCP_common"
+  name="TCP Common"
+  description = "The common part of TCP implementations"
+  initiallyEnabled = "true"
+  requires = "IPv4"
+  labels = "Transport"
+  nedPackages = "inet.transport.tcp_common
+                 inet.applications.tcpapp
+                 inet.util.headerserializers.tcp"
+  extraSourceFolders = ""
+  compileFlags = "-DWITH\_TCP_COMMON"
+  linkerFlags = ""
+  />
+\end{filelisting}
+
+\subsection{How to Introduce a Project Feature}
+
+If you plan to introduce a project feature in your project, here's what you'll need
+to do:
+
+\begin{itemize}
+    \item{Isolate the code that implements the feature into a separate source directory
+      (or several directories). This is because only whole folders can be
+      declared as part of a feature, individual source files cannot.}
+
+      \item{Check the remainder of the project. If you find source lines that reference
+        code from the new feature, use conditional compilation (\ttt{\#ifdef WITH\_YOURFEATURE})
+        to make sure that code compiles (and either works sensibly or throws an error)
+        when the new feature is disabled. (Your feature should define the \ttt{WITH\_YOURFEATURE}
+        symbol, i.e. \ttt{-DWITH\_YOURFEATURE} will need to be added to the feature compile flags.)}
+
+    \item{Add the feature description into the \ttt{.oppfeatures} file of your project.}
+
+    \item{Test. A rudimentary test is to verify that your project compiles at all, both
+      with the new feature enabled and disabled. For such build tests, the
+      'Export build tester makefile' function (at the bottom of the 'Project Features'
+      property page) can be quite useful: it creates a makefile that builds the
+      project in typical feature combinations. (It does not test 2\textsuperscript{N} combinations because
+      that's usually prohibitive, only about 2*N+2.)}
+\end{itemize}
+
+\subsection{The opp\_featuretool}
+
+The {\opp} IDE allows you to easily enable or disable a feature in the project. The
+state of the feature is stored in the \ttt{.oppfeaturestate} file in the project's root
+folder. The \ttt{opp\_featuretool} allows you to manipulate or query the state of any
+of the project's features.
+
+
+List all features in the project:
+\begin{commandline}
+$ opp_featuretool list
+\end{commandline}
+
+List all enabled features in the project:
+\begin{commandline}
+$ opp_featuretool list -e
+\end{commandline}
+
+Enable all features:
+\begin{commandline}
+$ opp_featuretool enable all
+\end{commandline}
+
+Disable a specific feature:
+\begin{commandline}
+$ opp_featuretool disable MyFeature
+\end{commandline}
+
+Print all the command line options that should be used with \ttt{opp\_makemake}
+to create a makefile that builds the project with the currently enabled features:
+\begin{commandline}
+$ opp_featuretool makemakeargs
+\end{commandline}
+
+Using it directly with the \ttt{opp\_makemake} command (note the back ticks):
+\begin{verbatim}
+$ opp_makemake --deep `opp_featuretool makemakeargs`
+\end{verbatim}
+
+The above command allows you to build the same executable from both the IDE and
+the command line.
 
 %%% Local Variables:
 %%% mode: latex

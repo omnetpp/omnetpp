@@ -905,19 +905,24 @@
     <sect2>
       <title>Using Features from Command Line</title>
       <para>
-        ``Project Features'' is an IDE feature. Command line tools ([[opp_makemake]], etc.)
-        do not understand the [[.oppfeatures]] file and do not know which features are
-        enabled.
+        ``Project Features'' can be easily configured from the IDE, but command line tools
+        ([[opp_makemake]], etc.) can also use them with the help of the [[opp_featuretool]]
+        command.
       </para>
       <para>
-        If you want to build the project from the command line in some feature
-        combination, you need to generate the makefiles with the same [[opp_makemake]]
-        options that the IDE uses in that feature combination. You can copy/paste the
-        the [[opp_makemake]] options from the ``Makemake'' page of the project's properties
-        dialog (select each makemake folder one by one, click ``Options'', and copy the options
-        from the bottom of the ``Preview'' tab in the dialog that comes up).
-        Alternatively, choose ``Export'' on the ``Makemake'' page, and copy/paste the
-        options from the generated [[makemakefiles]] file.
+        If you want to build the project from the command line with the same feature
+        combination the IDE is using, you need to generate the makefiles with the same [[opp_makemake]]
+        options that the IDE uses in that feature combination. The [[opp_featuretool makemakeargs]]
+        command (executed in the project's root directory) will show all the required
+        arguments that you need to specify for the  [[opp_makemake]] command to
+        build the same output as the IDE. This allows you to keep the same
+        features enabled no matter how you build your project.
+      </para>
+      <para>
+        Alternatively, you can choose ``Export'' on the ``Makemake'' page, and copy/paste the
+        options from the generated [[makemakefiles]] file. This method is
+        not recommended, because you must redo it manually each time after changing
+        the enablement state of a feature.
       </para>
     </sect2>
 
@@ -1034,4 +1039,3 @@
   </sect1>
 
 </chapter>
-
