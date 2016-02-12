@@ -585,9 +585,16 @@ void MainWindow::runUntilMsg(cMessage *msg, int runMode)
     if (!networkReady())
         return;
 
-    setGuiForRunmode(runModeToMode(runMode), true);
-    env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
-    setGuiForRunmode(NOT_RUNNING);
+    // mode must be "normal", "fast" or "express"
+    if (isRunning()) {
+        setGuiForRunmode(runModeToMode(runMode), true);
+        env->setSimulationRunMode(runMode);
+        env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
+    } else {
+        setGuiForRunmode(runModeToMode(runMode), true);
+        env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
+        setGuiForRunmode(NOT_RUNNING);
+    }
 }
 
 // opp_set_run_until_module

@@ -71,7 +71,8 @@ void StopDialog::keyPressEvent(QKeyEvent *e)
 }
 
 void StopDialog::closeEvent(QCloseEvent *event) {
-    getQtenv()->setStopSimulationFlag();
+    if (getQtenv()->isExpressMode())
+        getQtenv()->setStopSimulationFlag();
     QDialog::closeEvent(event);
 }
 
