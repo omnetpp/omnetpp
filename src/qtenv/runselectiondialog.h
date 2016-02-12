@@ -35,12 +35,15 @@ class RunSelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit RunSelectionDialog(QWidget *parent = 0);
+    explicit RunSelectionDialog(const std::string &defaultConfig, int defaultRun, QWidget *parent = nullptr);
     ~RunSelectionDialog();
 
     std::string getConfigName();
     int getRunNumber();
     int getConfigNumber();
+
+public slots:
+    void accept() override;
 
 private slots:
     void configNameChanged(int index);

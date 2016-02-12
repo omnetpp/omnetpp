@@ -562,22 +562,42 @@ void MainWindow::setupConfiguration(bool forceDialog)
     if (checkRunning())
         return;
 
-    RunSelectionDialog *dialog = new RunSelectionDialog(this);
-    int dialogResult = 1; // if we don't even run it, we'll take it as accepted
-    if (forceDialog || dialog->getConfigNumber() > 1 || dialog->getRunNumber() > 1)
-        dialogResult = dialog->exec();
+    std::string config;
+    int run;
 
-    // if the dialog is accepted (or was not run at all), setting it up
-    if (dialogResult) {
-        // TODO debug "selected $configname $runnumber"
-        busy("Setting up network...");
-        // TODO inspectorList:addAll 1
-        env->newRun(dialog->getConfigName().c_str(), dialog->getRunNumber());
-        reflectRecordEventlog();
-        busy();
+    // these are what were specified in either the omnetpp.ini file or as a command line argument
+    std::string defaultConfig = getQtenv()->opt->defaultConfig;
+    int defaultRun = getQtenv()->opt->defaultRun;
+
+    auto qtenvConf = getQtenv()->getConfigEx();
+
+    // if a default isn't given but there is only one config, use that
+    if (defaultConfig.empty() && qtenvConf->getConfigNames().size() == 1)
+        defaultConfig = qtenvConf->getConfigNames().front();
+
+    // if a config is known, and a default run isn't given but there is
+    // only one run in the config, use that
+    if (!defaultConfig.empty() && defaultRun < 0
+            && qtenvConf->getNumRunsInConfig(defaultConfig.c_str()) == 1)
+        defaultRun = 0;
+
+    // if there's still some doubt, lets ask the user.
+    if (forceDialog || defaultConfig.empty() || defaultRun < 0) {
+        RunSelectionDialog dialog(defaultConfig, defaultRun, this);
+        if (dialog.exec()) {
+            config = dialog.getConfigName();
+            run = dialog.getRunNumber();
+        } else { // the dialog was cancelled
+            return;
+        }
+    } else {
+        // a dialog was not forced, and either there is a default config or there is only one
+        config = defaultConfig.empty() ? qtenvConf->getConfigNames().front() : defaultConfig;
+        // and either there is a default run too, or there is only one run in the config
+        run = defaultRun < 0 ? 0 : defaultRun;
     }
-
-    delete dialog;
+    env->newRun(config.c_str(), run);
+    reflectRecordEventlog();
 }
 
 void MainWindow::runUntilMsg(cMessage *msg, int runMode)

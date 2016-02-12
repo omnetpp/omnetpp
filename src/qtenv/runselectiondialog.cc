@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-RunSelectionDialog::RunSelectionDialog(QWidget *parent) :
+RunSelectionDialog::RunSelectionDialog(const std::string &defaultConfig, int defaultRun, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RunSelectionDialog)
 {
@@ -63,6 +63,9 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent) :
         ++configNumber;
     }
 
+    QString c = getQtenv()->getPref("default-configname", "").toString();
+    QString r = getQtenv()->getPref("default-runnumber", "").toString();
+
     std::string configName = getQtenv()->opt->defaultConfig.c_str();
     int runNumber = getQtenv()->opt->defaultRun;
 
@@ -85,9 +88,6 @@ RunSelectionDialog::RunSelectionDialog(QWidget *parent) :
 
 RunSelectionDialog::~RunSelectionDialog()
 {
-    getQtenv()->opt->defaultConfig = getConfigName();
-    getQtenv()->opt->defaultRun = getRunNumber();
-
     delete ui;
 }
 
@@ -145,6 +145,13 @@ void RunSelectionDialog::fillRunNumberCombo(const char *configName)
 int RunSelectionDialog::getConfigNumber()
 {
     return configNumber;
+}
+
+void RunSelectionDialog::accept()
+{
+    getQtenv()->setPref("default-configname", getConfigName().c_str());
+    getQtenv()->setPref("default-runnumber", getRunNumber());
+    QDialog::accept();
 }
 
 } // namespace qtenv
