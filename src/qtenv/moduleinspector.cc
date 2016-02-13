@@ -295,10 +295,12 @@ void ModuleInspector::updateToolbarLayout() {
                     canvasViewer->verticalScrollBar()->width() + toolbarSpacing,
                     canvasViewer->horizontalScrollBar()->height() + toolbarSpacing);
     } else {
+#ifdef WITH_OSG
         osgViewer->getGLWidget()->setLayout(toolbarLayout);
-
         // the osg mode never displays scrollbars.
-        toolbarLayout->setMargin(toolbarSpacing);
+        toolbarLayout->setContentsMargins(toolbarSpacing, toolbarSpacing,
+                                          toolbarSpacing, toolbarSpacing);
+#endif
     }
 }
 
@@ -833,14 +835,18 @@ void ModuleInspector::switchToCanvasView()
     stackedLayout->setCurrentWidget(canvasViewer);
     updateToolbarLayout();
 
+#ifdef WITH_OSG // otherwise these don't exist
     switchToCanvasViewAction->setChecked(true);
     switchToOsgViewAction->setChecked(false);
+#endif
 
     // show/hide view-specific actions
     canvasRelayoutAction->setVisible(true);
     canvasZoomInAction->setVisible(true);
     canvasZoomOutAction->setVisible(true);
+#ifdef WITH_OSG // otherwise this doesn't exist
     resetOsgViewAction->setVisible(false);
+#endif
 
     QPointF center = getPref(PREF_CENTER, QPointF()).toPointF();
 
