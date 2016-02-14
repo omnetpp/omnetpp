@@ -53,7 +53,9 @@ namespace omnetpp {
 namespace qtenv {
 
 QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Framework\n\n(C) 1992-2015 Opensim Ltd.\n\
-        Release: " + QString(OMNETPP_RELEASE) + ", build: " + OMNETPP_BUILDID + "\n" + OMNETPP_EDITION + "\n\nNO WARRANTY -- see license for details.";
+        Release: " + QString(OMNETPP_RELEASE) + ", build: " + OMNETPP_BUILDID + "\n" + OMNETPP_EDITION + "\n\n"
+        "Qtenv was compiled with Qt " + QT_VERSION_STR + ", is running with Qt " + qVersion() + "\n\n"
+        "NO WARRANTY -- see license for details.";
 
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
