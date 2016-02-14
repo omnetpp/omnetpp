@@ -24,8 +24,11 @@ TEMPLATE = lib
 MAKEFILE_GENERATOR = UNIX
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
+# the QMAKE_MOC variable is not available without this with Qt5, so our defines in OPP_CFLAGS didn't get applied
+greaterThan(QT_MAJOR_VERSION, 4): load(moc)
+
 # IMPORTANT: on turn off the option to generate both debug and release version
-# we need only eithor of them not both and this is the default setting on Windows
+# we need only one of them not both and this is the default setting on Windows
 # but sadly it generates broken makefiles
 CONFIG *= static c++11 qt
 CONFIG -= debug_and_release
