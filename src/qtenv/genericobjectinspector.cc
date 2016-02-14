@@ -258,14 +258,6 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     //Text from item
     QString text = index.data(Qt::DisplayRole).toString();
-    QTextLayout layout;
-    layout.setFont(painter->font());
-    layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
-    // this is the standard layout procedure in a single line case
-    layout.beginLayout();
-    QTextLine line = layout.createLine();
-    line.setLineWidth(option.rect.width());
-    layout.endLayout();
 
     // the formatted regions
     QList<QTextLayout::FormatRange> formats;
@@ -290,8 +282,18 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         formats.append(f);
     }
 
+    QTextLayout layout;
+
     // applying the format ranges
     layout.setAdditionalFormats(formats);
+
+    layout.setFont(painter->font());
+    layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
+    // this is the standard layout procedure in a single line case
+    layout.beginLayout();
+    QTextLine line = layout.createLine();
+    line.setLineWidth(option.rect.width());
+    layout.endLayout();
 
     // the layout is complete, now we just draw it on the appropriate position
     layout.draw(painter, option.rect.bottomLeft() + QPoint(textOffset, -option.fontMetrics.height()));
