@@ -25,7 +25,7 @@ namespace omnetpp {
 
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::globalStream(&cLogProxy::buffer);
-LogLevel cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
+LogLevel cLog::loglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
 const char *cLogProxy::previousCategory = nullptr;
@@ -152,7 +152,7 @@ bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel loglevel
 {
     // log called from outside cComponent methods, use context component to decide enablement
     const cModule *contextModule = getSimulation()->getContextModule();
-    return loglevel >= cLogLevel::globalRuntimeLoglevel &&
+    return loglevel >= cLog::loglevel &&
            (!contextModule || loglevel >= contextModule->getLoglevel()) &&
            getEnvir()->isLoggingEnabled();
 }
@@ -160,7 +160,7 @@ bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel loglevel
 bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel loglevel, const char *category)
 {
     // log called from a cComponent method, check whether logging for that component is enabled
-    return loglevel >= cLogLevel::globalRuntimeLoglevel &&
+    return loglevel >= cLog::loglevel &&
            loglevel >= sourceComponent->getLoglevel() &&
            getEnvir()->isLoggingEnabled();
 }

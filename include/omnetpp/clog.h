@@ -110,12 +110,6 @@ enum LogLevel
 class SIM_API cLogLevel
 {
   public:
-    /**
-     * This log level specifies a globally applied runtime modifiable filter. This is
-     * the fastest runtime filter, it works with a simple integer comparison at the call
-     * site.
-     */
-    static LogLevel globalRuntimeLoglevel;
 
     /**
      * Returns a human-readable string representing the provided log level.
@@ -158,9 +152,17 @@ class SIM_API cLog
     typedef bool (*ComponentLogPredicate)(const cComponent *object, LogLevel loglevel, const char *category);
 
   public:
+    /**
+     * This log level specifies a globally applied runtime modifiable filter. This is
+     * the fastest runtime filter, it works with a simple integer comparison at the call
+     * site.
+     */
+    static LogLevel loglevel;
+
     static NoncomponentLogPredicate noncomponentLogPredicate;
     static ComponentLogPredicate componentLogPredicate;
 
+  public:
     static inline bool runtimeLogPredicate(const void *object, LogLevel loglevel, const char *category)
     { return noncomponentLogPredicate(object, loglevel, category); }
 

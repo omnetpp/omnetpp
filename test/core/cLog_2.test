@@ -12,7 +12,7 @@ cmdenv-log-format = "[%l]%9"
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_OFF;
+cLog::loglevel = LOGLEVEL_OFF;
 EV_FATAL  << "OFF" << endl;
 EV_ERROR  << "OFF" << endl;
 EV_WARN   << "OFF" << endl;
@@ -21,7 +21,7 @@ EV_DETAIL << "OFF" << endl;
 EV_DEBUG  << "OFF" << endl;
 EV_TRACE  << "OFF" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_FATAL;
+cLog::loglevel = LOGLEVEL_FATAL;
 EV_FATAL  << "FATAL" << endl;
 EV_ERROR  << "FATAL" << endl;
 EV_WARN   << "FATAL" << endl;
@@ -30,7 +30,7 @@ EV_DETAIL << "FATAL" << endl;
 EV_DEBUG  << "FATAL" << endl;
 EV_TRACE  << "FATAL" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_ERROR;
+cLog::loglevel = LOGLEVEL_ERROR;
 EV_FATAL  << "ERROR" << endl;
 EV_ERROR  << "ERROR" << endl;
 EV_WARN   << "ERROR" << endl;
@@ -39,7 +39,7 @@ EV_DETAIL << "ERROR" << endl;
 EV_DEBUG  << "ERROR" << endl;
 EV_TRACE  << "ERROR" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_WARN;
+cLog::loglevel = LOGLEVEL_WARN;
 EV_FATAL  << "WARN" << endl;
 EV_ERROR  << "WARN" << endl;
 EV_WARN   << "WARN" << endl;
@@ -48,7 +48,7 @@ EV_DETAIL << "WARN" << endl;
 EV_DEBUG  << "WARN" << endl;
 EV_TRACE  << "WARN" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_INFO;
+cLog::loglevel = LOGLEVEL_INFO;
 EV_FATAL  << "INFO" << endl;
 EV_ERROR  << "INFO" << endl;
 EV_WARN   << "INFO" << endl;
@@ -57,7 +57,7 @@ EV_DETAIL << "INFO" << endl;
 EV_DEBUG  << "INFO" << endl;
 EV_TRACE  << "INFO" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DETAIL;
+cLog::loglevel = LOGLEVEL_DETAIL;
 EV_FATAL  << "DETAIL" << endl;
 EV_ERROR  << "DETAIL" << endl;
 EV_WARN   << "DETAIL" << endl;
@@ -66,7 +66,7 @@ EV_DETAIL << "DETAIL" << endl;
 EV_DEBUG  << "DETAIL" << endl;
 EV_TRACE  << "DETAIL" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_DEBUG;
+cLog::loglevel = LOGLEVEL_DEBUG;
 EV_FATAL  << "DEBUG" << endl;
 EV_ERROR  << "DEBUG" << endl;
 EV_WARN   << "DEBUG" << endl;
@@ -75,7 +75,7 @@ EV_DETAIL << "DEBUG" << endl;
 EV_DEBUG  << "DEBUG" << endl;
 EV_TRACE  << "DEBUG" << endl;
 
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
+cLog::loglevel = LOGLEVEL_TRACE;
 EV_FATAL  << "TRACE" << endl;
 EV_ERROR  << "TRACE" << endl;
 EV_WARN   << "TRACE" << endl;

@@ -38,7 +38,7 @@ network TestNetwork
 
 #undef GLOBAL_COMPILETIME_LOGLEVEL
 #define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
-cLogLevel::globalRuntimeLoglevel = LOGLEVEL_TRACE;
+cLog::loglevel = LOGLEVEL_TRACE;
 
 EV_FATAL  << "Hello" << endl;
 EV_ERROR  << "Hello" << endl;
