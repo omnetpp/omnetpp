@@ -184,7 +184,7 @@ inline const char *getClassName() {return nullptr;}
 
 /**
  * Use this macro when logging from static member functions.
- * Background: OPP_LOG and derived macros (EV_INFO, EV_DETAIL, etc) will fail
+ * Background: EV_LOG and derived macros (EV_INFO, EV_DETAIL, etc) will fail
  * to compile when placed into static member functions of cObject-derived classes
  * ("cannot call member function 'cObject::getThisPtr()' without object" in GNU C++,
  * and "C2352: illegal call of non-static member function" in Visual C++).
@@ -206,26 +206,26 @@ inline const char *getClassName() {return nullptr;}
  * @ingroup Logging
  * @hideinitializer
  */
-#define OPP_LOG(loglevel, category) OPP_LOGPROXY(getThisPtr(), loglevel, category).getStream()
+#define EV_LOG(loglevel, category) OPP_LOGPROXY(getThisPtr(), loglevel, category).getStream()
 
 /**
  * Logging macros with the default category. Category is a string that refers to the
  * topic of the log message. The macro can be used as a C++ stream. Example:
  * <tt>EV_DETAIL << "Connection setup complete" << endl;</tt>.
  *
- * @see OPP_LOG, LogLevel, EV_STATICCONTEXT
+ * @see EV_LOG, LogLevel, EV_STATICCONTEXT
  * @ingroup Logging
  * @defgroup LoggingDefault Logging with default category
  */
 //@{
 #define EV        EV_INFO                           ///< Short for EV_INFO
-#define EV_FATAL  OPP_LOG(LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
-#define EV_ERROR  OPP_LOG(LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
-#define EV_WARN   OPP_LOG(LOGLEVEL_WARN, nullptr)   ///< Log warnings
-#define EV_INFO   OPP_LOG(LOGLEVEL_INFO, nullptr)   ///< Log information (default log level)
-#define EV_DETAIL OPP_LOG(LOGLEVEL_DETAIL, nullptr) ///< Log state variables and other low-level information
-#define EV_DEBUG  OPP_LOG(LOGLEVEL_DEBUG, nullptr)  ///< Log state variables and other low-level information
-#define EV_TRACE  OPP_LOG(LOGLEVEL_TRACE, nullptr)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV_FATAL  EV_LOG(LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
+#define EV_ERROR  EV_LOG(LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
+#define EV_WARN   EV_LOG(LOGLEVEL_WARN, nullptr)   ///< Log warnings
+#define EV_INFO   EV_LOG(LOGLEVEL_INFO, nullptr)   ///< Log information (default log level)
+#define EV_DETAIL EV_LOG(LOGLEVEL_DETAIL, nullptr) ///< Log state variables and other low-level information
+#define EV_DEBUG  EV_LOG(LOGLEVEL_DEBUG, nullptr)  ///< Log state variables and other low-level information
+#define EV_TRACE  EV_LOG(LOGLEVEL_TRACE, nullptr)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
@@ -233,19 +233,19 @@ inline const char *getClassName() {return nullptr;}
  * topic of the log message. The macro can be used as a C++ stream. Example:
  * <tt>EV_DETAIL("retransmissions") << "Too many retries, discarding frame" << endl;</tt>.
  *
- * @see OPP_LOG, LogLevel, EV_STATICCONTEXT
+ * @see EV_LOG, LogLevel, EV_STATICCONTEXT
  * @ingroup Logging
  * @defgroup LoggingCat  Logging with explicit category
  */
 //@{
 #define EV_C(category)        EV_INFO_C(category)                ///< Short for EV_INFO_C
-#define EV_FATAL_C(category)  OPP_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
-#define EV_ERROR_C(category)  OPP_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
-#define EV_WARN_C(category)   OPP_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
-#define EV_INFO_C(category)   OPP_LOG(LOGLEVEL_INFO, category)   ///< Log information (default log level)
-#define EV_DETAIL_C(category) OPP_LOG(LOGLEVEL_DETAIL, category) ///< Log state variables and other low-level information
-#define EV_DEBUG_C(category)  OPP_LOG(LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
-#define EV_TRACE_C(category)  OPP_LOG(LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV_FATAL_C(category)  EV_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
+#define EV_ERROR_C(category)  EV_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
+#define EV_WARN_C(category)   EV_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
+#define EV_INFO_C(category)   EV_LOG(LOGLEVEL_INFO, category)   ///< Log information (default log level)
+#define EV_DETAIL_C(category) EV_LOG(LOGLEVEL_DETAIL, category) ///< Log state variables and other low-level information
+#define EV_DEBUG_C(category)  EV_LOG(LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
+#define EV_TRACE_C(category)  EV_LOG(LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
