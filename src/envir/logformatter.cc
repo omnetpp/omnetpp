@@ -88,6 +88,7 @@ void LogFormatter::parseFormat(const char *format)
         }
         current++;
     }
+    isBlank_ = formatParts.empty();
 }
 
 LogFormatter::FormatDirective LogFormatter::getDirective(char ch)

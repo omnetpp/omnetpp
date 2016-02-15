@@ -605,8 +605,10 @@ void Cmdenv::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
-    std::string prefix = logFormatter.formatPrefix(entry);
-    ::fputs(prefix.c_str(), fout);
+    if (!logFormatter.isBlank()) {
+        std::string prefix = logFormatter.formatPrefix(entry);
+        ::fputs(prefix.c_str(), fout);
+    }
     ::fwrite(entry->text, 1, entry->textLength, fout);
     if (opt->autoflush)
         ::fflush(fout);
