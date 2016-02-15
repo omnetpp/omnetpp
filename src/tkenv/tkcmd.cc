@@ -1578,7 +1578,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
     else if (0 == strcmp(argv[1], "logformat"))
         strcpy(buf, opt->logFormat.c_str());
     else if (0 == strcmp(argv[1], "loglevel"))
-        strcpy(buf, cLogLevel::getName(opt->logLevel));
+        strcpy(buf, cLog::getName(opt->logLevel));
     else if (0 == strcmp(argv[1], "silent_event_filters"))
         buf = const_cast<char *>(app->getSilentEventFilters());
     else if (0 == strcmp(argv[1], "logbuffer_maxnumevents"))
@@ -1667,7 +1667,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         opt->logFormat = argv[2];
     }
     else if (0 == strcmp(argv[1], "loglevel")) {
-        TRY(opt->logLevel = cLogLevel::getLevel(argv[2]));
+        TRY(opt->logLevel = cLog::getLevel(argv[2]));
         app->setLogLevel(opt->logLevel);
     }
     else if (0 == strcmp(argv[1], "silent_event_filters")) {

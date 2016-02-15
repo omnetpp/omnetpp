@@ -160,7 +160,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             // log statement related
             case LOGLEVEL:
-                stream << cLogLevel::getName(entry->loglevel);
+                stream << cLog::getName(entry->loglevel);
                 break;
 
             case LOGCATEGORY:
