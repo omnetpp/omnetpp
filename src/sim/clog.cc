@@ -23,7 +23,7 @@
 
 namespace omnetpp {
 
-LogLevel cLog::logLevel = LOGLEVEL_DEBUG;
+LogLevel cLog::logLevel = LOGLEVEL_TRACE;
 cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
 cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
 
