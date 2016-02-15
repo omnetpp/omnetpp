@@ -117,23 +117,23 @@ int cLogProxy::LogBuffer::sync()
 
 //----
 
-cLogProxy::cLogProxy(const void *sourcePointer, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const void *sourcePointer, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction)
 {
-    fillEntry(logLevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
+    fillEntry(logLevel, category, sourceFile, sourceLine, sourceFunction);
     currentEntry.sourcePointer = sourcePointer;
     currentEntry.sourceObject = currentEntry.sourceComponent = nullptr;
 }
 
-cLogProxy::cLogProxy(const cObject *sourceObject, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const cObject *sourceObject, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction)
 {
-    fillEntry(logLevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
+    fillEntry(logLevel, category, sourceFile, sourceLine, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = const_cast<cObject *>(sourceObject);
     currentEntry.sourceComponent = nullptr;
 }
 
-cLogProxy::cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction)
 {
-    fillEntry(logLevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
+    fillEntry(logLevel, category, sourceFile, sourceLine, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = currentEntry.sourceComponent = const_cast<cComponent *>(sourceComponent);
 }
 
@@ -144,7 +144,7 @@ cLogProxy::~cLogProxy()
     previousCategory = currentEntry.category;
 }
 
-void cLogProxy::fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+void cLogProxy::fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction)
 {
     if (previousLogLevel != logLevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
         flushLastLine();
@@ -152,7 +152,6 @@ void cLogProxy::fillEntry(LogLevel logLevel, const char *category, const char *s
     currentEntry.logLevel = logLevel;
     currentEntry.sourceFile = sourceFile;
     currentEntry.sourceLine = sourceLine;
-    currentEntry.sourceClass = sourceClass;
     currentEntry.sourceFunction = sourceFunction;
     currentEntry.userTime = clock();
 }

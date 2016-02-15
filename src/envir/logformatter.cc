@@ -338,8 +338,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
             case SOURCE_OBJECT_CLASSNAME:
                 stream << (entry->sourceComponent ? entry->sourceComponent->getComponentType()->getName() :
-                           (entry->sourceObject ? entry->sourceObject->getClassName() :
-                            (entry->sourceClass ? opp_demangle_typename(entry->sourceClass) : "")));
+                           (entry->sourceObject ? entry->sourceObject->getClassName() : ""));
                 break;
 
             case SOURCE_FUNCTION:
@@ -411,16 +410,11 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 if (entry->sourceComponent)
                     stream << "(" << entry->sourceComponent->getComponentType()->getName() << ")" << entry->sourceComponent->getFullPath();
                 else if (entry->sourceObject) {
-                    stream << "(" << entry->sourceClass << ")"
-                           <<(entry->sourceObject->getOwner() == contextComponent ?
-                       entry->sourceObject->getFullName() : entry->sourceObject->getFullPath());
+                    stream << "(" << entry->sourceObject->getClassName() << ")"
+                           << (entry->sourceObject->getOwner() == contextComponent ? entry->sourceObject->getFullName() : entry->sourceObject->getFullPath());
                 }
-                else if (entry->sourceClass || entry->sourcePointer) {
-                    if (entry->sourceClass)
-                        stream << "(" << entry->sourceClass << ")";
-                    if (entry->sourcePointer)
-                        stream << "0x" << std::hex << entry->sourcePointer;
-                }
+                else if (entry->sourcePointer)
+                    stream << "0x" << std::hex << entry->sourcePointer;
                 else
                     lastPartEmpty = true;
                 break;

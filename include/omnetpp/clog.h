@@ -183,14 +183,11 @@ class SIM_API cLog
 #define OPP_LOGPROXY(object, logLevel, category) \
     ((void)0, !(COMPILETIME_LOG_PREDICATE(object, logLevel, category) && \
     cLog::runtimeLogPredicate(object, logLevel, category))) ? \
-    omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, logLevel, category, __FILE__, __LINE__, getClassName(), __FUNCTION__)
+    omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, logLevel, category, __FILE__, __LINE__, __FUNCTION__)
 
 
 // Returns nullptr. Helper function for the logging macros.
 inline void *getThisPtr() {return nullptr;}
-
-// Returns nullptr. Helper function for the logging macros.
-inline const char *getClassName() {return nullptr;}
 
 /**
  * Use this macro when logging from static member functions.
@@ -204,7 +201,7 @@ inline const char *getClassName() {return nullptr;}
  * @ingroup Logging
  * @hideinitializer
  */
-#define EV_STATICCONTEXT  void *(*getThisPtr)() = omnetpp::getThisPtr; const char *(*getClassName)() = omnetpp::getClassName;
+#define EV_STATICCONTEXT  void *(*getThisPtr)() = omnetpp::getThisPtr;
 
 /**
  * This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
@@ -277,7 +274,6 @@ class SIM_API cLogEntry
     const cComponent *sourceComponent;
     const char *sourceFile;
     int sourceLine;
-    const char *sourceClass;
     const char *sourceFunction;
 
     // operating system related
@@ -325,12 +321,12 @@ class SIM_API cLogProxy
     static const char *previousCategory; // category of the previous log statement
 
   private:
-    void fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    void fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction);
 
   public:
-    cLogProxy(const void *sourcePointer, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cObject *sourceObject, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const void *sourcePointer, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction);
+    cLogProxy(const cObject *sourceObject, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction);
+    cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceFunction);
     ~cLogProxy();
 
     std::ostream& getStream() { return stream; }
