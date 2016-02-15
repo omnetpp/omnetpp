@@ -25,7 +25,7 @@ LibXML2
 -------
 LibXML2 (xmlsoft.org) is an open-source XML parser, written by Daniel Veillard
 for the GNOME project. LibXML and ICONV (also a needed component) are distributed
-under the GNU Lesser General Public License (LGPL). http://www.gnu.org/licenses/
+under the MIT License. https://opensource.org/licenses/MIT
 
 Tcl/Tk
 ------
@@ -70,6 +70,15 @@ Eclipse
 The OMNeT++/OMNEST IDE is based on the Eclipse Platform and additional
 platform features and plug-ins, distributed under the EPL (Eclipse Public
 License). https://www.eclipse.org/org/documents/epl-v10.php
+
+SWT Workbench
+-------------
+Common Public License - https://opensource.org/licenses/cpl1.0.php
+
+Freemarker Template Engine
+--------------------------
+Developed by the Visigoth Software Society (http://www.visigoths.org/).
+Distributed under 4 clause BSD License.
 
 Java Runtime Environment
 ------------------------
