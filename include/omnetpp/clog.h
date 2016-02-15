@@ -25,7 +25,6 @@ namespace omnetpp {
 class cObject;
 class cComponent;
 
-
 /**
  * Classifies log messages based on detail and importance.
  *
@@ -117,7 +116,7 @@ enum LogLevel
  * This predicate determines if a log statement gets compiled into the executable.
  */
 #ifndef COMPILETIME_LOG_PREDICATE
-#define COMPILETIME_LOG_PREDICATE(object, loglevel, category) (loglevel >= COMPILETIME_LOGLEVEL)
+#define COMPILETIME_LOG_PREDICATE(object, logLevel, category) (logLevel >= COMPILETIME_LOGLEVEL)
 #endif
 
 /**
@@ -129,8 +128,8 @@ enum LogLevel
 class SIM_API cLog
 {
   public:
-    typedef bool (*NoncomponentLogPredicate)(const void *object, LogLevel loglevel, const char *category);
-    typedef bool (*ComponentLogPredicate)(const cComponent *object, LogLevel loglevel, const char *category);
+    typedef bool (*NoncomponentLogPredicate)(const void *object, LogLevel logLevel, const char *category);
+    typedef bool (*ComponentLogPredicate)(const cComponent *object, LogLevel logLevel, const char *category);
 
   public:
     /**
@@ -138,7 +137,7 @@ class SIM_API cLog
      * the fastest runtime filter, it works with a simple integer comparison at the call
      * site.
      */
-    static LogLevel loglevel;
+    static LogLevel logLevel;
 
     static NoncomponentLogPredicate noncomponentLogPredicate;
     static ComponentLogPredicate componentLogPredicate;
@@ -147,21 +146,21 @@ class SIM_API cLog
     /**
      * Returns a human-readable string representing the provided log level.
      */
-    static const char *getLogLevelName(LogLevel loglevel);
+    static const char *getLogLevelName(LogLevel logLevel);
 
     /**
      * Returns the associated log level for the provided human-readable string.
      */
     static LogLevel resolveLogLevel(const char *name);
 
-    static inline bool runtimeLogPredicate(const void *object, LogLevel loglevel, const char *category)
-    { return noncomponentLogPredicate(object, loglevel, category); }
+    static inline bool runtimeLogPredicate(const void *object, LogLevel logLevel, const char *category)
+    { return noncomponentLogPredicate(object, logLevel, category); }
 
-    static inline bool runtimeLogPredicate(const cComponent *object, LogLevel loglevel, const char *category)
-    { return componentLogPredicate(object, loglevel, category); }
+    static inline bool runtimeLogPredicate(const cComponent *object, LogLevel logLevel, const char *category)
+    { return componentLogPredicate(object, logLevel, category); }
 
-    static bool defaultNoncomponentLogPredicate(const void *object, LogLevel loglevel, const char *category);
-    static bool defaultComponentLogPredicate(const cComponent *object, LogLevel loglevel, const char *category);
+    static bool defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel, const char *category);
+    static bool defaultComponentLogPredicate(const cComponent *object, LogLevel logLevel, const char *category);
 };
 
 // Creates a log proxy object that captures the provided context.
@@ -170,10 +169,10 @@ class SIM_API cLog
 // NOTE: the (void)0 trick prevents GCC producing statement has no effect warnings
 // for compile time disabled log statements.
 //
-#define OPP_LOGPROXY(object, loglevel, category) \
-    ((void)0, !(COMPILETIME_LOG_PREDICATE(object, loglevel, category) && \
-    cLog::runtimeLogPredicate(object, loglevel, category))) ? \
-    omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, loglevel, category, __FILE__, __LINE__, getClassName(), __FUNCTION__)
+#define OPP_LOGPROXY(object, logLevel, category) \
+    ((void)0, !(COMPILETIME_LOG_PREDICATE(object, logLevel, category) && \
+    cLog::runtimeLogPredicate(object, logLevel, category))) ? \
+    omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, logLevel, category, __FILE__, __LINE__, getClassName(), __FUNCTION__)
 
 
 // Returns nullptr. Helper function for the logging macros.
@@ -206,7 +205,7 @@ inline const char *getClassName() {return nullptr;}
  * @ingroup Logging
  * @hideinitializer
  */
-#define EV_LOG(loglevel, category) OPP_LOGPROXY(getThisPtr(), loglevel, category).getStream()
+#define EV_LOG(logLevel, category) OPP_LOGPROXY(getThisPtr(), logLevel, category).getStream()
 
 /**
  * Logging macros with the default category. Category is a string that refers to the
@@ -258,7 +257,7 @@ class SIM_API cLogEntry
 {
   public:
     // log statement related
-    LogLevel loglevel;
+    LogLevel logLevel;
     const char *category;
 
     // C++ source related (where the log statement appears)
@@ -311,16 +310,16 @@ class SIM_API cLogProxy
     static LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
     static std::ostream stream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
     static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
-    static LogLevel previousLoglevel; // log level of the previous log statement
+    static LogLevel previousLogLevel; // log level of the previous log statement
     static const char *previousCategory; // category of the previous log statement
 
   private:
-    void fillEntry(LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    void fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 
   public:
-    cLogProxy(const void *sourcePointer, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cObject *sourceObject, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cComponent *sourceComponent, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const void *sourcePointer, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const cObject *sourceObject, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     ~cLogProxy();
 
     std::ostream& getStream() { return stream; }

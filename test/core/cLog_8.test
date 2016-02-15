@@ -9,7 +9,7 @@ cmdenv-log-format = "[%l]%9"
 
 %activity:
 
-cLog::loglevel = LOGLEVEL_TRACE;
+cLog::logLevel = LOGLEVEL_TRACE;
 #undef COMPILETIME_LOGLEVEL
 #define COMPILETIME_LOGLEVEL LOGLEVEL_FATAL
 

@@ -202,7 +202,7 @@ void Qtenv::storeOptsInPrefs() {
     case LOGLEVEL_DEBUG:  logLevelString = "debug";  break;
     case LOGLEVEL_TRACE:  logLevelString = "trace";  break;
     }
-    setPref("loglevel", logLevelString);
+    setPref("logLevel", logLevelString);
 
     setPref("scrollbacklimit", opt->scrollbackLimit);
     setPref("logbuffer_maxnumevents", logBuffer.getMaxNumEntries());
@@ -308,7 +308,7 @@ void Qtenv::restoreOptsFromPrefs() {
     pref = getPref("logformat");
     if (pref.isValid()) opt->logFormat = pref.toString().toStdString().c_str();
 
-    pref = getPref("loglevel");
+    pref = getPref("logLevel");
     if (pref.isValid()) {
         QString logLevelString = pref.toString();
         if (logLevelString == "off") {
@@ -2089,7 +2089,7 @@ void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level)
     setPref(QString("ComponentLogLevels/") + component->getFullPath().c_str(), level);
 
     for (int i = 0; i < v.getArraySize(); ++i) {
-        objs[i]->setLoglevel(level);
+        objs[i]->setLogLevel(level);
     }
 }
 

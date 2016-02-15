@@ -72,7 +72,7 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
     signalTable = nullptr;
     signalHasLocalListeners = signalHasAncestorListeners = 0;
 
-    setLoglevel(LOGLEVEL_TRACE);
+    setLogLevel(LOGLEVEL_TRACE);
 }
 
 cComponent::~cComponent()
@@ -150,11 +150,11 @@ cRNG *cComponent::getRNG(int k) const
     return getEnvir()->getRNG(k < rngMapSize ? rngMap[k] : k);
 }
 
-void cComponent::setLoglevel(LogLevel loglevel)
+void cComponent::setLogLevel(LogLevel logLevel)
 {
-    ASSERT(0 <= loglevel && loglevel <= 7);
+    ASSERT(0 <= logLevel && logLevel <= 7);
     flags &= ~(0x7 << FL_LOGLEVEL_SHIFT);
-    flags |= loglevel << FL_LOGLEVEL_SHIFT;
+    flags |= logLevel << FL_LOGLEVEL_SHIFT;
 }
 
 void cComponent::reallocParamv(int size)

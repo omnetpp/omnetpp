@@ -144,7 +144,7 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
             action = subMenu->addAction(#LEVEL, getQtenv(), SLOT(setComponentLogLevel())); \
             action->setData(QVariant::fromValue(ActionDataPair(comp, LOGLEVEL_ ## LEVEL))); \
             action->setCheckable(true); \
-            action->setChecked(comp->getLoglevel() == LOGLEVEL_ ## LEVEL); \
+            action->setChecked(comp->getLogLevel() == LOGLEVEL_ ## LEVEL); \
             action->setActionGroup(logLevelActionGroup);
 
         INSPECTORUTIL_ADD_LOGLEVEL(TRACE);

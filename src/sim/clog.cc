@@ -25,17 +25,17 @@ namespace omnetpp {
 
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::stream(&cLogProxy::buffer);
-LogLevel cLog::loglevel = LOGLEVEL_DEBUG;
+LogLevel cLog::logLevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
-LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
+LogLevel cLogProxy::previousLogLevel = (LogLevel)-1;
 const char *cLogProxy::previousCategory = nullptr;
 cLogProxy::nullstream cLogProxy::dummyStream;
 
 //----
 
-const char *cLog::getLogLevelName(LogLevel loglevel)
+const char *cLog::getLogLevelName(LogLevel logLevel)
 {
-    switch (loglevel) {
+    switch (logLevel) {
         case LOGLEVEL_OFF: return "OFF";
         case LOGLEVEL_FATAL: return "FATAL";
         case LOGLEVEL_ERROR: return "ERROR";
@@ -44,7 +44,7 @@ const char *cLog::getLogLevelName(LogLevel loglevel)
         case LOGLEVEL_DETAIL:return "DETAIL";
         case LOGLEVEL_DEBUG: return "DEBUG";
         case LOGLEVEL_TRACE: return "TRACE";
-        default: throw cRuntimeError("Unknown log level '%d'", loglevel);
+        default: throw cRuntimeError("Unknown log level '%d'", logLevel);
     }
 }
 
@@ -105,39 +105,39 @@ void cLogProxy::flushLastLine()
 
 //----
 
-cLogProxy::cLogProxy(const void *sourcePointer, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const void *sourcePointer, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
-    fillEntry(loglevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
+    fillEntry(logLevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = sourcePointer;
     currentEntry.sourceObject = currentEntry.sourceComponent = nullptr;
 }
 
-cLogProxy::cLogProxy(const cObject *sourceObject, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const cObject *sourceObject, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
-    fillEntry(loglevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
+    fillEntry(logLevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = const_cast<cObject *>(sourceObject);
     currentEntry.sourceComponent = nullptr;
 }
 
-cLogProxy::cLogProxy(const cComponent *sourceComponent, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+cLogProxy::cLogProxy(const cComponent *sourceComponent, LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
-    fillEntry(loglevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
+    fillEntry(logLevel, category, sourceFile, sourceLine, sourceClass, sourceFunction);
     currentEntry.sourcePointer = currentEntry.sourceObject = currentEntry.sourceComponent = const_cast<cComponent *>(sourceComponent);
 }
 
 cLogProxy::~cLogProxy()
 {
     stream.flush();
-    previousLoglevel = currentEntry.loglevel;
+    previousLogLevel = currentEntry.logLevel;
     previousCategory = currentEntry.category;
 }
 
-void cLogProxy::fillEntry(LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
+void cLogProxy::fillEntry(LogLevel logLevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
-    if (previousLoglevel != loglevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
+    if (previousLogLevel != logLevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
         flushLastLine();
     currentEntry.category = category;
-    currentEntry.loglevel = loglevel;
+    currentEntry.logLevel = logLevel;
     currentEntry.sourceFile = sourceFile;
     currentEntry.sourceLine = sourceLine;
     currentEntry.sourceClass = sourceClass;
@@ -148,20 +148,20 @@ void cLogProxy::fillEntry(LogLevel loglevel, const char *category, const char *s
 cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
 cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
 
-bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel loglevel, const char *category)
+bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel, const char *category)
 {
     // log called from outside cComponent methods, use context component to decide enablement
     const cModule *contextModule = getSimulation()->getContextModule();
-    return loglevel >= cLog::loglevel &&
-           (!contextModule || loglevel >= contextModule->getLoglevel()) &&
+    return logLevel >= cLog::logLevel &&
+           (!contextModule || logLevel >= contextModule->getLogLevel()) &&
            getEnvir()->isLoggingEnabled();
 }
 
-bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel loglevel, const char *category)
+bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel logLevel, const char *category)
 {
     // log called from a cComponent method, check whether logging for that component is enabled
-    return loglevel >= cLog::loglevel &&
-           loglevel >= sourceComponent->getLoglevel() &&
+    return logLevel >= cLog::logLevel &&
+           logLevel >= sourceComponent->getLogLevel() &&
            getEnvir()->isLoggingEnabled();
 }
 

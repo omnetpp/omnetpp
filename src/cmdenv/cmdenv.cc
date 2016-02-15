@@ -363,7 +363,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
 
                 // print event banner if necessary
                 if (opt->printEventBanners)
-                    if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->getLoglevel() != LOGLEVEL_OFF)
+                    if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->getLogLevel() != LOGLEVEL_OFF)
                         printEventBanner(event);
 
 
@@ -537,7 +537,7 @@ void Cmdenv::displayException(std::exception& ex)
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
     // TODO: make this an EV_INFO in the component?
-    if (!opt->expressMode && opt->printEventBanners && component->getLoglevel() != LOGLEVEL_OFF)
+    if (!opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
         ::fprintf(fout, "Initializing %s %s, stage %d\n",
                 component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 }
@@ -567,7 +567,7 @@ void Cmdenv::configure(cComponent *component)
     EnvirBase::configure(component);
 
     LogLevel level = cLog::resolveLogLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
-    component->setLoglevel(level);
+    component->setLogLevel(level);
 }
 
 void Cmdenv::askParameter(cPar *par, bool unassigned)

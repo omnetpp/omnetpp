@@ -38,7 +38,7 @@ network TestNetwork
 
 #undef COMPILETIME_LOGLEVEL
 #define COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
-cLog::loglevel = LOGLEVEL_TRACE;
+cLog::logLevel = LOGLEVEL_TRACE;
 
 EV_FATAL  << "Hello" << endl;
 EV_ERROR  << "Hello" << endl;

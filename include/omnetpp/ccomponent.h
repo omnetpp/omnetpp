@@ -130,8 +130,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
   public:
     // internal: used by log mechanism
-    LogLevel getLoglevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
-    void setLoglevel(LogLevel loglevel);
+    LogLevel getLogLevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
+    void setLogLevel(LogLevel logLevel);
 
     // internal: invoked from within cEnvir::preconfigure(component)
     void setRNGMap(short size, int *map) {rngMapSize=size; rngMap=map;}

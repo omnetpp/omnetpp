@@ -1759,7 +1759,7 @@ void EnvirBase::clearEventlogRecordingIntervals()
 
 void EnvirBase::setLogLevel(LogLevel logLevel)
 {
-    cLog::loglevel = logLevel;
+    cLog::logLevel = logLevel;
 }
 
 void EnvirBase::setLogFormat(const char *logFormat)
