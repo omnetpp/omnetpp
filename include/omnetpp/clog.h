@@ -324,12 +324,12 @@ class SIM_API cLogProxy
     static const char *previousCategory; // category of the previous log statement
 
   private:
-    void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    void fillEntry(LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 
   public:
-    cLogProxy(const void *sourcePointer, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cObject *sourceObject, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
-    cLogProxy(const cComponent *sourceComponent, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const void *sourcePointer, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const cObject *sourceObject, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
+    cLogProxy(const cComponent *sourceComponent, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     ~cLogProxy();
 
     std::ostream& getStream() { return globalStream; }
