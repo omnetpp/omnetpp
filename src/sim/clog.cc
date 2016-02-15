@@ -23,9 +23,12 @@
 
 namespace omnetpp {
 
+LogLevel cLog::logLevel = LOGLEVEL_DEBUG;
+cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
+cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
+
 cLogProxy::LogBuffer cLogProxy::buffer;
 std::ostream cLogProxy::stream(&cLogProxy::buffer);
-LogLevel cLog::logLevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLogLevel = (LogLevel)-1;
 const char *cLogProxy::previousCategory = nullptr;
@@ -70,6 +73,23 @@ LogLevel cLog::resolveLogLevel(const char *name)
         throw cRuntimeError("Unknown log level name '%s'", name);
 }
 
+bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel, const char *category)
+{
+    // log called from outside cComponent methods, use context component to decide enablement
+    const cModule *contextModule = getSimulation()->getContextModule();
+    return logLevel >= cLog::logLevel &&
+           (!contextModule || logLevel >= contextModule->getLogLevel()) &&
+           getEnvir()->isLoggingEnabled();
+}
+
+bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel logLevel, const char *category)
+{
+    // log called from a cComponent method, check whether logging for that component is enabled
+    return logLevel >= cLog::logLevel &&
+           logLevel >= sourceComponent->getLogLevel() &&
+           getEnvir()->isLoggingEnabled();
+}
+
 //----
 
 int cLogProxy::LogBuffer::sync()
@@ -93,14 +113,6 @@ int cLogProxy::LogBuffer::sync()
         }
     }
     return 0;
-}
-
-void cLogProxy::flushLastLine()
-{
-    if (!buffer.isEmpty()) {
-        stream.put('\n');
-        stream.flush();
-    }
 }
 
 //----
@@ -145,24 +157,12 @@ void cLogProxy::fillEntry(LogLevel logLevel, const char *category, const char *s
     currentEntry.userTime = clock();
 }
 
-cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
-cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
-
-bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel logLevel, const char *category)
+void cLogProxy::flushLastLine()
 {
-    // log called from outside cComponent methods, use context component to decide enablement
-    const cModule *contextModule = getSimulation()->getContextModule();
-    return logLevel >= cLog::logLevel &&
-           (!contextModule || logLevel >= contextModule->getLogLevel()) &&
-           getEnvir()->isLoggingEnabled();
-}
-
-bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel logLevel, const char *category)
-{
-    // log called from a cComponent method, check whether logging for that component is enabled
-    return logLevel >= cLog::logLevel &&
-           logLevel >= sourceComponent->getLogLevel() &&
-           getEnvir()->isLoggingEnabled();
+    if (!buffer.isEmpty()) {
+        stream.put('\n');
+        stream.flush();
+    }
 }
 
 }  // namespace omnetpp
