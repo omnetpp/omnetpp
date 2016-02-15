@@ -147,12 +147,12 @@ class SIM_API cLog
     /**
      * Returns a human-readable string representing the provided log level.
      */
-    static const char *getName(LogLevel loglevel);
+    static const char *getLogLevelName(LogLevel loglevel);
 
     /**
      * Returns the associated log level for the provided human-readable string.
      */
-    static LogLevel getLevel(const char *name);
+    static LogLevel resolveLogLevel(const char *name);
 
     static inline bool runtimeLogPredicate(const void *object, LogLevel loglevel, const char *category)
     { return noncomponentLogPredicate(object, loglevel, category); }

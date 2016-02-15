@@ -185,7 +185,7 @@ void Cmdenv::readPerRunOptions()
     opt->detailedEventBanners = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
-    setLogLevel(cLog::getLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str()));
+    setLogLevel(cLog::resolveLogLevel(getConfig()->getAsString(CFGID_GLOBAL_LOGLEVEL).c_str()));
     setLogFormat(getConfig()->getAsString(CFGID_LOG_FORMAT).c_str());
 }
 
@@ -566,7 +566,7 @@ void Cmdenv::configure(cComponent *component)
 {
     EnvirBase::configure(component);
 
-    LogLevel level = cLog::getLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
+    LogLevel level = cLog::resolveLogLevel(getEnvir()->getConfig()->getAsString(component->getFullPath().c_str(), CFGID_CMDENV_LOGLEVEL).c_str());
     component->setLoglevel(level);
 }
 

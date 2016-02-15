@@ -33,7 +33,7 @@ cLogProxy::nullstream cLogProxy::dummyStream;
 
 //----
 
-const char *cLog::getName(LogLevel loglevel)
+const char *cLog::getLogLevelName(LogLevel loglevel)
 {
     switch (loglevel) {
         case LOGLEVEL_OFF: return "OFF";
@@ -48,7 +48,7 @@ const char *cLog::getName(LogLevel loglevel)
     }
 }
 
-LogLevel cLog::getLevel(const char *name)
+LogLevel cLog::resolveLogLevel(const char *name)
 {
     if (!strcasecmp(name, "OFF"))
         return LOGLEVEL_OFF;
