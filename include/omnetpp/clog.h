@@ -318,7 +318,7 @@ class SIM_API cLogProxy
 
   private:
     static LogBuffer buffer;  // underlying buffer that contains the text that has been written so far
-    static std::ostream globalStream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
+    static std::ostream stream;  // this singleton is used to avoid allocating a new stream each time a log statement executes
     static cLogEntry currentEntry; // context of the current (last) log statement that has been executed.
     static LogLevel previousLoglevel; // log level of the previous log statement
     static const char *previousCategory; // category of the previous log statement
@@ -332,7 +332,7 @@ class SIM_API cLogProxy
     cLogProxy(const cComponent *sourceComponent, LogLevel loglevel, const char *category, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     ~cLogProxy();
 
-    std::ostream& getStream() { return globalStream; }
+    std::ostream& getStream() { return stream; }
     static void flushLastLine();
 };
 

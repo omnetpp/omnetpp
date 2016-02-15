@@ -24,7 +24,7 @@
 namespace omnetpp {
 
 cLogProxy::LogBuffer cLogProxy::buffer;
-std::ostream cLogProxy::globalStream(&cLogProxy::buffer);
+std::ostream cLogProxy::stream(&cLogProxy::buffer);
 LogLevel cLog::loglevel = LOGLEVEL_DEBUG;
 cLogEntry cLogProxy::currentEntry;
 LogLevel cLogProxy::previousLoglevel = (LogLevel)-1;
@@ -98,8 +98,8 @@ int cLogProxy::LogBuffer::sync()
 void cLogProxy::flushLastLine()
 {
     if (!buffer.isEmpty()) {
-        globalStream.put('\n');
-        globalStream.flush();
+        stream.put('\n');
+        stream.flush();
     }
 }
 
@@ -127,7 +127,7 @@ cLogProxy::cLogProxy(const cComponent *sourceComponent, LogLevel loglevel, const
 
 cLogProxy::~cLogProxy()
 {
-    globalStream.flush();
+    stream.flush();
     previousLoglevel = currentEntry.loglevel;
     previousCategory = currentEntry.category;
 }
