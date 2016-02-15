@@ -94,7 +94,7 @@ enum LogLevel
     LOGLEVEL_FATAL,
 
     /**
-     * Not a real log level. TODO
+     * Not a real log level, it completely disables logging when set.
      */
     LOGLEVEL_OFF,
 };
@@ -139,7 +139,18 @@ class SIM_API cLog
      */
     static LogLevel logLevel;
 
+    /**
+     * This predicate determines if a log statement is executed for log statements
+     * that occur outside module or channel member functions. This is a customization
+     * point for logging.
+     */
     static NoncomponentLogPredicate noncomponentLogPredicate;
+
+    /**
+     * This predicate determines if a log statement is executed for log statements
+     * that occur in module or channel member functions. This is a customization
+     * point for logging.
+     */
     static ComponentLogPredicate componentLogPredicate;
 
   public:
