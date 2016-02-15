@@ -141,6 +141,35 @@ class SIM_API cLogLevel
 #endif
 #endif
 
+/**
+ * This predicate determines if a log statement gets compiled into the executable.
+ */
+#ifndef COMPILETIME_LOG_PREDICATE
+#define COMPILETIME_LOG_PREDICATE(object, loglevel, category) (loglevel >= COMPILETIME_LOGLEVEL)
+#endif
+
+/**
+ * This class groups logging related functionality.
+ */
+class SIM_API cLog
+{
+  public:
+    typedef bool (*NoncomponentLogPredicate)(const void *object, LogLevel loglevel, const char *category);
+    typedef bool (*ComponentLogPredicate)(const cComponent *object, LogLevel loglevel, const char *category);
+
+  public:
+    static NoncomponentLogPredicate noncomponentLogPredicate;
+    static ComponentLogPredicate componentLogPredicate;
+
+    static inline bool runtimeLogPredicate(const void *object, LogLevel loglevel, const char *category)
+    { return noncomponentLogPredicate(object, loglevel, category); }
+
+    static inline bool runtimeLogPredicate(const cComponent *object, LogLevel loglevel, const char *category)
+    { return componentLogPredicate(object, loglevel, category); }
+
+    static bool defaultNoncomponentLogPredicate(const void *object, LogLevel loglevel, const char *category);
+    static bool defaultComponentLogPredicate(const cComponent *object, LogLevel loglevel, const char *category);
+};
 
 // Creates a log proxy object that captures the provided context.
 // This macro is internal to the logging infrastructure.
@@ -148,12 +177,10 @@ class SIM_API cLogLevel
 // NOTE: the (void)0 trick prevents GCC producing statement has no effect warnings
 // for compile time disabled log statements.
 //
-#define OPP_LOGPROXY(object, classname, loglevel, category) \
-        ((void)0, !(loglevel >= GLOBAL_COMPILETIME_LOGLEVEL && \
-         loglevel >= omnetpp::cLogLevel::globalRuntimeLoglevel && \
-         getEnvir()->isLoggingEnabled() && \
-         omnetpp::cLogProxy::isEnabled(object, category, loglevel))) ? \
-         omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, category, loglevel, __FILE__, __LINE__, classname, __FUNCTION__)
+#define OPP_LOGPROXY(object, loglevel, category) \
+    ((void)0, !(COMPILETIME_LOG_PREDICATE(object, loglevel, category) && \
+    cLog::runtimeLogPredicate(object, loglevel, category))) ? \
+    omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, loglevel, category, __FILE__, __LINE__, getClassName(), __FUNCTION__)
 
 
 // Returns nullptr. Helper function for the logging macros.
@@ -186,7 +213,7 @@ inline const char *getClassName() {return nullptr;}
  * @ingroup Logging
  * @hideinitializer
  */
-#define OPP_LOG(loglevel, category) OPP_LOGPROXY(getThisPtr(), getClassName(), loglevel, category).getStream()
+#define OPP_LOG(loglevel, category) OPP_LOGPROXY(getThisPtr(), loglevel, category).getStream()
 
 /**
  * Logging macros with the default category. Category is a string that refers to the
@@ -295,7 +322,6 @@ class SIM_API cLogProxy
     static const char *previousCategory; // category of the previous log statement
 
   private:
-    static bool isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel);
     void fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
 
   public:
@@ -303,10 +329,6 @@ class SIM_API cLogProxy
     cLogProxy(const cObject *sourceObject, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     cLogProxy(const cComponent *sourceComponent, const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction);
     ~cLogProxy();
-
-    // invoked from OPP_LOGPROXY(), compiler selects one based on return type of selected getThisPtr()
-    static bool isEnabled(const void *thisPtr, const char *category, LogLevel loglevel);
-    static bool isEnabled(const cComponent *thisPtr, const char *category, LogLevel loglevel);
 
     std::ostream& getStream() { return globalStream; }
     static void flushLastLine();

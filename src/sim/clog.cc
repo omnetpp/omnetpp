@@ -132,24 +132,6 @@ cLogProxy::~cLogProxy()
     previousCategory = currentEntry.category;
 }
 
-bool cLogProxy::isEnabled(const void *, const char *category, LogLevel loglevel)
-{
-    // log called from outside cComponent methods, use context component to decide enablement
-    const cModule *contextModule = getSimulation()->getContextModule();
-    return !contextModule || isComponentEnabled(contextModule, category, loglevel);
-}
-
-bool cLogProxy::isEnabled(const cComponent *sourceComponent, const char *category, LogLevel loglevel)
-{
-    // log called from a cComponent method, check whether logging for that component is enabled
-    return isComponentEnabled(sourceComponent, category, loglevel);
-}
-
-bool cLogProxy::isComponentEnabled(const cComponent *component, const char *category, LogLevel loglevel)
-{
-    return loglevel >= component->getLoglevel(); //TODO use category
-}
-
 void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *sourceFile, int sourceLine, const char *sourceClass, const char *sourceFunction)
 {
     if (previousLoglevel != loglevel || (previousCategory != category && strcmp(previousCategory ? previousCategory : "", category ? category : "")))
@@ -161,6 +143,26 @@ void cLogProxy::fillEntry(const char *category, LogLevel loglevel, const char *s
     currentEntry.sourceClass = sourceClass;
     currentEntry.sourceFunction = sourceFunction;
     currentEntry.userTime = clock();
+}
+
+cLog::NoncomponentLogPredicate cLog::noncomponentLogPredicate = &cLog::defaultNoncomponentLogPredicate;
+cLog::ComponentLogPredicate cLog::componentLogPredicate = &cLog::defaultComponentLogPredicate;
+
+bool cLog::defaultNoncomponentLogPredicate(const void *object, LogLevel loglevel, const char *category)
+{
+    // log called from outside cComponent methods, use context component to decide enablement
+    const cModule *contextModule = getSimulation()->getContextModule();
+    return loglevel >= cLogLevel::globalRuntimeLoglevel &&
+           (!contextModule || loglevel >= contextModule->getLoglevel()) &&
+           getEnvir()->isLoggingEnabled();
+}
+
+bool cLog::defaultComponentLogPredicate(const cComponent *sourceComponent, LogLevel loglevel, const char *category)
+{
+    // log called from a cComponent method, check whether logging for that component is enabled
+    return loglevel >= cLogLevel::globalRuntimeLoglevel &&
+           loglevel >= sourceComponent->getLoglevel() &&
+           getEnvir()->isLoggingEnabled();
 }
 
 }  // namespace omnetpp
