@@ -127,11 +127,11 @@ class SIM_API cLogLevel
  * that use lower log levels than the one specified by this macro are not compiled
  * into the executable.
  */
-#ifndef GLOBAL_COMPILETIME_LOGLEVEL
+#ifndef COMPILETIME_LOGLEVEL
 #ifdef NDEBUG
-#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_INFO
+#define COMPILETIME_LOGLEVEL LOGLEVEL_INFO
 #else
-#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
+#define COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
 #endif
 #endif
 

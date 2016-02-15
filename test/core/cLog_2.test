@@ -9,8 +9,8 @@ cmdenv-log-format = "[%l]%9"
 
 %activity:
 
-#undef GLOBAL_COMPILETIME_LOGLEVEL
-#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
+#undef COMPILETIME_LOGLEVEL
+#define COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
 
 cLog::loglevel = LOGLEVEL_OFF;
 EV_FATAL  << "OFF" << endl;

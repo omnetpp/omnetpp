@@ -10,8 +10,8 @@ cmdenv-log-format = "[%l]%9"
 %activity:
 
 cLog::loglevel = LOGLEVEL_TRACE;
-#undef GLOBAL_COMPILETIME_LOGLEVEL
-#define GLOBAL_COMPILETIME_LOGLEVEL LOGLEVEL_FATAL
+#undef COMPILETIME_LOGLEVEL
+#define COMPILETIME_LOGLEVEL LOGLEVEL_FATAL
 
 EV_FATAL << printf("Hello") << endl;
 EV_ERROR << printf("Omitted") << endl;
