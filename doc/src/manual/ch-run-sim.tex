@@ -207,7 +207,8 @@ There are several useful configuration options that control how a simulation is 
   \item \fconfig{fingerprint} -- Instructs the simulation kernel to compute one or more fingerprints while
           the simulation is running. When the simulation terminates, the simulation kernel will generate an
           error if the computed fingerprints don't match with the provided ones. This feature is mainly
-          useful for regression testing.
+          useful for regression testing. Fingerprint tests are discussed in detail in section
+          \ref{ch-testing:sec:fingerprint-tests}.
   \item \fconfig{debug-on-errors} -- If the runtime detects any error, it will generate a breakpoint
           so you will be able to check the location and the context of the problem in your debugger.
   \item \fconfig{debugger-attach-on-error} -- Controls just-in-time debugging. When this option is enabled

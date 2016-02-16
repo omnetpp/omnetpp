@@ -3,7 +3,7 @@
 
 \section{Overview}
 
-\subsection{Verification, validation}
+\subsection{Verification, Validation}
 
 Correctness of the simulation model is a primary concern of the developers
 and users of the model, because they want to obtain credible simulation
@@ -29,7 +29,7 @@ Of the two, verification is essentially a software engineering issue, so it
 can be assisted with tools used for software quality assurance, for example
 testing tools. Validation is not a software engineering issue.
 
-\subsection{Unit testing, regression testing}
+\subsection{Unit Testing, Regression Testing}
 
 As mentioned above, software testing techniques can be of significant help
 during model verification. Testing can also help to ensure that
@@ -83,6 +83,7 @@ useful for testing simulation models.
 
 
 \section{The opp\_test Tool}
+\label{ch-testing:sec:opptest}
 
 \subsection{Introduction}
 
@@ -252,7 +253,7 @@ The next sections will use the following language:
 \end{itemize}
 
 
-\subsection{Test file syntax}
+\subsection{Test File Syntax}
 
 Test files are composed of \%-directives of the syntax:
 
@@ -266,7 +267,7 @@ or to the end of the file. Some directives require a value, others a body, or bo
 
 Certain directives, e.g. \ftest{\%contains}, may occur several times in the file.
 
-\subsection{Test description}
+\subsection{Test Description}
 
 Syntax:
 \begin{filelisting}
@@ -281,7 +282,7 @@ because determining the original purpose of a test that has become broken
 can often be quite difficult without them.
 
 
-\subsection{Test code generation}
+\subsection{Test Code Generation}
 
 This section describes the ways you can create C++ source and other files
 into the test directory.
@@ -343,7 +344,7 @@ inserted above (outside) the namespace, and \ftest{\%globals} is inserted
 inside the namespace.
 
 
-\subsubsection{The default ini file}
+\subsubsection{The Default Ini File}
 
 The following ini file is always generated:
 
@@ -395,14 +396,14 @@ There can be several \ftest{\%inifile} sections in the test file.
 The default ini file is always generated.
 
 
-\subsubsection{The @TESTNAME@ macro}
+\subsubsection{The @TESTNAME@ Macro}
 
 In test files, the string \ttt{@TESTNAME@} will be replaced with the test
 case name. Since it is substituted everywhere (C++, NED, msg and ini
 files), you can also write things like \ttt{@TESTNAME@\_function()}, or
 \ttt{printf("this is @TESTNAME@{\textbackslash}n")}.
 
-\subsubsection{Avoiding C++ name clashes}
+\subsubsection{Avoiding C++ Name Clashes}
 
 Since all sources are compiled into a single test executable, actions have
 to be taken to prevent accidental name clashes between C++ symbols in
@@ -420,7 +421,7 @@ This is done automatically for the \ftest{\%activity}, \ftest{\%module},
 via \ftest{\%file}, that needs to be done manually.
 
 
-\subsection{PASS criteria}
+\subsection{PASS Criteria}
 
 \subsubsection{\%contains, \%contains-regex, \%not-contains, \%not-contains-regex}
 
@@ -534,7 +535,7 @@ Syntax:
 These directives test for the presence or absence of a certain file in
 the test directory.
 
-\subsection{Extra processing steps}
+\subsection{Extra Processing Steps}
 
 \subsubsection{\%env, \%extraargs, \%testprog}
 
@@ -642,7 +643,7 @@ by printing \ttt{\#UNRESOLVED} or \ttt{\#UNRESOLVED:some-explanation} on the
 standard output, at the beginning of the line.
 
 
-\subsection{opp\_test synopsys}
+\subsection{opp\_test Synopsys}
 
 Little has been said so far what \fprog{opp\_test} actually does, or how you
 can invoke it.
@@ -689,7 +690,7 @@ $ cd work; opp_makemake --deep --no-deep-includes; make
 
 to achieve that.
 
-\subsection{Writing the control script}
+\subsection{Writing the Control Script}
 
 Usually one writes a control script to automate the two invocations of \fprog{opp\_test}
 and the build of the simulation model between them.
@@ -713,10 +714,17 @@ the \ttt{NEDPATH} environment variable in the control script.
 For inspiration, check out \ttt{runtest} in the \ttt{omnetpp/test/core}
 directory, and a similar script used in the INET Framework.
 
+\bigskip
+\begin{center}
+* * *
+\end{center}
+\bigskip
 
-\section{Implementing various types of tests}
+Further sections describe how one can implement various types of tests in
+{\opp}.
 
-\subsection{Smoke tests}
+\section{Smoke Tests}
+\label{ch-testing:sec:smoke-tests}
 
 Smoke tests are a tool for very basic verification and regression testing.
 Basically, the simulation is run for a while, and it must not crash or stop
@@ -729,63 +737,169 @@ directory and the command to run), and reports the results. The script can
 be easily adapted to other models or model frameworks.
 
 
-\subsection{Fingerprint tests}
+\section{Fingerprint Tests}
+\label{ch-testing:sec:fingerprint-tests}
 
 Fingerprint tests are a low-cost but effective tool for regression testing
 of simulation models. A fingerprint is a hash computed from various properties
-of simulation events, messages and statistics. The hash value is continuosly
+of simulation events, messages and statistics. The hash value is continuously
 updated as the simulation executes, and thus, the final fingerprint value is
 a characteristic of the simulation's trajectory. For regression testing, one
-just needs to compare the computed fingerprints to that from a reference run
--- if they differ, the simulation trajectory has changed. In general, fingerprint
+needs to compare the computed fingerprints to that from a reference run --
+if they differ, the simulation trajectory has changed. In general, fingerprint
 tests are very useful for ensuring that a change (some refactoring, a bugfix,
 or a new feature) didn't break the simulation.
+
+\subsection{Fingerprint Computation}
 
 Technically, providing a \fconfig{fingerprint} option in the config file or
 on the command line (\ttt{-\-fingerprint=...}) will turn on fingerprint
 computation in the {\opp} simulation kernel. When the simulation terminates,
-{\opp} will compare the computed fingerprints with the provided ones, and
-if they differ an error is generated.
+{\opp} compares the computed fingerprints with the provided ones, and
+if they differ, an error is generated.
 
-The fingerprint computation algorithm allows controlling what is included in
-the hash value by providing the \fconfig{fingerprint-ingredients} option. This
-option specifies a subset of the set of predefined properties of simulation
-events, messages and statistics. Some notable examples are: simulation time,
-event number, module full path, message length, message content, scalar result,
-vector result. Changing the ingredients allows to make the fingerprint sensitive
-for certain changes while keeping it immune to other changes. If this is not
-enough, the algorithm also supports computing multiple different fingerprints
-simultaneously.
-  \footnote{The old ({\opp} 4.x) fingerprint was computed from the module
-  ID and simulation time of each event. The same fingerprint can still be
-  computed by setting the \fconfig{fingerprint-ingredients} option to
-  \ttt{"ti"}. }
+\subsubsection{Ingredients}
 
-In addition, independently of the ingredients, the \fconfig{fingerprint-events},
-\fconfig{fingerprint-modules}, and \fconfig{fingerprint-results} options can
-be used to further filter for events, modules, and statistical results
-respectively. These options take a wildcard expression that is used to match
-against the corresponding object before including its property in the fingerprint.
-These filters are mainly useful to compute fingerprints only for a subset of the
-simulation.
+The fingerprint computation algorithm allows controlling what is included
+in the hash value. Changing the \textit{ingredients} allows one to make the
+fingerprint sensitive for certain changes while keeping it immune to
+others.
 
-\begin{warning}
-The computed fingerprint value may be dependent on the accuracy of the
-floating point arithmetic. There are differences between the floating point
-operations of AMD and Intel CPUs. Running under a processor emulator software
-like \fprog{valgrind} may also produce a different fingerprint. This is
-normal. Hint: see gcc options \ttt{-mfpmath=sse -msse2}.
-\end{warning}
+The ingredients of a fingerprint are usually indicated after a \ttt{/} sign
+following the hexadecimal hash value. Each ingredient is identified with a
+letter. For example, \tbf{t} stands for simulation time. Thus, the following
+\ffilename{omnetpp.ini} line
+
+\begin{inifile}
+fingerprint = 53de-64a7/tplx
+\end{inifile}
+
+means that a fingerprint needs to be computed with the simulation time, the
+module full path, received packet's bit length and the extra data included
+for each event, and the result should be \ttt{53de-64a7}.
+
+The full list of fingerprint ingredients:
+
+%% Latex formatting: compact two-column, use letter as bullet, using multicols and [noitemsep]
+\begin{multicols}{2}
+\begin{itemize}[noitemsep]
+  \item[\tbf{e}]: event number
+  \item[\tbf{t}]: simulation time
+  \item[\tbf{n}]: message/event full name
+  \item[\tbf{c}]: message/event class name
+  \item[\tbf{k}]: message kind
+  \item[\tbf{l}]: message (packet) bit length
+  \item[\tbf{o}]: message control info class name
+  \item[\tbf{d}]: message data
+  \item[\tbf{i}]: module id
+  \item[\tbf{m}]: module full name (name with index)
+  \item[\tbf{p}]: module full path (hierarchical name)
+  \item[\tbf{a}]: module class name
+  \item[\tbf{r}]: random numbers drawn
+  \item[\tbf{s}]: scalar results
+  \item[\tbf{z}]: statistic results (histogram, etc.)
+  \item[\tbf{v}]: vector results
+  \item[\tbf{x}]: extra data added programmatically
+\end{itemize}
+\end{multicols}
+
+Ingredients may also be specified with the
+\fconfig{fingerprint-ingredients} configuration option. However, that is
+rarely necessary, because the ingredients list included in the fingerprints
+take precedence, and are also more convenient to use.
+
+\subsubsection{Multiple Fingerprints, Alternative Values}
+
+It is possible to specify more than one fingerprint, separated by
+\textit{commas}, each with different ingredients. This will cause {\opp} to
+compute multiple fingerprints, and all of them must match for the test to
+pass. An example:
+
+\begin{inifile}
+fingerprint = 53de-64a7/tplx, 9a3f-7ed2/szv
+\end{inifile}
+
+Occasionally, the same simulation gives a different fingerprint when run on
+a different processor architecture or platform. This is due to subtle
+differences in floating point arithmetic across platforms.\footnote{There
+are differences between the floating point operations of AMD and Intel
+CPUs. Running under a processor emulator like \fprog{valgrind} may also
+produce a different fingerprint. This is normal. Hint: see gcc options
+\ttt{-mfpmath=sse -msse2}.} Acknowledging this fact, {\opp} lets you list
+several values for a fingerprint, separated by \textit{spaces}, and will
+accept whichever is produced by the simulation. The following example lists
+two alternative values for both fingerprints.
+
+\begin{inifile}
+fingerprint = 53de-64a7/tplx 63dc-ff21/tplx, 9a3f-7ed2/szv da39-91fc/szv
+\end{inifile}
+
+Note that fingerprint computation has been changed and significantly
+extended in {\opp} version 5.0.\footnote{The old ({\opp} 4.x) fingerprint
+was computed from the module ID and simulation time of each event. To
+reproduce a 4.x fingerprint on {\opp} 5.0 or later, compile {\opp} and your
+model with \ttt{USE\_OMN\-ETPP4x\_FINGER\-PRINTS} defined. Simply setting the
+ingredients to \tbf{ti} is not enough because of additional, subtle changes
+in the simulation kernel.}
+
+
+\subsubsection{Further Filtering}
+
+It is also possible to filter which modules, statistics, etc. are included
+in the fingerprints. The \fconfig{fingerprint-events},
+\fconfig{fingerprint-modules}, and \fconfig{fingerprint-results} options
+filter by events, modules, and statistical results, respectively. These
+options take wildcard expressions that are matched against the
+corresponding object before including its property in the fingerprint.
+These filters are mainly useful to limit fingerprint computation to certain
+parts of the simulation.
+
+\subsubsection{Programmatic Access}
+
+\cclass{cFingerprint} is the class responsible for fingerprint computation.
+The current fingerprint computation object can be retrieved from
+\cclass{cSimulation}, using the \ffunc{getFingerprint()} member function.
+This method will return \ttt{nullptr} if fingerprint computation is turned
+off for the current simulation run.
+
+To contribute data to the fingerprint, \cclass{cFingerprint} has several
+\ffunc{addExtraData()} methods for various data types (string, \ttt{long},
+\ttt{double}, byte array, etc.)
+
+An example:
+
+\begin{cpp}
+if (cFingerprint *fingerprint = getSimulation()->getFingerprint()) {
+    fingerprint->addExtraData(retryCount);
+    fingerprint->addExtraData(rttEstimate);
+}
+\end{cpp}
+
+Data added using \ffunc{addExtraData()} will only be counted in the
+fingerprint if the list of fingerprint ingredients contains \tbf{x}.
+
+\subsection{Fingerprint Tests}
 
 The INET Framework contains a script for automated fingerprint tests as
 well. The script runs all or selected simulations defined in a CSV file
-(with columns like the working directory, the command to run, and the
-expected fingerprints), and reports the results. The script is extensively
-used during INET Framework development to detect regressions, and can be
-easily adapted to other models or model frameworks.
+(with columns like the working directory, the command to run, the
+simulation time limit, and the expected fingerprints), and reports the
+results. The script is extensively used during INET Framework development
+to detect regressions, and can be easily adapted to other models or model
+frameworks.
+
+Exerpt from a CSV file that prescribes fingerprint tests to run:
+
+\begin{filelisting}
+examples/aodv/, ./run -f omnetpp.ini -c Static,   50s,  4c29-95ef/tplx
+examples/aodv/, ./run -f omnetpp.ini -c Dynamic,  60s,  8915-f239/tplx
+examples/dhcp/, ./run -f omnetpp.ini -c Wired,    800s, e88f-fee0/tplx
+examples/dhcp/, ./run -f omnetpp.ini -c Wireless, 500s, faa5-4111/tplx
+\end{filelisting}
 
 
-\subsection{Unit tests}
+\section{Unit Tests}
+\label{ch-testing:sec:unit-tests}
 
 If a simulation models contains units of code (classes, functions) smaller
 than a module, they are candidates for unit testing. For a network simulation
@@ -804,7 +918,8 @@ to the include path, and also links the library to the test code.
 % TODO explain more, with concrete example for the control script?
 
 
-\subsection{Module tests}
+\section{Module Tests}
+\label{ch-testing:sec:module-tests}
 
 {\opp} modules are not as easy to unit test as standalone classes, because
 they typically assume a more complex environment, and, especially modules
@@ -823,21 +938,23 @@ and the expected output into a single, compact file, while large files or files 
 among several tests may be factored out and only referenced by \ttt{.test} files.
 
 
-\subsection{Statistical tests}
+\section{Statistical Tests}
+\label{ch-testing:sec:statistical-tests}
 
 Statistical tests are those where the test outcome is decided on
 some statistical property or properties of the simulation results.
 
 Statistical tests may be useful as validation as well as regression testing.
 
-\subsubsection{Validation tests}
+\subsubsection{Validation Tests}
 
 Validation tests aim to verify that simulation results correspond to some
 reference values, ideally to those obtained from the real system. In
 practice, reference values may come from physical measurements, theoretical
 values, or another simulator's results.
 
-\subsubsection{Statistical regression tests}
+\subsubsection{Statistical Regression Tests}
+\label{ch-testing:sec:statistical-regression-tests}
 
 After a refactoring that changes the simulation trajectory (e.g. after
 eliminating or introducing extra events, or changes in RNG usage), there
