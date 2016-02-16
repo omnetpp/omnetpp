@@ -732,32 +732,47 @@ be easily adapted to other models or model frameworks.
 \subsection{Fingerprint tests}
 
 Fingerprint tests are a low-cost but effective tool for regression testing
-of simulation models. Fingerprint itself is a hash computed from various
-properties of simulation events as the simulation executes, and thus, the
-final fingerprint value is characteristic of the trajectory of the
-simulation. For regression testing, one just needs to compare the computed
-fingerprint to that from a reference run -- if they differ, the simulation
-trajectory has changed.
-
-Fingerprint tests are very useful for ensuring that a change (refactoring,
-bugfix, or new feature) didn't break the simulation. The fingerprint
-computation algorithm was deliberately designed so that it is immune to
-``unimportant'' changes (e.g. changes in the debug log messages), but
-signals if the behaviour of the model changes.
-  \footnote{The current ({\opp} 4.x) fingerprint is computed from the module
-  ID and simulation time of each event. This is likely to change in {\opp}
-  5.x, partly to make the fingerprint immune to module ID changes.}
+of simulation models. A fingerprint is a hash computed from various properties
+of simulation events, messages and statistics. The hash value is continuosly
+updated as the simulation executes, and thus, the final fingerprint value is
+a characteristic of the simulation's trajectory. For regression testing, one
+just needs to compare the computed fingerprints to that from a reference run
+-- if they differ, the simulation trajectory has changed. In general, fingerprint
+tests are very useful for ensuring that a change (some refactoring, a bugfix,
+or a new feature) didn't break the simulation.
 
 Technically, providing a \fconfig{fingerprint} option in the config file or
 on the command line (\ttt{-\-fingerprint=...}) will turn on fingerprint
-computation in the {\opp} simulation kernel. When the simulation
-terminates, {\opp} will compare the computed hash with the provided one,
-and if they differ, an error is generated.
+computation in the {\opp} simulation kernel. When the simulation terminates,
+{\opp} will compare the computed fingerprints with the provided ones, and
+if they differ an error is generated.
+
+The fingerprint computation algorithm allows controlling what is included in
+the hash value by providing the \fconfig{fingerprint-ingredients} option. This
+option specifies a subset of the set of predefined properties of simulation
+events, messages and statistics. Some notable examples are: simulation time,
+event number, module full path, message length, message content, scalar result,
+vector result. Changing the ingredients allows to make the fingerprint sensitive
+for certain changes while keeping it immune to other changes. If this is not
+enough, the algorithm also supports computing multiple different fingerprints
+simultaneously.
+  \footnote{The old ({\opp} 4.x) fingerprint was computed from the module
+  ID and simulation time of each event. The same fingerprint can still be
+  computed by setting the \fconfig{fingerprint-ingredients} option to
+  \ttt{"ti"}. }
+
+In addition, independently of the ingredients, the \fconfig{fingerprint-events},
+\fconfig{fingerprint-modules}, and \fconfig{fingerprint-results} options can
+be used to further filter for events, modules, and statistical results
+respectively. These options take a wildcard expression that is used to match
+against the corresponding object before including its property in the fingerprint.
+These filters are mainly useful to compute fingerprints only for a subset of the
+simulation.
 
 \begin{warning}
-The computed fingerprint value is heavily dependent on the accuracy of the
+The computed fingerprint value may be dependent on the accuracy of the
 floating point arithmetic. There are differences between the floating point
-handling of AMD and Intel CPUs. Running under a processor emulator software
+operations of AMD and Intel CPUs. Running under a processor emulator software
 like \fprog{valgrind} may also produce a different fingerprint. This is
 normal. Hint: see gcc options \ttt{-mfpmath=sse -msse2}.
 \end{warning}
@@ -765,7 +780,7 @@ normal. Hint: see gcc options \ttt{-mfpmath=sse -msse2}.
 The INET Framework contains a script for automated fingerprint tests as
 well. The script runs all or selected simulations defined in a CSV file
 (with columns like the working directory, the command to run, and the
-expected fingerprint), and reports the results. The script is extensively
+expected fingerprints), and reports the results. The script is extensively
 used during INET Framework development to detect regressions, and can be
 easily adapted to other models or model frameworks.
 

@@ -204,19 +204,10 @@ There are several useful configuration options that control how a simulation is 
   \item \fconfig{sim-time-limit} -- Limits how long the simulation should run (in simulation time)
   \item \fconfig{record-eventlog} -- Turns on the recording of the simulator events into an event log file.
            The resulting \ttt{.elog} file can be analyzed later in the IDE with the sequence chart tool.
-  \item \fconfig{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
-          It is calculated from the module id and from the current simulation time of each event.
-          If you specify the \fconfig{fingerprint} option in the config file, the simulation runtime will
-          compare the computed checksum with the provided one. If there is a difference it will
-          generate an error. This feature is very useful if you make some cosmetic changes to your
-          source and want to be reasonable sure that your changes did not alter the behaviour
-          of the model.
-          \begin{warning}
-          The value of the calculated fingerprint is heavily dependent on the accuracy of the floating
-          point arithmetic. There are differences between the floating point handling of AMD and Intel CPUs.
-          Running under a processor emulator software like \fprog{valgrind} may also produce
-          a different fingerprint. This is normal. Hint: see gcc options \ttt{-mfpmath=sse -msse2}.
-          \end{warning}
+  \item \fconfig{fingerprint} -- Instructs the simulation kernel to compute one or more fingerprints while
+          the simulation is running. When the simulation terminates, the simulation kernel will generate an
+          error if the computed fingerprints don't match with the provided ones. This feature is mainly
+          useful for regression testing.
   \item \fconfig{debug-on-errors} -- If the runtime detects any error, it will generate a breakpoint
           so you will be able to check the location and the context of the problem in your debugger.
   \item \fconfig{debugger-attach-on-error} -- Controls just-in-time debugging. When this option is enabled
