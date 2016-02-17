@@ -1,0 +1,106 @@
+%description:
+Test histogram recording via @statistics:
+- for a @statistic named foo, the histogram is saved under the name foo:histogram
+- the config key for turning on/off the recording of histogram bins is foo:histogram:histogram (khmm)
+  NOTE: first ":histogram" is the recording mode, second ":histogram" is the key for disabling the recording of bins
+
+Test case 1: start with all scalar results enabled
+
+%file: test.ned
+
+simple Node
+{
+    @signal[foo];
+    @statistic[bins](source=foo; record=histogram);  // to be recorded with bins
+    @statistic[nobins](source=foo; record=histogram); // to be recorded without bins (just basic stats)
+    @statistic[nothing](source=foo; record=histogram);  // not to be recorded at all
+    @statistic[dummy](source=foo; record=last);  // to add a delimiter line at the end of the sca file
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule
+{
+    virtual void initialize() override {
+        simsignal_t foo = registerSignal("foo");
+        for (int i = 0; i < 100; i++)
+            emit(foo, binomial(40, 0.5));
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%inifile: omnetpp.ini
+**.nobins:histogram:histogram.scalar-recording = false
+**.nothing:histogram.scalar-recording = false
+
+%contains: results/General-0.sca
+statistic Test.node 	bins:histogram
+field count 100
+field mean 19.84
+field stddev 3.1549864332417
+field sum 1984
+field sqrsum 40348
+field min 12
+field max 28
+attr source  foo
+bin	-INF	0
+bin	4	0
+bin	5	0
+bin	6	0
+bin	7	0
+bin	8	0
+bin	9	0
+bin	10	0
+bin	11	0
+bin	12	3
+bin	13	1
+bin	14	3
+bin	15	2
+bin	16	6
+bin	17	6
+bin	18	8
+bin	19	11
+bin	20	15
+bin	21	14
+bin	22	14
+bin	23	8
+bin	24	5
+bin	25	1
+bin	26	1
+bin	27	1
+bin	28	1
+bin	29	0
+bin	30	0
+bin	31	0
+bin	32	0
+bin	33	0
+bin	34	0
+bin	35	0
+bin	36	0
+statistic Test.node 	nobins:histogram
+field count 100
+field mean 19.84
+field stddev 3.1549864332417
+field sum 1984
+field sqrsum 40348
+field min 12
+field max 28
+attr source  foo
+scalar Test.node 	dummy:last 	17
+attr source  foo
+
