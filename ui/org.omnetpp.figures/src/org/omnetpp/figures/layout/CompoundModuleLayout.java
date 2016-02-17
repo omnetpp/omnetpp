@@ -211,7 +211,7 @@ public class CompoundModuleLayout extends AbstractLayout {
             case ring: {
                 float rx = fallback(p.dx, (int)(spacing*constraint.getVectorSize()/(2*Math.PI)));
                 float ry = fallback(p.dy, rx);
-                double alpha = constraint.getVectorIndex() * 2 * Math.PI / constraint.getVectorSize();
+                double alpha = constraint.getVectorSize() == 0 ? 0 : constraint.getVectorIndex() * 2 * Math.PI / constraint.getVectorSize();
                 x = rx - (float)(rx*Math.sin(alpha));
                 y = ry - (float)(ry*Math.cos(alpha));
                 break;
