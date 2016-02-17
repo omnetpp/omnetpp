@@ -55,7 +55,9 @@ public class OmnetppStartup implements IStartup {
      * Method declared on IStartup.
      */
     public void earlyStartup() {
-        checkForNewVersion();
+        // FIXME do version check only if the user agreed to it.
+        // as we currently do not have a consent dialog, we just disable it for now
+        // checkForNewVersion();
 
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
