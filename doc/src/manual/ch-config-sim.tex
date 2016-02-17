@@ -1160,6 +1160,299 @@ For the now obsolete cLCG32 RNG, the name of the corresponding option is
 called \fprog{opp\_lcg32\_seedtool} to generate good seed values that
 are sufficiently separated in the RNG's sequence.
 
+\section{Logging}
+\label{sec:ch-config-sim:logging}
+
+The {\opp} logging infrastructure provides a few configuration options that
+affect what is written to the log output. It supports configuring multiple
+filters: global compile time, global runtime, and per-component runtime log
+level filters. For a log statement to actually produce output, it must pass
+each filter simulatenously. In addition, one can also specify a log prefix
+format string which determines the context information that is written before
+each log line. In the following sections, we look how to configure logging.
+
+\subsection{Compile Time Filtering}
+
+The \fmac{COMPILETIME\_LOGLEVEL} macro determines which log statements
+are compiled into the executable. Any log statment which uses a log level below
+the specified compile time log level is omitted. In other words, no matter how
+the runtime log levels are configured, such log statements are not even executed.
+This is mainly useful to avoid the performance penalty paid for log statements
+which are not needed.
+
+\begin{cpp}
+#define COMPILETIME_LOGLEVEL LOGLEVEL_INFO
+EV_INFO << "Packet received successfully" << endl;
+EV_DEBUG << "CRC check successful" << endl;
+\end{cpp}
+
+In the above example, the output of the second log statement is omitted:
+
+\begin{filelisting}
+[INFO] Packet received successfully
+\end{filelisting}
+
+If simulation performance is critical, and if there are lots of log statements
+in the code, it might be useful to omit all log statements from the executable.
+This can be very simply achieved by putting the following macro into effect for
+the compilation of all source files.
+
+\begin{cpp}
+#define COMPILETIME_LOGLEVEL LOGLEVEL_OFF
+\end{cpp}
+
+On the other hand, if there's some hard to track down issue, it might be useful
+to just do the opposite. Compiling with the lowest log level ensures that the
+log output contains as much information as possible.
+
+\begin{cpp}
+#define COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
+\end{cpp}
+
+By default, the \fmac{COMPILETIME\_LOGLEVEL} macro is set to
+\fmac{LOGLEVEL\_TRACE} if the code is compiled in debug mode (\fmac{NDEBUG} is
+not set). However, it is set to \fmac{LOGLEVEL\_DETAIL} if the code is compiled
+in release mode (\fmac{NDEBUG} is set).
+
+In fact, the \fmac{COMPILETIME\_LOG\_PREDICATE} macro is the most generic compile
+time predicate that determines which log statements are compiled into the executable.
+Mostly, there's no need to redefine this macro, but it can be useful sometimes.
+For example, one can do compile time filtering for log categories by redefining
+this macro. By default, the \fmac{COMPILETIME\_LOG\_PREDICATE} macro is defined
+as follows:
+
+\begin{cpp}
+#define COMPILETIME_LOG_PREDICATE(object, loglevel, category) \
+        (loglevel >= COMPILETIME_LOGLEVEL)
+\end{cpp}
+
+\subsection{Runtime Filtering}
+
+The \fvar{cLog::logLevel} variable restricts during runtime which log statements
+produce output. By default, the global runtime log level doesn't filter logging,
+it is set to \fmac{LOGLEVEL\_TRACE}. Although due to its global nature it's not
+really modular, nevertheless it's still allowed to change the value of this
+variable. It is mainly used in interactive user interfaces to implement efficient
+global filtering, but it may also be useful for various debugging purposes.
+
+In addition to the global variable, there's also a per-component runtime log
+level which only restricts the output of a particular component of the
+simulation. By default, the runtime log level of all components are set to
+\fmac{LOGLEVEL\_TRACE}. Programmatically, these log levels can be retrieved
+with \ffunc{cComponent::getLogLevel()} and changed with
+\ffunc{cComponent::setLogLevel()}.
+
+In general, any log statment which uses a log level below the specified global
+runtime log level, or below the specified per-component runtime log level, is
+omitted. If the log statement appears in a module source, then the module's
+per-component runtime log level is checked. In any other C++ code, the context
+module's per-component runtime log level is checked.
+
+In fact, the \fvar{cLog::noncomponentLogPredicate} and the \fvar{cLog::componentLogPredicate}
+are the most generic runtime predicates that determines which log statements are
+executed. Mostly, there's no need to redefine these predicates, but it can be
+useful sometimes. For example, one can do runtime filtering for log categories
+by redefining them. To give you an example, the \fvar{cLog::componentLogPredicate}
+does the following runtime checks:
+
+\begin{cpp}
+return statementLogLevel >= cLog::loglevel &&
+       statementLogLevel >= sourceComponent->getLogLevel() &&
+       getEnvir()->isLoggingEnabled(); // for express mode
+\end{cpp}
+
+\subsection{Log Prefix Format}
+
+The log prefix format is a string which determines the log prefix that is written
+before each log line. The format string contains constant parts interleaved with
+special format directives. The latter always start with the \ttt{\%} character
+followed by another character that identifies the format directive. Constant
+parts are simply written to the output, while format directives are substituted
+at runtime with the corresponding data that is captured by the log statement.
+
+The following is the list of predefined log prefix format directives. They are
+organized into groups based on what kind of information they provide.
+
+Log statement related format directives:
+\begin{itemize}
+  \item \ttt{\%l} log level name
+  \item \ttt{\%c} log category
+\end{itemize}
+
+Current simulation state related format directives:
+\begin{itemize}
+  \item \ttt{\%e} current event number
+  \item \ttt{\%t} current simulation time
+  \item \ttt{\%g} current fingerprint if fingerprint verification is enabled in the configuration, otherwise empty
+  \item \ttt{\%v} current message or event name
+  \item \ttt{\%a} current message or event class name
+  \item \ttt{\%n} module name of current event
+  \item \ttt{\%m} module path of current event
+  \item \ttt{\%o} module class name of current event
+  \item \ttt{\%s} simple NED type name of module of current event
+  \item \ttt{\%q} fully qualified NED type name of module of current event
+  \item \ttt{\%N} context component name
+  \item \ttt{\%M} context component path
+  \item \ttt{\%O} context component class name
+  \item \ttt{\%S} context component NED type simple name
+  \item \ttt{\%Q} context component NED type fully qualified name
+\end{itemize}
+
+Simulation run related format directives:
+\begin{itemize}
+  \item \ttt{\%G} config name
+  \item \ttt{\%R} run number
+  \item \ttt{\%X} network module class name
+  \item \ttt{\%Y} network module NED type simple name
+  \item \ttt{\%Z} network module NED type fully qualified name
+\end{itemize}
+
+C++ source related (where the log statement is) format directives:
+\begin{itemize}
+  \item \ttt{\%p} source object pointer
+  \item \ttt{\%b} source object name
+  \item \ttt{\%d} source object path
+  \item \ttt{\%z} source class name
+  \item \ttt{\%u} source function name
+  \item \ttt{\%x} source component NED type simple name
+  \item \ttt{\%y} source component NED type fully qualified
+  \item \ttt{\%f} source file name
+  \item \ttt{\%i} source line number
+\end{itemize}
+
+Operating system related format directives:
+\begin{itemize}
+  \item \ttt{\%w} user time in seconds
+  \item \ttt{\%W} human readable wall time
+  \item \ttt{\%H} host name
+  \item \ttt{\%I} process id
+\end{itemize}
+
+Compound field format directives:
+\begin{itemize}
+  \item \ttt{\%E} event object (class name, name)
+  \item \ttt{\%U} module of current event (NED type, full path)
+  \item \ttt{\%C} context component (NED type, full path)
+  \item \ttt{\%K} context component, if different from current module (NED type, full path)
+  \item \ttt{\%J} source component or object (NED type or class, full path or pointer)
+  \item \ttt{\%L} source component or object, if different from context component (NED type or class, full path or pointer)
+\end{itemize}
+
+Padding format directives:
+\begin{itemize}
+  \item \ttt{\%[0-9]+} add spaces until specified column
+  \item \ttt{\%|} adaptive tabstop: add padding until longest prefix seen so far
+  \item \ttt{\%>} function call depth times 2-space indentation (see Enter\_Method, Enter\_Method\_Silent)
+\end{itemize}
+
+Conditional format directives:
+\begin{itemize}
+  \item \ttt{\%?} ignore the following constant part if the preceding directive didn't print anything (useful for separators)
+\end{itemize}
+
+Escaping the \% character:
+\begin{itemize}
+  \item \ttt{\%\%} one \% character
+\end{itemize}
+
+\subsection{Configuring Cmdenv}
+
+In Cmdenv, logging can be configured using \ffilename{omnetpp.ini} configuration
+options. The configured settings remain in effect during the whole simulation run
+unless overridden programatically.
+
+\begin{itemize}
+  \item \fconfig{cmdenv-output-file} redirects standard output to a file
+  \item \fconfig{cmdenv-log-format} determines the log prefix of each line
+  \item \fconfig{<object-full-path>.cmdenv-log-level} restricts output on a per-component basis
+\end{itemize}
+
+By default, the log is written to the standard output but it can be redirected to
+a file. The output can be completely disabled from \ffilename{omnetpp.ini}, so
+that it doesn't slow down simulation when it is not needed. The per-component
+runtime log level option must match the full path of the targeted component. The
+supported values for this configuration option are the following:
+
+\begin{itemize}
+  \item \ttt{off} completely disables log output
+  \item \ttt{fatal} omits log output below \ttt{LOGLEVEL\_FATAL}
+  \item \ttt{error} omits log output below \ttt{LOGLEVEL\_ERROR}
+  \item \ttt{warn} omits log output below \ttt{LOGLEVEL\_WARN}
+  \item \ttt{info} omits log output below \ttt{LOGLEVEL\_INFO}
+  \item \ttt{detail} omits log output below \ttt{LOGLEVEL\_DETAIL}
+  \item \ttt{debug} omits log output below \ttt{LOGLEVEL\_DEBUG}
+  \item \ttt{trace} completely enables log output
+\end{itemize}
+
+By default, the log prefix format is set to \ttt{"[\%l]\textbackslash{}t"}. The
+default setting is intentionally quite simple to avoid cluttered standard output,
+it produces similar log output:
+
+\begin{filelisting}
+[INFO]  Packet received successfully
+[DEBUG] CRC check successful
+\end{filelisting}
+
+The log messages are aligned vertically because there's a \ttt{TAB} character
+in the format string. Setting the log prefix format to an empty string disables
+writing a log prefix altogether. Finally, here is a more detailed format string:
+\ttt{"[\%l]\textbackslash{}t\%C for \%E: \%|"}, it produces similar output:
+
+\begin{filelisting}
+[INFO]  (IPv4)host.ip for (ICMPMessage)ping0:     Pending (IPv4Datagram)ping0
+[INFO]  (ARP)host.arp for (ICMPMessage)ping0:     Starting ARP resolution
+[DEBUG] (ARP)host.arp for (ICMPMessage)ping0:     Sending (ARPPacket)arpREQ
+[INFO]  (Mac)host.wlan.mac for (ARPPacket)arpREQ: Enqueing (ARPPacket)arpREQ
+\end{filelisting}
+
+In express mode, for performance reasons, log output is disabled during the whole
+simulation. However, during the simulation finish stage, logging is automatically
+re-enabled to allow writing statistical and other results to the log. Alternatively,
+you can easily disable all logging temporarily and efficiently if you put the
+following configuration option at the beginning of \ffilename{omnetpp.ini}. This
+can be used without changing any other log level configuration options.
+
+\begin{inifile}
+[General]
+**.cmdenv-log-level = off
+\end{inifile}
+
+Finally, the following is a more complex example that sets the per-component
+runtime log levels for all PHY components to \fmac{LOGLEVEL\_WARN}, except for
+all MAC modules where it is set to \fmac{LOGLEVEL\_DEBUG}, and for all other
+modules it is set \fmac{LOGLEVEL\_OFF}.
+
+\begin{inifile}
+[General]
+**.phy.cmdenv-log-level = warn
+**.mac.cmdenv-log-level = debug
+**.cmdenv-log-level = off
+\end{inifile}
+
+\subsection{Configuring Tkenv and Qtenv}
+
+The graphical user interfaces, Tkenv and Qtenv, provide their own configuration
+dialogs where the user can configure logging. These dialogs offer setting the
+global runtime log level and the log prefix format string. The per-component
+runtime log levels can be set from the context menu of components. As in Cmdenv,
+it's also possible to set the log levels to \ttt{off}, effectively disabling
+logging globally or for specific components only.
+
+In contrast to Cmdenv, setting the runtime log levels is possible even if the
+simulation is already running. This feature allows continuous control over the
+level of detail of what is written to the log output. For obvious reasons,
+changing the log levels has no effect back in time, so already written log
+content in the log windows will not change.
+
+By default, the log prefix format is set to \ttt{"\%l \%C: "}, it produces
+similar log output:
+
+\begin{filelisting}
+INFO  Network.server.wlan[0].mac: Packet received successfully
+DEBUG Network.server.wlan[0].mac: CRC check successful
+\end{filelisting}
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"

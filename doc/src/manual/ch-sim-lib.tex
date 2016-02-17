@@ -235,55 +235,233 @@ configuration option lets you do that -- check it in section
 
 \section{Logging from Modules}
 
-The logging feature will be used extensively in the code examples, so
-we introduce it here.
+In a simulation there are often thousands of modules which simultaneously carry
+out non-trivial tasks. In order to understand a complex simulation, it is
+essential to know the inputs and outputs of algorithms, the information on
+which decisions are based, and the performed actions along with their parameters.
+In general, logging facilitates understanding which module is doing what and why.
 
-The \ttt{ev}\index{ev} object represents the user interface of the
-simulation.  You can send debugging output to \ttt{ev} with the C++-style
-output operators:
+{\opp} makes logging easy and consistent among simulation models by providing
+its own C++ API and configuration options. The API provides efficient logging
+with several predefined log levels, global compile time and runtime filters,
+per-component runtime filters, automatic context information, log prefixes and
+other useful features. In the following sections, we look at how to write log
+statements using the {\opp} logging API.
+
+\subsection{Log Output}
+
+The exact way log messages are displayed to the user depends on the user interface.
+In the command-line user interface (Cmdenv\index{Cmdenv}), the log is simply
+written to the standard output. In the graphical user interfaces, Tkenv and Qtenv,
+the main window displays the log output of all modules by default. You can also
+open new output windows on a per module basis, these windows automatically filter
+for the log messages of the selected module.
+
+\subsection{Log Levels}
+
+All logging must be categorized into one of the predefined log levels. The
+assigned log level determines how important and how detailed a log statement
+is. When deciding which log level is appropriate for a particular log statement,
+keep in mind that they are meant to be local to components. There's no need for
+a global agreement among all components, because {\opp} provides per component
+filtering. Log levels are mainly useful because log output can be filtered
+based on them.
+
+\begin{itemize}
+  \item \fmac{LOGLEVEL\_OFF} is not a real log level, it can't be used for actual
+    logging. It is only useful for configuration purposes, it completely disables
+    logging.
+  \item \fmac{LOGLEVEL\_FATAL} is the highest log level. It should be used for
+    fatal (unrecoverable) errors that prevent the component from further
+    operation. It doesn't mean that the simulation must stop immediately
+    (because in such cases the code should throw a cRuntimeError), but rather
+    that the a component is unable to continue normal operation. For example, a
+    special purpose recording component may be unable to continue recording due
+    to the disk being full.
+  \item \fmac{LOGLEVEL\_ERROR} should be used for recoverable (non-fatal)
+    errors that allow the component to continue normal operation. For example,
+    a MAC layer protocol component could log unsuccessful packet receptions and
+    unsuccessful packet transmissions using this level.
+  \item \fmac{LOGLEVEL\_WARN} should be used for exceptional (non-error)
+    situations that may be important for users and rarely occur in the
+    component. For example, a MAC layer protocol component could log detected
+    bit errors using this level.
+  \item \fmac{LOGLEVEL\_INFO} should be used for high-level protocol specific
+    details that are most likely important for the users of the component. For
+    example, a MAC layer protocol component could log successful packet
+    receptions and successful packet transmissions using this level.
+  \item \fmac{LOGLEVEL\_DETAIL} should be used for low-level protocol-specific
+    details that may be useful and understandable by the users of the component.
+    These messages may help to track down various protocol-specific issues
+    without actually looking too deep into the code. For example, a MAC layer
+    protocol component could log state machine updates, acknowledge timeouts
+    and selected back-off periods using this level.
+  \item \fmac{LOGLEVEL\_DEBUG} should be used for high-level
+    implementation-specific technical details that are most likely important
+    for the developers of the component. These messages may help to debug
+    various issues when one is looking at the code. For example, a MAC layer
+    protocol component could log updates to internal state variables, updates
+    to complex data structures using this level.
+  \item \fmac{LOGLEVEL\_TRACE} is the lowest log level. It should be used for
+    low-level implementation-specific technical details that are mostly useful
+    for the developers of the component. For example, a MAC layer protocol
+    component could log control flow in loops and if statements,
+    entering/leaving methods and code blocks using this level.
+\end{itemize}
+
+\subsection{Log Statements}
+
+{\opp} provides several C++ macros for the actual logging. Each one of these
+macros act like a C++ stream, so they can be used similarly to \fvar{std::cout}
+with \ffunc{operator<<} (shift operator).
+
+\begin{itemize}
+  \item \fmac{EV\_FATAL} for \fmac{LOGLEVEL\_FATAL}
+  \item \fmac{EV\_ERROR} for \fmac{LOGLEVEL\_ERROR}
+  \item \fmac{EV\_WARN} for \fmac{LOGLEVEL\_WARN}
+  \item \fmac{EV\_INFO} for \fmac{LOGLEVEL\_INFO}
+  \item \fmac{EV\_DETAIL} for \fmac{LOGLEVEL\_DETAIL}
+  \item \fmac{EV\_DEBUG} for \fmac{LOGLEVEL\_DEBUG}
+  \item \fmac{EV\_TRACE} for \fmac{LOGLEVEL\_TRACE}
+  \item \fmac{EV} is provided for backward compatibility, and defaults to \fmac{EV\_INFO}
+\end{itemize}
+
+The actual logging is as simple as writing information into one of these special
+log streams as follows:
 
 \begin{cpp}
-EV << "packet received, sequence number is " << seqNum << endl;
-EV << "queue full, discarding packet\n";
+EV_ERROR << "Connection to server is lost.\n";
+EV_WARN << "Queue is full, discarding packet.\n";
+EV_INFO << "Packet received , sequence number = " << seqNum << "." << endl;
+EV_TRACE << "routeUnicastPacket(" << packet << ");" << endl;
 \end{cpp}
 
-An alternative solution is \ffunc{ev.printf()}:
+\begin{note}
+It is not recommended that you directly use \ffunc{printf()} or \ffunc{std::cout}
+to print log messages -- log output can be controlled more easily from
+\ffilename{omnetpp.ini}, and it is more convenient to view, using Tkenv or Qtenv.
+\end{note}
+
+The above C++ macros work well from any C++ class, including {\opp} modules. In
+fact, they automatically capture a number of context specific information such
+as the current event, current simulation time, context module, \fvar{this}
+pointer, source file and line number. The final log lines will be automatically
+extended with a prefix that is created from the captured information (see
+section \ref{sec:ch-config-sim:logging}).
+
+In static class member functions or in non-class member functions an extra
+\fmac{EV\_STATICCONTEXT} macro must be present to make sure that normal log
+macros compile. \footnote{This is due to that in C++ it is impossible
+determine at compile time whether if a \fvar{this} pointer is accessible.}
 
 \begin{cpp}
-ev.printf("packet received, sequence number is %d\n", seqNum);
+void findModule(const char *name, cModule *from)
+{
+    EV_STATICCONTEXT;
+    EV_TRACE << "findModule(" << name << ", " << from << ");" << endl;
 \end{cpp}
 
-The exact way messages are displayed to the user depends on the user
-interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
-the message is simply dumped to the standard output. (This output can also be
-disabled from \ffilename{omnetpp.ini} so that it doesn't slow down simulation
-when it is not needed.) In Tkenv, the runtime GUI, you can open
-a text output window for every module.
-It is not recommended that you use \ffunc{printf()} or \ffunc{cout}
-to print messages -- \ttt{ev} output can be controlled more easily
-from \ffilename{omnetpp.ini} and it is more convenient to view, using Tkenv.
+\subsection{Log Categories}
 
-One can save CPU cycles by making logging statements conditional
-on whether the output is actually being displayed or recorded anywhere.
-The \ttt{ev.isDisabled()} call returns true when \ttt{EV<<} output is disabled,
-such as in Tkenv or Cmdenv ``express'' mode. Thus, one can write code like
-this:
+Sometimes it might be useful to further classify log statements into user
+defined log categories. In the {\opp} logging API, a log category is an
+arbitrary string provided by the user.
+
+For example, a module test may check for a specific log message in the test's
+output. Putting the log statement into the \ttt{test} category ensures that
+extra care is taken when someone changes the wording in the statement to match
+the one in the test.
+
+Similarily to the normal C++ log macros, there are separate log macros for each
+log level which also allow specifying the log category. Their name is the same
+as the normal variants' but simply extended with the \fmac{\_C} suffix. They
+take the log category as the first parameter before any shift operator calls:
 
 \begin{cpp}
-if (!ev.isDisabled())
-    EV << "Packet " << msg->getName() << " received\n";
+EV_INFO_C("test") << "Received " << numPacket << " packets in total.\n";
 \end{cpp}
 
-A more sophisticated implementation of the same idea is to the \fmac{EV}
-macro which can be used in logging statements instead of \ttt{ev}.
-One would simply write \ttt{EV<<} instead of \ttt{ev<<}:
+\subsection{Composition and New lines}
+
+Occasionally it's easier to produce a log line using multiple statements.
+Mostly because some computation has to be done between the parts. This can be
+achieved by omitting the new line from the log statements which are to be
+continued. And then subsequent log statements must use the same log level,
+otherwise an implicit new line would be inserted.
 
 \begin{cpp}
-EV << "Packet " << msg->getName() << " received\n";
+EV_INFO << "Line starts here, ";
+... // some other code without logging
+EV_INFO << "and it continues here" << endl;
 \end{cpp}
 
-\ttt{EV}'s implementation makes use of the fact that the \ttt{<<} operator
-is bound more loosely than the conditional operator (\ttt{?:}).
+Assuming a simple log prefix that prints the log level in brakets, the above
+code fragment produces the following output in Cmdenv:
+
+\begin{filelisting}
+[INFO] Line starts here, and it continues here
+\end{filelisting}
+
+Sometimes it might be useful to split a line into multiple lines to achieve
+better formatting. In such cases, there's no need to write multiple log
+statements. Simply insert new lines into the sequence of shift operator calls:
+
+\begin{cpp}
+EV_INFO << "First line" << endl << "second line" << endl;
+\end{cpp}
+
+In the produced output, each line will have the same log prefix, as shown below:
+
+\begin{filelisting}
+[INFO] First line
+[INFO] Second line
+\end{filelisting}
+
+The {\opp} logging API also supports direct printing to a log stream. This is
+mainly useful when printing is really complicated algorithmically (e.g. printing
+a multi-dimensional value). The following code could produce multiple log lines
+each having the same log prefix.
+
+\begin{cpp}
+void Matrix::print(std::stream &output) { ... }
+void Matrix::someFunction()
+{
+   print(EV_INFO);
+\end{cpp}
+
+\begin{note}
+The old ({\opp} 4.x) version provided \ffunc{ev.printf}, but it is deprecated.
+\end{note}
+
+\subsection{Implementation}
+
+{\opp} does its best to optimize the performance of logging. The implementation
+fully supports conditinal compilation of log statements based on their log
+level. It automatically checks whether the log is recorded anywhere. It also
+checks global and per-component runtime log levels. The latter is efficiently
+cached in the components for subsequent checks. See section
+\ref{sec:ch-config-sim:logging} for more details on how to configure these log
+levels.
+
+The implementation of the C++ log macros makes use of the fact that the
+\ffunc{operator<<} is bound more loosely than the conditional operator
+(\ttt{?:}). This solves conditional compilation, and also helps runtime
+checks by redirecting the output to a \ttt{null} stream. Unfortunately the
+\ffunc{operator<<} calls are still evaluated on the \ttt{null} stream, even if
+the log level is disabled.
+
+Rarely just the computation of log statement parameters may be very expensive,
+and thus it must be avoided if possible. In this case, it is a good idea to
+make the log statement conditional on whether the output is actually being
+displayed or recorded anywhere. The \ttt{cEnvir::isLoggingEnabled()} call
+returns false when the output is disabled, such as in ``express'' mode. Thus,
+one can write code like this:
+
+\begin{cpp}
+if (!getEnvir()->isLoggingEnabled())
+    EV_DEBUG << "CRC: " << computeExpensiveCRC(packet) << endl;
+\end{cpp}
+
 
 %FIXME add tale about debug channels etc.
 
