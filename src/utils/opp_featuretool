@@ -234,8 +234,6 @@ class FeatureTool:
                 if not check.match(line):
                     print("opp_featuretool: Error: invalid line in .nedfolders:%d : '%s'" % (ord, line), file=sys.stderr)
                     sys.exit(1)
-                elif line[0] == '-':
-                    print("opp_featuretool: Warning: .nedfolders:%d begins with '-': (This format was used by ommnet 4.x. Please remove this line from .nedfolders)." % (ord), file=sys.stderr)
                 else:
                     path = line.replace('.', '/')
                     prefix = ''
