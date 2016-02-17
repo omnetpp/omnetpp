@@ -6,6 +6,8 @@ ${bannerComment}
 
 #include <omnetpp.h>
 
+using namespace omnetpp;
+
 <#if namespace!="">namespace ${namespace} {</#if>
 
 /**
