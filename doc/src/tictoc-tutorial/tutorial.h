@@ -800,10 +800,7 @@ we only need to modify the displays string during runtime.
 The following code does the job:
 
 @dontinclude txc14.cc
-@skip isGUI
-@until updateDisplay
-
-@skip ::updateDisplay
+@skip ::refreshDisplay
 @until }
 
 And the result looks like this:
@@ -893,7 +890,7 @@ Sources: @ref tictoc15.ned, @ref tictoc15.msg, @ref txc15.cc, @ref omnetpp.ini
 
 @section s16 Step 16: Statistic collection without modifying your model
 
-In the previous step we have added statistic collection to our model. 
+In the previous step we have added statistic collection to our model.
 While we can compute and save any value we wish, usually it is not known
 at the time of writing the model, what data the enduser will need.
 
@@ -903,14 +900,14 @@ model writer just have to decide what signals to emit, what data to attach
 to them and when to emit them. The enduser can attach 'listeners' to these
 signals that can process or record these data items. This way the model
 code does not have to contain any code that is specific to the statistics
-collection and the enduser can freely add additional statistics without 
+collection and the enduser can freely add additional statistics without
 even looking into the C++ code.
 
 We will re-write the statistic collection introduced in the last step to
 use signals. First of all, we can safely remove all statistic related variables
-from our module. There is no need for the <tt>cOutVector</tt> and 
+from our module. There is no need for the <tt>cOutVector</tt> and
 <tt>cLongHistogram</tt> classes either. We will need only a single signal
-that carries the <tt>hopCount</tt> of the message at the time of message 
+that carries the <tt>hopCount</tt> of the message at the time of message
 arrival at the destination.
 
 First we need to define our signal. The <tt>arrivalSignal</tt> is just an
@@ -920,7 +917,7 @@ identifier that can be used later to easily refer to our signal.
 @skipline class Txc16
 @until protected:
 
-We must register all signals before using them. The best place to do this 
+We must register all signals before using them. The best place to do this
 is the <tt>initialize()</tt> method of the module.
 
 @skipline ::initialize()
@@ -931,32 +928,32 @@ Now we can emit our signal, when the message has arrived to the destination node
 @skipline ::handleMessage(
 @until EV <<
 
-As we do not have to save or store anything manually, the <tt>finish()</tt> method 
+As we do not have to save or store anything manually, the <tt>finish()</tt> method
 can be deleted. We no longer need it.
 
 The last step is that we have to define the emitted signal also in the NED file.
 Declaring signals in the NED file allows you to have all information about your
-module in one place. You will see the parameters it takes, its input and output 
+module in one place. You will see the parameters it takes, its input and output
 gates, and also the signals and statistics it provides.
 
 @dontinclude tictoc16.ned
 @skipline simple
 @until display
 
-Now we can define also a statistic that should be collected by default. Our previous example 
-has collected statistics (max,min,mean,count etc) about the hop count of the 
+Now we can define also a statistic that should be collected by default. Our previous example
+has collected statistics (max,min,mean,count etc) about the hop count of the
 arriving messages, so let's collect the same data here too.
 
 The <tt>source</tt> key specifies the signal we want our statistic to attach to.
 The <tt>record</tt> key can be used to tell what should be done with the received
 data. In our case we sepcify that each value must be saved in a vector file (vector)
-and also we need to calculate min,max,mean,count etc. (stats). (NOTE: <tt>stats</tt> is 
-just a shorthand for min, max, mean, sum, count etc.) With this step we have finished 
+and also we need to calculate min,max,mean,count etc. (stats). (NOTE: <tt>stats</tt> is
+just a shorthand for min, max, mean, sum, count etc.) With this step we have finished
 our model.
 
 Now we have just realized that we would like to see a histogram of the hopCount on the
 tic[1] module. On the other hand we are short on disk storage and we are not interested
-having the vector data for the first three module tic 0,1,2. No problem. We can add our 
+having the vector data for the first three module tic 0,1,2. No problem. We can add our
 histogram and remove the unneeded vector recording without even touching the C++ or NED
 files. Just open the INI file and modify the statistic recording:
 
@@ -1144,5 +1141,3 @@ UP: @ref contents
 
 /// @page omnetpp.ini omnetpp.ini
 /// @include omnetpp.ini
-
-
