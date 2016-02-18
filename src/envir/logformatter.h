@@ -176,12 +176,12 @@ class ENVIR_API LogFormatter
         bool conditional;
     };
 
-    bool isBlank_ = false;
+    bool isBlank_;
     std::vector<FormatPart> formatParts;
     std::vector<int> adaptiveTabColumns;
 
   public:
-    LogFormatter() { }
+    LogFormatter() : isBlank_(true) { }
     LogFormatter(const char *format);
 
     void setFormat(const char *format) { parseFormat(format); }
