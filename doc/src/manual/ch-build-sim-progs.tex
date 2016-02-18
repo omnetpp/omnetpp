@@ -7,69 +7,39 @@ As has already been mentioned, an {\opp} model consists of
 the following parts:
 
 \begin{itemize}
-  \item{NED language\index{ned!files} topology description(s). These
-      are files with the \ttt{.ned} extension.}
-  \item{Message definitions\index{message definitions}, in files
-      with \ttt{.msg} extension.}
-  \item{Simple module implementations and other C++ code, in \ttt{.cc}
-        files.}
+  \item NED language\index{ned!files} topology description(s). These are files
+        with the \ttt{.ned} extension.
+  \item Message definitions\index{message definitions}, in files with \ttt{.msg} extension.
+  \item Simple module implementations and other C++ code, in \ttt{.cc} and \ttt{.h} files.
 \end{itemize}
 
+To build an executable simulation program, you first need to translate the
+MSG files\index{msg!files} into C++, using the message compiler
+(\ttt{opp\_msgc}). After this step, the process is the same as building any
+C/C++ program from source: all C++ sources need to be compiled into object
+files (\ttt{.o} or \ttt{.obj}), and all object files need to be linked
+with the necessary libraries to get an executable or a shared library.
 
-To build an executable simulation program,
-you first need to translate the MSG files\index{msg!files}
-into C++, using the message compiler (\ttt{opp\_msgc}).
-After this step, the process is the same as building any C/C++
-program from source: all C++ sources need to be compiled into object files
-(\ttt{.o} files (using gcc or clang)
-\ifcommercial or \ttt{.obj} (using MSVC on Windows)) \fi
-and all object files need to be linked with the necessary libraries to get
-an executable or shared library.
-
-File names for libraries differ depending on the platform, whether it is
-a static or shared library, and whether it is a debug or release version.
-Let us suppose you have a library called \ttt{common}:
-\begin{itemize}
-  \item{The \ttt{opp} prefix is always prepended to all library names to avoid name clashes with other programs.}
-  \item{For all platforms, where the gcc (or mingw) compiler is used the static library filename has a ".a" extension
-         and the \ttt{lib} prefix is prepended to the name (e.g. \ttt{liboppfoo[d].a}).}
-  \item{For all platforms, the debug version filename has a "d" inserted
-            at the end of the library name  (e.g. \ttt{liboppcommond.ext}).}
-  \item{For the Unix/Linux platform, the shared library filename has a ".so"
-         extension (e.g. \ttt{liboppcommon[d].so}).}
-  \item{For the Mac OS X platform, the shared library filename has a ".dylib"
-         extension (e.g. \ttt{liboppcommon[d].dylib}).}
-  \item{For the Windows platform, the shared library filename has a ".dll"
-         extension (e.g. \ttt{liboppfoo[d].dll}).}
-  \ifcommercial
-     \item{With Microsoft Visual C++, the \ttt{lib} prefix is not prepended to the name
-     and the static library filename has a ".lib" extension. (e.g. \ttt{oppcommon.lib} and \ttt{oppcommon.dll}).}
-  \fi
-\end{itemize}
-
-We recommend that you use shared libraries whenever it is possible.
 You will need to link with the following libraries:
 
 \begin{itemize}
-  \item{The simulation kernel and class library\index{simulation!kernel},
-    called \textit{oppsim} (file \ttt{liboppsim.[so|dll|dylib]} etc).}
-  \item{User interfaces. The common part of all user interfaces is
-    the \textit{oppenvir} library (file \texttt{liboppenvir.[so|dll|dylib]}, etc),
-    and the specific user interfaces are \textit{opptkenv}, \textit{oppqtenv}
-    and \textit{oppcmdenv} (\ttt{libopptkenv.[so|dll|dylib]},
-    \ttt{liboppqtenv.[so|dll|dylib]}, \ttt{liboppcmdenv.[so|dll|dylib]}, etc).
-    You have to link with \textit{oppenvir}, plus one or more of \textit{opptkenv},
-    \textit{oppqtenv} or \textit{oppcmdenv} .}
-  \item{Additionally, \ttt{liboppmain.[a|lib]} needs to be linked in if you are
-    building a standalone executable file.}
+  \item The simulation kernel and class library\index{simulation!kernel} (the \textit{oppsim} library)
+  \item User interfaces: one or more of Tkenv, Qtenv and Cmdenv (the \textit{opptkenv},
+        \textit{oppqtenv} and \textit{oppcmdenv} libraries, their common part \textit{oppenvir},
+        and any additional libraries they depend on)
 \end{itemize}
 
-Luckily, you do not have to worry about the above details, because
-automatic tools like \ttt{opp\_makemake} will take care of the hard
-part for you.
+The exact files names of libraries depend on the platform and a number of
+additional factors.\footnote{On Unix-like platforms, file names are
+prefixed with \ttt{lib}. For debug versions, a \ttt{d} is appended to the
+name. Static libraries have the \ttt{.a} suffix (except on Windows where
+the file extension is \ttt{.lib}). Shared libraries end in \ttt{.so} on
+Unix-like platforms (but \ttt{.dylib} on OS X), and \ttt{.dll} on Windows.}
 
 The following figure gives an overview of the process of building
-and running simulation programs.
+(and running) simulation programs.
+
+%% TODO add reference to figure
 
 \begin{figure}[htbp]
   \begin{center}
@@ -78,24 +48,21 @@ and running simulation programs.
   \end{center}
 \end{figure}
 
-\section{Using gcc or clang}
+\section{Using opp\_makemake and Makefiles}
 
-The following section applies to using {\opp} on Linux, Solaris, Mac OS X, FreeBSD and
-other Unix derivatives, and also to MinGW on Windows.
+There are several tools available for managing the build of C/C++ programs.
+{\opp} uses the traditional way, Makefiles. Writing a Makefile is usually a
+tedious task. However, {\opp} provides a tool that can generate the
+Makefile for the user, saving manual labour.
 
-\begin{note}
-The \ttt{doc/InstallGuide.pdf} file in your {\opp} installation
-provides more detailed platform specific instructions.
-\end{note}
+\fprog{opp\_makemake} can automatically generate a Makefile for your
+simulation program, based on the source files in the current directory or
+directory tree.
 
+\subsection{Command-line Options}
 
-\subsection{The opp\_makemake Tool}
-
-The \fprog{opp\_makemake} tool can automatically generate a
-\texttt{Makefile} for your simulation program, based on the source files
-in the current directory or directory tree.
-\fprog{opp\_makemake} has several options; \ttt{opp\_makemake -h}
-displays help.
+\fprog{opp\_makemake} has several options;
+\ttt{opp\_makemake -h} displays help.
 
 The most important options are:
 
@@ -108,8 +75,7 @@ The most important options are:
                           cover the whole source tree under the make directory,
                           not just files in that directory.}
     \item{\ttt{-r, -{}-recurse} : Causes make to recursively descend into all subdirectories;
-                          subdirectories are expected to contain
-                          makefiles themselves.}
+                          subdirectories are expected to contain Makefiles themselves.}
     \item{\ttt{-X directory, -Xdirectory, -{}-except directory} :
                           With \ttt{-r} and \ttt{-{}-deep} option: ignore the given directory.}
     \item{\ttt{-dsubdir, -d subdir, -{}-subdir subdir} :
@@ -169,7 +135,7 @@ clean &  Deletes all files that were produced by the make process\\\hline
 
 \subsection{Debug and Release Builds}
 
-\fprog{opp\_makemake} generates a makefile that can create both release and debug builds.
+\fprog{opp\_makemake} generates a Makefile that can create both release and debug builds.
 By default it creates debug version, but it is easy to override this behavior.
 Just define the \ttt{MODE} variable on the \fprog{make} command line.
 
@@ -178,16 +144,16 @@ $ make MODE=release
 \end{commandline}
 
 If you want to create release builds by default you should use the \ttt{-{}-mode} \textit{mode}
-option for \fprog{opp\_makemake} when generating your makefiles.
+option for \fprog{opp\_makemake} when generating your Makefiles.
 \begin{commandline}
 $ opp_makemake --mode release ...
 \end{commandline}
 
 \subsection{Debugging the Makefile}
 
-\fprog{opp\_makemake} generates a makefile that prints only minimal information
+\fprog{opp\_makemake} generates a Makefile that prints only minimal information
 during the build process (only the name of the compiled file.) If you want to
-see the full compiler commands executed by the makefile, specify \ttt{V=1} as
+see the full compiler commands executed by the Makefile, specify \ttt{V=1} as
 a command line parameter for the \fprog{make} command.
 
 \begin{commandline}
@@ -209,14 +175,14 @@ external dependency.
 
 \subsection{Building Directory Trees}
 
-It is possible to build a whole source directory tree with a single makefile.
+It is possible to build a whole source directory tree with a single Makefile.
 A source tree will generate a single output file (executable or library).
 A source directory tree will always have a \ttt{Makefile} in its root,
 and source files may be placed anywhere in the tree.
 
 To turn on this option, use the \ttt{opp\_makemake -{}-deep} option.
 \ttt{opp\_makemake} will collect all \ttt{.cc} and \ttt{.msg} files from
-the whole subdirectory tree, and generate a makefile that covers all.
+the whole subdirectory tree, and generate a Makefile that covers all.
 If you need to exclude a specific directory, use the \ttt{-X exclude/dir/path}
 option. (Multiple \ttt{-X} options are accepted.)
 
@@ -257,17 +223,17 @@ unexpected errors in the build process.
 
 \subsection{Dependency Handling}
 
-Dependency information is used by the makefile to minimize the time required to
-compile and link your project. If your makefile contains up-to date dependency info
+Dependency information is used by the Makefile to minimize the time required to
+compile and link your project. If your Makefile contains up-to date dependency info
 -- only files changed since you last compiled your project will be re-compiled or linked.
 
 
-\fprog{opp\_makemake} automatically adds dependencies to the makefile\index{Makefile!dependencies}.
+\fprog{opp\_makemake} automatically adds dependencies to the Makefile\index{Makefile!dependencies}.
 You can regenerate the dependencies by typing \fprog[make]{make depend} any time.
 The warnings during the dependency generation process can be safely ignored.
 
 
-You may generate and add dependencies to the \ttt{makefile} manually using the \fprog{opp\_makedep}
+You may generate and add dependencies to the Makefile manually using the \fprog{opp\_makedep}
 tool. Use \fprog{opp\_makedep -{}-help} to display the supported command line options.
 
 \begin{note}
@@ -308,21 +274,21 @@ source folder rather than in the output folder.
 
 \subsection{Building Shared and Static Libraries}
 
-By default the makefile will create an executable file, but it is also
+By default the Makefile will create an executable file, but it is also
 possible to build shared or static libraries. Shared libraries
 are usually a better choice.
 
 Use \ttt{-{}-make-so} to create shared libraries, and \ttt{-{}-make-lib}
 to build static libraries. The \ttt{-{}-nolink} option completely avoids
-the linking step, which is useful for top-level makefiles that only invoke
-other makefiles, or if you want to do the linking manually.
+the linking step, which is useful for top-level Makefiles that only invoke
+other Makefiles, or if you want to do the linking manually.
 
 \ifcommercial
 \begin{note}
 The Microsoft Visual C++ compiler handles shared library (DLL) linking (-s)
 differently and requires additional steps to compile and link correctly.
 You must choose a \ttt{<symbol>} for your project and annotate each class
-and dll-public declaration with \ttt{<symbol>\_API}. If you generate your makefiles
+and dll-public declaration with \ttt{<symbol>\_API}. If you generate your Makefiles
 with the \ttt{-p <symbol>} option, \ttt{<symbol>\_EXPORT} macro will be passed to
 the compiler causing <symbol>\_API to be defined as \_\_declspec(dllexport) in
 your sources. This step allows Visual C++ to correctly generate DLL exports in Windows.
@@ -337,12 +303,12 @@ The \ttt{-{}-recurse} option enables recursive make; when you build the simulati
 descends into the subdirectories and runs make in them too.
 By default, \ttt{-{}-recurse} decends into all subdirectories; the -X directory option
 can be used to make it ignore certain subdirectories. This option is especially useful
-for top level makefiles.
+for top level Makefiles.
 
 
 The \ttt{-{}-recurse} option automatically discovers subdirectories, but this
 is sometimes inconvenient. Your source directory tree may contain
-parts which need their own hand written \ttt{Makefile}. This can happen if
+parts which need their own hand written Makefile. This can happen if
 you include source files from an other non {\opp} project. With the \ttt{-d dir}
 or \ttt{-{}-subdir dir} option, you can explicitly specify which directories to
 recurse into, and also, the directories need not be direct children of the
@@ -351,7 +317,7 @@ current directory.
 
 The recursive make options (\ttt{-{}-recurse}, \ttt{-d}, \ttt{-{}-subdir})
 imply \ttt{-X}, that is, the directories recursed into will be
-automatically excluded from deep makefiles.
+automatically excluded from deep Makefiles.
 
 
 You can control the order of traversal by adding dependencies into
@@ -366,15 +332,15 @@ cycles do not occur.
 
 Motivation for recursive builds:
 \begin{itemize}
- \item{toplevel makefile}
- \item{integrating sources that have their own makefile}
+ \item{toplevel Makefile}
+ \item{integrating sources that have their own Makefile}
 \end{itemize}
 
 
 \subsection{Customizing the Makefile}
 \label{sec:makefrag}
 
-It is possible to add rules or otherwise customize the generated makefile
+It is possible to add rules or otherwise customize the generated Makefile
 by providing a \ttt{makefrag} file. When you run \fprog{opp\_makemake}, it
 will automatically insert the content of the \ttt{makefrag} file into the
 resulting \ttt{Makefile}. With the \ttt{-i} option, you can also name other
@@ -386,12 +352,12 @@ ones, and also to override the default target.
 
 \ttt{makefrag} can be useful if some of your source files are generated
 from other files (for example, you use generated NED files), or you need
-additional targets in your makefile or just simply want to override the
-default target in the makefile.
+additional targets in your Makefile or just simply want to override the
+default target in the Makefile.
 
 \begin{note}
 If you change the content of the \ttt{makefrag} file, you must recreate the
-makefile using the \ttt{opp\_makemake} command.
+Makefile using the \ttt{opp\_makemake} command.
 \end{note}
 
 \subsection{Projects with Multiple Source Trees}
@@ -400,36 +366,35 @@ In the case of a large project, your source files may be spread across
 several directories and your project may generate more than one executable
 file (i.e. several shared libraries, examples etc.).
 
-Once you have created your makefiles with \ttt{opp\_makemake} in
-every source directory tree, you will need a toplevel makefile.
-The toplevel makefile usually calls only the makefiles
+Once you have created your Makefiles with \ttt{opp\_makemake} in
+every source directory tree, you will need a toplevel Makefile.
+The toplevel Makefile usually calls only the Makefiles
 recursively in the source directory trees.
 
 
 \subsection{A Multi-Directory Example}
 
 For a complex example of using \fprog{opp\_makemake}, we will show how to create
-the makefiles for the Mobility Framework. First, take a look at the
+the Makefiles for a large project. First, take a look at the
 project's directory structure and find the directories that should be used as
 source trees:
 
 \begin{verbatim}
-project
-    bitmaps
-    contrib <-- source tree (build libmfcontrib.so from this dir)
-    core <-- source tree (build libmfcore.so from this dir)
-    docs
-    network
-    template
-    testSuite <-- source tree (build testSuite executable from this dir)
+project/
+    doc/
+    images/
+    simulations/
+    contrib/ <-- source tree (build libmfcontrib.so from this dir)
+    core/ <-- source tree (build libmfcore.so from this dir)
+    test/ <-- source tree (build testSuite executable from this dir)
 \end{verbatim}
 
 Additionally, there are dependencies between these output files: \ttt{mfcontrib}
 requires \ttt{mfcore} and \ttt{testSuite} requires \ttt{mfcontrib} (and indirectly
 \ttt{mfcore}).
 
-First, we create the makefile for the core directory. The makefile will build
-a shared lib from all .cc files in the \ttt{core} subtree, and will name it \ttt{mfcore}):
+First, we create the Makefile for the core directory. The Makefile will build
+a shared lib from all .cc files in the \ttt{core} subtree, and will name it \ttt{mfcore}:
 
 \begin{commandline}
 $ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
@@ -441,7 +406,7 @@ the include directories manually from the \ttt{core} source tree, because autodi
 in the same source tree:
 
 \begin{commandline}
-$ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out \\
+$ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out \
   -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
 \end{commandline}
 
@@ -449,8 +414,8 @@ The \ttt{testSuite} will be created as an executable file which depends on both
 \ttt{mfcontrib} and \ttt{mfcore}.
 
 \begin{commandline}
-$ cd testSuite && opp_makemake -f --deep -o testSuite -O out
-    -I../core/utils -I../core/basicModules -I../contrib/utils \\
+$ cd test && opp_makemake -f --deep -o testSuite -O out
+    -I../core/utils -I../core/basicModules -I../contrib/utils \
     -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
 \end{commandline}
 
@@ -459,17 +424,17 @@ Add the lines below to the \ttt{makefrag} file in the project directory root.
 
 \begin{filelisting}
 contrib_dir: core_dir
-testSuite_dir: contrib_dir
+test_dir: contrib_dir
 \end{filelisting}
 
-Now the last step is to create a top-level makefile in the root of the project that
-calls the previously created makefiles in the correct order. We will use the
+Now the last step is to create a top-level Makefile in the root of the project that
+calls the previously created Makefiles in the correct order. We will use the
 \ttt{-{}-nolink} option, exclude every subdirectory from the build (\ttt{-X.}), and explicitly call
-the above makefiles using \ttt{-d dirname}. \ttt{opp\_makemake} will automatically include
+the above Makefiles using \ttt{-d dirname}. \ttt{opp\_makemake} will automatically include
 the above created \ttt{makefrag} file.
 
 \begin{commandline}
-$ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
+$ opp_makemake -f --nolink -O out -d test -d core -d contrib -X.
 \end{commandline}
 
 
@@ -480,7 +445,7 @@ There are only slight differences to the way Microsoft Visual C++
 is handled. The main differences are:
 \begin{itemize}
   \item{You should use \ttt{opp\_nmakemake} instead of \ttt{opp\_makemake}}
-  \item{The generated makefile will be called \ttt{Makefile.vc} by default.}
+  \item{The generated Makefile will be called \ttt{Makefile.vc} by default.}
   \item{Use \ttt{makefrag.vc} instead of \ttt{makefrag}.}
   \item{\ttt{nmake} is used instead of \ttt{make}.}
   \item{The build process is started by \ttt{nmake -f Makefile.vc} instead of \ttt{make}.}
@@ -490,23 +455,74 @@ Required compiler settings: turn on exception handling and RTTI, and
 set stack size to as low as 64K.
 \fi
 
-\section{Using Project Features}
+\section{Project Features}
 
 Long compile times are often an inconvenience when working with large
-{\opp}-based model frameworks. Project features lets you
-reduce build times by excluding or disabling parts of the model framework that
-you do not use for your simulation study. The word feature refers
+{\opp}-based model frameworks. {\opp} has a facility named \textit{project
+features} that lets you reduce build times by excluding or disabling parts
+of a large model library. For example, you can disable modules that you do
+not use for the current simulation study. The word \textit{feature} refers
 to a piece of the project codebase that can be turned off as a whole.
 
-Additional benefits of project features include a less cluttered model palette
-in the NED editor, being able to exclude code that does not compile on your system,
-and enforcing cleaner separation of unrelated parts in the model framework.
+Additional benefits of project features include enforcing cleaner
+separation of unrelated parts in the model framework, being able to exclude
+code written for other platforms, and a less cluttered model palette in the
+NED editor.
 
 \begin{note}
-  A similar effect could also achieved via breaking up the model framework
-  into several smaller projects, but that would cause other kinds of inconveniences for
-  model developers and users alike.
+  Modularization could also be achieved via breaking up the model framework
+  into several smaller projects, but that would cause other kinds of
+  inconveniences for model developers and users alike.
 \end{note}
+
+Project features can be enabled/disabled from both the IDE and the command line.
+It is possible to query the list of enabled project features, and use this
+information in creating a Makefile for the project.
+
+\subsection{The opp\_featuretool Program}
+
+Project features can be queried and manipulated using the \fprog{opp\_featuretool}
+program. The first argument to the program must be a command; the most frequently
+used ones are \ttt{list}, \ttt{enable} and \ttt{disable}. The operation of commands
+can be refined with further options. One can obtain the full list of comands and
+options using the \ttt{-h} option.
+
+Here are some examples of using the program.
+
+Listing all features in the project:
+\begin{commandline}
+$ opp_featuretool list
+\end{commandline}
+
+Listing all enabled features in the project:
+\begin{commandline}
+$ opp_featuretool list -e
+\end{commandline}
+
+Enabling all features:
+\begin{commandline}
+$ opp_featuretool enable all
+\end{commandline}
+
+Disabling a specific feature:
+\begin{commandline}
+$ opp_featuretool disable MyFeature
+\end{commandline}
+
+To print all the command line options that should be used with \ttt{opp\_makemake}
+to create a Makefile that builds the project with the currently enabled features:
+
+\begin{commandline}
+$ opp_featuretool makemakeargs
+\end{commandline}
+
+Using it directly with the \ttt{opp\_makemake} command:
+\begin{commandline}
+$ opp_makemake --deep $(opp_featuretool makemakeargs)
+\end{commandline}
+
+The above command allows you to build the same executable from both the IDE and
+the command line.
 
 \subsection{What is a Project Feature}
 
@@ -536,15 +552,16 @@ option of enabling/disabling those features. A feature definition contains:
     options listed here are added to the compiler command line of all C++ files in the project.
     A typical use of this field is defining symbols (\ttt{WITH\_xxx}) that allows you to write conditional code
     that only compiles when a given feature is enabled. Currently only the \ttt{-D} option
-    (define symbol) is supported here.}
+    (\textit{define symbol}) is supported here.}
 \item{Linker options. When the feature is enabled, the linker options listed here are added
     to the linker command line. A typical use of this field is linking with additional
     libraries that the feature's code requires, for example libavcodec.
-    Currently only the \ttt{-l} option (\ttt{link with library}) is supported here.}
+    Currently only the \ttt{-l} option (\textit{link with library}) is supported here.}
 \end{itemize}
 
-\subsection{The \ttt{.oppfeatures} File}
-Project features are defined in the \ttt{.oppfeatures} file in your project's
+\subsection{The .oppfeatures File}
+
+Project features are defined in the \ffilename{.oppfeatures} file in your project's
 root directory. This is an XML file, and it has to be written by hand
 (there is no specialized editor for it).
 
@@ -568,10 +585,13 @@ Here is an example feature from the INET Framework:
                  inet.applications.tcpapp
                  inet.util.headerserializers.tcp"
   extraSourceFolders = ""
-  compileFlags = "-DWITH\_TCP_COMMON"
+  compileFlags = "-DWITH_TCP_COMMON"
   linkerFlags = ""
   />
 \end{filelisting}
+
+Project feature enablements are stored in the \ffilename{.featurestate} file.
+
 
 \subsection{How to Introduce a Project Feature}
 
@@ -593,53 +613,11 @@ to do:
 
     \item{Test. A rudimentary test is to verify that your project compiles at all, both
       with the new feature enabled and disabled. For such build tests, the
-      'Export build tester makefile' function (at the bottom of the 'Project Features'
-      property page) can be quite useful: it creates a makefile that builds the
+      'Export build tester Makefile' function (at the bottom of the 'Project Features'
+      property page) can be quite useful: it creates a Makefile that builds the
       project in typical feature combinations. (It does not test 2\textsuperscript{N} combinations because
       that's usually prohibitive, only about 2*N+2.)}
 \end{itemize}
-
-\subsection{The opp\_featuretool}
-
-The {\opp} IDE allows you to easily enable or disable a feature in the project. The
-state of the feature is stored in the \ttt{.oppfeaturestate} file in the project's root
-folder. The \ttt{opp\_featuretool} allows you to manipulate or query the state of any
-of the project's features.
-
-
-List all features in the project:
-\begin{commandline}
-$ opp_featuretool list
-\end{commandline}
-
-List all enabled features in the project:
-\begin{commandline}
-$ opp_featuretool list -e
-\end{commandline}
-
-Enable all features:
-\begin{commandline}
-$ opp_featuretool enable all
-\end{commandline}
-
-Disable a specific feature:
-\begin{commandline}
-$ opp_featuretool disable MyFeature
-\end{commandline}
-
-Print all the command line options that should be used with \ttt{opp\_makemake}
-to create a makefile that builds the project with the currently enabled features:
-\begin{commandline}
-$ opp_featuretool makemakeargs
-\end{commandline}
-
-Using it directly with the \ttt{opp\_makemake} command (note the back ticks):
-\begin{verbatim}
-$ opp_makemake --deep `opp_featuretool makemakeargs`
-\end{verbatim}
-
-The above command allows you to build the same executable from both the IDE and
-the command line.
 
 %%% Local Variables:
 %%% mode: latex
