@@ -7,8 +7,14 @@
 
 package org.omnetpp.figures.misc;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FreeformFigure;
+import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
@@ -113,5 +119,30 @@ public class FigureUtils {
                 return ((ITooltipTextProvider) f).getTooltipText(x, y);
         }
         return null;
+    }
+
+    public static Rectangle getBounds(IFigure figure)
+    {
+        if (figure instanceof FreeformFigure) {
+            FreeformFigure freeformDiagramFigure = (FreeformFigure)figure;
+            return freeformDiagramFigure.getFreeformExtent();
+        }
+        else
+            return figure.getBounds();
+    }
+
+    public static Rectangle getBounds(Collection<IFigure> figures)
+    {
+        if (figures.size() == 1)
+            return getBounds(figures.iterator().next());
+        else {
+            FreeformFigure freeformHelperFigure = new FreeformLayer();
+            for (IFigure figure : figures) {
+                IFigure newFigure = new Figure();
+                newFigure.setBounds(getBounds(figure));
+                freeformHelperFigure.add(newFigure);
+            }
+            return getBounds(freeformHelperFigure);
+        }
     }
 }

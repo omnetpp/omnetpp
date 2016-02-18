@@ -85,8 +85,10 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.editor.export.ExportDiagramFilesOperation;
+import org.omnetpp.ned.editor.export.NedFigureProvider;
+import org.omnetpp.ned.editor.export.PNGDiagramExporter;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
-import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
@@ -125,11 +127,6 @@ import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import de.unikassel.imageexport.exporters.ImageExporter;
-import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
-import de.unikassel.imageexport.exporters.PNGImageExporter;
-import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
 /**
  * This class generates documentation for a single OMNeT++ project. It calls
@@ -1735,26 +1732,17 @@ public class DocumentationGenerator {
         if (generateNedTypeFigures) {
             ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResources.getNedFiles(project));
 
-            final ExportImagesOfDiagramFilesOperation exportOperation =
-                new ExportImagesOfDiagramFilesOperation(nedFiles,
-                        new ImageExporterDescriptor() {
-                            public ImageExporter createExporter() {
-                                return new PNGImageExporter();
-                            }
+            final ExportDiagramFilesOperation exportOperation =
+                new ExportDiagramFilesOperation(nedFiles,
+                    new PNGDiagramExporter() {
+                        public String getName() {
+                            return "NED Figure Provider";
+                        }
 
-                            public String getDescription() {
-                                return "NED Figure Provider";
-                            }
-
-                            public String getFileExtension() {
-                                return "png";
-                            }
-
-                            public String getName() {
-                                return "NED Figure Provider";
-                            }
-
-                }, getFullNeddocPath(), true, null) {
+                        public String getDescription() {
+                            return "NED Figure Provider";
+                        }
+                }, true, null) {
 
                 @Override
                 protected void refreshContainer(IContainer container, IProgressMonitor monitor) {
@@ -1762,7 +1750,7 @@ public class DocumentationGenerator {
                         throw new CancellationException();
                 }
             };
-            exportOperation.setOverwriteMode(ExportImagesOfDiagramFilesOperation.OverwriteMode.ALL);
+            exportOperation.setOverwriteMode(ExportDiagramFilesOperation.OverwriteMode.ALL);
             exportOperation.run(monitor);
 
             try {

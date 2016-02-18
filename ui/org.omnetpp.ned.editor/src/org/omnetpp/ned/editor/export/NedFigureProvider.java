@@ -5,8 +5,9 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.ned.editor.graph.misc;
+package org.omnetpp.ned.editor.export;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,10 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.editparts.LayerManager;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.DisplayUtils;
@@ -26,15 +31,41 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
-import de.unikassel.imageexport.providers.AbstractFigureProvider;
+public class NedFigureProvider
+{
+    public List<IFigure> getDiagramFigures(List<GraphicalEditPart> editParts)
+    {
+        List<IFigure> figures = new ArrayList<IFigure>(editParts.size());
+        // If only the root edit part is selected, the whole diagram is exported.
+        if (isWholeDiagramSelected(editParts)) {
+            GraphicalEditPart diagramEditPart = editParts.get(0);
+            IFigure rootFigure = getExportFigure((GraphicalViewer) diagramEditPart.getRoot().getViewer());
+            figures.add(rootFigure);
+        }
+         // The root edit part is not selected but any number of other edit parts.
+        if (figures.isEmpty())
+            for (GraphicalEditPart editPart : editParts)
+                figures.add(editPart.getFigure());
+        return figures;
+    }
 
-/**
- * Figure provider for image export plugins, returns all compound module figures
- * in the given file, along with their names.
- *
- * @author rhornig
- */
-public class NedFigureProvider extends AbstractFigureProvider {
+    public static boolean isWholeDiagramSelected(List<GraphicalEditPart> selectedEditParts)
+    {
+        if (selectedEditParts.size() == 1) {
+            GraphicalEditPart editPart = selectedEditParts.get(0);
+            if (editPart == editPart.getRoot().getViewer().getContents())
+                return true;
+        }
+        return false;
+    }
+
+    public static IFigure getExportFigure(GraphicalViewer viewer)
+    {
+        LayerManager layers = (LayerManager) viewer.getEditPartRegistry().get(LayerManager.ID);
+        IFigure diagramFigure = layers.getLayer(LayerConstants.PRINTABLE_LAYERS);
+        return diagramFigure;
+    }
+
     public static ScrollingGraphicalViewer createNedViewer(INedElement model) {
         ScrollingGraphicalViewer viewer = new ScrollingGraphicalViewer();
         viewer.setEditPartFactory(new NedEditPartFactory());
@@ -50,12 +81,11 @@ public class NedFigureProvider extends AbstractFigureProvider {
         rootFigure.setBorder(null);
         rootFigure.setFont(Display.getDefault().getSystemFont());
         rootFigure.validate();
-
         return viewer;
     }
 
     @SuppressWarnings("unchecked")
-    public Map<IFigure, String> provideExportImageFigures(final IFile diagramFile) {
+    public Map<IFigure, String> getDiagramFigures(final IFile diagramFile) {
         final Map<IFigure, String>[] results = new Map[1];
 
         DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
@@ -85,6 +115,6 @@ public class NedFigureProvider extends AbstractFigureProvider {
 
     public static String getFigureName(List<INedTypeElement> typeElements, INedTypeElement typeElement, String fileBaseName) {
         return typeElements.size() == 1 && typeElement.getName().endsWith(fileBaseName) ?
-            typeElement.getName() : fileBaseName + "_" + typeElement.getName();
+               typeElement.getName() : fileBaseName + "_" + typeElement.getName();
     }
 }

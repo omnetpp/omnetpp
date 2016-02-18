@@ -13,9 +13,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.ned.editor.export.ExportDiagramWizard;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
-
-import de.unikassel.imageexport.wizards.ExportImageOfCurrentDiagramWizard;
 
 /**
  * TODO add documentation
@@ -55,7 +54,7 @@ public class ExportImageAction extends org.eclipse.gef.ui.actions.SelectionActio
 
     @Override
     public void run() {
-        ExportImageOfCurrentDiagramWizard wizard = new ExportImageOfCurrentDiagramWizard();
+        ExportDiagramWizard wizard = new ExportDiagramWizard();
         wizard.init(getWorkbenchPart().getSite().getWorkbenchWindow().getWorkbench(), (IStructuredSelection)getSelection());
         WizardDialog dialog = new WizardDialog(getWorkbenchPart().getSite().getShell(), wizard);
         dialog.open();
