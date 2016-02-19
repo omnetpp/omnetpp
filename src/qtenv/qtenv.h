@@ -281,7 +281,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       // will get the cComponent pointer and LogLevel in an
       // ActionDataPair from the data of the sender QAction
       void setComponentLogLevel();
-      void setComponentLogLevel(cComponent *component, LogLevel level);
+      void setComponentLogLevel(cComponent *component, LogLevel level, bool save = false);
 
   protected:
       // redefined virtual functions from EnvirBase

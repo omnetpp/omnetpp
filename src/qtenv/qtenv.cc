@@ -352,6 +352,8 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 
 Qtenv::~Qtenv()
 {
+    delete localPrefs; // will sync it to disk
+    delete globalPrefs; // will sync it to disk
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
     delete animator;
@@ -1976,7 +1978,11 @@ unsigned Qtenv::getExtraStackForEnvir() const
 }
 
 void Qtenv::setPref(const QString &key, const QVariant &value) {
-    (localPrefKeys.contains(key) ? localPrefs : globalPrefs)->setValue(key, value);
+    auto settings = (localPrefKeys.contains(key) ? localPrefs : globalPrefs);
+    if (value.isValid())
+        settings->setValue(key, value);
+    else
+        settings->remove(key);
 }
 
 QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
@@ -2061,27 +2067,36 @@ void Qtenv::setComponentLogLevel()
     auto action = dynamic_cast<QAction *>(sender());
     if (action) {
         auto data = action->data();
-        if (data.isValid() && data.canConvert(QVariant::Int)) {
+        if (data.isValid() && data.canConvert<ActionDataPair>()) {
             auto pair = data.value<ActionDataPair>();
             auto component = dynamic_cast<cComponent *>(pair.first);
-            setComponentLogLevel(component, (LogLevel)pair.second);
+            setComponentLogLevel(component, (LogLevel)pair.second, true);
         }
     }
 }
 
-void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level)
+// the save parameter will be false when restoring the levels from the prefs
+// without it, the loglevels of all children would be erased when restoring
+// the level of one of its ancestor components
+void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level, bool save)
 {
     cCollectObjectsOfTypeVisitor<cComponent> v; // should include the component itself
     v.process(component);
     cComponent **objs = (cComponent**)v.getArray();
 
-    // only saving the pref for the one which got explicitly set, the restoring
-    // part will take care of the descendants (and the ini file won't grow too much)
-    setPref(QString("ComponentLogLevels/") + component->getFullPath().c_str(), level);
-
     for (int i = 0; i < v.getArraySize(); ++i) {
+        // have to remove the explicitly saved loglevels of the children, so
+        // they won't have their old levels restored in the next session
+        if (save)
+            setPref(QString("ComponentLogLevels/") + objs[i]->getFullPath().c_str(), QVariant());
         objs[i]->setLogLevel(level);
     }
+
+    // only saving the pref for the one which got explicitly set, the restoring
+    // part will take care of the descendants (and the ini file won't grow too much)
+    // have to do this after the removal up there, because component is in objs
+    if (save)
+        setPref(QString("ComponentLogLevels/") + component->getFullPath().c_str(), level);
 }
 
 void Qtenv::initFonts()
