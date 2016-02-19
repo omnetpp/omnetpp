@@ -2,6 +2,7 @@
 \label{cha:graphics}
 
 \section{Overview}
+\label{sec:graphics:overview}
 
 {\opp} simulations can be run under graphical user interfaces (Tkenv,
 Qtenv) that offer visualization and animation in addition to interactive
@@ -43,7 +44,7 @@ can redefine and place visualization-related code into.
 
 
 \section{Placement of Visualization Code}
-\label{sec:ch-graphics:refreshdisplay}
+\label{sec:graphics:refreshdisplay}
 
 Traditionally, when C++ code was needed to enhance visualization, for
 example to update a displayed status label or to refresh the position of a
@@ -58,6 +59,7 @@ significant amount of CPU cycles.
 
 
 \subsection{The refreshDisplay() Method}
+\label{sec:graphics:refreshdisplay-usage-and-semantics}
 
 Starting from {\opp} version 5.0, visualization code can be placed into a
 dedicated method. This method is called much more economically, that is, only
@@ -115,6 +117,7 @@ void FooModule::refreshDisplay() const
 
 
 \subsection{Advantages}
+\label{sec:graphics:refreshdisplay-advantages}
 
 Overriding \ffunc{refreshDisplay()} has several advantages over putting the
 simulation code into \ffunc{handleMessage()}. The first one is, as you have
@@ -139,6 +142,7 @@ and \ffunc{refreshDisplay()} lets you completely separate the two.
 
 
 \subsection{Why is \ffunc{refreshDisplay()} const?}
+\label{sec:graphics:refreshdisplay-constness}
 
 Code in \ffunc{refreshDisplay()} should never alter the state of the
 simulation (mostly because from the simulation model's point of
@@ -152,7 +156,7 @@ to allow \ffunc{refreshDisplay()} change them.
 
 
 \section{Display Strings}
-\label{sec:ch-graphics:display-strings}
+\label{sec:graphics:display-strings}
 
 Display strings\index{display strings} are compact textual descriptions
 that specify the arrangement and appearance of the graphical
@@ -177,6 +181,7 @@ Display strings can be used in the following contexts:
 
 
 \subsection{Syntax and Placement}
+\label{sec:graphics:displaystring-syntax-and-placement}
 
 Display strings are specified in \fprop{@display} properties. The property
 must contain a single string as value. The string should contain a
@@ -224,6 +229,7 @@ network Example
 
 
 \subsection{Inheritance}
+\label{sec:graphics:displaystring-inheritance}
 
 At runtime, every module and channel object has one single display string object,
 which controls its appearance in various contexts. The initial value of
@@ -291,6 +297,7 @@ network SimpleQueue {
 
 
 \subsection{Submodule Tags}
+\label{sec:graphics:submodule-displaystring-tags}
 
 The following tags of the module display string are in effect in submodule
 context, that is, when the module is displayed as a submodule of another
@@ -310,9 +317,10 @@ module:
 
 The following sections provide an overview and examples for each tag. More
 detailed information, such as what each tag argument means, is available in
-Appendix \ref{cha:display-string-tags}.
+Appendix \ref{cha:display-strings}.
 
 \subsubsection{Icons}
+\label{sec:graphics:submodule-icons}
 
 By default, modules are displayed with a simple default icon, but {\opp}
 comes with a large set of categorized icons that you can choose from.
@@ -346,6 +354,7 @@ The following example makes the icon 20\% red:
 \end{center}
 
 \subsubsection{Status Icon}
+\label{sec:graphics:submodule-status-icon}
 
 Modules may also display a small auxiliary icon in the top-right corner of
 the main icon. This icon can be useful for displaying the status of the
@@ -363,6 +372,7 @@ An example:
 \end{center}
 
 \subsubsection{Shapes}
+\label{sec:graphics:submodule-shapes}
 
 To have a simple but resizable representation for your module, one can use
 the \ttt{b} tag to create geometric shapes. Currently, \ttt{oval} and
@@ -380,6 +390,7 @@ black border and red fill:
 \end{center}
 
 \subsubsection{Positioning}
+\label{sec:graphics:submodule-positioning}
 
 The \ttt{p} tag allows one to define the position of a submodule or
 otherwise affect its placement.
@@ -387,7 +398,7 @@ otherwise affect its placement.
 \begin{note}
 If the \ttt{p} tag is missing or doesn't specify the position, {\opp} will
 use a layouting algorithm to place the module automatically. The layouting
-algorithm is covered in section \ref{sec:ch-graphics:layouting}.
+algorithm is covered in section \ref{sec:graphics:compound-module-layouting}.
 \end{note}
 
 The following example will place the module at the given position:
@@ -436,6 +447,7 @@ host[20]: Host {
 \end{figure}
 
 \subsubsection{Wireless Range}
+\label{sec:graphics:submodule-wireless-range}
 
 In wireless simulations, it is often useful to be able to display a circle
 or disc around the module to indicate transmission range, reception range,
@@ -460,6 +472,7 @@ submodules:
 \end{figure}
 
 \subsubsection{Queue Length}
+\label{sec:graphics:submodule-queue-length}
 
 If a module contains a queue object (\cclass{cQueue}), it is possible to
 let the graphical user interface display the queue length next to the
@@ -481,6 +494,7 @@ string.
 \end{center}
 
 \subsubsection{Text and Tooltip}
+\label{sec:graphics:submdule-text-and-tooltip}
 
 You can have a short text displayed next to or above the module icon or
 shape using the \ttt{t} tag. The tag lets you specify the placement (left,
@@ -507,10 +521,11 @@ mouse.
 \end{note}
 
 For a detailed descripton of the display string tags, check
-Appendix \ref{cha:display-string-tags}.
+Appendix \ref{cha:display-strings}.
 
 
 \subsection{Background Tags}
+\label{sec:graphics:background-displaystring-tags}
 
 The following tags of the module display string are in effect when the
 module itself is opened in a GUI. These tags mostly deal with the visual
@@ -552,10 +567,11 @@ that if the model attaches physical meaning to coordinates and
 distances, then those numbers should be interpreted as kilometers.
 
 More detailed information, such as what each tag argument means, is
-available in Appendix \ref{cha:display-string-tags}.
+available in Appendix \ref{cha:display-strings}.
 
 
 \subsection{Connection Display Strings}
+\label{sec:graphics:connection-displaystrings}
 
 Connections may also have display strings. Connections inherit the
 display string property from their channel types, in the same way as
@@ -585,10 +601,11 @@ To hide a connection, specify zero line width in the display string:
 \end{note}
 
 More detailed information, such as what each tag argument means, is
-available in Appendix \ref{cha:display-string-tags}.
+available in Appendix \ref{cha:display-strings}.
 
 
 \subsection{Message Display Strings}
+\label{sec:graphics:message-displaystrings}
 
 Message display strings affect how messages are shown during animation.
 By default, they are displayed as a small filled circle, in one of
@@ -598,6 +615,7 @@ The latter is configurable in the Options dialog of Tkenv and Qtenv,
 and message kind dependent coloring can also be turned off there.
 
 \subsubsection{How to Specify}
+\label{sec:graphics:specifying-message-displaystrings}
 
 Message objects do not store a display string by default. Instead,
 \cclass{cMessage} defines a virtual \ffunc{getDisplayString()} method
@@ -614,7 +632,7 @@ class Job : public cMessage
 \end{cpp}
 
 Message classes are often defined in \ttt{msg} files (see chapter
-\ref{cha:message-definitions}), and you can also have the message compiler
+\ref{cha:msg-def}), and you can also have the message compiler
 generate the display string for you. If you add a field named
 \ffunc{displayString} to the message definition, the message compiler will
 generate the \ffunc{setDisplayString()} and \ffunc{getDisplayString()}
@@ -631,6 +649,7 @@ message Job
 \end{msg}
 
 \subsubsection{Tags}
+\label{sec:graphics:message-displaystring-tags}
 
 The following tags can be used in message display strings:
 
@@ -659,10 +678,11 @@ color dependent on the message kind:
 \end{ned}
 
 More detailed information, such as what each tag argument means, is
-available in Appendix \ref{cha:display-string-tags}.
+available in Appendix \ref{cha:display-strings}.
 
 
 \subsection{Parameter Substitution}
+\label{sec:graphics:displaystring-parameter-substitution}
 
 Parameters of the module or channel containing the
 display string can be substituted into the display string
@@ -683,9 +703,10 @@ simple MobileNode
 \end{ned}
 
 \subsection{Colors}
-\label{sec:ch-graphics:colors}
+\label{sec:graphics:displaystring-colors}
 
 \subsubsection{Color Names}
+\label{sec:graphics:displaystring-color-names}
 
 A color may be given in several forms. One is English names: \ttt{blue},
 \ttt{lightgrey}, \ttt{wheat}, etc.; the list includes all standard SVG
@@ -706,6 +727,7 @@ name. It will map message kind to a color. (See the \ffunc{getKind()}
 method of \cclass{cMessage}.)
 
 \subsubsection{Icon Colorization}
+\label{sec:graphics:displaystring-icon-colorization}
 
 The \ttt{"i="} display string tag allows for colorization of icons.
 It accepts a target color and a percentage as the degree of colorization.
@@ -726,9 +748,10 @@ Colorization works with both submodule and message icons.
 
 
 \subsection{Icons}
-\label{sec:ch-graphics:icon-library}
+\label{sec:graphics:icon-library}
 
 \subsubsection{The Image Path}
+\label{sec:graphics:image-path}
 
 In the current {\opp} version, module icons are PNG or GIF files. The icons shipped
 with {\opp} are in the \ttt{images/} subdirectory. The IDE, Tkenv and Qtenv all
@@ -767,6 +790,7 @@ image-path = "/home/you/model-framework/images;/home/you/extra-images"
 
 
 \subsubsection{Categorized Icons}
+\label{sec:graphics:categorized-icons}
 
 Icons are organized into several categories, represented by folders.
 These categories include:
@@ -788,6 +812,7 @@ example, \ttt{/opt/omnetpp/images/block/sink.png} should be referred to as
 
 
 \subsubsection{Icon Size}
+\label{sec:graphics:icon-size}
 
 Icons come in various sizes: normal, large, small, very small, very large.
 Sizes are encoded into the icon name's suffix: \ttt{\_vl}, \ttt{\_l},
@@ -802,7 +827,7 @@ time (we recommend using the \ttt{is} tag.)
 %  It sounds wrong to me, but it may be an acceptable usage in your particular domain.
 
 \subsection{Layouting}
-\label{sec:ch-graphics:layouting}
+\label{sec:graphics:compound-module-layouting}
 
 {\opp} implements an automatic layouting feature, using a variation of the
 Spring Embedder algorithm. Modules which have not been assigned explicit
@@ -856,6 +881,7 @@ Caveats:
 
 
 \subsection{Changing Display Strings at Runtime}
+\label{sec:graphics:changing-displaystrings-at-runtime}
 
 It is often useful to manipulate the display string at runtime.
 Changing colors, icon, or text may convey status change, and
@@ -923,6 +949,7 @@ dispStr.setTagArg("i", 0, "device/cellphone");
 \end{cpp}
 
 \section{Bubbles}
+\label{sec:graphics:bubbles}
 
 Modules can display a transient bubble with a short message (e.g. "Going
 down" or "Connection estalished") by calling the \ffunc{bubble()} method of
@@ -953,9 +980,10 @@ if (hasGUI()) {
 
 
 \section{The Canvas}
-\label{sec:ch-graphics:canvas}
+\label{sec:graphics:canvas}
 
 \subsection{Overview}
+\label{sec:graphics:canvas-overview}
 
 The canvas is the 2D drawing API of {\opp}. Using the canvas, one can
 display lines, curves, polygons, images, text items and their combinations,
@@ -990,6 +1018,7 @@ programmatically at runtime.
 
 
 \subsection{Creating, Accessing and Viewing Canvases}
+\label{sec:graphics:creating-accessing-and-viewing-canvases}
 
 A canvas is represented by the \cclass{cCanvas} C++ class. A module's
 default canvas can be accessed with the \ffunc{getCanvas()} method of
@@ -1019,6 +1048,7 @@ locating them in the Tkenv/Qtenv GUI.
 
 
 \subsection{Figure Classes}
+\label{sec:graphics:figure-classes}
 
 The base class of all figure classes is \cclass{cFigure}. The class hierarchy
 is shown below.
@@ -1044,6 +1074,7 @@ cannot access e.g. the actual bounding box of a text just drawn.
 
 
 \subsection{Figure Hierarchy}
+\label{sec:graphics:figure-hierarchy}
 
 Figures on a canvas form a hierarchy. The canvas has a \textit{root
 figure}, and all toplevel figures in the canvas are children of the root
@@ -1102,6 +1133,7 @@ a figure including children, use the \ffunc{dupTree()} method.
 
 
 \subsection{Creating and Manipulating Figures from NED and C++}
+\label{sec:graphics:creating-and-manipulating-figures}
 
 As mentioned earlier, figures can be defined in the NED file, so they
 don't always need to be created programmatically. This possibility is
@@ -1158,6 +1190,7 @@ textFigure->setText("Hello World!");
 
 
 \subsection{Transforms}
+\label{sec:graphics:canvas-transforms}
 
 One of the most powerful features of the Canvas API is being able to assign
 geometric transformations to figures. {\opp} uses 2D homogeneous
@@ -1232,6 +1265,7 @@ the associativity of matrix multiplication.
 
 
 \subsubsection{The Transform Class}
+\label{sec:graphics:the-transform-class}
 
 Transformation matrices are represented in {\opp} by the \cclass{cFigure::Transform}
 class.
@@ -1269,6 +1303,7 @@ Point p2 = t.applyTo(p);
 
 
 \subsubsection{Figure Transforms}
+\label{sec:graphics:figure-transforms}
 
 Every figure has an associated transformation matrix, which
 affects how the figure and its figure subtree are displayed.
@@ -1290,6 +1325,7 @@ displayed by \cclass{cLabelFigure}, in contrast to that of
 well). Only the position is transformed.
 
 \subsubsection{Transform vs move()}
+\label{sec:graphics:figure-transform-vs-move}
 
 In addition to the \ffunc{translate()}, \ffunc{scale()}, \ffunc{rotate()},
 etc. functions that update the figure's transformation matrix, figures also
@@ -1308,8 +1344,10 @@ called \ffunc{moveLocal()}.
 
 
 \subsection{Showing/Hiding Figures}
+\label{sec:graphics:showing-hiding-figures}
 
 \subsubsection{Visibility Flag}
+\label{sec:graphics:figure-visibility-flag}
 
 Figures have a visibility flag that controls whether the figure is
 displayed. Hiding a figure via the flag will hide the whole figure subtree,
@@ -1319,6 +1357,7 @@ not just the figure itself. The flag can be accessed via the
 
 
 \subsubsection{Tags}
+\label{sec:graphics:figure-tags}
 
 Figures can also be assigned a number of textual tags. Tags do not directly
 affect rendering, but graphical user interfaces that display canvas
@@ -1342,8 +1381,10 @@ that can be turned on/off from Tkenv/Qtenv.
 %% TODO example
 
 \subsection{Specifying Positions, Colors, Fonts and Other Properties}
+\label{sec:graphics:figure-positions-colors-fonts-etc}
 
 \subsubsection{Points}
+\label{sec:graphics:canvas-points}
 
 Points are represented by the \cclass{cFigure::Point} struct:
 
@@ -1360,6 +1401,7 @@ operators (+,-,*,/) and some utility functions like \ffunc{translate()},
 \ffunc{distanceTo()} and \ffunc{str()}.
 
 \subsubsection{Rectangles}
+\label{sec:graphics:canvas-rectangles}
 
 Rectangles are represented by the \cclass{cFigure::Rectangle} struct:
 
@@ -1379,6 +1421,7 @@ also has utility functions like \ffunc{getCenter()}, \ffunc{getSize()},
 \ffunc{translate()} and \ffunc{str()}.
 
 \subsubsection{Colors}
+\label{sec:graphics:canvas-colors}
 
 Colors are represented by the \cclass{cFigure::Color} struct as 24-bit RGB colors:
 
@@ -1418,6 +1461,7 @@ cFigure::GOOD_LIGHT_COLORS[intrand(NUM_GOOD_LIGHT_COLORS)];
 
 
 \subsubsection{Fonts}
+\label{sec:graphics:canvas-fonts}
 
 The requested font for text figures is represented by the \cclass{cFigure::Font}
 struct. It stores the typeface, font style and font size in one.
@@ -1454,6 +1498,7 @@ cFigure::Font("Arial", 12, cFigure::FONT_BOLD | cFigure::FONT_ITALIC);
 
 
 \subsubsection{Other Line and Shape Properties}
+\label{sec:graphics:canvas-line-and-shape-properties}
 
 \cclass{cFigure} also contains a number of enums as inner types to describe
 various line, shape, text and image properties. Here they are:
@@ -1544,11 +1589,13 @@ is the anchor point.
 
 
 \subsection{Primitive Figures}
+\label{sec:graphics:primitive-figures}
 
 Now that we know all about figures in general, we can look into the
 specific figure classes provided by {\opp}.
 
 \subsubsection{cAbstractLineFigure}
+\label{sec:graphics:abstractlinefigure}
 
 \cclass{cAbstractLineFigure} is the common base class for various line
 figures, providing line color, style, width, opacity, arrowhead and other
@@ -1585,6 +1632,7 @@ platforms.}
 
 
 \subsubsection{cLineFigure}
+\label{sec:graphics:linefigure}
 
 \cclass{cLineFigure} displays a single straight line segment. The endpoints
 of the line can be set with the \ffunc{setStart()}/\ffunc{setEnd()}
@@ -1609,6 +1657,7 @@ The result:
 
 
 \subsubsection{cArcFigure}
+\label{sec:graphics:arcfigure}
 
 \cclass{cArcFigure} displays an axis-aligned arc. (To display a
 non-axis-aligned arc, apply a transform to \cclass{cArcFigure}, or use
@@ -1648,6 +1697,7 @@ The result:
 
 
 \subsubsection{cPolylineFigure}
+\label{sec:graphics:polylinefigure}
 
 By default, \cclass{cPolylineFigure} displays multiple connecting straight
 line segments. The class stores geometry information as a sequence of
@@ -1690,6 +1740,7 @@ The result, with both \textit{smooth=false} and \textit{smooth=true}:
 
 
 \subsubsection{cAbstractShapeFigure}
+\label{sec:graphics:abstractshapefigure}
 
 \cclass{cAbstractShapeFigure} is an abstract base class for various shapes,
 providing line and fill color, line and fill opacity, line style, line
@@ -1733,6 +1784,7 @@ Specifying zero for line width is currently not allowed. To hide the outline,
 
 
 \subsubsection{cRectangleFigure}
+\label{sec:graphics:rectanglefigure}
 
 \cclass{cRectangleFigure} displays an axis-aligned rectangle with
 optionally rounded corners. As with all shape figures, drawing of both the
@@ -1766,6 +1818,7 @@ The result:
 
 
 \subsubsection{cOvalFigure}
+\label{sec:graphics:ovalfigure}
 
 \cclass{cOvalFigure} displays a circle or an axis-aligned ellipse. As with
 all shape figures, drawing of both the outline and the fill are optional.
@@ -1793,6 +1846,7 @@ The result:
 
 
 \subsubsection{cRingFigure}
+\label{sec:graphics:ringfigure}
 
 \cclass{cRingFigure} displays a ring, with explicitly controllable
 inner/outer radii. The inner and outer circles (or ellipses) form the
@@ -1826,6 +1880,7 @@ ring->setFillColor(cFigure::YELLOW);
 
 
 \subsubsection{cPieSliceFigure}
+\label{sec:graphics:pieslicefigure}
 
 \cclass{cPieSliceFigure} displays a pie slice, that is, a section of an
 axis-aligned disc or filled ellipse.  The outline of the pie slice consists
@@ -1870,6 +1925,7 @@ The result:
 
 
 \subsubsection{cPolygonFigure}
+\label{sec:graphics:polygonfigure}
 
 \cclass{cPolygonFigure} displays a (closed) polygon, determined by a sequence of points.
 The polygon may be \textit{smoothed}. A smoothed polygon is drawn as a series
@@ -1917,6 +1973,7 @@ The result, with both \textit{smooth=false} and \textit{smooth=true}:
 
 
 \subsubsection{cPathFigure}
+\label{sec:graphics:pathfigure}
 
 \cclass{cPathFigure} displays a "path", a complex shape or line modeled after SVG
 paths. A path may consist of any number of straight line segments, Bezier
@@ -2020,6 +2077,7 @@ The result:
 \end{center}
 
 \subsubsection{cAbstractTextFigure}
+\label{sec:graphics:abstracttextfigure}
 
 \cclass{cAbstractTextFigure} is an abstract base class for figures that
 display (potentially multi-line) text.
@@ -2046,6 +2104,7 @@ fully transparent (invisible), and $1$ meaning fully opaque.
 
 
 \subsubsection{cTextFigure}
+\label{sec:graphics:textfigure}
 
 \cclass{cTextFigure} displays text which is affected by zooming and
 transformations. Font, color, position, anchoring and other properties are
@@ -2073,6 +2132,7 @@ The result:
 
 
 \subsubsection{cLabelFigure}
+\label{sec:graphics:labelfigure}
 
 \cclass{cLabelFigure} displays text which is unaffected by zooming or
 transformations, except its position. Font, color, position, anchoring and
@@ -2100,6 +2160,7 @@ The result:
 
 
 \subsubsection{cAbstractImageFigure}
+\label{sec:graphics:abstractimagefigure}
 
 \cclass{cAbstractImageFigure} is an abstract base class for image figures.
 
@@ -2135,6 +2196,7 @@ the alpha channel.
 
 
 \subsubsection{cImageFigure}
+\label{sec:graphics:imagefigure}
 
 \cclass{cImageFigure} displays an image, typically an icon or a background
 image, loaded from the {\opp} image path. Positioning and other properties
@@ -2156,6 +2218,7 @@ image->setHeight(500);
 
 
 \subsubsection{cIconFigure}
+\label{sec:graphics:iconfigure}
 
 \cclass{cIconFigure} displays a non-zooming image, loaded from the {\opp}
 image path. Positioning and other properties are inherited from
@@ -2187,6 +2250,7 @@ The result:
 
 
 \subsubsection{cPixmapFigure}
+\label{sec:graphics:pixmapfigure}
 
 \cclass{cPixmapFigure} displays a user-defined raster image. A pixmap
 figure may be used to display e.g. a heat map. Support for scaling and
@@ -2251,6 +2315,7 @@ The result, both with \textit{interpolation=NONE} and \textit{interpolation=FAST
 
 
 \subsubsection{cGroupFigure}
+\label{sec:graphics:groupfigure}
 
 \cclass{cGroupFigure} is for the sole purpose of grouping its children. It
 has no visual appearance. The usefulness of a group figure comes from the
@@ -2292,6 +2357,7 @@ The result:
 
 
 \subsection{Compound Figures}
+\label{sec:graphics:compound-figures}
 
 There are two ways the set of figure types can be extended:
 
@@ -2311,6 +2377,7 @@ their pointers. Added getter and setter methods would delegate to subfigures.
 %% TODO example: change the cGroupFigure example to be a subclass of cGroupFigure
 
 \subsection{Defining New Figure Types}
+\label{sec:graphics:defining-new-figure-types}
 
 It is is more difficult to create new figure types where the rendering is not
 based on already existing figures. The difficulty arises from the point that
@@ -2344,9 +2411,10 @@ error message will be issued. Tkenv does something similar.
 
 
 \section{3D Visualization}
-\label{sec:ch-graphics:osg}
+\label{sec:graphics:osg}
 
 \subsection{Introduction}
+\label{sec:graphics:osg-introduction}
 
 {\opp} lets one build advanced 3D visualization for simulation models.
 3D visualization is useful for wide range of simulations, including
@@ -2371,6 +2439,7 @@ such as the ability of using 3D model files directly, accessing and
 rendering online map and satellite imagery data sources, and so on.
 
 \subsubsection{OpenSceneGraph and osgEarth}
+\label{sec:graphics:osg-and-osgearth}
 
 OpenSceneGraph (openscenegraph.org), or OSG for short, is the base library.
 It is best to quote their web site:
@@ -2401,6 +2470,7 @@ In \opp, osgEarth can be very useful for simulations involving maps, terrain,
 or satellites.
 
 \subsection{The {\opp} API for OpenSceneGraph}
+\label{sec:graphics:opp-api-for-osg}
 
 For 3D visualization, {\opp} basically exposes the OpenSceneGraph API.
 You assemble an OSG scene graph in the model, and give it to {\opp} for
@@ -2438,6 +2508,7 @@ only be influenced in the form of viewer hints in
 
 
 \subsubsection{Creating and Accessing cOsgCanvas Objects}
+\label{sec:graphics:creating-and-accessing-osgcanvas-objects}
 
 Every module has a built-in (default) \cclass{cOsgCanvas}, which can be
 accessed with the \ffunc{getOsgCanvas()} method of \cclass{cModule}.
@@ -2455,6 +2526,7 @@ cOsgCanvas *osgCanvas = new cOsgCanvas("scene2");
 \end{cpp}
 
 \subsubsection{cOsgCanvas and Scene Graphs}
+\label{sec:graphics:osgcanvas-and-scene-graphs}
 
 Once a scene graph has been assembled, it can be set on \cclass{cOsgCanvas}
 with the \ffunc{setScene()} method.
@@ -2470,6 +2542,7 @@ otherwise let {\opp} know about the changes.
 
 
 \subsubsection{Viewer Hints}
+\label{sec:graphics:osgcanvas-viewer-hints}
 
 There are several hints that the 3D viewer may take into account when displaying
 the scene graph. Note that hints are only hints, so the viewer may choose to
@@ -2544,6 +2617,7 @@ osgCanvas->setGenericViewpoint(cOsgCanvas::Viewpoint(
 
 
 \subsubsection{Making Nodes Selectable}
+\label{sec:graphics:making-osg-nodes-selectable}
 
 If an OSG node represents an object in your simulation, it is very convenient
 if you can select that object for inspection by clicking on the node in the 3D scene.
@@ -2568,6 +2642,7 @@ clicking child nodes with the mouse is likely to result in a crash.
 \end{note}
 
 \subsubsection{Finding Resources}
+\label{sec:graphics:finding-resources}
 
 3D visualizations often need to load external resources from disk, for
 example images or 3D models. By default, OSG tries to load these files
@@ -2601,6 +2676,7 @@ auto node = osgDB::readNodeFile(fileLoc); // use the resolved path
 
 
 \subsubsection{Conditional Compilation}
+\label{sec:graphics:osg-conditional-compilation}
 
 OSG and osgEarth are optional in {\opp}, and may not be available in all
 installations. However, one probably wants simulation models to compile
@@ -2630,6 +2706,7 @@ void DemoModule::initialize()
 \end{cpp}
 
 \subsubsection{Using Additional Libraries}
+\label{sec:graphics:using-additional-osg-libraries}
 
 OSG and osgEarth are comprised of several libraries. By default, {\opp}
 links only a subset of them to your model: \ttt{osg}, \ttt{osgGA},
@@ -2653,6 +2730,7 @@ the presence of OSG/osgEarth in the first place.
 
 
 \subsection{Using OSG}
+\label{sec:graphics:using-osg}
 
 OpenScenegraph is a sizable library with 16+ namespaces and 40+ \cclass{osg::Node}
 subclasses, and we cannot fully document it here due to size constraints. Instead,
@@ -2663,6 +2741,7 @@ and in other online resources. You will find a list of OSG-related resources
 at the end of this chapter.
 
 \subsubsection{Loading Models}
+\label{sec:graphics:osg-loading-models}
 
 To display a 3D model in the canvas of a compound module, an \cclass{osg::Node} has
 to be provided as the root of the scene.
@@ -2715,6 +2794,7 @@ it is placed in the scene. For further information refer to the OSG
 knowledge base.
 
 \subsubsection{Creating Shapes}
+\label{sec:graphics:osg-creating-shapes}
 
 Shapes can also be built programatically. For that, one needs to use the
 \cclass{osg::Geode}, \cclass{osg::Shape\-Drawable} and \cclass{osg::Shape}
@@ -2750,6 +2830,7 @@ added to any number of \cclass{osg::Geode}s to make it appear in multiple
 places or sizes in the scene. This can in fact improve rendering performance.
 
 \subsubsection{Placing and Orienting Models in a Scene}
+\label{sec:graphics:osg-placing-and-orienting-models}
 
 One way to position and orient nodes is by making them children of an
 \cclass{osg::Position\-Attitude\-Transform}. This node provides methods to
@@ -2771,6 +2852,7 @@ transformNode->setAttitude(osg::Quat(heading, osg::Vec3d(0, 0, 1)));
 \end{cpp}
 
 \subsubsection{Adding Labels and Annotations}
+\label{sec:graphics:osg-adding-labels-and-annotations}
 
 OSG makes it possible to display text or image labels in the scene. Labels
 are rotated to be always parallel to the screen, and scaled to appear in a
@@ -2864,6 +2946,7 @@ autoTransform->setPosition(osg::Vec3d(0.0, 0.0, boundingSphere.radius()));
 
 
 \subsubsection{Drawing Lines}
+\label{sec:graphics:osg-drawing-lines}
 
 To draw a line between two points in the scene, first the two points
 have to be added into an \cclass{osg::Vec3Array}. Then an \cclass{osg::DrawArrays}
@@ -2930,6 +3013,7 @@ stateSet->setMode(GL_LIGHTING,
 \end{cpp}
 
 \subsubsection{How to Organize a Scene}
+\label{sec:graphics:osg-organizing-a-scene}
 
 Independent of how the scene has been constructed, it is always important
 to keep track of how the individual nodes are related to each other in the
@@ -2948,16 +3032,15 @@ moved and oriented to represent the state of the simulation by making it a
 child of an \cclass{osg::Position\-Attitude\-Transform} node.
 
 \subsubsection{Using Animations}
+\label{sec:graphics:osg-using-animations}
 
-\iffalse
-% this is the early draft version
-For more sophisticated animation it is also possible to play back stored
-motion sequences from the model file, as seen in the osg-indoor sample or
-the BostonPark scenario of the osg-earth sample. The former demonstrates
-explicit control over which animation is being played when and in what way,
-while the latter contains a really simple looping clip (the box people)
-requiring no control from the model code.
-\fi
+% TODO: this is the early draft version
+%For more sophisticated animation it is also possible to play back stored
+%motion sequences from the model file, as seen in the osg-indoor sample or
+%the BostonPark scenario of the osg-earth sample. The former demonstrates
+%explicit control over which animation is being played when and in what way,
+%while the latter contains a really simple looping clip (the box people)
+%requiring no control from the model code.
 
 If the node loaded by \ffunc{readNodeFile()} contains animations (sometimes called
 actions), the \ttt{osgAnimation} module is capable of playing them back.
@@ -3014,6 +3097,7 @@ animationManager->playAnimation(animation);
 \end{cpp}
 
 \subsubsection{State Sets}
+\label{sec:graphics:osg-state-sets}
 
 Every \cclass{osg::Drawable} can have an \cclass{osg::StateSet} attached to it.
 An easy way of accessing it is via the \ffunc{getOrCreateStateSet()} method of
@@ -3063,6 +3147,7 @@ performance, so wildly overusing them is to be avoided.
 
 
 \subsection{Using osgEarth}
+\label{sec:graphics:using-osgearth}
 
 osgEarth is a cross-platform terrain and mapping SDK built on top of OpenSceneGraph.
 The most visible feature of osgEarth is that it adds support for loading \ttt{.earth}
@@ -3082,6 +3167,7 @@ is insufficient.
 
 
 \subsubsection{Earth Files}
+\label{sec:graphics:earth-files}
 
 When the osgEarth plugin is used to display a map as the visual environment
 of the simulation, its appearance can be described in a .earth file.
@@ -3171,6 +3257,7 @@ ellipse (a hollow cylinder) next to it, and a big red flag nearby.
 \end{filelisting}
 
 \subsubsection{Placing Objects on a Map}
+\label{sec:graphics:osgearth-placing-objects}
 
 To easily position a part of the scene together on a given geographical location,
 an \cclass{osgEarth::Util::ObjectLocatorNode} is of great help. It can take
@@ -3190,6 +3277,7 @@ locatorNode->getLocator()->setOrientation(osg::Vec3d(heading, 0, 0));
 \end{cpp}
 
 \subsubsection{Adding Annotations on a Map}
+\label{sec:graphics:osgearth-adding-annotations}
 
 To display additional information on top of the terrain, annotations can be
 used. These are special objects that can adapt to the shape of the surface.
@@ -3226,8 +3314,10 @@ mapNode->getModelLayerGroup()->addChild(rangeNode);
 
 
 \subsection{OpenSceneGraph/osgEarth Programming Resources}
+\label{sec:graphics:osg-osgearth-programming-resources}
 
 \subsubsection{Online resources}
+\label{sec:graphics:osg-osgearth-online-resources}
 
 Loading and manipulating OSG models:
 \begin{itemize}
@@ -3248,6 +3338,8 @@ osgEarth online documentation:
 \end{itemize}
 
 \subsubsection{Samples}
+\label{sec:graphics:osg-osgearth-samples}
+
 Be sure to check the samples coming with your OpenSceneGraph installation as
 they contain invaluable information.
 \begin{itemize}
@@ -3256,6 +3348,7 @@ they contain invaluable information.
 \end{itemize}
 
 \subsubsection{Books}
+\label{sec:graphics:osg-osgearth-books}
 
 The following books can be useful for more complex visualization tasks:
 

@@ -2,7 +2,7 @@
 \label{cha:messages}
 
 \section{Overview}
-\label{sec:ch-msgs:overview}
+\label{sec:msgs:overview}
 
 Messages are a central concept in {\opp}. In the model, message objects
 represent events, packets, commands, jobs, customers or other kinds of
@@ -25,7 +25,7 @@ of the simulation programmer:
     name is displayed at many places in the graphical runtime interface,
     so it is generally useful to choose a descriptive name. Message name
     is inherited from \cclass{cObject} (see section
-    \ref{sec:ch-sim-lib:cobject}).
+    \ref{sec:sim-lib:cobject}).
   \item \textit{Message kind} is an integer field.
     Some negative values are reserved by the simulation library, but zero
     and positive values can be freely used in the model for any purpose.
@@ -74,9 +74,10 @@ useful for representing network packets:
 
 
 \section{The cMessage Class}
-\label{sec:ch-msgs:cmessage}
+\label{sec:msgs:cmessage}
 
 \subsection{Basic Usage}
+\label{sec:messages:cmessage-basic-usage}
 
 The \cclass{cMessage} constructor accepts an \textit{object name}
 and a \textit{message kind}, both optional:
@@ -149,6 +150,7 @@ segmentation/reassembly.
 
 
 \subsection{Duplicating Messages}
+\label{sec:messages:duplicating-messages}
 \index{message!duplication}
 
 It is often necessary to duplicate a message or a packet, for example,
@@ -181,11 +183,12 @@ class FooMessage : public cMessage {
 };
 \end{cpp}
 
-For generated classes (chapter \ref{cha:message-definitions}), this is
+For generated classes (chapter \ref{cha:msg-def}), this is
 taken care of automatically.
 
 
 \subsection{Message IDs}
+\label{sec:messages:message-ids}
 \index{message!IDs}
 
 Every message object has a unique numeric \textit{message ID}. It is normally
@@ -210,6 +213,7 @@ long getTreeId() const;
 
 
 \subsection{Control Info}
+\label{sec:messages:control-info}
 
 One of the main application areas of {\opp} is the simulation of
 telecommunication networks. Here, protocol layers are usually
@@ -247,6 +251,7 @@ info object is deleted as well.
 
 
 \subsection{Information About the Last Arrival}
+\label{sec:messages:information-about-last-arrival}
 
 The following methods return the sending and arrival times that correspond
 to the last sending of the message.
@@ -284,6 +289,7 @@ bool arrivedOn(const char *gatename, int gateindex) const;
 
 
 \subsection{Display String}
+\label{sec:messages:displaystring}
 
 \textit{Display strings} affect the message's visualization in graphical
 user interfaces like Tkenv and Qtenv. Message objects do not store a
@@ -300,9 +306,10 @@ See chapter \ref{cha:graphics} for more information on display strings.
 
 
 \section{Self-Messages}
-\label{sec:ch-msgs:self-messages}
+\label{sec:msgs:self-messages}
 
 \subsection{Using a Message as Self-Message}
+\label{sec:messages:using-message-as-self-message}
 
 Messages are often used to represent events internal to a module,
 such as a periodically firing timer to represent expiry of a timeout.
@@ -330,6 +337,7 @@ is the time it will be delivered to the module).
 
 
 \subsection{Context Pointer}
+\label{sec:messages:context-pointer}
 
 \cclass{cMessage} contains a \textit{context pointer} of type \ttt{void*},
 which can be accessed by the following functions:
@@ -352,9 +360,10 @@ the module which can carry enough ``context'' information about the event.
 
 
 \section{The cPacket Class}
-\label{sec:ch-msgs:cpacket}
+\label{sec:msgs:cpacket}
 
 \subsection{Basic Usage}
+\label{sec:messages:cpacket-basic-usage}
 
 The \cclass{cPacket} constructor is similar to the \cclass{cMessage}
 constructor, but it accepts an additional \textit{bit length} argument:
@@ -387,6 +396,7 @@ bool hasBitError() const;
 
 
 \subsection{Identifying the Protocol}
+\label{sec:messages:identifying-protocol-of-packet}
 
 In {\opp} protocol models, the protocol type is usually represented in the
 message subclass. For example, instances of class \ttt{IPv6Datagram}
@@ -407,6 +417,7 @@ if (dynamic_cast<IPv6Datagram *>(msg) != nullptr)
 
 
 \subsection{Information About the Last Transmission}
+\label{sec:messages:information-about-last-transmission}
 
 When a packet has been received, some information can be obtained
 about the transmission, namely the \textit{transmission duration}
@@ -420,6 +431,7 @@ bool isReceptionStart() const;
 
 
 \subsection{Encapsulating Packets}
+\label{sec:messages:encapsulating-packets}
 
 It is often necessary to encapsulate a packet\index{packet!encapsulation}
 into another when you are modeling layered protocols of computer networks.
@@ -502,12 +514,13 @@ other packets as well.
 
 
 \subsection{Encapsulating Several Packets}
+\label{sec:messages:encapsulating-several-packets}
 
 The \cclass{cPacket} class does not directly support encapsulating more
 than one packet, but you can subclass \cclass{cPacket} or \cclass{cMessage}
 to add the necessary functionality. (It is recommended that you
 use the message definition syntax that will be described in chapter
-\ref{cha:message-definitions} -- it can spare you some work.)
+\ref{cha:msg-def} -- it can spare you some work.)
 
 You can store the messages in a fixed-size or a dynamically allocated
 array, or you can use STL classes like \ttt{std::vector} or \ttt{std::list}.
@@ -536,20 +549,21 @@ You will also have to provide an \ffunc{operator=()} method to
 make sure your message objects can be copied and duplicated
 properly -- this is something often needed in simulations
 (think of broadcasts and retransmissions!). Section
-\ref{sec:ch-sim-lib:deriving-new-classes} contains more
+\ref{sec:sim-lib:deriving-new-classes} contains more
 about the things you need to take care of when deriving new classes.
 
 
 
 \section{Attaching Parameters and Objects}
-\label{sec:ch-msgs:attaching-objects}
+\label{sec:msgs:attaching-objects}
 
 If you want to add parameters or objects to a message, the preferred
 way to do that is via message definitions, described in chapter
-\ref{cha:message-definitions}.
+\ref{cha:msg-def}.
 
 
 \subsection{Attaching Objects}
+\label{sec:messages:attaching-objects}
 
 The \cclass{cMessage} class has an internal \cclass{cArray} object which can
 carry objects\index{message!attaching objects}. Only objects
@@ -590,9 +604,10 @@ msg->par("conn").configPointer(nullptr, nullptr, sizeof(struct conn_t));
 
 
 \subsection{Attaching Parameters}
+\label{sec:messages:attaching-parameters}
 
 The preferred way of extending messages with new data fields is to use
-message definitions (see chapter \ref{cha:message-definitions}).
+message definitions (see chapter \ref{cha:msg-def}).
 
 The old, deprecated way of adding new fields to messages is via
 attaching \cclass{cMsgPar} objects.

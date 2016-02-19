@@ -1,5 +1,5 @@
 \chapter{The Simulation Library}
-\label{cha:the-simulation-library}
+\label{cha:sim-lib}
 
 {\opp} has an extensive C++ class library available to the user for
 implementing simulation models and model components. Part of the class
@@ -17,9 +17,10 @@ library to allow one extending it and using it to its full potential.
 
 
 \section{Fundamentals}
+\label{sec:sim-lib:fundamentals}
 
 \subsection{Using the Library}
-\label{sec:ch-sim-lib:using-omnetpp}
+\label{sec:sim-lib:using-omnetpp-library}
 
 Classes in the {\opp} simulation library are part of the \ttt{omnetpp}
 namespace. To use the {\opp} API, you must include the \ttt{omnetpp.h}
@@ -27,10 +28,10 @@ header file and either import the namespace with \ttt{using namespace
 omnetpp}, or qualify names with the \ttt{omnetpp::} prefix.
 
 \subsection{The cObject Base Class}
-\label{sec:ch-sim-lib:cobject}
+\label{sec:sim-lib:cobject}
 
 Most classes in the simulation library are derived from \cclass{cObject},
-or its subclasses \cclass{cNamedObject} and \cclass {cOwnedObject}.
+or its subclasses \cclass{cNamedObject} and \cclass{cOwnedObject}.
 \cclass{cObject} defines several virtual member functions that are either
 inherited or redefined by subclasses. Otherwise, \cclass{cObject} is a
 zero-overhead class as far as memory consumption goes: it purely defines an
@@ -45,13 +46,13 @@ least one virtual member function.
   \end{center}
 \end{figure}
 
-The subclasses \cclass{cNamedObject} and \cclass {cOwnedObject} add data
+The subclasses \cclass{cNamedObject} and \cclass{cOwnedObject} add data
 members to implement more functionality. The following sections discuss
 some of the practically important functonality defined by \cclass{cObject}.
 
 
 \subsubsection{Name and Full Name}
-\label{sec:sim-lib:name}
+\label{sec:sim-lib:object-name}
 \index{object!name}
 
 The most useful and most visible member functions of \cclass{cObject} are
@@ -120,7 +121,7 @@ and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
 
 \subsubsection{Hierarchical Name}
-\label{sec:sim-lib:fullpath}
+\label{sec:sim-lib:object-fullpath}
 \index{object!fullpath}
 
 \ffunc{getFullPath()} returns the object's hierarchical name. This name is
@@ -168,7 +169,7 @@ const char *className = msg->getClassName(); // returns "omnetpp::cMessage"
 \end{cpp}
 
 %% \subsubsection{Owner}
-%% \label{sec:sim-lib:owner}
+%% \label{sec:sim-lib:object-owner}
 %%
 %% TODO
 
@@ -201,6 +202,7 @@ object instance, as opposed to being considered as part of its contents.
 %% TODO
 
 \subsection{Iterators}
+\label{sec:sim-lib:iterators}
 
 There are several container classes in the library (\cclass{cQueue},
 \cclass{cArray} etc.) For many of them, there is a corresponding
@@ -220,6 +222,7 @@ for (cQueue::Iterator it(queue); !it.end(); ++it) {
 \end{cpp}
 
 \subsection{Runtime Errors}
+\label{sec:sim-lib:runtime-errors}
 
 When library objects detect an error condition, they throw a C++ exception.
 This exception is then caught by the simulation environment which pops up
@@ -230,10 +233,11 @@ the error (just before the exception is thrown) and use a C++ debugger to
 look at the stack trace and examine variables. Enabling the
 \fconfig{debug-on-errors} or the \fconfig{debugger-attach-on-error}
 configuration option lets you do that -- check it in section
-\ref{sec:ch-run-sim:controlling}.
+\ref{sec:run-sim:controlling}.
 
 
 \section{Logging from Modules}
+\label{sec:sim-lib:logging-from-modules}
 
 In a simulation there are often thousands of modules which simultaneously carry
 out non-trivial tasks. In order to understand a complex simulation, it is
@@ -249,6 +253,7 @@ other useful features. In the following sections, we look at how to write log
 statements using the {\opp} logging API.
 
 \subsection{Log Output}
+\label{sec:sim-lib:log-output}
 
 The exact way log messages are displayed to the user depends on the user interface.
 In the command-line user interface (Cmdenv\index{Cmdenv}), the log is simply
@@ -258,6 +263,7 @@ open new output windows on a per module basis, these windows automatically filte
 for the log messages of the selected module.
 
 \subsection{Log Levels}
+\label{sec:sim-lib:log-levels}
 
 All logging must be categorized into one of the predefined log levels. The
 assigned log level determines how important and how detailed a log statement
@@ -310,6 +316,7 @@ based on them.
 \end{itemize}
 
 \subsection{Log Statements}
+\label{sec:sim-lib:log-statements}
 
 {\opp} provides several C++ macros for the actual logging. Each one of these
 macros act like a C++ stream, so they can be used similarly to \fvar{std::cout}
@@ -347,7 +354,7 @@ fact, they automatically capture a number of context specific information such
 as the current event, current simulation time, context module, \fvar{this}
 pointer, source file and line number. The final log lines will be automatically
 extended with a prefix that is created from the captured information (see
-section \ref{sec:ch-config-sim:logging}).
+section \ref{sec:config-sim:logging}).
 
 In static class member functions or in non-class member functions an extra
 \fmac{EV\_STATICCONTEXT} macro must be present to make sure that normal log
@@ -362,6 +369,7 @@ void findModule(const char *name, cModule *from)
 \end{cpp}
 
 \subsection{Log Categories}
+\label{sec:sim-lib:log-categories}
 
 Sometimes it might be useful to further classify log statements into user
 defined log categories. In the {\opp} logging API, a log category is an
@@ -382,6 +390,7 @@ EV_INFO_C("test") << "Received " << numPacket << " packets in total.\n";
 \end{cpp}
 
 \subsection{Composition and New lines}
+\label{sec:sim-lib:logging-composition-and-new-lines}
 
 Occasionally it's easier to produce a log line using multiple statements.
 Mostly because some computation has to be done between the parts. This can be
@@ -434,13 +443,14 @@ The old ({\opp} 4.x) version provided \ffunc{ev.printf}, but it is deprecated.
 \end{note}
 
 \subsection{Implementation}
+\label{sec:sim-lib:logging-implementation}
 
 {\opp} does its best to optimize the performance of logging. The implementation
 fully supports conditinal compilation of log statements based on their log
 level. It automatically checks whether the log is recorded anywhere. It also
 checks global and per-component runtime log levels. The latter is efficiently
 cached in the components for subsequent checks. See section
-\ref{sec:ch-config-sim:logging} for more details on how to configure these log
+\ref{sec:config-sim:logging} for more details on how to configure these log
 levels.
 
 The implementation of the C++ log macros makes use of the fact that the
@@ -467,7 +477,7 @@ if (!getEnvir()->isLoggingEnabled())
 
 
 \section{Random Number Generators}
-\label{cha:sim-lib:random-number-generators}
+\label{sec:sim-lib:random-number-generators}
 
 Random numbers in simulation are usually not really random. Rather, they
 are produced using deterministic algorithms. Based on some internal state,
@@ -487,7 +497,7 @@ random numbers. When non-uniform random numbers are needed, mathematical
 transformations are used to produce random numbers from RNG input that
 correspond to specific distributions. This is called random variate
 generation, and it will be covered in the next section,
-\ref{cha:sim-lib:random-variate-generation}.
+\ref{sec:sim-lib:random-variate-generation}.
 
 It is often advantageous for simulations to use random numbers from
 multiple RNG instances. For example, a wireless network simulation may use
@@ -510,6 +520,7 @@ correlation in the simulation results.
 {\opp} comes with the following RNG implementations.
 
 \subsubsection{Mersenne Twister}
+\label{sec:sim-lib:mersenne-twister}
 
 By default, {\opp} uses the Mersenne Twister RNG (MT) by M. Matsumoto and
 T. Nishimura \cite{Matsumoto98}. MT has a period of $2^{19937}-1$,
@@ -517,6 +528,7 @@ and 623-dimensional equidistribution property is assured. MT is
 also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 
 \subsubsection{The "Minimal Standard" RNG}
+\label{sec:sim-lib:minimal-standard-rng}
 
 {\opp} releases prior to 3.0 used a linear congruential generator
 (LCG) with a cycle length of $2^{31}-2$, described in
@@ -532,14 +544,16 @@ associated with RNGs used for simulation, and it is well worth reading.
 It also contains useful links and references on the topic.
 
 \subsubsection{The Akaroa RNG}
+\label{sec:sim-lib:akaroa-rng}
 
 When you execute simulations under Akaroa control (see section
-\ref{sec:ch-run-sim:akaroa}), you can also select Akaroa's
+\ref{sec:run-sim:akaroa}), you can also select Akaroa's
 RNG as the RNG underlying for the {\opp} random number functions.
 The Akaroa RNG also has to be selected from \ffilename{omnetpp.ini}
-(section \ref{sec:ch-config-sim:rng-config}).
+(section \ref{sec:config-sim:rng-config}).
 
 \subsubsection{Other RNGs}
+\label{sec:sim-lib:other-rngs}
 
 {\opp} allows plugging in your own RNGs as well. This mechanism,
 based on the \cclass{cRNG} interface, is described in section
@@ -550,6 +564,7 @@ number of \textit{guaranteed} independent streams.
 
 
 \subsection{Global and Component-Local RNGs}
+\label{sec:sim-lib:global-and-component-local-rngs}
 
 {\opp} can be configured to make several RNGs available for the simulation
 model. These \textit{global} or \textit{physical} RNGs are numbered from
@@ -585,7 +600,7 @@ argument.
 
 The local-to-global mapping, as well as the number of number of global
 RNGs and their seeding can be configured in \ffilename{omnetpp.ini} (see
-section \ref{sec:ch-config-sim:rng-config}).
+section \ref{sec:config-sim:rng-config}).
 
 The mapping can be set up arbitrarily, with the default being identity
 mapping (that is, local RNG $k$ refers to global RNG $k$.) The mapping
@@ -600,6 +615,7 @@ code. However, doing so is not recommended, because the model would lose
 configurability via \ffilename{omnetpp.ini}.
 
 \subsection{Accessing the RNGs}
+\label{sec:sim-lib:accessing-rngs}
 
 RNGs are represented with subclasses of the abstract class \cclass{cRNG}.
 In addition to random number generation methods like \ffunc{intRand()} and
@@ -616,7 +632,7 @@ next section.
 
 
 \section{Generating Random Variates}
-\label{cha:sim-lib:random-variate-generation}
+\label{sec:sim-lib:random-variate-generation}
 
 Random numbers produced by RNGs are uniformly distributed. This section
 describes how to obtain streams of non-uniformly distributed random numbers
@@ -667,6 +683,7 @@ There are several ways to generate random numbers from these distributions,
 as described in the next sections.
 
 \subsection{Component Methods}
+\label{sec:sim-lib:random-variate-component-methods}
 
 The preferred way is to use methods defined on \cclass{cComponent}, the
 common base class of modules and channels:
@@ -695,6 +712,7 @@ There are two additional methods, \ffunc{intrand()} and \ffunc{dblrand()}.
 an additional local RNG index that defaults to 0.
 
 \subsection{Random Number Stream Classes}
+\label{sec:sim-lib:random-number-stream-classes}
 
 It is sometimes useful to be able to pass around random variate generators
 as objects. The classes \cclass{cUniform}, \cclass{cExponential},
@@ -744,6 +762,7 @@ autocorrelated numbers, numbers from a stochastic process, or simply
 elements of a stored sequence (e.g. one loaded from a trace file).
 
 \subsection{Generator Functions}
+\label{sec:sim-lib:random-variate-generator-functions}
 
 Both the \cclass{cComponent} methods and the random number stream classes
 described above have been implemented with the help of standalone generator
@@ -758,6 +777,7 @@ double normal(cRNG *rng, double mean, double stddev);
 \end{cpp}
 
 \subsection{Random Numbers from Histograms}
+\label{sec:sim-lib:random-numbers-from-histograms}
 
 You can also specify your distribution as a
 histogram\index{distribution!as histogram}. The
@@ -768,13 +788,14 @@ equiprobable-cell histograms.  This feature is documented later, with
 the statistical classes.
 
 \subsection{Adding New Distributions}
+\label{sec:sim-lib:adding-new-distributions}
 
 One can easily add support for new distributions. We recommend that
 you write a standalone generator function first. Then you can add
 a \cclass{cRandom} subclass that wraps it, and/or module (channel)
 methods that invoke it with the module's local RNG.
 If you register the function with the \fmac{Define\_NED\_Function()}
-macro (see \ref{sec:ch-sim-lib:defining-ned-functions}), it will be
+macro (see \ref{sec:sim-lib:defining-ned-functions}), it will be
 possible to use the new distribution in NED files and ini files too.
 
 If you need a random number stream that has state, you need to
@@ -782,10 +803,13 @@ subclass from \cclass{cRandom}.
 
 
 \section{Container Classes}
+\label{sec:sim-lib:container-classes}
 
 \subsection{Queue class: cQueue}
+\label{sec:sim-lib:cqueue}
 
 \subsubsection{Basic Usage}
+\label{sec:sim-lib:cqueue-basic-usage}
 
 \cclass{cQueue} is a container class that acts as a queue.
 \cclass{cQueue} can hold objects of type derived from \cclass{cObject}
@@ -841,9 +865,8 @@ queue.remove(msg);
 \end{cpp}
 
 
-
 \subsubsection{Priority Queue}
-
+\label{sec:sim-lib:cqueue-as-priority-queue}
 
 By default, \cclass{cQueue} implements a FIFO, but it can also act as
 a priority queue, that is, it can keep the inserted objects
@@ -857,7 +880,6 @@ reference for details).  An example of setting up an ordered
 cQueue queue("queue", someCompareFunc);
 \end{cpp}
 
-
 If the queue object is set up as an ordered queue, the \ffunc{insert()}
 function uses the ordering function: it searches the queue contents
 from the head until it reaches the position where the new item
@@ -865,7 +887,7 @@ needs to be inserted, and inserts it there.
 
 
 \subsubsection{Iterators}
-
+\label{sec:sim-lib:cqueue-iteration}
 
 Normally, you can only access the objects at the head or tail of the
 queue. However, if you use an iterator class, \cclass{cQueue::Iterator},
@@ -879,11 +901,10 @@ it, the () operator to get a pointer to the current item, and the
 \ffunc{end()} member function to examine if you are at the end (or the
 beginning) of the queue.
 
-
 An example:
 
 \begin{cpp}
-for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
+for (cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 {
   cMessage *msg = (cMessage *) iter();
   //...
@@ -892,10 +913,11 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 
 
 
-
 \subsection{Expandable Array: cArray}
+\label{sec:sim-lib:carray}
 
 \subsubsection{Basic Usage}
+\label{sec:sim-lib:carray-basic-usage}
 
 
 \cclass{cArray} is a container class that holds objects derived from
@@ -908,7 +930,6 @@ fills up, it is reallocated.
 \cclass{cArray} objects are used in {\opp} to store parameters
 attached to messages, and internally, for storing module parameters
 and gates.
-
 
 Creating an array:
 
@@ -923,7 +944,6 @@ cPar *p = new cMsgPar("par");
 int index = array.add( p );
 \end{cpp}
 
-
 Adding an object at a given index (if the index is occupied,
 you will get an error message):
 
@@ -931,7 +951,6 @@ you will get an error message):
 cPar *p = new cMsgPar("par");
 int index = array.addAt(5,p);
 \end{cpp}
-
 
 Finding an object in the array:
 
@@ -953,7 +972,6 @@ int index = array.find("par");
 Par *p = (cPar *) array["par"];
 \end{cpp}
 
-
 You can remove an object from the array by calling \ffunc{remove()}
 with the object name, the index position or the object pointer:
 
@@ -973,7 +991,7 @@ delete array.remove( index );
 \end{cpp}
 
 \subsubsection{Iteration}
-
+\label{sec:sim-lib:carray-iteration}
 
 \cclass{cArray} has no iterator, but it is easy to loop through all the
 indices with an integer variable. The \ffunc{size()} member function
@@ -994,8 +1012,10 @@ for (int i = 0; i < array.size(); i++) {
 
 
 \section{Routing Support: cTopology}
+\label{sec:sim-lib:ctopology}
 
 \subsection{Overview}
+\label{sec:sim-lib:ctopology-overview}
 
 The \cclass{cTopology} class was designed primarily to support
 routing\index{routing support} in telecommunication or multiprocessor
@@ -1017,7 +1037,6 @@ there is no submodule nesting.  Connections which span across compound
 module boundaries are also represented as one graph edge. Graph edges
 are directed, just as module gates are.
 
-
 If you are writing a router or switch model, the \cclass{cTopology}
 graph can help you determine what nodes are available through which
 gate and also to find optimal routes\index{optimal routes}. The
@@ -1029,10 +1048,8 @@ The mapping between the graph (nodes, edges) and network model
 the corresponding module for a \cclass{cTopology} node and vica versa.
 
 
-
-
-
 \subsection{Basic Usage}
+\label{sec:sim-lib:ctopology-basic-usage}
 
 You can extract the network topology into a \cclass{cTopology}
 object by a single function call. You have several ways to select
@@ -1130,7 +1147,6 @@ The \ffunc{getNumNodes()} member function (1st line) returns the number of
 nodes in the graph, and getNode(i) returns a pointer to the \textit{i}th
 node, an \cclass{cTopology::Node} structure.
 
-
 The correspondence between a graph node and a module can be obtained
 by:
 
@@ -1139,18 +1155,15 @@ cTopology::Node *node = topo.getNodeFor(module);
 cModule *module = node->getModule();
 \end{cpp}
 
-
 The \ffunc{getNodeFor()} member function returns a pointer to the graph
 node for a given module. (If the module is not in the graph, it
 returns \ttt{nullptr}). \ffunc{getNodeFor()} uses binary search within the
 \cclass{cTopology} object so it is relatively fast.
 
-
 \cclass{cTopology::Node}'s other member functions let you determine the
 connections of this node: \ffunc{getNumInLinks()}, \ffunc{getNumOutLinks()} return
 the number of connections, \ttt{in(i)} and
 \ttt{out(i)} return pointers to graph edge objects.
-
 
 By calling member functions of the graph edge object, you can
 determine the modules and gates involved. The \ffunc{getRemoteNode()}
@@ -1164,10 +1177,8 @@ and ``local'' can be correctly interpreted for edges of both
 directions.)
 
 
-
-
-
 \subsection{Shortest Paths}
+\label{sec:sim-lib:ctopology-shortest-paths}
 
 The real power of \cclass{cTopology} is in finding shortest
 paths\index{topology!shortest path} in the network to support optimal
@@ -1271,6 +1282,7 @@ weightedMultiShortestPathsTo(cTopology::Node *target);
 
 
 \section{Pattern Matching}
+\label{sec:sim-lib:pattern-matching}
 
 Since version 4.3, {\opp} contains two utility classes for pattern
 matching, \cclass{cPatternMatcher} and \cclass{cMatchExpression}.
@@ -1285,10 +1297,11 @@ applies the pattern expressions to \textit{objects} instead of text. These
 classes are especially useful for making model-specific configuration files
 more concise or more powerful by introducing patterns.
 
-% See \ref{sec:ch-config-sim:wildcards} too.
+% See \ref{sec:config-sim:wildcards} too.
 
 
 \subsection{cPatternMatcher}
+\label{sec:sim-lib:cpatternmatcher}
 
 \cclass{cPatternMatcher} holds a pattern string and several option flags, and has
 a boolean \ffunc{matches()} function that lets you check whether the string passed as argument
@@ -1382,6 +1395,7 @@ EV << matcher.matches("Net.host[0].tcp") << endl;  // -> false
 
 
 \subsection{cMatchExpression}
+\label{sec:sim-lib:cmatchexpression}
 
 The \cclass{cMatchExpression} class builds on top of \cclass{cPatternMatcher},
 and lets you determine whether an \textit{object} matches a given pattern
@@ -1499,9 +1513,10 @@ EV << expr.matches(&cMatchableString("something else")) << endl; // -> false
 
 
 \section{Statistics and Distribution Estimation}
-\label{sec:ch-sim-lib:statistics}
+\label{sec:sim-lib:statistics}
 
 \subsection{cStatistic and Descendants}
+\label{sec:sim-lib:cstatistic-and-descendants}
 
 There are several statistic and result collection classes:
 \cclass{cStdDev}, \cclass{cWeightedStdDev}, \cclass{Long\-Histogram},
@@ -1541,11 +1556,11 @@ There are several statistic and result collection classes:
 \end{figure}
 
 \subsubsection{Basic Usage}
+\label{sec:sim-lib:cstatistic-basic-usage}
 
 One can insert an observation into a statistic object with the
-\ffunc{collect()} function or the \texttt{+=} operator (they are
-equivalent).  \cclass{cStdDev} has the following methods for getting
-statistics from the object: \ffunc{getCount()}, \ffunc{getMin()},
+\ffunc{collect()} function. \cclass{cStdDev} has the following methods for
+getting statistics from the object: \ffunc{getCount()}, \ffunc{getMin()},
 \ffunc{getMax()}, \ffunc{getMean()}, \ffunc{getStddev()}, \ffunc{getVariance()},
 \ffunc{getSum()}, \ffunc{getSqrSum()} with the obvious meanings. An example
 usage for \cclass{cStdDev}:
@@ -1566,11 +1581,11 @@ double mean = stat.getMean(),
 
 
 
-
-
 \subsection{Distribution Estimation}
+\label{sec:sim-lib:distribution-estimation-classes}
 
 \subsubsection{Initialization and Usage}
+\label{sec:sim-lib:histograms-initialization-and-usage}
 
 % TBD this has to be rewritten at some point... maybe take over examples from Doxygen doc.
 
@@ -1655,6 +1670,7 @@ as a histogram.
 
 
 \subsubsection{Querying Histogram Cells}
+\label{sec:sim-lib:querying-histogram-cells}
 
 There are three member functions to explicitly return cell boundaries
 and the number of observations in each cell. \ffunc{getNumCells()} returns
@@ -1695,6 +1711,7 @@ Density Function at a given \textit{x}, respectively.
 
 
 \subsubsection{Random Number Generation from Distributions}
+\label{sec:sim-lib:random-number-generation-from-distributions}
 
 
 The \ffunc{random()} member function generates random
@@ -1717,6 +1734,7 @@ double rnd = (double)rndPar; // random number from the cPSquare
 \end{cpp}
 
 \subsubsection{Storing and Loading Distributions}
+\label{sec:sim-lib:storing-and-loading-distributions}
 
 
 The statistic classes have \ffunc{loadFromFile()} member functions
@@ -1742,6 +1760,7 @@ fclose(f2);
 
 
 \subsubsection{Histogram with Custom Cells}
+\label{sec:sim-lib:histogram-with-custom-cells}
 
 
 The \cclass{cVarHistogram} class can be used to create
@@ -1786,11 +1805,11 @@ boundaries when the histogram has already been transformed.
 
 
 
-
 \subsection{The k-split Algorithm}
+\label{sec:sim-lib:ksplit-algorithm}
 
 \subsubsection{Purpose}
-
+\label{sec:sim-lib:ksplit-purpose}
 
 The \textit{k}-split algorithm is an on-line distribution
 estimation\index{distribution!online estimation} method.  It was
@@ -1805,7 +1824,7 @@ with the one-dimensional version only.
 
 
 \subsubsection{The Algorithm}
-
+\label{sec:sim-lib:ksplit-algorithm}
 
 The \textit{k-split} algorithm is an adaptive histogram-type estimate which
 maintains a good partitioning by doing cell splits. We start out with
@@ -1917,6 +1936,7 @@ equal-frequency partition.
 the \cclass{cKSplit} class.
 
 \subsubsection{The cKSplit Class}
+\label{sec:sim-lib:cksplit-class}
 
 The \cclass{cKSplit} class is an implementation of the \textit{k-split} method.
 Member functions:
@@ -1961,6 +1981,7 @@ struct cKSplit::Grid
 
 
 \subsection{Transient Detection and Result Accuracy}
+\label{sec:sim-lib:transient-detection-and-result-accuracy}
 
 In many simulations, only the steady state performance (i.e.
 the performance after the system has reached a stable state)
@@ -1988,6 +2009,7 @@ detection and result accuracy detection algorithms are:
 
 
 \subsubsection{Basic Usage}
+\label{sec:sim-lib:transient-detection-basic-usage}
 
 %
 % TBD comments
@@ -2012,10 +2034,10 @@ Detecting the end of the period:
 
 
 \subsubsection{Transient Detection}
-
+\label{sec:sim-lib:transient-detection}
 
 Currently one transient detection\index{transient detection} algorithm
-is implemented, i.e.  there is one class derived from
+is implemented, i.e. there is one class derived from
 \cclass{cTransientDetection}. The \cclass{cTDExpandingWindows} class
 uses the sliding window approach with two windows, and checks the
 difference of the two averages to see if the transient period is over.
@@ -2028,6 +2050,7 @@ void setParameters(int reps=3,
 \end{cpp}
 
 \subsubsection{Accuracy Detection}
+\label{sec:sim-lib:accuracy-detection}
 
 
 Currently one accuracy detection\index{accuracy detection} algorithm
@@ -2044,10 +2067,10 @@ void setParameters(double acc=0.1, int reps=3);
 
 
 \section{Recording Simulation Results}
-\label{sec:ch-sim-lib:result-recording}
+\label{sec:sim-lib:result-recording}
 
 \subsection{Output Vectors: cOutVector}
-\label{sec:ch-sim-lib:coutvector}
+\label{sec:sim-lib:coutvector}
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
 data (referred to as \textit{output vectors}) to a file. The \ffunc{record()}
@@ -2103,7 +2126,7 @@ that has a file extension \ttt{.vec}.
   the \ttt{.vec} file and does not contain any new information. The IDE
   re-creates the \ttt{.vci} file if it gets lost.}
 The format and processing of output vector files is described in section
-\ref{cha:analyzing-simulation-results}.
+\ref{cha:ana-sim}.
 
 You can configure output vectors from \ffilename{omnetpp.ini}:
 you can disable individual vectors, or limit recording to certain
@@ -2119,6 +2142,7 @@ output vector object.
 
 
 \subsection{Output Scalars}
+\label{sec:sim-lib:output-scalars}
 
 While output vectors are to record time series data and thus they
 typically record a large volume of data during a simulation run,
@@ -2186,13 +2210,15 @@ void Sink::finish()
 The above calls record the data into an \textit{output scalar file},
 a line-oriented text file that has the file extension \ttt{.sca}.
 The format and processing of output vector files is described in chapter
-\ref{cha:analyzing-simulation-results}.
+\ref{cha:ana-sim}.
 
 
 
 \section{Watches and Snapshots}
+\label{sec:sim-lib:watches-and-snapshots}
 
 \subsection{Basic Watches}
+\label{sec:sim-lib:basic-watches}
 
 Unfortunately, variables of type \ttt{int}, \ttt{long}, \ttt{double}
 do not show up by default in Tkenv/Qtenv; neither do STL classes
@@ -2250,6 +2276,7 @@ WATCH(currentClientInfo);
 
 
 \subsection{Read-write Watches}
+\label{sec:sim-lib:read-write-watches}
 
 Watches for primitive types and \ttt{std::string} allow for changing
 the value from the GUI as well, but for other types you need to explicitly
@@ -2275,6 +2302,7 @@ WATCH_RW(currentClientInfo);
 
 
 \subsection{Structured Watches}
+\label{sec:sim-lib:structured-watches}
 
 \ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches; they allow one
 line of (unstructured) text to be displayed. However, if you have a
@@ -2309,6 +2337,7 @@ watchedPtr = nullptr;  // set to nullptr when object gets deleted
 
 
 \subsection{STL Watches}
+\label{sec:sim-lib:stl-watches}
 
 The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc)
 also have structured watches, available via the following macros:
@@ -2340,7 +2369,7 @@ WATCH_PTRMAP(commandMap);
 
 
 \subsection{Snapshots}
-\label{sec:ch-sim-lib:snapshots}
+\label{sec:sim-lib:snapshots}
 
 The \ffunc{snapshot()} function outputs textual information about all
 or selected objects of the simulation (including the objects created
@@ -2442,6 +2471,7 @@ network="FifoNet">
 
 
 % \subsection{Disabling Warnings}
+% \label{sec:sim-lib:disabling-warnings}
 %
 % Some container classes and functions suspend the simulation and issue
 % warning messages in potentially bogus/dangerous situations, for
@@ -2470,6 +2500,7 @@ network="FifoNet">
 
 
 \subsection{Getting Coroutine Stack Usage}
+\label{sec:sim-lib:getting-coroutine-stack-usage}
 
 It is important to choose the correct stack size for
 modules\index{module!stack size}\index{stack!size}.  If the stack is
@@ -2511,7 +2542,7 @@ effect with local variables.
 
 
 \section{Defining New NED Functions}
-\label{sec:ch-sim-lib:defining-ned-functions}
+\label{sec:sim-lib:defining-ned-functions}
 
 It is possible to extend the NED language with new functions beyond the
 built-in ones. New functions are implemented in C++, and then compiled into
@@ -2527,6 +2558,7 @@ supports only certain cases. Both macros have several variants.
   called \fmac{Define\_Function()}.}
 
 \subsection{Define\_NED\_Function()}
+\label{sec:sim-lib:define-ned-function-macro}
 
 The \fmac{Define\_NED\_Function()} macro lets you define new functions that
 can accept arguments of various data types (\ttt{bool}, \ttt{double},
@@ -2577,6 +2609,7 @@ for your own functions as well, when appropriate.
 
 
 \subsubsection{The Signature}
+\label{sec:sim-lib:ned-function-signature}
 
 The signature string has the following syntax:
 
@@ -2630,6 +2663,7 @@ NED function that accepts an integer plus any number of additional arguments
 of any type, and returns the \textit{index}th one among them.
 
 \subsubsection{Implementing the NED Function}
+\label{sec:sim-lib:implementing-ned-function}
 
 The C++ function that implements the NED function must have the following
 signature, as defined by the \fdef{NEDFunction} typedef:
@@ -2758,6 +2792,7 @@ evaluator anyway when your function returns.
 
 
 \subsubsection{cNEDValue In More Detail}
+\label{sec:sim-lib:cnedvalue-in-more-detail}
 
 In the previous section we have given an overview and demonstrated the basic
 use of the \cclass{cNEDValue} class; here we go into further details.
@@ -2853,6 +2888,7 @@ value.setUnit(cNEDValue::getPooled(unit)); // use a persistent copy for setUnit(
 
 
 \subsection{Define\_NED\_Math\_Function()}
+\label{sec:sim-lib:define-ned-math-function}
 
 The \fmac{Define\_NED\_Math\_Function()} macro lets you register a C/C++
 ``mathematical'' function as a NED function. The registered C/C++ function
@@ -2910,9 +2946,10 @@ Define_NED_Math_Function3(pow, 2, "math", "Power-of function; see <math.h>");
 
 
 \section{Deriving New Classes}
-\label{sec:ch-sim-lib:deriving-new-classes}
+\label{sec:sim-lib:deriving-new-classes}
 
 \subsection{cObject or Not?}
+\label{sec:sim-lib:cobject-or-not}
 
 If you plan to implement a completely new class (as opposed to
 subclassing something already present in {\opp}), you have
@@ -2939,7 +2976,7 @@ then you \textit{must} subclass from \cclass{cObject}.
 The most significant features of \cclass{cObject} are
 the name string (which has to be stored somewhere, so it has
 its overhead) and ownership management (see section
-\ref{sec:ch-sim-lib:ownership-management}), which
+\ref{sec:sim-lib:ownership-management}), which
 also provides advantages at some cost.
 
 As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress} or
@@ -2951,6 +2988,7 @@ virtual functions.
 
 
 \subsection{cObject Virtual Methods}
+\label{sec:sim-lib:cobject-virtual-methods}
 
 Most classes in the simulation class library are descendants of
 \cclass{cObject}. If you want to derive a new class from
@@ -3016,6 +3054,7 @@ so that they delegate to the same function of the base class, and invoke a commo
 private \ffunc{copy()} function to copy the local members.
 
 \subsection{Class Registration}
+\label{sec:sim-lib:class-registration}
 
 You should also use the \fmac{Register\_Class()} macro to register the
 new class. It is used by the \ffunc{createOne()} factory function, which can
@@ -3044,11 +3083,12 @@ Register_Class(cMersenneTwister);
 \end{cpp}
 
 \ffunc{createOne()} is also needed by the parallel distributed simulation feature
-(Chapter \ref{cha:parallel-execution}) to create blank objects to unmarshal into
+(Chapter \ref{cha:parallel-exec}) to create blank objects to unmarshal into
 on the receiving side.
 
 
 \subsection{Details}
+\label{sec:sim-lib:subclassing-cobject-details}
 
 We'll go through the details using an example. We create a new
 class \ttt{NewClass}, redefine all above mentioned \cclass{cObject}
@@ -3148,7 +3188,7 @@ NewClass::~NewClass()
 The destructor should delete all data structures the object allocated.
 \cclass{cOwnedObject}-based objects should \textit{only} be deleted if they
 are owned by the object -- details will be covered in section
-\ref{sec:ch-sim-lib:ownership-management}.
+\ref{sec:sim-lib:ownership-management}.
 
 \begin{cpp}
 NewClass *NewClass::dup() const
@@ -3215,7 +3255,7 @@ to take ownership into account. If the contained object is \textit{not owned}
 then we assume it is a pointer to an ``external'' object, consequently
 we only copy the pointer. If it is \textit{owned}, we duplicate
 it and become the owner of the new object. Details of ownership
-management will be covered in section \ref{sec:ch-sim-lib:ownership-management}.
+management will be covered in section \ref{sec:sim-lib:ownership-management}.
 
 
 \begin{cpp}
@@ -3252,9 +3292,10 @@ Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
 
 \section{Object Ownership Management}
-\label{sec:ch-sim-lib:ownership-management}
+\label{sec:sim-lib:ownership-management}
 
 \subsection{The Ownership Tree}
+\label{sec:sim-lib:ownership-tree}
 
 {\opp} has a built-in ownership management mechanism which
 is used for sanity checks, and as part of the infrastructure
@@ -3286,6 +3327,7 @@ the \ffunc{forEachChild()} method by it looping through all
 contained objects and checking the owner of each object.
 
 \subsubsection{Why Do We Need This?}
+\label{sec:sim-lib:why-we-need-ownership}
 
 The traditional concept of object ownership is associated with
 the ``right to delete'' objects. In addition to that,
@@ -3337,6 +3379,7 @@ module.
 
 
 \subsection{Managing Ownership}
+\label{sec:sim-lib:managing-ownership}
 
 Ownership is managed transparently for the user, but this mechanism
 has to be supported by the participating classes themselves.
@@ -3347,6 +3390,7 @@ to store messages or other \cclass{cOwnedObject}-based objects.
 
 
 \subsubsection{Insertion}
+\label{sec:sim-lib:ownership-and-insertion-into-container}
 
 \cclass{cArray} and \cclass{cQueue} have internal data structures
 (array and linked list) to store the objects which are inserted
@@ -3383,6 +3427,7 @@ void cQueue::insert(cOwnedObject *obj)
 
 
 \subsubsection{Removal}
+\label{sec:sim-lib:ownership-and-removal-from-container}
 
 Here is what the \textit{remove} family of operations in \cclass{cQueue}
 (or \cclass{cArray}) does:
@@ -3428,6 +3473,7 @@ cOwnedObject *cQueue::remove(cOwnedObject *obj)
 
 
 \subsubsection{Destructor}
+\label{sec:sim-lib:ownership-and-container-destructor}
 
 The concept of \ffunc{ownership} is that \textit{the owner has the
 exclusive right and duty to delete the objects it owns}.
@@ -3440,6 +3486,7 @@ where \ttt{obj->getOwner()==this}.
 
 
 \subsubsection{Object Copying}
+\label{sec:sim-lib:ownership-and-object-copying}
 
 The ownership mechanism also has to be taken into consideration
 when a \cclass{cArray} or \cclass{cQueue} object is duplicated
@@ -3460,6 +3507,7 @@ left unchanged.
 % FIXME finish this!
 %
 % \subsubsection{Another Example: cMessage's Encapsulation Feature}
+% \label{sec:sim-lib:another-example-cmessages-encapsulation-feature}
 %
 % This template should be followed in other places too. Like cMessage's
 % encapsulation...
@@ -3482,6 +3530,7 @@ left unchanged.
 %
 %
 %\subsection{If you Use STL Containers}
+% \label{sec:sim-lib:if-you-use-stl-containers}
 %
 
 

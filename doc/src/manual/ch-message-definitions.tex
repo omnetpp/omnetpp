@@ -1,8 +1,8 @@
 \chapter{Message Definitions}
-\label{cha:message-definitions}
+\label{cha:msg-def}
 
 \section{Introduction}
-\label{sec:ch-msg-defs:intro}
+\label{sec:msg-defs:intro}
 
 In practice, you will need to add various fields to \cclass{cMessage} or
 \cclass{cPacket} to make them useful. For example, if you are modelling
@@ -26,7 +26,7 @@ great deal of manual work.
 
 
 \subsection{The First Message Class}
-\label{sec:ch-msg-defs:first-msg-class}
+\label{sec:msg-defs:first-msg-class}
 
 Let us begin with a simple example. Suppose that you need a packet class that
 carries source and destination addresses as well as a hop count. You may then
@@ -81,10 +81,10 @@ The following sections describe the message syntax and features in detail.
 
 
 \section{Messages and Packets}
-\label{sec:ch-msg-defs:messages-and-packets}
+\label{sec:msg-defs:messages-and-packets}
 
 \subsection{Defining Messages and Packets}
-\label{sec:ch-msg-defs:defining-messages-and-packets}
+\label{sec:msg-defs:defining-messages-and-packets}
 
 Message and packet contents can be defined in a syntax resembling C structs.
 The keyword can be \fkeyword{message} or \fkeyword{packet}; they cause
@@ -167,7 +167,7 @@ the \ttt{const char*} pointer.
 
 
 \subsection{Field Data Types}
-\label{sec:ch-msg-defs:field-data-types}
+\label{sec:msg-defs:field-data-types}
 
 Data types for fields are not limited to \fkeyword{int} and
 \fkeyword{bool}. You can use several C/C++ and other data types:
@@ -189,8 +189,8 @@ Data types for fields are not limited to \fkeyword{int} and
       \ttt{nullptr} is not allowed. The object will store a copy of the string,
       not just the pointer.
    \item structs and classes, defined in message files or elsewhere (see
-      in later sections \ref{sec:ch-msg-defs:other-types-as-fields}
-      and \ref{sec:ch-msg-defs:using-cpp-types})
+      in later sections \ref{sec:msg-defs:other-types-as-fields}
+      and \ref{sec:msg-defs:using-cpp-types})
    \item typedef'd names declared in C++ and announced to the message compiler
 )
 \end{itemize}
@@ -200,7 +200,7 @@ fields to empty string.
 
 
 \subsection{Initial Values}
-\label{sec:ch-msg-defs:initial-values}
+\label{sec:msg-defs:initial-values}
 
 You can specify initial values for fields. Examples:
 
@@ -225,7 +225,7 @@ generated class.
 
 
 \subsection{Enums}
-\label{sec:ch-msg-defs:enums}
+\label{sec:msg-defs:enums}
 
 You can declare that an \fkeyword{int} (or other integral type) field
 takes values from an enum. The message compiler can then generate code
@@ -279,7 +279,7 @@ packet FooPacket
 
 
 \subsection{Fixed-Size Arrays}
-\label{sec:ch-msg-defs:fixed-size-arrays}
+\label{sec:msg-defs:fixed-size-arrays}
 
 You can specify fixed size arrays:
 
@@ -303,7 +303,7 @@ will be thrown.
 
 
 \subsection{Variable-Size Arrays}
-\label{sec:ch-msg-defs:variable-size-arrays}
+\label{sec:msg-defs:variable-size-arrays}
 
 If the array size is not known in advance, you can declare the field
 to have a variable size:
@@ -335,7 +335,7 @@ start filling array elements.
 
 
 \subsection{Classes and Structs as Fields}
-\label{sec:ch-msg-defs:other-types-as-fields}
+\label{sec:msg-defs:other-types-as-fields}
 
 In addition to primitive types, you can also use other types (classes,
 structs, typedefs, etc.) as fields. For example, if you have a C++ type
@@ -352,7 +352,7 @@ packet IPPacket
 
 The \ttt{IPAddress} type must be known to the message compiler, and
 also at compile time to the C++ compiler; section
-\ref{sec:ch-msg-defs:using-cpp-types} will describe how to achieve that.
+\ref{sec:msg-defs:using-cpp-types} will describe how to achieve that.
 
 The generated class will contain \ttt{IPAddress} data members
 (that is, not pointers to \ttt{IPAddress} objects), and
@@ -370,7 +370,7 @@ virtual void setDest(const IPAddress& dest);
 
 
 \subsection{Pointer Fields}
-\label{sec:ch-msg-defs:pointers-fields}
+\label{sec:msg-defs:pointers-fields}
 
 Pointer fields where the setters and the destructor would delete the
 previous value are not supported yet. However, there are workarounds, as
@@ -380,7 +380,7 @@ You can create a typedef for the pointer and use the typedef name as field
 type. Then you'll get a plain pointer field where neither the setter nor
 the destructor deletes the old value (which is a likely memory leak).
 
-Example (section \ref{sec:ch-msg-defs:using-cpp-types} will explain the
+Example (section \ref{sec:msg-defs:using-cpp-types} will explain the
 details):
 
 \begin{msg}
@@ -396,11 +396,11 @@ packet Bar
 Then you can customize the class via C++ inheritance and reimplement
 the setter methods in C++, inserting the missing \ttt{delete} statements.
 Customization via C++ inheritance will be described in section
-\ref{sec:ch-msg-defs:customizing-via-inheritance}.
+\ref{sec:msg-defs:customizing-via-inheritance}.
 
 
 \subsection{Inheritance}
-\label{sec:ch-msg-defs:inheritance}
+\label{sec:msg-defs:inheritance}
 
 By default, messages are subclassed from \cclass{cMessage} or
 \cclass{cPacket}. However, you can explicitly specify the base class using
@@ -424,7 +424,7 @@ class Ieee80211DataFrame : public Ieee80211Frame {
 
 
 \subsection{Assignment of Inherited Fields}
-\label{sec:ch-msg-defs:assignment-of-inherited-fields}
+\label{sec:msg-defs:assignment-of-inherited-fields}
 
 Message definitions allow you to change the initial value of a field
 defined in an ancestor type. The syntax is similar to that of a field
@@ -478,7 +478,7 @@ packet UDPPacket
 
 
 \section{Classes}
-\label{sec:ch-msg-defs:defining-classes}
+\label{sec:msg-defs:defining-classes}
 
 Until now we have only seen message and packet descriptions, which generate
 classes derived from \cclass{cMessage} or \cclass{cPacket}. However, it is
@@ -531,7 +531,7 @@ class TCPOpenCommand : public TCPCommand
 
 
 \section{Structs}
-\label{sec:ch-msg-defs:defining-structs}
+\label{sec:msg-defs:defining-structs}
 
 You can define C-style structs to be used as fields in message classes,
 ``C-style'' meaning ``containing only data and no methods'' (in contrast to
@@ -590,7 +590,7 @@ However, because a struct has no member functions, there are limitations:
 \begin{itemize}
    \item variable-size arrays are not supported;
    \item customization via inheritance and \fkeyword{abstract} fields
-      (see later in \ref{sec:ch-msg-defs:customizing-via-inheritance})
+      (see later in \ref{sec:msg-defs:customizing-via-inheritance})
       cannot be used;
    \item cannot have classes subclassed from \cclass{cOwnedObject} as fields,
       because structs cannot be owners.
@@ -599,7 +599,7 @@ However, because a struct has no member functions, there are limitations:
 
 
 \section{Literal C++ Blocks}
-\label{sec:ch-msg-defs:cplusplus-blocks}
+\label{sec:msg-defs:cplusplus-blocks}
 
 It is possible to have C++ code placed directly into the generated code,
 more precisely, into the generated header file. This is done with the
@@ -625,7 +625,7 @@ header file.
 
 
 \section{Using C++ Types}
-\label{sec:ch-msg-defs:using-cpp-types}
+\label{sec:msg-defs:using-cpp-types}
 
 The message compile only knows about the types defined within the same msg
 file, and the built-in types. To be able to use other types, for example
@@ -640,7 +640,7 @@ The next two sections describe how to do each.
 
 
 \subsection{Announcing Types to the Message Compiler}
-\label{sec:ch-msg-defs:announcing-types}
+\label{sec:msg-defs:announcing-types}
 
 If you want to use a C++ type (a class, struct or typedef) not
 declared with the message syntax in the same file, you have to
@@ -689,7 +689,7 @@ class PrioQueue extends cOwnedObject;
 \begin{note}
 Notice that this default is inconsistent with the default base class for
 generating classes, which is \cclass{cObject} (see
-\ref{sec:ch-msg-defs:defining-classes}). The reason why type announcements
+\ref{sec:msg-defs:defining-classes}). The reason why type announcements
 assume \cclass{cOwnedObject} is that it is safer: a mistake will surface in
 the form of a compile error and will not remain hidden until it causes some
 obscure runtime error.
@@ -697,6 +697,7 @@ obscure runtime error.
 
 
 \subsection{Making the C++ Declarations Available}
+\label{sec:msg-def:making-cpp-declarations-available}
 
 In addition to announcing types to the message compiler, you also have to make
 sure their C++ declarations will be available at compile time so that the
@@ -725,6 +726,7 @@ cplusplus {{
 
 
 \subsection{Putting it Together}
+\label{sec:msg-def:putting-it-together}
 
 Suppose you have header files and message files that define various types:
 
@@ -780,11 +782,11 @@ packet AppPacketExt extends AppPacket {
 
 
 \section{Customizing the Generated Class}
-\label{sec:ch-msg-defs:customizing-generated-class}
+\label{sec:msg-defs:customizing-generated-class}
 
 
 \subsection{Customizing Method Names}
-\label{sec:ch-msg-defs:customizing-method-names}
+\label{sec:msg-defs:customizing-method-names}
 
 The names and some other properties of generated methods can be influenced
 with metadata annotations (properties).
@@ -834,7 +836,7 @@ accepted naming convention.
 
 
 \subsection{Customizing the Class via Inheritance}
-\label{sec:ch-msg-defs:customizing-via-inheritance}
+\label{sec:msg-defs:customizing-via-inheritance}
 
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
@@ -954,7 +956,7 @@ void FooPacket::setPayloadLength(int newlength)
 
 
 \subsection{Abstract Fields}
-\label{sec:ch-msg-defs:abstract-fields}
+\label{sec:msg-defs:abstract-fields}
 
 The purpose of abstract fields is to let you to override the way the value
 is stored inside the class, and still benefit from inspectability in
@@ -993,7 +995,7 @@ supply your implementation.
 
 
 \section{Using Standard Container Classes for Fields}
-\label{sec:ch-msg-defs:using-stl}
+\label{sec:msg-defs:using-stl}
 
 One often wants to use standard container classes (STL) as fields, such as
 \ttt{std::vector}, \ttt{std::stack} or \ttt{std::map}. The following sections
@@ -1005,6 +1007,7 @@ describe two ways this can be done:
 \end{enumerate}
 
 \subsection{Typedefs}
+\label{sec:msg-def:typedefs}
 
 The basic idea is that if we create a typedef for the desired type,
 we can use it for fields just as any other type. Example:
@@ -1060,6 +1063,7 @@ It is easy. However, there are also some drawbacks:
 \end{enumerate}
 
 \subsection{Abstract Fields}
+\label{sec:msg-def:abstract-fields}
 
 This approach uses abstract fields. We exploit the fact that
 \ttt{std::vector} and \ttt{std::stack} are representations of
@@ -1162,13 +1166,13 @@ Some additional notes:
 
 
 \section{Namespaces}
-\label{sec:ch-msg-defs:namespaces}
+\label{sec:msg-defs:namespaces}
 
 It is possible to place the generated classes into a C++ namespace,
 and also to use types from other namespaces.
 
 \subsection{Declaring a Namespace}
-\label{sec:ch-msg-defs:declaring-a-namespace}
+\label{sec:msg-defs:declaring-a-namespace}
 
 To place the generated types into a namespace, add a namespace declaration
 near the top of the message file:
@@ -1214,6 +1218,7 @@ whether you put something above the namespace declaration line or below it:
 \end{enumerate}
 
 \subsection{C++ Blocks and Namespace}
+\label{sec:msg-def:cpp-blocks-and-namespace}
 
 As described above, the contents of a \fkeyword{cplusplus} block will be
 copied above or into the C++ namespace block in the generated header
@@ -1238,6 +1243,7 @@ the namespace declaration based on whether you want them to be in the C++
 namespace or not.
 
 \subsection{Type Announcements and Namespace}
+\label{sec:msg-def:type-announcements-and-namespace}
 
 The type announcement syntax allows one to specify the namespace of the type
 as well, so the following lines are syntactically correct:
@@ -1340,7 +1346,7 @@ packet FooPacket extends NetworkPacket
 
 
 \section{Descriptor Classes}
-\label{sec:ch-msg-defs:descriptor-classes}
+\label{sec:msg-defs:descriptor-classes}
 
 For each generated class and struct, the message compiler generates an
 associated descriptor class. The descriptor class carries ``reflection''
@@ -1376,7 +1382,7 @@ exists), only a descriptor class.
 
 
 \section{Summary}
-\label{sec:ch-msg-defs:summary}
+\label{sec:msg-defs:summary}
 
 This section summarizes the possibilities offered by message definitions.
 

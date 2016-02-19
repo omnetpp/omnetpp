@@ -2,6 +2,7 @@
 \label{cha:plugin-exts}
 
 \section{Overview}
+\label{sec:plugin-exts:overview}
 
 {\opp} is an open system, and several details of its operation can be
 customized and extended by writing C++ code. Some extension interfaces
@@ -9,7 +10,7 @@ have already been covered in other chapters:
 
 \begin{itemize}
    \item \textit{Defining new NED functions} was described in
-     \ref{sec:ch-sim-lib:defining-ned-functions}
+     \ref{sec:sim-lib:defining-ned-functions}
    \item \textit{Defining new result filters and recorders} was described
      in \ref{sec:simple-modules:writing-result-filters}
 \end{itemize}
@@ -80,9 +81,10 @@ The following sections elaborate on the various extension interfaces.
 
 
 \section{Adding a New Configuration Option}
-\label{sec:plugin-exts:accessing-config}
+\label{sec:plugin-exts:configoption}
 
 \subsection{Registration}
+\label{sec:plugin-exts:configoption:registration}
 
 New configuration options need to be declared with one of the appropriate
 registration macros. These macros are:
@@ -149,6 +151,7 @@ The macro will register the option, and also declare the
 reading the option value from the configuration database.
 
 \subsection{Reading the Value}
+\label{sec:plugin-exts:configoption:reading-values}
 
 The configuration is accessible via the \ffunc{getConfig()} method of \cclass{cEnvir}.
 It returns a pointer to the configuration object (\cclass{cConfiguration}):
@@ -288,7 +291,7 @@ is also implemented with a custom \cclass{cEvent}.
 \label{sec:plugin-exts:rng}
 
 This interface lets one add new RNG implementations (see section
-\ref{cha:sim-lib:random-number-generators}) to {\opp}.
+\ref{sec:sim-lib:random-number-generators}) to {\opp}.
 The motivation might be achieving integration with external software (for
 example something like Akaroa), or exactly replicating the trajectory of a
 simulation ported from another simulation framework that uses a different
@@ -327,7 +330,7 @@ event in the future events list. Other variants:
     convert between protocol headers and their C++ object representations used
     within the simulation.
 
-\item For parallel simulation (see chapter \ref{cha:parallel-execution}), the
+\item For parallel simulation (see chapter \ref{cha:parallel-exec}), the
     scheduler is modified to listen for messages arriving from other logical
     processes (LPs), and inserts them into the simulation. The scheduler also
     blocks the simulation when it is not safe to execute the next event due to
@@ -381,7 +384,7 @@ and can be activated with the \fconfig{futureeventset-class} configuration optio
 \label{sec:plugin-exts:fingerprint}
 
 This extension interface allows one to replace or extend the fingerprint
-computation algorithm (see section \ref{ch-testing:sec:fingerprint-tests}).
+computation algorithm (see section \ref{sec:fingerprint-tests}).
 
 % TODO \cclass{cFingerprint}
 
@@ -437,7 +440,7 @@ option.
 \label{sec:plugin-exts:snapshotmanager}
 
 A snapshot manager provides an output stream to which snapshots are written
-(see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
+(see section \ref{sec:sim-lib:snapshots}). The default snapshot manager
 is \cclass{cFileSnapshotManager}.
 
 The new class must implement the \cclass{cISnapshotManager} interface, and
@@ -446,9 +449,10 @@ option.
 
 
 \section{Defining a New Configuration Provider}
-\label{sec:plugin-exts:configuration}
+\label{sec:plugin-exts:configuration-providers}
 
 \subsection{Overview}
+\label{sec:plugin-exts:configprovider-overview}
 
 The configuration provider extension lets you replace ini files
 with some other storage implementation, for example a database.
@@ -475,6 +479,7 @@ The default implementation of \cclass{cConfigurationReader} is
 \cclass{InifileReader}.
 
 \subsection{The Startup Sequence}
+\label{sec:plugin-exts:configprovider-startup-sequence}
 
 From the configuration extension's point of view, the startup sequence
 looks like the following (see \ttt{src/envir/startup.cc} in the source code):
@@ -501,6 +506,7 @@ looks like the following (see \ttt{src/envir/startup.cc} in the source code):
 \end{enumerate}
 
 \subsection{Providing a Custom Configuration Class}
+\label{sec:plugin-exts:configprovider:custom-class}
 
 To replace the configuration object with your custom implementation,
 you would write the class:
@@ -525,18 +531,19 @@ configuration-class = CustomConfiguration
 
 
 \subsection{Providing a Custom Reader for SectionBasedConfiguration}
+\label{sec:plugin-exts:custom-reader-for-sectionbasedconfiguration}
 
 As said already, writing a configuration class from scratch can
 be a lot of work, and it may be more practical to reuse
 \cclass{SectionBasedConfiguration} with a different configuration
-reader class. This can be done with \ttt{sectionbasedconfig-configreader-class}
+reader class. This can be done with \fconfig{sectionbasedconfig-configreader-class}
 config option, interpreted by \cclass{SectionBasedConfiguration}.
 Specify the following in your boot-time ini file:
 
 \begin{inifile}
 [General]
 configuration-class = SectionBasedConfiguration
-sectionbasedconfig-configreader-class = <my new reader class>
+sectionbasedconfig-configreader-class = <new-reader-class>
 \end{inifile}
 
 The configuration reader class should look like this:
@@ -554,7 +561,7 @@ Register_Class(DatabaseConfigurationReader);
 
 
 \section{Implementing a New User Interface}
-\label{sec:plugin-exts:userinterface}
+\label{sec:plugin-exts:user-interface}
 
 It is possible to extend {\opp} with a new user interface. The new
 user interface will have fully equal rights to Cmdenv, Tkenv and Qtenv;
@@ -573,7 +580,7 @@ implements lots of functionality that otherwise you'd have to.
 \begin{note}
 If you want something completely different from what \cclass{EnvirBase}
 provides, such as embedding the simulation kernel into another
-application, then you should be reading section \ref{sec:ch-embedding:embedding},
+application, then you should be reading section \ref{sec:embedding:embedding},
 not this one.
 \end{note}
 

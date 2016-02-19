@@ -1,7 +1,8 @@
 \chapter{Result Recording and Analysis}
-\label{cha:analyzing-simulation-results}
+\label{cha:ana-sim}
 
 \section{Result Recording}
+\label{sec:ana-sim:result-recording}
 
 {\opp} provides built-in support for recording simulation results, via
 \textit{output vectors} and \textit{output scalars}. Output vectors are
@@ -31,13 +32,14 @@ results in the form you need, without requiring heavy instrumentation or
 continuous tweaking of the simulation model.
 
 \subsection{Using Signals and Declared Statistics}
+\label{sec:ana-sim:signals-and-statistics}
 
 This approach combines the signal mechanism (see
 \ref{sec:simple-modules:signals}) and NED properties (see
-\ref{sec:ch-ned-lang:properties}) in order to de-couple the generation of
+\ref{sec:ned-lang:properties}) in order to de-couple the generation of
 results from their recording, thereby providing more flexibility in what to
 record and in which form. The details of the solution have been described
-in section \ref{sec:ch-simple-modules:statistic-signals} in detail; here we
+in section \ref{sec:simple-modules:signal-based-statistics} in detail; here we
 just give a short overview.
 
 Statistics are declared in the NED files with the \ttt{@statistic} property,
@@ -45,7 +47,7 @@ and modules emit values using the signal mechanism. The simulation framework
 records data by adding special result file writer listeners to the signals.
 By being able to choose what listeners to add, the user can control what to
 record in the result files and what computations to apply before recording.
-The aforementioned section \ref{sec:ch-simple-modules:statistic-signals}
+The aforementioned section \ref{sec:simple-modules:signal-based-statistics}
 also explains how to instrument simple modules and channels for signals-based
 result recording.
 
@@ -61,6 +63,7 @@ the signals approach, and there are extra configuration options to make
 the additional possibilities accessible.
 
 \subsection{Direct Result Recording}
+\label{sec:ana-sim:direct-result-recording}
 
 With this approach, scalar and statistics results are collected in class
 variables inside modules, then recorded in the finalization phase via
@@ -71,7 +74,7 @@ minimum/maximum value or the standard deviation, \cclass{cStdDev} and
 there are histogram and other distribution estimation classes
 (\cclass{cDoubleHistogram}, \cclass{cLongHistogram}, \cclass{cPSquare},
 \cclass{cKSplit}, and others). These classes are described in sections
-\ref{sec:ch-sim-lib:statistics} and \ref{sec:ch-sim-lib:result-recording}.
+\ref{sec:sim-lib:statistics} and \ref{sec:sim-lib:result-recording}.
 Recording of individual vectors, scalars and statistics can be enabled or
 disabled via the configuration (ini file), and it is also the place to set
 up recording intervals for vectors.
@@ -214,6 +217,7 @@ if (simTime() >= simulation.getWarmupPeriod())
 
 
 \subsection{Result File Names}
+\label{sec:ana-sim:result-file-names}
 
 Simulation results are recorded into \textit{output scalar files} that
 actually hold statistics results as well, and \textit{output vector
@@ -263,7 +267,7 @@ Recording scalar results can be enabled or disabled individually, using
 patterns. The syntax of the configuration option is
 \textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording=}\textit{true/false},
 where both \textit{<module-full-path>} and \textit{<scalar-name>}
-may contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
+may contain wildcards (see \ref{sec:config-sim:wildcards}).
 \textit{<scalar-name>} is the signal name, or the string passed to the
 \ffunc{recordScalar()} call. By default, the recording of all scalars is
 enabled.
@@ -303,7 +307,7 @@ configuration options are
 %line is outside the margins
 and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
 where both \textit{<module-full-path>} and \textit{<vector-name>} may
-contain wildcards (see \ref{sec:ch-config-sim:wildcards}).
+contain wildcards (see \ref{sec:config-sim:wildcards}).
 \textit{<vector-name>} is the signal name, or the name string of the
 \ffunc{cOutVector} object. By default, all output vectors are turned
 on for the whole duration the simulation.
@@ -355,6 +359,7 @@ effect.)
 
 
 \subsection{Saving Parameters as Scalars}
+\label{sec:ana-sim:saving-parameters-as-scalars}
 
 When you are running several simulations with different parameter
 settings, you'll usually want to refer to selected
@@ -510,6 +515,7 @@ consider the \textit{real} accuracy of your results:
 
 
 \section{Overview of the Result File Formats}
+\label{sec:ana-sim:result-file-formats}
 
 Both output vector and scalar files are textual, line-oriented files.
 The advantage of a text-based format is that it is very accessible
@@ -537,6 +543,7 @@ Vectors are recorded into a separate file for practical reasons: vector
 data usually consume several magnitudes more disk space than scalars.
 
 \subsection{Output Vector Files}
+\label{sec:ana-sim:output-vector-files}
 
 All output vectors from a simulation run are recorded into the same file.
 The following sections describe the format of the file, and
@@ -574,6 +581,7 @@ located, and do not need to scan through the whole file linearly.
 
 
 \subsection{Scalar Result Files}
+\label{sec:ana-sim:scalar-result-files}
 
 Fragment of an output scalar file (without header):
 
@@ -594,6 +602,7 @@ generate several lines: mean, standard deviation, etc.
 %% FIXME TODO attributes, statistics example, etc
 
 \section{The Analysis Tool in the Simulation IDE}
+\label{sec:ana-sim:analysis-tool}
 
 The Simulation IDE provides an Analysis Tool for analysis and visualization
 of simulation results. The Analysis Tool lets you load several result files
@@ -611,7 +620,8 @@ The Analysis Tool is covered in detail in the User Guide.
 
 
 \section{Scave Tool}
-\index{scavetool}\label{sec:ana-sim:scavetool}
+\label{sec:ana-sim:scavetool}
+\index{scavetool}
 
 Much of the IDE Analysis Tool's functionality is available on the command
 line as well, via the \fprog{scavetool} program. \fprog{scavetool} is
@@ -628,6 +638,7 @@ scavetool <command> [options] <file>...
 \end{commandline}
 
 \subsection{The \textit{filter} Command}
+\label{sec:ana-sim:scavetool-filter-command}
 
 The \textit{filter} command allows you to filter and/or convert result files.
 
@@ -696,6 +707,7 @@ time,"Queue.sink.queueing time"
 
 
 \subsection{The \textit{index} Command}
+\label{sec:ana-sim:scavetool-index-command}
 
 If the index file was deleted or the vector file was modified, you need to
 rebuild the index file before running the filter command:
@@ -711,6 +723,7 @@ to specify the -r option to rearrange the records of the vector file,
 otherwise the index file would be too big and the indexing inefficient.
 
 \subsection{The \textit{summary} Command}
+\label{sec:ana-sim:scavetool-summary-command}
 
 The \textit{summary} command reports the list of statistics names, module names,
 run ids, configuration names in the given files to the standard output.
@@ -721,7 +734,7 @@ scavetool summary Aloha-1.vec
 
 
 \section{Alternative Statistical Analysis and Plotting Tools}
-\label{sec:ana-sim:alt-tools}
+\label{sec:ana-sim:alternative-tools}
 
 There are several programs and packages in addition to the {\opp} IDE
 and \fprog{scavetool} that can also be used to analyze
@@ -735,7 +748,8 @@ result processing.
 
 
 \subsection{GNU R}
-\label{sec:ana-sim:gnu-r}\index{GNU R}
+\label{sec:ana-sim:gnu-r}
+\index{GNU R}
 
 R is a free software environment for statistical computing and graphics.
 R has an excellent programming language and powerful plotting capabilities,
@@ -759,6 +773,7 @@ use R for data analysis and plotting.
 
 
 \subsection{NumPy, SciPy and MatPlotLib}
+\label{sec:ana-sim:numpy-scipy-and-matplotlib}
 \index{NumPy}\index{SciPy}\index{MatPlotLib}
 
 NumPy and SciPy are numerical and scientific computing packages for the
@@ -771,6 +786,7 @@ Matplotlib is distributed under a BSD-style license.
 
 
 \subsection{MATLAB or Octave}
+\label{sec:ana-sim:matlab-or-octave}
 \index{Matlab}\index{Octave}
 
 MATLAB is a commercial numerical computing environment and programming language.
@@ -784,7 +800,8 @@ graphics capabilities than GNU R or MATLAB.
 
 
 \subsection{Gnuplot}
-\label{sec:ana-sim:gnuplot}\index{Gnuplot}
+\label{sec:ana-sim:gnuplot}
+\index{Gnuplot}
 
 Gnuplot is a very popular command-line program that can generate two-
 and three-dimensional plots of functions and data. The program runs
@@ -814,6 +831,7 @@ are working with.
 
 
 \subsection{ROOT}
+\label{sec:ana-sim:root}
 \index{ROOT}
 
 \textit{ROOT} is an object-oriented data analysis framework,
@@ -825,11 +843,9 @@ aimed at processing C/C++ scripts. It is probably harder to get started
 using ROOT than with either Gnuplot or Grace, but you will find that ROOT provides
 power and flexibility that would be unattainable with the other two programs.
 
-Curt Brune's page at Stanford (http://www.slac.stanford.edu/\~curt/omnet++/)
-shows examples of what you can achieve using ROOT with {\opp}.
-
 
 \subsection{Grace}
+\label{sec:ana-sim:grace}
 \index{Grace}
 
 An ``honorable mention,'' \textit{Grace} is a powerful GPL data visualization
@@ -844,6 +860,7 @@ programming language.
 
 
 \subsection{Spreadsheet Programs}
+\label{sec:ana-sim:spreadsheet-programs}
 \index{Spreadsheets}
 
 One straightforward solution is to use spreadsheets such as OpenOffice

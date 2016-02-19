@@ -2,8 +2,10 @@
 \label{cha:testing}
 
 \section{Overview}
+\label{sec:testing:overview}
 
 \subsection{Verification, Validation}
+\label{sec:testing:verification-validation}
 
 Correctness of the simulation model is a primary concern of the developers
 and users of the model, because they want to obtain credible simulation
@@ -30,6 +32,7 @@ can be assisted with tools used for software quality assurance, for example
 testing tools. Validation is not a software engineering issue.
 
 \subsection{Unit Testing, Regression Testing}
+\label{sec:testing:unit-testing-regression-testing}
 
 As mentioned above, software testing techniques can be of significant help
 during model verification. Testing can also help to ensure that
@@ -83,9 +86,10 @@ useful for testing simulation models.
 
 
 \section{The opp\_test Tool}
-\label{ch-testing:sec:opptest}
+\label{sec:testing:opptest}
 
 \subsection{Introduction}
+\label{sec:testing:opptest:introduction}
 
 This section documents the \fprog{opp\_test}, a versatile tool that is
 helpful for various testing scenarios. \fprog{opp\_test} can be used for
@@ -234,6 +238,7 @@ cases with the \fprog{opp\_test} tool.
 
 
 \subsection{Terminology}
+\label{sec:testing:opptest:terminology}
 
 The next sections will use the following language:
 
@@ -254,6 +259,7 @@ The next sections will use the following language:
 
 
 \subsection{Test File Syntax}
+\label{sec:testing:opptest:test-file-syntax}
 
 Test files are composed of \%-directives of the syntax:
 
@@ -268,6 +274,7 @@ or to the end of the file. Some directives require a value, others a body, or bo
 Certain directives, e.g. \ftest{\%contains}, may occur several times in the file.
 
 \subsection{Test Description}
+\label{sec:testing:opptest:test-description}
 
 Syntax:
 \begin{filelisting}
@@ -283,11 +290,13 @@ can often be quite difficult without them.
 
 
 \subsection{Test Code Generation}
+\label{sec:testing:opptest:test-code-generation}
 
 This section describes the ways you can create C++ source and other files
 into the test directory.
 
 \subsubsection{\%activity}
+\label{sec:testing:opptest:activity}
 
 Syntax:
 
@@ -305,6 +314,7 @@ ini file to set up the module as a network are also generated.
 
 
 \subsubsection{\%module}
+\label{sec:testing:opptest:module}
 
 Syntax:
 
@@ -321,6 +331,7 @@ ini file to set up the module as a network are also generated.
 
 
 \subsubsection{\%includes, \%global}
+\label{sec:testing:opptest:includes-and-global}
 
 Syntax:
 
@@ -345,6 +356,7 @@ inside the namespace.
 
 
 \subsubsection{The Default Ini File}
+\label{sec:testing:opptest:default-ini-file}
 
 The following ini file is always generated:
 
@@ -359,6 +371,7 @@ generated with \ftest{\%activity} or \ftest{\%module}; if they
 are absent, it will be \ttt{Test}.
 
 \subsubsection{\%network}
+\label{sec:testing:opptest:network}
 
 Syntax:
 
@@ -370,6 +383,7 @@ This directive can be used to override the network name in the default ini file.
 
 
 \subsubsection{\%file, \%inifile}
+\label{sec:testing:opptest:file-and-inifile}
 
 Syntax:
 
@@ -397,6 +411,7 @@ The default ini file is always generated.
 
 
 \subsubsection{The @TESTNAME@ Macro}
+\label{sec:testing:opptest:testname-macro}
 
 In test files, the string \ttt{@TESTNAME@} will be replaced with the test
 case name. Since it is substituted everywhere (C++, NED, msg and ini
@@ -404,6 +419,7 @@ files), you can also write things like \ttt{@TESTNAME@\_function()}, or
 \ttt{printf("this is @TESTNAME@{\textbackslash}n")}.
 
 \subsubsection{Avoiding C++ Name Clashes}
+\label{sec:testing:opptest:avoiding-cpp-name-clashes}
 
 Since all sources are compiled into a single test executable, actions have
 to be taken to prevent accidental name clashes between C++ symbols in
@@ -422,8 +438,10 @@ via \ftest{\%file}, that needs to be done manually.
 
 
 \subsection{PASS Criteria}
+\label{sec:testing:opptest:pass-criteria}
 
 \subsubsection{\%contains, \%contains-regex, \%not-contains, \%not-contains-regex}
+\label{sec:testing:opptest:contains-and-co}
 
 Syntax:
 
@@ -465,6 +483,7 @@ the test directory.
 
 
 \subsubsection{\%subst}
+\label{sec:testing:opptest:subst}
 
 Syntax:
 
@@ -496,6 +515,7 @@ brought to a common form:
 \end{filelisting}
 
 \subsubsection{\%exitcode, \%ignore-exitcode}
+\label{sec:testing:opptest:exitcode}
 
 Syntax:
 \begin{filelisting}
@@ -521,6 +541,7 @@ and test for the presence of the correct error message in the output.
 
 
 \subsubsection{\%file-exists, \%file-not-exists}
+\label{sec:testing:opptest:file-exists}
 
 Syntax:
 
@@ -536,8 +557,10 @@ These directives test for the presence or absence of a certain file in
 the test directory.
 
 \subsection{Extra Processing Steps}
+\label{sec:testing:opptest:extra-processing-steps}
 
 \subsubsection{\%env, \%extraargs, \%testprog}
+\label{sec:testing:opptest:env-extraargs-testprog}
 
 Syntax:
 
@@ -590,6 +613,7 @@ script, or in the shell you run the tests from.
 
 
 \subsubsection{\%prerun-command, \%postrun-command}
+\label{sec:testing:opptest:prerun-postrun-commands}
 
 Syntax:
 
@@ -636,6 +660,7 @@ its location or full path.
 
 
 \subsection{Unresolved}
+\label{sec:testing:opptest:unresolved}
 
 A test case is unresolved if the test program cannot be executed at all, the
 output cannot be read, or if the test case declares so. The latter is done
@@ -644,6 +669,7 @@ standard output, at the beginning of the line.
 
 
 \subsection{opp\_test Synopsys}
+\label{sec:testing:opptest:synopsys}
 
 Little has been said so far what \fprog{opp\_test} actually does, or how you
 can invoke it.
@@ -691,6 +717,7 @@ $ cd work; opp_makemake --deep --no-deep-includes; make
 to achieve that.
 
 \subsection{Writing the Control Script}
+\label{sec:testing:opptest:writing-control-script}
 
 Usually one writes a control script to automate the two invocations of \fprog{opp\_test}
 and the build of the simulation model between them.
@@ -724,7 +751,7 @@ Further sections describe how one can implement various types of tests in
 {\opp}.
 
 \section{Smoke Tests}
-\label{ch-testing:sec:smoke-tests}
+\label{sec:testing:smoke-tests}
 
 Smoke tests are a tool for very basic verification and regression testing.
 Basically, the simulation is run for a while, and it must not crash or stop
@@ -738,7 +765,7 @@ be easily adapted to other models or model frameworks.
 
 
 \section{Fingerprint Tests}
-\label{ch-testing:sec:fingerprint-tests}
+\label{sec:testing:fingerprint-tests}
 
 Fingerprint tests are a low-cost but effective tool for regression testing
 of simulation models. A fingerprint is a hash computed from various properties
@@ -751,6 +778,7 @@ tests are very useful for ensuring that a change (some refactoring, a bugfix,
 or a new feature) didn't break the simulation.
 
 \subsection{Fingerprint Computation}
+\label{sec:testing:fingerprint-computation}
 
 Technically, providing a \fconfig{fingerprint} option in the config file or
 on the command line (\ttt{-\-fingerprint=...}) will turn on fingerprint
@@ -759,6 +787,7 @@ computation in the {\opp} simulation kernel. When the simulation terminates,
 if they differ, an error is generated.
 
 \subsubsection{Ingredients}
+\label{sec:testing:fingerprint-ingredients}
 
 The fingerprint computation algorithm allows controlling what is included
 in the hash value. Changing the \textit{ingredients} allows one to make the
@@ -809,6 +838,7 @@ rarely necessary, because the ingredients list included in the fingerprints
 take precedence, and are also more convenient to use.
 
 \subsubsection{Multiple Fingerprints, Alternative Values}
+\label{sec:testing:multiple-fingerprints-alternative-values}
 
 It is possible to specify more than one fingerprint, separated by
 \textit{commas}, each with different ingredients. This will cause {\opp} to
@@ -844,6 +874,7 @@ in the simulation kernel.}
 
 
 \subsubsection{Further Filtering}
+\label{sec:testing:fingerprint-further-filtering}
 
 It is also possible to filter which modules, statistics, etc. are included
 in the fingerprints. The \fconfig{fingerprint-events},
@@ -855,6 +886,7 @@ These filters are mainly useful to limit fingerprint computation to certain
 parts of the simulation.
 
 \subsubsection{Programmatic Access}
+\label{sec:testing:fingerprint-programmatic-access}
 
 \cclass{cFingerprint} is the class responsible for fingerprint computation.
 The current fingerprint computation object can be retrieved from
@@ -879,6 +911,7 @@ Data added using \ffunc{addExtraData()} will only be counted in the
 fingerprint if the list of fingerprint ingredients contains \tbf{x}.
 
 \subsection{Fingerprint Tests}
+\label{sec:testing:fingerprint-tests}
 
 The INET Framework contains a script for automated fingerprint tests as
 well. The script runs all or selected simulations defined in a CSV file
@@ -899,7 +932,7 @@ examples/dhcp/, ./run -f omnetpp.ini -c Wireless, 500s, faa5-4111/tplx
 
 
 \section{Unit Tests}
-\label{ch-testing:sec:unit-tests}
+\label{sec:testing:unit-tests}
 
 If a simulation models contains units of code (classes, functions) smaller
 than a module, they are candidates for unit testing. For a network simulation
@@ -919,7 +952,7 @@ to the include path, and also links the library to the test code.
 
 
 \section{Module Tests}
-\label{ch-testing:sec:module-tests}
+\label{sec:testing:module-tests}
 
 {\opp} modules are not as easy to unit test as standalone classes, because
 they typically assume a more complex environment, and, especially modules
@@ -939,7 +972,7 @@ among several tests may be factored out and only referenced by \ttt{.test} files
 
 
 \section{Statistical Tests}
-\label{ch-testing:sec:statistical-tests}
+\label{sec:testing:statistical-tests}
 
 Statistical tests are those where the test outcome is decided on
 some statistical property or properties of the simulation results.
@@ -947,6 +980,7 @@ some statistical property or properties of the simulation results.
 Statistical tests may be useful as validation as well as regression testing.
 
 \subsubsection{Validation Tests}
+\label{sec:testing:validation-tests}
 
 Validation tests aim to verify that simulation results correspond to some
 reference values, ideally to those obtained from the real system. In
@@ -954,7 +988,7 @@ practice, reference values may come from physical measurements, theoretical
 values, or another simulator's results.
 
 \subsubsection{Statistical Regression Tests}
-\label{ch-testing:sec:statistical-regression-tests}
+\label{sec:testing:statistical-regression-tests}
 
 After a refactoring that changes the simulation trajectory (e.g. after
 eliminating or introducing extra events, or changes in RNG usage), there
@@ -969,6 +1003,7 @@ variance) to check that the ``before'' and the ``after'' sets of results
 are from the same distribution.
 
 \subsubsection{Implementation}
+\label{sec:testing:statistical-tests-implementation}
 
 Statistical software like \textit{GNU R} is extremely useful for these
 tests.

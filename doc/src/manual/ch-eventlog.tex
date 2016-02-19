@@ -30,6 +30,7 @@ information of the simulation run and later can be used for various purposes.
 \end{note}
 
 \section{Configuration}
+\label{sec:eventlog:configuration}
 
 To record an eventlog file during the simulation, insert the following line into
 the ini file:
@@ -44,6 +45,7 @@ record-eventlog = true
 \end{note}
 
 \subsection{File Name}
+\label{sec:eventlog:file-name}
 
 The simulation kernel will write the eventlog file during the simulation into the file
 specified by the following ini file configuration entry (showing the default file name
@@ -54,6 +56,7 @@ eventlog-file = ${resultdir}/${configname}-${runnumber}.elog
 \end{inifile}
 
 \subsection{Recording Intervals}
+\label{sec:eventlog:recording-intervals}
 
 The size of an eventlog file is approximately proportional to the number of
 events it contains. To reduce the file size and speed up the simulation, it
@@ -69,6 +72,7 @@ eventlog-recording-intervals = ..10.2, 22.2..100, 233.3..
 \end{inifile}
 
 \subsection{Recording Modules}
+\label{sec:eventlog:recording-modules}
 
 Another factor that affects the size of an eventlog file is the number of
 modules for which the simulation kernel records events during the
@@ -86,6 +90,7 @@ between 10 and 20, and turns off recording for all other modules.
 \end{inifile}
 
 \subsection{Recording Message Data}
+\label{sec:eventlog:recording-messages}
 
 Since recording message data dramatically increases the size of the
 eventlog file and also slows down the simulation, it is turned off by
@@ -122,11 +127,13 @@ eventlog-message-detail-pattern =
 
 
 \section{Eventlog Tool}
+\label{sec:eventlog:eventlog-tool}
 
 The Eventlog Tool is a command line tool to process eventlog files. Invoking it without
 parameters will display usage information. The following are the most useful commands for users.
 
 \subsection{Filter}
+\label{sec:eventlog:filter}
 
 The eventlog tool provides off line filtering that is usually applied to the eventlog file
 after the simulation has been finished and before actually opening it in the {\opp} IDE
@@ -134,6 +141,7 @@ or processing it by any other means. Use the filter command and its various opti
 specify what should be present in the result file.
 
 \subsection{Echo}
+\label{sec:eventlog:echo}
 
 Since the eventlog file format is text based and users are encouraged to implement their
 own filters, a way is needed to check whether an eventlog file is

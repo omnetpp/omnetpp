@@ -1,8 +1,9 @@
 \chapter{The NED Language}
-\label{cha:the-ned-language}
+\label{cha:ned-lang}
 
 
 \section{NED Overview}
+\label{sec:ned-lang:ned-overview}
 
 The user describes the structure of a simulation model in the NED language. NED
 stands for Network Description. NED lets the user declare simple modules, and
@@ -87,7 +88,7 @@ other systems like SQL databases, and so on.
 
 
 \section{NED Quickstart}
-\label{sec:ch-ned-lang:warmup}
+\label{sec:ned-lang:warmup}
 
 In this section we introduce the NED language via a complete and
 reasonably real-life example: a communication network.
@@ -100,7 +101,7 @@ transport layer from the model.
 
 
 \subsection{The Network}
-\label{sec:ch-ned-lang:warmup:network}
+\label{sec:ned-lang:warmup:network}
 
 First we'll define the network, then in the next sections we'll continue
 to define the network nodes.
@@ -155,8 +156,8 @@ The second half of the declaration defines how the nodes are to be
 connected. The double arrow means bidirectional connection. The connection
 points of modules are called gates, and the \ttt{port++} notation adds a
 new gate to the \ttt{port[]} gate vector. Gates and connections will be
-covered in more detail in sections \ref{sec:ch-ned-lang:gates} and
-\ref{sec:ch-ned-lang:connections}. Nodes are connected with a channel that
+covered in more detail in sections \ref{sec:ned-lang:gates} and
+\ref{sec:ned-lang:connections}. Nodes are connected with a channel that
 has a data rate of 100Mbps.
 
 \begin{note}
@@ -182,6 +183,7 @@ network = Network
 
 
 \subsection{Introducing a Channel}
+\label{sec:ned-lang:warmup:introducing-a-channel}
 
 It is cumbersome to have to repeat the data rate for every connection.
 Luckily, NED provides a convenient solution: one can create a new channel
@@ -219,6 +221,7 @@ Later sections will cover the concepts used (inner types, channels, the
 
 
 \subsection{The App, Routing, and Queue Simple Modules}
+\label{sec:ned-lang:warmup:the-simple-modules}
 
 Simple modules are the basic building blocks for other (compound) modules,
 denoted by the \fkeyword{simple} keyword.
@@ -284,6 +287,7 @@ syntax.
 
 
 \subsection{The Node Compound Module}
+\label{sec:warmup:ned-lang:node-compound-module}
 
 Now we can assemble \ttt{App}, \ttt{Routing} and \ttt{Queue} into the
 compound module \ttt{Node}. A compound module can be thought of as
@@ -346,6 +350,7 @@ corresponding port of the enclosing module.
 
 
 \subsection{Putting It Together}
+\label{sec:ned-lang:warmup:putting-it-together}
 
 We have created the NED definitions for this example, but how are they used by {\opp}? When
 the simulation program is started, it loads the NED files. The program
@@ -373,7 +378,7 @@ language and look at them in more detail.
 
 
 \section{Simple Modules}
-\label{sec:ch-ned-lang:simple-modules}
+\label{sec:ned-lang:simple-modules}
 
 Simple modules are the active components in the model.
 Simple modules are defined with the \fkeyword{simple} keyword.
@@ -450,8 +455,8 @@ this manual describes in detail how to write them.
 
 Simple modules can be extended (or specialized) via subclassing. The
 motivation for subclassing can be to set some open parameters or gate sizes
-to a fixed value (see \ref{sec:ch-ned-lang:parameters} and
-\ref{sec:ch-ned-lang:gates}), or to replace the C++ class with a different
+to a fixed value (see \ref{sec:ned-lang:parameters} and
+\ref{sec:ned-lang:gates}), or to replace the C++ class with a different
 one. Now, by default, the derived NED module type will \textit{inherit} the
 C++ class from its base, so it is important to remember that you need to
 write out \fprop{@class} if you want it to use the new class.
@@ -492,12 +497,12 @@ simple PriorityQueue extends Queue
 }
 \end{ned}
 
-Inheritance in general will be discussed in section \ref{sec:ch-ned-lang:inheritance}.
+Inheritance in general will be discussed in section \ref{sec:ned-lang:inheritance}.
 
 
 
 \section{Compound Modules}
-\label{sec:ch-ned-lang:compound-modules}
+\label{sec:ned-lang:compound-modules}
 
 A compound module groups other modules into a larger unit. A compound
 module may have gates and parameters like a simple module, but no active
@@ -602,7 +607,7 @@ module DesktopHost extends WirelessHost
 
 
 \section{Channels}
-\label{sec:ch-ned-lang:channels}
+\label{sec:ned-lang:channels}
 
 Channels encapsulate parameters and behaviour associated with connections.
 Channels are like simple modules, in the sense that there are C++ classes
@@ -626,7 +631,7 @@ subclass from, inheriting their C++ code. The predefined types are:
 \ttt{ned.IdealChannel}, \ttt{ned.Delay\-Channel} and \ttt{ned.Datarate\-Channel}.
 (``\ttt{ned}'' is the package name; you can get rid of it if you import the types
 with the \ttt{import ned.*} or similar directive. Packages and imports
-are described in section \ref{sec:ch-ned-lang:packages}.)
+are described in section \ref{sec:ned-lang:packages}.)
 
 \ttt{IdealChannel} has no parameters, and lets through all messages without
 delay or any side effect. A connection without a channel object
@@ -722,7 +727,7 @@ channel Backbone extends ned.DatarateChannel
 
 
 \section{Parameters}
-\label{sec:ch-ned-lang:parameters}
+\label{sec:ned-lang:parameters}
 
 Parameters are variables that belong to a module. Parameters can be
 used in building the topology (number of nodes, etc), and to supply
@@ -761,6 +766,7 @@ simple App
 
 
 \subsubsection{Assigning a Value}
+\label{sec:ned-lang:parameter-assignments}
 
 Parameters may get their values in several ways: from NED code, from the
 configuration (\ffilename{omnetpp.ini}), or even, interactively from the
@@ -930,7 +936,7 @@ Or if you are sure that you don't accidentally assign some other
 \end{inifile}
 
 Parameter assignments in the configuration are described in section
-\ref{sec:ch-config-sim:parameter-settings}.
+\ref{sec:config-sim:parameter-settings}.
 
 One can also write expressions, including stochastic expressions, in
 NED files and in ini files as well. For example, here's how you can
@@ -975,6 +981,7 @@ this will result in an error):
 
 
 \subsubsection{Expressions}
+\label{sec:ned-lang:expressions}
 
 Parameter values may be given with expressions. NED language expressions
 have a C-like syntax, with some variations on operator names: binary and
@@ -1008,6 +1015,7 @@ of already defined submodules, with the syntax \ttt{submodule.parametername}
 
 
 \subsubsection{volatile}
+\label{sec:ned-lang:volatile}
 
 The \fkeyword{volatile} modifier causes the parameter's value expression to
 be evaluated every time the parameter is read. This has significance if the
@@ -1052,6 +1060,7 @@ source of random numbers for modules.
 \end{note}
 
 \subsubsection{Units}
+\label{sec:ned-lang:units}
 
 One can declare a parameter to have an associated unit of measurement,
 by adding the \fprop{@unit} property. An example:
@@ -1074,7 +1083,7 @@ etc. as well.
 
 \begin{note}
     The list of units accepted by {\opp} is listed in the Appendix, see
-    \ref{ch-ned-ref:sec:units}. Unknown units (\ttt{bogomips}, etc.)
+    \ref{sec:ned-ref:units}. Unknown units (\ttt{bogomips}, etc.)
     can also be used, but there are no conversions for them,
     i.e. decimal prefixes will not be recognized.
 \end{note}
@@ -1088,6 +1097,7 @@ in subclasses or in submodule declarations.
 
 
 \subsubsection{XML Parameters}
+\label{sec:ned-lang:xml-parameters}
 
 Sometimes modules need complex data structures as input, which is something
 that cannot be done well with module parameters. One solution is to place
@@ -1182,7 +1192,7 @@ optional second XPath parameter for selecting a subtree.
 
 
 \section{Gates}
-\label{sec:ch-ned-lang:gates}
+\label{sec:ned-lang:gates}
 
 Gates are the connection points of modules.  {\opp} has three types of
 gates: \textit{input}, \textit{output} and \textit{inout}, the latter being
@@ -1192,7 +1202,7 @@ A gate, whether input or output, can only be connected to one other
 gate. (For compound module gates, this means one connection ``outside'' and
 one ``inside''.)  It is possible, though generally not recommended, to
 connect the input and output sides of an inout gate separately (see section
-\ref{sec:ch-ned-lang:connections}).
+\ref{sec:ned-lang:connections}).
 
 One can create single gates and gate vectors. The size of a gate vector
 can be given inside square brackets in the declaration, but it is also possible
@@ -1298,14 +1308,14 @@ module BinaryTree {
 
 
 \section{Submodules}
-\label{sec:ch-ned-lang:submodules}
+\label{sec:ned-lang:submodules}
 
 Modules that a compound module is composed of are called its submodules.
 A submodule has a name, and it is an instance of a compound or simple
 module type. In the NED definition of a submodule, this module type
 is usually given statically, but it is also possible to specify the type
 with a string expression. (The latter feature, \textit{parametric submodule
-types}, will be discussed in section \ref{sec:ch-ned-lang:submodule-like}.)
+types}, will be discussed in section \ref{sec:ned-lang:submodule-like}.)
 
 NED supports submodule arrays (vectors) and conditional submodules as well.
 Submodule vector size, unlike gate vector size, must always be specified
@@ -1313,7 +1323,7 @@ and cannot be left open as with gates.
 
 It is possible to add new submodules to an existing compound module via
 subclassing; this has been described in the section
-\ref{sec:ch-ned-lang:compound-modules}.
+\ref{sec:ned-lang:compound-modules}.
 
 The basic syntax of submodules is shown below:
 
@@ -1391,7 +1401,7 @@ use a zero vector size.
 
 
 \section{Connections}
-\label{sec:ch-ned-lang:connections}
+\label{sec:ned-lang:connections}
 
 Connections are defined in the \fkeyword{connections} section of compound
 modules. Connections cannot span across hierarchy levels; one can connect
@@ -1407,7 +1417,7 @@ The same syntax is used to add properties such as \fprop{@display} to the
 connection.
 
 Some examples have already been shown in the NED Quickstart section
-(\ref{sec:ch-ned-lang:warmup}); let's see some more.
+(\ref{sec:ned-lang:warmup}); let's see some more.
 
 %% XXX examples
 
@@ -1449,6 +1459,7 @@ directions.
 
 
 \subsubsection{Channel Specification}
+\label{sec:ned-lang:channel-specification}
 
 Channel specifications (\ttt{-{}->$channelspec$-{}->} inside a connection)
 are similar to submodules in many respect. Let's see some examples!
@@ -1530,6 +1541,7 @@ future {\opp} releases.
 
 
 \subsubsection{Channel Names}
+\label{sec:ned-lang:channel-names}
 
 The default name given to channel objects is \ttt{"channel"}. Since {\opp} 4.3
 it is possible to specify the name explicitly, and also to override
@@ -1586,7 +1598,7 @@ not using \ttt{@defaultname}, or by specifying the type via a module parameter
 
 
 \section{Multiple Connections}
-\label{sec:ch-ned-lang:multiple-connections}
+\label{sec:ned-lang:multiple-connections}
 
 Simple programming constructs (loop, conditional) allow creating
 multiple connections easily.
@@ -1596,6 +1608,7 @@ multiple connections easily.
 This will be shown in the following examples.
 
 \subsubsection{Chain}
+\label{sec:ned-lang:chain-example}
 
 One can create a chain\index{chain} of modules like this:
 
@@ -1617,6 +1630,7 @@ module Chain
 
 
 \subsubsection{Binary Tree}
+\label{sec:ned-lang:binary-tree-example}
 
 One can build a binary tree\index{binary tree} in the following way:
 
@@ -1651,6 +1665,7 @@ on an unconnected gate.
 
 
 \subsubsection{Random Graph}
+\label{sec:ned-lang:random-graph-example}
 
 Conditional connections can be used to generate random
 topologies\index{topology!random}, for example. The following code
@@ -1681,6 +1696,7 @@ for unconnected gates.
 
 
 \subsection{Connection Patterns}
+\label{sec:ned-lang:connection-design-patterns}
 
 \index{module!compound!patterns}
 \index{topology!patterns}
@@ -1691,6 +1707,7 @@ described below.
 
 
 \subsubsection{``Subgraph of a Full Graph''}
+\label{sec:ned-lang:subgraph-of-full-graph}
 
 
 This pattern takes a subset of the connections of a full graph.  A
@@ -1717,6 +1734,7 @@ two patterns do not suffer from this drawback.
 
 
 \subsubsection{``Connections of Each Node''}
+\label{sec:ned-lang:connections-of-each-node}
 
 The pattern loops through all nodes and creates the necessary
 connections for each one. It can be generalized like this:
@@ -1737,6 +1755,7 @@ function can be formulated.
 
 
 \subsubsection{``Enumerate All Connections''}
+\label{sec:ned-lang:enumerate-all-connections}
 
 
 A third pattern is to list all connections within a loop:
@@ -1762,9 +1781,10 @@ would do it in most existing simulators.
 
 
 \section{Parametric Submodule and Connection Types}
+\label{sec:ned-lang:parametric-submodule-and-connection-types}
 
 \subsection{Parametric Submodule Types}
-\label{sec:ch-ned-lang:submodule-like}
+\label{sec:ned-lang:submodule-like}
 
 A submodule type may be specified with a module parameter of the type
 \fkeyword{string}, or in general, with any string-typed expression.
@@ -1900,7 +1920,7 @@ module Node
 
 
 \subsection{Parametric Connection Types}
-\label{sec:ch-ned-lang:connection-like}
+\label{sec:ned-lang:connection-like}
 
 Parametric connection types work similarly to parametric submodule types,
 and the syntax is similar as well. A basic example that uses a parameter of
@@ -1938,7 +1958,7 @@ b.g$o[0].channel.typename = "Ethernet1000";  // B -> A channel
 
 
 \section{Metadata Annotations (Properties)}
-\label{sec:ch-ned-lang:properties}
+\label{sec:ned-lang:properties}
 
 NED properties are metadata annotations that can be added to modules, parameters,
 gates, connections, NED files, packages, and virtually anything in NED.
@@ -1989,6 +2009,7 @@ module Example
 
 
 \subsubsection{Property Indices}
+\label{sec:ned-lang:property-indices}
 
 Sometimes it is useful to have multiple properties with the same name,
 for example for declaring multiple statistics produced by a simple module.
@@ -2038,6 +2059,7 @@ simple DummyExt extends Dummy {
 
 
 \subsubsection{Data Model}
+\label{sec:ned-lang:property-data-model}
 
 Properties may contain data, given in parentheses; the data model is quite
 flexible. To begin with, properties may contain no value or a single
@@ -2099,6 +2121,7 @@ tag.
 
 
 \subsubsection{Overriding and Extending Property Values}
+\label{sec:ned-lang:overriding-and-extending-property-values}
 
 When you subclass a NED type, use a module type as submodule or use a channel
 type for a connection, you may add new properties to the module or channel,
@@ -2146,7 +2169,7 @@ $result$ & \ttt{@prop(foo=A,b,c;bar=1,2)}
 
 
 \section{Inheritance}
-\label{sec:ch-ned-lang:inheritance}
+\label{sec:ned-lang:inheritance}
 
 Inheritance support in the NED language is only described briefly here,
 because several details and examples have been already presented in
@@ -2180,19 +2203,19 @@ Inheritance may:
 \end{itemize}
 
 For details and examples, see the corresponding sections of this chapter
-(simple modules \ref{sec:ch-ned-lang:simple-modules},
-compound modules \ref{sec:ch-ned-lang:compound-modules},
-channels \ref{sec:ch-ned-lang:channels},
-parameters \ref{sec:ch-ned-lang:parameters},
-gates \ref{sec:ch-ned-lang:gates},
-submodules \ref{sec:ch-ned-lang:submodules},
-connections \ref{sec:ch-ned-lang:connections},
-module interfaces and channel interfaces \ref{sec:ch-ned-lang:submodule-like}).
+(simple modules \ref{sec:ned-lang:simple-modules},
+compound modules \ref{sec:ned-lang:compound-modules},
+channels \ref{sec:ned-lang:channels},
+parameters \ref{sec:ned-lang:parameters},
+gates \ref{sec:ned-lang:gates},
+submodules \ref{sec:ned-lang:submodules},
+connections \ref{sec:ned-lang:connections},
+module interfaces and channel interfaces \ref{sec:ned-lang:submodule-like}).
 
 
 
 \section{Packages}
-\label{sec:ch-ned-lang:packages}
+\label{sec:ned-lang:packages}
 
 Having all NED files in a single directory is fine for small simulation projects.
 When a project grows, however, it sooner or later becomes
@@ -2208,6 +2231,7 @@ name conflicts, because names can be qualified with the package name.
 \end{note}
 
 \subsubsection{Overview}
+\label{sec:ned-lang:packages-overview}
 
 When a simulation is run, you must tell the simulation kernel the
 directory which is the root of your package tree; let's call it
@@ -2309,6 +2333,7 @@ package inet.transport.tcp;
 
 
 \subsubsection{Name Resolution, Imports}
+\label{sec:ned-lang:imports-and-name-resolution}
 
 We already mentioned that packages can be used to distinguish
 similarly named NED types. The name that includes the package name
@@ -2354,11 +2379,12 @@ cannot be imported either.
 
 
 \subsubsection{Name Resolution With "like"}
+\label{sec:ned-lang:name-resolution-with-like}
 
 The situation is a little different for submodule and connection channel
 specifications using the \fkeyword{like} keyword, when the type name comes
 from a string-valued expression (see section
-\ref{sec:ch-ned-lang:submodule-like} about submodule and channel types as
+\ref{sec:ned-lang:submodule-like} about submodule and channel types as
 parameters). Imports are not much use here: at the time of writing the NED
 file it is not yet known what NED types will be suitable for being "plugged
 in" there, so they cannot be imported in advance.
@@ -2399,6 +2425,7 @@ but one must explicitly choose one of them by providing a package name:
 
 
 \subsubsection{The Default Package}
+\label{sec:ned-lang:default-package}
 
 It is not mandatory to make use of packages: if all NED files are in a
 single directory listed on the NEDPATH, then package declarations (and

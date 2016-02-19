@@ -2,11 +2,13 @@
 \label{cha:config-sim}
 
 \section{The Configuration File}
+\label{sec:config-sim:config-file}
 
 Configuration and input data for the simulation are in
 a configuration file usually called \ffilename{omnetpp.ini}.
 
 \subsection{An Example}
+\label{sec:config-sim:example-inifile}
 
 For a start, let us see a simple \ffilename{omnetpp.ini} file which
 can be used to run the Fifo example simulation.
@@ -37,6 +39,7 @@ and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 
 
 \subsection{File Syntax}
+\label{sec:config-sim:inifile-syntax}
 
 An {\opp} configuration file is an ASCII text file, but non-ASCII
 characters are permitted in comments and string literals. This allows for
@@ -96,6 +99,7 @@ debug-on-errors = false         # another configuration option
 \end{inifile}
 
 \subsection{File Inclusion}
+\label{sec:config-sim:inifile-inclusion}
 
 {\opp} supports including an ini file in another\index{ini file!file inclusion},
 via the \ttt{include} keyword. This feature allows you to partition large ini
@@ -153,12 +157,13 @@ errors/warnings disappear when the file is viewed as part of its main file.
 
 
 \section{Sections}
-\label{sec:ch-config-sim:general-section}
+\label{sec:config-sim:general-section}
 
 An ini file may contain a \ttt{[General]} section and several \ttt{[Config <configname>]}
 sections. The order of the sections doesn't matter.
 
 \subsection{The [General] Section}
+\label{sec:config-sim:general-section}
 
 The most commonly used options of the \texttt{[General]} section are the
 following.
@@ -176,6 +181,7 @@ option.
 
 
 \subsection{Named Configurations}
+\label{sec:config-sim:named-configurations}
 
 Named configurations are sections of the form \ttt{[Config <configname>]}, where
 \textit{<configname>} is by convention a camel-case string that starts with a capital letter:
@@ -210,6 +216,7 @@ the configuration from a dialog.)
 
 
 \subsection{Section Inheritance}
+\label{sec:config-sim:section-inheritance}
 
 Actually, when you activate the PureAloha configuration, the contents of
 the \ttt{[General]} section will also be taken into account: if some
@@ -305,7 +312,7 @@ simulation model, these techniques will make it much easier to manage
 ini files.
 
 \section{Assigning Module Parameters}
-\label{sec:ch-config-sim:parameter-settings}
+\label{sec:config-sim:parameter-settings}
 
 Simulations get input via module parameters, which can be assigned a
 value in NED files or in \ffilename{omnetpp.ini} -- in this order. Since parameters
@@ -337,7 +344,7 @@ Network.host[*].app.typename = "PingApp"
 
 
 \subsection{Using Wildcard Patterns}
-\label{sec:ch-config-sim:wildcards}
+\label{sec:config-sim:wildcards}
 
 Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
@@ -371,6 +378,7 @@ Pattern syntax:
 \end{itemize}
 
 \subsubsection{Precedence}
+\label{sec:config-sim:precedence-of-entries}
 
 If you use wildcards, the order of entries is important; if a parameter
 name matches several wildcard-patterns, the \textit{first} matching occurrence
@@ -388,6 +396,7 @@ An example ini file:
 
 
 \subsubsection{Asterisk vs Double Asterisk}
+\label{sec:config-sim:asterisk-vs-double-asterisk}
 
 The \ttt{*} wildcard is for matching a single module or parameter name in the
 path name, while \ttt{**} can be used to match several components in the path.
@@ -398,6 +407,7 @@ Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufS
 as well!
 
 \subsubsection{Sets, Negated Sets}
+\label{sec:config-sim:sets-negated-sets}
 
 Sets and negated sets can contain several character ranges and also
 enumeration of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
@@ -412,6 +422,7 @@ within set definitions.
 
 
 \subsubsection{Numeric Ranges and Index Ranges}
+\label{sec:config-sim:numeric-ranges-and-index-ranges}
 
 Only nonnegative integers can be matched.  The start or the end of the range
 (or both) can be omitted: \ttt{\{10..\}}, \ttt{\{..99\}} or \ttt{\{..\}}
@@ -431,6 +442,7 @@ An example for numeric ranges:
 
 
 \subsection{Using the Default Values}
+\label{sec:config-sim:using-default-values}
 
 It is also possible to utilize the default values specified in the NED files.
 The \textit{<parameter-fullpath>}\ttt{=default} setting assigns
@@ -474,6 +486,7 @@ More precisely, parameter resolution takes place as follows:
 
 
 \section{Parameter Studies}
+\label{sec:config-sim:parameter-studies}
 
 It is quite common in simulation studies that the simulation model is
 run several times with different parameter settings, and the results
@@ -583,6 +596,7 @@ not be what the user wants.)
 
 
 \subsection{Iterations}
+\label{sec:config-sim:iterations}
 
 Let us have a look at the example ini file in the previous section again:
 
@@ -635,6 +649,7 @@ except inside string literals where they are left intact.
 
 
 \subsection{Named Iteration Variables}
+\label{sec:config-sim:named-iteration-variables}
 
 You can assign names to iteration variables, which has the advantage
 that you will see meaningful names instead of \ttt{\$0} and
@@ -654,6 +669,7 @@ The scope of the variable name is the section that defines it, plus
 sections based on that section (via \fconfig{extends}).
 
 \subsubsection{Referencing Other Iteration Variables}
+\label{sec:config-sim:referencing-other-iteration-variables}
 
 Iterations may refer to other iteration variables, using the dollar syntax
 (\ttt{\$var}) or the dollar-brace syntax (\ttt{\$\{var\}}).
@@ -747,6 +763,7 @@ arithmetic expressions.
 
 
 \subsection{Parallel Iteration}
+\label{sec:config-sim:parallel-iteration}
 
 The body of an iteration may end in an exclamation mark followed by the
 name of another iteration variable. This syntax denotes a \textit{parallel
@@ -772,6 +789,7 @@ are selected, and so on.
 
 
 \subsection{Predefined Variables, Run ID}
+\label{sec:config-sim:predefined-variables}
 
 There are a number of predefined variables: \ttt{\$\{configname\}} and
 \ttt{\$\{runnumber\}} with the obvious meanings; \ttt{\$\{network\}} is the
@@ -792,6 +810,7 @@ to match vectors and scalars written by the same simulation run.
 
 
 \subsection{Constraint Expression}
+\label{sec:config-sim:constraint-expression}
 
 In cases when not all combinations of the iteration variables make sense
 or need to be simulated, it is possible to specify an additional
@@ -819,6 +838,7 @@ they must be protected with parentheses to preserve evaluation order.
 
 
 \subsection{Repeating Runs with Different Seeds}
+\label{sec:config-sim:repeating-runs-with-different-seeds}
 
 It is directly supported to perform several runs with the same
 parameters but different random number seeds. There are two
@@ -912,6 +932,7 @@ in lockstep with the \ttt{seed1} iteration.
 
 
 \subsection{Experiment-Measurement-Replication}
+\label{sec:config-sim:experiment-measurement-replication}
 
 We have introduced three concepts that are useful for organizing
 simulation results generated by batch executions or several batches of
@@ -1036,31 +1057,34 @@ replications.
 
 
 \section{Configuring the Random Number Generators}
-\label{sec:ch-config-sim:rng-config}
+\label{sec:config-sim:rng-config}
 
 The random number architecture of {\opp} was already outlined
-in section \ref{cha:sim-lib:random-number-generators}. Here
+in section \ref{sec:sim-lib:random-number-generators}. Here
 we'll cover the configuration of RNGs in \ffilename{omnetpp.ini}.
 
 \subsection{Number of RNGs}
+\label{sec:config-sim:number-of-rngs}
 
 The \fconfig{num-rngs} configuration option sets the number of
 random number generator instances (i.e. random number streams)
-available for the simulation model (see \ref{cha:sim-lib:random-number-generators}).
+available for the simulation model (see \ref{sec:sim-lib:random-number-generators}).
 Referencing an RNG number greater or equal to this number
 (from a simple module or NED file) will cause a runtime error.
 
 
 \subsection{RNG Choice}
+\label{sec:config-sim:rng-choice}
 
 The \fconfig{rng-class} configuration option sets the random number
 generator class to be used. It defaults to \ttt{"cMersenneTwister"},
 the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
 (the "legacy" RNG of {\opp} 2.3 and earlier versions, with a cycle length
 of $2^{31}-2$), and \ttt{"cAkaroaRNG"} (Akaroa's random number generator,
-see section \ref{sec:ch-run-sim:akaroa}).
+see section \ref{sec:run-sim:akaroa}).
 
 \subsection{RNG Mapping}
+\label{sec:config-sim:rng-mapping}
 
 The RNG numbers used in simple modules may be arbitrarily mapped to the
 actual random number streams (actual RNG instances) from \ffilename{omnetpp.ini}.
@@ -1092,6 +1116,7 @@ This mapping allows variance reduction techniques to be applied to
 
 
 \subsection{Automatic Seed Selection}
+\label{sec:config-sim:automatic-seed-selection}
 
 Automatic seed selection is used for an RNG if you do not explicitly
 specify seeds in \ffilename{omnetpp.ini}. Automatic and manual seed selection can
@@ -1136,6 +1161,7 @@ at all -- \ttt{cMersenneTwister} is superior in every respect.
 
 
 \subsection{Manual Seed Configuration}
+\label{sec:config-sim:manual-seed-configuration}
 
 In some cases you may want to manually configure seed values.
 Reasons for doing that may be that you want to use variance reduction
@@ -1153,7 +1179,7 @@ seed-1-mt = 9
 seed-2-mt = 7
 \end{inifile}
 
-\label{sec:ch-config-sim:seedtool}
+\label{sec:config-sim:seedtool}
 
 For the now obsolete cLCG32 RNG, the name of the corresponding option is
 \ttt{seed-}\textit{k}\ttt{-lcg32}, and {\opp} provides a standalone program
@@ -1161,7 +1187,7 @@ called \fprog{opp\_lcg32\_seedtool} to generate good seed values that
 are sufficiently separated in the RNG's sequence.
 
 \section{Logging}
-\label{sec:ch-config-sim:logging}
+\label{sec:config-sim:logging}
 
 The {\opp} logging infrastructure provides a few configuration options that
 affect what is written to the log output. It supports configuring multiple
@@ -1172,6 +1198,7 @@ format string which determines the context information that is written before
 each log line. In the following sections, we look how to configure logging.
 
 \subsection{Compile Time Filtering}
+\label{sec:config-sim:compile-time-log-filtering}
 
 The \fmac{COMPILETIME\_LOGLEVEL} macro determines which log statements
 are compiled into the executable. Any log statment which uses a log level below
@@ -1227,6 +1254,7 @@ as follows:
 \end{cpp}
 
 \subsection{Runtime Filtering}
+\label{sec:config-sim:runtime-log-filtering}
 
 The \fvar{cLog::logLevel} variable restricts during runtime which log statements
 produce output. By default, the global runtime log level doesn't filter logging,
@@ -1262,6 +1290,7 @@ return statementLogLevel >= cLog::loglevel &&
 \end{cpp}
 
 \subsection{Log Prefix Format}
+\label{sec:config-sim:log-prefix-format}
 
 The log prefix format is a string which determines the log prefix that is written
 before each log line. The format string contains constant parts interleaved with
@@ -1356,6 +1385,7 @@ Escaping the \% character:
 \end{itemize}
 
 \subsection{Configuring Cmdenv}
+\label{sec:config-sim:configuring-cmdenv}
 
 In Cmdenv, logging can be configured using \ffilename{omnetpp.ini} configuration
 options. The configured settings remain in effect during the whole simulation run
@@ -1430,6 +1460,7 @@ modules it is set \fmac{LOGLEVEL\_OFF}.
 \end{inifile}
 
 \subsection{Configuring Tkenv and Qtenv}
+\label{sec:config-sim:configuring-tkenv-and-qtenv}
 
 The graphical user interfaces, Tkenv and Qtenv, provide their own configuration
 dialogs where the user can configure logging. These dialogs offer setting the

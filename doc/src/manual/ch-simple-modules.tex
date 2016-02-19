@@ -11,7 +11,6 @@ implemented in {\opp}, and give an overview and practical advice
 on how to design and code simple modules.
 
 
-
 \section{Simulation Concepts}
 \label{sec:simple-modules:simulation-concepts}
 
@@ -193,8 +192,8 @@ which returns the value as a string; \ffunc{parse()}, which converts a
 string to \ttt{SimTime}; \ffunc{raw()}, which returns the
 underlying \ttt{int64} value; \ffunc{getScaleExp()}, which returns the
 global scale exponent; \ffunc{isZero()}, which tests whether the
-simulation time is 0; and \ffunc{getMaxTime()}, which returns the maximum 
-simulation time that can be represented at the current scale exponent. 
+simulation time is 0; and \ffunc{getMaxTime()}, which returns the maximum
+simulation time that can be represented at the current scale exponent.
 Zero and the maximum simulation time are also accessible
 via the \fmac{SIMTIME\_ZERO} and \fmac{SIMTIME\_MAX} macros.
 
@@ -230,7 +229,7 @@ not necessary for the typical simulation programmer.
 
 
 \section{Components, Simple Modules, Channels}
-\label{sec:simple-modules-in-opp}
+\label{sec:simple-modules:simple-modules-in-opp}
 
 {\opp} simulation models are composed of modules and connections. Modules
 may be simple (atomic) modules or compound modules; simple modules are the
@@ -323,7 +322,7 @@ modules, so we'll describe it in a later section (\ref{sec:simple-modules:channe
 Last, let us mention \ffunc{refreshDisplay()}, which is related to updating
 the visual appearance of the simulation when run under a graphical user
 interface. \ffunc{refreshDisplay()} is covered in the chapter that deals
-with simulation visualization (\ref{sec:ch-graphics:refreshdisplay}).
+with simulation visualization (\ref{sec:graphics:refreshdisplay}).
 
 \begin{note}
     \ffunc{refreshDisplay()} has been added in {\opp} 5.0. Until then,
@@ -337,6 +336,7 @@ with simulation visualization (\ref{sec:ch-graphics:refreshdisplay}).
 \label{sec:simple-modules:defining-simple-modules}
 
 \subsection{Overview}
+\label{sec:simple-modules:defining:overview}
 
 As mentioned before, a simple module\index{module!simple} is nothing more
 than a C++ class which has to be subclassed from \cclass{cSimpleModule},
@@ -448,6 +448,7 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \label{sec:simple-modules:initialize-and-finish}
 
 \subsubsection{Basic Usage}
+\label{sec:simple-modules:init-finish:basic-usage}
 
 The \ffunc{initialize()} and \ffunc{finish()} methods are declared
 as part of \cclass{cComponent}, and provide the user the opportunity
@@ -515,6 +516,7 @@ configuration.
 
 
 \subsubsection{Invocation Order}
+\label{sec:simple-modules:init-finish:invocation-order}
 
 The \ffunc{initialize()} functions of the modules are invoked \textit{before}
 the first event is processed, but \textit{after} the initial events (starter
@@ -582,7 +584,6 @@ destructor\index{module!destructor}.
 \subsubsection{Multi-Stage Initialization}
 \label{sec:simple-modules:multi-stage-init}
 
-
 In simulation models where one-stage
 initialization\index{initialization} provided by \ffunc{initialize()}
 is not sufficient, one can use multi-stage
@@ -617,6 +618,7 @@ simply calls \ffunc{initialize()}.
 
 
 \subsubsection{``End-of-Simulation'' Event}
+\label{sec:simple-modules:end-of-simulation-event}
 
 The task of \ffunc{finish()} is implemented in several other simulators
 by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
@@ -635,7 +637,7 @@ end-of-simulation events were dropped in favour of \ffunc{finish()}
 
 
 \section{Adding Functionality to cSimpleModule}
-\label{sec:simple-modules:adding-functionality-to-csimplemodule}
+\label{sec:simple-modules:handlemessage-and-activity}
 
 This section discusses \cclass{cSimpleModule}'s previously mentioned
 \ffunc{handleMessage()} and \ffunc{activity()} member functions, intended
@@ -646,7 +648,7 @@ to be redefined by the user.
 \label{sec:simple-modules:handlemessage}
 
 \subsubsection{Function Called for Each Event}
-
+\label{sec:simple-modules:handlemessage:overview}
 
 The idea is that at each event\index{event} (message arrival) we
 simply call a user-defined function. This function,
@@ -688,12 +690,11 @@ a message from other modules.
 
 
 \subsubsection{Programming with handleMessage()}
+\label{sec:simple-modules:handlemessage:programming}
 
-
-To use the \ffunc{handleMessage()} mechanism in a
-simple module, you must specify \textit{zero
-  stack size}\index{zero stack size} for the module. This is
-important, because this tells {\opp} that you want to use
+To use the \ffunc{handleMessage()} mechanism in a simple module, you must
+specify \textit{zero stack size}\index{zero stack size} for the module.
+This is important, because this tells {\opp} that you want to use
 \ffunc{handleMessage()} and not \ffunc{activity()}.
 
 Message/event related functions you can use in \ffunc{handleMessage()}:
@@ -704,10 +705,9 @@ Message/event related functions you can use in \ffunc{handleMessage()}:
   \item{\ffunc{cancelEvent()} -- to delete an event scheduled with \ffunc{scheduleAt()}}
 \end{itemize}
 
-You cannot use the \ffunc{receive()} and
-\ffunc{wait()} functions in \ffunc{handleMessage()}, because they are
-coroutine-based by nature, as explained in the section about
-\ffunc{activity()}.
+You cannot use the \ffunc{receive()} and \ffunc{wait()} functions in
+\ffunc{handleMessage()}, because they are coroutine-based by nature, as
+explained in the section about \ffunc{activity()}.
 
 You have to add data members to the module class for every piece
 of information you want to preserve. This information cannot
@@ -715,7 +715,6 @@ be stored in local variables of \ffunc{handleMessage()} because they
 are destroyed when the function returns. Also, they cannot be
 stored in static variables in the function (or the class), because
 they would be shared between all instances of the class.
-
 
 Data members to be added to the module class will typically include
 things like:
@@ -750,7 +749,7 @@ accumulated in data members of the class at the end of the simulation.
 
 
 \subsubsection{Application Area}
-
+\label{sec:simple-modules:handlemessage:application-area}
 
 \ffunc{handleMessage()} is in most cases a better choice than \ffunc{activity()}:
 
@@ -770,6 +769,7 @@ accumulated in data members of the class at the end of the simulation.
 
 
 \subsubsection{Example 1: Protocol Models}
+\label{sec:simple-modules:handlemessage:protocol-model-example}
 
 Models of protocol layers in a communication network tend to have
 a common structure on a high level because fundamentally they all have to react
@@ -813,6 +813,7 @@ methods to process separate packet types and separate timers.
 
 
 \subsubsection{Example 2: Simple Traffic Generators and Sinks}
+\label{sec:simple-modules:handlemessage:traffic-generator-example}
 
 
 The code for simple packet generators and sinks programmed with \ffunc{handleMessage()} might
@@ -870,7 +871,7 @@ void Generator::handleMessage(cMessage *msg)
 
 
 \subsubsection{Example 3: Bursty Traffic Generator}
-
+\label{sec:simple-modules:handlemessage:bursty-trafgen-example}
 
 A bit more realistic example is to rewrite our Generator to create
 packet bursts, each consisting of \ttt{burstLength} packets.
@@ -928,7 +929,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 \subsubsection{Pros and Cons of Using \ffunc{handleMessage()}}
-
+\label{sec:simple-modules:handlemessage:pros-and-cons}
 
 Pros:
 \begin{itemize}
@@ -946,7 +947,7 @@ Usually, \ffunc{handleMessage()} should be preferred over \ffunc{activity()}.
 
 
 \subsubsection{Other Simulators}
-
+\label{sec:simple-modules:handlemessage:other-simulators}
 
 Many simulation packages use a similar approach, often topped with
 something like a state machine\index{finite state machine}
@@ -969,6 +970,7 @@ systems are:
 \label{sec:simple-modules:activity}
 
 \subsubsection{Process-Style Description}
+\label{sec:simple-modules:activity:overview}
 
 With \ffunc{activity()}, you can code the simple
 module much like you would code an operating system process or a
@@ -1001,6 +1003,7 @@ with at least a \ffunc{wait()} or \ffunc{receive()} call in its body.
 
 
 \subsubsection{Application Area}
+\label{sec:simple-modules:activity:application-area}
 
 Generally you should prefer \ttt{handleMessage()} to \ttt{activity()}.
 The main problem with \ttt{activity()} is that it doesn't scale because
@@ -1090,7 +1093,7 @@ void Sink::handleMessage(cMessage *msg)
 
 
 \subsubsection{Activity() Is Run as a Coroutine}
-
+\label{sec:simple-modules:activity:coroutine}
 
 \ffunc{activity()} is run in a coroutine\index{coroutine}.
 Coroutines are similar to threads, but are scheduled
@@ -1108,7 +1111,6 @@ thread of execution is in other coroutines.  This implies that each
 coroutine must have its own processor stack\index{stack}, and
 \ffunc{transferTo()} involves a switch from one processor stack to
 another.
-
 
 Coroutines\index{coroutine} are at the heart of {\opp}, and the
 simulation programmer doesn't ever need to call \ffunc{transferTo()}
@@ -1190,7 +1192,7 @@ they are where
 
 
 \subsubsection{Starter Messages}
-
+\label{simple-modules:activity:starter-messages}
 
 Modules written with \ffunc{activity()} need starter
 messages\index{starter messages} to ``boot''.  These starter messages
@@ -1200,7 +1202,7 @@ functions are called.
 
 
 \subsubsection{Coroutine Stack Size}
-
+\label{sec:simple-modules:activity:stack-size}
 
 The simulation programmer needs to define the processor stack size\index{coroutine!stack size}
 for coroutines. This cannot be automated.
@@ -1214,14 +1216,13 @@ so you can find out if you overestimated the stack needs.
 
 
 \subsubsection{initialize() and finish() with activity()}
-
+\label{sec:simple-modules:activity:initialize-and-finish}
 
 Because local variables of \ffunc{activity()} are preserved across
 events, you can store everything (state information, packet buffers,
 etc.) in them. Local variables can be initialized at the top of the
 \ffunc{activity()} function, so there isn't much need to use
 \ffunc{initialize()}.
-
 
 You do need \ffunc{finish()}, however, if you want to write statistics at
 the end of the simulation. Because \ffunc{finish()} cannot access
@@ -1230,9 +1231,7 @@ and objects containing the statistics into the module class.
 You still don't need \ffunc{initialize()} because class members can also
 be initialized at the top of \ffunc{activity()}.
 
-
 Thus, a typical setup looks like this in pseudocode:
-
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textit{class MySimpleModule...}
@@ -1262,7 +1261,7 @@ MySimpleModule::finish()
 
 
 \subsubsection{Pros and Cons of Using \ffunc{activity()}}
-
+\label{sec:simple-modules:activity:pros-and-cons}
 
 Pros:
 \begin{itemize}
@@ -1287,7 +1286,7 @@ In most cases, cons outweigh pros and it is a better idea to use
 
 
 \subsubsection{Other Simulators}
-
+\label{sec:simple-modules:activity:other-simulators}
 
 Coroutines are used by a number of other simulation packages:
 \begin{itemize}
@@ -1503,10 +1502,11 @@ overloaded assignment operators for various types including \ttt{bool},
 
 To allow a module to be notified about parameter changes, override
 its \ffunc{handleParameterChange()} method, see
-\ref{sec:simple-modules:handleParameterChange}.
+\ref{sec:simple-modules:handleparameterchange}.
 
 
 \subsection{Further cPar Methods}
+\label{sec:simple-modules:further-cpar-methods}
 
 The parameter's name and type are returned by the \ffunc{getName()} and
 \ffunc{getType()} methods. The latter returns a value from an enum,
@@ -1548,6 +1548,7 @@ they are normally of little interest to users.
 
 
 \subsection{Emulating Parameter Arrays}
+\label{sec:simple-modules:emulating-parameter-arrays}
 
 As of version 4.2, {\opp} does not support parameter arrays,
 but in practice they can be emulated using string parameters.
@@ -1599,7 +1600,7 @@ while (tokenizer.hasMoreTokens())
 \end{cpp}
 
 \subsection{handleParameterChange()}
-\label{sec:simple-modules:handleParameterChange}
+\label{sec:simple-modules:handleparameterchange}
 
 It is possible for modules to be notified when the value of a
 parameter changes at runtime, possibly due to another module
@@ -1665,12 +1666,14 @@ for (int i = 0; i < getNumParams(); i++)
 \label{sec:simple-modules:gates}
 
 \subsection{Gate Objects}
+\label{sec:simple-modules:gate-objects}
 
 Module gates\index{gate} are represented by \cclass{cGate} objects.
 Gate objects know to which other gates they are connected, and
 what are the channel objects associated with the links.
 
 \subsubsection{Accessing Gates by Name}
+\label{sec:simple-modules:accessing-gates-by-name}
 
 The \cclass{cModule} class has a number of member functions that
 deal with gates. You can look up a gate by name using the \ffunc{gate()}
@@ -1726,6 +1729,7 @@ in detail in a later section.
 
 
 \subsubsection{Gate Vectors}
+\label{sec:simple-modules:gate-vectors}
 
 Gate vectors possess one \cclass{cGate} object per element.
 To access individual gates in the vector, you need to call
@@ -1758,6 +1762,7 @@ is within the bounds.
 
 
 \subsubsection{Gate IDs}
+\label{sec:simple-modules:gate-ids}
 
 A gate can also be accessed by its ID. A very important property of gate IDs
 is that they are \textit{contiguous} within a gate vector, that is,
@@ -1799,6 +1804,7 @@ for (int i = 0; i < size; i++) {
 
 
 \subsubsection{Enumerating All Gates}
+\label{sec:simple-modules:enumerating-gates}
 
 If you need to go through all gates of a module, there are
 two possibilities. One is invoking the \ffunc{getGateNames()} method
@@ -1838,6 +1844,7 @@ Where \ttt{this} denotes the module whose gates are being enumerated
 
 
 \subsubsection{Adding and Deleting Gates}
+\label{sec:simple-modules:adding-and-deleting-gates}
 
 Although rarely needed, it is possible to add and remove gates during
 simulation. You can add scalar gates and gate vectors, change the size of
@@ -1859,6 +1866,7 @@ None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
 
 
 \subsubsection{cGate Methods}
+\label{sec:simple-modules:cgate-methods}
 
 The \ffunc{getName()} method of \cclass{cGate} returns the name of the
 gate or gate vector without the index. If you need a string that contains the gate index
@@ -1974,6 +1982,7 @@ else
 
 
 \subsection{The Connection's Channel}
+\label{sec:simple-modules:connections-channel}
 
 The channel object associated with a connection is accessible by
 a pointer stored at the source gate of the connection. The pointer
@@ -2058,7 +2067,7 @@ and debugging purposes.
 
 
 \subsection{Self-Messages}
-\label{sec:ch-simple-modules:self-messages}
+\label{sec:simple-modules:self-messages}
 
 Nearly all simulation models need to schedule future events in order
 to implement timers, timeouts, delays, etc. Some typical examples:
@@ -2084,6 +2093,7 @@ special methods for them that allow for implementing self-messages without
 gates and connections.
 
 \subsubsection{Scheduling an Event}
+\label{sec:simple-modules:scheduling}
 
 The module can send a message to itself using the \ffunc{scheduleAt()} function.
 \ffunc{scheduleAt()} accepts an \textit{absolute} simulation time,
@@ -2103,6 +2113,7 @@ You can determine whether a message is currently in the FES\index{FES}
 by calling its \ffunc{isScheduled()} member function.
 
 \subsubsection{Cancelling an Event}
+\label{sec:simple-modules:cancelling}
 
 Scheduled self-messages can be cancelled\index{self-message!cancelling}
 \index{message!cancelling} (i.e. removed from the FES\index{FES}).
@@ -2149,6 +2160,7 @@ void Protocol::handleMessage(cMessage *msg)
 
 
 \subsubsection{Re-scheduling an Event}
+\label{sec:simple-modules:rescheduling}
 
 If you want to reschedule an event which is currently scheduled to a different
 simulation time, first you have to cancel it using \ffunc{cancelEvent()}.
@@ -2162,6 +2174,7 @@ scheduleAt(simTime() + delay, msg);
 
 
 \subsection{Sending Messages}
+\label{sec:simple-modules:sending-messages}
 
 Once created, a message object can be sent through an
 output gate\index{output!gate} using one of the following functions:
@@ -2201,6 +2214,7 @@ send(msg, "g$o", i); // if "g[]" is a gate vector
 
 
 \subsection{Broadcasts and Retransmissions}
+\label{sec:simple-modules:broadcasts-and-retransmissions}
 
 When you implement broadcasts or retransmissions, two frequently
 occurring tasks in protocol simulation, you might feel tempted
@@ -2224,12 +2238,13 @@ another module, currently scheduled or in a queue, etc., you'll get a
 runtime error: \textit{not owner of message}.
   \footnote{The feature does not increase runtime overhead significantly, because
   it uses the object ownership\index{ownership} management (described in
-  Section \ref{sec:ch-sim-lib:ownership-management});
+  Section \ref{sec:sim-lib:ownership-management});
   it merely checks that the owner of the message is the module that
   wants to send it.}
 
 
 \subsubsection{Broadcasting Messages}
+\label{sec:simple-modules:broadcasting-messages}
 
 In your model, you may need to broadcast a message to several destinations.
 Broadcast can be implemented in a simple module by sending out copies
@@ -2264,6 +2279,7 @@ for (int i = 0; i < n; i++)
 
 
 \subsubsection{Retransmissions}
+\label{sec:simple-modules:retransmissions}
 
 Many communication protocols involve retransmissions of packets (frames).
 When implementing retransmissions, you cannot just hold a pointer
@@ -2450,6 +2466,7 @@ kernel. This channel is called the \textit{transmission channel}.
 \end{note}
 
 \subsubsection{Transmitting a Packet}
+\label{sec:simple-modules:transmitting-a-packet}
 
 Packets may only be sent when the transmission channel is idle.
 This means that after each transmission, the sender module needs
@@ -2500,10 +2517,11 @@ The \ttt{getTransmissionChannel()} method searches the connection path each
 time it is called. If performance is important, it is recommended that you
 obtain the transmission channel pointer once, and cache it. When the network topology
 changes, the cached channel pointer needs to be updated; section
-\ref{sec:ch-simple-modules:model-change} describes the mechanism that can
+\ref{sec:simple-modules:model-change} describes the mechanism that can
 be used to get notifications about topology changes.
 
 \subsubsection{Receiving a Packet}
+\label{sec:simple-modules:receiving-a-packet}
 
 As a result of error modeling in the channel, the packet may arrive
 with the \textit{bit error} flag set (\ffunc{hasBitError() method}.
@@ -2566,6 +2584,7 @@ as well; there, the duration is an argument to the \ffunc{sendDirect()}
 call.
 
 \subsubsection{Aborting Transmissions}
+\label{sec:simple-modules:aborting-transmissions}
 
 Sometimes you want the sender to abort transmission. The support {\opp}
 provides for this task is the \ffunc{forceTransmissionFinishTime()} method
@@ -2577,6 +2596,7 @@ by some user-defined means, for example by sending another packet
 or an out-of-band message.
 
 \subsubsection{Implementation of Message Sending}
+\label{sec:simple-modules:implementation-of-message-sending}
 
 Message sending is implemented like this: the arrival time\index{arrival time}
 and the bit error\index{bit error} flag of a message are calculated right inside
@@ -2598,9 +2618,10 @@ run-time efficiency.
 
 
 \subsection{Receiving Messages with activity()}
+\label{sec:simple-modules:receiving-with-activity}
 
 \subsubsection{Receiving Messages}
-\label{sec:simple-modules:receiving-messages}
+\label{sec:simple-modules:receive}
 
 \ffunc{activity()}-based modules receive messages with the \ffunc{receive()}
 method of \cclass{cSimpleModule}. \ffunc{receive()} cannot be used with
@@ -2665,7 +2686,7 @@ for (;;)
 It is a runtime error if a message arrives during the wait interval.
 If you expect messages to arrive during the wait period, you can
 use the \ffunc{waitAndEnqueue()} function. It takes a pointer to a queue object
-(of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
+(of class \cclass{cQueue}, described in chapter \ref{cha:sim-lib})
 in addition to the wait interval. Messages that arrive during the
 wait interval will be accumulated in the queue, so you can
 process them after the \ffunc{waitAndEnqueue()} call returned.
@@ -2686,11 +2707,12 @@ if (!queue.empty())
 \label{sec:simple-modules:channels}
 
 \subsection{Overview}
+\label{sec:simple-modules:channels-overview}
 
 Channels encapsulate parameters and behavior associated with connections.
 Channel types are like simple modules, in the sense that they are declared
 in NED, and there are C++ implementation classes behind them. Section
-\ref{sec:ch-ned-lang:channels} describes NED language support for channels,
+\ref{sec:ned-lang:channels} describes NED language support for channels,
 and explains how to associate C++ classes with channel types declared in
 NED.
 
@@ -2722,6 +2744,7 @@ channel's parent is also the compound module.
 
 
 \subsection{The Channel API}
+\label{sec:simple-modules:channel-api}
 
 When subclassing \cclass{Channel}, you have to redefine and provide
 implementations for the following pure virtual member functions:
@@ -2736,6 +2759,7 @@ The first two functions are usually one-liners; the channel behavior is
 encapsulated in the third function, \ffunc{processMessage()}.
 
 \subsubsection{Transmission Channels}
+\label{sec:simple-modules:transmission-channels}
 
 The first function, \ffunc{isTransmissionChannel()}, determines whether
 the channel is a \textit{transmission channel}, i.e. one that models
@@ -2754,6 +2778,7 @@ value may be any simulation time which is less than or equal to the current
 simulation time.
 
 \subsubsection{The processMessage() Function}
+\label{sec:simple-modules:channel-processmessage}
 
 The third function, \ffunc{processMessage()} encapsulates the channel's
 functionality. However, before going into the details of this function
@@ -2828,6 +2853,7 @@ checks are done by the simulation kernel before \ffunc{processMessage()} is call
 % TODO:
 %
 % \subsection{Active Channels}
+% \label{sec:simple-modules:active-channels}
 %
 % You may have noticed that channels subclasses from \cclass{cChannel} are
 % passive in the sense that they cannot schedule events and cannot react
@@ -2841,6 +2867,7 @@ checks are done by the simulation kernel before \ffunc{processMessage()} is call
 
 
 \subsection{Channel Examples}
+\label{sec:simple-modules:channel-examples}
 
 To illustrate coding channel behavior, we look at how the built-in channel
 types are implemented.
@@ -2937,6 +2964,7 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
 \label{sec:simple-modules:stopping}
 
 \subsection{Normal Termination}
+\label{sec:simple-modules:endsimulation}
 
 You can finish the simulation with the \ffunc{endSimulation()} function:
 
@@ -2949,6 +2977,7 @@ can specify simulation time and CPU time limits\index{simulation time limits}
 in the ini file (see later).
 
 \subsection{Raising Errors}
+\label{sec:simple-modules:raising-errors}
 
 If your simulation encounters an error condition, you can throw a
 \ttt{cRuntimeError} exception to terminate the simulation with
@@ -2981,6 +3010,7 @@ is available.
 \label{sec:simple-modules:fsm}
 
 \subsubsection{Overview}
+\label{sec:simple-modules:fsm-overview}
 
 Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
 can make life with \ffunc{handleMessage()} easier. {\opp} provides a
@@ -3016,7 +3046,7 @@ state space if it becomes too large.
 
 
 \subsubsection{The FSM API}
-
+\label{sec:simple-modules:fsm-api}
 
 FSM state is stored in an object of type \cclass{cFSM}. The possible states
 are defined by an enum; the enum is also a place to define which
@@ -3034,12 +3064,9 @@ enum {
 };
 \end{cpp}
 
-
-
 The actual FSM is embedded in a switch-like statement,
 \fmac{FSM\_Switch()}, where you have cases for entering and leaving
 each state:
-
 
 \begin{cpp}
 FSM_Switch(fsm)
@@ -3074,6 +3101,7 @@ is conventionally named INIT.
 
 
 \subsubsection{Debugging FSMs}
+\label{sec:simple-modules:debugging-fsms}
 
 FSMs can log their state transitions, with the output looking like this:
 
@@ -3114,7 +3142,7 @@ output format by undefining \ttt{FSM\_Print()} after including
 
 
 \subsubsection{Implementation}
-
+\label{sec:simple-modules:fsm-implementation}
 
 The \fmac{FSM\_Switch()} is a macro. It expands to a \ffunc{switch()}
 statement embedded in a \ffunc{for()} loop which repeats until the
@@ -3127,7 +3155,7 @@ state, the simulation will terminate with an error message.
 
 
 \subsubsection{An Example}
-
+\label{sec:simple-modules:fsm-example}
 
 Let us write another bursty packet generator. It will have two
 states, SLEEP and ACTIVE. In the SLEEP state, the module does
@@ -3247,7 +3275,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 \label{sec:simple-modules:walking-module-hierarchy}
 
 \subsubsection{Module Vectors}
-
+\label{sec:simple-modules:module-vectors}
 
 If a module is part of a module vector\index{module!vector}, the
 \ffunc{getIndex()} and \ffunc{getVectorSize()} member functions can be used to
@@ -3260,9 +3288,9 @@ EV << "This is module [" << module->getIndex() <<
 
 
 \subsubsection{Module IDs}
+\label{sec:simple-modules:module-ids}
 
-
-Each module in the network has a unique ID that is returned by the
+Every module in the network has a unique ID that is returned by the
 \ffunc{getId()} member function. The module ID\index{module!id} is used
 internally by the simulation kernel to identify modules.
 
@@ -3286,7 +3314,7 @@ modules.
 
 
 \subsubsection{Walking Up and Down the Module Hierarchy}
-
+\label{sec:simple-modules:walking-up-and-down-module-hierarchy}
 
 The surrounding compound module can be accessed by the
 \ffunc{getParentModule()} member function:
@@ -3302,7 +3330,6 @@ like this:
 double timeout = getParentModule()->par( "timeout" );
 \end{cpp}
 
-
 \cclass{cModule}'s \ffunc{findSubmodule()} and \ffunc{getSubmodule()}
 member functions make it possible to look up the module's submodules
 by name\index{module!submodule!lookup} (or name+index if the submodule
@@ -3314,7 +3341,6 @@ submodule is not found, they return -1 or nullptr, respectively.
 int submodID = compoundmod->findSubmodule("child",5);
 cModule *submod = compoundmod->getSubmodule("child",5);
 \end{cpp}
-
 
 The \ffunc{getModuleByRelativePath()} member function can be used to find
 a submodule nested deeper than one level below. For example,
@@ -3333,14 +3359,13 @@ compoundmod->getSubmodule("child",5)->getSubmodule("grandchild");
 version would crash with an access violation because of \ttt{nullptr}
 dereference.)
 
-
 The \cclass{cSimulation}::\ffunc{getModuleByPath()} function is similar
 to \cclass{cModule}'s \ffunc{moduleByRelative\-Path()} function, and it
 starts the search at the top-level module.
 
 
 \subsubsection{Iterating over Submodules}
-
+\label{sec:simple-modules:iterating-over-submodules}
 
 To access all modules within a compound module,
 use \cclass{cSubModIterator}.
@@ -3365,7 +3390,7 @@ function returns the same for all modules:
 for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 {
   if (iter()->isName(getName())) // if iter() is in the same
-                              // vector as this module
+                                 // vector as this module
   {
     int itsIndex = iter()->getIndex();
     // do something to it
@@ -3374,7 +3399,8 @@ for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 \end{cpp}
 
 
-\subsubsection{Walking Along Links}
+\subsubsection{Navigating Connections}
+\label{sec:simple-modules:navigating-connections}
 
 To determine the module at the other end of a connection, use
 \cclass{cGate}'s \ffunc{getPreviousGate()}, \ffunc{getNextGate()} and
@@ -3464,10 +3490,11 @@ void Callee::doSomething()
 
 
 \section{Dynamic Module Creation}
-\label{sec:simple-modules:dynamic-module-creation}
+\label{sec:simple-modules:creating-modules}
 \index{module!dynamic creation}
 
 \subsection{When To Use}
+\label{sec:simple-modules:dynamic-creation:when-to-use}
 
 In some situations you need to dynamically create and maybe destroy
 modules. For example, when simulating a mobile network,
@@ -3494,7 +3521,7 @@ during simulation (though it is rarely useful.)
 
 
 \subsection{Overview}
-
+\label{sec:simple-modules:dynamic-creation:overview}
 
 To understand how dynamic module creation works, you have to know a
 bit about how {\opp} normally instantiates modules. Each module type
@@ -3536,6 +3563,7 @@ into the FES\index{FES}, and these messages should be processed
 
 
 \subsection{Creating Modules}
+\label{sec:simple-modules:dynamic-creation:api}
 
 The first step is to find the factory object. The \ttt{cModuleType::get()}
 function expects a fully qualified NED type name, and returns the factory
@@ -3552,10 +3580,11 @@ the function raises an error if the requested NED type was not found.
 was not found.)
 
 \subsubsection{The All-in-One Method}
+\label{sec:simple-modules:dynamic:createscheduleinit}
 
-\cclass{cModuleType} has a \ffunc[createScheduleInit()]{createScheduleInit(const
-char *name, cModule *parentmod)} convenience function to get a module up
-and running in one step.
+\cclass{cModuleType} has a
+\ffunc[createScheduleInit()]{createScheduleInit(const char *name, cModule *parentmod)} % don't break this line (for html)
+convenience function to get a module up and running in one step.
 
 \begin{cpp}
 cModule *mod = moduleType->createScheduleInit("node", this);
@@ -3576,6 +3605,7 @@ modules.
 
 
 \subsubsection{The Detailed Procedure}
+\label{sec:simple-modules:dynamic-creation:details}
 
 If the \ffunc{createScheduleInit()} all-in-one method is not applicable,
 one needs to use the full procedure. It consists of five steps:
@@ -3629,6 +3659,7 @@ module->scheduleStart(simTime());
 
 
 \subsection{Deleting Modules}
+\label{sec:simple-modules:deleting-modules}
 
 To delete a module dynamically\index{module!dynamic deletion}, use
 \cclass{cModule}'s \ffunc{deleteModule()} member function:
@@ -3648,6 +3679,7 @@ module.
 
 
 \subsection{Module Deletion and finish()}
+\label{sec:simple-modules:module-deletion-and-finish}
 
 \ffunc{finish()} is called for \textit{all} modules at the end of the
 simulation, no matter how the modules were created. If a module is
@@ -3674,6 +3706,7 @@ mod->deleteModule();
 
 
 \subsection{Creating Connections}
+\label{sec:simple-modules:creating-connections}
 \index{connection!creating}
 
 Connections can be created using \cclass{cGate}'s \ffunc{connectTo()}
@@ -3741,6 +3774,7 @@ a->gate("out")->connectTo(b->gate("in"), channel); // a, b are modules
 
 
 \subsection{Removing Connections}
+\label{sec:simple-modules:removing-connections}
 \index{connection!removing}
 
 The \ffunc{disconnect()} method of \cclass{cGate} can be
@@ -3751,6 +3785,8 @@ the channel object associated with the connection, if one has been set.
 \begin{cpp}
 srcGate->disconnect();
 \end{cpp}
+
+
 
 \section{Signals}
 \label{sec:simple-modules:signals}
@@ -3823,6 +3859,7 @@ also an (optional) argument of \ffunc{emit()}.
 
 
 \subsection{Design Considerations and Rationale}
+\label{sec:simple-modules:signals-design}
 
 The implementation of signals is based on the following assumptions:
 
@@ -3865,6 +3902,7 @@ Signal-related methods are declared on \cclass{cComponent}, so they are availabl
 for both \cclass{cModule} and \cclass{cChannel}.
 
 \subsubsection{Signal IDs}
+\label{sec:simple-modules:signal-ids}
 
 Signals are identified by names, but internally numeric signal IDs are used
 for efficiency. The \ffunc{registerSignal()} method takes a signal name as
@@ -3893,6 +3931,7 @@ const char *signalName = getSignalName(lengthSignalId); // --> "length"
 \end{note}
 
 \subsubsection{Emitting Signals}
+\label{sec:simple-modules:emitting-signals}
 
 The \ffunc{emit()} family of functions emit a signal from the module or
 channel. \ffunc{emit()} takes a signal ID (\ttt{simsignal\_t}) and
@@ -3943,6 +3982,7 @@ you take into account the cost of producing notification information when
 deciding between \ffunc{mayHaveListeners()} and \ffunc{hasListeners()}.
 
 \subsubsection{Signal Declarations}
+\label{sec:simple-modules:signal-declarations}
 
 Since {\opp} 4.4, signals can be declared in NED files for documentation
 purposes, and {\opp} can check that only declared signals are emitted,
@@ -3963,7 +4003,7 @@ simple Queue
 
 As you can see, signals are declared with the \fprop{@signal} property on
 the module or channel that emits it. (NED properties are described in
-\ref{sec:ch-ned-lang:properties}). The property index corresponds
+\ref{sec:ned-lang:properties}). The property index corresponds
 to the signal name, and the property's body may declare various attributes
 of the signal; currently only the data type is supported.
 
@@ -4003,6 +4043,7 @@ can declare those signals as:
 
 
 \subsubsection{Enabling Signal Checking}
+\label{sec:simple-modules:enabling-signal-checking}
 
 In {\opp} 4.x, signal checking is turned off by default. You can turn it
 on with the \fconfig{check-signals} configuration option in \ttt{omnetpp.ini}:
@@ -4018,6 +4059,7 @@ performance reasons.
 
 
 \subsubsection{Signal Data Objects}
+\label{sec:simple-modules:signal-data-objects}
 
 When emitting a signal with a \ttt{cObject*} pointer, you can pass as data
 an object that you already have in the model, provided you have a suitable
@@ -4033,7 +4075,7 @@ can create a temporary object, and pass its pointer to the \ffunc{emit()}
 function.
 
 An example of custom notification classes are the ones associated with
-model change notifications (see \ref{sec:ch-simple-modules:model-change}).
+model change notifications (see \ref{sec:simple-modules:model-change}).
 For example, the data class that accompanies a signal that announces that a
 gate or gate vector is about to be created looks like this:
 
@@ -4064,6 +4106,7 @@ if (hasListeners(PRE_MODEL_CHANGE))
 
 
 \subsubsection{Subscribing to Signals}
+\label{sec:simple-modules:subscribing-to-signals}
 
 The \ffunc{subscribe()} method registers a listener for a signal.
 Listeners are objects that extend the \cclass{cIListener} class.
@@ -4148,6 +4191,7 @@ for (unsigned int i = 0; i < signals.size(); i++) {
 \end{cpp}
 
 \subsubsection{Listeners}
+\label{sec:simple-modules:signal-listeners}
 
 Listeners are objects that subclass from the \cclass{cIListener} class, which
 declares the following methods:
@@ -4235,7 +4279,7 @@ and prints a warning message when it is not zero in the destructor.
 
 
 \subsection{Listening to Model Changes}
-\label{sec:ch-simple-modules:model-change}
+\label{sec:simple-modules:model-change}
 
 In simulation models it is often useful to hold references to other
 modules, a connecting channel or other objects, or to cache information
@@ -4327,9 +4371,10 @@ simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
 
 
 \section{Signal-Based Statistics Recording}
-\label{sec:ch-simple-modules:statistic-signals}
+\label{sec:simple-modules:signal-based-statistics}
 
 \subsection{Motivation}
+\label{sec:simple-modules:signal-based-statistics-motivation}
 
 One use of signals is to expose variables for result collection without
 telling where, how, and whether to record them. With this approach,
@@ -4362,9 +4407,10 @@ With the signals approach the above goals can be fulfilled.
 
 
 \subsection{Declaring Statistics}
-\label{sec:ch-simple-modules:declaring-statistics}
+\label{sec:simple-modules:declaring-statistics}
 
 \subsubsection{Introduction}
+\label{sec:simple-modules:declared-statistics:introduction}
 
 In order to record simulation results based on signals, one must add
 \fprop{@statistic} properties to the simple module's (or channel's) NED
@@ -4393,7 +4439,7 @@ simple Queue
 \end{ned}
 
 As you can see, statistics are represented with indexed NED properties (see
-\ref{sec:ch-ned-lang:properties}). The property name is always
+\ref{sec:ned-lang:properties}). The property name is always
 \ttt{statistic}, and the index (here, \ttt{queueLength}) is the
 name of the statistic. The property value, that is, everything inside the
 parentheses, carries hints and extra information for recording.
@@ -4500,6 +4546,7 @@ vector(8*sum)?);
 
 
 \subsubsection{Property Keys}
+\label{sec:simple-modules:declared-statistics:property-keys}
 
 The following keys are understood in \fprop{@statistic} properties:
 
@@ -4523,6 +4570,7 @@ The following keys are understood in \fprop{@statistic} properties:
 
 
 \subsubsection{Available Filters and Recorders}
+\label{sec:simple-modules:available-result-filters-and-recorders}
 
 The following table contains the list of predefined result filters.
 All filters in the table output a value for each input value.
@@ -4590,6 +4638,7 @@ printed by executing the \ttt{opp\_run -h resultfilters} and \ttt{opp\_run
 
 
 \subsubsection{Naming and Attributes of Recorded Results}
+\label{sec:simple-modules:naming-and-attributes-of-recorded-results}
 
 The names of recorded result items will be formed by concatenating the
 statistic name and the recording mode with a colon between them:
@@ -4620,6 +4669,7 @@ interpreted by the {\opp} runtime or the result analysis tool.
 
 
 \subsubsection{Source and Record Expressions in Detail}
+\label{sec:simple-modules:statistic-source-and-record-details}
 
 To fully understand \ttt{source} and \ttt{record}, it will be useful to see
 how result recording is set up.
@@ -4776,7 +4826,7 @@ most useful ones.
 the current simulation time. At times it might be desirable to associate
 them with a different timestamp, in much the same way as the
 \ffunc{recordWithTimestamp()} method of \cclass{cOutVector} (see
-\ref{sec:ch-sim-lib:coutvector}) does. For example, assume that you want to
+\ref{sec:sim-lib:coutvector}) does. For example, assume that you want to
 emit a signal at the start of every successful wireless frame reception.
 However, whether any given frame reception is going to be successful can
 only be known after the reception has completed. Hence, values can only be
@@ -4909,6 +4959,7 @@ bool SumPerDurationFilter::process(simtime_t& t, double& value)
 
 %
 % \subsubsection{Signal Naming}
+% \label{sec:simple-modules:signal-naming}
 %
 % XXX
 %

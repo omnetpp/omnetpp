@@ -1,7 +1,8 @@
 \chapter{Building Simulation Programs}
-\label{cha:building-simulation-programs}
+\label{cha:build-sim-progs}
 
 \section{Overview}
+\label{sec:build-sim-progs:overview}
 
 As has already been mentioned, an {\opp} model consists of
 the following parts:
@@ -49,6 +50,7 @@ The following figure gives an overview of the process of building
 \end{figure}
 
 \section{Using opp\_makemake and Makefiles}
+\label{sec:build-sim-progs:opp-makemake}
 
 There are several tools available for managing the build of C/C++ programs.
 {\opp} uses the traditional way, Makefiles. Writing a Makefile is usually a
@@ -60,6 +62,7 @@ simulation program, based on the source files in the current directory or
 directory tree.
 
 \subsection{Command-line Options}
+\label{sec:build-sim-progs:makemake-options}
 
 \fprog{opp\_makemake} has several options;
 \ttt{opp\_makemake -h} displays help.
@@ -92,6 +95,7 @@ The most important options are:
 
 
 \subsection{Basic Use}
+\label{sec:build-sim-progs:makemake-basic-use}
 
 Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
 \ttt{*.h}) in a directory, change the working directory to there and type:
@@ -134,6 +138,7 @@ clean &  Deletes all files that were produced by the make process\\\hline
 
 
 \subsection{Debug and Release Builds}
+\label{sec:build-sim-progs:debug-and-release-builds}
 
 \fprog{opp\_makemake} generates a Makefile that can create both release and debug builds.
 By default it creates debug version, but it is easy to override this behavior.
@@ -150,6 +155,7 @@ $ opp_makemake --mode release ...
 \end{commandline}
 
 \subsection{Debugging the Makefile}
+\label{sec:build-sim-progs:debugging-makefile}
 
 \fprog{opp\_makemake} generates a Makefile that prints only minimal information
 during the build process (only the name of the compiled file.) If you want to
@@ -162,6 +168,7 @@ $ make V=1
 
 
 \subsection{Using External C/C++ Libraries}
+\label{sec:build-sim-progs:using-external-libraries}
 
 If you are using external libraries you should specify the include path for the header files
 with the \ttt{-I} \textit{includedir} option. You should specify this option if you are using
@@ -174,6 +181,7 @@ external dependency.
 
 
 \subsection{Building Directory Trees}
+\label{sec:build-sim-progs:building-directory-trees}
 
 It is possible to build a whole source directory tree with a single Makefile.
 A source tree will generate a single output file (executable or library).
@@ -194,6 +202,7 @@ $ opp_makemake -f --deep -X experimental -X obsolete
 
 
 \subsection{Automatic Include Dirs}
+\label{sec:build-sim-progs:automatic-include-dirs}
 
 If your source tree contains several subdirectories (maybe several levels
 deep), it can be annoying to have to specify relative paths for your
@@ -222,6 +231,7 @@ unexpected errors in the build process.
 
 
 \subsection{Dependency Handling}
+\label{sec:build-sim-progs:dependency-handling}
 
 Dependency information is used by the Makefile to minimize the time required to
 compile and link your project. If your Makefile contains up-to date dependency info
@@ -243,6 +253,7 @@ files are always added to the file's dependency list.
 
 
 \subsection{Out-of-Directory Build}
+\label{sec:build-sim-progs:out-of-directory-build}
 
 The build system creates object and executable files in a separate directory, called the
 \textit{output directory}. The structure of the output directory will be the same as your
@@ -273,6 +284,7 @@ source folder rather than in the output folder.
 
 
 \subsection{Building Shared and Static Libraries}
+\label{sec:build-sim-progs:building-shared-and-static-libraries}
 
 By default the Makefile will create an executable file, but it is also
 possible to build shared or static libraries. Shared libraries
@@ -297,6 +309,7 @@ your sources. This step allows Visual C++ to correctly generate DLL exports in W
 
 
 \subsection{Recursive Builds}
+\label{sec:build-sim-progs:recursive-builds}
 
 
 The \ttt{-{}-recurse} option enables recursive make; when you build the simulation, make
@@ -361,6 +374,7 @@ Makefile using the \ttt{opp\_makemake} command.
 \end{note}
 
 \subsection{Projects with Multiple Source Trees}
+\label{sec:build-sim-progs:projects-with-multiple-source-trees}
 
 In the case of a large project, your source files may be spread across
 several directories and your project may generate more than one executable
@@ -373,6 +387,7 @@ recursively in the source directory trees.
 
 
 \subsection{A Multi-Directory Example}
+\label{sec:build-sim-progs:multi-directory-example}
 
 For a complex example of using \fprog{opp\_makemake}, we will show how to create
 the Makefiles for a large project. First, take a look at the
@@ -440,6 +455,7 @@ $ opp_makemake -f --nolink -O out -d test -d core -d contrib -X.
 
 \ifcommercial
 \section{Using Windows and Microsoft Visual C++}
+\label{sec:build-sim-progs:using-microsoft-visual-c}
 
 There are only slight differences to the way Microsoft Visual C++
 is handled. The main differences are:
@@ -456,6 +472,7 @@ set stack size to as low as 64K.
 \fi
 
 \section{Project Features}
+\label{sec:build-sim-progs:project-features}
 
 Long compile times are often an inconvenience when working with large
 {\opp}-based model frameworks. {\opp} has a facility named \textit{project
@@ -480,6 +497,7 @@ It is possible to query the list of enabled project features, and use this
 information in creating a Makefile for the project.
 
 \subsection{The opp\_featuretool Program}
+\label{sec:build-sim-progs:opp-featuretool}
 
 Project features can be queried and manipulated using the \fprog{opp\_featuretool}
 program. The first argument to the program must be a command; the most frequently
@@ -525,6 +543,7 @@ The above command allows you to build the same executable from both the IDE and
 the command line.
 
 \subsection{What is a Project Feature}
+\label{sec:build-sim-progs:project-feature}
 
 Features can be defined per project. As already mentioned, a feature is a piece of the
 project codebase that can be turned off as a whole, that is, excluded from the C++ sources
@@ -560,6 +579,7 @@ option of enabling/disabling those features. A feature definition contains:
 \end{itemize}
 
 \subsection{The .oppfeatures File}
+\label{sec:build-sim-progs:oppfeatures-file}
 
 Project features are defined in the \ffilename{.oppfeatures} file in your project's
 root directory. This is an XML file, and it has to be written by hand
@@ -594,6 +614,7 @@ Project feature enablements are stored in the \ffilename{.featurestate} file.
 
 
 \subsection{How to Introduce a Project Feature}
+\label{sec:build-sim-progs:introducing-project-features}
 
 If you plan to introduce a project feature in your project, here's what you'll need
 to do:

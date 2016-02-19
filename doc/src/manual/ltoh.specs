@@ -125,6 +125,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\textasciitilde:~::
 :comm   :\textbackslash:\::
 :comm   :\sim:~::
+:comm   :\times:x::
 :comm   :\dots:...::
 :comm   :\cdots:..::
 :comm   :\nobreakspace:&nbsp;::

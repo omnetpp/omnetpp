@@ -57,6 +57,7 @@ Entry types are:
 
 
 \section{Version}
+\label{sec:result-file-formats:version}
 
 Specifies the format of the result file. It is written at the beginning of the file.
 
@@ -70,6 +71,7 @@ by OMNeT++ 3.3 or earlier.
 
 
 \section{Run Declaration}
+\label{sec:result-file-formats:run-declaration}
 
 Marks the beginning of a new run in the file. Entries after this line
 belong to this run.
@@ -142,6 +144,7 @@ attr seedset 0
 
 
 \section{Attributes}
+\label{sec:result-file-formats:attributes}
 
 Contains an attribute for the preceding run, vector, scalar or
 statistics object. Attributes can be used for saving arbitrary
@@ -161,6 +164,7 @@ attr network "largeNet"
 
 
 \section{Module Parameters}
+\label{sec:result-file-formats:module-parameters}
 
 Contains a module parameter value for the given run. This is needed so
 that module parameters may be included in the analysis (e.g. to
@@ -190,6 +194,7 @@ param **.fifo.bitsPerSec 1000
 
 
 \section{Scalar Data}
+\label{sec:result-file-formats:scalar-data}
 
 Contains an output scalar value.
 
@@ -214,6 +219,7 @@ Scalar lines may be immediately followed by \textit{attribute} lines.
 
 
 \section{Vector Declaration}
+\label{sec:result-file-formats:vector-declaration}
 
 Defines an output vector.
 
@@ -254,6 +260,7 @@ Vector lines may be immediately followed by \textit{attribute} lines.
 
 
 \section{Vector Data}
+\label{sec:result-file-formats:vector-data}
 
 Adds a value to an output vector. This is the same as in older output
 vector files.
@@ -273,6 +280,7 @@ clusters allows one to read the file and seek in it more efficiently.
 This does not require any change or extension to the file format.
 
 \section{Index Header}
+\label{sec:result-file-formats:index-header}
 
 The first line of the index file stores the size and modification date
 of the vector file. If the attributes of a vector file differ from
@@ -284,6 +292,7 @@ Syntax:
 \hspace{20mm} \textbf{file} \textit{filesize} \textit{modificationDate}
 
 \section{Index Data}
+\label{sec:result-file-formats:index-data}
 
 Stores the location and statistics of blocks in the vector file.
 
@@ -307,6 +316,7 @@ where
 \end{itemize}
 
 \section{Statistics Object}
+\label{sec:result-file-formats:statistics-object}
 
 Represents a statistics object.
 
@@ -328,7 +338,7 @@ and a series of \textit{bin} lines that represent histogram data.
 \begin{itemize}
     \item \textbf{title}: suggested title on charts
     \item \textbf{unit}: measurement unit, e.g. \ttt{s} for seconds
-    \item \textbf{type}: type of the collected values: \ttt{int} or \ttt{double}; 
+    \item \textbf{type}: type of the collected values: \ttt{int} or \ttt{double};
                          the default is \ttt{double}
 \end{itemize}
 
@@ -361,6 +371,7 @@ bin	52	2
 
 
 \section{Field}
+\label{sec:result-file-formats:field}
 
 Represents a field in a statistics object.
 
@@ -398,6 +409,7 @@ For weighted statistics, additionally the following fields may be recorded:
 
 
 \section{Histogram Bin}
+\label{sec:result-file-formats:histogram-bin}
 
 Represents a bin in a histogram object.
 

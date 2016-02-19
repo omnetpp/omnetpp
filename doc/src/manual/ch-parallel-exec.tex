@@ -1,10 +1,11 @@
 \chapter{Parallel Distributed Simulation}
-\label{cha:parallel-execution}
+\label{cha:parallel-exec}
 
 %FIXME TBD bibl.references
 %FIXME TBD figures
 
 \section{Introduction to Parallel Discrete Event Simulation}
+\label{sec:parallel-exec:introduction-to-pdes}
 
 {\opp} supports parallel execution\index{parallel simulation} of large
 simulations. This section provides a brief picture
@@ -56,6 +57,7 @@ above:
 
 
 \section{Assessing Available Parallelism in a Simulation Model}
+\label{sec:parallel-exec:assessing-available-parallelism}
 
 {\opp} currently supports conservative synchronization
 via the classic Chandy-Misra-Bryant (or null message) algorithm
@@ -120,8 +122,10 @@ For details see the paper \cite{ParsimCrit03}.
 
 
 \section{Parallel Distributed Simulation Support in {\opp}}
+\label{sec:parallel-exec:pdes-support-in-omnetpp}
 
 \subsection{Overview}
+\label{sec:parallel-exec:overview}
 
 This chapter presents the parallel simulation architecture
 of {\opp}. The design allows simulation models to be run
@@ -211,6 +215,7 @@ configuration.
 
 
 \subsection{Parallel Simulation Example}
+\label{sec:parallel-exec:parallel-simulation-example}
 
 We will use the Parallel CQN example simulation for demonstrating the
 PDES capabilities of {\opp}.
@@ -311,6 +316,7 @@ EITs and EOTs can be inspected, etc.
 
 
 \subsection{Placeholder Modules, Proxy Gates}
+\label{sec:parallel-exec:placeholder-modules-proxy-gates}
 
 When setting up a model partitioned to several LPs,
 {\opp} uses placeholder modules and proxy gates.
@@ -362,6 +368,7 @@ everywhere else (Figure \ref{fig:inst}).
 
 
 \subsection{Configuration}
+\label{sec:parallel-exec:configuration}
 
 Parallel simulation configuration is the \ttt{[General]} section of \ttt{omnetpp.ini}.
 
@@ -420,6 +427,7 @@ output files. (See section \ref{sec:run-sim:using-shared-filesystems})
 
 
 \subsection{Design of PDES Support in {\opp}}
+\label{sec:parallel-exec:design-of-pdes-support}
 
 The design of PDES support in {\opp} follows a layered approach,
 with a modular and extensible architecture. The overall
@@ -439,6 +447,7 @@ if not needed. It consists of three layers, from the bottom up:
 Communications Layer, Partitioning Layer and Synchronization Layer.
 
 \subsubsection{The Communications Layer}
+\label{sec:parallel-exec:communications-layer}
 
 The purpose of the Communications Layer is to
 provide elementary messaging services between partitions for the
@@ -456,6 +465,7 @@ class \texttt{cMPICommBuffer} encapsulates MPI pack/unpack
 operations.
 
 \subsubsection{The Partitioning Layer}
+\label{sec:parallel-exec:partitioning-layer}
 
 The Partitioning Layer is responsible for instantiating
 modules on different LPs according to the partitioning specified
@@ -470,6 +480,7 @@ The implementation basically encapsulates the
 \texttt{cProxyGate} classes.
 
 \subsubsection{The Synchronization Layer}
+\label{sec:parallel-exec:synchronization-layer}
 
 The Synchronization Layer encapsulates the parallel
 simulation algorithm. Parallel simulation algorithms are also represented

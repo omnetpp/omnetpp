@@ -2,13 +2,14 @@
 \label{cha:run-sim}
 
 \section{Introduction}
+\label{sec:run-sim:introduction}
 
 This chapter describes how to run simulations. It covers basic usage,
 user interfaces, batch runs, how to use Akaroa, and also explains
 how to solve the most common errors.
 
 \subsection{Running a Simulation Executable}
-\label{sec:ch-run-sim:running}
+\label{sec:run-sim:running}
 
 By default, the output of an \fprog{opp\_makemake}-generated makefile is
 a simulation executable that can be run directly. In simple cases,
@@ -17,6 +18,7 @@ one will need to specify options to specify what ini file to use,
 which user interface to activate, where to load NED files from, and so on.
 
 \subsubsection{Getting Help}
+\label{sec:run-sim:getting-help}
 
 The following sections describe the most frequently used command-line
 options. To get a complete list of supported command line options, run
@@ -28,6 +30,7 @@ $ opp_run -h
 \end{commandline}
 
 \subsubsection{Specifying Ini Files}
+\label{sec:run-sim:specifying-ini-files}
 
 The default ini file is \ffilename{omnetpp.ini}, and is
 loaded if no other ini file is given on the command line.
@@ -46,6 +49,7 @@ to simulation options, module parameters and result recording options.
 
 
 \subsubsection{Specifying the NED Path}
+\label{sec:run-sim:specifying-ned-path}
 
 NED files are loaded from directories listed on the NED path. More precisely,
 they are loaded from the listed directories and their whole subdirectory trees.
@@ -73,6 +77,7 @@ NED path resolution rules are as follows:
 
 
 \subsubsection{Selecting a User Interface}
+\label{sec:run-sim:selecting-user-interface}
 
 {\opp} simulations can be run under different user interfaces.
 Currently the following user interfaces are supported:
@@ -91,7 +96,7 @@ educational and demonstration purposes.
 Both Tkenv and Cmdenv are provided in the form of a library, and
 you may choose between them by linking one or both into your
 simulation executable. (Creating the executable was described in
-chapter \ref{cha:building-simulation-programs}). Both user interfaces
+chapter \ref{cha:build-sim-progs}). Both user interfaces
 are supported on Unix and Windows platforms.
 
 You can choose which runtime environment is included in your simulation
@@ -110,6 +115,7 @@ both the config option and the command line option are present, the command
 line option takes precedence.
 
 \subsubsection{Selecting a Configuration and Run Number}
+\label{sec:run-sim:selecting-configuration-and-run-number}
 
 Configurations can be selected with the \ttt{-c <configname>} command line option.
 If you do not specify the configuration and you are running under:
@@ -135,6 +141,7 @@ variables and the number of runs in the configurations:
 
 
 \subsubsection{Loading Extra Libraries}
+\label{sec:run-sim:loading-extra-libraries}
 
 {\opp} allows you to load shared libraries at runtime. This means that you can create
 simulation models as a shared library and load the model later into a different executable without
@@ -178,6 +185,7 @@ and the config file will be merged.
 \end{note}
 
 \subsection{Running a Shared Library}
+\label{sec:run-sim:running-shared-lib}
 
 Shared libraries can be run using the \fprog{opp\_run} program.
 Both \fprog{opp\_run} and simulation executables are capable of
@@ -192,7 +200,7 @@ opp_run -l mymodel
 The above example will load the model found in \ttt{libmymodel.so} and execute it.
 
 \subsection{Controlling the Run}
-\label{sec:ch-run-sim:controlling}
+\label{sec:run-sim:controlling-the-run}
 
 There are several useful configuration options that control how a simulation is run.
 
@@ -208,7 +216,7 @@ There are several useful configuration options that control how a simulation is 
           the simulation is running. When the simulation terminates, the simulation kernel will generate an
           error if the computed fingerprints don't match with the provided ones. This feature is mainly
           useful for regression testing. Fingerprint tests are discussed in detail in section
-          \ref{ch-testing:sec:fingerprint-tests}.
+          \ref{sec:testing:fingerprint-tests}.
   \item \fconfig{debug-on-errors} -- If the runtime detects any error, it will generate a breakpoint
           so you will be able to check the location and the context of the problem in your debugger.
   \item \fconfig{debugger-attach-on-error} -- Controls just-in-time debugging. When this option is enabled
@@ -233,6 +241,7 @@ opp_run -h config
 
 
 \section{Cmdenv: the Command-Line Interface}
+\label{sec:run-sim:cmdenv}
 
 The command line user interface\index{command line user interface} is
 a small, portable and fast user interface that compiles and runs on
@@ -244,6 +253,7 @@ subsequent ones will still be executed. The runs to be executed can be
 passed via command-line argument or in the ini file.
 
 \subsection{Example Run}
+\label{sec:run-sim:cmdenv-example-run}
 
 When you run the Fifo example under Cmdenv, you should see
 something like this:
@@ -297,13 +307,14 @@ contains vector data recorded during simulation (here, queueing times),
 and it can be processed using the IDE or other tools.
 
 \subsection{Command-Line Options}
+\label{sec:run-sim:cmdenv-command-line-options}
 
 The command line environment allows you to specify more than one run by
-using the \ttt{-r 2,4,6..8} format. See \ref{sec:ch-run-sim:batch-execution}
+using the \ttt{-r 2,4,6..8} format. See \ref{sec:run-sim:batch-execution}
 for more information about running simulation batches.
 
 \subsection{Cmdenv Ini File Options}
-\label{sec:ch-run-sim:cmdenv-section}
+\label{sec:run-sim:cmdenv-section}
 
 \fconfig{cmdenv-runs-to-execute} specifies which simulation runs should be executed.
 It accepts a comma-separated list of run numbers or run number ranges, e.g.
@@ -334,7 +345,7 @@ Appendix \ref{cha:config-options}.
 
 
 \subsection{Interpreting Cmdenv Output}
-\label{sec:ch-run-sim:interpreting-cmdenv-output}
+\label{sec:run-sim:interpreting-cmdenv-output}
 
 When the simulation is running in ``express'' mode with detailed
 performance display enabled, Cmdenv periodically outputs a three-line
@@ -420,6 +431,7 @@ most common way of leaking memory in a simulation is by not deleting messages.
 
 
 \section{The Tkenv Graphical User Interface}
+\label{sec:run-sim:tkenv}
 
 Tkenv\index{Tkenv} is a portable graphical windowing user interface.
 Tkenv supports interactive simulation execution, tracing and
@@ -436,6 +448,7 @@ inside the network.
 \end{note}
 
 \subsection{Command-Line and Configuration Options}
+\label{sec:run-sim:tkenv-options}
 
 A simulation program built with Tkenv accepts all the general command line
 options. \index{command line options} Additionally, the \ttt{-c configname}
@@ -473,7 +486,7 @@ Appendix \ref{cha:config-options} for the list of possible configuration options
 
 
 \section{Batch Execution}
-\label{sec:ch-run-sim:batch-execution}
+\label{sec:run-sim:batch-execution}
 
 Once your model works reliably, you will usually want to run several
 simulations. You may want to run the model with various
@@ -496,6 +509,7 @@ by using wall clock time (\fconfig{cpu-time-limit}) or by directly ending a
 simulation with an API call if some condition is true.
 
 \subsection{Using Cmdenv}
+\label{sec:run-sim:batches-using-cmdenv}
 
 To execute more than one run using Cmdenv, use the \ttt{-r} option
 and specify the runs in a comma separated format \ttt{1,2,4,9..11}, or you may leave
@@ -512,6 +526,7 @@ out the \ttt{-r} option to execute all runs in the experiment.
 
 
 \subsection{Using Shell Scripts}
+\label{sec:run-sim:batches-using-shell-scripts}
 
 The following script executes a simulation named \ttt{wireless}
 several times, with parameters for the different runs
@@ -565,6 +580,7 @@ done
 \end{filelisting}
 
 \subsection{Using opp\_runall}
+\label{sec:run-sim:batches-using-opp-runall}
 
 {\opp} has a utility program called \fprog{opp\_runall} which
 allows you to execute a simulation batch in command line mode.
@@ -606,14 +622,16 @@ You can run your batch later by invoking the generated makefile.
 
 %% TODO
 %%\subsection{Using Xgrid}
+%% \label{sec:run-sim:batches-using-xgrid}
 
 
 \section{Akaroa Support: Multiple Replications in Parallel}
-\label{sec:ch-run-sim:akaroa}
+\label{sec:run-sim:akaroa}
 \index{Akaroa}
 \index{Multiple Replications in Parallel}
 
 \subsection{Introduction}
+\label{sec:run-sim:akaroa-introduction}
 
 Typical simulations are Monte-Carlo simulations: they use
 (pseudo-)random numbers to drive the simulation model.
@@ -647,6 +665,7 @@ to achieve this level -- it must be determined at runtime.
 
 
 \subsection{What Is Akaroa}
+\label{sec:run-sim:what-is-akaroa}
 
 Akaroa \cite{Akaroa99} addresses the above problem.
 According to its authors, Akaroa (Akaroa2) is a ``fully automated
@@ -682,8 +701,10 @@ and can be used free of charge for teaching and non-profit research activities.
 
 
 \subsection{Using Akaroa with {\opp}}
+\label{sec:run-sim:using-akaroa}
 
 \subsubsection{Akaroa}
+\label{sec:run-sim:starting-up-akaroa}
 
 Before the simulation can be run in parallel under Akaroa, you have to
 start up the system:
@@ -716,6 +737,7 @@ set up and successfully use Akaroa -- for that you need to read the
 Akaroa manual.
 
 \subsubsection{Configuring {\opp} for Akaroa}
+\label{sec:run-sim:configuring-akaroa}
 
 First of all, you have to compile {\opp} with Akaroa support enabled.
 
@@ -723,7 +745,7 @@ The {\opp} simulation must be configured in \ffilename{omnetpp.ini}
 so that it passes the observations to Akaroa. The simulation model itself does
 not need to be changed -- it continues to write
 the observations into output vectors (\cclass{cOutVector} objects,
-see chapter \ref{cha:the-simulation-library}). You can place some of
+see chapter \ref{cha:sim-lib}). You can place some of
 the output vectors under Akaroa control.
 
 You need to add the following to \ffilename{omnetpp.ini}:
@@ -754,7 +776,7 @@ produce exactly the same results.
 Then you need to specify which output vectors you want to
 be under Akaroa control (by default, none of them are).
 You can use the \ttt{*}, \ttt{**} wildcards (see
-section \ref{sec:ch-config-sim:wildcards}) to
+section \ref{sec:config-sim:wildcards}) to
 place certain vectors under Akaroa control.
 
 \begin{inifile}
@@ -764,7 +786,7 @@ place certain vectors under Akaroa control.
 
 
 \subsubsection{Using Shared File Systems}
-\label{sec:run-sim:using-shared-filesystems}
+\label{sec:run-sim:akaroa-using-shared-filesystems}
 
 It is usually practical to have the same physical disk mounted (e.g. via NFS or Samba)
 on all computers in the cluster. However, because all {\opp} simulation
@@ -784,16 +806,20 @@ files (output vector, output scalar, snapshot files).
 
 
 \section{Troubleshooting}
+\label{sec:run-sim:troubleshooting}
 
 \subsection{Unrecognized Configuration Option}
+\label{sec:run-sim:unrecognized-configuration-option}
 
 If you receive an error message about unrecognized configuration
 options you may use \ttt{-h config} or \ttt{-h configdetails} options
 to display all possible configuration options and their descriptions.
 
 \subsection{Stack Problems}
+\label{sec:run-sim:stack-problems}
 
 \subsubsection{``Stack violation (\textit{FooModule} stack too small?) in module \textit{bar.foo}''}
+\label{sec:run-sim:stack-too-small}
 \index{stack!too small}
 
 {\opp} detected that the module has used more stack space than it has
@@ -803,6 +829,7 @@ actually how much stack the module used.
 
 
 \subsubsection{``Error: Cannot allocate \textit{nn} bytes stack for module \textit{foo.bar''}}
+\label{sec:run-sim:cannot-allocate-stack}
 
 The resolution depends on whether you are using {\opp} on Unix or on Windows.
 
@@ -866,6 +893,7 @@ modules at runtime, including about 4000 dynamically created modules.)
 
 
 \subsubsection{``Segmentation fault''}
+\label{sec:run-sim:segmentation-fault}
 
 On Unix, if you set the total stack size higher, you may get a
 segmentation fault during network setup\index{segmentation fault} (or
@@ -925,6 +953,7 @@ Cmdenv does not need that much extra stack.
 
 
 \subsubsection{Eventually...}
+\label{sec:run-sim:eventually-about-activity}
 
 Once you get to the point where you have to adjust the total stack size to
 get your program running, you should probably consider transforming (some
@@ -934,6 +963,7 @@ of) your \ffunc{activity()} simple modules to \ffunc{handleMessage()}.
 
 
 \subsection{Memory Leaks and Crashes}
+\label{sec:run-sim:memory-leaks-and-crashes}
 
 The most common problems in C++ are associated with memory allocation
 (usage of \ttt{new} and \ttt{delete}):
@@ -952,7 +982,7 @@ The most common cause of memory leaks in {\opp} simulations is
 forgetting to delete messages. Both Tkenv and Cmdenv are able
 to display the number of messages currently in the simulation,
 helping you to determine if you have such a memory leak;
-see section \ref{sec:ch-run-sim:interpreting-cmdenv-output}.
+see section \ref{sec:run-sim:interpreting-cmdenv-output}.
 If you find that the number of messages is steadily increasing,
 you need to find where the message objects are located. You can do so
 by selecting \textit{Inspect|From list of all objects...} from
@@ -969,6 +999,7 @@ you will not be able to find them via Tkenv. You will probably need
 a specialized memory debugging tool like the ones described below.
 
 \subsubsection{Memory Debugging Tools}
+\label{sec:run-sim:memory-debugging-tools}
 
 If you suspect that you may have memory allocation problems
 (crashes associated with double-deletion or accessing already
@@ -987,6 +1018,7 @@ A proven commercial tool is \textit{Rational Purify}. It has
 a good reputation and has proved its usefulness many times.
 
 \subsection{Simulation Executes Slowly}
+\label{sec:run-sim:simulation-executes-slowly}
 
 Check the following if you think your simulation is running too slowly:
 

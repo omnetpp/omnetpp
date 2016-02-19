@@ -2,6 +2,7 @@
 \label{cha:neddoc}
 
 \section{Overview}
+\label{sec:neddoc:overview}
 
 {\opp} provides a tool which can generate HTML documentation from NED files
 and message definitions. Like Javadoc and Doxygen, the NED documentation tool
@@ -27,6 +28,7 @@ simulation IDE.
 
 
 \section{Documentation Comments}
+\label{sec:neddoc:documentation-comments}
 
 Documentation is embedded in normal comments. All \texttt{//} comments
 that are in the ``right place'' (from the documentation tool's
@@ -75,6 +77,7 @@ simple Sink
 \end{ned}
 
 \subsection{Private Comments}
+\label{sec:neddoc:private-comments}
 
 If you want a comment line \textit{not} to appear in the documentation,
 begin it with \texttt{//\#}. Those lines will be ignored by the
@@ -100,6 +103,7 @@ simple Gen
 
 
 \subsection{More on Comment Placement}
+\label{sec:neddoc:comment-placement}
 
 Comments should be written where the tool will find them.
 This is a) immediately above the documented item, or b) after the
@@ -124,6 +128,7 @@ Do not try to comment groups of parameters together. The result
 will be awkward.
 
 \section{Referring to Other NED and Message Types}
+\label{sec:neddoc:referring-to-other-ned-and-message-types}
 
 You can reference other NED and message types by name in comments. There
 are two styles in which references can be written: automatic linking and
@@ -132,6 +137,7 @@ project, and the correct one must be selected in the documentation
 generator tool when it is run.
 
 \subsection{Automatic Linking}
+\label{sec:neddoc:automatic-linking}
 
 In the automatic linking style, words that match existing NED of message
 types are hyperlinked automatically. It is usually enough to write the
@@ -166,6 +172,7 @@ The detailed rules:
 \end{enumerate}
 
 \subsection{Tilde Linking}
+\label{sec:neddoc:tilde-linking}
 
 In the tilde style, only words that are explicitly marked with a tilde are
 subject to hyperlinking: \ttt{{\textasciitilde}TCP},
@@ -189,8 +196,10 @@ The detailed rules:
 \end{enumerate}
 
 \section{Text Layout and Formatting}
+\label{sec:neddoc:text-layout-and-formatting}
 
 \subsection{Paragraphs and Lists}
+\label{sec:neddoc:paragraphs-and-lists}
 
 If you write longer descriptions, you will need text formatting capabilities.
 Text formatting works like in Javadoc or Doxygen -- you can break up the
@@ -221,6 +230,7 @@ Example:
 
 
 \subsection{Special Tags}
+\label{sec:neddoc:special-tags}
 
 The documentation tool understands the following tags and will render them accordingly:
 \ttt{@author}, \ttt{@date}, \ttt{@todo}, \ttt{@bug}, \ttt{@see}, \ttt{@since},
@@ -235,6 +245,7 @@ The documentation tool understands the following tags and will render them accor
 
 
 \subsection{Text Formatting Using HTML}
+\label{sec:neddoc:text-formatting-using-html}
 
 Common HTML tags are understood as formatting commands.
 The most useful tags are: \ttt{<i>..</i>} (italic),
@@ -339,6 +350,7 @@ will be rendered approximately as:
 
 
 \subsection{Escaping HTML Tags}
+\label{sec:neddoc:escaping-html-tags}
 
 Sometimes you may need to turn off interpreting HTML tags (\ttt{<i>}, \ttt{<b>}, etc.)
 as formatting instructions, and rather you want them to appear as literal
@@ -373,8 +385,10 @@ an \ttt{IP} module in the NED files.
 
 
 \section{Customizing and Adding Pages}
+\label{sec:neddoc:customizing-and-adding-pages}
 
 \subsection{Adding a Custom Title Page}
+\label{sec:neddoc:adding-custom-title-page}
 
 The title page is the one that appears in the main frame after
 opening the documentation in the browser. By default it contains
@@ -412,6 +426,7 @@ Example:
 
 
 \subsection{Adding Extra Pages}
+\label{sec:neddoc:adding-extra-pages}
 
 You can add new pages to the documentation in a similar way as customizing
 the title page. The directive to be used is \ttt{@page}, and it can
@@ -464,6 +479,7 @@ Example:
 
 
 \subsection{Incorporating Externally Created Pages}
+\label{sec:neddoc:externally-created-pages}
 
 You may want to create pages outside the documentation tool
 (e.g. using a HTML editor) and include them in the documentation.
@@ -484,6 +500,7 @@ the directory of the generated documentation, and to make
 sure the hyperlink works.
 
 \section{File Inclusion}
+\label{sec:neddoc:file-inclusion}
 
 You can include content into the documentation comment with the
 \ttt{@include} directive. It expects the path of the file to be incuded

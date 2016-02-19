@@ -3,6 +3,7 @@
 
 
 \section{Modeling Concepts}
+\label{sec:overview:modeling-concepts}
 
 An {\opp} model consists of modules that communicate with message passing.
 The active modules are termed \textit{simple modules}; they are written in C++,
@@ -65,6 +66,7 @@ structure of the actual system. Some of the main features are the following:
 \end{itemize}
 
 \subsection{Hierarchical Modules}
+\label{sec:overview:hierarchical-modules}
 
 
 An {\opp} model consists of hierarchically nested
@@ -88,6 +90,7 @@ simulation class library.
 
 
 \subsection{Module Types}
+\label{sec:overview:module-types}
 \index{module!types}
 
 Both simple and compound modules are instances of \textit{module
@@ -114,6 +117,7 @@ will be discussed later, in chapter \ref{cha:run-sim}.
 
 
 \subsection{Messages, Gates, Links}
+\label{sec:overview:messages-gates-links}
 
 Modules communicate by exchanging
 \textit{messages}\index{message!exchanging}. In an actual simulation,
@@ -149,6 +153,7 @@ outside world.
 
 
 \subsection{Modeling of Packet Transmissions}
+\label{sec:overview:modeling-of-packet-transmissions}
 
 To facilitate the modeling of communication networks, connections
 can be used to model physical links. Connections support
@@ -167,6 +172,7 @@ delivered to it when the packet reception starts.
 
 
 \subsection{Parameters}
+\label{sec:overview:parameters}
 \index{module!parameters}
 \index{parameters|see{module parameters}}
 
@@ -188,14 +194,16 @@ connections are made.
 
 
 \subsection{Topology Description Method}
+\label{sec:overview:topology-description-method}
 \index{topology!description}
 
 The user defines the structure of the model in NED language descriptions
 (Network Description). The NED language will be discussed in detail
-in chapter \ref{cha:the-ned-language}.
+in chapter \ref{cha:ned-lang}.
 
 
 \section{Programming the Algorithms}
+\label{sec:overview:programmable-using-cplusplus}
 
 The simple\index{module!simple} modules of a model contain algorithms
 as C++ functions.
@@ -229,6 +237,7 @@ all internals of the simulation are visible.
 
 
 % \subsection{Creating Simple Modules}
+% \label{sec:overview:creating-simple-modules}
 % \index{module!simple!creation}
 %
 % Each simple\index{module!simple} module type is implemented with a C++ class. Simple
@@ -247,6 +256,7 @@ all internals of the simulation are visible.
 %
 %
 % \subsection{Object Mechanisms}
+% \label{sec:overview:object-mechanisms}
 %
 % The use of smart container classes allows the user to build
 % \textit{aggregate data structures}\index{aggregate data structures}.
@@ -271,6 +281,7 @@ all internals of the simulation are visible.
 %
 %
 % \subsection{Derive New Classes}
+% \label{sec:overview:derive-new-classes}
 %
 % It most cases, the functionality offered by the {\opp} classes
 % is enough for the user. But if it is needed, one can derive new
@@ -281,6 +292,7 @@ all internals of the simulation are visible.
 %
 %
 % \subsection{Self-describing Objects to Ease Debugging}
+% \label{sec:overview:self-describing-objects-to-ease-debugging}
 % \index{debugging}
 %
 %
@@ -296,9 +308,11 @@ all internals of the simulation are visible.
 
 
 \section{Using {\opp}}
+\label{sec:overview:using-omnetpp}
 
 
 \subsection{Building and Running Simulations}
+\label{sec:overview:building-and-running-simulations}
 \index{simulation!building}
 \index{simulation!running}
 
@@ -340,6 +354,7 @@ text forms when the simulation program starts.
 
 
 \subsubsection{Running the Simulation and Analyzing the Results}
+\label{sec:overview:running-simulation-and-analyzing-results}
 
 The simulation may be compiled as a standalone program executable;
 thus it can be run on other machines without {\opp}
@@ -365,6 +380,7 @@ and spreadsheet programs.
 
 
 \subsubsection{User Interfaces}
+\label{sec:overview:user-interfaces}
 \index{simulation!user interface}
 
 The primary purpose of user interfaces is to make the internals
@@ -385,6 +401,7 @@ fast user interface that supports batch execution.
 
 
 \subsubsection{Component Libraries}
+\label{sec:overview:component-libraries}
 \index{module!libraries}
 
 Module types can be stored in files separate from the place
@@ -393,6 +410,7 @@ module types and create component libraries.
 
 
 \subsubsection{Universal Standalone Simulation Programs}
+\label{sec:overview:universal-standalone-simulation-programs}
 
 
 A simulation executable can store several independent models
@@ -405,6 +423,7 @@ supports this approach.
 
 
 \subsection{What Is in the Distribution}
+\label{sec:overview:what-is-in-distribution}
 
 If you installed the source distribution, the {\opp} directory on your system
 should contain the following subdirectories. (If you installed a precompiled
