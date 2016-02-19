@@ -47,6 +47,8 @@ htmlfile_spec := $BASE.htm
 :{}	:\footnote:<br><ul><font size=-1>[:]</font></ul>:
 :{}	:\mbox:::
 :{}	:\ensuremath:<it>:</>:
+:{} :\textsuperscript:<sup>:</sup>:
+:{} :\textsubscript:<sub>:</sub>:
 :{2}	:\renewcommand#1#2:::
 :{1}	:\makebox[^{]*#1:#1::
 :b/e	:\begin{center}:<div align=center>:</>:
@@ -59,6 +61,7 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{verse}:<blockquote>:</>:
 :b/e	:\begin{displayquote}:<blockquote>:</>:
 :b/e	:\begin{multicols}:::
+:b/e	:\begin{flushleft}:::
 :comm	:\ldots:...::
 :comm	:\par:<p>::
 :comm	:\LaTeX[^ \t\n]*:LaTeX::
