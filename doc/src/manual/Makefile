@@ -19,10 +19,10 @@ TEXCHAPTERS = \
 	 ch-messages.tex \
 	 ch-message-definitions.tex \
 	 ch-sim-lib.tex \
+	 ch-graphics.tex \
 	 ch-build-sim-progs.tex \
 	 ch-config-sim.tex \
 	 ch-run-sim.tex \
-	 ch-graphics.tex \
 	 ch-ana-sim.tex \
 	 ch-eventlog.tex \
 	 ch-neddoc.tex \
