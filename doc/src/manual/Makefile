@@ -92,10 +92,10 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 	mv $@l $@
 	rm  `echo $< | sed 's|\.bbl|.tex|'`
 
-.tex.htm:
+.tex.htm: ltoh.specs ltoh.pl
 	$(PERL) ltoh.pl $<
 
-eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
+eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --split --template eclipse.thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
@@ -105,7 +105,7 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cp *.png eclipse
 	cp figures/*.png eclipse
 
-html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
 	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi 
