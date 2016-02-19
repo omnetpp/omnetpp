@@ -108,13 +108,13 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2
 html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
-	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi 
 	rm usman.tmp
 	rm -rf ../../manual
 	mkdir ../../manual
 	cp usman.html ../../manual
 	cp *.png ../../manual
 	cp figures/*.png ../../manual
+	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi 
 
 clean:
 	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
