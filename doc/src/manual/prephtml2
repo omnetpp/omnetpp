@@ -50,15 +50,15 @@ while (@ARGV)
 # read template file
 #
 print "reading template $templatefile\n" unless $quiet;
-open(T, $templatefile) || die "cannot open $templatefile";
-read(T, $template, 1000000) || die "cannot read $templatefile";
+open(TEMPLATEFILE, $templatefile) || die "cannot open $templatefile";
+$template = join("", <TEMPLATEFILE>);
 
 #
 # read file into variable
 #
 print "reading $fname\n" unless $quiet;
-open( htmlf, $fname ) || die "cannot open $fname";
-read( htmlf, $html, 1000000 ) || die "cannot read $fname";
+open( HTMLFILE, $fname ) || die "cannot open $fname";
+$html = join("", <HTMLFILE>);
 
 #
 # kill unwanted formatting
