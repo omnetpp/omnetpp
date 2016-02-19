@@ -54,7 +54,6 @@ IDE:
   (Remove/add the features as needed)
 
   The following features should be present:
-      de.unikassel.imageexport 
       com.lowagie.itext
       org.eclipse.gmf.runtime.thirdparty
       org.eclipse.emf.common
@@ -72,7 +71,6 @@ IDE:
   Take a look especially at the following plugins: 
      org.eclipse.gmf.* 
      org.apache.*
-     de.unikassel.*
 
 
 Optional (not needed if the version numbers are not specified):
