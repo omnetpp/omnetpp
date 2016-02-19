@@ -15,6 +15,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{setspace}
 \usepackage{ifpdf}
+\usepackage{verbatim}   % for the comment environment
 \usepackage{makeidx}
 \usepackage{longtable}  %% page wrapping table environment
 \usepackage{colortbl}   %% colors for tables
@@ -40,6 +41,9 @@
 \renewcommand{\bottomfraction}{0.9}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.9}
+
+\newenvironment{htmlonly}{\expandafter\comment}{\expandafter\endcomment}
+\newcommand{\pdfonly}{}
 
 %% try to cure overfull hboxes
 %% \tolerance=500

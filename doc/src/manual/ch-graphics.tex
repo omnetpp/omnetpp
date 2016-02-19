@@ -1165,16 +1165,56 @@ transformation matrices, which are able to express affine transforms such
 as translation, scaling, rotation and skew (shearing). The
 transformation matrix used by {\opp} has the following format:
 
+\begin{htmlonly}
+<center>
+<div>
+<span style="vertical-align: middle;">T =</span>
+<table class="matrix" style="display:inline; vertical-align: middle;">
+  <tr><td>a</td><td>c</td><td>t<sub>1</sub></td></tr>
+  <tr><td>b</td><td>d</td><td>t<sub>2</sub></td></tr>
+  <tr><td>0</td><td>0</td><td>1</td></tr>
+</table>
+</div>
+</center>
+\end{htmlonly}
+
+\begin{pdfonly}
 \[ T = \left( \begin{array}{ccc}
 a & c & t_1 \\
 b & d & t_2 \\
 0 & 0 & 1 \end{array} \right)\]
+\end{pdfonly}
 
 In a nutshell, given a point with its $(x, y)$ coodinates, one can obtain the
 transformed version of it by multiplying the transformation matrix by the
 $(x \ y \ 1)$ column vector (a.k.a. homogeneous coordinates), and dropping the
 third component:
 
+\begin{htmlonly}
+<center>
+<div>
+<table class="matrix" style="display:inline; vertical-align: middle;">
+  <tr><td>x'</td></tr>
+  <tr><td>y'</td></tr>
+  <tr><td>1</td></tr>
+</table>
+<span style="vertical-align: middle;">&nbsp;&nbsp;&nbsp;=&nbsp;</span>
+<table class="matrix" style="display:inline; vertical-align: middle;">
+  <tr><td>a</td><td>c</td><td>t<sub>1</sub></td></tr>
+  <tr><td>b</td><td>d</td><td>t<sub>2</sub></td></tr>
+  <tr><td>0</td><td>0</td><td>1</td></tr>
+</table>
+<span>&nbsp;</span>
+<table class="matrix" style="display:inline; vertical-align: middle;">
+  <tr><td>x</td></tr>
+  <tr><td>y</td></tr>
+  <tr><td>1</td></tr>
+</table>
+</div>
+</center>
+\end{htmlonly}
+
+\begin{pdfonly}
 \[ \left( \begin{array}{c} x' \\ y' \\ 1 \end{array} \right)
  = \left( \begin{array}{ccc}
 a & c & t_1 \\
@@ -1182,6 +1222,7 @@ b & d & t_2 \\
 0 & 0 & 1 \end{array} \right)
 \left( \begin{array}{c} x \\ y \\ 1 \end{array} \right)
 \]
+\end{pdfonly}
 
 The result is the point $(ax+cy+t_1, bx+dy+t_2)$. As one can deduce, $a$,
 $b$, $c$, $d$ are responsible for rotation, scaling and skew, and $t_1$ and

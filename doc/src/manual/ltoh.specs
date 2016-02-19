@@ -50,13 +50,15 @@ htmlfile_spec := $BASE.htm
 :{2}	:\renewcommand#1#2:::
 :{1}	:\makebox[^{]*#1:#1::
 :b/e	:\begin{center}:<div align=center>:</>:
-:b/e	:\begin{itemize}:<ul>:</>:
+:b/e	:\begin{itemize}(\[noitemsep\])?:<ul>:</>:
 :b/e	:\begin{enumerate}:<ol>:</>:
 :b/e	:\begin{description}:<dl>:</>:
 :b/e	:\begin{multques}(\{[^\}]*\})*:<ol>:</>:
 :b/e	:\begin{document}:::
 :b/e	:\begin{quote}:<blockquote>:</>:
 :b/e	:\begin{verse}:<blockquote>:</>:
+:b/e	:\begin{displayquote}:<blockquote>:</>:
+:b/e	:\begin{multicols}:::
 :comm	:\ldots:...::
 :comm	:\par:<p>::
 :comm	:\LaTeX[^ \t\n]*:LaTeX::

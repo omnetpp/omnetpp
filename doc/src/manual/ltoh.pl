@@ -577,6 +577,8 @@ sub do_comment_verbatim {
     my($arrlen) = scalar(@$arr);
     vec($orig_inh, $arrlen-1, 1) = 0;           # pre-extend
     my($inh) = $false;
+    my($esc) = $true;
+    my($skip) = $false;
     for ($i=0; $i < $arrlen; $i++) {
         vec($orig_inh, $i, 1) = $inh;
         my($line) = $arr->[$i];
@@ -589,10 +591,24 @@ sub do_comment_verbatim {
             handle_specification($1);
         }
         # preserve special chars in html, always
-        $line =~ s/\\&/&amp;/xg;
-        $line =~ s/ < /&lt;/xg;
-        $line =~ s/ > /&gt;/xg;
-        if ($line =~ s/\\begin{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<pre class="$1">/ ) {
+        if ($esc == $true) {
+            $line =~ s/\\&/&amp;/xg;
+            $line =~ s/ < /&lt;/xg;
+            $line =~ s/ > /&gt;/xg;
+        }
+        if ($line =~ s/\\begin{pdfonly}//) {
+            $skip = $true;
+        } elsif ($line =~ s/\\end{pdfonly}//) {
+            $skip = $false;
+        } elsif ($line =~ s/\\begin{htmlonly}//) {
+            vec($orig_inh, $i, 1) = $true;      # inhibit further processing
+            $inh = $true;              # allow processing on next line
+            $esc = $false;
+        } elsif ($line =~ s/\\end{htmlonly}//) {
+            vec($orig_inh, $i, 1) = $true;      # inhibit further processing
+            $inh = $false;              # allow processing on next line
+            $esc = $true;
+        } elsif ($line =~ s/\\begin{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<pre class="$1">/ ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $true;
         } elsif ($line =~ s/\\end{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<\/pre>/ ) {
@@ -611,6 +627,10 @@ sub do_comment_verbatim {
 
         # attempt math formatting. --Andras Varga
         $line =~ s/\$([^\n]+?)\$/formatmath($1)/gse;
+
+        if ($skip == $true) {
+            $line = "";
+        }
 
         $arr->[$i] = $line;
     }
