@@ -115,14 +115,15 @@ proc createOmnetppWindow {} {
     mainWindow:createTimeline
 
     pack .toolbar -expand 0 -fill x -side top
-    pack .statusbar -expand 0 -fill x -side top
-    pack .statusbar2 -expand 0 -fill x -side top
-    #pack .statusbar3 -expand 0 -fill x -side top
+    pack .nexteventbar -expand 0 -fill x -side top
+    #pack .performancebar -expand 0 -fill x -side top
     pack .timeline -expand 0 -fill x -side top
 
     # Create main display area
     panedwindow .main -orient horizontal -sashrelief raised
     pack .main -expand 1 -fill both -side top
+
+    pack .statusbar -expand 0 -fill x -side top
 
     panedwindow .main.left -orient vertical -sashrelief raised
     panedwindow .main.right -orient vertical -sashrelief raised
@@ -286,6 +287,12 @@ proc mainWindow:createToolbar {} {
     animControl .toolbar.animspeed
     pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
+    ttk::label .simtimelabel -relief groove -font SimtimeFont -text "n/a" -width 20  -padding {10 -1 10 -1} -background #ffffe0
+    pack .simtimelabel -in .toolbar -anchor c -expand 0 -fill y -side right -padx 0 -pady 0
+
+    ttk::label .eventnumlabel -relief groove -font EventnumFont -anchor e -text "   n/a" -padding {10 -1 10 -1} -background #ffffe0
+    pack .eventnumlabel -in .toolbar -anchor c -expand 0 -fill y -side right -padx 0 -pady 0
+
     set help_tips(.toolbar.loadned) "Load NED file for compound module definitions"
     set help_tips(.toolbar.newrun)  "Set up an inifile configuration"
     set help_tips(.toolbar.copy)    "Copy selected text to clipboard (${CTRL_}C)"
@@ -313,35 +320,33 @@ proc mainWindow:createToolbar {} {
 proc mainWindow:createStatusbars {} {
     global help_tips
     ttk::frame .statusbar
-    ttk::frame .statusbar2
-    ttk::frame .statusbar3
+    ttk::frame .nexteventbar
+    ttk::frame .performancebar
 
     ttk::label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
-    ttk::label .eventnumlabel -relief groove -text "Event #0" -width 15  -anchor w
-    ttk::label .timelabel -relief groove -text "t=0" -width 20 -anchor w -font BoldFont
     ttk::label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
+    pack .networklabel .msgstatslabel -in .statusbar -anchor n -expand 1 -fill x -side left
 
-    ttk::label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 20
-    ttk::label .nextmodulelabel -relief groove -text "In: n/a" -anchor w -width 20
-    ttk::label .timedelta -relief groove -text "At: last event + 0s" -anchor w -width 20
+    ttk::label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 40
+    ttk::label .nextmodulelabel -relief groove -text "In: n/a" -anchor w  -width 60
+    ttk::label .nexttimelabel -relief groove -text "At t=0" -width 50 -anchor w
+    pack .nexteventlabel .nextmodulelabel -in .nexteventbar -anchor n -expand 1 -fill x -side left
+    pack .nexttimelabel -in .nexteventbar -anchor n -expand 0 -fill x -side left
 
     ttk::label .eventspersec -relief groove -text "Ev/sec: n/a" -anchor w -width 20
     ttk::label .simsecpersec -relief groove -text "Simsec/sec: n/a" -anchor w -width 20
     ttk::label .eventspersimsec -relief groove -text "Ev/simsec: n/a" -anchor w -width 20
+    pack .eventspersec .simsecpersec .eventspersimsec -in .performancebar -anchor n -expand 1 -fill x -side left
 
-    pack .networklabel .eventnumlabel .timelabel .msgstatslabel -in .statusbar -anchor n -expand 1 -fill x -side left
-    #pack .feslength .totalmsgs .livemsgs -in .statusbar2 -anchor n -expand 1 -fill x -side left
-    pack .nexteventlabel .nextmodulelabel .timedelta -in .statusbar2 -anchor n -expand 1 -fill x -side left
-    pack .eventspersec .simsecpersec .eventspersimsec -in .statusbar3 -anchor n -expand 1 -fill x -side left
+    set help_tips(.eventnumlabel)   "Event number of last event"
+    set help_tips(.simtimelabel)    "Simulation time of last event"
 
     set help_tips(.networklabel)    "Current inifile configuration, run number, and network name"
-    set help_tips(.eventnumlabel)   "Sequence number of next event"
-    set help_tips(.timelabel)       "Simulation time of next event"
     set help_tips(.msgstatslabel)   "Number of events (messages) currently scheduled /\nNumber of existing message objects, including scheduled ones /\nTotal number of messages created since start of the simulation"
 
-    set help_tips(.nexteventlabel)  "The next simulation event"
+    set help_tips(.nexttimelabel)   "Simulation time of next event"
+    set help_tips(.nexteventlabel)  "Next simulation event"
     set help_tips(.nextmodulelabel) "Module where next event will occur"
-    set help_tips(.timedelta)       "Time delta between the last executed and the next event"
 
     set help_tips(.eventspersec)    "Performance: events processed per second"
     set help_tips(.simsecpersec)    "Relative speed: simulated seconds processed per second"
@@ -453,8 +458,8 @@ proc toggleStatusDetails {} {
 
     set config(display-statusdetails) [expr !$config(display-statusdetails)]
     if {!$config(display-statusdetails)} {
-        pack forget .statusbar2
-        pack forget .statusbar3
+        pack forget .nexteventbar
+        pack forget .performancebar
     }
     mainWindow:updateStatusDisplay
 }
@@ -478,28 +483,33 @@ proc mainWindow:updateStatusDisplay {} {
         set runmode [opp_getrunmode]
 
         if {$state=="SIM_RUNNING" && ($runmode=="fast" || $runmode=="express")} {
-            if {[winfo manager .statusbar3]==""} {
-                pack .statusbar3 -after .statusbar -expand 0 -fill x -side top
-                pack forget .statusbar2
+            if {[winfo manager .performancebar]==""} {
+                pack .performancebar -after .toolbar -expand 0 -fill x -side top
+                pack forget .nexteventbar
             }
             mainWindow:updatePerformanceDisplay
         } else {
-            if {[winfo manager .statusbar2]==""} {
-                pack .statusbar2 -after .statusbar -expand 0 -fill x -side top
-                pack forget .statusbar3
+            if {[winfo manager .nexteventbar]==""} {
+                pack .nexteventbar -after .toolbar -expand 0 -fill x -side top
+                pack forget .performancebar
             }
-            mainWindow:updateNextModuleDisplay
+            mainWindow:updateNextEventDisplay
         }
     }
 }
 
+proc strpadleft {str len} {
+    set spaces [string repeat " " [expr max(0, $len-[string length $str])]]
+    return "$spaces$str"
+}
+
 proc mainWindow:updateSimtimeDisplay {} {
-    .eventnumlabel config -text "Event #[opp_getstatusvar eventnumber]"
-    .timelabel config -text "t=[opp_getstatusvar guessnextsimtime]s"
+    .eventnumlabel config -text [strpadleft "#[opp_getstatusvar eventnumber]" 6]
+    .simtimelabel config -text "[opp_getstatusvar simtime]s"
     .msgstatslabel config -text "Msg stats: [opp_getstatusvar feslength] scheduled / [opp_getstatusvar livemsgcount] existing / [opp_getstatusvar totalmsgcount] created"
 }
 
-proc mainWindow:updateNextModuleDisplay {} {
+proc mainWindow:updateNextEventDisplay {} {
     set modptr [opp_null]
     set msgptr [opp_null]
 
@@ -509,12 +519,12 @@ proc mainWindow:updateNextModuleDisplay {} {
         set msgptr [opp_getstatusvar guessnextevent]
     }
 
+    .nexttimelabel config -text "At t=[opp_getstatusvar guessnextsimtime]s (+[opp_getstatusvar timedelta]s)"
+
     if [opp_isnotnull $msgptr] {
         .nexteventlabel config -text "Next: [opp_getobjectname $msgptr] ([opp_getobjectfield $msgptr className], id=[opp_getobjectid $msgptr])"
-        .timedelta config -text "At: last event + [opp_getstatusvar timedelta]s"
     } else {
         .nexteventlabel config -text "Next: n/a"
-        .timedelta config -text "At: n/a"
     }
 
     if [opp_isnotnull $modptr] {

@@ -335,7 +335,6 @@ void Tkenv::doOneStep()
     try {
         cEvent *event = getSimulation()->takeNextEvent();
         if (event) {  // takeNextEvent() not interrupted
-            printEventBanner(event);
             getSimulation()->executeEvent(event);
             performAnimations();
         }
@@ -521,7 +520,6 @@ bool Tkenv::doRunSimulation()
         speedometer.addEvent(getSimulation()->getSimTime());
 
         // do a simulation step
-        printEventBanner(event);
         getSimulation()->executeEvent(event);
         performAnimations();
 
@@ -1181,6 +1179,14 @@ void Tkenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
+    if (loggingEnabled)
+        printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
+
+    if (animating && opt->animationEnabled) {
+        updateStatusDisplay();  // so that the correct (new) simulation time is displayed during animation
+        updateGraphicalInspectorsBeforeAnimation();
+    }
+
     if (animating && opt->animationEnabled && event->isMessage()) {
         cMessage *msg = static_cast<cMessage *>(event);
         cGate *arrivalGate = msg->getArrivalGate();
@@ -1188,7 +1194,6 @@ void Tkenv::simulationEvent(cEvent *event)
             return;
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
-        updateGraphicalInspectorsBeforeAnimation();
         if (arrivalGate->getPreviousGate()) {
             animateDelivery(msg);
         }

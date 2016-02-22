@@ -285,6 +285,8 @@ proc setupTkOptions {} {
       if {[tk scaling] > 1.5} {set size 11} else {set size 9}
    }
 
+   set simtimefontsize [expr $size+2]
+
    # Note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont
    # TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
    # but we use only 2 of them:
@@ -295,6 +297,8 @@ proc setupTkOptions {} {
    font configure TkTooltipFont -family $normalfamily -size $size
    font configure TkFixedFont -family $monofamily -size $size
    font create BoldFont -family $normalfamily -size $size -weight bold
+   font create SimtimeFont -family $monofamily -size $simtimefontsize -weight bold
+   font create EventnumFont -family $monofamily -size $simtimefontsize
    font create TimelineFont -family $condensedfamily -size $size
    font create CanvasFont -family $normalfamily -size $size
    font create LogFont -family $monofamily -size $size
@@ -490,7 +494,7 @@ proc getFontAsTkpOptions {font} {
 #
 proc updateTkpFonts {} {
     global tkpFont
-    foreach font {TkDefaultFont TkTooltipFont TkFixedFont BoldFont TimelineFont CanvasFont LogFont BIGFont} {
+    foreach font {TkDefaultFont TkTooltipFont TkFixedFont BoldFont SimtimeFont EventnumFont TimelineFont CanvasFont LogFont BIGFont} {
         set tkpFont($font) [getFontAsTkpOptions $font]
     }
 }

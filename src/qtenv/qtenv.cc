@@ -508,7 +508,6 @@ void Qtenv::doOneStep()
     try {
         cEvent *event = getSimulation()->takeNextEvent();
         if (event) {  // takeNextEvent() not interrupted
-            printEventBanner(event);
             getSimulation()->executeEvent(event);
             performAnimations();
         }
@@ -691,7 +690,6 @@ bool Qtenv::doRunSimulation()
         speedometer.addEvent(getSimulation()->getSimTime());
 
         // do a simulation step
-        printEventBanner(event);
         getSimulation()->executeEvent(event);
         performAnimations();
 
@@ -1361,6 +1359,10 @@ void Qtenv::objectDeleted(cObject *object)
 void Qtenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
+
+    if (runMode != RUNMODE_EXPRESS) {
+        printEventBanner(event);
+    }
 
     if (animating && opt->animationEnabled && event->isMessage()) {
         cMessage *msg = static_cast<cMessage *>(event);

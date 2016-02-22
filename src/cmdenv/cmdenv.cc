@@ -359,12 +359,6 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
                 if (!event)
                     throw cTerminationException("scheduler interrupted while waiting");
 
-                // print event banner if necessary
-                if (opt->printEventBanners)
-                    if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->getLogLevel() != LOGLEVEL_OFF)
-                        printEventBanner(event);
-
-
                 // flush *between* printing event banner and event processing, so that
                 // if event processing crashes, it can be seen which event it was
                 if (opt->autoflush)
@@ -538,6 +532,16 @@ void Cmdenv::componentInitBegin(cComponent *component, int stage)
     if (!opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
         ::fprintf(fout, "Initializing %s %s, stage %d\n",
                 component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
+}
+
+void Cmdenv::simulationEvent(cEvent *event)
+{
+    EnvirBase::simulationEvent(event);
+
+    // print event banner if necessary
+    if (!opt->expressMode && opt->printEventBanners)
+        if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->getLogLevel() != LOGLEVEL_OFF)
+            printEventBanner(event);
 }
 
 void Cmdenv::signalHandler(int signum)

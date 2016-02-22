@@ -69,7 +69,7 @@ proc saveTkenvrc {fname isglobal atexit {comment ""}} {
                 }
             }
 
-            set fonts {TimelineFont CanvasFont LogFont BIGFont BoldFont TkDefaultFont TkTooltipFont TkTextFont TkFixedFont}
+            set fonts {TimelineFont CanvasFont LogFont BIGFont BoldFont SimtimeFont EventnumFont TkDefaultFont TkTooltipFont TkTextFont TkFixedFont}
             foreach font $fonts {
                 puts $fout "font $font\t[list [font actual $font]]"
             }

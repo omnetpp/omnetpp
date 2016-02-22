@@ -16,12 +16,12 @@
 
 proc packToolbutton {w args} {
     eval toolbutton $w $args
-    pack $w -anchor n -side left -padx 1 -pady 2 -ipadx 1 -ipady 1
+    pack $w -anchor c -side left -padx 1 -pady 2 -ipadx 1 -ipady 1
 }
 
 proc rpackToolbutton {w args} {
     eval toolbutton $w $args
-    pack $w -anchor n -side right -padx 1 -pady 2 -ipadx 1 -ipady 1
+    pack $w -anchor c -side right -padx 1 -pady 2 -ipadx 1 -ipady 1
 }
 
 proc focusOrRoot {} {
@@ -155,7 +155,7 @@ proc fontcombo:getfontfamilies {} {
 proc fontcombo:updatefont {w fontname} {
     set family [$w.e get]
     set size [$w.s get]
-    font configure $fontname -family $family -size $size
+    font configure $fontname -family $family -size $size  ;# leave weight unchanged
 }
 
 proc label-text {w label height {text {}}} {

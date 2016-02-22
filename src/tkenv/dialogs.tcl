@@ -524,10 +524,12 @@ proc preferencesDialog {parent {defaultpage ""}} {
     label-fontcombo $nb.f.f1.timelinefont "Timeline:" TimelineFont
     label-fontcombo $nb.f.f1.canvasfont "Canvas:" CanvasFont
     label-fontcombo $nb.f.f1.textfont  "Log windows:" LogFont
+    label-fontcombo $nb.f.f1.simtimefont  "Simulation time:" SimtimeFont
     pack $nb.f.f1.normalfont -anchor w -fill x
     pack $nb.f.f1.timelinefont -anchor w -fill x
     pack $nb.f.f1.canvasfont -anchor w -fill x
     pack $nb.f.f1.textfont -anchor w -fill x
+    pack $nb.f.f1.simtimefont -anchor w -fill x
 
     pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 50 -ipady 0 -padx 10 -pady 5 -side top
 
@@ -630,6 +632,8 @@ proc preferencesDialog {parent {defaultpage ""}} {
         fontcombo:updatefont $nb.f.f1.textfont TkFixedFont
         fontcombo:updatefont $nb.f.f1.timelinefont TimelineFont
         fontcombo:updatefont $nb.f.f1.canvasfont CanvasFont
+        fontcombo:updatefont $nb.f.f1.simtimefont SimtimeFont
+        fontcombo:updatefont $nb.f.f1.simtimefont EventnumFont
         updateTkpFonts
 
         reflectSettingsInGui

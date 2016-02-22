@@ -777,6 +777,8 @@ int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
     char buf[64];
     if (0 == strcmp(argv[1], "eventnumber"))
         Tcl_SetResult(interp, opp_i64toa(buf, getSimulation()->getEventNumber()), TCL_VOLATILE);
+    else if (0 == strcmp(argv[1], "simtime"))
+        Tcl_SetResult(interp, TCLCONST(SIMTIME_STR(getSimulation()->getSimTime())), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "guessnextsimtime"))
         Tcl_SetResult(interp, TCLCONST(SIMTIME_STR(getSimulation()->guessNextSimtime())), TCL_VOLATILE);
     else if (0 == strcmp(argv[1], "guessnextevent"))

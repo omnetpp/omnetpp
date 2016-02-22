@@ -77,6 +77,7 @@ class CMDENV_API Cmdenv : public EnvirBase
 
      // redefined virtual funcs:
      virtual void componentInitBegin(cComponent *component, int stage) override;
+     virtual void simulationEvent(cEvent *event) override;
 
      virtual bool isGUI() const override {return false;}
      virtual bool isExpressMode() const override {return opt->expressMode;}
