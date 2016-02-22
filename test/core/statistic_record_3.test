@@ -1,0 +1,44 @@
+%description:
+Tests the **.statistic-recording= configuration option.
+
+%file: test.ned
+
+simple Node extends testlib.StatNode
+{
+    @statistic[dorecord](source=foo; record=last,min,max);
+    @statistic[norecord](source=foo; record=last,min,max);
+    @statistic[dummy](source=foo; record=last);  // to add a delimiter line at the end of the sca file
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%inifile: omnetpp.ini
+debug-statistics-recording = true
+
+**.dorecord.statistic-recording = true
+**.dummy.statistic-recording = true
+**.statistic-recording = false
+
+**.dorecord:min.scalar-recording = false
+
+%subst: /omnetpp:://
+%contains: stdout
+Test.node (Node):
+    "foo" (signalID=2):
+        omnetpp::LastValueRecorder ==> dorecord:last
+        omnetpp::MinRecorder ==> dorecord:min
+        omnetpp::MaxRecorder ==> dorecord:max
+        omnetpp::LastValueRecorder ==> dummy:last
+
+%contains: results/General-0.sca
+scalar Test.node 	dorecord:last 	17
+attr source  foo
+scalar Test.node 	dorecord:max 	28
+attr source  foo
+scalar Test.node 	dummy:last 	17
+attr source  foo
+

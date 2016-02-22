@@ -46,7 +46,8 @@ Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
 
-Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING, "scalar-recording", KIND_SCALAR, CFG_BOOL, "true", "Whether the matching output scalars should be recorded. Syntax: <module-full-path>.<scalar-name>.scalar-recording=true/false. Example: **.queue.packetsDropped.scalar-recording=true");
+Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING, "scalar-recording", KIND_SCALAR, CFG_BOOL, "true", "Whether the matching output scalars and statistic objects should be recorded. Usage: <module-full-path>.<scalar-name>.scalar-recording=true/false. To enable/disable individual recording modes for a @statistic (those added via the record=... key of @statistic or the **.result-recording-modes=... config option), use <statistic-name>:<mode> for <scalar-name>, and make sure the @statistic as a whole is not disabled with **.<statistic-name>.statistic-recording=false. Example: **.ping.roundTripTime:stddev.statistic-recording=false");
+Register_PerObjectConfigOption(CFGID_BIN_RECORDING, "bin-recording", KIND_SCALAR, CFG_BOOL, "true", "Whether the bins of the matching histogram object should be recorded, provided that recording of the histogram object itself is enabled (**.<scalar-name>.scalar-recording=true).  Usage: <module-full-path>.<scalar-name>.bin-recording=true/false. To control histogram recording from a @statistic, use <statistic-name>:histogram for <scalar-name>. Example: **.ping.roundTripTime:histogram.bin-recording=false");
 
 Register_Class(cFileOutputScalarManager);
 
@@ -186,7 +187,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     if (!name || !name[0])
         name = "(unnamed)";
 
-    // check that recording this statistic is not disabled as a whole
+    // check that recording this statistic object is not disabled
     std::string objectFullPath = component->getFullPath() + "." + name;
     bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
@@ -225,9 +226,9 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
 
     if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
-        // check that recording the histogram is enabled
-        bool enabled = getEnvir()->getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
-        if (enabled) {
+        // check that recording histogram bins is enabled
+        bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
+        if (binsEnabled) {
             if (!histogram->isTransformed())
                 histogram->transform();
 

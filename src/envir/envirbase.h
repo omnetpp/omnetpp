@@ -307,7 +307,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Utility functions for addResultRecorders()
     std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
     SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
-    void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty);
+    void doResultRecorder(const SignalSource& source, const char *mode, cComponent *component, const char *statisticName, cProperty *attrsProperty);
     void dumpResultRecorders(cComponent *component);
     void dumpResultRecorderChain(cResultListener *listener, int depth);
 

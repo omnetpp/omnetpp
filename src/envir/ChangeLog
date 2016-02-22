@@ -1,3 +1,30 @@
+2016-02-22  Andras Varga
+
+	* Introduced **.statistic-recording and **.bin-recording options.
+	Background is the following. In 4.x, **.scalar-recording=<bool>
+	was used as an enable/disable switch for three different things:
+
+	  1. recording of individual scalars and statistic objects (cStatistic),
+	     including scalar recording modes of a @statistic (foo:mean,
+             foo:stddev, etc.)
+	  2. main switch for @statistic (when set to false, no result
+             recorders were added at all)
+	  3. recording of histogram bins (cells) of a statistic object
+             (when key contained the ":histogram" suffix)
+
+	Using 1) and 3) together sometimes resulted in weird keys like
+	**.foo:histogram:histogram.scalar-recording, and poor usability:
+	after adding a **.scalar-recording=false line, one needed 3
+	lines to re-enable a histogram:
+	**.foo.scalar-recording=true,
+	**.foo:histogram.scalar-recording=true,
+	**.foo:histogram:histogram.scalar-recording=true).
+
+	Now, 2) is now controlled with **.statistic-recording, and 3) with
+	**.bin-recording.
+
+	* Improved the descriptions of several per-object config options
+
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-12-02  Andras Varga

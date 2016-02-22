@@ -1,16 +1,13 @@
 %description:
 Test histogram recording via @statistics:
 - for a @statistic named foo, the histogram is saved under the name foo:histogram
-- the config key for turning on/off the recording of histogram bins is foo:histogram:histogram (khmm)
-  NOTE: first ":histogram" is the recording mode, second ":histogram" is the key for disabling the recording of bins
 
 Test case 2: start with all scalar results disabled
 
 %file: test.ned
 
-simple Node
+simple Node extends testlib.StatNode
 {
-    @signal[foo];
     @statistic[bins](source=foo; record=histogram);  // to be recorded with bins
     @statistic[nobins](source=foo; record=histogram); // to be recorded without bins (just basic stats)
     @statistic[nothing](source=foo; record=histogram);  // not to be recorded at all
@@ -23,36 +20,12 @@ network Test
         node: Node;
 }
 
-%file: test.cc
-
-#include <omnetpp.h>
-
-using namespace omnetpp;
-
-namespace @TESTNAME@ {
-
-class Node : public cSimpleModule
-{
-    virtual void initialize() override {
-        simsignal_t foo = registerSignal("foo");
-        for (int i = 0; i < 100; i++)
-            emit(foo, binomial(40, 0.5));
-    }
-};
-
-Define_Module(Node);
-
-}; //namespace
-
 %inifile: omnetpp.ini
-**.bins.scalar-recording = true
 **.bins:histogram.scalar-recording = true
-**.bins:histogram:histogram.scalar-recording = true  # the second ":histogram" should rather be ":bins"
 
-**.nobins.scalar-recording = true
 **.nobins:histogram.scalar-recording = true
+**.nobins:histogram.bin-recording = false
 
-**.dummy.scalar-recording = true
 **.dummy:last.scalar-recording = true
 
 **.scalar-recording = false

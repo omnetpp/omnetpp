@@ -151,12 +151,9 @@ Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-
 Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (@signal properties) in NED files. The default setting depends on the build type: 'true' in DEBUG, and 'false' in RELEASE mode.");
 
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
-Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_MODULE, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The value may be an expression, with the index and ancestorIndex() operators being potentially very useful. The default is one-to-one mapping, i.e. RNG k of all modules refer to the global RNG k (for k=0..num-rngs-1).");
-Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the @statistic property matched by the wildcard. Special values: default, all: they select the modes listed in the record= key of @statistic; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
-
-// the following options are declared in other files
-extern cConfigOption *CFGID_SCALAR_RECORDING;
-extern cConfigOption *CFGID_VECTOR_RECORDING;
+Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_MODULE, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The value may be an expression, with the index and ancestorIndex() operators being potentially very useful. The default is one-to-one mapping, i.e. RNG k of all modules refer to the global RNG k (for k=0..num-rngs-1). Usage: <module-full-path>.rng-<local-index>=<global-index>. Examples: **.mac.rng-0=1; **.source[*].rng-0=index");
+Register_PerObjectConfigOption(CFGID_STATISTIC_RECORDING, "statistic-recording", KIND_STATISTIC, CFG_BOOL, "true", "Whether the matching @statistic should be recorded. This option lets one completely disable all recording from a @statistic. Disabling a @statistic this way is more efficient than specifying **.scalar-recording=false and **.vector-recording=false together. Usage: <module-full-path>.<statistic-name>.statistic-recording=true/false. Example: **.ping.roundTripTime.statistic-recording=false");
+Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the matching @statistic. Usage: <module-full-path>.<statistic-name>.result-recording-modes=<modes>. Special values: default, all: they select the modes listed in the record= key of @statistic; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with '-' get removed from the list. Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
@@ -981,9 +978,8 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
         componentFullPath = component->getFullPath();
     std::string statisticFullPath = componentFullPath + "." + statisticName;
 
-    bool scalarsEnabled = getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_SCALAR_RECORDING);
-    bool vectorsEnabled = getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_VECTOR_RECORDING);
-    if (!scalarsEnabled && !vectorsEnabled)
+    bool enabled = getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_STATISTIC_RECORDING);
+    if (!enabled)
         return;
 
     // collect the list of result recorders
@@ -1005,7 +1001,7 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
 
         // add result recorders
         for (int j = 0; j < (int)modes.size(); j++)
-            doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, statisticProperty);
+            doResultRecorder(source, modes[j].c_str(), component, statisticName, statisticProperty);
     }
 }
 
@@ -1102,15 +1098,12 @@ SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *sta
     }
 }
 
-void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName, cProperty *attrsProperty)
+void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, cComponent *component, const char *statisticName, cProperty *attrsProperty)
 {
     try {
         if (opp_isidentifier(recordingMode)) {
             // simple case: just a plain recorder
-            bool recordsVector = !strcmp(recordingMode, "vector");  // the only vector recorder is "vector"
-            if (recordsVector ? !vectorsEnabled : !scalarsEnabled)
-                return;  // no point in creating if recording is disabled
-
+            //TODO if disabled, don't add
             cResultRecorder *recorder = cResultRecorderDescriptor::get(recordingMode)->create();
             recorder->init(component, statisticName, recordingMode, attrsProperty);
             source.subscribe(recorder);
@@ -1118,7 +1111,7 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
         else {
             // something more complicated: use parser
             StatisticRecorderParser parser;
-            parser.parse(source, recordingMode, scalarsEnabled, vectorsEnabled, component, statisticName, attrsProperty);
+            parser.parse(source, recordingMode, component, statisticName, attrsProperty);
         }
     }
     catch (std::exception& e) {

@@ -53,7 +53,7 @@ using std::ofstream;
 using std::ios;
 
 Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
-Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", KIND_VECTOR, CFG_INT, nullptr, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect)");
+Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", KIND_VECTOR, CFG_INT, nullptr, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect). Usage: <module-full-path>.<vector-name>.vector-max-buffered-values=<count>.");
 
 #ifdef CHECK
 #undef CHECK
