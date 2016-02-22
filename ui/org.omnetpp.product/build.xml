@@ -146,8 +146,6 @@
 		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property." />
 		<available property="haveCdt" file="${cdt}" />
 		<fail unless="haveCdt" message="CDT mirror repo is required in the ${eclipse_home}/target directory. Use the 'sync-target-cdt' target to download from eclipse.org" />
-		<available property="haveImageexport" file="${imageexport}" />
-		<fail unless="haveImageexport" message="Image export feature required in the ${eclipse_home}/target directory." />
 
 		<ant antfile="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
 	</target>

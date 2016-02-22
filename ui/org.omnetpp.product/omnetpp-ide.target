@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
-
-<target includeMode="feature" name="omnetpp" sequenceNumber="7">
+<?pde version="3.8"?><target includeMode="feature" name="omnetpp" sequenceNumber="8">
 <locations>
-<location path="${eclipse_home}/target/imageexport" type="Directory"/>
 <location path="${eclipse_home}/target/cdt" type="Directory"/>
+<location path="${eclipse_home}/target/linuxtools" type="Directory"/>
 <location path="${eclipse_home}/target/deltapack" type="Directory"/>
 <location path="${eclipse_home}" type="Profile"/>
-<location path="${eclipse_home}/target/linuxtools" type="Directory"/>
 </locations>
 <environment>
 <nl>en_US</nl>
