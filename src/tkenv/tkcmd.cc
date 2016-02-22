@@ -1575,7 +1575,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         sprintf(buf, "%d", app->recordEventlog);
     else if (0 == strcmp(argv[1], "logformat"))
         strcpy(buf, opt->logFormat.c_str());
-    else if (0 == strcmp(argv[1], "logLevel"))
+    else if (0 == strcmp(argv[1], "loglevel"))
         strcpy(buf, cLog::getLogLevelName(opt->logLevel));
     else if (0 == strcmp(argv[1], "silent_event_filters"))
         buf = const_cast<char *>(app->getSilentEventFilters());
@@ -1664,7 +1664,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
         TRY(app->setLogFormat(argv[2]));
         opt->logFormat = argv[2];
     }
-    else if (0 == strcmp(argv[1], "logLevel")) {
+    else if (0 == strcmp(argv[1], "loglevel")) {
         TRY(opt->logLevel = cLog::resolveLogLevel(argv[2]));
         app->setLogLevel(opt->logLevel);
     }
