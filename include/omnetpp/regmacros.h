@@ -163,7 +163,7 @@ namespace omnetpp {
 
 // internal
 #define __REGISTER_CONFIGOPTION(ID, ARGLIST) \
-  cConfigOption *ID; \
+  omnetpp::cConfigOption *ID; \
   EXECUTE_ON_STARTUP(omnetpp::configOptions.getInstance()->add(ID = new omnetpp::cConfigOption ARGLIST);)
 
 /**

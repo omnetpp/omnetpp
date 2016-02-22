@@ -106,9 +106,9 @@ enum LogLevel
  */
 #ifndef COMPILETIME_LOGLEVEL
 #ifdef NDEBUG
-#define COMPILETIME_LOGLEVEL LOGLEVEL_DETAIL
+#define COMPILETIME_LOGLEVEL omnetpp::LOGLEVEL_DETAIL
 #else
-#define COMPILETIME_LOGLEVEL LOGLEVEL_TRACE
+#define COMPILETIME_LOGLEVEL omnetpp::LOGLEVEL_TRACE
 #endif
 #endif
 
@@ -182,7 +182,7 @@ class SIM_API cLog
 //
 #define OPP_LOGPROXY(object, logLevel, category) \
     ((void)0, !(COMPILETIME_LOG_PREDICATE(object, logLevel, category) && \
-    cLog::runtimeLogPredicate(object, logLevel, category))) ? \
+    omnetpp::cLog::runtimeLogPredicate(object, logLevel, category))) ? \
     omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, logLevel, category, __FILE__, __LINE__, __FUNCTION__)
 
 
@@ -226,13 +226,13 @@ inline void *getThisPtr() {return nullptr;}
  */
 //@{
 #define EV        EV_INFO                           ///< Short for EV_INFO
-#define EV_FATAL  EV_LOG(LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
-#define EV_ERROR  EV_LOG(LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
-#define EV_WARN   EV_LOG(LOGLEVEL_WARN, nullptr)   ///< Log warnings
-#define EV_INFO   EV_LOG(LOGLEVEL_INFO, nullptr)   ///< Log information (default log level)
-#define EV_DETAIL EV_LOG(LOGLEVEL_DETAIL, nullptr) ///< Log state variables and other low-level information
-#define EV_DEBUG  EV_LOG(LOGLEVEL_DEBUG, nullptr)  ///< Log state variables and other low-level information
-#define EV_TRACE  EV_LOG(LOGLEVEL_TRACE, nullptr)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV_FATAL  EV_LOG(omnetpp::LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
+#define EV_ERROR  EV_LOG(omnetpp::LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
+#define EV_WARN   EV_LOG(omnetpp::LOGLEVEL_WARN, nullptr)   ///< Log warnings
+#define EV_INFO   EV_LOG(omnetpp::LOGLEVEL_INFO, nullptr)   ///< Log information (default log level)
+#define EV_DETAIL EV_LOG(omnetpp::LOGLEVEL_DETAIL, nullptr) ///< Log state variables and other low-level information
+#define EV_DEBUG  EV_LOG(omnetpp::LOGLEVEL_DEBUG, nullptr)  ///< Log state variables and other low-level information
+#define EV_TRACE  EV_LOG(omnetpp::LOGLEVEL_TRACE, nullptr)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
@@ -246,13 +246,13 @@ inline void *getThisPtr() {return nullptr;}
  */
 //@{
 #define EV_C(category)        EV_INFO_C(category)                ///< Short for EV_INFO_C
-#define EV_FATAL_C(category)  EV_LOG(LOGLEVEL_FATAL, category)  ///< Log local fatal errors
-#define EV_ERROR_C(category)  EV_LOG(LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
-#define EV_WARN_C(category)   EV_LOG(LOGLEVEL_WARN, category)   ///< Log warnings
-#define EV_INFO_C(category)   EV_LOG(LOGLEVEL_INFO, category)   ///< Log information (default log level)
-#define EV_DETAIL_C(category) EV_LOG(LOGLEVEL_DETAIL, category) ///< Log state variables and other low-level information
-#define EV_DEBUG_C(category)  EV_LOG(LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
-#define EV_TRACE_C(category)  EV_LOG(LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
+#define EV_FATAL_C(category)  EV_LOG(omnetpp::LOGLEVEL_FATAL, category)  ///< Log local fatal errors
+#define EV_ERROR_C(category)  EV_LOG(omnetpp::LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
+#define EV_WARN_C(category)   EV_LOG(omnetpp::LOGLEVEL_WARN, category)   ///< Log warnings
+#define EV_INFO_C(category)   EV_LOG(omnetpp::LOGLEVEL_INFO, category)   ///< Log information (default log level)
+#define EV_DETAIL_C(category) EV_LOG(omnetpp::LOGLEVEL_DETAIL, category) ///< Log state variables and other low-level information
+#define EV_DEBUG_C(category)  EV_LOG(omnetpp::LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
+#define EV_TRACE_C(category)  EV_LOG(omnetpp::LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
 //@}
 
 /**
