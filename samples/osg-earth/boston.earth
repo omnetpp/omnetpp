@@ -12,6 +12,7 @@ to extruded buildings.
         <cache type="filesystem">
             <path>cache</path>
         </cache>
+        <cache_policy usage="none"/>
         <!-- <cache_policy usage="cache_only"/> -->
     </options>
 
