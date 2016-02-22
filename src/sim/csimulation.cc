@@ -446,8 +446,6 @@ void cSimulation::callInitialize()
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_INITIALIZE);
     }
 
-    currentEventNumber = 1;  // events are numbered from 1
-
     simulationStage = CTX_EVENT;
 }
 
@@ -523,9 +521,6 @@ cEvent *cSimulation::takeNextEvent()
         return nullptr;
 
     ASSERT(!event->isStale());  // it's the scheduler's task to discard stale events
-
-    // advance simulation time
-    currentSimtime = event->getArrivalTime();
 
     return event;
 }
@@ -617,6 +612,12 @@ void cSimulation::executeEvent(cEvent *event)
 
     setContextType(CTX_EVENT);
 
+    // increment event count
+    currentEventNumber++;
+
+    // advance simulation time
+    currentSimtime = event->getArrivalTime();
+
     // notify the environment about the event (writes eventlog, etc.)
     EVCB.simulationEvent(event);
 
@@ -654,9 +655,6 @@ void cSimulation::executeEvent(cEvent *event)
         throw e2;
     }
     setGlobalContext();
-
-    // increment event count
-    currentEventNumber++;
 
     // Note: simulation time (as read via simTime() from modules) will be updated
     // in takeNextEvent(), called right before the next executeEvent().
