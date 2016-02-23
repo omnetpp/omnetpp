@@ -242,7 +242,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Normal (Non-Express) Mode");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
-            addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c(null, "Log level")); //TODO 3-column editor
+            addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c("Component (component-path pattern)", "Log level")); //TODO 3-column editor
             addTextFieldEditor(group, CFGID_CMDENV_LOG_FORMAT, "Log prefix");
             addSpacer(form);
             group = createGroup(form, "Other");
