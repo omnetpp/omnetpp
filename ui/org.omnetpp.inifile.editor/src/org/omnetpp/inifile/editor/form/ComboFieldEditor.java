@@ -103,7 +103,7 @@ public class ComboFieldEditor extends FieldEditor {
     }
 
     protected Combo createCombo() {
-        Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER);
+        Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
         return combo;
     }
 
