@@ -1007,9 +1007,6 @@ void EnvirBase::doAddResultRecorders(cComponent *component, std::string& compone
         for (int j = 0; j < (int)modes.size(); j++)
             doResultRecorder(source, modes[j].c_str(), scalarsEnabled, vectorsEnabled, component, statisticName, statisticProperty);
     }
-
-    if (opt->debugStatisticsRecording)
-        dumpResultRecorders(component);
 }
 
 std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption, cProperty *statisticProperty)
