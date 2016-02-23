@@ -267,7 +267,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_QTENV_DEFAULT_RUN, "Run number");
             addSpacer(form);
             group = createGroup(form, "Other");
-            addTextFieldEditor(form, CFGID_QTENV_EXTRA_STACK, "Extra coroutine stack");
+            addTextFieldEditor(group, CFGID_QTENV_EXTRA_STACK, "Extra coroutine stack");
             addSpacer(form);
         }
         else if (category.equals(CAT_PARSIM)) {
