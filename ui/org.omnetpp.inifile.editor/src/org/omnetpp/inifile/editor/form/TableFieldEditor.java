@@ -72,7 +72,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 
     protected void createTableWithButtons(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        composite.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         composite.setLayout(new GridLayout(2, false));
 
         tableViewer = createTableViewer(composite);
