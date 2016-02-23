@@ -159,6 +159,15 @@ class SIM_API cMessage : public cEvent
     // internal: returns the parameter list object, or nullptr if it hasn't been used yet
     cArray *getParListPtr()  {return parList;}
 
+    // experimental tags support -- may be changed or removed without notice
+    template<typename T> T *ensureTag();
+    template<typename T> T *getTag();
+    template<typename T> T *getMandatoryTag();
+    template<typename T> T *removeTag();
+    virtual int getNumTags() const  {return !tags ? 0 : tags->size();}
+    virtual cObject *getTag(int i) const;
+    virtual void clearTags();
+
   private: // hide cEvent methods from the cMessage API
 
     // overridden from cEvent: return true
@@ -628,18 +637,6 @@ class SIM_API cMessage : public cEvent
      * time for the message.
      */
     void setArrival(int moduleId, int gateId, simtime_t_cref t) {targetModuleId = moduleId; targetGateId = gateId; setArrivalTime(t);}
-    //@}
-
-    /** @name Tags. */
-    //@{
-    //TODO document!
-    template<typename T> T *ensureTag();
-    template<typename T> T *getTag();
-    template<typename T> T *getMandatoryTag();
-    template<typename T> T *removeTag();
-    virtual int getNumTags() const  {return !tags ? 0 : tags->size();}
-    virtual cObject *getTag(int i) const;
-    virtual void clearTags();
     //@}
 
     /** @name Statistics. */
