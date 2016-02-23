@@ -445,7 +445,7 @@ void MainWindow::updateNextModuleDisplay()
     if (modptr)
         ui->labelDisplay2->setText(QString("In: ") + modptr->getFullPath().c_str()
                 +" (" + getObjectShortTypeName(modptr) + ", id="
-                +getObjectShortTypeName(modptr) + ")");
+                + QString::number(modptr->getId()) + ")");
     else
         ui->labelDisplay2->setText("In: n/a");
 }
