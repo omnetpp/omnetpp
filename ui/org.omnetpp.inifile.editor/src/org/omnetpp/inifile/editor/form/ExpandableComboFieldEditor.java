@@ -16,7 +16,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * An inifile field editor which displays ComboFieldEditor, and lets the user
- * expand it to a TextTableFieldEditor.
+ * expand it to a ComboTableFieldEditor.
  *
  * @author Andras
  */
@@ -30,7 +30,7 @@ public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
     @Override
     protected FieldEditor createFieldEditor(boolean isExpanded) {
         FieldEditor result = isExpanded ?
-                new TextTableFieldEditor(this, entry, inifile, formPage, labelText, hints) : // currently we have no ComboTableFieldEditor
+                new ComboTableFieldEditor(this, entry, inifile, formPage, labelText, hints) : // currently we have no ComboTableFieldEditor
                 new ComboFieldEditor(this, entry, inifile, formPage, labelText, hints);
         result.setComboContents(comboContents);
         return result;
