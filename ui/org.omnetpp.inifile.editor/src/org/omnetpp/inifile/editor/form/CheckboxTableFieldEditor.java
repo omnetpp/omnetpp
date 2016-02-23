@@ -23,6 +23,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
@@ -69,7 +70,10 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
             addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 150);
             height = table.getHeaderHeight() + 6*table.getItemHeight();
         }
-        table.setLayoutData(new GridData(305, height));
+        int width = 5;
+        for (TableColumn column : table.getColumns())
+            width += column.getWidth();
+        table.setLayoutData(new GridData(Math.max(305, width), height));
 
         final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
 

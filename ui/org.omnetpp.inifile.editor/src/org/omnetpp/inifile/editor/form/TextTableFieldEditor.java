@@ -21,6 +21,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
@@ -76,8 +77,11 @@ public class TextTableFieldEditor extends TableFieldEditor {
             addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 260);
         }
         int numLines = entry.isPerObject() ? 6 : 3;
+        int width = 5;
+        for (TableColumn column : table.getColumns())
+            width += column.getWidth();
         int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;
-        table.setLayoutData(new GridData(365, height));
+        table.setLayoutData(new GridData(Math.max(width, 365), height));
 
         final int objectColumnIndex = entry.isPerObject() ? 1 : -1;
         final int valueColumnIndex = entry.isPerObject() ? 2 : 1;

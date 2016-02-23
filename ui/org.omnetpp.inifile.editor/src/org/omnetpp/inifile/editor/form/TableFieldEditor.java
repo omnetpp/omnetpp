@@ -209,7 +209,9 @@ public abstract class TableFieldEditor extends FieldEditor {
     protected TableColumn addTableColumn(Table table, String label, int width) {
         TableColumn column = new TableColumn(table, SWT.NONE);
         column.setText(label);
-        column.setWidth(width);
+        column.pack();
+        if (column.getWidth() < width)
+            column.setWidth(width);
         return column;
     }
 
