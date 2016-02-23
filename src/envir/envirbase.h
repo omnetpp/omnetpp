@@ -272,7 +272,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     ArgList *argList()  {return args;}
     void printHelp();
     void setupEventLog();
-    void dumpComponentList(const char *category);
     virtual void printUISpecificHelp() = 0;
 
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
@@ -308,8 +307,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
     SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
     void doResultRecorder(const SignalSource& source, const char *mode, cComponent *component, const char *statisticName, cProperty *attrsProperty);
-    void dumpResultRecorders(cComponent *component);
-    void dumpResultRecorderChain(cResultListener *listener, int depth);
 
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);

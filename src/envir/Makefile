@@ -40,7 +40,7 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirb
       $O/speedometer.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/cxmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
       $O/eventlogfilemgr.o $O/runattributes.o $O/intervals.o \
-      $O/statisticparser.o $O/visitor.o
+      $O/statisticparser.o $O/visitor.o $O/envirutils.o
 
 GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 
@@ -313,6 +313,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chasher.h \
@@ -321,6 +322,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
   ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -378,11 +380,6 @@ $O/envirbase.o: envirbase.cc \
   ../common/stringutil.h \
   ../common/unitconversion.h \
   ../common/ver.h \
-  ../nedxml/nedelement.h \
-  ../nedxml/nederror.h \
-  ../nedxml/nedparser.h \
-  ../nedxml/nedxmldefs.h \
-  ../nedxml/nedyydefs.h \
   ../sim/parsim/cparsimpartition.h \
   ../sim/parsim/cparsimsynchr.h \
   ../sim/parsim/creceivedexception.h \
@@ -393,11 +390,82 @@ $O/envirbase.o: envirbase.cc \
   cxmldoccache.h \
   envirbase.h \
   envirdefs.h \
+  envirutils.h \
   eventlogfilemgr.h \
   intervals.h \
   logformatter.h \
   objectprinter.h \
   statisticparser.h
+$O/envirutils.o: envirutils.cc \
+  ../../include/omnetpp/carray.h \
+  ../../include/omnetpp/ccomponent.h \
+  ../../include/omnetpp/cconfigoption.h \
+  ../../include/omnetpp/cconfiguration.h \
+  ../../include/omnetpp/cdefaultlist.h \
+  ../../include/omnetpp/cdynamicexpression.h \
+  ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cevent.h \
+  ../../include/omnetpp/cexception.h \
+  ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cgate.h \
+  ../../include/omnetpp/checkandcast.h \
+  ../../include/omnetpp/clifecyclelistener.h \
+  ../../include/omnetpp/clistener.h \
+  ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmodule.h \
+  ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedfunction.h \
+  ../../include/omnetpp/cnedmathfunction.h \
+  ../../include/omnetpp/cnedvalue.h \
+  ../../include/omnetpp/cobject.h \
+  ../../include/omnetpp/cobjectfactory.h \
+  ../../include/omnetpp/cownedobject.h \
+  ../../include/omnetpp/cpar.h \
+  ../../include/omnetpp/crandom.h \
+  ../../include/omnetpp/cregistrationlist.h \
+  ../../include/omnetpp/cresultfilter.h \
+  ../../include/omnetpp/cresultlistener.h \
+  ../../include/omnetpp/cresultrecorder.h \
+  ../../include/omnetpp/crng.h \
+  ../../include/omnetpp/csimulation.h \
+  ../../include/omnetpp/cstatistic.h \
+  ../../include/omnetpp/cstringpool.h \
+  ../../include/omnetpp/cvisitor.h \
+  ../../include/omnetpp/distrib.h \
+  ../../include/omnetpp/envirext.h \
+  ../../include/omnetpp/errmsg.h \
+  ../../include/omnetpp/globals.h \
+  ../../include/omnetpp/onstartup.h \
+  ../../include/omnetpp/opp_string.h \
+  ../../include/omnetpp/platdep/intlimits.h \
+  ../../include/omnetpp/platdep/platdefs.h \
+  ../../include/omnetpp/platdep/platmisc.h \
+  ../../include/omnetpp/platdep/timeutil.h \
+  ../../include/omnetpp/regmacros.h \
+  ../../include/omnetpp/simkerneldefs.h \
+  ../../include/omnetpp/simtime.h \
+  ../../include/omnetpp/simtime_t.h \
+  ../../include/omnetpp/simutil.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/expression.h \
+  ../common/matchexpression.h \
+  ../common/stringpool.h \
+  ../common/stringutil.h \
+  ../nedxml/nedelement.h \
+  ../nedxml/nederror.h \
+  ../nedxml/nedparser.h \
+  ../nedxml/nedxmldefs.h \
+  ../nedxml/nedyydefs.h \
+  ../sim/resultfilters.h \
+  args.h \
+  envirbase.h \
+  envirdefs.h \
+  eventlogfilemgr.h \
+  intervals.h \
+  logformatter.h \
+  objectprinter.h
 $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/omnetpp/carray.h \
   ../../include/omnetpp/cchannel.h \
@@ -412,11 +480,14 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cfutureeventset.h \
   ../../include/omnetpp/cgate.h \
+  ../../include/omnetpp/chasher.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
   ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
   ../../include/omnetpp/cmsgpar.h \
@@ -515,7 +586,6 @@ $O/evmain.o: evmain.cc \
   ../../include/omnetpp/cstringpool.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -713,7 +783,6 @@ $O/fsutils.o: fsutils.cc \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/onstartup.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -792,7 +861,6 @@ $O/inifilereader.o: inifilereader.cc \
   ../../include/omnetpp/cconfigreader.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -859,20 +927,27 @@ $O/intervals.o: intervals.cc \
   logformatter.h \
   objectprinter.h
 $O/logformatter.o: logformatter.cc \
+  ../../include/omnetpp/carray.h \
   ../../include/omnetpp/ccomponent.h \
   ../../include/omnetpp/ccomponenttype.h \
   ../../include/omnetpp/cconfiguration.h \
   ../../include/omnetpp/cdefaultlist.h \
   ../../include/omnetpp/cenvir.h \
+  ../../include/omnetpp/cevent.h \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/cexpression.h \
+  ../../include/omnetpp/cfingerprint.h \
   ../../include/omnetpp/cgate.h \
   ../../include/omnetpp/chasher.h \
   ../../include/omnetpp/clifecyclelistener.h \
   ../../include/omnetpp/clistener.h \
   ../../include/omnetpp/clog.h \
+  ../../include/omnetpp/cmatchexpression.h \
+  ../../include/omnetpp/cmessage.h \
   ../../include/omnetpp/cmodule.h \
+  ../../include/omnetpp/cmsgpar.h \
   ../../include/omnetpp/cnamedobject.h \
+  ../../include/omnetpp/cnedmathfunction.h \
   ../../include/omnetpp/cnedvalue.h \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cobjectfactory.h \
@@ -1064,7 +1139,6 @@ $O/scenario.o: scenario.cc \
   ../../include/omnetpp/cobject.h \
   ../../include/omnetpp/cvisitor.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -1099,7 +1173,6 @@ $O/sectionbasedconfig.o: sectionbasedconfig.cc \
   ../../include/omnetpp/errmsg.h \
   ../../include/omnetpp/globals.h \
   ../../include/omnetpp/onstartup.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
   ../../include/omnetpp/platdep/platmisc.h \
@@ -1251,14 +1324,11 @@ $O/statisticparser.o: statisticparser.cc \
 $O/valueiterator.o: valueiterator.cc \
   ../../include/omnetpp/cexception.h \
   ../../include/omnetpp/errmsg.h \
-  ../../include/omnetpp/opp_string.h \
   ../../include/omnetpp/platdep/intlimits.h \
   ../../include/omnetpp/platdep/platdefs.h \
-  ../../include/omnetpp/platdep/platmisc.h \
   ../../include/omnetpp/simkerneldefs.h \
   ../../include/omnetpp/simtime.h \
   ../../include/omnetpp/simtime_t.h \
-  ../../include/omnetpp/simutil.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
