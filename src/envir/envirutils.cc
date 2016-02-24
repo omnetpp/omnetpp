@@ -39,6 +39,32 @@ namespace envir {
 
 using std::ostream;
 
+std::string EnvirUtils::getConfigOptionType(cConfigOption *option)
+{
+    if (option->isGlobal())
+        return "Global setting (applies to all simulation runs)";
+    else if (!option->isPerObject())
+        return "Per-simulation-run setting";
+    else {
+        const char *typeComment = "";
+        switch (option->getObjectKind()) {
+            case cConfigOption::KIND_COMPONENT: typeComment = "modules and channels"; break;
+            case cConfigOption::KIND_CHANNEL: typeComment = "channels"; break;
+            case cConfigOption::KIND_MODULE: typeComment = "modules"; break;
+            case cConfigOption::KIND_SIMPLE_MODULE: typeComment = "simple modules"; break;
+            case cConfigOption::KIND_UNSPECIFIED_TYPE: typeComment = "modules and channels"; break; // note: this is currently only used for **.typename
+            case cConfigOption::KIND_PARAMETER: typeComment = "module/channel parameters"; break;
+            case cConfigOption::KIND_STATISTIC: typeComment = "statistics (@statistic)"; break;
+            case cConfigOption::KIND_SCALAR: typeComment = "scalar results"; break;
+            case cConfigOption::KIND_VECTOR: typeComment = "vector results"; break;
+            case cConfigOption::KIND_OTHER: typeComment = "other objects"; break;
+            case cConfigOption::KIND_NONE: ASSERT(false); break;
+        }
+        return std::string("Per-object setting for ") + typeComment;
+    }
+
+}
+
 void EnvirUtils::dumpComponentList(const char *category)
 {
     cConfigurationEx *config = getEnvir()->getConfigEx();
@@ -58,15 +84,19 @@ void EnvirUtils::dumpComponentList(const char *category)
             if (!printDescriptions)
                 std::cout << "  ";
             if (obj->isPerObject())
-                std::cout << "<object-full-path>.";
+                std::cout << "**.";
             std::cout << obj->getName() << "=";
             std::cout << "<" << cConfigOption::getTypeName(obj->getType()) << ">";
             if (obj->getUnit())
                 std::cout << ", unit=\"" << obj->getUnit() << "\"";
             if (obj->getDefaultValue())
                 std::cout << ", default:" << obj->getDefaultValue() << "";
-            std::cout << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting";
+            if (!printDescriptions)
+                std::cout << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting"; // TODO getOptionKindName()
+
             std::cout << "\n";
+            if (printDescriptions)
+                std::cout << "    " << getConfigOptionType(obj) << ".\n";
             if (printDescriptions && !opp_isempty(obj->getDescription()))
                 std::cout << opp_indentlines(opp_breaklines(obj->getDescription(), 75).c_str(), "    ") << "\n";
             if (printDescriptions)
@@ -95,13 +125,14 @@ void EnvirUtils::dumpComponentList(const char *category)
         for (int i = 0; i < table->size(); i++) {
             cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(obj);
-            std::cout << "\\item[" << (obj->isPerObject() ? "<object-full-path>." : "") << opp_latexQuote(obj->getName()) << "] = ";
+            std::cout << "\\item[" << (obj->isPerObject() ? "**." : "") << opp_latexQuote(obj->getName()) << "] = ";
             std::cout << "\\textit{<" << cConfigOption::getTypeName(obj->getType()) << ">}";
             if (obj->getUnit())
                 std::cout << ", unit=\\ttt{" << obj->getUnit() << "}";
             if (obj->getDefaultValue())
                 std::cout << ", default: \\ttt{" << opp_latexQuote(obj->getDefaultValue()) << "}";
-            std::cout << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting\\\\\n";
+            std::cout << "\\\\\n";
+            std::cout << "    " << getConfigOptionType(obj) << ".\\\\\n";
             std::cout << opp_indentlines(opp_breaklines(opp_latexQuote(obj->getDescription()).c_str(), 75).c_str(), "    ") << "\n";
         }
         std::cout << "\\end{description}\n\n";

@@ -23,6 +23,7 @@
 namespace omnetpp {
 
 class cComponent;
+class cConfigOption;
 class cResultListener;
 
 namespace envir {
@@ -33,6 +34,7 @@ namespace envir {
 class ENVIR_API EnvirUtils
 {
     private:
+        static std::string getConfigOptionType(cConfigOption *option);
         static void dumpResultRecorderChain(cResultListener *listener, int depth);
     public:
         static void dumpComponentList(const char *category);
