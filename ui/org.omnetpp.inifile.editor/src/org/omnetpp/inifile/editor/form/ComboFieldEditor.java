@@ -50,9 +50,11 @@ public class ComboFieldEditor extends FieldEditor {
     private ToolItem resetButton;
     private boolean isEdited;
     private ControlDecoration problemDecoration;
+    private boolean enableTypein;
 
-    public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints, boolean enableTypein) {
         super(parent, SWT.NONE, entry, inifile, formPage, hints);
+        this.enableTypein = enableTypein;
 
         // layout
         GridLayout gridLayout = new GridLayout(3, false);
@@ -103,7 +105,7 @@ public class ComboFieldEditor extends FieldEditor {
     }
 
     protected Combo createCombo() {
-        Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
+        Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN | (enableTypein ? SWT.NONE : SWT.READ_ONLY));
         return combo;
     }
 

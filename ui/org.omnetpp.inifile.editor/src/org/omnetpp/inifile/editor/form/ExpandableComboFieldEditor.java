@@ -21,17 +21,19 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
+    protected boolean enableTypein;
     protected List<String> comboContents;
 
-    public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints, boolean enableTypein) {
         super(parent, entry, inifile, formPage, labelText, hints);
+        this.enableTypein = enableTypein;
     }
 
     @Override
     protected FieldEditor createFieldEditor(boolean isExpanded) {
         FieldEditor result = isExpanded ?
                 new ComboTableFieldEditor(this, entry, inifile, formPage, labelText, hints) : // currently we have no ComboTableFieldEditor
-                new ComboFieldEditor(this, entry, inifile, formPage, labelText, hints);
+                new ComboFieldEditor(this, entry, inifile, formPage, labelText, hints, enableTypein);
         result.setComboContents(comboContents);
         return result;
     }

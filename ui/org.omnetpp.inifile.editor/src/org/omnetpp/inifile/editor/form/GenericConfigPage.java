@@ -106,7 +106,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "CPU Time Limit"));
             addSpacer(form);
             group = createGroup(form, "Other");
-            addComboboxFieldEditor(group, CFGID_SIMTIME_PRECISION, "Simulation time precision");
+            addComboboxFieldEditor(group, CFGID_SIMTIME_PRECISION, "Simulation time precision", true);
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
             addSpacer(form);
         }
@@ -242,7 +242,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Normal (Non-Express) Mode");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
-            addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c("Component (component-path pattern)", "Log level")); //TODO 3-column editor
+            addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c("Component (component-path pattern)", "Log level"), false); //TODO 3-column editor
             addTextFieldEditor(group, CFGID_CMDENV_LOG_FORMAT, "Log prefix");
             addSpacer(form);
             group = createGroup(form, "Other");
@@ -358,14 +358,14 @@ public class GenericConfigPage extends ScrolledFormPage {
         return editor;
     }
 
-    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label) {
-        return addComboboxFieldEditor(parent, e, label, null);
+    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label, boolean enableTypein) {
+        return addComboboxFieldEditor(parent, e, label, null, enableTypein);
     }
 
-    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints) {
+    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label, Map<String,Object> hints, boolean enableTypein) {
         FieldEditor editor = e.isGlobal() ?
-                new ComboFieldEditor(parent, e, getInifileDocument(), this, label, hints) :
-                new ExpandableComboFieldEditor(parent, e, getInifileDocument(), this, label, hints);
+                new ComboFieldEditor(parent, e, getInifileDocument(), this, label, hints, enableTypein) :
+                new ExpandableComboFieldEditor(parent, e, getInifileDocument(), this, label, hints, enableTypein);
         addFieldEditor(editor);
         return editor;
     }
