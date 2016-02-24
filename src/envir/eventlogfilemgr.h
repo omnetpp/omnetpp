@@ -20,7 +20,7 @@
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/opp_string.h"
-#include "omnetpp/clifecyclelistener.h"
+#include "omnetpp/envirext.h"
 #include "envirdefs.h"
 #include "objectprinter.h"
 #include "intervals.h"
@@ -30,16 +30,13 @@ namespace omnetpp {
 class cComponent;
 class cModule;
 class cChannel;
-class cEvent;
-class cMessage;
-class cGate;
 
 namespace envir {
 
 /**
  * Responsible for writing the eventlog file.
  */
-class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
+class ENVIR_API EventlogFileManager : public cIEventlogManager
 {
   private:
     std::string filename;
@@ -110,53 +107,53 @@ class ENVIR_API EventlogFileManager : public cISimulationLifecycleListener
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
-    EventlogFileManager();
+    explicit EventlogFileManager();
     virtual ~EventlogFileManager();
 
-    virtual void configure();
-    virtual void open();
+    virtual void configure() override;
+    virtual void open() override;
     virtual void close();
     virtual void remove();
-    virtual void startRun();
-    virtual void endRun(bool isError, int resultCode, const char *message);
+    virtual void startRun() override;
+    virtual void endRun(bool isError, int resultCode, const char *message) override;
 
-    virtual bool hasRecordingIntervals() const;
-    virtual void clearRecordingIntervals();
+    virtual bool hasRecordingIntervals() const override;
+    virtual void clearRecordingIntervals() override;
 
-    virtual void recordSimulation();
+    virtual void recordSimulation() override;
     virtual void recordInitialize();
     virtual void recordMessages();
     virtual void recordModules(cModule *module);
     virtual void recordConnections(cModule *module);
 
-    virtual void flush();
+    virtual void flush() override;
     virtual const char *getFileName() const { return filename.c_str(); }
 
     /** @name Functions called from cEnvir's similar functions */
     //@{
-    virtual void simulationEvent(cEvent *event);
-    virtual void bubble(cComponent *component, const char *text);
-    virtual void messageScheduled(cMessage *msg);
-    virtual void messageCancelled(cMessage *msg);
-    virtual void beginSend(cMessage *msg);
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    virtual void endSend(cMessage *msg);
-    virtual void messageCreated(cMessage *msg);
-    virtual void messageCloned(cMessage *msg, cMessage *clone);
-    virtual void messageDeleted(cMessage *msg);
-    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId);
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);
-    virtual void componentMethodEnd();
-    virtual void moduleCreated(cModule *newmodule);
-    virtual void moduleDeleted(cModule *module);
-    virtual void gateCreated(cGate *newgate);
-    virtual void gateDeleted(cGate *gate);
-    virtual void connectionCreated(cGate *srcgate);
-    virtual void connectionDeleted(cGate *srcgate);
-    virtual void displayStringChanged(cComponent *component);
-    virtual void logLine(const char *prefix, const char *line, int lineLength);
+    virtual void simulationEvent(cEvent *event) override;
+    virtual void bubble(cComponent *component, const char *text) override;
+    virtual void messageScheduled(cMessage *msg) override;
+    virtual void messageCancelled(cMessage *msg) override;
+    virtual void beginSend(cMessage *msg) override;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+    virtual void endSend(cMessage *msg) override;
+    virtual void messageCreated(cMessage *msg) override;
+    virtual void messageCloned(cMessage *msg, cMessage *clone) override;
+    virtual void messageDeleted(cMessage *msg) override;
+    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) override;
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va) override;
+    virtual void componentMethodEnd() override;
+    virtual void moduleCreated(cModule *newmodule) override;
+    virtual void moduleDeleted(cModule *module) override;
+    virtual void gateCreated(cGate *newgate) override;
+    virtual void gateDeleted(cGate *gate) override;
+    virtual void connectionCreated(cGate *srcgate) override;
+    virtual void connectionDeleted(cGate *srcgate) override;
+    virtual void displayStringChanged(cComponent *component) override;
+    virtual void logLine(const char *prefix, const char *line, int lineLength) override;
     //@}
 
   private:

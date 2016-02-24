@@ -30,6 +30,9 @@ namespace omnetpp {
 
 class cModule;
 class cStatistic;
+class cEvent;
+class cMessage;
+class cGate;
 
 /**
  * Abstract base class for output vector managers for cEnvir.
@@ -305,6 +308,115 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
     virtual const char *getFileName() const = 0;
     //@}
 };
+
+
+/**
+ * Abstract base class for eventlog managers for cEnvir.
+ * cIEventlogManagers are plugins into the Envir user
+ * interface library (src/envir) that handle recording
+ *
+ * The default eventlog manager is EventlogFileManager, defined in the
+ * Envir library.
+ *
+ * To change the way event logs are written, subclass cIEventlogManager,
+ * register your new class with the Register_Class() macro, then select it
+ * by adding the following to <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * eventlogmanager-class="MyClass"
+ * </pre>
+ *
+ * @ingroup EnvirExtensions
+ */
+class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleListener
+{
+  private:
+    // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
+    cIEventlogManager(const cIEventlogManager&);
+    cIEventlogManager& operator=(const cIEventlogManager&);
+
+  protected:
+    /**
+     * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
+     */
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
+
+  public:
+    /** @name Constructor, destructor */
+    //@{
+
+    /**
+     * Constructor.
+     */
+    explicit cIEventlogManager() {}
+
+    /**
+     * Destructor.
+     */
+    virtual ~cIEventlogManager() {}
+    //@}
+
+    /** @name Controlling the beginning and end of collecting data. */
+    //@{
+
+    /**
+     * Early configuration before modules are created.
+     */
+	virtual void configure() = 0;
+
+    /**
+     * Opens collecting. Called at the beginning of a simulation run.
+     */
+    virtual void startRun() = 0;
+
+    /**
+     * Closes collecting. Called at the end of a simulation run.
+     */
+    virtual void endRun(bool isError, int resultCode, const char *message) = 0;
+
+    /**
+     * Force writing out all buffered output.
+     */
+    virtual void flush() = 0;
+
+    virtual void open() = 0;
+    virtual void recordSimulation() = 0;
+
+    virtual bool hasRecordingIntervals() const = 0;
+    virtual void clearRecordingIntervals() = 0;
+    //@}
+
+
+	/** @name Functions called from cEnvir's similar functions */
+    //@{
+    virtual void simulationEvent(cEvent *event) = 0;
+    virtual void bubble(cComponent *component, const char *text) = 0;
+    virtual void messageScheduled(cMessage *msg) = 0;
+    virtual void messageCancelled(cMessage *msg) = 0;
+    virtual void beginSend(cMessage *msg) = 0;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void endSend(cMessage *msg) = 0;
+    virtual void messageCreated(cMessage *msg) = 0;
+    virtual void messageCloned(cMessage *msg, cMessage *clone) = 0;
+    virtual void messageDeleted(cMessage *msg) = 0;
+    virtual void moduleReparented(cModule *module, cModule *oldparent, int oldId) = 0;
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va) = 0;
+    virtual void componentMethodEnd() = 0;
+    virtual void moduleCreated(cModule *newmodule) = 0;
+    virtual void moduleDeleted(cModule *module) = 0;
+    virtual void gateCreated(cGate *newgate) = 0;
+    virtual void gateDeleted(cGate *gate) = 0;
+    virtual void connectionCreated(cGate *srcgate) = 0;
+    virtual void connectionDeleted(cGate *srcgate) = 0;
+    virtual void displayStringChanged(cComponent *component) = 0;
+    virtual void logLine(const char *prefix, const char *line, int lineLength) = 0;
+    //@}
+};
+
+
 
 }  // namespace omnetpp
 

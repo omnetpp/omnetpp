@@ -48,6 +48,8 @@ interfaces:
    \item \cclass{cIOutputVectorManager}. This extension interface allows
      one to create additional means of saving vector results, for example
      database or CSV output.
+   \item \cclass{cIEventlogManager}. This extension interface allows one
+     to customize how event output logs are written out.
    \item \cclass{cISnapshotManager}. It provides an output stream to which
      snapshots are written.
    \item \cclass{cConfigurationEx}. Configuration provider extension.
@@ -416,6 +418,17 @@ and can be activated with the \fconfig{outputvectormanager-class}
 configuration option.
 
 
+\section{Defining a New Eventlog Manager}
+\label{sec:plugin-exts:eventlogmanager}
+
+An eventlog manager allows one to customize how event log is recorded.
+Custom filtering of events or changing the eventlog output format is possible
+by implementing a new eventlog manager class. The new class must implement
+the \cclass{cIEventlogManager} interface, and can be activated with the
+\fconfig{eventlogmanager-class} configuration option.
+
+The default eventlog manager is \cclass{EventlogFileManager}.
+
 \section{Defining a New Snapshot Manager}
 \label{sec:plugin-exts:snapshotmanager}
 
@@ -598,4 +611,3 @@ Cmdenv -- just copy and modify its source code to quickly get going.
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
-

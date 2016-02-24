@@ -223,6 +223,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_FUTUREEVENTSET_CLASS, "Future Event Set (FES) class");
             addTextFieldEditor(group, CFGID_OUTPUTVECTORMANAGER_CLASS, "Output vector manager class");
             addTextFieldEditor(group, CFGID_OUTPUTSCALARMANAGER_CLASS, "Output scalar manager class");
+            addTextFieldEditor(group, CFGID_EVENTLOGMANAGER_CLASS, "Eventlog manager class");
             addTextFieldEditor(group, CFGID_SNAPSHOTMANAGER_CLASS, "Snapshot manager class");
             addTextFieldEditor(group, CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "Config file reader class");
             addSpacer(form);

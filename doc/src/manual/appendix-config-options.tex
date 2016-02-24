@@ -179,6 +179,11 @@ with the \ttt{-h configdetails} option.
     [<from>]..[<to>],... That is, both start and end of an interval are
     optional, and intervals are separated by comma. Example: ..10.2, 22.2..100,
     233.3..
+\item[eventlogmanager-class] = \textit{<string>}, default: \ttt{omnetpp::envir::EventlogFileManager}\\
+    Global setting (applies to all simulation runs).\\
+    Part of the Envir plugin mechanism: selects the eventlog manager class to
+    be used to record data. The class has to implement the cIEventlogManager
+    interface.
 \item[experiment-label] = \textit{<string>}, default: \ttt{\$\{configname\}}\\
     Per-simulation-run setting.\\
     Identifies the simulation experiment (which consists of several,

@@ -39,6 +39,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
+Register_Class(EventlogFileManager)
+
 Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the eventlog file to generate.");
 Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, nullptr,
         "A list of patterns separated by '|' character which will be used to write "

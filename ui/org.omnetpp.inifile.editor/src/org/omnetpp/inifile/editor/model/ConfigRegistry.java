@@ -201,7 +201,7 @@ public class ConfigRegistry {
         "parameters. In interactive mode, it asks the user. In non-interactive mode " +
         "(which is more suitable for batch execution), Cmdenv stops with an error.");
     public static final ConfigOption CFGID_CMDENV_LOG_FORMAT = addPerRunOption(
-        "cmdenv-log-format", CFG_STRING, "[%l]  ",
+        "cmdenv-log-format", CFG_STRING, "[%l]	",
         "Specifies the format string that determines the prefix of each log line. " +
         "The format string may contain format directives in the syntax '%x' (a '%' " +
         "followed by a single format character).  For example '%l' stands for log " +
@@ -322,6 +322,11 @@ public class ConfigRegistry {
         "[<from>]..[<to>],... That is, both start and end of an interval are " +
         "optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, " +
         "233.3..");
+    public static final ConfigOption CFGID_EVENTLOGMANAGER_CLASS = addGlobalOption(
+        "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager",
+        "Part of the Envir plugin mechanism: selects the eventlog manager class to " +
+        "be used to record data. The class has to implement the cIEventlogManager " +
+        "interface.");
     public static final ConfigOption CFGID_EXPERIMENT_LABEL = addPerRunOption(
         "experiment-label", CFG_STRING, "${configname}",
         "Identifies the simulation experiment (which consists of several, " +

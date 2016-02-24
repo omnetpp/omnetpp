@@ -79,6 +79,7 @@ struct ENVIR_API EnvirOptions
     int seedset; // which set of seeds to use
 
     std::string schedulerClass;
+    std::string eventlogManagerClass;
     std::string outputVectorManagerClass;
     std::string outputScalarManagerClass;
     std::string snapshotmanagerClass;
@@ -131,7 +132,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     int currentModuleId;
 
     // Output file managers
-    EventlogFileManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
+    cIEventlogManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
     cIOutputVectorManager *outvectorManager;
     cIOutputScalarManager *outScalarManager;
     cISnapshotManager *snapshotManager;
