@@ -26,9 +26,11 @@ import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.contentassist.InifileModulePathContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
 
@@ -160,8 +162,21 @@ public class TextTableFieldEditor extends TableFieldEditor {
                 return super.getProposals(contents, position);
             }
         };
-
         ContentAssistUtil.configureTableColumnContentAssist(tableViewer, valueColumnIndex, valueProposalProvider, null, true);
+
+        // content assist for the Object column
+        if (entry.isPerObject()) {
+            IContentProposalProvider objectProposalProvider = new InifileModulePathContentProposalProvider(null, false, inifile, new InifileAnalyzer(inifile)) {
+                @Override
+                public IContentProposal[] getProposals(String contents, int position) {
+                    // we need to reconfigure the proposal provider on the fly to know about the current section
+                    SectionKey sectionKey = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+                    configure(sectionKey.section, false); // set context for proposal calculation
+                    return super.getProposals(contents, position);
+                }
+            };
+            ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, objectProposalProvider, null, false);
+        }
 
         return tableViewer;
     }

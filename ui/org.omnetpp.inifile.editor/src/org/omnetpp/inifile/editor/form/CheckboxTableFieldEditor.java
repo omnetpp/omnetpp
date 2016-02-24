@@ -10,9 +10,12 @@ package org.omnetpp.inifile.editor.form;
 import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -21,11 +24,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.contentassist.InifileModulePathContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
 
@@ -146,6 +152,20 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
                 tableViewer.refresh();
             }
         });
+
+        // content assist for the Object column
+        if (entry.isPerObject()) {
+            IContentProposalProvider objectProposalProvider = new InifileModulePathContentProposalProvider(null, false, inifile, new InifileAnalyzer(inifile)) {
+                @Override
+                public IContentProposal[] getProposals(String contents, int position) {
+                    // we need to reconfigure the proposal provider on the fly to know about the current section
+                    SectionKey sectionKey = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+                    configure(sectionKey.section, false); // set context for proposal calculation
+                    return super.getProposals(contents, position);
+                }
+            };
+            ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, objectProposalProvider, null, false);
+        }
 
         return tableViewer;
     }
