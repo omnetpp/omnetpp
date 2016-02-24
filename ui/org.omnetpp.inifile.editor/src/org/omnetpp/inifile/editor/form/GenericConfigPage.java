@@ -117,7 +117,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
-            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", null));
+            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_VECTOR_MAX_BUFFERED_VALUES, "Buffered size for output vectors", c("Vector (module-path.vectorname pattern)", "Number of Values"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
             addSpacer(form);
@@ -172,14 +172,14 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
-            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORDING, "Enable recording of vectors", c("Vector (module-path.vectorname pattern)", null));
+            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORDING, "Enable recording of vectors", c("Vector (module-path.vectorname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals", c("Vector (module-path.vectorname pattern)", "Intervals"));
             addSpacer(form);
             group = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
-            addCheckboxFieldEditor(group, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", null));
-            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins", c("Scalar (module-path.scalarname pattern)", null));
-            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars", c("Parameter (module-path.paramname pattern)", null));
+            addCheckboxFieldEditor(group, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins", c("Scalar (module-path.scalarname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars", c("Parameter (module-path.paramname pattern)", "Value"));
             addSpacer(form);
         }
         else if (category.equals(CAT_DEBUGGING)) {
@@ -206,7 +206,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_EVENTLOG_FILE, "Eventlog file", c(null, "Filename"));
             addTextFieldEditor(group, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
             addTextFieldEditor(group, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record", c(null, "Pattern Expression"));
-            addCheckboxFieldEditor(group, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module", null));
+            addCheckboxFieldEditor(group, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module", "Value"));
             addLabel(group, "Event log files (.elog) can be visualized in the Sequence Chart Tool.");
             addSpacer(form);
             group = createGroup(form, "Snapshots");
