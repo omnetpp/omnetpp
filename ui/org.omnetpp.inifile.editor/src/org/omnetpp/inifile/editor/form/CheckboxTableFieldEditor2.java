@@ -39,9 +39,9 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  *
  * @author Andras
  */
-public class CheckboxTableFieldEditor extends TableFieldEditor {
+public class CheckboxTableFieldEditor2 extends TableFieldEditor {
 
-    public CheckboxTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+    public CheckboxTableFieldEditor2(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
         super(parent, entry, inifile, formPage, labelText, hints);
     }
 
