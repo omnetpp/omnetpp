@@ -68,12 +68,12 @@ public class TextTableFieldEditor extends TableFieldEditor {
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         if (entry.isPerObject()) {
-            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
+            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 160);
             addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 100);
             addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 160);
         }
         else {
-            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
+            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 160);
             addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 260);
         }
         int numLines = entry.isPerObject() ? 6 : 3;
@@ -81,7 +81,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
         for (TableColumn column : table.getColumns())
             width += column.getWidth();
         int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;
-        table.setLayoutData(new GridData(Math.max(width, 365), height));
+        table.setLayoutData(new GridData(Math.max(width, 425), height));
 
         final int objectColumnIndex = entry.isPerObject() ? 1 : -1;
         final int valueColumnIndex = entry.isPerObject() ? 2 : 1;
