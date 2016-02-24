@@ -2,11 +2,12 @@
 \label{cha:eventlog}
 
 \section{Introduction}
-The eventlog feature and the related tools are completely new in {\opp} 4.0. They aim to
-help in understanding complex simulation models and to help correctly implement the
-desired component behaviors. Using these tools you will be able to easily examine every
-minute detail of the simulation back and forth in terms of simulation time, or step-by-step,
-focusing on the behavior instead of the statistical results of your model.
+\label{sec:eventlog:introduction}
+
+The eventlog feature and related tools have been added to {\opp} with the aim of
+helping the user understand complex simulation models and correctly implement the
+desired component behaviors. Using these tools, one can examine details of recorded
+history of a simulation, focusing on the behavior instead of the statistical results.
 
 The eventlog file is created automatically during a simulation run upon explicit request
 configurable in the ini file. The resulting file can be viewed in the {\opp} IDE using
@@ -23,10 +24,9 @@ recorded based on a message filter. The result is an eventlog file which contain
 information of the simulation run and later can be used for various purposes.
 
 \begin{note}
-    The eventlog file may become quite large for long running simulations
-    (often hundreds of megabytes, but occasionally several gigabytes), because it
-    contains a lot of information about the run, especially when message detail
-    recording is turned on.
+    The eventlog file may become quite large for long-running simulations
+    (often hundreds of megabytes, but occasionally several gigabytes), especially
+    when message detail recording is turned on.
 \end{note}
 
 \section{Configuration}
