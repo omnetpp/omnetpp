@@ -18,6 +18,7 @@
 *.pyc
 .tkenvrc
 .tkenvlog
+.qtenvrc
 .project
 .cproject
 lex.*yy.cc

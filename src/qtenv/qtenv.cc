@@ -391,8 +391,8 @@ void Qtenv::doRun()
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
         app->setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
 
-        globalPrefs = new QSettings(QDir::homePath() + "/.qtenv.ini", QSettings::IniFormat);
-        localPrefs = new QSettings(".qtenv.ini", QSettings::IniFormat);
+        globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
+        localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
 
         restoreOptsFromPrefs();
 
