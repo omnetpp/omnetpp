@@ -32,6 +32,8 @@ public class ConfigOption {
      */
     public enum ObjectKind {
         KIND_NONE,
+        KIND_COMPONENT,
+        KIND_CHANNEL,
         KIND_MODULE,
         KIND_SIMPLE_MODULE,
         KIND_UNSPECIFIED_TYPE, // .typename=

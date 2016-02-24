@@ -49,6 +49,8 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
     /// Configuration option kinds.
     enum ObjectKind {
         KIND_NONE,
+        KIND_COMPONENT,
+        KIND_CHANNEL,
         KIND_MODULE,
         KIND_SIMPLE_MODULE,
         KIND_UNSPECIFIED_TYPE, // for 'typename' option (object is submodule/channel declared with 'like')

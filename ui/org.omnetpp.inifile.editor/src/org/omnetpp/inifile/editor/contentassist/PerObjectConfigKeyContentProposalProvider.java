@@ -102,6 +102,8 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
         switch (kind) {
         case KIND_PARAMETER: return InifileUtils.ICON_PROPOSAL_PARAMETERCONFIG;
         case KIND_STATISTIC: return InifileUtils.ICON_PROPOSAL_STATISTICCONFIG;
+        case KIND_COMPONENT:
+        case KIND_CHANNEL:
         case KIND_MODULE:
         case KIND_SIMPLE_MODULE:
         case KIND_UNSPECIFIED_TYPE: return InifileUtils.ICON_PROPOSAL_MODULECONFIG;
@@ -142,9 +144,12 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
             }
         }
 
+        //TODO KIND_CHANEL! this analysis completely ignores channels and channel parameters
+
         // match any module name?
-        Set<ObjectKind> moduleKinds = EnumSet.of(ObjectKind.KIND_MODULE, ObjectKind.KIND_SIMPLE_MODULE, ObjectKind.KIND_UNSPECIFIED_TYPE);
+        Set<ObjectKind> moduleKinds = EnumSet.of(ObjectKind.KIND_COMPONENT, ObjectKind.KIND_CHANNEL, ObjectKind.KIND_MODULE, ObjectKind.KIND_SIMPLE_MODULE, ObjectKind.KIND_UNSPECIFIED_TYPE);
         for (Map.Entry<String, ISubmoduleOrConnection> entry : modules.entrySet()) {
+            objectKinds.add(ObjectKind.KIND_COMPONENT);
             objectKinds.add(ObjectKind.KIND_MODULE);
             ISubmoduleOrConnection module = entry.getValue();
             if (module != null && module.getEffectiveTypeRef() instanceof SimpleModuleElement) //FIXME getEffectiveTypeRef(): not good here: does not obey inifile content (it always returns an IModuleInterfaceElement for "like" submodules)

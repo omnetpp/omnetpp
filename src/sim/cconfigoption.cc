@@ -90,9 +90,11 @@ const char *cConfigOption::getTypeName(Type type)
 const char *cConfigOption::getObjectKindName(ObjectKind kind)
 {
     switch (kind) {
+        case KIND_COMPONENT:        return "component";
+        case KIND_CHANNEL:          return "channel";
         case KIND_MODULE:           return "module";
-        case KIND_SIMPLE_MODULE:    return "simplemodule";
-        case KIND_UNSPECIFIED_TYPE: return "unspecifiedtype";
+        case KIND_SIMPLE_MODULE:    return "simple-module";
+        case KIND_UNSPECIFIED_TYPE: return "unspecified-type";
         case KIND_PARAMETER:        return "parameter";
         case KIND_STATISTIC:        return "statistic";
         case KIND_SCALAR:           return "scalar";
