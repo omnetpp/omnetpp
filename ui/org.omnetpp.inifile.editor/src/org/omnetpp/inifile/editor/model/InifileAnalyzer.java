@@ -14,7 +14,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCAL
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.OBSOLETE_OPTIONS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_INT;
@@ -562,7 +564,9 @@ public final class InifileAnalyzer {
         // check key and if it occurs in the right section
         ConfigOption e = ConfigRegistry.getOption(key);
         if (e == null) {
-            if (!key.matches("[a-zA-Z0-9-_]+"))
+            if (OBSOLETE_OPTIONS.containsKey(key))
+                markers.addError(section, key, OBSOLETE_OPTIONS.get(key));
+            else if (!key.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in configuration option: "+key);
             else
                 markers.addError(section, key, "Unknown configuration option: "+key);
@@ -638,7 +642,7 @@ public final class InifileAnalyzer {
             if (d != Math.floor(d) || d > 0 || d < -18)
                 markers.addError(section, key, "Base-10 exponent must be a -18..0 integer");
             return;
-        } 
+        }
         catch (RuntimeException ex) {}
 
         if (value.matches("[a-zA-Z]+")) {
@@ -1098,8 +1102,8 @@ public final class InifileAnalyzer {
         String configName = key.substring(key.lastIndexOf('.')+1);
         ConfigOption e = ConfigRegistry.getPerObjectOption(configName);
         if (e == null) {
-            if (configName.equals("type-name"))
-                markers.addError(section, key, "Configuration option \"type-name\" has been renamed to \"typename\", please update the ini file");
+            if (OBSOLETE_OPTIONS.containsKey(configName))
+                markers.addError(section, key, OBSOLETE_OPTIONS.get(configName));
             else if (!configName.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in per-object configuration option: "+configName);
             else
@@ -1557,7 +1561,7 @@ public final class InifileAnalyzer {
      * contain an iteration, like "${1,2,5}" or "${x=1,2,5}".
      */
     public boolean containsIteration(final String activeSection) {
-        return (Boolean)withValidatedDocument(new Runnable2<Boolean>() {
+        return withValidatedDocument(new Runnable2<Boolean>() {
             public Boolean run() {
                 for (String section : doc.getSectionChain(activeSection)) {
                     SectionData sectionData = (SectionData) doc.getSectionData(section);

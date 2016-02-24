@@ -95,6 +95,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected void createFieldEditors(Composite form, String category) {
+        //TODO revise: per-object options should come up as table, and NOT be collapsible?
         Group group = null;
         if (category.equals(CAT_GENERAL)) {
             group = createGroup(form, "Network");
@@ -113,9 +114,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Regression");
             addTextFieldEditor(group, CFGID_FINGERPRINT, "Fingerprint to verify", c(null, "Fingerprint (Hex)"));
             addLabel(group, "Further options allow controlling the ingredients of the fingerprint, filtering by modules/events, etc.");
-            addSpacer(form);
-            group = createGroup(form, "Logging");
-            addTextFieldEditor(group, CFGID_LOG_LEVEL, "Per-module log level", c("Module", "Log level")); //TODO combo
             addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
@@ -168,8 +166,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
             addSpacer(form);
             group = createGroup(form, "Statistic Recording");
-            addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Warm-up Period"));
+            addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", null));
             addTextFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
+            addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Warm-up Period"));
             addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
@@ -179,6 +178,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
             addCheckboxFieldEditor(group, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", null));
+            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins", c("Scalar (module-path.scalarname pattern)", null));
             addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars", c("Parameter (module-path.paramname pattern)", null));
             addSpacer(form);
         }
@@ -239,16 +239,13 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_CMDENV_STATUS_FREQUENCY, "Status frequency");
             addSpacer(form);
             group = createGroup(form, "Normal (Non-Express) Mode");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_MODULE_MESSAGES, "Print module messages");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_EV_OUTPUT, "Module log");
-            addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level");
+            addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c(null, "Log level")); //TODO 3-column editor
             addTextFieldEditor(group, CFGID_CMDENV_LOG_FORMAT, "Log prefix");
             addSpacer(form);
             group = createGroup(form, "Other");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");  //TODO when opened (table), it should contain a 3rd, combobox-based column (true/false) instead of a checkbox
             addCheckboxFieldEditor(group, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
             addTextFieldEditor(group, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
             addTextFieldEditor(group, CFGID_CMDENV_EXTRA_STACK, "Extra coroutine stack");
