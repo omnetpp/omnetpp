@@ -49,7 +49,7 @@ interfaces:
      one to create additional means of saving vector results, for example
      database or CSV output.
    \item \cclass{cIEventlogManager}. This extension interface allows one
-     to customize how event output logs are written out.
+     to customize event log recording.
    \item \cclass{cISnapshotManager}. It provides an output stream to which
      snapshots are written.
    \item \cclass{cConfigurationEx}. Configuration provider extension.
@@ -421,13 +421,17 @@ configuration option.
 \section{Defining a New Eventlog Manager}
 \label{sec:plugin-exts:eventlogmanager}
 
-An eventlog manager allows one to customize how event log is recorded.
-Custom filtering of events or changing the eventlog output format is possible
-by implementing a new eventlog manager class. The new class must implement
-the \cclass{cIEventlogManager} interface, and can be activated with the
-\fconfig{eventlogmanager-class} configuration option.
+An eventlog manager handles the recording of simulation history into an
+event log (see \ref{cha:eventlog}). The default eventlog manager is
+\cclass{EventlogFileManager}, which records into file, and also allows for
+some filtering. By replacing the default eventlog manager class, one can
+introduce additional filtering, record into a different file format or
+to different storage (e.g. to a database or a remote vizualizer).
 
-The default eventlog manager is \cclass{EventlogFileManager}.
+The new class must implement the \cclass{cIEventlogManager} interface,
+and can be activated with the \fconfig{eventlogmanager-class} configuration
+option.
+
 
 \section{Defining a New Snapshot Manager}
 \label{sec:plugin-exts:snapshotmanager}

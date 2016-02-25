@@ -311,9 +311,9 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
 
 
 /**
- * Abstract base class for eventlog managers for cEnvir.
- * cIEventlogManagers are plugins into the Envir user
- * interface library (src/envir) that handle recording
+ * Abstract base class for eventlog managers for cEnvir. cIEventlogManagers
+ * are plugins into the Envir user interface library (src/envir) that handle
+ * the recording of simulation history into an event log.
  *
  * The default eventlog manager is EventlogFileManager, defined in the
  * Envir library.
