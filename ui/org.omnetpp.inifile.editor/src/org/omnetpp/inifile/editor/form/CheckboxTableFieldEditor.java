@@ -14,9 +14,13 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -88,6 +92,12 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 
         // set up tableViewer, label provider
         final TableViewer tableViewer = new TableViewer(table);
+        TableViewerEditor.create(tableViewer, new ColumnViewerEditorActivationStrategy(tableViewer) {
+            @Override
+            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+                return event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION || super.isEditorActivationEvent(event);
+            }
+        }, ColumnViewerEditor.DEFAULT);
         tableViewer.setLabelProvider(new TableLabelProvider() {
             @Override
             public String getColumnText(Object element, int columnIndex) {
@@ -116,7 +126,13 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
         tableViewer.setColumnProperties(entry.isPerObject() ?
                 new String[] {"section", "object", "value"} :
                 new String[] {"section", "value"});
-        CheckboxCellEditor valueCellEditor = new CheckboxCellEditor((Composite)tableViewer.getControl());
+        CheckboxCellEditor valueCellEditor = new CheckboxCellEditor((Composite)tableViewer.getControl()) {
+            @Override
+            public void activate(ColumnViewerEditorActivationEvent activationEvent) {
+                if (activationEvent.eventType != ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION)
+                    super.activate(activationEvent);
+            }
+        };
         final CellEditor[] cellEditors = entry.isPerObject() ?
                 new CellEditor[] {null, new TableTextCellEditor(tableViewer,1), valueCellEditor} :
                 new CellEditor[] {null, valueCellEditor};
