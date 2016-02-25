@@ -32,7 +32,7 @@ public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
     @Override
     protected FieldEditor createFieldEditor(boolean isExpanded) {
         FieldEditor result = isExpanded ?
-                new ComboTableFieldEditor(this, entry, inifile, formPage, labelText, hints) : // currently we have no ComboTableFieldEditor
+                new ComboTableFieldEditor(this, entry, inifile, formPage, labelText, hints) :
                 new ComboFieldEditor(this, entry, inifile, formPage, labelText, hints, enableTypein);
         result.setComboContents(comboContents);
         return result;
