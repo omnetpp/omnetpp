@@ -77,6 +77,24 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     ui->mainToolBar->addWidget(slider);
 
+    // add current event status
+    QString labelStyleSheet = "QLabel { background: rgb(255, 255, 224); }";
+    simTimeLabel = new QLabel();
+    simTimeLabel->setStyleSheet(labelStyleSheet);
+
+    eventNumLabel = new QLabel();
+    eventNumLabel->setStyleSheet(labelStyleSheet);
+    eventNumLabel->setAlignment(Qt::AlignRight);
+    eventNumLabel->setFont(QFont("Ubuntu",30));
+
+    QHBoxLayout *l = new QHBoxLayout();
+    l->addStretch(3);
+    l->addWidget(eventNumLabel);
+    l->addWidget(simTimeLabel, 1);
+    QWidget *w = new QWidget();
+    w->setLayout(l);
+    ui->mainToolBar->addWidget(w);
+
     connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
 
     // if we trigger the action here directly, it will block the initialization
@@ -90,6 +108,8 @@ MainWindow::~MainWindow()
     delete ui;
     delete fileEditor;
     delete stopDialog;
+    delete simTimeLabel;
+    delete eventNumLabel;
     if(filteredObjectListDialog)
         delete filteredObjectListDialog;
 }
@@ -398,14 +418,14 @@ void MainWindow::updateStatusDisplay()
                     || env->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS))
             updatePerformanceDisplay();
         else
-            updateNextModuleDisplay();
+            updateNextEventDisplay();
     }
 }
 
 void MainWindow::updateSimtimeDisplay()
 {
-    ui->labelEvent->setText("Event #" + QString::number(getSimulation()->getEventNumber()));
-    ui->labelTime->setText("t=" + QString(getSimulation()->guessNextSimtime().str().c_str()) + "s");
+    eventNumLabel->setText("#" + QString::number(getSimulation()->getEventNumber()));
+    simTimeLabel->setText(QString(getSimulation()->getSimTime().str().c_str()) + "s");
     ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->getFES()->getLength())
             +" scheduled / " + QString::number(cMessage::getLiveMessageCount())
             +" existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");
@@ -413,12 +433,12 @@ void MainWindow::updateSimtimeDisplay()
 
 void MainWindow::updatePerformanceDisplay()
 {
-    ui->labelDisplay2->setText("Simsec/sec: " + QString::number(env->getSpeedometer().getSimSecPerSec()));
-    ui->labelDisplay1->setText("Ev/sec: " + QString::number(env->getSpeedometer().getEventsPerSec()));
-    ui->labelDisplay3->setText("Ev/simsec: " + QString::number(env->getSpeedometer().getEventsPerSimSec()));
+    ui->nextModuleLabel->setText("Simsec/sec: " + QString::number(env->getSpeedometer().getSimSecPerSec()));
+    ui->nextEventLabel->setText("Ev/sec: " + QString::number(env->getSpeedometer().getEventsPerSec()));
+    ui->nextTimeLabel->setText("Ev/simsec: " + QString::number(env->getSpeedometer().getEventsPerSimSec()));
 }
 
-void MainWindow::updateNextModuleDisplay()
+void MainWindow::updateNextEventDisplay()
 {
     cSimpleModule *modptr = nullptr;
     cEvent *msgptr = nullptr;
@@ -431,23 +451,23 @@ void MainWindow::updateNextModuleDisplay()
 
     if (msgptr) {
         int objId = getObjectId(msgptr);
-        ui->labelDisplay1->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName()
+        simtime_t nextTime = getSimulation()->guessNextEvent()->getArrivalTime();
+        simtime_t diff = nextTime - getSimulation()->getSimTime();
+        ui->nextEventLabel->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName()
                 +", id=" + (objId == -1 ? "" : QString::number(objId)) + ")");
-        ui->labelDisplay3->setText(QString("At: last event + ")
-                +(getSimulation()->guessNextEvent()->getArrivalTime() - getSimulation()->getSimTime()).str().c_str()
-                +"s");
+        ui->nextTimeLabel->setText(QString("At: ") + nextTime.str().c_str() + "s (+" + diff.str().c_str() + "s)");
     }
     else {
-        ui->labelDisplay1->setText("Next: n/a");
-        ui->labelDisplay3->setText("At: n/a");
+        ui->nextEventLabel->setText("Next: n/a");
+        ui->nextTimeLabel->setText("At: n/a");
     }
 
     if (modptr)
-        ui->labelDisplay2->setText(QString("In: ") + modptr->getFullPath().c_str()
+        ui->nextModuleLabel->setText(QString("In: ") + modptr->getFullPath().c_str()
                 +" (" + getObjectShortTypeName(modptr) + ", id="
                 + QString::number(modptr->getId()) + ")");
     else
-        ui->labelDisplay2->setText("In: n/a");
+        ui->nextModuleLabel->setText("In: n/a");
 }
 
 int MainWindow::getObjectId(cEvent *object)
@@ -776,9 +796,9 @@ void MainWindow::restoreGeometry()
 
     // initialize status bar
     showStatusDetails = getQtenv()->getPref("display-statusdetails", true).value<bool>();
-    ui->labelDisplay1->setVisible(showStatusDetails);
-    ui->labelDisplay2->setVisible(showStatusDetails);
-    ui->labelDisplay3->setVisible(showStatusDetails);
+    ui->nextEventLabel->setVisible(showStatusDetails);
+    ui->nextModuleLabel->setVisible(showStatusDetails);
+    ui->nextTimeLabel->setVisible(showStatusDetails);
 }
 
 QSize MainWindow::sizeHint() const
@@ -892,9 +912,9 @@ void MainWindow::onAnimationSpeedChanged(float speed) {
 void MainWindow::on_actionStatusDetails_triggered()
 {
     showStatusDetails = !showStatusDetails;
-    ui->labelDisplay1->setVisible(showStatusDetails);
-    ui->labelDisplay2->setVisible(showStatusDetails);
-    ui->labelDisplay3->setVisible(showStatusDetails);
+    ui->nextEventLabel->setVisible(showStatusDetails);
+    ui->nextModuleLabel->setVisible(showStatusDetails);
+    ui->nextTimeLabel->setVisible(showStatusDetails);
     updateStatusDisplay();
 }
 

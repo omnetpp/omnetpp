@@ -29,6 +29,7 @@ class QGraphicsView;
 class QWidget;
 class QSlider;
 class QSplitter;
+class QLabel;
 
 namespace Ui {
 class MainWindow;
@@ -159,13 +160,14 @@ private:
     static QString aboutText;
     QList<int> defaultTimeLineSize;
     FileEditor *fileEditor;
+    QLabel *simTimeLabel, *eventNumLabel;
 
     bool checkRunning();
     void runSimulation(eMode mode);
 
     void updateSimtimeDisplay();
     void updatePerformanceDisplay();
-    void updateNextModuleDisplay();
+    void updateNextEventDisplay();
     int getObjectId(cEvent *object);
     const char *getObjectShortTypeName(cObject *object);
     const char *stripNamespace(const char *className);

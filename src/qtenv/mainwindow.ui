@@ -41,7 +41,7 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>-1</number>
+     <number>6</number>
     </property>
     <property name="leftMargin">
      <number>6</number>
@@ -61,71 +61,12 @@
        <number>1</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="topStatusRow">
-        <property name="spacing">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="labelConfigName">
-          <property name="styleSheet">
-           <string notr="true">border: 1px solid palette(mid);</string>
-          </property>
-          <property name="text">
-           <string>(No network set up)</string>
-          </property>
-          <property name="margin">
-           <number>1</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelEvent">
-          <property name="styleSheet">
-           <string notr="true">border: 1px solid palette(mid);</string>
-          </property>
-          <property name="text">
-           <string>Event #0</string>
-          </property>
-          <property name="margin">
-           <number>1</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelTime">
-          <property name="styleSheet">
-           <string notr="true">border: 1px solid palette(mid);</string>
-          </property>
-          <property name="text">
-           <string>t=0</string>
-          </property>
-          <property name="margin">
-           <number>1</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelMessageStats">
-          <property name="styleSheet">
-           <string notr="true">border: 1px solid palette(mid);</string>
-          </property>
-          <property name="text">
-           <string>Msg stats: 0 scheduled / 0 existing / 0 created</string>
-          </property>
-          <property name="margin">
-           <number>1</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="bottomStatusRow">
         <property name="spacing">
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelDisplay1">
+         <widget class="QLabel" name="nextEventLabel">
           <property name="styleSheet">
            <string notr="true">border: 1px solid palette(mid);</string>
           </property>
@@ -138,7 +79,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="labelDisplay2">
+         <widget class="QLabel" name="nextModuleLabel">
           <property name="styleSheet">
            <string notr="true">border: 1px solid palette(mid);</string>
           </property>
@@ -151,12 +92,12 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="labelDisplay3">
+         <widget class="QLabel" name="nextTimeLabel">
           <property name="styleSheet">
            <string notr="true">border: 1px solid palette(mid);</string>
           </property>
           <property name="text">
-           <string>At: last event + 0s</string>
+           <string>At: n/a</string>
           </property>
           <property name="margin">
            <number>1</number>
@@ -292,6 +233,39 @@
       </widget>
      </widget>
     </item>
+    <item>
+     <layout class="QHBoxLayout" name="statusBar">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelConfigName">
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid palette(mid);</string>
+        </property>
+        <property name="text">
+         <string>(No network set up)</string>
+        </property>
+        <property name="margin">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelMessageStats">
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid palette(mid);</string>
+        </property>
+        <property name="text">
+         <string>Msg stats: 0 scheduled / 0 existing / 0 created</string>
+        </property>
+        <property name="margin">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -385,14 +359,29 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
    <property name="windowTitle">
     <string>Qtenv toolbar</string>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
    </property>
    <property name="iconSize">
     <size>
      <width>30</width>
      <height>19</height>
     </size>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>

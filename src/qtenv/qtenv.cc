@@ -1360,8 +1360,12 @@ void Qtenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (runMode != RUNMODE_EXPRESS) {
-        printEventBanner(event);
+    if (loggingEnabled)
+        printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
+
+    if (animating && opt->animationEnabled) {
+        updateStatusDisplay();  // so that the correct (new) simulation time is displayed during animation
+        updateGraphicalInspectorsBeforeAnimation();
     }
 
     if (animating && opt->animationEnabled && event->isMessage()) {
@@ -1371,7 +1375,6 @@ void Qtenv::simulationEvent(cEvent *event)
             return;
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
-        updateGraphicalInspectorsBeforeAnimation();
         if (arrivalGate->getPreviousGate()) {
             animateDelivery(msg);
         }
