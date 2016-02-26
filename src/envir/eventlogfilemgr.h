@@ -36,9 +36,10 @@ namespace envir {
 /**
  * Responsible for writing the eventlog file.
  */
-class ENVIR_API EventlogFileManager : public cIEventlogManager
+class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulationLifecycleListener
 {
   private:
+    cEnvir *envir;
     std::string filename;
     FILE *feventlog;
     ObjectPrinter *objectPrinter;
@@ -48,9 +49,8 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
     int keyframeBlockSize;
     file_offset_t previousKeyframeFileOffset;
     bool recordEventlog;
-    bool isEventLogRecordingEnabled;
-    bool isModuleEventLogRecordingEnabled;
-    bool isIntervalEventLogRecordingEnabled;
+    bool isUserRecordingEnabled;
+    bool isCombinedRecordingEnabled;  // combines several other enablement flags
 
     // keyframe data structures
     struct EventLogEntryReference
@@ -102,7 +102,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
 
   protected:
     /**
-     * A cISimulationLifecycleListener method. Delegates to startRun() and endRun(); override if needed.
+     * A cISimulationLifecycleListener method.
      */
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
@@ -110,23 +110,25 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
     explicit EventlogFileManager();
     virtual ~EventlogFileManager();
 
-    virtual void configure() override;
-    virtual void open() override;
+    virtual void configure();
+    virtual bool isOpen() { return feventlog != nullptr; }
+    virtual void open();
     virtual void close();
     virtual void remove();
-    virtual void startRun() override;
-    virtual void endRun(bool isError, int resultCode, const char *message) override;
 
-    virtual bool hasRecordingIntervals() const override;
-    virtual void clearRecordingIntervals() override;
+    virtual void startRecording() override;
+    virtual void stopRecording() override;
+    virtual void flush() override;
 
-    virtual void recordSimulation() override;
+    virtual bool hasRecordingIntervals();
+    virtual void clearRecordingIntervals();
+
+    virtual void recordSimulation();
     virtual void recordInitialize();
     virtual void recordMessages();
     virtual void recordModules(cModule *module);
     virtual void recordConnections(cModule *module);
 
-    virtual void flush() override;
     virtual const char *getFileName() const { return filename.c_str(); }
 
     /** @name Functions called from cEnvir's similar functions */
@@ -154,6 +156,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager
     virtual void connectionDeleted(cGate *srcgate) override;
     virtual void displayStringChanged(cComponent *component) override;
     virtual void logLine(const char *prefix, const char *line, int lineLength) override;
+    virtual void stoppedWithException(bool isError, int resultCode, const char *message) override;
     //@}
 
   private:

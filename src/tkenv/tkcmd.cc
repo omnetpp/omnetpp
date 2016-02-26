@@ -131,7 +131,6 @@ int fesEvents_cmd(ClientData, Tcl_Interp *, int, const char **);
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
 int eventArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
 int patmatch_cmd(ClientData, Tcl_Interp *, int, const char **);
-int eventlogRecording_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -254,7 +253,6 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_eventarrtimefromnow",eventArrTimeFromNow_cmd}, // args: <eventptr>
    { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
-   { "opp_eventlogrecording", eventlogRecording_cmd },   // args: subcommand <args>
 
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> [<type>] [<geom>] ret: window
@@ -2078,27 +2076,6 @@ int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     PatternMatcher pat;
     TRY(pat.setPattern(p, true, true, true));
     Tcl_SetResult(interp, TCLCONST(pat.matches(s) ? "1" : "0"), TCL_STATIC);
-    return TCL_OK;
-}
-
-int eventlogRecording_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-    if (argc != 2) {
-        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    Tkenv *app = getTkenv();
-    if (strcmp(argv[1], "hasintervals") == 0) {
-        bool result = app->hasEventlogRecordingIntervals();
-        Tcl_SetResult(interp, TCLCONST(result ? "1" : "0"), TCL_STATIC);
-    }
-    else if (strcmp(argv[1], "clearintervals") == 0) {
-        app->clearEventlogRecordingIntervals();
-    }
-    else {
-        Tcl_SetResult(interp, TCLCONST("unknown option"), TCL_STATIC);
-        return TCL_ERROR;
-    }
     return TCL_OK;
 }
 

@@ -1,0 +1,87 @@
+%description:
+test module eventlog recording
+
+%file: test.ned
+
+simple Node {
+}
+
+network Test {
+    submodules:
+        enabled: Node;
+        disabled: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule
+{
+  public:
+    virtual void initialize(int stage) override {
+        scheduleAt(simTime() + 1, new cMessage());
+    }
+
+    virtual void handleMessage(cMessage *msg) override {
+        delete msg;
+        scheduleAt(simTime() + 1, new cMessage());
+    }
+};
+
+Define_Module(Node);
+
+}
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+record-eventlog = true
+sim-time-limit = 3s
+*.enabled.module-eventlog-recording = true
+*.disabled.module-eventlog-recording = false
+
+%subst: /^SB .*/SB .../m
+
+%subst: /omnetpp:://
+%contains: results/General-0.elog
+SB ...
+KF p -1 c "" s ""
+MC id 1 c cModule t Test n Test cm 1
+MS id 1 d ""
+MC id 2 c inifile_eventlog_2::Node t Node pid 1 n enabled
+MS id 2 d ""
+MC id 3 c inifile_eventlog_2::Node t Node pid 1 n disabled
+MS id 3 d ""
+MB sm 1 tm 2 m initialize(0)
+CM id 0 tid 0 eid 0 etid 0 c cMessage n "" pe -1
+BS id 0 tid 0 eid 0 etid 0 c cMessage n "" pe 0
+ES t 1
+ME
+MB sm 1 tm 3 m initialize(0)
+CM id 1 tid 1 eid 1 etid 1 c cMessage n "" pe -1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n "" pe 0
+ES t 1
+ME
+
+E # 1 t 1 m 2 ce 0 msg 0
+DM id 0 tid 0 eid 0 etid 0 c cMessage n "" pe 1
+CM id 2 tid 2 eid 2 etid 2 c cMessage n "" pe -1
+BS id 2 tid 2 eid 2 etid 2 c cMessage n "" pe 1
+ES t 2
+
+E # 3 t 2 m 2 ce 1 msg 2
+DM id 2 tid 2 eid 2 etid 2 c cMessage n "" pe 3
+CM id 4 tid 4 eid 4 etid 4 c cMessage n "" pe -1
+BS id 4 tid 4 eid 4 etid 4 c cMessage n "" pe 3
+ES t 3
+
+E # 5 t 3 m 2 ce 3 msg 4
+DM id 4 tid 4 eid 4 etid 4 c cMessage n "" pe 5
+CM id 6 tid 6 eid 6 etid 6 c cMessage n "" pe -1
+BS id 6 tid 6 eid 6 etid 6 c cMessage n "" pe 5
+ES t 4

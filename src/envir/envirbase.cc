@@ -410,7 +410,6 @@ bool EnvirBase::setup()
 
         // install eventlog manager
         CREATE_BY_CLASSNAME(eventlogManager, opt->eventlogManagerClass.c_str(), cIEventlogManager, "eventlog manager");
-        addLifecycleListener(eventlogManager);
 
         // install output vector manager
         CREATE_BY_CLASSNAME(outvectorManager, opt->outputVectorManagerClass.c_str(), cIOutputVectorManager, "output vector manager");
@@ -1340,8 +1339,6 @@ void EnvirBase::readPerRunOptions()
 #endif
 
     // open eventlog file.
-    // Note: in startRun() it would be too late, because modules are created earlier
-    eventlogManager->configure();
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 }
 
@@ -1384,24 +1381,14 @@ void EnvirBase::setSimtimePrecision(const char *precision)
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
-    // NOTE: eventlogmgr must be non-nullptr when record_eventlog is true
-    if (enabled && !recordEventlog) {  // FIXME not good!!!!
-        eventlogManager->open();
-        eventlogManager->recordSimulation();
+    if (enabled != recordEventlog) {
+        // NOTE: eventlogmgr must be non-nullptr when record_eventlog is true
+        if (enabled)
+            eventlogManager->startRecording();
+        else
+            eventlogManager->stopRecording();
+        recordEventlog = enabled;
     }
-    recordEventlog = enabled;
-    eventlogManager->flush();
-}
-
-bool EnvirBase::hasEventlogRecordingIntervals() const
-{
-    return eventlogManager && eventlogManager->hasRecordingIntervals();
-}
-
-void EnvirBase::clearEventlogRecordingIntervals()
-{
-    if (eventlogManager)
-        eventlogManager->clearRecordingIntervals();
 }
 
 void EnvirBase::setLogLevel(LogLevel logLevel)
@@ -1723,7 +1710,7 @@ void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
         parsimPartition->broadcastTerminationException(e);
 #endif
     if (recordEventlog)
-        eventlogManager->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
+        eventlogManager->stoppedWithException(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
 }
 
 void EnvirBase::stoppedWithException(std::exception& e)
@@ -1736,7 +1723,7 @@ void EnvirBase::stoppedWithException(std::exception& e)
 #endif
     if (recordEventlog)
         // TODO: get error code from the exception?
-        eventlogManager->endRun(true, E_CUSTOM, e.what());
+        eventlogManager->stoppedWithException(true, E_CUSTOM, e.what());
 }
 
 void EnvirBase::checkFingerprint()

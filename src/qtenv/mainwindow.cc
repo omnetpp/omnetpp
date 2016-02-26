@@ -940,15 +940,6 @@ void MainWindow::on_actionEventlogRecording_triggered()
         getQtenv()->setEventlogRecording(false);
     else
         getQtenv()->setEventlogRecording(true);
-
-    if(getQtenv()->hasEventlogRecordingIntervals())
-    {
-        QMessageBox::warning(this, tr("Eventlog Recording"),
-                                     tr("Switching to manual control of eventlog recording -- \
-                                        the recording intervals specified in the configuration will be ignored."),
-                        QMessageBox::Ok);
-        getQtenv()->clearEventlogRecordingIntervals();
-    }
 }
 
 void MainWindow::reflectRecordEventlog()

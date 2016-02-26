@@ -329,18 +329,12 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleListener
+class SIM_API cIEventlogManager : public cObject
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
     cIEventlogManager(const cIEventlogManager&);
     cIEventlogManager& operator=(const cIEventlogManager&);
-
-  protected:
-    /**
-     * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and flush(); override if needed.
-     */
-    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
   public:
     /** @name Constructor, destructor */
@@ -361,34 +355,27 @@ class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleLi
     //@{
 
     /**
-     * Early configuration before modules are created.
+     * (Re)starts eventlog recording. Whether eventlog recording is enabled by
+     * default depends on the eventlog manager (e.g. omnetpp.ini configuration
+     * options). This function may be called several times (from the user
+     * interface) during the simulation, but only between events.
+     * The eventlog manager is expected to produce output starting from the
+     * next event.
      */
-	virtual void configure() = 0;
+    virtual void startRecording() = 0;
 
     /**
-     * Opens collecting. Called at the beginning of a simulation run.
+     * Temporarily stops eventlog recording. See startRecording() for more details.
      */
-    virtual void startRun() = 0;
+    virtual void stopRecording() = 0;
 
     /**
-     * Closes collecting. Called at the end of a simulation run.
-     */
-    virtual void endRun(bool isError, int resultCode, const char *message) = 0;
-
-    /**
-     * Force writing out all buffered output.
+     * Forces writing out all buffered output.
      */
     virtual void flush() = 0;
-
-    virtual void open() = 0;
-    virtual void recordSimulation() = 0;
-
-    virtual bool hasRecordingIntervals() const = 0;
-    virtual void clearRecordingIntervals() = 0;
     //@}
 
-
-	/** @name Functions called from cEnvir's similar functions */
+    /** @name Functions called from cEnvir's similar functions */
     //@{
     virtual void simulationEvent(cEvent *event) = 0;
     virtual void bubble(cComponent *component, const char *text) = 0;
@@ -413,6 +400,7 @@ class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleLi
     virtual void connectionDeleted(cGate *srcgate) = 0;
     virtual void displayStringChanged(cComponent *component) = 0;
     virtual void logLine(const char *prefix, const char *line, int lineLength) = 0;
+    virtual void stoppedWithException(bool isError, int resultCode, const char *message) = 0;
     //@}
 };
 

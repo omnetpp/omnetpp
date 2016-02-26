@@ -37,11 +37,9 @@ BS id 0 tid 0 eid 0 etid 0 c cMessage n starter-1 k -1 pe 0
 ES t 0
 
 E # 1 t 0 m 1 ce 0 msg 0
-- Before wait
 BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 pe 1
 ES t 1
 
 E # 2 t 1 m 1 ce 1 msg 0
-- After wait
 SE e 0 c 13 m "No more events -- simulation ended at event #3, t=1."
 
