@@ -40,7 +40,7 @@ feature_d_folder
 return: ERROR
 
 %contains: test.err
-opp_featuretool: Error: FEATURESTATEFILE: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN'
+opp_featuretool: Error: .oppfeaturestate: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN'
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

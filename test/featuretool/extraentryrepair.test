@@ -37,11 +37,11 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-opp_featuretool: .featurestate file updated.
+opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 
 %contains: test.err
-opp_featuretool: Warning: FEATURESTATEFILE: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN', removed
+opp_featuretool: Warning: .oppfeaturestate: Line '<feature enabled="false" id="F_UNKNOWN"/>' contains the unknown feature 'F_UNKNOWN', removed
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

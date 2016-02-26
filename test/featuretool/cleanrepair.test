@@ -20,7 +20,7 @@ Repair .oppfeaturestate and .nedexclusions files
 '.nedexclusions' found.
 
 %contains: stdout
-opp_featuretool: .featurestate file updated.
+opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 
 %contains: .oppfeaturestate

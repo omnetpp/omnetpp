@@ -36,7 +36,7 @@ feature_d_folder
 
 %contains: stdout
 Enabling feature(s):  F_B
-opp_featuretool: .featurestate file updated.
+opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 
 %not-contains: test.err

@@ -22,7 +22,7 @@ feature_c_folder
 feature_d_folder
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
-%testprog: opp_featuretool list
+%testprog: opp_featuretool -v list
 
 #%ignore-exitcode: 1
 
@@ -36,15 +36,15 @@ feature_d_folder
 
 %contains: stdout
 List of all features:
-    +F_A
-    -F_B
-    -F_C
-    -F_D
-    +F_E
+    + F_A
+    - F_B
+    - F_C
+    - F_D
+    + F_E
 5 feature(s) found.
 
 %contains: test.err
-opp_featuretool: Warning: feature 'F_C' is missing from the FEATURESTATE file, using the default state.
+opp_featuretool: Warning: feature 'F_C' is missing from the .oppfeaturestate file, using the default state.
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

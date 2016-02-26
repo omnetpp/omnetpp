@@ -7,7 +7,7 @@ Generates makemake args
 %prerun-command: rm -f .oppfeaturestate
 %prerun-command: rm -f .nedexclusions
 
-%testprog: opp_featuretool makemakeargs
+%testprog: opp_featuretool options
 
 #%ignore-exitcode: 1
 

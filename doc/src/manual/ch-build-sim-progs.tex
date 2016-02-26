@@ -531,16 +531,21 @@ To print all the command line options that should be used with \ttt{opp\_makemak
 to create a Makefile that builds the project with the currently enabled features:
 
 \begin{commandline}
-$ opp_featuretool makemakeargs
+$ opp_featuretool options
 \end{commandline}
 
 Using it directly with the \ttt{opp\_makemake} command:
 \begin{commandline}
-$ opp_makemake --deep $(opp_featuretool makemakeargs)
+$ opp_makemake --deep $(opp_featuretool options)
 \end{commandline}
 
 The above command allows you to build the same executable from both the IDE and
 the command line.
+
+Creating a header file that can be included in all C++ files:
+\begin{commandline}
+$ opp_featuretool defines >project_defines.h
+\end{commandline}
 
 \subsection{What is a Project Feature}
 \label{sec:build-sim-progs:project-feature}

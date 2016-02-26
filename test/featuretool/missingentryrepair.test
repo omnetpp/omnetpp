@@ -35,11 +35,11 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-opp_featuretool: .featurestate file updated.
+opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 
 %contains: test.err
-opp_featuretool: Warning: feature 'F_C' is missing from the FEATURESTATE file, adding it with default state.
+opp_featuretool: Warning: feature 'F_C' is missing from the .oppfeaturestate file, adding it with default state.
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

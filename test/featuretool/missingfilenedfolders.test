@@ -39,12 +39,7 @@ feature_d_folder
 return: ERROR
 
 %contains: test.err
-usage: opp_featuretool [-h] [--featurefile FEATUREFILE]
-                       [--featurestatefile FEATURESTATEFILE]
-                       [--nedfoldersfile NEDFOLDERSFILE]
-                       [--nedexclusionsfile NEDEXCLUSIONSFILE]
-                       COMMAND ...
-opp_featuretool: error: argument --nedfoldersfile: can't open './.nedfolders': [Errno 2] No such file or directory: './.nedfolders'
+opp_featuretool: Error: can't open .nedfolders file: [Errno 2] No such file or directory: '.nedfolders'
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

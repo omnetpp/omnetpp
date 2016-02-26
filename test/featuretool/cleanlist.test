@@ -7,7 +7,7 @@ Lists features
 %prerun-command: rm -f .oppfeaturestate
 %prerun-command: rm -f .nedexclusions
 
-%testprog: opp_featuretool list
+%testprog: opp_featuretool -v list
 
 #%ignore-exitcode: 1
 
@@ -21,11 +21,11 @@ Lists features
 
 %contains: stdout
 List of all features:
-    +F_A
-    -F_B
-    -F_C
-    -F_D
-    +F_E
+    + F_A
+    - F_B
+    - F_C
+    - F_D
+    + F_E
 5 feature(s) found.
 
 %not-contains-regex: test.err
