@@ -166,7 +166,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
             addSpacer(form);
             group = createGroup(form, "Statistic Recording");
-            addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", null));
+            addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
             addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Warm-up Period"));
             addSpacer(form);
