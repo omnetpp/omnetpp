@@ -1242,10 +1242,26 @@ bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char 
     }
 }
 
+
 std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs() const
 {
+    // we resolve the section chain again, and search through all ancestor sections
+    //TODO it would be better if the flattened entry list or the section chain were stored by activateConfig()
     std::vector<const char *> result;
-    // FIXME TBD
+    std::vector<int> sectionChain = resolveSectionChain(activeConfig.c_str());
+    for (int i = 0; i < (int)sectionChain.size(); i++) {
+        int sectionId = sectionChain[i];
+        for (int i = 0; i < ini->getNumEntries(sectionId); i++) {
+            // if it's a parameter assignment or typename line, add it to the result
+            const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, i);
+            const char *lastDotPos = strrchr(entry.getKey(), '.');
+            bool containsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
+            if (lastDotPos && !containsHyphen) {
+                result.push_back(entry.getKey());
+                result.push_back(entry.getValue());
+            }
+        }
+    }
     return result;
 }
 
