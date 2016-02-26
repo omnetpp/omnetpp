@@ -547,7 +547,7 @@ public class ConfigRegistry {
         "Specifies which config Qtenv should set up automatically on startup. The " +
         "default is to ask the user.");
     public static final ConfigOption CFGID_QTENV_DEFAULT_RUN = addGlobalOption(
-        "qtenv-default-run", CFG_INT, "0",
+        "qtenv-default-run", CFG_INT, null,
         "Specifies which run (of the default config, see qtenv-default-config) Qtenv " +
         "should set up automatically on startup. The default is to ask the user.");
     public static final ConfigOption CFGID_QTENV_EXTRA_STACK = addGlobalOptionU(
