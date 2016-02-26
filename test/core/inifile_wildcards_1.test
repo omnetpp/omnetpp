@@ -78,7 +78,6 @@ void Simple::printParametersOf(cModule *mod)
 [General]
 network = Test
 cmdenv-express-mode = false
-**.cmdenv-ev-output = true
 **.param-record-as-scalar = false
 
 Test.p="1st-level, p"
