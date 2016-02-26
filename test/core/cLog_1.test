@@ -22,6 +22,4 @@ EV_TRACE  << "Hello" << endl;
 [INFO]   Hello
 [DETAIL] Hello
 [DEBUG]  Hello
-
-%not-contains: stdout
 [TRACE]  Hello

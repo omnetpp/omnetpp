@@ -92,4 +92,4 @@ Define_Module(TestModule);
 [testModuleName TestModule] Hello from TestModule method
 [objectName cLog_12::Object] Hello from Object
 [ ] Hello from NonCObject
-[ LoggableNonCObject] Hello from LoggableNonCObject
+[ ] Hello from LoggableNonCObject
