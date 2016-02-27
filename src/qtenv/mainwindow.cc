@@ -78,19 +78,23 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     ui->mainToolBar->addWidget(slider);
 
     // add current event status
-    QString labelStyleSheet = "QLabel { background: rgb(255, 255, 224); }";
     simTimeLabel = new QLabel();
-    simTimeLabel->setStyleSheet(labelStyleSheet);
-
+    simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
+    simTimeLabel->setStyleSheet("border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel = new QLabel();
-    eventNumLabel->setStyleSheet(labelStyleSheet);
+    eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
+    eventNumLabel->setStyleSheet("border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel->setAlignment(Qt::AlignRight);
-    eventNumLabel->setFont(QFont("Ubuntu",30));
 
     QHBoxLayout *l = new QHBoxLayout();
-    l->addStretch(3);
-    l->addWidget(eventNumLabel);
+    l->addStretch(0);
+    l->addWidget(eventNumLabel, 1);
+    eventNumLabel->setMaximumWidth(100);
+    eventNumLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
     l->addWidget(simTimeLabel, 1);
+    simTimeLabel->setMaximumWidth(200);
+    simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
+
     QWidget *w = new QWidget();
     w->setLayout(l);
     ui->mainToolBar->addWidget(w);
