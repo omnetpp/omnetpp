@@ -1982,6 +1982,12 @@ unsigned Qtenv::getExtraStackForEnvir() const
     return opt->extraStack;
 }
 
+QPoint Qtenv::getDefaultStopDialogCorner(const QPoint &offset)
+{
+    auto insp = getQtenv()->getMainModuleInspector();
+    return insp->mapToGlobal(insp->contentsRect().topRight() + offset); // not covering the toolbar
+}
+
 void Qtenv::setPref(const QString &key, const QVariant &value) {
     auto settings = (localPrefKeys.contains(key) ? localPrefs : globalPrefs);
     if (value.isValid())

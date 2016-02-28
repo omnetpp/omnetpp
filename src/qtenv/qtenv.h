@@ -256,7 +256,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       ModuleInspector *getMainModuleInspector() { return mainNetworkView; }
       LogInspector *getMainLogInspector() { return mainLogView; }
       TimeLineInspector *getMainTimeLineInspector() { return mainTimeLine; }
-
+      // currently the rop-right one, ignoring the decoration, use accordingly
+      QPoint getDefaultStopDialogCorner(const QPoint &offset = QPoint(-20, 80));
 
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key, const QVariant &defaultValue = QVariant());
