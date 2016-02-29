@@ -80,10 +80,10 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // add current event status
     simTimeLabel = new QLabel();
     simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
-    simTimeLabel->setStyleSheet("border: 1px solid palette(mid); font-size: 16px;");
+    simTimeLabel->setStyleSheet("background-color: white; border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel = new QLabel();
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
-    eventNumLabel->setStyleSheet("border: 1px solid palette(mid); font-size: 16px;");
+    eventNumLabel->setStyleSheet("background-color: white; border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel->setAlignment(Qt::AlignRight);
 
     QHBoxLayout *l = new QHBoxLayout();
