@@ -197,6 +197,12 @@ root directory where the following files are present:
         # defines command:
         defines_parser = subparsers.add_parser('defines', help='Print the compiler macros that can be used as a header file (i.e. the -DWITH_FEATURE options from the project features)')
 
+        # isenabled command
+        isenabled_parser = subparsers.add_parser('isenabled', help='Tests whether the specified features are enabled and returns with 0 exit code.')
+        isenabled_parser.add_argument('features', nargs='+',
+                    help='feature list',
+                    )
+
         # common arguments:
         self.parser.add_argument('-v', '--verbose', action='count', default=1, help='Verbose mode')
         self.parser.add_argument('-q', '--quiet', action='store_const', const=0, dest='verbose', help='Quiet mode')
@@ -706,6 +712,27 @@ root directory where the following files are present:
 
 
     ############################
+    def doIsEnabledCommand(self):
+        self.doValidateCommand()
+        # ISENABLED command #
+        featureOnList = set()
+        featureUnknownList = set()
+        for key in self.args.features:
+            if not key in self.features:
+                featureUnknownList.add(key)
+            elif not self.featurestate[key].enabled:
+                featureOnList.add(key)
+        if len(featureUnknownList) > 0:
+            fail("Unknown feature(s): {}.".format((", ".join(sorted(featureUnknownList)))))
+        if len(featureOnList) > 0:
+            if self.args.verbose >= 2:
+                print("Disabled feature(s): {}.".format((", ".join(sorted(featureOnList)))), file=sys.stderr)
+            sys.exit(1)
+        self.printIfVerbose(1, "Feature(s) {} are enabled.".format((", ".join(self.args.features))))
+        sys.exit(0)
+
+
+    ############################
     def run(self):
         self.errorOccurred = False
         self.fsChanged = False
@@ -752,6 +779,8 @@ root directory where the following files are present:
             self.doOptionsCommand()
         elif self.args.command == 'defines':
             self.doDefinesCommand()
+        elif self.args.command == 'isenabled':
+            self.doIsEnabledCommand()
         else:
             fail("unknown command '%s'" % self.args.command)
 
