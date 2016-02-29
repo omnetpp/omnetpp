@@ -1,0 +1,32 @@
+%description:
+Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders only
+Generates makemake args
+
+%prerun-command: cp ../../.nedfolders .
+%prerun-command: cp ../../.oppfeatures .
+%prerun-command: rm -f .oppfeaturestate
+%prerun-command: rm -f .nedexclusions
+
+%testprog: opp_featuretool defines
+
+#%ignore-exitcode: 1
+
+%postrun-command: ../../fileExistingCheck
+
+%contains: postrun-command(1).out
+'.oppfeatures' found.
+'.oppfeaturestate' not found.
+'.nedfolders' found.
+'.nedexclusions' not found.
+
+%contains: stdout
+#ifndef F_A
+#define F_A
+#endif
+
+#ifndef F_E
+#define F_E
+#endif
+
+%not-contains-regex: test.err
+[a-zA-Z0-9]
