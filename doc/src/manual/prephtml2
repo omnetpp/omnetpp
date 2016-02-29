@@ -76,7 +76,7 @@ if ($product ne "OMNEST") {
 $html =~ s|`\\opp`|$product|seg;
 
 # move chapter/section anchors into title
-$html =~ s|(<h[0-9]>)(.*?)(</h[0-9]>)\s*<a name="(.*?)"></a>|$1<a name="$4"/>$2$3|gi;
+$html =~ s|(<h[0-9]>)(.*?)(</h[0-9]>)\s*<a name="(.*?)"></a>|$1<a name="$4"/>$2<a class="headerlink" href="#$4" title="Permalink to this headline">¶</a>$3|gi;
 
 # add IDs to headers
 $ctr=100;

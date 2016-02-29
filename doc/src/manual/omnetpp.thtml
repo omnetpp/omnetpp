@@ -38,6 +38,9 @@
   table.matrix:before { left: -6px; border-right: 0px; }
   table.matrix:after { right: -6px; border-left: 0px; }
   table.matrix td { padding: 5px; text-align: center; border: 0px; }
+
+  a.headerlink { visibility: hidden; font-size: 0.8em; padding: 0 4px 0 4px; text-decoration: none; color: #1A41A8; }
+  h1:hover > a.headerlink, h2:hover > a.headerlink, h3:hover > a.headerlink, h4:hover > a.headerlink { visibility: visible; }
 </style>
 
 <body>
