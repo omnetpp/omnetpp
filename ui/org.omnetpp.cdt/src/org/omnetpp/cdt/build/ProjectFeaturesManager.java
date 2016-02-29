@@ -159,17 +159,21 @@ public class ProjectFeaturesManager {
     }
 
     protected Map<String, Boolean> loadFeatureEnablements() throws CoreException {
-        Document doc = readXmlFile(getFeatureStatesFile());
-        if (doc == null)
-            return null;
         Map<String, Boolean> result = new HashMap<String, Boolean>();
-        Element root = doc.getDocumentElement();
-        NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
-        for (int i = 0; i < featureElements.getLength(); i++) {
-            Element e = (Element)featureElements.item(i);
-            String id = getAttribute(e, ATT_ID);
-            boolean enabled = "true".equals(getAttribute(e, ATT_ENABLED));
-            result.put(id, enabled);
+        Document doc = readXmlFile(getFeatureStatesFile());
+        if (doc == null) {
+            for (ProjectFeature feature : features.values())
+                result.put(feature.getId(), feature.getInitiallyEnabled());
+        }
+        else {
+            Element root = doc.getDocumentElement();
+            NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
+            for (int i = 0; i < featureElements.getLength(); i++) {
+                Element e = (Element)featureElements.item(i);
+                String id = getAttribute(e, ATT_ID);
+                boolean enabled = "true".equals(getAttribute(e, ATT_ENABLED));
+                result.put(id, enabled);
+            }
         }
         return result;
     }
