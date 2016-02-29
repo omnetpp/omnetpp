@@ -8,12 +8,7 @@
       ws="cocoa,gtk,win32"
       arch="x86,x86_64">
 
-   <includes
-         id="com.lowagie.itext"
-         version="0.0.0"/>
-
    <requires>
-      <import feature="com.lowagie.itext"/>
       <import feature="org.eclipse.cdt"/>
       <import feature="org.eclipse.emf.common"/>
       <import feature="org.eclipse.emf.common.ui"/>

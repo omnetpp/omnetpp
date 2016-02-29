@@ -52,7 +52,6 @@ IDE:
   (Remove/add the features as needed)
 
   The following features should be present:
-      com.lowagie.itext
       org.eclipse.gmf.runtime.thirdparty
       org.eclipse.emf.common
       org.eclipse.emf.common.ui
