@@ -153,7 +153,7 @@ SIGNAL from module "Test", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleD
 
 DONE
 
-<!> No more events -- simulation ended at event #2, t=0.
+<!> No more events -- simulation ended at event #1, t=0.
 
 
 Calling finish() at end of Run #0...

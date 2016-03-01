@@ -18,8 +18,8 @@ cmdenv-performance-display= false
 
 %contains-regex: stdout
 Running simulation...
-\*\* Event #1   T=0   Elapsed: .*?
-\*\* Event #3   T=1   Elapsed: .*?
+\*\* Event #0   T=0   Elapsed: .*?
+\*\* Event #2   T=1   Elapsed: .*?
 
 <!> No more events -- simulation ended.
 

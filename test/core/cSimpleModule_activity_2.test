@@ -85,4 +85,4 @@ good bye from a
 ** Event #5  T=4   Test.b (Shadow, id=3)
 good bye from b
 
-<!> No more events -- simulation ended at event #6, t=4.
+<!> No more events -- simulation ended at event #5, t=4.

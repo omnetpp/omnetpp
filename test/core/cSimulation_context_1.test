@@ -112,7 +112,7 @@ Running simulation...
 - Test.b handleMessage: "packet"
 - Test.a handleMessage: "packet"
 
-<!> No more events -- simulation ended at event #5, t=1.
+<!> No more events -- simulation ended at event #4, t=1.
 
 
 Calling finish() at end of Run #0...
