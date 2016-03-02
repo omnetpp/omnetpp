@@ -285,7 +285,7 @@ class cMessage extends cEvent
     long treeId @group("message") @hint("Identifier shared between the message and its copies");
     short kind @group("message") @editable @hint("Generic user-settable attribute, usually carries \"type\" or \"role\" or \"category\" of message");
     string displayString @group("message") @hint("Controls appearance of the message in GUI");
-    cObject *tags[] @getter(getTag) @sizeGetter(getNumTags) @group("message") @hint("Pieces of metadata attached to the message");
+    cObject *tags[] @getter(getTag) @sizeGetter(getNumTags) @hint("Pieces of metadata attached to the message");
     cObject *controlInfo @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");
     cArray *parList @getter(getParListPtr) @group("message") @hint("OBSOLETE: use of \"parList\" should be replaced with message subclassing in the few models that still use it");
 
