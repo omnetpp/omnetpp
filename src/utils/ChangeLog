@@ -1,3 +1,17 @@
+2016-02-29  Zoltan Bojthe & Rudolf Hornig
+
+	* Updated opp_featuretool and related documentation. Removed unnecessary
+	warning when an omnetpp 4 compatible .nedfolders file is detected. Added
+	isenabled command.
+
+2016-02-10  Zoltan Bojthe
+
+	* Changed opp_test script to execute pre-run commands in testcase_run.
+
+2015-12-11  Rudolf Hornig
+
+	* Fixed copying opp_featuretool to the bin directory.
+
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-11-20  Zoltan Bojthe

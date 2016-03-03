@@ -1,3 +1,42 @@
+2016-02-29  Levente Meszaros
+
+	* Moved the implementation of cISimulationLifecycleListener interface from
+	envir plugin interfaces to the actual implementations. The lifecycle
+	listener interface is not required for the plugins. The affected envir
+	plugin interfaces are: cIOutputScalarManager, cIOutputVectorManager, and
+	cISnapshotManager. The affected envir plugin implementations are:
+	cFileOutputScalarManager, cFileOutputVectorManager, cFileSnapshotManager,
+	cIndexedFileOutputVectorManager, cMySQLOutputScalarManager, and
+	cMySQLOutputVectorManager.
+
+2016-02-26  Levente Meszaros
+
+	* Changed EventlogFileManager to implement the new cIEventlogManager plugin
+	interface. Added startRecording() and stopRecording() as required by the
+	plugin interface. Removed all other unclear function calls from cEnvir to
+	EventlogFileManager such as configure(), hasRecordingIntervals(), and
+	clearRecordingIntervals().
+
+2016-02-26  Andras Varga
+
+	* Fixed bug #950: inifile parameter assignments were not saved into .sca file.
+
+2016-02-24  Andras Varga
+
+	* Factored out "-h xxx" functionality into envirutils.cc.
+
+2016-02-24  Andras Varga
+
+	* Refined per-object config option kinds (added COMPONENT and CHANNEL).
+
+2016-02-23  Andras Varga
+
+	* Fixed double call to dumpResultRecorders().
+
+2016-02-22  Rudolf Hornig
+
+	* Updated version number and copyright header.
+
 2016-02-22  Andras Varga
 
 	* Introduced **.statistic-recording and **.bin-recording options.
@@ -24,6 +63,28 @@
 	**.bin-recording.
 
 	* Improved the descriptions of several per-object config options
+
+2016-02-08  Levente Meszaros
+
+	* Removed cEnvir::isDisabled() and added cEnvir::isLoggingEnabled(). Renamed
+	cEnvir::disableTracing member variable to cEnvir::loggingEnabled. Cleaned up
+	cEnvir::isLoggingEnabled() and cEnvir::isExpressMode() usages.
+
+2016-02-05  Andras Varga
+
+	* Renamed getRNGMappingFor(component) to preconfigure(component)
+
+2016-01-29  Rudolf Hornig
+
+	* Show WITH_OSG flag in opp_run -v if OSG was detected.
+
+2016-01-26  Andras Varga
+
+	* Switched from cEnvir::getClassNameForRenderer() to cEnvir::getRendererClassName().
+
+2015-12-09  Rudolf Hornig
+
+	* Image-path is no longer considered obsolete (it's again available in OMNeT++ 5)
 
 2015-12-07  ------ omnetpp-5.0b3 released ------
 

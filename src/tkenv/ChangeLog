@@ -1,3 +1,17 @@
+2016-02-22  Andras Varga
+
+	* Added fields to the toolbar that display the *current* simulation time
+	and event number. Refactored the status bars, and added a status line at
+	the bottom. The status bar displays the simulation time of the next event
+	along with the difference from the last event. Moved network description
+	and message info to the new status line.
+	* With the recent simulation kernel changes, printEventBanner() needs to be
+	called inside simulationEvent() so that it prints the correct (updated)
+	simulation time and event number.
+	* When animating, updateStatusDisplay() also needs to be called in
+	simulationEvent() so that the correct (updated) simulation time is displayed
+	during the animation.
+
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-12-02  Andras Varga

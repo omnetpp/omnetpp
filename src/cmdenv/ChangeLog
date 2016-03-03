@@ -1,3 +1,32 @@
+2016-02-22  Levente Meszaros & Andras Varga
+
+	* With the recent simulation kernel changes, printEventBanner() needs to be
+	called inside simulationEvent() so that it prints the correct (updated)
+	simulation time and event number.
+
+2016-02-15  Levente Meszaros
+
+	* Removed the cmdenv-global-log-level configuration option. It was
+	confusing due to being redundant with the per-component configuration
+	option. The equivalent is the **.cmdenv-log-level configuration option, it
+	should be used instead.
+
+2016-02-08  Levente Meszaros
+
+	* Fixed isExpressMode() to actually return true in express mode.
+	* Changed Cmdenv::log() to write to stdout whenever its called. Added a
+	check for blank log prefix for performance reasons.
+	* Removed the per-component cmdenv-ev-output configuration option. It's
+	superseded by per-component cmdenv-log-level configuration option.
+	* Removed the cmdenv-module-messages configuration option. It's superseded
+	by **.cmdenv-log-level = OFF configuration option.
+	* Removed the cmdenv-message-trace configuration option. It had very
+	limited usefulness, and it was somewhat overlapping with eventlog.
+
+2016-02-05  Andras Varga
+
+	* Moved per-component log level from sim to cmdenv.
+
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-10-16  Andras Varga

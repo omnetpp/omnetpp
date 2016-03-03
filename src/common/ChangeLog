@@ -1,3 +1,11 @@
+2016-02-15  Attila Torok
+
+	* Fixed global colors map, it's guaranteed to be constructed before use.
+
+2016-01-18  Andras Varga
+
+	* Added opp_substringbeforelast() and opp_substringafterlast().
+
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-11-17  Andras Varga

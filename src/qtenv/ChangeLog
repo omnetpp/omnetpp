@@ -1,3 +1,146 @@
+2016-02-29  Levente Meszaros
+
+	Changed the background color of the simtime and eventnum labels to white.
+
+2016-02-28  Attila Torok
+
+	StopDialog default position is under the floating toolbar. And its geometry can easily be made persistent.
+	Toolbar event status appearance modified. (layout, frame, font size)
+	Renamed .qtenv.ini to .qtenvrc.
+
+2016-02-26  Mihaly Palenik
+
+	follow recent Tkenv changes
+
+2016-02-26  Andras Varga
+
+	qtenv-default-run: use fallback instead of "-1" default
+
+2016-02-23  Levente Meszaros
+
+	Fixed module id in next module display.
+
+2016-02-22  Andras Varga
+
+	tkenv: display *current* simtime in toolbar
+
+	Also:
+	- refactored status bars
+	- printEventBanner() needs to be called inside simulationEvent() so that
+	it
+	 prints the correct (updated) simtime and eventnumber
+	- when animating, updateStatusDisplay() also need to be called in
+	simulationEvent()
+	 so that the correct (updated) simtime is displayed during the animation
+
+	- Cmdenv, Qtenv: moved printEventBanner into simulationEvent for the same
+	reason as in Tkenv
+
+2016-02-19  Attila Torok
+
+	Fixes to cComponent-wise loglevel persistence.
+
+2016-02-14  Attila Torok
+
+	GenericObjectInspector works with Qt5 now.
+	Added load(moc) to qtenv.pro.
+	Added Qt version information to the About dialog.
+	Fixed crashes when compiled without OSG.
+	Resolved issues with config and run selection from .ini, args and dialog.
+	Small changes to make the code compile with Qt5.
+	Undo wrong fix for run until message, apply correct one. Oops.
+	osg: Switching between camera manipulators doesn't reset the viewpoint anymore.
+
+2016-02-10  Attila Torok
+
+	logging: LogLevel of Components can be changed, and is saved/restored.
+	Also a small fix regarding switching of run modes.
+	Separate inspector preferences for toplevel and embedded
+	inspectors. The toplevel inspectors will default to the prefs of the
+	embedded ones if they don't have their own values.
+	Restored StopDialog button font size.
+	Context menu in LogInspector for messages, express run until message fixed.
+
+2016-02-08  Rudolf Hornig
+
+	ColorizeEffect fixed, image figures use it now, zoomLabel painting fixed, other small corrections.
+	styling, layouting, fixes, etc
+
+2016-02-08  Attila Torok
+
+	CompoundModuleItem: Border now takes width and height independently from the bgb tag.
+	Correct status display when single stepping.
+	Some interpolation mode changes.
+
+2016-02-04  Attila Torok
+
+	Style and layout fixes and adjustments (some are Mac-specific).
+
+2016-02-03  Rudolf Hornig
+
+	osgEarth: made it compile with osgEarth 2.7 (in Fedora 23).
+
+2016-02-01  Attila Torok
+
+	Inspector preferences.
+	Multiple ModuleInspectors in OSG mode should work better.
+	Closing the StopDialog in Express mode stops the simulation.
+	Doubleclicking on a cObjectNode in the OSG canvas sets the object to be inspected.
+
+2016-01-27  Attila Torok
+
+	GenericObjectInspector: The default mode for container-like objects is now children.
+	Scrolling fixed yet again. Context menu on green background.
+
+2016-01-27  Levente Meszaros
+
+	Added call to setComputeNearFarMode to prevent automatically updating zNear and zFar.
+
+2016-01-26  Andras Varga
+
+	sim: canvas: switch to getRendererClassName()
+
+2016-01-22  Andras Varga
+
+	sim: canvas: spelling: ArrowHead changed to Arrowhead everywhere
+
+2016-01-20  Attila Torok
+
+	Fixed the interpolation mode of pixmap figures.
+	The zoom label on the module canvas uses the canvas font now.
+	Added hasChildren() to GenericObjectTreeModel. This should make it a bit faster in some cases.
+
+2016-01-13  Attila Torok
+
+	Double confirmation dialog on Ctrl+Q fixed.
+	ModuleCanvasViewer: Scroll region correction and figure rendering fixes.
+	ModuleCanvasViewer now redraws the compound module upon refresh.
+	Context menu positions corrected.
+	Fixes and improvements to figure and arrowhead rendering.
+
+2016-01-08  Attila Torok
+
+	Minor corrections in ConnectionItem and OutlinedTextItem.
+	textviewerwidget: Another improvement to scrollbar handling.
+	submoduleitem: Icons are no longer colored if the weight is an empty string.
+	fileeditor: Changed the handling of QActions, F3 works now.
+	Flip window layout action fixed.
+	Implemented Qtenv::askyesno().
+	Splitter ratio now correctly saved and restored in both orientations.
+	Fixed a few compiler warnings here and there.
+	Increase/Decrease icon size shortcuts now work, fixed crashes when no network is set up.
+
+2015-12-07  Rudolf Hornig
+
+	fixed a build error on windows
+
+2015-12-03  Rudolf Hornig
+
+	a workaround for a bug where the floating toolbar was not properly
+	refreshed on MAC OS X when the inspector window was scrolled.
+	Right now we are putting the toolbar above the window on MAC OS X. We
+	could switch back to floating toolbar once the refresh issue is solved.
+
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-12-02  Andras Varga
