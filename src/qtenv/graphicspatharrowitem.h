@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H
 
 #include <QGraphicsPolygonItem>
+#include "qtenvdefs.h"
 
 class GraphicsPathArrowItem : public QGraphicsPolygonItem
 {

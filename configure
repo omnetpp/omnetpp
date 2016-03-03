@@ -6504,7 +6504,7 @@ fi
 
 #----------------------
 # Check for PTHREAD.
-# On MinGW, add "-mthread" to PTHREAD_CFLAGS and PTHREAD_LIBS to force using
+# On MinGW/gcc, add "-mthread" to PTHREAD_CFLAGS and PTHREAD_LIBS to force using
 # the multithreaded standard libraries.
 #----------------------
 
@@ -6583,7 +6583,9 @@ fi
 if test $pthread_ok = yes; then
     HAVE_PTHREAD=yes
     if test "$mingw" = yes; then
-        PTHREAD_CFLAGS="$PTHREAD_CFLAGS -mthreads"
+        if test "$CC" = gcc; then
+            PTHREAD_CFLAGS="$PTHREAD_CFLAGS -mthreads" # add mthread only for GCC but not for clang
+        fi
         PTHREAD_LIBS="$PTHREAD_LIBS -mthreads"
     fi
 else
