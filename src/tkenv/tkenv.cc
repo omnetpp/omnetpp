@@ -544,7 +544,7 @@ bool Tkenv::doRunSimulation()
             break;
         if (runUntil.time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= runUntil.time)
             break;
-        if (runUntil.eventNumber > 0 && getSimulation()->getEventNumber() >= runUntil.eventNumber)
+        if (runUntil.eventNumber > 0 && getSimulation()->getEventNumber() + 1 >= runUntil.eventNumber)
             break;
 
         checkTimeLimits();
@@ -615,7 +615,7 @@ bool Tkenv::doRunSimulationExpress()
         checkTimeLimits();
     } while (!stopSimulationFlag &&
              (runUntil.time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntil.time) &&
-             (runUntil.eventNumber <= 0 || getSimulation()->getEventNumber() < runUntil.eventNumber)
+             (runUntil.eventNumber <= 0 || getSimulation()->getEventNumber() + 1 < runUntil.eventNumber)
              );
 
     sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
