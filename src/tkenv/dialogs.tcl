@@ -131,7 +131,7 @@ proc aboutDialog {} {
 OMNeT++/OMNEST
 Discrete Event Simulation Framework
 
-(C) 1992-2015 Opensim Ltd.
+(C) 1992-2016 OpenSim Ltd.
 Release: $OMNETPP_RELEASE, build: $OMNETPP_BUILDID
 $OMNETPP_EDITION
 
