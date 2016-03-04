@@ -27,7 +27,7 @@ Options:
   it is strongly recommended to update your models as soon as possible.
 
 ifdef::OMNEST[]
-`SYSTEMC=no`::
+`WITH_SYSTEMC=yes`::
   Use this variable to enable integration whith the bundled SystemC reference implementation.
 endif::OMNEST[]
 

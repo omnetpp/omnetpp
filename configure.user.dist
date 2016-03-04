@@ -21,11 +21,6 @@
 PREFER_CLANG=yes
 
 #
-# Set to "yes" to compile with C++ 11 support enabled (-std=c++11)
-#
-USE_CXX11=yes
-
-#
 # Compiler optimization switches. There are two sets of switches,
 # and the MODE variable ("debug" or "release") decides which one gets used.
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
@@ -73,9 +68,9 @@ WITH_PARSIM=yes
 
 #
 # Set to "yes" to enable SystemC support. (Available only in the commecial version (OMNEST))
-# Please note that SystemC is not supported on MacOS and on the MinGW compiler on Windows.
+# Please note that SystemC is not supported on MAC OS X and on the MinGW compiler on Windows.
 #
-SYSTEMC=no
+WITH_SYSTEMC=no
 
 #
 # Set to no if you want to create static OMNeT++ libraries. Can be overriden
@@ -83,6 +78,11 @@ SYSTEMC=no
 # with "make SHARED_LIBS=no"
 #
 SHARED_LIBS=yes
+
+#
+# Set to "yes" to compile with C++ 11 support enabled (-std=c++11)
+#
+USE_CXX11=yes
 
 #
 # Compiler and linker options for Tcl/Tk

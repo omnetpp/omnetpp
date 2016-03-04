@@ -56,7 +56,7 @@ SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo osg-intro osg-earth osg-
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 # add systemc optionally
-ifeq "$(SYSTEMC)" "yes"
+ifeq "$(WITH_SYSTEMC)" "yes"
 ifneq "$(wildcard src/systemc)" ""
 BASE+= systemc
 SAMPLES+= systemc-embedding

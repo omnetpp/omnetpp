@@ -205,6 +205,8 @@ DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-no}
 USE_CXX11=${USE_CXX11:-yes}
 PREFER_QTENV=${PREFER_QTENV:-no}
+WITH_QTENV=${WITH_QTENV:-yes}
+WITH_TKENV=${WITH_TKENV:-yes}
 
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
@@ -223,7 +225,7 @@ CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 SHARED_LIBS=${SHARED_LIBS:-yes}
 
 # No SystemC support by default
-SYSTEMC=${SYSTEMC:-no}
+WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
@@ -1318,7 +1320,7 @@ AC_SUBST(DLL_LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 
-AC_SUBST(SYSTEMC)
+AC_SUBST(WITH_SYSTEMC)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
@@ -1429,13 +1431,13 @@ fi
 #---------------------------
 
 #if test -d src/systemc; then
-#  if test "$SYSTEMC" = "yes"; then
+#  if test "$WITH_SYSTEMC" = "yes"; then
 #    if test "$PLATFORM" != "linux.x86" -a "$PLATFORM" != "linux.x86_64"; then
-#        AC_MSG_ERROR([SystemC is enabled, but it is not supported on this platform. Set SYSTEMC=no in configure.user])
+#        AC_MSG_ERROR([SystemC is enabled, but it is not supported on this platform. Set WITH_SYSTEMC=no in configure.user])
 #    fi
 #  else
 #    if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
-#        AC_MSG_NOTICE([SystemC is disabled. You can enable it by setting SYSTEMC=yes in configure.user])
+#        AC_MSG_NOTICE([SystemC is disabled. You can enable it by setting WITH_SYSTEMC=yes in configure.user])
 #    fi
 #  fi
 #fi

@@ -8,6 +8,11 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 OMNeT++ 5.0 (February 2016)
 ---------------------------
 
+Core:
+
+ - Introduced WITH_TKENV, WITH_QTENV, WITH_OSG and WITH_SYSTEMC settings in 
+   configure.user to disable certain features if they are not needed.
+
 Samples:
 
  - Removed google-earth demo in favor of the osg-earth sample.
