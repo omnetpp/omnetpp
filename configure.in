@@ -881,7 +881,7 @@ fi # WITH_OSG
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
-if test -n "$NO_TCL"; then
+if test "$WITH_TKENV" != "yes"; then
     # skip testing for TCL
     TKENV_IF_POSSIBLE=missing-dependency
 else
@@ -980,7 +980,7 @@ else
     # and build samples using Tkenv
     ALL_ENV_LIBS+=' $(TKENV_LIBS)'
 
-fi # end of Tcl tests ($NO_TCL=="" branch)
+fi # end of Tcl tests ($WITH_TKENV branch)
 
 #----------------------
 # Check for JRE
@@ -1191,7 +1191,7 @@ fi
 DEFINES="$DEFINES -DXMLPARSER=$XMLPARSER"
 
 # zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
-if test $libxml_ok = yes -o $expat_ok = yes -o -z "$NO_TCL"; then
+if test $libxml_ok = yes -o $expat_ok = yes -o "$WITH_TKENV" = "yes" ; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
@@ -1319,7 +1319,6 @@ AC_SUBST(EXE_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 
 AC_SUBST(SYSTEMC)
-AC_SUBST(NO_TCL)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
@@ -1361,6 +1360,8 @@ AC_SUBST(OMNETPP_TKENV_DIR)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
+AC_SUBST(WITH_TKENV)
+AC_SUBST(WITH_QTENV)
 AC_SUBST(WITH_OSG)
 
 AC_SUBST(JAVA_CFLAGS)
@@ -1528,13 +1529,12 @@ fi
 # Check if TCL_LIBRARY is set.
 #----------------------
 
-if test -n "$NO_TCL"; then
+if test "$WITH_TKENV" != "yes"; then
 
     cat << EOT
 
-$OMNETPP_PRODUCT was configured without Tcl/Tk (\$NO_TCL set). Tkenv (the GUI
-runtime environment) will not be available, simulations need to be run
-under Cmdenv.
+$OMNETPP_PRODUCT was configured without Tcl/Tk (\$WITH_TKENV = no). Tkenv (the GUI
+runtime environment) will not be available.
 EOT
 
 elif test "$PLATFORM" = "macosx"; then

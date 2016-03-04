@@ -37,18 +37,29 @@ USE_CXX11=yes
 
 #
 # Linker switches used for linking.
-# For example use the -m64 switch to build 64 bit binaies on a 32bit operating system
-# (only if the 64bit libraries are installed of course). You should add the -m64 flag
-# to the CFLAGS_... variables too !!!
-# NOTE: that not all 64 bit libraries may be present on your system (i.e. Tcl/Tk and other
-# libraries may be missing. Use the NO_TCL=yes if you want to skip the Tcl/Tk based parts)
 #
 #LDFLAGS=""
 
 #
-# If you don't have Tcl/Tk installed, adding
-#  NO_TCL=true
-# below lets you build just the non-GUI components.
+# Set to "yes" to enable the Tcl/Tk based graphical runtime environment (Tkenv)
+#
+WITH_TKENV=yes
+
+#
+# Set to "yes" to enable the Qt based graphical runtime environment (Qtenv)
+#
+WITH_QTENV=yes
+
+#
+# Set to "yes" to enable OpenSceneGraph and osgEarth support in Qtenv
+#
+WITH_OSG=yes
+
+#
+# Select whether the defaut graphical runtime envirnment should be Qtenv (instead of Tkenv)
+# Set to "yes" to use Qtenv by default
+#
+PREFER_QTENV=no
 
 #
 # Set to "yes" to enable simulation executables to load NED files dynamically.
@@ -59,11 +70,6 @@ WITH_NETBUILDER=yes
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
 WITH_PARSIM=yes
-
-#
-# Set to "yes" to enable OpenSceneGraph and osgEarth support in Qtenv
-#
-WITH_OSG=yes
 
 #
 # Set to "yes" to enable SystemC support. (Available only in the commecial version (OMNEST))
@@ -119,14 +125,8 @@ SHARED_LIBS=yes
 #
 EMBED_TCL_CODE=yes
 
-
-# Select whether the defaut graphical runtime envirnment should be Qtenv (instead of Tkenv)
-# Set to "yes" to use Qtenv by default
-#
-PREFER_QTENV=no
-
 # Select which QT version you prefer to use.
-# Possible values: 4, 5 or leave it empty (comment out) to disable QT support
+# Possible values: 4, 5 or leave it empty (comment out) to disable Qtenv support
 QT_VERSION=4
 
 #
