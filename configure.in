@@ -850,31 +850,33 @@ fi
 # Detecting OpenSceneGraph (libopenscenegraph-dev)
 # and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
 #-----------------------------
-if test -z "$OSG_LIBS"; then
-    OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
-fi
-OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
-if test $osg_ok = no; then
-  OSG_LIBS=""
-  AC_MSG_WARN([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!])
-else
-    # OpenSceneGraph found, detect osgEarth, too
-    if test -z "$OSGEARTH_LIBS"; then
-        OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
-    fi
-    OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS_RELEASE $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
-    if test $osgearth_ok = no; then
-      OSGEARTH_LIBS=""
-      AC_MSG_ERROR([Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required.])
-    else
-        # on MAC and Windows we don't have to link the executables directly with these libs
-        if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
-          SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
-        fi
-        # models can detect whether OSG is present based on the presence of WITH_OSG macro
-        DEFINES="$DEFINES -DWITH_OSG"
-    fi
-fi
+if test "$WITH_OSG" = yes; then
+  if test -z "$OSG_LIBS"; then
+      OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
+  fi
+  OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
+  if test $osg_ok = no; then
+    OSG_LIBS=""
+    AC_MSG_WARN([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!])
+  else
+      # OpenSceneGraph found, detect osgEarth, too
+      if test -z "$OSGEARTH_LIBS"; then
+          OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+      fi
+      OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS_RELEASE $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
+      if test $osgearth_ok = no; then
+        OSGEARTH_LIBS=""
+        AC_MSG_ERROR([Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required.])
+      else
+          # on MAC and Windows we don't have to link the executables directly with these libs
+          if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
+            SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
+          fi
+          # models can detect whether OSG is present based on the presence of WITH_OSG macro
+          DEFINES="$DEFINES -DWITH_OSG"
+      fi
+  fi
+fi # WITH_OSG
 
 #----------------------
 # Check for Tcl/Tk.
@@ -1359,6 +1361,7 @@ AC_SUBST(OMNETPP_TKENV_DIR)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
+AC_SUBST(WITH_OSG)
 
 AC_SUBST(JAVA_CFLAGS)
 AC_SUBST(JAVA_LIBS)

@@ -587,6 +587,7 @@ LIBOBJS
 PLATFORM
 JAVA_LIBS
 JAVA_CFLAGS
+WITH_OSG
 WITH_PARSIM
 WITH_NETBUILDER
 OMNETPP_TKENV_DIR
@@ -5083,9 +5084,10 @@ fi
 # Detecting OpenSceneGraph (libopenscenegraph-dev)
 # and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
 #-----------------------------
-if test -z "$OSG_LIBS"; then
-    OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
-fi
+if test "$WITH_OSG" = yes; then
+  if test -z "$OSG_LIBS"; then
+      OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
+  fi
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5120,15 +5122,15 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-if test $osg_ok = no; then
-  OSG_LIBS=""
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&5
+  if test $osg_ok = no; then
+    OSG_LIBS=""
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&5
 $as_echo "$as_me: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&2;}
-else
-    # OpenSceneGraph found, detect osgEarth, too
-    if test -z "$OSGEARTH_LIBS"; then
-        OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
-    fi
+  else
+      # OpenSceneGraph found, detect osgEarth, too
+      if test -z "$OSGEARTH_LIBS"; then
+          OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+      fi
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5163,18 +5165,19 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    if test $osgearth_ok = no; then
-      OSGEARTH_LIBS=""
-      as_fn_error $? "Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required." "$LINENO" 5
-    else
-        # on MAC and Windows we don't have to link the executables directly with these libs
-        if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
-          SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
-        fi
-        # models can detect whether OSG is present based on the presence of WITH_OSG macro
-        DEFINES="$DEFINES -DWITH_OSG"
-    fi
-fi
+      if test $osgearth_ok = no; then
+        OSGEARTH_LIBS=""
+        as_fn_error $? "Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required." "$LINENO" 5
+      else
+          # on MAC and Windows we don't have to link the executables directly with these libs
+          if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
+            SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
+          fi
+          # models can detect whether OSG is present based on the presence of WITH_OSG macro
+          DEFINES="$DEFINES -DWITH_OSG"
+      fi
+  fi
+fi # WITH_OSG
 
 #----------------------
 # Check for Tcl/Tk.
@@ -7001,6 +7004,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
