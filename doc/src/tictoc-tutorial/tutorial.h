@@ -55,9 +55,14 @@ Here are the steps you take to implement your first simulation from scratch:
 
 1. Create a working directory called tictoc, and cd to this directory.
 
-2. Describe your example network by creating a topology file. A topology file is a
+2. Describe your example network by creating a topology file. Topology files
+are written in the NED language (Network Definition).
+A  NED topology file is a
 text file that identifies the network's nodes and the links between them.
 You can create it with your favourite text editor.
+@note You can find a detailed description of the NED language in <a href="../manual/usman.html#cha:ned-lang" target="blank">Section 3</a> of the
+@opp manual (it's also in the <tt>doc</tt> directory of your @opp installation).
+
 Let's call it tictoc1.ned:
 
 @include tictoc1.ned
@@ -73,6 +78,8 @@ The file is best read from the bottom up. Here's what it says:
      will be implemented in C++). Txc1 has one input gate named in,
      and one output gate named out (<tt>simple ... { ... }</tt>).
 
+@note You can find more information on Simple modules in <a href="../manual/usman.html#cha:simple-modules" target="_blank">Section 4</a> of the @opp manual.
+
 3. We now need to implement the functionality of the simple module Txc1. This is
 achieved by writing a C++ file @ref txc1.cc:
 
@@ -80,7 +87,9 @@ achieved by writing a C++ file @ref txc1.cc:
 
 The Txc1 simple module type is represented by the C++ class Txc1, which
 has to be subclassed from cSimpleModule, and registered in @opp with the
-Define_Module() macro. We redefine two methods from cSimpleModule: initialize()
+Define_Module() macro.
+
+We redefine two methods from cSimpleModule: initialize()
 and handleMessage(). They are invoked from the simulation kernel:
 the first one only once, and the second one whenever a message arrives at the module.
 
@@ -131,6 +140,9 @@ in the commercial version OMNEST.
 If there are compilation errors, you need to rectify those and repeat the make until
 you get an error-free compilation and linking.
 
+@note It might be more convenient to use the @opp IDE for starting simulations. You can create a new project and add your source files, or open an existing one.
+You can build the project, and the IDE automatically creates and runs the make file. Right click on <i>omnetpp.ini</i> and select <i>Run as</i>, then <i>@opp Simulation</i>.
+
 6. If you start the executable now, it will complain that it cannot find
 the file omnetpp.ini, so you have to create one. omnetpp.ini tells the
 simulation program which network you want to simulate (yes, several networks
@@ -180,10 +192,35 @@ by hitting F8 (equivalent to the STOP button on the toolbar), single-step
 through it (F4), run it with (F5) or without (F6) animation.
 F7 (express mode) completely turns off tracing features for maximum speed.
 Note the event/sec and simsec/sec gauges on the status bar of the
-main window.
+main window (only visible when the simulation is running in fast or express mode).
 
 10. You can exit the simulation program by clicking its Close icon or
 choosing File|Exit.
+
+@note There are some typical mistakes that people who are new to @opp make:
+
+@note-   The module type name must be the same in both the .ned and .cc files,
+    and it is case sensitive (there are ways that this can be overriden in the .ned files,
+    please refer to the manual).
+    It is a common mistake to either forget the Define_Module() macro, or mistype the module name so it is
+    not the same in the .ned and .cc files.
+    These mistakes yield the following errors, respectively:
+
+@note    <i>Error in module
+    (omnetpp::cModule) Tictoc1 (id=1) during network setup: Class "Txc1" not found -- perhaps
+    its code was not linked in, or the class wasn't registered with Register_Class(), or in
+    the case of modules and channels, with Define_Module()/Define_Channel().</i>
+
+@note    and
+
+@note    <i>Error in module (omnetpp::cModule) TicToc1 (id=1) during network setup:
+    Submodule tic: cannot resolve module type 'Txc1' (not in the loaded NED files?), at
+    /omnetpp-5.0b3/samples/tictoc/tictoc1.ned:26.</i>
+
+@note-   Also, you must run <tt>opp_makemake</tt> and <tt>make</tt> after adding any source files to the project.
+    Failing to do so will be indicated by the first error message above.
+
+@note    If you use the @opp IDE, this is done automatically.
 
 Sources: @ref tictoc1.ned, @ref txc1.cc, @ref omnetpp.ini
 
@@ -527,6 +564,8 @@ There we just created another packet if we needed to
 retransmit. This is OK because the packet didn't contain much, but
 in real life it's usually more practical to keep a copy of the original
 packet so that we can re-send it without the need to build it again.
+Keeping a pointer to the sent message - so we can send it again - might seem easier,
+but when the message is destroyed at the other node the pointer becomes invalid.
 
 What we do here is keep the original packet and send only copies of it.
 We delete the original when toc's acknowledgement arrives.
@@ -693,8 +732,11 @@ The message class specification is in tictoc13.msg:
 @skip message TicTocMsg13
 @until }
 
+@note See <a href="../manual/usman.html#cha:msg-def" target="_blank">Section 6</a> of the @opp manual for more details on messages.
+
 The makefile is set up so that the message compiler, opp_msgc is invoked
-and it generates tictoc13_m.h and tictoc13_m.cc from the message declaration.
+and it generates tictoc13_m.h and tictoc13_m.cc from the message declaration
+(The file names are generated from the tictoc13.msg file name, not the message type name).
 They will contain a generated TicTocMsg13 class subclassed from cMessage;
 the class will have getter and setter methods for every field.
 
@@ -869,10 +911,16 @@ in the code below write into the <tt>Tictoc15-0.sca</tt> file.
 
 The files are stored in the <tt>results/</tt> subdirectory.
 
-You can also view the data during simulation. In the module inspector's
-Contents page you'll find the hopCountStats and hopCountVector objects,
-and you can open their inspectors (double-click). They will be initially
-empty -- run the simulation in Fast (or even Express) mode to get enough
+You can also view the data during simulation. To do that, right click on a module, and
+choose <tt>Open Details</tt>. In the module inspector's Contents page you'll find the hopCountStats
+and hopCountVector objects. To open their inspectors, right click on <tt>cLongHistogram hopCountStats</tt> or
+<tt>cOutVector HopCount</tt>, and click <tt>Open Graphical View</tt>.
+
+<img src="open_details.png">
+
+<img src="open_graphical_view.png">
+
+They will be initially empty -- run the simulation in Fast (or even Express) mode to get enough
 data to be displayed. After a while you'll get something like this:
 
 <img src="step12a.gif">
@@ -984,8 +1032,18 @@ The @opp IDE can help you to analyze your results. It supports filtering,
 processing and displaying vector and scalar data, and can display histograms too.
 The following diagrams have been created with the Result Analysis tool of the IDE.
 
+The <tt>results</tt> directory in the project folder contains .vec and .sca files, which are the files that store the results in vector and scalar form, respectively.
+Vectors record data values as a function of time, while scalars typically record aggregate values at the end of the simulation.
+To open the Result Analysis tool, double click on either the .vec or the .sca files in the @opp IDE. Both files will be loaded by the Result Analysis tool.
+You can find the <tt>Browse Data</tt> tab at the bottom of the Result Analysis tool panel. Here you can browse results by type by switching the various tabs
+at the top of the tool panel, ie. Scalars, Vectors, or Histograms. By default, all results of a result type are displayed. You can filter them by the module filter
+to view all or some of the individual modules, or the statistic name filter to display different types of statistics, ie. mean, max, min, standard deviation, etc.
+You can select some or all of the individual results by highlighting them. If you select multiple results, they will be plotted on one chart. Right click and select Plot to display the figures.
+
+<img src="statistics.png">
+
 @note For further information about the charting and processing capabilities,
-please refer to the <b>@opp Users Guide</b>.
+please refer to the <a href="../UserGuide.pdf" target="_blank"><b>@opp Users Guide</b></a> (you can also find it in the <tt>doc</tt> directory of the @opp installation).
 
 Our last model records the <tt>hopCount</tt> of a message each time the message
 reaches its destination. The following plot shows these vectors for nodes 0 and 1.
@@ -1010,8 +1068,11 @@ The following diagram shows the histogram of <tt>hopCount</tt>'s distribution.
 @section logs Sequence charts end event logs
 
 The @opp simulation kernel can record the message exchanges during the
-simulation into an <i>event log file</i>. This log file can be analyzed later
-with the Sequence Chart tool.
+simulation into an <i>event log file</i>. To enable recording the event log, you must specify <i>record-eventlog = true</i> in omnetpp.ini.
+Alternatively, you can click on the <tt>Record</tt> button in the graphical runtime environment.
+This log file can be analyzed later with the Sequence Chart tool. The <tt>results</tt> directory in the project folder contains
+the <tt>.elog</tt> file. Double clicking on this in the @opp IDE opens the Sequence Chart tool,
+and the event log tab at the bottom of the screen.
 
 The following figure has been created with the Sequence Chart tool, and shows
 how the message is routed between the different nodes in the network.
