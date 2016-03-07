@@ -20,6 +20,8 @@
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
 
+#include <omnetpp/osgutil.h>
+
 #include "GroundStation.h"
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
@@ -66,7 +68,7 @@ void GroundStation::initialize(int stage)
         auto pat = new osg::PositionAttitudeTransform();
         pat->setScale(osg::Vec3d(modelScale, modelScale, modelScale));
 
-        auto objectNode = cOsgCanvas::createOmnetppObjectNode(this);
+        auto objectNode = new cObjectOsgNode(this);
         pat->addChild(objectNode);
         objectNode->addChild(modelNode);
         locatorNode->addChild(pat);

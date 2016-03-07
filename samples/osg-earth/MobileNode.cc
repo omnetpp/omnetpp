@@ -15,6 +15,8 @@
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
 
+#include <omnetpp/osgutil.h>
+
 #include "MobileNode.h"
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
@@ -66,7 +68,7 @@ void MobileNode::initialize(int stage)
                             osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
         modelNode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
-        auto objectNode = cOsgCanvas::createOmnetppObjectNode(this);  // make the node selectable in QTEnv
+        auto objectNode = new cObjectOsgNode(this);  // make the node selectable in Qtenv
         objectNode->addChild(modelNode);
         locatorNode->addChild(objectNode);
 

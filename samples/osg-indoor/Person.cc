@@ -9,6 +9,7 @@
 
 #ifdef WITH_OSG
 #include <osgDB/ReadFile>
+#include <omnetpp/osgutil.h>
 #include "Person.h"
 #include "OsgScene.h"
 
@@ -45,7 +46,7 @@ void Person::initialize(int stage)
         if (!modelNode)
             throw cRuntimeError("Model file \"%s\" not found or format is not recognized", modelURL.c_str());
 
-        auto objectNode = cOsgCanvas::createOmnetppObjectNode(this);  // make the node selectable in QTEnv
+        auto objectNode = new cObjectOsgNode(this);  // make the node selectable in Qtenv
         objectNode->addChild(modelNode);
 
         patNode = new osg::PositionAttitudeTransform();

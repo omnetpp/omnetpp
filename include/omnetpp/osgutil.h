@@ -20,7 +20,7 @@
 // DO NOT #include THIS FILE INTO <OMNETPP.H> BECAUSE WE DON'T WANT
 // <OMNETPP.H> TO PULL IN OSG HEADERS!
 
-#include "simkerneldefs.h"
+#include <omnetpp.h>
 
 #ifdef WITH_OSG
 
@@ -33,24 +33,47 @@ class cObject;
 /**
  * osg::Node for defining correspondence to an OMNeT++ object.
  */
-class SIM_API OmnetppObjectNode : public osg::Group
+class SIM_API cObjectOsgNode : public osg::Group
 {
     protected:
         int componentId; // 0=none
-        cObject *object; // object pointer; if componentId!=0, it takes precedence
+        const cObject *object; // object pointer; if componentId!=0, it takes precedence
 
     protected:
-        virtual ~OmnetppObjectNode();
+        virtual ~cObjectOsgNode() {}
 
     public:
-        OmnetppObjectNode();
-        OmnetppObjectNode(cObject* object);
-        OmnetppObjectNode(const OmnetppObjectNode& node, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
-        META_Node(osg, OmnetppObjectNode);
+        cObjectOsgNode() : componentId(0), object(nullptr) {}
+        cObjectOsgNode(const cObject *object) : componentId(0), object(nullptr) { setObject(object);}
+        cObjectOsgNode(const cObjectOsgNode& node, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
+        META_Node(osg, cObjectOsgNode);
 
-        cObject* getObject() const;
-        void setObject(cObject* obj);
+        const cObject *getObject() const;
+        void setObject(const cObject *obj);
 };
+
+inline cObjectOsgNode::cObjectOsgNode(const cObjectOsgNode& node, const osg::CopyOp& copyop) : Group(node, copyop)
+{
+    componentId = node.componentId;
+    object = node.object;
+}
+
+inline const cObject *cObjectOsgNode::getObject() const
+{
+    return componentId != 0 ? getSimulation()->getComponent(componentId) : object;
+}
+
+inline void cObjectOsgNode::setObject(const cObject *obj)
+{
+    if (const cComponent *component = dynamic_cast<const cComponent*>(obj)) {
+        componentId = component->getId();
+        object = nullptr;
+    }
+    else {
+        componentId = 0;
+        object = obj;
+    }
+}
 
 } // namespace omnetpp
 

@@ -100,32 +100,6 @@ void cOsgCanvas::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
     *earthViewpoint = viewpoint;
 }
 
-osg::Group *cOsgCanvas::createOmnetppObjectNode(cObject *object)
-{
-    return new OmnetppObjectNode(object);
-}
-
-bool cOsgCanvas::isOmnetppObjectNode(osg::Group *omnetppObjectNode)
-{
-    return dynamic_cast<OmnetppObjectNode*>(omnetppObjectNode) != nullptr;
-}
-
-void cOsgCanvas::setOmnetppObject(osg::Group *omnetppObjectNode, cObject *object)
-{
-    OmnetppObjectNode *node = dynamic_cast<OmnetppObjectNode*>(omnetppObjectNode);
-    if (!node)
-        throw cRuntimeError("cOsgCanvas::setOmnetppObject(): node is not an OmnetppObjectNode");
-    node->setObject(object);
-}
-
-cObject *cOsgCanvas::getOmnetppObject(osg::Group *omnetppObjectNode)
-{
-    OmnetppObjectNode *node = dynamic_cast<OmnetppObjectNode*>(omnetppObjectNode);
-    if (!node)
-        throw cRuntimeError("cOsgCanvas::setOmnetppObject(): node is not an OmnetppObjectNode");
-    return node->getObject();
-}
-
 cOsgCanvas::Vec3d::operator osg::Vec3d() const {
     return osg::Vec3d(x, y, z);
 }

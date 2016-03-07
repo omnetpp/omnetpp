@@ -208,14 +208,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
         //TODO more osgEarth-related hints
 
         //@}
-
-        /**
-         * TODO
-         */
-        static osg::Group *createOmnetppObjectNode(cObject *object);
-        static bool isOmnetppObjectNode(osg::Group *omnetppObjectNode);
-        static void setOmnetppObject(osg::Group *omnetppObjectNode, cObject *object);
-        static cObject *getOmnetppObject(osg::Group *omnetppObjectNode);
 };
 
 } // namespace omnetpp
