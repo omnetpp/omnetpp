@@ -31,7 +31,7 @@ Tcl/Tk 8.5 or later::
   Required by the Tkenv simulation runtime environment.
   You need the 'devel' packages that include the C header files as well.
   It is also possible to compile @OMNETPP@ without Tcl/Tk (and Tkenv),
-  by turning on the `NO_TCL` environment variable.
+  by setting then `WITH_TKENV=no` environment variable.
 LibXML2 or Expat::
   Either one of these XML parsers are needed for @OMNETPP@ to be able
   to read XML files. The 'devel' packages (that include the header files)
@@ -90,7 +90,7 @@ If your platform does not have suitable Tcl/Tk packages, you may still use @OMNE
 to run simulations from the command line. To disable the graphical runtime environment
 use:
 
-  $ NO_TCL=yes ./configure
+  $ WITH_TKENV=no ./configure
 
 This will prevent the build system to link with Tcl/Tk libraries. This is required also
 if you are installing @OMNETPP@ from a remote terminal session.
@@ -187,7 +187,7 @@ via an ssh session, or there is some other reason why X is not running,
 the easiest way to work around the problem is to tell @OMNETPP@ to build
 without Tcl/Tk. To do that, use the command
 
-  $ NO_TCL=1 ./configure
+  $ WITH_TKENV=no ./configure
 
 instead of plain `./configure`.
 

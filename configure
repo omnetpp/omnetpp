@@ -4662,8 +4662,8 @@ ALL_ENV_LIBS='$(CMDENV_LIBS)'
 #-----------------------------
 # Check for Qt cflags and libs
 #-----------------------------
-if test -z "$QT_VERSION"; then
-    # skip building QT
+if test "$WITH_QTENV" != "yes"; then
+    # skip building Qtenv
     QTENV_IF_POSSIBLE=missing-dependency
 else
     if test "$QT_VERSION" = "5"; then
@@ -4872,6 +4872,8 @@ rm -f core conftest.err conftest.$ac_objext \
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
             # QT_CFLAGS+=' -I/usr/include/QtOpenGL' # we need this because of a bug in qmake that prevents correctly detecting the include directory of the QtOpenGL library (on MinGW-64 and on Fedora 23)
             QTENV_IF_POSSIBLE=qtenv
+            # models can detect whether Qtenv is present based on the presence of WITH_QTENV macro
+            DEFINES="$DEFINES -DWITH_QTENV"
         fi
     elif test "$QT_VERSION" = "4"; then
         # Check for qmake.
@@ -5079,6 +5081,8 @@ rm -f core conftest.err conftest.$ac_objext \
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
             QT_CFLAGS+=' -I/usr/include/QtOpenGL' # we need this because of a bug in qmake that prevents correctly detecting the include directory of the QtOpenGL library (on MinGW-64 and on Fedora 23)
             QTENV_IF_POSSIBLE=qtenv
+            # models can detect whether Qtenv is present based on the presence of WITH_QTENV macro
+            DEFINES="$DEFINES -DWITH_QTENV"
         fi
     fi
 fi
@@ -5087,7 +5091,7 @@ fi
 # Detecting OpenSceneGraph (libopenscenegraph-dev)
 # and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
 #-----------------------------
-if test "$WITH_OSG" = yes; then
+if test "$WITH_OSG" = "yes"; then
   if test -z "$OSG_LIBS"; then
       OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
   fi
@@ -5941,6 +5945,8 @@ test -n "$WISH" || WISH="nope"
     # and build samples using Tkenv
     ALL_ENV_LIBS+=' $(TKENV_LIBS)'
 
+    # models can detect whether Tkenv is present based on the presence of WITH_TKENV macro
+    DEFINES="$DEFINES -DWITH_TKENV"
 fi # end of Tcl tests ($WITH_TKENV branch)
 
 #----------------------
@@ -8441,8 +8447,8 @@ if test "$WITH_TKENV" != "yes"; then
 
     cat << EOT
 
-$OMNETPP_PRODUCT was configured without Tcl/Tk (\$WITH_TKENV = no). Tkenv (the GUI
-runtime environment) will not be available.
+$OMNETPP_PRODUCT was configured with \$WITH_TKENV = no. The Tcl/Tk based graphical
+runtime environment (Tkenv) will not be available.
 EOT
 
 elif test "$PLATFORM" = "macosx"; then
@@ -8456,6 +8462,19 @@ elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
 WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
 init.tcl or tclConfig.sh file in that directory. (TCL_LIBRARY usually points
 to /usr/lib/tcl8.5)
+EOT
+
+fi
+
+#--------------
+# Qtenv warning
+#--------------
+if test "$WITH_QTENV" != "yes"; then
+
+    cat << EOT
+
+$OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt based graphical
+runtime environment (Qtenv) will not be available.
 EOT
 
 fi

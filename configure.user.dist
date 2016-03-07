@@ -46,15 +46,14 @@ WITH_TKENV=yes
 WITH_QTENV=yes
 
 #
+# Set to "yes" to use Qtenv as the default graphical runtime environment (instead of Tkenv)
+#
+PREFER_QTENV=no
+
+#
 # Set to "yes" to enable OpenSceneGraph and osgEarth support in Qtenv
 #
 WITH_OSG=yes
-
-#
-# Select whether the defaut graphical runtime envirnment should be Qtenv (instead of Tkenv)
-# Set to "yes" to use Qtenv by default
-#
-PREFER_QTENV=no
 
 #
 # Set to "yes" to enable simulation executables to load NED files dynamically.
@@ -125,8 +124,8 @@ USE_CXX11=yes
 #
 EMBED_TCL_CODE=yes
 
-# Select which QT version you prefer to use.
-# Possible values: 4, 5 or leave it empty (comment out) to disable Qtenv support
+# Select which Qt version you prefer to use.
+# Possible values: 4, 5. Any other value will disable building Qtenv
 QT_VERSION=4
 
 #

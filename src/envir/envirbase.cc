@@ -196,6 +196,14 @@ static const char *buildOptions = ""
     " WITH_NETBUILDER"
     #endif
 
+    #ifdef WITH_TKENV
+    " WITH_TKENV"
+    #endif
+
+    #ifdef WITH_QTENV
+    " WITH_QTENV"
+    #endif
+
     #ifdef WITH_OSG
     " WITH_OSG"
     #endif
