@@ -63,11 +63,8 @@ RunSelectionDialog::RunSelectionDialog(const std::string &defaultConfig, int def
         ++configNumber;
     }
 
-    QString c = getQtenv()->getPref("default-configname", "").toString();
-    QString r = getQtenv()->getPref("default-runnumber", "").toString();
-
-    std::string configName = getQtenv()->opt->defaultConfig.c_str();
-    int runNumber = getQtenv()->opt->defaultRun;
+    std::string configName = getQtenv()->getPref("default-configname", "").toString().toUtf8().constData();
+    int runNumber = getQtenv()->getPref("default-runnumber", "").toInt();
 
     auto it = std::find(configNames.begin(), configNames.end(), configName);
 
