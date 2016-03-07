@@ -21,15 +21,16 @@ export TEST_PROG="opp_run -h all"
 export WITH_NETBUILDER=yes
 export WITH_PARSIM=yes
 export SHARED_LIBS=yes
-export NO_TCL=
+export WITH_TKENV=yes
+export WITH_QTENV=yes
+export WITH_OSG=yes
+export WITH_SYSTEMC=no
+export PREFER_CLANG=no
 export MPI_LIBS=
 export LIBXML_LIBS=
 export EXPAT_LIBS=
 export CFLAGS_DEBUG=
 export CFLAGS_RELEASE=
-export SYSTEMC=no
-export PREFER_CLANG=no
-export USE_CXX11=no
 
 export TWEAKCONFIG="perl $TEST_DIR/tweakconfigfile.pl"
 
@@ -93,13 +94,14 @@ compile_gcc() {
     $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_TKENV  "$WITH_TKENV" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user NO_TCL  "$NO_TCL" || failure $CFG
     $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user USE_CXX11 "$USE_CXX11" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
@@ -109,8 +111,10 @@ compile_gcc() {
     $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc NO_TCL  "$NO_TCL" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc SYSTEMC  "$SYSTEMC" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_TKENV  "$WITH_TKENV" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Building..."
     $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
@@ -124,9 +128,11 @@ compile_vc() {
     # tweak
     $TWEAKCONFIG setoradd configuser.vc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc WITH_TKENV  "$WITH_TKENV" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc NO_TCL  "$NO_TCL" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc SYSTEMC  "$SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     cp configuser.vc "$LOG_DIR/$CFG-configuser.vc"
 
@@ -145,25 +151,28 @@ compile_clang() {
     $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_TKENV  "$WITH_TKENV" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user NO_TCL  "$NO_TCL" || failure $CFG
     $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user USE_CXX11 "$USE_CXX11" || failure $CFG
-
+    $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
     ./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
     cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
 
+
     $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc NO_TCL  "$NO_TCL" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc SYSTEMC  "$SYSTEMC" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_TKENV  "$WITH_TKENV" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
+    $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
 
     echo "    Building..."
     $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
@@ -269,6 +278,7 @@ CFG=default
 contains cParsimPartition yes
 contains "Tkenv : graphical user interface" yes
 contains "Cmdenv : command-line user interface" yes
+contains "Qtenv : graphical user interface" yes
 
 if [ "$TOOLCHAIN" = "clang" ]; then
     (TEST_PROG="opp_run -v" contains "Clang" yes)
@@ -276,7 +286,6 @@ fi
 
 (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
-(TEST_PROG="opp_run -v" contains "simtime_t=SimTime" yes)
 (TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
 (checkfingerprints)
 (checkfingerprints_sharedlibs)
@@ -291,7 +300,7 @@ fi
 if [ "$PLATFORM" = "linux" -o "$TOOLCHAIN" = "vc" ]; then
     if [ -d src/systemc ]; then
         CFG=systemc
-        (SYSTEMC=yes compile)
+        (WITH_SYSTEMC=yes compile)
         (checkfingerprints)
         (checkfingerprints_sharedlibs)
         (checkfingerprints_systemc)
@@ -305,37 +314,12 @@ CFG=default_static
 
 # the static build does not contain opp_run so we must use the aloha sample
 (TEST_PROG="samples/aloha/aloha -h all" contains "Tkenv : graphical user interface" yes)
+(TEST_PROG="samples/aloha/aloha -h all" contains "Qtenv : graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
+(TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSG" yes)
 (checkfingerprints)
-
-########################################
-# CPP11 test
-# We don't compile, just check the Makefile.inc CXXFLAGS contains -std=c++11
-
-CFG=default_cpp11
-
-echo "    Testing C++11..."
-
-$TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
-$TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
-$TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-$TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-$TWEAKCONFIG setoradd configure.user NO_TCL  "$NO_TCL" || failure $CFG
-$TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
-$TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
-$TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
-$TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
-$TWEAKCONFIG setoradd configure.user USE_CXX11 "yes" || failure $CFG
-
-
-echo "    Configuring..."
-cp configure.user "$LOG_DIR/$CFG-configure.user"
-./configure >"$LOG_DIR/$CFG-configure.out" 2>"$LOG_DIR/$CFG-configure.err"
-cp Makefile.inc "$LOG_DIR/$CFG-Makefile.inc"
-
-$TWEAKCONFIG assert_contains Makefile.inc CXXFLAGS  "-std=c++11" || failure $CFG
 
 
 ########################################
@@ -368,13 +352,10 @@ if [ "$EXTRA_TESTS" != "yes" ]; then
 fi
 
 #########################################
-# check building with double simtime instead of simtime_t
-# (no fingerprint testing here as it will surely fail becuase of
-# the different time representation)
-CFG=with_double_simtime
-(CFLAGS_DEBUG="-DUSE_DOUBLE_SIMTIME -g -Wall" compile)
-(TEST_PROG="opp_run -v" contains "USE_DOUBLE_SIMTIME" yes)
-(TEST_PROG="opp_run -v" contains "simtime_t=d" yes)
+# check building without OSG
+CFG=withoutg
+(WITH_OSG=no compile)
+(TEST_PROG="opp_run contains "WITH_OSG" no)
 (runtest makemake 0)
 
 ########################################
