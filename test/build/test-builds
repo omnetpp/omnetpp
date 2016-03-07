@@ -31,6 +31,7 @@ export LIBXML_LIBS=
 export EXPAT_LIBS=
 export CFLAGS_DEBUG=
 export CFLAGS_RELEASE=
+export USE_CXX11=yes
 
 export TWEAKCONFIG="perl $TEST_DIR/tweakconfigfile.pl"
 
@@ -102,6 +103,7 @@ compile_gcc() {
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_CXX11  "$USE_CXX11" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
@@ -133,6 +135,7 @@ compile_vc() {
     $TWEAKCONFIG setoradd configuser.vc WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_CXX11  "$USE_CXX11" || failure $CFG
 
     cp configuser.vc "$LOG_DIR/$CFG-configuser.vc"
 
@@ -159,6 +162,7 @@ compile_clang() {
     $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user USE_CXX11  "$USE_CXX11" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
@@ -352,8 +356,13 @@ if [ "$EXTRA_TESTS" != "yes" ]; then
 fi
 
 #########################################
+# check building without C++11 support (disable also QTENV and OSG as they require C++11)
+CFG=without_cpp11
+(WITH_OSG=no WITH_QTENV=no USE_CXX11=no compile)
+
+#########################################
 # check building without OSG
-CFG=withoutg
+CFG=without_osg
 (WITH_OSG=no compile)
 (TEST_PROG="opp_run contains "WITH_OSG" no)
 (runtest makemake 0)
