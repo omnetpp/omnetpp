@@ -16,19 +16,17 @@
 #ifndef __OMNETPP_OSGUTIL_H
 #define __OMNETPP_OSGUTIL_H
 
-// IMPORTANT:
-// DO NOT #include THIS FILE INTO <OMNETPP.H> BECAUSE WE DON'T WANT
-// <OMNETPP.H> TO PULL IN OSG HEADERS!
-
-#include <omnetpp.h>
-
 #ifdef WITH_OSG
 
 #include <osg/Group>
 
+#include "ccomponent.h"
+#include "csimulation.h"
+
 namespace omnetpp {
 
-class cObject;
+// IMPORTANT: This class must NOT be used within the simulation kernel, so
+// the sim. kernel doesn't have a linker dependency on the OSG libraries.
 
 /**
  * osg::Node for defining correspondence to an OMNeT++ object.

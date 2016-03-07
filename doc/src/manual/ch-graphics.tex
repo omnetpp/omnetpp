@@ -2626,17 +2626,13 @@ if you can select that object for inspection by clicking on the node in the 3D s
 
 {\opp} provides a wrapper node that associates its children with a particular {\opp}
 object (\cclass{cObject} descendant), making them selectable in the 3D viewer.
-One can create a wrapper node with the \ffunc{cOsgCanvas::createOmnetppObjectNode}
-factory method, and then add children to it normally. The wrapper node subclasses
+The wrapper class is called \cclass{cObjectOsgNode}, and it subclasses
 from \cclass{osg::Group}.
 
 \begin{cpp}
-auto objectNode = cOsgCanvas::createOmnetppObjectNode(myModule);
+auto objectNode = new cObjectOsgNode(myModule);
 objectNode->addChild(myNode);
 \end{cpp}
-
-The associated {\opp} object in the wrapper node can be modified later, using
-\ffunc{cOsgCanvas::setOmnetppObject()}.
 
 \begin{note}
 The {\opp} object should exist as long as the wrapper node exists. Otherwise,

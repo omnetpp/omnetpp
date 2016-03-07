@@ -20,8 +20,6 @@
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
 
-#include <omnetpp/osgutil.h>
-
 #include "GroundStation.h"
 #include "OsgEarthScene.h"
 #include "ChannelController.h"

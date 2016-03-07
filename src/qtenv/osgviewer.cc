@@ -156,7 +156,7 @@ std::vector<cObject*> PickHandler::pick(osgViewer::View *view, const osgGA::GUIE
                 // find cObject pointer node (OmnetppObjectNode) in nodepath, back to front
                 for (int i = nodePath.size()-1; i >= 0; --i) {
                     if (cObjectOsgNode *objNode = dynamic_cast<cObjectOsgNode*>(nodePath[i])) {
-                        if (cObject *obj = objNode->getObject()) {
+                        if (cObject *obj = const_cast<cObject *>(objNode->getObject())) {
                             // qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
                             if (std::find(objects.begin(), objects.end(), obj) == objects.end()) // filter out duplicates
                                 objects.push_back(obj);
