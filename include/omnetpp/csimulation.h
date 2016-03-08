@@ -568,7 +568,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTime();}
 
 /**
- * @brief Returns the currently active simulation.
+ * @brief Returns the currently active simulation, or nullptr if there is none.
  *
  * @ingroup SimSupport
  */
@@ -576,6 +576,7 @@ inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();
 
 /**
  * @brief Returns the environment object for the currently active simulation.
+ * This function never returns nullptr (not even during shutdown).
  *
  * @ingroup SimSupport
  */
