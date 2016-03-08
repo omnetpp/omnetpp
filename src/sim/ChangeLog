@@ -1,55 +1,29 @@
 2016-02-22  Andras Varga
 
-	* Moved both updating the event number and simulation time into executeEvent().
-	They were updated inconsistently, plus executeEvent() is a better place for
-	that than getNextEvent(). (consider putBackEvent()!)
+	* cSimulation: moved both updating the event number and simulation time
+	into executeEvent(). They were updated inconsistently, plus executeEvent()
+	is a better place for that than getNextEvent(), considering cScheduler's
+	putBackEvent().
 
-2016-02-11  Attila Torok
+2016-02-15  Levente Meszaros
 
-	osg: Switching between camera manipulators doesn't reset the viewpoint anymore.
+	* Follow changes in the logging API, see include/ChangeLog
 
 2016-02-05  Andras Varga
 
-	sim: cEnvir: getRNGMappingFor(component) renamed to preconfigure(component)
-	logging: per-component "log-level" moved from Sim into Cmdenv + TODO
+	* cEnvir: getRNGMappingFor(component) renamed to preconfigure(component)
 
 2016-01-22  Andras Varga
 
-	spelling: ArrowHead changed to Arrowhead everywhere
-	added cAbstractImageFigure and cPixmapFigure methods renamed
-	move() made recursive, nonrecursive version is called moveLocal()
-	added NUM_GOOD_DARK_COLORS and NUM_GOOD_LIGHT_COLORS
-	transform= to support matrix(a,b,c,d,t1,t2) syntax
+	* cFigure: implemented API refinements, see include/ChangeLog
 
-2016-01-18  Andras Varga
-
-	scale() to accept a center as well
-	arc, rectangle, image, etc to support "bounds" property
-	bounds=x,t,width,height is an alternative to the pos=,size=,anchor= triplet
-	resize()->setSize()
-	parse methods refactoring + format changes
-	- parseTransform() to accept "((a b) (c d) (t1 t2))" syntax too
-	- Color::str() to return HTML color, not "(r,g,b)" which requires extra
-	parser
-	- parse methods moved from sim_std.msg to ccanvas.cc
-	skew: use coeff instead of angle
-
-2016-01-14  Andras Varga
-
-	* Implemented cMessage/cPacket tags support.
-
-2016-01-13  Andras Varga
-
-	* Transposed cFigure::Transform matrix so points can be column vectors
-	instead of row vectors.
-
-2015-12-06  Andras Varga
-
-	* Renamed fingerprint categories to fingerprint ingredients.
-
-2015-12-03  Zoltan Bojthe
-
-	fingerprint: cOmnetpp4xFingerprint::checkFingerprint() ignores omnetpp5.0 fingerprints
+	* @figure parsing refined:
+	  - transform= now accepts "((a b) (c d) (t1 t2))" and
+	    matrix(a,b,c,d,t1,t2) syntaxes
+	  - in transform=, scale() now accepts center as well
+	  - in transform=, skew() now expects coefficient instead of angle
+	  - arc, rectangle, image, etc to support bounds=x,t,width,height
+	    as an alternative to the pos=,size=,anchor= triplet
 
 2015-12-07  ------ omnetpp-5.0b3 released ------
 

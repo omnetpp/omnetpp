@@ -527,7 +527,7 @@ class SIM_API cAbstractLineFigure : public cFigure
         virtual void setLineStyle(LineStyle lineStyle);
         virtual CapStyle getCapStyle() const {return capStyle;}
         virtual void setCapStyle(CapStyle capStyle);
-        virtual Arrowhead getStartArrowhead() const  {return startArrowhead;}  //FIXME should be lowercase "h", as "arrowhead" is one word!
+        virtual Arrowhead getStartArrowhead() const  {return startArrowhead;}
         virtual void setStartArrowhead(Arrowhead startArrowhead);
         virtual Arrowhead getEndArrowhead() const  {return endArrowhead;}
         virtual void setEndArrowhead(Arrowhead endArrowhead);

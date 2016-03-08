@@ -1,14 +1,3 @@
-2016-02-29  Levente Meszaros
-
-	* Moved the implementation of cISimulationLifecycleListener interface from
-	envir plugin interfaces to the actual implementations. The lifecycle
-	listener interface is not required for the plugins. The affected envir
-	plugin interfaces are: cIOutputScalarManager, cIOutputVectorManager, and
-	cISnapshotManager. The affected envir plugin implementations are:
-	cFileOutputScalarManager, cFileOutputVectorManager, cFileSnapshotManager,
-	cIndexedFileOutputVectorManager, cMySQLOutputScalarManager, and
-	cMySQLOutputVectorManager.
-
 2016-02-26  Levente Meszaros
 
 	* Changed EventlogFileManager to implement the new cIEventlogManager plugin
@@ -35,7 +24,7 @@
 
 2016-02-22  Rudolf Hornig
 
-	* Updated version number and copyright header.
+	* Updated version number and copyright headers.
 
 2016-02-22  Andras Varga
 
@@ -81,10 +70,6 @@
 2016-01-26  Andras Varga
 
 	* Switched from cEnvir::getClassNameForRenderer() to cEnvir::getRendererClassName().
-
-2015-12-09  Rudolf Hornig
-
-	* Image-path is no longer considered obsolete (it's again available in OMNeT++ 5)
 
 2015-12-07  ------ omnetpp-5.0b3 released ------
 

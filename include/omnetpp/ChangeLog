@@ -1,23 +1,23 @@
-2016-02-29  Levente Meszaros
+2016-03-07  Andras Varga
 
-	* Moved the implementation of cISimulationLifecycleListener interface from
-	envir plugin interfaces to the actual implementations. The lifecycle
-	listener interface is not required for the plugins. The affected envir
-	plugin interfaces are: cIOutputScalarManager, cIOutputVectorManager, and
-	cISnapshotManager.
+	* OSG refinements:
+	  - OmnetppObjectNode renamed to cObjectOsgNode
+	  - cOsgCanvas: removed createOmnetppObjectNode(), isOmnetppObjectNode(),
+	    setOmnetppObject(), getOmnetppObject() methods; one should directly
+	    use cObjectOsgNode instead
+	  - osgutil.h is now part of omnetpp.h, doesn't need to be #included
+	    separately
 
 2016-02-26  Levente Meszaros & Andras Varga
 
-	* Added a new envir plugin that allows one to replace the built-in eventlog
-	manager. The plugin interface is called cIEventlogManager, and the default
-	implementation is called EventlogFileManager. The eventlog manager plugin
-	gets called whenever something interesting happens in the simulation. See
-	the C++ interface for more details. It also gets notified when the user
-	enables/disables eventlog recording from the user interface.
+	* Added cIEventlogManager, a new Envir plugin class that allows one
+	to replace the built-in eventlog manager. Eventlog managers are
+	responsible for recording simulation history into an eventlog file.
 
 2016-02-24  Andras Varga
 
-	* Refined per-object config option kinds (added COMPONENT and CHANNEL).
+	* cConfigOption: Refined per-object config option kinds (added COMPONENT
+	and CHANNEL).
 
 2016-02-22  Rudolf Hornig
 
@@ -27,12 +27,17 @@
 
 2016-02-16  Levente Meszaros
 
-	* Changed default compile time release mode log level to LOGLEVEL_DETAIL,
-	and debug mode log level to LOGLEVEL_TRACE. The former keeps all details
-	understood by users, the latter keeps all debug information understood by
-	the developers. Changed default run-time cLog::logLevel to LOGLEVEL_TRACE.
-	* Dropped sourceClass and getClassName() because they were slowing down the
-	simulation even if they were not used.
+	Refined the logging API. Changes include:
+
+	* Changed default compile-time release-mode log level to LOGLEVEL_DETAIL,
+	  and debug-mode log level to LOGLEVEL_TRACE. The former keeps all details
+	  understood by users, the latter keeps all debug information understood by
+	  the developers. Changed default run-time cLog::logLevel to LOGLEVEL_TRACE.
+
+	* Dropped source object class name from the list of supported log prefix
+	  items, because getClassName() was slowing down the simulation even if it
+	  was not used.
+
 	* Renamed a few things in the logging API:
 	  - OPP_LOG to EV_LOG
 	  - GLOBAL_COMPILETIME_LOGLEVEL to COMPILETIME_LOGLEVEL
@@ -41,63 +46,46 @@
 	  - cLogLevel::globalRuntimeLoglevel to cLog::logLevel
 	  - cLogLevel::getLogLevel() to cLog::resolveLogLevel()
 	  - cLogLevel::getName() to cLog::getLogLevelName()
-	* Reversed LOGLEVEL_* enumeration member to make the values consistent with
-	semantics. Added LOGLEVEL_OFF that allows to completely disable logging.
+
+	* Reversed LOGLEVEL_* enum members to make the values consistent with
+	  semantics. Added LOGLEVEL_OFF that allows to completely disable logging.
+
 	* Added new user customization points to the logging API.
-	  - The COMPILETIME_LOG_PREDICATE allows changing the compile time condition
-	  for compiling log statements into the executable.
+	  - The COMPILETIME_LOG_PREDICATE allows changing the compile time
+	    condition for compiling log statements into the executable.
 	  - The cLog::noncomponentLogPredicate and cLog::componentLogPredicate
-	  static global variables allow changing the run-time condition for
-	  executing log statements.
-
-2016-01-14  Andras Varga
-
-	* Implemented cMessage/cPacket tags support.
+	    static global variables allow changing the run-time condition for
+	    executing log statements.
 
 2016-02-05  Andras Varga
 
-	* Renamed getRNGMappingFor(component) to preconfigure(component).
+	* cEnvir: Renamed getRNGMappingFor(component) to preconfigure(component)
 
 2016-02-01  Andras Varga
 
-	* Removed cOsgCanvas::setPerspective().
+	* cOsgCanvas: Removed redundant setPerspective() method (it was a union
+	of two other setters)
 
 2016-01-25  Andras Varga
 
-	switch to getRendererClassName()
-	spelling: ArrowHead changed to Arrowhead everywhere
-	added cAbstractImageFigure and cPixmapFigure methods renamed
-	move() made recursive, nonrecursive version is called moveLocal()
-	added NUM_GOOD_DARK_COLORS and NUM_GOOD_LIGHT_COLORS
-
-2016-01-18  Andras Varga
-
-	Renamed resize() to setSize()
-	single-arg ctors made explicit
-	parse methods refactoring + format changes
-
-	- parseTransform() to accept "((a b) (c d) (t1 t2))" syntax too
-	- Color::str() to return HTML color, not "(r,g,b)" which requires extra parser
-	- parse methods moved from sim_std.msg to ccanvas.cc
-
-	skew: use coeff instead of angle
-
-2016-01-16  Andras Varga
-
-	* Added getBounds() and setBounds() to cFigure subclasses.
-
-2016-01-13  Andras Varga
-
-	* Transposed cFigure::Transform matrix so points can be column vectors
-	  instead of row vectors.
+	* cFigure API refinements:
+	  - replaced getClassNameForRenderer() with getRendererClassName()
+	  - spelling: ArrowHead changed to Arrowhead in method names, enum name, etc.
+	  - move() made recursive, nonrecursive version is called moveLocal()
+	  - Pixmap: renamed resize() to setSize()
+	  - Transform: skew() methods to use coefficient instead of angle
+	  - Transform: matrix was transposed so points can be column vectors
+	    instead of row vectors
+	  - added NUM_GOOD_DARK_COLORS and NUM_GOOD_LIGHT_COLORS
+	  - some cPixmapFigure methods were also renamed
 
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
 2015-12-02  Andras Varga
 
 	* Added cEnvir::resolveResourcePath() that searches a number of folders
-	for a resource given with its file name or relative path, and returns 
-	the path for the first match. It can useful for locating various data 
+	for a resource given with its file name or relative path, and returns
+	the path for the first match. It can useful for locating various data
 	files for models, OSG model files, and other files.
 
 	* Added cComponent::resolveResourcePath() that delegates to the cEnvir

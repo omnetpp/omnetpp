@@ -5,9 +5,11 @@
 	the bottom. The status bar displays the simulation time of the next event
 	along with the difference from the last event. Moved network description
 	and message info to the new status line.
+
 	* With the recent simulation kernel changes, printEventBanner() needs to be
 	called inside simulationEvent() so that it prints the correct (updated)
 	simulation time and event number.
+
 	* When animating, updateStatusDisplay() also needs to be called in
 	simulationEvent() so that the correct (updated) simulation time is displayed
 	during the animation.
