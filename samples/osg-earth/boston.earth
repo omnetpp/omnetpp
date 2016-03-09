@@ -21,12 +21,6 @@ to extruded buildings.
         <profile>spherical-mercator</profile>
     </image>
 
-<!-- oplace an office model on top o a buildig -->
-    <model name = "model" driver="simple">
-      <url>office.osgb.445e-3.scale.0,0,16.rot</url>
-      <location>-71.067607 42.356687 3.5</location>
-    </model>
-
 <!--
     <image name="readymap_imagery" driver="tms">
         <url>http://readymap.org/readymap/tiles/1.0.0/22/</url>
