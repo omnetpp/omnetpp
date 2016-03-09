@@ -20,5 +20,5 @@ all:
 	cd sub && $(OPP_MAKEMAKE) --nolink
 
 %contains: stdout
-class cMessage
+class omnetpp::cMessage
 
