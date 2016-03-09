@@ -345,6 +345,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       // small functions:
       void updateNetworkRunDisplay();
+      void updateSimtimeDisplay();
       void updateStatusDisplay();
 
       void confirm(const char *msg); // messagebox with OK button

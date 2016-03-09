@@ -1110,6 +1110,11 @@ void Qtenv::updateNetworkRunDisplay()
     mainWindow->setWindowTitle(getWindowTitle().c_str());
 }
 
+void Qtenv::updateSimtimeDisplay()
+{
+    mainWindow->updateSimtimeDisplay();
+}
+
 void Qtenv::updateStatusDisplay()
 {
     mainWindow->updateStatusDisplay();
@@ -1364,7 +1369,7 @@ void Qtenv::simulationEvent(cEvent *event)
         printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
     if (animating && opt->animationEnabled) {
-        updateStatusDisplay();  // so that the correct (new) simulation time is displayed during animation
+        updateSimtimeDisplay();  // so that the correct (new) simulation time is displayed during animation
         updateGraphicalInspectorsBeforeAnimation();
     }
 

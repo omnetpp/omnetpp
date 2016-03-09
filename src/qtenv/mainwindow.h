@@ -65,6 +65,7 @@ public:
     ~MainWindow();
 
     void displayText(const char* t);
+    void updateSimtimeDisplay();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
 
@@ -165,7 +166,6 @@ private:
     bool checkRunning();
     void runSimulation(eMode mode);
 
-    void updateSimtimeDisplay();
     void updatePerformanceDisplay();
     void updateNextEventDisplay();
     int getObjectId(cEvent *object);
