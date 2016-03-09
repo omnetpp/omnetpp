@@ -140,8 +140,9 @@ in the commercial version OMNEST.
 If there are compilation errors, you need to rectify those and repeat the make until
 you get an error-free compilation and linking.
 
-@note It might be more convenient to use the @opp IDE for starting simulations. You can create a new project and add your source files, or open an existing one.
-You can build the project, and the IDE automatically creates and runs the make file. Right click on <i>omnetpp.ini</i> and select <i>Run as</i>, then <i>@opp Simulation</i>.
+@note It might be more convenient to use the @opp IDE for the tutorial. Creating a
+new project, adding files and building your project is fully automated in the IDE.
+There is no need to manually create the <tt>Makefile</tt> either.
 
 6. If you start the executable now, it will complain that it cannot find
 the file omnetpp.ini, so you have to create one. omnetpp.ini tells the
@@ -169,7 +170,8 @@ $ ./tictoc
 
 and hopefully you should now get the @opp simulation window.
 
-@note Windows: the command is just <tt>tictoc</tt>.
+@note To run the simulation from the IDE, just right click on
+<i>omnetpp.ini</i> and select <i>Run as</i>, then <i>@opp Simulation</i>.
 
 8. Press the Run button on the toolbar to start the simulation. What you should
 see is that tic and toc are exchanging messages with each other.
@@ -199,11 +201,9 @@ choosing File|Exit.
 
 @note There are some typical mistakes that people who are new to @opp make:
 
-@note-   The module type name must be the same in both the .ned and .cc files,
-    and it is case sensitive (there are ways that this can be overriden in the .ned files,
-    please refer to the manual).
-    It is a common mistake to either forget the Define_Module() macro, or mistype the module name so it is
-    not the same in the .ned and .cc files.
+@note-   By default, the module type name must be the same in both the .ned and the .cc files.
+    It is a common mistake to either forget the Define_Module() macro, or mistype the
+    module name so it is not the same in the .ned and .cc files.
     These mistakes yield the following errors, respectively:
 
 @note    <i>Error in module
@@ -211,16 +211,15 @@ choosing File|Exit.
     its code was not linked in, or the class wasn't registered with Register_Class(), or in
     the case of modules and channels, with Define_Module()/Define_Channel().</i>
 
-@note    and
+@note    or
 
 @note    <i>Error in module (omnetpp::cModule) TicToc1 (id=1) during network setup:
     Submodule tic: cannot resolve module type 'Txc1' (not in the loaded NED files?), at
-    /omnetpp-5.0b3/samples/tictoc/tictoc1.ned:26.</i>
+    /omnetpp-5.0/samples/tictoc/tictoc1.ned:26.</i>
 
-@note-   Also, you must run <tt>opp_makemake</tt> and <tt>make</tt> after adding any source files to the project.
-    Failing to do so will be indicated by the first error message above.
-
-@note    If you use the @opp IDE, this is done automatically.
+@note-   Also, you must run <tt>opp_makemake</tt> and <tt>make</tt> after adding a
+    <tt>.cc</tt> file to the project. Failing to do so will be indicated by the
+    first error message above. If you use the @opp IDE, this is done automatically.
 
 Sources: @ref tictoc1.ned, @ref txc1.cc, @ref omnetpp.ini
 
@@ -241,9 +240,7 @@ the "block/routing" icon (the file <tt>images/block/routing.png</tt>), and paint
 and yellow for toc. This is achieved by adding display strings to the
 NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
-@dontinclude tictoc2.ned
-@skip submodules
-@until connections
+@include tictoc2.ned
 
 You can see the result here:
 
@@ -990,7 +987,7 @@ gates, and also the signals and statistics it provides.
 
 Now we can define also a statistic that should be collected by default. Our previous example
 has collected statistics (max,min,mean,count etc) about the hop count of the
-arriving messages, so let's collect the same data here too.
+arriving messages, so let's collect the same data here, too.
 
 The <tt>source</tt> key specifies the signal we want our statistic to attach to.
 The <tt>record</tt> key can be used to tell what should be done with the received
@@ -1029,7 +1026,7 @@ PREV: @ref part4 UP: @ref contents
 @section results Visualizing output scalars and vectors
 
 The @opp IDE can help you to analyze your results. It supports filtering,
-processing and displaying vector and scalar data, and can display histograms too.
+processing and displaying vector and scalar data, and can display histograms, too.
 The following diagrams have been created with the Result Analysis tool of the IDE.
 
 The <tt>results</tt> directory in the project folder contains .vec and .sca files, which are the files that store the results in vector and scalar form, respectively.
@@ -1043,7 +1040,7 @@ You can select some or all of the individual results by highlighting them. If yo
 <img src="statistics.png">
 
 @note For further information about the charting and processing capabilities,
-please refer to the <a href="../UserGuide.pdf" target="_blank"><b>@opp Users Guide</b></a> (you can also find it in the <tt>doc</tt> directory of the @opp installation).
+please refer to the <a href="../UserGuide.pdf" target="_blank"><b>@opp Users Guide</b></a> (you can find it in the <tt>doc</tt> directory of the @opp installation).
 
 Our last model records the <tt>hopCount</tt> of a message each time the message
 reaches its destination. The following plot shows these vectors for nodes 0 and 1.
