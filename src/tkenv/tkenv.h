@@ -277,6 +277,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
 
       // small functions:
       void updateNetworkRunDisplay();
+      void updateSimtimeDisplay();
       void updateStatusDisplay();
 
       void confirm(const char *msg); // messagebox with OK button

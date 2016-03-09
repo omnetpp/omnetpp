@@ -937,6 +937,11 @@ void Tkenv::updateNetworkRunDisplay()
     CHK(Tcl_VarEval(interp, "wm title . ", TclQuotedString(getWindowTitle().c_str()).get(), TCL_NULL));
 }
 
+void Tkenv::updateSimtimeDisplay()
+{
+    CHK(Tcl_VarEval(interp, "mainWindow:updateSimtimeDisplay", TCL_NULL));
+}
+
 void Tkenv::updateStatusDisplay()
 {
     CHK(Tcl_VarEval(interp, "mainWindow:updateStatusDisplay", TCL_NULL));
@@ -1183,7 +1188,7 @@ void Tkenv::simulationEvent(cEvent *event)
         printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
     if (animating && opt->animationEnabled) {
-        updateStatusDisplay();  // so that the correct (new) simulation time is displayed during animation
+        updateSimtimeDisplay();  // so that the correct (new) simulation time is displayed during animation
         updateGraphicalInspectorsBeforeAnimation();
     }
 
