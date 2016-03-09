@@ -1124,7 +1124,7 @@ void Qtenv::printEventBanner(cEvent *event)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     char *p = banner;
-    p += sprintf(p, "** Event #%" LL "d  T=%s  ",
+    p += sprintf(p, "** Event #%" LL "d  t=%s  ",
                 getSimulation()->getEventNumber(),
                 SIMTIME_STR(getSimulation()->getSimTime()));
 

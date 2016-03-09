@@ -62,7 +62,7 @@ std::string cEvent::info() const
         return "(in the past)";
 
     std::stringstream out;
-    out << "at T=" << arrivalTime << ", in dt=" << (arrivalTime - getSimulation()->getSimTime());
+    out << "at t=" << arrivalTime << ", in dt=" << (arrivalTime - getSimulation()->getSimTime());
     if (getTargetObject())
         out << ", for " << getTargetObject()->getFullPath();
     return out.str();

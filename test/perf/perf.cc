@@ -53,7 +53,7 @@ void Queue_1::activity()
 
 void Queue_1::finish()
 {
-    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "t=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 // ---------------
@@ -90,7 +90,7 @@ void Schedule_1::handleMessage(cMessage *msg)
 void Schedule_1::finish()
 {
     tmr.stop();
-    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "t=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 // --------------
@@ -129,7 +129,7 @@ void Send_1::handleMessage(cMessage *msg)
 void Send_1::finish()
 {
     tmr.stop();
-    EV << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+    EV << "t=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
 // ---------------

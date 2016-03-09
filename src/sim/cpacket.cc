@@ -70,7 +70,7 @@ std::string cPacket::info() const  //FIXME revise
 //    if (delivd > simTime())
 //    {
 //        // if it arrived in the past, dt is usually unimportant, don't print it
-//        out << "at T=" << delivd << ", in dt=" << (delivd - simTime()) << "; ";
+//        out << "at t=" << delivd << ", in dt=" << (delivd - simTime()) << "; ";
 //    }
 //
 //#define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)

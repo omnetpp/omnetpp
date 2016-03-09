@@ -69,7 +69,7 @@ Define_Module(Node2);
 
 void Node2::handleMessage(cMessage *msg)
 {
-    EV << "msg arrived at T=" << simTime();
+    EV << "msg arrived at t=" << simTime();
     delete msg;
 }
 
@@ -82,4 +82,4 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 %contains: stdout
-msg arrived at T=1.1
+msg arrived at t=1.1

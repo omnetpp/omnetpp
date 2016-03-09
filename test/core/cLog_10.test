@@ -13,7 +13,7 @@ wait(1);
 EV_DEBUG << "World";
 
 %contains: stdout
-** Event #1  T=0   Test (Test, id=1)
+** Event #1  t=0   Test (Test, id=1)
 [DEBUG]  Hello
-** Event #2  T=1   Test (Test, id=1)
+** Event #2  t=1   Test (Test, id=1)
 [DEBUG]  World

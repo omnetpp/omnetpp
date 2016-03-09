@@ -432,7 +432,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
 
 void Cmdenv::printEventBanner(cEvent *event)
 {
-    ::fprintf(fout, "** Event #%" LL "d  T=%s%s   ",
+    ::fprintf(fout, "** Event #%" LL "d  t=%s%s   ",
             getSimulation()->getEventNumber(),
             SIMTIME_STR(getSimulation()->getSimTime()),
             progressPercentage());  // note: IDE launcher uses this to track progress
@@ -467,7 +467,7 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
     speedometer.beginNewInterval();
 
     if (opt->printPerformanceData) {
-        ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s\n",
+        ::fprintf(fout, "** Event #%" LL "d   t=%s   Elapsed: %s%s\n",
                 getSimulation()->getEventNumber(),
                 SIMTIME_STR(getSimulation()->getSimTime()),
                 timeToStr(totalElapsed()),
@@ -483,7 +483,7 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
                 getSimulation()->getFES()->getLength());
     }
     else {
-        ::fprintf(fout, "** Event #%" LL "d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
+        ::fprintf(fout, "** Event #%" LL "d   t=%s   Elapsed: %s%s   ev/sec=%g\n",
                 getSimulation()->getEventNumber(),
                 SIMTIME_STR(getSimulation()->getSimTime()),
                 timeToStr(totalElapsed()),

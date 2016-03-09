@@ -52,34 +52,34 @@ EV_TRACE  << "Hello" << endl;
 .*OFF
 
 %contains: stdout
-** Event #2  T=0   TestNetwork.fatal (Test, id=3)
+** Event #2  t=0   TestNetwork.fatal (Test, id=3)
 [FATAL]  Hello
-** Event #3  T=0   TestNetwork.error (Test, id=4)
+** Event #3  t=0   TestNetwork.error (Test, id=4)
 [FATAL]  Hello
 [ERROR]  Hello
-** Event #4  T=0   TestNetwork.warn (Test, id=5)
+** Event #4  t=0   TestNetwork.warn (Test, id=5)
 [FATAL]  Hello
 [ERROR]  Hello
 [WARN]   Hello
-** Event #5  T=0   TestNetwork.info (Test, id=6)
+** Event #5  t=0   TestNetwork.info (Test, id=6)
 [FATAL]  Hello
 [ERROR]  Hello
 [WARN]   Hello
 [INFO]   Hello
-** Event #6  T=0   TestNetwork.detail (Test, id=7)
+** Event #6  t=0   TestNetwork.detail (Test, id=7)
 [FATAL]  Hello
 [ERROR]  Hello
 [WARN]   Hello
 [INFO]   Hello
 [DETAIL] Hello
-** Event #7  T=0   TestNetwork.debug (Test, id=8)
+** Event #7  t=0   TestNetwork.debug (Test, id=8)
 [FATAL]  Hello
 [ERROR]  Hello
 [WARN]   Hello
 [INFO]   Hello
 [DETAIL] Hello
 [DEBUG]  Hello
-** Event #8  T=0   TestNetwork.trace (Test, id=9)
+** Event #8  t=0   TestNetwork.trace (Test, id=9)
 [FATAL]  Hello
 [ERROR]  Hello
 [WARN]   Hello

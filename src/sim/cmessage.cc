@@ -114,7 +114,7 @@ std::string cMessage::info() const
     simtime_t t = getArrivalTime();
     if (t > getSimulation()->getSimTime()) {
         // if it arrived in the past, dt is usually unimportant, don't print it
-        out << "at T=" << t << ", in dt=" << (t - getSimulation()->getSimTime()) << "; ";
+        out << "at t=" << t << ", in dt=" << (t - getSimulation()->getSimTime()) << "; ";
     }
 
 #define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
