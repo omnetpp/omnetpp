@@ -204,6 +204,8 @@ void GenericObjectInspector::setMode(Mode mode)
 
 void GenericObjectInspector::doSetObject(cObject *obj) {
 
+    QSet<QString> expanded = model->getExpandedNodesIn(treeView);
+
     Inspector::doSetObject(obj);
 
     auto defaultMode = GROUPED;
@@ -216,16 +218,13 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
 
     // will recreate the model for the new object
     setMode((Mode)getPref(PREF_MODE, defaultMode).toInt());
+
+    model->expandNodesIn(treeView, expanded);
 }
 
 void GenericObjectInspector::refresh() {
     Inspector::refresh();
-
-    QSet<QString> expanded = model->getExpandedNodesIn(treeView);
-
     doSetObject(object);
-
-    model->expandNodesIn(treeView, expanded);
 }
 
 // ---- HighlighterItemDelegate implementation ----

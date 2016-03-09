@@ -495,7 +495,7 @@ QVariant SuperClassNode::data(int role) {
 
 QString SuperClassNode::getNodeIdentifier() {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
-            + QString("%1{%3}").arg(voidPtrToStr(containingObject)).arg(superDesc->getClassName());
+            + QString("%1{%3}").arg(voidPtrToStr(containingDesc)).arg(superDesc->getClassName());
 }
 
 
@@ -526,7 +526,7 @@ QVariant ChildObjectNode::data(int role) {
 
 QString ChildObjectNode::getNodeIdentifier() {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
-            + QString("%1{%3}").arg(voidPtrToStr(containingObject)).arg(object->getClassName());
+            + QString("%1{%3}").arg(voidPtrToStr(containingDesc)).arg(object->getClassName());
 }
 
 cObject *ChildObjectNode::getCObjectPointer() {
@@ -664,7 +664,7 @@ cObject *FieldNode::getCObjectPointer() {
 
 QString FieldNode::getNodeIdentifier() {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
-            + QString("%1:%2").arg(voidPtrToStr(containingObject)).arg(fieldIndex);
+            + QString("%1:%2").arg(voidPtrToStr(containingDesc)).arg(fieldIndex);
 }
 
 
@@ -705,7 +705,7 @@ QVariant RootNode::data(int role) {
 }
 
 QString RootNode::getNodeIdentifier() {
-    return voidPtrToStr(object);
+    return voidPtrToStr(object ? object->getDescriptor() : nullptr);
 }
 
 cObject *RootNode::getCObjectPointer() {
@@ -758,7 +758,7 @@ QVariant FieldGroupNode::data(int role) {
 
 QString FieldGroupNode::getNodeIdentifier() {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
-            + QString("%1(%2)").arg(voidPtrToStr(containingObject)).arg(groupName.c_str());
+            + QString("%1(%2)").arg(voidPtrToStr(containingDesc)).arg(groupName.c_str());
 }
 
 
