@@ -164,6 +164,7 @@ class SIM_API cMessage : public cEvent
     template<typename T> T *getTag();
     template<typename T> T *getMandatoryTag();
     template<typename T> T *removeTag();
+    template<typename T> T *removeMandatoryTag();
     virtual int getNumTags() const  {return !tags ? 0 : tags->size();}
     virtual cObject *getTag(int i) const;
     virtual void clearTags();
@@ -711,6 +712,15 @@ inline T *cMessage::removeTag()
 {
     int i = findTag<T>();
     return (i == -1) ? nullptr : (T*)doRemoveTag(i);
+}
+
+template<typename T>
+inline T *cMessage::removeMandatoryTag()
+{
+    int i = findTag<T>();
+    if (i == -1)
+        throw cRuntimeError(this, E_MISSINGTAG, opp_typename(typeid(T)));
+    return (T*)doRemoveTag(i);
 }
 
 }  // namespace omnetpp
