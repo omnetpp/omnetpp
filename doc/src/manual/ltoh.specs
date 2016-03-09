@@ -42,7 +42,7 @@ htmlfile_spec := $BASE.htm
 :{}	:\appendixchapter:<hr class='pgbr'><h1>Appendix&#58; :</h1>:
 :{}	:\section:<h2>:</h2>:
 :{}	:\subsection:<h3>:</h3>:
-:{}	:\subsubsection:<p class="subheading">:</p>:
+:{}	:\subsubsection:<h4>:</h4>:
 :{}	:\centerline:<p align=center>:</>:
 :{}	:\footnote:<br><ul><font size=-1>[:]</font></ul>:
 :{}	:\mbox:::

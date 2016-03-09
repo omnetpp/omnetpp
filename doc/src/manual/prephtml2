@@ -78,9 +78,10 @@ $html =~ s|`\\opp`|$product|seg;
 # move chapter/section anchors into title
 $html =~ s|(<h[0-9]>)(.*?)(</h[0-9]>)\s*<a name="(.*?)"></a>|$1<a name="$4"/>$2<a class="headerlink" href="#$4" title="Permalink to this headline">¶</a>$3|gi;
 
-# add IDs to headers
-$ctr=100;
-$html =~ s/(\<h[0-9]\>)([^<])/$1."<a name=\"sec".$ctr++."\"\/>$2"/gie;
+# check for missing section labels
+if ($html =~ /(\<h[0-9]\>)([^<])/) {
+   die "missing section label";
+}
 
 #
 # Do some more LaTeX formatting, not done by L2H
@@ -169,14 +170,15 @@ $afilename = ""; #if singlePage
 while ($scrap =~ s/\<a name="([^"]+)"//si)
 {
       $aname = $1;
-      if ($aname =~ /^sec[0-9]/)  {
+      if ($aname =~ /^sec:|^cha:/)  {
           $cursection = $aname;
           if (!$singlePage) {
               my $i = $aname2index{$aname};
               my $c = $chapnum[$i];
               $afilename = "chap$c.$ext";
           }
-      } elsif ($aname =~ /^fig/) {
+      }
+      if ($aname =~ /^fig/) {
           # leave figures alone
           $xref{$aname} = "$afilename#$aname";
           $xrefname{$aname} = "below";
@@ -228,6 +230,7 @@ if ($singlePage) {
 }
 for ($i=0; $i<$nheadings; $i++)
 {
+      if ($level[$i]==4) { next; }
       $link = $singlePage ? "#$label[$i]" : "chap$chapnum[$i].$ext#$label[$i]";
       $entry = "<a name=\"toc_$number[$i]\"/><a href=\"$link\" class=\"toc\">$number[$i] $title[$i]</A>";
       for ($j=0; $j<$level[$i]; $j++) {$entry = "&nbsp;&nbsp;$entry";}

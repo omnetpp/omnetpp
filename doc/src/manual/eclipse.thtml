@@ -4,16 +4,18 @@
   <meta name="copyright" content="OpenSim Ltd.">
   <meta NAME="Author" CONTENT="Andras Varga">
   <meta http-equiv="Content-Language" content="en-us">
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="STYLESHEET" href="../book.css"  type="text/css">
   <title>OMNeT++ - Manual</title>
 </head>
 <style type="text/css">
-  table.matrix { position: relative; border: 0px; }
+  table.matrix { position: relative; border: 0px; background:#ffffff; margin-left:8pt; margin-right:8pt; }
   table.matrix:before, table.matrix:after { content: ""; position: absolute; top: 0; border: 1px solid #000; width: 6px; height: 100%; }
   table.matrix:before { left: -6px; border-right: 0px; }
   table.matrix:after { right: -6px; border-left: 0px; }
   table.matrix td { padding: 5px; text-align: center; border: 0px; }
+
+  a.headerlink { visibility: hidden; }
 </style>
 <body>
 

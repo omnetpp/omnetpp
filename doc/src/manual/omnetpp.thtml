@@ -17,9 +17,9 @@
   h1 { color: #1A41A8; margin-top: 50px; margin-bottom: 20px; }
   h2 { color: #1A41A8; margin-top: 40px; margin-bottom: 20px; }
   h3 { color: #1A41A8; margin-top: 30px; margin-bottom: 20px; }
+  h4 { color: #1A41A8; margin-top: 30px; font-weight: bold; }
 
   hr.pgbr { color: #f5f5f5; margin-top: 40px; margin-bottom: 10px; }
-  p.subheading { color: #1A41A8; margin-top: 30px; font-weight: bold; }
   pre { margin: 4px 8px 4px 2px; padding: 8px 10px; background:#fffff4; border: 1px solid #dddddd; }
   pre.ned { background:#f5fff5; border-left: 4px solid #ccffcc; }
   pre.msg { background:#f5fff5; border-left: 4px solid #ccffcc; }
@@ -33,7 +33,7 @@
   a:visited { text-decoration: none; }
   # a:hover { text-decoration: underline; }
 
-  table.matrix { position: relative; border: 0px; }
+  table.matrix { position: relative; border: 0px; background:#ffffff; margin-left:8pt; margin-right:8pt; }
   table.matrix:before, table.matrix:after { content: ""; position: absolute; top: 0; border: 1px solid #000; width: 6px; height: 100%; }
   table.matrix:before { left: -6px; border-right: 0px; }
   table.matrix:after { right: -6px; border-left: 0px; }
