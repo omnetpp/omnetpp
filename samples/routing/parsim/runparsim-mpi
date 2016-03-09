@@ -5,4 +5,4 @@ if test "$HOSTNAME" = ""; then
   export HOSTNAME=`hostname`
 fi
 
-mpiexec -n 3 ../routing -n .. -c LargeLookahead -u Cmdenv --parsim-communications-class=cMPICommunications
+mpiexec -n 3 ../routing -n .. -c Net10-parsim -u Cmdenv --parsim-communications-class=cMPICommunications
