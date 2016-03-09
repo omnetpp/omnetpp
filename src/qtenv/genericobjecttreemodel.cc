@@ -63,7 +63,7 @@ public:
     TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc);
     TreeNode *getParent();
     int getIndexInParent();
-    virtual bool hasChildren() = 0; // should override this to not fill the children vector if possible
+    virtual bool hasChildren(); // should override this to not fill the children vector if possible
     int getChildCount(); // will fill the children vector if needed
     TreeNode *getChild(int index); // will fill the children vector if needed
     QString getFieldName(int fieldIndex);
@@ -422,7 +422,6 @@ int TreeNode::getIndexInParent() {
 }
 
 bool TreeNode::hasChildren() {
-    // this should be impossible, but just in case.
     return getChildCount() > 0;
 }
 
@@ -473,7 +472,10 @@ SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contOb
 }
 
 bool SuperClassNode::hasChildren() {
-    return objectHasChildren(containingObject, superDesc, true);
+    if (filled)
+        return TreeNode::hasChildren();
+    else
+        return objectHasChildren(containingObject, superDesc, true);
 }
 
 void SuperClassNode::fill() {
@@ -503,7 +505,10 @@ ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *cont
 }
 
 bool ChildObjectNode::hasChildren() {
-    return objectHasChildren(object, cClassDescriptor::getDescriptorFor(object));
+    if (filled)
+        return TreeNode::hasChildren();
+    else
+        return objectHasChildren(object, cClassDescriptor::getDescriptorFor(object));
 }
 
 QVariant ChildObjectNode::data(int role) {
@@ -542,10 +547,13 @@ FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cCla
 }
 
 bool FieldNode::hasChildren() {
-    if (containingObject && containingDesc && containingDesc->getFieldIsArray(fieldIndex)) {
-        return containingDesc->getFieldArraySize(containingObject, fieldIndex) > 0;
-    } else {
-        return objectHasChildren(object, desc);
+    if (filled)
+        return TreeNode::hasChildren();
+    else {
+        if (containingObject && containingDesc && containingDesc->getFieldIsArray(fieldIndex))
+            return containingDesc->getFieldArraySize(containingObject, fieldIndex) > 0;
+        else
+            return objectHasChildren(object, desc);
     }
 }
 
@@ -684,9 +692,12 @@ RootNode::RootNode(cObject *object, bool grouping, bool inheritance, bool childr
 }
 
 bool RootNode::hasChildren() {
-    return object
-        ? objectHasChildren(object, cClassDescriptor::getDescriptorFor(object), false)
-        : false;
+    if (filled)
+        return TreeNode::hasChildren();
+    else
+        return object
+            ? objectHasChildren(object, cClassDescriptor::getDescriptorFor(object), false)
+            : false;
 }
 
 QVariant RootNode::data(int role) {
@@ -708,16 +719,18 @@ FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, void *contOb
 }
 
 bool FieldGroupNode::hasChildren() {
-    if (!containingObject || !containingDesc) {
+    if (filled)
+        return TreeNode::hasChildren();
+    else {
+        if (!containingObject || !containingDesc)
+            return false;
+        for (int i = 0; i < containingDesc->getFieldCount(); ++i) {
+            const char *thisFieldGroup = containingDesc->getFieldProperty(i, "group");
+            if (thisFieldGroup && (thisFieldGroup == groupName))
+                return true;
+        }
         return false;
     }
-    for (int i = 0; i < containingDesc->getFieldCount(); ++i) {
-        const char *thisFieldGroup = containingDesc->getFieldProperty(i, "group");
-        if (thisFieldGroup && (thisFieldGroup == groupName)) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void FieldGroupNode::fill() {
@@ -761,13 +774,16 @@ ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, void *co
     : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
 }
 
-bool ArrayElementNode::hasChildren()
-{
-    if (containingDesc->getFieldIsCompound(fieldIndex)) {
-        cClassDescriptor *fieldDesc = getDescriptorForField(containingObject, containingDesc, fieldIndex, arrayIndex);
-        return objectHasChildren(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex), fieldDesc);
-    } else {
-        return false;
+bool ArrayElementNode::hasChildren() {
+    if (filled)
+        return TreeNode::hasChildren();
+    else {
+        if (containingDesc->getFieldIsCompound(fieldIndex)) {
+            cClassDescriptor *fieldDesc = getDescriptorForField(containingObject, containingDesc, fieldIndex, arrayIndex);
+            return objectHasChildren(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex), fieldDesc);
+        }
+        else
+            return false;
     }
 }
 
