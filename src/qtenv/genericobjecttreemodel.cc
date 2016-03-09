@@ -354,7 +354,7 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
         }
     } else {
         if (inheritanceEnabled() && !excludeInherited) {
-            for (int i = desc->getInheritanceChainLength() - 1; i >= 0; --i) {
+            for (int i = 0; i < desc->getInheritanceChainLength(); i++) {
                 children.push_back(new SuperClassNode(this, i, of, desc, i));
             }
         } else {
