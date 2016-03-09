@@ -72,15 +72,15 @@
 
 /samples/hypercube/,                 -f omnetpp.ini -c Hypercube1 -r 0,            5000s,         1dbc-daaa/tplx
 # /samples/neddemo/,                   -f omnetpp.ini -c General -r 0,               5000s,         0000-0000           # Tkenv specific, show dialog: choose network
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=BinaryTree1 -r 0,  5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=BinaryTree2 -r 0,  5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=Chain -r 0,        5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=FullGraph -r 0,    5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=Grid -r 0,         5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=HexGrid -r 0,      5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=RandomGraph -r 0,  5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=Star -r 0,         5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c General --network=TriangleGrid -r 0, 5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c BinaryTree1 -r 0,  5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c BinaryTree2 -r 0,  5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c Chain -r 0,        5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c FullGraph -r 0,    5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c Grid -r 0,         5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c HexGrid -r 0,      5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c RandomGraph -r 0,  5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c Star -r 0,         5s,         0
+/samples/neddemo/,                   -f omnetpp.ini -c TriangleGrid -r 0, 5s,         0
 
 /samples/osg-earth/,                 -f omnetpp.ini -c BostonPark -r 0,            5000s,         1332-ccb0/tplx
 /samples/osg-earth/,                 -f omnetpp.ini -c BostonStreets -r 0,         5000s,         d2fe-f19f/tplx
