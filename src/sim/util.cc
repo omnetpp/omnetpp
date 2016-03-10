@@ -346,7 +346,7 @@ void _sim_dummy_func()
     cVarHistogram vh;
     vh.draw();
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-    cOmnetpp4xFingerprint fp;
+    cOmnetpp4xFingerprintCalculator fp;
     fp.initialize(nullptr, nullptr);
 #endif
 

@@ -348,11 +348,11 @@ public class ConfigRegistry {
         "be specified for a single fingerprint, separated by spaces, and a match " +
         "with any of them will be accepted. To obtain a fingerprint, enter a dummy " +
         "value (such as \"0000\"), and run the simulation.");
-    public static final ConfigOption CFGID_FINGERPRINT_CLASS = addGlobalOption(
-        "fingerprint-class", CFG_STRING, "omnetpp::cSingleFingerprint",
-        "Part of the Envir plugin mechanism: selects the fingerprint class to be " +
+    public static final ConfigOption CFGID_FINGERPRINTCALCULATOR_CLASS = addGlobalOption(
+        "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator",
+        "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be " +
         "used to calculate the simulation fingerprint. The class has to implement " +
-        "the cFingerprint interface.");
+        "the cFingerprintCalculator interface.");
     public static final ConfigOption CFGID_FINGERPRINT_EVENTS = addPerRunOption(
         "fingerprint-events", CFG_STRING, "*",
         "Configures the fingerprint calculator to consider only certain events. The " +

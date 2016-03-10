@@ -181,8 +181,8 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
                 break;
 
             case FINGERPRINT:
-                if (simulation->getFingerprint())
-                    stream << simulation->getFingerprint()->info().c_str();
+                if (simulation->getFingerprintCalculator())
+                    stream << simulation->getFingerprintCalculator()->info().c_str();
                 else
                     lastPartEmpty = true;
                 break;

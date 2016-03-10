@@ -206,11 +206,11 @@ with the \ttt{-h configdetails} option.
     be specified for a single fingerprint, separated by spaces, and a match
     with any of them will be accepted. To obtain a fingerprint, enter a dummy
     value (such as "0000"), and run the simulation.
-\item[fingerprint-class] = \textit{<string>}, default: \ttt{omnetpp::cSingleFingerprint}\\
+\item[fingerprintcalculator-class] = \textit{<string>}, default: \ttt{omnetpp::cSingleFingerprintCalculator}\\
     Global setting (applies to all simulation runs).\\
-    Part of the Envir plugin mechanism: selects the fingerprint class to be
+    Part of the Envir plugin mechanism: selects the fingerprint calculator class to be
     used to calculate the simulation fingerprint. The class has to implement
-    the cFingerprint interface.
+    the cFingerprintCalculator interface.
 \item[fingerprint-events] = \textit{<string>}, default: \ttt{*}\\
     Per-simulation-run setting.\\
     Configures the fingerprint calculator to consider only certain events. The

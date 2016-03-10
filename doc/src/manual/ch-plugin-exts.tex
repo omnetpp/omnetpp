@@ -41,7 +41,7 @@ interfaces:
      replace the data structure used for storing future events during
      simulation, i.e. the FES. This may make sense for specialized
      workloads.
-   \item \cclass{cFingerprint}. This extension interface allows one
+   \item \cclass{cFingerprintCalculator}. This extension interface allows one
      to replace or extend the fingerprint computation algorithm.
    \item \cclass{cIOutputScalarManager}. This extension interface allows
      one to create additional means of saving scalar results, for example
@@ -386,10 +386,10 @@ and can be activated with the \fconfig{futureeventset-class} configuration optio
 This extension interface allows one to replace or extend the fingerprint
 computation algorithm (see section \ref{sec:fingerprint-tests}).
 
-% TODO \cclass{cFingerprint}
+% TODO \cclass{cFingerprintCalculator}
 
-The fingerprint computation class must implement the \cclass{cFingerprint} interface,
-and can be activated with the \fconfig{fingerprint-class} configuration option.
+The fingerprint computation class must implement the \cclass{cFingerprintCalculator} interface,
+and can be activated with the \fconfig{fingerprintcalculator-class} configuration option.
 
 
 \section{Defining a New Output Scalar Manager}

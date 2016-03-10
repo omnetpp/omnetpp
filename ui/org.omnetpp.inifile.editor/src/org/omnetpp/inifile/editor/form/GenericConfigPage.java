@@ -221,6 +221,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_SCHEDULER_CLASS, "Scheduler class");
             addTextFieldEditor(group, CFGID_REALTIMESCHEDULER_SCALING, "Real-Time scheduler scaling");
             addTextFieldEditor(group, CFGID_FUTUREEVENTSET_CLASS, "Future Event Set (FES) class");
+            addTextFieldEditor(group, CFGID_FINGERPRINTCALCULATOR_CLASS, "Fingerprint calculator class");
             addTextFieldEditor(group, CFGID_OUTPUTVECTORMANAGER_CLASS, "Output vector manager class");
             addTextFieldEditor(group, CFGID_OUTPUTSCALARMANAGER_CLASS, "Output scalar manager class");
             addTextFieldEditor(group, CFGID_EVENTLOGMANAGER_CLASS, "Eventlog manager class");

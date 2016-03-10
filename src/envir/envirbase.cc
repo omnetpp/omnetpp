@@ -140,7 +140,7 @@ Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullpt
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option **.result-recording-modes). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via recordScalar()) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as \"0000\"), and run the simulation.");
 #ifndef USE_OMNETPP4x_FINGERPRINTS
-Register_GlobalConfigOption(CFGID_FINGERPRINT_CLASS, "fingerprint-class", CFG_STRING, "omnetpp::cSingleFingerprint", "Part of the Envir plugin mechanism: selects the fingerprint class to be used to calculate the simulation fingerprint. The class has to implement the cFingerprint interface.");
+Register_GlobalConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator", "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be used to calculate the simulation fingerprint. The class has to implement the cFingerprintCalculator interface.");
 #endif
 Register_PerRunConfigOption(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigOption(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "omnetpp::cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
@@ -1299,23 +1299,23 @@ void EnvirBase::readPerRunOptions()
 
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
-    // install fingerprint object
-    cFingerprint *fingerprint = nullptr;
+    // install fingerprint calculator object
+    cFingerprintCalculator *fingerprint = nullptr;
     std::string expectedFingerprints = cfg->getAsString(CFGID_FINGERPRINT);
     if (!expectedFingerprints.empty()) {
         // create calculator
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-        std::string fingerprintClass = "omnetpp::cOmnetpp4xFingerprint";
-        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprint, "fingerprint calculator");
+        std::string fingerprintClass = "omnetpp::cOmnetpp4xFingerprintCalculator";
+        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprintCalculator, "fingerprint calculator");
 #else
-        std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINT_CLASS);
-        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprint, "fingerprint calculator");
+        std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINTER_CLASS);
+        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprintCalculator, "fingerprint calculator");
         if (expectedFingerprints.find(',') != expectedFingerprints.npos)
-            fingerprint = new cMultiFingerprint(fingerprint);
+            fingerprint = new cMultiFingerprintCalculator(fingerprint);
 #endif
         fingerprint->initialize(expectedFingerprints.c_str(), cfg);
     }
-    getSimulation()->setFingerprint(fingerprint);
+    getSimulation()->setFingerprintCalculator(fingerprint);
 
     cComponent::setCheckSignals(opt->checkSignals);
 
@@ -1506,9 +1506,9 @@ void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     assert(outvectorManager);
-    if (getSimulation()->getFingerprint())
+    if (getSimulation()->getFingerprintCalculator())
         // TODO: determine component and result name if possible
-        getSimulation()->getFingerprint()->addVectorResult(nullptr, "", t, value);
+        getSimulation()->getFingerprintCalculator()->addVectorResult(nullptr, "", t, value);
     return outvectorManager->record(vechandle, t, value);
 }
 
@@ -1518,16 +1518,16 @@ void EnvirBase::recordScalar(cComponent *component, const char *name, double val
 {
     assert(outScalarManager);
     outScalarManager->recordScalar(component, name, value, attributes);
-    if (getSimulation()->getFingerprint())
-        getSimulation()->getFingerprint()->addScalarResult(component, name, value);
+    if (getSimulation()->getFingerprintCalculator())
+        getSimulation()->getFingerprintCalculator()->addScalarResult(component, name, value);
 }
 
 void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     assert(outScalarManager);
     outScalarManager->recordStatistic(component, name, statistic, attributes);
-    if (getSimulation()->getFingerprint())
-        getSimulation()->getFingerprint()->addStatisticResult(component, name, statistic);
+    if (getSimulation()->getFingerprintCalculator())
+        getSimulation()->getFingerprintCalculator()->addStatisticResult(component, name, statistic);
 }
 
 //-------------------------------------------------------------
@@ -1736,8 +1736,8 @@ void EnvirBase::stoppedWithException(std::exception& e)
 
 void EnvirBase::checkFingerprint()
 {
-    cFingerprint *fingerprint = getSimulation()->getFingerprint();
-    if (!getSimulation()->getFingerprint())
+    cFingerprintCalculator *fingerprint = getSimulation()->getFingerprintCalculator();
+    if (!getSimulation()->getFingerprintCalculator())
         return;
 
     if (fingerprint->checkFingerprint())

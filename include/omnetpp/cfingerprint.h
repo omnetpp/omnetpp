@@ -30,15 +30,15 @@ namespace omnetpp {
 /**
  * This class defines the interface for fingerprint calculators.
  *
- * @see cSimulation::getFingerprint()
+ * @see cSimulation::getFingerprintCalculator()
  * @ingroup EnvirExtensions
  */
-class SIM_API cFingerprint : public cObject, noncopyable
+class SIM_API cFingerprintCalculator : public cObject, noncopyable
 {
   public:
     /** @name Constructor, destructor. */
     //@{
-    virtual ~cFingerprint() {}
+    virtual ~cFingerprintCalculator() {}
     //@}
 
     /**
@@ -86,17 +86,17 @@ class SIM_API cFingerprint : public cObject, noncopyable
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cOmnetpp4xFingerprint : public cFingerprint
+class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
 {
   protected:
     std::string expectedFingerprints;
     cHasher *hasher;
 
   public:
-    cOmnetpp4xFingerprint();
-    virtual ~cOmnetpp4xFingerprint();
+    cOmnetpp4xFingerprintCalculator();
+    virtual ~cOmnetpp4xFingerprintCalculator();
 
-    virtual cOmnetpp4xFingerprint *dup() const override { return new cOmnetpp4xFingerprint(); }
+    virtual cOmnetpp4xFingerprintCalculator *dup() const override { return new cOmnetpp4xFingerprintCalculator(); }
     virtual std::string info() const override { return hasher->str(); }
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
@@ -153,7 +153,7 @@ class SIM_API cOmnetpp4xFingerprint : public cFingerprint
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cSingleFingerprint : public cFingerprint
+class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
 {
   protected:
     enum FingerprintIngredient {
@@ -212,10 +212,10 @@ class SIM_API cSingleFingerprint : public cFingerprint
     virtual bool addEventIngredient(cEvent *event, FingerprintIngredient ingredient);
 
   public:
-    cSingleFingerprint();
-    virtual ~cSingleFingerprint();
+    cSingleFingerprintCalculator();
+    virtual ~cSingleFingerprintCalculator();
 
-    virtual cSingleFingerprint *dup() const override { return new cSingleFingerprint(); }
+    virtual cSingleFingerprintCalculator *dup() const override { return new cSingleFingerprintCalculator(); }
     virtual std::string info() const override;
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
@@ -245,22 +245,22 @@ class SIM_API cSingleFingerprint : public cFingerprint
 
 /**
  * This class calculates multiple fingerprints simultaneously. The calculator
- * can be configured similarly to the cSingleFingerprint class, but in this case
+ * can be configured similarly to the cSingleFingerprintCalculator class, but in this case
  * each option is a comma separated list.
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cMultiFingerprint : public cFingerprint
+class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
 {
   protected:
-    cFingerprint *prototype;
-    std::vector<cFingerprint *> elements;
+    cFingerprintCalculator *prototype;
+    std::vector<cFingerprintCalculator *> elements;
 
   public:
-    cMultiFingerprint(cFingerprint *prototype);
-    virtual ~cMultiFingerprint();
+    cMultiFingerprintCalculator(cFingerprintCalculator *prototype);
+    virtual ~cMultiFingerprintCalculator();
 
-    virtual cMultiFingerprint *dup() const override { return new cMultiFingerprint(static_cast<cFingerprint *>(prototype->dup())); }
+    virtual cMultiFingerprintCalculator *dup() const override { return new cMultiFingerprintCalculator(static_cast<cFingerprintCalculator *>(prototype->dup())); }
     virtual std::string info() const override;
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
@@ -269,7 +269,7 @@ class SIM_API cMultiFingerprint : public cFingerprint
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override;
     virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
 
-#define for_each_element(CODE) for (std::vector<cFingerprint *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprint *element = *it; CODE; }
+#define for_each_element(CODE) for (std::vector<cFingerprintCalculator *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprintCalculator *element = *it; CODE; }
     virtual void addExtraData(const char *data, size_t length) override { for_each_element(element->addExtraData(data, length)); }
     virtual void addExtraData(char data) override { for_each_element(element->addExtraData(data)); }
     virtual void addExtraData(short data) override { for_each_element(element->addExtraData(data)); }

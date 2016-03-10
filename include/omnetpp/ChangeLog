@@ -104,22 +104,22 @@
 
 	* Fingerprint computation re-thought: cHasher has been relegated to
 	a simple hash computing class, and fingerprint computation is now
-	performed by cFingerprint (which itself relies on a cHasher).
-	More precisely, cFingerprint is an abstract class interface from
+	performed by cFingerprinter (which itself relies on a cHasher).
+	More precisely, cFingerprinter is an abstract class interface from
 	which concrete fingerprint computing classes are derived, currently
-	cSingleFingerprint, cMultiFingerprint, and cOmnetpp4xFingerprint.
+	cSingleFingerprinter, cMultiFingerprinter, and cOmnetpp4xFingerprinter.
 
-	cSingleFingerprint allows selecting which data elements to include
+	cSingleFingerprinter allows selecting which data elements to include
 	in the fingerprint, and also allows filtering (by module, etc).
 	See sim/ChangeLog for a more detailed feature description.
 
 	* Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
-	OMNeT++ 4.x fingerprints. Note: using cOmnetpp4xFingerprint alone is
+	OMNeT++ 4.x fingerprints. Note: using cOmnetpp4xFingerprinter alone is
 	not enough, because SimTime operation has also changed in some details.
 	USE_OMNETPP4x_FINGERPRINT also restores the 4.x behavior of SimTime.
 
 	* API change: cSimulation no longer has getHasher()/setHasher();
-	getFingerprint() has been added instead.
+	getFingerprinter() has been added instead.
 
 2015-11-20  Andras Varga
 

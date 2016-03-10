@@ -36,7 +36,7 @@ class cFutureEventSet;
 class cScheduler;
 class cParsimPartition;
 class cNEDFileLoader;
-class cFingerprint;
+class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;
 class cDefaultList;
@@ -96,7 +96,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cException *exception;    // helper variable to get exceptions back from activity()
     bool trapOnNextEvent;  // when set, next handleMessage or activity() will execute debugger interrupt
 
-    cFingerprint *fingerprint; // used for fingerprint calculation
+    cFingerprintCalculator *fingerprint; // used for fingerprint calculation
 
   private:
     // internal
@@ -549,12 +549,12 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * Returns the object used for fingerprint calculation. It returns nullptr
      * if no fingerprint is being calculated during this simulation run.
      */
-    cFingerprint *getFingerprint() {return fingerprint;}
+    cFingerprintCalculator *getFingerprintCalculator() {return fingerprint;}
 
     /**
      * Installs a new fingerprint object, used for fingerprint calculation.
      */
-    void setFingerprint(cFingerprint *fingerprint);
+    void setFingerprintCalculator(cFingerprintCalculator *fingerprint);
     //@}
 };
 

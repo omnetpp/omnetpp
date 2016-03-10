@@ -888,27 +888,30 @@ parts of the simulation.
 \subsubsection{Programmatic Access}
 \label{sec:testing:fingerprint-programmatic-access}
 
-\cclass{cFingerprint} is the class responsible for fingerprint computation.
+\cclass{cFingerprintCalculator} is the class responsible for fingerprint computation.
 The current fingerprint computation object can be retrieved from
-\cclass{cSimulation}, using the \ffunc{getFingerprint()} member function.
+\cclass{cSimulation}, using the \ffunc{getFingerprintCalculator()} member function.
 This method will return \ttt{nullptr} if fingerprint computation is turned
 off for the current simulation run.
 
-To contribute data to the fingerprint, \cclass{cFingerprint} has several
+To contribute data to the fingerprint, \cclass{cFingerprintCalculator} has several
 \ffunc{addExtraData()} methods for various data types (string, \ttt{long},
 \ttt{double}, byte array, etc.)
 
-An example:
+An example (note that we check the pointer for \ttt{nullptr} to decide
+whether a fingerprint is being computed):
 
 \begin{cpp}
-if (cFingerprint *fingerprint = getSimulation()->getFingerprint()) {
+cFingerprintCalculator *fingerprint = getSimulation()->getFingerprintCalculator();
+if (fingerprint) {
     fingerprint->addExtraData(retryCount);
     fingerprint->addExtraData(rttEstimate);
 }
 \end{cpp}
 
 Data added using \ffunc{addExtraData()} will only be counted in the
-fingerprint if the list of fingerprint ingredients contains \tbf{x}.
+fingerprint if the list of fingerprint ingredients contains \tbf{x}
+(otherwise \ffunc{addExtraData()} does nothing).
 
 \subsection{Fingerprint Tests}
 \label{sec:testing:fingerprint-tests}

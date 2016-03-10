@@ -83,7 +83,7 @@
 
 	* Fingerprint computation made more powerful/flexible; see sim/ChangeLog
 	for more details. The envir library contributes to this feature
-	by providing the fingerprint-class configuration option, and support
+	by providing the fingerprinter-class configuration option, and support
 	for the USE_OMNETPP4x_FINGERPRINT compatibility compile-time option.
 
 2015-11-19  Andras Varga

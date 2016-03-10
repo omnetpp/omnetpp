@@ -34,25 +34,25 @@ namespace omnetpp {
 
 #ifdef USE_OMNETPP4x_FINGERPRINTS
 
-Register_Class(cOmnetpp4xFingerprint);
+Register_Class(cOmnetpp4xFingerprintCalculator);
 
-cOmnetpp4xFingerprint::cOmnetpp4xFingerprint()
+cOmnetpp4xFingerprintCalculator::cOmnetpp4xFingerprintCalculator()
 {
     hasher = nullptr;
 }
 
-cOmnetpp4xFingerprint::~cOmnetpp4xFingerprint()
+cOmnetpp4xFingerprintCalculator::~cOmnetpp4xFingerprintCalculator()
 {
     delete hasher;
 }
 
-void cOmnetpp4xFingerprint::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
+void cOmnetpp4xFingerprintCalculator::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
 {
     this->expectedFingerprints = expectedFingerprints;
     hasher = new cHasher();
 }
 
-void cOmnetpp4xFingerprint::addEvent(cEvent *event)
+void cOmnetpp4xFingerprintCalculator::addEvent(cEvent *event)
 {
     if (event->isMessage()) {
         cMessage *message = static_cast<cMessage *>(event);
@@ -62,7 +62,7 @@ void cOmnetpp4xFingerprint::addEvent(cEvent *event)
     }
 }
 
-bool cOmnetpp4xFingerprint::checkFingerprint() const
+bool cOmnetpp4xFingerprintCalculator::checkFingerprint() const
 {
     cStringTokenizer tokenizer(expectedFingerprints.c_str());
     while (tokenizer.hasMoreTokens()) {
@@ -77,19 +77,19 @@ bool cOmnetpp4xFingerprint::checkFingerprint() const
 
 #else // if !USE_OMNETPP4x_FINGERPRINTS
 
-Register_Class(cSingleFingerprint);
+Register_Class(cSingleFingerprintCalculator);
 
 Register_PerRunConfigOption(CFGID_FINGERPRINT_INGREDIENTS, "fingerprint-ingredients", CFG_STRING, "tplx", "Specifies the list of ingredients to be taken into account for fingerprint computation. Each character corresponds to one ingredient: 'e' event number, 't' simulation time, 'n' message (event) full name, 'c' message (event) class name, 'k' message kind, 'l' message bit length, 'o' message control info class name, 'd' message data, 'i' module id, 'm' module full name, 'p' module full path, 'a' module class name, 'r' random numbers drawn, 's' scalar results, 'z' statistic results, 'v' vector results, 'x' extra data provided by modules. Note: ingredients specified in an expected fingerprint (characters after the '/' in the fingerprint value) take precedence over this setting. If you configured multiple fingerprints, separate ingredients with commas.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_EVENTS, "fingerprint-events", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain events. The value is a pattern that will be matched against the event name by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in the calculated fingerprint. If you configured multiple fingerprints, separate filters with commas.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_MODULES, "fingerprint-modules", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain modules. The value is a pattern that will be matched against the module full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all events in all modules in the calculated fingerprint. If you configured multiple fingerprints, separate filters with commas.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT_RESULTS, "fingerprint-results", CFG_STRING, "*", "Configures the fingerprint calculator to consider only certain results. The value is a pattern that will be matched against the result full path by default. It may also be an expression containing pattern matching characters, field access, and logical operators. The default setting is '*' which includes all results in all modules in the calculated fingerprint. If you configured multiple fingerprints, separate filters with commas.");
 
-const char *cSingleFingerprint::MatchableObject::getAsString() const
+const char *cSingleFingerprintCalculator::MatchableObject::getAsString() const
 {
     return object->getFullPath().c_str();
 }
 
-const char *cSingleFingerprint::MatchableObject::getAsString(const char *attribute) const
+const char *cSingleFingerprintCalculator::MatchableObject::getAsString(const char *attribute) const
 {
     cClassDescriptor *descriptor = const_cast<cObject *>(object)->getDescriptor();
     int fieldId = descriptor->findField(attribute);
@@ -101,7 +101,7 @@ const char *cSingleFingerprint::MatchableObject::getAsString(const char *attribu
     }
 }
 
-cSingleFingerprint::cSingleFingerprint()
+cSingleFingerprintCalculator::cSingleFingerprintCalculator()
 {
     eventMatcher = nullptr;
     moduleMatcher = nullptr;
@@ -114,7 +114,7 @@ cSingleFingerprint::cSingleFingerprint()
     addExtraData_ = false;
 }
 
-cSingleFingerprint::~cSingleFingerprint()
+cSingleFingerprintCalculator::~cSingleFingerprintCalculator()
 {
     delete eventMatcher;
     delete moduleMatcher;
@@ -128,7 +128,7 @@ inline std::string getListItem(const std::string& list, int index)
     return (index >= 0 && index < (int)items.size()) ? items[index] : "";
 }
 
-void cSingleFingerprint::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
+void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, cConfiguration *cfg, int index)
 {
     this->expectedFingerprints = expectedFingerprints;
     hasher = new cHasher();
@@ -158,19 +158,19 @@ void cSingleFingerprint::initialize(const char *expectedFingerprints, cConfigura
     parseResultMatcher(getListItem(cfg->getAsString(CFGID_FINGERPRINT_RESULTS), index).c_str());
 }
 
-std::string cSingleFingerprint::info() const
+std::string cSingleFingerprintCalculator::info() const
 {
     return hasher->str() + "/" + ingredients;
 }
 
-cSingleFingerprint::FingerprintIngredient cSingleFingerprint::validateIngredient(char ch)
+cSingleFingerprintCalculator::FingerprintIngredient cSingleFingerprintCalculator::validateIngredient(char ch)
 {
     if (strchr("etncklodimparszvx0", ch) == nullptr)
         throw cRuntimeError("Unknown fingerprint ingredient character '%c'", ch);
     return (FingerprintIngredient) ch;
 }
 
-void cSingleFingerprint::parseIngredients(const char *s)
+void cSingleFingerprintCalculator::parseIngredients(const char *s)
 {
     ingredients = s;
     for (; *s; s++) {
@@ -185,7 +185,7 @@ void cSingleFingerprint::parseIngredients(const char *s)
     }
 }
 
-void cSingleFingerprint::parseEventMatcher(const char *s)
+void cSingleFingerprintCalculator::parseEventMatcher(const char *s)
 {
     if (s && *s && strcmp("*", s) != 0) {
         eventMatcher = new cMatchExpression();
@@ -193,7 +193,7 @@ void cSingleFingerprint::parseEventMatcher(const char *s)
     }
 }
 
-void cSingleFingerprint::parseModuleMatcher(const char *s)
+void cSingleFingerprintCalculator::parseModuleMatcher(const char *s)
 {
     if (s && *s && strcmp("*", s)) {
         moduleMatcher = new cMatchExpression();
@@ -201,7 +201,7 @@ void cSingleFingerprint::parseModuleMatcher(const char *s)
     }
 }
 
-void cSingleFingerprint::parseResultMatcher(const char *s)
+void cSingleFingerprintCalculator::parseResultMatcher(const char *s)
 {
     if (s && *s && strcmp("*", s)) {
         resultMatcher = new cMatchExpression();
@@ -209,7 +209,7 @@ void cSingleFingerprint::parseResultMatcher(const char *s)
     }
 }
 
-void cSingleFingerprint::addEvent(cEvent *event)
+void cSingleFingerprintCalculator::addEvent(cEvent *event)
 {
     if (addEvents) {
         const MatchableObject matchableEvent(event);
@@ -302,12 +302,12 @@ void cSingleFingerprint::addEvent(cEvent *event)
     }
 }
 
-bool cSingleFingerprint::addEventIngredient(cEvent *event, FingerprintIngredient ingredient)
+bool cSingleFingerprintCalculator::addEventIngredient(cEvent *event, FingerprintIngredient ingredient)
 {
     return false;
 }
 
-void cSingleFingerprint::addScalarResult(const cComponent *component, const char *name, double value)
+void cSingleFingerprintCalculator::addScalarResult(const cComponent *component, const char *name, double value)
 {
     if (addScalarResults) {
         MatchableObject matchableComponent(component);
@@ -320,7 +320,7 @@ void cSingleFingerprint::addScalarResult(const cComponent *component, const char
     }
 }
 
-void cSingleFingerprint::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
+void cSingleFingerprintCalculator::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
 {
     if (addStatisticResults) {
         MatchableObject matchableComponent(component);
@@ -338,7 +338,7 @@ void cSingleFingerprint::addStatisticResult(const cComponent *component, const c
     }
 }
 
-void cSingleFingerprint::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
+void cSingleFingerprintCalculator::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
 {
     if (addVectorResults) {
         MatchableObject matchableComponent(component);
@@ -354,7 +354,7 @@ void cSingleFingerprint::addVectorResult(const cComponent *component, const char
     }
 }
 
-bool cSingleFingerprint::checkFingerprint() const
+bool cSingleFingerprintCalculator::checkFingerprint() const
 {
     cStringTokenizer tokenizer(expectedFingerprints.c_str());
     while (tokenizer.hasMoreTokens()) {
@@ -370,15 +370,15 @@ bool cSingleFingerprint::checkFingerprint() const
 //----
 
 // Note: This is basically equivalent to "for (auto & element : elements)", but we don't want to rely on C++11 yet...
-#define for_each_element(CODE) for (std::vector<cFingerprint *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprint *element = *it; CODE; }
-#define for_each_element_const(CODE) for (std::vector<cFingerprint *>::const_iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprint *element = *it; CODE; }
+#define for_each_element(CODE) for (std::vector<cFingerprintCalculator *>::iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprintCalculator *element = *it; CODE; }
+#define for_each_element_const(CODE) for (std::vector<cFingerprintCalculator *>::const_iterator it = elements.begin(); it != elements.end(); ++it) { cFingerprintCalculator *element = *it; CODE; }
 
-cMultiFingerprint::cMultiFingerprint(cFingerprint *prototype) :
+cMultiFingerprintCalculator::cMultiFingerprintCalculator(cFingerprintCalculator *prototype) :
     prototype(prototype)
 {
 }
 
-cMultiFingerprint::~cMultiFingerprint()
+cMultiFingerprintCalculator::~cMultiFingerprintCalculator()
 {
     delete prototype;
     for_each_element(
@@ -386,48 +386,48 @@ cMultiFingerprint::~cMultiFingerprint()
     )
 }
 
-void cMultiFingerprint::initialize(const char *expectedFingerprintsList, cConfiguration *cfg, int index)
+void cMultiFingerprintCalculator::initialize(const char *expectedFingerprintsList, cConfiguration *cfg, int index)
 {
     if (index != -1)
-        throw cRuntimeError("cMultiFingerprint objects cannot be nested");
+        throw cRuntimeError("cMultiFingerprintCalculator objects cannot be nested");
 
     std::vector<std::string> expectedFingerprints = cStringTokenizer(expectedFingerprintsList, ",").asVector();
     for (int i = 0; i < (int)expectedFingerprints.size(); i++) {
-        cFingerprint *fingerprint = static_cast<cFingerprint*>(prototype->dup());
+        cFingerprintCalculator *fingerprint = static_cast<cFingerprintCalculator*>(prototype->dup());
         fingerprint->initialize(expectedFingerprints[i].c_str(), cfg, i);
         elements.push_back(fingerprint);
     }
 }
 
-void cMultiFingerprint::addEvent(cEvent *event)
+void cMultiFingerprintCalculator::addEvent(cEvent *event)
 {
     for_each_element(
         element->addEvent(event);
     )
 }
 
-void cMultiFingerprint::addScalarResult(const cComponent *component, const char *name, double value)
+void cMultiFingerprintCalculator::addScalarResult(const cComponent *component, const char *name, double value)
 {
     for_each_element(
         element->addScalarResult(component, name, value);
     )
 }
 
-void cMultiFingerprint::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
+void cMultiFingerprintCalculator::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
 {
     for_each_element(
         element->addStatisticResult(component, name, value);
     )
 }
 
-void cMultiFingerprint::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
+void cMultiFingerprintCalculator::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
 {
     for_each_element(
         element->addVectorResult(component, name, t, value);
     )
 }
 
-bool cMultiFingerprint::checkFingerprint() const
+bool cMultiFingerprintCalculator::checkFingerprint() const
 {
     for_each_element_const(
         if (!element->checkFingerprint())
@@ -436,7 +436,7 @@ bool cMultiFingerprint::checkFingerprint() const
     return true;
 }
 
-std::string cMultiFingerprint::info() const
+std::string cMultiFingerprintCalculator::info() const
 {
     std::stringstream stream;
     for_each_element_const(

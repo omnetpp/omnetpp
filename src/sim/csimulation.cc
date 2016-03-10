@@ -672,8 +672,8 @@ void cSimulation::doMessageEvent(cMessage *msg, cSimpleModule *module)
     // give msg to module (set ownership)
     module->take(msg);
 
-    if (getFingerprint())
-        getFingerprint()->addEvent(msg);
+    if (getFingerprintCalculator())
+        getFingerprintCalculator()->addEvent(msg);
 
     if (!module->initialized())
         throw cRuntimeError(module, "Module not initialized (did you forget to invoke "
@@ -728,7 +728,7 @@ unsigned long cSimulation::getUniqueNumber()
     return getEnvir()->getUniqueNumber();
 }
 
-void cSimulation::setFingerprint(cFingerprint *f)
+void cSimulation::setFingerprintCalculator(cFingerprintCalculator *f)
 {
     if (fingerprint)
         delete fingerprint;
