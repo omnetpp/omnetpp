@@ -21,6 +21,46 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.0rc1
+~~~~~~~~~~~~~~
+
+(!)    cFingerprint renamed to cFingerprintCalculator.
+
+(!)    cModule: size() deprecated, use getVectorSize() instead
+
+(!)    More methods made virtual in cSimpleModule and other classes
+
+(!)    OSG: OmnetppObjectNode renamed to cObjectOsgNode
+
+(!)    cOsgCanvas: removed createOmnetppObjectNode(), isOmnetppObjectNode(),
+       setOmnetppObject(), getOmnetppObject() methods; one should directly
+       use cObjectOsgNode instead
+
+(!)    cOsgCanvas: removed setPerspective()
+
+(!)    osgutil.h is now part of omnetpp.h, doesn't need to be #included
+       separately
+
+(+)    Added cIEventlogManager.
+
+(+)    cConfigOption: Refined per-object config option kinds (added
+       COMPONENT and CHANNEL).
+
+(!)    Refined the logging API that was introduced in earlier 5.0 betas.
+
+(!)    cEnvir: Renamed getRNGMappingFor(component) to preconfigure(component)
+
+(!)    Refined the cFigure API that was introduced in earlier 5.0 betas.
+        - replaced getClassNameForRenderer() with getRendererClassName()
+        - spelling: ArrowHead changed to Arrowhead in method names, enum name, etc.
+        - move() made recursive, nonrecursive version is called moveLocal()
+        - Pixmap: renamed resize() to setSize()
+        - Transform: skew() methods to use coefficient instead of angle
+        - Transform: matrix was transposed so points can be column vectors
+          instead of row vectors
+        - added NUM_GOOD_DARK_COLORS and NUM_GOOD_LIGHT_COLORS
+        - some cPixmapFigure methods were also renamed
+
 OMNeT++ 5.0b3
 ~~~~~~~~~~~~~
 
@@ -38,14 +78,14 @@ OMNeT++ 5.0b3
         graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
         to be refreshed after processing some simulation events.
 
-(+)	cEnvir: added isExpressMode() that can be used to tailor the operation
-	of refreshDisplay().
+(+)     cEnvir: added isExpressMode() that can be used to tailor the operation
+        of refreshDisplay().
 
-(+)	cEnvir: added resolveResourcePath() for finding data or other files
-	needed by the model.
+(+)     cEnvir: added resolveResourcePath() for finding data or other files
+        needed by the model.
 
-(+)	ccComponent: added resolveResourcePath(). It delegates to cEnvir's
-	similar method.
+(+)     ccComponent: added resolveResourcePath(). It delegates to cEnvir's
+        similar method.
 
 (!!!)   Signal listener interface change: A cObject *details (default-nullptr)
         argument has been added to emit() methods, and consequently, to

@@ -1,3 +1,11 @@
+2016-03-10  Levente Meszaros
+
+	* cmdenv-log-format option renamed to cmdenv-log-prefix.
+
+2016-03-09  Rudolf Hornig
+
+	* Change in event bannner format (display "T=<time>" with lowercase t).
+
 2016-02-22  Levente Meszaros & Andras Varga
 
 	* With the recent simulation kernel changes, printEventBanner() needs to be

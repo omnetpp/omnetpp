@@ -1,3 +1,14 @@
+2016-03-10  Rudolf Hornig
+
+	* Fix: empty "i2" display string tag displayed a "missing icon" icon
+	(question mark) instead of simply not displaying a status icon as both
+	the IDE and Qtenv do.
+
+2016-03-09  Rudolf Hornig
+
+	* Change in status and event bannner texts (display "T=<time>" with
+	lowercase t).
+
 2016-02-22  Andras Varga
 
 	* Added fields to the toolbar that display the *current* simulation time

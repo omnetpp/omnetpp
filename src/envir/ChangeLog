@@ -1,3 +1,7 @@
+2016-03-10  Levente Meszaros, Andras Varga
+
+	* fingerprint-class option renamed to fingerprintcalculator-class.
+
 2016-02-26  Levente Meszaros
 
 	* Changed EventlogFileManager to implement the new cIEventlogManager plugin
@@ -34,11 +38,11 @@
 
 	  1. recording of individual scalars and statistic objects (cStatistic),
 	     including scalar recording modes of a @statistic (foo:mean,
-             foo:stddev, etc.)
+	     foo:stddev, etc.)
 	  2. main switch for @statistic (when set to false, no result
-             recorders were added at all)
+	     recorders were added at all)
 	  3. recording of histogram bins (cells) of a statistic object
-             (when key contained the ":histogram" suffix)
+	     (when key contained the ":histogram" suffix)
 
 	Using 1) and 3) together sometimes resulted in weird keys like
 	**.foo:histogram:histogram.scalar-recording, and poor usability:
