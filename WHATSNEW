@@ -5,18 +5,135 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 5.0 (February 2016)
----------------------------
+
+OMNeT++ 5.0 rc1 (March 2016)
+----------------------------
+
+This release brings numerous refinements to APIs introduced in previous beta
+versions, several bug fixes, and relatively few new features. The manual has
+been improved and brought up to date for the most part, although there are
+still gaps that will be filled in for the final 5.0 release. The most
+conspicuous change will be the new simulation time display in Tkenv and Qtenv.
+
+Build:
+
+ - Introduced WITH_TKENV, WITH_QTENV, WITH_OSG and WITH_SYSTEMC in configure.user;
+   theses options allow one to disable certain features if they are not needed.
+   In particular, WITH_TKENV=no replaces NO_TCL=1
 
 Core:
 
- - Introduced WITH_TKENV, WITH_QTENV, WITH_OSG and WITH_SYSTEMC settings in 
-   configure.user to disable certain features if they are not needed.
+ - The logging API was refined. In addition to several renames (e.g.
+   GLOBAL_COMPILETIME_LOGLEVEL was changed to COMPILETIME_LOGLEVEL), the
+   numeric order of log level constants (LOGLEVEL_*) was reversed to make
+   the values consistent with semantics, and LOGLEVEL_OFF was added to allow
+   one completely disable logging. Support for log filtering was added in the
+   form of compile-time and runtime predicates. The default compile-time
+   log levels were also changed (to TRACE in debug builds, and DETAIL in
+   release builds).
 
-Samples:
+ - In the OpenSceneGraph API, OmnetppObjectNode was renamed to cObjectOsgNode.
+   Static cOsgCanvas methods that existed for creating and manipulating such
+   nodes (createOmnetppObjectNode(), isOmnetppObjectNode(), setOmnetppObject(),
+   getOmnetppObject()) were removed, and one should directly use cObjectOsgNode
+   instead. Also, the osgutil.h header is now part of omnetpp.h, so it doesn't
+   need to be included separately.
 
- - Removed google-earth demo in favor of the osg-earth sample.
+ - In cOsgCanvas, the redundant setPerspective() method was removed (it was a
+   union of two other setters).
+
+ - There were several refinements in the cFigure API:
+   - replaced getClassNameForRenderer() with getRendererClassName()
+   - spelling: ArrowHead changed to Arrowhead in method names, enum name, etc.
+   - move() made recursive, nonrecursive version is called moveLocal()
+   - Pixmap: renamed resize() to setSize()
+   - Transform: skew() methods to use coefficient instead of angle
+   - Transform: the matrix was transposed so points can be column vectors
+     instead of row vectors
+   - added NUM_GOOD_DARK_COLORS and NUM_GOOD_LIGHT_COLORS
+   - some cPixmapFigure methods were also renamed
+
+ - Refined @figure syntax, the way figures can be defined in NED files:
+   - transform= now accepts "((a b) (c d) (t1 t2))" and matrix(a,b,c,d,t1,t2)
+     syntaxes as well
+   - in transform=, scale() now accepts center as well
+   - in transform=, skew() now expects coefficient instead of angle
+   - arc, rectangle, image, etc to support bounds=x,t,width,height
+     as an alternative to the pos=,size=,anchor= triplet
+
+ - Revised the configuration options that control recording of @statistics,
+   individual scalars, and histograms. As a result, the **.statistic-recording
+   and **.bin-recording options were introduced that take over some of the
+   responsibility of the formally overloaded **.scalar-recording option.
+   Rationale and details in src/envir/ChangeLog.
+
+ - Added cIEventlogManager, a new Envir plugin class that allows one
+   to replace the built-in eventlog manager. Eventlog managers are
+   responsible for recording simulation history into an eventlog file.
+   A new eventlog manager can be activated with the eventlogmanager-class
+   configuration option.
+
+ - The cFingerprint class was renamed to cFingerprintCalculator, and the
+   fingerprint-class config option to fingerpringcalculator-class.
+
+ - In cEnvir, renamed getRNGMappingFor(component) to preconfigure(component).
+
+ - In cSimulation, moved both updating the event number and simulation time
+   into executeEvent(). They were updated inconsistently, plus executeEvent()
+   is a better place for that than getNextEvent(), considering cScheduler's
+   putBackEvent().
+
+ - Removed cEnvir::isDisabled() and added cEnvir::isLoggingEnabled(). Renamed
+   cEnvir::disableTracing member variable to cEnvir::loggingEnabled.
+
+ - cModule: size() deprecated, use getVectorSize() instead
+
+ - More methods made virtual in cSimpleModule and other classes
+
+ - Improved the descriptions of several per-object config options.
+
+Tkenv:
+
+ - Added a large simulation time and event number display to the toolbar that
+   display the *current* simulation time (or the time of the last event), as
+   opposed to the time of the next event displayed previously. The status bar
+   below the toolbar displays information about the *next* event, together with
+   the time delta from the current simulation time. Information on the currently
+   set up simulation, along with message statistics, have been moved to the
+   bottom status bar of the main window.
+
+Qtenv:
+
+ - Added a large simulation time and event number display to the toolbar. (This
+   is the same GUI change as in Tkenv, see above.)
+
+ - Changed the name of the preferences file to .qtenvrc.
+
+ - Numerous bug fixes and improvements.
+
+Cmdenv:
+
+ - Configuration options controlling logging in non-express mode
+   (cmdenv-express-mode=false) have been simplified. The following options
+   have been removed: cmdenv-module-messages, cmdenv-global-log-level,
+   **.cmdenv-ev-output. The equivalent functionality (enabling/disabling
+   logging and setting the log level globally and per-module) is now
+   controlled with **.cmdenv-log-level. Logging can be disabled with
+   **.cmdenv-log-level = OFF. Note that the cmdenv-event-banners and
+   cmdenv-log-prefix options still exist.
+
+ - The cmdenv-message-trace configuration option has been removed. It had very
+   limited usefulness, and it was somewhat overlapping with eventlog.
+
+Examples:
+
  - Updated visualization in samples to use the new refreshDisplay() callback.
+
+ - Removed google-earth demo. (We already have a similar demo, osg-earth.)
+
+Utils:
+
+ - opp_featuretool revised and improved
 
 
 OMNeT++ 5.0 beta 3 (December 2015)
