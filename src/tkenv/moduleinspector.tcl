@@ -775,7 +775,7 @@ proc ModuleInspector:drawSubmodule {c submodptr x y name dispstr isplaceholder} 
        }
 
        # modifier icon (i2 tag)
-       if {[info exists tags(i2)]} {
+       if {[info exists tags(i2)] && [lindex $tags(i2) 0]!=""} {
            if ![info exists tags(is2)] {
                set tags(is2) {}
            }
