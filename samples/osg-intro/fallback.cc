@@ -13,13 +13,13 @@
 // fallback code used in case OpenSceneGraph and osgEarth is not present on the system
 using namespace omnetpp;
 
-class Model3d : public cSimpleModule
+class OsgScene : public cSimpleModule
 {
   protected:
     virtual void initialize() { throw cRuntimeError("This example requires OpenSceneGraph and osgEarth installed"); }
     virtual void handleMessage(cMessage *msg) {};
 };
 
-Define_Module(Model3d);
+Define_Module(OsgScene);
 
 #endif // WITH_OSG
