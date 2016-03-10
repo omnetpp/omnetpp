@@ -180,7 +180,7 @@ Core:
    100ms), and also base-10 scale exponents in the -18..0 range (mostly for
    backward compatibility with simtime-scale).
 
- - RNG-to-module mapping made more flexible: the *.rng-<N> config option now
+ - RNG-to-module mapping made more flexible: the **.rng-<N> config option now
    allows expressions, including those containing index, parentIndex, and
    ancestorIndex(level). This change allows things like assigning a separate
    RNG to each element of a module vector.
