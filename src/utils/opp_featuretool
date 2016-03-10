@@ -198,7 +198,7 @@ root directory where the following files are present:
         defines_parser = subparsers.add_parser('defines', help='Print the compiler macros that can be used as a header file (i.e. the -DWITH_FEATURE options from the project features)')
 
         # isenabled command
-        isenabled_parser = subparsers.add_parser('isenabled', help='Tests whether the specified features are enabled and returns with 0 exit code.')
+        isenabled_parser = subparsers.add_parser('isenabled', help='Returns true if the specified feature(s) are enabled, and false otherwise.')
         isenabled_parser.add_argument('features', nargs='+',
                     help='feature list',
                     )
