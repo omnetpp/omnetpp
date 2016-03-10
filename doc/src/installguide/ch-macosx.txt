@@ -145,7 +145,7 @@ environment in order to test for `wish`, the Tcl/Tk shell. If you are
 logged in via an ssh session or you want to compile @OMNETPP@ without Tcl/Tk,
 use the command
 
-  $ WITH_TKENV=no ./configure
+  $ ./configure WITH_TKENV=no
 
 instead of plain `./configure`.
 

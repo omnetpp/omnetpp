@@ -18,7 +18,7 @@ conspicuous change will be the new simulation time display in Tkenv and Qtenv.
 Build:
 
  - Introduced WITH_TKENV, WITH_QTENV, WITH_OSG and WITH_SYSTEMC in configure.user;
-   theses options allow one to disable certain features if they are not needed.
+   these options allow one to disable certain features if they are not needed.
    In particular, WITH_TKENV=no replaces NO_TCL=1
 
 Core:

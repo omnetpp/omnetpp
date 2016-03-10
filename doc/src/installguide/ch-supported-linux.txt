@@ -128,7 +128,7 @@ via an 'ssh' session, or there is some other reason why X is not running,
 the easiest way to work around the problem is to tell @OMNETPP@ to build
 without Tcl/Tk. To do that, use the command
 
-  $ WITH_TKENV=no ./configure
+  $ ./configure WITH_TKENV=no
 
 instead of plain `./configure`.
 

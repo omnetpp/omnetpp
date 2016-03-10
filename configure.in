@@ -841,7 +841,7 @@ else
                 OPP_CHECK_LIB(Qt4, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
             fi
             if test $qt_ok = no; then
-                AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
+                AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying WITH_QTENV=no in configure.user])
             fi
             ALL_ENV_LIBS+=' $(QTENV_LIBS)'
             QT_CFLAGS+=' -I/usr/include/QtOpenGL' # we need this because of a bug in qmake that prevents correctly detecting the include directory of the QtOpenGL library (on MinGW-64 and on Fedora 23)

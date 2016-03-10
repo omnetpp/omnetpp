@@ -11,7 +11,6 @@ all:
 	-mkdir ..\..\tictoc-tutorial 2>nul
 	$(DOXYGEN:/=\) tictoc.doxyfile
 	copy *.png ..\..\tictoc-tutorial
-	copy *.gif ..\..\tictoc-tutorial
 
 clean:
 	-del /s /q ..\..\tictoc-tutorial 2>nul

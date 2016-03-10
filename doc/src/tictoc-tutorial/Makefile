@@ -10,6 +10,6 @@ all:
 	rm -rf ../../tictoc-tutorial
 	mkdir ../../tictoc-tutorial
 	$(DOXYGEN) tictoc.doxyfile
-	cp *.gif *.png ../../tictoc-tutorial
+	cp *.png ../../tictoc-tutorial
 clean:
 	-rm -rf ../../tictoc-tutorial
