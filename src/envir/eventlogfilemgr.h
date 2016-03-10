@@ -48,7 +48,6 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     int entryIndex;
     int keyframeBlockSize;
     file_offset_t previousKeyframeFileOffset;
-    bool recordEventlog;
     bool isUserRecordingEnabled;
     bool isCombinedRecordingEnabled;  // combines several other enablement flags
 

@@ -99,7 +99,6 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cCla
 EventlogFileManager::EventlogFileManager()
 {
     envir = getEnvir();
-    recordEventlog = false;
     feventlog = nullptr;
     objectPrinter = nullptr;
     recordingIntervals = nullptr;
@@ -132,9 +131,6 @@ void EventlogFileManager::configure()
 {
     envir->addLifecycleListener(this);
 
-    // main switch
-    recordEventlog = envir->getConfig()->getAsBool(CFGID_RECORD_EVENTLOG);
-
     // setup eventlog object printer
     delete objectPrinter;
     objectPrinter = nullptr;
@@ -158,7 +154,7 @@ void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType,
 {
     switch (eventType) {
         case LF_PRE_NETWORK_SETUP:
-            if (recordEventlog) {  // FIXME flag is duplicate!!!
+            if (envir->getConfig()->getAsBool(CFGID_RECORD_EVENTLOG)) {
                 if (!isOpen()) {
                     open();
                     recordInitialize();
