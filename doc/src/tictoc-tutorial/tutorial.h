@@ -65,7 +65,10 @@ You can create it with your favourite text editor.
 
 Let's call it tictoc1.ned:
 
-@include tictoc1.ned
+@dontinclude tictoc1.ned
+@skip simple Txc1
+@until toc.out
+@skipline }
 
 The file is best read from the bottom up. Here's what it says:
 
@@ -83,7 +86,10 @@ The file is best read from the bottom up. Here's what it says:
 3. We now need to implement the functionality of the simple module Txc1. This is
 achieved by writing a C++ file @ref txc1.cc:
 
-@include txc1.cc
+@dontinclude txc1.cc
+@skip #include
+@until // send out the message
+@skipline }
 
 The Txc1 simple module type is represented by the C++ class Txc1, which
 has to be subclassed from cSimpleModule, and registered in @opp with the
@@ -240,7 +246,10 @@ the "block/routing" icon (the file <tt>images/block/routing.png</tt>), and paint
 and yellow for toc. This is achieved by adding display strings to the
 NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
-@include tictoc2.ned
+@dontinclude tictoc2.ned
+@skip Here we make
+@until toc.out
+@skipline }
 
 You can see the result here:
 
@@ -262,7 +271,7 @@ will appear in the main text window:
 <img src="step2b.png">
 
 You can also open separate output windows for tic and toc by right-clicking
-on their icons and choosing Module output from the menu. This feature
+on their icons and choosing Component log from the menu. This feature
 will be useful when you have a large model ("fast scrolling logs syndrome")
 and you're interested only in the log messages of specific module.
 
@@ -362,9 +371,9 @@ Tictoc4.*.limit=5
 
 or even
 
-@code
+@verbatim
 **.limit=5
-@endcode
+@endverbatim
 
 with the same effect. (The difference between * and ** is that * will not match
 a dot and ** will.)
@@ -766,7 +775,7 @@ which is provided by @opp: it tries to cast the pointer via dynamic_cast,
 and if it fails it stops the simulation with an error message, similar to the
 following:
 
-<img src="step10e.gif">
+<img src="step13e.png">
 
 In the next line, we check if the destination address is the same as the
 node's address. The <tt>getIndex()</tt> member function returns the index
@@ -824,7 +833,7 @@ can use the Find/inspect objects dialog (Inspect menu; it is also on
 the toolbar) to learn how many packets were sent or received by the
 various nodes.
 
-<img src="step11a.gif">
+<img src="step14a.png">
 
 It's true that in this concrete simulation model the numbers will be
 roughly the same, so you can only learn from them that intuniform()
@@ -843,7 +852,7 @@ The following code does the job:
 
 And the result looks like this:
 
-<img src="step11b.gif">
+<img src="step14b.png">
 
 Sources: @ref tictoc14.ned, @ref tictoc14.msg, @ref txc14.cc, @ref omnetpp.ini
 
@@ -914,14 +923,16 @@ and hopCountVector objects. To open their inspectors, right click on <tt>cLongHi
 
 <img src="open_details.png">
 
+The inspector:
+
 <img src="open_graphical_view.png">
 
 They will be initially empty -- run the simulation in Fast (or even Express) mode to get enough
 data to be displayed. After a while you'll get something like this:
 
-<img src="step12a.gif">
+<img src="step15a.gif">
 
-<img src="step12b.gif">
+<img src="step15b.gif">
 
 When you think enough data has been collected, you can stop the simulation
 and then we'll analyse the result files (<tt>Tictoc15-0.vec</tt> and
