@@ -589,7 +589,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Alias for getVectorSize().
      */
-    int size() const  {return getVectorSize();}
+    _OPPDEPRECATED int size() const  {return getVectorSize();}
     //@}
 
     /** @name Submodule access. */
