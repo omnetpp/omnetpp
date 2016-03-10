@@ -258,7 +258,7 @@
           <item>
            <widget class="QLabel" name="settings">
             <property name="text">
-             <string>The above settings apply to subsequent simulation events. Hover mouse to get help on log format syntax.</string>
+             <string>The above settings apply to subsequent simulation events. Hover mouse to get help on log prefix syntax.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

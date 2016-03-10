@@ -4,7 +4,7 @@ Test conditional text (based on the previous part being empty).
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "[%c%? %l] "
+cmdenv-log-prefix = "[%c%? %l] "
 
 %activity:
 

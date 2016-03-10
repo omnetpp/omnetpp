@@ -934,6 +934,6 @@ namespace @TESTNAME@ {
 [General]
 network = @NETWORKNAME@
 cmdenv-express-mode = false
-cmdenv-log-format = ""
+cmdenv-log-prefix = ""
 ';
 }

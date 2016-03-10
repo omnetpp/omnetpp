@@ -1,10 +1,10 @@
 %description:
 
-Test log format characters.
+Test log prefix characters.
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "text %% l='%l' c='%c' e='%e' t='%t' v='%v' a='%a' n='%n' m='%m' o='%o' s='%s' q='%q' N='%N' M='%M' O='%O' S='%S' Q='%Q' G='%G' R='%R' X='%X' Y='%Y' Z='%Z' p='%p' b='%b' d='%d' x='%x' y='%y' f='%f' i='%i' z='%z' u='%u' w='%w' W='%W' H='%H' I='%I' "
+cmdenv-log-prefix = "text %% l='%l' c='%c' e='%e' t='%t' v='%v' a='%a' n='%n' m='%m' o='%o' s='%s' q='%q' N='%N' M='%M' O='%O' S='%S' Q='%Q' G='%G' R='%R' X='%X' Y='%Y' Z='%Z' p='%p' b='%b' d='%d' x='%x' y='%y' f='%f' i='%i' z='%z' u='%u' w='%w' W='%W' H='%H' I='%I' "
 
 %activity:
 

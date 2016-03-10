@@ -410,7 +410,7 @@ proc preferencesDialog {parent {defaultpage ""}} {
     ttk::checkbutton $nb.g.f2.shortbanners -text "Short event banners" -variable opp(shortbanners)
     label-entry-help $nb.g.f2.logformat "Log prefix format:" $helptexts(logformat)
     label-combo $nb.g.f2.loglevel "Log level:" {FATAL ERROR WARN INFO DETAIL DEBUG TRACE} ""
-    commentlabel $nb.g.f2.c0 "The above settings apply to subsequent simulation events. Hover mouse to get help on log format syntax."
+    commentlabel $nb.g.f2.c0 "The above settings apply to subsequent simulation events. Hover mouse to get help on log prefix syntax."
     label-entry $nb.g.f2.numevents "Overall history size (in events):"
     label-entry $nb.g.f2.numlines "Scrollback buffer (lines):"
     commentlabel $nb.g.f2.c1 "Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines."

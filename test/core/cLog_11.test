@@ -4,7 +4,7 @@ Test all log macro variants.
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "[%l]%9%c "
+cmdenv-log-prefix = "[%l]%9%c "
 
 %activity:
 

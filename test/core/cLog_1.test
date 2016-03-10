@@ -1,10 +1,10 @@
 %description:
 
-Test the default log format and log level settings.
+Test the default log prefix and log level settings.
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "[%l]%9"
+cmdenv-log-prefix = "[%l]%9"
 
 %activity:
 EV_FATAL  << "Hello" << endl;

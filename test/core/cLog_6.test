@@ -3,7 +3,7 @@ Test sequence and nesting of log statements.
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "[%l]%9"
+cmdenv-log-prefix = "[%l]%9"
 
 %activity:
 

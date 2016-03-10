@@ -244,7 +244,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
             addComboboxFieldEditor(group, CFGID_CMDENV_LOG_LEVEL, "Log level (per module)", c("Component (component-path pattern)", "Log level"), false); //TODO 3-column editor
-            addTextFieldEditor(group, CFGID_CMDENV_LOG_FORMAT, "Log prefix");
+            addTextFieldEditor(group, CFGID_CMDENV_LOG_PREFIX, "Log prefix");
             addSpacer(form);
             group = createGroup(form, "Other");
             addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");  //TODO when opened (table), it should contain a 3rd, combobox-based column (true/false) instead of a checkbox

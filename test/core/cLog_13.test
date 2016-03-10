@@ -1,11 +1,11 @@
 %description:
 
-Test log format characters of compound fields. This is a rudimentary and boring test, because
+Test log prefix characters of compound fields. This is a rudimentary and boring test, because
 the event's module, the context module and the source object are all the same.
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "%U, %C, %K, %J, %L"
+cmdenv-log-prefix = "%U, %C, %K, %J, %L"
 
 %activity:
 

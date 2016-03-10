@@ -5,7 +5,7 @@ Test logging: adaptive tab stops (%|) and fingerprint (%g)
 %inifile: test.ini
 [General]
 network = TestModule
-cmdenv-log-format = "%ts%| %v%| %g : "
+cmdenv-log-prefix = "%ts%| %v%| %g : "
 cmdenv-event-banners = false
 fingerprint = 0000-0000
 

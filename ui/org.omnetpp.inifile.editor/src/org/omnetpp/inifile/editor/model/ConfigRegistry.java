@@ -200,8 +200,8 @@ public class ConfigRegistry {
         "Defines what Cmdenv should do when the model contains unassigned " +
         "parameters. In interactive mode, it asks the user. In non-interactive mode " +
         "(which is more suitable for batch execution), Cmdenv stops with an error.");
-    public static final ConfigOption CFGID_CMDENV_LOG_FORMAT = addPerRunOption(
-        "cmdenv-log-format", CFG_STRING, "[%l]	",
+    public static final ConfigOption CFGID_CMDENV_LOG_PREFIX = addPerRunOption(
+        "cmdenv-log-prefix", CFG_STRING, "[%l]	",
         "Specifies the format string that determines the prefix of each log line. " +
         "The format string may contain format directives in the syntax '%x' (a '%' " +
         "followed by a single format character).  For example '%l' stands for log " +

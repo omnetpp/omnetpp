@@ -5,7 +5,7 @@ Test logging: indent (%>) using Ackerman's function
 %inifile: test.ini
 [General]
 network = TestModule
-cmdenv-log-format = "%ts%| :%> "
+cmdenv-log-prefix = "%ts%| :%> "
 cmdenv-event-banners = false
 
 %file: test.ned

@@ -4,7 +4,7 @@ Test automatic log output flushing between events and after simulation end.
 
 %inifile: test.ini
 [General]
-cmdenv-log-format = "[%l]%9"
+cmdenv-log-prefix = "[%l]%9"
 
 %activity:
 
