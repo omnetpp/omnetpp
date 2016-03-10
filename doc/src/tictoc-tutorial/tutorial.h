@@ -630,8 +630,7 @@ returns the index of the module in the vector.
 
 The meat of the code is the forwardMessage() function which we invoke
 from handleMessage() whenever a message arrives at the node. It draws
-a random gate number (size() is the size of the gate vector), and
-sends out message on that gate.
+a random gate number, and sends out message on that gate.
 
 @dontinclude txc10.cc
 @skip ::forwardMessage

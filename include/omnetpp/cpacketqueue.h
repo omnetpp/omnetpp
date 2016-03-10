@@ -179,7 +179,7 @@ class SIM_API cPacketQueue : public cQueue
      * get(0) returns the front element. This method performs linear
      * search.
      */
-    virtual cPacket *get(int i) const  {return (cPacket *)cQueue::get(i);}
+    virtual cPacket *get(int i) const override {return (cPacket *)cQueue::get(i);}
     //@}
 };
 

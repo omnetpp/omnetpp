@@ -82,7 +82,7 @@ TicTocMsg14 *Txc14::generateMessage()
 {
     // Produce source and destination addresses.
     int src = getIndex();  // our module index
-    int n = size();  // module vector size
+    int n = getVectorSize();  // module vector size
     int dest = intuniform(0, n-2);
     if (dest >= src)
         dest++;

@@ -98,7 +98,7 @@ TicTocMsg15 *Txc15::generateMessage()
 {
     // Produce source and destination addresses.
     int src = getIndex();
-    int n = size();
+    int n = getVectorSize();
     int dest = intuniform(0, n-2);
     if (dest >= src)
         dest++;

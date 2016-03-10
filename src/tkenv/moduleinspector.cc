@@ -322,11 +322,11 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     }
     else if (!strcmp(layout, "i") || !strcmp(layout, "ri") || !strcmp(layout, "ring")) {
         // perhaps we should use the size of the 1st element in the vector?
-        double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*submod->size()/4);
+        int vectorSize = submod->getVectorSize();
+        double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*vectorSize/4);
         double ry = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, rx);
-
-        x += rx - rx*sin(submod->getIndex()*2*PI/submod->size());
-        y += ry - ry*cos(submod->getIndex()*2*PI/submod->size());
+        x += rx - rx*sin(submod->getIndex()*2*PI/vectorSize);
+        y += ry - ry*cos(submod->getIndex()*2*PI/vectorSize);
     }
     else {
         CHK(Tcl_VarEval(interp, "messagebox {Error} "

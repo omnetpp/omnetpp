@@ -109,10 +109,10 @@ void Simple::activity()
         EV << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
     for (cModule::GateIterator it(this); !it.end(); it++)
         if ((*it)->getIndex()==0)
-            EV << (*it)->getName() << " size=" << (*it)->size() << endl;
+            EV << (*it)->getName() << " size=" << (*it)->getVectorSize() << endl;
     for (cModule::SubmoduleIterator it(getParentModule()); !it.end(); it++)
         if ((*it)->getIndex()==0)
-            EV << (*it)->getName() << " size=" << (*it)->size() << endl;
+            EV << (*it)->getName() << " size=" << (*it)->getVectorSize() << endl;
 }
 
 }; //namespace
