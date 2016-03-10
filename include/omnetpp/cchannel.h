@@ -205,7 +205,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Returns the gate this channel is attached to.
      */
-    cGate *getSourceGate() const  {return srcGate;}
+    virtual cGate *getSourceGate() const  {return srcGate;}
 
     /**
      * Returns true if the channel models a nonzero-duration transmission,

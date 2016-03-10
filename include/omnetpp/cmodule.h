@@ -452,7 +452,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Overridden to add the module ID.
      */
-    std::string info() const override;
+    virtual std::string info() const override;
     //@}
 
     /** @name Setting up the module. */
@@ -598,21 +598,21 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns true if the module has submodules, and false otherwise.
      * To enumerate the submodules use SubmoduleIterator.
      */
-    bool hasSubmodules() const {return firstSubmodule!=nullptr;}
+    virtual bool hasSubmodules() const {return firstSubmodule!=nullptr;}
 
     /**
      * Finds a direct submodule with the given name and index, and returns
      * its module ID. If the submodule was not found, returns -1. Index
      * must be specified exactly if the module is member of a module vector.
      */
-    int findSubmodule(const char *name, int index=-1) const;
+    virtual int findSubmodule(const char *name, int index=-1) const;
 
     /**
      * Finds a direct submodule with the given name and index, and returns
      * its pointer. If the submodule was not found, returns nullptr.
      * Index must be specified exactly if the module is member of a module vector.
      */
-    cModule *getSubmodule(const char *name, int index=-1) const;
+    virtual cModule *getSubmodule(const char *name, int index=-1) const;
 
     /**
      * Finds a module in the module tree, given by its absolute or relative path.
@@ -632,7 +632,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      *  @see cSimulation::getModuleByPath()
      */
-    cModule *getModuleByPath(const char *path) const;
+    virtual cModule *getModuleByPath(const char *path) const;
     //@}
 
     /** @name Gates. */
@@ -774,7 +774,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * modules, it returns <tt>true</tt>. This function is called during
      * network setup.
      */
-    bool checkInternalConnections() const;
+    virtual bool checkInternalConnections() const;
     //@}
 
     /** @name Utilities. */
@@ -783,7 +783,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Searches for the parameter in the parent modules, up to the system
      * module. If the parameter is not found, throws cRuntimeError.
      */
-    cPar& getAncestorPar(const char *parname);
+    virtual cPar& getAncestorPar(const char *parname);
 
     /**
      * Returns the default canvas for this module, creating it if it hasn't

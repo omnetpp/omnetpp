@@ -207,38 +207,38 @@ class SIM_API cArray : public cOwnedObject
      * number of contained objects if there are no "holes" (nullptr elements)
      * in the array.
      */
-    int size() const {return last+1;}
+    virtual int size() const {return last+1;}
 
     /**
      * Makes the container empty. Contained objects that were owned by the
      * container will be deleted.
      */
-    void clear();
+    virtual void clear();
 
     /**
      * Returns the allocated size of the underlying array.
      */
-    int getCapacity() const {return capacity;}
+    virtual int getCapacity() const {return capacity;}
 
     /**
      * Resizes the the underlying array, without changing the contents of
      * this array. The specified capacity cannot be less than size().
      */
-    void setCapacity(int capacity);
+    virtual void setCapacity(int capacity);
 
     /**
      * Inserts the object into the array. Only the pointer of the object
      * will be stored. The return value is the object's index in the
      * array.
      */
-    int add(cObject *obj);
+    virtual int add(cObject *obj);
 
     /**
      * Inserts the object into the array at the given position. If
      * the position is occupied, the function throws a cRuntimeError.
      * The return value is the object's index in the array.
      */
-    int addAt(int m, cObject *obj);
+    virtual int addAt(int m, cObject *obj);
 
     /**
      * Inserts the object into the array. If the array already contains
@@ -247,45 +247,45 @@ class SIM_API cArray : public cOwnedObject
      * is deleted using discard().
      * The return value is the object's index in the array.
      */
-    int set(cObject *obj);
+    virtual int set(cObject *obj);
 
     /**
      * Searches the array for the pointer of the object passed and returns
      * the index of the first match. If the object was not found, -1 is
      * returned.
      */
-    int find(cObject *obj) const;
+    virtual int find(cObject *obj) const;
 
     /**
      * Returns the index of the first item in the array that has the
      * name pointed to by s (cObject::isName() is used.)
      * If no such item was found, -1 is returned.
      */
-    int find(const char *objname) const;
+    virtual int find(const char *objname) const;
 
     /**
      * Returns reference to the mth object in the array. Returns nullptr
      * if the mth position is not used.
      */
-    cObject *get(int m);
+    virtual cObject *get(int m);
 
     /**
      * Returns reference to the first object in the array with name s.
      * Returns nullptr if no object with the given name was found.
      */
-    cObject *get(const char *objname);
+    virtual cObject *get(const char *objname);
 
     /**
      * Returns reference to the mth object in the array. Returns nullptr
      * if the mth position is not used.
      */
-    const cObject *get(int m) const;
+    virtual const cObject *get(int m) const;
 
     /**
      * Returns reference to the first object in the array with name s.
      * Returns nullptr if no object with the given name was found.
      */
-    const cObject *get(const char *objname) const;
+    virtual const cObject *get(const char *objname) const;
 
     /**
      * The same as get(int). With the indexing operator,
@@ -314,27 +314,27 @@ class SIM_API cArray : public cOwnedObject
     /**
      * Returns true if position m is used in the array, otherwise false.
      */
-    bool exist(int m) const  {return m>=0 && m<=last && vect[m]!=nullptr;}
+    virtual bool exist(int m) const  {return m>=0 && m<=last && vect[m]!=nullptr;}
 
     /**
      * Returns true if the array contains an object with the given name,
      * otherwise false.
      */
-    bool exist(const char *objname) const  {return find(objname)!=-1;}
+    virtual bool exist(const char *objname) const  {return find(objname)!=-1;}
 
     /**
      * Removes the object given with its index/name/pointer from the
      * container. (If the object was owned by the container, drop()
      * is called.)
      */
-    cObject *remove(int m);
+    virtual cObject *remove(int m);
 
     /**
      * Removes the object given with its index/name/pointer from the
      * container. (If the object was owned by the container, drop()
      * is called.)
      */
-    cObject *remove(const char *objname);
+    virtual cObject *remove(const char *objname);
 
     /**
      * Removes the object given with its index/name/pointer from the
@@ -342,7 +342,7 @@ class SIM_API cArray : public cOwnedObject
      * found, nullptr is returned. (If the object was owned by the container, drop()
      * is called.)
      */
-    cObject *remove(cObject *obj);
+    virtual cObject *remove(cObject *obj);
     //@}
 
     /** @name Ownership control flag.

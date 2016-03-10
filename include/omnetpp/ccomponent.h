@@ -131,10 +131,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
   public:
     // internal: used by log mechanism
     LogLevel getLogLevel() const { return (LogLevel)((flags >> FL_LOGLEVEL_SHIFT) & 0x7); }
-    void setLogLevel(LogLevel logLevel);
+    virtual void setLogLevel(LogLevel logLevel);
 
     // internal: invoked from within cEnvir::preconfigure(component)
-    void setRNGMap(short size, int *map) {rngMapSize=size; rngMap=map;}
+    virtual void setRNGMap(short size, int *map) {rngMapSize=size; rngMap=map;}
 
     // internal: sets associated cComponentType for the component;
     // called as part of the creation process.
@@ -163,8 +163,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     bool hasDisplayString();
 
     // internal: checks consistency of signal listener flags
-    void checkLocalSignalConsistency() const;
-    void checkSignalConsistency() const;
+    virtual void checkLocalSignalConsistency() const;
+    virtual void checkSignalConsistency() const;
 
     // internal: clears per-run signals-related data structures; to be invoked before each simulation run
     static void clearSignalState();
@@ -328,7 +328,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Returns the associated component type. Guaranteed to be non-nullptr.
      */
-    cComponentType *getComponentType() const;
+    virtual cComponentType *getComponentType() const;
 
     /**
      * Returns the simulation the component is part of. Currently may only
@@ -466,12 +466,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Produces a random integer in the range [0,r) using the RNG given with its index.
      */
-    unsigned long intrand(long r, int rng=0) const  {return getRNG(rng)->intRand(r);}
+    virtual unsigned long intrand(long r, int rng=0) const  {return getRNG(rng)->intRand(r);}
 
     /**
      * Produces a random double in the range [0,1) using the RNG given with its index.
      */
-    double dblrand(int rng=0) const  {return getRNG(rng)->doubleRand();}
+    virtual double dblrand(int rng=0) const  {return getRNG(rng)->doubleRand();}
     //@}
 
     /** @name Random variate generation -- continuous distributions. */
@@ -483,12 +483,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param a, b the interval, a<b
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double uniform(double a, double b, int rng=0) const  {return omnetpp::uniform(getRNG(rng), a, b);}
+    virtual double uniform(double a, double b, int rng=0) const  {return omnetpp::uniform(getRNG(rng), a, b);}
 
     /**
      * SimTime version of uniform(double,double,int), for convenience.
      */
-    SimTime uniform(SimTime a, SimTime b, int rng=0) const  {return uniform(a.dbl(), b.dbl(), rng);}
+    virtual SimTime uniform(SimTime a, SimTime b, int rng=0) const  {return uniform(a.dbl(), b.dbl(), rng);}
 
     /**
      * Returns a random variate from the exponential distribution with the
@@ -497,12 +497,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param mean mean value
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double exponential(double mean, int rng=0) const  {return omnetpp::exponential(getRNG(rng), mean);};
+    virtual double exponential(double mean, int rng=0) const  {return omnetpp::exponential(getRNG(rng), mean);};
 
     /**
      * SimTime version of exponential(double,int), for convenience.
      */
-    SimTime exponential(SimTime mean, int rng=0) const  {return exponential(mean.dbl(), rng);}
+    virtual SimTime exponential(SimTime mean, int rng=0) const  {return exponential(mean.dbl(), rng);}
 
     /**
      * Returns a random variate from the normal distribution with the given mean
@@ -512,12 +512,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param stddev standard deviation of the normal distribution
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double normal(double mean, double stddev, int rng=0) const  {return omnetpp::normal(getRNG(rng), mean, stddev);};
+    virtual double normal(double mean, double stddev, int rng=0) const  {return omnetpp::normal(getRNG(rng), mean, stddev);};
 
     /**
      * SimTime version of normal(double,double,int), for convenience.
      */
-    SimTime normal(SimTime mean, SimTime stddev, int rng=0) const  {return normal(mean.dbl(), stddev.dbl(), rng);}
+    virtual SimTime normal(SimTime mean, SimTime stddev, int rng=0) const  {return normal(mean.dbl(), stddev.dbl(), rng);}
 
     /**
      * Normal distribution truncated to nonnegative values.
@@ -534,12 +534,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param stddev standard deviation of the normal distribution
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double truncnormal(double mean, double stddev, int rng=0) const  {return omnetpp::truncnormal(getRNG(rng), mean, stddev);};
+    virtual double truncnormal(double mean, double stddev, int rng=0) const  {return omnetpp::truncnormal(getRNG(rng), mean, stddev);};
 
     /**
      * SimTime version of truncnormal(double,double,int), for convenience.
      */
-    SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) const  {return truncnormal(mean.dbl(), stddev.dbl(), rng);}
+    virtual SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) const  {return truncnormal(mean.dbl(), stddev.dbl(), rng);}
 
     /**
      * Returns a random variate from the gamma distribution with parameters
@@ -576,7 +576,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param theta >0  the "scale" parameter
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double gamma_d(double alpha, double theta, int rng=0) const  {return omnetpp::gamma_d(getRNG(rng), alpha, theta);};
+    virtual double gamma_d(double alpha, double theta, int rng=0) const  {return omnetpp::gamma_d(getRNG(rng), alpha, theta);};
 
     /**
      * Returns a random variate from the beta distribution with parameters
@@ -590,7 +590,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param alpha1, alpha2 >0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double beta(double alpha1, double alpha2, int rng=0) const  {return omnetpp::beta(getRNG(rng), alpha1, alpha2);};
+    virtual double beta(double alpha1, double alpha2, int rng=0) const  {return omnetpp::beta(getRNG(rng), alpha1, alpha2);};
 
     /**
      * Returns a random variate from the Erlang distribution with k phases
@@ -610,7 +610,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param mean >0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double erlang_k(unsigned int k, double mean, int rng=0) const  {return omnetpp::erlang_k(getRNG(rng), k, mean);};
+    virtual double erlang_k(unsigned int k, double mean, int rng=0) const  {return omnetpp::erlang_k(getRNG(rng), k, mean);};
 
     /**
      * Returns a random variate from the chi-square distribution
@@ -627,7 +627,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param k degrees of freedom, k>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double chi_square(unsigned int k, int rng=0) const  {return omnetpp::chi_square(getRNG(rng), k);};
+    virtual double chi_square(unsigned int k, int rng=0) const  {return omnetpp::chi_square(getRNG(rng), k);};
 
     /**
      * Returns a random variate from the student-t distribution with
@@ -640,7 +640,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param i degrees of freedom, i>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double student_t(unsigned int i, int rng=0) const  {return omnetpp::student_t(getRNG(rng), i);};
+    virtual double student_t(unsigned int i, int rng=0) const  {return omnetpp::student_t(getRNG(rng), i);};
 
     /**
      * Returns a random variate from the Cauchy distribution (also called
@@ -656,7 +656,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param b  b>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double cauchy(double a, double b, int rng=0) const  {return omnetpp::cauchy(getRNG(rng), a, b);};
+    virtual double cauchy(double a, double b, int rng=0) const  {return omnetpp::cauchy(getRNG(rng), a, b);};
 
     /**
      * Returns a random variate from the triangular distribution with parameters
@@ -667,7 +667,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param a, b, c   a <= b <= c
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double triang(double a, double b, double c, int rng=0) const  {return omnetpp::triang(getRNG(rng), a, b, c);};
+    virtual double triang(double a, double b, double c, int rng=0) const  {return omnetpp::triang(getRNG(rng), a, b, c);};
 
     /**
      * Returns a random variate from the lognormal distribution with "scale"
@@ -680,7 +680,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param w  "shape" parameter, w>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double lognormal(double m, double w, int rng=0) const  {return omnetpp::lognormal(getRNG(rng), m, w);}
+    virtual double lognormal(double m, double w, int rng=0) const  {return omnetpp::lognormal(getRNG(rng), m, w);}
 
     /**
      * Returns a random variate from the Weibull distribution with parameters
@@ -701,7 +701,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param b  the "shape" parameter, b>0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double weibull(double a, double b, int rng=0) const  {return omnetpp::weibull(getRNG(rng), a, b);};
+    virtual double weibull(double a, double b, int rng=0) const  {return omnetpp::weibull(getRNG(rng), a, b);};
 
     /**
      * Returns a random variate from the shifted generalized Pareto distribution.
@@ -712,7 +712,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param c    shift parameter for left-shift
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    double pareto_shifted(double a, double b, double c, int rng=0) const  {return omnetpp::pareto_shifted(getRNG(rng), a, b, c);};
+    virtual double pareto_shifted(double a, double b, double c, int rng=0) const  {return omnetpp::pareto_shifted(getRNG(rng), a, b, c);};
     //@}
 
     /** @name Random variate generation -- discrete distributions. */
@@ -725,7 +725,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param a, b  the interval, a<b
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int intuniform(int a, int b, int rng=0) const  {return omnetpp::intuniform(getRNG(rng), a, b);};
+    virtual int intuniform(int a, int b, int rng=0) const  {return omnetpp::intuniform(getRNG(rng), a, b);};
 
     /**
      * Returns the result of a Bernoulli trial with probability p,
@@ -736,7 +736,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p  0=<p<=1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int bernoulli(double p, int rng=0) const  {return omnetpp::bernoulli(getRNG(rng), p);};
+    virtual int bernoulli(double p, int rng=0) const  {return omnetpp::bernoulli(getRNG(rng), p);};
 
     /**
      * Returns a random integer from the binomial distribution with
@@ -750,7 +750,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p 0<=p<=1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int binomial(int n, double p, int rng=0) const  {return omnetpp::binomial(getRNG(rng), n, p);};
+    virtual int binomial(int n, double p, int rng=0) const  {return omnetpp::binomial(getRNG(rng), n, p);};
 
     /**
      * Returns a random integer from the geometric distribution with parameter p,
@@ -764,7 +764,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p  0<p<=1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int geometric(double p, int rng=0) const  {return omnetpp::geometric(getRNG(rng), p);};
+    virtual int geometric(double p, int rng=0) const  {return omnetpp::geometric(getRNG(rng), p);};
 
     /**
      * Returns a random integer from the negative binomial distribution with
@@ -778,7 +778,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param p  0<p<1
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int negbinomial(int n, double p, int rng=0) const  {return omnetpp::negbinomial(getRNG(rng), n, p);};
+    virtual int negbinomial(int n, double p, int rng=0) const  {return omnetpp::negbinomial(getRNG(rng), n, p);};
 
     /**
      * Returns a random integer from the Poisson distribution with parameter lambda,
@@ -795,7 +795,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @param lambda  > 0
      * @param rng index of the component RNG to use, see getRNG(int)
      */
-    int poisson(double lambda, int rng=0) const  {return omnetpp::poisson(getRNG(rng), lambda);};
+    virtual int poisson(double lambda, int rng=0) const  {return omnetpp::poisson(getRNG(rng), lambda);};
     //@}
 
     /** @name Emitting simulation signals. */
@@ -827,76 +827,76 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, bool b, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, bool b, cObject *details = nullptr);
 
     /**
      * Emits the long value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, long l, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, long l, cObject *details = nullptr);
 
     /**
      * Emits the unsigned long value as a signal. If the given signal has listeners in
      * this component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, unsigned long l, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, unsigned long l, cObject *details = nullptr);
 
     /**
      * Emits the double value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, double d, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, double d, cObject *details = nullptr);
 
     /**
      * Emits the simtime_t value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, const SimTime& t, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, const SimTime& t, cObject *details = nullptr);
 
     /**
      * Emits the given string as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, const char *s, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, const char *s, cObject *details = nullptr);
 
     /**
      * Emits the given object as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
      * are called. If there are no listeners, the runtime cost is usually minimal.
      */
-    void emit(simsignal_t signalID, cObject *obj, cObject *details = nullptr);
+    virtual void emit(simsignal_t signalID, cObject *obj, cObject *details = nullptr);
 
     /** Delegates to emit(simsignal_t, cObject*) after a const_cast. */
-    void emit(simsignal_t signalID, const cObject *obj, cObject *details = nullptr) { emit(signalID, const_cast<cObject *>(obj), details); }
+    virtual void emit(simsignal_t signalID, const cObject *obj, cObject *details = nullptr) { emit(signalID, const_cast<cObject *>(obj), details); }
 
     /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, char c, cObject *details = nullptr) {emit(signalID,(long)c, details);}
+    virtual void emit(simsignal_t signalID, char c, cObject *details = nullptr) {emit(signalID,(long)c, details);}
 
     /** Delegates to emit(simsignal_t, unsigned long) */
-    void emit(simsignal_t signalID, unsigned char c, cObject *details = nullptr) {emit(signalID,(unsigned long)c, details);}
+    virtual void emit(simsignal_t signalID, unsigned char c, cObject *details = nullptr) {emit(signalID,(unsigned long)c, details);}
 
     /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, short i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
+    virtual void emit(simsignal_t signalID, short i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
 
     /** Delegates to emit(simsignal_t, unsigned long) */
-    void emit(simsignal_t signalID, unsigned short i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
+    virtual void emit(simsignal_t signalID, unsigned short i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
 
     /** Delegates to emit(simsignal_t, long) */
-    void emit(simsignal_t signalID, int i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
+    virtual void emit(simsignal_t signalID, int i, cObject *details = nullptr) {emit(signalID,(long)i, details);}
 
     /** Delegates to emit(simsignal_t, unsigned long) */
-    void emit(simsignal_t signalID, unsigned int i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
+    virtual void emit(simsignal_t signalID, unsigned int i, cObject *details = nullptr) {emit(signalID,(unsigned long)i, details);}
 
     /** Delegates to emit(simsignal_t, double) */
-    void emit(simsignal_t signalID, float f, cObject *details = nullptr) {emit(signalID,(double)f, details);}
+    virtual void emit(simsignal_t signalID, float f, cObject *details = nullptr) {emit(signalID,(double)f, details);}
 
     /** Delegates to emit(simsignal_t, double) */
-    void emit(simsignal_t signalID, long double d, cObject *details = nullptr) {emit(signalID,(double)d, details);}
+    virtual void emit(simsignal_t signalID, long double d, cObject *details = nullptr) {emit(signalID,(double)d, details);}
 
     /**
      * If producing a value for a signal has a significant runtime cost, this
@@ -932,48 +932,48 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * will be notified is undefined, so it is not necessarily the same order
      * in which listeners were subscribed.
      */
-    void subscribe(simsignal_t signalID, cIListener *listener);
+    virtual void subscribe(simsignal_t signalID, cIListener *listener);
 
     /**
      * Convenience method; it is equivalent to
      * <tt>subscribe(registerSignal(signalName), listener)</tt>.
      */
-    void subscribe(const char *signalName, cIListener *listener);
+    virtual void subscribe(const char *signalName, cIListener *listener);
 
     /**
      * Removes the given listener. It has no effect if the given listener
      * is not subscribed.
      */
-    void unsubscribe(simsignal_t signalID, cIListener *listener);
+    virtual void unsubscribe(simsignal_t signalID, cIListener *listener);
 
     /**
      * Convenience method; it is equivalent to
      * <tt>unsubscribe(registerSignal(signalName), listener)</tt>.
      */
-    void unsubscribe(const char *signalName, cIListener *listener);
+    virtual void unsubscribe(const char *signalName, cIListener *listener);
 
     /**
      * Returns true if the given listener is subscribed to the given signal
      * at this component (i.e. it does not look at listeners subscribed
      * at ancestor components).
      */
-    bool isSubscribed(simsignal_t signalID, cIListener *listener) const;
+    virtual bool isSubscribed(simsignal_t signalID, cIListener *listener) const;
 
     /**
      * Convenience method; it is equivalent to
      * <tt>isSubscribed(registerSignal(signalName), listener)</tt>.
      */
-    bool isSubscribed(const char *signalName, cIListener *listener) const;
+    virtual bool isSubscribed(const char *signalName, cIListener *listener) const;
 
     /**
      * Returns the signals which have listeners subscribed at this component.
      */
-    std::vector<simsignal_t> getLocalListenedSignals() const;
+    virtual std::vector<simsignal_t> getLocalListenedSignals() const;
 
     /**
      * Returns the listeners subscribed to the given signal at this component.
      */
-    std::vector<cIListener*> getLocalSignalListeners(simsignal_t signalID) const;
+    virtual std::vector<cIListener*> getLocalSignalListeners(simsignal_t signalID) const;
     //@}
 
     /** @name Display strings, animation. */
@@ -987,24 +987,24 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      *
      * This method delegates to cEnvir::isGUI().
      */
-    bool hasGUI() const;
+    virtual bool hasGUI() const;
 
     /**
      * Returns the display string which defines presentation when the module
      * is displayed as a submodule in a compound module graphics.
      */
-    cDisplayString& getDisplayString() const;
+    virtual cDisplayString& getDisplayString() const;
 
     /**
      * Shortcut to <tt>getDisplayString().set(dispstr)</tt>.
      */
-    void setDisplayString(const char *dispstr);
+    virtual void setDisplayString(const char *dispstr);
 
     /**
      * When the models is running under Tkenv or Qtenv, it displays the given
      * text in the network graphics, as a bubble above the module's icon.
      */
-    void bubble(const char *text) const;
+    virtual void bubble(const char *text) const;
 
     /**
      * Searches a number of folders for a resource given with its file name or
@@ -1018,7 +1018,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      *
      * @see cEnvir::resolveResourcePath()
      */
-    std::string resolveResourcePath(const char *fileName) const;
+    virtual std::string resolveResourcePath(const char *fileName) const;
     //@}
 
     /** @name Statistics collection */
@@ -1027,26 +1027,26 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Records a double into the scalar result file.
      */
-    void recordScalar(const char *name, double value, const char *unit=nullptr);
+    virtual void recordScalar(const char *name, double value, const char *unit=nullptr);
 
     /**
      * Convenience method, delegates to recordScalar(const char *, double).
      */
-    void recordScalar(const char *name, SimTime value, const char *unit=nullptr) {recordScalar(name, value.dbl(), unit);}
+    virtual void recordScalar(const char *name, SimTime value, const char *unit=nullptr) {recordScalar(name, value.dbl(), unit);}
 
     /**
      * Records the given statistics into the scalar result file. Delegates to
      * cStatistic::recordAs(). Note that if the statistics object is a histogram,
      * this operation may invoke its transform() method.
      */
-    void recordStatistic(cStatistic *stats, const char *unit=nullptr);
+    virtual void recordStatistic(cStatistic *stats, const char *unit=nullptr);
 
     /**
      * Records the given statistics into the scalar result file with the given name.
      * Delegates to cStatistic::recordAs().  Note that if the statistics object is
      * a histogram, this operation may invoke its transform() method.
      */
-    void recordStatistic(const char *name, cStatistic *stats, const char *unit=nullptr);
+    virtual void recordStatistic(const char *name, cStatistic *stats, const char *unit=nullptr);
     //@}
 };
 

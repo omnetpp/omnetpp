@@ -207,23 +207,23 @@ class SIM_API cStatistic : public cRandom
      * Assigns transient and accuracy detection objects to the statistic
      * object.
      */
-    void setTransientDetectionObject(cTransientDetection *object);
+    virtual void setTransientDetectionObject(cTransientDetection *object);
 
     /**
      * Assigns transient and accuracy detection objects to the statistic
      * object.
      */
-    void setAccuracyDetectionObject(cAccuracyDetection *object);
+    virtual void setAccuracyDetectionObject(cAccuracyDetection *object);
 
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cTransientDetection *getTransientDetectionObject() const  {return td;}
+    virtual cTransientDetection *getTransientDetectionObject() const  {return td;}
 
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cAccuracyDetection  *getAccuracyDetectionObject() const  {return ra;}
+    virtual cAccuracyDetection  *getAccuracyDetectionObject() const  {return ra;}
     //@}
 
     /** @name Generating random numbers based on the collected data */

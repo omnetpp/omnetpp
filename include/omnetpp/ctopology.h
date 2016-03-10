@@ -409,12 +409,12 @@ class SIM_API cTopology : public cOwnedObject
      * parameter may take any value you like, and it is passed back to selfunc()
      * in its second argument.
      */
-    void extractFromNetwork(bool (*selfunc)(cModule *,void *), void *userdata=nullptr);
+    virtual void extractFromNetwork(bool (*selfunc)(cModule *,void *), void *userdata=nullptr);
 
     /**
      * The type safe, object-oriented equivalent of extractFromNetwork(selfunc, userdata).
      */
-    void extractFromNetwork(Predicate *predicate);
+    virtual void extractFromNetwork(Predicate *predicate);
 
     /**
      * Extracts model topology by module full path. All modules whole getFullPath()
@@ -425,7 +425,7 @@ class SIM_API cTopology : public cOwnedObject
      *
      * <tt>topo.extractByModulePath(cStringTokenizer("**.host[*] **.router*").asVector());</tt>
      */
-    void extractByModulePath(const std::vector<std::string>& fullPathPatterns);
+    virtual void extractByModulePath(const std::vector<std::string>& fullPathPatterns);
 
     /**
      * Extracts model topology by the fully qualified NED type name of the
@@ -437,7 +437,7 @@ class SIM_API cTopology : public cOwnedObject
      *
      * <tt>topo.extractByNedTypeName(cStringTokenizer("some.package.Host other.package.Router").asVector());</tt>
      */
-    void extractByNedTypeName(const std::vector<std::string>& nedTypeNames);
+    virtual void extractByNedTypeName(const std::vector<std::string>& nedTypeNames);
 
     /**
      * Extracts model topology by a module property. All modules get included
@@ -457,7 +457,7 @@ class SIM_API cTopology : public cOwnedObject
      * </pre>
      *
      */
-    void extractByProperty(const char *propertyName, const char *value=nullptr);
+    virtual void extractByProperty(const char *propertyName, const char *value=nullptr);
 
     /**
      * Extracts model topology by a module parameter. All modules get included
@@ -465,12 +465,12 @@ class SIM_API cTopology : public cOwnedObject
      * method returns the paramValue string. If paramValue is nullptr, only the
      * parameter's existence is checked but not its value.
      */
-    void extractByParameter(const char *paramName, const char *paramValue=nullptr);
+    virtual void extractByParameter(const char *paramName, const char *paramValue=nullptr);
 
     /**
      * Deletes the topology stored in the object.
      */
-    void clear();
+    virtual void clear();
     //@}
 
     /** @name Manipulating the graph.
@@ -480,20 +480,20 @@ class SIM_API cTopology : public cOwnedObject
      * Adds the given node to the graph. Returns the index of the new graph node
      * (see getNode(int)). Indices of existing graph nodes may change.
      */
-    int addNode(Node *node);
+    virtual int addNode(Node *node);
 
     /**
      * Removes the given node from the graph, together with all of its links.
      * Indices of existing graph nodes may change.
      */
-    void deleteNode(Node *node);
+    virtual void deleteNode(Node *node);
 
     /**
      * Adds the given link to the graph, between the specified nodes.
      * If the link is already part of the graph it is removed first,
      * i.e. this method also serves as reconnectLink().
      */
-    void addLink(Link *link, Node *srcNode, Node *destNode);
+    virtual void addLink(Link *link, Node *srcNode, Node *destNode);
 
     /**
      * Adds the given link to the graph, between the nodes that correspond
@@ -502,13 +502,13 @@ class SIM_API cTopology : public cOwnedObject
      * of the graph it is removed first, i.e. this method also serves as
      * reconnectLink().
      */
-    void addLink(Link *link, cGate *srcGate, cGate *destGate);
+    virtual void addLink(Link *link, cGate *srcGate, cGate *destGate);
 
     /**
      * Removes the given link from the graph. Indices of existing links in the
      * source and destination nodes may change.
      */
-    void deleteLink(Link *link);
+    virtual void deleteLink(Link *link);
     //@}
 
 
@@ -522,13 +522,13 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Returns the number of nodes in the graph.
      */
-    int getNumNodes() const  {return nodes.size();}
+    virtual int getNumNodes() const  {return nodes.size();}
 
     /**
      * Returns pointer to the ith node in the graph. Node's methods
      * can be used to further examine the node's connectivity, etc.
      */
-    Node *getNode(int i);
+    virtual Node *getNode(int i);
 
     /**
      * Returns the graph node which corresponds to the given module in the
@@ -537,7 +537,7 @@ class SIM_API cTopology : public cOwnedObject
      * network, that is, it was probably created with one of the
      * extract...() functions.
      */
-    Node *getNodeFor(cModule *mod);
+    virtual Node *getNodeFor(cModule *mod);
     //@}
 
     /** @name Algorithms to find shortest paths. */
@@ -552,20 +552,20 @@ class SIM_API cTopology : public cOwnedObject
      * Apply the Dijkstra algorithm to find all shortest paths to the given
      * graph node. The paths found can be extracted via Node's methods.
      */
-    void calculateUnweightedSingleShortestPathsTo(Node *target);
+    virtual void calculateUnweightedSingleShortestPathsTo(Node *target);
 
     /**
      * Apply the Dijkstra algorithm to find all shortest paths to the given
      * graph node. The paths found can be extracted via Node's methods.
      * Uses weights in nodes and links.
      */
-    void calculateWeightedSingleShortestPathsTo(Node *target);
+    virtual void calculateWeightedSingleShortestPathsTo(Node *target);
 
     /**
      * Returns the node that was passed to the most recently called
      * shortest path finding function.
      */
-    Node *getTargetNode() const {return target;}
+    virtual Node *getTargetNode() const {return target;}
     //@}
 
   protected:

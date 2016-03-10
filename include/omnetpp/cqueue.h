@@ -299,7 +299,7 @@ class SIM_API cQueue : public cOwnedObject
      * get(0) returns the front element. This method performs linear
      * search.
      */
-    cObject *get(int i) const;
+    virtual cObject *get(int i) const;
 
     /**
      * Returns true if the queue contains the given object.

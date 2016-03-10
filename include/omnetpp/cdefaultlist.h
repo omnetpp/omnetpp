@@ -72,12 +72,12 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Redefined.
      */
-    void take(cOwnedObject *obj) override;
+    virtual void take(cOwnedObject *obj) override;
 
     /**
      * Redefined.
      */
-    void drop(cOwnedObject *obj) override;
+    virtual void drop(cOwnedObject *obj) override;
 
   public:
     /** @name Constructors, destructor, assignment. */

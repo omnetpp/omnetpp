@@ -267,14 +267,14 @@ class SIM_API cXMLElement
      * tagname might be nullptr -- then any element with the given attribute
      * will be accepted. Returns nullptr if not found.
      */
-    cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=nullptr) const;
+    virtual cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=nullptr) const;
 
     /**
      * Returns the first element which has an "id" attribute with the given
      * value. ("id" attributes are supposed to be unique in an XML document.)
      * Returns nullptr if not found.
      */
-    cXMLElement *getElementById(const char *idattrvalue) const;
+    virtual cXMLElement *getElementById(const char *idattrvalue) const;
 
     /**
      * Returns the first element designated by the given path expression.
@@ -305,12 +305,12 @@ class SIM_API cXMLElement
      * The method throws an exception if the path expression is invalid,
      * and returns nullptr if the element is not found.
      */
-    cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=nullptr, ParamResolver *resolver=nullptr) const;
+    virtual cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=nullptr, ParamResolver *resolver=nullptr) const;
 
     /**
      * Prints detailedInfo() on EV.
      */
-    void debugDump() const;
+    virtual void debugDump() const;
 
     /**
      * Returns tree contents in an XML-like format. This method is only

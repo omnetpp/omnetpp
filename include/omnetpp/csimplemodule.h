@@ -207,7 +207,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * See also class cWatch and the WATCH() macro.
      */
-    bool snapshot(cObject *obj=nullptr, const char *label=nullptr);
+    virtual bool snapshot(cObject *obj=nullptr, const char *label=nullptr);
     //@}
 
     /** @name Message sending. */
@@ -216,71 +216,71 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Sends a message through the gate given with its ID.
      */
-    int send(cMessage *msg, int gateid)  {return sendDelayed(msg, SIMTIME_ZERO, gateid);}
+    virtual int send(cMessage *msg, int gateid)  {return sendDelayed(msg, SIMTIME_ZERO, gateid);}
 
     /**
      * Sends a message through the gate given with its name and index
      * (if multiple gate).
      */
-    int send(cMessage *msg, const char *gatename, int gateindex=-1)  {return sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
+    virtual int send(cMessage *msg, const char *gatename, int gateindex=-1)  {return sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
 
     /**
      * Sends a message through the gate given with its pointer.
      */
-    int send(cMessage *msg, cGate *outputgate)  {return sendDelayed(msg, SIMTIME_ZERO, outputgate);}
+    virtual int send(cMessage *msg, cGate *outputgate)  {return sendDelayed(msg, SIMTIME_ZERO, outputgate);}
 
     /**
      * Delayed sending. Sends a message through the gate given with
      * its index as if it was sent delay seconds later.
      */
-    int sendDelayed(cMessage *msg, simtime_t delay, int gateid);
+    virtual int sendDelayed(cMessage *msg, simtime_t delay, int gateid);
 
     /**
      * Delayed sending. Sends a message through the gate given with
      * its name and index (if multiple gate) as if it was sent delay
      * seconds later.
      */
-    int sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1);
+    virtual int sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1);
 
     /**
      * Sends a message through the gate given with its pointer as if
      * it was sent delay seconds later.
      */
-    int sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
+    virtual int sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
 
     /**
      * Sends a message directly to another module, with zero propagation delay
      * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
      * for a more detailed description.
      */
-    int sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1);
+    virtual int sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1);
 
     /**
      * Sends a message directly to another module, with zero propagation delay
      * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
      * for a more detailed description.
      */
-    int sendDirect(cMessage *msg, cModule *mod, int inputGateId);
+    virtual int sendDirect(cMessage *msg, cModule *mod, int inputGateId);
 
     /**
      * Sends a message directly to another module, with zero propagation delay
      * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
      * for a more detailed description.
      */
-    int sendDirect(cMessage *msg, cGate *inputGate);
+    virtual int sendDirect(cMessage *msg, cGate *inputGate);
 
     /**
      * Sends a message directly to another module.
      * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
      * detailed description.
      */
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1);
+    virtual int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1);
 
     /**
      * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
      * detailed description.
      */
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId);
+    virtual int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId);
 
     /**
      * Send a message directly to another module.
@@ -321,7 +321,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * For messages that are not packets (i.e. not subclassed from cPacket),
      * the duration parameter must be zero.
      */
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
+    virtual int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
     //@}
 
     /** @name Self-messages. */
@@ -353,7 +353,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * you can schedule it again -- so you can reuse the same message
      * object for timeouts over and over during the whole simulation.
      */
-    void scheduleAt(simtime_t t, cMessage *msg);
+    virtual void scheduleAt(simtime_t t, cMessage *msg);
 
     /**
      * Removes the given message from the future events. The message
@@ -361,7 +361,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * This function can be used to cancel a timer implemented with scheduleAt().
      * If the message is not currently scheduled, nothing happens.
      */
-    cMessage *cancelEvent(cMessage *msg);
+    virtual cMessage *cancelEvent(cMessage *msg);
 
     /**
      * Invokes cancelEvent() on the message (in case it is scheduled), then
@@ -369,7 +369,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * This method is especially useful in simple module destructors, to dispose
      * of self-messages that the module has allocated.
      */
-    void cancelAndDelete(cMessage *msg);
+    virtual void cancelAndDelete(cMessage *msg);
     //@}
 
     /** @name Receiving messages.
@@ -382,7 +382,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * Remove the next message from the event queue and return a pointer
      * to it.
      */
-    cMessage *receive();
+    virtual cMessage *receive();
 
     /**
      * Removes the next message from the event queue and returns a pointer
@@ -391,7 +391,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * available. If the timeout expires and there is still no message
      * in the queue, the function returns nullptr.
      */
-    cMessage *receive(simtime_t timeout);
+    virtual cMessage *receive(simtime_t timeout);
     //@}
 
     /** @name Waiting. */
@@ -410,7 +410,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * This function can only be used with activity(), but not with
      * handleMessage().
      */
-    void wait(simtime_t time);
+    virtual void wait(simtime_t time);
 
     /**
      * Waits for the given interval. The messages received during the wait
@@ -419,7 +419,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * This function can only be used with activity(), but not with
      * handleMessage().
      */
-    void waitAndEnqueue(simtime_t time, cQueue *queue);
+    virtual void waitAndEnqueue(simtime_t time, cQueue *queue);
     //@}
 
     /** @name Stopping the module or the simulation. */
@@ -428,19 +428,19 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * Causes the whole simulation to stop. The implementation simply
      * throws a cTerminationException.
      */
-    void endSimulation();
+    virtual void endSimulation();
 
     /**
      * May only be invoked from activity()-based simple modules.
      * Execution of the simple module stops in this call, and any further
      * messages sent to module will cause a runtime error.
      */
-    void halt();
+    virtual void halt();
 
     /**
      * Equivalent to <tt>throw cRuntimeError(<i>same argument list</i>)</tt>.
      */
-    void error(const char *format,...) const;
+    virtual void error(const char *format,...) const;
     //@}
 
     /** @name Coroutine stack info. Useful only if module uses activity(). */
