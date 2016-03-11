@@ -90,8 +90,121 @@ code in the modules.
 \section{Configuring Result Collection}
 \label{sec:ana-sim:config-results}
 
-\subsection{Configuring Signal-Based Statistics Recording}
-\label{sec:ana-sim:signal-based-recording}
+\subsection{Result File Names}
+\label{sec:ana-sim:result-file-names}
+
+Simulation results are recorded into \textit{output scalar files} that
+actually hold statistics results as well, and \textit{output vector
+files}. The usual file extension for scalar files is \ttt{.sca}, and
+for vector files \ttt{.vec}.
+
+Every simulation run generates a single scalar file and a vector file.
+The file names can be controlled with the \fconfig{output-vector-file}
+and \fconfig{output-scalar-file} options. These options rarely need
+to be used, because the default values are usually fine. The defaults
+are:
+
+\begin{inifile}
+output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
+output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
+\end{inifile}
+
+Here, \ttt{\$\{resultdir\}} is the value of the \fconfig{result-dir}
+configuration option which defaults to \ttt{results/}, and
+\ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the name of
+the configuration name in the ini file (e.g. \ttt{[Config PureAloha]}),
+and the run number. Thus, the above defaults generate file names
+like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
+and so on.
+
+\begin{note}
+  In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
+  \ttt{omnetpp.sca}, and scalar files were always appended to, rather than
+  being overwritten as in the 4.x version. When needed, the old behavior
+  for scalar files can be turned back on by setting
+  \ttt{output-scalar-file-append=true} in the configuration.
+\end{note}
+
+
+\subsection{Enabling/Disabling Result Items}
+\label{sec:ana-sim:disabling-result-items}
+
+The recording of simulation results can be enabled/disabled at multiple levels
+with various configuration options:
+
+\begin{itemize}
+  \item All recording from a \fprop{@statistic} can be enabled/disabled together
+        using the \fconfig{statistic-recording} option;
+  \item Recording of a scalar or a statistic object can be controlled with the
+        \fconfig{scalar-recording} option;
+  \item Recording of an output vector can be controlled with the \fconfig{vector-recording}
+        option;
+  \item Recording of the bins of a histogram object can be controlled with the
+        \fconfig{bin-recording} option.
+\end{itemize}
+
+All the above options are boolean per-object options, thus, they have similar syntaxes:
+
+\begin{itemize}
+\item \textit{<module-path>.<statistic-name>.}\fconfig{statistic-recording}\ttt{ = true/false}
+\item \textit{<module-path>.<scalar-name>.}\fconfig{scalar-recording}\ttt{ = true/false}
+\item \textit{<module-path>.<vector-name>.}\fconfig{vector-recording}\ttt{ = true/false}
+\item \textit{<module-path>.<histogram-name>.}\fconfig{bin-recording}\ttt{ = true/false}
+\end{itemize}
+
+For example, all recording from the following statistic
+
+\begin{ned}
+@statistic[queueLength](record=max,timeavg,vector);
+\end{ned}
+
+can disabled with this ini file line:
+
+\begin{inifile}
+**.queueLength.statistic-recording = false
+\end{inifile}
+
+When a scalar, vector, or histogram is recorded using a \fprop{@statistic},
+its name is derived from the statistic name, by appending the recording
+mode after a semicolon. For example, the above statistic will generate 	the
+scalars named \ttt{queueLength:max} and \ttt{queueLength:timeavg}, and the
+vector named \ttt{queueLength:vector}. Their recording can be individually
+disabled with the following lines:
+
+\begin{inifile}
+**.queueLength:max.scalar-recording = false
+**.queueLength:timeavg.scalar-recording = false
+**.queueLength:vector.vector-recording = false
+\end{inifile}
+
+The statistic, scalar or vector name part in the key may also contain
+wildcards. This can be used, for example, to handle result items with
+similar names together, or, by using \ttt{*} as name, for filtering by
+module or to disable all recording. The following example turns off
+recording of all scalar results except those called \ttt{latency}, and those
+produced by modules named \ttt{tcp}:
+
+\begin{inifile}
+**.tcp.*.scalar-recording = true
+**.latency.scalar-recording = true
+**.scalar-recording = false
+\end{inifile}
+
+To disable all result recording, use the following three lines:
+
+\begin{inifile}
+**.statistic-recording = false
+**.scalar-recording = false
+**.vector-recording = false
+\end{inifile}
+
+The first line is not strictly necessary. However, it may improve runtime
+performance because it causes result recorders not to be added, instead of
+adding and then disabling them.
+
+
+\subsection{Selecting Recording Modes for Signal-Based Statistics}
+\label{sec:ana-sim:configuring-recording-modes}
 
 Signal-based statistics recording has been designed so that it can be
 easily configured to record a ``default minimal'' set of results, a
@@ -104,7 +217,7 @@ which is identified by the full path (hierarchical name) of the module or
 connection channel object in question, plus the name of the statistic
 (which is the ``index'' of \fprop{@statistic} property, i.e. the name in
 the square brackets). Thus, configuration keys have the syntax
-\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-modes=}.
+\textit{<module-path>.<statistic-name>.}\ttt{result-recording-modes=}.
 
 The \fconfig{result-recording-modes} option accepts one or more items as value,
 separated by comma. An item may be a result recording mode (surprise!), and
@@ -144,11 +257,11 @@ With the following the ini file lines (see results in comments):
 
 \begin{inifile}
 **.result-recording-modes = default  # --> count, mean
-**.result-recording-modes = all      # --> count, mean, max
+**.result-recording-modes = all      # --> count, mean, max, vector
 **.result-recording-modes = -        # --> none
 **.result-recording-modes = mean     # --> only mean (disables 'default')
 **.result-recording-modes = default,-vector,+histogram # --> count,mean,histogram
-**.result-recording-modes = -vector,+histogram      # --> same as above
+**.result-recording-modes = -vector,+histogram         # --> same as the previous
 **.result-recording-modes = all,-vector,+histogram  # --> count,mean,max,histogram
 \end{inifile}
 
@@ -157,18 +270,11 @@ key. The following line applies to \ttt{queueLength} statistics of
 \ttt{fifo[]} submodule vectors anywhere in the network:
 
 \begin{inifile}
-**.fifo[*].queueLength.result-recording-modes = +vector  # default modes plus vector
+**.fifo[*].queueLength.result-recording-modes = +vector  # default plus vector
 \end{inifile}
 
 In the result file, the recorded scalars will be suffixed with the recording mode,
 i.e. the mean of \ttt{queueingTime} will be recorded as \ttt{queueingTime:mean}.
-
-\begin{note}
-Signal-based statistics recording forms a layer above the normal scalar and
-vector recording infrastructure, so options like \fconfig{scalar-recording},
-\fconfig{vector-recording}, \fconfig{vector-recording-intervals} also affect it.
-These options are described in the following sections.
-\end{note}
 
 
 \subsection{Warm-up Period}
@@ -216,114 +322,25 @@ if (simTime() >= simulation.getWarmupPeriod())
 \end{cpp}
 
 
-\subsection{Result File Names}
-\label{sec:ana-sim:result-file-names}
+\subsection{Output Vectors Recording Intervals}
+\label{sec:ana-sim:vector-recording-intervals}
 
-Simulation results are recorded into \textit{output scalar files} that
-actually hold statistics results as well, and \textit{output vector
-files}. The usual file extension for scalar files is \ttt{.sca}, and
-for vector files \ttt{.vec}.
+The size of output vector files can easily reach several gigabytes,
+but very often, only some of the recorded statistics are
+interesting to the analyst. In addition to selecting which vectors to
+record, {\opp} also allows one to specify one or more collection intervals.
 
-Every simulation run generates a single scalar file and a vector file.
-The file names can be controlled with the \fconfig{output-vector-file}
-and \fconfig{output-scalar-file} options. These options rarely need
-to be used, because the default values are usually fine. The defaults
-are:
-
-\begin{inifile}
-output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
-output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
-\end{inifile}
-
-Here, \ttt{\$\{resultdir\}} is the value of the \fconfig{result-dir}
-configuration option which defaults to \ttt{results/}, and
-\ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the name of
-the configuration name in the ini file (e.g. \ttt{[Config PureAloha]}),
-and the run number. Thus, the above defaults generate file names
-like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
-and so on.
-
-\begin{note}
-  In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
-  \ttt{omnetpp.sca}, and scalar files were always appended to, rather than
-  being overwritten as in the 4.x version. When needed, the old behavior
-  for scalar files can be turned back on by setting
-  \ttt{output-scalar-file-append=true} in the configuration.
-\end{note}
-
-
-\subsection{Configuring Scalar Results}
-\label{sec:ana-sim:scalar-results}
-
-Recording results into the scalar file can be turned off globally by adding
-the following line to the ini file. Any existing file with the same name
-will still be removed before the simulation starts.
-
-\begin{inifile}
-**.scalar-recording = false
-\end{inifile}
-
-Recording scalar results can be enabled or disabled individually, using
-patterns. The syntax of the configuration option is
-\textit{<module-full-path>.<scalar-name>.}\ttt{scalar-recording=}\textit{true/false},
-where both \textit{<module-full-path>} and \textit{<scalar-name>}
-may contain wildcards (see \ref{sec:config-sim:wildcards}).
-\textit{<scalar-name>} is the signal name, or the string passed to the
-\ffunc{recordScalar()} call. By default, the recording of all scalars is
-enabled.
-
-The following example turns off recording all scalar results, except
-end-to-end delays and those produced by TCP modules:
-
-\begin{inifile}
-**.tcp.**.scalar-recording = true
-**.endToEndDelay.scalar-recording = true
-**.scalar-recording = false
-\end{inifile}
-
-%% TODO **.eed:histogram.scalar-recording=false    disables histogram
-
-
-\subsection{Configuring Output Vectors}
-\label{sec:ana-sim:vector-config}
-
-Recording output vector results can be turned off globally by adding
-the following line to the ini file. Any existing file with the same name
-will still be removed before the simulation starts.
-
-\begin{inifile}
-**.vector-recording = false
-\end{inifile}
-
-The size of output vector files can easily reach the magnitude of several
-hundred megabytes, but very often, only some of the recorded statistics are
-interesting to the analyst. {\opp} allows you to control which vectors you
-want to record, and to specify one or more collection intervals.
-
-Output vectors can be configured with the \fconfig{vector-recording} and
-\fconfig{vector-recording-intervals} per-object options. The syntax of the
-configuration options are
-\textit{<module-full-path>.<vector-name>.}\ttt{vector-recording=}\textit{true/false},
-%line is outside the margins
-and \textit{<module-full-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
-where both \textit{<module-full-path>} and \textit{<vector-name>} may
+The latter can be configured with the \fconfig{vector-recording-intervals}
+per-object option. The syntax of the configuration option is
+\textit{<module-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
+where both \textit{<module-path>} and \textit{<vector-name>} may
 contain wildcards (see \ref{sec:config-sim:wildcards}).
-\textit{<vector-name>} is the signal name, or the name string of the
+\textit{<vector-name>} is the vector name, or the name string of the
 \ffunc{cOutVector} object. By default, all output vectors are turned
 on for the whole duration the simulation.
 
-The following example only records the \ttt{queueLength} vectors and
-\ttt{endToEndDelay} in \ttt{voiceApp} modules, and turns off the rest:
-
-\begin{inifile}
-**.queueLength.vector-recording = true
-**.voiceApp.endToEndDelay.vector-recording = true
-**.vector-recording = false
-\end{inifile}
-
-For the \fconfig{vector-recording-intervals} option, one can specify
-one or more intervals in the \textit{<startTime>..<stopTime>} syntax,
-separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
+One can specify one or more intervals in the \textit{<startTime>..<stopTime>}
+syntax, separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
 to be given with measurement units, and both can be omitted to denote
 the beginning and the end of the simulation, respectively.
 
@@ -335,6 +352,9 @@ simulation run:
 **.dropCount.vector-recording-intervals = 0..
 **.vector-recording-intervals = 0..1000s, 5000s..6000s, 9000s..
 \end{inifile}
+
+\subsection{Recording Event Numbers in Output Vectors}
+\label{sec:ana-sim:vector-eventnum-recording}
 
 A third per-vector configuration option is \fconfig{vector-record-eventnumbers},
 which specifies whether to record event numbers for an output vector.
@@ -435,7 +455,7 @@ automatically saved into the result files.
 
 
 \subsection{Recording Precision}
-\label{sec:outputfile-precision}
+\label{sec:ana-sim:outputfile-precision}
 
 Output scalar and output vector files are text files, and floating point
 values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
