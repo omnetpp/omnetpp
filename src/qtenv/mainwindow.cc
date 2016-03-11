@@ -86,7 +86,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     eventNumLabel->setToolTip("Event number of last event");
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     eventNumLabel->setStyleSheet("background-color: palette(base); border: 1px solid palette(mid); font-size: 16px;");
-    eventNumLabel->setAlignment(Qt::AlignRight);
+    eventNumLabel->setAlignment(Qt::Alignment(Qt::AlignVCenter | Qt::AlignRight));
 
     QHBoxLayout *l = new QHBoxLayout();
     l->addStretch(0);
@@ -96,6 +96,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     l->addWidget(simTimeLabel, 1);
     simTimeLabel->setMaximumWidth(200);
     simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
+    l->setMargin(0);
 
     QWidget *w = new QWidget();
     w->setLayout(l);
