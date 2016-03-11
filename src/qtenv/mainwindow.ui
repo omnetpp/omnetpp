@@ -240,6 +240,9 @@
       </property>
       <item>
        <widget class="QLabel" name="labelConfigName">
+        <property name="toolTip">
+         <string>Current inifile configuration, run number, and network name</string>
+        </property>
         <property name="styleSheet">
          <string notr="true">border: 1px solid palette(mid);</string>
         </property>
@@ -253,6 +256,11 @@
       </item>
       <item>
        <widget class="QLabel" name="labelMessageStats">
+        <property name="toolTip">
+         <string>Number of events (messages) currently scheduled /
+Number of existing message objects, including scheduled ones /
+Total number of messages created since start of the simulation</string>
+        </property>
         <property name="styleSheet">
          <string notr="true">border: 1px solid palette(mid);</string>
         </property>

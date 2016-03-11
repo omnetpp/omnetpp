@@ -79,9 +79,11 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     // add current event status
     simTimeLabel = new QLabel();
+    simTimeLabel->setToolTip("Simulation time of last event");
     simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     simTimeLabel->setStyleSheet("background-color: palette(base); border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel = new QLabel();
+    eventNumLabel->setToolTip("Event number of last event");
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     eventNumLabel->setStyleSheet("background-color: palette(base); border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel->setAlignment(Qt::AlignRight);
@@ -437,6 +439,12 @@ void MainWindow::updateSimtimeDisplay()
 
 void MainWindow::updatePerformanceDisplay()
 {
+    // Set Status Detail's tooltips
+    ui->nextEventLabel->setToolTip("Performance: events processed per second");
+    ui->nextModuleLabel->setToolTip("Relative speed: simulated seconds processed per second");
+    ui->nextTimeLabel->setToolTip("Event density: events per simulated second");
+
+    // Set Status Detail's texts
     ui->nextModuleLabel->setText("Simsec/sec: " + QString::number(env->getSpeedometer().getSimSecPerSec()));
     ui->nextEventLabel->setText("Ev/sec: " + QString::number(env->getSpeedometer().getEventsPerSec()));
     ui->nextTimeLabel->setText("Ev/simsec: " + QString::number(env->getSpeedometer().getEventsPerSimSec()));
@@ -444,6 +452,11 @@ void MainWindow::updatePerformanceDisplay()
 
 void MainWindow::updateNextEventDisplay()
 {
+    // Set Status Detail's tooltips
+    ui->nextEventLabel->setToolTip("Next simulation event");
+    ui->nextModuleLabel->setToolTip("Module where next event will occur");
+    ui->nextTimeLabel->setToolTip("Simulation time of next event");
+
     cSimpleModule *modptr = nullptr;
     cEvent *msgptr = nullptr;
 
@@ -453,6 +466,7 @@ void MainWindow::updateNextEventDisplay()
         msgptr = getSimulation()->guessNextEvent();
     }
 
+    // Set Status Detail's texts
     if (msgptr) {
         int objId = getObjectId(msgptr);
         simtime_t nextTime = getSimulation()->guessNextEvent()->getArrivalTime();
