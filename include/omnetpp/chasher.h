@@ -64,7 +64,7 @@ class SIM_API cHasher : noncopyable
     void add(short d)          {merge((uint32_t)d);}
     void add(int d)            {merge((uint32_t)d);}
     void add(long d)           {int64_t tmp=d; merge2((uint64_t)tmp);}
-    void add(long long d)   {merge2((uint64_t)d);}
+    void add(long long d)      {merge2((uint64_t)d);}
     void add(unsigned char d)  {merge((uint32_t)d);}
     void add(unsigned short d) {merge((uint32_t)d);}
     void add(unsigned int d)   {merge((uint32_t)d);}

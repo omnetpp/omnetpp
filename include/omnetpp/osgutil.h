@@ -29,7 +29,28 @@ namespace omnetpp {
 // the sim. kernel doesn't have a linker dependency on the OSG libraries.
 
 /**
- * osg::Node for defining correspondence to an OMNeT++ object.
+ * @brief osg::Group for defining correspondence of a 3D object to an
+ * \opp object.
+ *
+ * Using this node in an OSG scene graph associates its children (and all
+ * descendants) with a simulation object. The effect is that when a such
+ * a node is clicked in the OSG viewer, the corresponding simulation object
+ * can be inspected in the runtime GUI.
+ *
+ * Example usage:
+ *
+ * <pre>
+ * cModule *carModule = ...
+ * osg::Node *carModel = ...
+ * osg::Group *parent = ...
+ * cObjectOsgNode *wrapperNode = new cObjectOsgNode();
+ * wrapperNode->setObject(carModule);
+ * wrapperNode->addChild(carModel);
+ * parent->addChild(wrapperNode);
+ * </pre>
+ *
+ * The \opp object should exist as long as the wrapper node exists. Otherwise,
+ * clicking child nodes with the mouse is likely to result in a crash.
  */
 class SIM_API cObjectOsgNode : public osg::Group
 {
@@ -63,6 +84,8 @@ inline const cObject *cObjectOsgNode::getObject() const
 
 inline void cObjectOsgNode::setObject(const cObject *obj)
 {
+    // if the object is a component, store ID instead so we can avoid having
+    // a dangling pointer when it's deleted
     if (const cComponent *component = dynamic_cast<const cComponent*>(obj)) {
         componentId = component->getId();
         object = nullptr;

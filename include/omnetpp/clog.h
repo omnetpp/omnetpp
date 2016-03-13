@@ -225,7 +225,7 @@ inline void *getThisPtr() {return nullptr;}
  * @defgroup LoggingDefault Logging with default category
  */
 //@{
-#define EV        EV_INFO                           ///< Short for EV_INFO
+#define EV        EV_INFO                                   ///< Short for EV_INFO
 #define EV_FATAL  EV_LOG(omnetpp::LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
 #define EV_ERROR  EV_LOG(omnetpp::LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
 #define EV_WARN   EV_LOG(omnetpp::LOGLEVEL_WARN, nullptr)   ///< Log warnings
@@ -245,7 +245,7 @@ inline void *getThisPtr() {return nullptr;}
  * @defgroup LoggingCat  Logging with explicit category
  */
 //@{
-#define EV_C(category)        EV_INFO_C(category)                ///< Short for EV_INFO_C
+#define EV_C(category)        EV_INFO_C(category)                        ///< Short for EV_INFO_C
 #define EV_FATAL_C(category)  EV_LOG(omnetpp::LOGLEVEL_FATAL, category)  ///< Log local fatal errors
 #define EV_ERROR_C(category)  EV_LOG(omnetpp::LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
 #define EV_WARN_C(category)   EV_LOG(omnetpp::LOGLEVEL_WARN, category)   ///< Log warnings
@@ -259,6 +259,7 @@ inline void *getThisPtr() {return nullptr;}
  * This class holds various data that is captured when a particular log statement
  * executes. It also contains the text written to the log stream.
  *
+ * @see cEnvir::log(cLogEntry*)
  * @ingroup Internals
  */
 class SIM_API cLogEntry
@@ -292,10 +293,8 @@ class SIM_API cLogEntry
 class SIM_API cLogProxy
 {
   private:
-    /**
-     * This class is used for buffering the text content to be able to send whole
-     * lines one by one to the active environment.
-     */
+    // This class is used for buffering the text content to be able to send whole
+    // lines one by one to the active environment.
     class LogBuffer : public std::basic_stringbuf<char> {
       public:
         LogBuffer() { }

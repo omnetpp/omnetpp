@@ -290,9 +290,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     //@{
 
     /**
-     * Installs a scheduler object. This may only be called when no
-     * network is set up. The cSimulation object will be responsible
-     * for deallocating the scheduler object.
+     * Installs a scheduler object. This method may only be called before or
+     * between simulations, when there is no network set up. The cSimulation
+     * object will be responsible for deallocating the scheduler object.
      */
     void setScheduler(cScheduler *scheduler);
 
@@ -302,12 +302,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     cScheduler *getScheduler() const  {return scheduler;}
 
     /**
-     * TODO document
+     * Sets the future event set. This method may only be called before or
+     * between simulations, when there is no network set up. The cSimulation
+     * object will be responsible for deallocating the FES object.
      */
     void setFES(cFutureEventSet *fes);
 
     /**
-     * TODO document
+     * Returns the future event set data structure used by the simulation.
      */
     cFutureEventSet *getFES() const  {return fes;}
 

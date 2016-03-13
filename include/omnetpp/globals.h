@@ -26,8 +26,8 @@ namespace omnetpp {
 // Global objects
 //
 
-//< Internal: list in which objects are accumulated if there is no simple module in context.
-//< @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
+// Internal: list in which objects are accumulated if there is no simple module in context.
+// @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
 SIM_API extern cDefaultList defaultList;
 
 SIM_API extern cGlobalRegistrationList componentTypes;  ///< List of all component types (cComponentType)

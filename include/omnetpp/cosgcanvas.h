@@ -43,9 +43,20 @@ namespace omnetpp {
 class SIM_API cOsgCanvas : public cOwnedObject
 {
     public:
-        enum ViewerStyle { STYLE_GENERIC, STYLE_EARTH };
+        enum ViewerStyle {
+            STYLE_GENERIC, ///< For generic (non-osgEarth) OSG models
+            STYLE_EARTH    ///< For osgEarth models
+        };
+
         typedef cFigure::Color Color;
-        enum CameraManipulatorType { CAM_AUTO, CAM_TERRAIN, CAM_OVERVIEW, CAM_TRACKBALL, CAM_EARTH };
+
+        enum CameraManipulatorType {
+            CAM_AUTO,      ///< Choose the camera manipulator automatically
+            CAM_TERRAIN,   ///< Suitable for flying above an object or terrain
+            CAM_OVERVIEW,  ///< Similar to TERRAIN, but only allows seeing the object from above
+            CAM_TRACKBALL, ///< Allows unrestricted movement centered around an object
+            CAM_EARTH      ///< Useful when viewing osgEarth scenes
+        };
 
         // this is only needed to simplify the Viewpoint hint
         struct Vec3d {
@@ -114,17 +125,22 @@ class SIM_API cOsgCanvas : public cOwnedObject
         /** @name Hints for the OSG viewer. */
         //@{
         /**
-         * TODO
+         * Sets the viewer style. This hint affects the defaults for several other hints,
+         * for example the camera maniplator hint. Currently there are two styles,
+         * STYLE_GENERIC for generic OSG (non-osgEarth), and STYLE_EARTH for osgEarth
+         * models.
          */
         void setViewerStyle(ViewerStyle viewerStyle) {this->viewerStyle = viewerStyle;}
 
         /**
-         * TODO
+         * Return the viewer style hint.
          */
         ViewerStyle getViewerStyle() const {return viewerStyle;}
 
         /**
-         * Set the color hint for the background behind the scene.
+         * Set the color hint for the background behind the scene. Note that
+         * this hint will be ignored by osgEarth models, because osgEarth uses
+         * sky models for the same purpose.
          */
         void setClearColor(Color clearColor) {this->clearColor = clearColor;}
 
@@ -136,6 +152,9 @@ class SIM_API cOsgCanvas : public cOwnedObject
         /**
          * Set the camera manipulator type hint. The camera manipulator
          * determines how the camera reacts to mouse/keyboard actions.
+         * CAM_TERRAIN, CAM_OVERVIEW, and CAM_TRACKBALL are useful when
+         * viewing generic OSG scenes, and CAM_EARTH is useful for osgEarth
+         * scenes.
          */
         void setCameraManipulatorType(CameraManipulatorType manipulator) {this->cameraManipulatorType = manipulator;}
 
@@ -188,9 +207,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
          * Returns the initial genericViewpoint hint.
          */
         const Viewpoint& getGenericViewpoint() const {return *genericViewpoint;}
-
-        //TODO more generic style related hints
-
         //@}
 
         /** @name osgEarth-related viewer hints. */
@@ -204,9 +220,6 @@ class SIM_API cOsgCanvas : public cOwnedObject
          * Returns the initial earthViewpoint hint.
          */
         const osgEarth::Viewpoint& getEarthViewpoint() const {return *earthViewpoint;}
-
-        //TODO more osgEarth-related hints
-
         //@}
 };
 
