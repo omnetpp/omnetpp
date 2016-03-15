@@ -328,6 +328,9 @@ class SIM_API cFigure : public cOwnedObject
         int getId() const {return id;}
         virtual bool isVisible() const {return visible;} // affects figure subtree, not just this very figure
         virtual void setVisible(bool visible) {this->visible = visible; fireStructuralChange();}
+        /**
+         * Returns the transform associated with this figure.
+         */
         virtual const Transform& getTransform() const {return transform;}
         virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
         virtual const char *getTags() const {return tags;} // returns space-separated list of tags
@@ -344,10 +347,10 @@ class SIM_API cFigure : public cOwnedObject
         virtual void rotate(double phi) {transform.rotate(phi); fireTransformChange();}
         virtual void rotate(double phi, double cx, double cy) {transform.rotate(phi,cx,cy); fireTransformChange();}
         virtual void rotate(double phi, const Point& c) {rotate(phi, c.x, c.y);}
-        virtual void skewx(double phi) {transform.skewx(phi); fireTransformChange();}
-        virtual void skewy(double phi) {transform.skewy(phi); fireTransformChange();}
-        virtual void skewx(double phi, double cy) {transform.skewx(phi,cy); fireTransformChange();}
-        virtual void skewy(double phi, double cx) {transform.skewy(phi,cx); fireTransformChange();}
+        virtual void skewx(double coeff) {transform.skewx(coeff); fireTransformChange();}
+        virtual void skewy(double coeff) {transform.skewy(coeff); fireTransformChange();}
+        virtual void skewx(double coeff, double cy) {transform.skewx(coeff,cy); fireTransformChange();}
+        virtual void skewy(double coeff, double cx) {transform.skewy(coeff,cx); fireTransformChange();}
         //@}
 
         /** @name Managing child figures. */
