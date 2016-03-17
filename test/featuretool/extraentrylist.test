@@ -3,8 +3,8 @@ Testing opp_feature with a clean project: exists .oppfeatures and .nedfolders on
 .oppfeaturestate has an unknown feature
 Try listing features
 
-%prerun-command: cp ../../.nedfolders .
-%prerun-command: cp ../../.oppfeatures .
+%prerun-command: ../../lib/createSrcFolders
+%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
 
 %file: .oppfeaturestate_in
 <?xml version="1.0" ?>
@@ -28,7 +28,7 @@ feature_d_folder
 
 #%ignore-exitcode: 1
 
-%postrun-command: ../../fileExistingCheck
+%postrun-command: ../../lib/fileExistingCheck
 
 %contains: postrun-command(1).out
 '.oppfeatures' found.

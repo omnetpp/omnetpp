@@ -1,0 +1,8 @@
+#!/bin/bash
+mkdir src
+mkdir src/feature_a_folder
+mkdir src/feature_b_folder
+mkdir src/feature_c_folder
+mkdir src/feature_d_folder
+mkdir src/feature_e_folder
+ls src

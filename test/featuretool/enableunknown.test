@@ -2,8 +2,8 @@
 Testing opp_feature
 Try enable an unknown feature
 
-%prerun-command: cp ../../.nedfolders .
-%prerun-command: cp ../../.oppfeatures .
+%prerun-command: ../../lib/createSrcFolders
+%prerun-command: cp ../../.nedfolders ../../.oppfeatures .
 
 %file: .oppfeaturestate_in
 <?xml version="1.0" ?>
@@ -26,7 +26,7 @@ feature_d_folder
 
 #%ignore-exitcode: 1
 
-%postrun-command: ../../fileExistingCheck
+%postrun-command: ../../lib/fileExistingCheck
 
 %contains: postrun-command(1).out
 '.oppfeatures' found.
