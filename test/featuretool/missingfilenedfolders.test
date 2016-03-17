@@ -24,7 +24,7 @@ feature_c_folder
 feature_d_folder
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
-%testprog: opp_featuretool list && echo return: OK || echo return: ERROR
+%testprog: opp_featuretool options
 
 #%ignore-exitcode: 1
 
@@ -37,32 +37,7 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-return: ERROR
+ -DF_A -DF_E -llibA -llibE
 
-%contains: test.err
-opp_featuretool: Error: can't open .nedfolders file: [Errno 2] No such file or directory: '.nedfolders'
-
-%contains: .oppfeaturestate
-<?xml version="1.0" ?>
-<featurestates>
-    <feature enabled="true" id="F_A"/>
-    <feature enabled="false" id="F_B"/>
-    <feature enabled="false" id="F_C"/>
-    <feature enabled="false" id="F_D"/>
-    <feature enabled="true" id="F_E"/>
-</featurestates>
-
-%not-contains: .nedexclusions
-feature_a_folder
-
-%contains: .nedexclusions
-feature_b_folder
-
-%contains: .nedexclusions
-feature_c_folder
-
-%contains: .nedexclusions
-feature_d_folder
-
-%not-contains: .nedexclusions
-feature_e_folder
+%not-contains-regex: test.err
+[a-zA-Z0-9]

@@ -19,7 +19,7 @@ Generates makemake args
 '.nedexclusions' not found.
 
 %contains: stdout
- -DF_A -DF_E -llibA -llibE
+-Xfeature_b_folder -Xfeature_c_folder -Xfeature_d_folder -DF_A -DF_E -llibA -llibE
 
 %not-contains-regex: test.err
 [a-zA-Z0-9]

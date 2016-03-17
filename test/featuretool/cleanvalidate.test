@@ -19,4 +19,4 @@ Validate .oppfeaturestate and .nedexclusions
 '.nedexclusions' not found.
 
 %contains: test.err
-opp_featuretool: Error: the .oppfeaturestate file does not exists.
+opp_featuretool: Error: the .oppfeaturestate file does not exist.
