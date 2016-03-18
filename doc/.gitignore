@@ -4,7 +4,6 @@
 tmp*.xml
 /ide-overview/
 /manual/
-/migration/
 /installguide/
 /ide-customization-guide/
 /userguide/

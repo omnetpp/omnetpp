@@ -14,13 +14,6 @@
       <group path="page-content/top-right">
       </group>
    </page>
-   <page id="migrate">
-      <group path="page-content/bottom-left" default="true">
-         <extension id="org.omnetpp.intro.migrate.extension" importance="low"/>
-      </group>
-      <group path="page-content/bottom-right" default="true">
-      </group>
-   </page>
    <page id="whatsnew">
       <group path="page-content/bottom-left" default="true">
          <extension id="org.omnetpp.intro.whatsnew.extension" importance="new"/>

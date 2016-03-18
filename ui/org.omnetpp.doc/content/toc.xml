@@ -20,9 +20,6 @@
    <topic label="OMNeT++ Manual">
       <link toc="content/manual/toc.xml"/>
    </topic>
-   <topic label="Migration Guide">
-      <link toc="content/migration/toc.xml"/>
-   </topic>
    <topic label="IDE User Guide">
       <link toc="content/userguide/toc.xml"/>
    </topic>

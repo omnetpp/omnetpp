@@ -13,10 +13,6 @@
             primary="false">
       </toc>
       <toc
-            file="content/migration/toc.xml"
-            primary="false">
-      </toc>
-      <toc
             file="content/userguide/toc.xml"
             primary="false">
       </toc>
@@ -43,10 +39,6 @@
       <configExtension
             configId="org.eclipse.ui.intro.universalConfig"
             content="intro/tutorials.xml">
-      </configExtension>
-      <configExtension
-            configId="org.eclipse.ui.intro.universalConfig"
-            content="intro/migrate.xml">
       </configExtension>
    </extension>
 
