@@ -448,12 +448,12 @@ class SIM_API cTopology : public cOwnedObject
      * "false" (i.e. the first value of the default key may not be "false").
      *
      * For example, <tt>topo.extractByProperty("node");</tt> would extract
-     * all modules that contain the <tt>\@node</tt> property, like the following
+     * all modules that contain the <tt>@node</tt> property, like the following
      * one:
      *
      * <pre>
      * module X {
-     *     \@node;
+     *     @node;
      * }
      * </pre>
      *

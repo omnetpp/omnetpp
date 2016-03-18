@@ -29,7 +29,7 @@ class cResultFilter;
 /**
  * @brief Registers a result filter. The class must be a subclass of cResultFilter.
  * Registered result filters can be used in the <tt>source=</tt> and
- * <tt>record=</tt> attributes of <tt>\@statistic</tt> properties in NED files,
+ * <tt>record=</tt> attributes of <tt>@statistic</tt> properties in NED files,
  * and with the <tt>**.result-recording-modes=</tt> configuration option.
  *
  * @ingroup MacrosReg

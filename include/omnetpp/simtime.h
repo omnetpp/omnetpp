@@ -143,7 +143,7 @@ class SIM_API SimTime
     /**
      * Initialize simulation time from a module or channel parameter. It uses
      * conversion to <tt>double</tt>. It currently does not check the measurement
-     * unit of the parameter (\@unit NED property), although this may change in
+     * unit of the parameter (@unit NED property), although this may change in
      * future releases.
      */
     SimTime(cPar& d) {operator=(d);}

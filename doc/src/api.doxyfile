@@ -180,6 +180,17 @@ TAB_SIZE               = 8
 # You can put \n's in the value part of an alias to insert newlines.
 
 ALIASES                ="opp=OMNeT++"
+ALIASES               += "color=\@color"
+ALIASES               += "defaultname=\@defaultname"
+ALIASES               += "figure=\@figure"
+ALIASES               += "foo=\@foo"
+ALIASES               += "hhssbb=\@hhssbb"
+ALIASES               += "node=\@node"
+ALIASES               += "propertyname=\@propertyname"
+ALIASES               += "propname=\@propname"
+ALIASES               += "statistic=\@statistic"
+ALIASES               += "statisticTemplate=\@statisticTemplate"
+ALIASES               += "unit=\@unit"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.

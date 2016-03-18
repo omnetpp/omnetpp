@@ -262,7 +262,7 @@ namespace omnetpp {
  * etc. config options.
  *
  *    - cResultFilter, cResultRecorder: subclass them if you need new filters
- *      or recorders for signal-based statistic recoding (<tt>\@statistic</tt>)
+ *      or recorders for signal-based statistic recoding (<tt>@statistic</tt>)
  *    - cIOutputVectorManager, cIOutputScalarManager, cISnapshotManager: subclassing
  *      them lets you write output vectors, output scalars and simulation snapshots
  *      in a different format or in a different way (e.g. into a database)

@@ -29,7 +29,7 @@ class cProperty;
 /**
  * @brief Registers a result recorder. The class must be a subclass of cResultRecorder.
  * Registered result recorders can be used in the <tt>record=</tt> attributes
- * of <tt>\@statistic</tt> properties in NED files, and with the
+ * of <tt>@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
  *
  * @ingroup MacrosReg

@@ -286,7 +286,7 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
-     * as declared with the \@unit property of the parameter in NED,
+     * as declared with the @unit property of the parameter in NED,
      * or nullptr if no unit was specified. Unit is only valid for LONG and DOUBLE
      * types.
      */
