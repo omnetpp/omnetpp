@@ -24,7 +24,7 @@ namespace omnetpp {
 
 
 /**
- * Prototype for callback functions that are used to notify graphical user
+ * @brief Prototype for callback functions that are used to notify graphical user
  * interfaces when values are recorded to an output vector (see cOutVector).
  * @ingroup EnumsTypes
  */
@@ -34,7 +34,7 @@ class cEnum;
 
 
 /**
- * Responsible for recording vector simulation results (an output vector).
+ * @brief Responsible for recording vector simulation results (an output vector).
  * A cOutVector object can write doubles to the output vector file
  * (or any another device determined by the current cIOutputVectorManager).
  *

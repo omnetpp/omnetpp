@@ -27,7 +27,7 @@ class cResultRecorder;
 class cProperty;
 
 /**
- * Registers a result recorder. The class must be a subclass of cResultRecorder.
+ * @brief Registers a result recorder. The class must be a subclass of cResultRecorder.
  * Registered result recorders can be used in the <tt>record=</tt> attributes
  * of <tt>\@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
@@ -41,7 +41,7 @@ class cProperty;
 
 
 /**
- * Abstract base class for result recorders.
+ * @brief Abstract base class for result recorders.
  *
  * @see Register_ResultRecorder()
  * @ingroup EnvirExtensions
@@ -79,7 +79,7 @@ class SIM_API cResultRecorder : public cResultListener
 };
 
 /**
- * Abstract base class for numeric result recorders. Numeric result recorders
+ * @brief Abstract base class for numeric result recorders. Numeric result recorders
  * convert all numeric data types to double, and throw an error for non-numeric
  * types (const char *, cObject *).
  *
@@ -101,7 +101,7 @@ class SIM_API cNumericResultRecorder : public cResultRecorder
 };
 
 /**
- * Registers a cResultRecorder.
+ * @brief Registers a cResultRecorder.
  *
  * @ingroup Internals
  */

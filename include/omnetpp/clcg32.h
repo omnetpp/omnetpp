@@ -27,7 +27,7 @@ namespace omnetpp {
 #define LCG32_MAX  0x7ffffffeL  /* = 2^31-2 */
 
 /**
- * Implements a 32-bit (2^31-2 cycle length) linear congruential random
+ * @brief Implements a 32-bit (2^31-2 cycle length) linear congruential random
  * number generator.
  *    - Range:              1 ... 2^31-2
  *    - Period length:      2^31-2

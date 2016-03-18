@@ -37,7 +37,7 @@ class cTerminationException;
 
 
 /**
- * Represents one partition in a parallel simulation. Knows about
+ * @brief Represents one partition in a parallel simulation. Knows about
  * partitions and the links between this partition and its neighbours.
  *
  * Interconnections are stored not directly inside this object,

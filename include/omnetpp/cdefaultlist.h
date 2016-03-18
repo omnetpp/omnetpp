@@ -22,7 +22,7 @@ namespace omnetpp {
 
 
 /**
- * Internal class, used as a base class for modules and channels. It is not
+ * @brief Internal class, used as a base class for modules and channels. It is not
  * intended for subclassing outside the simulation kernel.
  *
  * cDefaultList acts as a "soft owner" (see object ownership discussion

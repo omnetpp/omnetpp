@@ -28,7 +28,7 @@ namespace omnetpp {
 
 
 /**
- * Stores a property with its value. The value consists of key-valuelist pairs;
+ * @brief Stores a property with its value. The value consists of key-valuelist pairs;
  * the key might be empty (default key).
  *
  * @ingroup Internals

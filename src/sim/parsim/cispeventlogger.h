@@ -27,7 +27,7 @@ namespace omnetpp {
 
 
 /**
- * Implements phase one for the Ideal Simulation Protocol (ISP),
+ * @brief Implements phase one for the Ideal Simulation Protocol (ISP),
  * namely, creating the log of "external" events. That log will be
  * used as by the ISP synchromization mechanism (cIdealSimulationProtocol).
  *

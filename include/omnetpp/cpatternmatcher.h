@@ -25,7 +25,7 @@ namespace omnetpp {
 namespace common { class PatternMatcher; };
 
 /**
- * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
+ * @brief Glob-style pattern matching class, adopted to special OMNeT++ requirements.
  * One instance represents a pattern to match.
  *
  * Pattern syntax:

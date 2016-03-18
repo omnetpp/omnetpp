@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * NEDXML-based cModuleType: takes all info from cNEDLoader
+ * @brief NEDXML-based cModuleType: takes all info from cNEDLoader
  */
 class SIM_API cDynamicModuleType : public cModuleType
 {

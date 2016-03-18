@@ -26,7 +26,7 @@ class cObject;
 class cComponent;
 
 /**
- * Classifies log messages based on detail and importance.
+ * @brief Classifies log messages based on detail and importance.
  *
  * @ingroup Logging
  */
@@ -100,7 +100,7 @@ enum LogLevel
 };
 
 /**
- * This log level specifies a globally applied compile time filter. Log statements
+ * @brief This log level specifies a globally applied compile time filter. Log statements
  * that use lower log levels than the one specified by this macro are not compiled
  * into the executable.
  */
@@ -113,14 +113,14 @@ enum LogLevel
 #endif
 
 /**
- * This predicate determines if a log statement gets compiled into the executable.
+ * @brief This predicate determines if a log statement gets compiled into the executable.
  */
 #ifndef COMPILETIME_LOG_PREDICATE
 #define COMPILETIME_LOG_PREDICATE(object, logLevel, category) (logLevel >= COMPILETIME_LOGLEVEL)
 #endif
 
 /**
- * This class groups logging related functionality.
+ * @brief This class groups logging related functionality.
  * @see LogLevel
  *
  * @ingroup Logging
@@ -190,7 +190,7 @@ class SIM_API cLog
 inline void *getThisPtr() {return nullptr;}
 
 /**
- * Use this macro when logging from static member functions.
+ * @brief Use this macro when logging from static member functions.
  * Background: EV_LOG and derived macros (EV_INFO, EV_DETAIL, etc) will fail
  * to compile when placed into static member functions of cObject-derived classes
  * ("cannot call member function 'cObject::getThisPtr()' without object" in GNU C++,
@@ -204,7 +204,7 @@ inline void *getThisPtr() {return nullptr;}
 #define EV_STATICCONTEXT  void *(*getThisPtr)() = omnetpp::getThisPtr;
 
 /**
- * This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
+ * @brief This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
  * It can be used as a C++ stream to log data with the provided log level and log category.
  * Log statements are wrapped with compile time and runtime guards at the call site to
  * efficiently prevent unnecessary computation of parameters and log content.
@@ -256,7 +256,7 @@ inline void *getThisPtr() {return nullptr;}
 //@}
 
 /**
- * This class holds various data that is captured when a particular log statement
+ * @brief This class holds various data that is captured when a particular log statement
  * executes. It also contains the text written to the log stream.
  *
  * @see cEnvir::log(cLogEntry*)

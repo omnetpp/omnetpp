@@ -51,7 +51,8 @@ using std::endl;
 #define EVCB  cSimulation::getActiveEnvir()->suppressNotifications ? (void)0 : (*cSimulation::getActiveEnvir())
 
 /**
- * cEnvir represents the "environment" or user interface of the simulation.
+ * @brief cEnvir represents the "environment" or user interface of the simulation.
+ *
  * The active cEnvir object can be accessed via cSimulation::getActiveEnvir()
  * or the getEnvir() global function.
  *
@@ -716,7 +717,7 @@ class SIM_API cEnvir
 
 
 /**
- * The interface for cEnvir objects that can be instantiated as a user interface
+ * @brief The interface for cEnvir objects that can be instantiated as a user interface
  * like Cmdenv and Tkenv.
  *
  * @ingroup Envir

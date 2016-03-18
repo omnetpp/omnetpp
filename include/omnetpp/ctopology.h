@@ -33,7 +33,7 @@ class cPar;
 #endif
 
 /**
- * Routing support. The cTopology class was designed primarily to support
+ * @brief Routing support. The cTopology class was designed primarily to support
  * routing in telecommunication or multiprocessor networks.
  *
  * A cTopology object stores an abstract representation of the network
@@ -61,7 +61,7 @@ class SIM_API cTopology : public cOwnedObject
     class LinkOut;
 
     /**
-     * Supporting class for cTopology, represents a node in the graph.
+     * @brief Supporting class for cTopology, represents a node in the graph.
      */
     class SIM_API Node
     {
@@ -178,7 +178,7 @@ class SIM_API cTopology : public cOwnedObject
 
 
     /**
-     * Supporting class for cTopology, represents a link in the graph.
+     * @brief Supporting class for cTopology, represents a link in the graph.
      */
     class SIM_API Link
     {
@@ -232,7 +232,7 @@ class SIM_API cTopology : public cOwnedObject
 
 
     /**
-     * Supporting class for cTopology.
+     * @brief Supporting class for cTopology.
      *
      * While navigating the graph stored in a cTopology, Node's methods return
      * LinkIn and LinkOut objects, which are 'aliases' to Link objects.
@@ -275,7 +275,7 @@ class SIM_API cTopology : public cOwnedObject
 
 
     /**
-     * Supporting class for cTopology.
+     * @brief Supporting class for cTopology.
      *
      * While navigating the graph stored in a cTopology, Node's methods return
      * LinkIn and LinkOut objects, which are 'aliases' to Link objects.
@@ -317,7 +317,8 @@ class SIM_API cTopology : public cOwnedObject
     };
 
     /**
-     * Base class for selector objects used in extract...() methods of cTopology.
+     * @brief Base class for selector objects used in extract...() methods of cTopology.
+     *
      * Redefine the matches() method to return whether the given module
      * should be included in the extracted topology or not.
      */

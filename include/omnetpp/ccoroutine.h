@@ -42,7 +42,7 @@ struct _Task;
 #endif
 
 /**
- * Prototype for functions that can be used with cCoroutine objects as
+ * @brief Prototype for functions that can be used with cCoroutine objects as
  * coroutine bodies.
  * @ingroup EnumsTypes
  */
@@ -51,7 +51,7 @@ typedef void (*CoroutineFnp)( void * );
 //--------------------------------------------------------------------------
 
 /**
- * Low-level coroutine library. Coroutines are used by cSimpleModule.
+ * @brief Low-level coroutine library. Coroutines are used by cSimpleModule.
  *
  * cCoroutine has platform-dependent implementation:
  *

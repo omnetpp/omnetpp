@@ -22,7 +22,7 @@
 namespace omnetpp {
 
 /**
- * Statistics class to collect min, max, mean, and standard deviation.
+ * @brief Statistics class to collect min, max, mean, and standard deviation.
  *
  * @ingroup Statistics
  */
@@ -218,7 +218,7 @@ class SIM_API cStdDev : public cStatistic
 
 
 /**
- * Statistics class to collect doubles and calculate weighted statistics
+ * @brief Statistics class to collect doubles and calculate weighted statistics
  * of them. It can be used for example to calculate time average.
  *
  * @ingroup Statistics

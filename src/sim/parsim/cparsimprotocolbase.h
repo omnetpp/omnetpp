@@ -28,7 +28,7 @@ namespace omnetpp {
 class cCommBuffer;
 
 /**
- * Contains utility functions for implementing parallel simulation
+ * @brief Contains utility functions for implementing parallel simulation
  * protocols.
  *
  * @ingroup Parsim

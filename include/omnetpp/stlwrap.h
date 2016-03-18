@@ -28,7 +28,7 @@ namespace omnetpp {
 //
 
 /**
- * Wrap std::string templated class into an equivalent non-templated class.
+ * @brief Wrap std::string templated class into an equivalent non-templated class.
  * Motivation: Microsoft Visual C++ has problems exporting templated
  * classes from DLLs, so we cannot use "raw" STL in our public API.
  *
@@ -53,7 +53,7 @@ class SIM_API stdstring : public std::string
 
 
 /**
- * Wrap std::vector\<stdtring\> templated class into an equivalent non-templated class.
+ * @brief Wrap std::vector\<stdtring\> templated class into an equivalent non-templated class.
  * Motivation: see description at stdstring.
  */
 class SIM_API stdstringvector : public std::vector<stdstring>
@@ -66,7 +66,7 @@ class SIM_API stdstringvector : public std::vector<stdstring>
 };
 
 /**
- * Wrap std::vector\<const char *\> templated class into an equivalent non-templated class.
+ * @brief Wrap std::vector\<const char *\> templated class into an equivalent non-templated class.
  * Motivation: see description at stdstring.
  */
 class SIM_API stdcharpvector : public std::vector<const char *>

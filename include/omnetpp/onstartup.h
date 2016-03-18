@@ -38,7 +38,7 @@ namespace omnetpp {
 #define __FILEUNIQUENAME__  MAKE_UNIQUE_WITHIN_FILE(__uniquename_)
 
 /**
- * Allows code fragments to be collected in global scope which will
+ * @brief Allows code fragments to be collected in global scope which will
  * then be executed from main() right after program startup. This is
  * used by in \opp for building global registration lists of
  * module types, network types, etc. Registration lists in fact
@@ -53,7 +53,7 @@ namespace omnetpp {
   };
 
 /**
- * Allows code fragments to be collected in global scope which will then be
+ * @brief Allows code fragments to be collected in global scope which will then be
  * executed on normal shutdown, just before control returns from main().
  * This is used by \opp for deallocating static global data structures such as
  * registration lists.
@@ -68,7 +68,7 @@ namespace omnetpp {
   };
 
 /**
- * Supporting class for the EXECUTE_ON_STARTUP and EXECUTE_ON_SHUTDOWN macros.
+ * @brief Supporting class for the EXECUTE_ON_STARTUP and EXECUTE_ON_SHUTDOWN macros.
  *
  * @ingroup Internals
  */

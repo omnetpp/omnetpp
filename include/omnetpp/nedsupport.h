@@ -35,7 +35,7 @@ class ModuleIndex : public cDynamicExpression::Functor
 };
 
 /**
- * Variations: parameter, parentParameter
+ * @brief Variations: parameter, parentParameter
  */
 class ParameterRef : public cDynamicExpression::Functor
 {
@@ -54,7 +54,7 @@ class ParameterRef : public cDynamicExpression::Functor
 };
 
 /**
- * siblingModuleParameter, indexedSiblingModuleParameter
+ * @brief siblingModuleParameter, indexedSiblingModuleParameter
  */
 class SiblingModuleParameterRef : public cDynamicExpression::Functor
 {
@@ -74,7 +74,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
 };
 
 /**
- * i,j in NED "for" loops
+ * @brief i,j in NED "for" loops
  */
 class LoopVar : public cDynamicExpression::Functor
 {
@@ -104,7 +104,7 @@ class LoopVar : public cDynamicExpression::Functor
 
 
 /**
- * sizeof operator. See also: SiblingModuleSizeof
+ * @brief sizeof operator. See also: SiblingModuleSizeof
  */
 class Sizeof : public cDynamicExpression::Functor
 {

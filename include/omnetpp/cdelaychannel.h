@@ -22,7 +22,7 @@
 namespace omnetpp {
 
 /**
- * Channel with propagation delay.
+ * @brief Channel with propagation delay.
  *
  * @ingroup SimCore
  */

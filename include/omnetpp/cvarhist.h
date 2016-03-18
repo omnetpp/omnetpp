@@ -22,7 +22,7 @@ namespace omnetpp {
 
 
 /**
- * Variable bin size histogram. You may add cell (bin) boundaries
+ * @brief Variable bin size histogram. You may add cell (bin) boundaries
  * manually, or let the object create cells with equal number of
  * observations in them (or as close to that as possible).
  *

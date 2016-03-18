@@ -29,7 +29,7 @@ namespace omnetpp {
 class cCommBuffer;
 
 /**
- * "Dummy" implementation -- just pass messages between partitions,
+ * @brief "Dummy" implementation -- just pass messages between partitions,
  * without any synchronization. Of course incausalities may occur
  * which terminate the simulation with error, so this class is
  * only useful as a base "template" for implementing "real" synchronization

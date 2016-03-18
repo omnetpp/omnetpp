@@ -47,7 +47,7 @@ typedef int PIPE;
 
 
 /**
- * Implementation of the communications layer which uses named pipes.
+ * @brief Implementation of the communications layer which uses named pipes.
  * Pipes are created at initialization time, and are used throughout
  * the whole simulation.
  *

@@ -24,7 +24,7 @@ class cObject;
 
 
 /**
- * Enables traversing the tree of (cObject-rooted) simulation objects.
+ * @brief Enables traversing the tree of (cObject-rooted) simulation objects.
  * Should be subclassed and the visit() method redefined according
  * to your needs.
  *
@@ -57,7 +57,7 @@ class SIM_API cVisitor
 {
   protected:
     /**
-     * Can be thrown to get out in the middle of the traversal process.
+     * @brief Can be thrown to get out in the middle of the traversal process.
      */
      class EndTraversalException { public: EndTraversalException() {} };
 

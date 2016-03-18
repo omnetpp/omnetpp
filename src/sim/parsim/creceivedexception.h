@@ -26,7 +26,7 @@
 namespace omnetpp {
 
 /**
- * Represents an exception that has been received from other partitions.
+ * @brief Represents an exception that has been received from other partitions.
  *
  * @ingroup Parsim
  */
@@ -40,7 +40,7 @@ class cReceivedException : public cException
 };
 
 /**
- * Represents a termination exception that has been received from other
+ * @brief Represents a termination exception that has been received from other
  * partitions.
  *
  * @ingroup Parsim

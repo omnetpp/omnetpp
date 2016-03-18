@@ -27,7 +27,7 @@ class cCommBuffer;
 
 
 /**
- * Basic communications layer for parallel simulation. It provides an
+ * @brief Basic communications layer for parallel simulation. It provides an
  * abstraction layer above MPI, PVM, shared-memory communications, etc.
  *
  * This is an interface: functionality is added by specific subclasses

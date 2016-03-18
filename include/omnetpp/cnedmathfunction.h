@@ -25,7 +25,7 @@ namespace omnetpp {
 
 
 /**
- * Prototype for mathematical functions.
+ * @brief Prototype for mathematical functions.
  *
  * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
@@ -33,7 +33,7 @@ namespace omnetpp {
 typedef double (*MathFunc)(...);
 
 /**
- * Prototype for mathematical functions taking no arguments.
+ * @brief Prototype for mathematical functions taking no arguments.
  *
  * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
@@ -41,7 +41,7 @@ typedef double (*MathFunc)(...);
 typedef double (*MathFuncNoArg)();
 
 /**
- * Prototype for mathematical functions taking one argument.
+ * @brief Prototype for mathematical functions taking one argument.
  *
  * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
@@ -49,7 +49,7 @@ typedef double (*MathFuncNoArg)();
 typedef double (*MathFunc1Arg)(double);
 
 /**
- * Prototype for mathematical functions taking two arguments.
+ * @brief Prototype for mathematical functions taking two arguments.
  *
  * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
@@ -57,7 +57,7 @@ typedef double (*MathFunc1Arg)(double);
 typedef double (*MathFunc2Args)(double,double);
 
 /**
- * Prototype for mathematical functions taking three arguments.
+ * @brief Prototype for mathematical functions taking three arguments.
  *
  * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
@@ -65,7 +65,7 @@ typedef double (*MathFunc2Args)(double,double);
 typedef double (*MathFunc3Args)(double,double,double);
 
 /**
- * Prototype for mathematical functions taking four arguments.
+ * @brief Prototype for mathematical functions taking four arguments.
  *
  * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
@@ -74,7 +74,7 @@ typedef double (*MathFunc4Args)(double,double,double,double);
 
 
 /**
- * Registration class for extending NED with new functions. Stores a pointer to
+ * @brief Registration class for extending NED with new functions. Stores a pointer to
  * a function taking up to 4 doubles as args and returning a double.
  *
  * Objects of this class are usually created via the Define_NED_Math_Function() macro.

@@ -30,7 +30,7 @@ class cComponent;
 
 
 /**
- * Internal class that stores parameter values. cPar delegates almost all
+ * @brief Internal class that stores parameter values. cPar delegates almost all
  * methods to cParImpl. Delegation was introduced to save memory by using
  * shared storage for module parameters of the same values.
  *

@@ -25,7 +25,7 @@ namespace omnetpp {
 class cXMLElement;
 
 /**
- * Abstract base class for expression evaluators.
+ * @brief Abstract base class for expression evaluators.
  *
  * @see cPar
  * @ingroup SimCore

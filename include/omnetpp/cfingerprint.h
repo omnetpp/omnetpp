@@ -28,7 +28,7 @@
 namespace omnetpp {
 
 /**
- * This class defines the interface for fingerprint calculators.
+ * @brief This class defines the interface for fingerprint calculators.
  *
  * @see cSimulation::getFingerprintCalculator()
  * @ingroup EnvirExtensions
@@ -78,7 +78,7 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
 #ifdef USE_OMNETPP4x_FINGERPRINTS
 
 /**
- * Computes \opp 4.x compatible fingerprints. This class is only
+ * @brief Computes \opp 4.x compatible fingerprints. This class is only
  * available when \opp was compiled with USE_OMNETPP4x_FINGERPRINTS
  * defined. Note that USE_OMNETPP4x_FINGERPRINTS affects other parts
  * of the \opp codebase as well (e.g. SimTime), not only the availability
@@ -126,7 +126,7 @@ class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
 #else // if !USE_OMNETPP4x_FINGERPRINTS
 
 /**
- * This class calculates the "fingerprint" of a simulation. The
+ * @brief This class calculates the "fingerprint" of a simulation. The
  * fingerprint is a 32-bit hash value calculated from various data
  * of the simulation events and simulation results. The calculator
  * can be configured to consider only certain events, modules, and
@@ -244,7 +244,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
 
 
 /**
- * This class calculates multiple fingerprints simultaneously. The calculator
+ * @brief This class calculates multiple fingerprints simultaneously. The calculator
  * can be configured similarly to the cSingleFingerprintCalculator class, but in this case
  * each option is a comma separated list.
  *

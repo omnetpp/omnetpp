@@ -24,7 +24,7 @@ namespace omnetpp {
 
 
 /**
- * Interface for emitting timestamped values as signals, primarily for
+ * @brief Interface for emitting timestamped values as signals, primarily for
  * result recording.
  *
  * Note: The signalID argument is present in the methods to allow the same
@@ -57,7 +57,7 @@ class SIM_API cITimestampedValue
 };
 
 /**
- * A straightforward implementation of cITimestampedValue.
+ * @brief A straightforward implementation of cITimestampedValue.
  *
  * @ingroup Signals
  */

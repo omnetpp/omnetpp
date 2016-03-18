@@ -27,7 +27,7 @@ namespace omnetpp {
 //@{
 
 /**
- * Registers a C/C++ mathematical function for use in NED and ini files. The function
+ * @brief Registers a C/C++ mathematical function for use in NED and ini files. The function
  * may take 0, 1, 2 or 3 double arguments, and must return a double.
  * Corresponding C/C++ typedefs: MathFuncNoArg, MathFunc1Arg, MathFunc2Args,
  * MathFunc3Args, MathFunc4Args.
@@ -43,7 +43,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
- * Like Define_NED_Math_Function(), but takes three arguments, the second one being the
+ * @brief Like Define_NED_Math_Function(), but takes three arguments, the second one being the
  * pointer to the function. This macro allows registering a function with a
  * different name from its implementation.
  *
@@ -53,7 +53,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
- * Like Define_NED_Math_Function(), but takes category and description strings as well.
+ * @brief Like Define_NED_Math_Function(), but takes category and description strings as well.
  *
  * @hideinitializer
  */
@@ -61,7 +61,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
- * Like Define_NED_Math_Function2(), but takes category and description strings as well.
+ * @brief Like Define_NED_Math_Function2(), but takes category and description strings as well.
  *
  * @hideinitializer
  */
@@ -69,7 +69,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
- * Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
+ * @brief Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
  * FUNCTION is a pointer to the function, and SIGNATURE is the function's
  * signature in NED.
  *
@@ -96,7 +96,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDFunction(FUNCTION,SIGNATURE));)
 
 /**
- * Like Define_NED_Function(), but allows one to specify a category string
+ * @brief Like Define_NED_Function(), but allows one to specify a category string
  * and documentation as well.
  *
  * @hideinitializer
@@ -105,7 +105,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
- * Register class. This defines a factory object which makes it possible
+ * @brief Register class. This defines a factory object which makes it possible
  * to create an object by the passing class name to the createOne() function.
  * The class must be a subclass of cObject, otherwise a compile-time error
  * will occur: <i>"cannot convert..."</i>
@@ -116,7 +116,7 @@ namespace omnetpp {
 #define Register_Class(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, omnetpp::cObject, "class")
 
 /**
- * Register an abstract class. Registration makes it possible to dynamically test
+ * @brief Register an abstract class. Registration makes it possible to dynamically test
  * whether an object is a subclass of the registered class (see cObjectFactory::isInstance()).
  * The class must be a subclass of cObject, otherwise a compile-time error
  * will occur: <i>"cannot convert..."</i>
@@ -127,7 +127,7 @@ namespace omnetpp {
 #define Register_Abstract_Class(CLASSNAME)  __REGISTER_ABSTRACT_CLASS(CLASSNAME, omnetpp::cObject, "class")
 
 /**
- * Announces the C++ simple module class to \opp, and couples it with the
+ * @brief Announces the C++ simple module class to \opp, and couples it with the
  * NED simple module declaration of the same name.
  *
  * @hideinitializer
@@ -135,7 +135,7 @@ namespace omnetpp {
 #define Define_Module(CLASSNAME)  __REGISTER_CLASS(CLASSNAME, omnetpp::cModule, "module")
 
 /**
- * Announces the C++ channel class to \opp, and couples it with the
+ * @brief Announces the C++ channel class to \opp, and couples it with the
  * NED channel declaration of the same name.
  *
  * @hideinitializer
@@ -154,7 +154,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), nullptr, MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
 
 /**
- * Internal. Registers a class descriptor which provides reflection information.
+ * @brief Internal. Registers a class descriptor which provides reflection information.
  *
  * @hideinitializer
  */
@@ -167,7 +167,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::configOptions.getInstance()->add(ID = new omnetpp::cConfigOption ARGLIST);)
 
 /**
- * Registers a global configuration option.
+ * @brief Registers a global configuration option.
  *
  * @hideinitializer
  */
@@ -175,7 +175,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, true, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Registers a per-run configuration option.
+ * @brief Registers a per-run configuration option.
  *
  * @hideinitializer
  */
@@ -183,7 +183,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, false, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Registers a global configuration option with type==CFG_DOUBLE and an
+ * @brief Registers a global configuration option with type==CFG_DOUBLE and an
  * expected unit of measurement.
  *
  * @hideinitializer
@@ -192,7 +192,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, true, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Registers a per-run configuration option with type==CFG_DOUBLE and an
+ * @brief Registers a per-run configuration option with type==CFG_DOUBLE and an
  * expected unit of measurement.
  *
  * @hideinitializer
@@ -201,7 +201,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, false, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Registers a per-object configuration option.
+ * @brief Registers a per-object configuration option.
  *
  * @hideinitializer
  */
@@ -209,7 +209,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::KIND, omnetpp::cConfigOption::TYPE, nullptr, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Registers a per-object configuration option with type==CFG_DOUBLE and an
+ * @brief Registers a per-object configuration option with type==CFG_DOUBLE and an
  * expected unit of measurement.
  *
  * @hideinitializer
@@ -218,7 +218,7 @@ namespace omnetpp {
   __REGISTER_CONFIGOPTION(ID, (NAME, omnetpp::cConfigOption::KIND, omnetpp::cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Registers a message printer class (cMessagePrinter)
+ * @brief Registers a message printer class (cMessagePrinter)
  *
  * @hideinitializer
  */
@@ -226,7 +226,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::messagePrinters.getInstance()->add(new CLASSNAME());)
 
 /**
- * Registers an enum.
+ * @brief Registers an enum.
  *
  * Example:
  * <pre>
@@ -244,7 +244,7 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(omnetpp::enums.getInstance()->add((new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
 
 /**
- * Registers an enum, and makes it accessible via a global cEnum* pointer,
+ * @brief Registers an enum, and makes it accessible via a global cEnum* pointer,
  * using explicit strings for the enum type and it member names.
  *
  * Example:

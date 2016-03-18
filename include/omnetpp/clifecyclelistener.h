@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * Event type for cISimulationLifecycleListener's lifecycleEvent() method.
+ * @brief Event type for cISimulationLifecycleListener's lifecycleEvent() method.
  *
  * @ingroup SimCore
  */
@@ -153,7 +153,7 @@ enum SimulationLifecycleEventType
 
 
 /**
- * A callback interface for receiving notifications at various stages of
+ * @brief A callback interface for receiving notifications at various stages of
  * setting up, running, and tearing down simulations. Listeners can be added
  * to cEnvir with its addLifecycleListener() method, and removed with
  * removeLifecycleListener().

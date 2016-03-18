@@ -27,7 +27,7 @@ class cProperty;
 
 
 /**
- * Stores properties.
+ * @brief Stores properties.
  *
  * @ingroup Internals
  */

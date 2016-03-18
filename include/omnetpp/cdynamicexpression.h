@@ -28,7 +28,7 @@ class cNEDMathFunction;
 class cNEDFunction;
 
 /**
- * A stack-based expression evaluator class, for dynamically created
+ * @brief A stack-based expression evaluator class, for dynamically created
  * expressions.
  *
  * NOTE: Experimental class -- API is subject to change.
@@ -57,7 +57,7 @@ class SIM_API cDynamicExpression : public cExpression
     class Functor; // forward decl
 
     /**
-     * One element in a (reverse Polish) expression
+     * @brief One element in a (reverse Polish) expression
      */
     class SIM_API Elem
     {
@@ -186,7 +186,7 @@ class SIM_API cDynamicExpression : public cExpression
     };
 
     /**
-     * Function object base class. We use function objects to handle NED parameter
+     * @brief Function object base class. We use function objects to handle NED parameter
      * references, "index" and "sizeof" operators, and references to NED "for" loop
      * variables.
      */

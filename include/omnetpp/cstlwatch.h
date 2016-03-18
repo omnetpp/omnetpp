@@ -319,56 +319,56 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
 //@{
 
 /**
- * Makes std::vectors inspectable in Tkenv. See also WATCH_PTRVECTOR().
+ * @brief Makes std::vectors inspectable in Tkenv. See also WATCH_PTRVECTOR().
  *
  * @hideinitializer
  */
 #define WATCH_VECTOR(variable)     omnetpp::createStdVectorWatcher(#variable,(variable))
 
 /**
- * Makes std::vectors storing pointers inspectable in Tkenv. See also WATCH_VECTOR().
+ * @brief Makes std::vectors storing pointers inspectable in Tkenv. See also WATCH_VECTOR().
  *
  * @hideinitializer
  */
 #define WATCH_PTRVECTOR(variable)  omnetpp::createStdPointerVectorWatcher(#variable,(variable))
 
 /**
- * Makes std::lists inspectable in Tkenv. See also WATCH_PTRLIST().
+ * @brief Makes std::lists inspectable in Tkenv. See also WATCH_PTRLIST().
  *
  * @hideinitializer
  */
 #define WATCH_LIST(variable)       omnetpp::createStdListWatcher(#variable,(variable))
 
 /**
- * Makes std::lists storing pointers inspectable in Tkenv. See also WATCH_LIST().
+ * @brief Makes std::lists storing pointers inspectable in Tkenv. See also WATCH_LIST().
  *
  * @hideinitializer
  */
 #define WATCH_PTRLIST(variable)    omnetpp::createStdPointerListWatcher(#variable,(variable))
 
 /**
- * Makes std::sets inspectable in Tkenv. See also WATCH_PTRSET().
+ * @brief Makes std::sets inspectable in Tkenv. See also WATCH_PTRSET().
  *
  * @hideinitializer
  */
 #define WATCH_SET(variable)        omnetpp::createStdSetWatcher(#variable,(variable))
 
 /**
- * Makes std::sets storing pointers inspectable in Tkenv. See also WATCH_SET().
+ * @brief Makes std::sets storing pointers inspectable in Tkenv. See also WATCH_SET().
  *
  * @hideinitializer
  */
 #define WATCH_PTRSET(variable)     omnetpp::createStdPointerSetWatcher(#variable,(variable))
 
 /**
- * Makes std::maps inspectable in Tkenv. See also WATCH_PTRMAP().
+ * @brief Makes std::maps inspectable in Tkenv. See also WATCH_PTRMAP().
  *
  * @hideinitializer
  */
 #define WATCH_MAP(m)               omnetpp::createStdMapWatcher(#m,(m))
 
 /**
- * Makes std::maps storing pointers inspectable in Tkenv. See also WATCH_MAP().
+ * @brief Makes std::maps storing pointers inspectable in Tkenv. See also WATCH_MAP().
  *
  * @hideinitializer
  */

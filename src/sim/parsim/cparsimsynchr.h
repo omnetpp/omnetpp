@@ -32,7 +32,7 @@ class cParsimPartition;
 class cParsimCommunications;
 
 /**
- * Abstract base class for parallel simulation algorithms.
+ * @brief Abstract base class for parallel simulation algorithms.
  * Subclasses implement the "null message algorithm" and others.
  *
  * Task of this layer is to implement conservative synchronization, that is,

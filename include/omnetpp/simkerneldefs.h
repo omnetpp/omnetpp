@@ -49,7 +49,7 @@
 
 #ifndef NDEBUG
 /**
- * The \opp version of C's assert() macro. If expr evaluates to false, an exception
+ * @brief The \opp version of C's assert() macro. If expr evaluates to false, an exception
  * will be thrown with file/line/function information.
  */
 #define ASSERT(expr) \
@@ -57,7 +57,7 @@
                                    #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
 
 /**
- * The \opp version of C's assert() macro. If expr evaluates to false, an exception
+ * @brief The \opp version of C's assert() macro. If expr evaluates to false, an exception
  * will be thrown with file/line/function information and the given text.
  */
 #define ASSERT2(expr,text) \
@@ -70,7 +70,7 @@
 
 
 /**
- * Sequence number of events during the simulation. Events are numbered from one.
+ * @brief Sequence number of events during the simulation. Events are numbered from one.
  * (Event number zero is reserved for network setup and initialization.)
  *
  * @ingroup EnumsTypes

@@ -41,7 +41,7 @@ void check_and_cast_failure(T *p, P ret)
 }
 
 /**
- * Cast a pointer to the given pointer type P, and throw exception if fails.
+ * @brief Cast a pointer to the given pointer type P, and throw exception if fails.
  * The method calls dynamic_cast\<P\>(p) where P is a type you supplied;
  * if the result is nullptr (which indicates incompatible types), an exception
  * is thrown.
@@ -68,7 +68,7 @@ P check_and_cast(T *p)
 }
 
 /**
- * A variant of check_and_cast\<\>() that also allows nullptr as input.
+ * @brief A variant of check_and_cast\<\>() that also allows nullptr as input.
  *
  * @ingroup Functions
  */

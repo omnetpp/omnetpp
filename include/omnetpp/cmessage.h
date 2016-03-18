@@ -32,7 +32,7 @@ class cSimpleModule;
 class cSimulation;
 
 /**
- * Predefined message kind values (values for cMessage's getKind(),
+ * @brief Predefined message kind values (values for cMessage's getKind(),
  * setKind() methods).
  *
  * Negative values are reserved for the \opp system and its
@@ -47,7 +47,7 @@ enum eMessageKind
 };
 
 /**
- * Maximum number of partitions for parallel simulation.
+ * @brief Maximum number of partitions for parallel simulation.
  *
  * @ingroup ParsimBrief
  * @ingroup Parsim
@@ -57,7 +57,7 @@ enum eMessageKind
 
 
 /**
- * The message class in \opp. cMessage objects may represent events,
+ * @brief The message class in \opp. cMessage objects may represent events,
  * messages, jobs or other entities in a simulation. To represent network
  * packets, use the cPacket subclass.
  *

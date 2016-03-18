@@ -27,13 +27,13 @@ namespace omnetpp {
 //@{
 
 /**
- * After this many transitions without reaching a steady state
+ * @brief After this many transitions without reaching a steady state
  * we assume the FSM is in an infinite loop.
  */
 #define FSM_MAXT  64
 
 /**
- * Implements a Finite State Machine. FSM state is stored in
+ * @brief Implements a Finite State Machine. FSM state is stored in
  * an object of type cFSM.
  *
  * There are two kinds of states: transient and steady. At each
@@ -91,7 +91,7 @@ namespace omnetpp {
      switch (FSM_Print(fsm,__i&1),(((fsm).getState()<<1)|(__i&1)))
 
 /**
- * Declares a transient state; to be used in enum which declares states.
+ * @brief Declares a transient state; to be used in enum which declares states.
  * Example:
  *
  * <PRE>
@@ -112,7 +112,7 @@ namespace omnetpp {
 #define FSM_Transient(state)   (-(state))
 
 /**
- * Declares a steady state; to be used in enum which declares states.
+ * @brief Declares a steady state; to be used in enum which declares states.
  * See example in FSM_Transient.
  *
  * @hideinitializer
@@ -121,7 +121,7 @@ namespace omnetpp {
 #define FSM_Steady(state)      (state)
 
 /**
- * Create state for FSM_Enter and FSM_Exit.
+ * @brief Create state for FSM_Enter and FSM_Exit.
  * Handling signed (transient) flag with shift value operation correctly.
  *
  * @hideinitializer
@@ -130,7 +130,7 @@ namespace omnetpp {
 #define FSM_EnterExit(state)  ( ((state)<0) ? -((-state)<<1) : (state)<<1 )
 
 /**
- * Within an FSM_Switch() case branch, declares code to be executed
+ * @brief Within an FSM_Switch() case branch, declares code to be executed
  * on entering the given state. No calls to FSM_Goto() are allowed
  * within a state's Enter block.
  *
@@ -140,7 +140,7 @@ namespace omnetpp {
 #define FSM_Enter(state)  (FSM_EnterExit(state)|0)
 
 /**
- * Within an FSM_Switch() case branch, declares code to be executed
+ * @brief Within an FSM_Switch() case branch, declares code to be executed
  * on exiting the given state.
  *
  * @hideinitializer
@@ -149,7 +149,7 @@ namespace omnetpp {
 #define FSM_Exit(state)   (FSM_EnterExit(state)|1)
 
 /**
- * To be used in state exit code, to transition to another state.
+ * @brief To be used in state exit code, to transition to another state.
  *
  * Uses stringize (\#state), so it only works correctly if 'state'
  * is the enum name itself and not some variable that contains the
@@ -162,7 +162,7 @@ namespace omnetpp {
 
 #ifdef FSM_DEBUG
 /**
- * #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
+ * @brief #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
  * all state changes to EV.
  *
  * @hideinitializer
@@ -183,7 +183,7 @@ namespace omnetpp {
 //-----------------------------------------------------
 
 /**
- * Store the state of an FSM. This class is used in conjunction with
+ * @brief Store the state of an FSM. This class is used in conjunction with
  * the FSM_Switch() and other FSM_ macros.
  *
  * @ingroup SimSupport

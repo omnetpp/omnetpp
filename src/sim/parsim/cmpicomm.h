@@ -30,7 +30,7 @@ namespace omnetpp {
 class cMPICommBuffer;
 
 /**
- * MPI implementation of the basic parallel simulation communications layer.
+ * @brief MPI implementation of the basic parallel simulation communications layer.
  *
  * @ingroup Parsim
  */

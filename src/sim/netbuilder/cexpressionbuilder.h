@@ -31,7 +31,7 @@ using namespace omnetpp::nedxml;
 class cParImpl;
 
 /**
- * Utility classes for dynamic NED loading.
+ * @brief Utility classes for dynamic NED loading.
  * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
  * @ingroup NetworkBuilder

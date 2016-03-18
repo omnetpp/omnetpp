@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * NEDXML-based cChannelType: takes all info from cNEDLoader
+ * @brief NEDXML-based cChannelType: takes all info from cNEDLoader
  */
 class SIM_API cDynamicChannelType : public cChannelType
 {

@@ -27,7 +27,7 @@ namespace omnetpp {
 
 
 /**
- * Communication buffer that packs data into a memory buffer without any
+ * @brief Communication buffer that packs data into a memory buffer without any
  * transformation.
  *
  * @ingroup Parsim

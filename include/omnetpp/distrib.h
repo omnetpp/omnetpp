@@ -19,12 +19,12 @@ namespace omnetpp {
 
 //TODO @group etc
 /**
- * Produces a random integer in the range [0,r) using the RNG given with its index.
+ * @brief Produces a random integer in the range [0,r) using the RNG given with its index.
  */
 inline unsigned long intrand(cRNG *rng, long r)  {return rng->intRand(r);}
 
 /**
- * Produces a random double in the range [0,1) using the RNG given with its index.
+ * @brief Produces a random double in the range [0,1) using the RNG given with its index.
  */
 inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
 
@@ -35,7 +35,7 @@ inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
 //@{
 
 /**
- * Returns a random variate with uniform distribution in the range [a,b).
+ * @brief Returns a random variate with uniform distribution in the range [a,b).
  *
  * @param a, b the interval, a<b
  * @param rng the underlying random number generator
@@ -43,12 +43,12 @@ inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
 SIM_API double uniform(cRNG *rng, double a, double b);
 
 /**
- * SimTime version of uniform(cRNG*,double,double), for convenience.
+ * @brief SimTime version of uniform(cRNG*,double,double), for convenience.
  */
 inline SimTime uniform(cRNG *rng, SimTime a, SimTime b) {return uniform(rng, a.dbl(), b.dbl());}
 
 /**
- * Returns a random variate from the exponential distribution with the
+ * @brief Returns a random variate from the exponential distribution with the
  * given mean (that is, with parameter lambda=1/mean).
  *
  * @param mean mean value
@@ -57,12 +57,12 @@ inline SimTime uniform(cRNG *rng, SimTime a, SimTime b) {return uniform(rng, a.d
 SIM_API double exponential(cRNG *rng, double mean);
 
 /**
- * SimTime version of exponential(cRNG*,double), for convenience.
+ * @brief SimTime version of exponential(cRNG*,double), for convenience.
  */
 inline SimTime exponential(cRNG *rng, SimTime mean) {return exponential(rng, mean.dbl());}
 
 /**
- * Returns a random variate from the normal distribution with the given mean
+ * @brief Returns a random variate from the normal distribution with the given mean
  * and standard deviation.
  *
  * @param mean mean of the normal distribution
@@ -72,12 +72,12 @@ inline SimTime exponential(cRNG *rng, SimTime mean) {return exponential(rng, mea
 SIM_API double normal(cRNG *rng, double mean, double stddev);
 
 /**
- * SimTime version of normal(cRNG*,double,double), for convenience.
+ * @brief SimTime version of normal(cRNG*,double,double), for convenience.
  */
 inline SimTime normal(cRNG *rng, SimTime mean, SimTime stddev) {return normal(rng, mean.dbl(), stddev.dbl());}
 
 /**
- * Normal distribution truncated to nonnegative values.
+ * @brief Normal distribution truncated to nonnegative values.
  * It is implemented with a loop that discards negative values until
  * a nonnegative one comes. This means that the execution time is not bounded:
  * a large negative mean with much smaller stddev is likely to result
@@ -94,12 +94,12 @@ inline SimTime normal(cRNG *rng, SimTime mean, SimTime stddev) {return normal(rn
 SIM_API double truncnormal(cRNG *rng, double mean, double stddev);
 
 /**
- * SimTime version of truncnormal(cRNG*,double,double), for convenience.
+ * @brief SimTime version of truncnormal(cRNG*,double,double), for convenience.
  */
 inline SimTime truncnormal(cRNG *rng, SimTime mean, SimTime stddev) {return truncnormal(rng, mean.dbl(), stddev.dbl());}
 
 /**
- * Returns a random variate from the gamma distribution with parameters
+ * @brief Returns a random variate from the gamma distribution with parameters
  * alpha>0, theta>0. Alpha is known as the "shape" parameter, and theta
  * as the "scale" parameter.
  *
@@ -136,7 +136,7 @@ inline SimTime truncnormal(cRNG *rng, SimTime mean, SimTime stddev) {return trun
 SIM_API double gamma_d(cRNG *rng, double alpha, double theta);
 
 /**
- * Returns a random variate from the beta distribution with parameters
+ * @brief Returns a random variate from the beta distribution with parameters
  * alpha1, alpha2.
  *
  * Generation is using relationship to Gamma distribution: if Y1 has gamma
@@ -150,7 +150,7 @@ SIM_API double gamma_d(cRNG *rng, double alpha, double theta);
 SIM_API double beta(cRNG *rng, double alpha1, double alpha2);
 
 /**
- * Returns a random variate from the Erlang distribution with k phases
+ * @brief Returns a random variate from the Erlang distribution with k phases
  * and mean mean.
  *
  * This is the sum of k mutually independent random variables, each with
@@ -170,7 +170,7 @@ SIM_API double beta(cRNG *rng, double alpha1, double alpha2);
 SIM_API double erlang_k(cRNG *rng, unsigned int k, double mean);
 
 /**
- * Returns a random variate from the chi-square distribution
+ * @brief Returns a random variate from the chi-square distribution
  * with k degrees of freedom.  The chi-square distribution arises
  * in statistics. If Yi are k independent random variates from the normal
  * distribution with unit variance, then the sum-of-squares (sum(Yi^2))
@@ -187,7 +187,7 @@ SIM_API double erlang_k(cRNG *rng, unsigned int k, double mean);
 SIM_API double chi_square(cRNG *rng, unsigned int k);
 
 /**
- * Returns a random variate from the student-t distribution with
+ * @brief Returns a random variate from the student-t distribution with
  * i degrees of freedom. If Y1 has a normal distribution and Y2 has a chi-square
  * distribution with k degrees of freedom then X = Y1 / sqrt(Y2/k)
  * has a student-t distribution with k degrees of freedom.
@@ -200,7 +200,7 @@ SIM_API double chi_square(cRNG *rng, unsigned int k);
 SIM_API double student_t(cRNG *rng, unsigned int i);
 
 /**
- * Returns a random variate from the Cauchy distribution (also called
+ * @brief Returns a random variate from the Cauchy distribution (also called
  * Lorentzian distribution) with parameters a,b where b>0.
  *
  * This is a continuous distribution describing resonance behavior.
@@ -216,7 +216,7 @@ SIM_API double student_t(cRNG *rng, unsigned int i);
 SIM_API double cauchy(cRNG *rng, double a, double b);
 
 /**
- * Returns a random variate from the triangular distribution with parameters
+ * @brief Returns a random variate from the triangular distribution with parameters
  * a <= b <= c.
  *
  * Generation uses inverse transform.
@@ -227,7 +227,7 @@ SIM_API double cauchy(cRNG *rng, double a, double b);
 SIM_API double triang(cRNG *rng, double a, double b, double c);
 
 /**
- * Returns a random variate from the lognormal distribution with "scale"
+ * @brief Returns a random variate from the lognormal distribution with "scale"
  * parameter m and "shape" parameter w. m and w correspond to the parameters
  * of the underlying normal distribution (m: mean, w: standard deviation.)
  *
@@ -243,7 +243,7 @@ inline double lognormal(cRNG *rng, double m, double w)
 }
 
 /**
- * Returns a random variate from the Weibull distribution with parameters
+ * @brief Returns a random variate from the Weibull distribution with parameters
  * a, b > 0, where a is the "scale" parameter and b is the "shape" parameter.
  * Sometimes Weibull is given with alpha and beta parameters, then alpha=b
  * and beta=a.
@@ -264,7 +264,7 @@ inline double lognormal(cRNG *rng, double m, double w)
 SIM_API double weibull(cRNG *rng, double a, double b);
 
 /**
- * Returns a random variate from the shifted generalized Pareto distribution.
+ * @brief Returns a random variate from the shifted generalized Pareto distribution.
  *
  * Generation uses inverse transform.
  *
@@ -283,7 +283,7 @@ SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 //@{
 
 /**
- * Returns a random integer with uniform distribution in the range [a,b],
+ * @brief Returns a random integer with uniform distribution in the range [a,b],
  * inclusive. (Note that the function can also return b.)
  *
  * @param a, b  the interval, a<b
@@ -292,7 +292,7 @@ SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 SIM_API int intuniform(cRNG *rng, int a, int b);
 
 /**
- * Returns the result of a Bernoulli trial with probability p,
+ * @brief Returns the result of a Bernoulli trial with probability p,
  * that is, 1 with probability p and 0 with probability (1-p).
  *
  * Generation is using elementary look-up.
@@ -307,7 +307,7 @@ inline int bernoulli(cRNG *rng, double p)
 }
 
 /**
- * Returns a random integer from the binomial distribution with
+ * @brief Returns a random integer from the binomial distribution with
  * parameters n and p, that is, the number of successes in n independent
  * trials with probability p.
  *
@@ -321,7 +321,7 @@ inline int bernoulli(cRNG *rng, double p)
 SIM_API int binomial(cRNG *rng, int n, double p);
 
 /**
- * Returns a random integer from the geometric distribution with parameter p,
+ * @brief Returns a random integer from the geometric distribution with parameter p,
  * that is, the number of independent trials with probability p until the
  * first success.
  *
@@ -335,7 +335,7 @@ SIM_API int binomial(cRNG *rng, int n, double p);
 SIM_API int geometric(cRNG *rng, double p);
 
 /**
- * Returns a random integer from the negative binomial distribution with
+ * @brief Returns a random integer from the negative binomial distribution with
  * parameters n and p, that is, the number of failures occurring before
  * n successes in independent trials with probability p of success.
  *
@@ -368,7 +368,7 @@ SIM_API int negbinomial(cRNG *rng, int n, double p);
 // SIM_API int hypergeometric(cRNG *rng, int a, int b, int n);
 
 /**
- * Returns a random integer from the Poisson distribution with parameter lambda,
+ * @brief Returns a random integer from the Poisson distribution with parameter lambda,
  * that is, the number of arrivals over unit time where the time between
  * successive arrivals follow exponential distribution with parameter lambda.
  *

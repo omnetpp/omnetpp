@@ -25,7 +25,7 @@ class cConfiguration;
 
 
 /**
- * Abstract interface for random number generator classes.
+ * @brief Abstract interface for random number generator classes.
  * Some known implementations are <tt>cMersenneTwister</tt>,
  * <tt>cLCG32</tt> and <tt>cAkaroaRNG</tt>. The actual RNG class
  * to be used in simulations can be configured (a feature of the

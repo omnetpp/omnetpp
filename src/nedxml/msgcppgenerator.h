@@ -45,7 +45,8 @@ struct MsgCppGeneratorOptions
 };
 
 /**
- * Generates C++ code from a MSG file object tree.
+ * @brief Generates C++ code from a MSG file object tree.
+ *
  * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
  * @ingroup NEDGenerator

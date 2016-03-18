@@ -25,7 +25,7 @@ namespace omnetpp {
 
 
 /**
- * Abstract base class for structure description classes, used mainly
+ * @brief Abstract base class for structure description classes, used mainly
  * with message subclassing.
  *
  * Subclasses of cClassDescriptor encapsulate the kind of reflection

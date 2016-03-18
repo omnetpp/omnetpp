@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * Error codes
+ * @brief Error codes
  */
 enum OppErrorCode
 {
@@ -72,7 +72,7 @@ enum OppErrorCode
 };
 
 /**
- * Provides error messages for error codes.
+ * @brief Provides error messages for error codes.
  *
  * @ingroup Internals
  */

@@ -37,7 +37,7 @@ namespace common { class PatternMatcher; };
 using namespace omnetpp::nedxml;
 
 /**
- * Extends NEDTypeInfo with property and cached expression storage,
+ * @brief Extends NEDTypeInfo with property and cached expression storage,
  * suitable for the sim kernel (cDynamicModuleType/cDynamicChannelType).
  *
  * cNEDDeclarations are used during network setup (and dynamic module

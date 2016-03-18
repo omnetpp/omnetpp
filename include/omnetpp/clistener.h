@@ -24,7 +24,7 @@ namespace omnetpp {
 class cComponent;
 
 /**
- * Signal handle.
+ * @brief Signal handle.
  *
  * @see cComponent::subscribe(), cComponent::unsubscribe(), cComponent::emit()
  * and cIListener
@@ -36,7 +36,7 @@ typedef int simsignal_t;
 #define SIMSIGNAL_NULL   ((omnetpp::simsignal_t)-1)
 
 /**
- * Signal data types.
+ * @brief Signal data types.
  *
  * @see simsignal_t, cIListener
  * @ingroup Signals
@@ -54,7 +54,7 @@ enum SimsignalType
 };
 
 /**
- * Interface for listeners in a simulation model.
+ * @brief Interface for listeners in a simulation model.
  *
  * This class performs subscription counting, in order to make sure that
  * when the destructor runs, the object is no longer subscribed anywhere.
@@ -148,7 +148,7 @@ class SIM_API cIListener
 };
 
 /**
- * A do-nothing implementation of cIListener, suitable as a base class
+ * @brief A do-nothing implementation of cIListener, suitable as a base class
  * for other listeners. The user needs to redefine one or more of the
  * overloaded receiveSignal() methods; the rest will throw a "Data type
  * not supported" error.

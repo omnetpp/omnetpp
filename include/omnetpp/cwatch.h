@@ -24,7 +24,7 @@ namespace omnetpp {
 
 
 /**
- * Utility class to make primitive types and non-cOwnedObject objects
+ * @brief Utility class to make primitive types and non-cOwnedObject objects
  * inspectable in Tkenv. To be used only via the WATCH, WATCH_PTR,
  * WATCH_OBJ, WATCH_VECTOR etc macros.
  *
@@ -58,7 +58,7 @@ class SIM_API cWatchBase : public cNoncopyableOwnedObject
 
 
 /**
- * Template Watch class, for any type that supports operator<<.
+ * @brief Template Watch class, for any type that supports operator<<.
  * @ingroup Internals
  */
 template<typename T>
@@ -80,7 +80,7 @@ class cGenericReadonlyWatch : public cWatchBase
 
 
 /**
- * Template Watch class, for any type that supports operator<<,
+ * @brief Template Watch class, for any type that supports operator<<,
  * and operator>> for assignment.
  * @ingroup Internals
  */
@@ -107,7 +107,7 @@ class cGenericAssignableWatch : public cWatchBase
 };
 
 /**
- * Watch class, specifically for bool.
+ * @brief Watch class, specifically for bool.
  * @ingroup Internals
  */
 class SIM_API cWatch_bool : public cWatchBase
@@ -129,7 +129,7 @@ class SIM_API cWatch_bool : public cWatchBase
 };
 
 /**
- * Watch class, specifically for char.
+ * @brief Watch class, specifically for char.
  * @ingroup Internals
  */
 class SIM_API cWatch_char : public cWatchBase
@@ -156,7 +156,7 @@ class SIM_API cWatch_char : public cWatchBase
 };
 
 /**
- * Watch class, specifically for unsigned char.
+ * @brief Watch class, specifically for unsigned char.
  * @ingroup Internals
  */
 class SIM_API cWatch_uchar : public cWatchBase
@@ -183,7 +183,7 @@ class SIM_API cWatch_uchar : public cWatchBase
 };
 
 /**
- * Watch class, specifically for std::string.
+ * @brief Watch class, specifically for std::string.
  * @ingroup Internals
  */
 class SIM_API cWatch_stdstring : public cWatchBase
@@ -199,7 +199,7 @@ class SIM_API cWatch_stdstring : public cWatchBase
 };
 
 /**
- * Watch class, specifically for objects subclassed from cObject.
+ * @brief Watch class, specifically for objects subclassed from cObject.
  * @ingroup Internals
  */
 class SIM_API cWatch_cObject : public cWatchBase
@@ -215,7 +215,7 @@ class SIM_API cWatch_cObject : public cWatchBase
 };
 
 /**
- * Watch class, specifically for pointers to objects subclassed from cObject.
+ * @brief Watch class, specifically for pointers to objects subclassed from cObject.
  * @ingroup Internals
  */
 class SIM_API cWatch_cObjectPtr : public cWatchBase
@@ -320,7 +320,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 //@{
 
 /**
- * Makes primitive types and types with operator<< inspectable in Tkenv.
+ * @brief Makes primitive types and types with operator<< inspectable in Tkenv.
  * See also WATCH_RW(), WATCH_PTR(), WATCH_OBJ(), WATCH_VECTOR(),
  * WATCH_PTRVECTOR(), etc. macros.
  *
@@ -329,7 +329,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH(variable)  omnetpp::createWatch(#variable,(variable))
 
 /**
- * Makes types with operator\<\< and operator\>\> inspectable in Tkenv.
+ * @brief Makes types with operator\<\< and operator\>\> inspectable in Tkenv.
  * operator\>\> is used to enable changing the variable's value interactively.
  *
  * @hideinitializer
@@ -337,7 +337,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH_RW(variable)  omnetpp::createWatch_genericAssignable(#variable,(variable))
 
 /**
- * Makes classes derived from cObject inspectable in Tkenv.
+ * @brief Makes classes derived from cObject inspectable in Tkenv.
  * See also WATCH_PTR().
  *
  * @hideinitializer
@@ -345,7 +345,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH_OBJ(variable)  omnetpp::createWatch_cObject(#variable,(variable))
 
 /**
- * Makes pointers to objects derived from cObject inspectable in Tkenv.
+ * @brief Makes pointers to objects derived from cObject inspectable in Tkenv.
  * See also WATCH_OBJ().
  *
  * @hideinitializer

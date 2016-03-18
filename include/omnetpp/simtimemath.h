@@ -28,7 +28,7 @@ inline int64_t _i64mod(const int64_t& any_t, const int64_t& positive_u)
 }
 
 /**
- * simtime_t version of floor(double) from math.h.
+ * @brief simtime_t version of floor(double) from math.h.
  */
 inline const SimTime floor(const SimTime& x)
 {
@@ -38,7 +38,7 @@ inline const SimTime floor(const SimTime& x)
 }
 
 /**
- * Generalized version of floor(), accepting a unit and an offset:
+ * @brief Generalized version of floor(), accepting a unit and an offset:
  * floor(x,u,off) = floor((x-off)/u)*u + off.
  *
  * Examples: floor(2.1234, 0.1) = 2.1; floor(2.1234, 0.1, 0.007) = 2.107;
@@ -53,7 +53,7 @@ inline const SimTime floor(const SimTime& x, const SimTime& unit, const SimTime&
 }
 
 /**
- * simtime_t version of ceil(double) from math.h.
+ * @brief simtime_t version of ceil(double) from math.h.
  */
 inline const SimTime ceil(const SimTime& x)
 {
@@ -63,7 +63,7 @@ inline const SimTime ceil(const SimTime& x)
 }
 
 /**
- * Generalized version of ceil(), accepting a unit and an offset:
+ * @brief Generalized version of ceil(), accepting a unit and an offset:
  * ceil(x,u,off) = ceil((x-off)/u)*u + off.
  */
 inline const SimTime ceil(const SimTime& x, const SimTime& unit, const SimTime& offset = SimTime())
@@ -75,7 +75,7 @@ inline const SimTime ceil(const SimTime& x, const SimTime& unit, const SimTime& 
 }
 
 /**
- * Returns the absolute value of the simulation time x.
+ * @brief Returns the absolute value of the simulation time x.
  */
 inline const SimTime fabs(const SimTime& x)
 {
@@ -83,7 +83,7 @@ inline const SimTime fabs(const SimTime& x)
 }
 
 /**
- * Computes the quotient of the simulation times x and y. The quotient is the
+ * @brief Computes the quotient of the simulation times x and y. The quotient is the
  * algebraic quotient with any fractional part discarded (truncated towards zero).
  * The function internally relies on the standard C/C++ integer division (/) operation.
  *
@@ -98,7 +98,7 @@ inline int64_t div(const SimTime& x, const SimTime& y)
 }
 
 /**
- * Computes the remainder of the division of two simulation times.
+ * @brief Computes the remainder of the division of two simulation times.
  *
  * The function internally relies on the standard C/C++ integer modulo (%)
  * operation. This has implications regarding the sign of the result:

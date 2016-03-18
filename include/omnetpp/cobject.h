@@ -33,7 +33,7 @@ class cOwnedObject;
 
 
 /**
- * Root of the \opp class hierarchy. cObject is a lightweight class, it
+ * @brief Root of the \opp class hierarchy. cObject is a lightweight class, it
  * does not contain any data members.
  *
  * Note: In OMNeT++ 2.x and 3.x, cObject was called cPolymorphic.
@@ -303,7 +303,7 @@ class SIM_API cObject
 
 
 /**
- * Utility class, to make it impossible to call the operator= and copy
+ * @brief Utility class, to make it impossible to call the operator= and copy
  * constructor of any class derived from it.
  *
  * NOTE: <tt>dup()</tt> must be redefined as <tt>{copyNotSupported(); return nullptr;}</tt>

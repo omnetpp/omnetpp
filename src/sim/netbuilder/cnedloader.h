@@ -25,7 +25,7 @@
 namespace omnetpp {
 
 /**
- * Stores dynamically loaded NED files, and one can look up NED declarations
+ * @brief Stores dynamically loaded NED files, and one can look up NED declarations
  * of modules, channels, module interfaces and channel interfaces in them.
  * NED declarations are wrapped in cNEDDeclaration objects, which
  * point back into the NEDElement trees of the loaded NED files.

@@ -45,7 +45,7 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
 };
 
 /**
- * Result filter for counting signals. Signal values do not need to be numeric
+ * @brief Result filter for counting signals. Signal values do not need to be numeric
  * to be counted.
  */
 class SIM_API CountFilter : public cResultFilter
@@ -64,7 +64,7 @@ class SIM_API CountFilter : public cResultFilter
 };
 
 /**
- * Result filter that replaces every value with a constant. Signal values
+ * @brief Result filter that replaces every value with a constant. Signal values
  * do not need to be numeric.
  */
 class SIM_API ConstantFilter : public cResultFilter
@@ -83,7 +83,7 @@ class SIM_API ConstantFilter : public cResultFilter
 };
 
 /**
- * Result filter that replaces every value with zero.
+ * @brief Result filter that replaces every value with zero.
  */
 class SIM_API Constant0Filter : public ConstantFilter
 {
@@ -92,7 +92,7 @@ class SIM_API Constant0Filter : public ConstantFilter
 };
 
 /**
- * Result filter that replaces every value with 1.0.
+ * @brief Result filter that replaces every value with 1.0.
  */
 class SIM_API Constant1Filter : public ConstantFilter
 {
@@ -101,7 +101,7 @@ class SIM_API Constant1Filter : public ConstantFilter
 };
 
 /**
- * This class is a no-op filter.
+ * @brief This class is a no-op filter.
  */
 class SIM_API IdentityFilter : public cNumericResultFilter
 {
@@ -110,7 +110,7 @@ class SIM_API IdentityFilter : public cNumericResultFilter
 };
 
 /**
- * Filter that outputs the sum of signal values.
+ * @brief Filter that outputs the sum of signal values.
  */
 class SIM_API SumFilter : public cNumericResultFilter
 {
@@ -123,7 +123,7 @@ class SIM_API SumFilter : public cNumericResultFilter
 };
 
 /**
- * Result filter that computes the mean of signal values
+ * @brief Result filter that computes the mean of signal values
  */
 class SIM_API MeanFilter : public cNumericResultFilter
 {
@@ -137,7 +137,7 @@ class SIM_API MeanFilter : public cNumericResultFilter
 };
 
 /**
- * Result filter that computes the minimum of signal values
+ * @brief Result filter that computes the minimum of signal values
  */
 class SIM_API MinFilter : public cNumericResultFilter
 {
@@ -150,7 +150,7 @@ class SIM_API MinFilter : public cNumericResultFilter
 };
 
 /**
- * Result filter that computes the maximum of signal values
+ * @brief Result filter that computes the maximum of signal values
  */
 class SIM_API MaxFilter : public cNumericResultFilter
 {
@@ -163,7 +163,7 @@ class SIM_API MaxFilter : public cNumericResultFilter
 };
 
 /**
- * Result filter that computes the time average of signal values
+ * @brief Result filter that computes the time average of signal values
  */
 class SIM_API TimeAverageFilter : public cNumericResultFilter
 {
@@ -179,7 +179,7 @@ class SIM_API TimeAverageFilter : public cNumericResultFilter
 };
 
 /**
- * Result filter that removes repeated values
+ * @brief Result filter that removes repeated values
  */
 class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
 {
@@ -233,7 +233,7 @@ class SIM_API ExpressionFilter : public cNumericResultFilter
 };
 
 /**
- * Result filter that computes an expression from signal values
+ * @brief Result filter that computes an expression from signal values
  */
 class SIM_API UnaryExpressionFilter : public ExpressionFilter
 {
@@ -248,7 +248,7 @@ class SIM_API UnaryExpressionFilter : public ExpressionFilter
 };
 
 /**
- * Result filter that computes an expression from multiple signal values.
+ * @brief Result filter that computes an expression from multiple signal values.
  */
 class SIM_API NaryExpressionFilter : public ExpressionFilter
 {
@@ -273,7 +273,7 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
 };
 
 /**
- * Filter that expects a cPacket and outputs its length in bytes (getByteLength()).
+ * @brief Filter that expects a cPacket and outputs its length in bytes (getByteLength()).
  */
 class SIM_API PacketBytesFilter : public cObjectResultFilter
 {
@@ -283,7 +283,7 @@ class SIM_API PacketBytesFilter : public cObjectResultFilter
 };
 
 /**
- * Filter that expects a cPacket and outputs its length in bits (getBitLength()).
+ * @brief Filter that expects a cPacket and outputs its length in bits (getBitLength()).
  */
 class SIM_API PacketBitsFilter : public cObjectResultFilter
 {
@@ -293,7 +293,7 @@ class SIM_API PacketBitsFilter : public cObjectResultFilter
 };
 
 /**
- * Filter that outputs the sum of signal values divided by the measurement
+ * @brief Filter that outputs the sum of signal values divided by the measurement
  * interval (simtime minus warmupPeriod)
  */
 class SIM_API SumPerDurationFilter : public cNumericResultFilter

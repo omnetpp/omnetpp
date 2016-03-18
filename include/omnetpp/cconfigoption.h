@@ -23,7 +23,7 @@ namespace omnetpp {
 
 
 /**
- * Describes a configuration option.
+ * @brief Describes a configuration option.
  *
  * @see Register_GlobalConfigOption(), Register_PerRunConfigOption(),
  *      Register_GlobalConfigOptionU(), Register_PerRunConfigOptionU(),

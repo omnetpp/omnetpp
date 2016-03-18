@@ -28,18 +28,18 @@ class cXMLElement;
 class cModule;
 
 /**
- * A list of XML elements. Used with cXMLElement.
+ * @brief A list of XML elements. Used with cXMLElement.
  */
 typedef std::vector<cXMLElement*> cXMLElementList;
 
 /**
- * Attributes of an XML element. Used with cXMLElement.
+ * @brief Attributes of an XML element. Used with cXMLElement.
  */
 typedef std::map<std::string,std::string> cXMLAttributeMap;
 
 
 /**
- * Represents an XML element in an XML configuration file. XML-typed
+ * @brief Represents an XML element in an XML configuration file. XML-typed
  * NED parameters are accessible as cXMLElement via the cPar::xmlValue()
  * method.
  *
@@ -73,7 +73,7 @@ class SIM_API cXMLElement
 {
   public:
     /**
-     * Base class for classes that resolve parameters ($PARAM) that occur in
+     * @brief Base class for classes that resolve parameters ($PARAM) that occur in
      * in XPath expressions to their values.
      */
     class SIM_API ParamResolver
@@ -323,7 +323,7 @@ class SIM_API cXMLElement
 };
 
 /**
- * A parameter resolver class for cXMLElement (more precisely, for
+ * @brief A parameter resolver class for cXMLElement (more precisely, for
  * cXMLElement::getElementByPath()) that, given a cModule pointer, resolves
  * the following parameters: $MODULE_FULLPATH, $MODULE_FULLNAME, $MODULE_NAME,
  * $MODULE_INDEX, $MODULE_ID; $PARENTMODULE_FULLPATH etc;
@@ -339,7 +339,7 @@ class SIM_API ModNameParamResolver : public cXMLElement::ParamResolver
 };
 
 /**
- * A parameter resolver class for cXMLElement (more precisely, for
+ * @brief A parameter resolver class for cXMLElement (more precisely, for
  * cXMLElement::getElementByPath()), which resolves parameters from
  * a string map that contains (parametername, value) pairs.
  */

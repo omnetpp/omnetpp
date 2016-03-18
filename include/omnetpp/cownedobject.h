@@ -35,7 +35,7 @@ class cPacket;
 
 
 /**
- * Base class for several classes in the \opp library. Instances of
+ * @brief Base class for several classes in the \opp library. Instances of
  * cOwnedObjects are kept track of by the simulation kernel, and
  * may be inserted into cQueue and cArray.
  *
@@ -242,7 +242,7 @@ class SIM_API cOwnedObject : public cNamedObject
 
 
 /**
- * Base class for cOwnedObject-based classes that do not wish to support
+ * @brief Base class for cOwnedObject-based classes that do not wish to support
  * assignment and duplication.
  *
  * @ingroup SimCore

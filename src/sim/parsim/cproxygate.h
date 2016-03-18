@@ -28,7 +28,7 @@ namespace omnetpp {
 class cParsimPartition;
 
 /**
- * A gate that belongs to a cross-partition link and represents
+ * @brief A gate that belongs to a cross-partition link and represents
  * the remote gate on the local partition. cProxyGate's belong to
  * cPlaceholderModule objects, which represent a "remote" module
  * in the local partition.

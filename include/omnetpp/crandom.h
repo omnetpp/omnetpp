@@ -24,7 +24,7 @@ namespace omnetpp {
 class cRNG;
 
 /**
- * Abstract interface for random variate generator classes.
+ * @brief Abstract interface for random variate generator classes.
  *
  * @ingroup RandomNumbers
  */
@@ -64,7 +64,8 @@ class SIM_API cRandom : public cOwnedObject
 };
 
 /**
- * Generates random numbers from the uniform distribution.
+ * @brief Generates random numbers from the uniform distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>uniform(cRNG *rng, double a, double b)</code>
  * function.
@@ -104,7 +105,8 @@ class SIM_API cUniform : public cRandom
 };
 
 /**
- * Generates random numbers from the exponential distribution.
+ * @brief Generates random numbers from the exponential distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>exponential(cRNG *rng, double mean)</code> function.
  *
@@ -140,7 +142,8 @@ class SIM_API cExponential : public cRandom
 };
 
 /**
- * Generates random numbers from the normal distribution.
+ * @brief Generates random numbers from the normal distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>normal(cRNG *rng, double mean, double stddev)</code>
  * function.
@@ -180,7 +183,8 @@ class SIM_API cNormal : public cRandom
 };
 
 /**
- * Generates random numbers from the truncated normal distribution.
+ * @brief Generates random numbers from the truncated normal distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>truncnormal(cRNG *rng, double mean, double stddev)</code>
  * function.
@@ -220,7 +224,8 @@ class SIM_API cTruncNormal : public cRandom
 };
 
 /**
- * Generates random numbers from the gamma distribution.
+ * @brief Generates random numbers from the gamma distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>gamma_d(cRNG *rng, double alpha, double theta)</code>
  * function.
@@ -260,7 +265,8 @@ class SIM_API cGamma : public cRandom
 };
 
 /**
- * Generates random numbers from the beta distribution.
+ * @brief Generates random numbers from the beta distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>beta(cRNG *rng, double alpha1, double alpha2)</code>
  * function.
@@ -300,7 +306,8 @@ class SIM_API cBeta : public cRandom
 };
 
 /**
- * Generates random numbers from the Erlang distribution.
+ * @brief Generates random numbers from the Erlang distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>erlang_k(cRNG *rng, unsigned int k, double mean)</code>
  * function.
@@ -340,7 +347,8 @@ class SIM_API cErlang : public cRandom
 };
 
 /**
- * Generates random numbers from the chi-square distribution.
+ * @brief Generates random numbers from the chi-square distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>chi_square(cRNG *rng, unsigned int k)</code>
  * function.
@@ -377,7 +385,8 @@ class SIM_API cChiSquare : public cRandom
 };
 
 /**
- * Generates random numbers from Student's T distribution.
+ * @brief Generates random numbers from Student's T distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>student_t(cRNG *rng, unsigned int i)</code>
  * function.
@@ -414,7 +423,8 @@ class SIM_API cStudentT : public cRandom
 };
 
 /**
- * Generates random numbers from the Cauchy distribution.
+ * @brief Generates random numbers from the Cauchy distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>cauchy(cRNG *rng, double a, double b)</code>
  * function.
@@ -454,7 +464,8 @@ class SIM_API cCauchy : public cRandom
 };
 
 /**
- * Generates random numbers from the triangular distribution.
+ * @brief Generates random numbers from the triangular distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>triang(cRNG *rng, double a, double b, double c)</code>
  * function.
@@ -497,7 +508,8 @@ class SIM_API cTriang : public cRandom
 };
 
 /**
- * Generates random numbers from the Weibull distribution.
+ * @brief Generates random numbers from the Weibull distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>weibull(cRNG *rng, double a, double b)</code>
  * function.
@@ -537,7 +549,8 @@ class SIM_API cWeibull : public cRandom
 };
 
 /**
- * Generates random numbers from the shifted Pareto distribution.
+ * @brief Generates random numbers from the shifted Pareto distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>pareto_shifted(cRNG *rng, double a, double b, double c)</code>
  * function.
@@ -582,7 +595,8 @@ class SIM_API cParetoShifted : public cRandom
 // discrete:
 
 /**
- * Generates random numbers from the discrete uniform distribution.
+ * @brief Generates random numbers from the discrete uniform distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>intuniform(cRNG *rng, int a, int b)</code>
  * function.
@@ -622,7 +636,8 @@ class SIM_API cIntUniform : public cRandom
 };
 
 /**
- * Generates random numbers that are the results of Bernoulli trials.
+ * @brief Generates random numbers that are the results of Bernoulli trials.
+ *
  * This class is an object-oriented wrapper around the
  * <code>bernoulli(cRNG *rng, double p)</code>
  * function.
@@ -659,7 +674,8 @@ class SIM_API cBernoulli : public cRandom
 };
 
 /**
- * Generates random numbers from the binomial distribution.
+ * @brief Generates random numbers from the binomial distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>binomial(cRNG *rng, int n, double p)</code>
  * function.
@@ -699,7 +715,8 @@ class SIM_API cBinomial : public cRandom
 };
 
 /**
- * Generates random numbers from the geometric distribution.
+ * @brief Generates random numbers from the geometric distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>geometric(cRNG *rng, double p)</code>
  * function.
@@ -736,7 +753,8 @@ class SIM_API cGeometric : public cRandom
 };
 
 /**
- * Generates random numbers from the negative binomial distribution.
+ * @brief Generates random numbers from the negative binomial distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>negbinomial(cRNG *rng, int n, double p)</code>
  * function.
@@ -776,7 +794,8 @@ class SIM_API cNegBinomial : public cRandom
 };
 
 /**
- * Generates random numbers from the Poisson distribution.
+ * @brief Generates random numbers from the Poisson distribution.
+ *
  * This class is an object-oriented wrapper around the
  * <code>poisson(cRNG *rng, double lambda)</code>
  * function.

@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * A cParImpl subclass that stores a module/channel parameter of type XML.
+ * @brief A cParImpl subclass that stores a module/channel parameter of type XML.
  *
  * @ingroup Internals
  */

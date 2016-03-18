@@ -27,7 +27,7 @@ class cGate;
 
 
 /**
- * Base class for channels.
+ * @brief Base class for channels.
  *
  * @ingroup SimCore
  */
@@ -57,7 +57,8 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
   public:
     /**
-     * Allows returning multiple values from the processMessage() method.
+     * @brief Allows returning multiple values from the processMessage() method.
+     *
      * The constructor initializes all fields to zero.
      */
     struct result_t
@@ -69,7 +70,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     };
 
     /**
-     * Signal value that accompanies the "messageSent" signal.
+     * @brief Signal value that accompanies the "messageSent" signal.
      */
     class MessageSentSignalValue : public cITimestampedValue, public cObject
     {
@@ -323,7 +324,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
 
 /**
- * Channel with zero propagation delay, zero transmission delay (infinite
+ * @brief Channel with zero propagation delay, zero transmission delay (infinite
  * datarate), and always enabled.
  *
  * @ingroup SimCore

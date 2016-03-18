@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * A function that can be used with cDynamicExpression.
+ * @brief A function that can be used with cDynamicExpression.
  *
  * @see cNEDFunction, Define_NED_Function().
  * @ingroup EnumsTypes
@@ -35,7 +35,7 @@ typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc
 
 
 /**
- * Registration class for extending NED with new functions.
+ * @brief Registration class for extending NED with new functions.
  *
  * Objects of this class are usually created via the Define_NED_Function() macro.
  *

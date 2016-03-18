@@ -24,7 +24,7 @@ namespace omnetpp {
 
 
 /**
- * The class behind the createOne() function and the Register_Class() macro.
+ * @brief The class behind the createOne() function and the Register_Class() macro.
  * Each instance is a factory for a particular class: it knows how to create
  * an object of that class.
  *
@@ -139,14 +139,14 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
  */
 //@{
 /**
- * Shortcut to cObjectFactory::createOne().
+ * @brief Shortcut to cObjectFactory::createOne().
  */
 inline cObject *createOne(const char *classname) {
     return cObjectFactory::createOne(classname);
 }
 
 /**
- * Shortcut to cObjectFactory::createOneIfClassIsKnown().
+ * @brief Shortcut to cObjectFactory::createOneIfClassIsKnown().
  */
 inline cObject *createOneIfClassIsKnown(const char *classname) {
     return cObjectFactory::createOneIfClassIsKnown(classname);

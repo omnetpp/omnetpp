@@ -23,7 +23,7 @@ namespace omnetpp {
 
 
 /**
- * A queue class specialized for cPacket objects. The added value
+ * @brief A queue class specialized for cPacket objects. The added value
  * is that this class keeps track of the total queue length in bits
  * as well.
  *

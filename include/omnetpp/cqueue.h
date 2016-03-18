@@ -22,7 +22,7 @@ namespace omnetpp {
 
 
 /**
- * Type for comparison functions for cObject. Return value should be:
+ * @brief Type for comparison functions for cObject. Return value should be:
  * - less than zero if a < b
  * - greater than zero if a > b
  * - zero if a == b
@@ -33,7 +33,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 
 /**
- * Queue class for objects derived from cObject. The default behaviour of
+ * @brief Queue class for objects derived from cObject. The default behaviour of
  * cQueue is a FIFO: you insert elements at the back using insert(), and
  * remove them at the front using pop().
  *
@@ -61,7 +61,7 @@ class SIM_API cQueue : public cOwnedObject
 
   public:
     /**
-     * Walks along a cQueue.
+     * @brief Walks along a cQueue.
      */
     class Iterator
     {

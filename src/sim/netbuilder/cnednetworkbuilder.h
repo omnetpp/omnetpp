@@ -38,7 +38,7 @@ class cChannel;
 
 
 /**
- * Stateless object to assist in building the network, based on NED files.
+ * @brief Stateless object to assist in building the network, based on NED files.
  *
  * @ingroup NetworkBuilder
  */

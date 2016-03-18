@@ -37,7 +37,7 @@ class cStatistic;
 
 
 /**
- * Common base for module and channel classes: cModule and cChannel.
+ * @brief Common base for module and channel classes: cModule and cChannel.
  * cComponent provides parameters, properties and RNG mapping.
  *
  * @ingroup SimCore

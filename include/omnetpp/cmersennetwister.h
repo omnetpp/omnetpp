@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * Wraps the Mersenne Twister RNG by Makoto Matsumoto and Takuji Nishimura.
+ * @brief Wraps the Mersenne Twister RNG by Makoto Matsumoto and Takuji Nishimura.
  * Cycle length is 2^19937-1, and 623-dimensional equidistribution property
  * is assured.
  *

@@ -24,7 +24,7 @@
 namespace omnetpp {
 
 /**
- * Expects a -p<procId>,<numPartitions> command line argument, and parses it
+ * @brief Expects a -p<procId>,<numPartitions> command line argument, and parses it
  * into the variables passed. Throws exception on error.
  */
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions,

@@ -29,7 +29,7 @@ class cProperties;
 class cComponent;
 
 /**
- * Represents a module or channel parameter.
+ * @brief Represents a module or channel parameter.
  *
  * When a module or channel is created, parameter objects are added
  * automatically, based on the NED declaration of the module/channel.

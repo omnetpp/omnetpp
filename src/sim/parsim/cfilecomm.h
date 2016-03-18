@@ -28,7 +28,7 @@ namespace omnetpp {
 
 
 /**
- * Implementation of the communications layer which works via files.
+ * @brief Implementation of the communications layer which works via files.
  * Every message is created as a file in a communications directory.
  *
  * It is VERY slow, and only useful for understanding, debugging or

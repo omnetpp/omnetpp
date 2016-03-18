@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * A minimalistic XPath interpreter.
+ * @brief A minimalistic XPath interpreter.
  */
 class MiniXPath
 {

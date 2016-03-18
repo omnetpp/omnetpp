@@ -45,31 +45,31 @@ enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FI
  */
 //@{
 /**
- * Same as the standard strlen() function, except that does not crash
+ * @brief Same as the standard strlen() function, except that does not crash
  * on nullptr but returns 0.
  */
 inline int opp_strlen(const char *);
 
 /**
- * Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
+ * @brief Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
  * strings it returns nullptr.
  */
 inline char *opp_strdup(const char *);
 
 /**
- * Same as the standard strcpy() function, except that nullptr as the
+ * @brief Same as the standard strcpy() function, except that nullptr as the
  * second argument is treated as an empty string ("").
  */
 inline char *opp_strcpy(char *,const char *);
 
 /**
- * Same as the standard strcmp() function, except that nullptr is treated
+ * @brief Same as the standard strcmp() function, except that nullptr is treated
  * exactly as an empty string ("").
  */
 inline int opp_strcmp(const char *, const char *);
 
 /**
- * Copies src string into desc, and if its length would exceed maxlen,
+ * @brief Copies src string into desc, and if its length would exceed maxlen,
  * it is truncated with an ellipsis. For example, <tt>opp_strprettytrunc(buf,
  * "long-long",6)</tt> yields <tt>"lon..."</tt>.
  */
@@ -85,7 +85,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
 
 
 /**
- * Denotes module class member function as callable from other modules.
+ * @brief Denotes module class member function as callable from other modules.
  *
  * Usage: <tt>Enter_Method(fmt, arg1, arg2...);</tt>
  *
@@ -106,7 +106,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
 #define Enter_Method  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
 
 /**
- * Denotes module class member function as callable from other modules.
+ * @brief Denotes module class member function as callable from other modules.
  * This macro is similar to the Enter_Method() macro, only it does not animate
  * the call on the GUI; the call is still recorded into the the event log file.
  *
@@ -124,7 +124,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
 #define Enter_Method_Silent  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
 
 /**
- * The constructor switches the context to the given component, and the
+ * @brief The constructor switches the context to the given component, and the
  * destructor restores the original context.
  *
  * @see cSimulation::getContextModule(), cSimulation::setContextModule()
@@ -147,7 +147,7 @@ class SIM_API cContextSwitcher
 };
 
 /**
- * Internal class. May only be used via the Enter_Method() and Enter_Method_Silent() macros!
+ * @brief Internal class. May only be used via the Enter_Method() and Enter_Method_Silent() macros!
  * @ingroup Internals
  */
 class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
@@ -182,7 +182,7 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
 };
 
 /**
- * The constructor switches the context type, and the destructor restores
+ * @brief The constructor switches the context type, and the destructor restores
  * the original context type.
  *
  * @see cSimulation::getContextModule(), cSimulation::setContextModule()

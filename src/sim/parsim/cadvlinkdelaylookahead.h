@@ -26,7 +26,7 @@
 namespace omnetpp {
 
 /**
- * Lookahead calculation based on inter-partition link delays only.
+ * @brief Lookahead calculation based on inter-partition link delays only.
  *
  * @ingroup Parsim
  */

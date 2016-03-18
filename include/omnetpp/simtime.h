@@ -30,7 +30,7 @@ class cPar;
 #define INT64_MAX_DBL  9.22337203685e18
 
 /**
- * Enum for simulation time base-10 exponents.
+ * @brief Enum for simulation time base-10 exponents.
  */
 enum SimTimeUnit
 {
@@ -43,7 +43,7 @@ enum SimTimeUnit
 };
 
 /**
- * int64_t-based, fixed-point simulation time. Precision is determined by a scale
+ * @brief int64_t-based, fixed-point simulation time. Precision is determined by a scale
  * exponent, which is global (shared by all SimTime instances), and falls in
  * the range -18..0. For example, a scale exponent of -6 means microsecond
  * precision.

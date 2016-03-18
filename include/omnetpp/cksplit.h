@@ -25,7 +25,7 @@ namespace omnetpp {
 
 
 /**
- * Implements k-split, an adaptive histogram-like density estimation
+ * @brief Implements k-split, an adaptive histogram-like density estimation
  * algorithm.
  *
  * @ingroup Statistics
@@ -40,7 +40,7 @@ class SIM_API cKSplit : public cDensityEstBase
     enum { K = 2 };
 
     /**
-     * Supporting struct for cKSplit. Represents one grid in the k-split
+     * @brief Supporting struct for cKSplit. Represents one grid in the k-split
      * data structure.
      */
     struct Grid
@@ -65,7 +65,7 @@ class SIM_API cKSplit : public cDensityEstBase
     typedef double (*DivFunc)(const cKSplit&, cKSplit::Grid&, double, double *);
 
     /**
-     * Walks along cells of the distribution stored in a cKSplit object.
+     * @brief Walks along cells of the distribution stored in a cKSplit object.
      */
     class Iterator
     {

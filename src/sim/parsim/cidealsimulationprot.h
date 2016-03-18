@@ -28,7 +28,7 @@ namespace omnetpp {
 class cCommBuffer;
 
 /**
- * Implements the Ideal Simulation Protocol, described in the paper
+ * @brief Implements the Ideal Simulation Protocol, described in the paper
  * "Performance Evaluation of Conservative Algoritms in Parallel
  * Simulation Languages" by Bagrodia et al.
 

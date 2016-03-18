@@ -22,7 +22,7 @@ namespace omnetpp {
 
 
 /**
- * Base class for histogram classes. It adds a vector of counters to
+ * @brief Base class for histogram classes. It adds a vector of counters to
  * cDensityEstBase.
  *
  * @ingroup Statistics
@@ -127,7 +127,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
 
 /**
- * Implements an equidistant histogram that can operate in two modes.
+ * @brief Implements an equidistant histogram that can operate in two modes.
  * In INTEGERS mode, cell boundaries are whole numbers; in DOUBLES mode,
  * they can be real numbers. The operating mode can be chosen with a
  * constructor argument or with the setMode() method; the default behavior
@@ -326,7 +326,7 @@ class SIM_API cHistogram : public cHistogramBase
 
 
 /**
- * Equidistant histogram for integers. This class is just a cHistogram
+ * @brief Equidistant histogram for integers. This class is just a cHistogram
  * preconfigured for collecting integers (MODE_INTEGERS).
  *
  * @ingroup Statistics
@@ -389,7 +389,7 @@ class SIM_API cLongHistogram : public cHistogram
 
 
 /**
- * Equidistant histogram for doubles. This class is just a cHistogram
+ * @brief Equidistant histogram for doubles. This class is just a cHistogram
  * preconfigured for collecting doubles (MODE_DOUBLES).
  *
  * @ingroup Statistics

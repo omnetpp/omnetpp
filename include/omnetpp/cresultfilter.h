@@ -27,7 +27,7 @@ namespace omnetpp {
 class cResultFilter;
 
 /**
- * Registers a result filter. The class must be a subclass of cResultFilter.
+ * @brief Registers a result filter. The class must be a subclass of cResultFilter.
  * Registered result filters can be used in the <tt>source=</tt> and
  * <tt>record=</tt> attributes of <tt>\@statistic</tt> properties in NED files,
  * and with the <tt>**.result-recording-modes=</tt> configuration option.
@@ -41,7 +41,7 @@ class cResultFilter;
 
 
 /**
- * Base class for result filters. Result filters map ONE SIGNAL to ONE SIGNAL
+ * @brief Base class for result filters. Result filters map ONE SIGNAL to ONE SIGNAL
  * (i.e. vector-to-vector one-to-one mapping), and accept several listeners
  * (delegates). Result filters do not record anything -- that is left to result
  * recorders.
@@ -72,7 +72,7 @@ class SIM_API cResultFilter : public cResultListener
 };
 
 /**
- * Base class for filters that expect to receive an numeric value.
+ * @brief Base class for filters that expect to receive an numeric value.
  * This class overrides all other receiveSignal() methods to throw an exception,
  * and delegates numeric types to a common (actually, two common) methods.
  *
@@ -95,7 +95,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
 };
 
 /**
- * Base class for filters that expect to receive an object.
+ * @brief Base class for filters that expect to receive an object.
  * This class overrides all other receiveSignal() methods
  * to throw an exception.
  *
@@ -113,7 +113,7 @@ class SIM_API cObjectResultFilter : public cResultFilter
 };
 
 /**
- * Registers a cResultFilter.
+ * @brief Registers a cResultFilter.
  *
  * @ingroup Internals
  */

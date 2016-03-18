@@ -31,7 +31,7 @@ class cNMPLookahead;
 
 
 /**
- * Implements the "null message algorithm".
+ * @brief Implements the "null message algorithm".
  * Lookahead calculation is encapsulated into a separate object,
  * subclassed from cNMPLookahead.
  *

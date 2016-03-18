@@ -28,7 +28,7 @@
 #endif
 
 /**
- * simtime_t: simulation time
+ * @brief simtime_t: simulation time
  */
 typedef omnetpp::SimTime   simtime_t;
 

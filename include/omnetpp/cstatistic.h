@@ -27,7 +27,7 @@ class cAccuracyDetection;
 
 
 /**
- * cStatistic is an abstract class for computing statistical properties of
+ * @brief cStatistic is an abstract class for computing statistical properties of
  * a random variable.  It subclasses from cRandom, because instances are
  * able to generate random variates from the estimated distribution.
  *

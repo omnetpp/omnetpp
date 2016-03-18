@@ -27,7 +27,7 @@
 namespace omnetpp {
 
 /**
- * In distributed parallel simulation, modules of the network
+ * @brief In distributed parallel simulation, modules of the network
  * are distributed across partitions.
  *
  * Represents a module which was instantiated on a remote partition.

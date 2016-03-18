@@ -27,7 +27,7 @@ namespace omnetpp {
 
 
 /**
- * Utility class to calculate the hash of some data.
+ * @brief Utility class to calculate the hash of some data.
  *
  * We are trying to achieve that the same calls gives the same hash
  * on a 32-bit machine and on a 64-bit machine. Longs can be either 32-bit or

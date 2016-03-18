@@ -24,7 +24,7 @@ namespace omnetpp {
 
 
 /**
- * Implements the P<SUP>2</SUP> algorithm, which calculates quantile values
+ * @brief Implements the P<SUP>2</SUP> algorithm, which calculates quantile values
  * without storing the observations.
  *
  * @ingroup Statistics

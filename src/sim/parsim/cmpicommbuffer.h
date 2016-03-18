@@ -29,7 +29,7 @@ namespace omnetpp {
 
 
 /**
- * Communication buffer that wraps MPI_Pack() and MPI_Unpack() functions.
+ * @brief Communication buffer that wraps MPI_Pack() and MPI_Unpack() functions.
  *
  * @ingroup Parsim
  */

@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * A signal which is fired before simulation model changes such as module
+ * @brief A signal which is fired before simulation model changes such as module
  * creation or connection creation. The signals carry data objects that
  * describe the type and details the change. The data objects are subclassed
  * from cModelChangeNotification, and begin with the prefix "cPre".
@@ -54,7 +54,7 @@ namespace omnetpp {
 SIM_API extern simsignal_t PRE_MODEL_CHANGE;
 
 /**
- * A signal which is fired after simulation model changes such as module
+ * @brief A signal which is fired after simulation model changes such as module
  * creation or connection creation. The signals carry data objects that
  * describe the type and details the change. The data objects are subclassed
  * from cModelChangeNotification, and begin with the prefix "cPost".
@@ -100,7 +100,7 @@ SIM_API extern simsignal_t PRE_MODEL_CHANGE;
 SIM_API extern simsignal_t POST_MODEL_CHANGE;
 
 /**
- * Common base class for data objects that accompany PRE_MODEL_CHANGE
+ * @brief Common base class for data objects that accompany PRE_MODEL_CHANGE
  * and POST_MODEL_CHANGE notifications (signals).
  *
  * @ingroup Signals SimCore
@@ -110,7 +110,7 @@ class SIM_API cModelChangeNotification : public cObject, noncopyable
 };
 
 /**
- * Fired at the top of cModuleType::create(); fields contain the cModuleType
+ * @brief Fired at the top of cModuleType::create(); fields contain the cModuleType
  * object, and the arguments of the create() method call.
  *
  * @ingroup Signals
@@ -126,7 +126,7 @@ class SIM_API cPreModuleAddNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the end of cModuleType::create(); at that stage the module is
+ * @brief Fired at the end of cModuleType::create(); at that stage the module is
  * already created, its gates and parameters are added and it is inserted
  * into the model, but it is not yet initialized nor its submodules
  * are created yet.
@@ -140,7 +140,7 @@ class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the top of cModule::deleteModule(). The module still exists
+ * @brief Fired at the top of cModule::deleteModule(). The module still exists
  * at this point. Note that this notification is also fired when the
  * network is being deleted after simulation completion.
  *
@@ -153,7 +153,7 @@ class SIM_API cPreModuleDeleteNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the end of cModule::deleteModule(). The module object no longer
+ * @brief Fired at the end of cModule::deleteModule(). The module object no longer
  * exists at this point, and its submodules have also been deleted.
  * Fields include properties of the deleted module. It also includes the
  * module pointer (in case it serves as a key in some user data structure),
@@ -174,7 +174,7 @@ class SIM_API cPostModuleDeleteNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the top of cModule::changeParentTo(), before any changes have
+ * @brief Fired at the top of cModule::changeParentTo(), before any changes have
  * been done.
  *
  * @ingroup Signals
@@ -187,7 +187,7 @@ class SIM_API cPreModuleReparentNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the end of cModule::changeParentTo().
+ * @brief Fired at the end of cModule::changeParentTo().
  *
  * @ingroup Signals
  */
@@ -199,7 +199,7 @@ class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired at the top of cModule::addGate(), that is,
+ * @brief This notification is fired at the top of cModule::addGate(), that is,
  * when a gate or gate vector is added to the module.
  *
  * Note: this notification is fired for the gate or gate vector as a
@@ -222,7 +222,7 @@ class SIM_API cPreGateAddNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired at the bottom of cModule::addGate(), that is,
+ * @brief This notification is fired at the bottom of cModule::addGate(), that is,
  * when a gate or gate vector was added to the module.
  *
  * Note: this notification is fired for the gate or gate vector as a
@@ -243,7 +243,7 @@ class SIM_API cPostGateAddNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the top of cModule::deleteGate(). The gate or gate vector still
+ * @brief Fired at the top of cModule::deleteGate(). The gate or gate vector still
  * exists at this point.
  *
  * Note: this notification is fired for the gate or gate vector as a
@@ -261,7 +261,7 @@ class SIM_API cPreGateDeleteNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the end of cModule::deleteGate(). The gate or gate vector
+ * @brief Fired at the end of cModule::deleteGate(). The gate or gate vector
  * no longer exists at this point.
  *
  * Note: this notification is fired for the gate or gate vector as a
@@ -284,7 +284,7 @@ class SIM_API cPostGateDeleteNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the top of cModule::setGateSize(). Note that other cModule methods
+ * @brief Fired at the top of cModule::setGateSize(). Note that other cModule methods
  * used for implementing the NED "gate++" syntax also expand the gate vector,
  * and fire this notification. These methods are getOrCreateFirstUnconnectedGate()
  * and getOrCreateFirstUnconnectedGatePair()).
@@ -300,7 +300,7 @@ class SIM_API cPreGateVectorResizeNotification : public cModelChangeNotification
 };
 
 /**
- * Fired at the end of cModule::setGateSize(). Note that other cModule methods
+ * @brief Fired at the end of cModule::setGateSize(). Note that other cModule methods
  * used for implementing the NED "gate++" syntax also expand the gate vector,
  * and fire this notification. These methods are getOrCreateFirstUnconnectedGate()
  * and getOrCreateFirstUnconnectedGatePair()).
@@ -316,7 +316,7 @@ class SIM_API cPostGateVectorResizeNotification : public cModelChangeNotificatio
 };
 
 /**
- * This notification is fired at the top of cGate::connectTo().
+ * @brief This notification is fired at the top of cGate::connectTo().
  * This notification is fired on the module that contains the source gate.
  * of the connection. If you wish to listen on the target gate of the
  * connection being connected, you should add the listener to the
@@ -334,7 +334,7 @@ class SIM_API cPreGateConnectNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired at the end of cGate::connectTo(), to announce that
+ * @brief This notification is fired at the end of cGate::connectTo(), to announce that
  * a connection between the given gate and its peer (gate->getNextGate())
  * has been created.
  * This notification is fired on the module that contains the source gate.
@@ -351,7 +351,7 @@ class SIM_API cPostGateConnectNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired at the top of cGate::disconnect(), to announce
+ * @brief This notification is fired at the top of cGate::disconnect(), to announce
  * that the connection between the given gate and its peer (gate->getNextGate())
  * is about to be deleted.
  * This notification is fired on the module that contains the source gate.
@@ -369,7 +369,7 @@ class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired at the end of cGate::disconnect(), to announce
+ * @brief This notification is fired at the end of cGate::disconnect(), to announce
  * that the connection between the given gates has been deleted.
  * This notification is fired on the module that contains the source gate.
  * of the connection. If you wish to listen on the target gate of the
@@ -388,7 +388,7 @@ class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
 };
 
 /**
- * Base class for path change notifications. Like gate connect/disconnect
+ * @brief Base class for path change notifications. Like gate connect/disconnect
  * notifications, they are fired when a gate is connected or disconnected;
  * the difference is that path change notifications are fired on the owner
  * modules of the start AND end gates of the path that contains the connection
@@ -413,7 +413,7 @@ class SIM_API cPathChangeNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired at the top of cGate::connectTo() on the owner
+ * @brief This notification is fired at the top of cGate::connectTo() on the owner
  * modules of the start AND end gates of the future connection path that will
  * be created when the gate gets connected.
  * See cPathChangeNotification for more details.
@@ -423,7 +423,7 @@ class SIM_API cPathChangeNotification : public cModelChangeNotification
 class SIM_API cPrePathCreateNotification : public cPathChangeNotification { };
 
 /**
- * This notification is fired at the end of cGate::connectTo() on the owner
+ * @brief This notification is fired at the end of cGate::connectTo() on the owner
  * modules of the start AND end gates of the connection path that was formed
  * when the gate was connected.
  * See cPathChangeNotification for more details.
@@ -433,7 +433,7 @@ class SIM_API cPrePathCreateNotification : public cPathChangeNotification { };
 class SIM_API cPostPathCreateNotification : public cPathChangeNotification { };
 
 /**
- * This notification is fired at the top of cGate::disconnect() on the owner
+ * @brief This notification is fired at the top of cGate::disconnect() on the owner
  * modules of the start AND end gates of the connection path that is about to
  * be cut when the gate gets connected.
  * See cPathChangeNotification for more details.
@@ -443,7 +443,7 @@ class SIM_API cPostPathCreateNotification : public cPathChangeNotification { };
 class SIM_API cPrePathCutNotification : public cPathChangeNotification { };
 
 /**
- * This notification is fired at the end of cGate::disconnect() on the owner
+ * @brief This notification is fired at the end of cGate::disconnect() on the owner
  * modules of the start AND end gates of the connection path that was cut when
  * the gate got disconnected.
  * See cPathChangeNotification for more details.
@@ -453,7 +453,7 @@ class SIM_API cPrePathCutNotification : public cPathChangeNotification { };
 class SIM_API cPostPathCutNotification : public cPathChangeNotification { };
 
 /**
- * This notification is fired before a module or channel parameter value was
+ * @brief This notification is fired before a module or channel parameter value was
  * changed.
  *
  * @ingroup Signals
@@ -465,7 +465,7 @@ class SIM_API cPreParameterChangeNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired after a module or channel parameter value was
+ * @brief This notification is fired after a module or channel parameter value was
  * changed.
  *
  * @ingroup Signals
@@ -477,7 +477,7 @@ class SIM_API cPostParameterChangeNotification : public cModelChangeNotification
 };
 
 /**
- * This notification is fired before a display string gets changed.
+ * @brief This notification is fired before a display string gets changed.
  *
  * @ingroup Signals
  */
@@ -488,7 +488,7 @@ class SIM_API cPreDisplayStringChangeNotification : public cModelChangeNotificat
 };
 
 /**
- * This notification is fired after a display string gets changed.
+ * @brief This notification is fired after a display string gets changed.
  *
  * @ingroup Signals
  */

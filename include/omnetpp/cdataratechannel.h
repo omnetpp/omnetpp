@@ -23,7 +23,7 @@ namespace omnetpp {
 
 
 /**
- * Channel that models delay, bit error rate and data rate.
+ * @brief Channel that models delay, bit error rate and data rate.
  *
  * @ingroup SimCore
  */

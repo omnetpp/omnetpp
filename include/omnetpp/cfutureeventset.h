@@ -23,7 +23,7 @@ namespace omnetpp {
 class cEvent;
 
 /**
- * Abstract base class for the future event set (FES), a central data structure
+ * @brief Abstract base class for the future event set (FES), a central data structure
  * for discrete event simulation. FES is also known as FEL (future event list).
  *
  * @see cSimulation::getFES()

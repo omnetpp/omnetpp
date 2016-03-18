@@ -314,8 +314,9 @@ foreach $element (@elements)
     $decl =~ s/ *$//mg;
 
     print H "/**\n";
-    print H " * GENERATED CLASS. Represents the \\<$element\\> XML element in memory. DTD declaration:\n";
+    print H " * \@brief GENERATED CLASS. Represents the \\<$element\\> XML element in memory.\n";
     print H " *\n";
+    print H " * DTD declaration:\n";
     print H " * <pre>\n";
     print H $decl;
     print H " * </pre>\n";

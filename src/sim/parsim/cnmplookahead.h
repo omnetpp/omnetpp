@@ -33,7 +33,7 @@ class cParsimPartition;
 
 
 /**
- * Base class of lookahead calculations for cNullMessageProtocol
+ * @brief Base class of lookahead calculations for cNullMessageProtocol
  * which implements the "null message algorithm".
  *
  * @ingroup Parsim

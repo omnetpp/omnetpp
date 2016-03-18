@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * Common base class for density estimation classes. Provides several
+ * @brief Common base class for density estimation classes. Provides several
  * pure virtual functions, so it is an abstract class, no instances
  * can be created.
  *
@@ -67,7 +67,7 @@ class SIM_API cDensityEstBase : public cStdDev
 {
   public:
     /**
-     * Constants for histogram range_mode
+     * @brief Constants for histogram range_mode
      */
     enum RangeMode {
         RANGE_AUTO,      // automatic range setup, using precollected values and range extension (the default)
@@ -78,7 +78,7 @@ class SIM_API cDensityEstBase : public cStdDev
     };
 
     /**
-     * Information about a cell. This struct is not used internally by
+     * @brief Information about a cell. This struct is not used internally by
      * histogram and histogram-like classes, only to return information
      * to the user.
      */

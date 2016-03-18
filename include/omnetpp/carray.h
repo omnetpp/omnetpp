@@ -22,7 +22,7 @@ namespace omnetpp {
 
 
 /**
- * Container object that holds objects derived from cObject.
+ * @brief Container object that holds objects derived from cObject.
  * cArray stores the pointers of the objects inserted instead of making copies.
  * cArray works as an array, but if it gets full, it grows automatically by
  * a specified delta.
@@ -39,7 +39,7 @@ class SIM_API cArray : public cOwnedObject
 {
   public:
     /**
-     * Iterates through elements in a cArray, skipping holes (slots containing
+     * @brief Iterates through elements in a cArray, skipping holes (slots containing
      * nullptr).
      *
      * Usage:

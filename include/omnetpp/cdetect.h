@@ -25,20 +25,20 @@ namespace omnetpp {
 class cStatistic;
 
 /**
- * Prototype for callback functions used by a cTransientDetection object.
+ * @brief Prototype for callback functions used by a cTransientDetection object.
  * @ingroup EnumsTypes
  */
 typedef void (*PostTDFunc)(cTransientDetection *, void *);
 
 /**
- * Prototype for callback functions used by a cAccuracyDetection object.
+ * @brief Prototype for callback functions used by a cAccuracyDetection object.
  * @ingroup EnumsTypes
  */
 typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 
 
 /**
- * Virtual base class for transient detection classes.
+ * @brief Virtual base class for transient detection classes.
  *
  * @ingroup Statistics
  */
@@ -127,7 +127,7 @@ class SIM_API cTransientDetection : public cOwnedObject
 //----
 
 /**
- * Virtual base class for result accuracy detection classes.
+ * @brief Virtual base class for result accuracy detection classes.
  *
  * @ingroup Statistics
  */
@@ -219,7 +219,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
 //----
 
 /**
- * A transient detection algorithm. Uses sliding window approach
+ * @brief A transient detection algorithm. Uses sliding window approach
  * with two windows, and checks the difference of the two averages
  * to see if the transient period is over.
  *
@@ -327,7 +327,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 //----
 
 /**
- * An algorithm for result accuracy detection. The actual algorithm:
+ * @brief An algorithm for result accuracy detection. The actual algorithm:
  * divide the standard deviation by the square of the number of values
  * and check if this is small enough.
  *

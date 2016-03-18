@@ -37,7 +37,7 @@ class cObjectFactory;
 
 
 /**
- * Common base class for cModuleType and cChannelType.
+ * @brief Common base class for cModuleType and cChannelType.
  *
  * The getName() method returns the unqualified name (without namespace, e.g.
  * "Queue"), and getFullName() returns the qualified name (with namespace,
@@ -174,7 +174,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
 
 /**
- * Abstract class for creating a module of a specific type.
+ * @brief Abstract class for creating a module of a specific type.
  *
  * A cModuleType object exist for each module type (simple or compound).
  *
@@ -295,7 +295,7 @@ class SIM_API cModuleType : public cComponentType
 
 
 /**
- * Abstract base class for creating a channel of a given type.
+ * @brief Abstract base class for creating a channel of a given type.
  *
  * @ingroup Internals
  */

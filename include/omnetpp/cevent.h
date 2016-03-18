@@ -22,7 +22,7 @@ namespace omnetpp {
 
 
 /**
- * Represents an event in the discrete event simulator. When events are scheduled,
+ * @brief Represents an event in the discrete event simulator. When events are scheduled,
  * they are inserted into the future events set (FES) where they are (conceptually)
  * stored in timestamp (="arrival time") order. Events are removed from the FES one
  * by one, and their execute() methods are called. execute() should be overridden

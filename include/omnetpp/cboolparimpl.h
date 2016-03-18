@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * A cParImpl subclass that stores a module/channel parameter
+ * @brief A cParImpl subclass that stores a module/channel parameter
  * of the type bool.
  *
  * @ingroup Internals

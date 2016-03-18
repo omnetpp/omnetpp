@@ -23,7 +23,8 @@ namespace omnetpp {
 class cConfiguration;
 
 /**
- * Abstract base class for configuration readers for SectionBasedConfiguration.
+ * @brief Abstract base class for configuration readers for SectionBasedConfiguration.
+ *
  * This class presents configuration contents as key-value pairs grouped
  * into sections. This class does not try to make sense of section/key names.
  *
@@ -34,7 +35,7 @@ class cConfigurationReader
 {
   public:
     /**
-     * Abstract base class for representing a key-value pair in the configuration.
+     * @brief Abstract base class for representing a key-value pair in the configuration.
      */
     class KeyValue {
       public:

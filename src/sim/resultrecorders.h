@@ -29,7 +29,7 @@ using omnetpp::common::POSITIVE_INFINITY;
 using omnetpp::common::NEGATIVE_INFINITY;
 
 /**
- * Listener for recording a signal to an output vector
+ * @brief Listener for recording a signal to an output vector
  */
 class SIM_API VectorRecorder : public cNumericResultRecorder
 {
@@ -45,7 +45,7 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording the count of signal values. Signal values do not need
+ * @brief Listener for recording the count of signal values. Signal values do not need
  * to be numeric to be counted.
  */
 class SIM_API CountRecorder : public cResultRecorder
@@ -65,7 +65,7 @@ class SIM_API CountRecorder : public cResultRecorder
 };
 
 /**
- * Listener for recording the last signal value
+ * @brief Listener for recording the last signal value
  */
 class SIM_API LastValueRecorder : public cNumericResultRecorder
 {
@@ -79,7 +79,7 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording the sum of signal values
+ * @brief Listener for recording the sum of signal values
  */
 class SIM_API SumRecorder : public cNumericResultRecorder
 {
@@ -93,7 +93,7 @@ class SIM_API SumRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording the mean of signal values
+ * @brief Listener for recording the mean of signal values
  */
 class SIM_API MeanRecorder : public cNumericResultRecorder
 {
@@ -108,7 +108,7 @@ class SIM_API MeanRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording the minimum of signal values
+ * @brief Listener for recording the minimum of signal values
  */
 class SIM_API MinRecorder : public cNumericResultRecorder
 {
@@ -122,7 +122,7 @@ class SIM_API MinRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording the maximum of signal values
+ * @brief Listener for recording the maximum of signal values
  */
 class SIM_API MaxRecorder : public cNumericResultRecorder
 {
@@ -136,7 +136,7 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording the time average of signal values
+ * @brief Listener for recording the time average of signal values
  */
 class SIM_API TimeAverageRecorder : public cNumericResultRecorder
 {
@@ -153,7 +153,7 @@ class SIM_API TimeAverageRecorder : public cNumericResultRecorder
 };
 
 /**
- * Listener for recording signal values via a cStatistic
+ * @brief Listener for recording signal values via a cStatistic
  */
 class SIM_API StatisticsRecorder : public cNumericResultRecorder, private cObject /*so it can own the statistic object*/
 {
@@ -181,7 +181,7 @@ class SIM_API HistogramRecorder : public StatisticsRecorder
 };
 
 /**
- * Result recorder that remembers the last value of a signal,
+ * @brief Result recorder that remembers the last value of a signal,
  * and in finish() it evaluates an expression and saves the result.
  */
 //TODO: make variants that eat 2 signals, and N signals

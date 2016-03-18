@@ -26,7 +26,7 @@ class  cXMLElement;
 
 
 /**
- * cMsgPar objects store a (string, bool, double, etc) value, and
+ * @brief cMsgPar objects store a (string, bool, double, etc) value, and
  * can be attached to cMessage objects.
  *
  * <b>Note:</b> Before version 3.0, the cPar class was used for both

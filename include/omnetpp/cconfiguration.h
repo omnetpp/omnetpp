@@ -25,12 +25,12 @@ namespace omnetpp {
 class cConfigOption;
 
 /**
- * "General", the name of the default configuration
+ * @brief "General", the name of the default configuration
  */
 #define CFGNAME_GENERAL "General"
 
 /**
- * Predefined configuration variables; see cConfigurationEx::getVariable().
+ * @brief Predefined configuration variables; see cConfigurationEx::getVariable().
  * Variables can be referred to using the ${...} syntax in the configuration.
  */
 //@{
@@ -52,7 +52,7 @@ class cConfigOption;
 //@}
 
 /**
- * Represents the configuration, as accessed by the simulation kernel.
+ * @brief Represents the configuration, as accessed by the simulation kernel.
  * The configuration object can be accessed with getEnvir()->getConfig().
  *
  * This class logically belongs to the cEnvir facade. (cEnvir presents
@@ -72,7 +72,7 @@ class SIM_API cConfiguration : public cObject
 {
   public:
     /**
-     * Describes a configuration entry.
+     * @brief Describes a configuration entry.
      */
     class KeyValue {
       public:
@@ -258,7 +258,7 @@ class SIM_API cConfiguration : public cObject
 
 
 /**
- * Represents a configuration suitable for use with the Envir library.
+ * @brief Represents a configuration suitable for use with the Envir library.
  * This class extends cConfiguration with the following functionality:
  *
  * <ul>

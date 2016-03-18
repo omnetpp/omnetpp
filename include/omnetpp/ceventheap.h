@@ -21,7 +21,7 @@
 namespace omnetpp {
 
 /**
- * Default implementation for the future event set. The underlying data structure
+ * @brief Default implementation for the future event set. The underlying data structure
  * is (binary) heap, which provides reliable performance for most workloads.
  * A worst case for heap is insertion at the front (i.e. for the current simulation
  * time); it is actually quite common, due to the abundance of zero-delay links in models.

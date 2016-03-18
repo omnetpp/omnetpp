@@ -29,7 +29,7 @@ class cObject;
 class cComponent;
 
 /**
- * Exception class.
+ * @brief Exception class.
  *
  * @ingroup SimSupport
  */
@@ -214,7 +214,7 @@ class SIM_API cException : public std::exception
 };
 
 /**
- * Thrown when the simulation is completed.
+ * @brief Thrown when the simulation is completed.
  * For example, cSimpleModule::endSimulation() throws this exception.
  * Statistics object may also throw this exception to
  * signal that accuracy of simulation results has reached the desired level.
@@ -256,7 +256,7 @@ class SIM_API cTerminationException : public cException
 };
 
 /**
- * Thrown when the simulation kernel or other components detect a runtime
+ * @brief Thrown when the simulation kernel or other components detect a runtime
  * error. For example, cSimpleModule::scheduleAt() throws this exception when
  * the specified simulation time is in the past, or the message pointer
  * is nullptr.
@@ -312,7 +312,7 @@ class SIM_API cRuntimeError : public cException
 };
 
 /**
- * This exception is only thrown from cSimpleModule::deleteModule()
+ * @brief This exception is only thrown from cSimpleModule::deleteModule()
  * if the current module is to be deleted, in order to exit that module
  * immediately.
  *
@@ -345,7 +345,7 @@ class SIM_API cDeleteModuleException : public cException
 };
 
 /**
- * Used internally when deleting an activity() simple module.
+ * @brief Used internally when deleting an activity() simple module.
  * Then, the coroutine running activity() is "asked" to throw a
  * cStackCleanupException to achieve stack unwinding, a side effect of
  * exceptions, in order to properly clean up activity()'s local variables.

@@ -28,7 +28,7 @@ namespace osgEarth { class Viewpoint; }
 namespace omnetpp {
 
 /**
- * Wraps an OpenSceneGraph scene, allowing 3D visualization in graphical user
+ * @brief Wraps an OpenSceneGraph scene, allowing 3D visualization in graphical user
  * interfaces that support it (currently Qtenv). This class only wraps an OSG
  * scene (as an osg::Node* pointer) and some visualization hints, other
  * tasks like setting up a 3D viewer window are taken care of by the OMNeT++

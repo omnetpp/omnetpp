@@ -27,7 +27,7 @@ class cXMLElement;
 class cDynamicExpression;
 
 /**
- * Value used during evaluating NED expressions.
+ * @brief Value used during evaluating NED expressions.
  *
  * See notes below.
  *

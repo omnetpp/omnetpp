@@ -26,7 +26,7 @@ class cComponent;
 
 
 /**
- * Common abstract base class for result filters and result recorders.
+ * @brief Common abstract base class for result filters and result recorders.
  *
  * @ingroup EnvirExtensions
  */
