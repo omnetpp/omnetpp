@@ -291,7 +291,7 @@ while ($tags =~ s|\<compound +kind="class".*?\>(.*?)\</compound\>||s)
 {
       $tag = $1;
       $tag =~ s|\<member .*?\>(.*?)\</member\>||sg;
-      if ($tag =~ m|\<name\>(.*?)\</name\>|) {$name = $1; push(@components,$name);} else {next;}
+      if ($tag =~ m|\<name\>(.*?)\</name\>|) {$name = $1; $name =~ s/^.*:://g; push(@components,$name);} else {next;}
       if ($tag =~ m|\<filename\>(.*?)\</filename\>|)  {$htmlfile{$name} = $1;}
       #print "DBG: $name, $htmlfile{$name}\n";
 }
