@@ -16,6 +16,8 @@
 // This file defines modules for documentation generation.
 // Nothing useful for the C++ compiler.
 
+namespace omnetpp {
+
 /**
  * @mainpage  \opp API Reference
  * If you are new to \opp, a good starting point for browsing
@@ -319,3 +321,6 @@
  * which is generated from the source files in <tt>src/sim/parsim</tt>
  * directory.
  */
+
+} // namespace omnetpp
+

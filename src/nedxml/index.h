@@ -16,6 +16,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+namespace omnetpp {
+
+namespace nedxml {
 
 /**
  * @mainpage \opp NEDXML API Reference
@@ -187,5 +190,7 @@
  *
  */
 
+} // namespace nedxml
 
+} // namespace omnetpp
 
