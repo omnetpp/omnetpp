@@ -319,13 +319,9 @@ proc mainWindow:createToolbar {} {
 
 proc mainWindow:createStatusbars {} {
     global help_tips
-    ttk::frame .statusbar
     ttk::frame .nexteventbar
     ttk::frame .performancebar
-
-    ttk::label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
-    ttk::label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
-    pack .networklabel .msgstatslabel -in .statusbar -anchor n -expand 1 -fill x -side left
+    ttk::frame .statusbar
 
     ttk::label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 40
     ttk::label .nextmodulelabel -relief groove -text "In: n/a" -anchor w  -width 60
@@ -338,11 +334,12 @@ proc mainWindow:createStatusbars {} {
     ttk::label .eventspersimsec -relief groove -text "Ev/simsec: n/a" -anchor w -width 20
     pack .eventspersec .simsecpersec .eventspersimsec -in .performancebar -anchor n -expand 1 -fill x -side left
 
+    ttk::label .networklabel -relief groove -text "(No network set up)" -width 40 -anchor w
+    ttk::label .msgstatslabel -relief groove -text "Msg stats: 0 scheduled / 0 existing / 0 created" -width 40 -anchor w
+    pack .networklabel .msgstatslabel -in .statusbar -anchor n -expand 1 -fill x -side left
+
     set help_tips(.eventnumlabel)   "Event number of last event"
     set help_tips(.simtimelabel)    "Simulation time of last event"
-
-    set help_tips(.networklabel)    "Current inifile configuration, run number, and network name"
-    set help_tips(.msgstatslabel)   "Number of events (messages) currently scheduled /\nNumber of existing message objects, including scheduled ones /\nTotal number of messages created since start of the simulation"
 
     set help_tips(.nexttimelabel)   "Simulation time of next event"
     set help_tips(.nexteventlabel)  "Next simulation event"
@@ -351,6 +348,9 @@ proc mainWindow:createStatusbars {} {
     set help_tips(.eventspersec)    "Performance: events processed per second"
     set help_tips(.simsecpersec)    "Relative speed: simulated seconds processed per second"
     set help_tips(.eventspersimsec) "Event density: events per simulated second"
+
+    set help_tips(.networklabel)    "Current inifile configuration, run number, and network name"
+    set help_tips(.msgstatslabel)   "Number of events (messages) currently scheduled /\nNumber of existing message objects, including scheduled ones /\nTotal number of messages created since start of the simulation"
 }
 
 proc mainWindow:createTimeline {} {
