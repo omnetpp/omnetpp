@@ -119,11 +119,11 @@ proc createOmnetppWindow {} {
     #pack .performancebar -expand 0 -fill x -side top
     pack .timeline -expand 0 -fill x -side top
 
+    pack .statusbar -expand 0 -fill x -side bottom
+
     # Create main display area
     panedwindow .main -orient horizontal -sashrelief raised
     pack .main -expand 1 -fill both -side top
-
-    pack .statusbar -expand 0 -fill x -side top
 
     panedwindow .main.left -orient vertical -sashrelief raised
     panedwindow .main.right -orient vertical -sashrelief raised
