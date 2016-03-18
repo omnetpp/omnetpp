@@ -95,7 +95,7 @@ class SIM_API cFigure : public cOwnedObject
         };
 
         /**
-         * @brief Represents an RGB color. Conversion from string exists, and accepts HTML colors (#rrggbb),
+         * @brief Represents an RGB color. Conversion from string exists, and accepts HTML colors (\#rrggbb),
          * HSB colors in a similar notation (@hhssbb), and English color names (SVG color names,
          * to be more precise.) Predefined constants for the basic colors (see BLACK, WHITE,
          * GREY, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA), as well as a collection of good dark and
