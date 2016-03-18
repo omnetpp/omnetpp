@@ -101,7 +101,7 @@ proc createOmnetppWindow {} {
     global B2 B3
 
     wm focusmodel . passive
-    wm geometry . 1000x650
+    wm geometry . 1020x650
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1
