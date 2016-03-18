@@ -34,9 +34,7 @@ namespace omnetpp {
 class SIM_API cKSplit : public cDensityEstBase
 {
   public:
-    /**
-     * K is the grid size of the algorithm. It must be 2, or a >=3 odd number.
-     */
+    // K is the grid size of the algorithm. It must be 2, or a >=3 odd number.
     enum { K = 2 };
 
     /**
