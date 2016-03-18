@@ -16,7 +16,7 @@ else
     echo $omnetpp_root
     if [ `uname` = "Darwin" ]; then
       if [ ! -d $omnetpp_root/tools/macosx ]; then
-          echo "WARNING!!! We are on MAC OS X, but it seems that you have downloaded the Linux version of the installation package!"
+          echo "WARNING! We are on Mac OS X, but it seems that you have downloaded the Linux version of the installation package!"
       fi
       export PATH=$omnetpp_root/tools/macosx/bin:$PATH
       export QT_PLUGIN_PATH=$omnetpp_root/tools/macosx/plugins
