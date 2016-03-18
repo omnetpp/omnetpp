@@ -31,7 +31,7 @@ array set colors {
    color4 #4cb28a
    color5 #d0b48f
    color6 #80a3a7
-   color7 #4b9adb
+   color7 #ABC4D8
    color8 #948ca6
    color9 #e99b04
    colorA #e1e0d8
@@ -61,17 +61,17 @@ foreach line {
    {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube"}
    {color5  "Routing"          "routing"          "./routing"       "routing"}
    {color6  "Canvas"           "canvas"           "./canvas"        "canvas"}
-   {color6  "OpenSceneGraph Intro"         "osg-intro"         "./osg-intro"      "osg-intro"}
-   {color6  "OpenSceneGraph Earth"     "osg-earth"     "./osg-earth" "osg-earth"}
-   {color6  "OpenSceneGraph Indoor"     "osg-indoor"     "./osg-indoor" "osg-indoor"}
-   {color6  "OpenSceneGraph Satellites"     "osg-satellites"     "./osg-satellites" "osg-satellites"}
-   {color6  "CQN/ParSim"       "cqn/parsim"       "./runparsim"     "runparsim"}
-   {color6  "Routing/Parsim"   "routing/parsim"   "./runparsim -c Net60-parsim" "runparsim -c Net60-parsim"}
-   {color6  "Dyna/RealTime"    "dyna/realtime"    "./run"           "run"}
-   {color6  "Sockets/HTTP"     "sockets"          "./sockets -c HTTPExample"    "sockets -c HTTPExample"}
-   {color6  "Sockets/Telnet"   "sockets"          "./sockets -c TelnetExample"  "sockets -c TelnetExample"}
-   {color7  "Embedding"        "embedding"        "./embedding"      "embedding"}
-   {color7  "Embedding2"       "embedding2"       "./embedding2"     "embedding2"}
+   {color6  "OpenSceneGraph Intro"       "osg-intro"      "./osg-intro"       "osg-intro"}
+   {color6  "OpenSceneGraph Earth"       "osg-earth"      "./osg-earth"       "osg-earth"}
+   {color6  "OpenSceneGraph Indoor"      "osg-indoor"     "./osg-indoor"      "osg-indoor"}
+   {color6  "OpenSceneGraph Satellites"  "osg-satellites" "./osg-satellites"  "osg-satellites"}
+   {color7  "CQN/ParSim"       "cqn/parsim"       "./runparsim"     "runparsim"}
+   {color7  "Routing/Parsim"   "routing/parsim"   "./runparsim -c Net60-parsim" "runparsim -c Net60-parsim"}
+   {color7  "Dyna/RealTime"    "dyna/realtime"    "./run"           "run"}
+   {color7  "Sockets/HTTP"     "sockets"          "./sockets -c HTTPExample"    "sockets -c HTTPExample"}
+   {color7  "Sockets/Telnet"   "sockets"          "./sockets -c TelnetExample"  "sockets -c TelnetExample"}
+   {color8  "Embedding"        "embedding"        "./embedding"     "embedding"}
+   {color8  "Embedding2"       "embedding2"       "./embedding2"    "embedding2"}
 } {
    lappend samples $i
    if {[llength $line]==0} {

@@ -1,4 +1,25 @@
-This sample requires Qtenv and demonstrates how to render 3D scenes using OpenSceneGraph
-(http://www.osgearth.org). OpenSceneGraph is an open source high-performance
-3D graphics toolkit, used by application developers in fields such as visual
-simulation, games, virtual reality, scientific visualization and modeling.
+OSG Indoor Demo
+===============
+
+This is one of the example simulations that demonstrate 3D visualization in
+OMNeT++ using OpenSceneGraph and osgEarth.
+
+The model demonstrates visualizing an indoor mobility scenario. The 3D
+office model is loaded from an osgb file. Mobile nodes (walking cardboard
+box men) are also loaded from an osgb file that also includes the
+animation, and move along a path loaded from a trace file.
+
+---
+
+OpenSceneGraph (http://www.openscenegraph.org), or OSG for short, is an
+open source high-performance 3D graphics toolkit, used by application
+developers in fields such as visual simulation, games, virtual reality,
+scientific visualization and modeling.
+
+osgEarth (http://osgearth.org/) is a terrain rendering library implemented
+on top of OpenSceneGraph. osgEarth can work with many data sources
+including OpenStreetmap, Yahoo Maps, Bing Maps, MapQuest and ReadyMap, just
+to name a few.
+
+This example simulation requires the Qtenv runtime environment.
+
