@@ -317,9 +317,8 @@ class SIM_API cFigure : public cOwnedObject
         virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
         virtual const char *getRendererClassName() const = 0;
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
-
-        virtual void moveLocal(double x, double y) = 0;
-        virtual void move(double x, double y);  // recursive
+        virtual void moveLocal(double dx, double dy) = 0;
+        virtual void move(double dx, double dy);  // recursive
         virtual cCanvas *getCanvas() const;
         //@}
 
@@ -423,7 +422,7 @@ class SIM_API cGroupFigure : public cFigure
         virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
         virtual std::string info() const override;
         virtual const char *getRendererClassName() const override {return "";} // non-visual figure
-        virtual void moveLocal(double x, double y) override {}
+        virtual void moveLocal(double dx, double dy) override {}
         //@}
 };
 
@@ -463,7 +462,7 @@ class SIM_API cPanelFigure : public cFigure
         virtual std::string info() const override;
         virtual const char *getRendererClassName() const override {return "";} // non-visual figure
         virtual void updateParentTransform(Transform& transform) override;
-        virtual void moveLocal(double x, double y) override {position.translate(x,y); fireTransformChange();}
+        virtual void moveLocal(double dx, double dy) override {position.x += dx; position.y += dy; fireTransformChange();}
         //@}
 
         /** @name Figure attributes */
@@ -567,7 +566,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual cLineFigure *dup() const override  {return new cLineFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "LineFigureRenderer";}
         //@}
 
@@ -610,7 +609,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual cArcFigure *dup() const override  {return new cArcFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "ArcFigureRenderer";}
         //@}
 
@@ -665,7 +664,7 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual cPolylineFigure *dup() const override  {return new cPolylineFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "PolylineFigureRenderer";}
         //@}
 
@@ -789,7 +788,7 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         virtual cRectangleFigure *dup() const override  {return new cRectangleFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "RectangleFigureRenderer";}
         //@}
 
@@ -833,7 +832,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         virtual cOvalFigure *dup() const override  {return new cOvalFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "OvalFigureRenderer";}
         //@}
 
@@ -875,7 +874,7 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         virtual cRingFigure *dup() const override  {return new cRingFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "RingFigureRenderer";}
         //@}
 
@@ -923,7 +922,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         virtual cPieSliceFigure *dup() const override  {return new cPieSliceFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "PieSliceFigureRenderer";}
         //@}
 
@@ -976,7 +975,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual cPolygonFigure *dup() const override  {return new cPolygonFigure(*this);}
         virtual std::string info() const override;
         virtual void parse(cProperty *property) override;
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "PolygonFigureRenderer";}
         //@}
 
@@ -1069,7 +1068,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         /**
          * The move operation modifies the offset field (see getOffset()).
          */
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         virtual const char *getRendererClassName() const override {return "PathFigureRenderer";}
         //@}
 
@@ -1160,7 +1159,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         /**
          * Updates the position of the text, see getPosition().
          */
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         //@}
 
         /** @name Figure attributes */
@@ -1287,7 +1286,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         /**
          * Updates the position of the image, see getPosition().
          */
-        virtual void moveLocal(double x, double y) override;
+        virtual void moveLocal(double dx, double dy) override;
         //@}
 
         /** @name Figure attributes */

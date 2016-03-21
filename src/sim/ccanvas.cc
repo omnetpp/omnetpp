@@ -1200,11 +1200,11 @@ void cFigure::lowerToBottom()
     }
 }
 
-void cFigure::move(double x, double y)
+void cFigure::move(double dx, double dy)
 {
-    moveLocal(x, y);
+    moveLocal(dx, dy);
     for (int i = 0; i < (int)children.size(); i++)
-        children[i]->move(x, y);
+        children[i]->move(dx, dy);
 }
 
 //----
@@ -1443,12 +1443,12 @@ const char **cLineFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cLineFigure::moveLocal(double x, double y)
+void cLineFigure::moveLocal(double dx, double dy)
 {
-    start.x += x;
-    start.y += y;
-    end.x += x;
-    end.y += y;
+    start.x += dx;
+    start.y += dy;
+    end.x += dx;
+    end.y += dy;
     fireGeometryChange();
 }
 
@@ -1516,10 +1516,10 @@ const char **cArcFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cArcFigure::moveLocal(double x, double y)
+void cArcFigure::moveLocal(double dx, double dy)
 {
-    bounds.x += x;
-    bounds.y += y;
+    bounds.x += dx;
+    bounds.y += dy;
     fireGeometryChange();
 }
 
@@ -1609,11 +1609,11 @@ const char **cPolylineFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPolylineFigure::moveLocal(double x, double y)
+void cPolylineFigure::moveLocal(double dx, double dy)
 {
     for (int i = 0; i < (int)points.size(); i++) {
-        points[i].x += x;
-        points[i].y += y;
+        points[i].x += dx;
+        points[i].y += dy;
     }
     fireGeometryChange();
 }
@@ -1861,10 +1861,10 @@ const char **cRectangleFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cRectangleFigure::moveLocal(double x, double y)
+void cRectangleFigure::moveLocal(double dx, double dy)
 {
-    bounds.x += x;
-    bounds.y += y;
+    bounds.x += dx;
+    bounds.y += dy;
     fireGeometryChange();
 }
 
@@ -1936,10 +1936,10 @@ const char **cOvalFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cOvalFigure::moveLocal(double x, double y)
+void cOvalFigure::moveLocal(double dx, double dy)
 {
-    bounds.x += x;
-    bounds.y += y;
+    bounds.x += dx;
+    bounds.y += dy;
     fireGeometryChange();
 }
 
@@ -2002,10 +2002,10 @@ const char **cRingFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cRingFigure::moveLocal(double x, double y)
+void cRingFigure::moveLocal(double dx, double dy)
 {
-    bounds.x += x;
-    bounds.y += y;
+    bounds.x += dx;
+    bounds.y += dy;
     fireGeometryChange();
 }
 
@@ -2085,10 +2085,10 @@ const char **cPieSliceFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPieSliceFigure::moveLocal(double x, double y)
+void cPieSliceFigure::moveLocal(double dx, double dy)
 {
-    bounds.x += x;
-    bounds.y += y;
+    bounds.x += dx;
+    bounds.y += dy;
     fireGeometryChange();
 }
 
@@ -2181,11 +2181,11 @@ const char **cPolygonFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cPolygonFigure::moveLocal(double x, double y)
+void cPolygonFigure::moveLocal(double dx, double dy)
 {
     for (int i = 0; i < (int)points.size(); i++) {
-        points[i].x += x;
-        points[i].y += y;
+        points[i].x += dx;
+        points[i].y += dy;
     }
     fireGeometryChange();
 }
@@ -2782,9 +2782,9 @@ void cPathFigure::addClosePath()
     addItem(item);
 }
 
-void cPathFigure::moveLocal(double x, double y)
+void cPathFigure::moveLocal(double dx, double dy)
 {
-    setOffset(Point(getOffset()).translate(x, y));
+    setOffset(Point(getOffset()).translate(dx, dy));
 }
 
 void cPathFigure::setJoinStyle(JoinStyle joinStyle)
@@ -2866,10 +2866,10 @@ const char **cAbstractTextFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cAbstractTextFigure::moveLocal(double x, double y)
+void cAbstractTextFigure::moveLocal(double dx, double dy)
 {
-    position.x += x;
-    position.y += y;
+    position.x += dx;
+    position.y += dy;
     fireGeometryChange();
 }
 
@@ -3014,10 +3014,10 @@ const char **cAbstractImageFigure::getAllowedPropertyKeys() const
     return keys;
 }
 
-void cAbstractImageFigure::moveLocal(double x, double y)
+void cAbstractImageFigure::moveLocal(double dx, double dy)
 {
-    position.x += x;
-    position.y += y;
+    position.x += dx;
+    position.y += dy;
     fireGeometryChange();
 }
 
