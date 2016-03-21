@@ -36,6 +36,7 @@ class cProperties;
  * - coordinates are in canvas units (usually meters), not in pixels!
  * - coordinates are transformed with the figure's own transform plus the transforms of all ancestors
  * - a figure subtree can be hidden by calling setVisible(false)
+ * - the order of child figures also denotes drawing order (of overlapping figures, the last one will appear on top)
  * - dup() makes shallow copy (doesn't copy child figures); see dupTree() as well
  * - figures are only data storage classes, rendering is done in the back-end (e.g. Tkenv)
  *   by separate renderer classes.
@@ -266,7 +267,7 @@ class SIM_API cFigure : public cOwnedObject
         static void concatArrays(const char **dest, const char **first, const char **second);
 
     public:
-        // internal::
+        // internal:
         static Point parsePoint(const char *s); // parse Point::str() format
         static Rectangle parseRectangle(const char *s); // parse Rectangle::str() format
         static Transform parseTransform(const char *s);  // parse Transform::str() format
@@ -283,7 +284,9 @@ class SIM_API cFigure : public cOwnedObject
 
     public:
         // internal:
+        virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
         virtual const char **getAllowedPropertyKeys() const;
+        virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
@@ -299,41 +302,242 @@ class SIM_API cFigure : public cOwnedObject
     public:
         /** @name Constructors, destructor, assignment */
         //@{
+        /**
+         * Constructor.
+         */
         explicit cFigure(const char *name=nullptr);
+
+        /**
+         * Copy constructor. Child figures and the figure ID are not copied.
+         */
         cFigure(const cFigure& other) : cOwnedObject(other), tags(nullptr) {copy(other);}
+
+        /**
+         * Destructor
+         */
         virtual ~cFigure();
+
+        /**
+         * Assignment operator. It copies all data members except the object
+         * name, figure ID and child figures. (See cNamedObject's operator=()
+         * for details.)
+         */
         cFigure& operator=(const cFigure& other);
         //@}
 
         /** @name Redefined cObject member functions. */
         //@{
-        virtual cFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}  // see also dupTree()
-        virtual void forEachChild(cVisitor *v) override;
-        virtual std::string info() const override;
-        //@}
+        /**
+         * Clones the figure, ignoring its child figures. (The copy will have
+         * no children.) To clone a figure together with its figure subtree,
+         * use dupTree().
+         */
+        virtual cFigure *dup() const override {throw cRuntimeError(this, E_CANTDUP);}
 
-        /** @name Miscellaneous. */
-        //@{
-        virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
-        virtual const char *getRendererClassName() const = 0;
-        virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
-        virtual void moveLocal(double dx, double dy) = 0;
-        virtual void move(double dx, double dy);  // recursive
-        virtual cCanvas *getCanvas() const;
+        /**
+         * Calls v->visit(this) on each child figure.
+         * See cObject for more details.
+         */
+        virtual void forEachChild(cVisitor *v) override;
+
+        /**
+         * Returns a one-line string with the most characteristic data of the figure.
+         */
+        virtual std::string info() const override;
         //@}
 
         /** @name Common figure attributes. */
         //@{
+        /**
+         * Returns the unique ID of this figure object. This ID is mostly
+         * intended for internal use.
+         */
         int getId() const {return id;}
-        virtual bool isVisible() const {return visible;} // affects figure subtree, not just this very figure
+
+        /**
+         * Returns the visibility flag of the figure.
+         */
+        virtual bool isVisible() const {return visible;}
+
+        /**
+         * Sets the visibility flag of the figure. Setting the visibility flag
+         * to false will cause the whole figure subtree to be omitted from
+         * rendering.
+         */
         virtual void setVisible(bool visible) {this->visible = visible; fireStructuralChange();}
+
         /**
          * Returns the transform associated with this figure.
          */
         virtual const Transform& getTransform() const {return transform;}
+
+        /**
+         * Sets the transform associated with this figure. The transform will
+         * affect the rendering of this figure and its whole figure subtree.
+         * The transform may also be modified with the various
+         * translate(), scale(), rotate(), skewx()/skewy() methods.
+         */
         virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
-        virtual const char *getTags() const {return tags;} // returns space-separated list of tags
-        virtual void setTags(const char *tags); // accepts space-separated list of tags
+
+        /**
+         * Returns the space-separated list of the tags associated with the figure.
+         * Tags may be used in the GUI displaying a canvas for implementing
+         * layers or other kind of filtering.
+         */
+        virtual const char *getTags() const {return tags;}
+
+        /**
+         * Sets the list of tags associated with the figure. This method accepts
+         * a space-separated list of tags. (Tags themselves may not contain spaces;
+         * underscores are recommended instead where needed.)
+         */
+        virtual void setTags(const char *tags);
+        //@}
+
+        /** @name Accessing the parent figure and child figures. */
+        //@{
+        /**
+         * Returns the figure of this figure, or nullptr if it has none.
+         */
+        virtual cFigure *getParentFigure() const {return dynamic_cast<cFigure*>(getOwner());}
+
+        /**
+         * Returns the canvas object to which this figure was added, or nullptr
+         * if there is no such canvas. Note that the runtime cost of this method
+         * is proportional to the depth of this figure in the figure tree.
+         */
+        virtual cCanvas *getCanvas() const;
+
+        /**
+         * Returns the number of child figures.
+         */
+        virtual int getNumFigures() const {return children.size();}
+
+        /**
+         * Returns the kth figure in the child list. The index must be in the
+         * range 0..getNumFigures()-1. An out-of-bounds index will cause a runtime
+         * error.
+         */
+        virtual cFigure *getFigure(int pos) const;
+
+        /**
+         * Return a child figure by name, or nullptr if there is no such child figure.
+         */
+        virtual cFigure *getFigure(const char *name) const;
+
+        /**
+         * Finds the first figure with the given name among the children of this
+         * figure, and returns its index. If there is no such figure, -1 is returned.
+         */
+        virtual int findFigure(const char *name) const;
+
+        /**
+         * Finds the given figure among the children of this figure, and returns
+         * its index. If it is not found, -1 is returned.
+         */
+        virtual int findFigure(cFigure *figure) const;
+
+        /**
+         * Returns true of this figure has child figures, and false otherwise.
+         */
+        virtual bool containsFigures() const {return !children.empty();}
+
+        /**
+         * Find the first figure with the given name in this figure's subtree,
+         * including the figure itself. Returns nullptr if no such figure is found.
+         */
+        virtual cFigure *findFigureRecursively(const char *name) const;
+
+        /**
+         * Finds a figure in the subtree, given by its absolute or relative path.
+         * The path is a string of figure names separated by dots; the special
+         * module name ^ (caret) stands for the parent figure. If the path starts
+         * with a dot or caret, it is understood as relative to this figure,
+         * otherwise it is taken to mean an absolute path (i.e. relative to the
+         * root figure, see getRootFigure()). Returns nullptr if the
+         * figure was not found.
+         *
+         * Examples:
+         *   - "." means this figure;
+         *   - ".icon" means the child figure name "icon";
+         *   - ".group.label" means the "label" child of the "group" child figure;
+         *   - "^.icon" or ".^.icon" means the "icon" sibling of this figure;
+         *   - "icon" means the "icon" child of the root figure
+         *
+         * The above syntax is similar to the one used by cModule::getModuleByPath()
+         */
+        virtual cFigure *getFigureByPath(const char *path) const;
+
+        /**
+         * Remove this figure from the child list of its parent figure.
+         */
+        virtual cFigure *removeFromParent(); //TODO in wrong group...
+        //@}
+
+        /** @name Managing child figures. */
+        //@{
+        /**
+         * Appends the given figure to the list of children.
+         */
+        virtual void addFigure(cFigure *figure);
+
+        /**
+         * Inserts the given figure to the list of children at the given position.
+         */
+        virtual void addFigure(cFigure *figure, int pos);
+
+        /**
+         * Inserts the given figure into the child list after the reference figure.
+         */
+        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure);
+
+        /**
+         * Inserts the given figure into the child list before the reference figure.
+         */
+        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure);
+
+        /**
+         * Remove the given figure from the child list. An error is raised if
+         * the figure is not a child of this figure.
+         */
+        virtual cFigure *removeFigure(cFigure *figure);
+
+        /**
+         * Remove the kth figure from the child list. An error is raised if pos
+         * is not in the range 0..getNumFigures()-1.
+         */
+        virtual cFigure *removeFigure(int pos);
+        //@}
+
+        /** @name Changing the Z-order of this figure. */
+        //@{
+        /**
+         * If this figure precedes (i.e. is drawn below) the given figure
+         * in the parent figure's child list, move it directly after.
+         * An error is raised if the two figures do not share the same parent.
+         */
+        virtual void raiseAbove(cFigure *figure);
+
+        /**
+         * If this figure follows (i.e. is drawn above) the given figure
+         * in the parent figure's child list, move it directly before.
+         * An error is raised if the two figures do not share the same parent.
+         */
+        virtual void lowerBelow(cFigure *figure);
+
+        /**
+         * Move this figure to the end of the child list in its parent, so that
+         * it is drawn above all its siblings. It is an error if this figure
+         * has no parent.
+         */
+        virtual void raiseToTop();
+
+        /**
+         * Move this figure to the beginning of the child list in its parent,
+         * so that it is drawn below all its siblings. It is an error if this
+         * figure has no parent.
+         */
+        virtual void lowerToBottom();
         //@}
 
         /** @name Operations on the transformation matrix. */
@@ -352,33 +556,32 @@ class SIM_API cFigure : public cOwnedObject
         virtual void skewy(double coeff, double cx) {transform.skewy(coeff,cx); fireTransformChange();}
         //@}
 
-        /** @name Managing child figures. */
-        //@{
-        virtual void addFigure(cFigure *figure);
-        virtual void addFigure(cFigure *figure, int pos);
-        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure);
-        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure);
-        virtual cFigure *removeFromParent();
-        virtual cFigure *removeFigure(int pos);
-        virtual cFigure *removeFigure(cFigure *figure);
-        virtual int findFigure(const char *name) const;
-        virtual int findFigure(cFigure *figure) const;
-        virtual bool containsFigures() const {return !children.empty();}
-        virtual int getNumFigures() const {return children.size();}
-        virtual cFigure *getFigure(int pos) const;
-        virtual cFigure *getFigure(const char *name) const;
-        virtual cFigure *getParentFigure() const {return dynamic_cast<cFigure*>(getOwner());}
-        virtual void raiseAbove(cFigure *figure);
-        virtual void lowerBelow(cFigure *figure);
-        virtual void raiseToTop();
-        virtual void lowerToBottom();
-        //@}
-
-        /** @name Accessing the figure tree. */
-        //@{
+        /** @name Miscellaneous. */
+        /**
+         * Duplicate the figure subtree.
+         */
         virtual cFigure *dupTree() const;
-        virtual cFigure *findFigureRecursively(const char *name) const;
-        virtual cFigure *getFigureByPath(const char *path) const;  //NOTE: path has similar syntax to cModule::getModuleByPath()
+
+        /**
+         * Change the figure's position by the given x and y deltas.
+         * Child figures will not be affected.
+         */
+        virtual void moveLocal(double dx, double dy) = 0;
+
+        /**
+         * Change the position of this figure and the figures in its subtree
+         * by the given x and y deltas. The implementation of this method
+         * calls moveLocal() on this figure, then move() recursively on child
+         * figures.
+         */
+        virtual void move(double dx, double dy);
+
+        /**
+         * Returns the name of the class responsible for rendering this figure.
+         * Renderer classes are specific to, and are usually implemented as
+         * part of, the graphical user interface library (Tkenv or Qtenv).
+         */
+        virtual const char *getRendererClassName() const = 0;
         //@}
 };
 
