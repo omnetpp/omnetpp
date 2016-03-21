@@ -33,7 +33,7 @@ greaterThan(QT_MAJOR_VERSION, 4): load(moc)
 CONFIG *= static c++11 qt
 CONFIG -= debug_and_release
 CONFIG -= warn_on warn_off
-DEFINES += "BUILDING_QTENV"
+DEFINES += "BUILDING_QTENV" "QT_NO_EMIT"
 WARNING_FLAGS *= -Wall -Wextra -Wno-unused-parameter
 !win32: WARNING_FLAGS *= -Wno-inconsistent-missing-override
 QMAKE_CXXFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS

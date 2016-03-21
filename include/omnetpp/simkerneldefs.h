@@ -16,10 +16,6 @@
 #ifndef __OMNETPP_SIMKERNELDEFS_H
 #define __OMNETPP_SIMKERNELDEFS_H
 
-#ifdef emit
-#undef emit //FIXME this is only for Qtenv -- Qt defines an "emit" macro which messes with cComponent's similarly named methods
-#endif
-
 #include <cstddef>
 #include <cfloat>
 #include <cmath>

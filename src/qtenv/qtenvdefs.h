@@ -26,11 +26,12 @@
 #include "omnetpp/cobject.h"
 #include "omnetpp/cmessage.h"
 
-// this prevents the definition of "emit" as a macro
-// it is needed because OMNeT uses "emit" as a function name
-// if you want to use "emit" the Qt way after including this header
-// just define "emit" as empty, like in qobjectdefs.h
-#define QT_NO_EMIT
+// Require QT_NO_EMIT to prevent the definition of "emit" as a macro. It is needed
+// because OMNeT++ uses "emit" as a function name. If you want to use "emit" the
+// Qt way, define "emit" as empty, like in <qobjectdefs.h>.
+#ifndef QT_NO_EMIT
+#error "Qtenv must be compiled with -DQT_NO_EMIT, because the simkernel uses 'emit' as function name"
+#endif
 
 #include <QMetaType>
 #include <QPair>
