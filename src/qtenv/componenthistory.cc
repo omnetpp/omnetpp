@@ -113,6 +113,11 @@ std::string ComponentHistory::getComponentTypeName(int componentId) const
     return getComponentType(componentId)->getFullPath();
 }
 
+void ComponentHistory::clear()
+{
+    components.clear();
+}
+
 } // namespace qtenv
 } // namespace omnetpp
 

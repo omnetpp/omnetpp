@@ -942,9 +942,9 @@ void Qtenv::setupNetwork(cModuleType *network)
 {
     answers.clear();
     logBuffer.clear();
+    componentHistory.clear();
 
     EnvirBase::setupNetwork(network);
-
 
     // collapsing all nodes in the object tree, because even if a new network is
     // loaded, there is a chance that some objects will be on the same place

@@ -170,7 +170,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       InspectorList inspectors;    // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
-      ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules  FIXME TODO clear this between runs!!!
+      ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules
 
       GenericObjectInspector *mainInspector;
       ModuleInspector *mainNetworkView;

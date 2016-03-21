@@ -765,6 +765,7 @@ void Tkenv::setupNetwork(cModuleType *network)
 {
     answers.clear();
     logBuffer.clear();
+    componentHistory.clear();
 
     EnvirBase::setupNetwork(network);
 
