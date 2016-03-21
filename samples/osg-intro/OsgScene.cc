@@ -26,11 +26,11 @@ void OsgScene::initialize()
 {
     cOsgCanvas *osgCanvas = getParentModule()->getOsgCanvas();  // get the canvas of the root module
 
-    osg::Node *scene = osgDB::readNodeFile(par("scene"));  // read the scene data
+    osg::Node *scene = osgDB::readNodeFile(par("sceneFile"));  // read the scene data
     if (!scene)
         throw cRuntimeError("Could not read scene file \"%s\"", par("scene").stringValue());
 
-    if(par("earthViewer"))
+    if (par("isEarthStyle"))
         osgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);  // we need a different camera manipulator to display terrains
 
     osgCanvas->setScene(scene);

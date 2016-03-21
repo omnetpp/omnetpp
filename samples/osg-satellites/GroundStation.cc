@@ -91,7 +91,8 @@ void GroundStation::initialize(int stage)
     }
 }
 
-void GroundStation::refreshVisuals() {
+void GroundStation::refreshVisuals() 
+{
     locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, altitude));
 }
 

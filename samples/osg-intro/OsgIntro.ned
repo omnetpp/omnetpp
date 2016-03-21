@@ -9,8 +9,8 @@
 
 simple OsgScene
 {
-    string scene;
-    bool earthViewer = default(false);  // use normal (trackpoint) viewer by default
+    string sceneFile; // model file to load via osgDB::readNodeFile()
+    bool isEarthStyle = default(false);  // selects viewer style
 }
 
 network OsgIntro
