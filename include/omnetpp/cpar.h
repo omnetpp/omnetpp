@@ -94,6 +94,10 @@ class SIM_API cPar : public cObject
     void afterChange();
 
   public:
+    // internal, used by cComponent::finalizeParameters()
+    void read();
+    // internal, used by cComponent::finalizeParameters()
+    void finalize();
     // internal: applies the default value if there is one
     void acceptDefault();
     // internal
@@ -339,24 +343,6 @@ class SIM_API cPar : public cObject
 
     /** @name Miscellaneous utility functions. */
     //@{
-
-    /**
-     * This method does the final touches on the parameter. It is invoked
-     * at some point on all parameter objects before we start the simulation.
-     *
-     * - if the parameter is not set, gets the value from omnetpp.ini or
-     *   interactively from the user, or sets the default value.
-     */
-    void read();  //XXX make private, as it no longer evaluates non-volatile parameters!
-    /**
-     * - if the parameter is non-volatile, (isVolatile()==false), converts
-     *   possible expression value to a constant (see convertToConst()).
-     *
-     * - if the parameter is volatile but contains "const" subexpressions,
-     *   these parts are converted to a constant value.
-     */
-    void finalize(); //XXX name not good! make private!
-
     /**
      * For non-const values, replaces the stored expression with its
      * evaluation.

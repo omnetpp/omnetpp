@@ -21,6 +21,13 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.0rc2
+~~~~~~~~~~~~~~
+
+(!)     cPar: read() and finalize() conceptually changed to be internal methods
+        (they are still declared public for technical reasons)
+
+
 OMNeT++ 5.0rc1
 ~~~~~~~~~~~~~~
 
