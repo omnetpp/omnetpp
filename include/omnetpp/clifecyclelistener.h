@@ -97,7 +97,7 @@ enum SimulationLifecycleEventType
      * (during network setup, initialization, in an event during simulation,
      * during finalization and network deletion.)
      */
-    //TODO the detail object contains (is?) the exception object
+    //TODO the detail object should contain the exception object
     LF_ON_SIMULATION_ERROR,
 
     /**

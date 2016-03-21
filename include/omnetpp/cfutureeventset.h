@@ -48,7 +48,7 @@ class SIM_API cFutureEventSet : public cOwnedObject
      * Assignment operator. The name member is not copied;
      * see cOwnedObject's operator=() for more details.
      */
-    cFutureEventSet& operator=(const cFutureEventSet& other); //TODO
+    cFutureEventSet& operator=(const cFutureEventSet& other);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -57,7 +57,7 @@ class SIM_API cFutureEventSet : public cOwnedObject
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const override;  //TODO
+    virtual std::string info() const override;
     //@}
 
     /** @name Simulation-related operations. */

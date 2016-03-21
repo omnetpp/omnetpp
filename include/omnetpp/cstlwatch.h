@@ -57,7 +57,7 @@ class cStdVectorWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::vector<T>& v;
-    std::string classname; //XXX maybe do not cache?
+    std::string classname;
   public:
     cStdVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcherBase(name), v(var) {
         classname = std::string("std::vector<")+opp_typename(typeid(T))+">";

@@ -128,7 +128,7 @@ class SIM_API cQueue : public cOwnedObject
     friend class Iterator;
 
   private:
-    bool takeOwnership; //FIXME move it info flags
+    bool takeOwnership; //TODO move it info flags
     QElem *frontp, *backp;  // inserting at back(), removal at front()
     int n;  // number of items in the queue
     CompareFunc compare;   // comparison function; nullptr for FIFO

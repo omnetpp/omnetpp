@@ -709,7 +709,7 @@ class SIM_API cEnvir
      */
     virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) = 0;
 
-    // internal. FIXME it swallows exceptions, which is sometimes desirable, sometimes not!
+    // internal. TODO it swallows exceptions, which is sometimes desirable, sometimes not!
     virtual void notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details=nullptr) = 0;
     //@}
 };
