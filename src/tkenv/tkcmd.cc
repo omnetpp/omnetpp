@@ -1574,7 +1574,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
     else if (0 == strcmp(argv[1], "scrollbacklimit"))
         sprintf(buf, "%d", opt->scrollbackLimit);
     else if (0 == strcmp(argv[1], "record_eventlog"))
-        sprintf(buf, "%d", app->recordEventlog);
+        sprintf(buf, "%d", app->getEventlogRecording());
     else if (0 == strcmp(argv[1], "logformat"))
         strcpy(buf, opt->logFormat.c_str());
     else if (0 == strcmp(argv[1], "loglevel"))

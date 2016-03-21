@@ -131,6 +131,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     const char *currentEventClassName;
     int currentModuleId;
 
+    // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters)
+    bool recordEventlog;
+
     // Output file managers
     cIEventlogManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
     cIOutputVectorManager *outvectorManager;
@@ -164,6 +167,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // eventlog recording
     virtual void setEventlogRecording(bool enabled);
+    virtual bool getEventlogRecording() const {return recordEventlog;}
     virtual void setLogLevel(LogLevel logLevel);
     virtual void setLogFormat(const char *logFormat);
 

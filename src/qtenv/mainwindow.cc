@@ -960,15 +960,12 @@ void MainWindow::on_actionDebugNextEvent_triggered()
 
 void MainWindow::on_actionEventlogRecording_triggered()
 {
-    if(getQtenv()->recordEventlog)
-        getQtenv()->setEventlogRecording(false);
-    else
-        getQtenv()->setEventlogRecording(true);
+    getQtenv()->setEventlogRecording(!getQtenv()->getEventlogRecording());
 }
 
 void MainWindow::reflectRecordEventlog()
 {
-    ui->actionEventlogRecording->setChecked(getQtenv()->recordEventlog);
+    ui->actionEventlogRecording->setChecked(getQtenv()->getEventlogRecording());
 }
 
 // newNetwork

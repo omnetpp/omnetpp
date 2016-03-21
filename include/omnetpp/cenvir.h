@@ -77,9 +77,6 @@ class SIM_API cEnvir
     // Internal flag for express mode.
     bool loggingEnabled;
 
-    // Indicates whether eventlog recording is currently enabled
-    bool recordEventlog;  //FIXME remove!!!! use flag inside eventlogmgr
-
     // Internal flag. When set to true, the simulation kernel MAY omit calling
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
     // beginSend(), messageSendDirect(), messageSendHop(), messageSendHop(),
