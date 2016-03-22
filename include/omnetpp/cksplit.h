@@ -316,13 +316,13 @@ class SIM_API cKSplit : public cDensityEstBase
 
     /**
      * Enables/disables range extension. If range extension is enabled,
-     * a new observation that falls outside the k-split range (ie. outside
+     * a new observation that falls outside the k-split range (i.e. outside
      * the root grid) will cause the range to be expanded (i.e. new
      * root getGrid(s) to be placed above the current root grid).
      * If range extension is disabled, such observations will simply be
      * counted as underflows or overflows.
      */
-    void rangeExtension(bool enabled);
+    void setRangeExtension(bool enabled);
     //@}
 
     /** @name Querying the k-split data structure. */

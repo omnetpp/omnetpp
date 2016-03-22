@@ -180,7 +180,7 @@ void cKSplit::setDivFunc(DivFunc _divfunc, double *_divdata)
     divData = _divdata;
 }
 
-void cKSplit::rangeExtension(bool enabled)
+void cKSplit::setRangeExtension(bool enabled)
 {
     rangeExtEnabled = enabled;
 }
@@ -533,7 +533,7 @@ void cKSplit::printGrids() const
 void cKSplit::iteratorToCell(int cell_nr) const
 {
     // create iterator or reinit if it is stale
-    iter = nullptr;
+    iter = nullptr; //FIXME why?
     if (!iter) {
         iter = new Iterator(*this);
         iterNumValues = numValues;
