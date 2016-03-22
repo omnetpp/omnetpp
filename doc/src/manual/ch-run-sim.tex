@@ -125,7 +125,7 @@ If you do not specify the configuration and you are running under:
   \item Cmdenv: the \ttt{General} configuration will be executed.
 \end{itemize}
 
-User interfaces may support the \ttt{-r runnumber} option to select runs,
+User interfaces may support the \ttt{-r <runnumber>} option to select runs,
 either one or more, depending on the type of the user interface.
 
 There are several command line options to get information about the iteration
@@ -134,9 +134,9 @@ variables and the number of runs in the configurations:
 \begin{itemize}
   \item \ttt{-a} -- Prints all configuration names and the number of runs in them.
   \item \ttt{-x <configname>} -- Prints the number of runs available in the given configuration.
-  \item \ttt{-g} -- Prints the unrolled configuration (together with the -x option) and
+  \item \ttt{-g} -- Prints the unrolled configuration (together with the \ttt{-x} option) and
                     expands the iteration variables.
-  \item \ttt{-G} -- Prints even more details than -g.
+  \item \ttt{-G} -- Prints even more details than \ttt{-g}.
 \end{itemize}
 
 
@@ -208,8 +208,14 @@ There are several useful configuration options that control how a simulation is 
   \item \fconfig{cmdenv-express-mode} -- Provides only minimal status updates on the console.
   \item \fconfig{cmdenv-interactive} -- Allows the simulation to ask missing parameter values interactively
   \item \fconfig{cmdenv-status-frequency} -- Controls how often the status is written to the console.
-  \item \fconfig{cpu-time-limit} -- Limits how long the simulation should run (in wall clock time)
   \item \fconfig{sim-time-limit} -- Limits how long the simulation should run (in simulation time)
+  \item \fconfig{cpu-time-limit} -- Limits how long the simulation should run (in real time)
+  \item \fconfig{simtime-precision} -- Defines the resolution of simulation time. Acceptable
+          values are SI time units (\ttt{s}, \ttt{ms}, \ttt{us}, \ttt{ns}, \ttt{ps}, \ttt{fs},
+          \ttt{as}), power-of-ten multiples of such units (e.g. \ttt{100ms}), and base-10 scale
+          exponents in the -18..0 range (e.g. -6 for microseconds). The maximum representable
+          simulation time depends on the resolution. The representation of simulation time was
+          covered in \ref{sec:simple-modules:simulation-time}.
   \item \fconfig{record-eventlog} -- Turns on the recording of the simulator events into an event log file.
            The resulting \ttt{.elog} file can be analyzed later in the IDE with the sequence chart tool.
   \item \fconfig{fingerprint} -- Instructs the simulation kernel to compute one or more fingerprints while
@@ -451,11 +457,12 @@ inside the network.
 \label{sec:run-sim:tkenv-options}
 
 A simulation program built with Tkenv accepts all the general command line
-options. \index{command line options} Additionally, the \ttt{-c configname}
-and \ttt{-r runnumber} options can be used to preselect a single run for execution;
+options. \index{command line options} Additionally, the \ttt{-c <configname>}
+and \ttt{-r <runnumber>} options can be used to preselect a single run for execution;
 that is, these options suppress the initial run selection dialog.
 
 Tkenv configuration options:
+
 \begin{itemize}
   \item \fconfig{tkenv-default-config}:
     Specifies which config Tkenv should set up automatically on startup. The
@@ -471,17 +478,21 @@ Tkenv configuration options:
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Tkenv.
 
-  \item \fconfig{image-path}: Specifies the path for loading module icons.
-    This one was named \ttt{tkenv-image-path} in {\opp} 4.x and renamed,
-    because from version 5.0 it is shared between Tkenv and Qtenv.
-
   \item \fconfig{tkenv-plugin-path}:
     Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
     that get evaluated on startup.
 \end{itemize}
 
+It is also affected by the following option:
+
+\begin{itemize}
+  \item \fconfig{image-path}: Specifies the path for loading module icons.
+    This one was named \ttt{tkenv-image-path} in {\opp} 4.x and renamed,
+    because from version 5.0 it is shared between Tkenv and Qtenv.
+\end{itemize}
+
 Tkenv-specific configuration options can also be specified on the command line
-by prefixing them with two dashes (e.g \ttt{-{}-tkenv-option=value}). See
+by prefixing them with two dashes (e.g \ttt{-{}-tkenv-extra-stack=32KiB}). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
 
@@ -614,11 +625,12 @@ The form of the command is:
 opp_runall -j2 ./aloha -u Cmdenv -c PureAlohaExperiment -r 0..23
 \end{commandline}
 
-You can use the \ttt{-x ConfigName -g} command line options with your simulation to
-check the number of available runs.
+You can use the \ttt{-x <configname> -g} command line options with your
+simulation to check the number of available runs.
 
-Using the \ttt{-{}-export filename} option only generates the \ttt{makefile}, but does not start it.
-You can run your batch later by invoking the generated makefile.
+Using the \ttt{-{}-export <filename>} option only generates the
+\ttt{makefile}, but does not start it. You can run your batch later by
+invoking the generated makefile.
 
 %% TODO
 %%\subsection{Using Xgrid}

@@ -115,6 +115,20 @@ void FooModule::refreshDisplay() const
 }
 \end{cpp}
 
+One useful accessory to \ffunc{refreshDisplay()} is the
+\ffunc{isExpressMode()} method of \cclass{cEnvir}. It returns true if the
+simulation is running under a GUI in \textit{Express} mode. Visualization
+code may check this flag and adapt the visualization accordingly. An example:
+
+\begin{cpp}
+if (!getEnvir()->isExpressMode()) {
+    // visualize current frame transmission
+}
+else {
+    // display throughtput statistics
+}
+\end{cpp}
+
 
 \subsection{Advantages}
 \label{sec:graphics:refreshdisplay-advantages}
@@ -562,7 +576,7 @@ network EuropePlayground
 The \ttt{bgu} tag deserves special attention. It does not affect
 the visual appearance, but instead it is a hint for model code
 on how to interpret coordinates and distances in this compound
-module. The above example specifies \ttt{bgs=km}, which means
+module. The above example specifies \ttt{bgu=km}, which means
 that if the model attaches physical meaning to coordinates and
 distances, then those numbers should be interpreted as kilometers.
 

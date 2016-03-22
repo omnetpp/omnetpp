@@ -3443,19 +3443,22 @@ of the module, so that its methods become visible.
 This makes the following code:
 
 \begin{cpp}
-cModule *calleeModule = getParentModule()->getSubmodule("callee");
-Callee *callee = check_and_cast<Callee *>(calleeModule);
-callee->doSomething();
+cModule *targetModule = getParentModule()->getSubmodule("foo");
+Foo *target = check_and_cast<Foo *>(targetModule);
+target->doSomething();
 \end{cpp}
 
 The \ffunc{check\_and\_cast<>()} template function on the second line
 is part of {\opp}. It performs a standard C++ \ttt{dynamic\_cast}, and checks
 the result: if it is \ttt{nullptr}, \ttt{check\_and\_cast} raises an {\opp} error.
 Using \ttt{check\_and\_cast} saves you from writing error checking
-code: if \ttt{calleeModule} from the first line is \ttt{nullptr} because
-the submodule named \ttt{"callee"} was not found, or if that
-module is actually not of type \ttt{Callee}, an error is thrown
-from \ttt{check\_and\_cast}.
+code: if \ttt{targetModule} from the first line is \ttt{nullptr} because
+the submodule named \ttt{"foo"} was not found, or if that
+module is actually not of type \ttt{Foo}, an exception is thrown
+from \ttt{check\_and\_cast} with an appropriate error message.\footnote{A
+\ffunc{check\_and\_cast\_nullable<>()} function also exists. It
+accepts \ttt{nullptr} as input, and only complains if the cast
+goes wrong.}
 
 The second issue is how to let the simulation kernel know that
 a method call across modules is taking place. Why is this necessary
@@ -3463,7 +3466,7 @@ in the first place? First, the simulation kernel always has to know which
 module's code is currently executing, in order for ownership handling
 and other internal mechanisms to work correctly. Second, the Tkenv and
 Qtenv simulation GUIs can animate method calls, but to be able to do that,
-they has to know about them. Third, method calls are also recorded
+they need to know about them. Third, method calls are also recorded
 in the event log.
 
 The solution is to add the \fmac{Enter\_Method()} or \fmac{Enter\_Method\_Silent()}
@@ -3480,7 +3483,7 @@ the animation (\fmac{Enter\_Method()} only) and recorded into the event log.
 
 
 \begin{cpp}
-void Callee::doSomething()
+void Foo::doSomething()
 {
     Enter_Method("doSomething()");
     ...
@@ -3855,7 +3858,7 @@ may be wrapped into an object, and emitted as such.
 
 Even when the signal value is of a primitive type, it is possible to convey
 extra information to listeners via an additional \textit{details} object,
-also an (optional) argument of \ffunc{emit()}.
+which an optional argument of \ffunc{emit()}.
 
 
 \subsection{Design Considerations and Rationale}

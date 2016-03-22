@@ -1191,18 +1191,18 @@ are sufficiently separated in the RNG's sequence.
 
 The {\opp} logging infrastructure provides a few configuration options that
 affect what is written to the log output. It supports configuring multiple
-filters: global compile time, global runtime, and per-component runtime log
+filters: global compile-time, global runtime, and per-component runtime log
 level filters. For a log statement to actually produce output, it must pass
 each filter simulatenously. In addition, one can also specify a log prefix
 format string which determines the context information that is written before
 each log line. In the following sections, we look how to configure logging.
 
-\subsection{Compile Time Filtering}
+\subsection{Compile-Time Filtering}
 \label{sec:config-sim:compile-time-log-filtering}
 
 The \fmac{COMPILETIME\_LOGLEVEL} macro determines which log statements
 are compiled into the executable. Any log statment which uses a log level below
-the specified compile time log level is omitted. In other words, no matter how
+the specified compile-time log level is omitted. In other words, no matter how
 the runtime log levels are configured, such log statements are not even executed.
 This is mainly useful to avoid the performance penalty paid for log statements
 which are not needed.
@@ -1244,7 +1244,7 @@ in release mode (\fmac{NDEBUG} is set).
 In fact, the \fmac{COMPILETIME\_LOG\_PREDICATE} macro is the most generic compile
 time predicate that determines which log statements are compiled into the executable.
 Mostly, there's no need to redefine this macro, but it can be useful sometimes.
-For example, one can do compile time filtering for log categories by redefining
+For example, one can do compile-time filtering for log categories by redefining
 this macro. By default, the \fmac{COMPILETIME\_LOG\_PREDICATE} macro is defined
 as follows:
 

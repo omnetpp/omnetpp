@@ -247,7 +247,7 @@ In general, logging facilitates understanding which module is doing what and why
 
 {\opp} makes logging easy and consistent among simulation models by providing
 its own C++ API and configuration options. The API provides efficient logging
-with several predefined log levels, global compile time and runtime filters,
+with several predefined log levels, global compile-time and runtime filters,
 per-component runtime filters, automatic context information, log prefixes and
 other useful features. In the following sections, we look at how to write log
 statements using the {\opp} logging API.
@@ -359,7 +359,7 @@ section \ref{sec:config-sim:logging}).
 In static class member functions or in non-class member functions an extra
 \fmac{EV\_STATICCONTEXT} macro must be present to make sure that normal log
 macros compile. \footnote{This is due to that in C++ it is impossible
-determine at compile time whether if a \fvar{this} pointer is accessible.}
+determine at compile-time whether if a \fvar{this} pointer is accessible.}
 
 \begin{cpp}
 void findModule(const char *name, cModule *from)
@@ -1931,53 +1931,28 @@ eliminated. It has been shown that the partition created by
 \textit{k}-split can be better than both the equi-distant and the
 equal-frequency partition.
 
-
 {\opp} contains an implementation of the \textit{k}-split algorithm,
 the \cclass{cKSplit} class.
+
 
 \subsubsection{The cKSplit Class}
 \label{sec:sim-lib:cksplit-class}
 
-The \cclass{cKSplit} class is an implementation of the \textit{k-split} method.
-Member functions:
+The \cclass{cKSplit} class is an implementation of the \textit{k-split}
+method. It is a subclass of \cclass{cDensityEstBase}, so configuring,
+adding observations and querying histogram cells is done the same way as
+with other histogram classes.
 
-%
-% TBD comments
-%
+Specific member functions allow one to fine-tune the \textit{k}-split
+algorithm. \ffunc{setCritFunc()} and \ffunc{setDivFunc()} let one replace
+the split criteria and the cell division function, respectively.
+\ffunc{setRangeExtension()} lets one enable/disable range extension. (If
+range extension is disabled, out-of-range observations will simply be
+counted as underflows or overflows.)
 
-\begin{cpp}
-void setCritFunc(KSplitCritFunc critfunc, double *critdata);
-void setDivFunc(KSplitDivFunc divfunc, double *divdata);
-void rangeExtension( bool enabled );
-\end{cpp}
-
-
-\begin{cpp}
-int getTreeDepth();
-int getTreeDepth(cKSplit::Grid& grid);
-\end{cpp}
-
-\begin{cpp}
-double getRealCellValue(cKSplit::Grid& grid, int cell);
-void printGrids();
-\end{cpp}
-
-\begin{cpp}
-cKSplit::Grid& getGrid(int k);
-cKSplit::Grid& getRootGrid();
-\end{cpp}
-
-\begin{cpp}
-struct cKSplit::Grid
-{
-  int parent;   // index of parent grid
-  int reldepth; // depth = (reldepth - rootgrid's reldepth)
-  long total;   // sum of cells & all subgrids (includes "mother")
-  int mother;   // observations "inherited" from mother cell
-  int cells[K]; // cell values
-};
-\end{cpp}
-
+The class also allows one to access the \textit{k}-split data structure,
+directly, via methods like \ffunc{getTreeDepth()}, \ffunc{getRootGrid()},
+\ffunc{getGrid(i)}, and others.
 
 
 \subsection{Transient Detection and Result Accuracy}

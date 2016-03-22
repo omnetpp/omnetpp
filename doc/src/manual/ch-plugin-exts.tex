@@ -262,16 +262,19 @@ class CustomScheduler : public cScheduler, public cISimulationLifecycleListener
 \section{cEvent}
 \label{sec:plugin-exts:cevent}
 
-\cclass{cEvent} represents an event in the discrete event simulator. (The
-concepts were introduced in section \ref{sec:simple-modules:simulation-concepts}).
-When events are scheduled, they are inserted into the future events set
-(FES) where they are (conceptually) stored in timestamp. Events are removed
-from the FES one by one, and their \ffunc{execute()} member functions are
-called. \ffunc{execute()} should be overridden in subclasses to carry out
-the actions associated with the event. For example, \cclass{cMessage} is
-also a subclass of \cclass{cEvent}, where \ffunc{execute()} ends up calling
-the \ffunc{handleMessage()} method of the destination module, or switches
-to the coroutine of its \ffunc{activity()} method.
+\cclass{cEvent} represents an event in the discrete event simulator. When
+events are scheduled, they are inserted into the future events set (FES).
+During the simulation, events are removed from the FES and executed one by
+one in timestamp order. A \cclass{cEvent} is executed by invoking its
+\ffunc{execute()} member function. \ffunc{execute()} should be overridden
+in subclasses to carry out the actions associated with the event.
+
+\begin{note}
+\cclass{cMessage} is also a subclass of \cclass{cEvent}. Its
+\ffunc{execute()} method calls the \ffunc{handleMessage()} method of the
+message's destination module, or switches to the coroutine of its
+\ffunc{activity()} method.
+\end{note}
 
 \ffunc{execute()} has the following signature:
 
