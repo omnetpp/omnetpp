@@ -3254,12 +3254,12 @@ void BurstyGenerator::handleMessage(cMessage *msg)
      case FSM_Exit(SEND): {
        // generate and send out job
        char msgname[32];
-       sprintf( msgname, "job-%d", ++i);
+       sprintf(msgname, "job-%d", ++i);
        EV << "Generating " << msgname << endl;
        cMessage *job = new cMessage(msgname);
-       job->setBitLength( (long) *msgLength );
+       job->setBitLength((long) *msgLength);
        job->setTimestamp();
-       send( job, "out" );
+       send(job, "out");
        // return to ACTIVE
        FSM_Goto(fsm,ACTIVE);
        break;
@@ -3299,13 +3299,12 @@ int myModuleId = getId();
 \end{cpp}
 
 If you know the module ID, you can ask the simulation object
-(a global variable) to get back the module pointer:
+to get back the module pointer:
 
 \begin{cpp}
 int id = 100;
-cModule *mod = simulation.getModule( id );
+cModule *mod = getSimulation()->getModule(id);
 \end{cpp}
-
 
 Module IDs are guaranteed to be unique for the duration of the whole
 simulation, even when modules are created and destroyed dynamically;
@@ -3327,7 +3326,7 @@ For example, the parameters of the parent module are accessed
 like this:
 
 \begin{cpp}
-double timeout = getParentModule()->par( "timeout" );
+double timeout = getParentModule()->par("timeout");
 \end{cpp}
 
 \cclass{cModule}'s \ffunc{findSubmodule()} and \ffunc{getSubmodule()}
@@ -4138,7 +4137,7 @@ one can subscribe at the system module level:
 
 \begin{cpp}
 cIListener *listener = ...;
-simulation.getSystemModule()->subscribe("length", listener);
+getSimulation()->getSystemModule()->subscribe("length", listener);
 \end{cpp}
 
 The \ffunc{unsubscribe()} method has the same parameter list
@@ -4351,7 +4350,7 @@ If you'd like to get notification about the deletion of any module, you need
 to install the listener on the system module:
 
 \begin{cpp}
-simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
+getSimulation()->getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
 \end{cpp}
 
 \begin{note}
@@ -4741,7 +4740,7 @@ The NED file would look like this:
 In the C++ code of the module, you need to register each new signal with
 \ffunc{registerSignal()}, and in addition, tell {\opp} to set up statistics
 recording for it as described by the \fprop{@statisticTemplate} property.
-The latter can be achieved by calling \ffunc{ev.addResultRecorders()}.
+The latter can be achieved by calling \ffunc{getEnvir()->addResultRecorders()}.
 
 \begin{cpp}
 char signalName[32];
@@ -4752,7 +4751,7 @@ char statisticName[32];
 sprintf(statisticName, "session%d-jitter", sessionNum);
 cProperty *statisticTemplate =
     getProperties()->get("statisticTemplate", "sessionJitter");
-ev.addResultRecorders(this, signal, statisticName, statisticTemplate);
+getEnvir()->addResultRecorders(this, signal, statisticName, statisticTemplate);
 \end{cpp}
 
 In the \fprop{@statisticTemplate} property, the \ttt{source} key will be
@@ -4783,7 +4782,7 @@ and the title is \ttt{"bytes sent in connection \$namePart2"}, it will become
 \subsection{Adding Result Filters and Recorders Programmatically}
 \label{sec:simple-modules:statistic-recording-programmatically}
 
-As an alternative to \fprop{@statisticTemplate} and \ffunc{ev.addResultRecorders()},
+As an alternative to \fprop{@statisticTemplate} and \ffunc{addResultRecorders()},
 it is also possible to set up result recording programmatically, by creating and
 attaching result filters and recorders to the desired signals.
 
@@ -4944,17 +4943,17 @@ class SumPerDurationFilter : public cNumericResultFilter
     protected:
         double sum;
     protected:
-        virtual bool process(simtime_t& t, double& value);
+        virtual bool process(simtime_t& t, double& value, cObject *details);
     public:
         SumPerDurationFilter() {sum = 0;}
 };
 
 Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
 
-bool SumPerDurationFilter::process(simtime_t& t, double& value)
+bool SumPerDurationFilter::process(simtime_t& t, double& value, cObject *)
 {
     sum += value;
-    value = sum / (simTime() - simulation.getWarmupPeriod());
+    value = sum / (simTime() - getSimulation()->getWarmupPeriod());
     return true;
 }
 \end{cpp}

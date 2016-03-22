@@ -48,10 +48,9 @@ each other:
 \begin{itemize}
   \item{\textbf{Executing Model $\Leftrightarrow$ Sim}. The simulation kernel
     manages the future events and activates modules in the executing model
-    as events occur. The modules of the executing model are stored
-    in the main object of Sim, \fvar{simulation} (of class \cclass{cSimulation}).
-    In turn, the executing model calls functions in the
-    simulation kernel and uses classes in the Sim library.}
+    as events occur. The modules of the executing model are stored in an
+    instance of the class \cclass{cSimulation}. In turn, the executing model
+    calls functions in the simulation kernel and uses classes in the Sim library.
   \item{\textbf{Sim $\Leftrightarrow$ Model Component Library}. The simulation kernel
     instantiates simple modules and other components when the simulation model
     is set up at the beginning of the simulation run. In addition, it refers
@@ -79,9 +78,8 @@ each other:
   \item{\textbf{Envir $\Leftrightarrow$ Cmdenv/Tkenv/Qtenv}. Cmdenv, Tkenv and Qtenv
     are concrete user interface implementations. When a simulation program
     is started, the \ttt{main()} function (which is part of Envir) determines
-    the appropriate user interface class, creates an instance and runs it
-    by invoking its \ttt{run()} method. Sim's or the model's calls on the
-    \ttt{ev} object are delegated to the user interface.}
+    the appropriate user interface class, creates an instance and runs it.
+    Sim's or the model's calls on Envir are delegated to the user interface.}
 \end{itemize}
 
 
@@ -201,7 +199,7 @@ void simulate(const char *networkName, simtime_t limit)
     }
 
     if (ok)
-        simulation.callFinish();  //E!
+        sim->callFinish();  //E!
 
     // finish the simulation and clean up the network
     sim->endRun();  //E!
@@ -461,7 +459,7 @@ specific module type via \ffunc{check\_and\_cast<>()} so that the getter
 methods can be invoked.
 
 \begin{cpp}
-cModule *mod = simulation.getModuleByPath("Network.client[2].app");
+cModule *mod = getSimulation()->getModuleByPath("Network.client[2].app");
 WebApp *appMod = check_and_cast<WebApp *>(mod);
 int numRequestsSent = appMod->getNumRequestsSent();
 double avgReplyTime = appMod->getAvgReplyTime();
@@ -583,11 +581,11 @@ own scheduler class), add a \ffunc{setScheduler()} call into \ttt{main()}:
 
 \begin{cpp}
 cScheduler *scheduler = new CustomScheduler();
-simulation.setScheduler(scheduler);
+getSimulation()->setScheduler(scheduler);
 \end{cpp}
 
 It is usually not a good idea to change schedulers in the middle of
-a simulation, therefore  \ffunc{setScheduler()} may only be called when
+a simulation, therefore \ffunc{setScheduler()} may only be called when
 no network is set up.
 
 

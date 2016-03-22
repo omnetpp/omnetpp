@@ -496,6 +496,65 @@ by prefixing them with two dashes (e.g \ttt{-{}-tkenv-extra-stack=32KiB}). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
 
+\section{The Qtenv Graphical User Interface}
+\label{sec:run-sim:qtenv}
+
+Qtenv\index{Qtenv} is a runtime simulation GUI, intended to replace Tkenv
+on the long term. Qtenv's features are also similar to Tkenv: it supports
+interactive simulation execution, animation, tracing and debugging. Note
+that 3D visualization is only available in Qtenv.
+
+As of version {\opp} 5.0, Qtenv is still in preview status, and Tkenv is the
+default runtime. Qtenv can be activated by adding the \ttt{-u Qtenv} option
+to simulation command lines. Alternatively, one can configure and build
+{\opp} so that Qtenv is the default GUI. (Hint: specify \ttt{PREFER\_QTENV=yes}
+in \ffilename{configure.user}; see the \textit{Installation Guide} for details.)
+
+%% TODO:
+%% \ begin{note}
+%%   This section only covers the command-line and configuration options
+%%   of Qtenv; the user interface is described in the Qtenv chapter of the
+%%  {\opp} User Guide.
+%% \ end{note}
+
+\subsection{Command-Line and Configuration Options}
+\label{sec:run-sim:qtenv-options}
+
+A simulation program built with Qtenv accepts all the general command line
+options. \index{command line options} Additionally, the \ttt{-c <configname>}
+and \ttt{-r <runnumber>} options can be used to preselect a single run for execution;
+that is, these options suppress the initial run selection dialog.
+
+Qtenv configuration options:
+
+\begin{itemize}
+  \item \fconfig{qtenv-default-config}:
+    Specifies which config Qtenv should set up automatically on startup. The
+    default is to ask the user. This option is equivalent to the \ttt{-c}
+    command-line option.
+
+  \item \fconfig{qtenv-default-run}: Specifies which run (of the default
+    config, see qtenv-default-config) Qtenv should set up automatically on startup.
+    The default is to ask the user. This option is equivalent to the \ttt{-r}
+    command-line option.
+
+  \item \fconfig{qtenv-extra-stack}:
+    Specifies the extra amount of stack that is reserved for each activity()
+    simple module when the simulation is run under Qtenv.
+\end{itemize}
+
+It is also affected by the following option:
+
+\begin{itemize}
+  \item \fconfig{image-path}: Specifies the path for loading module icons.
+  This option is shared between Tkenv and Qtenv.
+\end{itemize}
+
+Qtenv-specific configuration options can also be specified on the command line
+by prefixing them with two dashes (e.g \ttt{-{}-qtenv-extra-stack=32KiB}). See
+Appendix \ref{cha:config-options} for the list of possible configuration options.
+
+
 \section{Batch Execution}
 \label{sec:run-sim:batch-execution}
 

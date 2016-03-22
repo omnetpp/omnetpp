@@ -305,7 +305,7 @@ warm-up period in the C++ code.
 \end{note}
 
 The warm-up period is available via the \ffunc{getWarmupPeriod()} method of
-the \ttt{simulation} object, so the C++ code that updates the corresponding
+the simulation object, so the C++ code that updates the corresponding
 state variables needs to be surrounded with an \textit{if} statement:
 
 Old:
@@ -317,7 +317,7 @@ dropCount++;
 New:
 
 \begin{cpp}
-if (simTime() >= simulation.getWarmupPeriod())
+if (simTime() >= getSimulation()->getWarmupPeriod())
     dropCount++;
 \end{cpp}
 

@@ -438,9 +438,6 @@ void Matrix::someFunction()
    print(EV_INFO);
 \end{cpp}
 
-\begin{note}
-The old ({\opp} 4.x) version provided \ffunc{ev.printf}, but it is deprecated.
-\end{note}
 
 \subsection{Implementation}
 \label{sec:sim-lib:logging-implementation}
@@ -940,15 +937,15 @@ cArray array("array");
 Adding an object at the first free index:
 
 \begin{cpp}
-cPar *p = new cMsgPar("par");
-int index = array.add( p );
+cMsgPar *p = new cMsgPar("par");
+int index = array.add(p);
 \end{cpp}
 
 Adding an object at a given index (if the index is occupied,
 you will get an error message):
 
 \begin{cpp}
-cPar *p = new cMsgPar("par");
+cMsgPar *p = new cMsgPar("par");
 int index = array.addAt(5,p);
 \end{cpp}
 
@@ -978,7 +975,7 @@ with the object name, the index position or the object pointer:
 \begin{cpp}
 array.remove("par");
 array.remove(index);
-array.remove( p );
+array.remove(p);
 \end{cpp}
 
 
@@ -987,7 +984,7 @@ returns the object pointer. If you also want to deallocate it, you can
 write:
 
 \begin{cpp}
-delete array.remove( index );
+delete array.remove(index);
 \end{cpp}
 
 \subsubsection{Iteration}
@@ -1088,7 +1085,7 @@ topo.extractByModuleType(typeNames);
 Second, you can extract all modules which have a certain parameter:
 
 \begin{cpp}
-topo.extractByParameter( "ipAddress" );
+topo.extractByParameter("ipAddress");
 \end{cpp}
 
 You can also specify that the parameter must have a certain value
@@ -1096,7 +1093,7 @@ for the module to be included in the graph:
 
 \begin{cpp}
 cMsgPar yes = "yes";
-topo.extractByParameter( "includeInTopo", &yes );
+topo.extractByParameter("includeInTopo", &yes);
 \end{cpp}
 
 The third form allows you to pass a function which can determine for
@@ -1108,10 +1105,10 @@ does not use the \ttt{void*} pointer):
 \begin{cpp}
 int selectFunction(cModule *mod, void *)
 {
-  return mod->getParentModule() == simulation.getSystemModule();
+  return mod->getParentModule() == getSimulation()->getSystemModule();
 }
 
-topo.extractFromNetwork( selectFunction, nullptr );
+topo.extractFromNetwork(selectFunction, nullptr);
 \end{cpp}
 
 %
@@ -1192,8 +1189,8 @@ the shortest path to the target looks like this:
 
 \begin{cpp}
 cModule *targetmodulep =...;
-cTopology::Node *targetnode = topo.getNodeFor( targetmodulep );
-topo.calculateUnweightedSingleShortestPathsTo( targetnode );
+cTopology::Node *targetnode = topo.getNodeFor(targetmodulep);
+topo.calculateUnweightedSingleShortestPathsTo(targetnode);
 \end{cpp}
 
 
@@ -1207,10 +1204,10 @@ the previous call.
 Walking along the path from our module to the target node:
 
 \begin{cpp}
-cTopology::Node *node = topo.getNodeFor( this );
+cTopology::Node *node = topo.getNodeFor(this);
 
 if (node == nullptr) {
-  ev < "We (" << getFullPath() << ") are not included in the topology.\n";
+  EV << "We (" << getFullPath() << ") are not included in the topology.\n";
 }
 else if (node->getNumPaths()==0) {
   EV << "No path to destination.\n";
@@ -1569,7 +1566,7 @@ usage for \cclass{cStdDev}:
 cStdDev stat("stat");
 
 for (int i = 0; i < 10; i++)
-  stat.collect( normal(0,1) );
+  stat.collect(normal(0,1));
 
 long numSamples = stat.getCount();
 double smallest = stat.getMin(),
@@ -2351,21 +2348,19 @@ or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
 \begin{cpp}
-bool snapshot(cObject *obj = &simulation, const char *label = nullptr);
+bool snapshot(cObject *obj=nullptr, const char *label=nullptr);
 \end{cpp}
 
 The function can be called from module functions, like this:
 
 \begin{cpp}
-snapshot();     // dump the whole network
+snapshot();     // dump the network
 snapshot(this); // dump this simple module and all its objects
-snapshot(&simulation.msgQueue); // dump future events
+snapshot(getSimulation()->getFES()); // dump the future events set
 \end{cpp}
 
-This will append snapshot information to the end of the snapshot file.
-(The snapshot file name has an extension of \ttt{.sna}, default is
-\ttt{omnetpp.sna}\index{omnetpp.sna}. The actual file name can be set in the
-config file.)
+\ffunc{snapshot()} will append to the end of the snapshot file. The snapshot
+file name has an extension of \ttt{.sna}.
 
 The snapshot file output is detailed enough to be used for debugging
 the simulation: by regularly calling \ffunc{snapshot()}, one can trace
@@ -2462,12 +2457,12 @@ network="FifoNet">
 % following way:
 %
 % \ begin{verbatim}
-% bool w = simulation.warnings();
-% simulation.setWarnings( false );
+% bool w = getSimulation()->warnings();
+% getSimulation()->setWarnings(false);
 % ...
 % ... // critical code
 % ...
-% simulation.setWarnings( w );
+% getSimulation()->setWarnings(w);
 % \ end{verbatim}
 
 
@@ -3118,8 +3113,7 @@ Here is the top of the \ttt{.cc} file:
 #include <iostream.h>
 #include "newclass.h"
 
-Register_Class( NewClass );
-
+Register_Class(NewClass);
 
 NewClass::NewClass(const char *name, int sz) : cObject(name)
 {
@@ -3495,9 +3489,9 @@ left unchanged.
 %
 %    if (msg)
 %    {
-%        if (msg->getOwner()!=&(simulation.getContextSimpleModule()->locals))
+%        if (msg->getOwner()!=&(getSimulation()->getContextSimpleModule()->locals))
 %            throw cRuntimeError(this,"encapsulate(): not owner of message");
-%        take( encapmsg = msg );
+%        take(encapmsg = msg);
 %        len += encapmsg->len;
 %    }
 %}
