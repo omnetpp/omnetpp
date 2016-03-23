@@ -57,7 +57,7 @@ void OsgEarthScene::initialize()
     const SpatialReference *geoSRS = mapNode->getMapSRS()->getGeographicSRS();
     builtinOsgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);
     // and move the initial view right above it
-    builtinOsgCanvas->setEarthViewpoint(osgEarth::Viewpoint(centerLongitude, centerLatitude, 50, 0, -90, playgroundHeight*2, geoSRS));
+    builtinOsgCanvas->setEarthViewpoint(osgEarth::Viewpoint("home", centerLongitude, centerLatitude, 50, 0, -90, playgroundHeight*2));
     builtinOsgCanvas->setScene(scene);
 
     // set up an annotation to show the playground area

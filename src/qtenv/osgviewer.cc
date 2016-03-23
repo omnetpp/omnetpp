@@ -401,7 +401,7 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             double heading = - atan2(localEye.y(), localEye.x()) * 180.0 / M_PI - 90;
             double pitch = atan2(localUp.z(), osg::Vec2d(localUp.x(), localUp.y()).length()) * 180.0 / M_PI - 90;
 
-            osgEarth::Viewpoint vp(geoCenter, heading, pitch, distance);
+            osgEarth::Viewpoint vp("viewpoint", geoCenter.x(), geoCenter.y(), geoCenter.z(), heading, pitch, distance);
             earthManip->setViewpoint(vp);
         }
     }
