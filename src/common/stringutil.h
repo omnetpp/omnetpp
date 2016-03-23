@@ -363,6 +363,11 @@ COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, in
  */
 COMMON_API std::string opp_latexQuote(const char *s);
 
+/**
+ * Convert opp markup to LaTeX.
+ */
+COMMON_API std::string opp_markup2Latex(const char *s);
+
 } // namespace common
 }  // namespace omnetpp
 

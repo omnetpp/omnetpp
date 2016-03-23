@@ -44,9 +44,9 @@ namespace omnetpp {
 
 Register_Class(cFileCommunications);
 
-Register_GlobalConfigOption(CFGID_FILECOMM_PREFIX, "parsim-filecommunications-prefix", CFG_STRING, "comm/", "When cFileCommunications is selected as parsim communications class: specifies the prefix (directory+potential filename prefix) for creating the files for cross-partition messages.");
-Register_GlobalConfigOption(CFGID_FILECOMM_READ_PREFIX, "parsim-filecommunications-read-prefix", CFG_STRING, "comm/read/", "When cFileCommunications is selected as parsim communications class: specifies the prefix (directory) where files will be moved after having been consumed.");
-Register_GlobalConfigOption(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunications-preserve-read", CFG_BOOL, "false", "When cFileCommunications is selected as parsim communications class: specifies that consumed files should be moved into another directory instead of being deleted.");
+Register_GlobalConfigOption(CFGID_FILECOMM_PREFIX, "parsim-filecommunications-prefix", CFG_STRING, "comm/", "When `cFileCommunications` is selected as parsim communications class: specifies the prefix (directory+potential filename prefix) for creating the files for cross-partition messages.");
+Register_GlobalConfigOption(CFGID_FILECOMM_READ_PREFIX, "parsim-filecommunications-read-prefix", CFG_STRING, "comm/read/", "When `cFileCommunications` is selected as parsim communications class: specifies the prefix (directory) where files will be moved after having been consumed.");
+Register_GlobalConfigOption(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunications-preserve-read", CFG_BOOL, "false", "When `cFileCommunications` is selected as parsim communications class: specifies that consumed files should be moved into another directory instead of being deleted.");
 
 cFileCommunications::cFileCommunications()
 {

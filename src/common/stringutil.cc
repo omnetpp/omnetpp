@@ -753,6 +753,30 @@ std::string opp_latexQuote(const char *s)
     tmp = opp_replacesubstring(tmp.c_str(), "&", "\\&", true);
     tmp = opp_replacesubstring(tmp.c_str(), "#", "\\#", true);
     tmp = opp_replacesubstring(tmp.c_str(), "\b", "{\\textbackslash}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "\n", "\\\\", true);
+
+    return opp_markup2Latex(tmp.c_str());
+}
+
+std::string opp_markup2Latex(const char *s)
+{
+    // replace `monospace text` to \ttt{monospace text}
+    std::string tmp = s;
+    std::string::size_type pos = 0;
+    static const char substring[] = "`";
+    static const char *replacement[2] = {"\\ttt{", "}"};
+    int idx = 0;
+    do {
+        pos = tmp.find(substring, pos);
+        if (pos == std::string::npos)
+            break;
+        tmp.replace(pos, strlen(substring), replacement[idx]);
+        pos += strlen(replacement[idx]);
+        idx = 1 - idx;
+    } while (true);
+    if (idx)
+        throw opp_runtime_error("missing right backtick from text >>> %s <<<", s);
+
     return tmp;
 }
 

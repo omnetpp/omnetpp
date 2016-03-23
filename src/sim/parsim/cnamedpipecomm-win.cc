@@ -43,7 +43,7 @@ namespace omnetpp {
 
 Register_Class(cNamedPipeCommunications);
 
-Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When cNamedPipeCommunications is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
+Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When `cNamedPipeCommunications` is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
 
 #define PIPE_INBUFFERSIZE    (1024*1024) /*1MB*/
 

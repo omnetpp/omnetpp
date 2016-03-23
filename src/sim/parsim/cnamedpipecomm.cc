@@ -45,7 +45,7 @@ namespace omnetpp {
 
 Register_Class(cNamedPipeCommunications);
 
-Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "comm/", "When cNamedPipeCommunications is selected as parsim communications class: selects the prefix (directory+potential filename prefix) where name pipes are created in the file system.");
+Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "comm/", "When `cNamedPipeCommunications` is selected as parsim communications class: selects the prefix (directory+potential filename prefix) where name pipes are created in the file system.");
 
 static int readBytes(int fd, void *buf, int len)
 {

@@ -41,8 +41,8 @@ namespace omnetpp {
 
 Register_Class(cNullMessageProtocol);
 
-Register_GlobalConfigOption(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the C++ class that calculates lookahead. The class should subclass from cNMPLookahead.");
-Register_GlobalConfigOption(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the laziness of sending null messages. Values in the range [0,1) are accepted. Laziness=0 causes null messages to be sent out immediately as a new EOT is learned, which may result in excessive null message traffic.");
+Register_GlobalConfigOption(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead", "When `cNullMessageProtocol` is selected as parsim synchronization class: specifies the C++ class that calculates lookahead. The class should subclass from `cNMPLookahead`.");
+Register_GlobalConfigOption(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5", "When `cNullMessageProtocol` is selected as parsim synchronization class: specifies the laziness of sending null messages. Values in the range `[0,1)` are accepted. Laziness=0 causes null messages to be sent out immediately as a new EOT is learned, which may result in excessive null message traffic.");
 extern cConfigOption *CFGID_PARSIM_DEBUG;  // registered in cparsimpartition.cc
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()

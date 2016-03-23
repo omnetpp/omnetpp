@@ -99,9 +99,9 @@ extern "C" QTENV_API void _qtenv_lib() {}
 
 #define SPEEDOMETER_UPDATEMILLISECS    1000
 
-Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Qtenv.");
+Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, nullptr, "Specifies which run (of the default config, see qtenv-default-config) Qtenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. The default is to ask the user.");
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
