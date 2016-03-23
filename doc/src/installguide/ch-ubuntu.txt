@@ -43,7 +43,7 @@ To install the required packages, type in the terminal:
        doxygen graphviz libwebkitgtk-1.0-0
 
 To use Qtenv with 3D visualization support, install the development packages
-for Qt4, OpenSceneGraph and the osgEarth packages:
+for Qt4, OpenSceneGraph (3.2) and the osgEarth (2.5 or later) packages:
 
   $ sudo apt-get install qt4-qmake libqt4-dev libqt4-opengl-dev \
        openscenegraph libopenscenegraph-dev openscenegraph-plugin-osgearth \
