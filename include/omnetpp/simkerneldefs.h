@@ -73,7 +73,7 @@
  * @brief Sequence number of events during the simulation. Events are numbered from one.
  * (Event number zero is reserved for network setup and initialization.)
  *
- * @ingroup EnumsTypes
+ * @ingroup SimSupport
  */
 typedef int64_t eventnumber_t;
 

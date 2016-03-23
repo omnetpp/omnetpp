@@ -27,9 +27,9 @@ class cProperty;
 
 
 /**
- * @brief Stores properties.
+ * @brief A collection of properties (cProperty).
  *
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cProperties : public cObject
 {

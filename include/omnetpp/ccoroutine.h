@@ -44,7 +44,8 @@ struct _Task;
 /**
  * @brief Prototype for functions that can be used with cCoroutine objects as
  * coroutine bodies.
- * @ingroup EnumsTypes
+
+ * @ingroup SimSupport
  */
 typedef void (*CoroutineFnp)( void * );
 
@@ -69,7 +70,7 @@ typedef void (*CoroutineFnp)( void * );
  * maybe several hundred megabytes), otherwise a segmentation fault
  * will occur.
  *
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cCoroutine
 {

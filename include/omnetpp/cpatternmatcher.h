@@ -25,7 +25,7 @@ namespace omnetpp {
 namespace common { class PatternMatcher; };
 
 /**
- * @brief Glob-style pattern matching class, adopted to special OMNeT++ requirements.
+ * @brief Glob-style pattern matching class, adopted to special \opp requirements.
  * One instance represents a pattern to match.
  *
  * Pattern syntax:
@@ -69,6 +69,8 @@ namespace common { class PatternMatcher; };
  *     "{10..}", "{..99}" or "{..}" are valid numeric ranges (the last one
  *     matches any number). The specification must use exactly two dots.
  *     Caveat: "*{17..19}" will match "a17","117" and "963217" as well.
+ *
+ * @ingroup Utilities
  */
 class SIM_API cPatternMatcher
 {

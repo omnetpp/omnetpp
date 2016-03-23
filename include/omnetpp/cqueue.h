@@ -22,20 +22,23 @@ namespace omnetpp {
 
 
 /**
- * @brief Type for comparison functions for cObject. Return value should be:
+ * @brief Function for comparing two cObjects, used for example by cQueue.
+ *
+ * The return value should be:
  * - less than zero if a < b
  * - greater than zero if a > b
  * - zero if a == b
  *
- * @ingroup EnumsTypes
+ * @ingroup Containers
  */
 typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 
 /**
- * @brief Queue class for objects derived from cObject. The default behaviour of
- * cQueue is a FIFO: you insert elements at the back using insert(), and
- * remove them at the front using pop().
+ * @brief Queue class for objects derived from cObject.
+ *
+ * The default behaviour of cQueue is a FIFO: you insert elements at the back
+ * using insert(), and remove them at the front using pop().
  *
  * cQueue may be set up to act as a priority queue. This requires the user to
  * supply a comparison function.

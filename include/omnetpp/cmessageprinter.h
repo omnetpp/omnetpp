@@ -39,7 +39,7 @@ class cMessage;
  * message.
  *
  * @see Register_MessagePrinter()
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cMessagePrinter : public cNoncopyableOwnedObject
 {

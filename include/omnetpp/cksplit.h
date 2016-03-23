@@ -52,13 +52,13 @@ class SIM_API cKSplit : public cDensityEstBase
 
     /**
      * Prototype for cell split criterion functions used by cKSplit objects.
-     * @ingroup EnumsTypes
+     * @ingroup Statistics
      */
     typedef int (*CritFunc)(const cKSplit&, cKSplit::Grid&, int, double *);
 
     /**
      * Prototype for cell division criterion functions used by cKSplit objects.
-     * @ingroup EnumsTypes
+     * @ingroup Statistics
      */
     typedef double (*DivFunc)(const cKSplit&, cKSplit::Grid&, double, double *);
 

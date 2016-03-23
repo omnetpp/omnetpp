@@ -21,14 +21,16 @@
 namespace omnetpp {
 
 /**
- * @brief Default implementation for the future event set. The underlying data structure
- * is (binary) heap, which provides reliable performance for most workloads.
- * A worst case for heap is insertion at the front (i.e. for the current simulation
- * time); it is actually quite common, due to the abundance of zero-delay links in models.
- * This case is optimized by employing an additional circular buffer specifically
- * for storing events inserted scheduled for the current simulation time.
+ * @brief The default, binary heap based implementation of the future event set.
  *
- * @ingroup Internals
+ * Using binary heap as the underlying data structure provides reliable
+ * performance for most workloads. A worst case for heap is insertion at the
+ * front (i.e. for the current simulation time), which is actually quite common,
+ * due to the abundance of zero-delay links in models. This case is optimized
+ * by employing an additional circular buffer specifically for storing events
+ * inserted scheduled for the current simulation time.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cEventHeap : public cFutureEventSet
 {

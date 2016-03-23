@@ -47,7 +47,7 @@ class  cXMLElement;
  *     - <b>P</b> pointer to cOwnedObject,
  *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class SIM_API cMsgPar : public cOwnedObject
 {

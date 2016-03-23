@@ -3,8 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Author: Andras Varga
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -31,7 +29,7 @@ namespace omnetpp {
  * @brief This class defines the interface for fingerprint calculators.
  *
  * @see cSimulation::getFingerprintCalculator()
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cFingerprintCalculator : public cObject, noncopyable
 {
@@ -78,13 +76,13 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
 #ifdef USE_OMNETPP4x_FINGERPRINTS
 
 /**
- * @brief Computes \opp 4.x compatible fingerprints. This class is only
- * available when \opp was compiled with USE_OMNETPP4x_FINGERPRINTS
- * defined. Note that USE_OMNETPP4x_FINGERPRINTS affects other parts
- * of the \opp codebase as well (e.g. SimTime), not only the availability
- * of this class.
+ * @brief Computes \opp 4.x compatible fingerprints.
  *
- * @ingroup EnvirExtensions
+ * This class is only available when \opp was compiled with USE_OMNETPP4x_FINGERPRINTS
+ * defined. Note that USE_OMNETPP4x_FINGERPRINTS affects other parts of the \opp
+ * codebase as well (e.g. SimTime), not only the availability of this class.
+ *
+ * @ingroup Internals
  */
 class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
 {
@@ -126,8 +124,9 @@ class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
 #else // if !USE_OMNETPP4x_FINGERPRINTS
 
 /**
- * @brief This class calculates the "fingerprint" of a simulation. The
- * fingerprint is a 32-bit hash value calculated from various data
+ * @brief This class calculates the "fingerprint" of a simulation.
+ *
+ * The fingerprint is a 32-bit hash value calculated from various data
  * of the simulation events and simulation results. The calculator
  * can be configured to consider only certain events, modules, and
  * results using filter expressions.
@@ -151,7 +150,7 @@ class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
  *  - 'v' vector results
  *  - 'x' extra data provided by modules
  *
- * @ingroup EnvirExtensions
+ * @ingroup Internals
  */
 class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
 {
@@ -244,11 +243,12 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
 
 
 /**
- * @brief This class calculates multiple fingerprints simultaneously. The calculator
- * can be configured similarly to the cSingleFingerprintCalculator class, but in this case
- * each option is a comma separated list.
+ * @brief This class calculates multiple fingerprints simultaneously.
  *
- * @ingroup EnvirExtensions
+ * The calculator can be configured similarly to the cSingleFingerprintCalculator
+ * class, but in this case each option is a comma separated list.
+ *
+ * @ingroup Internals
  */
 class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
 {

@@ -214,12 +214,14 @@ class SIM_API cException : public std::exception
 };
 
 /**
- * @brief Thrown when the simulation is completed.
- * For example, cSimpleModule::endSimulation() throws this exception.
- * Statistics object may also throw this exception to
- * signal that accuracy of simulation results has reached the desired level.
+ * @brief Thrown when the simulation is completed without error.
  *
- * @ingroup Internals
+ * For example, cSimpleModule::endSimulation() throws this exception.
+ * Statistical result collection objects may also throw this exception
+ * to signal that the accuracy of simulation results has reached the
+ * desired level.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cTerminationException : public cException
 {
@@ -256,12 +258,14 @@ class SIM_API cTerminationException : public cException
 };
 
 /**
- * @brief Thrown when the simulation kernel or other components detect a runtime
- * error. For example, cSimpleModule::scheduleAt() throws this exception when
+ * @brief Thrown when the simulation kernel or other components detect a
+ * runtime error.
+ *
+ * For example, cSimpleModule::scheduleAt() throws this exception when
  * the specified simulation time is in the past, or the message pointer
  * is nullptr.
  *
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cRuntimeError : public cException
 {
@@ -312,9 +316,8 @@ class SIM_API cRuntimeError : public cException
 };
 
 /**
- * @brief This exception is only thrown from cSimpleModule::deleteModule()
- * if the current module is to be deleted, in order to exit that module
- * immediately.
+ * @brief Thrown from cSimpleModule::deleteModule() when the current module is
+ * about to be deleted, in order to exit that module immediately.
  *
  * @ingroup Internals
  */
@@ -346,6 +349,7 @@ class SIM_API cDeleteModuleException : public cException
 
 /**
  * @brief Used internally when deleting an activity() simple module.
+ *
  * Then, the coroutine running activity() is "asked" to throw a
  * cStackCleanupException to achieve stack unwinding, a side effect of
  * exceptions, in order to properly clean up activity()'s local variables.

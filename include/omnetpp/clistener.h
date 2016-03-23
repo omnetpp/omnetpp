@@ -149,9 +149,10 @@ class SIM_API cIListener
 
 /**
  * @brief A do-nothing implementation of cIListener, suitable as a base class
- * for other listeners. The user needs to redefine one or more of the
- * overloaded receiveSignal() methods; the rest will throw a "Data type
- * not supported" error.
+ * for other listeners.
+ *
+ * The user needs to redefine one or more of the overloaded receiveSignal()
+ * methods; the rest will throw a "Data type not supported" error.
  *
  * @ingroup Signals
  */

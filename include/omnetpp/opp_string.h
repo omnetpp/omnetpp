@@ -33,7 +33,7 @@ namespace omnetpp {
  * deallocation of the contents takes place via opp_strdup() and operator
  * delete.
  *
- * @ingroup Internals
+ * @ingroup Utilities
  */
 class SIM_API opp_string
 {
@@ -162,7 +162,7 @@ inline std::ostream& operator<<(std::ostream& out, const opp_string& s)
  * Inheritance is used to "de-templatize" the vector class, because the
  * Windows DLL interface is not really a friend of templated classes.
  *
- * @ingroup Internals
+ * @ingroup Utilities
  */
 class SIM_API opp_string_vector : public std::vector<opp_string>
 {
@@ -177,7 +177,7 @@ class SIM_API opp_string_vector : public std::vector<opp_string>
  * Inheritance is used to "de-templatize" the map class, because the
  * Windows DLL interface is not really a friend of templated classes.
  *
- * @ingroup Internals
+ * @ingroup Utilities
  */
 class SIM_API opp_string_map : public std::map<opp_string,opp_string>
 {

@@ -26,9 +26,13 @@ namespace omnetpp {
 class cOwnedObject;
 
 /**
- * @brief Stores objects with a qualified name. The getName() method of objects
- * should return the unqualified name (without namespace or package name),
- * and the getFullName() method the qualified name (with namespace or package).
+ * @brief Implements a list or table of objects with qualified names.
+ *
+ * The getName() method of objects should return the unqualified name
+ * (without namespace or package name), and the getFullName() method
+ * the qualified name (with namespace or package).
+ *
+ * @ingroup Internals
  */
 class SIM_API cRegistrationList : public cNamedObject, noncopyable
 {

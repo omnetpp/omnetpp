@@ -28,21 +28,27 @@ namespace osgEarth { class Viewpoint; }
 namespace omnetpp {
 
 /**
- * @brief Wraps an OpenSceneGraph scene, allowing 3D visualization in graphical user
- * interfaces that support it (currently Qtenv). This class only wraps an OSG
- * scene (as an osg::Node* pointer) and some visualization hints, other
- * tasks like setting up a 3D viewer window are taken care of by the OMNeT++
- * user interface code (Qtenv). The scene graph can be assembled using the OSG
- * API, e.g. using osgDB::readNodeFile() or creating and adding nodes directly.
+ * @brief Wraps an OpenSceneGraph scene, allowing 3D visualization in graphical
+ * user interfaces that support it (currently Qtenv).
+ *
+ * This class only wraps an OSG scene (as an osg::Node* pointer) and some
+ * visualization hints, other tasks like setting up a 3D viewer window are
+ * taken care of by the OMNeT++ user interface code (Qtenv). The scene graph
+ * can be assembled using the OSG API, e.g. using osgDB::readNodeFile() or
+ * creating and adding nodes directly.
  *
  * Since OpenSceneGraph is not a mandatory part of OMNeT++, it is recommended
- * that you surround your OSG code with #ifdef WITH_OSG.
+ * that you surround your OSG code with \#ifdef WITH_OSG.
  *
- * @ingroup Canvas
+ * @ingroup OSG
  */
 class SIM_API cOsgCanvas : public cOwnedObject
 {
     public:
+        /**
+         * @brief Viewer styles.
+         * @ingroup OSG
+         */
         enum ViewerStyle {
             STYLE_GENERIC, ///< For generic (non-osgEarth) OSG models
             STYLE_EARTH    ///< For osgEarth models
@@ -50,6 +56,10 @@ class SIM_API cOsgCanvas : public cOwnedObject
 
         typedef cFigure::Color Color;
 
+        /**
+         * @brief Camera manupulator types.
+         * @ingroup OSG
+         */
         enum CameraManipulatorType {
             CAM_AUTO,      ///< Choose the camera manipulator automatically
             CAM_TERRAIN,   ///< Suitable for flying above an object or terrain
@@ -66,11 +76,28 @@ class SIM_API cOsgCanvas : public cOwnedObject
             operator osg::Vec3d() const;
         };
 
+        /**
+         * @brief Defines a viewpoint in the 3D space.
+         *
+         * The Viewpoint is defined by the position of the eye, the point
+         * to look at, and the "up" direction. See OpenGL gluLookAt() for
+         * details.
+         *
+         * @ingroup OSG
+         */
         struct Viewpoint {
-            Vec3d eye, center, up; // see OpenGL gluLookAt
+            /** @name Data members. */
+            //@{
+            Vec3d eye;    ///< Specifies the position of the eye point.
+            Vec3d center; ///< Specifies the position of the reference point.
+            Vec3d up;     ///< Specifies the direction of the up vector.
             bool valid;
+            //@}
+            /** @name Methods. */
+            //@{
             Viewpoint() : valid(false) {}
-            Viewpoint(const Vec3d &eye, const Vec3d &center, const Vec3d &up): eye(eye), center(center), up(up), valid(true) {}
+            Viewpoint(const Vec3d& eye, const Vec3d& center, const Vec3d& up): eye(eye), center(center), up(up), valid(true) {}
+            //@}
         };
 
     protected:

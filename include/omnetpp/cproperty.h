@@ -28,10 +28,12 @@ namespace omnetpp {
 
 
 /**
- * @brief Stores a property with its value. The value consists of key-valuelist pairs;
- * the key might be empty (default key).
+ * @brief Stores a (NED) property with its (possibly compound) value.
  *
- * @ingroup Internals
+ * The value consists of key-valuelist pairs; the key might be empty
+ * (default key).
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cProperty : public cNamedObject
 {

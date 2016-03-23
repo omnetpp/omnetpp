@@ -311,11 +311,7 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
 }
 
 
-
-/**
- * @ingroup Macros
- * @defgroup MacrosWatch WATCH macros
- */
+/** @ingroup WatchMacros */
 //@{
 
 /**

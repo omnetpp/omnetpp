@@ -41,8 +41,8 @@ class cSimulation;
  * scheduler-class = "MyClass"
  * </pre>
  *
- * @ingroup EnvirExtensions
- * @ingroup Internals
+ * @ingroup SimSupport
+ * @ingroup ExtensionPoints
  */
 class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
 {
@@ -146,7 +146,7 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
 /**
  * @brief Event scheduler for sequential simulation.
  *
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cSequentialScheduler : public cScheduler
 {
@@ -189,7 +189,7 @@ class SIM_API cSequentialScheduler : public cScheduler
  * For example, if it is set to 2.0, the simulation will try to execute twice
  * as fast as real time.
  *
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 //TODO soft realtime, hard realtime (that is: tries to catch up, or resynchronizes on each event)
 class SIM_API cRealTimeScheduler : public cScheduler

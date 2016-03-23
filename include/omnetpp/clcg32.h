@@ -29,6 +29,7 @@ namespace omnetpp {
 /**
  * @brief Implements a 32-bit (2^31-2 cycle length) linear congruential random
  * number generator.
+ *
  *    - Range:              1 ... 2^31-2
  *    - Period length:      2^31-2
  *    - Method:             x=(x * 7^5) mod (2^31-1)

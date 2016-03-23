@@ -51,6 +51,8 @@ namespace omnetpp {
  *
  * The \opp object should exist as long as the wrapper node exists. Otherwise,
  * clicking child nodes with the mouse is likely to result in a crash.
+ *
+ * @ingroup OSG
  */
 class SIM_API cObjectOsgNode : public osg::Group
 {

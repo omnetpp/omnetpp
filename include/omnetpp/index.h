@@ -27,18 +27,18 @@ namespace omnetpp {
  * links at the top of this page:
  *
  * - @ref SimCore
+ * - @ref SimSupport
+ * - @ref SimTime
  * - @ref Containers
  * - @ref RandomNumbers
  * - @ref Statistics
  * - @ref Canvas
- * - @ref SimSupport
- * - @ref Envir
+ * - @ref OSG
+ * - @ref FSM
+ * - @ref Utilities
  * - @ref Logging
- * - @ref EnumsTypes
- * - @ref Functions
- * - @ref Macros
+ * - @ref ExtensionPoints
  * - @ref Internals
- * - @ref EnvirExtensions
  * - @ref ParsimBrief
  *
  * If you have used the \opp before:
@@ -53,44 +53,59 @@ namespace omnetpp {
 
 
 /**
- * @defgroup SimCore  Simulation core classes
+ * @defgroup SimCore  Simulation Core
  *
- * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
+ * @brief Classes in this group, such as cSimpleModule or cMessage, are
+ * essential to writing \opp simulation models.
  *
- *    - cObject and cOwnedObject are the base classes for most \opp classes
  *    - cModule and cSimpleModule represent modules in the simulation.
- *      The user implements new models by subclassing cSimpleModule and
- *      overriding at least its activity() or handleMessage() member function.
+ *      The user implements new modules by subclassing cSimpleModule and
+ *      overriding its handleMessage() or activity() member function.
+ *    - cChannel and subclasses encapulate properties of connections between modules
  *    - cMessage represents events, and also messages sent among modules
- *    - cGate represents module gates
  *    - cPar represents parameters of modules and channels
- *    - cSimulation stores all modules of the network and the
- *      data structure for scheduled events (the <i>future event set</i>)
- *      Most methods are used internally, but some are useful for model
- *      developers as well.
- *
- * Many other classes closely related to the above ones are not listed
- * here explicitly, but you can find them via 'See also' links from their
- * main classes.
+ *    - cGate represents module gates (attachment points of connections)
  */
 
 /**
- * @defgroup Containers  Container classes
+ * @defgroup SimSupport  Simulation Support
  *
- * Container classes:      <!-- blank line needed for autobrief=yes -->
+ * @brief Classes and other items in this group are important part of the
+ * simulation kernel, but they are not of primary interest to simulation model
+ * authors.
  *
- *    - cQueue: a generic queue class
- *    - cPacketQueue: a queue specialized for message objects (cMessage)
- *    - cArray: a dynamic array
+ * Central classes are:
+ *    - cObject and cOwnedObject are the base classes for most \opp classes
+ *    - cSimulation stores the network with its mudules and channels,
+ *      the future events set, and the event scheduler.
+ *    - cEnvir represents the runtume environment or user interface of the
+ *      simulation kernel and simulations.
+ */
+
+/**
+ * @defgroup Containers  Container Classes
+ *
+ * @brief \opp provides container classes that are aware of the simulation
+ * kernel's ownership mechanism, and also make contents inspectable in
+ * runtime GUIs like Qtenv or Tkenv.
  *
  * In addition, one can also use standard C++ container classes like
  * std::vector or std::map. Note that these containers will not show up
- * in Tkenv's inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
+ * in Tkenv or Qtenv inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
  * macros.
  */
 
 /**
- * @defgroup RandomNumbers  Random number generation
+ * @defgroup SimTime  Simulation Time
+
+ * @brief The simulation kernel and models use simtime_t to represent simulation
+ * time. simtime_t is an alias to the SimTime class that is 64-bit fixed-point
+ * representation with a globally shared exponent. This group describes simtime_t,
+ * SimTime, and related types and macros.
+ */
+
+/**
+ * @defgroup RandomNumbers  Random Number Generation
  *
  * <b>Distributions</b>
  *
@@ -124,10 +139,10 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup Statistics  Statistical data collection
+ * @defgroup Statistics  Statistical Result Collection
  *
- * \opp provides a variety of statistical classes. There are basic classes
- * which compute basic statistics like mean and standard deviation,
+ * @brief \opp provides a variety of statistical classes. There are basic
+ * classes which compute basic statistics like mean and standard deviation,
  * some classes deal with density estimation, and other classes support
  * automatic detection of the end of a transient, and automatic detection
  * of accuracy of collected statistics.
@@ -136,12 +151,13 @@ namespace omnetpp {
  * Most other classes are mostly polymorphic on these two, which means
  * most functionality in subclasses is available via virtual functions
  * defined in cStatistic and cDensityEstBase.
+ *
  * The transient detection and result accuracy classes are derived from
  * the cTransientDetection and cAccuracyDetection abstract base classes.
  *
  * The classes are:
  *    - cOutVector is used to record vector simulation results (an output
- *      vector, containing <i>(time, value)</i> pairs) to file
+ *      vector, containing (time, value) pairs) to file
  *    - cStdDev keeps mean, standard deviation, minimum and maximum value etc.
  *    - cWeightedStdDev is similar to cStdDev, but accepts weighted observations.
  *      cWeightedStdDev can be used for example to calculate time average.
@@ -172,16 +188,14 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup Canvas  Canvas and figure classes
+ * @defgroup Canvas  Canvas (2D Graphics)
  *
- * \opp provides a 2D figure-based drawing API. <!-- blank line needed for autobrief=yes -->
+ * @brief \opp provides a 2D figure-based drawing API. The central classes
+ * are cFigure and cCanvas.
  *
  * One can create figure objects (derived from cFigure), and place them on
  * a canvas (cCanvas). Every module has its own canvas (cModule::getCanvas()),
- * and one may create additional ones directly. Figure classes are data
- * storage classes only, actual rendering is in the GUI code (e.g. Tkenv).
- * Figures form an object tree, where child figure coordinates are relative
- * to the parent figure.
+ * and one may create additional ones directly.
  *
  * cFigure contains the following utility classes:
  *    - cFigure::Point, cFigure::Rectangle, cFigure::Color, cFigure::Font,
@@ -201,7 +215,7 @@ namespace omnetpp {
  *    - cRingFigure - ring
  *    - cPieSliceFigure - pie slice
  *    - cPolygonFigure - (smoothed) polygon
- *    - cPathFigure - optionally filled path, modelled after SVG
+ *    - cPathFigure - optionally filled path, modeled after SVG
  *
  * Text figures:
  *    - cTextFigure - text
@@ -214,109 +228,90 @@ namespace omnetpp {
  */
 
 /**
- * @defgroup SimSupport  Utility classes
+ * @defgroup OSG  OSG (3D Graphics)
  *
- * Classes that make it easier to write simulation models: <!-- blank line needed for autobrief=yes -->
- *
- *    - cXMLElement makes XML configuration available for simple modules
- *    - cTopology supports routing in telecommunication or multiprocessor networks
- *    - cStringTokenizer splits up a string to words
- *    - cFSM is used to build Final State Machines
- *    - cVisitor: subclass from this to traverse the tree of simulation objects
- *
- * Many other classes closely related to the above ones are not listed
- * here explicitly, but you can find them via 'See also' links from their
- * main classes.
+ * @brief \opp provides support for 3D visualization of simulation scenes,
+ * with the help of the OpenSceneGraph and osgEarth libraries. Assemble
+ * an OSG scene and give it to a cOsgCanvas for visualization.
  */
 
 /**
- * @defgroup Envir  User interface: cEnvir and ev
- */
-
-/**
- * @defgroup Logging Logging
- */
-
-/**
- * @defgroup EnumsTypes  Enums, types, function typedefs
- */
-
-/**
- * @defgroup Functions  Functions
- */
-
-/**
- * @defgroup Macros  Macros
- */
-
-/**
- * @defgroup EnvirExtensions  Extension interfaces
+ * @defgroup FSM  FSM Support
  *
- * Classes in this group provide a plugin mechanism that can be used to
- * customize the functionality of the Envir user interface library
- * (and also Cmdenv and Tkenv, because they build on Envir).
- *
- * To customize, subclass from the classes below, and select the new class
- * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>,
- * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>,
- * etc. config options.
- *
- *    - cResultFilter, cResultRecorder: subclass them if you need new filters
- *      or recorders for signal-based statistic recoding (<tt>@statistic</tt>)
- *    - cIOutputVectorManager, cIOutputScalarManager, cISnapshotManager: subclassing
- *      them lets you write output vectors, output scalars and simulation snapshots
- *      in a different format or in a different way (e.g. into a database)
- *      let you
- *    - cRNG: subclass it if you want to use a new random number generator algorithm
- *    - cConfiguration, cConfigurationEx: subclass it if you want to customize or
- *      override the inifile-based configuration mechanism
+ * @brief Macros and classes for writing Finite State Machines. An FSM is
+ * defined with the FSM_Switch() macro.
  */
 
 /**
- * @defgroup Internals  Internal classes
+ * @defgroup Signals  Signals
  *
- * The classes described here are used internally by the simulation kernel.
+ * @brief Simulation signals (or just signals) provide a way of publish-subscribe
+ * communication for models. Signals are represented by the type simsignal_t,
+ * are emitted on a module or channel using cComponent::emit(), and propagate
+ * up in the module tree. At any level, one may add listeners (cIListener)
+ * with cComponent::subscribe().
+ *
+ * The simulation kernel also utilizes signals for proving notifications about
+ * model changes such as creation and deletion of modules. The corresponding
+ * signals are PRE_MODEL_CHANGE and POST_MODEL_CHANGE, and details are provided
+ * via subclasses of cModelChangeNotification (various cPre/cPost..Notification
+ * classes).
+ */
+
+/**
+ * @defgroup Utilities  Utility Classes
+ *
+ * @brief This group is a collection of classes and functions that make it easier
+ * to write simulation models.
+ */
+
+/**
+ * @defgroup Logging  Logging
+ *
+ * @brief \opp provides a logging mechanism for models, with support for log levels,
+ * filtering, a configurable log prefix, and more.
+ *
+ * At a basic level, use EV_INFO as a stream, i.e. send data into it with the
+ * left-shift (<<) operator. Also, be sure to review EV_STATICCONTEXT!
+ */
+
+/**
+ * @defgroup WatchMacros  WATCH Macros
+ *
+ * @brief WATCH macros make normal variables show up in Tkenv/Qtenv inspectors.
+ */
+
+/**
+ * @defgroup RegMacros Registration Macros
+ *
+ * @brief Macros for registering various classes, functions and other extension
+ * items with the simulation kernel. Registration is necessary for allowing
+ * instantiation by class name and attaching meta-information.
+ */
+
+/**
+ * @defgroup ExtensionPoints  Extension Points
+ *
+ * @brief Classes in this group provide a plugin mechanism that can be used to
+ * customize the functionality of the simulation kernel or the Envir user
+ * interface library.
+ */
+
+/**
+ * @defgroup Internals  Internal Classes
+ *
+ * @brief The classes described here are used internally by the simulation kernel.
  * They are normally of very little interest to the simulation programmer.
  * Note that although these internal classes do have a documented API,
  * they may change more often than other classes, simply because
  * they are not used in simulation models and thus backwards compatibility
  * is less important.
- *
- * Classes associated with simulation execution:
- *   - cSimulation has a single instance. It stores the network and
- *     manages simulation runs.
- *   - cScheduler is a base class for schedulers (see in @ref EnvirExtensions
- *     as well)
- *   - cFutureEventSet is a base class for FES (Future Event Set) data structures
- *   - cCoroutine is the engine behind activity()-based simple modules
- *   - cWatch is the class behind the WATCH() and LWATCH() macros
- *
- * Registration classes are listed below. They play the role of a central
- * registry in \opp -- each instance holds some specific piece of (static)
- * information or serves as a factory object for other objects.
- *
- * Registration objects play an important role at network build time (they
- * store information about available module, channel, etc. types and can
- * instantiate them), and for inspectors in graphical user interfaces like
- * Tkenv.
- *
- *   - cModuleType can instantiate a module type
- *   - cChannelType can instantiate a channel type
- *   - cNEDMathFunction stores a pointer to a math function accessible from NED
- *   - cObjectFactory can instantiate a class, given the class name as string
- *   - cClassDescriptor provides a generic way to access data in a struct
- *     or class (somewhat analogous to Java reflection)
- *   - cEnum maps enum values to their string representations and vica versa
- *
- * Some other classes, closely related to the above ones are not listed
- * here explicitly, but you can find them via 'See also' links from their
- * main classes.
  */
 
 /**
- * @defgroup ParsimBrief  Parallel simulation extension
+ * @defgroup ParsimBrief  Parallel Simulation Extension
  *
- * These classes are used with the parallel simulation feature.
+ * @brief Classes in this group belong to the parallel simulation feature.
  * For more information, please see the separate Parallel Simulation API
  * which is generated from the source files in <tt>src/sim/parsim</tt>
  * directory.

@@ -26,13 +26,13 @@ class cStatistic;
 
 /**
  * @brief Prototype for callback functions used by a cTransientDetection object.
- * @ingroup EnumsTypes
+ * @ingroup Statistics
  */
 typedef void (*PostTDFunc)(cTransientDetection *, void *);
 
 /**
  * @brief Prototype for callback functions used by a cAccuracyDetection object.
- * @ingroup EnumsTypes
+ * @ingroup Statistics
  */
 typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 

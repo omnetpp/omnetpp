@@ -29,24 +29,20 @@ namespace omnetpp {
  * empty body, with a trivial implementation, or to throw an exception
  * with the "unsupported method" text.
  *
- * This class is not used by \opp, it is provided for convenience of
- * writing standalone programs that embed the simulation kernel as a library.
+ * This class is not used by \opp, it is provided for convenience of writing
+ * standalone programs that embed the simulation kernel as a library.
  *
  * You may want to subclass from cNullEnvir, and redefine some the following
  * methods:
- * <ul>
- *   <li> sputn() to print module log messages instead of discarding
- *        them (<tt>::fwrite(s,1,n,stdout);</tt>);
- *   <li> readParameter() to set module parameters, or at least apply the
- *        NED default value;
- *   <li> the RNG methods (getNumRNGs(), getRNG()) to provide more than one
- *        random number generator
- *   <li> recordScalar() and other statistics recording methods to store
- *        simulation results instead of discarding them
- * </ul>
+ *  - log() to print log messages instead of discarding them;
+ *  - readParameter() to set module parameters, or at least apply the
+ *    NED default value;
+ *  - the RNG methods (getNumRNGs(), getRNG()) to provide more than one
+ *    random number generator
+ *  - recordScalar() and other statistics recording methods to store
+ *    simulation results instead of discarding them
  *
- * @ingroup Envir
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cNullEnvir : public cEnvir
 {

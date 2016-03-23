@@ -20,10 +20,7 @@
 
 namespace omnetpp {
 
-/**
- * @ingroup Macros
- * @defgroup MacrosFSM Final State Machine macros
- */
+/** @addtogroup FSM */
 //@{
 
 /**
@@ -45,7 +42,7 @@ namespace omnetpp {
  * The actual FSM is embedded in an FSM_Switch(), which has cases for
  * entering and leaving each state:
  *
- * <PRE>
+ * <pre>
  * FSM_Switch(fsm)
  * {
  *     case FSM_Exit(state1):
@@ -62,7 +59,7 @@ namespace omnetpp {
  *         break;
  *     //...
  * }
- * </PRE>
+ * </pre>
  *
  * States are declared in enums, using the FSM_Transient() and FSM_Steady() macros.
  *
@@ -92,16 +89,16 @@ namespace omnetpp {
 
 /**
  * @brief Declares a transient state; to be used in enum which declares states.
- * Example:
  *
- * <PRE>
+ * Example:
+ * <pre>
  * enum {
  *    INIT = 0,
  *    SLEEP = FSM_Steady(1),
  *    ACTIVE = FSM_Steady(2),
  *    SEND = FSM_Transient(1),
  * };
- * </PRE>
+ * </pre>
  *
  * The numbers in parens must be unique within the state type and they are
  * used for constructing numeric IDs for the states.
@@ -113,6 +110,7 @@ namespace omnetpp {
 
 /**
  * @brief Declares a steady state; to be used in enum which declares states.
+ *
  * See example in FSM_Transient.
  *
  * @hideinitializer
@@ -122,6 +120,7 @@ namespace omnetpp {
 
 /**
  * @brief Create state for FSM_Enter and FSM_Exit.
+ *
  * Handling signed (transient) flag with shift value operation correctly.
  *
  * @hideinitializer
@@ -131,8 +130,9 @@ namespace omnetpp {
 
 /**
  * @brief Within an FSM_Switch() case branch, declares code to be executed
- * on entering the given state. No calls to FSM_Goto() are allowed
- * within a state's Enter block.
+ * on entering the given state.
+ *
+ * Calls to FSM_Goto() are not allowed within a state's Enter block.
  *
  * @hideinitializer
  * @see FSM_Switch
@@ -186,7 +186,7 @@ namespace omnetpp {
  * @brief Store the state of an FSM. This class is used in conjunction with
  * the FSM_Switch() and other FSM_ macros.
  *
- * @ingroup SimSupport
+ * @ingroup FSM
  * @see FSM_Switch, FSM_Transient, FSM_Steady, FSM_Enter, FSM_Exit, FSM_Goto
  */
 class SIM_API cFSM : public cOwnedObject

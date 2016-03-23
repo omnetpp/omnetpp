@@ -31,6 +31,7 @@ class cPar;
 
 /**
  * @brief Enum for simulation time base-10 exponents.
+ * @ingroup SimTime
  */
 enum SimTimeUnit
 {
@@ -43,10 +44,11 @@ enum SimTimeUnit
 };
 
 /**
- * @brief int64_t-based, fixed-point simulation time. Precision is determined by a scale
- * exponent, which is global (shared by all SimTime instances), and falls in
- * the range -18..0. For example, a scale exponent of -6 means microsecond
- * precision.
+ * @brief int64_t-based, base-10 fixed-point simulation time.
+ *
+ * Precision is determined by a scale exponent, which is global (shared by
+ * all SimTime instances), and falls in the range -18..0. For example, a
+ * scale exponent of -6 means microsecond precision.
  *
  * Conversions and arithmetic operations are provided specifically for double
  * and cPar, and via template functions for integer types. Performance note:
@@ -57,6 +59,8 @@ enum SimTimeUnit
  * operation, without floating-point or int64_t multiplication.
  *
  * The underlying raw 64-bit integer is also made accessible.
+ *
+ * @ingroup SimTime
  */
 class SIM_API SimTime
 {
@@ -71,6 +75,11 @@ class SIM_API SimTime
     static bool checkmul;    // when true, multiplications are checked for integer overflow
 
   public:
+    /**
+     * Represents the zero simulation time. Using SimTime::ZERO may be faster
+     * than writing SimTime() or conversion from 0.0, because the constructor
+     * call may be spared.
+     */
     static const SimTime ZERO;
 
   protected:

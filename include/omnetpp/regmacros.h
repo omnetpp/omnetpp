@@ -20,10 +20,7 @@
 
 namespace omnetpp {
 
-/**
- * @ingroup Macros
- * @defgroup MacrosReg Registration macros
- */
+/** @ingroup RegMacros */
 //@{
 
 /**

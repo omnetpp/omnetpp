@@ -25,12 +25,18 @@ namespace common { class MatchExpression; };
 
 
 /**
- * @brief Matches various fields of an object. By default, a pattern must match
- * the "default field" of the object, which will usually be its name.
- * Other fields can be matched with the fieldname(pattern) syntax.
- * These elements can be combined with the AND, OR, NOT operators, accepted in
- * both lowercase and uppercase. AND has higher precedence than OR, but
- * parentheses can be used to change the evaluation order.
+ * @brief Decides whether an object matches an expression.
+ *
+ * Objects must implement, or be wrapped into an instance of,
+ * cMatchExpression::Matchable to be used with this class.
+ * Fields of the object will be queried via methods of Matchable.
+ *
+ * By default, a pattern must match the "default field" of the object,
+ * which will usually be its name. Other fields can be matched with the
+ * fieldname(pattern) syntax. These elements can be combined with the
+ * AND, OR, NOT operators, accepted in both lowercase and uppercase.
+ * AND has higher precedence than OR, but parentheses can be used to
+ * change the evaluation order.
  *
  * Patterns are those accepted by cPatternMatcher, that is, "*", "?",
  * character ranges as "{a-z}", numeric ranges as "{0..999}", or bracketed
@@ -45,12 +51,15 @@ namespace common { class MatchExpression; };
  *  - "packet-* and className(PPPFrame)"
  *  - "className(TCPSegment) and not kind({0..2}) and SYN or data-*"
  *  - "className(TCPSegment) or byteLength({4096..})
+ *
+ * @ingroup Utilities
  */
 class SIM_API cMatchExpression
 {
   public:
     /**
-     * @brief Objects to be matched must implement this interface
+     * @brief Objects to be matched must implement this interface.
+     * @ingroup Utilities
      */
     class SIM_API Matchable
     {
@@ -110,6 +119,7 @@ class SIM_API cMatchExpression
 
 /**
  * @brief Wrapper to make a string matchable with cMatchExpression.
+ * @ingroup Utilities
  */
 class SIM_API cMatchableString : public cMatchExpression::Matchable
 {

@@ -32,7 +32,7 @@ class cProperty;
  * of <tt>@statistic</tt> properties in NED files, and with the
  * <tt>**.result-recording-modes=</tt> configuration option.
  *
- * @ingroup MacrosReg
+ * @ingroup RegMacros
  * @hideinitializer
  */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
@@ -44,7 +44,7 @@ class cProperty;
  * @brief Abstract base class for result recorders.
  *
  * @see Register_ResultRecorder()
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cResultRecorder : public cResultListener
 {
@@ -83,7 +83,7 @@ class SIM_API cResultRecorder : public cResultListener
  * convert all numeric data types to double, and throw an error for non-numeric
  * types (const char *, cObject *).
  *
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cNumericResultRecorder : public cResultRecorder
 {

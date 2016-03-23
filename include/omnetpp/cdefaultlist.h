@@ -28,7 +28,7 @@ namespace omnetpp {
  * cDefaultList acts as a "soft owner" (see object ownership discussion
  * in cOwnedObject documentation).
  *
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cDefaultList : public cNoncopyableOwnedObject
 {

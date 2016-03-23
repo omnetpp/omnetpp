@@ -66,7 +66,7 @@ class cConfigOption;
  * assigned via cEnvir's readParameter() method.
  *
  * @see cConfigurationEx, cEnvir::getConfig()
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cConfiguration : public cObject
 {
@@ -259,18 +259,16 @@ class SIM_API cConfiguration : public cObject
 
 /**
  * @brief Represents a configuration suitable for use with the Envir library.
- * This class extends cConfiguration with the following functionality:
  *
- * <ul>
- *   <li> Methods for reading module parameters; cEnvir's readParameter()
- *        method delegates to them by default.
- *   <li> Support for multiple configurations (enumeration, activation, etc.)
- *   <li> Parameter Study support: run numbers, iteration variables, unrolling, etc.
- *   <li> Other utility functions like dump()
- * </ul>
+ * This class extends cConfiguration with the following functionality:
+ *   - Methods for reading module parameters; cEnvir's readParameter()
+ *     method delegates to them by default.
+ *   - Support for multiple configurations (enumeration, activation, etc.)
+ *   - Parameter Study support: run numbers, iteration variables, unrolling, etc.
+ *   - Other utility functions like dump()
  *
  * @see cEnvir::getConfigEx()
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cConfigurationEx : public cConfiguration
 {

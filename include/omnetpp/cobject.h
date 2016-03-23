@@ -33,11 +33,13 @@ class cOwnedObject;
 
 
 /**
- * @brief Root of the \opp class hierarchy. cObject is a lightweight class, it
- * does not contain any data members.
+ * @brief Root of the \opp class hierarchy. cObject is a lightweight class
+ * without any data members.
  *
- * Note: In OMNeT++ 2.x and 3.x, cObject was called cPolymorphic.
- * Class cObject in 2.x and 3.x has been renamed to cOwnedObject.
+ * cObject and its subclass cOwnedObject define an ownership mechanism.
+ * Any cObject may become owner of other objects, but owned objects must be
+ * subclassed from cOwnedObject. cObject also contains methods that allow
+ * the object to be displayed in graphical user interfaces (Tkenv, Qtenv).
  *
  * It is recommended to use cObject as a base class for any class
  * that has at least one virtual member function. This makes the class more
@@ -45,24 +47,13 @@ class cOwnedObject;
  * sizeof(cObject) should yield 4 on a 32-bit architecture (4-byte vptr),
  * and using cObject as a base class does not add anything to the size
  * of an object, because a class with a virtual function already has a vptr.
- *
- * cObject allows the object to be displayed in graphical user
- * interface (Tkenv) via the getClassName(), info() and detailedInfo() methods
- * which you may choose to redefine in your own subclasses.
- *
- * Using cObject also strengthens type safety. <tt>cObject *</tt>
- * pointers should replace <tt>void *</tt> in most places where you need
- * pointers to "any data structure". Using cObject will allow safe
- * downcasts using <tt>dynamic_cast</tt> and also \opp's
- * <tt>check_and_cast</tt>.
- *
- * Any cObject may become owner of other objects, but owned objects must be
- * subclassed from cOwnedObject.
- *
  * Subclasses are expected to redefine member functions such as dup(),
- * info(), etc.
+ * info(), forEachChild(), etc.
  *
- * @ingroup SimCore
+ * Note: The (cPolymorphic, cObject) classes in \opp versions 2.x and 3.x
+ * were renamed to (cObject, cOwnedObject) in version 4.0.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cObject
 {
@@ -194,19 +185,18 @@ class SIM_API cObject
     //@{
 
     /**
-     * Makes this object the owner of 'object'.
-     * The function called by the container object when it takes ownership
-     * of the obj object that is inserted into it.
+     * Makes this object the owner of obj. This method should be called by
+     * container classes when they take ownership of an object inserted into
+     * them.
      *
      * The obj pointer should not be nullptr.
      */
     virtual void take(cOwnedObject *obj);
 
     /**
-     * Releases ownership of `object', giving it back to its default owner.
-     * The function called by the container object when obj is removed
-     * from the container -- releases the ownership of the object and
-     * hands it over to its default owner.
+     * Releases ownership of obj, giving it back to its default owner.
+     * This method should be called by container classes when an object is
+     * removed from the container.
      *
      * The obj pointer should not be nullptr.
      */
@@ -250,8 +240,8 @@ class SIM_API cObject
     /** @name Miscellaneous functions. */
     //@{
     /**
-     * May be redefined to return an owner or parent object. This default
-     * implementation just returns nullptr.
+     * Returns owner (or parent) object. This default implementation just
+     * returns nullptr.
      */
     virtual cObject *getOwner() const {return nullptr;}
 

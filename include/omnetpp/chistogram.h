@@ -127,12 +127,13 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
 
 /**
- * @brief Implements an equidistant histogram that can operate in two modes.
- * In INTEGERS mode, cell boundaries are whole numbers; in DOUBLES mode,
- * they can be real numbers. The operating mode can be chosen with a
- * constructor argument or with the setMode() method; the default behavior
- * is to choose the mode automatically, by inspecting precollected
- * observations.
+ * @brief Implements an equidistant histogram.
+ *
+ * The histogram can operate in two modes. In INTEGERS mode, cell boundaries
+ * are whole numbers; in DOUBLES mode, they can be real numbers. The operating
+ * mode can be chosen with a constructor argument or with the setMode() method;
+ * the default behavior is to choose the mode automatically, by inspecting
+ * precollected observations.
  *
  * By default, the number of cells is chosen automatically, and the histogram
  * range is determined by precollecting a number of observations and extending
@@ -326,8 +327,10 @@ class SIM_API cHistogram : public cHistogramBase
 
 
 /**
- * @brief Equidistant histogram for integers. This class is just a cHistogram
- * preconfigured for collecting integers (MODE_INTEGERS).
+ * @brief Equidistant histogram for integers.
+ *
+ * This class is just a cHistogram preconfigured for collecting integers,
+ * that is, it operates in INTEGERS mode.
  *
  * @ingroup Statistics
  */
@@ -389,8 +392,10 @@ class SIM_API cLongHistogram : public cHistogram
 
 
 /**
- * @brief Equidistant histogram for doubles. This class is just a cHistogram
- * preconfigured for collecting doubles (MODE_DOUBLES).
+ * @brief Equidistant histogram for doubles.
+ *
+ * This class is just a cHistogram preconfigured for collecting doubles,
+ * that is, it operates in DOUBLES mode.
  *
  * @ingroup Statistics
  */

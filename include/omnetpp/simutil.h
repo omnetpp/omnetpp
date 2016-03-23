@@ -34,24 +34,16 @@ class cComponent;
 // logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
 
-/**
- * Some of these functions are similar to \<string.h\> functions, with the
- * exception that they also accept nullptr to mean empty strings (""),
- * and use operator new instead of malloc(). It is recommended to use these
- * functions instead of the original \<string.h\> functions.
- *
- * @ingroup Functions
- * @defgroup FunctionsString String-related
- */
+/** @addtogroup Utilities */
 //@{
 /**
- * @brief Same as the standard strlen() function, except that does not crash
- * on nullptr but returns 0.
+ * @brief Same as the standard strlen() function, except that it also accepts
+ * nullptr and returns 0 for it.
  */
 inline int opp_strlen(const char *);
 
 /**
- * @brief Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
+ * @brief Duplicates the string, using <tt>new char[]</tt>. For nullptr and empty
  * strings it returns nullptr.
  */
 inline char *opp_strdup(const char *);
@@ -75,13 +67,15 @@ inline int opp_strcmp(const char *, const char *);
  */
 SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
 
+/**
+ * @brief Returns the name of a C++ type, correcting the quirks of various compilers.
+ */
+SIM_API const char *opp_typename(const std::type_info& t);
+
 //@}
 
 // INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
 SIM_API const char *opp_demangle_typename(const char *mangledName);
-
-// INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
-SIM_API const char *opp_typename(const std::type_info& t);
 
 
 /**
@@ -102,11 +96,14 @@ SIM_API const char *opp_typename(const std::type_info& t);
  * <tt>printf()</tt>, so it is easy to include the actual parameter values.
  *
  * @see Enter_Method_Silent() macro
+ * @ingroup SimSupport
+ * @hideinitializer
  */
 #define Enter_Method  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCall
 
 /**
  * @brief Denotes module class member function as callable from other modules.
+ *
  * This macro is similar to the Enter_Method() macro, only it does not animate
  * the call on the GUI; the call is still recorded into the the event log file.
  *
@@ -120,6 +117,8 @@ SIM_API const char *opp_typename(const std::type_info& t);
  * Example: <tt>Enter_Method_Silent("getRouteFor(address=%d)",address);</tt>
  *
  * @see Enter_Method() macro
+ * @ingroup SimSupport
+ * @hideinitializer
  */
 #define Enter_Method_Silent  omnetpp::cMethodCallContextSwitcher __ctx(this); __ctx.methodCallSilent
 

@@ -56,8 +56,7 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
  * Some methods which can be of interest when programming simple modules:
  * getUniqueNumber(), getModuleByPath(), getModule(), snapshot().
  *
- * @ingroup SimCore
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cSimulation : public cNamedObject, noncopyable
 {
@@ -570,15 +569,14 @@ inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTim
 /**
  * @brief Returns the currently active simulation.
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 inline cSimulation *getSimulation()  {return cSimulation::getActiveSimulation();}
 
 /**
  * @brief Returns the environment object for the currently active simulation.
  *
- * @ingroup SimCore
- * @ingroup Envir
+ * @ingroup SimSupport
  */
 inline cEnvir *getEnvir()  {return cSimulation::getActiveEnvir();}
 

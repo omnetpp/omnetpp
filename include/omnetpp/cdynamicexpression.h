@@ -31,9 +31,7 @@ class cNEDFunction;
  * @brief A stack-based expression evaluator class, for dynamically created
  * expressions.
  *
- * NOTE: Experimental class -- API is subject to change.
- *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class SIM_API cDynamicExpression : public cExpression
 {

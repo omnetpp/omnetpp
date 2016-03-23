@@ -55,7 +55,7 @@ class cDynamicExpression;
  * getPooled() method or from cStringPool.
  *
  * @see cDynamicExpression, cNEDFunction, Define_NED_Function()
- * @ingroup EnumsTypes
+ * @ingroup SimSupport
  */
 class SIM_API cNEDValue
 {

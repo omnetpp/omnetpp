@@ -21,12 +21,13 @@
 namespace omnetpp {
 
 /**
- * @brief Provides string representation for enums. The class basically implements
- * effective integer-to-string and string-to-integer mapping. Primary usage
- * is to support displaying symbolic names for integer values that represent
- * some code (such as an enum or \#define).
+ * @brief Provides string representation for enums.
  *
- * @ingroup Internals
+ * The class basically implements efficient integer-to-string and
+ * string-to-integer mapping. The primary usage is to support
+ * displaying symbolic names for integer enum values.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cEnum : public cOwnedObject
 {

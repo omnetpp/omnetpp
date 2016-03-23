@@ -100,9 +100,14 @@ enum LogLevel
 };
 
 /**
- * @brief This log level specifies a globally applied compile time filter. Log statements
- * that use lower log levels than the one specified by this macro are not compiled
- * into the executable.
+ * @brief For compile-time filtering of logs.
+ *
+ * One is free to define this macro before including <omnetpp.h>, or redefine
+ * it any time. The change will affect subsequent log statements.
+ * Log statements that use lower log levels than the one specified
+ * by this macro will not be compiled into the executable.
+ *
+ * @ingroup Logging
  */
 #ifndef COMPILETIME_LOGLEVEL
 #ifdef NDEBUG
@@ -113,7 +118,13 @@ enum LogLevel
 #endif
 
 /**
- * @brief This predicate determines if a log statement gets compiled into the executable.
+ * @brief This predicate determines if a log statement gets compiled into the
+ * executable.
+ *
+ * One is free to define this macro before including <omnetpp.h>, or redefine
+ * it any time. The change will affect subsequent log statements.
+ *
+ * @ingroup Logging
  */
 #ifndef COMPILETIME_LOG_PREDICATE
 #define COMPILETIME_LOG_PREDICATE(object, logLevel, category) (logLevel >= COMPILETIME_LOGLEVEL)
@@ -121,8 +132,8 @@ enum LogLevel
 
 /**
  * @brief This class groups logging related functionality.
- * @see LogLevel
  *
+ * @see LogLevel
  * @ingroup Logging
  */
 class SIM_API cLog
@@ -191,6 +202,7 @@ inline void *getThisPtr() {return nullptr;}
 
 /**
  * @brief Use this macro when logging from static member functions.
+ *
  * Background: EV_LOG and derived macros (EV_INFO, EV_DETAIL, etc) will fail
  * to compile when placed into static member functions of cObject-derived classes
  * ("cannot call member function 'cObject::getThisPtr()' without object" in GNU C++,
@@ -205,6 +217,7 @@ inline void *getThisPtr() {return nullptr;}
 
 /**
  * @brief This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
+ *
  * It can be used as a C++ stream to log data with the provided log level and log category.
  * Log statements are wrapped with compile time and runtime guards at the call site to
  * efficiently prevent unnecessary computation of parameters and log content.

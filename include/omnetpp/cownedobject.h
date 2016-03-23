@@ -35,24 +35,22 @@ class cPacket;
 
 
 /**
- * @brief Base class for several classes in the \opp library. Instances of
- * cOwnedObjects are kept track of by the simulation kernel, and
- * may be inserted into cQueue and cArray.
+ * @brief A cObject that keeps track of its owner. It serves as base class
+ * for many classes in the \opp library.
+ *
+ * Instances of cOwnedObjects are kept track of by the simulation kernel,
+ * and may be inserted into cQueue and cArray.
  *
  * It is not always a good idea to subclass your own classes from
- * cOwnedObject, especially if they are small data objects.
- * The more lightweight cObject is often a better choice.
+ * cOwnedObject, especially if they are small data objects. The more
+ * lightweight cObject is often a better choice.
  *
- * When subclassing cOwnedObject, some virtual member functions are
- * expected to be redefined: dup() are mandatory to be redefined, and
- * often you'll want to redefine info() and detailedInfo() as well.
+ * Ownership management helps \opp catch common programming errors.
+ * The term ownership means the exclusive right and duty to delete
+ * owned objects.
  *
- * <b>Ownership management</b> helps \opp catch common programming
- * errors. As a definition, <i>ownership means the exclusive right and duty
- * to delete owned objects.</i>
- *
- * cOwnedObjects hold a pointer to their owner objects; the getOwner() method returns
- * this pointer. An example will help to understand how it is used:
+ * cOwnedObjects hold a pointer to their owner objects; the getOwner() method
+ * returns this pointer. An example will help to understand how it is used:
  *
  *    - when you insert a cMessage into a cQueue, the cQueue will become
  *      the owner of the message, and will set the message's owner to itself.
@@ -101,7 +99,7 @@ class cPacket;
  *      data members: your class (the enclosing object) should own them --
  *      call take() from the constructor and drop() from the destructor.
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class SIM_API cOwnedObject : public cNamedObject
 {
@@ -245,7 +243,7 @@ class SIM_API cOwnedObject : public cNamedObject
  * @brief Base class for cOwnedObject-based classes that do not wish to support
  * assignment and duplication.
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {

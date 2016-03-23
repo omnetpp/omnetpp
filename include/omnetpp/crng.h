@@ -43,7 +43,7 @@ class cConfiguration;
  * See also cModule::getRNG().
  *
  * @ingroup RandomNumbers
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cRNG : public cObject
 {

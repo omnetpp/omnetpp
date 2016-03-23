@@ -103,7 +103,7 @@ SIM_API extern simsignal_t POST_MODEL_CHANGE;
  * @brief Common base class for data objects that accompany PRE_MODEL_CHANGE
  * and POST_MODEL_CHANGE notifications (signals).
  *
- * @ingroup Signals SimCore
+ * @ingroup Signals
  */
 class SIM_API cModelChangeNotification : public cObject, noncopyable
 {

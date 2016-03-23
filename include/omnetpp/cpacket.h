@@ -22,12 +22,13 @@ namespace omnetpp {
 
 
 /**
- * @brief A subclass of cMessage that can be used to represent packets (frames,
- * datagrams, application messages, etc). cPacket adds length (measured in
- * bits or bytes), bit error flag, and encapsulation capability to cMessage.
- * Length and bit error flag are significant when the packet travels through
- * a cDatarateChannel or another channel that supports data rate and/or
- * error modelling.
+ * @brief A subclass of cMessage to represent packets, frames, datagrams,
+ * application messages, and similar data.
+ *
+ * cPacket adds length (measured in bits or bytes), bit error flag, and
+ * encapsulation capability to cMessage. Length and bit error flag are
+ * significant when the packet travels through a cDatarateChannel or
+ * another channel that supports data rate and/or error modelling.
  *
  * cPacket is rarely used "as is". Typically the user wants to subclass it
  * to create specific packet types for various protocols being modelled.

@@ -52,7 +52,7 @@ class cGate;
  * outputvectormanager-class="MyClass"
  * </pre>
  *
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecycleListener
 {
@@ -156,7 +156,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
  * outputscalarmanager-class="MyClass"
  * </pre>
  *
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecycleListener
 {
@@ -245,7 +245,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
  * snapshotmanager-class="MyClass"
  * </pre>
  *
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleListener
 {
@@ -327,7 +327,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
  * eventlogmanager-class="MyClass"
  * </pre>
  *
- * @ingroup EnvirExtensions
+ * @ingroup ExtensionPoints
  */
 class SIM_API cIEventlogManager : public cObject
 {

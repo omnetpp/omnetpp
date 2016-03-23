@@ -57,19 +57,15 @@ using std::endl;
  * or the getEnvir() global function.
  *
  * Methods useful for simulation models include isGUI() and isExpressMode().
- * Most other cEnvir methods are internal for communication between
+ * Most other cEnvir methods are used in the communication between
  * the simulation kernel and the environment.
  *
- * cEnvir is a common facade for the Cmdenv and Tkenv user interfaces (and any
- * other future user interface).
- *
- * The default implementation of cEnvir can be customized by subclassing
+ * The default implementation of cEnvir can be extended by subclassing
  * the classes declared in the envirext.h header (e.g. cConfiguration,
  * cRNG, cIOutputVectorManager, cIOutputScalarManager), and selecting the
- * new classes from <tt>omnetpp.ini</tt>.
+ * new classes in <tt>omnetpp.ini</tt>.
  *
- * @ingroup Envir
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cEnvir
 {
@@ -717,11 +713,10 @@ class SIM_API cEnvir
 
 
 /**
- * @brief The interface for cEnvir objects that can be instantiated as a user interface
- * like Cmdenv and Tkenv.
+ * @brief A cEnvir that can be instantiated as a user interface, like Cmdenv
+ * and Tkenv.
  *
- * @ingroup Envir
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cRunnableEnvir : public cEnvir
 {

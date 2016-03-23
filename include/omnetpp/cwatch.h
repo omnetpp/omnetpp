@@ -25,7 +25,7 @@ namespace omnetpp {
 
 /**
  * @brief Utility class to make primitive types and non-cOwnedObject objects
- * inspectable in Tkenv. To be used only via the WATCH, WATCH_PTR,
+ * inspectable in Tkenv/Qtenv. To be used only via the WATCH, WATCH_PTR,
  * WATCH_OBJ, WATCH_VECTOR etc macros.
  *
  * @ingroup Internals
@@ -313,10 +313,7 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 }
 
 
-/**
- * @ingroup Macros
- * @defgroup MacrosWatch WATCH macros
- */
+/** @ingroup WatchMacros */
 //@{
 
 /**

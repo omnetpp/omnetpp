@@ -38,10 +38,8 @@ class cPar;
  *
  * A cTopology object stores an abstract representation of the network
  * in graph form:
- * <ul>
- *   <li> each cTopology node corresponds to a module (simple or compound), and
- *   <li> each cTopology edge corresponds to a link or series of connecting links.
- * </ul>
+ *  - each cTopology node corresponds to a module (simple or compound), and
+ *  - each cTopology edge corresponds to a link or series of connecting links.
  *
  * You can specify which modules (either simple or compound) you want to
  * include in the graph. The graph will include all connections among the
@@ -50,7 +48,7 @@ class cPar;
  * boundaries are also represented as one graph edge. Graph edges are directed,
  * just as module gates are.
  *
- * @ingroup SimSupport
+ * @ingroup Utilities
  * @see cTopology::Node, cTopology::Link, cTopology::LinkIn, cTopology::LinkOut
  */
 class SIM_API cTopology : public cOwnedObject

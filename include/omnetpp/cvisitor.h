@@ -50,7 +50,6 @@ class cObject;
  * cObject *result = v.getResult();
  * \endcode
  *
- * @ingroup SimCore
  * @ingroup SimSupport
  */
 class SIM_API cVisitor

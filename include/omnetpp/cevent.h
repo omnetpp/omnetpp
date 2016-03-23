@@ -22,21 +22,23 @@ namespace omnetpp {
 
 
 /**
- * @brief Represents an event in the discrete event simulator. When events are scheduled,
- * they are inserted into the future events set (FES) where they are (conceptually)
- * stored in timestamp (="arrival time") order. Events are removed from the FES one
- * by one, and their execute() methods are called. execute() should be overridden
- * in subclasses to carry out the actions associated with the event.
+ * @brief Represents an event in the discrete event simulator.
+ *
+ * When events are scheduled, they are inserted into the future events set (FES)
+ * where they are (conceptually) stored in timestamp (="arrival time") order.
+ * Events are removed from the FES one by one, and processed by invoking their
+ * execute() methods. execute() should be overridden in subclasses to carry out
+ * the actions associated with the event.
  *
  * If several events have identical timestamp values (arrival times), further fields
  * decide their ordering: first, scheduling priority and then, insertion order.
  *
- * Event objects (cEvent) are normally of little interest to the user. Instead, they
- * should utilize messages and packets (cMessage, cPacket). They are subclassed from
+ * Pure event objects (cEvent) are normally of little interest to the user. Instead,
+ * one should use messages and packets (cMessage, cPacket). They are subclassed from
  * cEvent, and their execute() methods automatically delivers the message/packet
  * to the target module.
  *
- * @ingroup SimCore Internals
+ * @ingroup SimSupport
  */
 class SIM_API cEvent : public cOwnedObject
 {

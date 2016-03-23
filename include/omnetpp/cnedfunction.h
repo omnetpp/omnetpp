@@ -29,7 +29,7 @@ namespace omnetpp {
  * @brief A function that can be used with cDynamicExpression.
  *
  * @see cNEDFunction, Define_NED_Function().
- * @ingroup EnumsTypes
+ * @ingroup SimSupport
  */
 typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc);
 

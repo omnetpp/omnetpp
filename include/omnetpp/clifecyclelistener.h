@@ -23,7 +23,7 @@ namespace omnetpp {
 /**
  * @brief Event type for cISimulationLifecycleListener's lifecycleEvent() method.
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 enum SimulationLifecycleEventType
 {
@@ -153,10 +153,11 @@ enum SimulationLifecycleEventType
 
 
 /**
- * @brief A callback interface for receiving notifications at various stages of
- * setting up, running, and tearing down simulations. Listeners can be added
- * to cEnvir with its addLifecycleListener() method, and removed with
- * removeLifecycleListener().
+ * @brief A callback interface for receiving notifications at various stages
+ * simulations, including setting up, running, and tearing down..
+ *
+ * Listeners can be added to cEnvir with its addLifecycleListener() method,
+ * and removed with removeLifecycleListener().
  *
  * Simulation lifecycle listeners are mainly intended for use by plug-in
  * classes that extend the simulator's functionality: schedulers, output
@@ -180,8 +181,7 @@ enum SimulationLifecycleEventType
  * exits. To delete a listener on shutdown, add <tt>delete this;</tt>
  * into the listenerRemoved() method.
  *
- * @ingroup SimCore
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cISimulationLifecycleListener
 {

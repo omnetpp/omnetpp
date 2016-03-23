@@ -31,7 +31,7 @@ namespace omnetpp {
  * @brief Extends cObject with a name string. Also includes a "flags" member,
  * with bits open for use by subclasses.
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class SIM_API cNamedObject : public cObject
 {

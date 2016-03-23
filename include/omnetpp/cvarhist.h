@@ -22,45 +22,23 @@ namespace omnetpp {
 
 
 /**
- * @brief Variable bin size histogram. You may add cell (bin) boundaries
- * manually, or let the object create cells with equal number of
- * observations in them (or as close to that as possible).
+ * @brief Variable bin size histogram.
  *
- * Transform types for cVarHistogram:
- * <UL>
- *   <LI> HIST_TR_NO_TRANSFORM: no transformation; uses bin boundaries
- *        previously defined by addBinBound()/appendBinBound()
- *   <LI> HIST_TR_AUTO_EPC_DBL: automatically creates equiprobable cells
- *   <LI> HIST_TR_AUTO_EPC_INT: a variation of HIST_TR_AUTO_EPC_DBL
- * </Ul>
+ * One may add cell (bin) boundaries manually, or let the object create
+ * cells with approximately equal number of observations in them.
  *
- * Layout of the variable bin width histogram:
- * <PRE><TT>
- *
- *        underflow-cell   ordinary cells . . .             overflow-cell
- *        ...---------|-----------|- ... -|-----------------|---------...
- *                    | ^cellv[0] |      cellv[num_cells-1]^|
- *                  n |           |                         |
- *                rangemin        |                      rangemax
- *                    |    bin_bounds[1]                    |
- *              bin_bounds[0]                       bin_bounds[numcells]
- * </TT></PRE>
- *
- * Rangemin and rangemax are chosen after precollection of initial observations
- * has finished. It is not possible to add cell boundaries when histogram is
- * already transformed.
- *
- * Now we do support the following 2 uses of cVarHistogram:
- * <OL>
- *   <LI> add all the boundaries (manually) before collecting observations
- *   <LI> collect observations and transform() makes the boundaries
- * </OL>
+ * The histogram range (rangemin, rangemax) is chosen after precollection
+ * of the initial observations has finished. It is not possible to add
+ * cell boundaries when histogram is already transformed.
  *
  * @ingroup Statistics
  */
 class SIM_API cVarHistogram : public cHistogramBase
 {
   public:
+    /**
+     * Controls the way histogram bins are set up at the end of the precollection period.
+     */
     enum TransformType {
        HIST_TR_NO_TRANSFORM, ///< no transformation; uses bin boundaries previously defined by addBinBound()/appendBinBound()
        HIST_TR_AUTO_EPC_DBL, ///< automatically creates equi-probable cells

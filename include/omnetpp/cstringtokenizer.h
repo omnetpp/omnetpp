@@ -50,7 +50,7 @@ namespace omnetpp {
  * std::vector\<int\> array = cStringTokenizer(str).asIntVector();
  * </pre>
  *
- * @ingroup SimSupport
+ * @ingroup Utilities
  */
 class SIM_API cStringTokenizer
 {

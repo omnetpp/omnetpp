@@ -51,10 +51,12 @@ class cDatarateChannel;
 #define MAX_VECTORGATESIZE ((1<<(GATEID_LBITS-1))-1) // default ~500000
 
 /**
- * @brief Represents a module gate. cGate object are created and managed by modules;
- * the user typically does not want to directly create or destroy cGate
- * objects. However, they are important if a simple module algorithm
- * needs to know about its surroundings.
+ * @brief Represents a module gate.
+ *
+ * cGate object are created and managed by modules; the user typically
+ * does not want to directly create or destroy cGate objects. However,
+ * they are important if a simple module algorithm needs to know about
+ * its surroundings.
  *
  * @ingroup SimCore
  */

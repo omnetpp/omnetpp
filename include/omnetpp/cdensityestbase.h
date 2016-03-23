@@ -21,26 +21,22 @@
 namespace omnetpp {
 
 /**
- * @brief Common base class for density estimation classes. Provides several
- * pure virtual functions, so it is an abstract class, no instances
- * can be created.
+ * @brief Abstract base class for density estimation classes.
  *
  * For the histogram classes, you need to specify the number of cells
  * and the range. Range can either be set explicitly or you can choose
  * automatic range determination.
  *
  * Automatic range estimation works in the following way:
- * <OL>
- *   <LI>The first <I>numPrecollect</I> observations are stored.
- *   <LI>After having collected a given number of observations, the actual
- *   histogram is set up. The range (<I>min</I>, <I>max</I>) of the
- *   initial values is expanded <I>rangeExtensionFactoror</I> times, and
- *   the result will become the histogram's range (<I>rangeMin</I>,
- *   <I>rangeMax</I>). Based on the range, the cells are layed out.
- *   Then the initial values that have been stored up to this point
- *   will be transferred into the new histogram structure and their
- *   store is deleted -- this is done by the transform() function.
- * </OL>
+ *  1. The first <I>numPrecollect</I> observations are stored.
+ *  2. After having collected a given number of observations, the actual
+ *     histogram is set up. The range (min, max) of the  initial values
+ *     is expanded rangeExtensionFactoror times, and the result will become
+ *     the histogram's range (rangeMin, rangeMax). Based on the range,
+ *     the cells are layed out.
+ *  3. Then the initial values that have been stored up to this point
+ *     will be transferred into the new histogram structure and their
+ *     store is deleted -- this is done by the transform() function.
  *
  * You may also explicitly specify the lower or upper limit and have
  * the other end of the range estimated automatically. The setRange...()
@@ -49,17 +45,8 @@ namespace omnetpp {
  * transform() etc.
  *
  * Subsequent observations are placed in the histogram structure.
- * If an observation falls out of the histogram range, the <I>underflow</I>
- * or the <I>overflow</I> <I>cell</I> is incremented.
- *
- * layout of the histogram:
- * <PRE><TT>
- *        underflow-cell   ordinary cells          overflow-cell
- *       ...----------|----|----|----|----|----|----|--------- ...
- *                    |                             |
- *                    |                             |
- *                rangemin                       rangemax
- * </TT></PRE>
+ * If an observation falls out of the histogram range, the underflow
+ * or overflow counter is incremented.
  *
  * @ingroup Statistics
  */

@@ -29,7 +29,7 @@ namespace omnetpp {
  * an object of that class.
  *
  * @see Register_Class(), Define_Module() macros
- * @ingroup Internals
+ * @ingroup SimSupport
  */
 class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 {
@@ -134,12 +134,8 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 
 
 /**
- *
- * @addtogroup Functions
- */
-//@{
-/**
  * @brief Shortcut to cObjectFactory::createOne().
+ * @ingroup SimSupport
  */
 inline cObject *createOne(const char *classname) {
     return cObjectFactory::createOne(classname);
@@ -147,11 +143,11 @@ inline cObject *createOne(const char *classname) {
 
 /**
  * @brief Shortcut to cObjectFactory::createOneIfClassIsKnown().
+ * @ingroup SimSupport
  */
 inline cObject *createOneIfClassIsKnown(const char *classname) {
     return cObjectFactory::createOneIfClassIsKnown(classname);
 }
-//@}
 
 }  // namespace omnetpp
 

@@ -27,12 +27,14 @@ namespace omnetpp {
 class cResultFilter;
 
 /**
- * @brief Registers a result filter. The class must be a subclass of cResultFilter.
- * Registered result filters can be used in the <tt>source=</tt> and
- * <tt>record=</tt> attributes of <tt>@statistic</tt> properties in NED files,
- * and with the <tt>**.result-recording-modes=</tt> configuration option.
+ * @brief Registers a result filter.
  *
- * @ingroup MacrosReg
+ * The class must be a subclass of cResultFilter. Registered result filters
+ * can be used in the <tt>source=</tt> and <tt>record=</tt> attributes of
+ * <tt>@statistic</tt> properties in NED files, and with the
+ * <tt>**.result-recording-modes=</tt> configuration option.
+ *
+ * @ingroup RegMacros
  * @hideinitializer
  */
 #define Register_ResultFilter(NAME, CLASSNAME) \
@@ -41,13 +43,14 @@ class cResultFilter;
 
 
 /**
- * @brief Base class for result filters. Result filters map ONE SIGNAL to ONE SIGNAL
- * (i.e. vector-to-vector one-to-one mapping), and accept several listeners
- * (delegates). Result filters do not record anything -- that is left to result
- * recorders.
+ * @brief Base class for result filters.
+ *
+ * Result filters map ONE SIGNAL to ONE SIGNAL (i.e. vector-to-vector
+ * one-to-one mapping), and accept several listeners (delegates).
+ * Result filters do not record anything -- that is left to result recorders.
  *
  * @see Register_ResultFilter()
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cResultFilter : public cResultListener
 {
@@ -76,7 +79,7 @@ class SIM_API cResultFilter : public cResultListener
  * This class overrides all other receiveSignal() methods to throw an exception,
  * and delegates numeric types to a common (actually, two common) methods.
  *
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cNumericResultFilter : public cResultFilter
 {
@@ -99,7 +102,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
  * This class overrides all other receiveSignal() methods
  * to throw an exception.
  *
- * @ingroup EnvirExtensions
+ * @ingroup SimSupport
  */
 class SIM_API cObjectResultFilter : public cResultFilter
 {
