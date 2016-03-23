@@ -187,7 +187,6 @@
  *
  * Figures for grouping:
  *    - cGroupFigure - for grouping other figures, no visual appearance
- *    - cPanelFigure - non-zooming container, no visual appearance
  *
  * Line figures:
  *    - cLineFigure - a single line segment

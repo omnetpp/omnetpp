@@ -52,7 +52,12 @@ class SIM_API cFigure : public cOwnedObject
          * @ingroup Canvas
          */
         struct SIM_API Point {
+            /** @name Coordinates. */
+            //@{
             double x, y;
+            //@}
+            /** @name Methods. */
+            //@{
             Point() : x(0), y(0) {}
             Point(double x, double y) : x(x), y(y) {}
             Point operator + (const Point& p) const;
@@ -65,6 +70,7 @@ class SIM_API cFigure : public cOwnedObject
             Point& translate(double dx, double dy) {x += dx; y += dy; return *this;}
             bool operator==(const Point& other) const {return x == other.x && y == other.y;}
             std::string str() const;
+            //@}
         };
 
         /**
@@ -72,7 +78,12 @@ class SIM_API cFigure : public cOwnedObject
          * @ingroup Canvas
          */
         struct SIM_API Rectangle {
+            /** @name Rectangle geometry as top-left corner and size. */
+            //@{
             double x, y, width, height;
+            //@}
+            /** @name Methods. */
+            //@{
             Rectangle() : x(0), y(0), width(0), height(0) {}
             Rectangle(double x, double y, double width, double height) : x(x), y(y), width(width), height(height) {}
             Point getCenter() const;
@@ -80,6 +91,7 @@ class SIM_API cFigure : public cOwnedObject
             Rectangle& translate(double dx, double dy) {x += dx; y += dy; return *this;}
             bool operator==(const Rectangle& other) const {return x == other.x && y == other.y && width == other.width && height == other.height;}
             std::string str() const;
+            //@}
         };
 
         /**
@@ -93,14 +105,22 @@ class SIM_API cFigure : public cOwnedObject
          * @ingroup Canvas
          */
         struct SIM_API Color {
+            /** @name RGB color components. */
+            //@{
             uint8_t red, green, blue;
+            //@}
+            /** @name Methods. */
+            //@{
             Color() : red(0), green(0), blue(0) {}
             Color(uint8_t red, uint8_t green, uint8_t blue) : red(red), green(green), blue(blue) {}
             Color(const char *color) {*this = parseColor(color);}
             bool operator==(const Color& other) const {return red == other.red && green == other.green && blue == other.blue;}
             std::string str() const;
+            //@}
         };
 
+        /** @name Predefined colors. */
+        //@{
         static const Color BLACK;
         static const Color WHITE;
         static const Color GREY;
@@ -115,19 +135,26 @@ class SIM_API cFigure : public cOwnedObject
         static const int NUM_GOOD_LIGHT_COLORS;
         static const Color GOOD_DARK_COLORS[14];
         static const Color GOOD_LIGHT_COLORS[10];
+        //@}
 
         /**
          * Represents properties of a font.
          * @ingroup Canvas
          */
         struct SIM_API Font {
+            /** @name Font attributes. */
+            //@{
             std::string typeface; // empty string means default font
             int pointSize;  // zero or negative value means default size
             uint8_t style;  // binary OR of FontStyle constants
+            //@}
+            /** @name Methods. */
+            //@{
             Font() : pointSize(0), style(FONT_NONE) {}
             Font(std::string typeface, int pointSize=-1, uint8_t style=FONT_NONE) : typeface(typeface), pointSize(pointSize), style(style) {}
             bool operator==(const Font& other) const {return typeface == other.typeface && pointSize == other.pointSize && style == other.style;}
             std::string str() const;
+            //@}
         };
 
         enum FontStyle { FONT_NONE=0, FONT_BOLD=1, FONT_ITALIC=2, FONT_UNDERLINE=4 };
@@ -151,28 +178,35 @@ class SIM_API cFigure : public cOwnedObject
          * @ingroup Canvas
          */
         struct SIM_API Transform {
-                double a, b, c, d, t1, t2;
-                Transform() : a(1), b(0), c(0), d(1), t1(0), t2(0) {}
-                Transform(double a, double b, double c, double d, double t1, double t2) : a(a), b(b), c(c), d(d), t1(t1), t2(t2) {}
-                Transform(const Transform& t) : a(t.a), b(t.b), c(t.c), d(t.d), t1(t.t1), t2(t.t2) {}
-                Transform& operator=(const Transform& t) {a=t.a; b=t.b; c=t.c; d=t.d; t1=t.t1; t2=t.t2; return *this;}
-                Transform& translate(double dx, double dy);
-                Transform& scale(double s) {return scale(s,s);}
-                Transform& scale(double sx, double sy);
-                Transform& scale(double sx, double sy, double cx, double cy);
-                Transform& scale(double sx, double sy, const Point& c) {return scale(sx, sy, c.x, c.y);}
-                Transform& rotate(double phi);
-                Transform& rotate(double phi, double cx, double cy);
-                Transform& rotate(double phi, const Point& c) {return rotate(phi, c.x, c.y);}
-                Transform& skewx(double coeff); // note: if you want to skew by an angle, use coeff = tan(phi)
-                Transform& skewy(double coeff);
-                Transform& skewx(double coeff, double cy);
-                Transform& skewy(double coeff, double cx);
-                Transform& multiply(const Transform& t); // left-multiply: *this = t * (*this)
-                Transform& rightMultiply(const Transform& t); // *this = (*this) * t
-                Point applyTo(const Point& p) const;
-                bool operator==(const Transform& o) const {return a == o.a && b == o.b && c == o.c && d == o.d && t1 == o.t1 && t2 == o.t2;}
-                std::string str() const;
+            /** @name Components of the pixel. */
+            //@{
+            double a, b, c, d, t1, t2;
+            //@}
+
+            /** @name Methods. */
+            //@{
+            Transform() : a(1), b(0), c(0), d(1), t1(0), t2(0) {}
+            Transform(double a, double b, double c, double d, double t1, double t2) : a(a), b(b), c(c), d(d), t1(t1), t2(t2) {}
+            Transform(const Transform& t) : a(t.a), b(t.b), c(t.c), d(t.d), t1(t.t1), t2(t.t2) {}
+            Transform& operator=(const Transform& t) {a=t.a; b=t.b; c=t.c; d=t.d; t1=t.t1; t2=t.t2; return *this;}
+            Transform& translate(double dx, double dy);
+            Transform& scale(double s) {return scale(s,s);}
+            Transform& scale(double sx, double sy);
+            Transform& scale(double sx, double sy, double cx, double cy);
+            Transform& scale(double sx, double sy, const Point& c) {return scale(sx, sy, c.x, c.y);}
+            Transform& rotate(double phi);
+            Transform& rotate(double phi, double cx, double cy);
+            Transform& rotate(double phi, const Point& c) {return rotate(phi, c.x, c.y);}
+            Transform& skewx(double coeff); // note: if you want to skew by an angle, use coeff = tan(phi)
+            Transform& skewy(double coeff);
+            Transform& skewx(double coeff, double cy);
+            Transform& skewy(double coeff, double cx);
+            Transform& multiply(const Transform& t); // left-multiply: *this = t * (*this)
+            Transform& rightMultiply(const Transform& t); // *this = (*this) * t
+            Point applyTo(const Point& p) const;
+            bool operator==(const Transform& o) const {return a == o.a && b == o.b && c == o.c && d == o.d && t1 == o.t1 && t2 == o.t2;}
+            std::string str() const;
+            //@}
         };
 
         /**
@@ -180,7 +214,12 @@ class SIM_API cFigure : public cOwnedObject
          * @ingroup Canvas
          */
         struct SIM_API RGBA {
+            /** @name Components of the pixel. */
+            //@{
             uint8_t red, green, blue, alpha;
+            //@}
+            /** @name Methods. */
+            //@{
             RGBA() : red(0), green(0), blue(0), alpha(0) {}
             RGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : red(red), green(green), blue(blue), alpha(alpha) {}
             void set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {red=r; green=g; blue=b; alpha=a;}
@@ -188,6 +227,7 @@ class SIM_API cFigure : public cOwnedObject
             operator Color() const {return Color(red, green, blue);}
             bool operator==(const RGBA& o) const {return red == o.red && green == o.green && blue == o.blue && alpha == o.alpha;}
             std::string str() const;
+            //@}
         };
 
         /**
@@ -203,6 +243,8 @@ class SIM_API cFigure : public cOwnedObject
                 void allocate(int width, int height);
                 static uint8_t alpha(double opacity) {return opacity<=0 ? 0 : opacity>=1.0 ? 255 : (uint8_t)(opacity*255+0.5);}
             public:
+                /** @name Methods. */
+                //@{
                 Pixmap();
                 Pixmap(int width, int height);
                 Pixmap(int width, int height, const RGBA& fill);
@@ -225,6 +267,7 @@ class SIM_API cFigure : public cOwnedObject
                 virtual void setOpacity(int x, int y, double opacity) {pixel(x,y).alpha = alpha(opacity);}
                 const uint8_t *buffer() const {return (uint8_t*)data;} // direct access for low-level manipulation
                 std::string str() const;
+                //@}
         };
 
         // internal:
