@@ -266,7 +266,7 @@ else
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         # on MinGW dll auto importing MUST be used with shared gcc and stdc++
         # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc -L/usr/bin"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
 
         # If we are building on windows (native compile) we have to add the /usr/lib and
         # /usr/include directories as they are not added by default, but they are needed
@@ -399,6 +399,11 @@ fi
 # higher than -O0 is specified. This should be removed once clang 3.8 fixes this.
 if test "$mingw" = yes -a "$CC" = clang; then
   CFLAGS_RELEASE="$CFLAGS_RELEASE -O0"
+fi
+
+# test if we are running on mingw using gcc as we have t force the use of shared libgcc
+if test "$mingw" = yes -a "$CC" = "gcc"; then
+  LDFLAGS_ARCH="$LDFLAGS_ARCH -shared-libgcc"
 fi
 
 #----------------------
