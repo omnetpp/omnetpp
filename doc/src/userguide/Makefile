@@ -44,11 +44,14 @@ pdf:  chart-properties.xml processing-operations.xml cover
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf userguide.pdf
-	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	pdftk C=cover.pdf B=../cover/copyright.pdf D=userguide.pdf cat C B D3-end output ../../UserGuide.pdf
+	pdftk userguide.pdf dump_data > tmp.metadata
+	perl -i -pe 's/#160;/#32;/g' tmp.metadata
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=userguide.pdf cat C B D3-end output tmp.pdf
+	pdftk tmp.pdf update_info tmp.metadata output ../../UserGuide.pdf
+	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl tmp.pdf tmp.metadata
 
 clean:
-	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml cover.svg cover.pdf
+	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml cover.svg cover.pdf tmp.pdf tmp.metadata
 	rm -rf eclipse
 	rm -rf ../../userguide ../../UserGuide.pdf
 

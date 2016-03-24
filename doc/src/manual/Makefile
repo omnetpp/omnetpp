@@ -64,8 +64,11 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 	makeindex usman
 	pdflatex usman.tex $(LOGFILTER)
 	pdflatex usman.tex $(LOGFILTER)
-	pdftk C=cover.pdf B=../cover/copyright.pdf D=usman.pdf cat C B D3-end output ../../Manual.pdf
-	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
+	pdftk usman.pdf dump_data > tmp.metadata
+	perl -i -pe 's/#160;/#32;/g' tmp.metadata
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=usman.pdf cat C B D3-end output tmp.pdf
+	pdftk tmp.pdf update_info tmp.metadata output ../../Manual.pdf
+	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg tmp.metadata tmp.pdf
 
 %.pdf: %.svg
 	$(INKSCAPE) $< -A $@

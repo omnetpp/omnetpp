@@ -68,7 +68,11 @@ pdf: docbook cover
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf installguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
-	pdftk C=cover.pdf B=../cover/copyright.pdf D=installguide.pdf cat C B D3-end output ../../InstallGuide.pdf
+	pdftk installguide.pdf dump_data > tmp.metadata
+	perl -i -pe 's/#160;/#32;/g' tmp.metadata
+	pdftk C=cover.pdf B=../cover/copyright.pdf D=installguide.pdf cat C B D3-end output tmp.pdf
+	pdftk tmp.pdf update_info tmp.metadata output ../../InstallGuide.pdf
+	rm -f tmp.pdf tmp.metadata
 
 clean:
 	rm -f installguide.pdf installguide.html tmp1.xml tmp.xml cover.svg cover.pdf
