@@ -7,7 +7,7 @@ OMNeT++ using OpenSceneGraph and osgEarth.
 The model demonstrates visualizing satellites orbiting the Earth. The model
 uses the osgEarth library, thus, the Earth 3D model is loaded from an
 .earth file. Satellites and their ground stations (large antenna dishes)
-are loaded from osgb files. Satellite orbits are parameterized via module
+are loaded from .osgb files. Satellite orbits are parameterized via module
 parameters in omnetpp.ini. Several scenarios are configured, including
 random, geostationary and polar orbits.
 

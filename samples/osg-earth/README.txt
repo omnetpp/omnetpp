@@ -6,9 +6,9 @@ OMNeT++ using OpenSceneGraph and osgEarth.
 
 The model demonstrates displaying and animating mobile nodes (cows in one
 example, and trucks in the other) on a map. The map is loaded from an
-.earth file, and mobile nodes are loaded from osgb files. Both random and
+.earth file, and mobile nodes are loaded from .osgb files. Both random and
 trace-based mobility is demonstrated. Wireless frame transmissions are
-visualized with an inflating bubbles animation, also loaded from an osgb
+visualized with an inflating bubble animation, also loaded from an .osgb
 file.
 
 ---
