@@ -105,6 +105,7 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2
 	rm -rf eclipse
 	mkdir eclipse
 	mv *.html toc.xml eclipse
+	xmllint --noout eclipse/toc.xml
 	cp *.png eclipse
 	cp figures/*.png eclipse
 

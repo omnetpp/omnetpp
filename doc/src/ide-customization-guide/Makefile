@@ -37,6 +37,7 @@ eclipse: docbook
 	mkdir eclipse/images
 	mkdir eclipse/pictures
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
+	xmllint --noout eclipse/toc.xml
 	cp images/* eclipse/images
 	cp pictures/* eclipse/pictures
 	rm tmp.xml tmp0.xml

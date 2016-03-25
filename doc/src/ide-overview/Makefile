@@ -26,6 +26,7 @@ eclipse:
 	mkdir eclipse/pictures
 	cp pictures/*.png eclipse/pictures
 	cd eclipse && xsltproc --nonet ../custom-html-docbook-tmp.xsl ../tmp.xml
+	xmllint --noout eclipse/toc.xml
 	rm tmp.xml custom-html-docbook-tmp.xsl
 
 pdf:

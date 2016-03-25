@@ -60,6 +60,7 @@ eclipse: docbook
 	-cp images/*.png eclipse/images
 	-cp pictures/*.png eclipse/pictures
 	cd eclipse && xsltproc --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
+	xmllint --noout eclipse/toc.xml
 	rm tmp.xml
 
 pdf: docbook cover
