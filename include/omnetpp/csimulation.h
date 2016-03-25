@@ -45,9 +45,10 @@ SIM_API extern cDefaultList defaultList; // also in globals.h
 
 
 /**
- * @brief Simulation manager class.  cSimulation is the central class in \opp.
- * It stores the active simulation model, and provides methods for setting up,
- * running and finalizing simulations.
+ * @brief Simulation manager class.
+ *
+ * cSimulation is the central class in \opp. It stores the active simulation
+ * model, and provides methods for setting up, running and finalizing simulations.
  *
  * Most cSimulation methods are not of interest for simulation model code,
  * they are used internally (e.g. by the user interface libraries (Envir,

@@ -23,10 +23,12 @@ namespace omnetpp {
 class cMessage;
 
 /**
- * @brief Base class for message printers. Message printers is a somewhat experimental
- * feature, intended at giving models a way to control how network packets or
- * in general, cMessage objects) are displayed. Currently, message printer output
- * is used for the Messages mode display of the Log viewer in Tkenv/Qtenv.
+ * @brief Base class for message printers.
+ *
+ * Message printers is a somewhat experimental feature, intended at giving
+ * models a way to control how network packets or in general, cMessage
+ * objects) are displayed. Currently, message printer output is used for
+ * the Messages mode display of the Log viewer in Tkenv/Qtenv.
  *
  * Several message printers may be registered (with Register_MessagePrinter()),
  * independent of each other, and OMNeT++ will choose the "best" or most
@@ -72,9 +74,11 @@ class SIM_API cMessagePrinter : public cNoncopyableOwnedObject
 };
 
 /**
- * @brief A default message printer that displays the ID, kind, and length (for packets)
- * of the message. (The name and class name do not need to be returned, as they
- * are already displayed by default.)
+ * @brief A default message printer that displays the ID, kind, and length
+ * (for packets) of the message.
+ *
+ * Note: The name and class name do not need to be returned, as they
+ * are already displayed by default.
  */
 class SIM_API cDefaultMessagePrinter : public cMessagePrinter
 {

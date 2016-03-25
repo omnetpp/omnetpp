@@ -26,8 +26,8 @@ class  cXMLElement;
 
 
 /**
- * @brief cMsgPar objects store a (string, bool, double, etc) value, and
- * can be attached to cMessage objects.
+ * @brief Allows a value (string, bool, double, etc) to be attached to
+ * a cMessage object.
  *
  * <b>Note:</b> Before version 3.0, the cPar class was used for both
  * message parameters and module parameters. As of 4.0, cPar only

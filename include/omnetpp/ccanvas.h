@@ -28,12 +28,17 @@ class cProperty;
 class cProperties;
 
 /**
- * @brief A lightweight graphical object. Figures are rendered on a canvas (see cCanvas).
- * Figures can be composed to create complex graphics.
+ * @brief A lightweight graphical object for cCanvas.
+ *
+ * This is the central class of \opp's 2D drawing API. Graphical elements
+ * are called figures, and are represented by subclasses of cFigure.
+ * To display a figure-based drawing, one needs to add figures to a canvas
+ * (cCanvas). Every module has its own canvas, accessible via
+ * cModule::getCanvas(), and one may also create additional ones.
  *
  * Notes:
  * - figures can be hierarchical (resulting in a figure tree)
- * - coordinates are in canvas units (usually meters), not in pixels!
+ * - coordinates are in canvas units, not in pixels (interactive zooming!)
  * - coordinates are transformed with the figure's own transform plus the transforms of all ancestors
  * - a figure subtree can be hidden by calling setVisible(false)
  * - the order of child figures also denotes drawing order (of overlapping figures, the last one will appear on top)
@@ -95,11 +100,14 @@ class SIM_API cFigure : public cOwnedObject
         };
 
         /**
-         * @brief Represents an RGB color. Conversion from string exists, and accepts HTML colors (\#rrggbb),
-         * HSB colors in a similar notation (@hhssbb), and English color names (SVG color names,
-         * to be more precise.) Predefined constants for the basic colors (see BLACK, WHITE,
-         * GREY, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA), as well as a collection of good dark and
-         * light colors, suitable for e.g. chart drawing (see GOOD_DARK_COLORS and GOOD_LIGHT_COLORS)
+         * @brief Represents an RGB color.
+         *
+         * Conversion from string exists, and accepts HTML colors (\#rrggbb),
+         * HSB colors in a similar notation (@hhssbb), and English color names
+         * (SVG color names, to be more precise.) Predefined constants for the
+         * basic colors (see BLACK, WHITE, GREY, RED, GREEN, BLUE, YELLOW, CYAN,
+         * MAGENTA), as well as a collection of good dark and light colors, suitable
+         * for e.g. chart drawing (see GOOD_DARK_COLORS and GOOD_LIGHT_COLORS)
          * are provided.
          *
          * @ingroup Canvas
@@ -643,11 +651,12 @@ STREAMOP(cFigure::Pixmap);
 
 
 /**
- * @brief A figure with the sole purpose of grouping its children. It has no visual
- * appearance. The usefulness of a group figure comes from the fact that
- * transformations are inherited from parent to child, thus, children
- * of a group can be moved, scaled, rotated, etc. together by updating the
- * group's transformation matrix.
+ * @brief A figure with the sole purpose of grouping its children, and no visual
+ * representation.
+ *
+ * The usefulness of a group figure comes from the fact that transformations
+ * are inherited from parent to child, thus, children of a group can be moved,
+ * scaled, rotated, etc. together by updating the group's transformation matrix.
  *
  * @ingroup Canvas
  */
@@ -676,6 +685,7 @@ class SIM_API cGroupFigure : public cFigure
 /**
  * @brief Sets up an axis-aligned, unscaled coordinate system for children, canceling the
  * effect of any transformation (scaling, rotation, etc.) inherited from ancestor figures.
+ *
  * This allows pixel-based positioning of children, and makes them immune to zooming.
  * The origin of the coordinate system is the position of the panel figure.
  * Setting a transformation on the panel figure itself allows rotation, scaling,
@@ -720,9 +730,10 @@ class SIM_API cPanelFigure : public cFigure
 #endif
 
 /**
- * @brief Common base class for line figures. Provides line color, style, width,
- * opacity, and other properties. Lines may also be augmented with arrowheads
- * at either or both ends.
+ * @brief Common base class for line figures.
+ *
+ * This class provides line color, style, width, opacity, and other properties.
+ * Lines may also be augmented with arrowheads at either or both ends.
  *
  * Transformations such as scaling or skew do affect the width of the line as it
  * is rendered on the canvas. Whether zooming (by the user) should also affect
@@ -785,9 +796,10 @@ class SIM_API cAbstractLineFigure : public cFigure
 };
 
 /**
- * @brief A figure that displays a straight line segment. This class provides the
- * coordinates of the end points. Other properties such as color and line style
- * are inherited from cAbstractLineFigure.
+ * @brief A figure that displays a straight line segment.
+ *
+ * This class provides the coordinates of the end points. Other properties
+ * such as color and line style are inherited from cAbstractLineFigure.
  *
  * @ingroup Canvas
  */
@@ -826,10 +838,11 @@ class SIM_API cLineFigure : public cAbstractLineFigure
 };
 
 /**
- * @brief A figure that displays an arc. An arc's geometry is determined by the
- * bounding box of the circle or ellipse the arc is part of, and the
- * start and end angles. Other properties such as color and line style
- * are inherited from cAbstractLineFigure.
+ * @brief A figure that displays an arc.
+ *
+ * An arc's geometry is determined by the bounding box of the circle or ellipse
+ * the arc is part of, and the start and end angles. Other properties such as
+ * color and line style are inherited from cAbstractLineFigure.
  *
  * @ingroup Canvas
  */
@@ -871,13 +884,14 @@ class SIM_API cArcFigure : public cAbstractLineFigure
 };
 
 /**
- * @brief A figure that displays a line consisting of multiple connecting straight
- * line segments. The class stores geometry information as a sequence of
- * points. The line may be <i>smoothed</i>. A smoothed line is drawn
- * as a series of Bezier curves, which touch the start point of the first
- * line segment, the end point of the last line segment, and the midpoints
- * of intermediate line segments, while intermediate points serve as control
- * points.
+ * @brief A figure that displays a line consisting of multiple connecting
+ * straight line segments.
+ *
+ * The class stores geometry information as a sequence of points. The line
+ * may be <i>smoothed</i>. A smoothed line is drawn as a series of Bezier
+ * curves, which touch the start point of the first line segment, the
+ * end point of the last line segment, and the midpoints of intermediate
+ * line segments, while intermediate points serve as control points.
  *
  * Additional properties such as color and line style are inherited from
  * cAbstractLineFigure.
@@ -932,9 +946,10 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
 };
 
 /**
- * @brief Abstract base class for various shapes, providing line and fill color,
- * line and fill opacity, line style, line width, and other properties
- * for them. Both outline and fill are optional.
+ * @brief Abstract base class for various shapes.
+ *
+ * This class provides line and fill color, line and fill opacity, line style,
+ * line width, and other properties for them. Both outline and fill are optional.
  *
  * When the outline is drawn with a width larger than one pixel, it will be
  * drawn symmetrically, i.e. approximately 50-50% of its width will fall
@@ -1006,6 +1021,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
 
 /**
  * @brief A figure that displays a rectangle, with optionally rounded corners.
+ *
  * As with all shape figures, drawing of both the outline and the fill
  * are optional. Line and fill color, and several other properties are
  * inherited from cAbstractShapeFigure.
@@ -1051,9 +1067,11 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
 };
 
 /**
- * @brief A figure that draws a circle or ellipse. As with all shape figures, drawing
- * of both the outline and the fill are optional. Line and fill color, and
- * several other properties are inherited from cAbstractShapeFigure.
+ * @brief A figure that draws a circle or ellipse.
+ *
+ * As with all shape figures, drawing of both the outline and the fill are
+ * optional. Line and fill color, and several other properties are inherited
+ * from cAbstractShapeFigure.
  *
  * @ingroup Canvas
  */
@@ -1091,6 +1109,7 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
 
 /**
  * @brief A figure that displays a ring, with explicitly controllable inner/outer radii.
+ *
  * The inner/outer circles (or ellipses) form the outline, and the area between
  * them is filled. As with all shape figures, drawing of both the outline and
  * the fill are optional. Line and fill color, and several other properties are
@@ -1137,11 +1156,13 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
 };
 
 /**
- * @brief A figure that displays a pie slice, that is, a section of an axis-aligned disc
- * or filled ellipse. A pie slice is determined by the bounding box of the full
- * disc or ellipse, and a start and an end angle. The outline of the pie slice
- * consists of an arc and two radii. As with all shape figures, drawing of
- * both the outline and the fill are optional. Line and fill color, and several
+ * @brief A figure that displays a pie slice, that is, a section of an
+ * axis-aligned disc or filled ellipse.
+ *
+ * A pie slice is determined by the bounding box of the full disc or ellipse,
+ * and a start and an end angle. The outline of the pie slice consists of
+ * an arc and two radii. As with all shape figures, drawing of both the
+ * outline and the fill are optional. Line and fill color, and several
  * other properties are inherited from cAbstractShapeFigure.
  *
  * @ingroup Canvas
@@ -1185,6 +1206,7 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 
 /**
  * @brief A figure that displays a (closed) polygon, determined by a sequence of points.
+ *
  * The polygon may be <i>smoothed</i>. A smoothed polygon is drawn as a series
  * of cubic Bezier curves, where the curves touch the midpoints of the sides,
  * and vertices serve as control points. As with all shape figures, drawing of
@@ -1245,9 +1267,11 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 };
 
 /**
- * @brief A figure that displays a "path", a complex shape or line modeled after SVG
- * paths. A path is may consist of any number of straight line segments, Bezier
- * curves and arcs. The path can be disjoint as well. Closed paths may be filled.
+ * @brief A figure that displays a "path", a complex shape or line modeled
+ * after SVG paths.
+ *
+ * A path is may consist of any number of straight line segments, Bezier curves
+ * and arcs. The path can be disjoint as well. Closed paths may be filled.
  * The drawing of filled self-intersecting polygons is controlled by the
  * <i>fill rule</i> property. Line and fill color, and several other properties
  * are inherited from cAbstractShapeFigure.
@@ -1427,6 +1451,7 @@ class SIM_API cAbstractTextFigure : public cFigure
 
 /**
  * @brief A figure that displays text which is affected by zooming and transformations.
+ *
  * Font, color, position, anchoring and other properties are inherited from
  * cAbstractTextFigure.
  *
@@ -1453,7 +1478,8 @@ class SIM_API cTextFigure : public cAbstractTextFigure
 
 /**
  * @brief A figure that displays text which is unaffected by zooming or
- * transformations, except its position.
+ * transformations, except for its position.
+ *
  * Font, color, position, anchoring and other properties are inherited from
  * cAbstractTextFigure.
  *
@@ -1559,8 +1585,9 @@ class SIM_API cAbstractImageFigure : public cFigure
 
 /**
  * @brief A figure that displays an image, typically an icon or a background image,
- * loaded from the OMNeT++ image path. Positioning and other properties
- * are inherited from cAbstractImageFigure.
+ * loaded from the \opp image path.
+ *
+ * Positioning and other properties are inherited from cAbstractImageFigure.
  *
  * @see cIconFigure, cPixmapFigure
  * @ingroup Canvas
@@ -1598,11 +1625,11 @@ class SIM_API cImageFigure : public cAbstractImageFigure
 
 /**
  * @brief A figure that displays an image, typically an icon or a background image,
- * loaded from the OMNeT++ image path, in a non-zooming way.
+ * loaded from the \opp image path, in a non-zooming way.
  *
  * Positioning and other properties are inherited from cAbstractImageFigure.
  *
- * Note: not affected by transforms or zoom, except its position
+ * Note: The image is not affected by transforms or zoom, except for its position.
  *
  * @ingroup Canvas
  */
@@ -1627,6 +1654,7 @@ class SIM_API cIconFigure : public cImageFigure
 
 /**
  * @brief A figure that displays an image that can be manipulated programmatically.
+ *
  * A pixmap figure may be used to display e.g. a heat map. Support for scaling
  * and various interpolation modes are useful here.
  *

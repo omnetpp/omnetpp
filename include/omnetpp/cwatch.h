@@ -24,7 +24,7 @@ namespace omnetpp {
 
 
 /**
- * @brief Utility class to make primitive types and non-cOwnedObject objects
+ * @brief Helper class to make primitive types and non-cOwnedObject objects
  * inspectable in Tkenv/Qtenv. To be used only via the WATCH, WATCH_PTR,
  * WATCH_OBJ, WATCH_VECTOR etc macros.
  *

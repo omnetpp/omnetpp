@@ -25,8 +25,9 @@ class cObject;
 
 /**
  * @brief Enables traversing the tree of (cObject-rooted) simulation objects.
- * Should be subclassed and the visit() method redefined according
- * to your needs.
+ *
+ * Subclasses should redefine the visit() method and add the desired
+ * functionality.
  *
  * An example: the cRecursiveObjectFinderVisitor class (internal) has been
  * created to find an object of the given name. The constructor accepts

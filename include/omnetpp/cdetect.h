@@ -219,9 +219,11 @@ class SIM_API cAccuracyDetection : public cOwnedObject
 //----
 
 /**
- * @brief A transient detection algorithm. Uses sliding window approach
- * with two windows, and checks the difference of the two averages
- * to see if the transient period is over.
+ * @brief A basic transient detection algorithm.
+ *
+ * The class implements a sliding window approach with two windows,
+ * and checks the difference of the two averages to see if the
+ * transient period is over.
  *
  * @ingroup Statistics
  */
@@ -327,9 +329,10 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 //----
 
 /**
- * @brief An algorithm for result accuracy detection. The actual algorithm:
- * divide the standard deviation by the square of the number of values
- * and check if this is small enough.
+ * @brief An basic algorithm for result accuracy detection.
+ *
+ * The algorithm divides the standard deviation by the square of the number
+ * of values and check if it is small enough.
  *
  * @ingroup Statistics
  */

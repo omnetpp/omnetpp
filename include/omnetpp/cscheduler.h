@@ -26,8 +26,9 @@ class cEvent;
 class cSimulation;
 
 /**
- * @brief Abstract class to encapsulate event scheduling. See description
- * of takeNextEvent() for more info.
+ * @brief Abstract class to encapsulate event scheduling.
+ *
+ * The central method is takeNextEvent().
  *
  * To switch to your own scheduler class (reasons you'd like to do that
  * include real-time simulation, hardware-in-the-loop simulation,
@@ -174,9 +175,10 @@ class SIM_API cSequentialScheduler : public cScheduler
 
 
 /**
- * @brief Real-time scheduler class. When installed as scheduler using the scheduler-class
- * omnetpp.ini entry, it will synchronize simulation execution to real (wall clock)
- * time.
+ * @brief Real-time scheduler class.
+ *
+ * When installed as scheduler using the scheduler-class omnetpp.ini entry,
+ * it will synchronize simulation execution to real (wall clock) time.
  *
  * Operation: a "base time" is determined when startRun() is called. Later on,
  * the scheduler object calls usleep() from takeNextEvent() to synchronize the

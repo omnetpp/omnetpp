@@ -218,7 +218,9 @@ class SIM_API cStdDev : public cStatistic
 
 /**
  * @brief Statistics class to collect doubles and calculate weighted statistics
- * of them. It can be used for example to calculate time average.
+ * from them.
+ *
+ * One application is to calculate time average.
  *
  * @ingroup Statistics
  */

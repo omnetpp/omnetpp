@@ -30,6 +30,8 @@ class cConfiguration;
  *
  * The default implementation is InifileReader, but other variants (e.g. those
  * that read the configuration from a database) can also be implemented.
+ *
+ * @ingroup ExtensionPoints
  */
 class cConfigurationReader
 {

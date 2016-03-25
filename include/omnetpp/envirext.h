@@ -36,6 +36,7 @@ class cGate;
 
 /**
  * @brief Abstract base class for output vector managers for cEnvir.
+ *
  * cIOutputVectorManagers are plugins into the Envir user
  * interface library (src/envir) that handle recording the output for
  * cOutVectors.
@@ -140,6 +141,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
 
 /**
  * @brief Abstract base class for handling recording of output scalar data.
+ *
  * cIOutputScalarManagers are plugins into the Envir user interface
  * library (src/envir) that ultimately handle calls to the
  * cComponent::recordScalar() family of functions.
@@ -229,9 +231,11 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
 
 
 /**
- * @brief Abstract base class for snapshot managers. cISnapshotManagers are plugins
- * into the Envir user interface library (src/envir) that provide an output
- * stream into which snapshots are written (see cSimulation::snapshot()).
+ * @brief Abstract base class for snapshot managers.
+ *
+ * cISnapshotManagers are plugins into the Envir user interface library
+ * (src/envir) that provide an output stream into which snapshots are written
+ * (see cSimulation::snapshot()).
  *
  * The default output snapshot manager is cFileSnapshotManager, defined in the
  * Envir library.
@@ -311,9 +315,11 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
 
 
 /**
- * @brief Abstract base class for eventlog managers for cEnvir. cIEventlogManagers
- * are plugins into the Envir user interface library (src/envir) that handle
- * the recording of simulation history into an event log.
+ * @brief Abstract base class for eventlog managers for cEnvir.
+ *
+ * cIEventlogManagers are plugins into the Envir user interface library
+ * (src/envir) that handle the recording of simulation history into an
+ * event log.
  *
  * The default eventlog manager is EventlogFileManager, defined in the
  * Envir library.

@@ -25,11 +25,12 @@ namespace omnetpp {
 
 /**
  * @brief The class behind the createOne() function and the Register_Class() macro.
+ *
  * Each instance is a factory for a particular class: it knows how to create
  * an object of that class.
  *
  * @see Register_Class(), Define_Module() macros
- * @ingroup SimSupport
+ * @ingroup Internals
  */
 class SIM_API cObjectFactory : public cNoncopyableOwnedObject
 {

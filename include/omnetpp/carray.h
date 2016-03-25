@@ -22,10 +22,10 @@ namespace omnetpp {
 
 
 /**
- * @brief Container object that holds objects derived from cObject.
- * cArray stores the pointers of the objects inserted instead of making copies.
- * cArray works as an array, but if it gets full, it grows automatically by
- * a specified delta.
+ * @brief Vector-like container for objects derived from cObject.
+ *
+ * cArray stores pointers of objects. When the array is full, the its capacity
+ * grows automatically by a delta.
  *
  * Ownership of cOwnedObjects may be controlled by invoking setTakeOwnership()
  * prior to inserting objects. Objects that cannot track their ownership

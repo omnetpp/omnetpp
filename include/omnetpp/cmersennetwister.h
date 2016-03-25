@@ -27,8 +27,9 @@ namespace omnetpp {
 
 /**
  * @brief Wraps the Mersenne Twister RNG by Makoto Matsumoto and Takuji Nishimura.
- * Cycle length is 2^19937-1, and 623-dimensional equidistribution property
- * is assured.
+ *
+ * Mersenne Twister has a cycle length is 2^19937-1, and 623-dimensional
+ * equidistribution property is assured.
  *
  * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ewhat-is-mt.html
  *

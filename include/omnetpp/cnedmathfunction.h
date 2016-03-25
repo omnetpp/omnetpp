@@ -74,10 +74,11 @@ typedef double (*MathFunc4Args)(double,double,double,double);
 
 
 /**
- * @brief Registration class for extending NED with new functions. Stores a pointer to
- * a function taking up to 4 doubles as args and returning a double.
+ * @brief Registration class for extending NED with new mathematical functions.
  *
- * Objects of this class are usually created via the Define_NED_Math_Function() macro.
+ * Objects of this class are usually created via the Define_NED_Math_Function()
+ * macro. It stores a pointer to a function taking up to 4 doubles as args
+ * and returning a double.
  *
  * @ingroup Internals
  */

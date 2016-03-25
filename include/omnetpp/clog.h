@@ -269,8 +269,8 @@ inline void *getThisPtr() {return nullptr;}
 //@}
 
 /**
- * @brief This class holds various data that is captured when a particular log statement
- * executes. It also contains the text written to the log stream.
+ * @brief This class holds various data that is captured when a particular
+ * log statement executes. It also contains the text written to the log stream.
  *
  * @see cEnvir::log(cLogEntry*)
  * @ingroup Internals

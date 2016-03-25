@@ -25,9 +25,11 @@ namespace omnetpp {
 
 
 /**
- * @brief A cEnvir implementation with all pure virtual methods defined with an
- * empty body, with a trivial implementation, or to throw an exception
- * with the "unsupported method" text.
+ * @brief A do-nothing cEnvir implementation.
+ *
+ * This class defines cEnvir's pure virtual methods with an empty body,
+ * with a trivial implementation, or to throw an exception with an
+ * "unsupported method" message.
  *
  * This class is not used by \opp, it is provided for convenience of writing
  * standalone programs that embed the simulation kernel as a library.

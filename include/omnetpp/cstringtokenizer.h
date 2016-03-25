@@ -23,11 +23,13 @@
 namespace omnetpp {
 
 /**
- * @brief String tokenizer class, modelled after strtok(). It considers the input
- * string to consist of tokens, separated by one or more delimiter characters.
- * Repeated calls to nextToken() will enumerate the tokens in the string,
- * returning nullptr after the last token. The function hasMoreTokens() can be
- * used to find out whether there are more tokens without consuming one.
+ * @brief String tokenizer class, modelled after strtok().
+ *
+ * It considers the input string to consist of tokens, separated by one
+ * or more delimiter characters. Repeated calls to nextToken() will enumerate
+ * the tokens in the string, returning nullptr after the last token.
+ * The function hasMoreTokens() can be used to find out whether there
+ * are more tokens without consuming one.
  *
  * Limitations: this class does not honor quotes, apostrophes or backslash
  * quoting; nor does it return empty tokens if it encounters multiple

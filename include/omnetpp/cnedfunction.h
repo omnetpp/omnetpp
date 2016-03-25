@@ -35,7 +35,7 @@ typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc
 
 
 /**
- * @brief Registration class for extending NED with new functions.
+ * @brief Registration class for extending NED with arbitrary new functions.
  *
  * Objects of this class are usually created via the Define_NED_Function() macro.
  *

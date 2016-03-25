@@ -37,8 +37,11 @@ class cStatistic;
 
 
 /**
- * @brief Common base for module and channel classes: cModule and cChannel.
- * cComponent provides parameters, properties and RNG mapping.
+ * @brief Common base for module and channel classes.
+ *
+ * cComponent provides parameters, properties, display string, RNG mapping,
+ * initialization and finalization support, simulation signals support,
+ * and several other services to its subclasses.
  *
  * @ingroup SimCore
  */

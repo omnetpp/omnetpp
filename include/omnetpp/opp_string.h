@@ -26,6 +26,7 @@ namespace omnetpp {
 
 /**
  * @brief Lightweight string class, used internally in some parts of \opp.
+ *
  * In simulation models it is better to use std::string or const char *
  * instead.
  *
@@ -159,6 +160,7 @@ inline std::ostream& operator<<(std::ostream& out, const opp_string& s)
 
 /**
  * @brief Lightweight string vector, used internally in some parts of \opp.
+ *
  * Inheritance is used to "de-templatize" the vector class, because the
  * Windows DLL interface is not really a friend of templated classes.
  *
@@ -173,7 +175,8 @@ class SIM_API opp_string_vector : public std::vector<opp_string>
 
 
 /**
- * @brief Lightweight string vector, used internally in some parts of \opp.
+ * @brief Lightweight string-to-string map, used internally in some parts of \opp.
+ *
  * Inheritance is used to "de-templatize" the map class, because the
  * Windows DLL interface is not really a friend of templated classes.
  *

@@ -78,6 +78,7 @@ inline SimTime normal(cRNG *rng, SimTime mean, SimTime stddev) {return normal(rn
 
 /**
  * @brief Normal distribution truncated to nonnegative values.
+ *
  * It is implemented with a loop that discards negative values until
  * a nonnegative one comes. This means that the execution time is not bounded:
  * a large negative mean with much smaller stddev is likely to result
@@ -171,10 +172,12 @@ SIM_API double erlang_k(cRNG *rng, unsigned int k, double mean);
 
 /**
  * @brief Returns a random variate from the chi-square distribution
- * with k degrees of freedom.  The chi-square distribution arises
- * in statistics. If Yi are k independent random variates from the normal
- * distribution with unit variance, then the sum-of-squares (sum(Yi^2))
- * has a chi-square distribution with k degrees of freedom.
+ * with k degrees of freedom.
+ *
+ * The chi-square distribution arises in statistics. If Yi are k independent
+ * random variates from the normal distribution with unit variance, then
+ * the sum-of-squares (sum(Yi^2)) has a chi-square distribution with k degrees
+ * of freedom.
  *
  * The expected value of this distribution is k. Chi_square with parameter
  * k is gamma-distributed with alpha=k/2, beta=2.

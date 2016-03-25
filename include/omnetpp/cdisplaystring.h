@@ -24,9 +24,10 @@ namespace omnetpp {
 
 
 /**
- * @brief Class for storage and easy manipulation of display strings. Display strings
- * are used to control the graphical presentation of network elements
- * when a GUI execution environment is used (Tkenv).
+ * @brief Represents a display string.
+ *
+ * Display strings are used to control the graphical presentation of network
+ * elements when a graphical runtime environment is used.
  *
  * A display string consist of several named tags, where each tag may have
  * several arguments (parameters). The syntax: "tag1=value1,val2,val3;tag2=val4,val5".
@@ -36,10 +37,9 @@ namespace omnetpp {
  * method allows very fast operation; it will generally be faster than
  * direct string manipulation.
  *
- * The object doesn't try to interpret the display string in any way,
- * nor does it know the meaning of the different tags; it merely
- * parses the string as data elements separated by semicolons, equal
- * signs and commas.
+ * The this class does not know about the meaning or semantics of various
+ * display string tags, it merely parses the string as data elements separated
+ * by semicolons, equal signs and commas.
  *
  * An example:
  * <pre>

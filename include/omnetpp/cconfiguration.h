@@ -53,17 +53,14 @@ class cConfigOption;
 
 /**
  * @brief Represents the configuration, as accessed by the simulation kernel.
- * The configuration object can be accessed with getEnvir()->getConfig().
  *
- * This class logically belongs to the cEnvir facade. (cEnvir presents
- * to the simulation kernel the UI, or generally, the program which embeds
- * the simulation.) This class provides access to configuration data for
- * components such as scheduler classes, parallel simulation algorithms, etc.
- * Model code (simple modules) should not directly read the configuration --
- * they should rely on module parameters for input.
+ * This class provides access to configuration data for components such as
+ * scheduler classes, parallel simulation algorithms, etc. Model code (simple
+ * modules) should not directly read the configuration, they are expected
+ * to rely on module parameters for input.
  *
- * This class does not deal with module parameters, because they get
- * assigned via cEnvir's readParameter() method.
+ * This class logically belongs to the cEnvir facade, and the configuration
+ * instance can be accessed with getEnvir()->getConfig().
  *
  * @see cConfigurationEx, cEnvir::getConfig()
  * @ingroup ExtensionPoints

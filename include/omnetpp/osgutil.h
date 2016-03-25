@@ -29,7 +29,7 @@ namespace omnetpp {
 // the sim. kernel doesn't have a linker dependency on the OSG libraries.
 
 /**
- * @brief osg::Group for defining correspondence of a 3D object to an
+ * @brief An osg::Group for defining correspondence of a 3D object to an
  * \opp object.
  *
  * Using this node in an OSG scene graph associates its children (and all

@@ -32,12 +32,11 @@ class  cCanvas;
 class  cOsgCanvas;
 
 /**
- * @brief This class represents modules in the simulation. cModule can be used directly
- * for compound modules. Simple module classes need to be subclassed from
- * cSimpleModule, a class that adds more functionality to cModule.
+ * @brief This class represents modules in the simulation.
  *
- * cModule provides gates, parameters, RNG mapping, display strings,
- * and a set of virtual methods.
+ * cModule can be used directly for compound modules. Simple module
+ * classes need to be subclassed from cSimpleModule, a class that
+ * adds more functionality to cModule.
  *
  * For navigating the module tree, see:
  * getParentModule(), getSubmodule(), cModule::SubmoduleIterator,
@@ -197,8 +196,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * @brief Walks along the channels inside a module, that is, the channels
-     * among the module and its submodules. This is the same set of channels
-     * whose getParentModule() would return the iterated module.
+     * among the module and its submodules.
+     *
+     * This is the same set of channels whose getParentModule() would return
+     * the iterated module.
      *
      * Implementation note:
      *

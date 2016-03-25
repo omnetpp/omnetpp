@@ -76,6 +76,7 @@ class SIM_API cResultFilter : public cResultListener
 
 /**
  * @brief Base class for filters that expect to receive an numeric value.
+ *
  * This class overrides all other receiveSignal() methods to throw an exception,
  * and delegates numeric types to a common (actually, two common) methods.
  *
@@ -99,6 +100,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
 
 /**
  * @brief Base class for filters that expect to receive an object.
+ *
  * This class overrides all other receiveSignal() methods
  * to throw an exception.
  *

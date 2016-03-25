@@ -24,12 +24,13 @@
 namespace omnetpp {
 
 /**
- * @brief For saving memory on the storage of (largely) constant strings that occur in
- * many instances during runtime: module names, gate names, property names,
- * keys and values, etc. These strings can be stored in a cStringPool as one
- * shared instance. Strings in the cStringPool are reference counted.
- * (See Flyweight GoF pattern.)
+ * @brief Reference-counted storage for strings.
  *
+ * The purpose of this class is to allow saving memory on the storage of
+ * (largely) constant strings that occur in many instances during runtime:
+ * module names, gate names, property names, keys and values, etc.
+ *
+ * @see cNamedObject::cNamedObject, cNamedObject::setNamePooling()
  * @ingroup internals
  */
 class cStringPool

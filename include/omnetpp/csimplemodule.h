@@ -24,10 +24,12 @@ class cQueue;
 class cCoroutine;
 
 /**
- * @brief Base class for all simple module classes. cSimpleModule, although packed
- * with simulation-related functionality, does not do anything useful by itself:
- * one has to subclass from it and redefine one or more virtual member
- * functions to make it do useful work. These functions are:
+ * @brief Base class for all simple module classes.
+ *
+ * cSimpleModule, although packed with simulation-related functionality,
+ * does not do anything useful by itself: one has to subclass from it
+ * and redefine one or more virtual member functions to make it do useful work.
+ * These functions are:
  *
  *    - void initialize()
  *    - void handleMessage(cMessage *msg)

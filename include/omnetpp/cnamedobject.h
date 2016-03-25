@@ -117,8 +117,8 @@ class SIM_API cNamedObject : public cObject
     virtual const char *getName() const override  {return name ? name : "";}
 
     /**
-     * Turn name pooling on/off. Name pooling is an optimization technique that saves
-     * memory if several objects have identical names.
+     * Turn name pooling on/off. Name pooling is an optimization technique that
+     * saves memory if several objects have identical names.
      */
     virtual void setNamePooling(bool b);
 

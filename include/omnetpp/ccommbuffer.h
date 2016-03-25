@@ -27,6 +27,7 @@ class opp_string;
 
 /**
  * @brief Buffer for the communications layer of parallel simulation.
+ *
  * This is an abstract class which has different implementations
  * for specific communication mechanisms.
  * For example, the MPI implementation, cMPICommBuffer encapsulates
