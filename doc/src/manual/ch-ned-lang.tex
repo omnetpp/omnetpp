@@ -765,7 +765,7 @@ simple App
 \end{ned}
 
 
-\subsubsection{Assigning a Value}
+\subsection{Assigning a Value}
 \label{sec:ned-lang:parameter-assignments}
 
 Parameters may get their values in several ways: from NED code, from the
@@ -980,7 +980,7 @@ this will result in an error):
 \end{note}
 
 
-\subsubsection{Expressions}
+\subsection{Expressions}
 \label{sec:ned-lang:expressions}
 
 Parameter values may be given with expressions. NED language expressions
@@ -1014,7 +1014,7 @@ of already defined submodules, with the syntax \ttt{submodule.parametername}
 %% XXX there are no parameter arrays, but... demonstrate the choose() function
 
 
-\subsubsection{volatile}
+\subsection{volatile}
 \label{sec:ned-lang:volatile}
 
 The \fkeyword{volatile} modifier causes the parameter's value expression to
@@ -1059,7 +1059,7 @@ source of random numbers for modules.
     of the simulation.
 \end{note}
 
-\subsubsection{Units}
+\subsection{Units}
 \label{sec:ned-lang:units}
 
 One can declare a parameter to have an associated unit of measurement,
@@ -1096,7 +1096,7 @@ The \fprop{@unit} property of a parameter cannot be added or overridden
 in subclasses or in submodule declarations.
 
 
-\subsubsection{XML Parameters}
+\subsection{XML Parameters}
 \label{sec:ned-lang:xml-parameters}
 
 Sometimes modules need complex data structures as input, which is something
@@ -1458,7 +1458,7 @@ directions.
 %% XXX examples
 
 
-\subsubsection{Channel Specification}
+\subsection{Channel Specification}
 \label{sec:ned-lang:channel-specification}
 
 Channel specifications (\ttt{-{}->$channelspec$-{}->} inside a connection)
@@ -1540,7 +1540,7 @@ easier to identify connections in patterns. This feature is planned for
 future {\opp} releases.
 
 
-\subsubsection{Channel Names}
+\subsection{Channel Names}
 \label{sec:ned-lang:channel-names}
 
 The default name given to channel objects is \ttt{"channel"}. Since {\opp} 4.3
@@ -1606,6 +1606,9 @@ multiple connections easily.
 %% XXX explain for; nesting; explain if;
 
 This will be shown in the following examples.
+
+\subsection{Examples}
+\label{sec:ned-lang:multiple-connections-examples}
 
 \subsubsection{Chain}
 \label{sec:ned-lang:chain-example}
@@ -2008,7 +2011,7 @@ module Example
 \end{ned}
 
 
-\subsubsection{Property Indices}
+\subsection{Property Indices}
 \label{sec:ned-lang:property-indices}
 
 Sometimes it is useful to have multiple properties with the same name,
@@ -2058,7 +2061,7 @@ simple DummyExt extends Dummy {
 \end{ned}
 
 
-\subsubsection{Data Model}
+\subsection{Data Model}
 \label{sec:ned-lang:property-data-model}
 
 Properties may contain data, given in parentheses; the data model is quite
@@ -2120,7 +2123,7 @@ equivalent to \ttt{@host}: \ttt{@host()}, \ttt{@host(true)},
 tag.
 
 
-\subsubsection{Overriding and Extending Property Values}
+\subsection{Overriding and Extending Property Values}
 \label{sec:ned-lang:overriding-and-extending-property-values}
 
 When you subclass a NED type, use a module type as submodule or use a channel
@@ -2230,7 +2233,7 @@ name conflicts, because names can be qualified with the package name.
     surprise in this section.
 \end{note}
 
-\subsubsection{Overview}
+\subsection{Overview}
 \label{sec:ned-lang:packages-overview}
 
 When a simulation is run, you must tell the simulation kernel the
@@ -2332,7 +2335,7 @@ package inet.transport.tcp;
 \end{ned}
 
 
-\subsubsection{Name Resolution, Imports}
+\subsection{Name Resolution, Imports}
 \label{sec:ned-lang:imports-and-name-resolution}
 
 We already mentioned that packages can be used to distinguish
@@ -2378,7 +2381,7 @@ Inner types may not be referred to outside their enclosing types, so they
 cannot be imported either.
 
 
-\subsubsection{Name Resolution With "like"}
+\subsection{Name Resolution With "like"}
 \label{sec:ned-lang:name-resolution-with-like}
 
 The situation is a little different for submodule and connection channel
@@ -2424,7 +2427,7 @@ but one must explicitly choose one of them by providing a package name:
 \ttt{mobility\-Type="inet.ad\-hoc.Random\-Walk"}.
 
 
-\subsubsection{The Default Package}
+\subsection{The Default Package}
 \label{sec:ned-lang:default-package}
 
 It is not mandatory to make use of packages: if all NED files are in a

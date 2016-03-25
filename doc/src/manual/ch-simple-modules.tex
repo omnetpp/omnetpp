@@ -3009,7 +3009,7 @@ is available.
 \section{Finite State Machines}
 \label{sec:simple-modules:fsm}
 
-\subsubsection{Overview}
+\subsection{Overview}
 \label{sec:simple-modules:fsm-overview}
 
 Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
@@ -3274,7 +3274,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 \section{Navigating the Module Hierarchy}
 \label{sec:simple-modules:walking-module-hierarchy}
 
-\subsubsection{Module Vectors}
+\subsection{Module Vectors}
 \label{sec:simple-modules:module-vectors}
 
 If a module is part of a module vector\index{module!vector}, the
@@ -3287,7 +3287,7 @@ EV << "This is module [" << module->getIndex() <<
 \end{cpp}
 
 
-\subsubsection{Module IDs}
+\subsection{Module IDs}
 \label{sec:simple-modules:module-ids}
 
 Every module in the network has a unique ID that is returned by the
@@ -3313,7 +3313,7 @@ that is, IDs of deleted modules are not reused for newly created
 modules.
 
 
-\subsubsection{Walking Up and Down the Module Hierarchy}
+\subsection{Walking Up and Down the Module Hierarchy}
 \label{sec:simple-modules:walking-up-and-down-module-hierarchy}
 
 The surrounding compound module can be accessed by the
@@ -3364,7 +3364,7 @@ to \cclass{cModule}'s \ffunc{moduleByRelative\-Path()} function, and it
 starts the search at the top-level module.
 
 
-\subsubsection{Iterating over Submodules}
+\subsection{Iterating over Submodules}
 \label{sec:simple-modules:iterating-over-submodules}
 
 To access all modules within a compound module,
@@ -3399,7 +3399,7 @@ for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 \end{cpp}
 
 
-\subsubsection{Navigating Connections}
+\subsection{Navigating Connections}
 \label{sec:simple-modules:navigating-connections}
 
 To determine the module at the other end of a connection, use

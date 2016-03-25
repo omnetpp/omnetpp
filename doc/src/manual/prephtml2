@@ -114,10 +114,12 @@ $i = 0;
 while ($scrap =~ s/\<h([0-9])\>(.*?)\<\/h[0-9]\>//si)
 {
       $level[$i] = $1;
-      $2 =~ m/\<a name\=\"(.*?)\"\/\>(.*)/si;
+    
+      $2 =~ m/\<a name\=\"(.*?)\"\/\>(.*?)\<a/si;
       $label[$i] = $1;
       $title[$i] = $2;
       $aname2index{$1} = $i;
+      if ($i > 0 && $level[$i]-$level[$i-1] > 1) { die "Error: heading level skipped between section \"$title[$i-1]\" and \"$title[$i]\""; }
       $i++;
 }
 $nheadings = $i;
