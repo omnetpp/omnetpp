@@ -70,7 +70,7 @@ class SIM_API cRandom : public cOwnedObject
  * <code>uniform(cRNG *rng, double a, double b)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersContCont
  */
 class SIM_API cUniform : public cRandom
 {
@@ -110,7 +110,7 @@ class SIM_API cUniform : public cRandom
  * This class is an object-oriented wrapper around the
  * <code>exponential(cRNG *rng, double mean)</code> function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cExponential : public cRandom
 {
@@ -148,7 +148,7 @@ class SIM_API cExponential : public cRandom
  * <code>normal(cRNG *rng, double mean, double stddev)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cNormal : public cRandom
 {
@@ -189,7 +189,7 @@ class SIM_API cNormal : public cRandom
  * <code>truncnormal(cRNG *rng, double mean, double stddev)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cTruncNormal : public cRandom
 {
@@ -230,7 +230,7 @@ class SIM_API cTruncNormal : public cRandom
  * <code>gamma_d(cRNG *rng, double alpha, double theta)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cGamma : public cRandom
 {
@@ -271,7 +271,7 @@ class SIM_API cGamma : public cRandom
  * <code>beta(cRNG *rng, double alpha1, double alpha2)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cBeta : public cRandom
 {
@@ -312,7 +312,7 @@ class SIM_API cBeta : public cRandom
  * <code>erlang_k(cRNG *rng, unsigned int k, double mean)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cErlang : public cRandom
 {
@@ -353,7 +353,7 @@ class SIM_API cErlang : public cRandom
  * <code>chi_square(cRNG *rng, unsigned int k)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cChiSquare : public cRandom
 {
@@ -391,7 +391,7 @@ class SIM_API cChiSquare : public cRandom
  * <code>student_t(cRNG *rng, unsigned int i)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cStudentT : public cRandom
 {
@@ -429,7 +429,7 @@ class SIM_API cStudentT : public cRandom
  * <code>cauchy(cRNG *rng, double a, double b)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cCauchy : public cRandom
 {
@@ -470,7 +470,7 @@ class SIM_API cCauchy : public cRandom
  * <code>triang(cRNG *rng, double a, double b, double c)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cTriang : public cRandom
 {
@@ -514,7 +514,7 @@ class SIM_API cTriang : public cRandom
  * <code>weibull(cRNG *rng, double a, double b)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cWeibull : public cRandom
 {
@@ -555,7 +555,7 @@ class SIM_API cWeibull : public cRandom
  * <code>pareto_shifted(cRNG *rng, double a, double b, double c)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersCont
  */
 class SIM_API cParetoShifted : public cRandom
 {
@@ -601,7 +601,7 @@ class SIM_API cParetoShifted : public cRandom
  * <code>intuniform(cRNG *rng, int a, int b)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersDiscr
  */
 class SIM_API cIntUniform : public cRandom
 {
@@ -642,7 +642,7 @@ class SIM_API cIntUniform : public cRandom
  * <code>bernoulli(cRNG *rng, double p)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersDiscr
  */
 class SIM_API cBernoulli : public cRandom
 {
@@ -680,7 +680,7 @@ class SIM_API cBernoulli : public cRandom
  * <code>binomial(cRNG *rng, int n, double p)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersDiscr
  */
 class SIM_API cBinomial : public cRandom
 {
@@ -721,7 +721,7 @@ class SIM_API cBinomial : public cRandom
  * <code>geometric(cRNG *rng, double p)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersDiscr
  */
 class SIM_API cGeometric : public cRandom
 {
@@ -759,7 +759,7 @@ class SIM_API cGeometric : public cRandom
  * <code>negbinomial(cRNG *rng, int n, double p)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersDiscr
  */
 class SIM_API cNegBinomial : public cRandom
 {
@@ -800,7 +800,7 @@ class SIM_API cNegBinomial : public cRandom
  * <code>poisson(cRNG *rng, double lambda)</code>
  * function.
  *
- * @ingroup RandomNumbers
+ * @ingroup RandomNumbersDiscr
  */
 class SIM_API cPoisson : public cRandom
 {

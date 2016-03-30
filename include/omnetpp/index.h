@@ -109,33 +109,30 @@ namespace omnetpp {
  *
  * <b>Distributions</b>
  *
- * There are several functions which generate random variates
- * from different distributions: uniform, exponential, normal,
- * truncated normal, gamma, beta, Erlang, Weibull, Bernoulli,
- * binomial, geometric, Poisson, and several more.
+ * The simulation library provides support for generating random variates
+ * from various continuous and discrete distributions: uniform, exponential,
+ * normal, truncated  normal, gamma, beta, Erlang, Weibull, Bernoulli,
+ * binomial, geometric, Poisson, and more.
  *
- * The functions rely on the random number generator described below.
- *
- * The documentation of individual functions includes the generation method
- * it uses. The description may refer to one of the following publications:
- *
- * LawKelton: A.M. Law and W.D. Kelton, Simulation Modeling and Analysis,
- * 3rd ed., McGraw Hill, 2000.
- *
- * Banks: J. Banks: Handbook of Simulation, Wiley, 1998.
- *
- * I have also found the web site
- * <a href="http://www.xycoon.com">http://www.xycoon.com</a> extremely useful.
+ * Generators come in two flavours: as plain functions (taking an RNG
+ * and the parameters of the distribution as arguments), and as classes
+ * that subclass cRandom and encapsulate both the RNG and the parameters
+ * of the distribution.
  *
  * <b>Random number generators</b>
  *
  * \opp provides several random number generators (streams) and several
  * random number generator algorithms (default is cMersenneTwister).
- * RNGs can be configured in omnetpp.ini.
+ * RNGs can be configured in omnetpp.ini. RNGs are made available via
+ * the cRNG interface, and the cModule::getRNG() method. All functions
+ * returning random variates, etc. internally call cModule::getRNG()
+ * and cRNG::intRand(), cRNG::doubleRand().
  *
- * RNGs are made available via the cRNG interface, and the cModule::getRNG()
- * method. All functions returning random variates, etc. internally
- * call cModule::getRNG() and cRNG::intRand(), cRNG::doubleRand().
+ * Note: The documentation of individual functions may refer to the
+ * following publications as [LawKelton] or [Banks]:
+ *   - [LawKelton] Simulation Modeling and Analysis, A.M. Law and W.D.
+ *     Kelton, 3rd ed., McGraw Hill, 2000
+ *   - [Banks] Handbook of Simulation, J. Banks, Wiley, 1998
  */
 
 /**
@@ -271,8 +268,7 @@ namespace omnetpp {
  * @brief \opp provides a logging mechanism for models, with support for log levels,
  * filtering, a configurable log prefix, and more.
  *
- * At a basic level, use EV_INFO as a stream, i.e. send data into it with the
- * left-shift (<<) operator. Also, be sure to review EV_STATICCONTEXT!
+ * See EV_INFO for a starting point.
  */
 
 /**

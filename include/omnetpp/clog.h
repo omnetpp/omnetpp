@@ -216,57 +216,139 @@ inline void *getThisPtr() {return nullptr;}
 #define EV_STATICCONTEXT  void *(*getThisPtr)() = omnetpp::getThisPtr;
 
 /**
- * @brief This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and similar log macros.
+ * @brief This is the macro underlying EV_INFO, EV_DETAIL, EV_INFO_C, and
+ * similar log macros.
  *
- * It can be used as a C++ stream to log data with the provided log level and log category.
- * Log statements are wrapped with compile time and runtime guards at the call site to
- * efficiently prevent unnecessary computation of parameters and log content.
+ * This macro should not be used directly, but via the logging macros
+ * EV, EV_FATAL, EV_ERROR, EV_WARN, EV_INFO, EV_DETAIL, EV_DEBUG, EV_TRACE,
+ * and their "category" versions EV_C, EV_FATAL_C, EV_ERROR_C, EV_WARN_C,
+ * EV_INFO_C, EV_DETAIL_C, EV_DEBUG_C, EV_TRACE_C.
  *
- * @see LogLevel, EV_STATICCONTEXT, EV_INFO, EV_INFO_C
+ * Those macros act as C++ streams: one can write on them using the
+ * left-shift (<<) operator. Their names refer to the log level they
+ * represent (see LogLevel). The "category" (_C) versions accept a category
+ * string. Each category acts like a separate log channel; for example,
+ * one can use the "test" category to log text intended for consumption
+ * by an automated test suite.
+ *
+ * Log statements are wrapped with compile-time and runtime guards at the
+ * call site to efficiently prevent unnecessary computation of parameters
+ * and log content. Compile-time guards are COMPILETIME_LOGLEVEL and
+ * COMPILETIME_LOG_PREDICATE. Runtime guards (runtime log level) can be
+ * set up via omnetpp.ini.
+ *
+ * Under certain circumstances, compiling log statements may result in errors.
+ * When that happens, it is possible that the EV_STATICCONTEXT macro needs to
+ * be added to the code; please review its documentation for more info.
+ *
+ * Examples:
+ *
+ * \code
+ * EV_INFO << "Connection setup complete" << endl;
+ * EV_INFO_C("test") << "ESTAB" << endl;
+ * \endcode
+ *
+ * @see LogLevel, EV_STATICCONTEXT, EV_INFO, EV_INFO_C, COMPILETIME_LOGLEVEL, COMPILETIME_LOG_PREDICATE
  * @ingroup Logging
  * @hideinitializer
  */
 #define EV_LOG(logLevel, category) OPP_LOGPROXY(getThisPtr(), logLevel, category).getStream()
 
 /**
- * Logging macros with the default category. Category is a string that refers to the
- * topic of the log message. The macro can be used as a C++ stream. Example:
- * <tt>EV_DETAIL << "Connection setup complete" << endl;</tt>.
- *
- * @see EV_LOG, LogLevel, EV_STATICCONTEXT
- * @ingroup Logging
- * @defgroup LoggingDefault Logging with default category
+ * @brief Short for EV_INFO.
+ * @see EV_INFO @ingroup Logging
  */
-//@{
-#define EV        EV_INFO                                   ///< Short for EV_INFO
-#define EV_FATAL  EV_LOG(omnetpp::LOGLEVEL_FATAL, nullptr)  ///< Log local fatal errors
-#define EV_ERROR  EV_LOG(omnetpp::LOGLEVEL_ERROR, nullptr)  ///< Log local but recoverable errors
-#define EV_WARN   EV_LOG(omnetpp::LOGLEVEL_WARN, nullptr)   ///< Log warnings
-#define EV_INFO   EV_LOG(omnetpp::LOGLEVEL_INFO, nullptr)   ///< Log information (default log level)
-#define EV_DETAIL EV_LOG(omnetpp::LOGLEVEL_DETAIL, nullptr) ///< Log state variables and other low-level information
-#define EV_DEBUG  EV_LOG(omnetpp::LOGLEVEL_DEBUG, nullptr)  ///< Log state variables and other low-level information
-#define EV_TRACE  EV_LOG(omnetpp::LOGLEVEL_TRACE, nullptr)  ///< Log control flow information (entering/exiting functions, etc)
-//@}
+#define EV        EV_INFO
 
 /**
- * Logging macros with an explicit category. Category is a string that refers to the
- * topic of the log message. The macro can be used as a C++ stream. Example:
- * <tt>EV_DETAIL("retransmissions") << "Too many retries, discarding frame" << endl;</tt>.
- *
- * @see EV_LOG, LogLevel, EV_STATICCONTEXT
- * @ingroup Logging
- * @defgroup LoggingCat  Logging with explicit category
+ * @brief Pseudo-stream for logging local fatal errors. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
  */
-//@{
-#define EV_C(category)        EV_INFO_C(category)                        ///< Short for EV_INFO_C
-#define EV_FATAL_C(category)  EV_LOG(omnetpp::LOGLEVEL_FATAL, category)  ///< Log local fatal errors
-#define EV_ERROR_C(category)  EV_LOG(omnetpp::LOGLEVEL_ERROR, category)  ///< Log local but recoverable errors
-#define EV_WARN_C(category)   EV_LOG(omnetpp::LOGLEVEL_WARN, category)   ///< Log warnings
-#define EV_INFO_C(category)   EV_LOG(omnetpp::LOGLEVEL_INFO, category)   ///< Log information (default log level)
-#define EV_DETAIL_C(category) EV_LOG(omnetpp::LOGLEVEL_DETAIL, category) ///< Log state variables and other low-level information
-#define EV_DEBUG_C(category)  EV_LOG(omnetpp::LOGLEVEL_DEBUG, category)  ///< Log state variables and other low-level information
-#define EV_TRACE_C(category)  EV_LOG(omnetpp::LOGLEVEL_TRACE, category)  ///< Log control flow information (entering/exiting functions, etc)
-//@}
+#define EV_FATAL  EV_LOG(omnetpp::LOGLEVEL_FATAL, nullptr)
+
+/**
+ * @brief Pseudo-stream for logging local recoverable errors. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_ERROR  EV_LOG(omnetpp::LOGLEVEL_ERROR, nullptr)
+
+/**
+ * @brief Pseudo-stream for logging warnings. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_WARN   EV_LOG(omnetpp::LOGLEVEL_WARN, nullptr)
+
+/**
+ * @brief Pseudo-stream for logging information with the default log level. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_INFO   EV_LOG(omnetpp::LOGLEVEL_INFO, nullptr)
+
+/**
+ * @brief Pseudo-stream for logging low-level protocol-specific details. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_DETAIL EV_LOG(omnetpp::LOGLEVEL_DETAIL, nullptr)
+
+/**
+ * @brief Pseudo-stream for logging state variables and other low-level information. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_DEBUG  EV_LOG(omnetpp::LOGLEVEL_DEBUG, nullptr)
+
+/**
+ * @brief Pseudo-stream for logging control flow information (entering/exiting functions, etc). See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_TRACE  EV_LOG(omnetpp::LOGLEVEL_TRACE, nullptr)
+
+/**
+ * @brief Short for EV_INFO_C.
+ * @see EV_INFO_C @ingroup Logging
+ */
+#define EV_C(category)        EV_INFO_C(category)
+
+/**
+ * @brief Pseudo-stream for logging local fatal errors of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_FATAL_C(category)  EV_LOG(omnetpp::LOGLEVEL_FATAL, category)
+
+/**
+ * @brief Pseudo-stream for logging local recoverable errors of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_ERROR_C(category)  EV_LOG(omnetpp::LOGLEVEL_ERROR, category)
+
+/**
+ * @brief Pseudo-stream for logging warnings of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_WARN_C(category)   EV_LOG(omnetpp::LOGLEVEL_WARN, category)
+
+/**
+ * @brief Pseudo-stream for logging information with the default log level of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_INFO_C(category)   EV_LOG(omnetpp::LOGLEVEL_INFO, category)
+
+/**
+ * @brief Pseudo-stream for logging low-level protocol-specific details of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_DETAIL_C(category) EV_LOG(omnetpp::LOGLEVEL_DETAIL, category)
+
+/**
+ * @brief Pseudo-stream for logging state variables and other low-level information of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_DEBUG_C(category)  EV_LOG(omnetpp::LOGLEVEL_DEBUG, category)
+
+/**
+ * @brief Pseudo-stream for logging control flow information (entering/exiting functions, etc) of a specific category. See EV_LOG for details.
+ * @see EV_LOG @hideinitializer @ingroup Logging
+ */
+#define EV_TRACE_C(category)  EV_LOG(omnetpp::LOGLEVEL_TRACE, category)
 
 /**
  * @brief This class holds various data that is captured when a particular

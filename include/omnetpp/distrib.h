@@ -30,7 +30,8 @@ inline double dblrand(cRNG *rng)  {return rng->doubleRand();}
 
 /**
  * @ingroup RandomNumbers
- * @defgroup RandomNumbersCont Continuous distributions
+ * @defgroup RandomNumbersCont Continuous Distributions
+ * @brief Random variate generators for continuous distributions
  */
 //@{
 
@@ -281,7 +282,8 @@ SIM_API double pareto_shifted(cRNG *rng, double a, double b, double c);
 
 /**
  * @ingroup RandomNumbers
- * @defgroup RandomNumbersDiscr Discrete distributions
+ * @defgroup RandomNumbersDiscr Discrete Distributions
+ * @brief Random variate generators for discrete distributions
  */
 //@{
 
