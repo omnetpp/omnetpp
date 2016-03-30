@@ -17,7 +17,7 @@
       -->
       <anchor id="gettingstarted"/>
    </topic>
-   <topic label="OMNeT++ Manual">
+   <topic label="Simulation Manual">
       <link toc="content/manual/toc.xml"/>
    </topic>
    <topic label="IDE User Guide">
@@ -29,7 +29,7 @@
    <topic label="IDE Developers Guide">
       <link toc="content/ide-developersguide/toc.xml"/>
    </topic>
-   <topic href="content/api/main.html" label="OMNeT++ API Reference">
+   <topic href="content/api/index.html" label="OMNeT++ API Reference">
       <topic href="content/api/APIChanges.html" label="API Changes">
       </topic>
       <anchor id="api"/>

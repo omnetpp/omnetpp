@@ -1,7 +1,7 @@
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
 <html>
 <head>
-  <title>OMNeT++ - Manual</title>
+  <title>OMNeT++ - Simulation Manual</title>
   <meta name="copyright" content="OpenSim Ltd.">
   <meta name="author" content="Andras Varga">
   <meta http-equiv="Content-Language" content="en-us">
@@ -544,7 +544,7 @@ function redirectOldLinks() {
 __TITLEPAGE_START__
   <br>
   <img src='omnetpp.png' border='0'>
-  <p style="color: #1A41A8; font-weight: bold; font-size: 32px; margin-top: 15px; margin-bottom: 5px">User Manual</p>
+  <p style="color: #1A41A8; font-weight: bold; font-size: 32px; margin-top: 15px; margin-bottom: 5px">Simulation Manual</p>
   <p style="color: #1A41A8; font-weight: bold; font-size: 18px; margin-top: 5px; margin-bottom: 10px">OMNeT++ version __VERSION__</p>
   <p style="color: #1A41A8; font-weight: bold; font-size: 12px; margin-top: 5px; margin-bottom: 40px"><a href="http://omnetpp.org">http://omnetpp.org</a></p>
   <hr>

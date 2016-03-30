@@ -398,7 +398,7 @@
 
       <note>
         <para>
-        Recording output vectors is explained in the ``&Omnetpp; User Manual''.
+        Recording output vectors is explained in the ``&Omnetpp; Simulation Manual''.
         It is recommended to turn on recording event numbers
         ([[**.vector-record-eventnumbers = true]] inifile setting), because that
         allows the Sequence Chart tool to display state changes accurately even

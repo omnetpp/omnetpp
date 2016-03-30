@@ -4,9 +4,9 @@ PERL=perl
 INKSCAPE=inkscape
 DOT=dot
 TEMPLATE=omnetpp
-VERSION=4.x
+VERSION=5.x
 
-TITLE=User Manual
+TITLE=Simulation Manual
 
 # --- generating pdf ---
 
@@ -67,7 +67,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 	pdftk usman.pdf dump_data > tmp.metadata
 	perl -i -pe 's/#160;/#32;/g' tmp.metadata
 	pdftk C=cover.pdf B=../cover/copyright.pdf D=usman.pdf cat C B D3-end output tmp.pdf
-	pdftk tmp.pdf update_info tmp.metadata output ../../Manual.pdf
+	pdftk tmp.pdf update_info tmp.metadata output ../../SimulationManual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg tmp.metadata tmp.pdf
 
 %.pdf: %.svg
@@ -123,6 +123,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2
 clean:
 	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
 	rm -rf ../../manual
+	rm -rf ../../SimulationManual.pdf
 	rm -rf eclipse
 	rm -f figures/*.pdf
 	rm -f `ls figures/*.svg | sed 's/svg$$/png/'`

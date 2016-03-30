@@ -6,7 +6,7 @@ PDFTK=$(TOOLS_DIR)\pdftk\pdftk
 
 CWD=$(OMNETPP_ROOT)\doc\src\manual  # because Inkscape is broken and needs full paths
 
-TITLE=User Manual
+TITLE=Simulation Manual
 
 # --- generating pdf ---
 
@@ -104,7 +104,7 @@ pdf: $(ALLTEX) $(DOTPICS:.dot=.svg) $(PDFPICS) figures/*.png cover
 	-del tmp.pdf
 	ren usman.pdf tmp.pdf
 	$(PDFTK) C=cover.pdf B=../cover/copyright.pdf D=tmp.pdf cat C B D3-end output usman.pdf dont_ask
-	copy usman.pdf ..\..\manual\Manual.pdf
+	copy usman.pdf ..\..\manual\SimulationManual.pdf
 
 .svg.pdf:
 	$(INKSCAPE) $(CWD)\$< -A $(CWD)\$@
@@ -161,6 +161,7 @@ clean:
 	-del usman.dvi usman.pdf tmp.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf
 	-del /s /q ..\..\manual 2>nul
 	-rmdir ..\..\manual 2>nul
+	-del /s /q ..\..\SimulationManual.pdf 2>nul
 	-del /s /q eclipse
 	-rmdir eclipse
 	-del /q figures\*.pdf

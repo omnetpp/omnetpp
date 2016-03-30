@@ -17,7 +17,7 @@
       to run in parallel, so you can take advantage of multiple processors or processor cores.
       The progress of the batch can be monitored, and you can also kill processes from the
       batch if needed. Batches are based on the ``parameter study'' feature of INI files;
-      you can read more about it in the ``&Omnetpp; User Manual''.
+      you can read more about it in the ``&Omnetpp; Simulation Manual''.
     </para>
 
     <para>

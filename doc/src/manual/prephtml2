@@ -8,7 +8,7 @@
 # *** check settings below -- also ltoh.specs for \opp definition! ***
 #$product = "OMNEST";
 $product = "OMNeT++";
-$opp_version = "4.x";
+$opp_version = "5.x";
 $templatefile = "omnetpp.thtml";
 #$templatefile = "omnest.thtml";
 
@@ -208,7 +208,7 @@ if ($singlePage) {
       $chapters = "<h1>Chapters</h1>\n<p>\n";
 } else {
       $navbar="<p><b><hr><a href=\"toc.$ext\">[Table of Contents]</a><hr></b></p>";
-      $chapters = $navbar . "<h1>$product User Manual -- Chapters</h1>\n<p>\n";
+      $chapters = $navbar . "<h1>$product Simulation Manual -- Chapters</h1>\n<p>\n";
 }
 for ($i=0; $i<$nheadings; $i++)
 {
@@ -252,7 +252,7 @@ sub spaces($) {
 # create eclipse-style table of contents (toc.xml)
 #
 $tocxml = '<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<toc label="OMNeT++ Manual" topic="index.html">
+<toc label="OMNeT++ Simulation Manual" topic="index.html">
 ';
 
 $level[$nheadings] = 1; #sentry
