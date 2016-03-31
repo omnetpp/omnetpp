@@ -124,7 +124,7 @@ MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
         {"bool",            "bool",            "string2bool($)",     "bool2string($)",      "false"},
         {"float",           "float",           "string2double($)",   "double2string($)",    "0"},
         {"double",          "double",          "string2double($)",   "double2string($)",    "0"},
-        {"simtime_t", "::omnetpp::simtime_t",  "string2double($)",   "double2string($)",    "0"}, //FIXME miert double-on keresztul konvertalunk?
+        {"simtime_t", "::omnetpp::simtime_t",  "string2simtime($)",  "simtime2string($)",   "0"},
         {"string",    "::omnetpp::opp_string", "($)",                "oppstring2string($)", ""},
         {"char",            "char",            "string2long($)",     "long2string($)",      "0"},
         {"short",           "short",           "string2long($)",     "long2string($)",      "0"},
