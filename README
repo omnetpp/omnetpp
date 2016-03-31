@@ -8,15 +8,10 @@ networks, but it has been successfully used in other areas like the simulation
 of IT systems, queueing networks, hardware architectures and business processes
 as well.
 
-OLD USERS:
-	If you have simulations written for OMNeT++ 3.x that you want to
-	port to 4.x, see the MIGRATION file, doc/migration.pdf, and the
-	scripts under migrate/!
-
-If you installed the source distribution, the omnetpp directory on your system
-should contain the following subdirectories. (If you installed a precompiled
-distribution, some of the directories may be missing, or there might be
-additional directories, e.g. containing software bundled with OMNeT++.)
+If you installed and successfully compiled the source distribution, the omnetpp 
+directory on your system should contain the following subdirectories.
+(If you installed a precompiled distribution, some of the directories may be missing,
+or there might be additional directories, e.g. containing software bundled with OMNeT++.)
 
 The simulation system itself:
 
@@ -25,12 +20,14 @@ The simulation system itself:
     include/       header files for simulation models
     lib/           library files
     images/        icons that can be used in network graphics
-    doc/           manual (PDF), readme, license, etc.
-      manual/      manual in HTML
-      tictoc-tutorial/  introduction into using OMNeT++
+    doc/           simulation manual (PDF), readme, license, etc.
+      manual/      Simulation Manual in HTML
+      ide-customization-guide/ HTML version of IDE Customization Guide
+      ide-developersguide/ HTML version of IDE Developers Guide
       api/         API reference in HTML
       nedxml-api/  API reference for the NEDXML library
-      src/         sources of the documentation
+      parsim-api/  API reference for the parallel simulation support
+      tictoc-tutorial/  introduction into using OMNeT++
     src/           OMNeT++ sources
       sim/         simulation kernel
         parsim/    files for distributed execution
@@ -38,18 +35,22 @@ The simulation system itself:
       envir/       common code for runtime user interfaces
       cmdenv/      command-line runtime user interface
       tkenv/       Tcl/Tk-based graphical runtime user interface
+      qtenv/       Qt-based graphical runtime user interface
       nedxml/      nedtool, message compiler, NED infrastructure
       layout/      graph layouting library
       scave/       library for processing result files
       eventlog/    library for processing event log files
       common/      common utility classes
       utils/       makefile generator and various utilities
-    ide/           the OMNeT++ integrated environment
-    migrate/       scripts for migrating simulation models from the 3.x version
+    ide/           the OMNeT++ Integrated Development Environment
+    misc/          various misc file (e.g. debugger pretty printer scripts)
     test/          regression test suite
       core/        regression test suite for the simulation library
       distrib/     regression test suite for built-in distributions
       ...
+    tools/         3rd party tools and libraries bundled with OMNeT++
+      win32/       on Windows, contains MSYS tools and the MinGW-W64 toolchain
+      macosx/      on OS X, contains various 3rd party libraries (e.g. OSG, osgEarth, Qt)
 
 Sample simulations are in the samples directory.
 
