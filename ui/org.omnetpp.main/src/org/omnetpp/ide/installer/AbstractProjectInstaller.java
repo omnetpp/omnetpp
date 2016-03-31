@@ -71,6 +71,7 @@ public abstract class AbstractProjectInstaller {
 
     protected File extractProjectDistribution(IProgressMonitor progressMonitor, File distributionFile) {
         try {
+            // unzip the tgz archive into a tar file
             progressMonitor.subTask("Extracting archive");
             String projectDistributionPath = distributionFile.getPath();
             File tarFile = new File(projectDistributionPath.replace(".tgz", ".tar"));
@@ -85,6 +86,8 @@ public abstract class AbstractProjectInstaller {
             }
             gzipInputStream.close();
             tarOutputStream.close();
+
+            // count files in tar file for better progress reporting
             TarArchiveInputStream countTarArchiveInputStream = new TarArchiveInputStream(new FileInputStream(tarFile));
             int count = 0;
             while (countTarArchiveInputStream.getNextTarEntry() != null) {
@@ -93,6 +96,8 @@ public abstract class AbstractProjectInstaller {
                     throw new OperationCanceledException();
             }
             countTarArchiveInputStream.close();
+
+            // extract files
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             subProgressMonitor.beginTask("Extracting file", count);
             TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(new FileInputStream(tarFile));
@@ -118,6 +123,8 @@ public abstract class AbstractProjectInstaller {
                     tarArchiveInputStream.read(content, 0, content.length);
                     File outputFile = new File(tarArchiveEntryFile.getPath());
                     FileUtils.writeByteArrayToFile(outputFile, content);
+                    boolean isExecutable = (tarArchiveEntry.getMode() & 1) != 0;
+                    outputFile.setExecutable(isExecutable);
                 }
                 if (progressMonitor.isCanceled())
                     throw new OperationCanceledException();
