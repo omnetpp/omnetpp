@@ -54,7 +54,7 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{center}:<div align=center>:</>:
 :b/e	:\begin{itemize}(\[noitemsep\])?:<ul>:</>:
 :b/e	:\begin{enumerate}:<ol>:</>:
-:b/e	:\begin{description}:<dl>:</>:
+:b/e	:\begin{description}:<ul class="dl">:</>:
 :b/e	:\begin{multques}(\{[^\}]*\})*:<ol>:</>:
 :b/e	:\begin{document}:::
 :b/e	:\begin{quote}:<blockquote>:</>:
@@ -96,6 +96,7 @@ htmlfile_spec := $BASE.htm
 :comm	:\vfill:::
 :comm	:\bigskip:<br><br>::
 :comm	:\textquotedbl:"::
+:comm	:\allowbreak:::
 #TODO \bfseries
 #TODO \ttfamily
 #TODO \itshape

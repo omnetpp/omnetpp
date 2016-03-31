@@ -208,7 +208,8 @@ public class InifileHoverUtils {
         text = text.replaceAll("\n( *)    ", "\n$1&nbsp;&nbsp;&nbsp;&nbsp;");
         text = text.replaceAll("\n( *)  ", "\n$1&nbsp;&nbsp;");
         text = text.replaceAll("\n ", "\n&nbsp;");
-        text = text.replace("\n", "<p>");
+        text = text.replace("\n", "<br>");
+        text = text.replaceAll("`(.*?)`", "<code>$1</code>");
         return text;
     }
 

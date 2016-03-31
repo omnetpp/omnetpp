@@ -160,82 +160,84 @@ public class ConfigRegistry {
         "bin-recording", KIND_SCALAR, CFG_BOOL, "true",
         "Whether the bins of the matching histogram object should be recorded, " +
         "provided that recording of the histogram object itself is enabled " +
-        "(**.<scalar-name>.scalar-recording=true).  Usage: " +
-        "<module-full-path>.<scalar-name>.bin-recording=true/false. To control " +
-        "histogram recording from a @statistic, use <statistic-name>:histogram for " +
-        "<scalar-name>. Example: **.ping.roundTripTime:histogram.bin-recording=false");
+        "(`**.<scalar-name>.scalar-recording=true`).\n" +
+        "Usage: `<module-full-path>.<scalar-name>.bin-recording=true/false`. To " +
+        "control histogram recording from a `@statistic`, use " +
+        "`<statistic-name>:histogram` for `<scalar-name>`.\n" +
+        "Example: `**.ping.roundTripTime:histogram.bin-recording=false`");
     public static final ConfigOption CFGID_CHECK_SIGNALS = addPerRunOption(
         "check-signals", CFG_BOOL, "true",
         "Controls whether the simulation kernel will validate signals emitted by " +
-        "modules and channels against signal declarations (@signal properties) in " +
-        "NED files. The default setting depends on the build type: 'true' in DEBUG, " +
-        "and 'false' in RELEASE mode.");
+        "modules and channels against signal declarations (`@signal` properties) in " +
+        "NED files. The default setting depends on the build type: `true` in DEBUG, " +
+        "and `false` in RELEASE mode.");
     public static final ConfigOption CFGID_CMDENV_AUTOFLUSH = addPerRunOption(
         "cmdenv-autoflush", CFG_BOOL, "false",
-        "Call fflush(stdout) after each event banner or status update; affects both " +
-        "express and normal mode. Turning on autoflush may have a performance " +
+        "Call `fflush(stdout)` after each event banner or status update; affects " +
+        "both express and normal mode. Turning on autoflush may have a performance " +
         "penalty, but it can be useful with printf-style debugging for tracking down " +
         "program crashes.");
     public static final ConfigOption CFGID_CMDENV_CONFIG_NAME = addGlobalOption(
         "cmdenv-config-name", CFG_STRING, null,
-        "Specifies the name of the configuration to be run (for a value `Foo', " +
-        "section [Config Foo] will be used from the ini file). See also " +
-        "cmdenv-runs-to-execute=. The -c command line option overrides this setting.");
+        "Specifies the name of the configuration to be run (for a value `Foo`, " +
+        "section `[Config Foo]` will be used from the ini file). See also " +
+        "`cmdenv-runs-to-execute`. The `-c` command line option overrides this " +
+        "setting.");
     public static final ConfigOption CFGID_CMDENV_EVENT_BANNER_DETAILS = addPerRunOption(
         "cmdenv-event-banner-details", CFG_BOOL, "false",
-        "When cmdenv-express-mode=false: print extra information after event " +
+        "When `cmdenv-express-mode=false`: print extra information after event " +
         "banners.");
     public static final ConfigOption CFGID_CMDENV_EVENT_BANNERS = addPerRunOption(
         "cmdenv-event-banners", CFG_BOOL, "true",
-        "When cmdenv-express-mode=false: turns printing event banners on/off.");
+        "When `cmdenv-express-mode=false`: turns printing event banners on/off.");
     public static final ConfigOption CFGID_CMDENV_EXPRESS_MODE = addPerRunOption(
         "cmdenv-express-mode", CFG_BOOL, "true",
-        "Selects ``normal'' (debug/trace) or ``express'' mode.");
+        "Selects normal (debug/trace) or express mode.");
     public static final ConfigOption CFGID_CMDENV_EXTRA_STACK = addGlobalOptionU(
         "cmdenv-extra-stack", "B", "8KiB",
-        "Specifies the extra amount of stack that is reserved for each activity() " +
+        "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Cmdenv.");
     public static final ConfigOption CFGID_CMDENV_INTERACTIVE = addGlobalOption(
         "cmdenv-interactive", CFG_BOOL, "false",
         "Defines what Cmdenv should do when the model contains unassigned " +
         "parameters. In interactive mode, it asks the user. In non-interactive mode " +
         "(which is more suitable for batch execution), Cmdenv stops with an error.");
-    public static final ConfigOption CFGID_CMDENV_LOG_PREFIX = addPerRunOption(
-        "cmdenv-log-prefix", CFG_STRING, "[%l]	",
-        "Specifies the format string that determines the prefix of each log line. " +
-        "The format string may contain format directives in the syntax '%x' (a '%' " +
-        "followed by a single format character).  For example '%l' stands for log " +
-        "level, and '%J' for source component. See the manual for the list of " +
-        "available format characters.");
     public static final ConfigOption CFGID_CMDENV_LOG_LEVEL = addPerObjectOption(
         "cmdenv-log-level", KIND_MODULE, CFG_STRING, "TRACE",
         "Specifies the per-component level of detail recorded by log statements, " +
         "output below the specified level is omitted. Available values are (case " +
-        "insensitive): off, fatal, error, warn, info, detail, debug or trace. Note " +
-        "that the level of detail is also controlled by the globally specified " +
-        "runtime log level and the COMPILETIME_LOGLEVEL macro that is used to " +
-        "completely remove log statements from the executable.");
+        "insensitive): `off`, `fatal`, `error`, `warn`, `info`, `detail`, `debug` or " +
+        "`trace`. Note that the level of detail is also controlled by the globally " +
+        "specified runtime log level and the `COMPILETIME_LOGLEVEL` macro that is " +
+        "used to completely remove log statements from the executable.");
+    public static final ConfigOption CFGID_CMDENV_LOG_PREFIX = addPerRunOption(
+        "cmdenv-log-prefix", CFG_STRING, "[%l]  ",
+        "Specifies the format string that determines the prefix of each log line. " +
+        "The format string may contain format directives in the syntax `%x` (a `%` " +
+        "followed by a single format character).  For example `%l` stands for log " +
+        "level, and `%J` for source component. See the manual for the list of " +
+        "available format characters.");
     public static final ConfigOption CFGID_CMDENV_OUTPUT_FILE = addGlobalOption(
         "cmdenv-output-file", CFG_FILENAME, null,
         "When a filename is specified, Cmdenv redirects standard output into the " +
         "given file. This is especially useful with parallel simulation. See the " +
-        "`fname-append-host' option as well.");
+        "`fname-append-host` option as well.");
     public static final ConfigOption CFGID_CMDENV_PERFORMANCE_DISPLAY = addPerRunOption(
         "cmdenv-performance-display", CFG_BOOL, "true",
-        "When cmdenv-express-mode=true: print detailed performance information. " +
+        "When `cmdenv-express-mode=true`: print detailed performance information. " +
         "Turning it on results in a 3-line entry printed on each update, containing " +
         "ev/sec, simsec/sec, ev/simsec, number of messages created/still " +
         "present/currently scheduled in FES.");
     public static final ConfigOption CFGID_CMDENV_RUNS_TO_EXECUTE = addGlobalOption(
         "cmdenv-runs-to-execute", CFG_STRING, null,
         "Specifies which runs to execute from the selected configuration (see " +
-        "cmdenv-config-name=). It accepts a comma-separated list of run numbers or " +
-        "run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv " +
-        "executes all runs in the selected configuration. The -r command line option " +
-        "overrides this setting.");
+        "`cmdenv-config-name` option). It accepts a comma-separated list of run " +
+        "numbers or run number ranges, e.g. `1,3..4,7..9`. If the value is missing, " +
+        "Cmdenv executes all runs in the selected configuration. The `-r` command " +
+        "line option overrides this setting.");
     public static final ConfigOption CFGID_CMDENV_STATUS_FREQUENCY = addPerRunOptionU(
         "cmdenv-status-frequency", "s", "2s",
-        "When cmdenv-express-mode=true: print status update every n seconds.");
+        "When `cmdenv-express-mode=true`: print status update every n seconds.");
     public static final ConfigOption CFGID_CONFIGURATION_CLASS = addGlobalOption(
         "configuration-class", CFG_STRING, null,
         "Part of the Envir plugin mechanism: selects the class from which all " +
@@ -243,11 +245,11 @@ public class ConfigRegistry {
         "omnetpp.ini with some other implementation, e.g. database input. The " +
         "simulation program still has to bootstrap from an omnetpp.ini (which " +
         "contains the configuration-class setting). The class should implement the " +
-        "cConfigurationEx interface.");
+        "`cConfigurationEx` interface.");
     public static final ConfigOption CFGID_CONSTRAINT = addPerRunOption(
         "constraint", CFG_STRING, null,
-        "For scenarios. Contains an expression that iteration variables (${} syntax) " +
-        "must satisfy for that simulation to run. Example: $i < $j+1.");
+        "For scenarios. Contains an expression that iteration variables (`${}` " +
+        "syntax) must satisfy for that simulation to run. Example: `$i < $j+1`.");
     public static final ConfigOption CFGID_CPU_TIME_LIMIT = addPerRunOptionU(
         "cpu-time-limit", "s", null,
         "Stops the simulation when CPU usage has reached the given limit. The " +
@@ -261,12 +263,12 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_DEBUG_STATISTICS_RECORDING = addPerRunOption(
         "debug-statistics-recording", CFG_BOOL, "false",
         "Turns on the printing of debugging information related to statistics " +
-        "recording (@statistic properties)");
+        "recording (`@statistic` properties)");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_COMMAND = addGlobalOption(
         "debugger-attach-command", CFG_STRING, "nemiver --attach=%u &",
         "Command line to launch the debugger. It must contain exactly one percent " +
-        "sign, as '%u', which will be replaced by the PID of this process. The " +
-        "command must not block (i.e. it should end in '&' on Unix-like systems).");
+        "sign, as `%u`, which will be replaced by the PID of this process. The " +
+        "command must not block (i.e. it should end in `&` on Unix-like systems).");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_ERROR = addGlobalOption(
         "debugger-attach-on-error", CFG_BOOL, "false",
         "When set to true, runtime errors and crashes will trigger an external " +
@@ -302,30 +304,30 @@ public class ConfigRegistry {
         "and/or/not/* and various field match expressions can be used. The object " +
         "pattern matches to class name, the field pattern matches to field name by " +
         "default.\n" +
-        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* " +
-        "DETAIL_PATTERN\n" +
-        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
-        "  OBJECT-PATTERN := MATCH-EXPRESSION\n" +
-        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
-        "  FIELD-PATTERN := MATCH-EXPRESSION\n" +
-        "Examples (enter them without quotes):\n" +
-        "  \"*\": captures all fields of all messages\n" +
-        "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and " +
+        "  `EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* " +
+        "DETAIL_PATTERN`\n" +
+        "  `DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]`\n" +
+        "  `OBJECT-PATTERN := MATCH-EXPRESSION`\n" +
+        "  `FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN`\n" +
+        "  `FIELD-PATTERN := MATCH-EXPRESSION`\n" +
+        "Examples:\n" +
+        "  `*`: captures all fields of all messages\n" +
+        "  `*Frame:*Address,*Id`: captures all fields named somethingAddress and " +
         "somethingId from messages of any class named somethingFrame\n" +
-        "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage " +
+        "  `MyMessage:declaredOn(MyMessage)`: captures instances of MyMessage " +
         "recording the fields declared on the MyMessage class\n" +
-        "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
-        "declaredOn(cObject))\": records user-defined fields from all messages");
+        "  `*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
+        "declaredOn(cObject))`: records user-defined fields from all messages");
     public static final ConfigOption CFGID_EVENTLOG_RECORDING_INTERVALS = addPerRunOption(
         "eventlog-recording-intervals", CFG_CUSTOM, null,
         "Simulation time interval(s) when events should be recorded. Syntax: " +
-        "[<from>]..[<to>],... That is, both start and end of an interval are " +
-        "optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, " +
-        "233.3..");
+        "`[<from>]..[<to>],...` That is, both start and end of an interval are " +
+        "optional, and intervals are separated by comma. Example: `..10.2, " +
+        "22.2..100, 233.3..`");
     public static final ConfigOption CFGID_EVENTLOGMANAGER_CLASS = addGlobalOption(
         "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager",
         "Part of the Envir plugin mechanism: selects the eventlog manager class to " +
-        "be used to record data. The class has to implement the cIEventlogManager " +
+        "be used to record data. The class has to implement the `cIEventlogManager` " +
         "interface.");
     public static final ConfigOption CFGID_EXPERIMENT_LABEL = addPerRunOption(
         "experiment-label", CFG_STRING, "${configname}",
@@ -347,12 +349,7 @@ public class ConfigRegistry {
         "fingerprints occasionally differ across platforms, more than one value can " +
         "be specified for a single fingerprint, separated by spaces, and a match " +
         "with any of them will be accepted. To obtain a fingerprint, enter a dummy " +
-        "value (such as \"0000\"), and run the simulation.");
-    public static final ConfigOption CFGID_FINGERPRINTCALCULATOR_CLASS = addGlobalOption(
-        "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator",
-        "Part of the Envir plugin mechanism: selects the fingerprint calculator class to be " +
-        "used to calculate the simulation fingerprint. The class has to implement " +
-        "the cFingerprintCalculator interface.");
+        "value (such as `0000`), and run the simulation.");
     public static final ConfigOption CFGID_FINGERPRINT_EVENTS = addPerRunOption(
         "fingerprint-events", CFG_STRING, "*",
         "Configures the fingerprint calculator to consider only certain events. The " +
@@ -390,6 +387,11 @@ public class ConfigRegistry {
         "characters, field access, and logical operators. The default setting is '*' " +
         "which includes all results in all modules in the calculated fingerprint. If " +
         "you configured multiple fingerprints, separate filters with commas.");
+    public static final ConfigOption CFGID_FINGERPRINTCALCULATOR_CLASS = addGlobalOption(
+        "fingerprintcalculator-class", CFG_STRING, "omnetpp::cSingleFingerprintCalculator",
+        "Part of the Envir plugin mechanism: selects the fingerprint calculator " +
+        "class to be used to calculate the simulation fingerprint. The class has to " +
+        "implement the `cFingerprintCalculator` interface.");
     public static final ConfigOption CFGID_FNAME_APPEND_HOST = addGlobalOption(
         "fname-append-host", CFG_BOOL, null,
         "Turning it on will cause the host name and process Id to be appended to the " +
@@ -400,15 +402,15 @@ public class ConfigRegistry {
         "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap",
         "Part of the Envir plugin mechanism: selects the class for storing the " +
         "future events in the simulation. The class has to implement the " +
-        "cFutureEventSet interface.");
+        "`cFutureEventSet` interface.");
     public static final ConfigOption CFGID_IMAGE_PATH = addGlobalOption(
         "image-path", CFG_PATH, null,
         "A semicolon-separated list of directories that contain module icons and " +
-        "other resources. This list with be concatenated with OMNETPP_IMAGE_PATH.");
+        "other resources. This list with be concatenated with `OMNETPP_IMAGE_PATH`.");
     public static final ConfigOption CFGID_LOAD_LIBS = addGlobalOption(
         "load-libs", CFG_FILENAMES, null,
         "A space-separated list of dynamic libraries to be loaded on startup. The " +
-        "libraries should be given without the `.dll' or `.so' suffix -- that will " +
+        "libraries should be given without the `.dll` or `.so` suffix -- that will " +
         "be automatically appended.");
     public static final ConfigOption CFGID_MAX_MODULE_NESTING = addPerRunOption(
         "max-module-nesting", CFG_INT, "50",
@@ -422,9 +424,9 @@ public class ConfigRegistry {
         "module-eventlog-recording", KIND_SIMPLE_MODULE, CFG_BOOL, "true",
         "Enables recording events on a per module basis. This is meaningful for " +
         "simple modules only. Usage: " +
-        "<module-full-path>.module-eventlog-recording=true/false. Examples: " +
-        "**.router[10..20].**.module-eventlog-recording = true; " +
-        "**.module-eventlog-recording = false");
+        "`<module-full-path>.module-eventlog-recording=true/false`. Examples: " +
+        "`**.router[10..20].**.module-eventlog-recording = true`; " +
+        "`**.module-eventlog-recording = false`");
     public static final ConfigOption CFGID_NED_PATH = addGlobalOption(
         "ned-path", CFG_PATH, null,
         "A semicolon-separated list of directories. The directories will be regarded " +
@@ -470,12 +472,12 @@ public class ConfigRegistry {
         "outputscalarmanager-class", CFG_STRING, "omnetpp::envir::cFileOutputScalarManager",
         "Part of the Envir plugin mechanism: selects the output scalar manager class " +
         "to be used to record data passed to recordScalar(). The class has to " +
-        "implement the cIOutputScalarManager interface.");
+        "implement the `cIOutputScalarManager` interface.");
     public static final ConfigOption CFGID_OUTPUTVECTORMANAGER_CLASS = addGlobalOption(
         "outputvectormanager-class", CFG_STRING, "omnetpp::envir::cIndexedFileOutputVectorManager",
         "Part of the Envir plugin mechanism: selects the output vector manager class " +
         "to be used to record data from output vectors. The class has to implement " +
-        "the cIOutputVectorManager interface.");
+        "the `cIOutputVectorManager` interface.");
     public static final ConfigOption CFGID_PARALLEL_SIMULATION = addGlobalOption(
         "parallel-simulation", CFG_BOOL, "false",
         "Enables parallel distributed simulation.");
@@ -483,66 +485,68 @@ public class ConfigRegistry {
         "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false",
         "Applicable to module parameters: specifies whether the module parameter " +
         "should be recorded into the output scalar file. Set it for parameters whose " +
-        "value you'll need for result analysis.");
+        "value you will need for result analysis.");
     public static final ConfigOption CFGID_PARSIM_COMMUNICATIONS_CLASS = addGlobalOption(
         "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications",
-        "If parallel-simulation=true, it selects the class that implements " +
+        "If `parallel-simulation=true`, it selects the class that implements " +
         "communication between partitions. The class must implement the " +
-        "cParsimCommunications interface.");
+        "`cParsimCommunications` interface.");
     public static final ConfigOption CFGID_PARSIM_DEBUG = addGlobalOption(
         "parsim-debug", CFG_BOOL, "true",
-        "With parallel-simulation=true: turns on printing of log messages from the " +
+        "With `parallel-simulation=true`: turns on printing of log messages from the " +
         "parallel simulation code.");
     public static final ConfigOption CFGID_PARSIM_FILECOMMUNICATIONS_PREFIX = addGlobalOption(
         "parsim-filecommunications-prefix", CFG_STRING, "comm/",
-        "When cFileCommunications is selected as parsim communications class: " +
+        "When `cFileCommunications` is selected as parsim communications class: " +
         "specifies the prefix (directory+potential filename prefix) for creating the " +
         "files for cross-partition messages.");
     public static final ConfigOption CFGID_PARSIM_FILECOMMUNICATIONS_PRESERVE_READ = addGlobalOption(
         "parsim-filecommunications-preserve-read", CFG_BOOL, "false",
-        "When cFileCommunications is selected as parsim communications class: " +
+        "When `cFileCommunications` is selected as parsim communications class: " +
         "specifies that consumed files should be moved into another directory " +
         "instead of being deleted.");
     public static final ConfigOption CFGID_PARSIM_FILECOMMUNICATIONS_READ_PREFIX = addGlobalOption(
         "parsim-filecommunications-read-prefix", CFG_STRING, "comm/read/",
-        "When cFileCommunications is selected as parsim communications class: " +
+        "When `cFileCommunications` is selected as parsim communications class: " +
         "specifies the prefix (directory) where files will be moved after having " +
         "been consumed.");
     public static final ConfigOption CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE = addGlobalOption(
         "parsim-idealsimulationprotocol-tablesize", CFG_INT, "100000",
-        "When cIdealSimulationProtocol is selected as parsim synchronization class: " +
-        "specifies the memory buffer size for reading the ISP event trace file.");
+        "When `cIdealSimulationProtocol` is selected as parsim synchronization " +
+        "class: specifies the memory buffer size for reading the ISP event trace " +
+        "file.");
     public static final ConfigOption CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalOption(
         "parsim-mpicommunications-mpibuffer", CFG_INT, null,
-        "When cMPICommunications is selected as parsim communications class: " +
+        "When `cMPICommunications` is selected as parsim communications class: " +
         "specifies the size of the MPI communications buffer. The default is to " +
         "calculate a buffer size based on the number of partitions.");
     public static final ConfigOption CFGID_PARSIM_NAMEDPIPECOMMUNICATIONS_PREFIX = addGlobalOption(
         "parsim-namedpipecommunications-prefix", CFG_STRING, "comm/",
-        "When cNamedPipeCommunications is selected as parsim communications class: " +
+        "When `cNamedPipeCommunications` is selected as parsim communications class: " +
         "selects the prefix (directory+potential filename prefix) where name pipes " +
         "are created in the file system.");
     public static final ConfigOption CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS = addGlobalOption(
         "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5",
-        "When cNullMessageProtocol is selected as parsim synchronization class: " +
-        "specifies the laziness of sending null messages. Values in the range [0,1) " +
-        "are accepted. Laziness=0 causes null messages to be sent out immediately as " +
-        "a new EOT is learned, which may result in excessive null message traffic.");
+        "When `cNullMessageProtocol` is selected as parsim synchronization class: " +
+        "specifies the laziness of sending null messages. Values in the range " +
+        "`[0,1)` are accepted. Laziness=0 causes null messages to be sent out " +
+        "immediately as a new EOT is learned, which may result in excessive null " +
+        "message traffic.");
     public static final ConfigOption CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS = addGlobalOption(
         "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead",
-        "When cNullMessageProtocol is selected as parsim synchronization class: " +
+        "When `cNullMessageProtocol` is selected as parsim synchronization class: " +
         "specifies the C++ class that calculates lookahead. The class should " +
-        "subclass from cNMPLookahead.");
+        "subclass from `cNMPLookahead`.");
     public static final ConfigOption CFGID_PARSIM_SYNCHRONIZATION_CLASS = addGlobalOption(
         "parsim-synchronization-class", CFG_STRING, "omnetpp::cNullMessageProtocol",
-        "If parallel-simulation=true, it selects the parallel simulation algorithm. " +
-        "The class must implement the cParsimSynchronizer interface.");
+        "If `parallel-simulation=true`, it selects the parallel simulation " +
+        "algorithm. The class must implement the `cParsimSynchronizer` interface.");
     public static final ConfigOption CFGID_PARTITION_ID = addPerObjectOption(
         "partition-id", KIND_MODULE, CFG_STRING, null,
         "With parallel simulation: in which partition the module should be " +
         "instantiated. Specify numeric partition ID, or a comma-separated list of " +
         "partition IDs for compound modules that span across multiple partitions. " +
-        "Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
+        "Ranges (`5..9`) and `*` (=all) are accepted too.");
     public static final ConfigOption CFGID_PRINT_UNDISPOSED = addGlobalOption(
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +
@@ -553,88 +557,92 @@ public class ConfigRegistry {
         "default is to ask the user.");
     public static final ConfigOption CFGID_QTENV_DEFAULT_RUN = addGlobalOption(
         "qtenv-default-run", CFG_INT, null,
-        "Specifies which run (of the default config, see qtenv-default-config) Qtenv " +
-        "should set up automatically on startup. The default is to ask the user.");
+        "Specifies which run (of the default config, see `qtenv-default-config`) " +
+        "Qtenv should set up automatically on startup. The default is to ask the " +
+        "user.");
     public static final ConfigOption CFGID_QTENV_EXTRA_STACK = addGlobalOptionU(
         "qtenv-extra-stack", "B", "48KiB",
-        "Specifies the extra amount of stack that is reserved for each activity() " +
+        "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Qtenv.");
     public static final ConfigOption CFGID_REALTIMESCHEDULER_SCALING = addGlobalOption(
         "realtimescheduler-scaling", CFG_DOUBLE, null,
         "When cRealTimeScheduler is selected as scheduler class: ratio of simulation " +
-        "time to real time. For example, scaling=2 will cause simulation time to " +
-        "progress twice as fast as runtime.");
+        "time to real time. For example, `realtimescheduler-scaling=2` will cause " +
+        "simulation time to progress twice as fast as runtime.");
     public static final ConfigOption CFGID_RECORD_EVENTLOG = addPerRunOption(
         "record-eventlog", CFG_BOOL, "false",
         "Enables recording an eventlog file, which can be later visualized on a " +
-        "sequence chart. See eventlog-file= option too.");
+        "sequence chart. See `eventlog-file` option too.");
     public static final ConfigOption CFGID_REPEAT = addPerRunOption(
         "repeat", CFG_INT, "1",
         "For scenarios. Specifies how many replications should be done with the same " +
         "parameters (iteration variables). This is typically used to perform " +
         "multiple runs with different random number seeds. The loop variable is " +
-        "available as ${repetition}. See also: seed-set= key.");
+        "available as `${repetition}`. See also: `seed-set` key.");
     public static final ConfigOption CFGID_REPLICATION_LABEL = addPerRunOption(
         "replication-label", CFG_STRING, "#${repetition}",
-        "Identifies one replication of a measurement (see repeat= and " +
-        "measurement-label= as well). This string gets recorded into result files, " +
-        "and may be referred to during result analysis.");
+        "Identifies one replication of a measurement (see `repeat` and " +
+        "`measurement-label` options as well). This string gets recorded into result " +
+        "files, and may be referred to during result analysis.");
     public static final ConfigOption CFGID_RESULT_DIR = addPerRunOption(
         "result-dir", CFG_STRING, "results",
-        "Value for the ${resultdir} variable, which is used as the default directory " +
-        "for result files (output vector file, output scalar file, eventlog file, " +
-        "etc.)");
+        "Value for the `${resultdir}` variable, which is used as the default " +
+        "directory for result files (output vector file, output scalar file, " +
+        "eventlog file, etc.)");
     public static final ConfigOption CFGID_RESULT_RECORDING_MODES = addPerObjectOption(
         "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default",
-        "Defines how to calculate results from the matching @statistic. Usage: " +
-        "<module-full-path>.<statistic-name>.result-recording-modes=<modes>. Special " +
-        "values: default, all: they select the modes listed in the record= key of " +
-        "@statistic; all selects all of them, default selects the non-optional ones " +
-        "(i.e. excludes the ones that end in a question mark). Example values: " +
-        "vector, count, last, sum, mean, min, max, timeavg, stats, histogram. More " +
-        "than one values are accepted, separated by commas. Expressions are allowed. " +
-        "Items prefixed with '-' get removed from the list. Example: " +
-        "**.queueLength.result-recording-modes=default,-vector,+timeavg");
+        "Defines how to calculate results from the matching `@statistic`.\n" +
+        "Usage: " +
+        "`<module-full-path>.<statistic-name>.result-recording-modes=<modes>`. " +
+        "Special values: `default`, `all`: they select the modes listed in the " +
+        "`record` key of `@statistic`; all selects all of them, default selects the " +
+        "non-optional ones (i.e. excludes the ones that end in a question mark). " +
+        "Example values: `vector`, `count`, `last`, `sum`, `mean`, `min`, `max`, " +
+        "`timeavg`, `stats`, `histogram`. More than one values are accepted, " +
+        "separated by commas. Expressions are allowed. Items prefixed with `-` get " +
+        "removed from the list. Example: " +
+        "`**.queueLength.result-recording-modes=default,-vector,+timeavg`");
     public static final ConfigOption CFGID_RNG_n = addPerObjectOption(
         "rng-%", KIND_COMPONENT, CFG_INT, null,
-        "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 " +
-        "maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The " +
-        "value may be an expression, with the index and ancestorIndex() operators " +
-        "being potentially very useful. The default is one-to-one mapping, i.e. RNG " +
-        "k of all modules refer to the global RNG k (for k=0..num-rngs-1). Usage: " +
-        "<module-full-path>.rng-<local-index>=<global-index>. Examples: " +
-        "**.mac.rng-0=1; **.source[*].rng-0=index");
+        "Maps a module-local RNG to one of the global RNGs. Example: " +
+        "`**.gen.rng-1=3` maps the local RNG 1 of modules matching `**.gen` to the " +
+        "global RNG 3. The value may be an expression, with the `index` and " +
+        "`ancestorIndex()` operators being potentially very useful. The default is " +
+        "one-to-one mapping, i.e. RNG k of all modules refer to the global RNG k " +
+        "(`for k=0..num-rngs-1`).\n" +
+        "Usage: `<module-full-path>.rng-<local-index>=<global-index>`. Examples: " +
+        "`**.mac.rng-0=1; **.source[*].rng-0=index`");
     public static final ConfigOption CFGID_RNG_CLASS = addPerRunOption(
         "rng-class", CFG_STRING, "omnetpp::cMersenneTwister",
-        "The random number generator class to be used. It can be `cMersenneTwister', " +
-        "`cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be " +
-        "subclassed from cRNG).");
+        "The random number generator class to be used. It can be `cMersenneTwister`, " +
+        "`cLCG32`, `cAkaroaRNG`, or you can use your own RNG class (it must be " +
+        "subclassed from `cRNG`).");
     public static final ConfigOption CFGID_RUNNUMBER_WIDTH = addPerRunOption(
         "runnumber-width", CFG_INT, "0",
-        "Setting a nonzero value will cause the $runnumber variable to get padded " +
+        "Setting a nonzero value will cause the `$runnumber` variable to get padded " +
         "with leading zeroes to the given length.");
     public static final ConfigOption CFGID_SCALAR_RECORDING = addPerObjectOption(
         "scalar-recording", KIND_SCALAR, CFG_BOOL, "true",
         "Whether the matching output scalars and statistic objects should be " +
-        "recorded. Usage: " +
-        "<module-full-path>.<scalar-name>.scalar-recording=true/false. To " +
+        "recorded.\n" +
+        "Usage: `<module-full-path>.<scalar-name>.scalar-recording=true/false`. To " +
         "enable/disable individual recording modes for a @statistic (those added via " +
-        "the record=... key of @statistic or the **.result-recording-modes=... " +
-        "config option), use <statistic-name>:<mode> for <scalar-name>, and make " +
-        "sure the @statistic as a whole is not disabled with " +
-        "**.<statistic-name>.statistic-recording=false. Example: " +
-        "**.ping.roundTripTime:stddev.scalar-recording=false");
+        "the `record=...` key of `@statistic` or the `**.result-recording-modes=...` " +
+        "config option), use `<statistic-name>:<mode>` for `<scalar-name>`, and make " +
+        "sure the `@statistic` as a whole is not disabled with " +
+        "`**.<statistic-name>.statistic-recording=false`.\n" +
+        "Example: `**.ping.roundTripTime:stddev.scalar-recording=false`");
     public static final ConfigOption CFGID_SCHEDULER_CLASS = addGlobalOption(
         "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler",
         "Part of the Envir plugin mechanism: selects the scheduler class. This " +
         "plugin interface allows for implementing real-time, hardware-in-the-loop, " +
         "distributed and distributed parallel simulation. The class has to implement " +
-        "the cScheduler interface.");
+        "the `cScheduler` interface.");
     public static final ConfigOption CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS = addGlobalOption(
         "sectionbasedconfig-configreader-class", CFG_STRING, null,
-        "When configuration-class=SectionBasedConfiguration: selects the " +
+        "When `configuration-class=SectionBasedConfiguration`: selects the " +
         "configuration reader C++ class, which must subclass from " +
-        "cConfigurationReader.");
+        "`cConfigurationReader`.");
     public static final ConfigOption CFGID_SEED_n_LCG32 = addPerRunOption(
         "seed-%-lcg32", CFG_INT, null,
         "When cLCG32 is selected as random number generator: seed for the kth RNG. " +
@@ -651,8 +659,8 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_SEED_SET = addPerRunOption(
         "seed-set", CFG_INT, "${runnumber}",
         "Selects the kth set of automatic random number seeds for the simulation. " +
-        "Meaningful values include ${repetition} which is the repeat loop counter " +
-        "(see repeat= key), and ${runnumber}.");
+        "Meaningful values include `${repetition}` which is the repeat loop counter " +
+        "(see `repeat` option), and `${runnumber}`.");
     public static final ConfigOption CFGID_SIM_TIME_LIMIT = addPerRunOptionU(
         "sim-time-limit", "s", null,
         "Stops the simulation when simulation time reaches the given limit. The " +
@@ -660,11 +668,11 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_SIMTIME_PRECISION = addGlobalOption(
         "simtime-precision", CFG_CUSTOM, "ps",
         "Sets the resolution for the 64-bit fixed-point simulation time " +
-        "representation. Accepted values are: second-or-smaller time units (s, ms, " +
-        "us, ns, ps, fs or as), power-of-ten multiples of such units (e.g. 100ms), " +
-        "and base-10 scale exponents in the -18..0 range. The maximum representable " +
-        "simulation time depends on the resolution. The default is picosecond " +
-        "resolution, which offers a range of ~110 days.");
+        "representation. Accepted values are: second-or-smaller time units (`s`, " +
+        "`ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units " +
+        "(e.g. 100ms), and base-10 scale exponents in the -18..0 range. The maximum " +
+        "representable simulation time depends on the resolution. The default is " +
+        "picosecond resolution, which offers a range of ~110 days.");
     public static final ConfigOption CFGID_SIMTIME_SCALE = addGlobalOption(
         "simtime-scale", CFG_INT, "-12",
         "DEPRECATED in favor of simtime-precision. Sets the scale exponent, and thus " +
@@ -679,26 +687,28 @@ public class ConfigRegistry {
         "snapshotmanager-class", CFG_STRING, "omnetpp::envir::cFileSnapshotManager",
         "Part of the Envir plugin mechanism: selects the class to handle streams to " +
         "which snapshot() writes its output. The class has to implement the " +
-        "cISnapshotManager interface.");
+        "`cISnapshotManager` interface.");
     public static final ConfigOption CFGID_STATISTIC_RECORDING = addPerObjectOption(
         "statistic-recording", KIND_STATISTIC, CFG_BOOL, "true",
-        "Whether the matching @statistic should be recorded. This option lets one " +
-        "completely disable all recording from a @statistic. Disabling a @statistic " +
-        "this way is more efficient than specifying **.scalar-recording=false and " +
-        "**.vector-recording=false together. Usage: " +
-        "<module-full-path>.<statistic-name>.statistic-recording=true/false. " +
-        "Example: **.ping.roundTripTime.statistic-recording=false");
+        "Whether the matching `@statistic` should be recorded. This option lets one " +
+        "completely disable all recording from a @statistic. Disabling a " +
+        "`@statistic` this way is more efficient than specifying " +
+        "`**.scalar-recording=false` and `**.vector-recording=false` together.\n" +
+        "Usage: " +
+        "`<module-full-path>.<statistic-name>.statistic-recording=true/false`.\n" +
+        "Example: `**.ping.roundTripTime.statistic-recording=false`");
     public static final ConfigOption CFGID_TKENV_DEFAULT_CONFIG = addGlobalOption(
         "tkenv-default-config", CFG_STRING, null,
         "Specifies which config Tkenv should set up automatically on startup. The " +
         "default is to ask the user.");
     public static final ConfigOption CFGID_TKENV_DEFAULT_RUN = addGlobalOption(
         "tkenv-default-run", CFG_INT, "0",
-        "Specifies which run (of the default config, see tkenv-default-config) Tkenv " +
-        "should set up automatically on startup. The default is to ask the user.");
+        "Specifies which run (of the default config, see `tkenv-default-config`) " +
+        "Tkenv should set up automatically on startup. The default is to ask the " +
+        "user.");
     public static final ConfigOption CFGID_TKENV_EXTRA_STACK = addGlobalOptionU(
         "tkenv-extra-stack", "B", "48KiB",
-        "Specifies the extra amount of stack that is reserved for each activity() " +
+        "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Tkenv.");
     public static final ConfigOption CFGID_TKENV_PLUGIN_PATH = addGlobalOption(
         "tkenv-plugin-path", CFG_PATH, null,
@@ -706,8 +716,8 @@ public class ConfigRegistry {
         "that get evaluated on startup.");
     public static final ConfigOption CFGID_TOTAL_STACK = addGlobalOptionU(
         "total-stack", "B", null,
-        "Specifies the maximum memory for activity() simple module stacks. You need " +
-        "to increase this value if you get a ``Cannot allocate coroutine stack'' " +
+        "Specifies the maximum memory for `activity()` simple module stacks. You " +
+        "need to increase this value if you get a \"Cannot allocate coroutine stack\" " +
         "error.");
     public static final ConfigOption CFGID_TYPENAME = addPerObjectOption(
         "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, null,
@@ -718,43 +728,47 @@ public class ConfigRegistry {
         "and Qtenv. This option is normally left empty, as it is more convenient to " +
         "specify the user interface via a command-line option or the IDE's Run and " +
         "Debug dialogs. New user interfaces can be defined by subclassing " +
-        "cRunnableEnvir.");
+        "`cRunnableEnvir`.");
     public static final ConfigOption CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectOption(
         "vector-max-buffered-values", KIND_VECTOR, CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
         "before writing out a block into the output vector file. The default is no " +
-        "per-vector limit (i.e. only the total memory limit is in effect). Usage: " +
-        "<module-full-path>.<vector-name>.vector-max-buffered-values=<count>.");
+        "per-vector limit (i.e. only the total memory limit is in effect).\n" +
+        "Usage: " +
+        "`<module-full-path>.<vector-name>.vector-max-buffered-values=<count>`.");
     public static final ConfigOption CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectOption(
         "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true",
         "Whether to record event numbers for an output vector. (Values and " +
         "timestamps are always recorded.) Event numbers are needed by the Sequence " +
-        "Chart Tool, for example. Usage: " +
-        "<module-full-path>.<vector-name>.vector-record-eventnumbers=true/false. " +
-        "Example: **.ping.roundTripTime:vector.vector-record-eventnumbers=false");
+        "Chart Tool, for example.\n" +
+        "Usage: " +
+        "`<module-full-path>.<vector-name>.vector-record-eventnumbers=true/false`.\n" +
+        "Example: `**.ping.roundTripTime:vector.vector-record-eventnumbers=false`");
     public static final ConfigOption CFGID_VECTOR_RECORDING = addPerObjectOption(
         "vector-recording", KIND_VECTOR, CFG_BOOL, "true",
-        "Whether data written into an output vector should be recorded. Usage: " +
-        "<module-full-path>.<vector-name>.vector-recording=true/false. To control " +
-        "vector recording from a @statistic, use <statistic-name>:vector for " +
-        "<vector-name>. Example: **.ping.roundTripTime:vector.vector-recording=false");
+        "Whether data written into an output vector should be recorded.\n" +
+        "Usage: `<module-full-path>.<vector-name>.vector-recording=true/false`. To " +
+        "control vector recording from a `@statistic`, use `<statistic-name>:vector " +
+        "for <vector-name>`. Example: " +
+        "`**.ping.roundTripTime:vector.vector-recording=false`");
     public static final ConfigOption CFGID_VECTOR_RECORDING_INTERVALS = addPerObjectOption(
         "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, null,
         "Allows one to restrict recording of an output vector to one or more " +
         "simulation time intervals. Usage: " +
         "<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>. " +
-        "The syntax for <intervals> is: [<from>]..[<to>],... That is, both start and " +
-        "end of an interval are optional, and intervals are separated by comma. " +
-        "Example: **.roundTripTime:vector.vector-recording-intervals=..100, " +
-        "200..400, 900..");
+        "The syntax for <intervals> is: `[<from>]..[<to>],...` That is, both start " +
+        "and end of an interval are optional, and intervals are separated by " +
+        "comma.\n" +
+        "Example: `**.roundTripTime:vector.vector-recording-intervals=..100, " +
+        "200..400, 900..`");
     public static final ConfigOption CFGID_WARMUP_PERIOD = addPerRunOptionU(
         "warmup-period", "s", null,
         "Length of the initial warm-up period. When set, results belonging to the " +
         "first x seconds of the simulation will not be recorded into output vectors, " +
         "and will not be counted into output scalars (see option " +
-        "**.result-recording-modes). This option is useful for steady-state " +
+        "`**.result-recording-modes`). This option is useful for steady-state " +
         "simulations. The default is 0s (no warmup period). Note that models that " +
-        "compute and record scalar results manually (via recordScalar()) will not " +
+        "compute and record scalar results manually (via `recordScalar()`) will not " +
         "automatically obey this setting.");
     public static final ConfigOption CFGID_WARNINGS = addPerRunOption(
         "warnings", CFG_BOOL, "true",
@@ -767,21 +781,27 @@ public class ConfigRegistry {
     public static final String CFGVAR_INIFILE = addConfigVariable("inifile", "Name of the (primary) inifile");
     public static final String CFGVAR_CONFIGNAME = addConfigVariable("configname", "Name of the active configuration");
     public static final String CFGVAR_RUNNUMBER = addConfigVariable("runnumber", "Sequence number of the current run within all runs in the active configuration");
-    public static final String CFGVAR_NETWORK = addConfigVariable("network", "Value of the \"network\" configuration option");
-    public static final String CFGVAR_EXPERIMENT = addConfigVariable("experiment", "Value of the \"experiment-label\" configuration option");
-    public static final String CFGVAR_MEASUREMENT = addConfigVariable("measurement", "Value of the \"measurement-label\" configuration option");
-    public static final String CFGVAR_REPLICATION = addConfigVariable("replication", "Value of the \"replication-label\" configuration option");
+    public static final String CFGVAR_NETWORK = addConfigVariable("network", "Value of the `network` configuration option");
+    public static final String CFGVAR_EXPERIMENT = addConfigVariable("experiment", "Value of the `experiment-label` configuration option");
+    public static final String CFGVAR_MEASUREMENT = addConfigVariable("measurement", "Value of the `measurement-label` configuration option");
+    public static final String CFGVAR_REPLICATION = addConfigVariable("replication", "Value of the `replication-label` configuration option");
     public static final String CFGVAR_PROCESSID = addConfigVariable("processid", "PID of the simulation process");
     public static final String CFGVAR_DATETIME = addConfigVariable("datetime", "Date and time the simulation run was started");
-    public static final String CFGVAR_RESULTDIR = addConfigVariable("resultdir", "Value of the \"result-dir\" configuration option");
-    public static final String CFGVAR_REPETITION = addConfigVariable("repetition", "The iteration number in 0..N-1, where N is the value of the \"repeat\" configuration option");
-    public static final String CFGVAR_SEEDSET = addConfigVariable("seedset", "Value of the \"seed-set\" configuration option");
-    public static final String CFGVAR_ITERATIONVARS = addConfigVariable("iterationvars", "Concatenation of all user-defined iteration variables in name=value form");
-    public static final String CFGVAR_ITERATIONVARS2 = addConfigVariable("iterationvars2", "Concatenation of all user-defined iteration variables in name=value form, plus ${repetition}");
+    public static final String CFGVAR_RESULTDIR = addConfigVariable("resultdir", "Value of the `result-dir` configuration option");
+    public static final String CFGVAR_REPETITION = addConfigVariable("repetition", "The iteration number in `0..N-1`, where `N` is the value of the `repeat` configuration option");
+    public static final String CFGVAR_SEEDSET = addConfigVariable("seedset", "Value of the `seed-set` configuration option");
+    public static final String CFGVAR_ITERATIONVARS = addConfigVariable("iterationvars", "Concatenation of all user-defined iteration variables in `name=value` form");
+    public static final String CFGVAR_ITERATIONVARS2 = addConfigVariable("iterationvars2", "Concatenation of all user-defined iteration variables in `name=value` form, plus `${repetition}`");
 
     static {
         EXTENDS = CFGID_EXTENDS.getName();
         TYPENAME = CFGID_TYPENAME.getName();
+
+        // if you've just updated the config registry with "opp_run -h jconfig" and now you're
+        // getting compile errors below, you've accidentally removed some entries due to
+        // not having Akaroa or MPI configured ;-)
+        CFGID_WITH_AKAROA.toString();
+        CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER.toString();
     }
 
     public static final String[] SIMTIME_SCALE_CHOICES = new String[] {

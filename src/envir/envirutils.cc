@@ -130,10 +130,10 @@ void EnvirUtils::dumpComponentList(const char *category)
             if (obj->getUnit())
                 std::cout << ", unit=\\ttt{" << obj->getUnit() << "}";
             if (obj->getDefaultValue())
-                std::cout << ", default: \\ttt{" << opp_latexQuote(obj->getDefaultValue()) << "}";
+                std::cout << ", default: \\ttt{" << opp_latexInsertBreaks(opp_latexQuote(obj->getDefaultValue()).c_str()) << "}";
             std::cout << "\\\\\n";
-            std::cout << "    " << getConfigOptionType(obj) << ".\\\\\n";
-            std::cout << opp_indentlines(opp_breaklines(opp_latexQuote(obj->getDescription()).c_str(), 75).c_str(), "    ") << "\n";
+            std::cout << "    \\textit{" << getConfigOptionType(obj) << ".}\\\\\n";
+            std::cout << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(obj->getDescription()).c_str()).c_str(), 75).c_str(), "    ") << "\n";
         }
         std::cout << "\\end{description}\n\n";
 
@@ -143,7 +143,7 @@ void EnvirUtils::dumpComponentList(const char *category)
         for (int i = 0; i < (int)v.size(); i++) {
             std::cout << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
             const char *desc = config->getVariableDescription(v[i]);
-            std::cout << opp_indentlines(opp_breaklines(opp_latexQuote(desc).c_str(), 75).c_str(), "    ") << "\n";
+            std::cout << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc).c_str()).c_str(), 75).c_str(), "    ") << "\n";
         }
         std::cout << "\\end{description}\n\n";
     }

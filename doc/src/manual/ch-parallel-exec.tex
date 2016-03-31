@@ -32,14 +32,14 @@ above:
   \item{\textbf{Conservative algorithms}\index{parallel simulation!conservative}
     prevents incausalities from happening. The Null Message Algorithm
     exploits knowledge of the time when LPs send messages to other LPs,
-    and uses `null' messages to propagate this information to other LPs.
-    If an LP knows it won't receive any messages from other
+    and uses special \textit{null messages} to propagate this information
+    to other LPs. If an LP knows it won't receive any messages from other
     LPs until $t+\Delta t$ simulation time, it may advance until
     $t+\Delta t$ without the need for external synchronization.
     Conservative simulation tends to converge to sequential simulation
     (slowed down by communication between LPs) if there is not
     enough parallelism in the model, or parallelism is not exploited
-    by sending a sufficient number of `null' messages.}
+    by sending a sufficient number of null messages.}
 
   \item{\textbf{Optimistic synchronization}\index{parallel simulation!optimistic}
     allows incausalities to occur, but detects and

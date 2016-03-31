@@ -55,7 +55,7 @@ Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mes
         "  `OBJECT-PATTERN := MATCH-EXPRESSION`\n"
         "  `FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN`\n"
         "  `FIELD-PATTERN := MATCH-EXPRESSION`\n"
-        "Examples (enter them without quotes):\n"
+        "Examples:\n"
         "  `*`: captures all fields of all messages\n"
         "  `*Frame:*Address,*Id`: captures all fields named somethingAddress and somethingId from messages of any class named somethingFrame\n"
         "  `MyMessage:declaredOn(MyMessage)`: captures instances of MyMessage recording the fields declared on the MyMessage class\n"

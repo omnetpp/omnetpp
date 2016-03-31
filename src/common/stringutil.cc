@@ -754,14 +754,60 @@ std::string opp_latexQuote(const char *s)
     tmp = opp_replacesubstring(tmp.c_str(), "#", "\\#", true);
     tmp = opp_replacesubstring(tmp.c_str(), "\b", "{\\textbackslash}", true);
     tmp = opp_replacesubstring(tmp.c_str(), "\n", "\\\\", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "~", "{\\textasciitilde}", true);
 
-    return opp_markup2Latex(tmp.c_str());
+    return tmp.c_str();
+}
+
+std::string opp_latexInsertBreaks(const char *s)
+{
+    std::string tmp = s;
+    tmp = opp_replacesubstring(tmp.c_str(), "-", "-{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "=", "={\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), ",", ",{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "/", "/{\\allowbreak}", true);
+
+    // properties and variables
+    tmp = opp_replacesubstring(tmp.c_str(), "@", "@{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "$\\{", "$\\{{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "\\}", "\\}{\\allowbreak}", true);
+
+    // colons
+    tmp = opp_replacesubstring(tmp.c_str(), "::", ">>>doublecolon<<<", true);
+    tmp = opp_replacesubstring(tmp.c_str(), ":", ":{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), ">>>doublecolon<<<", "::{\\allowbreak}", true);
+
+    // dots
+    tmp = opp_replacesubstring(tmp.c_str(), "...", ">>>tripledot<<<", true);
+    tmp = opp_replacesubstring(tmp.c_str(), "..", ">>>doubledot<<<", true);
+    tmp = opp_replacesubstring(tmp.c_str(), ".", ".{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), ">>>tripledot<<<", "...{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp.c_str(), ">>>doubledot<<<", "..{\\allowbreak}", true);
+
+    tmp = opp_replacesubstring(tmp.c_str(), " ", " {\\allowbreak}", true);
+
+    char ch;
+    char previousCh;
+    for (int i = 0; i < tmp.length(); i++) {
+        ch = tmp[i];
+        // avoid putting a break opportunity into cFoo
+        if (i != 0 && previousCh != 'c' && opp_isalpha(previousCh) && opp_isalpha(ch) && opp_islower(previousCh) && opp_isupper(ch)) {
+            char replacement[] = "\\-";
+            tmp.replace(i, 0, replacement);
+            i += strlen(replacement);
+        }
+        previousCh = ch;
+    }
+
+    return tmp;
 }
 
 std::string opp_markup2Latex(const char *s)
 {
     // replace `monospace text` to \ttt{monospace text}
     std::string tmp = s;
+    std::string::size_type begin;
+    std::string::size_type end;
     std::string::size_type pos = 0;
     static const char substring[] = "`";
     static const char *replacement[2] = {"\\ttt{", "}"};
@@ -770,8 +816,20 @@ std::string opp_markup2Latex(const char *s)
         pos = tmp.find(substring, pos);
         if (pos == std::string::npos)
             break;
-        tmp.replace(pos, strlen(substring), replacement[idx]);
-        pos += strlen(replacement[idx]);
+        if (idx == 0) {
+            begin = pos + strlen(replacement[idx]);
+            tmp.replace(pos, strlen(substring), replacement[idx]);
+            pos += strlen(replacement[idx]);
+        }
+        else {
+            end = pos;
+            tmp.replace(pos, strlen(substring), replacement[idx]);
+            pos += strlen(replacement[idx]);
+            // replace content
+            std::string processed = opp_latexInsertBreaks(tmp.substr(begin, end - begin).c_str());
+            pos += strlen(processed.c_str()) - (end - begin);
+            tmp.replace(begin, end - begin, processed);
+        }
         idx = 1 - idx;
     } while (true);
     if (idx)
