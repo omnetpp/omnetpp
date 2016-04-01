@@ -30,7 +30,9 @@ namespace nedxml {
 class NEDResourceCache;
 
 /**
- * Wraps a NEDElement tree of a NED declaration (module, channel, module
+ * @brief Stores information on a NED or MSG type.
+ *
+ * This class wraps a NEDElement tree of a NED declaration (module, channel, module
  * interface or channel interface), or declaration in a msg file (enum,
  * class, struct). May be extended by subclassing.
  *

@@ -33,7 +33,7 @@ namespace nedxml {
 
 
 /**
- * Empty. Subclass from this if you want to attach extra data to NEDElement objects.
+ * @brief Subclass from this if you want to attach extra data to NEDElement objects.
  *
  * @ingroup Data
  */
@@ -49,7 +49,7 @@ class NEDXML_API NEDElementUserData
 
 
 /**
- * Stores a line:col..line:col region in a source file. Used for mapping
+ * @brief Stores a line:col..line:col region in a source file. Used for mapping
  * NEDElements back to the source code.
  *
  * @ingroup Data

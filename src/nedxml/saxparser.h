@@ -28,7 +28,7 @@ class SAXParser;
 
 
 /**
- * Base class for SAX event handlers needed by SAXParser.
+ * @brief Base class for SAX event handlers needed by SAXParser.
  * This is a simplified SAX handler interface.
  *
  * All event handlers provided by this class are empty, one must
@@ -95,8 +95,10 @@ class NEDXML_API SAXHandler
 
 
 /**
- * Wraps XML SAX parsers (Expat and LibXML are supported at the moment,
- * decided at compile-time. DTD validation is supported with LibXML.)
+ * @brief Wraps XML SAX parsers.
+ *
+ * Expat and LibXML are supported at the moment, decided at compile-time.
+ * DTD validation is supported with LibXML.
  *
  * One must provide a SAXHandler for this class to be useful.
  *

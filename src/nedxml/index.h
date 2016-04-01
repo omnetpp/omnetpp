@@ -24,14 +24,15 @@ namespace nedxml {
  * @mainpage \opp NEDXML API Reference
  *
  * This reference documents NEDXML -- a library for parsing NED and MSG files,
- * and much more. The result of parsing is a DOM-like object tree, which
- * you can export as an XML file (and import it back as well), generate C++
- * code from it (a la nedc), or -- possibly after modifying it -- convert
- * it back to the original NED/MSG format.
+ * and much more. The result of parsing is a DOM-like abstract syntax tree.
+ * The parsed form can be converted back into NED/MSG source (with a side effect
+ * of pretty-printing it), can be serialized into XML, restored from XML, and
+ * (in the case of MSG files) also serves as input for C++ code generation.
  *
- * For a start, read the @ref Overview, or you can go to one of the more
- * specific topics:
+ * Choose one of the more following topics:
  *
+ * - @ref Overview
+ * - @ref Example
  * - @ref DTD
  * - @ref Data
  * - @ref NEDParser
@@ -47,60 +48,8 @@ namespace nedxml {
 /**
  * @defgroup Overview  Overview
  *
- * XML is ideal as an alternative representation of NED. By supporting XML,
- * NED becomes more interoperable with other systems, and it is be possible
- * to process it with standard tools. (Note that XML is unsuitable
- * though as the <i>only</i> representation of NED information because of its
- * relatively poor readability.)
+ * @brief Overview of the library.
  *
- * As an example, let's see a short NED code fragment and its XML representation:
- * <pre>
- * module FDDINode
- *     parameters:
- *         address : string;
- *     gates:
- *         in: net_in;
- *         out: net_out;
- *     submodules:
- *         MAC: FDDI_MAC
- *             parameters:
- *                 mac_address = address;
- *                 promiscuous = false;
- *         ...
- * endmodule
- * </pre>
- *
- * The XML version is a bit less readable but straightforward:
- *
- * <pre>
- * @verbatim
- * <?xml version="1.0" ?>
- * <nedfile filename="fddi.ned">
- *     <module name="FDDINode">
- *         <params>
- *             <param name="address" datatype="string"/>
- *         </params>
- *         <gates>
- *             <gate gatetype="in" isvector="false" name="net_in" />
- *             <gate gatetype="out" isvector="false" name="net_out" />
- *         </gates>
- *         <submodules>
- *             <submodule name="MAC" typename="FDDI_MAC">
- *                 <substparams>
- *                     <substparam name="mac_address" value="address"/>
- *                     <substparam name="promiscuous" value="false"/>
- *                 </substparams>
- *             </submodule>
- *             ...
- *
- * @endverbatim
- * </pre>
- *
- * The above XML fragment should be quite self-explanatory for those familiar
- * with NED.
- *
- * A DTD (document type descriptor) exists to describe the format of valid
- * NED XML documents.
  *
  * The NED-XML infrastructure is centered around data classes that are
  * the in-memory representation of NED. The data structure is an object tree,
@@ -144,6 +93,66 @@ namespace nedxml {
  * data sources and applications.
  */
 
+/**
+ * @defgroup Example  Example
+ *
+ * @brief An example NED file and its XML representation.
+ *
+ * A short NED code fragment:
+ *
+ * <pre>
+ * @verbatim
+ * //
+ * // This file is part of an OMNeT++/OMNEST simulation example.
+ * //
+ *
+ * //
+ * // Generates jobs (messages) with the given interarrival time.
+ * //
+ * simple Source
+ * {
+ *     parameters:
+ *         volatile double sendIaTime @unit(s);
+ *         @display("i=block/source");
+ *     gates:
+ *         output out;
+ * }
+ * @endverbatim
+ * </pre>
+ *
+ * The corresponding XML:
+ *
+ * <pre>
+ * @verbatim
+ * <?xml version="1.0" encoding="ISO-8859-1"?>
+ *
+ * <ned-file filename="Source1.ned">
+ *     <comment locid="banner" content="//&#10;// This file is part of an OMNeT++/OMNEST simulation example.&#10;//&#10;&#10;&#10;"/>
+ *     <simple-module name="Source">
+ *         <comment locid="trailing" content="&#10;&#10;&#10;"/>
+ *         <comment locid="banner" content="//&#10;// Generates jobs (messages) with the given interarrival time.&#10;//&#10;"/>
+ *         <parameters>
+ *             <param type="double" is-volatile="true" name="sendIaTime">
+ *                 <property name="unit">
+ *                     <property-key>
+ *                         <literal type="spec" text="s" value="s"/>
+ *                     </property-key>
+ *                 </property>
+ *             </param>
+ *             <property name="display">
+ *                 <property-key>
+ *                     <literal type="string" text="&quot;i=block/source&quot;" value="i=block/source"/>
+ *                 </property-key>
+ *             </property>
+ *         </parameters>
+ *         <gates>
+ *             <gate name="out" type="output"/>
+ *         </gates>
+ *     </simple-module>
+ * </ned-file>
+ * @endverbatim
+ * </pre>
+ */
 
 /**
  * @defgroup DTD  DTD
@@ -156,38 +165,52 @@ namespace nedxml {
 /**
  * @defgroup Data  Data classes
  *
+ * @brief Classes in this group represent the parsed form of NED and MSG files.
  */
 
 /**
  * @defgroup NEDParser NED Parsing
+ *
+ * @brief Classes and functions for parsing NED and MSG files.
  */
 
 /**
  * @defgroup XMLParser  XML Parsing
+ *
+ * @brief Classes and functions for deserializing a NED/MSG AST from XML.
  */
 
 /**
  * @defgroup XMLGenerator Generating XML
+ *
+ * @brief Classes and functions for serializing a NED/MSG AST to XML.
  */
 
 /**
  * @defgroup Validation  Validation
  *
+ * @brief Classes and functions for validating a NED/MSG AST.
  */
 
 /**
  * @defgroup NEDResources  NED Resources
  *
+ * @brief Classes for storing NED/MSG files in parsed form, and looking up
+ * types in them.
  */
 
 /**
  * @defgroup NEDGenerator  Generating NED
  *
+ * @brief Classes and functions for regenerating NED/MSG source from
+ * their parsed form.
  */
 
 /**
  * @defgroup CppGenerator Generating C++ code
  *
+ * @brief Classes and functions for generating C++ source from a parsed MSG
+ * file (opp_msgc functionality).
  */
 
 } // namespace nedxml

@@ -28,10 +28,12 @@ namespace nedxml {
 
 
 /**
- * Performs structural validation of components. Assumes the tree already
- * passed DTD validation. Every compound module and other component is
- * viewed in isolation: syntax validation does NOT process imports or
- * examines validity of references to other module types, channel types, etc.
+ * @brief Performs structural validation of components.
+ *
+ * It assumes that the tree already passed DTD validation. Every compound
+ * module and other component is viewed in isolation: syntax validation
+ * does NOT process imports or examines validity of references to other
+ * module types, channel types, etc.
  *
  * @ingroup Validation
  */

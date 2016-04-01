@@ -30,6 +30,11 @@
 namespace omnetpp {
 namespace nedxml {
 
+/**
+ * @brief Options for MsgCppGenerator.Generates C++ code from a MSG file object tree.
+ *
+ * @ingroup CppGenerator
+ */
 struct MsgCppGeneratorOptions
 {
     std::string exportDef;
@@ -49,7 +54,7 @@ struct MsgCppGeneratorOptions
  *
  * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
- * @ingroup NEDGenerator
+ * @ingroup CppGenerator
  */
 class NEDXML_API MsgCppGenerator
 {

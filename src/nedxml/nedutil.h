@@ -35,7 +35,9 @@ class PropertyElement;
 class LiteralElement;
 
 /**
- * Display string conversions.
+ * @brief Display string conversions.
+ *
+ * @ingroup Misc
  */
 class NEDXML_API DisplayStringUtil
 {
@@ -51,6 +53,11 @@ class NEDXML_API DisplayStringUtil
     static std::string toOldConnectionDisplayString(const char *s);
 };
 
+/**
+ * @brief Various utilities for the NEDElement tree.
+ *
+ * @ingroup Misc
+ */
 class NEDXML_API NEDElementUtil
 {
   public:

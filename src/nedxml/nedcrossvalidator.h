@@ -32,7 +32,7 @@ class NEDResourceCache;
 // *** CURRENTLY NOT IN USE ***
 
 /**
- * Performs cross validation. Should be called after tree passed
+ * @brief Performs cross validation. Should be called after tree passed
  * DTD validation and syntax validation.
  *
  * @ingroup Validation

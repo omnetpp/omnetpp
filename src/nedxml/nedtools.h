@@ -24,7 +24,7 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
- * Misc NED utilities
+ * @brief Misc NED utilities
  *
  * @ingroup Validation
  */

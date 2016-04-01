@@ -40,7 +40,8 @@ extern NEDParser *np;
 
 
 /**
- * Parses NED files into a NED object tree.
+ * @brief Parses NED and MSG files into an object tree form.
+ *
  * Elements of the tree are subclassed from NEDElement;
  * NEDElementFactory is used to actually create the objects.
  * Internally this class uses a bison/flex grammar and NEDFileBuffer.

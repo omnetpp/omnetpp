@@ -26,21 +26,21 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
- * Simple front-end to NEDXMLGenerator.
+ * @brief Simple front-end to NEDXMLGenerator.
  *
  * @ingroup XMLGenerator
  */
 NEDXML_API void generateXML(std::ostream& out, NEDElement *tree, bool srcloc, int indentsize = 4);
 
 /**
- * Simple front-end to NEDXMLGenerator.
+ * @brief Simple front-end to NEDXMLGenerator.
  *
  * @ingroup XMLGenerator
  */
 NEDXML_API std::string generateXML(NEDElement *tree, bool srcloc, int indentsize = 4);
 
 /**
- * Serializes a NED object tree in XML format.
+ * @brief Serializes a NED object tree in XML format.
  *
  * @ingroup XMLGenerator
  */

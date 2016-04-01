@@ -509,7 +509,7 @@ foreach $element (@elements)
 # Factory class
 #
 print H "/**\n";
-print H " * GENERATED CLASS. Factory for NEDElement subclasses.\n";
+print H " * @brief GENERATED CLASS. Factory for NEDElement subclasses.\n";
 print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
@@ -588,7 +588,7 @@ print VAL_CC "namespace omnetpp {\n";
 print VAL_CC "namespace nedxml {\n\n";
 
 print VAL_H "/**\n";
-print VAL_H " * GENERATED CLASS. Abtract base class for NED validators.\n";
+print VAL_H " * @brief GENERATED CLASS. Abtract base class for NED validators.\n";
 print VAL_H " *\n";
 print VAL_H " * \@ingroup Validation\n";
 print VAL_H " */\n";
@@ -670,7 +670,7 @@ print DTDVAL_CC "namespace omnetpp {\n";
 print DTDVAL_CC "namespace nedxml {\n\n";
 
 print DTDVAL_H "/**\n";
-print DTDVAL_H " * GENERATED CLASS. Validates a NEDElement tree by the DTD.\n";
+print DTDVAL_H " * @brief GENERATED CLASS. Validates a NEDElement tree by the DTD.\n";
 print DTDVAL_H " *\n";
 print DTDVAL_H " * \@ingroup Validation\n";
 print DTDVAL_H " */\n";

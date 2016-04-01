@@ -23,6 +23,8 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
+ * @brief Stores the full text of a NED/MSG file.
+ *
  * Used internally by NEDParser. Stores the full text of a NED file,
  * and makes it possible to retrieve parts of it by (line1,col1,line2,col2)
  * coordinates passed in an YYLTYPE structure. Also finds and retrieves

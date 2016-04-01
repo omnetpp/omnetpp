@@ -28,7 +28,7 @@ namespace nedxml {
 class NEDElement;
 
 /**
- * Low-level routines throw an exception instead of calling NEDErrorStore->add().
+ * @brief Low-level routines throw an exception instead of calling NEDErrorStore->add().
  */
 class NEDXML_API NEDException : public std::runtime_error
 {

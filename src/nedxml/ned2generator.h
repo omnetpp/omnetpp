@@ -26,15 +26,17 @@ namespace nedxml {
 
 
 /**
- * Simple front-end to NED2Generator.
+ * @brief Simple front-end to NED2Generator.
  *
  * @ingroup NEDGenerator
  */
 NEDXML_API void generateNED2(std::ostream& out, NEDElement *node, NEDErrorStore *e);
 
 /**
- * Generates NED code from a NED object tree.
- * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
+ * @brief Generates NED code from a NED object tree.
+ *
+ * Assumes that the object tree has already passed all validation stages (DTD,
+ * syntax, semantic).
  *
  * @ingroup NEDGenerator
  */

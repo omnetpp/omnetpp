@@ -29,7 +29,9 @@ namespace nedxml {
 
 
 /**
- * Context of NED type lookup
+ * @brief Context of NED type lookup, for NEDResourceCache.
+ *
+ * @ingroup NEDResources
  */
 struct NEDLookupContext
 {
@@ -39,7 +41,7 @@ struct NEDLookupContext
 };
 
 /**
- * Stores loaded NED files, and keeps track of components in them.
+ * @brief Stores loaded NED files, and keeps track of components in them.
  *
  * This class can be turned into a cache (discarding and reloading
  * NED files on demand) if such need arises.

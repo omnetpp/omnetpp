@@ -27,7 +27,8 @@ namespace nedxml {
 
 
 /**
- * SAX handler (to be used with SAXParser) that builds a NED object tree.
+ * @brief SAX handler (to be used with SAXParser) that builds a NED object tree.
+ *
  * Elements of the tree are subclassed from NEDElement;
  * NEDElementFactory is used to actually create the objects.
  *

@@ -84,13 +84,13 @@ The file is best read from the bottom up. Here's what it says:
 @note You can find more information on Simple modules in <a href="../manual/usman.html#cha:simple-modules" target="_blank">Section 4</a> of the @opp manual.
 
 3. We now need to implement the functionality of the simple module Txc1. This is
-achieved by writing a C++ file @ref txc1.cc:
+achieved by writing a C++ file @ref txc1.cc :
 
 @dontinclude txc1.cc
 @skip #include
 @until // send out the message
 @skipline }
-
+    
 The Txc1 simple module type is represented by the C++ class Txc1, which
 has to be subclassed from cSimpleModule, and registered in @opp with the
 Define_Module() macro.

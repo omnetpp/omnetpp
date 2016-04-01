@@ -25,7 +25,7 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
- * Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
+ * @brief Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
  *
  * @ingroup XMLParser
  */
