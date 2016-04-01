@@ -22,6 +22,7 @@
 #include "qtenv.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
+#include "qtutil.h"
 
 #include <QDebug>
 
@@ -367,7 +368,14 @@ void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int
     brushColor.setAlpha(active ? 255 : 40);
     QColor penColor = msgKindBorderColors[colorIndex];
     penColor.setAlpha(active ? 255 : 40);
-    scene()->addEllipse(x-2, y-4, 5, 9, QPen(penColor), QBrush(brushColor))->setData(1, QVariant::fromValue(message));
+
+    QGraphicsItem *ellipse = scene()->addEllipse(x-2, y-4, 5, 9, QPen(penColor), QBrush(brushColor));
+    ellipse->setData(1, QVariant::fromValue(message));
+
+    QString toolTip = QString("(") + getObjectShortTypeName(message) + ") " + message->getFullName();
+    if(!message->info().empty())
+        toolTip += QString(", ") + message->info().c_str();
+    ellipse->setToolTip(toolTip);
 }
 
 void TimeLineGraphicsView::mousePressEvent(QMouseEvent *event) {
