@@ -164,7 +164,7 @@ void GenericObjectInspector::closeEvent(QCloseEvent *event)
 void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
     auto object = model->getCObjectPointer(index);
     if (object)
-        emit objectDoubleClicked(object);
+        setObject(object);
 }
 
 void GenericObjectInspector::onDataChanged() {
