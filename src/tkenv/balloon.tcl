@@ -117,6 +117,7 @@ proc initBalloons {args} {
     }
     enableBalloon Menu "%W index active"
     enableBalloon Canvas "%W find withtag current"  ;#DO NOT CHANGE THIS
+    enableBalloon PathCanvas "%W find withtag current"  ;#DO NOT CHANGE THIS
 }
 
 #package provide balloon 1.0

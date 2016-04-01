@@ -272,7 +272,7 @@ proc getHelpTip {w x y} {
    }
    set tip ""
 
-   if {[winfo class $w]=="Canvas"} {
+   if {[winfo class $w]=="Canvas" || [winfo class $w]=="PathCanvas"} {
        set canvasx [$w canvasx $x]
        set canvasy [$w canvasy $y]
        set items [$w find overlapping [expr $canvasx-2] [expr $canvasy-2] [expr $canvasx+2] [expr $canvasy+2]]
