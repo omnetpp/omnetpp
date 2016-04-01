@@ -325,7 +325,7 @@ proc mainWindow:createStatusbars {} {
 
     ttk::label .nexteventlabel -relief groove -text "Next: n/a" -anchor w -width 40
     ttk::label .nextmodulelabel -relief groove -text "In: n/a" -anchor w  -width 60
-    ttk::label .nexttimelabel -relief groove -text "At t=0" -width 50 -anchor w
+    ttk::label .nexttimelabel -relief groove -text "At: 0s" -width 50 -anchor w
     pack .nexteventlabel .nextmodulelabel -in .nexteventbar -anchor n -expand 1 -fill x -side left
     pack .nexttimelabel -in .nexteventbar -anchor n -expand 0 -fill x -side left
 
@@ -519,12 +519,13 @@ proc mainWindow:updateNextEventDisplay {} {
         set msgptr [opp_getstatusvar guessnextevent]
     }
 
-    .nexttimelabel config -text "At t=[opp_getstatusvar guessnextsimtime]s (+[opp_getstatusvar timedelta]s)"
 
     if [opp_isnotnull $msgptr] {
         .nexteventlabel config -text "Next: [opp_getobjectname $msgptr] ([opp_getobjectfield $msgptr className], id=[opp_getobjectid $msgptr])"
+        .nexttimelabel config -text "At: [opp_getstatusvar guessnextsimtime]s (+[opp_getstatusvar timedelta]s)"
     } else {
         .nexteventlabel config -text "Next: n/a"
+        .nexttimelabel config -text "At: n/a"
     }
 
     if [opp_isnotnull $modptr] {
