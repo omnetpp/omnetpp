@@ -45,7 +45,7 @@ class GateInspectorFactory : public InspectorFactory
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new GateInspector(parent, isTopLevel, this); }
 };
 
-Register_InspectorFactory(GateInspectorFactory);
+// TODO Register_InspectorFactory(GateInspectorFactory);
 
 GateInspector::GateInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {

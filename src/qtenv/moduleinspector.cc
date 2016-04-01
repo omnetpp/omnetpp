@@ -629,7 +629,8 @@ void ModuleInspector::doubleClick(QMouseEvent *event) {
     if (!objects.empty()) {
         if (supportsObject(objects.front()))
             setObject(objects.front());
-        emit objectDoubleClicked(objects.front());
+        else    // If this inspector supports object then no need to inspect one more time.
+            emit objectDoubleClicked(objects.front());
     }
 }
 
