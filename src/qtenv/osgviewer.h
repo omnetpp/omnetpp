@@ -53,6 +53,7 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     osgViewer::View *view = nullptr;
     QWidget *glWidget = nullptr;
     QTimer timer;
+    osg::CullSettings::ComputeNearFarMode defaultComputeNearFarMode;
 
     QAction *toTerrainManipulatorAction;
     QAction *toOverviewManipulatorAction;
@@ -62,11 +63,12 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
   protected:
     QWidget *addViewWidget();
     void paintEvent(QPaintEvent* event) override;
-    void resizeEvent(QResizeEvent *event) override;
 
     void setClearColor(float r, float g, float b, float alpha);
     void setCameraManipulator(cOsgCanvas::CameraManipulatorType type, bool keepView = false);
-    void setPerspective(double fieldOfViewAngle, double zNear, double zFar);
+    void setFieldOfViewAngle(double fovy);
+    void setAspectRatio(double aspectRatio);
+    void setZNearFar(double zNear, double zFar);
     QMenu *createCameraManipulatorMenu();
 
   protected slots:

@@ -203,22 +203,48 @@ class SIM_API cOsgCanvas : public cOwnedObject
         /**
          * Set the distance hint from the viewer to the near clipping plane
          * (always positive).
+         *
+         * @see setZLimits()
          */
         void setZNear(double zNear) {this->zNear = zNear;}
 
         /**
-         * Return the distance hint from the viewer to the near clipping plane.
-         */
-        double getZNear() const {return zNear;}
-
-        /**
          * Set the distance hint from the viewer to the far clipping plane
          * (always positive).
+         *
+         * @see setZLimits()
          */
         void setZFar(double zFar) {this->zFar = zFar;}
 
         /**
+         * Set the distance from the viewer to the near and far clipping planes
+         * (always positive) as viewer hint. When not set, the corresponding
+         * limits are computed automatically by the viewer.
+         *
+         * @see clearZLimits()
+         */
+        void setZLimits(double zNear, double zFar) {this->zNear = zNear; this->zFar = zFar;}
+
+        /**
+         * Unset the zNear/zFar values set via setZLimits().
+         */
+        void clearZLimits();
+
+        /**
+         * Returns true if the zNear/zFar values are set manually.
+         * @see setZLimits(), clearZLimits()
+         */
+        bool hasZLimits() const;
+
+        /**
+         * Return the distance hint from the viewer to the near clipping plane.
+         * Returns NaN when not set (e.g. after clearZLimits()).
+         */
+        double getZNear() const {return zNear;}
+
+        /**
          * Return the distance from the viewer to the far clipping plane.
+         * Returns NaN when not set (e.g. after clearZLimits()).
          */
         double getZFar() const {return zFar;}
         //@}

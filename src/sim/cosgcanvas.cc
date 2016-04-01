@@ -18,6 +18,8 @@
 
 #ifdef WITH_OSG
 
+#include <cmath>
+#include <limits>
 #include "omnetpp/globals.h"
 #include "omnetpp/osgutil.h" // OmnetppObjectNode
 #include "osg/Node"
@@ -26,6 +28,8 @@
 namespace omnetpp {
 
 Register_Class(cOsgCanvas);
+
+static double NaN = std::numeric_limits<double>::quiet_NaN();
 
 inline void ref(osg::Node *scene)
 {
@@ -41,7 +45,7 @@ inline void unref(osg::Node *scene)
 
 cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *scene) : cOwnedObject(name),
     scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)),
-    cameraManipulatorType(CAM_AUTO), fieldOfViewAngle(30), zNear(1.0), zFar(10000.0),
+    cameraManipulatorType(CAM_AUTO), fieldOfViewAngle(30), zNear(NaN), zFar(NaN),
     genericViewpoint(new Viewpoint()),
     earthViewpoint(new osgEarth::Viewpoint())
 {
@@ -88,6 +92,16 @@ void cOsgCanvas::setScene(osg::Node *scene)
     ref(scene);
     unref(this->scene);
     this->scene = scene;
+}
+
+void cOsgCanvas::clearZLimits()
+{
+    zNear = zFar = NaN;
+}
+
+bool cOsgCanvas::hasZLimits() const
+{
+    return !std::isnan(zNear) && !std::isnan(zFar);
 }
 
 void cOsgCanvas::setGenericViewpoint(const Viewpoint& viewpoint)

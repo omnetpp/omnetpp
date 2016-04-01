@@ -231,8 +231,8 @@ QWidget *OsgViewer::addViewWidget()
     osg::Camera *camera = view->getCamera();
     camera->setClearColor(osg::Vec4(0.9, 0.9, 0.9, 1.0));
     camera->setViewport(new osg::Viewport(0, 0, 100, 100));
-    camera->setProjectionResizePolicy(osg::Camera::FIXED);
-    camera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+    camera->setProjectionResizePolicy(osg::Camera::HORIZONTAL);
+    defaultComputeNearFarMode = camera->getComputeNearFarMode();
 
     view->addEventHandler(new PickHandler(this));
     view->addEventHandler(new osgViewer::StatsHandler);
@@ -263,13 +263,6 @@ void OsgViewer::paintEvent(QPaintEvent *event)
     frame();
 }
 
-void OsgViewer::resizeEvent(QResizeEvent *event)
-{
-    if (osgCanvas)
-        setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
-    QWidget::resizeEvent(event);
-}
-
 void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
 {
     if (osgCanvas != canvas) {
@@ -298,7 +291,6 @@ void OsgViewer::refresh()
 
 void OsgViewer::applyViewerHints()
 {
-    // printf("applyViewerHints()\n");
     ASSERT(osgCanvas != nullptr);
 
     cOsgCanvas::Color color = osgCanvas->getClearColor();
@@ -306,15 +298,29 @@ void OsgViewer::applyViewerHints()
 
     setCameraManipulator(osgCanvas->getCameraManipulatorType());
 
-    setPerspective(osgCanvas->getFieldOfViewAngle(), osgCanvas->getZNear(), osgCanvas->getZFar());
+    osg::Camera *camera = view->getCamera();
+    camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000); // reset to sensible values to avoid later calls bump into a singular state
+
+    double widgetAspect = glWidget->geometry().width() / (double) glWidget->geometry().height();
+    setAspectRatio(widgetAspect);
+    setFieldOfViewAngle(osgCanvas->getFieldOfViewAngle());
+
+    if (osgCanvas->hasZLimits()) {
+        camera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+        setZNearFar(osgCanvas->getZNear(), osgCanvas->getZFar());
+    }
+    else {
+        camera->setComputeNearFarMode(defaultComputeNearFarMode);
+    }
 }
 
 void OsgViewer::resetViewer()
 {
-    // printf("resetViewer()\n");
+    // called when there is no cOsgCanvas to display
+    ASSERT(osgCanvas == nullptr);
     setClearColor(0.9, 0.9, 0.9, 1.0);
-    //setCameraManipulator(nullptr);
-    setPerspective(30, 1, 1000);
+    osg::Camera *camera = view->getCamera();
+    camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000);
 }
 
 void OsgViewer::setClearColor(float r, float g, float b, float alpha)
@@ -424,11 +430,28 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
         manipulator->home(0);
 }
 
-void OsgViewer::setPerspective(double fieldOfViewAngle, double zNear, double zFar)
+void OsgViewer::setFieldOfViewAngle(double fovy)
 {
     osg::Camera *camera = view->getCamera();
-    double widgetAspect = glWidget->geometry().width() / (double) glWidget->geometry().height();
-    camera->setProjectionMatrixAsPerspective(fieldOfViewAngle, widgetAspect, zNear, zFar);
+    double origFovy, origAspect, origZNear, origZFar;
+    camera->getProjectionMatrixAsPerspective(origFovy, origAspect, origZNear, origZFar);
+    camera->setProjectionMatrixAsPerspective(fovy, origAspect, origZNear, origZFar);
+}
+
+void OsgViewer::setAspectRatio(double aspectRatio)
+{
+    osg::Camera *camera = view->getCamera();
+    double origFovy, origAspect, origZNear, origZFar;
+    camera->getProjectionMatrixAsPerspective(origFovy, origAspect, origZNear, origZFar);
+    camera->setProjectionMatrixAsPerspective(origFovy, aspectRatio, origZNear, origZFar);
+}
+
+void OsgViewer::setZNearFar(double zNear, double zFar)
+{
+    osg::Camera *camera = view->getCamera();
+    double origFovy, origAspect, origZNear, origZFar;
+    camera->getProjectionMatrixAsPerspective(origFovy, origAspect, origZNear, origZFar);
+    camera->setProjectionMatrixAsPerspective(origFovy, origAspect, zNear, zFar);
 }
 
 QMenu *OsgViewer::createCameraManipulatorMenu()
