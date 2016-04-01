@@ -41,7 +41,7 @@ simsignal_t cDatarateChannel::messageDiscardedSignal;
 
 cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {
-    txFinishTime = 0;
+    txFinishTime = -1;
     delay = 0;
     datarate = 0;
     ber = 0;
@@ -50,6 +50,14 @@ cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 
 cDatarateChannel::~cDatarateChannel()
 {
+}
+
+void cDatarateChannel::finish()
+{
+    if (txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
+        cTimestampedValue tmp(txFinishTime, 0L);
+        emit(channelBusySignal, &tmp);
+    }
 }
 
 cDatarateChannel *cDatarateChannel::create(const char *name)
@@ -142,6 +150,11 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
         return;
     }
 
+    if (txFinishTime != -1 && mayHaveListeners(channelBusySignal)) {
+        cTimestampedValue tmp(txFinishTime, 0L);
+        emit(channelBusySignal, &tmp);
+    }
+
     // datarate modeling
     if ((flags & FL_DATARATE_NONZERO) && msg->isPacket()) {
         cPacket *pkt = (cPacket *)msg;
@@ -166,7 +179,6 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
         if (flags & FL_PER_NONZERO)
             if (dblrand() < per)
                 pkt->setBitError(true);
-
     }
 
     // emit signals
@@ -177,10 +189,6 @@ void cDatarateChannel::processMessage(cMessage *msg, simtime_t t, result_t& resu
     if (mayHaveListeners(channelBusySignal)) {
         cTimestampedValue tmp(t, 1L);
         emit(channelBusySignal, &tmp);
-
-        tmp.timestamp = txFinishTime;
-        tmp.l = 0L;
-        emit(channelBusySignal, &tmp);
     }
 }
 
@@ -188,8 +196,6 @@ void cDatarateChannel::forceTransmissionFinishTime(simtime_t t)
 {
     //TODO record this into the eventlog so that it can be visualized in the sequence chart
     txFinishTime = t;
-    cTimestampedValue tmp(t, 0L);
-    emit(channelBusySignal, &tmp);
 }
 
 }  // namespace omnetpp

@@ -1,0 +1,103 @@
+%description:
+Test for bug #943. Tests that calling forceTransmissionFinishTime() during an ongoing 
+transmission turns the datarate channel IDLE and the busy signal is successfully recorded
+into a vector.
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-log-prefix = ""
+**.result-recording-modes = +vector
+**.channel.busy:vector.vector-recording = true
+**.vector-recording = false
+
+%file: test.ned
+
+import ned.*;
+
+simple Gen
+{
+    gates:
+        output out;
+}
+
+simple Sink
+{
+    gates:
+        input in;
+}
+
+network Test
+{
+    submodules:
+        gen: Gen;
+        sink: Sink;
+    connections:
+        gen.out --> {  datarate = 1000bps; } --> sink.in;
+}
+
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Gen : public cSimpleModule
+{
+  public:
+    Gen() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Gen);
+
+void Gen::activity()
+{
+    cGate *g = gate("out");
+    cDatarateChannel *ch =check_and_cast<cDatarateChannel *>(g->getChannel());
+    cPacket *p1 = new cPacket();
+    p1->setBitLength(2000);
+    cPacket *p2 = new cPacket();
+    p2->setBitLength(2000);
+    // send out a packet (takes 2s to transmit)
+    EV << "Sending packet 1";
+    send(p1, g);
+    // force an about at 1s
+    wait(1);
+    EV << "Aborting packet 1";
+    ch->forceTransmissionFinishTime(1);
+    wait(0.5);
+    EV << "Sending packet 2";
+    // send out a new packet at 1.5 s
+    send(p2, g);
+}
+
+class Sink : public cSimpleModule
+{
+  public:
+    virtual void handleMessage(cMessage *msg) override;
+};
+
+Define_Module(Sink);
+
+void Sink::handleMessage(cMessage *msg)
+{
+    delete msg;
+}
+
+}; //namespace
+
+
+%contains: results/General-0.vec
+vector 0  Test.gen.out.channel  busy:vector  ETV
+attr interpolationmode  sample-hold
+attr source  channelBusy
+0	0	0	0
+0	1	0	1
+0	3	1	0
+0	3	1.5	1
+0	5	3.5	0

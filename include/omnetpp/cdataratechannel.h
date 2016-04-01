@@ -60,10 +60,11 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     // internal: update cached copies of parameters
     void rereadPars();
 
-    /**
-     * Called back when a parameter changes. Redefined from cComponent.
-     */
+    // internal: react to parameter changes
     virtual void handleParameterChange(const char *parname) override;
+
+    // internal: emits last busy signal
+    virtual void finish() override;
 
   public:
     /** @name Constructors, destructor */
