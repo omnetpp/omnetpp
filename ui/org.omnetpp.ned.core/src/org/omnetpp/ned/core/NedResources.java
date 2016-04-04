@@ -285,6 +285,12 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
      * Forget a NED file, and throws out all cached info.
      */
     public synchronized void forgetNedFile(IFile file) {
+        ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
+        doForgetNedFile(file, sync);
+        sync.runAsWorkspaceJob();
+    }
+
+    protected synchronized void doForgetNedFile(IFile file, ProblemMarkerSynchronizer sync) {
         if (nedFiles.containsKey(file)) {
             // remove our model change listener from the file
             NedFileElementEx nedFileElement = nedFiles.get(file);
@@ -300,9 +306,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                 rebuildProjectsTable();
 
             // remove all NED markers (otherwise they'll stay forever)
-            ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             sync.register(file);
-            sync.runAsWorkspaceJob();
 
             // fire notification.
             nedModelChanged(new NedFileRemovedEvent(file));
@@ -441,9 +445,11 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             if (!isNedFile(file))
                 trash.add(file);
         try {
+            ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             fireBeginChangeEvent();
             for (IFile file : trash)
-                forgetNedFile(file);
+                doForgetNedFile(file, sync);
+            sync.runAsWorkspaceJob();
         } finally {
             fireEndChangeEvent();
         }
@@ -601,7 +607,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                         IFile file = (IFile)resource;
                         switch (delta.getKind()) {
                         case IResourceDelta.REMOVED:
-                            forgetNedFile(file); // includes rebuildProjectsTable() if needed
+                            doForgetNedFile(file, sync); // includes rebuildProjectsTable() if needed
                             break;
                         case IResourceDelta.ADDED:
                             doReadNedFile(file, sync); // includes rebuildProjectsTable() if needed
