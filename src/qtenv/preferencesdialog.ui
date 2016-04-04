@@ -206,7 +206,30 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="logPrefix"/>
+             <widget class="QLineEdit" name="logPrefix">
+              <property name="toolTip">
+               <string>Here are some of the format characters that you can use in the log prefix.
+See the manual or the LogFormatter class for the complete list.
+
+General:
+  - %l, %c: log level (INFO, DEBUG, etc) and category string
+  - %e, %t, %g: event number, simulation time, and fingerprint if enabled
+  - %f, %i, %u: source file, line number, and function
+
+Objects:
+  - %E event object (class name, name)
+  - %U module of current event (NED type, full path)
+  - %C context component (NED type, full path)
+  - %K context component, if different from event module (NED type, full path)
+  - %J source component or object (NED type or class, full path or pointer)
+  - %L source component or object, if different from context (NED type or class, full path or pointer)
+
+Padding with spaces:
+  - %[0-9]+ add spaces until specified column
+  - %| adaptive tabstop: add padding until longest prefix seen so far
+  - %&gt; function call depth times 2-space indentation (see Enter_Method, Enter_Method_Silent)</string>
+              </property>
+             </widget>
             </item>
             <item row="1" column="1">
              <widget class="QComboBox" name="logLevel">

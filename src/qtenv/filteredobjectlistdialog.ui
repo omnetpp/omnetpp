@@ -56,12 +56,66 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="fullPathEdit"/>
+       <widget class="QLineEdit" name="fullPathEdit">
+        <property name="toolTip">
+         <string>Generic filter expression which matches the object full path by default.
+
+Wildcards (&quot;?&quot;, &quot;*&quot;) are allowed. &quot;{a-exz}&quot; matches any character in the
+range &quot;a&quot;..&quot;e&quot;, plus &quot;x&quot; and &quot;z&quot;. You can match numbers: &quot;*.job{128..191}&quot;
+will match objects named &quot;job128&quot;, &quot;job129&quot;, ..., &quot;job191&quot;. &quot;job{128..}&quot;
+and &quot;job{..191}&quot; are also understood. You can combine patterns with AND, OR
+and NOT and parentheses (lowercase and, or, not are also OK). You can match
+against other object fields such as queue length, message kind, etc., with
+the syntax &quot;fieldname(pattern)&quot;. Put quotation marks around a pattern if it
+contains parentheses.
+
+HINT: You'll want to start the pattern with &quot;*.&quot; in most cases, to match
+objects anywhere in the network!
+
+Examples:
+ *.destAddr
+            matches all objects whose name is &quot;destAddr&quot; (likely module
+            parameters)
+ *.subnet2.*.destAddr
+            matches objects named &quot;destAddr&quot; inside &quot;subnet2&quot;
+ *.node[8..10].*
+            matches anything inside module node[8], node[9] and node[10]
+ className(cQueue) and not length(0)
+            matches non-empty queue objects
+ className(cQueue) and length({10..})
+            matches queue objects with length&gt;=10
+ kind(3) or kind({7..9})
+            matches messages with message kind equal to 3, 7, 8 or 9
+            (Only messages have a &quot;kind&quot; attribute.)
+ className(IP*) and *.data-*
+            matches objects whose class name begins with &quot;IP&quot; and
+            name begins with &quot;data-&quot;
+ not className(cMessage) and byteLength({1500..})
+            matches messages whose class is not cMessage, and byteLength is
+            at least 1500. (Only messages have a &quot;byteLength&quot; attribute.)
+ &quot;*(*&quot; or &quot;*.msg(ACK)&quot;
+            quotation marks needed when pattern is a reserved word or contains
+            parentheses. (Note: *.msg(ACK) without parens would be interpreted
+            as some object having a &quot;*.msg&quot; attribute with the value &quot;ACK&quot;!)</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QComboBox" name="comboBox">
         <property name="toolTip">
-         <string/>
+         <string>Generic filter expression which matches class name by default.
+
+Wildcards (&quot;?&quot;, &quot;*&quot;), AND, OR, NOT and field matchers are accepted;
+see Object Filter help for a more complete list.
+
+Examples:
+  cQueue
+            matches cQueue objects
+  TCP* or (IP* and not IPDatagram)
+            matches objects whose class name begins with TCP or IP,
+            excluding IPDatagrams
+  cMessage and kind(3)
+            matches objects of class cMessage and message kind 3.</string>
         </property>
         <property name="editable">
          <bool>true</bool>
