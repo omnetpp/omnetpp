@@ -118,8 +118,8 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 %contains: stdout
-t=0: busy:0, finishes:0
-t=1: busy:0, finishes:0
+t=0: busy:0, finishes:-1
+t=1: busy:0, finishes:-1
 t=1: busy:1, finishes:1.005
 t=1.105: pkt1 arrived
 t=2: busy:0, finishes:1.005
