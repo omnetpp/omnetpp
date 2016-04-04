@@ -96,6 +96,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
 
     // whether a job to call readMissingNedFiles() has been scheduled
     private boolean isLoadingInProgress = false;
+    private WorkspaceJob readMissingNedFilesJob = null;
 
     // job that performs NED validation in the background
     private Job nedValidationJob;
@@ -450,25 +451,36 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         // invalidate because project dependencies might have changed, even if there was no NED change
         invalidate();
         nedModelChanged(new NedModelChangeEvent(null));  // "anything might have changed"
-        scheduleReadMissingNedFiles();
+        if (!isReadMissingNedFilesJobScheduled())
+            scheduleReadMissingNedFilesJob();
+    }
+
+    public boolean isReadMissingNedFilesJobScheduled() {
+        return readMissingNedFilesJob != null && readMissingNedFilesJob.getState() == Job.WAITING;
     }
 
     /**
      * Schedules a background job to read NED files that are not yet loaded.
      */
-    public void scheduleReadMissingNedFiles() {
+    public void scheduleReadMissingNedFilesJob() {
         isLoadingInProgress = true;
-        WorkspaceJob job = new WorkspaceJob("Parsing NED files...") {
+        readMissingNedFilesJob = new WorkspaceJob("Parsing NED files...") {
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                readMissingNedFiles();
+                try {
+                    readMissingNedFiles();
+                }
+                finally {
+                    isLoadingInProgress = false;
+                    readMissingNedFilesJob = null;
+                }
                 return Status.OK_STATUS;
             }
         };
-        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-        job.setPriority(Job.SHORT);
-        job.setSystem(false);
-        job.schedule();
+        readMissingNedFilesJob.setRule(ResourcesPlugin.getWorkspace().getRoot());
+        readMissingNedFilesJob.setPriority(Job.SHORT);
+        readMissingNedFilesJob.setSystem(false);
+        readMissingNedFilesJob.schedule();
     }
 
     public boolean isLoadingInProgress() {
@@ -504,7 +516,6 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             NedResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
             nedModelChangeNotificationDisabled = false;
-            isLoadingInProgress = false;
             Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readMissingNedFiles()");
             nedModelChanged(new NedModelChangeEvent(null));  // "everything changed"
         }
