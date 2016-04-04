@@ -26,7 +26,7 @@ feature_d_folder
 
 %testprog: opp_featuretool options
 
-#%ignore-exitcode: 1
+%ignore-exitcode: 1
 
 %postrun-command: ../../lib/fileExistingCheck
 
@@ -36,8 +36,13 @@ feature_d_folder
 '.nedfolders' not found.
 '.nedexclusions' found.
 
-%contains: stdout
- -DF_A -DF_E -llibA -llibE
-
-%not-contains-regex: test.err
+%not-contains-regex: stdout
 [a-zA-Z0-9]
+
+%contains: stderr
+opp_featuretool: Error: NED package 'feature_a_folder' in feature 'F_A' was not found.
+opp_featuretool: Error: NED package 'feature_b_folder' in feature 'F_B' was not found.
+opp_featuretool: Error: NED package 'feature_c_folder' in feature 'F_C' was not found.
+opp_featuretool: Error: NED package 'feature_d_folder' in feature 'F_D' was not found.
+opp_featuretool: Error: NED package 'feature_e_folder' in feature 'F_E' was not found.
+opp_featuretool: Error: Check whether all NED folders are set properly (in the .nedfolders file) and all directories corresponding to the NED packages defined in the .oppfeatures file do exist.

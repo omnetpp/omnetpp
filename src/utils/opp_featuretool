@@ -458,6 +458,33 @@ root directory where the following files are present:
 
 
     ############################
+    def checkFeatureNedFolders(self, feature):
+        retval = True
+        for nedPackage in feature.nedPackages:
+            foundNedPackageFolder = False
+            for nedfolder in self.nedfolders:
+                if nedfolder.isSubpackage(nedPackage):
+                    packageSuffix = nedPackage[len(nedfolder.prefix):]
+                    folder = nedfolder.path + '/' + packageSuffix.replace('.', '/')
+                    if os.path.exists(folder):
+                        foundNedPackageFolder = True
+            if not foundNedPackageFolder:
+                print("opp_featuretool: Error: NED package '{}' in feature '{}' was not found.".format(nedPackage, feature.id), file=sys.stderr)
+                retval = False
+        return retval
+
+
+    ############################
+    def verifyFeaturesNedFolders(self):
+        ok = True
+        for fid, feature in self.sortedFeatures:
+            if not self.checkFeatureNedFolders(feature):
+                ok = False
+        if not ok:
+            fail("Check whether all NED folders are set properly (in the {} file) and all directories corresponding to the NED packages defined in the {} file do exist.".format(NEDFOLDERSFILE, FEATURESFILE))
+
+
+    ############################
     def doListCommand(self):
         self.doValidateCommand()
         # LIST command #
@@ -761,11 +788,13 @@ root directory where the following files are present:
         self.autoFixingMode = (self.args.command != "validate")
         self.fixingMode = (self.args.command == "repair")
 
+        # read nedfolders file:
+        self.readNedFoldersFile()
+
         # read feature file
         self.readFeatures()
 
-        # read nedfolders file:
-        self.readNedFoldersFile()
+        self.verifyFeaturesNedFolders()
 
         if self.args.command == 'reset':
             self.doResetCommand()
