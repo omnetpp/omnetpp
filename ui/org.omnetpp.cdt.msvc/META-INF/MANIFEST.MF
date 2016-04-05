@@ -16,8 +16,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.omnetpp.common,
  org.omnetpp.ide.nativelibs,
- org.omnetpp.cdt,
- org.omnetpp.main
+ org.omnetpp.cdt
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: OpenSim Ltd.

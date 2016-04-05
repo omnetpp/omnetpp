@@ -41,7 +41,7 @@ import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.ICustomWizardPage;
 import org.omnetpp.common.wizard.TemplateSelectionPage;
 import org.omnetpp.common.wizard.XSWTDataBinding;
-import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
+import org.omnetpp.common.wizards.NewOmnetppProjectWizard;
 import org.osgi.framework.Bundle;
 
 /**

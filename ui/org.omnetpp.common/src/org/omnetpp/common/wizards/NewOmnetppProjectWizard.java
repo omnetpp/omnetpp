@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.ide.wizard;
+package org.omnetpp.common.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -31,11 +31,11 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IContentTemplate;
 import org.omnetpp.common.wizard.TemplateBasedWizard;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * "New OMNeT++ Project" wizard. (This wizard only appears on the UI if the org.omnetpp.cdt
@@ -171,7 +171,7 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
             }
             else {
                 // Unexpected runtime exceptions and errors may still occur.
-                OmnetppMainPlugin.logError(t);
+                CommonPlugin.logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
             }
             return false;

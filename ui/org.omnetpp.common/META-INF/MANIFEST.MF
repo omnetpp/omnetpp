@@ -180,6 +180,7 @@ Export-Package: au.com.bytecode.opencsv,
    org.eclipse.swt.widgets",
  org.omnetpp.common.wizard,
  org.omnetpp.common.wizard.support,
+ org.omnetpp.common.wizards,
  org.omnetpp.common.wizardwizard,
  org.omnetpp.common.xml;uses:="org.xml.sax.helpers,org.xml.sax"
 Bundle-ClassPath: .,

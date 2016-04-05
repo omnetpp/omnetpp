@@ -35,7 +35,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.omnetpp.common.Debug;
-import org.omnetpp.ide.wizard.NewOmnetppProjectWizard.NewOmnetppProjectCreationPage;
+import org.omnetpp.common.wizards.NewOmnetppProjectWizard.NewOmnetppProjectCreationPage;
 
 
 public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
