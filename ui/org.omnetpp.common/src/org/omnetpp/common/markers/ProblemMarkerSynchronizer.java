@@ -184,8 +184,7 @@ public class ProblemMarkerSynchronizer {
             // which invokes a timerExec, whose run() contains validateAllNedFiles, etc...)
             job.setRule(ResourcesPlugin.getWorkspace().getRoot());
             job.setPriority(Job.INTERACTIVE);
-            if (!debug)
-                job.setSystem(true);
+            job.setSystem(true);
             job.schedule();
         }
     }
