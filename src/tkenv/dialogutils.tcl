@@ -449,22 +449,5 @@ proc placeWindowNearMouse {w} {
     wm geometry $w +$x+$y
 }
 
-#
-# Move rect (given as x,y,w,h) so that it falls inside parentrect.
-# Returns new (x,y). Can be used e.g. for ensuring that a tooltip
-# or dialog doesn't partially fall off-screen.
-#
-proc moveRectIntoRect {rect parentrect} {
-    setvars {x y w h} $rect
-    setvars {px py pw ph} $parentrect
-
-    if {$x < $px} {set x $px}
-    if {$y < $py} {set y $py}
-    if {$x+$w > $px+$pw} {set x [expr {$px+$pw-$w}]}
-    if {$y+$h > $py+$ph} {set y [expr {$py+$ph-$h}]}
-    if {$x < $px} {set x $px}
-    if {$y < $py} {set y $py}
-    return [list $x $y]
-}
 
 

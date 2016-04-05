@@ -87,9 +87,9 @@ proc createBalloon {window text x y} {
     label $l -text $text -padx 4 -wraplength $help_tips(width) -bg $help_tips(color) \
              -border 1 -relief solid -font TkTooltipFont -justify left
 
-    set balloonrect [list [expr $x-5] [expr $y+16] [winfo reqwidth $l] [winfo reqheight $l]]
+    set balloonsize [list [winfo reqwidth $l] [winfo reqheight $l]]
     set windowrect [list [winfo rootx $window] [winfo rooty $window] [winfo width $window] [winfo height $window]]
-    setvars {balloonx balloony} [moveRectIntoRect $balloonrect $windowrect]
+    setvars {balloonx balloony} [placeBalloon $balloonsize $windowrect $x $y]
 
     wm geometry .balloon_help "+$balloonx+$balloony"
 
@@ -118,6 +118,43 @@ proc initBalloons {args} {
     enableBalloon Menu "%W index active"
     enableBalloon Canvas "%W find withtag current"  ;#DO NOT CHANGE THIS
     enableBalloon PathCanvas "%W find withtag current"  ;#DO NOT CHANGE THIS
+}
+
+#
+# Ensures that a tooltip doesn't partially fall off-screen.
+# Place balloon so that it falls inside parentrect as much as possible,
+# however, it MUST NEVER cover the mouse. Returns new (x,y).
+#
+proc placeBalloon {balloonsize parentrect mousex mousey} {
+    setvars {w h} $balloonsize
+    setvars {px py pw ph} $parentrect
+    setvars {offx offy} {2 16}
+
+    # vertical spacing:
+    # - if there's enough space below the mouse, put the tooltip there;
+    # - otherwise, if there's enough space above the mouse, put it there;
+    # - otherwise, choose the option with more space
+    set spaceabove [expr ($mousey-$offy-$h) - $py]
+    set spacebelow [expr ($py+$ph) - ($mousey+$offy+$h)]
+    if {$spacebelow >= 0 || $spacebelow >= $spaceabove} {
+        set y [expr $mousey+$offy] ;# below
+    } else {
+        set y [expr $mousey-$offy-$h] ;# above
+    }
+
+    # horizontal spacing:
+    # - if there's enough space right of the mouse, put the tooltip there;
+    # - otherwise, if there's enough space left of the mouse, put it there;
+    # - otherwise, choose the option with more space
+    set spaceleft [expr ($mousex-$offx-$w) - $px]
+    set spaceright [expr ($px+$pw) - ($mousex+$offx+$w)]
+    if {$spaceright >= 0 || $spaceright >= $spaceleft} {
+        set x [expr $mousex+$offx] ;# right
+    } else {
+        set x [expr $mousex-$offx-$w] ;# left
+    }
+
+    return [list $x $y]
 }
 
 #package provide balloon 1.0
