@@ -40,11 +40,11 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.ui.ProblemsMessageDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Keeps makefiles up to date.
@@ -235,17 +235,17 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // check if the libraries required for the active configuration are present
         // advise the user to switch configs
         boolean libMissing =
-                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.debug") && !OmnetppMainPlugin.isOppsimGccOrClangLibraryPresent(true)) ||
-                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.release") && !OmnetppMainPlugin.isOppsimGccOrClangLibraryPresent(false)) ||
-                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.debug") && !OmnetppMainPlugin.isOppsimVcLibraryPresent(true)) ||
-                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.release") && !OmnetppMainPlugin.isOppsimVcLibraryPresent(false));
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.debug") && !OmnetppDirs.isOppsimGccOrClangLibraryPresent(true)) ||
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.release") && !OmnetppDirs.isOppsimGccOrClangLibraryPresent(false)) ||
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.debug") && !OmnetppDirs.isOppsimVcLibraryPresent(true)) ||
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.release") && !OmnetppDirs.isOppsimVcLibraryPresent(false));
 
         if (libMissing) {
             runInUIThread(new Runnable() {
                 public void run() {
                     String message =
                         "OMNeT++ libraries not yet compiled: library files for configuration \"" + activeConfig.getName() + "\" " +
-                        "are missing from " + OmnetppMainPlugin.getOmnetppLibDir() + ".\n\n"+
+                        "are missing from " + OmnetppDirs.getOmnetppLibDir() + ".\n\n"+
                         "Switch to a different build configuration in the project context menu, " +
                         "or build the OMNeT++ libraries from " +
                         "the command line. (See the Install Guide for help.)";

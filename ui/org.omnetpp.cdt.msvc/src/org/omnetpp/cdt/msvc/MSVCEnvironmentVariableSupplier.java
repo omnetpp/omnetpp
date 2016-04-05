@@ -22,7 +22,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.BuildEnvironmentVariable;
 import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 import org.osgi.framework.Version;
 
 /**
@@ -94,7 +94,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         Map<String, IBuildEnvironmentVariable> vars = new HashMap<String, IBuildEnvironmentVariable>();
 
         // add OMNETPP_ROOT variable because it is needed by the nmake scripts
-        addvar(vars, new BuildEnvironmentVariable("OMNETPP_ROOT", OmnetppMainPlugin.getOmnetppRootDir(), IBuildEnvironmentVariable.ENVVAR_REPLACE));
+        addvar(vars, new BuildEnvironmentVariable("OMNETPP_ROOT", OmnetppDirs.getOmnetppRootDir(), IBuildEnvironmentVariable.ENVVAR_REPLACE));
 
         String vcDir = getVCDir();
         if (vcDir == null)
@@ -123,7 +123,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         // PATH
         buff = new StringBuffer();
 
-        String msysDir = OmnetppMainPlugin.getMsysBinDir();
+        String msysDir = OmnetppDirs.getMsysBinDir();
         if (!StringUtils.isEmpty(msysDir))
             buff.append(msysDir+";");
 

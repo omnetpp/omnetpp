@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 
 /**
  * Resolves opp_additional_path
@@ -31,8 +31,8 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
         if (argument != null)
             abort("${" + varName +"} requires no argument", null);
 
-        String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
-        String mingwBinDir = OmnetppMainPlugin.getMingwBinDir();
+        String msysBinDir = OmnetppDirs.getMsysBinDir();
+        String mingwBinDir = OmnetppDirs.getMingwBinDir();
 
         String result = msysBinDir + ";" + mingwBinDir;
         return result.equals(";") ? "" : result;

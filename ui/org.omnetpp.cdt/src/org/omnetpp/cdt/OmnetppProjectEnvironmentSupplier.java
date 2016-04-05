@@ -12,7 +12,7 @@ import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 
 /**
  * Adds environment variables specific to an omnetpp simulation project. Prepends the omnetpp_bin
@@ -37,7 +37,7 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
         }
 
         public String getValue() {
-            return OmnetppMainPlugin.getOmnetppBinDir();
+            return OmnetppDirs.getOmnetppBinDir();
         }
 
         public int getOperation() {

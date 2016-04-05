@@ -51,7 +51,7 @@ import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -332,7 +332,7 @@ public class OmnetppLaunchUtils {
 
         IProject project;
         if (StringUtils.isEmpty(exeName)) {  // this means opp_run
-            exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run";
+            exeName = OmnetppDirs.getOmnetppBinDir()+"/opp_run";
             // detect if the current executable is release or debug
             // if we run a release executable we have to use opp_run_release (instead of opp_run)
             if (isOppRunReleaseRequired(workingdirStr))

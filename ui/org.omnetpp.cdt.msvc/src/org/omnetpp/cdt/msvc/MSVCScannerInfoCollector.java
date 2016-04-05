@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 
 /**
  *
@@ -62,7 +62,7 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
             }
 
             // add the omnetpp include directory
-            paths.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
+            paths.add(new Path(OmnetppDirs.getOmnetppInclDir()));
 
             // add the folders inside the project and in referenced projects
             // Note: we MUST NOT compute the folders here, we must not access the CDT project configuration, see bug #299

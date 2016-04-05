@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 
@@ -135,7 +136,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
         WorkspaceJob job = new WorkspaceJob("Importing sample projects") {
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                ProjectUtils.importAllProjectsFromDirectory(new File(OmnetppMainPlugin.getOmnetppSamplesDir()), open, monitor);
+                ProjectUtils.importAllProjectsFromDirectory(new File(OmnetppDirs.getOmnetppSamplesDir()), open, monitor);
                 return Status.OK_STATUS;
             }
         };
@@ -147,7 +148,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
     protected void installINET() {
         try {
             isInstallINETRequested = installINETButton.getSelection();
-            String omnetppVersion = "omnetpp-" + OmnetppMainPlugin.getMajorVersion() + "." + OmnetppMainPlugin.getMinorVersion();
+            String omnetppVersion = "omnetpp-" + OmnetppDirs.getMajorVersion() + "." + OmnetppDirs.getMinorVersion();
             URL projectDescriptionURL = new URL(InstallSimulationModelsDialog.DESCRIPTORS_URL + "/" + omnetppVersion + "/inet.xml");
             InstallProjectJob installProjectJob = new InstallProjectJob(projectDescriptionURL, new ProjectInstallationOptions("inet"));
             installProjectJob.setUser(true);

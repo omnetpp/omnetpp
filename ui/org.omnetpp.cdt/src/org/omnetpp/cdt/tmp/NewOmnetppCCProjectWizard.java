@@ -33,8 +33,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 
@@ -155,7 +155,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             }
             else {
                 // Unexpected runtime exceptions and errors may still occur.
-                OmnetppMainPlugin.getDefault().logError(t);
+                Activator.logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
             }
             return null;

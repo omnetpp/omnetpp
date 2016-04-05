@@ -17,7 +17,7 @@ import org.eclipse.cdt.make.internal.core.scannerconfig2.PerProjectSICollector;
 import org.eclipse.cdt.managedbuilder.scannerconfig.IManagedScannerInfoCollector;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 
 /**
  * Special InfoCollector based on the CDT's GCC per project collector, but adds
@@ -41,7 +41,7 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
                 includeMap.put((String)location, true);
 
         // add the omnetpp include directory
-        includeMap.put(OmnetppMainPlugin.getOmnetppInclDir(), false);
+        includeMap.put(OmnetppDirs.getOmnetppInclDir(), false);
 
         // add the folders inside the project and in referenced projects
         // Note: we MUST NOT compute the folders here, we must not access the CDT project configuration, see bug #299

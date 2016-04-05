@@ -26,6 +26,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ViewIntroAdapterPart;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.views.NewVersionView;
@@ -68,7 +69,7 @@ public class VersionChecker {
         //
         Job job = new Job("Version check") {
             public IStatus run(IProgressMonitor pm) {
-                String versionCheckURL = VersionChecker.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
+                String versionCheckURL = VersionChecker.VERSIONCHECK_URL + "?v=" + OmnetppDirs.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
                 final String content = getWebPage(versionCheckURL);
                 if (StringUtils.isNotBlank(content)) {
                     Display.getDefault().asyncExec(new Runnable() {

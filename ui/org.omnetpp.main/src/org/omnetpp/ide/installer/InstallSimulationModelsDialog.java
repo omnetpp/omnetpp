@@ -46,6 +46,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class InstallSimulationModelsDialog extends TitleAreaDialog {
@@ -233,7 +234,7 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
 
     protected void scheduleDownloadProjectDescriptions() {
         try {
-            String omnetppVersion = "omnetpp-" + OmnetppMainPlugin.getMajorVersion() + "." + OmnetppMainPlugin.getMinorVersion();
+            String omnetppVersion = "omnetpp-" + OmnetppDirs.getMajorVersion() + "." + OmnetppDirs.getMinorVersion();
             final URL descriptorsURL = new URL(DESCRIPTORS_URL + "/" + omnetppVersion + "/descriptors.txt");
             Job job = new Job("Download project descriptors") {
                 @Override

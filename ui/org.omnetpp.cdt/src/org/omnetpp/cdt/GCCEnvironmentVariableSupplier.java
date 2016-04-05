@@ -13,7 +13,7 @@ import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSu
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.runtime.Platform;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 
 /**
  * We use the same toolchain for gcc on all platforms, so we need a combined
@@ -29,11 +29,11 @@ public class GCCEnvironmentVariableSupplier implements IConfigurationEnvironment
         StringBuilder buff = new StringBuilder();
 
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
-            String mingwBinDir = OmnetppMainPlugin.getMingwBinDir();
+            String mingwBinDir = OmnetppDirs.getMingwBinDir();
             if (!StringUtils.isEmpty(mingwBinDir))
                 buff.append(mingwBinDir).append(';');
 
-            String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
+            String msysBinDir = OmnetppDirs.getMsysBinDir();
             if (!StringUtils.isEmpty(msysBinDir))
                 buff.append(msysBinDir).append(';');
         }

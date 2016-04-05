@@ -38,7 +38,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ProcessUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.OmnetppDirs;
 
 /**
  * This is a property page displayed in project properties to set the project specific parameters for documentation generation.
@@ -298,7 +298,7 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
-            content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppMainPlugin.getOmnetppRootDir() + "/doc/api");
+            content = replaceDoxygenConfigurationEntry(content, "TAGFILES", OmnetppDirs.getOmnetppRootDir() + "/doc/api/opptags.xml=" + OmnetppDirs.getOmnetppRootDir() + "/doc/api");
             FileUtils.writeTextFile(fileName, content, null);
         }
         catch (Exception x) {
