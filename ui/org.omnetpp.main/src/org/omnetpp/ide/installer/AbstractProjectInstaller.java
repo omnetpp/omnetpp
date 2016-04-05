@@ -33,6 +33,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.cdt.build.ProjectFeaturesManager;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
@@ -155,6 +157,7 @@ public abstract class AbstractProjectInstaller {
             IProject project = workspace.getRoot().getProject(projectInstallationOptions.getName());
             SubProgressMonitor subProgressMonitor = new SubProgressMonitor(progressMonitor, 1);
             project.create(projectDescription, subProgressMonitor);
+
             return project;
         }
         catch (OperationCanceledException e) {
@@ -188,6 +191,14 @@ public abstract class AbstractProjectInstaller {
         }
         catch (Exception e) {
             throw new RuntimeException("Cannot open project " + projectDescription.getName(), e);
+        }
+    }
+
+    protected void initializeProjectFeaturesState(IProject project) throws CoreException {
+        ProjectFeaturesManager features = new ProjectFeaturesManager(project);
+        if (features.loadFeaturesFile()) {
+            Debug.println("Project Features: activating default feature selection for new project " + project.getName());
+            features.initializeProjectState();
         }
     }
 

@@ -1,6 +1,7 @@
 package org.omnetpp.common.project;
 
 import org.eclipse.core.resources.IContainer;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Represents contents of a ".nedfolders" file
@@ -30,6 +31,11 @@ public class NedSourceFoldersConfiguration {
 
     public void setExcludedPackages(String[] excludedPackages) {
         this.excludedPackages = excludedPackages;
+    }
+
+    @Override
+    public String toString() {
+        return "sourceFolders: [" + StringUtils.join(sourceFolders, " ") + "], excludedPackages: [" + StringUtils.join(excludedPackages, " ") + "]";
     }
 
 

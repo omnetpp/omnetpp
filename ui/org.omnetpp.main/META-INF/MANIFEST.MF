@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.help,
  org.eclipse.help.ui,
  org.apache.commons.logging,
- org.omnetpp.common
+ org.omnetpp.common,
+ org.omnetpp.cdt
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,
