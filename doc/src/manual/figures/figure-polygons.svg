@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   version="1.1"
-   width="40"
-   height="11.15625"
-   id="svg3821">
+   id="svg3821"
+   height="44.523281"
+   width="159.93887"
+   version="1.1">
   <defs
      id="defs3823" />
   <metadata
@@ -26,15 +24,15 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(12.65625,0.34375)"
-     id="layer1">
+     id="layer1"
+     transform="matrix(4,0,0,4,50.573895,1.3287502)">
     <path
-       d="m -11.891753,10.48726 10.3790999,0 10.3791,0 L -1.5126531,0.10816031 -11.891753,10.48726 z"
+       style="fill:none;stroke:#0000ff;stroke-width:0.62274593;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
        id="path198"
-       style="fill:none;stroke:#0000ff;stroke-width:0.62274593;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none" />
+       d="m -11.891753,10.48726 10.3790999,0 10.3791,0 L -1.5126531,0.10816031 -11.891753,10.48726 Z" />
     <path
-       d="m 14.055997,10.48726 c 3.4597,0 6.9194,0 10.3791,0 3.4597,0 3.4597,-1.7298497 0,-5.1895497 -3.4597,-3.4597 -6.9194,-3.4597 -10.3791,0 -3.4597,3.4597 -3.4597,5.1895497 0,5.1895497 z"
+       style="fill:none;stroke:#0000ff;stroke-width:0.62274593;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
        id="path202"
-       style="fill:none;stroke:#0000ff;stroke-width:0.62274593;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none" />
+       d="m 14.055997,10.48726 c 3.4597,0 6.9194,0 10.3791,0 3.4597,0 3.4597,-1.7298497 0,-5.1895497 -3.4597,-3.4597 -6.9194,-3.4597 -10.3791,0 -3.4597,3.4597 -3.4597,5.1895497 0,5.1895497 z" />
   </g>
 </svg>

@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -8,19 +6,19 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   version="1.1"
-   width="10.703125"
-   height="11.015625"
-   id="svg3821">
+   id="svg3821"
+   height="44.105423"
+   width="42.859898"
+   version="1.1">
   <defs
      id="defs3823">
     <mask
        id="mask246">
       <image
-         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAAXNCSVQI5gpbmQAAAIZJREFUOI3t1LEKgzAUheE/odApk5PUWXDo8/iSxrcSCgWHdjR4O4RCF+OZS86U4YNLlt8BENorh1vW76ufrLg4ZDduZWe7jQD9lk6g7TYAJ3ezjLjwOv7GzxrfSY6bv2gQL7oKK6zwH2ESoR6pdxSYzasY0jsIaU45zWLsHQChK2Ty8QT4AC9R/XM9vqhTAAAAAElFTkSuQmCC"
-         width="1"
+         id="image248"
          height="1"
-         id="image248" />
+         width="1"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAAXNCSVQI5gpbmQAAAIZJREFUOI3t1LEKgzAUheE/odApk5PUWXDo8/iSxrcSCgWHdjR4O4RCF+OZS86U4YNLlt8BENorh1vW76ufrLg4ZDduZWe7jQD9lk6g7TYAJ3ezjLjwOv7GzxrfSY6bv2gQL7oKK6zwH2ESoR6pdxSYzasY0jsIaU45zWLsHQChK2Ty8QT4AC9R/XM9vqhTAAAAAElFTkSuQmCC" />
     </mask>
   </defs>
   <metadata
@@ -36,19 +34,19 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(0.19958,0.3779525)"
-     id="layer1">
+     id="layer1"
+     transform="matrix(4,0,0,4,0.80125478,1.5830836)">
     <g
-       transform="matrix(1.25,0,0,-1.25,-368.94958,926.84861)"
-       id="g4065">
+       id="g4065"
+       transform="matrix(1.25,0,0,-1.25,-368.94958,926.84861)">
       <path
-         d="m 303.48836,732.97442 c 0,4.58578 -3.7175,8.30328 -8.30327,8.30328"
+         style="fill:none;stroke:#0000ff;stroke-width:0.16606557;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
          id="path166"
-         style="fill:none;stroke:#0000ff;stroke-width:0.16606557;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none" />
+         d="m 303.48836,732.97442 c 0,4.58578 -3.7175,8.30328 -8.30327,8.30328" />
       <path
-         d="m 295.18508,741.27771 0.66426,-0.33213 -0.16606,0.33213 0.16606,0.33213 -0.66426,-0.33213 z"
+         style="fill:#0000ff;fill-opacity:1;fill-rule:nonzero;stroke:#0000ff;stroke-width:0.16606557;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
          id="path170"
-         style="fill:#0000ff;fill-opacity:1;fill-rule:nonzero;stroke:#0000ff;stroke-width:0.16606557;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none" />
+         d="m 295.18508,741.27771 0.66426,-0.33213 -0.16606,0.33213 0.16606,0.33213 -0.66426,-0.33213 z" />
     </g>
   </g>
 </svg>

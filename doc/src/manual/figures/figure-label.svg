@@ -1,44 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="55.841694"
-   height="3.8994782"
-   id="svg3734"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="figure-text.svg">
+   id="svg3734"
+   height="17.638542"
+   width="223.70689">
   <defs
      id="defs3736" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="-6.8000497"
-     inkscape:cy="-2.8506642"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:window-width="1177"
-     inkscape:window-height="729"
-     inkscape:window-x="803"
-     inkscape:window-y="73"
-     inkscape:window-maximized="0" />
   <metadata
      id="metadata3739">
     <rdf:RDF>
@@ -52,21 +24,18 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-128.45946,-63.028491)">
+     transform="translate(-44.372938,-55.865766)"
+     id="layer1">
     <text
-       id="text218"
-       x="128.04019"
-       y="66.831215"
-       style="font-size:4.50345755px">
+       style="font-size:18.01383018px"
+       y="73.269753"
+       x="43.481628"
+       id="text218">
       <tspan
-         style="font-size:6.00461006px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#000000;fill-opacity:0.89803922;fill-rule:nonzero;stroke:none;font-family:Courier New;-inkscape-font-specification:CourierNewPSMT"
-         x="128.04019 131.64061 135.24104 138.84146 142.44186 146.04228 149.6427 153.24313 156.84355 160.44398 164.0444 167.64479 171.24522 174.84564 178.44608 182.04649"
-         y="66.831215"
-         sodipodi:role="line"
-         id="tspan220">This is a label.</tspan>
+         id="tspan220"
+         y="73.269753"
+         x="43.481628 57.883301 72.285034 86.686707 101.08832 115.48999 129.89166 144.2934 158.69507 173.0968 187.49847 201.90002 216.30176 230.70343 245.10516 259.50684"
+         style="font-variant:normal;font-weight:normal;font-size:24.01844025px;font-family:'Courier New';-inkscape-font-specification:CourierNewPSMT;writing-mode:lr-tb;fill:#000000;fill-opacity:0.89803922;fill-rule:nonzero;stroke:none">This is a label.</tspan>
     </text>
   </g>
 </svg>

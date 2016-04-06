@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   version="1.1"
-   width="21.25"
-   height="10.78125"
-   id="svg3821">
+   id="svg3821"
+   height="43.089344"
+   width="85.064735"
+   version="1.1">
   <defs
      id="defs3823" />
   <metadata
@@ -26,19 +24,19 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(2.4727725,-2.6267175)"
-     id="layer1">
+     id="layer1"
+     transform="matrix(4,0,0,4,9.8877239,-10.499152)">
     <g
-       transform="matrix(1.25,0,0,-1.25,-319.46496,950.16578)"
-       id="g3804">
+       id="g3804"
+       transform="matrix(1.25,0,0,-1.25,-319.46496,950.16578)">
       <path
-         d="m 253.66869,757.88426 16.60656,-8.30328"
+         style="fill:none;stroke:#000000;stroke-width:0.33213115;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
          id="path158"
-         style="fill:none;stroke:#000000;stroke-width:0.33213115;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none" />
+         d="m 253.66869,757.88426 16.60656,-8.30328" />
       <path
-         d="m 270.27524,749.58099 -0.8912,1.18827 0,-0.74267 -0.59414,-0.4456 1.48534,0 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.33213115;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
          id="path162"
-         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.33213115;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none" />
+         d="m 270.27524,749.58099 -0.8912,1.18827 0,-0.74267 -0.59414,-0.4456 1.48534,0 z" />
     </g>
   </g>
 </svg>
