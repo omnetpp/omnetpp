@@ -292,16 +292,20 @@ public class ProjectUtils {
         List<String> excludedPackages = new ArrayList<String>();
 
         // read .nedfolders if exists
-        IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
-        if (!project.getWorkspace().isTreeLocked())
-            nedFoldersFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        // TODO: this is a workaround for a deadlock caused by the combination of
+        // resource changed notifications, synchronized NedResources methods, and calling refreshLocal here
+        // see commit comment and Eclipse bug at https://bugs.eclipse.org/bugs/show_bug.cgi?id=491065
+//        IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
+//        if (!project.getWorkspace().isTreeLocked())
+//            nedFoldersFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        File nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME).getLocation().toFile();
         if (nedFoldersFile.exists()) {
             String contents;
             try {
-                contents = FileUtils.readTextFile(nedFoldersFile.getContents(), null);
+                contents = FileUtils.readTextFile(nedFoldersFile, null);
             }
             catch (IOException e) {
-                throw CommonPlugin.wrapIntoCoreException("Cannot read " + nedFoldersFile.getFullPath(), e);
+                throw CommonPlugin.wrapIntoCoreException("Cannot read " + nedFoldersFile.getAbsolutePath(), e);
             }
             for (String line : StringUtils.splitToLines(contents)) {
                 line = line.trim();
@@ -317,16 +321,20 @@ public class ProjectUtils {
             folders.add(project); // this is the default
 
         // read .nedexclusions if exists
-        IFile nedExclusionsFile = project.getFile(NEDEXCLUSIONS_FILENAME);
-        if (!project.getWorkspace().isTreeLocked())
-            nedExclusionsFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        // TODO: this is a workaround for a deadlock caused by the combination of
+        // resource changed notifications, synchronized NedResources methods, and calling refreshLocal here
+        // see commit comment and Eclipse bug at https://bugs.eclipse.org/bugs/show_bug.cgi?id=491065
+//        IFile nedExclusionsFile = project.getFile(NEDEXCLUSIONS_FILENAME);
+//        if (!project.getWorkspace().isTreeLocked())
+//            nedExclusionsFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        File nedExclusionsFile = project.getFile(NEDEXCLUSIONS_FILENAME).getLocation().toFile();
         if (nedExclusionsFile.exists()) {
             String contents;
             try {
-                contents = FileUtils.readTextFile(nedExclusionsFile.getContents(), null);
+                contents = FileUtils.readTextFile(nedExclusionsFile, null);
             }
             catch (IOException e) {
-                throw CommonPlugin.wrapIntoCoreException("Cannot read " + nedExclusionsFile.getFullPath(), e);
+                throw CommonPlugin.wrapIntoCoreException("Cannot read " + nedExclusionsFile.getAbsolutePath(), e);
             }
             for (String line : StringUtils.splitToLines(contents)) {
                 line = line.trim();
