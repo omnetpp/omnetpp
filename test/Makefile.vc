@@ -1,5 +1,5 @@
 
-all: test_builds
+all: test_common test_core test_envir test_makemake test_featuretool test_fingerprints test_builds
 
 test_builds:
 	cd build && test-builds.cmd
@@ -13,12 +13,14 @@ test_core:
 test_makemake:
 	cd makemake && runtest.cmd
 
+test_fingerprint:
+	cd fingerprint && runtest
+
 test_envir:
 	cd envir && runtest.cmd
 
+test_featuretool:
+	cd featuretool && runtest.cmd
+
 clean:
-	-del /q common\work 2>nul
-	-del /q core\work 2>nul
-	-del /q makemake\work 2>nul
-	-del /q makemake\out 2>nul
-	-del /q envir\out 2>nul
+	-del /q -rf core/work envir/work common/work makemake/work makemake/out featuretool/work fingerprint/results 2>nul
