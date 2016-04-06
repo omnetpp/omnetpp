@@ -31,8 +31,7 @@ from StringIO import StringIO
 
 
 omnetRoot = os.path.abspath("../..")
-sep = ";" if sys.platform == 'win32' else ':'
-nedPath = omnetRoot + "/src" + sep + omnetRoot + "/examples" + sep + omnetRoot + "/tests/networks"
+nedPath = ""
 opp_run = "opp_run"
 cpuTimeLimit = "300s"
 logFile = "test.out"
@@ -272,8 +271,8 @@ class FingerprintTestCase(SimulationTestCase):
         workingdir = _iif(self.wd.startswith('/'), omnetRoot + self.wd, self.wd)
         m = re.search('/([^/]+)/$', workingdir)
         if not m:
-            assert False, "runname not detected"
-        runname = m.group(1)
+            assert False, "could not identify program name from working directory"
+        program = m.group(1)
         wdname = '' + self.wd
         wdname = re.sub('/', '_', wdname);
         wdname = re.sub('[\W]+', '_', wdname);
@@ -283,7 +282,8 @@ class FingerprintTestCase(SimulationTestCase):
                 os.makedirs(resultdir)
             except OSError:
                 pass
-        command = "./" + runname + " -u Cmdenv " + self.args + \
+        sep = "\\" if sys.platform == 'win32' else '/'
+        command = "." + sep + program + " -u Cmdenv " + self.args + \
             _iif(self.simtimelimit != "", " --sim-time-limit=" + self.simtimelimit, "") + \
             " \"--fingerprint=" + self.fingerprint + "\" --cpu-time-limit=" + cpuTimeLimit + \
             " --vector-recording=false --scalar-recording=true" + \
