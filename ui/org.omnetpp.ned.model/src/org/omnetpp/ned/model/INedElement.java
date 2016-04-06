@@ -329,7 +329,7 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
      * back to the original element.
      * @see getOriginal()
      */
-    public INedElement dup(INedTypeResolver targetResolver, boolean rememberOriginal);
+    public INedElement dup(INedTypeResolver targetResolver, boolean rememberOriginal, boolean cloneId);
 
     /**
      * Creates a deep copy of the tree, for use in the default NED type resolver.
@@ -344,7 +344,7 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
      * back to the original element.
      * @see getOriginal()
      */
-    public INedElement deepDup(INedTypeResolver targetResolver, boolean rememberOriginal);
+    public INedElement deepDup(INedTypeResolver targetResolver, boolean rememberOriginal, boolean cloneId);
 
     /**
      * If this element was created by dup() or deepDup() called with rememberOriginal=true,

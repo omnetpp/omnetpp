@@ -99,14 +99,14 @@ public class NedTypeResolver implements INedTypeResolver {
     protected NedTypeResolver(NedTypeResolver other) {
         // clone NED file parse trees
         for (IFile file : other.nedFiles.keySet())
-            nedFiles.put(file, (NedFileElementEx)other.nedFiles.get(file).deepDup(this, true));
+            nedFiles.put(file, (NedFileElementEx)other.nedFiles.get(file).deepDup(this, true, true));
 
         // fill in reverse mapping
         for (Map.Entry<IFile, NedFileElementEx> entry : nedFiles.entrySet())
             nedElementFiles.put(entry.getValue(), entry.getKey());
 
         // clone other fields (note: no need to clone nedTypeLookupCache)
-        builtInDeclarationsFile = (NedFileElementEx) other.builtInDeclarationsFile.deepDup(this, true);
+        builtInDeclarationsFile = (NedFileElementEx) other.builtInDeclarationsFile.deepDup(this, true, true);
         lastChangeSerial = other.lastChangeSerial;
 
         // clone projects table
@@ -261,22 +261,11 @@ public class NedTypeResolver implements INedTypeResolver {
                 // determine whether this marker belongs to the element in question
                 Object attr = marker.getAttribute(NedMarkerErrorStore.NEDELEMENT_ID);
                 boolean matches = false;
-                if (attr instanceof Long) {
-                    long markerElementId = ((Long)attr).longValue();
-                    if (!recursive)
-                        matches = element.getId()==markerElementId;
-                    else
-                        matches = element.findElementWithId(markerElementId) != null;
-                }
-                else if (attr instanceof long[]) {
-                    long[] markerElementIds = (long[])attr;
-                    if (!recursive)
-                        matches = ArrayUtils.contains(markerElementIds, element.getId());
-                    else
-                        for (long id : markerElementIds)
-                            if (element.findElementWithId(id) != null)
-                                matches = true;
-                }
+                long markerElementId = ((Long)attr).longValue();
+                if (!recursive)
+                    matches = element.getId()==markerElementId;
+                else
+                    matches = element.findElementWithId(markerElementId) != null;
 
                 // if so, collect this marker
                 if (matches)

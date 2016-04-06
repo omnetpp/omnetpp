@@ -63,10 +63,7 @@ public class NedMarkerErrorStore extends AbstractNedErrorStore {
         markerAttrs.put(IMarker.MESSAGE, message);
         markerAttrs.put(IMarker.SEVERITY, severity);
         markerAttrs.put(IMarker.LINE_NUMBER, line);
-        if (context.getOriginal() == null)
-            markerAttrs.put(NEDELEMENT_ID, (Long)context.getId());
-        else
-            markerAttrs.put(NEDELEMENT_ID, new long[] {context.getId(), context.getOriginal().getId()}); // don't go deeper... (getOriginal().getOriginal().getId(), etc)
+        markerAttrs.put(NEDELEMENT_ID, context.getId());
         markerSync.addMarker(file, markerType, markerAttrs);
 
         if (markerType.equals(INedTypeResolver.NEDSYNTAXPROBLEM_MARKERID))

@@ -479,14 +479,17 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public INedElement dup() {
-        return dup(getDefaultNedTypeResolver(), false);
+        return dup(getDefaultNedTypeResolver(), false, false);
     }
 
-    public INedElement dup(INedTypeResolver targetResolver, boolean rememberOriginal) {
+    public INedElement dup(INedTypeResolver targetResolver, boolean rememberOriginal, boolean cloneId) {
         INedElement clone = NedElementFactoryEx.getInstance().createElement(targetResolver, getTagCode());
 
         if (rememberOriginal)
             ((NedElement)clone).original = this;
+
+        if (cloneId)
+            clone.setId(getId());
 
         for (int i = 0; i < getNumAttributes(); ++i)
             clone.setAttribute(i, getAttribute(i));
@@ -500,14 +503,14 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public INedElement deepDup() {
-        return deepDup(getDefaultNedTypeResolver(), false);
+        return deepDup(getDefaultNedTypeResolver(), false, false);
     }
 
-    public INedElement deepDup(INedTypeResolver targetResolver, boolean rememberOriginal) {
-        INedElement result = dup(targetResolver, rememberOriginal);
+    public INedElement deepDup(INedTypeResolver targetResolver, boolean rememberOriginal, boolean cloneId) {
+        INedElement result = dup(targetResolver, rememberOriginal, cloneId);
 
         for (INedElement child : this)
-            result.appendChild(child.deepDup(targetResolver, rememberOriginal));
+            result.appendChild(child.deepDup(targetResolver, rememberOriginal, cloneId));
 
         return result;
     }
