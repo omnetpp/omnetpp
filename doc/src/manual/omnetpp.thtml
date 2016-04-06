@@ -34,7 +34,7 @@
   a:visited { text-decoration: none; }
   # a:hover { text-decoration: underline; }
 
-  table.matrix { position: relative; border: 0px; background:#ffffff; margin-left:8pt; margin-right:8pt; }
+  table.matrix { display:inline-block; vertical-align: middle; position: relative; border: 0px; background:#ffffff; margin-left:8pt; margin-right:8pt; }
   table.matrix:before, table.matrix:after { content: ""; position: absolute; top: 0; border: 1px solid #000; width: 6px; height: 100%; }
   table.matrix:before { left: -6px; border-right: 0px; }
   table.matrix:after { right: -6px; border-left: 0px; }
