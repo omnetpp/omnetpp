@@ -1,3 +1,22 @@
+2016-03-23  Zoltan Bojthe
+
+	Added markup to config option descriptions
+
+2016-04-01  Rudolf Hornig
+
+	* Fix bug #943, error in cDatarateChannel::forceTransmissionFinishTime().
+	It caused error when vector recording was on (recorded values not in
+	increasing timstamp order)
+
+2016-04-01  Andras Varga
+
+	* cOsgCanvas: implemented zNear/zFar related changes (see include/omnetpp/ChangeLog)
+
+2016-03-10  Andras Varga
+
+	* cFingerprint renamed to cFingerprintCalculator, config option also
+	renamed to fingerprintcalculator-class.
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2016-02-22  Andras Varga

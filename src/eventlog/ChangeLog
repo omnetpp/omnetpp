@@ -1,3 +1,7 @@
+2016-04-06  Levente Meszaros
+
+	* Fixed a bug that broke transmission delay drawing in the sequence chart
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2015-12-07  ------ omnetpp-5.0b3 released ------

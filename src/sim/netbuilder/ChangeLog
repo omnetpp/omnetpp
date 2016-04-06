@@ -1,3 +1,7 @@
+2016-04-01  Andras Varga
+
+	* Edited comments to improve the generated C++ documentation (doxygen)
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2015-12-07  ------ omnetpp-5.0b3 released ------

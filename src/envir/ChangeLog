@@ -1,3 +1,24 @@
+2016-03-31  Levente Meszaros
+
+	* Edited markup in config option descriptions.
+
+	* Refined "opp_run -h latexconfig" operation to add line break
+	opportunities (\allowbreak). This change allows better LaTeX
+	word wrapping and hyphenation in the appendix.
+
+2016-03-23  Zoltan Bojthe
+
+	* Added markup to config option descriptions.
+
+	* Added markup support to config option descriptions. Two notations are
+	supported: `backticks` means monospace, "\n" means linebreak (and "\n\n"
+	should mean paragraph separator). "opp_run -h latexconfig" was updated
+	accordingly.
+
+2016-03-21  Andras Varga
+
+	* cEnvir::recordEventlog was not in use by simkernel, moved into EnvirBase
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2016-03-10  Levente Meszaros, Andras Varga

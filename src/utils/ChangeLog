@@ -1,3 +1,12 @@
+2016-04-04  Zoltan Bojthe
+
+	featuretool: shows error when a NED package mentioned in a feature does
+	not have a corresponding folder (may also be caused by missing .nedfolders)
+
+2016-03-17  Zoltan Bojthe
+
+	opp_featuretool: nedfolders file is not required
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2016-02-29  Zoltan Bojthe & Rudolf Hornig

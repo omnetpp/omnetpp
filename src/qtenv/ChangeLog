@@ -1,3 +1,50 @@
+2016-03-23  Zoltan Bojthe
+
+	* Added markup to config option descriptions
+
+2016-04-01  Mihaly Palenik
+
+	* Added tooltip to timeline messages
+	* Added tooltips to Preferences dialog and Find Objects dialog
+	* Deactivated dummy GateInspector
+	* GenericObjectInspector not to open a new window when double-clicking
+	  on an object
+
+2016-04-01  Andras Varga
+
+	* osg: fix: earth scenes did not display in the osg-intro sample
+
+	Root cause: zNear/zFar was not set explicitly in these demos, so it stuck
+	with the default values in cOsgCanvas: 1 and 1000.  This caused basically
+	all of the scene to be clipped away (out of z range).
+
+	Solution: cOsgCanvas does NOT contain any zNear/zFar by default, only
+	when explicitly set. In the viewer, activate near/far autocompute mode
+	when cOsgCanvas has no zNear/zFar, otherwise set DO_NOT_COMPUTE_NEAR_FAR.
+
+	Adjusting the aspect ratio in OsgViewer::resizeEvent() is not needed when
+	setProjectionResizePolicy(HORIZONTAL) is set.
+
+2016-03-11  Mihaly Palenik
+
+	* Set margin on layout of simTimeLabel and eventNumLabel
+
+2016-03-11  Mihaly Palenik
+
+	* Add tooltips to status
+
+2016-03-23  Rudolf Hornig
+
+	* osg: Following the changing osgEarth::Viewpoint API.
+
+2016-03-21  Andras Varga
+
+	* "#undef emit" no longer needed in simkerneldefs.h
+
+2016-03-21  Andras Varga
+
+	* Fix: clear componentHistory between runs
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2016-02-29  Levente Meszaros
@@ -7,7 +54,7 @@
 
 2016-02-28  Attila Torok
 
-	* StopDialog default position is under the floating toolbar. And its 
+	* StopDialog default position is under the floating toolbar. And its
 	  geometry can easily be made persistent.
 	* Toolbar event status appearance modified. (layout, frame, font size)
 	* Renamed .qtenv.ini to .qtenvrc.
@@ -48,20 +95,20 @@
 
 	* logging: LogLevel of Components can be changed, and is saved/restored.
 	* Also a small fix regarding switching of run modes.
-	* Separate inspector preferences for toplevel and embedded inspectors. 
-	  The toplevel inspectors will default to the prefs of the embedded ones 
+	* Separate inspector preferences for toplevel and embedded inspectors.
+	  The toplevel inspectors will default to the prefs of the embedded ones
 	  if they don't have their own values.
 	* Restored StopDialog button font size.
 	* Context menu in LogInspector for messages, express run until message fixed.
 
 2016-02-08  Rudolf Hornig
 
-	* ColorizeEffect fixed, image figures use it now, zoomLabel painting 
+	* ColorizeEffect fixed, image figures use it now, zoomLabel painting
 	fixed, other small corrections.
-	
+
 2016-02-08  Attila Torok
 
-	* CompoundModuleItem: Border now takes width and height independently 
+	* CompoundModuleItem: Border now takes width and height independently
 	  from the bgb tag.
 	* Correct status display when single stepping.
 
@@ -78,25 +125,25 @@
 	* Inspector preferences.
 	* Multiple ModuleInspectors in OSG mode should work better.
 	* Closing the StopDialog in Express mode stops the simulation.
-	* Double-clicking on a cObjectNode in the OSG canvas sets the object 
+	* Double-clicking on a cObjectNode in the OSG canvas sets the object
 	  to be inspected.
 
 2016-01-27  Attila Torok
 
 	* GenericObjectInspector: The default mode for container-like objects
-	is now children. Scrolling fixed yet again. Context menu on green 
+	is now children. Scrolling fixed yet again. Context menu on green
 	background.
 
 2016-01-27  Levente Meszaros
 
-	* OSG: Added call to setComputeNearFarMode() to prevent automatically 
+	* OSG: Added call to setComputeNearFarMode() to prevent automatically
 	updating zNear and zFar.
 
 2016-01-20  Attila Torok
 
 	* Fixed the interpolation mode of pixmap figures.
 	* The zoom label on the module canvas uses the canvas font now.
-	* Added hasChildren() to GenericObjectTreeModel. This should make it 
+	* Added hasChildren() to GenericObjectTreeModel. This should make it
 	  a bit faster in some cases.
 
 2016-01-13  Attila Torok
@@ -154,4 +201,3 @@
 2015-03-16  Rudolf Hornig
 
 	* Qtenv development started: Initial Qt code by Attila Torok.
-

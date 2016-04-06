@@ -1,3 +1,69 @@
+2016-04-01  Andras Varga
+
+	* cOsgCanvas: initialize zNear/zFar to NaN. This will turn on automatic
+	  zNear/zFar computation in the viewer.
+
+	* cOsgCanvas: added methods setZLimits(), clearZLimits(), hasZLimits()
+
+2016-03-13..30  Andras Varga
+
+	* Documented several classes around cFigure/cCanvas and cOsgCanvas
+
+	* Edited comments to improve the generated C++ documentation (doxygen)
+
+	* Removed unused stlwrap.h
+
+2016-03-23  Andras Varga
+
+	* Fix: simtime_t was not part of the omnetpp namespace
+
+2016-03-21  Andras Varga
+
+	* cFigure: move(x,y) args renamed to (dx,dy)
+
+2016-03-15  Andras Varga
+
+	* cFigure: skew now uses a coefficient, not an angle
+
+2016-03-22  Andras Varga
+
+	* cKSplit: method rename: rangeExtension(bool) to setRangeExtension()
+
+2016-03-21  Andras Varga
+
+	* cEnvir::recordEventlog was not in use by simkernel, moved into
+	EnvirBase
+
+2016-03-21  Andras Varga
+
+	* "#undef emit" no longer needed in simkerneldefs.h
+
+2016-03-21  Andras Varga
+
+	* cPar: read() and finalize() conceptually changed to be internal
+	methods. They are still declared public for technical reasons
+	(called from cComponent)
+
+2016-03-21  Andras Varga
+
+	* Remove Register_Enum()-related temporary workaround for INET-3.0
+	compilation with OMNeT++ 5.0b2
+
+2016-03-10  Andras Varga
+
+	* cFingerprint renamed to cFingerprintCalculator
+	* cSimulation methods also renamed accordingly (i.e. to get/set-
+	FingerprintCalculator())
+
+2016-03-10  Andras Varga
+
+	* cModule::size() deprecated (use getVectorSize() instead)
+
+2016-03-10  Andras Varga
+
+	* Several methods made virtual in cComponent, cModule, cSimpleModule,
+	cChannel, cArray, cQueue, cTopology, cStatistic, etc.
+
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2016-03-10  Levente Meszaros, Andras Varga
