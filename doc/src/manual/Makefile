@@ -115,7 +115,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2
 	rm usman.tmp
 	rm -rf ../../manual
 	mkdir ../../manual
-	cp usman.html ../../manual
+	cp usman.html ../../manual/index.html
 	cp *.png ../../manual
 	cp figures/*.png ../../manual
 	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi 

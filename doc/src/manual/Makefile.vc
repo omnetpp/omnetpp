@@ -153,7 +153,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	del usman.tmp
-	copy usman.html ..\..\manual
+	copy usman.html ..\..\manual\index.html
 	copy *.png ..\..\manual
 	copy figures\*.png ..\..\manual
 
