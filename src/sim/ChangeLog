@@ -1,3 +1,5 @@
+2016-03-10  ------ omnetpp-5.0rc released ------
+
 2016-02-22  Andras Varga
 
 	* cSimulation: moved both updating the event number and simulation time
