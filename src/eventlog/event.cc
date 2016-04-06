@@ -266,7 +266,7 @@ simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
             transmissionDelay = sendDirectEntry->transmissionDelay;
         else if (SendHopEntry *sendHopEntry = dynamic_cast<SendHopEntry *>(eventLogEntry))
             transmissionDelay = sendHopEntry->transmissionDelay;
-        else if (eventLogEntry == endSendEntry || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
+        else if (eventLogEntry == endSendEntry || (!dynamic_cast<EventLogMessageEntry *>(eventLogEntry) && !dynamic_cast<MessageEntry *>(eventLogEntry)))
             break;
         if (transmissionDelay != 0)
             break;
