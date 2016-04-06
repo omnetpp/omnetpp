@@ -203,13 +203,13 @@ depend:
 
 makefiles:
 	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f --deep)); fi;\
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (MAKE="$(MAKE)" opp_makemake -f --deep)); fi;\
 	done
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (MAKE="$(MAKE)" opp_makemake -f --deep --nolink))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (MAKE="$(MAKE)" opp_makemake -f --deep --nolink))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (MAKE="$(MAKE)" opp_makemake -f --make-so))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (MAKE="$(MAKE)" opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (MAKE="$(MAKE)" opp_makemake -f -n))
 
 # copy the documentation to the UI doc folder too.
 # patch some files to have correct URLs and add generic eclipse stylesheet when needed
