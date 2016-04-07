@@ -6,6 +6,84 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.0 (April 2016)
+------------------------
+
+Release 5.0 is a result of development effort of nearly two years. This is a
+major release that introduces significant new features compared to the last
+4.x version, for example the Canvas API (2D graphics), OpenSceneGraph-based 3D
+graphics support, improved logging, a new Qt-based runtime environment that
+will eventually replace Tkenv, and much more.
+
+We have also taken the opportunity of the major release to improve several
+corners of the OMNeT++ API, and also to get rid of deprecated functionality.
+For porting models from OMNeT++ 4.x, see doc/API-changes.txt which lists all
+changes, with hints on how to update the model code.
+
+Changes since the release candidate:
+
+Documentation:
+
+ - Several organizational and rendering improvements on the API documentation
+   generated using Doxygen.
+
+ - The User Manual has been renamed to Simulation Manual to reduce the chance of
+   confusing it with the User Guide (which describes the IDE and Tkenv/Qtenv).
+
+ - Improved the contents and the HTML rendering of the Simulation Manual.
+
+Core:
+
+ - cFigure: skew() methods now take a coefficient instead of an angle.
+
+ - cOsgCanvas: initialize zNear/zFar to NaN (to indicate they are unset by
+   default), and added the mthods setZLimits(), clearZLimits(), hasZLimits().
+   Missing zNear/zFar will turn on automatic zNear/zFar computation in the viewer.
+
+ - Removed a Register_Enum()-related workaround introduced around OMNeT++ 5.0b2
+   so that it could compile INET-3.0.
+
+ - cFingerprint renamed to cFingerprintCalculator.
+
+ - cKSplit: method rangeExtension(bool) has been renamed to setRangeExtension().
+
+ - cModule::size() has been deprecated (use getVectorSize() instead).
+
+ - Several methods in cComponent, cModule, cSimpleModule, cChannel, cArray,
+   cQueue, cTopology, cStatistic and other classes have been made virtual to
+   allow the user override them.
+
+ - Fix: simtime_t was not part of the omnetpp namespace.
+
+ - Fixed #943 which prevented using cDatarateChannel's forceTransmissionFinishTime()
+   method when the channel's busy state signal was recorded into an output vector.
+
+Tkenv:
+
+ - Fixed tooltip-related problems: large tooltips could not appear (e.g. the
+   help for log prefix in the Preferences dialog); submodule tooltips were
+   missing from the canvas
+
+Qtenv:
+
+ - Added help to the Log Prefix field in the Preferences dialog and filter
+   fields in the Find Objects dialog
+
+ - Added tooltips to timeline messages
+
+ - Fix: on Windows, Earth scenes appeared distorted in the osg-earth and
+   osg-satellites sample simulations
+
+ - Fix: Earth scenes did not display in the osg-intro sample simulation (blank
+   viewer window)
+
+Utils:
+
+ - opp_featuretool refinements
+
+Additionally, several bug were fixed in the IDE, Tkenv and Qtenv.
+
+
 OMNeT++ 5.0 rc1 (March 2016)
 ----------------------------
 
@@ -124,6 +202,8 @@ Cmdenv:
 
  - The cmdenv-message-trace configuration option has been removed. It had very
    limited usefulness, and it was somewhat overlapping with eventlog.
+
+ - The cmdenv-log-format option has been renamed to cmdenv-log-prefix.
 
 Examples:
 

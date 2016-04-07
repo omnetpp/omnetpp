@@ -6,10 +6,6 @@
 
 	* Added markup to config option descriptions.
 
-2016-03-10  Levente Meszaros
-
-	cmdenv-log-format renamed to cmdenv-log-prefix
-
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2016-03-10  Levente Meszaros
