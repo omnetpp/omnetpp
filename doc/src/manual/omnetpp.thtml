@@ -29,7 +29,7 @@
   pre.inifile { background:#fffff0; border-left: 4px solid #e5e533; }
   pre.filelisting { background:#f0f0f0; border-left: 4px solid #d9d9d9; }
   pre.commandline { background:#fffff0; border-left: 4px solid #606060; }
-  table { background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid; }
+  table { background:#fffff4; margin: 0 auto; border-collapse:collapse; border: 2px solid; }
   td,th { text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000; }
   a { text-decoration: none; }
   a:visited { text-decoration: none; }
