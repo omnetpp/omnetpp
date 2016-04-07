@@ -24,44 +24,40 @@ Legend:
 OMNeT++ 5.0
 ~~~~~~~~~~~
 
-(!)     cKSplit: method rename: rangeExtension(bool) to setRangeExtension()
+(!!!)   OMNeT++ classes are now in the "omnetpp" namespace. Models need to be
+        modified in order to compile, e.g. by adding "using namespace omnetpp".
+        If you don't want to change the model source code, define the
+        AUTOIMPORT_OMNETPP_NAMESPACE macro on the compiler command line
+        (add -DAUTOIMPORT_OMNETPP_NAMESPACE to CFLAGS), which will
+        basically add the using namespace directive at the end of
+        <omnetpp.h>.
 
-(!)     cEnvir::recordEventlog was not in use by simkernel, moved into
-        EnvirBase
+(!!!)   ev << is no longer legal, use EV << instead.
 
-(-)     cModule::size() deprecated (use getVectorSize() instead)
+(!!!)   ev.printf() was removed, use the stream API (EV <<) instead.
 
-(!)     Several methods made virtual in cComponent, cModule, cSimpleModule,
-        cChannel, cArray, cQueue, cTopology, cStatistic, etc.
+(!!!)   Random variate generation functions (normal(), etc.) signature change:
+        trailing "int rng" (RNG index of context module) argument changed
+        to cRNG*, and moved to the front. Motivation: break the functions'
+        dependence on the context module.
+        Affected functions: uniform(), exponential(), normal(), truncnormal(),
+        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
+        triang(), weibull(), pareto_shifted(), intuniform(), binomial(),
+        geometric(), negbinomial(), poisson(), intrand(), dblrand().
 
-(!)     cPar: read() and finalize() conceptually changed to be internal methods
-        (they are still declared public for technical reasons)
+(!!!)   Random variate generation functions (normal(), etc; see above) with
+        their original signatures have been added to cComponent as members.
+        Motivation: convenience for users; lessen the impact of signature change.
 
-(!)    cModule: size() deprecated, use getVectorSize() instead
+(!!!)   Revised cScheduler interface. The main methods in cScheduler are now
+        takeNextEvent() and guessNextEvent().
 
-(+)    Added cIEventlogManager.
+(!!!)   Removed the "simulation" and "ev" macros, to reduce pollution of the
+        global namespace; use the new getSimulation() and getEnvir() functions
+        instead.
 
-(+)    cConfigOption: Refined per-object config option kinds (added
-       COMPONENT and CHANNEL).
-
-(!)    Refined the logging API that was introduced in earlier 5.0 betas.
-
-(!)    cEnvir: Renamed getRNGMappingFor(component) to preconfigure(component)
-
-(+)     Added cOsgCanvas and cObjectOsgNode.
-
-(+)     cComponent: added the refreshDisplay() method which is called by
-        graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
-        to be refreshed after processing some simulation events.
-
-(+)     cEnvir: added isExpressMode() that can be used to tailor the operation
-        of refreshDisplay().
-
-(+)     cEnvir: added resolveResourcePath() for finding data or other files
-        needed by the model.
-
-(+)     ccComponent: added resolveResourcePath(). It delegates to cEnvir's
-        similar method.
+(!!!)   Fingerprint computation has changed. To compute OMNeT++ 4.x fingerprints,
+        compile OMNeT++ and models with USE_OMNETPP4x_FINGERPRINTS.
 
 (!!!)   Signal listener interface change: A cObject *details (default-nullptr)
         argument has been added to emit() methods, and consequently, to
@@ -77,6 +73,28 @@ OMNeT++ 5.0
 (!!!)   Result filter/recorder interface change: Related to the listener
         interface change, a cObject *details argument has been added to
         several cResultFilter and cResultRecorder methods as well.
+
+(x)     Removed double-simtime support (WITH_DOUBLE_SIMTIME)
+
+(!)     Removed WITHOUT_CPACKET feature (it was a compatibility macro to help
+        code migration from OMNeT++ 3.x to 4.0)
+
+(!)     cEnvir::recordEventlog was not in use by simkernel, moved into
+        EnvirBase
+
+(!)     cEnvir: Renamed getRNGMappingFor(component) to preconfigure(component)
+
+(!)     cStatistic now subclasses from cRandom, and its random() has been
+        deprecated in favour of cRandom's draw()
+
+(!)     Iterators: changed increment/decrement operators to make them more
+        similar to STL iterators.
+
+(!)     SimTime: conversion from double now uses rounding instead of truncation
+        (plain C-style cast). This change may alter simulation results.
+
+(!)     cSimulation: getLastModuleId() renamed to getLastComponentId()
+        (as cSimulation now stores cComponent pointers, not cModule pointers)
 
 (!)     The following macros were removed: SIMTIME_RAW(), STR_SIMTIME(),
         SIMTIME_TTOA(). They were compatibility macros that had been
@@ -96,15 +114,11 @@ OMNeT++ 5.0
         - void split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder)
           const
 
-(+)     The *, /, *=, /= operations involving a SimTime and an integer type
-        now do the computation using integer arithmetic (instead of double),
-        and also check for overflow.
+(!)     Several methods made virtual in cComponent, cModule, cSimpleModule,
+        cChannel, cArray, cQueue, cTopology, cStatistic, etc.
 
-(+)     Added SimTime::isZero()
-
-(+)     Added div(SimTime, SimTime)
-
-(+)     Added cFingerprintCalculator and subclasses.
+(!)     cPar: read() and finalize() conceptually changed to be internal methods
+        (they are still declared public for technical reasons)
 
 (!)     Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
         OMNeT++ 4.x fingerprints.
@@ -125,74 +139,79 @@ OMNeT++ 5.0
 
 (!)     M_PI has been added to <omnetpp/platdep/platmisc.h>
 
-(!!!)   OMNeT++ classes are now in the "omnetpp" namespace. Models need
-        to be modified to compile, e.g. by adding "using namespace omnetpp".
-        If you don't want to change the model source code, define the
-        AUTOIMPORT_OMNETPP_NAMESPACE macro on the compiler command line
-        (add -DAUTOIMPORT_OMNETPP_NAMESPACE to CFLAGS), which will
-        basically add the using namespace directive at the end of
-        <omnetpp.h>.
+(!)     Renamed cOutputVectorManager, cOutputScalarManager and cSnapshotManager
+        to cIOutputVectorManager, cIOutputScalarManager and cISnapshotManager.
 
-(+)     Introduced cRandom, which encapsulates a random number stream into an
-        object. Random numbers can be extracted with the draw() method.
-
-(+)     Added the following cRandom subclasses: cUniform, cExponential,
-        cNormal, cTruncNormal, cGamma, cBeta, cErlang, cChiSquare, cStudentT,
-        cCauchy, cTriang, cWeibull, cParetoShifted, cIntUniform, cBernoulli,
-        cBinomial, cGeometric, cNegBinomial, cPoisson. They encapsulate the
-        similarly named functions (e.g. exponential()) with their parameters
-        and the random number generator (cRNG).
-
-(!!!)   Random variate generation functions (normal(), etc.) signature change:
-        trailing "int rng" (RNG index of context module) argument changed
-        to cRNG*, and moved to the front. Motivation: break the functions'
-        dependence on the context module.
-        Affected functions: uniform(), exponential(), normal(), truncnormal(),
-        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
-        triang(), weibull(), pareto_shifted(), intuniform(), binomial(),
-        geometric(), negbinomial(), poisson(), intrand(), dblrand().
-
-(!!!)   Random variate generation functions (normal(), etc; see above) with
-        their original signatures have been added to cComponent as members.
-        Motivation: convenience for users; lessen the impact of signature change.
-
-(x)     Removed deprecated functions: genk_intrand(), genk_dblrand(). Use the
-        updated intrand/dblrand instead.
-
-(!)     cStatistic now subclasses from cRandom, and its random() has been
-        deprecated in favour of cRandom's draw()
-
-(+)     Iterators (cModule::GateIterator, cModule::SubmoduleIterator,
-        cModule::ChannelIterator, cQueue::Iterator, etc.): added operator*
-        and operator-> to make them behave more similar to STL iterators.
-
-(-)     Iterators: deprecated operator(); use operator* and operator-> instead.
-
-(!)     Iterators: changed increment/decrement operators to make them more
-        similar to STL iterators.
-
-(!)     cMessageHeap has been renamed to cEventHeap
-
-(+)     An abstract cFutureEventSet base class has been introduced, and
-        cEventHeap now extends cFutureEventSet
+(!)     Renamed cMessageHeap to cEventHeap
 
 (!)     cSimulation: removed msgQueue and getMessageQueue(); added getFES()
         as replacement (returns cFutureEventSet*)
 
 (!)     cEventHeap: peek(k) renamed to get(k)
 
-(x)     cEventHeap::Iterator removed (not much advantage over get(i))
+(!)     cException: getContextModuleID() renamed to getContextComponentId()
 
-(x)     cEventHeap: removed length() and empty(); use getLength() and isEmpty()
-        instead
+(!)     cStatistic: methods renamed:
+        - addTransientDetection() -> setTransientDetectionObject()
+        - addAccuracyDetection() -> setAccuracyDetectionObject()
+
+(!)     cDensityEstBase: methods renamed:
+        - getNumFirstVals() -> getNumPrecollectedValues()
+        - setNumFirstVals() -> setNumPrecollectedValues()
+
+(!)     cKSplit: method rename: rangeExtension(bool) to setRangeExtension()
+
+(!)     cVarHistogram: unnamed enum of HIST_TR_xxx constants became
+        cVarHistogram::TransformType
+
+(!)     cObject: parsimPack() became const
+
+(!)     Register_Enum(): implementation changed, so now the 1st arg must name
+        an existing C++ enum. Before this change any string would suffice.
+
+(!)     VoidDelFunc and VoidDupFunc became inner types of cMsgPar, as only
+        cMsgPar used them.
+
+(!)     cEnvir: new method log(cLogEntry&) replaces earlier stream operators,
+        getOStream() and sputn() methods as the mechanism underlying EV <<.
+        New class cLogEntry captures much more context of the log statement
+        than previously available.
+
+(!)     cResultListener: added callFinish(), so that invoking finish() multiple
+        times can be eliminated at the cost of one additional flag.
+
+(!)     cModule: changeParentTo() will now assign a new ID to the module.
+        This usually causes no problem in the simulation's operation, but
+        if your model stores module IDs somewhere, you'll need to invalidate or
+        update them manually.
+
+(!)     cSimulation: getModule(id) also returns NULL if the ID is valid but
+        refers to a non-module (that is, channel) object. Previously it only
+        returned NULL if the ID was invalid or referred to a deleted module.
+
+(!)     Renamed error codes: eXXX to E_XXX
+
+(!)     Removed nonstandard fixed-size integer typedefs: int8, uint8, etc.
+        Use the standard ones with the _t suffix. Note that the removed types
+        were never advertised as API.
+
+(!)     cClassDescriptor interface cleanup:
+        - removed redundant "void *object" first argument from methods that
+          referred to the class and not instance: getFieldName(),
+          getFieldProperty(), getFieldStructName(), etc.
+        - added getPropertyNames() and getFieldPropertyNames()
+        - renamed getArraySize() to getFieldArraySize()
+        - renamed getFieldAsString() to getFieldValueAsString()
+        - similarly, renamed setFieldAsString() to setFieldValueAsString()
+        - renamed getFieldStructPointer to getFieldStructValuePointer()
+        - old methods still exist as deprecated ones
+
+(-)     Iterators: deprecated operator(); use operator* and operator-> instead.
 
 (-)     cQueue: deprecated length() and empty(); use getLength() and isEmpty()
         instead
 
-(+)     cEnum: added getNameValueMap() method
-
-(+)     Remove the deprecated status of some cChannelType methods:
-        createIdealChannel(), createDelayChannel() and createDatarateChannel()
+(-)     cModule: size() deprecated, use getVectorSize() instead
 
 (x)     cClassDescriptor: removed deprecated compatibility methods that emulated
         pre-4.2 API, i.e. certain overloaded versions of:
@@ -219,25 +238,81 @@ OMNeT++ 5.0
         - Simtime::SCALEEXP_S and other SCALEEXP_xxx constants; use SIMTIME_xxx
           constants instead
 
-(!)     cException: getContextModuleID() renamed to getContextComponentId()
+(x)     Removed deprecated functions: genk_intrand(), genk_dblrand(). Use the
+        updated intrand/dblrand instead.
+
+(x)     cEventHeap::Iterator removed (not much advantage over get(i))
+
+(x)     cEventHeap: removed length() and empty(); use getLength() and isEmpty()
+        instead
+
+(x)     Removed deprecated opp_error(), opp_terminate(), opp_warning() functions
+
+(x)     Removed deprecated class cLinkedList. Use std::list instead.
+
+(x)     Removed deprecated operator[] from cSimulation. Use getModule(id) or
+        getComponent(id) instead.
+
+(x)     Removed deprecated macros: Define_Function(), Define_Function2(),
+        Define_Function3(), Define_Function4(). Use Define_NED_Math_Function()
+        instead.
+
+(+)     Introduced cRandom, which encapsulates a random number stream into an
+        object. Random numbers can be extracted with the draw() method.
+
+(+)     Added cIEventlogManager.
+
+(+)     cConfigOption: Refined per-object config option kinds (added
+        COMPONENT and CHANNEL).
+
+(+)     Added cOsgCanvas and cObjectOsgNode.
+
+(+)     cComponent: added the refreshDisplay() method which is called by
+        graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
+        to be refreshed after processing some simulation events.
+
+(+)     cEnvir: added isExpressMode() that can be used to tailor the operation
+        of refreshDisplay().
+
+(+)     cEnvir: added resolveResourcePath() for finding data or other files
+        needed by the model.
+
+(+)     cComponent: added resolveResourcePath(). It delegates to cEnvir's
+        similar method.
+
+(+)     The *, /, *=, /= operations involving a SimTime and an integer type
+        now do the computation using integer arithmetic (instead of double),
+        and also check for overflow.
+
+(+)     Added SimTime::isZero()
+
+(+)     Added div(SimTime, SimTime)
+
+(+)     Added cFingerprintCalculator and subclasses.
+
+(+)     Added the following cRandom subclasses: cUniform, cExponential,
+        cNormal, cTruncNormal, cGamma, cBeta, cErlang, cChiSquare, cStudentT,
+        cCauchy, cTriang, cWeibull, cParetoShifted, cIntUniform, cBernoulli,
+        cBinomial, cGeometric, cNegBinomial, cPoisson. They encapsulate the
+        similarly named functions (e.g. exponential()) with their parameters
+        and the random number generator (cRNG).
+
+(+)     Iterators (cModule::GateIterator, cModule::SubmoduleIterator,
+        cModule::ChannelIterator, cQueue::Iterator, etc.): added operator*
+        and operator-> to make them behave more similar to STL iterators.
+
+(+)     An abstract cFutureEventSet base class has been introduced, and
+        cEventHeap now extends cFutureEventSet
+
+(+)     cEnum: added getNameValueMap() method
+
+(+)     Remove the deprecated status of some cChannelType methods:
+        createIdealChannel(), createDelayChannel() and createDatarateChannel()
 
 (+)     cException: added getContextComponentKind()
 
 (+)     cComponent: added getComponentKind() (and isModule()/isChannel() changed
         to rely on it)
-
-(!)     cStatistic: methods renamed:
-        - addTransientDetection() -> setTransientDetectionObject()
-        - addAccuracyDetection() -> setAccuracyDetectionObject()
-
-(!)     cDensityEstBase: methods renamed:
-        - getNumFirstVals() -> getNumPrecollectedValues()
-        - setNumFirstVals() -> setNumPrecollectedValues()
-
-(!)     cVarHistogram: unnamed enum of HIST_TR_xxx constants became
-        cVarHistogram::TransformType
-
-(x)     Removed deprecated opp_error(), opp_terminate(), opp_warning() functions
 
 (+)     New global functions: getSimulation(), getEnvir()
 
@@ -246,24 +321,13 @@ OMNeT++ 5.0
         - cComponent::getSystemModule()
         - cScheduler::getSimulation()
 
-(x)     Removed the "simulation" and "ev" macros, to reduce pollution of the
-        global namespace; use getSimulation() and getEnvir() instead
-
 (+)     Added cComponent::hasGUI() to replace ev.isGUI() calls
 
 (+)     Added OMNETPP_BUILDNUM
 
-(!)     cObject: parsimPack() became const
-
-(!)     Register_Enum(): implementation changed, so now the 1st arg must name
-        an existing C++ enum. Before this change any string would suffice.
-
 (+)     cObjectFactory: the static find() and get() methods received two extra
         args with default values, namely const char *contextNamespace=nullptr
         and bool fallbackToOmnetpp=true
-
-(!)     VoidDelFunc and VoidDupFunc became inner types of cMsgPar, as only
-        cMsgPar used them.
 
 (+)     Added the canvas API for 2D figure-based drawing.
         - Principal classes: cCanvas, cFigure.
@@ -290,15 +354,6 @@ OMNeT++ 5.0
 (+)     Added GLOBAL_COMPILETIME_LOGLEVEL. Define it at compile time to control
         which log statements are compiled into the code.
 
-(!)     cEnvir: new method log(cLogEntry&) replaces earlier stream operators,
-        getOStream() and sputn() methods as the mechanism underlying EV <<.
-        New class cLogEntry captures much more context of the log statement
-        than previously available.
-
-(!!!)   ev << is no longer legal, use EV << instead.
-
-(!!!)   ev.printf() was removed, use the stream API (EV <<) instead.
-
 (+)     check_and_cast<> may now be used to convert across arbitrary types,
         i.e. argument no longer needs to be cObject*.
 
@@ -306,9 +361,6 @@ OMNeT++ 5.0
 
 (+)     Introduced cEvent as a base class of cMessage. cEvent allows scheduling
         of execution of code that's not tied to a module.
-
-(!!!)   Revised cScheduler interface. The main methods in cScheduler are now
-        takeNextEvent() and guessNextEvent().
 
 (+)     Added putBackFirst(cEvent *event) to cMessageHeap
 
@@ -324,27 +376,11 @@ OMNeT++ 5.0
 
 (+)     cEnvir: added addLifecycleListener() and removeLifecycleListener().
 
-(!)     Renamed cOutputVectorManager, cOutputScalarManager and cSnapshotManager
-        to cIOutputVectorManager, cIOutputScalarManager and cISnapshotManager.
-
-(!!!)   Fingerprint computation has changed. To compute OMNeT++ 4.x fingerprints,
-        compile OMNeT++ and models with USE_OMNETPP4x_FINGERPRINTS.
-
-(!)     SimTime: conversion from double now uses rounding instead of truncation
-        (plain C-style cast). This change may alter simulation results.
-
 (+)     getId() moved from cModule to cComponent, so now it's inherited by
         cChannel as well
 
-(!)     cSimulation: getLastModuleId() renamed to getLastComponentId()
-        (as cSimulation now stores cComponent pointers, not cModule pointers)
-
 (+)     cSimulation: added getComponent(id) and getChannel(id) to complement
         getModule(id)
-
-(!)     cSimulation: getModule(id) also returns NULL if the ID is valid but
-        refers to a non-module (that is, channel) object. Previously it only
-        returned NULL if the ID was invalid or referred to a deleted module.
 
 (+)     cTopology: added factory methods for links and edges
 
@@ -355,17 +391,6 @@ OMNeT++ 5.0
             void addLink(Link *link, cGate *srcGate, cGate *destGate);
             void deleteLink(Link *link);
 
-(!)     cClassDescriptor interface cleanup:
-        - removed redundant "void *object" first argument from methods that
-          referred to the class and not instance: getFieldName(),
-          getFieldProperty(), getFieldStructName(), etc.
-        - added getPropertyNames() and getFieldPropertyNames()
-        - renamed getArraySize() to getFieldArraySize()
-        - renamed getFieldAsString() to getFieldValueAsString()
-        - similarly, renamed setFieldAsString() to setFieldValueAsString()
-        - renamed getFieldStructPointer to getFieldStructValuePointer()
-        - old methods still exist as deprecated ones
-
 (+)     cEnvir: added addHttpRequestHandler() and removeHttpRequestHandler()
 
 (+)     New classes: cHttpRequestHandler, cHttpRequest
@@ -375,37 +400,9 @@ OMNeT++ 5.0
 
 (+)     cEnum: added resolve() and bulkInsert()
 
-(!)     cResultListener: added callFinish(), so that invoking finish() multiple
-        times can be eliminated at the cost of one additional flag.
-
 (+)     cGate: added getConnectionId(), mostly useful for tools.
 
-(!)     cModule: changeParentTo() will now assign a new ID to the module.
-        This usually causes no problem in the simulation's operation, but
-        if your model stores module IDs somewhere, you'll need to invalidate or
-        update them manually.
-
 (+)     opp_string: added size() method
-
-(!)     Renamed error codes: eXXX to E_XXX
-
-(!)     Removed nonstandard fixed-size integer typedefs: int8, uint8, etc.
-        Use the standard ones with the _t suffix. Note that the removed types
-        were never advertised as API.
-
-(x)     Removed deprecated class cLinkedList. Use std::list instead.
-
-(x)     Removed deprecated operator[] from cSimulation. Use getModule(id) or
-        getComponent(id) instead.
-
-(x)     Removed double-simtime support (WITH_DOUBLE_SIMTIME)
-
-(!)     Removed WITHOUT_CPACKET feature (it was a compatibility macro to help
-        code migration from OMNeT++ 3.x to 4.0)
-
-(x)     Removed deprecated macros: Define_Function(), Define_Function2(),
-        Define_Function3(), Define_Function4(). Use Define_NED_Math_Function()
-        instead.
 
 
 OMNeT++ 4.6
