@@ -1,5 +1,7 @@
 digraph g {
         fontsize=12; size="5,5";
+        node [fontname="Arial"];
+        edge [fontname="Arial"];
 
 	node [shape = "ellipse"];
 	cc  [label = "C++ sources"];

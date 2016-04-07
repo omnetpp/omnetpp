@@ -1,5 +1,7 @@
 digraph g {
         fontsize=12;
+        node [fontname="Arial"];
+        edge [fontname="Arial"];
 
         node [shape = "rectangle"];
         edge [dir = "back"];

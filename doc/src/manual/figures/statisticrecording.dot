@@ -6,6 +6,8 @@
 digraph g {
 
         fontsize=12; size="5,5";
+        node [fontname="Arial"];
+        edge [fontname="Arial"];
         rankdir=LR;
 
         node [width=1, height=1];
