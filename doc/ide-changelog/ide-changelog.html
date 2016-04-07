@@ -4,12 +4,56 @@
     <title>Visual Changelog</title>
   </head>
   <style>
+    td:first-child {max-width: 200px;}
     td {border-top: solid thin black;}
     tr {vertical-align: top;}
+    body {width: 1000px; margin: 0 auto;}
   </style>
 <body>
 
+<h1>What's New in OMNeT++/OMNEST 5.0</h1>
 
+<h2>Tkenv</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Improved Status Area</b></p></td>
+<td><p>Status information about the current simulation state and the upcoming simulation event
+is much better presented in the status area. Both the last executed and the next event's simulation
+time is visible. Statistical data about the running simulation is now available on the bottom status bar.</p>
+<img src="pictures/50-tkenv-status-area.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>2D Canvas in Tkenv</b></p></td>
+<td><p>It is now possible to create arbitrary drawings on the graphical module inspector window.
+Figures can be created either declaratively from the NED files or programmatically, by using the
+new Canvas API.</p>
+<img src="pictures/50-tkenv-canvas.png" border="0"><br>
+</td></tr>
+</tbody></table>
+
+<h2>Qtenv</h2>
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Qtenv - the New Qt Based Runtime Environment</b></p></td>
+<td><p>Qtenv has been introduced to replace the aging Tcl/Tk based runtime environment. Qtenv
+integrates better with the platform's look and feel while providing superior performance.
+In 5.0, the default runtime is still Tkenv, but users can start the new runtime by specifying 
+the '-u Qtenv' command line option when starting a simulation model.</p>
+<img src="pictures/50-qtenv-window.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>3D Visualization Using OpenSceneGraph and osgEarth</b></p></td>
+<td><p>With Qtenv, it is now possible to switch between 2D and 3D visualization modes on 
+the module inspector's local toolbar. 3D Scenes can be rendered using the popular 
+OpenSceneGraph and osgEarth APIs. While models still have a default 2D representation,
+the customized 3D visualization should be provided by the model's author.</p>
+<img src="pictures/50-qtenv-3d.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
 
 <h1>What's New in OMNeT++/OMNEST 4.5</h1>
 
