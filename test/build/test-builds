@@ -1,7 +1,6 @@
 #!/bin/sh
 #
-# Test the build process with different configurations and run
-# all examples for a while and check their fingerprints
+# Test the build process with different configurations
 #
 # The toolchain used for testing (default is gcc)
 # $TOOLCHAIN=vc or gcc
@@ -194,43 +193,6 @@ compile() {
     fi
 }
 
-###############################################
-#
-# fingerprint testing functions
-#
-
-checkfingerprint() {
-    (cd $1 && ./$2 -u Cmdenv -c $3 fingerprints.ini >"$LOG_DIR/$CFG-fingerprint-$2-$3.out" 2>"$LOG_DIR/$CFG-fingerprint-$2-$3.err") || failure "fingerprint check failed: $2 $3"
-}
-
-checkfingerprints() {
-    echo "    Checking fingerprints..."
-    checkfingerprint samples/aloha     aloha     PureAloha1
-    checkfingerprint samples/aloha     aloha     PureAloha2
-    checkfingerprint samples/aloha     aloha     SlottedAloha1
-    checkfingerprint samples/aloha     aloha     SlottedAloha2
-    checkfingerprint samples/cqn       cqn       CQN-B
-    checkfingerprint samples/cqn       cqn       CQN-A
-    checkfingerprint samples/dyna      dyna      Medium
-    checkfingerprint samples/routing   routing   Net60
-}
-
-checkfingerprints_sharedlibs() {
-    echo "    Checking fingerprints on models using shared libs..."
-    checkfingerprint samples/queuenet  queuenet  OneFifo
-    checkfingerprint samples/queuenet  queuenet  TandemFifos
-    checkfingerprint samples/queuenet  queuenet  Ring
-    checkfingerprint samples/queuenet  queuenet  Terminal
-    checkfingerprint samples/queuenet  queuenet  CallCenter
-    checkfingerprint samples/queuenet  queuenet  ForkJoin
-}
-
-checkfingerprints_systemc() {
-    echo "    Checking systemc sample fingerprints..."
-    checkfingerprint samples/systemc-embedding     systemc-embedding     example1
-    checkfingerprint samples/systemc-embedding     systemc-embedding     example2
-    checkfingerprint samples/systemc-embedding     systemc-embedding     example3
-}
 
 ###############################################
 #
@@ -253,19 +215,12 @@ rm -rf $LOG_DIR
 mkdir -p $LOG_DIR
 
 ########################################
-# test fingerprints before compiling (= test the precompiled binaries)
-# if the precompiled binaries exist (right after installation)
+# run tests on precompield binaries
 #
 if [ "$PLATFORM" = "windows" -a -f bin/opp_run.exe ]; then
 
   CFG=precompiled-binaries
-  (checkfingerprints)
-  (checkfingerprints_sharedlibs)
-  # test also the SystemC examples if the systemc folder exists
-  if [ -d src/systemc ]; then
-        (checkfingerprints_systemc)
-  fi
-  (runtest core 0)
+  (runtest core 1)
   (runtest common 0)
   (runtest envir 1)
   (runtest makemake 0)
@@ -282,7 +237,7 @@ CFG=default
 contains cParsimPartition yes
 contains "Tkenv : graphical user interface" yes
 contains "Cmdenv : command-line user interface" yes
-contains "Qtenv : graphical user interface" yes
+contains "Qtenv : Qt-based graphical user interface" yes
 
 if [ "$TOOLCHAIN" = "clang" ]; then
     (TEST_PROG="opp_run -v" contains "Clang" yes)
@@ -291,23 +246,18 @@ fi
 (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
-(checkfingerprints)
-(checkfingerprints_sharedlibs)
-(runtest core 0)
+(runtest core 1)
 (runtest common 0)
 (runtest envir 1)
 (runtest makemake 0)
 
 ########################################
-# Run SystemC compile and fingerprint tests on Linux and on Visual C++
+# Run SystemC compile tests on Linux and on Visual C++
 # Other platforms / compilers are not supported
 if [ "$PLATFORM" = "linux" -o "$TOOLCHAIN" = "vc" ]; then
     if [ -d src/systemc ]; then
         CFG=systemc
         (WITH_SYSTEMC=yes compile)
-        (checkfingerprints)
-        (checkfingerprints_sharedlibs)
-        (checkfingerprints_systemc)
   fi
 fi
 
@@ -318,12 +268,11 @@ CFG=default_static
 
 # the static build does not contain opp_run so we must use the aloha sample
 (TEST_PROG="samples/aloha/aloha -h all" contains "Tkenv : graphical user interface" yes)
-(TEST_PROG="samples/aloha/aloha -h all" contains "Qtenv : graphical user interface" yes)
+(TEST_PROG="samples/aloha/aloha -h all" contains "Qtenv : Qt-based graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_OSG" yes)
-(checkfingerprints)
 
 
 ########################################
@@ -336,7 +285,6 @@ if [ "$PLATFORM" = "linux" ]; then
   contains cParsimPartition yes
   contains cMPICommunications yes
   (runtest makemake 0)
-  # TODO check MPI examples with fingerprint check
 
   ########################################
   # test if disabling MPI is working
@@ -345,7 +293,6 @@ if [ "$PLATFORM" = "linux" ]; then
   contains cParsimPartition yes
   contains cMPICommunications no
   (runtest makemake 0)
-  # TODO check parsim examples with fingerprint check
 fi
 
 
