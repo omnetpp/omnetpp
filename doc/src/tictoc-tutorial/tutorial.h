@@ -265,8 +265,8 @@ and
 
 @skipline EV <<
 
-When you run the simulation in the @opp GUI Tkenv, the following output
-will appear in the main text window:
+When you run the simulation in the @opp runtime environment, the following output
+will appear in the log window:
 
 <img src="step2b.png">
 
@@ -301,7 +301,7 @@ Note the
 @skipline WATCH(c
 
 line in the source: this makes it possible to see the counter value
-in Tkenv. Double-click on tic's icon, then choose the Contents page
+in the graphical runtime environment. Double-click on tic's icon, then choose the Contents page
 from the inspector window that pops up.
 
 <img src="step3.png">
@@ -378,7 +378,7 @@ or even
 with the same effect. (The difference between * and ** is that * will not match
 a dot and ** will.)
 
-In Tkenv, you can inspect module parameters either in the object tree
+In the graphical runtime environment, you can inspect module parameters either in the object tree
 on the left-hand side of the main window, or in the Parameters page of
 the module inspector (opened via double-clicking on the module icon).
 
@@ -467,7 +467,7 @@ as well.
 
 We have left out the counter, to keep the source code small.
 
-The result of running the simulation can be seen below.
+While running the simulation you will see the following log output:
 
 <img src="step6.png">
 
