@@ -21,8 +21,29 @@ Legend:
 (i)     information
 
 
-OMNeT++ 5.0rc2
-~~~~~~~~~~~~~~
+OMNeT++ 5.0
+~~~~~~~~~~~
+
+(!)     cOsgCanvas: initialize zNear/zFar to NaN; added methods
+        setZLimits(), clearZLimits(), hasZLimits()
+
+(!)     cFigure: move(x,y) args renamed to (dx,dy)
+
+(!)     cFigure: skew now uses a coefficient, not an angle
+
+(!)     cKSplit: method rename: rangeExtension(bool) to setRangeExtension()
+
+(!)     cEnvir::recordEventlog was not in use by simkernel, moved into
+        EnvirBase
+
+(!)     cFingerprint renamed to cFingerprintCalculator
+
+(!)     cSimulation: get/setFingerprint() renamed to get/setFingerprintCalculator()
+
+(-)     cModule::size() deprecated (use getVectorSize() instead)
+
+(!)     Several methods made virtual in cComponent, cModule, cSimpleModule,
+        cChannel, cArray, cQueue, cTopology, cStatistic, etc.
 
 (!)     cPar: read() and finalize() conceptually changed to be internal methods
         (they are still declared public for technical reasons)
