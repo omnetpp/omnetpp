@@ -24,21 +24,10 @@ Legend:
 OMNeT++ 5.0
 ~~~~~~~~~~~
 
-(!)     cOsgCanvas: initialize zNear/zFar to NaN; added methods
-        setZLimits(), clearZLimits(), hasZLimits()
-
-(!)     cFigure: move(x,y) args renamed to (dx,dy)
-
-(!)     cFigure: skew now uses a coefficient, not an angle
-
 (!)     cKSplit: method rename: rangeExtension(bool) to setRangeExtension()
 
 (!)     cEnvir::recordEventlog was not in use by simkernel, moved into
         EnvirBase
-
-(!)     cFingerprint renamed to cFingerprintCalculator
-
-(!)     cSimulation: get/setFingerprint() renamed to get/setFingerprintCalculator()
 
 (-)     cModule::size() deprecated (use getVectorSize() instead)
 
@@ -48,26 +37,7 @@ OMNeT++ 5.0
 (!)     cPar: read() and finalize() conceptually changed to be internal methods
         (they are still declared public for technical reasons)
 
-
-OMNeT++ 5.0rc1
-~~~~~~~~~~~~~~
-
-(!)    cFingerprint renamed to cFingerprintCalculator.
-
 (!)    cModule: size() deprecated, use getVectorSize() instead
-
-(!)    More methods made virtual in cSimpleModule and other classes
-
-(!)    OSG: OmnetppObjectNode renamed to cObjectOsgNode
-
-(!)    cOsgCanvas: removed createOmnetppObjectNode(), isOmnetppObjectNode(),
-       setOmnetppObject(), getOmnetppObject() methods; one should directly
-       use cObjectOsgNode instead
-
-(!)    cOsgCanvas: removed setPerspective()
-
-(!)    osgutil.h is now part of omnetpp.h, doesn't need to be #included
-       separately
 
 (+)    Added cIEventlogManager.
 
@@ -78,29 +48,7 @@ OMNeT++ 5.0rc1
 
 (!)    cEnvir: Renamed getRNGMappingFor(component) to preconfigure(component)
 
-(!)    Refined the cFigure API that was introduced in earlier 5.0 betas.
-        - replaced getClassNameForRenderer() with getRendererClassName()
-        - spelling: ArrowHead changed to Arrowhead in method names, enum name, etc.
-        - move() made recursive, nonrecursive version is called moveLocal()
-        - Pixmap: renamed resize() to setSize()
-        - Transform: skew() methods to use coefficient instead of angle
-        - Transform: matrix was transposed so points can be column vectors
-          instead of row vectors
-        - added NUM_GOOD_DARK_COLORS and NUM_GOOD_LIGHT_COLORS
-        - some cPixmapFigure methods were also renamed
-
-OMNeT++ 5.0b3
-~~~~~~~~~~~~~
-
-(!!!)   Compared to the previous beta: The omnetpp namespace was made permanent
-        (cannot be turned off): removed configure option and preprocessor
-        symbol USE_NAMESPACE, and related macros NAMESPACE_BEGIN, NAMESPACE_END,
-        USING_NAMESPACE, OPP, OPP_STR, OPP_PREFIX etc. have been permanently
-        expanded.
-
-(+)     Added cOsgCanvas, a class that supports 3D graphics support via
-        OpenSceneGraph. Also added OmnetppObjectNode (requires #include
-        <omnetpp/osgutil.h>).
+(+)     Added cOsgCanvas and cObjectOsgNode.
 
 (+)     cComponent: added the refreshDisplay() method which is called by
         graphical user interfaces (Qtenv, Tkenv) whenever GUI contents need
@@ -156,13 +104,13 @@ OMNeT++ 5.0b3
 
 (+)     Added div(SimTime, SimTime)
 
-(+)     Added cFingerprint and subclasses.
+(+)     Added cFingerprintCalculator and subclasses.
 
 (!)     Define USE_OMNETPP4x_FINGERPRINT at compile-time to get back
         OMNeT++ 4.x fingerprints.
 
 (!)     cSimulation: removed getHasher() and setHasher(), added
-        getFingerprint() and setFingerprint().
+        getFingerprintCalculator() and setFingerprintCalculator().
 
 (!)     cSimpleModule::scheduleAt() return type changed from int (a dummy)
         to void.
@@ -177,19 +125,13 @@ OMNeT++ 5.0b3
 
 (!)     M_PI has been added to <omnetpp/platdep/platmisc.h>
 
-OMNeT++ 5.0b2
-~~~~~~~~~~~~~
-
-(!!!)   OMNeT++ classes are now in the "omnetpp" namespace. Models need to be
-        modified to compile, e.g. by adding "using namespace omnetpp" or
-        USING_NAMESPACE lines at appropriate places. (The latter conditionally
-        expands to the former when needed, and to the empty string when not,
-        making your code compatible with OMNeT++ 4.6 too.) If you don't want to
-        change the model source code, you can define the AUTOIMPORT_NAMESPACE
-        macro on the compiler command line (add -DAUTOIMPORT_NAMESPACE to
-        CFLAGS), which will basically add the using namespace directive at the
-        end of <omnetpp.h>. NOTE: USING_NAMESPACE and AUTOIMPORT_NAMESPACE will
-        be removed in the next beta.
+(!!!)   OMNeT++ classes are now in the "omnetpp" namespace. Models need
+        to be modified to compile, e.g. by adding "using namespace omnetpp".
+        If you don't want to change the model source code, define the
+        AUTOIMPORT_OMNETPP_NAMESPACE macro on the compiler command line
+        (add -DAUTOIMPORT_OMNETPP_NAMESPACE to CFLAGS), which will
+        basically add the using namespace directive at the end of
+        <omnetpp.h>.
 
 (+)     Introduced cRandom, which encapsulates a random number stream into an
         object. Random numbers can be extracted with the draw() method.
@@ -322,10 +264,6 @@ OMNeT++ 5.0b2
 
 (!)     VoidDelFunc and VoidDupFunc became inner types of cMsgPar, as only
         cMsgPar used them.
-
-
-OMNeT++ 5.0b1
-~~~~~~~~~~~~~
 
 (+)     Added the canvas API for 2D figure-based drawing.
         - Principal classes: cCanvas, cFigure.
