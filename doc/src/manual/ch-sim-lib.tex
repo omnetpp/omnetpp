@@ -40,9 +40,9 @@ class does not add anything to the size of a class if it already has at
 least one virtual member function.
 
 \begin{figure}[htbp]
- \begin{center}
-   \includegraphics[height=6cm]{figures/cobject-inheritance}
-   \caption{cObject is the base class for most of the simulation library}
+  \begin{center}
+    \includegraphics[height=6cm]{figures/cobject-inheritance}
+    \caption{cObject is the base class for most of the simulation library}
   \end{center}
 \end{figure}
 
@@ -576,6 +576,7 @@ actual RNG instances. This mapping occurs on per-component basis. That is,
 each module and channel object contains a mapping table similar to the
 following:
 
+\begin{center}
 \begin{tabular}{ c c c }
 Local RNG index &               & Global RNG \\ \hline
               0 & $\rightarrow$ & 0 \\
@@ -585,6 +586,7 @@ Local RNG index &               & Global RNG \\ \hline
               4 & $\rightarrow$ & 1 \\
               5 & $\rightarrow$ & 3 \\
 \end{tabular}
+\end{center}
 
 In the example, the module or channel in question has 6 local (logical)
 RNGs that map to 4 global (physical) RNGs.
@@ -1644,10 +1646,10 @@ are returned by the \ffunc{getUnderflowCell()} and \ffunc{getOverflowCell()}
 member functions.
 
 \begin{figure}[htbp]
-\begin{center}
-  \includegraphics{figures/simlib-histogramsetup}
-  \caption{Histogram structure after setting up the cells}
-\end{center}
+  \begin{center}
+    \includegraphics{figures/simlib-histogramsetup}
+    \caption{Histogram structure after setting up the cells}
+  \end{center}
 \end{figure}
 
 One exception is the \cclass{cPSquare} class that implements the $P^{2}$
