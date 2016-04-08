@@ -120,7 +120,7 @@ htmlfile_spec := $BASE.htm
 :{2}    :\href#1#2:<a href="#1">#2</a>::
 :{1}    :\cite#1:[<a href="#bib-#1">#1</a>]::
 :{1}    :\url#1:<a href="#1">#1</a>::
-@{}     @\caption@<center><i>Figure: @</i></center>@
+@{}     @\caption@<center><div class="caption"><i>Figure: @</i></div></center>@
 :comm   :\textbar:|::
 :comm   :\textasciicircum:^::
 :comm   :\textasciitilde:~::

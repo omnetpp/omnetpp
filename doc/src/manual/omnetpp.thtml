@@ -31,6 +31,7 @@
   pre.commandline { background:#fffff0; border-left: 4px solid #606060; }
   table { background:#fffff4; margin: 0 auto; border-collapse:collapse; border: 2px solid; }
   td,th { text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000; }
+  div.caption { margin-top: 10px; }
   a { text-decoration: none; }
   a:visited { text-decoration: none; }
   # a:hover { text-decoration: underline; }
