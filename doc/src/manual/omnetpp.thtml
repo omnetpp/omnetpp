@@ -9,11 +9,16 @@
 </head>
 
 <style type="text/css">
-  body { max-width: 750px; margin: 0 auto; }
+  body { background-color: rgb(240, 240, 240); margin: 0 auto; }
   body,th,td,p,ul,ol,li,h1,h2,h3,h4 { font-family: arial,sans-serif; color: #000000}
   body,td,p,ul,ol,li { font-size: 12pt; }
   th,td { font-size: 11pt; }
   tt,code,pre { font-size: 11pt; }
+
+  div.top {
+    background-color: white; max-width: 750px; margin: 0 auto; padding-left: 100px; padding-right: 100px;
+    box-shadow: 0 0 2px 2px #dddddd;
+  }
 
   h1 { color: #1A41A8; margin-top: 50px; margin-bottom: 20px; }
   h2 { color: #1A41A8; margin-top: 40px; margin-bottom: 20px; }
@@ -543,6 +548,7 @@ function redirectOldLinks() {
 </script>
 
 <body onload='redirectOldLinks()'>
+<div class="top">
 
 __TITLEPAGE_START__
   <br>
@@ -554,7 +560,7 @@ __TITLEPAGE_START__
 __TITLEPAGE_END__
 
 __BODY__
-
+</div>
 </body>
 </html>
 
