@@ -1812,12 +1812,12 @@ be set independently for the $x$ and $y$ direction using
 \ffunc{setCornerRx()} and \ffunc{setCornerRy()}, or together with
 \ffunc{setCornerRadius()}.
 
-The following example draws a rounded rectangle of size 80x50, filled with
+The following example draws a rounded rectangle of size 160x100, filled with
 a "good dark color".
 
 \begin{cpp}
 cRectangleFigure *rect = new cRectangleFigure("rect");
-rect->setBounds(cFigure::Rectangle(100,100,80,50));
+rect->setBounds(cFigure::Rectangle(100,100,160,100));
 rect->setCornerRadius(5);
 rect->setFilled(true);
 rect->setFillColor(cFigure::GOOD_LIGHT_COLORS[0]);
@@ -1843,12 +1843,13 @@ Line and fill color, and several other properties are inherited from
 The geometry is specified with the bounding box, and it can be set with the
 \ffunc{setBounds()} method that takes a \cclass{cFigure::Rectangle}.
 
-The following example draws a circle of diameter 50 with a wide dotted line.
+The following example draws a circle of diameter 120 with a wide dotted line.
 
 \begin{cpp}
 cOvalFigure *circle = new cOvalFigure("circle");
-circle->setBounds(cFigure::Rectangle(100,100,50,50));
-circle->setLineStyle(cFigure::LINE_DASHED);
+circle->setBounds(cFigure::Rectangle(100,100,120,120));
+circle->setLineWidth(2);
+circle->setLineStyle(cFigure::LINE_DOTTED);
 \end{cpp}
 
 %% NOTE to authors: code should be kept in sync with test/anim/usman/*.cc!

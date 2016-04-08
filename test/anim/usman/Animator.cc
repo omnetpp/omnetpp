@@ -38,15 +38,16 @@ void Animator::initialize()
 
     //--------------------------
     cRectangleFigure *rect = new cRectangleFigure("rect");
-    rect->setBounds(cFigure::Rectangle(100,100,80,50));
+    rect->setBounds(cFigure::Rectangle(100,100,160,100));
     rect->setCornerRadius(5);
     rect->setFilled(true);
     rect->setFillColor(cFigure::GOOD_LIGHT_COLORS[0]);
 
     //--------------------------
     cOvalFigure *circle = new cOvalFigure("circle");
-    circle->setBounds(cFigure::Rectangle(100,100,50,50));
-    circle->setLineStyle(cFigure::LINE_DASHED);
+    circle->setBounds(cFigure::Rectangle(100,100,120,120));
+    circle->setLineWidth(2);
+    circle->setLineStyle(cFigure::LINE_DOTTED);
 
     //--------------------------
     cRingFigure *ring = new cRingFigure("ring");
