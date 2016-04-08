@@ -1,9 +1,9 @@
 digraph g {
-    fontsize=12; size="6,5";
-    node [fontname="Arial"];
+    size="7.8,0!";
+    node [fontname="Arial"; fontsize=10];
     edge [fontname="Arial"];
 
-    node [shape = "rectangle"];
+    node [shape = "rectangle"; margin=0.09; width=0; height=0];
     edge [dir = "back"];
 
     subgraph a {
@@ -11,17 +11,10 @@ digraph g {
         cAbstractLineFigure -> cLineFigure;
         cAbstractLineFigure -> cArcFigure;
         cAbstractLineFigure -> cPolylineFigure;
-        cFigure -> cAbstractShapeFigure;
-        cAbstractShapeFigure -> cRectangleFigure;
-        cAbstractShapeFigure -> cOvalFigure;
-        cAbstractShapeFigure -> cRingFigure;
-        cAbstractShapeFigure -> cPieSliceFigure;
-        cAbstractShapeFigure -> cPolygonFigure;
-        cAbstractShapeFigure -> cPathFigure;
     }
 
     subgraph b {
-        cFigure2 [label = cFigure]
+        cFigure2 [label = cFigure];
         cFigure2 -> cAbstractTextFigure;
         cAbstractTextFigure -> cTextFigure;
         cAbstractTextFigure -> cLabelFigure;
@@ -32,6 +25,17 @@ digraph g {
         cFigure2 -> cGroupFigure;
     }
 
-    cRectangleFigure -> cFigure2 [style=invis]; /* hack to place the 2nd subgraph below the first */
+    subgraph c {
+        cFigure3 [label = cFigure];
+        cFigure3 -> cAbstractShapeFigure;
+        cAbstractShapeFigure -> cRectangleFigure;
+        cAbstractShapeFigure -> cOvalFigure;
+        cAbstractShapeFigure -> cRingFigure;
+        cAbstractShapeFigure -> cPieSliceFigure;
+        cAbstractShapeFigure -> cPolygonFigure;
+        cAbstractShapeFigure -> cPathFigure;
+    }
+
+    cLabelFigure -> cFigure3 [style=invis]; /* hack to place the 3rd subgraph below the first */
 }
 

@@ -1,5 +1,5 @@
 digraph g {
-        fontsize=12; size="5,5";
+        fontsize=12; size="7.8,0!";
         node [fontname="Arial"];
         edge [fontname="Arial"];
 
