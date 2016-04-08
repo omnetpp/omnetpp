@@ -4,14 +4,14 @@
   <title>A QUICK OVERVIEW OF THE &Omnetpp; IDE</title>
   <sect1>
     <title>Introduction</title>
-    <para>The &Omnetpp; 4.x Integrated Development Environment is based on the Eclipse platform, and extends
+    <para>The &Omnetpp; Integrated Development Environment is based on the Eclipse platform, and extends
       it with new editors, views, wizards, and additional functionality. &Omnetpp; adds functionality for creating and
       configuring models (NED and ini files), performing batch executions, and analyzing simulation
       results, while Eclipse provides C++ editing, SVN/GIT integration, and other optional features (UML
       modeling, bugtracker integration, database access, etc.) via various open-source and commercial plug-ins.
     </para>
     <para>The following screenshots introduce the main components of the &Omnetpp; IDE.</para>
-    <picture file="pictures/img1.png">The &Omnetpp; 4.x IDE, editing a NED file</picture>
+    <picture file="pictures/img1.png">The &Omnetpp; IDE, editing a NED file</picture>
   </sect1>
   <sect1>
     <title>The NED Editor</title>
@@ -216,9 +216,9 @@
       not necessarily) simulations done with the same model but with different parameter settings; that is,
       the user will explore the parameter space with several simulation runs. To gain statistical
       confidence in the results, each measurement will be possibly repeated several times with different
-      random number seeds. It is easy to set up such scenarios with the improved ini files of &Omnetpp; 4.x. 
+      random number seeds. It is easy to set up such scenarios with the improved ini files of &Omnetpp;. 
      Then, the experiment-measurement-replication labels will be assigned more-or-less automatically – please
-      refer to the Inifile document (“Configuring Simulations in &Omnetpp; 4.x”) for more discussion.</para>
+      refer to the Inifile document (“Configuring Simulations in &Omnetpp;”) for more discussion.</para>
     <picture file="pictures/img19.png">Browsing vector and scalar data generated
       by the simulation</picture>
     <para>
