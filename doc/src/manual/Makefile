@@ -44,9 +44,8 @@ ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
 HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
 DOTPICS = $(wildcard figures/*.dot)
-SVGPICS = $(wildcard figures/*.svg)
+SVGPICS = $(wildcard figures/*.svg) $(DOTPICS:.dot=.svg)
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
-PNGPICS = $(SVGPICS:.svg=.png) $(DOTPICS:.dot=.png)
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
@@ -98,7 +97,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 .tex.htm: ltoh.specs ltoh.pl
 	$(PERL) ltoh.pl $<
 
-eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2
+eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --split --template eclipse.thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
@@ -107,9 +106,10 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2
 	mv *.html toc.xml eclipse
 	xmllint --noout eclipse/toc.xml
 	cp *.png eclipse
+	cp figures/*.svg eclipse
 	cp figures/*.png eclipse
 
-html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2
+html : $(HTMCHAPTERS) $(SVGPICS) omnest.thtml omnetpp.thtml prephtml2
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
@@ -117,6 +117,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2
 	mkdir ../../manual
 	cp usman.html ../../manual/index.html
 	cp *.png ../../manual
+	cp figures/*.svg ../../manual
 	cp figures/*.png ../../manual
 	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi 
 

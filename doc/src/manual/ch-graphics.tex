@@ -364,7 +364,7 @@ The following example makes the icon 20\% red:
 \end{ned}
 
 \begin{center}
-\includegraphics{figures/graphics-itag}
+\includepng{figures/graphics-itag}
 \end{center}
 
 \subsubsection{Status Icon}
@@ -382,7 +382,7 @@ An example:
 \end{ned}
 
 \begin{center}
-\includegraphics{figures/graphics-i2tag}
+\includepng{figures/graphics-i2tag}
 \end{center}
 
 \subsubsection{Shapes}
@@ -400,7 +400,7 @@ black border and red fill:
 \end{ned}
 
 \begin{center}
-\includegraphics{figures/graphics-btag}
+\includepng{figures/graphics-btag}
 \end{center}
 
 \subsubsection{Positioning}
@@ -454,7 +454,7 @@ host[20]: Host {
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics{figures/graphics-ptag}
+    \includepng{figures/graphics-ptag}
     \caption{Matrix arrangement using the $p$ tag}
     \label{fig:graphics-ptag}
   \end{center}
@@ -479,7 +479,7 @@ submodules:
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics{figures/graphics-rtag}
+    \includepng{figures/graphics-rtag}
     \caption{Range indicator using the $r$ tag}
     \label{fig:graphics-rtag}
   \end{center}
@@ -504,7 +504,7 @@ string.
 \end{ned}
 
 \begin{center}
-\includegraphics{figures/graphics-qtag}
+\includepng{figures/graphics-qtag}
 \end{center}
 
 \subsubsection{Text and Tooltip}
@@ -524,7 +524,7 @@ mouse.
 \end{ned}
 
 \begin{center}
-\includegraphics{figures/graphics-ttag}
+\includepng{figures/graphics-ttag}
 \end{center}
 
 \begin{note}
@@ -567,7 +567,7 @@ network EuropePlayground
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics{figures/graphics-bgtags}
+    \includepng{figures/graphics-bgtags}
     \caption{Background image and grid}
     \label{fig:graphics-bgtags}
   \end{center}
@@ -606,7 +606,7 @@ source1.out --> { @display("ls=red,3"); } --> queue1.in++;
 \end{ned}
 
 \begin{center}
-\includegraphics{figures/graphics-lstag}
+\includepng{figures/graphics-lstag}
 \end{center}
 
 \begin{note}
@@ -976,7 +976,7 @@ bubble("Going down!");
 \end{cpp}
 
 \begin{center}
-\includegraphics{figures/graphics-bubble}
+\includepng{figures/graphics-bubble}
 \end{center}
 
 If the module often displays bubbles, it is recommended to make the
@@ -1534,7 +1534,7 @@ This enum is used by line and path figures, and it indicates the shape to
 be used at the end of the lines or open subpaths.
 
 \begin{center}
-\includegraphics[scale=0.8]{figures/graphics-linecaps}
+\includepng[scale=0.8]{figures/graphics-linecaps}
 \end{center}
 
 \tbf{JoinStyle}
@@ -1545,7 +1545,7 @@ This enum indicates the shape to be used when two line segments are joined,
 in line or shape figures.
 
 \begin{center}
-\includegraphics[scale=0.8]{figures/graphics-linejoins}
+\includepng[scale=0.8]{figures/graphics-linejoins}
 \end{center}
 
 \tbf{FillRule}
@@ -1556,7 +1556,7 @@ This enum determines which regions of a self-intersecting shape
 should be considered to be inside the shape, and thus be filled.
 
 \begin{center}
-\includegraphics[scale=0.8]{figures/graphics-fillrule}
+\includepng[scale=0.8]{figures/graphics-fillrule}
 \end{center}
 
 \tbf{Arrowhead}
@@ -1567,7 +1567,7 @@ Some figures support displaying arrowheads at one or both ends of a line.
 This enum determines the style of the arrowhead to be used.
 
 \begin{center}
-\includegraphics[scale=0.8]{figures/graphics-arrowheads}
+\includepng[scale=0.8]{figures/graphics-arrowheads}
 \end{center}
 
 \tbf{Interpolation}
@@ -1666,7 +1666,7 @@ line->setEndArrowhead(cFigure::ARROW_BARBED);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-line}
+\includesvg{figures/figure-line}
 \end{center}
 
 
@@ -1706,7 +1706,7 @@ arc->setEndArrowhead(cFigure::ARROW_BARBED);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-arc}
+\includesvg{figures/figure-arc}
 \end{center}
 
 
@@ -1749,7 +1749,7 @@ polyline->setSmooth(true);
 The result, with both \textit{smooth=false} and \textit{smooth=true}:
 
 \begin{center}
-\includegraphics{figures/figure-polylines}
+\includesvg{figures/figure-polylines}
 \end{center}
 
 
@@ -1827,7 +1827,7 @@ rect->setFillColor(cFigure::GOOD_LIGHT_COLORS[0]);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-rectangle}
+\includesvg{figures/figure-rectangle}
 \end{center}
 
 
@@ -1855,7 +1855,7 @@ circle->setLineStyle(cFigure::LINE_DASHED);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-oval}
+\includesvg{figures/figure-oval}
 \end{center}
 
 
@@ -1889,7 +1889,7 @@ ring->setFillColor(cFigure::YELLOW);
 %% NOTE to authors: code should be kept in sync with test/anim/usman/*.cc!
 
 \begin{center}
-\includegraphics{figures/figure-ring}
+\includesvg{figures/figure-ring}
 \end{center}
 
 
@@ -1934,7 +1934,7 @@ pieslice->setFillColor(cFigure::YELLOW);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-pieslice}
+\includesvg{figures/figure-pieslice}
 \end{center}
 
 
@@ -1982,7 +1982,7 @@ polygon->setSmooth(true);
 The result, with both \textit{smooth=false} and \textit{smooth=true}:
 
 \begin{center}
-\includegraphics{figures/figure-polygons}
+\includesvg{figures/figure-polygons}
 \end{center}
 
 
@@ -2087,7 +2087,7 @@ path2->setFillColor(cFigure::YELLOW);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-path}
+\includesvg{figures/figure-path}
 \end{center}
 
 \subsubsection{cAbstractTextFigure}
@@ -2141,7 +2141,7 @@ text->setFont(cFigure::Font("Arial", 12, cFigure::FONT_BOLD));
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-text}
+\includesvg{figures/figure-text}
 \end{center}
 
 
@@ -2169,7 +2169,7 @@ label->setOpacity(0.9);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-label}
+\includesvg{figures/figure-label}
 \end{center}
 
 
@@ -2259,7 +2259,7 @@ icon->setOpacity(0.8);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-icon}
+\includepng{figures/figure-icon}
 %% note: this is a png, no need for [scale=4.0]
 \end{center}
 
@@ -2325,7 +2325,7 @@ pixmapFigure->setInterpolation(cFigure::INTERPOLATION_FAST);
 The result, both with \textit{interpolation=NONE} and \textit{interpolation=FAST}:
 
 \begin{center}
-\includegraphics{figures/figure-pixmaps}
+\includepng{figures/figure-pixmaps}
 %% note: this is a png, no need for [scale=4.0]
 \end{center}
 
@@ -2368,7 +2368,7 @@ group->rotate(M_PI/6, 100, 100);
 The result:
 
 \begin{center}
-\includegraphics{figures/figure-group}
+\includesvg{figures/figure-group}
 \end{center}
 
 

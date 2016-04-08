@@ -157,7 +157,8 @@ htmlfile_spec := $BASE.htm
 :comm   :\fconfig(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
 :comm   :\ffilename(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\ftest(\[.*?\])?{(.*?)}:<tt>$2</tt>::
-:comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
+:comm   :\includepng(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
+:comm   :\includesvg(\[.*?\])?{figures/(.*?)}:<img src="$2.svg">::
 :comm   :\ifcommercial:@ifcommercial@::
 :comm   :\fi:@fi@::
 
