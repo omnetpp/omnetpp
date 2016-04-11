@@ -560,11 +560,11 @@ bool Tkenv::doRunSimulationExpress()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
-    //  - stopsimulation_flag
-    //  - opt->expressmode_autoupdate
+    //  - runMode, runUntil.time, runUntil.eventNumber, runUntil.msg, runUntil.module;
+    //  - stopSimulationFlag
+    //  - opt->autoupdateInExpress
     //
-    // EXPRESS does not support rununtil_module!
+    // EXPRESS does not support runUntil.module!
     //
 
     char info[128];

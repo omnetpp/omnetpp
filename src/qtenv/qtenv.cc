@@ -729,10 +729,10 @@ bool Qtenv::doRunSimulationExpress()
     //
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
-    // during Tcl_Eval("update"):
-    //  - runmode, runUntil.time, runUntil.eventNumber, runUntil.msg, runUntil.module;
-    //  - stopsimulation_flag
-    //  - opt->expressmode_autoupdate
+    // during TQCoreApplication::processEvents():
+    //  - runMode, runUntil.time, runUntil.eventNumber, runUntil.msg, runUntil.module;
+    //  - stopSimulationFlag
+    //  - opt->autoupdateInExpress
     //
     // EXPRESS does not support runUntil.module!
     //
