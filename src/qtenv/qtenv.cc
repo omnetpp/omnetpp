@@ -499,9 +499,8 @@ void Qtenv::doOneStep()
 
     animating = true;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    simulationState = SIM_RUNNING;
-
     updateStatusDisplay();
+    simulationState = SIM_RUNNING; // currently must come after updateStatusDisplay(), because it depends on it...
 
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
@@ -511,10 +510,10 @@ void Qtenv::doOneStep()
             getSimulation()->executeEvent(event);
             performAnimations();
         }
+        simulationState = SIM_READY; // currently must precede updateStatusDisplay(), because it depends on it...
         callRefreshDisplay();
         updateStatusDisplay();
         refreshInspectors();
-        simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e) {
