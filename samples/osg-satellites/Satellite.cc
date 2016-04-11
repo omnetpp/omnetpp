@@ -42,7 +42,6 @@ void Satellite::initialize(int stage)
 {
     switch (stage) {
     case 0: {
-        timeStep = par("timeStep");
         modelURL = par("modelURL").stringValue();
         modelScale = par("modelScale");
         labelColor = par("labelColor").stringValue();
@@ -66,7 +65,7 @@ void Satellite::initialize(int stage)
             ss >> z;
 
             if (!ss)
-                throw cRuntimeError("Couldn't parse orbit normal \"%s\", the correct format is for example \"2.5,3,0\", or leave it empty for random.", normalString.c_str());
+                throw cRuntimeError("Couldn't parse orbit normal vector \"%s\", the correct format is for example \"2.5,3,0\", or leave it empty for random", normalString.c_str());
 
             normal.set(x, y, z);
         }
@@ -181,39 +180,42 @@ void Satellite::initialize(int stage)
             coneGeode->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::ON);
             locatorNode->addChild(coneGeode);
         }
-
-        // schedule first move
-        cMessage *timer = new cMessage("move");
-        scheduleAt(0, timer);
-        break;
     }
 }
 
 void Satellite::handleMessage(cMessage *msg)
 {
-    // update the node position
-    move();
+    throw cRuntimeError("This module does not process messages");
+}
 
-    // schedule next movement
-    scheduleAt(simTime() + timeStep, msg);
+void Satellite::updatePosition()
+{
+    //double t = simTime().inUnit(SIMTIME_MS) / 1000.0;  ?????
+    simtime_t t = simTime();
+    if (t != lastPositionUpdateTime) {
+        phase = startingPhase + t.dbl() * getOmega();  //FIXME getOmega(); ???
+        pos = getPositionAtPhase(phase);
+
+        osg::Vec3d v;
+        mapNode->getMap()->getSRS()->transformFromWorld(pos, v);
+        locatorNode->getLocator()->setPosition(v);
+
+        lastPositionUpdateTime = t;
+    }
+}
+
+osg::Vec3 Satellite::getPositionAtPhase(double alpha) const
+{
+    return (orbitX * std::cos(alpha) + orbitY * std::sin(alpha)) * (earthRadius + altitude) * 1000;
 }
 
 void Satellite::refreshDisplay() const
 {
-    osg::Vec3d pos = getPosition();
+    const_cast<Satellite *>(this)->updatePosition();
 
-    osg::Vec3d v;
-    mapNode->getMap()->getSRS()->transformFromWorld(pos, v);
-    locatorNode->getLocator()->setPosition(v);
-
-    // update the position on the 2D canvas, too*/
+    // update the position on the 2D canvas
     getDisplayString().setTagArg("p", 0, 300 + pos.x() / 100000);
     getDisplayString().setTagArg("p", 1, 300 - pos.y() / 100000);
-}
-
-void Satellite::move()
-{
-    phase = startingPhase + (getSimulation()->getSimTime().inUnit(SIMTIME_MS) / 1000.0) * getOmega();
 }
 
 #endif // WITH_OSG

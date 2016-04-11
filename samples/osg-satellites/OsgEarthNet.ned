@@ -14,7 +14,7 @@ network OsgEarthNet
 {
     parameters:
         @display("bgb=500,500;bg=black");
-        
+
         int numSats = default(0);
         int numStats = default(0);
 
@@ -30,5 +30,8 @@ network OsgEarthNet
         }
         stat[numStats]: GroundStation {
             @display("p=250,250");
+        }
+        clock: Clock {
+            @display("p=44.352,41.328003");
         }
 }

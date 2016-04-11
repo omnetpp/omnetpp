@@ -10,6 +10,7 @@
 #ifdef WITH_OSG
 #include <osgEarthUtil/ObjectLocator>
 #include <osgEarthUtil/LinearLineOfSight>
+#include <osgUtil/UpdateVisitor>
 #include <osg/ValueObject>
 #include <osg/LineWidth>
 #include <osg/Depth>
@@ -112,6 +113,15 @@ void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type)
 
 void ChannelController::refreshDisplay() const
 {
+    // make sure satellite positions are up to date
+    for (auto satellite : satellites)
+        satellite->updatePosition();
+
+    // los update callbacks are called during update traversal, so do it now
+    osgUtil::UpdateVisitor updateVisitor;
+    scene->traverse(updateVisitor);
+
+    // update line-of-sight lines (remove all, then add back current ones)
     connections->removeDrawables(0, connections->getNumDrawables());
 
     int numSatToSat = 0;

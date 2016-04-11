@@ -25,5 +25,4 @@ simple Satellite
         double altitude @unit("km") = default(5000km); // above sea level
         string orbitNormal = default("");              // can't be zero length, for example: "2.5,3,0", or leave it empty for a random orbit plane
         double startingPhase @unit("deg") = default(0deg);
-        double timeStep @unit("s") = default(60s);     // the time granularity of movement calculation in simulation time
 }
