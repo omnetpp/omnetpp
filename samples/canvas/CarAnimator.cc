@@ -32,7 +32,7 @@ class CarAnimator : public cSimpleModule
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
-        virtual void refreshDisplay() const override;
+        void refresh();
 };
 
 Define_Module(CarAnimator);
@@ -66,10 +66,12 @@ void CarAnimator::initialize()
     WATCH(targetPointIndex);
     WATCH(distanceTravelled);
 
+    refresh();
+
     scheduleAt(simTime(), new cMessage());
 }
 
-void CarAnimator::refreshDisplay() const
+void CarAnimator::refresh()
 {
     cFigure::Transform t;
     t.rotate(heading);
@@ -114,6 +116,7 @@ void CarAnimator::handleMessage(cMessage *msg)
     loc.y += distance * sin(heading);
     antenna->rotate(-2*M_PI/180, 0, 0);
     distanceTravelled += distance;
+    refresh();
 
     scheduleAt(simTime() + timeStep, msg);
 }
