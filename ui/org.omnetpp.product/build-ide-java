@@ -4,7 +4,7 @@ export OMNETPP_ROOT=`pwd`
 export BUILD_DIRECTORY=$OMNETPP_ROOT/out/ide
 
 if [ "$ECLIPSE_HOME"x = "x" ]; then
-    export ECLIPSE_HOME=/home/default/tools/eclipse/44
+    export ECLIPSE_HOME=/home/default/tools/eclipse/442
     echo Using Eclipse from: $ECLIPSE_HOME
 fi
 if [ "$BUILDID"x = "x" ]; then
