@@ -40,17 +40,45 @@ new Canvas API.</p>
 <tr><td><p align="right"><b>Qtenv - the New Qt Based Runtime Environment</b></p></td>
 <td><p>Qtenv has been introduced to replace the aging Tcl/Tk based runtime environment. Qtenv
 integrates better with the platform's look and feel while providing superior performance.
-In 5.0, the default runtime is still Tkenv, but users can start the new runtime by specifying 
+In 5.0, the default runtime is still Tkenv, but users can start the new runtime by specifying
 the '-u Qtenv' command line option when starting a simulation model.</p>
 <img src="pictures/50-qtenv-window.png" border="0"><br>
 </td></tr>
 
 <tr><td><p align="right"><b>3D Visualization Using OpenSceneGraph and osgEarth</b></p></td>
-<td><p>With Qtenv, it is now possible to switch between 2D and 3D visualization modes on 
-the module inspector's local toolbar. 3D Scenes can be rendered using the popular 
+<td><p>With Qtenv, it is now possible to switch between 2D and 3D visualization modes on
+the module inspector's local toolbar. 3D Scenes can be rendered using the popular
 OpenSceneGraph and osgEarth APIs. While models still have a default 2D representation,
 the customized 3D visualization should be provided by the model's author.</p>
 <img src="pictures/50-qtenv-3d.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
+
+<h1>What's New in OMNeT++/OMNEST 4.6</h1>
+
+<h2>Tkenv</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Improved zooming/panning support</b></p></td>
+<td><p>Use double click to zoom in around a point, and Shift + double click to zoom out.
+Use Ctrl + left mouse button to drag out a rectangle to zoom to (a.k.a. marquee zoom);
+right-click cancels marquee zoom. Use left mouse button for panning.</p>
+<img src="pictures/46-tkenv-marquee-zoom.png" border="0" width=500><br>
+</td></tr>
+
+</tbody></table>
+
+<h2>IDE</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Updated Eclipse Platform</b></p></td>
+<td><p>The IDE is now based on Eclipse 4.4 Luna and CDT 8.4.</p>
+<img src="pictures/46-eclipse-platform.png" border="0" width=500><br>
 </td></tr>
 
 </tbody></table>
@@ -72,7 +100,7 @@ the customized 3D visualization should be provided by the model's author.</p>
 <tr><td><p align="right"><b>New Look and Feel</b></p></td>
 <td><p>Tkenv has also received a new, modern look
    and feel, due to the use of the Ttk widgets and a custom Ttk theme.
-   This makes a huge difference in looks on all platforms, but especially on OS X. 
+   This makes a huge difference in looks on all platforms, but especially on OS X.
    See before (left) and after (right) screenshots.</p>
 <img src="pictures/45-newtheme.png" border="0">
 </td></tr>
@@ -89,14 +117,14 @@ the customized 3D visualization should be provided by the model's author.</p>
 <td><p>Tkenv now stores message sendings and also a clone of corresponding
      message objects (cMessage), and can show them in the log window.
      Message printer classes can be contributed to customize the
-     content of the log lines. Switching between the module log and 
-     the message trace is possible using the local toolbar in the log 
+     content of the log lines. Switching between the module log and
+     the message trace is possible using the local toolbar in the log
      inspector window.</p>
 <img src="pictures/45-message-trace.png" border="0">
 </td></tr>
 
 <tr><td><p align="right"><b>Optimized Status Area</b></p></td>
-<td><p>The status area is more concise now (two rows instead of three), 
+<td><p>The status area is more concise now (two rows instead of three),
        and shows more information at the same time.
        A part of the status area can be turned off to free up vertical space (Ctrl+D).
     </p>
@@ -104,7 +132,7 @@ the customized 3D visualization should be provided by the model's author.</p>
 </td></tr>
 
 <tr><td><p align="right"><b>Main Menu Cleanup</b></p></td>
-<td><p>We have reorganized the main menu, removed obsolete menu items 
+<td><p>We have reorganized the main menu, removed obsolete menu items
        and added numerous smaller improvements:
        additional hotkeys (Ctrl+Plus/Minus for Zoom, Ctrl+F5 Run Until,
        Ctrl+Q Quit); on-demand scrollbars (i.e. they are hidden when not needed);
@@ -155,7 +183,7 @@ You just need to hit "Step Into" in your debugger to debug that event.</p>
 </td></tr>
 
 <tr><td><p align="right"><b>Attach external debugger on error</b></p></td>
-<td><p>The simulation kernel can invoke an external debugger on an error. The Ini file editor 
+<td><p>The simulation kernel can invoke an external debugger on an error. The Ini file editor
 allows you to specify the options related to the just-in-time debugging feature.</p>
 <img src="pictures/44-ini-attach-debugger.png" border="0">
 </td></tr>
