@@ -83,7 +83,7 @@ void CarAnimator::refresh()
         trail->removePoint(0);
 
     char buf[20];
-    sprintf(buf, "%gm", distanceTravelled);
+    sprintf(buf, "%.0fm", distanceTravelled);
     distanceDisplay->setText(buf);
 
     int degrees = -int(heading*180/M_PI);
