@@ -399,6 +399,8 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
             else
                 cont = doRunSimulation();
         }
+        if (runMode != RUNMODE_NORMAL) // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
+            callRefreshDisplay();
         simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
