@@ -420,6 +420,7 @@ void MainWindow::updateStatusDisplay()
     updateSimtimeDisplay();
 
     if (showStatusDetails) {
+        //FIXME: switching between NextEvent Display and Performance Display should be explicit and in the Qtenv class not here! --Andras
         if (env->getSimulationState() == Qtenv::SIM_RUNNING
                 && (env->getSimulationRunMode() == Qtenv::RUNMODE_FAST
                     || env->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS))
@@ -440,6 +441,8 @@ void MainWindow::updateSimtimeDisplay()
 
 void MainWindow::updatePerformanceDisplay()
 {
+    //FIXME FIXME FIXME: should NOT overload the widgets used by updateNextEventDisplay()! Should use SEPARATE widgets not nextModuleLabel/nextEventLabel/nextTimeLabel, and swap the two statusbars when needed! Also: move away tooltip setting, into some initialization code! --Andras
+
     // Set Status Detail's tooltips
     ui->nextEventLabel->setToolTip("Performance: events processed per second");
     ui->nextModuleLabel->setToolTip("Relative speed: simulated seconds processed per second");

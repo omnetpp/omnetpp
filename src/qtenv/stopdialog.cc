@@ -44,6 +44,8 @@ void StopDialog::onClickStop()
 
 void StopDialog::stopDialogAutoupdate()
 {
+    //FIXME: updateButton is never handled! --Andras
+
     ui->updateButton->setDisabled(ui->checkBox->isChecked());
     if (ui->checkBox->isChecked())
         getQtenv()->opt->autoupdateInExpress = true;
