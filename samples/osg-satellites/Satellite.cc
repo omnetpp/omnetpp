@@ -54,7 +54,8 @@ void Satellite::initialize(int stage)
         if (normalString.empty()) {
             // it is not a correct spherical distribution, nor deterministic, but will do here
              normal.set(dblrand() * 2 - 1, dblrand() * 2 - 1, dblrand() * 2 - 1);
-        } else {
+        }
+        else {
             std::stringstream ss(normalString);
 
             double x, y, z;

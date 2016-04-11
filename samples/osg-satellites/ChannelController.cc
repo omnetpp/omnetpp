@@ -23,6 +23,9 @@ Define_Module(ChannelController);
 
 ChannelController *ChannelController::instance = nullptr;
 
+template<typename T>
+bool contains(const std::vector<T>& vector, T item) { return std::find(vector.begin(), vector.end(), item) != vector.end(); }
+
 ChannelController::ChannelController()
 {
     if (instance)
@@ -42,7 +45,8 @@ ChannelController *ChannelController::getInstance()
     return instance;
 }
 
-osg::ref_ptr<osg::Drawable> ChannelController::createLineBetweenPoints(osg::Vec3 start, osg::Vec3 end, float width, osg::Vec4 color) {
+osg::ref_ptr<osg::Drawable> ChannelController::createLineBetweenPoints(osg::Vec3 start, osg::Vec3 end, float width, osg::Vec4 color)
+{
     osg::ref_ptr<osg::Geometry> orbitGeom = new osg::Geometry;
     osg::ref_ptr<osg::DrawArrays> drawArrayLines = new  osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP);
     osg::ref_ptr<osg::Vec3Array> vertexData = new osg::Vec3Array;
@@ -68,25 +72,8 @@ osg::ref_ptr<osg::Drawable> ChannelController::createLineBetweenPoints(osg::Vec3
     return orbitGeom;
 }
 
-int ChannelController::findSatellite(Satellite *p)
+void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type)
 {
-    for (int i = 0; i < (int)satellites.size(); i++)
-        if (satellites[i] == p)
-            return i;
-
-    return -1;
-}
-
-int ChannelController::findGroundStation(GroundStation *p)
-{
-    for (int i = 0; i < (int)stations.size(); i++)
-        if (stations[i] == p)
-            return i;
-
-    return -1;
-}
-
-void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type) {
     auto mapNode = osgEarth::MapNode::findMapNode(scene);
     osgEarth::Util::LinearLineOfSightNode *los = new osgEarth::Util::LinearLineOfSightNode(mapNode);
     losNodes.push_back(los);
@@ -111,31 +98,14 @@ void ChannelController::addLineOfSight(osg::Node *a, osg::Node *b, int type) {
 
 void ChannelController::addSatellite(Satellite *p)
 {
-    if (findSatellite(p) == -1)
-        satellites.push_back(p);
-    refreshDisplay();
+    ASSERT(!contains(satellites, p));
+    satellites.push_back(p);
 }
-
-void ChannelController::removeSatellite(Satellite *p)
-{
-    int k = findSatellite(p);
-    if (k != -1)
-        satellites.erase(satellites.begin()+k);
-}
-
 
 void ChannelController::addGroundStation(GroundStation *p)
 {
-    if (findGroundStation(p) == -1)
-        stations.push_back(p);
-    refreshDisplay();
-}
-
-void ChannelController::removeGroundStation(GroundStation *p)
-{
-    int k = findGroundStation(p);
-    if (k != -1)
-        stations.erase(stations.begin()+k);
+    ASSERT(!contains(stations, p));
+    stations.push_back(p);
 }
 
 void ChannelController::initialize(int stage)

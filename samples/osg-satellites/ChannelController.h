@@ -33,8 +33,7 @@ using namespace omnetpp;
  */
 class ChannelController : public cSimpleModule
 {
-protected:
-
+  protected:
     static osg::ref_ptr<osg::Drawable> createLineBetweenPoints(osg::Vec3 start, osg::Vec3 end, float width, osg::Vec4 color);
 
     static ChannelController *instance;
@@ -54,24 +53,19 @@ protected:
     // the node containing the osgEarth data
     osg::Group *scene = nullptr;
 
+  protected:
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override { return 3; }
     virtual void handleMessage(cMessage *msg) override;
-    int findSatellite(Satellite *p);
-    int findGroundStation(GroundStation *p);
-
+    virtual void refreshDisplay() const override;
     void addLineOfSight(osg::Node *a, osg::Node *b, int type);
 
   public:
     ChannelController();
     virtual ~ChannelController();
     static ChannelController *getInstance();
-    virtual void addSatellite(Satellite *p);
-    virtual void removeSatellite(Satellite *p);
-
-    virtual void addGroundStation(GroundStation *p);
-    virtual void removeGroundStation(GroundStation *p);
-    virtual void refreshDisplay() const override;
+    void addSatellite(Satellite *p); // to be called exactly in initialize stage 1
+    void addGroundStation(GroundStation *p); // to be called exactly in initialize stage 1
 };
 
 #endif
