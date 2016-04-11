@@ -600,7 +600,7 @@ proc dispstrGetImage {tags_i tags_is imagesizefactor {alphamult 1} {defaultimage
 
         # opacity
         if {$alphamult != 1} {
-            lappend options -opacity $alphamult
+            lappend options -fillopacity $alphamult
         }
 
         # scaling
