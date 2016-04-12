@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++/OMNEST simulation example.
 //
-// Copyright (C) 2010 OpenSim Ltd.
+// Copyright (C) 2015 OpenSim Ltd.
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
@@ -91,7 +91,7 @@ void GroundStation::initialize(int stage)
     }
 }
 
-void GroundStation::refreshVisuals() 
+void GroundStation::refreshVisuals()
 {
     locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, altitude));
 }

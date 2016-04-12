@@ -1,14 +1,14 @@
 //
 // This file is part of an OMNeT++/OMNEST simulation example.
 //
-// Copyright (C) 2010 OpenSim Ltd.
+// Copyright (C) 2015 OpenSim Ltd.
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
 //
 
 //
-// Generates periodic events to ensure the progress of simulation time 
+// Generates periodic events to ensure the progress of simulation time
 //
 simple Clock
 {
