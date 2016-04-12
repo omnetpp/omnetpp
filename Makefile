@@ -221,7 +221,7 @@ copy-ui-docu:
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-overview
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
-	cp -r $(OMNETPP_DOC_DIR)/ide-changelog $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	cp -r $(OMNETPP_DOC_DIR)/visual-changelog $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/src/manual/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
 	cp -r $(OMNETPP_DOC_DIR)/src/userguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
