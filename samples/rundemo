@@ -110,7 +110,7 @@ foreach line {
 
 
 proc createWindow {} {
-    global wantScrollbar samples first db fonts colors tcl_platform
+    global wantScrollbar samples first db colors tcl_platform
 
     wm focusmodel . passive
     wm minsize . 1 1
@@ -166,7 +166,7 @@ proc createWindow {} {
     pack .main.lo -expand 0 -fill x  -side bottom
     pack .main.mid -expand 1 -fill both -side top
 
-    label .main.up.banner -bg $colors(banner) -relief groove  -font $fonts(bold)
+    label .main.up.banner -bg $colors(banner) -relief groove  -font BoldFont
     pack .main.up.banner -fill x -side top
 
     text .main.mid.text -yscrollcommand ".main.mid.sb set" -width 82 -height 25 -wrap none
@@ -174,7 +174,7 @@ proc createWindow {} {
     pack .main.mid.sb -anchor center -expand 0 -fill y  -side right
     pack .main.mid.text -anchor center -expand 1 -fill both -side left
 
-    button .main.lo.start -font $fonts(bold) -bg $colors(startbutton)
+    button .main.lo.start -font BoldFont -bg $colors(startbutton)
     pack .main.lo.start -expand 1 -fill x  -padx 10 -pady 6
 
     canvas .sel.c -width 200
@@ -188,14 +188,12 @@ proc createWindow {} {
     .sel.c create window 0 0 -anchor nw -window .sel.c.f
     set f .sel.c.f
 
-    #label $f.banner -text "Sample simulations:" -bg $colors(banner) -relief groove -font $fonts(bold)
-    #pack $f.banner -fill x -side top
     foreach i $samples {
         if {$db($i,type)=="spacer"} {
             frame $f.$i -relief flat
             pack $f.$i -fill x -side top -pady 5
         } elseif {$db($i,type)=="heading"} {
-            label $f.$i -text $db($i,title) -bg $colors(banner) -relief groove  -font $fonts(bold)
+            label $f.$i -text $db($i,title) -bg $colors(banner) -relief groove  -font BoldFont
             pack $f.$i -fill x -side top -padx 5 -pady 5
         } elseif {$db($i,type)=="readme" || $db($i,type)=="docu" || $db($i,type)=="program"} {
             button $f.$i -text $db($i,title) -bd 1 -command "showDemo $i"
@@ -337,52 +335,35 @@ proc generic_bindings {} {
 #===================================================================
 
 proc font_bindings {} {
-   global fonts tcl_platform colors
+   global tcl_platform colors
 
    set colors(banner)      #e0e0a0
    set colors(unselbutton) #c0c0c0
    set colors(selbutton)   #ffffff
    set colors(startbutton) #70e070
 
-   #
-   # fonts() array elements:
-   #  normal:  menus, labels etc
-   #  bold:    buttons
-   #  icon:    toolbar 'icons'
-   #  big:     STOP button
-   #  msgname: message name during animation
-   #  fixed:   text windows and listboxes
-   #
-
-   if {$tcl_platform(platform) == "unix"} {
-      set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(bold)   -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(icon)   -Adobe-Times-Bold-I-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(fixed)  fixed
-      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+   # set up fonts
+   if {[string equal [tk windowingsystem] win32]} {
+      # Windows
+      set normalfamily [getFirstAvailableFontFamily {"Segoe UI" "MS Sans Serif" "Arial"} unknown]
+      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "Consolas" "Terminal"} unknown]
+      set size 9
+      if {$normalfamily == "Segoe UI"} {set size 9}  ;# text in this font appears to be smaller than in MS Sans Serif or Arial
+   } elseif {[string equal [tk windowingsystem] aqua]} {
+      # Mac
+      set normalfamily [getFirstAvailableFontFamily {"Lucida Grande" Helvetica} unknown]
+      set monofamily [getFirstAvailableFontFamily {"Monaco" "Courier"} unknown]
+      set size 13
    } else {
-      # Windows, Mac
-      set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(bold)   -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(icon)   -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(fixed)  FixedSys
-      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
+      # Linux and other systems
+      set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
+      set monofamily [getFirstAvailableFontFamily {"Ubuntu Mono" "DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
+      if {[tk scaling] > 1.5} {set size 11} else {set size 9}
    }
 
-   if {$tcl_platform(platform) == "unix"} {
-       option add *Scrollbar.width  12
-       option add *Menubutton.font  $fonts(normal)
-       option add *Menu.font        $fonts(normal)
-       option add *Label.font       $fonts(normal)
-       option add *Entry.font       $fonts(normal)
-       option add *Listbox.font     $fonts(fixed)
-       option add *Text.font        $fonts(fixed)
-       option add *Button.font      $fonts(bold)
-   }
+   font configure TkDefaultFont -family $normalfamily -size $size
+   font configure TkFixedFont -family $monofamily -size $size
+   font create BoldFont -family $normalfamily -size $size -weight bold
 }
 
 proc checkVersion {} {
@@ -408,6 +389,17 @@ proc checkVersion {} {
       tk_messageBox -title {Warning} -type ok -icon warning \
         -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
    }
+}
+
+proc getFirstAvailableFontFamily {preferencelist defaultvalue} {
+    set families [font families]
+    foreach family $preferencelist {
+        set index [lsearch $families $family]
+        if {$index != -1} {
+            return [lindex $families $index]
+        }
+    }
+    return $defaultvalue
 }
 
 cd [file dirname [info script]]
