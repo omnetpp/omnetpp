@@ -31,12 +31,13 @@ struct rgb_t { // only used internally for easier map storage
 };
 
 // Preventing the "static initialization order fiasco".
-// https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use
+// https://isocpp.org/wiki/faq/ctors#construct-on-first-use-v2
 static std::map<std::string, rgb_t> &colors() {
     // This will only get constructed once, and it is guaranteed to be before the first use.
-    // The downside is that it will never be destructed. The OS will clean it up after the process ended...
-    static std::map<std::string, rgb_t> *map = new std::map<std::string, rgb_t>();
-    return *map;
+    // This could only crash if the map is used in a destructor during exit and the map already got destructed.
+    // Luckily, this could only happen if parseColor is called from a destructor, but it's very unlikely.
+    static std::map<std::string, rgb_t> colorMap;
+    return colorMap;
 }
 
 static std::string lc(const char *s)
