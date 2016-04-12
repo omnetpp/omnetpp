@@ -66,6 +66,16 @@ void MobileNode::initialize(int stage)
                             osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
         modelNode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
+        const char *modelColor = par("modelColor");
+        if (*modelColor != '\0') {
+            auto color = osgEarth::Color(modelColor);
+            auto material = new osg::Material();
+            material->setAmbient(osg::Material::FRONT_AND_BACK, color);
+            material->setDiffuse(osg::Material::FRONT_AND_BACK, color);
+            material->setAlpha(osg::Material::FRONT_AND_BACK, 1.0);
+            modelNode->getOrCreateStateSet()->setAttribute(material, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
+        }
+
         auto objectNode = new cObjectOsgNode(this);  // make the node selectable in Qtenv
         objectNode->addChild(modelNode);
         locatorNode->addChild(objectNode);

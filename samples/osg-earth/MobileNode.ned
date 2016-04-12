@@ -17,6 +17,7 @@ simple MobileNode
         @display("i=block/broadcast");
         string modelURL;                             // the URL/filename of the 3D model to be used for the node
                                                      // (you can use osg pseudo filters like: modelname.osgb.3.scale.0,0,45.rot scaleX3, rotate 45 deg around Z)
+        string modelColor = default("");             // colorizes the 3D model used for the node
         // decorations and annotations
         string labelColor = default("#000000ff");    // the color of the model label in hex RRGGBBAA format or "" to turn off labels
         bool showTxRange = default(true);            // whether to show the transmission range around the nodes
