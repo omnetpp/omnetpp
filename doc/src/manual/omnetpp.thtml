@@ -20,10 +20,10 @@
     box-shadow: 0 0 2px 2px #dddddd;
   }
 
-  h1 { color: #1A41A8; margin-top: 50px; margin-bottom: 20px; }
-  h2 { color: #1A41A8; margin-top: 40px; margin-bottom: 20px; }
-  h3 { color: #1A41A8; margin-top: 30px; margin-bottom: 20px; }
-  h4 { color: #1A41A8; margin-top: 30px; font-weight: bold; }
+  h1 { color: #196F93; margin-top: 50px; margin-bottom: 20px; }
+  h2 { color: #196F93; margin-top: 40px; margin-bottom: 20px; }
+  h3 { color: #196F93; margin-top: 30px; margin-bottom: 20px; }
+  h4 { color: #196F93; margin-top: 30px; font-weight: bold; }
 
   hr.pgbr { color: #f5f5f5; margin-top: 40px; margin-bottom: 10px; }
   ul.dl { padding-left: 30px; text-indent: -30px; list-style: none; }
@@ -37,7 +37,7 @@
   table { background:#fffff4; margin: 0 auto; border-collapse:collapse; border: 2px solid; }
   td,th { text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000; }
   div.caption { margin-top: 10px; }
-  a { text-decoration: none; }
+  a { color: #196F93; text-decoration: none; }
   a:visited { text-decoration: none; }
   # a:hover { text-decoration: underline; }
 
@@ -47,7 +47,7 @@
   table.matrix:after { right: -6px; border-left: 0px; }
   table.matrix td { padding: 5px; text-align: center; border: 0px; }
 
-  a.headerlink { visibility: hidden; font-size: 0.8em; padding: 0 4px 0 4px; text-decoration: none; color: #8080FF; }
+  a.headerlink { visibility: hidden; font-size: 0.8em; padding: 0 4px 0 4px; text-decoration: none; color: #82A3AF; }
   h1:hover > a.headerlink, h2:hover > a.headerlink, h3:hover > a.headerlink, h4:hover > a.headerlink { visibility: visible; }
 </style>
 
@@ -553,9 +553,9 @@ function redirectOldLinks() {
 __TITLEPAGE_START__
   <br>
   <img src='omnetpp.png' border='0'>
-  <p style="color: #1A41A8; font-weight: bold; font-size: 32px; margin-top: 15px; margin-bottom: 5px">Simulation Manual</p>
-  <p style="color: #1A41A8; font-weight: bold; font-size: 18px; margin-top: 5px; margin-bottom: 10px">OMNeT++ version __VERSION__</p>
-  <p style="color: #1A41A8; font-weight: bold; font-size: 12px; margin-top: 5px; margin-bottom: 40px"><a href="http://omnetpp.org">http://omnetpp.org</a></p>
+  <p style="color: #196F93; font-weight: bold; font-size: 32px; margin-top: 15px; margin-bottom: 5px">Simulation Manual</p>
+  <p style="color: #196F93; font-weight: bold; font-size: 18px; margin-top: 5px; margin-bottom: 10px">OMNeT++ version __VERSION__</p>
+  <p style="color: #196F93; font-weight: bold; font-size: 12px; margin-top: 5px; margin-bottom: 40px"><a href="http://omnetpp.org">http://omnetpp.org</a></p>
   <hr>
 __TITLEPAGE_END__
 
