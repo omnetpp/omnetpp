@@ -120,12 +120,6 @@ proc createWindow {} {
     wm title . "OMNeT++ Demo Simulations"
     wm protocol . WM_DELETE_WINDOW {exit}
 
-    if {$tcl_platform(platform) == "unix"} {
-        wm geometry . "690x595"
-    } else {
-        wm geometry . "650x535"
-    }
-
     #################################
     # Menu bar
     #################################
@@ -175,7 +169,7 @@ proc createWindow {} {
     label .main.up.banner -bg $colors(banner) -relief groove  -font $fonts(bold)
     pack .main.up.banner -fill x -side top
 
-    text .main.mid.text -yscrollcommand ".main.mid.sb set" -width 80 -height 20  -wrap none
+    text .main.mid.text -yscrollcommand ".main.mid.sb set" -width 82 -height 25 -wrap none
     scrollbar .main.mid.sb -command ".main.mid.text yview"
     pack .main.mid.sb -anchor center -expand 0 -fill y  -side right
     pack .main.mid.text -anchor center -expand 1 -fill both -side left
@@ -217,6 +211,9 @@ proc createWindow {} {
     .sel.c config -width [winfo width .sel.c.f]
     .sel.c config -scrollregion "0 0 0 [winfo height .sel.c.f]"
     showDemo $first
+
+    # prevent window from changing size when a demo is selected
+    wm geometry . "[winfo width .]x[winfo height .]"
 }
 
 proc helpAbout {} {
