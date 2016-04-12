@@ -61,6 +61,7 @@ void cNEDLoader::registerNedType(const char *qname, bool isInnerType, NEDElement
     // wrap, and add to the table (Note: we cannot reuse base class impl, because it creates a NEDTypeInfo)
     cNEDDeclaration *decl = new cNEDDeclaration(this, qname, isInnerType, node);
     nedTypes[qname] = decl;
+    nedTypeNames.clear();  // invalidate
 
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = nullptr;
