@@ -27,6 +27,7 @@ StopDialog::StopDialog(QWidget *parent) :
     ui(new Ui::StopDialog)
 {
     ui->setupUi(this);
+    ui->checkBox->setChecked(getQtenv()->opt->autoupdateInExpress);
 
     stopDialogAutoupdate();
 }
@@ -45,12 +46,9 @@ void StopDialog::onClickStop()
 void StopDialog::stopDialogAutoupdate()
 {
     //FIXME: updateButton is never handled! --Andras
-
-    ui->updateButton->setDisabled(ui->checkBox->isChecked());
-    if (ui->checkBox->isChecked())
-        getQtenv()->opt->autoupdateInExpress = true;
-    else
-        getQtenv()->opt->autoupdateInExpress = false;
+    bool autoUpdate = ui->checkBox->isChecked();
+    getQtenv()->opt->autoupdateInExpress = autoUpdate;
+    ui->updateButton->setDisabled(autoUpdate);
 }
 
 void StopDialog::onClickUpdate()
