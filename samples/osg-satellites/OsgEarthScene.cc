@@ -34,7 +34,7 @@ OsgEarthScene *OsgEarthScene::instance = nullptr;
 OsgEarthScene::OsgEarthScene()
 {
     if (instance)
-        throw cRuntimeError("There can be only one OsgRenderer instance in the network");
+        throw cRuntimeError("There can be only one OsgEarthScene instance in the network");
     instance = this;
 }
 
@@ -82,7 +82,7 @@ void OsgEarthScene::initialize()
 OsgEarthScene *OsgEarthScene::getInstance()
 {
     if (!instance)
-        throw cRuntimeError("OsgRenderer::getInstance(): there is no OsgRenderer module in the network");
+        throw cRuntimeError("OsgEarthScene::getInstance(): there is no OsgEarthScene module in the network");
     return instance;
 }
 

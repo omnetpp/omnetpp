@@ -9,7 +9,8 @@
 
 
 //
-// Creates OSG Nodes from the model
+// Loads the Earth model from the given file, and at runtime rotates 
+// the Earth 360deg/24h.
 //
 simple OsgEarthScene
 {

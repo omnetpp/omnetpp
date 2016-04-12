@@ -17,7 +17,7 @@
 using namespace omnetpp;
 
 /**
- * Initialize global 3d canvas and load the configured earth model file.
+ * Initialize global 3D canvas and load the configured Earth model file.
  */
 class OsgEarthScene : public cSimpleModule
 {

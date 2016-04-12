@@ -8,7 +8,7 @@
 //
 
 //
-// This module is responsible for tracking the distance of mobile nodes,
+// This module is responsible for tracking the distances of mobile nodes,
 // and visualizing the connectivity graph via osgEarth.
 //
 simple ChannelController

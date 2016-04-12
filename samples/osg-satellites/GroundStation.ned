@@ -8,8 +8,7 @@
 //
 
 //
-// A mobile node showing a 3D model. Able to display
-// its position, trail, transmission range
+// Represents a satellite ground station at the given longitude/latitude.
 //
 simple GroundStation
 {

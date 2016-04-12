@@ -8,7 +8,11 @@
 //
 
 //
-// Generates periodic events to ensure the progress of simulation time
+// Generates periodic events. Since updating the 3D scene is all done
+// inside refreshDisplay() methods that are only called by the GUI
+// "when needed" (and there are no events in other modules), we need
+// to artificially generate periodic events to get an animation.
+// See the documentation of refreshDisplay() in the Simulation Manual.
 //
 simple Clock
 {

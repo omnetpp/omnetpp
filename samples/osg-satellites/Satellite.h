@@ -21,8 +21,7 @@
 using namespace omnetpp;
 
 /**
- * A mobile node (with a 3D model) moving around . A range indicator, and the
- * model's track can be shown along with its label.
+ * Satellite model. See NED file for details.
  */
 class Satellite : public cSimpleModule
 {

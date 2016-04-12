@@ -8,8 +8,8 @@
 //
 
 //
-// A mobile node showing a 3D model. Able to display
-// its position, trail, transmission range
+// Represents a satellite. Loads the 3D model from the given file, and 
+// moves it along the specified orbit.
 //
 simple Satellite
 {
