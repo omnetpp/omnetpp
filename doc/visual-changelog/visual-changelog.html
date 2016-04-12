@@ -19,17 +19,23 @@
 <tbody>
 
 <tr><td><p align="right"><b>Improved Status Area</b></p></td>
-<td><p>Status information about the current simulation state and the upcoming simulation event
-is much better presented in the status area. Both the last executed and the next event's simulation
-time is visible. Statistical data about the running simulation is now available on the bottom status bar.</p>
-<img src="images/50-tkenv-status-area.png" border="0"><br>
+<td><p>The status area has been redesigned. The most prominent feature is the large
+displays showing the simulation time and event number on the right side of the toolbar.
+They display the last event when the simulation is not running, and the
+current event during animation. The status line below the toolbar shows information
+about the next event. When the simulation is running, this area switches
+to displaying performance data such as the current event/second value. Additional,
+more static or less important information has been moved to the bottom status bar.
+</p>
+<img width="800" src="images/50-tkenv-status-area.png" border="0"><br>
 </td></tr>
 
-<tr><td><p align="right"><b>2D Canvas in Tkenv</b></p></td>
-<td><p>It is now possible to create arbitrary drawings on the graphical module inspector window.
-Figures can be created either declaratively from the NED files or programmatically, by using the
-new Canvas API.</p>
-<img src="images/50-tkenv-canvas.png" border="0"><br>
+<tr><td><p align="right"><b>Tkenv Canvas Support</b></p></td>
+<td><p>Tkenv has gained support for the Canvas API, a new facility that allows
+one to augment simulations with graphical elements. The screenshot is from the new
+Canvas example simulation.
+</p>
+<img width="800" src="images/50-tkenv-canvas.png" border="0"><br>
 </td></tr>
 </tbody></table>
 
@@ -37,20 +43,34 @@ new Canvas API.</p>
 <table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
 <tbody>
 
-<tr><td><p align="right"><b>Qtenv - the New Qt Based Runtime Environment</b></p></td>
-<td><p>Qtenv has been introduced to replace the aging Tcl/Tk based runtime environment. Qtenv
-integrates better with the platform's look and feel while providing superior performance.
-In 5.0, the default runtime is still Tkenv, but users can start the new runtime by specifying
-the '-u Qtenv' command line option when starting a simulation model.</p>
-<img src="images/50-qtenv-window.png" border="0"><br>
+<tr><td><p align="right"><b>Qtenv - A New Qt-Based Runtime Environment</b></p></td>
+<td><p>Qtenv has been introduced to replace the aging Tcl/Tk-based runtime environment.
+The Qt toolkit provides better look and feel, a richer set of features, and at the same time delivers
+superior performance. In 5.0, the default runtime is still Tkenv, but users can optionally start
+the new runtime with Qtenv. This can be achieved by adding the "-u Qtenv" option on the command line,
+or by selecting Qtenv in the simulation's Run/Debug configuration in IDE.</p>
+<img width="800" src="images/50-qtenv-window.png" border="0"><br>
 </td></tr>
 
 <tr><td><p align="right"><b>3D Visualization Using OpenSceneGraph and osgEarth</b></p></td>
-<td><p>With Qtenv, it is now possible to switch between 2D and 3D visualization modes on
-the module inspector's local toolbar. 3D Scenes can be rendered using the popular
-OpenSceneGraph and osgEarth APIs. While models still have a default 2D representation,
-the customized 3D visualization should be provided by the model's author.</p>
-<img src="images/50-qtenv-3d.png" border="0"><br>
+<td><p>Qtenv also allows one to visualize 3D scenes using the OpenSceneGraph and osgEarth libraries,
+a feature that could not be implemented using Tcl/Tk. One can switch between the 3D visualization
+and the traditional (2D) graphics using the module inspector's local toolbar. The screenshot
+shows one of the new example simulations.
+</p>
+<img width="800" src="images/50-qtenv-3d.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
+
+<h2>IDE</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Updated Eclipse Platform</b></p></td>
+<td><p>The IDE is now based on Eclipse 4.4.2 Luna and CDT 8.6.</p>
+<img src="images/50-eclipse-platform.png" border="0" width=500><br>
 </td></tr>
 
 </tbody></table>
