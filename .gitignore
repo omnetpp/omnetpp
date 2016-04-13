@@ -10,6 +10,8 @@
 *.tab.hh
 *.tab.cc
 *.bak
+*~
+*.orig
 *.pdb
 *.idb
 *.ilk
@@ -31,6 +33,7 @@ autom4te.cache/
 /bin/*
 out/
 /lib/
+/samples/inet/
 Thumbs.db
 backups
 Thumbs.db
