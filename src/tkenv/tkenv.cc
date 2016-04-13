@@ -85,9 +85,6 @@ extern "C" TKENV_API void _tkenv_lib() {}
 
 #define LL  INT64_PRINTF_FORMAT
 
-#define SPEEDOMETER_UPDATEMILLISECS 1000
-
-
 Register_GlobalConfigOptionU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Tkenv.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, nullptr, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see `tkenv-default-config`) Tkenv should set up automatically on startup. The default is to ask the user.");
@@ -530,11 +527,11 @@ bool Tkenv::doRunSimulation()
 
         // display update
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
+            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3)) // do not start new interval at every event
+                speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             callRefreshDisplay();
-            updateStatusDisplay();
             refreshInspectors();
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-                speedometer.beginNewInterval();
+            updateStatusDisplay();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
         }
@@ -600,13 +597,12 @@ bool Tkenv::doRunSimulationExpress()
         getSimulation()->executeEvent(event);
 
         if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->updateFreqExpress, last_update)) {
-            updateStatusDisplay();
+            speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             if (opt->autoupdateInExpress) {
                 callRefreshDisplay();
                 refreshInspectors();
             }
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-                speedometer.beginNewInterval();
+            updateStatusDisplay();
             Tcl_Eval(interp, "update");
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
             if (runMode != RUNMODE_EXPRESS) {

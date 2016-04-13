@@ -106,8 +106,6 @@ extern "C" QTENV_API void _qtenv_lib() {}
 
 #define LL                             INT64_PRINTF_FORMAT
 
-#define SPEEDOMETER_UPDATEMILLISECS    1000
-
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. The default is to ask the user.");
@@ -710,11 +708,11 @@ bool Qtenv::doRunSimulation()
 
         // display update
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
+            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3)) // do not start new interval at every event
+                speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             callRefreshDisplay();
-            updateStatusDisplay();
             refreshInspectors();
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-                speedometer.beginNewInterval();
+            updateStatusDisplay();
             QCoreApplication::processEvents();
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
         }
@@ -780,13 +778,12 @@ bool Qtenv::doRunSimulationExpress()
         getSimulation()->executeEvent(event);
 
         if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->updateFreqExpress, last_update)) {
-            updateStatusDisplay();
+            speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             if (opt->autoupdateInExpress) {
                 callRefreshDisplay();
                 refreshInspectors();
             }
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-                speedometer.beginNewInterval();
+            updateStatusDisplay();
             QCoreApplication::processEvents();
             resetElapsedTime(last_update);  // exclude UI update time [bug #52]
             if (runMode != RUNMODE_EXPRESS) {

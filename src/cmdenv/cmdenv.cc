@@ -89,8 +89,6 @@ extern "C" CMDENV_API void cmdenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" CMDENV_API void _cmdenv_lib() {}
 
-#define SPEEDOMETER_UPDATEMILLISECS 1000
-
 #define LL  INT64_PRINTF_FORMAT
 
 static char buffer[1024];

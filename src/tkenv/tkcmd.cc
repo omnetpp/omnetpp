@@ -147,6 +147,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
+int callRefreshDisplay_cmd(ClientData, Tcl_Interp *, int, const char **);
 int refreshInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int redrawInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -271,6 +272,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_markinspectorfordeletion", markInspectorForDeletion_cmd}, // args: <window>
    { "opp_inspmarkedfordeletion", inspMarkedForDeletion_cmd}, // args: <window>
    { "opp_getinspectors",     getInspectors_cmd     }, // args: <toplevelOnly>
+   { "opp_callrefreshdisplay", callRefreshDisplay_cmd }, // args: -
    { "opp_refreshinspectors", refreshInspectors_cmd }, // args: -
    { "opp_redrawinspectors",  redrawInspectors_cmd  }, // args: -
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
@@ -2356,6 +2358,17 @@ int getInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
             Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(TCLCONST(insp->getWindowName()), -1));
     }
     Tcl_SetObjResult(interp, listobj);
+    return TCL_OK;
+}
+
+int callRefreshDisplay_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+    if (argc != 1) {
+        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+        return TCL_ERROR;
+    }
+    Tkenv *app = getTkenv();
+    app->callRefreshDisplay();
     return TCL_OK;
 }
 

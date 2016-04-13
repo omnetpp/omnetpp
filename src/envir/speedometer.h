@@ -51,7 +51,9 @@ class ENVIR_API Speedometer
     void beginNewInterval();
 
     unsigned long getMillisSinceIntervalStart();
+    long getNumEventsSinceIntervalStart();
 
+    // return readings from the last interval, or 0 if no interval has been completed yet
     double getEventsPerSec();
     double getEventsPerSimSec();
     double getSimSecPerSec();

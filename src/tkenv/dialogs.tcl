@@ -304,7 +304,7 @@ proc displayStopDialog {} {
     button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
           -borderwidth 6 -font BIGFont -command {opp_stopsimulation}
     ttk::checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopDialogAutoupdate $w"
-    ttk::button $w.updatebutton  -text "  Update now  " -command {opp_refreshinspectors}
+    ttk::button $w.updatebutton  -text "  Update now  " -command {opp_callrefreshdisplay; opp_refreshinspectors}
 
     grid $w.stopbutton   -sticky news -padx 4 -pady 3
     grid $w.autoupdate   -sticky nes -padx 4 -pady 0
