@@ -2198,6 +2198,7 @@ void _dummy_for_loginspector();
 void _dummy_for_gateinspector();
 void _dummy_for_histograminspector();
 void _dummy_for_outputvectorinspector();
+void _dummy_for_objecttreeinspector();
 
 void _dummy_func()
 {
@@ -2208,6 +2209,7 @@ void _dummy_func()
     _dummy_for_gateinspector();
     _dummy_for_histograminspector();
     _dummy_for_outputvectorinspector();
+    _dummy_for_objecttreeinspector();
 }
 
 } // namespace qtenv

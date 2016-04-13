@@ -28,6 +28,8 @@
 namespace omnetpp {
 namespace qtenv {
 
+void _dummy_for_objecttreeinspector() {}
+
 class ObjectTreeInspectorFactory : public InspectorFactory
 {
   public:
