@@ -37,6 +37,7 @@
 #include "fileoutvectormgr.h"
 #include "fileoutscalarmgr.h"
 #include "filesnapshotmgr.h"
+#include "eventlogfilemgr.h"
 #include "indexedfileoutvectormgr.h"
 #include "akaroarng.h"
 #include "akoutvectormgr.h"
@@ -265,12 +266,14 @@ void env_dummy_function()
     cFileSnapshotManager sm;
     cIndexedFileOutputVectorManager iovm;
     MatchableObjectAdapter moa;
+    EventlogFileManager elfm;
     (void)a;
     (void)ovm;
     (void)osm;
     (void)sm;
     (void)iovm;
     (void)moa;  // eliminate 'unused var' warnings
+    (void)elfm;
 #ifdef WITH_AKAROA
     cAkOutputVectorManager ao;
     cAkaroaRNG ar;
