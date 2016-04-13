@@ -130,16 +130,16 @@
 
 2015-11-17  Andras Varga
 
-	* Added the simtime-precision config option, more user-friendly
-	replacement for the now-deprecated simtime-scale. simtime-precision
+	* Added the simtime-resolution config option, more user-friendly
+	replacement for the now-deprecated simtime-scale. simtime-resolution
 	accepts time units (s, ms, us, ns, ps, fs, as), power-of-ten multiples
 	of such a unit (e.g. 100ms), and also base-10 scale exponents in the
 	-18..0 range (mostly for backward compatiblity with simtime-scale).
 
 	Examples:
-	   simtime-precision = ms
-	   simtime-precision = 10ns
-	   simtime-precision = -6  (==microseconds)
+	   simtime-resolution = ms
+	   simtime-resolution = 10ns
+	   simtime-resolution = -6  (==microseconds)
 
 2015-11-09  Andras Varga
 

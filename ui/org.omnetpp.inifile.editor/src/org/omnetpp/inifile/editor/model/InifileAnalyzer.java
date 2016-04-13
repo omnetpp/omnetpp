@@ -9,7 +9,7 @@ package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_PRECISION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
@@ -573,7 +573,7 @@ public final class InifileAnalyzer {
             return;
         }
         else if (e == CFGID_SIMTIME_SCALE) {
-            markers.addWarning(section, key, "Option \""+key+"\" is deprecated, use \"" + CFGID_SIMTIME_PRECISION.getName() + "\" instead");
+            markers.addWarning(section, key, "Option \""+key+"\" is deprecated, use \"" + CFGID_SIMTIME_RESOLUTION.getName() + "\" instead");
         }
         else if (e.isGlobal() && !section.equals(GENERAL)) {
             markers.addError(section, key, "Option \""+key+"\" can only be specified globally, in the [General] section");
@@ -613,8 +613,8 @@ public final class InifileAnalyzer {
         else if (e==CFGID_NETWORK) {
             validateNetwork(section, key, ned, value);
         }
-        else if (e == CFGID_SIMTIME_PRECISION) {
-            validateSimtimePrecision(section, key, value);
+        else if (e == CFGID_SIMTIME_RESOLUTION) {
+            validateSimtimeResolution(section, key, value);
         }
     }
 
@@ -636,7 +636,7 @@ public final class InifileAnalyzer {
         return;
     }
 
-    private void validateSimtimePrecision(String section, String key, String value) {
+    private void validateSimtimeResolution(String section, String key, String value) {
         try {
             double d = Double.parseDouble(value);
             if (d != Math.floor(d) || d > 0 || d < -18)

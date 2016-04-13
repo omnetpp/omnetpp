@@ -665,8 +665,8 @@ public class ConfigRegistry {
         "sim-time-limit", "s", null,
         "Stops the simulation when simulation time reaches the given limit. The " +
         "default is no limit.");
-    public static final ConfigOption CFGID_SIMTIME_PRECISION = addGlobalOption(
-        "simtime-precision", CFG_CUSTOM, "ps",
+    public static final ConfigOption CFGID_SIMTIME_RESOLUTION = addGlobalOption(
+        "simtime-resolution", CFG_CUSTOM, "ps",
         "Sets the resolution for the 64-bit fixed-point simulation time " +
         "representation. Accepted values are: second-or-smaller time units (`s`, " +
         "`ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units " +
@@ -675,7 +675,7 @@ public class ConfigRegistry {
         "picosecond resolution, which offers a range of ~110 days.");
     public static final ConfigOption CFGID_SIMTIME_SCALE = addGlobalOption(
         "simtime-scale", CFG_INT, "-12",
-        "DEPRECATED in favor of simtime-precision. Sets the scale exponent, and thus " +
+        "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus " +
         "the resolution of time for the 64-bit fixed-point simulation time " +
         "representation. Accepted values are -18..0; for example, -6 selects " +
         "microsecond resolution. -12 means picosecond resolution, with a maximum " +
@@ -808,7 +808,7 @@ public class ConfigRegistry {
         "0", "-3", "-6", "-9", "-12", "-15", "-18"
     };
 
-    public static final String[] SIMTIME_PRECISION_CHOICES = new String[] {
+    public static final String[] SIMTIME_RESOLUTION_CHOICES = new String[] {
         "s",
         "100ms", "10ms", "ms",
         "100us", "10us", "us",

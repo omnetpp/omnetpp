@@ -569,7 +569,7 @@ with the \ttt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     Stops the simulation when simulation time reaches the given limit. The
     default is no limit.
-\item[simtime-precision] = \textit{<custom>}, default: \ttt{ps}\\
+\item[simtime-resolution] = \textit{<custom>}, default: \ttt{ps}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Sets the resolution for the 64-bit fixed-point simulation time
     representation. Accepted values are: second-or-smaller time units (\ttt{s},
@@ -580,7 +580,7 @@ with the \ttt{-h configdetails} option.
     {\textasciitilde}110 days.
 \item[simtime-scale] = \textit{<int>}, default: \ttt{-{\allowbreak}12}\\
     \textit{Global setting (applies to all simulation runs).}\\
-    DEPRECATED in favor of simtime-precision. Sets the scale exponent, and thus
+    DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus
     the resolution of time for the 64-bit fixed-point simulation time
     representation. Accepted values are -18..0; for example, -6 selects
     microsecond resolution. -12 means picosecond resolution, with a maximum

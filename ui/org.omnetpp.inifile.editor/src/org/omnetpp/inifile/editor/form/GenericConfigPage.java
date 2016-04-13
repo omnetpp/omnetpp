@@ -106,7 +106,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "CPU Time Limit"));
             addSpacer(form);
             group = createGroup(form, "Other");
-            addComboboxFieldEditor(group, CFGID_SIMTIME_PRECISION, "Simulation time precision", true);
+            addComboboxFieldEditor(group, CFGID_SIMTIME_RESOLUTION, "Simulation time resolution", true);
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
             addSpacer(form);
         }
@@ -299,9 +299,9 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
 
         // initialize combo boxes with static content
-        FieldEditor simtimePrecisionEditor = getFieldEditorFor(CFGID_SIMTIME_PRECISION);
-        if (simtimePrecisionEditor != null)
-            simtimePrecisionEditor.setComboContents(Arrays.asList(SIMTIME_PRECISION_CHOICES));
+        FieldEditor simtimeResolutionEditor = getFieldEditorFor(CFGID_SIMTIME_RESOLUTION);
+        if (simtimeResolutionEditor != null)
+            simtimeResolutionEditor.setComboContents(Arrays.asList(SIMTIME_RESOLUTION_CHOICES));
         FieldEditor cmdenvLoglevelEditor = getFieldEditorFor(CFGID_CMDENV_LOG_LEVEL);
         if (cmdenvLoglevelEditor != null)
             cmdenvLoglevelEditor.setComboContents(Arrays.asList(LOGLEVEL_CHOICES));

@@ -61,9 +61,9 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
     private InifileAnalyzer analyzer;
 
     private ConfigOption[] assistedOptions = {
-            CFGID_EXTENDS, CFGID_NETWORK, CFGID_USER_INTERFACE, CFGID_CMDENV_CONFIG_NAME, 
+            CFGID_EXTENDS, CFGID_NETWORK, CFGID_USER_INTERFACE, CFGID_CMDENV_CONFIG_NAME,
             CFGID_TKENV_DEFAULT_CONFIG, CFGID_QTENV_DEFAULT_CONFIG, CFGID_CONSTRAINT,
-            CFGID_SIMTIME_PRECISION,CFGID_SIMTIME_SCALE
+            CFGID_SIMTIME_RESOLUTION,CFGID_SIMTIME_SCALE
     };
 
     public InifileValueContentProposalProvider(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, boolean replace) {
@@ -187,8 +187,8 @@ s    * before getting presented to the user.
             if (prefix.matches(".*\\$[A-Za-z0-9_]*"))
                 addConfigVariableProposals(p);
         }
-        else if (entry==CFGID_SIMTIME_PRECISION) {
-            p.addAll(toProposals(SIMTIME_PRECISION_CHOICES));
+        else if (entry==CFGID_SIMTIME_RESOLUTION) {
+            p.addAll(toProposals(SIMTIME_RESOLUTION_CHOICES));
         }
         else if (entry==CFGID_SIMTIME_SCALE) {
             p.addAll(toProposals(SIMTIME_SCALE_CHOICES));

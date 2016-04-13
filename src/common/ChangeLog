@@ -15,7 +15,7 @@
 2015-11-17  Andras Varga
 
 	* UnitConversion: added femtosecond and attosecond, as they are needed
-	for the new simtime-precision config option.
+	for the new simtime-resolution config option.
 
 2015-10-16  Andras Varga
 
