@@ -349,7 +349,7 @@ proc mainWindow:createStatusbars {} {
     set help_tips(.simsecpersec)    "Relative speed: simulated seconds processed per second"
     set help_tips(.eventspersimsec) "Event density: events per simulated second"
 
-    set help_tips(.networklabel)    "Current inifile configuration, run number, and network name"
+    set help_tips(.networklabel)    "Current inifile configuration, run number, network name, and potential scheduler information"
     set help_tips(.msgstatslabel)   "Number of events (messages) currently scheduled /\nNumber of existing message objects, including scheduled ones /\nTotal number of messages created since start of the simulation"
 }
 
@@ -468,9 +468,11 @@ proc mainWindow:updateNetworkRunDisplay {} {
     set configname [opp_getstatusvar activeconfig]
     set runnumber [opp_getstatusvar activerunnumber]
     set network [opp_getstatusvar networktypename]
+    set scheduler [opp_getobjectinfostring [opp_object_scheduler]]
     if {$configname==""} {set configName "n/a"}
     if {$network==""} {set network "(no network)"}
-    .networklabel config -text "$configname #$runnumber: $network"
+    if {$scheduler==""} {set sep ""} else {set sep " - "}
+    .networklabel config -text "$configname #$runnumber: $network$sep$scheduler"
 }
 
 proc mainWindow:updateStatusDisplay {} {

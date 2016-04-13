@@ -1,8 +1,13 @@
 2016-04-08  ------ omnetpp-5.0 released ------
 
+2016-04-13  Andras Varga
+
+	* cScheduler and scheduler classes: info() now returns a short description
+	that will be displayed in the GUI
+
 2016-03-23  Zoltan Bojthe
 
-	Added markup to config option descriptions
+	* Added markup to config option descriptions
 
 2016-04-01  Rudolf Hornig
 

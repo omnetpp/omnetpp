@@ -44,6 +44,7 @@
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cenum.h"
 #include "omnetpp/ccanvas.h"
+#include "omnetpp/cscheduler.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "tkutil.h"
@@ -163,6 +164,7 @@ int isNotNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectDefaultList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectScheduler_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectNetworks_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectComponentTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -287,6 +289,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_defaultlist",  objectDefaultList_cmd  },
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
+   { "opp_object_scheduler",    objectScheduler_cmd    },
    { "opp_object_messagequeue", objectMessageQueue_cmd },
    { "opp_object_componenttypes",objectComponentTypes_cmd},
    { "opp_object_classes",      objectClasses_cmd      },
@@ -2505,6 +2508,16 @@ int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
         return TCL_ERROR;
     }
     Tcl_SetResult(interp, ptrToStr(getSimulation()->getSystemModule()), TCL_VOLATILE);
+    return TCL_OK;
+}
+
+int objectScheduler_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+    if (argc != 1) {
+        Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
+        return TCL_ERROR;
+    }
+    Tcl_SetResult(interp, ptrToStr(getSimulation()->getScheduler()), TCL_VOLATILE);
     return TCL_OK;
 }
 

@@ -30,6 +30,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
+#include "omnetpp/cscheduler.h"
 #include "inspector.h"
 #include "common/stringutil.h"
 #include "common/ver.h"
@@ -539,13 +540,15 @@ const char *MainWindow::stripNamespace(const char *className)
 
 void MainWindow::updateNetworkRunDisplay()
 {
-    const char *configname = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
+    const char *configName = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
     const char *network = !getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName();
+    std::string scheduler = getSimulation()->getScheduler()->info();
+    const char *sep = scheduler.empty() ? "" : " - ";
 
     // TODO
 //    if {$configname==""} {set configName "n/a"}
 //    if {$network==""} {set network "(no network)"}
-    ui->labelConfigName->setText(QString(configname) + " #" + QString::number(env->getConfigEx()->getActiveRunNumber()) + ": " + network);
+    ui->labelConfigName->setText(QString(configName) + " #" + QString::number(env->getConfigEx()->getActiveRunNumber()) + ": " + network + sep + scheduler.c_str());
 }
 
 QWidget *MainWindow::getMainInspectorArea()

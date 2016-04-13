@@ -241,7 +241,7 @@
       <item>
        <widget class="QLabel" name="labelConfigName">
         <property name="toolTip">
-         <string>Current inifile configuration, run number, and network name</string>
+         <string>Current inifile configuration, run number, network name, and potential scheduler information</string>
         </property>
         <property name="styleSheet">
          <string notr="true">border: 1px solid palette(mid);</string>

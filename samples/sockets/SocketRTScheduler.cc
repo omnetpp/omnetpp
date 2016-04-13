@@ -38,6 +38,11 @@ cSocketRTScheduler::~cSocketRTScheduler()
 {
 }
 
+std::string cSocketRTScheduler::info() const
+{
+    return "socket RT scheduler";
+}
+
 void cSocketRTScheduler::startRun()
 {
     if (initsocketlibonce() != 0)

@@ -69,6 +69,13 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
     virtual ~cScheduler();
 
     /**
+     * Return a short description. This string will be displayed in the Qtenv
+     * and Tkenv GUIs as scheduler information. Returning an empty string means
+     * "default scheduler", and is reserved for cSequentialScheduler.
+     */
+    virtual std::string info() const override;
+
+    /**
      * Pass cSimulation object to scheduler.
      */
     virtual void setSimulation(cSimulation *_sim);
@@ -158,6 +165,11 @@ class SIM_API cSequentialScheduler : public cScheduler
     cSequentialScheduler() {}
 
     /**
+     * Returns empty string as description.
+     */
+    virtual std::string info() const override;
+
+    /**
      * Returns the first event in the Future Event Set.
      */
     virtual cEvent *guessNextEvent() override;
@@ -218,6 +230,11 @@ class SIM_API cRealTimeScheduler : public cScheduler
      * Destructor.
      */
     virtual ~cRealTimeScheduler();
+
+    /**
+     * Returns a description that depends on the parametrization of this class.
+     */
+    virtual std::string info() const override;
 
     /**
      * Recalculates "base time" from current wall clock time.

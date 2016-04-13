@@ -85,6 +85,11 @@ class cSocketRTScheduler : public cScheduler
     virtual ~cSocketRTScheduler();
 
     /**
+     * Return a description for the GUI.
+     */
+    virtual std::string info() const override;
+
+    /**
      * Called at the beginning of a simulation run.
      */
     virtual void startRun() override;

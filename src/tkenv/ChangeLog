@@ -1,5 +1,9 @@
 2016-04-08  ------ omnetpp-5.0 released ------
 
+2016-04-13  Andras Varga
+
+	* Display scheduler info() string on status bar
+
 2016-04-05  Andras Varga
 
 	* Fix: large tooltips could not appear (e.g. the help for log prefix

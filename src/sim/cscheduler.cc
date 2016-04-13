@@ -41,6 +41,11 @@ cScheduler::~cScheduler()
 {
 }
 
+std::string cScheduler::info() const
+{
+    return "(no scheduler info provided)";
+}
+
 void cScheduler::setSimulation(cSimulation *_sim)
 {
     sim = _sim;
@@ -59,6 +64,11 @@ void cScheduler::lifecycleEvent(SimulationLifecycleEventType eventType, cObject 
 //-----
 
 Register_Class(cSequentialScheduler);
+
+std::string cSequentialScheduler::info() const
+{
+    return "";  // NOTE: Do not change this to "sequential scheduler"! As this scheduler is the "nothing special" scheduler, we don't want to advertise its presence.
+}
 
 cEvent *cSequentialScheduler::guessNextEvent()
 {
@@ -94,6 +104,17 @@ cRealTimeScheduler::cRealTimeScheduler() : cScheduler()
 
 cRealTimeScheduler::~cRealTimeScheduler()
 {
+}
+
+std::string cRealTimeScheduler::info() const
+{
+    if (!doScaling)
+        return "real-time scheduling";
+    else {
+        char buf[64];
+        sprintf(buf, "scaled real-time scheduling (%gx)", factor);
+        return buf;
+    }
 }
 
 void cRealTimeScheduler::startRun()

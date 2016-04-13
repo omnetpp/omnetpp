@@ -1,2 +1,2 @@
 cd ..
-./dyna realtime.ini
+./dyna realtime.ini $*

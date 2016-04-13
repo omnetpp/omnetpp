@@ -22,6 +22,11 @@
 
 using namespace omnetpp;
 
+std::string cParsimSynchronizer::info() const
+{
+    return "parsim scheduler";
+}
+
 cEvent *cParsimSynchronizer::guessNextEvent()
 {
     return sim->getFES()->peekFirst();
