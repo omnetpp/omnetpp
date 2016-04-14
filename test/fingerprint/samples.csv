@@ -92,9 +92,9 @@
 /samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapFlat -r 0,     5000s,         0000-0000
 /samples/osg-intro/,                 -f omnetpp.ini -c ReadyMapWithElevation -r 0, 5000s,         0000-0000
 
-/samples/osg-satellites/,            -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         0bd0-4343/tplx
-/samples/osg-satellites/,            -f omnetpp.ini -c Geostationary -r 0,         5000s,         a584-2bad/tplx
-/samples/osg-satellites/,            -f omnetpp.ini -c PolarOrbits -r 0,           5000s,         496c-d55a/tplx
+/samples/osg-satellites/,            -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         7adf-31e0/tplx
+/samples/osg-satellites/,            -f omnetpp.ini -c Geostationary -r 0,         5000s,         7adf-31e0/tplx
+/samples/osg-satellites/,            -f omnetpp.ini -c PolarOrbits -r 0,           5000s,         7adf-31e0/tplx
 
 # /samples/queueinglibext/,            -f omnetpp.ini -c OneFifo -r 0,               5000s,         0000-0000           # opp_run
 /samples/queuenet/,                  -f omnetpp.ini -c OneFifo -r 0,               5000s,         be44-15dd/tplx
