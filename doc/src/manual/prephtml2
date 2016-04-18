@@ -114,7 +114,7 @@ $i = 0;
 while ($scrap =~ s/\<h([0-9])\>(.*?)\<\/h[0-9]\>//si)
 {
       $level[$i] = $1;
-    
+
       $2 =~ m/\<a name\=\"(.*?)\"\/\>(.*?)\<a/si;
       $label[$i] = $1;
       $title[$i] = $2;
@@ -287,7 +287,7 @@ $tocxml .= "</toc>";
 #
 print "adding hyperlinks on class names (tagfile=$tagfile)\n" unless $quiet;
 open(INFILE, $tagfile) || die "cannot open $tagfile";
-read(INFILE, $tags, 1000000) || die "cannot read $tagfile";
+$tags = join("", <INFILE>);
 $components = ();
 while ($tags =~ s|\<compound +kind="class".*?\>(.*?)\</compound\>||s)
 {
