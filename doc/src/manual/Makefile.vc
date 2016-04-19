@@ -90,6 +90,7 @@ DOTPICS = \
 	figures\figure-inheritance.dot \
 	figures\statisticrecording.dot
 
+SVGPICS = $(SVGPICS) $(DOTPICS:.dot=.svg)
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 
 # an imperfect attempt to filter out less important warnings...
@@ -138,7 +139,7 @@ pdf: $(ALLTEX) $(DOTPICS:.dot=.svg) $(PDFPICS) figures/*.png cover
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
+eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	:#FIXME use tmp dir
 	@echo. > usman.tmp
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
@@ -150,9 +151,10 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	move *.html eclipse
 	move toc.xml eclipse
 	copy *.png eclipse
+	copy figures\*.svg eclipse
 	copy figures\*.png eclipse
 
-html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+html : $(HTMCHAPTERS) $(SVGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	:#FIXME use tmp dir
 	@echo. > usman.tmp
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
@@ -160,6 +162,7 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 	del usman.tmp
 	copy usman.html ..\..\manual\index.html
 	copy *.png ..\..\manual
+	copy figures\*.svg ..\..\manual
 	copy figures\*.png ..\..\manual
 
 clean:

@@ -101,7 +101,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 .tex.htm: ltoh.specs ltoh.pl
 	$(PERL) ltoh.pl $<
 
-eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2
+eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --split --template eclipse.thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
@@ -113,7 +113,7 @@ eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2
 	cp figures/*.svg eclipse
 	cp figures/*.png eclipse
 
-html : $(HTMCHAPTERS) $(SVGPICS) omnest.thtml omnetpp.thtml prephtml2
+html : $(HTMCHAPTERS) $(SVGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
 	rm usman.tmp
