@@ -396,7 +396,6 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
 
     EVCB.beginSend(msg);
     bool keepMsg = outGate->deliver(msg, delayEndTime);
-    EVCB.messageSent_OBSOLETE(msg);  // TODO: Tkenv currently takes animation input from this call; to be rewritten
     if (!keepMsg) {
         delete msg;  // event log for this sending will end with "DM" (DeleteMessage) instead of "ES" (EndSend)
     }
@@ -495,13 +494,10 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
                             msg->getClassName(), msg->getName());
     EVCB.messageSendDirect(msg, toGate, propagationDelay, duration);
     bool keepit = toGate->deliver(msg, simTime() + propagationDelay);
-    if (!keepit) {
+    if (!keepit)
         delete msg;  //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
-    }
-    else {
-        EVCB.messageSent_OBSOLETE(msg, toGate);  //FIXME obsolete
+    else
         EVCB.endSend(msg);
-    }
     return 0;
 }
 
@@ -543,7 +539,6 @@ void cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     // set message parameters and schedule it
     msg->setSentFrom(this, -1, simTime());
     msg->setArrival(getId(), -1, t);
-    EVCB.messageSent_OBSOLETE(msg);  //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
     getSimulation()->insertEvent(msg);
 }

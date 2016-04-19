@@ -251,7 +251,6 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     EVCB.beginSend(msg);
     EVCB.messageSendHop(msg, srcg);  // TODO store approx propagationDelay, transmissionDelay (they were already simulated remotely)
     bool keepit = g->deliver(msg, msg->getArrivalTime());
-    EVCB.messageSent_OBSOLETE(msg);
     if (!keepit)
         delete msg;
     else

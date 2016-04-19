@@ -780,7 +780,6 @@ class StaticEnv : public cEnvir
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override {}
     virtual void simulationEvent(cEvent *event) override  {}
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate = nullptr) override  {}
     virtual void messageScheduled(cMessage *msg) override  {}
     virtual void messageCancelled(cMessage *msg) override  {}
     virtual void beginSend(cMessage *msg) override  {}

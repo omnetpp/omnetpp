@@ -1502,24 +1502,6 @@ void Qtenv::simulationEvent(cEvent *event)
     }
 }
 
-void Qtenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)  // FIXME needed?
-{
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        // find suitable inspectors and do animate the message...
-        updateGraphicalInspectorsBeforeAnimation();  // actually this will draw `msg' too (which would cause "phantom message"),
-                                                     // but we'll manually remove it before animation
-        if (!directToGate) {
-            // message was sent via a gate (send())
-            animateSend(msg, msg->getSenderGate(), msg->getArrivalGate());
-        }
-        else {
-            // sendDirect() was used
-            animateSendDirect(msg, getSimulation()->getModule(msg->getSenderModuleId()), directToGate);
-            animateSend(msg, directToGate, msg->getArrivalGate());
-        }
-    }
-}
-
 void Qtenv::messageScheduled(cMessage *msg)
 {
     EnvirBase::messageScheduled(msg);

@@ -1207,34 +1207,6 @@ void Tkenv::simulationEvent(cEvent *event)
     }
 }
 
-void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)  // FIXME needed?
-{
-//    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-//        // find suitable inspectors and do animate the message...
-//        updateGraphicalInspectorsBeforeAnimation();  // actually this will draw `msg' too (which would cause "phantom message"),
-//                                                     // but we'll manually remove it before animation
-//        if (!directToGate) {
-//            // message was sent via a gate (send())
-//            cGate *g = msg->getSenderGate();
-//            cGate *arrivalgate = msg->getArrivalGate();
-//            while (g && g->getNextGate()) {
-//                animateSendHop(msg, g, g->getNextGate()==arrivalgate);
-//                g = g->getNextGate();
-//            }
-//        }
-//        else {
-//            // sendDirect() was used
-//            animateSendDirectHop(msg, msg->getSenderModule(), directToGate);
-//            cGate *g = directToGate;
-//            cGate *arrivalgate = msg->getArrivalGate();
-//            while (g && g->getNextGate()) {
-//                animateSendHop(msg, g, g->getNextGate()==arrivalgate);
-//                g = g->getNextGate();
-//            }
-//        }
-//    }
-}
-
 void Tkenv::messageScheduled(cMessage *msg)
 {
     EnvirBase::messageScheduled(msg);

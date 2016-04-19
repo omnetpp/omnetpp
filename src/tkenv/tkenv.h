@@ -179,7 +179,6 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       virtual void objectDeleted(cObject *object) override; // notify environment
       virtual void componentInitBegin(cComponent *component, int stage) override;
       virtual void simulationEvent(cEvent *event) override;
-      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) override;
       virtual void messageScheduled(cMessage *msg) override;
       virtual void messageCancelled(cMessage *msg) override;
       virtual void beginSend(cMessage *msg) override;
