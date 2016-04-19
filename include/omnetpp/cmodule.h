@@ -328,10 +328,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // submodule tree, and returns true if there are more stages to do
     virtual bool initializeChannels(int stage);
 
-    // internal: called when a message arrives at a gate which is no further
-    // connected (that is, getNextGate() is nullptr)
-    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
-
     // internal: sets module name and its index within vector (if module is
     // part of a module vector). Called as part of the module creation process.
     virtual void setNameAndIndex(const char *s, int i, int n);
@@ -776,6 +772,16 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * network setup.
      */
     virtual bool checkInternalConnections() const;
+
+    /**
+     * This method is invoked as part of a send() call in another module.
+     * It is called when the message arrives at a gates in this module which
+     * is not further connected, that is, the gate's getNextGate() method
+     * returns nullptr. The default, cModule implementation reports an error
+     * ("message arrived at a compound module"), and the cSimpleModule
+     * implementation inserts the message into the FES after some processing.
+     */
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
     //@}
 
     /** @name Utilities. */
