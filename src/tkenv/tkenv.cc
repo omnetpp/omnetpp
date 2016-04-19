@@ -1209,20 +1209,30 @@ void Tkenv::simulationEvent(cEvent *event)
 
 void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)  // FIXME needed?
 {
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        // find suitable inspectors and do animate the message...
-        updateGraphicalInspectorsBeforeAnimation();  // actually this will draw `msg' too (which would cause "phantom message"),
-                                                     // but we'll manually remove it before animation
-        if (!directToGate) {
-            // message was sent via a gate (send())
-            animateSend(msg, msg->getSenderGate(), msg->getArrivalGate());
-        }
-        else {
-            // sendDirect() was used
-            animateSendDirect(msg, getSimulation()->getModule(msg->getSenderModuleId()), directToGate);
-            animateSend(msg, directToGate, msg->getArrivalGate());
-        }
-    }
+//    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+//        // find suitable inspectors and do animate the message...
+//        updateGraphicalInspectorsBeforeAnimation();  // actually this will draw `msg' too (which would cause "phantom message"),
+//                                                     // but we'll manually remove it before animation
+//        if (!directToGate) {
+//            // message was sent via a gate (send())
+//            cGate *g = msg->getSenderGate();
+//            cGate *arrivalgate = msg->getArrivalGate();
+//            while (g && g->getNextGate()) {
+//                animateSendHop(msg, g, g->getNextGate()==arrivalgate);
+//                g = g->getNextGate();
+//            }
+//        }
+//        else {
+//            // sendDirect() was used
+//            animateSendDirectHop(msg, msg->getSenderModule(), directToGate);
+//            cGate *g = directToGate;
+//            cGate *arrivalgate = msg->getArrivalGate();
+//            while (g && g->getNextGate()) {
+//                animateSendHop(msg, g, g->getNextGate()==arrivalgate);
+//                g = g->getNextGate();
+//            }
+//        }
+//    }
 }
 
 void Tkenv::messageScheduled(cMessage *msg)
@@ -1245,6 +1255,12 @@ void Tkenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
 
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        // actually this will draw `msg' too (which would cause "phantom message"),
+        // but we'll manually remove it before animation
+        updateGraphicalInspectorsBeforeAnimation();
+    }
+
     if (loggingEnabled)
         logBuffer.beginSend(msg);
 }
@@ -1252,6 +1268,9 @@ void Tkenv::beginSend(cMessage *msg)
 void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+        animateSendDirect(msg, msg->getSenderModule(), toGate);
 
     if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
@@ -1261,6 +1280,11 @@ void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
 
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
+        animateSendHop(msg, srcGate, isLastHop);
+    }
+
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate);
 }
@@ -1268,6 +1292,11 @@ void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
+        animateSendHop(msg, srcGate, isLastHop);
+    }
 
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
@@ -1523,29 +1552,22 @@ void Tkenv::moduleDisplayStringChanged(cModule *module)
     }
 }
 
-void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
+void Tkenv::animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
 {
     char msgptr[32];
     ptrToStr(msg, msgptr);
 
-    cGate *g = fromgate;
-    cGate *arrivalgate = togate;
-
-    while (g && g->getNextGate()) {
-        cModule *mod = g->getOwnerModule();
-        if (g->getType() == cGate::OUTPUT)
-            mod = mod->getParentModule();
-        bool isLastGate = (g->getNextGate() == arrivalgate);
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(mod, *it);
-            if (insp)
-                insp->animateSendOnConn(g, msg, (isLastGate ? ANIM_BEGIN : ANIM_THROUGH));
-        }
-        g = g->getNextGate();
+    cModule *mod = srcGate->getOwnerModule();
+    if (srcGate->getType() == cGate::OUTPUT)
+        mod = mod->getParentModule();
+    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            insp->animateSendOnConn(srcGate, msg, (isLastHop ? ANIM_BEGIN : ANIM_THROUGH));
     }
 }
 
-// helper for animateSendDirect() functions
+// helper for animateSendDirectHop() functions
 static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandchild)
 {
     if (parentmod == towardsgrandchild)
@@ -1598,12 +1620,13 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     }
 }
 
-void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
+void Tkenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate)
 {
     PathVec pathvec;
-    findDirectPath(frommodule, togate->getOwnerModule(), pathvec);
+    findDirectPath(srcModule, destGate->getOwnerModule(), pathvec);
 
-    cModule *arrivalmod = msg->getArrivalGate()->getOwnerModule();
+    // for checking whether the sendDirect target module is also the final destination of the msg
+    cModule *arrivalmod = destGate->getNextGate()==nullptr ? destGate->getOwnerModule() : nullptr;
 
     PathVec::iterator i;
     for (i = pathvec.begin(); i != pathvec.end(); i++) {
@@ -1629,6 +1652,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             }
         }
         else {
+            // level
             cModule *enclosingmod = i->from->getParentModule();
             bool isArrival = (i->to == arrivalmod);
             for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {

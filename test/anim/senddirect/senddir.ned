@@ -75,7 +75,7 @@ network SendDirTest
         }
         dummy: Dummy {
             parameters:
-                @display("p=127,40;i=ball_s");
+                @display("p=127,40;i=misc/node_s");
         }
     connections allowunconnected:
         boxedGen.out1 --> sink.in;

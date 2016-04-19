@@ -1540,6 +1540,10 @@ void Qtenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
 
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        updateGraphicalInspectorsBeforeAnimation();
+    }
+
     if (loggingEnabled)
         logBuffer.beginSend(msg);
 }
@@ -1547,6 +1551,9 @@ void Qtenv::beginSend(cMessage *msg)
 void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+        animateSendDirect(msg, msg->getSenderModule(), toGate);
 
     if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
@@ -1556,6 +1563,11 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
 
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
+        animateSendHop(msg, srcGate, isLastHop);
+    }
+
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate);
 }
@@ -1563,6 +1575,11 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
+        animateSendHop(msg, srcGate, isLastHop);
+    }
 
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
@@ -1801,25 +1818,15 @@ void Qtenv::moduleDisplayStringChanged(cModule *module)
     }
 }
 
-void Qtenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
+void Qtenv::animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
 {
-    char msgptr[32];
-    ptrToStr(msg, msgptr);
-
-    cGate *g = fromgate;
-    cGate *arrivalgate = togate;
-
-    while (g && g->getNextGate()) {
-        cModule *mod = g->getOwnerModule();
-        if (g->getType() == cGate::OUTPUT)
-            mod = mod->getParentModule();
-        bool isLastGate = (g->getNextGate() == arrivalgate);
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(mod, *it);
-            if (insp)
-                animator->animateSendOnConn(insp, g, msg, (isLastGate ? ANIM_BEGIN : ANIM_THROUGH));
-        }
-        g = g->getNextGate();
+    cModule *mod = srcGate->getOwnerModule();
+    if (srcGate->getType() == cGate::OUTPUT)
+        mod = mod->getParentModule();
+    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+        if (insp)
+            animator->animateSendOnConn(insp, srcGate, msg, (isLastHop ? ANIM_BEGIN : ANIM_THROUGH));
     }
 }
 
@@ -1876,12 +1883,13 @@ void Qtenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     }
 }
 
-void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
+void Qtenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate)
 {
     PathVec pathvec;
-    findDirectPath(frommodule, togate->getOwnerModule(), pathvec);
+    findDirectPath(srcModule, destGate->getOwnerModule(), pathvec);
 
-    cModule *arrivalmod = msg->getArrivalGate()->getOwnerModule();
+    // for checking whether the sendDirect target module is also the final destination of the msg
+    cModule *arrivalmod = destGate->getNextGate()==nullptr ? destGate->getOwnerModule() : nullptr;
 
     PathVec::iterator i;
     for (i = pathvec.begin(); i != pathvec.end(); i++) {
@@ -1907,6 +1915,7 @@ void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
             }
         }
         else {
+            // level
             cModule *enclosingmod = i->from->getParentModule();
             bool isArrival = (i->to == arrivalmod);
             for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
@@ -1914,6 +1923,18 @@ void Qtenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
                 if (insp)
                     animator->animateSenddirectHoriz(insp, i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
+        }
+    }
+
+    // then remove all arrows
+    for (i = pathvec.begin(); i != pathvec.end(); i++) {
+        cModule *mod = i->from ? i->from : i->to;
+        cModule *enclosingmod = mod->getParentModule();
+
+        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
+            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            if (insp)
+                animator->animateSenddirectCleanup(insp); //TODO
         }
     }
 }

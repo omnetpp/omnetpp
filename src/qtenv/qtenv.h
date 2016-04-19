@@ -360,7 +360,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void printEventBanner(cEvent *event);
       void setAnimationSpeed(float speed);
-      void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
+      void animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
       void animateDelivery(cMessage *msg);
       void animateDeliveryDirect(cMessage *msg);

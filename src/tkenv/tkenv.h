@@ -286,8 +286,8 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
                        std::string& outResult, bool& inoutCheckState);
 
       void printEventBanner(cEvent *event);
-      void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
-      void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
+      void animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
+      void animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate);
       void animateDelivery(cMessage *msg);
       void animateDeliveryDirect(cMessage *msg);
       void performAnimations();
