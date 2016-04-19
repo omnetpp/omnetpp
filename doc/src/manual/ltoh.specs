@@ -39,7 +39,7 @@ htmlfile_spec := $BASE.htm
 :{}	:\textsf:<i>:</>:
 :{}	:\underline:<ul>:</>:
 :{}	:\chapter:<hr class='pgbr'><h1>:</h1>:
-:{}	:\appendixchapter:<hr class='pgbr'><h1>Appendix&#58; :</h1>:
+:{}	:\appendixchapter:<hr class='pgbr'><h1>Appendix AAA&#58; :</h1>:
 :{}	:\section:<h2>:</h2>:
 :{}	:\subsection:<h3>:</h3>:
 :{}	:\subsubsection:<h4>:</h4>:

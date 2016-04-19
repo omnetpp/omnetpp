@@ -10,7 +10,10 @@ TITLE=Simulation Manual
 
 # --- generating pdf ---
 
-# FIXME
+# *** IMPORTANT! ***
+# The order of files below must MATCH the order they are included in usman.tex,
+# otherwise the chapter numbering will differ in the PDF and HTML versions!!!
+#
 TEXCHAPTERS = \
 	 ch-introduction.tex \
 	 ch-overview.tex \
@@ -36,10 +39,11 @@ TEXCHAPTERS = \
 	 appendix-ned-functions.tex \
 	 appendix-msg-grammar.tex \
 	 appendix-display-strings.tex \
+	 appendix-figure-definitions.tex \
 	 appendix-config-options.tex \
 	 appendix-result-file-formats.tex \
-	 appendix-eventlog-file-format.tex \
-	 appendix-figure-definitions.tex
+	 appendix-eventlog-file-format.tex
+
 ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
 HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
@@ -119,7 +123,7 @@ html : $(HTMCHAPTERS) $(SVGPICS) omnest.thtml omnetpp.thtml prephtml2
 	cp *.png ../../manual
 	cp figures/*.svg ../../manual
 	cp figures/*.png ../../manual
-	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi 
+	@if grep 'Unknown LaTeX command' usman.html; then echo 'Error: LaTeX commands missing from ltoh.specs! (see lines above)'; exit 1; fi
 
 clean:
 	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html cover.svg cover.pdf

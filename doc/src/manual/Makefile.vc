@@ -10,6 +10,10 @@ TITLE=Simulation Manual
 
 # --- generating pdf ---
 
+# *** IMPORTANT! ***
+# The order of files below must MATCH the order they are included in usman.tex,
+# otherwise the chapter numbering will differ in the PDF and HTML versions!!!
+#
 TEXCHAPTERS = \
          ch-introduction.tex \
          ch-overview.tex \
@@ -18,10 +22,10 @@ TEXCHAPTERS = \
          ch-messages.tex \
          ch-message-definitions.tex \
          ch-sim-lib.tex \
+         ch-graphics.tex \
          ch-build-sim-progs.tex \
          ch-config-sim.tex \
          ch-run-sim.tex \
-         ch-graphics.tex \
          ch-ana-sim.tex \
          ch-eventlog.tex \
          ch-neddoc.tex \
@@ -35,10 +39,11 @@ TEXCHAPTERS = \
          appendix-ned-functions.tex \
          appendix-msg-grammar.tex \
          appendix-display-strings.tex \
+         appendix-figure-definitions.tex \
          appendix-config-options.tex \
          appendix-result-file-formats.tex \
-         appendix-eventlog-file-format.tex \
-         appendix-figure-definitions.tex
+         appendix-eventlog-file-format.tex
+
 ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
 HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 

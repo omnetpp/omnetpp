@@ -106,6 +106,12 @@ sub kill_p_tag ()
 }
 
 #
+# add alpha numbering of appendices
+#
+$letter = ord('A');
+$html =~ s/Appendix AAA/"Appendix ".chr($letter++)/sge;
+
+#
 # collect heading info from document
 #
 print "collecting headings\n" unless $quiet;
