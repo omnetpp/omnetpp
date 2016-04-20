@@ -91,8 +91,8 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
-	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
+nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
+	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
 
 ned1.tab.hh ned1.tab.cc : ned1.y
 	$(qecho) YACC: $<
