@@ -1824,7 +1824,7 @@ It goes like this:
 
 \begin{cpp}
 for (cModule::GateIterator i(this); !i.end(); i++) {
-    cGate *gate = i();
+    cGate *gate = *i;
     ...
 }
 \end{cpp}
@@ -1902,7 +1902,7 @@ to print some information about each gate:
 
 \begin{cpp}
 for (cModule::GateIterator i(this); !i.end(); i++) {
-    cGate *gate = i();
+    cGate *gate = *i;
     EV << gate->getFullName() << ": ";
     EV << "id=" << gate->getId() << ", ";
     if (!gate->isVector())
@@ -3366,33 +3366,13 @@ starts the search at the top-level module.
 \label{sec:simple-modules:iterating-over-submodules}
 
 To access all modules within a compound module,
-use \cclass{cSubModIterator}.
-
-For example:
+one can use \cclass{cModule::SubmoduleIterator}.
 
 \begin{cpp}
-for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
+for (cModule::SubmoduleIterator it(module); !it.end(); it++)
 {
-  EV << iter()->getFullName();
-}
-\end{cpp}
-
-(\ffunc{iter()} is pointer to the current module the iterator is at.)
-
-
-The above method can also be used to iterate along a module
-vector\index{module!vector!iteration}, since the \ffunc{getName()}
-function returns the same for all modules:
-
-\begin{cpp}
-for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
-{
-  if (iter()->isName(getName())) // if iter() is in the same
-                                 // vector as this module
-  {
-    int itsIndex = iter()->getIndex();
-    // do something to it
-  }
+  cModule *submodule = *it;
+  EV << submodule->getFullName() << endl;
 }
 \end{cpp}
 

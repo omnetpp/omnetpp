@@ -888,25 +888,33 @@ needs to be inserted, and inserts it there.
 \subsubsection{Iterators}
 \label{sec:sim-lib:cqueue-iteration}
 
-Normally, you can only access the objects at the head or tail of the
-queue. However, if you use an iterator class, \cclass{cQueue::Iterator},
-you can examine each object in the queue\index{queue!iteration}.
+The \cclass{cQueue::Iterator} class lets one iterate over the contents
+of the queue and examine each object\index{queue!iteration}.
 
-The \cclass{cQueue::Iterator} constructor takes two arguments; the first
-is the queue object and the second argument specifies the initial position
-of the iterator: 0=tail, 1=head. Otherwise it acts as any other
-{\opp} iterator class: you can use the \texttt{++} and \texttt{--} operators to advance
-it, the () operator to get a pointer to the current item, and the
-\ffunc{end()} member function to examine if you are at the end (or the
-beginning) of the queue.
+The \cclass{cQueue::Iterator} constructor expects the queue object in the
+first argument. Normally, forward iteration is assumed, and the iteration
+is initialized to point at the front of the queue. For reverse iteration,
+specify \ttt{reverse=true} as the optional second argument. After that, the
+class acts as any other {\opp} iterator: one can use the \ttt{++} and
+\ttt{--} operators to advance it, the \ttt{*} operator to get a pointer
+to the current item, and the \ffunc{end()} member function to examine
+whether the iterator has reached the end (or the beginning) of the queue.
 
-An example:
+Forward iteration:
 
 \begin{cpp}
-for (cQueue::Iterator iter(queue,1); !iter.end(), iter++)
-{
-  cMessage *msg = (cMessage *) iter();
-  //...
+for (cQueue::Iterator iter(queue); !iter.end(), iter++) {
+    cMessage *msg = (cMessage *) *iter;
+    //...
+}
+\end{cpp}
+
+Reverse iteration:
+
+\begin{cpp}
+for (cQueue::Iterator iter(queue, true); !iter.end(), iter--) {
+    cMessage *msg = (cMessage *) *iter;
+    //...
 }
 \end{cpp}
 
