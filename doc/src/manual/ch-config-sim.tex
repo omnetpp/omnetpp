@@ -1111,6 +1111,10 @@ num-rngs = 3
 **.noisychannel[*].rng-0 = 2
 \end{inifile}
 
+The value also allows expressions, including those containing \fkeyword{index},
+\fkeyword{parentIndex}, and \fkeyword{ancestorIndex(level)}. This allows things
+like assigning a separate RNG to each element of a module vector.
+
 This mapping allows variance reduction techniques to be applied to
 {\opp} models, without any model change or recompilation.
 
