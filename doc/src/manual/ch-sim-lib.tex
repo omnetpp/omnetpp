@@ -838,7 +838,7 @@ for (int i = 0; i < 10; i++) {
 }
 
 // remove messages
-while(!queue.empty()) {
+while(!queue.isEmpty()) {
     msg = (cMessage *)queue.pop();
     delete msg;
 }
@@ -926,17 +926,10 @@ for (cQueue::Iterator iter(queue, true); !iter.end(), iter--) {
 \subsubsection{Basic Usage}
 \label{sec:sim-lib:carray-basic-usage}
 
-
 \cclass{cArray} is a container class that holds objects derived from
-\cclass{cObject}. \cclass{cArray} stores the pointers of the objects
-inserted instead of making copies. \cclass{cArray} works as an array,
-but it grows automatically when it becomes full. Internally,
-\cclass{cArray} is implemented with an array of pointers; when the array
-fills up, it is reallocated.
-
-\cclass{cArray} objects are used in {\opp} to store parameters
-attached to messages, and internally, for storing module parameters
-and gates.
+\cclass{cObject}. \cclass{cArray} implements a dynamic-size array: its
+capacity grows automatically when it becomes full. \cclass{cArray} stores
+pointers of objects inserted instead of making copies.
 
 Creating an array:
 
@@ -2431,7 +2424,7 @@ network="FifoNet">
         </object>
       </object>
     </object>
-    <object class="cMessageHeap" fullpath="simulation.scheduled-events">
+    <object class="cEventHeap" fullpath="simulation.scheduled-events">
       <info>length=3</info>
       <object class="cMessage" fullpath="simulation.scheduled-events.job">
         <info>src=FifoNet.fifo (id=3)  dest=FifoNet.sink (id=4)</info>
