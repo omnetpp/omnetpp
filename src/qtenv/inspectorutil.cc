@@ -135,13 +135,18 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     cComponent *comp = dynamic_cast<cComponent *>(object);
     if (comp) {
         menu->addSeparator();
-        QMenu *subMenu = menu->addMenu(QString("Set LogLevel for '") + name + "' and children...");
+        QMenu *subMenu = menu->addMenu(QString("Set Log Level for '") + name + "' and children...");
 
         QAction *action;
         QActionGroup *logLevelActionGroup = new QActionGroup(menu);
 
         #define INSPECTORUTIL_ADD_LOGLEVEL(LEVEL) \
-            action = subMenu->addAction(#LEVEL, getQtenv(), SLOT(setComponentLogLevel())); \
+            /* Capitalize action's text */ \
+            QString text_ ## LEVEL = #LEVEL; \
+            text_ ## LEVEL = text_ ## LEVEL.toLower(); \
+            text_ ## LEVEL[0] = text_ ## LEVEL[0].toUpper(); \
+            /* Set action */ \
+            action = subMenu->addAction(text_ ## LEVEL, getQtenv(), SLOT(setComponentLogLevel())); \
             action->setData(QVariant::fromValue(ActionDataPair(comp, LOGLEVEL_ ## LEVEL))); \
             action->setCheckable(true); \
             action->setChecked(comp->getLogLevel() == LOGLEVEL_ ## LEVEL); \
@@ -175,6 +180,8 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     action = subMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
 }
+
+
 
 QMenu *InspectorUtil::createInspectorContextMenu(cObject* object, Inspector *insp)
 {
