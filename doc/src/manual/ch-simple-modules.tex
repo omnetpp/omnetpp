@@ -3319,8 +3319,8 @@ cModule *mod = getSimulation()->getModule(id); // exists, and is a module
 \subsection{Walking Up and Down the Module Hierarchy}
 \label{sec:simple-modules:walking-up-and-down-module-hierarchy}
 
-The surrounding compound module can be accessed by the
-\ffunc{getParentModule()} member function:
+The parent module can be accessed by the \ffunc{getParentModule()}
+member function:
 
 \begin{cpp}
 cModule *parent = getParentModule();
@@ -3335,14 +3335,14 @@ double timeout = getParentModule()->par("timeout");
 
 \cclass{cModule}'s \ffunc{findSubmodule()} and \ffunc{getSubmodule()}
 member functions make it possible to look up the module's submodules
-by name\index{module!submodule!lookup} (or name+index if the submodule
-is in a module vector). The first one returns the numeric module ID of
-the submodule, and the latter returns the module pointer.  If the
-submodule is not found, they return -1 or nullptr, respectively.
+by name\index{module!submodule!lookup} (or name and index if the submodule
+is in a module vector). The first one returns the module ID of
+the submodule, and the latter returns the module pointer. If the
+submodule is not found, they return -1 or \ttt{nullptr}, respectively.
 
 \begin{cpp}
-int submodID = compoundmod->findSubmodule("child",5);
-cModule *submod = compoundmod->getSubmodule("child",5);
+int submodID = module->findSubmodule("foo", 3); // look up "foo[3]"
+cModule *submod = module->getSubmodule("foo", 3);
 \end{cpp}
 
 The \ffunc{getModuleByRelativePath()} member function can be used to find
