@@ -174,6 +174,11 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     connect(inspectorListBoxView, SIGNAL(activated(QModelIndex)), this, SLOT(inspect(QModelIndex)));
     connect(inspectorListBoxView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(onListBoxSelectionChanged(QItemSelection,QItemSelection)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
+
+    // geometry
+    QByteArray geometry = getQtenv()->getPref("filtobjlist-geometry", QByteArray()).value<QByteArray>();
+    if(!geometry.isEmpty())
+        restoreGeometry(geometry);
 }
 
 void FilteredObjectListDialog::onFontChanged()
@@ -216,11 +221,6 @@ void FilteredObjectListDialog::onListBoxSelectionChanged(QItemSelection selected
         getQtenv()->onSelectionChanged(object);
 }
 
-void FilteredObjectListDialog::setSearchEdit(cObject *obj)
-{
-    ui->searchEdit->setText(obj ? obj->getFullPath().c_str() : "");
-}
-
 QStringList FilteredObjectListDialog::getClassNames()
 {
     cRegistrationList *rList = classes.getInstance();
@@ -236,24 +236,6 @@ QStringList FilteredObjectListDialog::getClassNames()
 
     classNames.sort();
     return classNames;
-}
-
-void FilteredObjectListDialog::done(int r)
-{
-    getQtenv()->setPref("filtobjlist-class", QVariant::fromValue(ui->comboBox->currentText()));
-    getQtenv()->setPref("filtobjlist-name", QVariant::fromValue(ui->fullPathEdit->text()));
-
-    // filtobjlist-category
-    getQtenv()->setPref("cat-m", ui->modulesCheckBox->isChecked());
-    getQtenv()->setPref("cat-p", ui->paramCheckBox->isChecked());
-    getQtenv()->setPref("cat-q", ui->queuesCheckBox->isChecked());
-    getQtenv()->setPref("cat-s", ui->outVectorsCheckBox->isChecked());
-    getQtenv()->setPref("cat-g", ui->messagesCheckBox->isChecked());
-    getQtenv()->setPref("cat-c", ui->gatesCheckBox->isChecked());
-    getQtenv()->setPref("cat-v", ui->fsmCheckBox->isChecked());
-    getQtenv()->setPref("cat-o", ui->otherCheckBox->isChecked());
-
-    QDialog::done(r);
 }
 
 void FilteredObjectListDialog::refresh()
@@ -393,6 +375,19 @@ void FilteredObjectListDialog::checkPattern(const char *pattern)
 
 FilteredObjectListDialog::~FilteredObjectListDialog()
 {
+    getQtenv()->setPref("filtobjlist-class", QVariant::fromValue(ui->comboBox->currentText()));
+    getQtenv()->setPref("filtobjlist-name", QVariant::fromValue(ui->fullPathEdit->text()));
+
+    // filtobjlist-category
+    getQtenv()->setPref("cat-m", ui->modulesCheckBox->isChecked());
+    getQtenv()->setPref("cat-p", ui->paramCheckBox->isChecked());
+    getQtenv()->setPref("cat-q", ui->queuesCheckBox->isChecked());
+    getQtenv()->setPref("cat-s", ui->outVectorsCheckBox->isChecked());
+    getQtenv()->setPref("cat-g", ui->messagesCheckBox->isChecked());
+    getQtenv()->setPref("cat-c", ui->gatesCheckBox->isChecked());
+    getQtenv()->setPref("cat-v", ui->fsmCheckBox->isChecked());
+    getQtenv()->setPref("cat-o", ui->otherCheckBox->isChecked());
+
     getQtenv()->setPref("filtobjlist-width", width());
     getQtenv()->setPref("filtobjlist-height", height());
 
@@ -401,6 +396,7 @@ FilteredObjectListDialog::~FilteredObjectListDialog()
         widths += QString::number(inspectorListBoxView->columnWidth(i)) + "#";
 
     getQtenv()->setPref("objdialog:columnwidths", widths);
+    getQtenv()->setPref("filtobjlist-geometry", saveGeometry());
 
     delete ui;
 }

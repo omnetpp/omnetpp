@@ -47,7 +47,6 @@ namespace qtenv {
 class Qtenv;
 class Inspector;
 class StopDialog;
-class FilteredObjectListDialog;
 class FileEditor;
 
 class MainWindow : public QMainWindow
@@ -156,7 +155,6 @@ private:
     QSlider *slider;
     QList<int> timeLineSize;
     bool showStatusDetails;
-    FilteredObjectListDialog *filteredObjectListDialog;
     static QString aboutText;
     QList<int> defaultTimeLineSize;
     FileEditor *fileEditor;

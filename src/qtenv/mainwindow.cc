@@ -61,8 +61,7 @@ QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Frame
 MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    env(env),
-    filteredObjectListDialog(nullptr)
+    env(env)
 {
     ui->setupUi(this);
 
@@ -121,8 +120,6 @@ MainWindow::~MainWindow()
     delete stopDialog;
     delete simTimeLabel;
     delete eventNumLabel;
-    if(filteredObjectListDialog)
-        delete filteredObjectListDialog;
 }
 
 void MainWindow::onSimTimeLabelGroupingTriggered()
@@ -374,9 +371,6 @@ bool MainWindow::on_actionQuit_triggered()
 //    # save settings (fonts etc) globally, and inspector list locally
 //    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
 //    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
-
-    if(filteredObjectListDialog)
-        filteredObjectListDialog->close();
 
     close();
     return true;
@@ -1055,10 +1049,9 @@ void MainWindow::on_actionFindInspectObjects_triggered()
     // implements Find/inspect objects...
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     cObject *obj = variant.isValid() ? variant.value<cObject*>() : getQtenv()->getMainObjectInspector()->getObject();
-    if(!filteredObjectListDialog)
-        filteredObjectListDialog = new FilteredObjectListDialog(obj);
-    else
-        filteredObjectListDialog->setSearchEdit(obj);
+
+    QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj);
+    filteredObjectListDialog->setAttribute(Qt::WA_DeleteOnClose);
     filteredObjectListDialog->show();
 }
 
