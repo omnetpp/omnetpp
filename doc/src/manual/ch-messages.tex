@@ -378,12 +378,12 @@ set/get in bytes. If the bit length is not a multiple of eight, the
 \ffunc{getByteLength()} method will round it up.
 
 \begin{cpp}
-void setBitLength(int64 l);
-void setByteLength(int64 l);
-void addBitLength(int64 delta);
-void addByteLength(int64 delta);
-int64 getBitLength() const;
-int64 getByteLength() const;
+void setBitLength(int64_t l);
+void setByteLength(int64_t l);
+void addBitLength(int64_t delta);
+void addByteLength(int64_t delta);
+int64_t getBitLength() const;
+int64_t getByteLength() const;
 \end{cpp}
 
 Another extra field is the bit error flag. It can be accessed with the

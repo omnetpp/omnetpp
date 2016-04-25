@@ -189,7 +189,7 @@ have overloaded variants that directly accept \ttt{SimTime}, for example
 Other useful methods of \ttt{SimTime} include \ffunc{str()},
 which returns the value as a string; \ffunc{parse()}, which converts a
 string to \ttt{SimTime}; \ffunc{raw()}, which returns the
-underlying \ttt{int64} value; \ffunc{getScaleExp()}, which returns the
+underlying 64-bit integer; \ffunc{getScaleExp()}, which returns the
 global scale exponent; \ffunc{isZero()}, which tests whether the
 simulation time is 0; and \ffunc{getMaxTime()}, which returns the maximum
 simulation time that can be represented at the current scale exponent.
