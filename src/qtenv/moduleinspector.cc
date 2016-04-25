@@ -87,6 +87,8 @@ const QString ModuleInspector::PREF_SHOWARROWHEADS = "showarrowheads";
 
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
+    isShiftKeyPressed = false;
+
     switchToOsgViewAction = nullptr;
     switchToCanvasViewAction = nullptr;
 
@@ -632,6 +634,23 @@ void ModuleInspector::doubleClick(QMouseEvent *event) {
         else    // If this inspector supports object then no need to inspect one more time.
             emit objectDoubleClicked(objects.front());
     }
+
+    if(objects.empty() || objects.front() == object) {
+        if(isShiftKeyPressed)
+            zoomOut(event->pos().x(), event->pos().y());
+        else
+            zoomIn(event->pos().x(), event->pos().y());
+    }
+}
+
+void ModuleInspector::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Shift)
+        isShiftKeyPressed = true;
+}
+
+void ModuleInspector::keyReleaseEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Shift)
+        isShiftKeyPressed = false;
 }
 
 void ModuleInspector::onViewerDragged(QPointF center) {
