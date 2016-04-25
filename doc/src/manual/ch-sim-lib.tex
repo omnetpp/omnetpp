@@ -359,7 +359,7 @@ section \ref{sec:config-sim:logging}).
 In static class member functions or in non-class member functions an extra
 \fmac{EV\_STATICCONTEXT} macro must be present to make sure that normal log
 macros compile. \footnote{This is due to that in C++ it is impossible
-determine at compile-time whether if a \fvar{this} pointer is accessible.}
+determine at compile-time whether a \fvar{this} pointer is accessible.}
 
 \begin{cpp}
 void findModule(const char *name, cModule *from)
