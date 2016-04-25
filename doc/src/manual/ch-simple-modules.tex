@@ -3289,26 +3289,31 @@ EV << "This is module [" << module->getIndex() <<
 \subsection{Module IDs}
 \label{sec:simple-modules:module-ids}
 
-Every module in the network has a unique ID that is returned by the
-\ffunc{getId()} member function. The module ID\index{module!id} is used
-internally by the simulation kernel to identify modules.
+Every component (module and channel) in the network has a unique ID that
+can be obtained from \cclass{cComponent}'s \ffunc{getId()} member
+function:
 
 \begin{cpp}
-int myModuleId = getId();
+int componentId = getId();
 \end{cpp}
 
-If you know the module ID, you can ask the simulation object
-to get back the module pointer:
+IDs uniquely identify a module or channel for the whole duration of the
+simulation. This holds even when modules are created and destroyed
+dynamically, because IDs of deleted modules or channels are never reused for
+newly created ones.
+
+To look up a component by ID, one needs to use methods of the simulation
+object, \cclass{cSimulation}. \ffunc{getComponent()} expects an ID, and
+returns the component's pointer if the component still exists, otherwise it
+returns \ttt{nullptr}. The method has two variations, \ffunc{getModule(id)}
+and \ffunc{getChannel(id)}. They return \cclass{cModule} and \cclass{cChannel}
+pointers if the identified component is in fact a module or a channel, respectively,
+otherwise they return \ttt{nullptr}.
 
 \begin{cpp}
 int id = 100;
-cModule *mod = getSimulation()->getModule(id);
+cModule *mod = getSimulation()->getModule(id); // exists, and is a module
 \end{cpp}
-
-Module IDs are guaranteed to be unique for the duration of the whole
-simulation, even when modules are created and destroyed dynamically;
-that is, IDs of deleted modules are not reused for newly created
-modules.
 
 
 \subsection{Walking Up and Down the Module Hierarchy}
