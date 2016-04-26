@@ -177,18 +177,20 @@ void simulate(const char *networkName, simtime_t limit)
 
     // set up network and prepare for running it
     sim->setupNetwork(networkType); //E!
-    sim->startRun(); //E!
+    sim->setSimulationTimeLimit(limit);
+
+    // prepare for running it
+    sim->callInitialize();
 
     // run the simulation
     bool ok = true;
     try {
-        while (sim->getSimTime() < limit) {
-            cSimpleModule *mod = sim->selectNextModule(); //E!
-            if (!mod)
+        while (true) {
+            cEvent *event = sim->takeNextEvent();
+            if (!event)
                 break;
-            sim->doOneEvent(mod);  //E!
+            sim->executeEvent(event);
         }
-        printf("Finished: time limit reached\n");
     }
     catch (cTerminationException& e) {
         printf("Finished: %s\n", e.what());
@@ -201,8 +203,6 @@ void simulate(const char *networkName, simtime_t limit)
     if (ok)
         sim->callFinish();  //E!
 
-    // finish the simulation and clean up the network
-    sim->endRun();  //E!
     sim->deleteNetwork();  //E!
 
     cSimulation::setActiveSimulation(nullptr);
@@ -213,14 +213,14 @@ void simulate(const char *networkName, simtime_t limit)
 The function accepts a network type name (which must be fully qualified
 with a package name) and a simulation time limit.
 
-In the first few lines the system looks up the network name among the modules that
-have been loaded from the  NED files, and an error message is printed if it is not found.
+In the first few lines, the code looks up the network among the available
+module types, and prints an error message if it is not found.
 
-Then it is required to create and activate a simulation manager object
+Then it proceeds to create and activate a simulation manager object
 (\cclass{cSimulation}). The simulation manager requires another object,
-called the environment object. This environment object is used by the
-simulation manager to read the configuration. In addition, the results
-produced by the simulation manager are written to this environment object.
+called the environment object. The environment object is used by the
+simulation manager to read the configuration. In addition, the simulation
+results are also written via the environment object.
 
 The environment object (\ttt{CustomSimulationEnv} in the above code) must
 be provided by the programmer; this is described in detail in a later section.
@@ -242,22 +242,21 @@ an error (for example, module type not found), an exception will be thrown. The
 exception object is some kind of \cclass{std::exception}, usually a
 \cclass{cRuntimeError}.
 
-If the network setup was successful, the \ttt{sim->}\ffunc{startRun()} function is called,
-and the \ffunc{initialize()} methods of modules
-and channels are then activated. An exception is thrown if
-something goes wrong in any of the \ffunc{initialize()} methods.
+If the network setup is successful, \ttt{sim->}\ffunc{callInitialize()} is
+invoked next, to run the initialization code of modules and channels in the
+network. An exception is thrown if something goes wrong in any of the
+\ffunc{initialize()} methods.
 
-The following lines run the simulation by calling
-\ttt{sim->}\ffunc{selectNextModule()} and \ttt{sim->}\ffunc{doOneEvent()}
-in an event loop, until the simulation time limit is reached or an
-exception occurs. Exceptions that are subclassed from \cclass{cTerminationException}
-signify the normal termination of the simulation process; other exceptions indicate
-various errors.
+The next lines run the simulation by calling
+\ttt{sim->}\ffunc{takeNextEvent()} and \ttt{sim->}\ffunc{executeEvent()}
+in a loop. The loop is exited when an exception occurs. The exception
+may indicate a runtime error, or a normal termination condition such as
+when there are no more events, or the simulation time limit has been
+reached. (The latter are represented by \cclass{cTerminationException}.)
 
 If the simulation has completed successfully (\ttt{ok==true}), the code
 goes on to call the \ffunc{finish()} methods of modules and channels. Then,
-regardless of whether there was an error, \ttt{sim->}\ffunc{endRun()} is
-called, and the network is shut down using
+regardless whether there was an error, cleanup takes place by calling
 \ttt{sim->}\ffunc{deleteNetwork()}.
 
 Finally, the simulation manager object is deallocated, but the active
