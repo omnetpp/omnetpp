@@ -3345,26 +3345,47 @@ int submodID = module->findSubmodule("foo", 3); // look up "foo[3]"
 cModule *submod = module->getSubmodule("foo", 3);
 \end{cpp}
 
-The \ffunc{getModuleByRelativePath()} member function can be used to find
-a submodule nested deeper than one level below. For example,
+
+\subsection{Finding Modules by Path}
+\label{sec:simple-modules:finding-modules-by-path}
+
+\cclass{cModule}'s \ffunc{getModuleByPath()} member function can be used to
+find modules by relative or absolute path. It accepts a path string, and
+returns the pointer of the matching module, or \ttt{nullptr} if the module
+identified by the path does not exist.
+
+The path is dot-separated list of module names. The special module name
+\ttt{\textasciicircum} (caret) stands for the parent module. If the path
+starts with a dot or caret, it is understood as relative to this module,
+otherwise it is taken to mean an absolute path. For absolute paths,
+inclusion of the toplevel module's name in the path is optional.
+
+The following lines demonstrate relative paths, and find the \ttt{app[3]}
+submodule and the \ttt{gen} submodule of \ttt{app[3]} submodule of the
+module in question:
 
 \begin{cpp}
-compoundmod->getModuleByRelativePath("child[5].grandchild");
+cModule *app = module->getModuleByPath(".app[3]");  // note leading dot
+cModule *gen = module->getModuleByPath(".app[3].gen");
 \end{cpp}
 
-would give the same result as
+Without the leading dot, the path is interpreted as absolute. The following
+lines both find the \ttt{tcp} submodule of \ttt{host[2]} in the network,
+regardless of the module on which the \ffunc{getModuleByPath()} has been
+invoked.
 
 \begin{cpp}
-compoundmod->getSubmodule("child",5)->getSubmodule("grandchild");
+cModule *tcp = module->getModuleByPath("Network.host[2].tcp");
+cModule *tcp = module->getModuleByPath("host[2].tcp");
 \end{cpp}
 
-(Provided that \ttt{child[5]} does exist, because otherwise the second
-version would crash with an access violation because of \ttt{nullptr}
-dereference.)
+The parent module may be expressed with a caret:
 
-The \cclass{cSimulation}::\ffunc{getModuleByPath()} function is similar
-to \cclass{cModule}'s \ffunc{moduleByRelative\-Path()} function, and it
-starts the search at the top-level module.
+\begin{cpp}
+cModule *parent = module->getModuleByPath("^"); // parent module
+cModule *tcp = module->getModuleByPath("^.tcp"); // sibling module
+cModule *other = module->getModuleByPath("^.^.host[1].tcp"); // two levels up, then...
+\end{cpp}
 
 
 \subsection{Iterating over Submodules}
@@ -3387,7 +3408,7 @@ for (cModule::SubmoduleIterator it(module); !it.end(); it++)
 
 To determine the module at the other end of a connection, use
 \cclass{cGate}'s \ffunc{getPreviousGate()}, \ffunc{getNextGate()} and
-\ffunc{getOwnerModule()} functions. For example:
+\ffunc{getOwnerModule()} methods. An example:
 
 \begin{cpp}
 cModule *neighbour = gate("out")->getNextGate()->getOwnerModule();
@@ -3395,6 +3416,16 @@ cModule *neighbour = gate("out")->getNextGate()->getOwnerModule();
 
 For input gates, you would use \ffunc{getPreviousGate()} instead of
 \ffunc{getNextGate()}.
+
+The endpoints of the connection path are returned by the
+\ffunc{getPathStartGate()} and \ffunc{getPathEndGate()} \cclass{cGate}
+methods. These methods follow the connection path by repeatedly calling
+\ffunc{getPreviousGate()} and \ffunc{getNextGate()}, respectively,
+until they arrive at a \ttt{nullptr}. An example:
+
+\begin{cpp}
+cModule *peer = gate("out")->getPathEndGate()->getOwnerModule();
+\end{cpp}
 
 
 \section{Direct Method Calls Between Modules}
