@@ -3727,30 +3727,13 @@ mod->deleteModule();
 \index{connection!creating}
 
 Connections can be created using \cclass{cGate}'s \ffunc{connectTo()}
-method.
-  \footnote{The earlier \ffunc{connect()} global functions that
-  accepted two gates have been deprecated, and may be removed
-  from further {\opp} releases.}
-\ffunc{connectTo()} should be invoked on the source gate
+method. \ffunc{connectTo()} should be invoked on the source gate
 of the connection, and expects the destination gate pointer as
-an argument:
+an argument. (The use of the words \textit{source} and \textit{destination}
+correspond to the direction of the arrow in NED files.)
 
 \begin{cpp}
 srcGate->connectTo(destGate);
-\end{cpp}
-
-The \textit{source} and \textit{destination} words correspond
-to the direction of the arrow in NED files.
-
-As an example, we create two modules and connect them in both directions:
-
-\begin{cpp}
-cModuleType *moduleType = cModuleType::get("TicToc");
-cModule *a = modtype->createScheduleInit("a", this);
-cModule *b = modtype->createScheduleInit("b", this);
-
-a->gate("out")->connectTo(b->gate("in"));
-b->gate("out")->connectTo(a->gate("in"));
 \end{cpp}
 
 \ffunc{connectTo()} also accepts a channel object (\ttt{cChannel*}) as an
@@ -3758,14 +3741,15 @@ additional, optional argument. Similarly to modules, channels can be
 created using their factory object of the type \cclass{cChannelType}:
 
 \begin{cpp}
-cGate *outg=..., *ing=...;
+cGate *outGate, *inGate;
+...
 
 // find factory object and create a channel
 cChannelType *channelType = cChannelType::get("foo.util.Channel");
 cChannel *channel = channelType->create("channel");
 
 // create connecting
-outg->connectTo(ing, channel);
+outGate->connectTo(inGate, channel);
 \end{cpp}
 
 The channel object will be owned by the source gate of the connection, and
@@ -3774,19 +3758,36 @@ you cannot reuse the same channel object with several connections.
 If you need one of the built-in channel types (\cclass{cIdealChannel},
 \cclass{cDelayChannel} or \cclass{cDatarateChannel}), the step to find the
 factory object can be spared, as those classes have static \ffunc{create()}
-functions to create a channel instance.
+functions to create a channel instance. Alternatively, one can use
+\cclass{cChannelType}'s \ffunc{createIdealChannel()}, \ffunc{createDelayChannel()}
+and \ffunc{createDatarateChannel()} static methods.
 
-\cclass{cDatarateChannel} also has member functions to set up its
-parameters: \ffunc{setDelay()}, \ffunc{setBitErrorRate()},
-\ffunc{setPacketErrorRate()} and \ffunc{setDatarate()}.
+The channel object may need to be parameterized before using it for a
+connection. For example, \cclass{cDelayChannel} has a \ffunc{setDelay()}
+method, and \cclass{cDatarateChannel} has \ffunc{setDelay()},
+\ffunc{setDatarate()}, \ffunc{setBitErrorRate()} and
+\ffunc{setPacketErrorRate()}.
 
-An example that sets up a channel with a delay:
+An example that sets up a channel with a datarate and a delay between two
+modules:
 
 \begin{cpp}
-cDatarateChannel *channel = cDatarateChannel::create("channel");
-channel->setDelay(0.001);
+cDatarateChannel *datarateChannel = cDatarateChannel::create("channel");
+datarateChannel->setDelay(0.001);
+datarateChannel->setDatarate(1e9);
+outGate->connectTo(inGate, datarateChannel);
+\end{cpp}
 
-a->gate("out")->connectTo(b->gate("in"), channel); // a, b are modules
+Finally, here is a more complete example that creates two modules and
+connects them in both directions:
+
+\begin{cpp}
+cModuleType *moduleType = cModuleType::get("TicToc");
+cModule *a = modtype->createScheduleInit("a", this);
+cModule *b = modtype->createScheduleInit("b", this);
+
+a->gate("out")->connectTo(b->gate("in"));
+b->gate("out")->connectTo(a->gate("in"));
 \end{cpp}
 
 
