@@ -27,6 +27,29 @@ namespace. To use the {\opp} API, you must include the \ttt{omnetpp.h}
 header file and either import the namespace with \ttt{using namespace
 omnetpp}, or qualify names with the \ttt{omnetpp::} prefix.
 
+Thus, simulation models will contain the
+
+\begin{cpp}
+#include <omnetpp.h>
+\end{cpp}
+
+line, and often also
+
+\begin{cpp}
+using namespace omnetpp;
+\end{cpp}
+
+When writing code that should work with various versions of {\opp}, it is
+often useful to have compile-time access to the {\opp} version in a numeric
+form. The \fmac{OMNETPP\_VERSION} macro exists for that purpose, and it is
+defined by {\opp} to hold the version number as a \textit{major*256+minor}
+value. For example, in {\opp} 4.6 is was defined as
+
+\begin{cpp}
+#define OMNETPP_VERSION 0x406
+\end{cpp}
+
+
 \subsection{The cObject Base Class}
 \label{sec:sim-lib:cobject}
 
