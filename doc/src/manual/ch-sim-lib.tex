@@ -1142,7 +1142,7 @@ topo.extractFromNetwork(selectFunction, nullptr);
 %
 
 A \cclass{cTopology} object uses two types: \cclass{cTopology::Node} for
-nodes and \cclass{cTopology::Link} for edges. (\cclass{sTopo\-Link\-In} and
+nodes and \cclass{cTopology::Link} for edges. (\cclass{cTopology::LinkIn} and
 \cclass{cTopology::LinkOut} are aliases for \cclass{cTopology::Link}; we'll
 talk about them later.)
 
@@ -1166,12 +1166,12 @@ for (int i = 0; i < topo.getNumNodes(); i++) {
 }
 \end{cpp}
 
-The \ffunc{getNumNodes()} member function (1st line) returns the number of
-nodes in the graph, and getNode(i) returns a pointer to the \textit{i}th
-node, an \cclass{cTopology::Node} structure.
+The \ffunc{getNumNodes()} member function returns the number of
+nodes in the graph, and \ffunc{getNode(i)} returns a pointer to the \textit{i}th
+node, a \cclass{cTopology::Node} structure.
 
 The correspondence between a graph node and a module can be obtained
-by:
+by \ffunc{getNodeFor()} method:
 
 \begin{cpp}
 cTopology::Node *node = topo.getNodeFor(module);
@@ -1185,8 +1185,8 @@ returns \ttt{nullptr}). \ffunc{getNodeFor()} uses binary search within the
 
 \cclass{cTopology::Node}'s other member functions let you determine the
 connections of this node: \ffunc{getNumInLinks()}, \ffunc{getNumOutLinks()} return
-the number of connections, \ttt{in(i)} and
-\ttt{out(i)} return pointers to graph edge objects.
+the number of connections, \ttt{getLinkIn(i)} and
+\ttt{getLinkOut(i)} return pointers to graph edge objects.
 
 By calling member functions of the graph edge object, you can
 determine the modules and gates involved. The \ffunc{getRemoteNode()}
@@ -1302,6 +1302,18 @@ weightedSingleShortestPathsTo(cTopology::Node *target);
 weightedMultiShortestPathsTo(cTopology::Node *target);
 \end{cpp}
 
+\subsection{Manipulating the graph}
+\label{sec:sim-lib:ctopology-manipulating}
+
+\cclass{cTopology} also has methods that let one manipulate the stored graph,
+or even, build a graph from scratch. These methods are \ffunc{addNode()},
+\ffunc{deleteNode()}, \ffunc{addLink()} and \ffunc{deleteLink()}.
+
+When extracting the topology from the network, \cclass{cTopology} uses
+the factory methods \ttt{createNode()} and \ttt{createLink()} to instantiate
+the node and link objects. These methods may be overridden by subclassing
+\cclass{cTopology} if the need arises, for example when it is useful to be
+able to store additional information in those objects.
 
 
 \section{Pattern Matching}
