@@ -2181,9 +2181,13 @@ because several details and examples have been already presented in
 previous sections.
 
 In NED, a type may only extend (\fkeyword{extends} keyword) an element of
-the same component type: a simple module may only extend a simple module,
-compound module may only extend a compound module, and so on. Single
-inheritance is supported for modules and channels, and multiple inheritance
+the same component type: a simple module may extend a simple module, a
+channel may extend a channel, a module interface may extend a module
+interface, and so on. There is one irregularity, however: A compound module
+may extend a simple module (and inherits its C++ class), but not vica
+versa.
+
+Single inheritance is supported for modules and channels, and multiple inheritance
 is supported for module interfaces and channel interfaces. A network is a
 shorthand for a compound module with the \fprop{@isNetwork} property set, so
 the same rules apply to it as to compound modules.
