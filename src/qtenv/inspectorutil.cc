@@ -136,33 +136,17 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     if (comp) {
         menu->addSeparator();
         QMenu *subMenu = menu->addMenu(QString("Set Log Level for '") + name + "' and children...");
-
-        QAction *action;
         QActionGroup *logLevelActionGroup = new QActionGroup(menu);
 
-        #define INSPECTORUTIL_ADD_LOGLEVEL(LEVEL) \
-            /* Capitalize action's text */ \
-            QString text_ ## LEVEL = #LEVEL; \
-            text_ ## LEVEL = text_ ## LEVEL.toLower(); \
-            text_ ## LEVEL[0] = text_ ## LEVEL[0].toUpper(); \
-            /* Set action */ \
-            action = subMenu->addAction(text_ ## LEVEL, getQtenv(), SLOT(setComponentLogLevel())); \
-            action->setData(QVariant::fromValue(ActionDataPair(comp, LOGLEVEL_ ## LEVEL))); \
-            action->setCheckable(true); \
-            action->setChecked(comp->getLogLevel() == LOGLEVEL_ ## LEVEL); \
-            action->setActionGroup(logLevelActionGroup);
-
-        INSPECTORUTIL_ADD_LOGLEVEL(TRACE);
-        INSPECTORUTIL_ADD_LOGLEVEL(DEBUG);
-        INSPECTORUTIL_ADD_LOGLEVEL(DETAIL);
-        INSPECTORUTIL_ADD_LOGLEVEL(INFO);
-        INSPECTORUTIL_ADD_LOGLEVEL(WARN);
-        INSPECTORUTIL_ADD_LOGLEVEL(ERROR);
-        INSPECTORUTIL_ADD_LOGLEVEL(FATAL);
+        addLoglevel(LOGLEVEL_TRACE, "Trace", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_DEBUG, "Debug", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_DETAIL,"Detail", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_INFO, "Info", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_WARN, "Warn", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_ERROR, "Error", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_FATAL, "Fatal", comp, logLevelActionGroup, subMenu);
         subMenu->addSeparator();
-        INSPECTORUTIL_ADD_LOGLEVEL(OFF);
-
-        #undef INSPECTORUTIL_ADD_LOGLEVEL
+        addLoglevel(LOGLEVEL_OFF, "Off", comp, logLevelActionGroup, subMenu);
     }
 
     // add utilities menu
@@ -181,7 +165,15 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
 }
 
-
+void InspectorUtil::addLoglevel(LogLevel level, QString levelInStr, cComponent *comp, QActionGroup *logLevelActionGroup,
+                                QMenu *subMenu)
+{
+    QAction *action = subMenu->addAction(levelInStr, getQtenv(), SLOT(setComponentLogLevel()));
+    action->setData(QVariant::fromValue(ActionDataPair(comp, level)));
+    action->setCheckable(true);
+    action->setChecked(comp->getLogLevel() == level);
+    action->setActionGroup(logLevelActionGroup);
+}
 
 QMenu *InspectorUtil::createInspectorContextMenu(cObject* object, Inspector *insp)
 {

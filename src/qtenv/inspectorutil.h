@@ -21,6 +21,7 @@
 #include "qtenvdefs.h"
 
 class QMenu;
+class QActionGroup;
 
 namespace omnetpp {
 
@@ -32,6 +33,9 @@ class Inspector;
 
 class InspectorUtil
 {
+private:
+    static void addLoglevel(LogLevel level, QString levelInStr, cComponent *comp, QActionGroup *logLevelActionGroup, QMenu *subMenu);
+
 public:
     enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
     enum eTab { TAB_GENERAL, TAB_LOGS, TAB_LAYOUTING, TAB_ANIMATION, TAB_FILTERING, TAB_FONTS, TAB_NOTDEFINED };
