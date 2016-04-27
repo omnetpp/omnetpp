@@ -102,8 +102,8 @@ debug-on-errors = false         # another configuration option
 \label{sec:config-sim:inifile-inclusion}
 
 {\opp} supports including an ini file in another\index{ini file!file inclusion},
-via the \ttt{include} keyword. This feature allows you to partition large ini
-files into logical units, fixed and varying part, etc.
+via the \ttt{include} keyword. This feature allows one to partition a large ini
+file into logical units, fixed and varying part, etc.
 
 An example:
 
@@ -116,7 +116,7 @@ include ../common/config.ini
 ...
 \end{inifile}
 
-You can also include files from other directories. If the included ini file
+One can also include files from other directories. If the included ini file
 further includes others, their path names will be understood as relative to
 the location of the file which contains the reference, rather than relative
 to the current working directory of the simulation.
@@ -150,8 +150,8 @@ baz2 = 4          # lines still belong to [General]
 
 \begin{note}
 The concept of file inclusion implies that include files may not make sense
-on their own. Thus, when you open an included ini file in an specialized ini file
-editor, the file contents may be flagged with errors and warnings. These
+on their own. Thus, when an included ini file is opened in the ini editor
+in the IDE, file contents may be flagged with errors and warnings. These
 errors/warnings disappear when the file is viewed as part of its main file.
 \end{note}
 
@@ -203,7 +203,7 @@ Some configuration options (such as user interface selection) are only
 accepted in the \ttt{[General]} section, but most of them can go into \ttt{Config}
 sections as well.
 
-When you run a simulation, you need to select one of the configurations
+When a simulation is run, one needs to select one of the configurations
 to be activated. In Cmdenv, this is done with the \ttt{-c} command-line option:
 
 \begin{commandline}
@@ -211,14 +211,14 @@ $ aloha -c PureAloha
 \end{commandline}
 
 The simulation will then use the contents of the \ttt{[Config PureAloha]}
-section to set up the simulation. (Tkenv, of course, lets you select
+section to set up the simulation. (Tkenv, of course, lets the user choose
 the configuration from a dialog.)
 
 
 \subsection{Section Inheritance}
 \label{sec:config-sim:section-inheritance}
 
-Actually, when you activate the PureAloha configuration, the contents of
+When the PureAloha configuration is activated, the contents of
 the \ttt{[General]} section will also be taken into account: if some
 configuration option or parameter value is not found in \ttt{[Config PureAloha]},
 then the search will continue in the \ttt{[General]} section. In
@@ -256,11 +256,10 @@ extends = SlottedAloha2
 \end{inifile}
 
 
-If you activate the \ttt{SlottedAloha2b} configuration, lookups will consider
-sections in the following order (this is also called the
-\textit{section fallback chain}): \ttt{SlottedAloha2b},
-\ttt{SlottedAloha2}, \ttt{SlottedAlohaBase}, \ttt{HighTrafficSettings},
-\ttt{General}.
+When \ttt{SlottedAloha2b} is activated, lookups will consider sections in the
+following order (this is also called the \textit{section fallback chain}):
+\ttt{SlottedAloha2b}, \ttt{SlottedAloha2}, \ttt{SlottedAlohaBase},
+\ttt{HighTrafficSettings}, \ttt{General}.
 
 The effect is the same as if the contents of the sections
 SlottedAloha2b, SlottedAloha2, SlottedAlohaBase, HighTrafficSettings and
@@ -299,17 +298,18 @@ General
 \end{commandline}
 
 The \textit{section fallback} concept is similar to multiple inheritance in
-object-oriented languages, and benefits are similar too; you can factor out
+object-oriented languages, and benefits are similar too; one can factor out
 the common parts of several configurations into a ``base'' configuration,
-and additionally you can reuse existing configurations (as opposed to
-copying them) by using them as a base. In practice you will often have
-``abstract'' configurations too (in the C++/Java sense), which assign only
-a subset of parameters and leave the others open, to be assigned in derived
+and additionally, one can reuse existing configurations without copying, by
+using them as a base. In practice one will often have ``abstract''
+configurations too (in the C++/Java sense), which assign only a subset of
+parameters and leave the others open, to be assigned in derived
 configurations.
 
-If you are experimenting a lot with different parameter settings of a
-simulation model, these techniques will make it much easier to manage
-ini files.
+When experimenting with a lot of different parameter settings for a
+simulation model, file inclusion and section inheritance can make it much
+easier to manage ini files.
+
 
 \section{Assigning Module Parameters}
 \label{sec:config-sim:parameter-settings}
@@ -380,9 +380,9 @@ Pattern syntax:
 \subsubsection{Precedence}
 \label{sec:config-sim:precedence-of-entries}
 
-If you use wildcards, the order of entries is important; if a parameter
-name matches several wildcard-patterns, the \textit{first} matching occurrence
-is used. This means that you need to list specific settings first, and
+The order of entries is very important with wildcards. When a key matches
+several wildcard patterns, the \textit{first} matching occurrence
+is used. This means that one needs to list specific settings first, and
 more general ones later. Catch-all settings should come last.
 
 An example ini file:
@@ -415,10 +415,10 @@ or digit, plus the underscore; \ttt{\{xyzc-f\}} matches any of the characters
 x, y, z, c, d, e, f.
 To include '-' in the set, put it at a position where it cannot be
 interpreted as character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
-If you want to include '\}' in the set, it must be the first
-character: \ttt{\{\}a-z\}}, or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}.
-A backslash is always taken as a literal backslash (and not as an escape character)
-within set definitions.
+To include '\}' in the set, it must be the first character: \ttt{\{\}a-z\}},
+or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}.
+A backslash is always taken as a literal backslash (and not as an escape
+character) within set definitions.
 
 
 \subsubsection{Numeric Ranges and Index Ranges}
@@ -460,9 +460,9 @@ cause an error or will be interactively prompted for, depending
 on the particular user interface.
 
 \begin{note}
-In Cmdenv you must explicitly enable the interactive mode with the
-\ttt{-{}-cmdenv-interactive=true} option otherwise you will get an error
-when running the simulation.
+In Cmdenv, one must explicitly enable interactive mode with the
+\ttt{-{}-cmdenv-interactive=true} option, otherwise the simulation
+program will stop with an error in the setup phase.
 \end{note}
 
 More precisely, parameter resolution takes place as follows:
@@ -513,9 +513,9 @@ each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it work? First of all, Cmdenv with the \ttt{-x} option will tell you how many
-simulation runs a given section expands to. (You will of course use Cmdenv for batch runs,
-not Tkenv or Qtenv.)
+How does it work? First of all, Cmdenv with the \ttt{-x} option will print
+how many simulation runs a given section expands to. (One should of course
+use Cmdenv for batch runs, not a GUI one like Tkenv or Qtenv.)
 
 \begin{commandline}
 $ aloha -u Cmdenv -x AlohaStudy
@@ -526,7 +526,7 @@ Config: AlohaStudy
 Number of runs: 24
 \end{commandline}
 
-If you add the \ttt{-g} option, the program will also print out the values
+When the \ttt{-g} option is also added, the program also prints the values
 of the iteration variables for each run. (Use \ttt{-G} for even more info.)
 Note that the parameter study actually maps to nested loops, with the last
 \ttt{\$\{...\}} becoming the innermost loop. The iteration variables are
@@ -591,14 +591,14 @@ Preparing for running configuration AlohaStudy, run #23...
 
 However, this approach is not recommended, because it is more
 susceptible to C++ programming errors in the model. (For example, if
-any of the runs crashes, the whole batch is terminated -- which may
+any of the runs crashes, the whole batch stops -- which may
 not be what the user wants.)
 
 
 \subsection{Iterations}
 \label{sec:config-sim:iterations}
 
-Let us have a look at the example ini file in the previous section again:
+Let us return to the example ini file in the previous section:
 
 \begin{inifile}
 [Config AlohaStudy]
@@ -609,11 +609,10 @@ Let us have a look at the example ini file in the previous section again:
 The \ttt{\$\{...\}} syntax specifies an iteration. It is sort of a macro: at
 each run, the whole \ttt{\$\{...\}} string is textually replaced with the
 current iteration value. The values to iterate over do not need to be
-numbers (unless you want to use the \textit{"a..b"} or
-\textit{"a..b step c"} syntax), and the
-substitution takes place even inside string constants. So, the
-following examples are all valid (note that textual substitution is
-used):
+numbers (although the \textit{"a..b"} and \textit{"a..b step c"} forms
+only work on numbers), and the substitution takes place even inside
+string constants. So, the following examples are all valid (note that
+textual substitution is used):
 
 \begin{Verbatim}[commandchars=\\\{\}]
 *.param = 1 + \$\{1e-6, 1/3, sin(0.5)\}
@@ -632,7 +631,7 @@ the left brace with a backslash: \ttt{\${\textbackslash}\{..\}}.
 \begin{note}
 Inside \ttt{\$\{..\}}, the values are separated with commas. However,
 not every comma is taken as a value separator because the parser
-tries to be smart about what you meant. Commas inside (nested) parentheses,
+tries to be smart about what is meant. Commas inside (nested) parentheses,
 brackets or curly braces are ignored so that \ttt{\$\{uniform(0,3)\}} is
 parsed as one value and not as \ttt{uniform(0} plus \ttt{3)}. Commas, curly
 braces and other charachers inside double-quoted string literals are
@@ -640,7 +639,7 @@ also ignored, so \ttt{\$\{"Hello, world"\}} yields a single \ttt{"Hello, world"}
 string and not \ttt{"Hello} plus \ttt{world"}. It is assumed that string literals
 use backslash as an escape characher, like in C/C++ and NED.
 
-If you want to have a literal comma or close-brace inside a value, you need
+To include a literal comma or close-brace inside a value, one needs
 to escape it with a backslash: \ttt{\$\{foo{\textbackslash},bar{\textbackslash}\}baz\}}
 will parse as a single value, \ttt{foo,bar\}baz}. Backslashes themselves must be doubled.
 As the above examples illustrate, the parser removes one level of backslashes,
@@ -651,10 +650,10 @@ except inside string literals where they are left intact.
 \subsection{Named Iteration Variables}
 \label{sec:config-sim:named-iteration-variables}
 
-You can assign names to iteration variables, which has the advantage
-that you will see meaningful names instead of \ttt{\$0} and
-\ttt{\$1} in the Cmdenv output, and also lets you refer to the variables at
-more than one place in the ini file. The syntax is
+One can assign names to iteration variables, which has the advantage
+that meaningful names will be displayed in the Cmdenv output instead
+of \ttt{\$0} and \ttt{\$1}, and also lets one reference iteration
+variables at other places in the ini file. The syntax is
 \ttt{\$\{<varname>=<iteration>\}}, and variables can be referred to simply as
 \ttt{\$\{<varname>\}}:
 
@@ -798,10 +797,10 @@ name of the network that is simulated; \ttt{\$\{processid\}} and
 time it was started; and there are some more: \ttt{\$\{runid\},}
 \ttt{\$\{iterationvars\}} and \ttt{\$\{repetition\}.}
 
-\ttt{\$\{runid\}} holds the \textit{run ID}. When a simulation is run, a a
-run ID is generated that uniquely identifies that instance of the
-simulation: if you run the same thing again, it will get a different run
-ID. Run ID is a concatenation of several variables like
+\ttt{\$\{runid\}} holds the \textit{run ID}. When a simulation is run, a
+run ID is assigned that uniquely identifies that instance of running the
+simulation: every subsequent run of the same simulation will produce a different
+run ID. The run ID is generated as the concatenation of several variables like
 \ttt{\$\{configname\},} \ttt{\$\{runnumber\},} \ttt{\$\{datetime\}} and
 \ttt{\$\{processid\}.} This yields an identifier that is unique ``enough''
 for all practical purposes, yet it is meaningful for humans. The run ID is
@@ -892,7 +891,7 @@ where all \ttt{\$repetition=0} runs will use the same seeds (seed set 0), all
 \ttt{\$repetition=1} runs use another seed set, \ttt{\$repetition=2} a third seed
 set, etc.
 
-To perform runs with manually selected seed sets, you can just define an
+To perform runs with manually selected seed sets, one needs to define an
 iteration for the \fconfig{seed-set} key:
 
 \begin{inifile}
@@ -1024,10 +1023,9 @@ by these three executions should be identical, unless, for example,
 some parameter was modified in the ini file, or a bug got fixed in the
 C++ code.
 
-We believe that the default way of generating
-\textit{experiment-measurement-replication} labels is useful and
-sufficient for the majority of simulation studies. However, you can
-customize it if needed. For example, here is a way to join two
+The default way of generating the \textit{experiment/measurement/replication}
+labels is useful and sufficient for the majority of simulation studies.
+However, it can be customized if needed. For example, here is a way to join two
 configurations into one experiment:
 
 \begin{inifile}
@@ -1122,7 +1120,7 @@ This mapping allows variance reduction techniques to be applied to
 \subsection{Automatic Seed Selection}
 \label{sec:config-sim:automatic-seed-selection}
 
-Automatic seed selection is used for an RNG if you do not explicitly
+Automatic seed selection is used for an RNG if one does not explicitly
 specify seeds in \ffilename{omnetpp.ini}. Automatic and manual seed selection can
 co-exist; for a particular simulation, some RNGs can be configured
 manually, and some automatically.
@@ -1167,10 +1165,9 @@ at all -- \ttt{cMersenneTwister} is superior in every respect.
 \subsection{Manual Seed Configuration}
 \label{sec:config-sim:manual-seed-configuration}
 
-In some cases you may want to manually configure seed values.
-Reasons for doing that may be that you want to use variance reduction
-techniques, or you may want to use the same seeds for several simulation
-runs.
+In some cases, one may want to manually configure seed values. The
+motivation for doing so may be the use of variance reduction techniques, or
+the intention to reuse the same seeds for several simulation runs.
 
 To manually set seeds for the Mersenne Twister RNG, use the \ttt{seed-}\textit{k}\ttt{-mt}
 option, where \textit{k} is the RNG index. An example:
@@ -1284,8 +1281,8 @@ In fact, the \fvar{cLog::noncomponentLogPredicate} and the \fvar{cLog::component
 are the most generic runtime predicates that determines which log statements are
 executed. Mostly, there's no need to redefine these predicates, but it can be
 useful sometimes. For example, one can do runtime filtering for log categories
-by redefining them. To give you an example, the \fvar{cLog::componentLogPredicate}
-does the following runtime checks:
+by redefining them. To cite a real example, the \fvar{cLog::componentLogPredicate} function
+contains the following runtime checks:
 
 \begin{cpp}
 return statementLogLevel >= cLog::loglevel &&
@@ -1441,10 +1438,9 @@ writing a log prefix altogether. Finally, here is a more detailed format string:
 
 In express mode, for performance reasons, log output is disabled during the whole
 simulation. However, during the simulation finish stage, logging is automatically
-re-enabled to allow writing statistical and other results to the log. Alternatively,
-you can easily disable all logging temporarily and efficiently if you put the
-following configuration option at the beginning of \ffilename{omnetpp.ini}. This
-can be used without changing any other log level configuration options.
+re-enabled to allow writing statistical and other results to the log. One can
+completely disable all logging by adding following configuration option at the
+beginning of \ffilename{omnetpp.ini}:
 
 \begin{inifile}
 [General]

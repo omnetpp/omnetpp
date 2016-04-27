@@ -284,13 +284,12 @@ redefining in subclasses:
 variants for multi-stage initialization, will be covered in detail in
 section \ref{sec:simple-modules:initialize-and-finish}.
 
-
 In {\opp}, events occur inside simple modules\index{module!simple}.
 Simple modules encapsulate C++ code that generates events and reacts to events,
-in other words, implements the behaviour of the model.
+implementing the behaviour of the module.
 
-To define the dynamic behavior of a simple module, you need to redefine one
-of the following member functions:
+To define the dynamic behavior of a simple module, one of the following
+member functions need to be overridden:
 
 \begin{itemize}
   \item \ffunc[handleMessage()]{handleMessage(cMessage *msg)}. It
@@ -326,7 +325,7 @@ with simulation visualization (\ref{sec:graphics:refreshdisplay}).
 \begin{note}
     \ffunc{refreshDisplay()} has been added in {\opp} 5.0. Until then,
     visualization-related tasks were usually implemented as part of
-    \ffunc{handleMessage()}; however, \ffunc{refreshDisplay()} provides
+    \ffunc{handleMessage()}. \ffunc{refreshDisplay()} provides
     a far superior and more efficient solution.
 \end{note}
 
@@ -602,7 +601,7 @@ initialization takes place in several ``waves''. For each module,
 stages required, e.g. for a two-stage init, \ffunc{numInitStages()}
 should return 2, and \ffunc{initialize(int stage)} must be implemented to
 handle the \textit{stage=0} and \textit{stage=1} cases.
-  \footnote{Note \ttt{const} in the \ttt{numInitStages()} declaration.
+  \footnote{Note the \ttt{const} in the \ttt{numInitStages()} declaration.
   If you forget it, by C++ rules you create a \textit{different} function
   instead of redefining the existing one in the base class, thus the
   existing one will remain in effect and return 1.}
@@ -704,7 +703,7 @@ Message/event related functions you can use in \ffunc{handleMessage()}:
   \item{\ffunc{cancelEvent()} -- to delete an event scheduled with \ffunc{scheduleAt()}}
 \end{itemize}
 
-You cannot use the \ffunc{receive()} and \ffunc{wait()} functions in
+The \ffunc{receive()} and \ffunc{wait()} functions cannot be used in
 \ffunc{handleMessage()}, because they are coroutine-based by nature, as
 explained in the section about \ffunc{activity()}.
 
@@ -729,13 +728,12 @@ things like:
   \item{variables/objects for statistics collection}
 \end{itemize}
 
-You can initialize these variables from the \ffunc{initialize()}
-function.  The constructor\index{module!constructor} is not a very good place
-for this purpose, because it is called in the network setup phase when
-the model is still under construction, so a lot of information you may
-want to use is not yet available.
+These variables are often initialized from the \ffunc{initialize()}
+method, because the information needed to obtain the initial value
+(e.g. module parameters) may not yet be available at the time the
+module constructor runs.
 
-Another task you have to do in \ffunc{initialize()} is to schedule
+Another task to be done in \ffunc{initialize()} is to schedule
 initial event(s)\index{events!initial} which trigger the first call(s)
 to \ffunc{handleMessage()}.  After the first call,
 \ffunc{handleMessage()} must take care to schedule further events for
@@ -971,16 +969,14 @@ systems are:
 \subsubsection{Process-Style Description}
 \label{sec:simple-modules:activity:overview}
 
-With \ffunc{activity()}, you can code the simple
-module much like you would code an operating system process or a
-thread. You can wait for an incoming message (event) at any point of
-the code, you can suspend the execution for some time (model time!),
-etc. When the \ffunc{activity()} function exits, the module is
-terminated.  (The simulation can continue if there are other modules
+With \ffunc{activity()}, a simple module can be coded much like an
+operating system process or thread. One can wait for an incoming message
+(event) at any point of the code, suspend the execution for some time
+(model time!), etc. When the \ffunc{activity()} function exits, the module
+is terminated.  (The simulation can continue if there are other modules
 which can run.)
 
-
-The most important functions you can use in \ffunc{activity()} are
+The most important functions that can be used in \ffunc{activity()} are
 (they will be discussed in detail later):
 \begin{itemize}
 \item{\ffunc{receive()} -- to receive messages (events)}
@@ -1007,11 +1003,12 @@ with at least a \ffunc{wait()} or \ffunc{receive()} call in its body.
 Generally you should prefer \ttt{handleMessage()} to \ttt{activity()}.
 The main problem with \ttt{activity()} is that it doesn't scale because
 every module needs a separate coroutine stack. It has also been observed
-that \ttt{activity()} does not encourage a good programming style.
+that \ttt{activity()} does not encourage a good programming style, and
+stack switching also confuses many debuggers.
 
 There is one scenario where \ttt{activity()}'s process-style
 description is convenient: when the process has many
-states but transitions are very limited, ie. from any state the
+states but transitions are very limited, i.e. from any state the
 process can only go to one or two other states.  For example, this is
 the case when programming a network application, which uses a single
 network connection.  The pseudocode of the application which talks to
@@ -2161,8 +2158,8 @@ void Protocol::handleMessage(cMessage *msg)
 \subsubsection{Re-scheduling an Event}
 \label{sec:simple-modules:rescheduling}
 
-If you want to reschedule an event which is currently scheduled to a different
-simulation time, first you have to cancel it using \ffunc{cancelEvent()}.
+To reschedule an event which is currently scheduled to a different
+simulation time, it first needs to be cancelled using \ffunc{cancelEvent()}.
 This is shown in the following example code:
 
 \begin{cpp}
@@ -2203,8 +2200,8 @@ send(msg, "outv", i); // send via a gate in a gate vector
 
 To send via an inout gate, remember that an inout gate is an input and an
 output gate glued together, and the two halves can be identified with the
-\ttt{\$i} and \ttt{\$o} name suffixes. Thus, for sending you need to specify
-the gate name with the \ttt{\$o} suffix:
+\ttt{\$i} and \ttt{\$o} name suffixes. Thus, the gate name needs to be
+specified in the \ffunc{send()} call with the \ttt{\$o} suffix:
 
 \begin{cpp}
 send(msg, "g$o");
@@ -2215,26 +2212,26 @@ send(msg, "g$o", i); // if "g[]" is a gate vector
 \subsection{Broadcasts and Retransmissions}
 \label{sec:simple-modules:broadcasts-and-retransmissions}
 
-When you implement broadcasts or retransmissions, two frequently
+When implementing broadcasts or retransmissions, two frequently
 occurring tasks in protocol simulation, you might feel tempted
 to use the same message in multiple \ffunc{send()} operations.
 Do not do it -- you cannot send the same message object multiple times.
 Instead, duplicate the message object.
 
-Why? A message is like any real world object -- it cannot be at two places
-at the same time. Once you've sent it, the message object no longer belongs
+Why? A message is like a real-world object -- it cannot be at two places
+at the same time. Once sent out, the message no longer belongs
 to the module: it is taken over by the simulation kernel, and will
 eventually be delivered to the destination module. The sender module should
-not even refer to its pointer any more. Once the message arrived in the
+not even refer to its pointer any more. Once the message arrives in the
 destination module, that module will have full authority over it -- it can
 send it on, destroy it immediately, or store it for further handling. The
 same applies to messages that have been scheduled -- they belong to the
 simulation kernel until they are delivered back to the module.
 
-To enforce the rules above, all message sending functions check that you
-actually own the message you are about to send. If the message is in
-another module, currently scheduled or in a queue, etc., you'll get a
-runtime error: \textit{not owner of message}.
+To enforce the rules above, all message sending functions check that the
+module actually owns the message it is about to send. If the message is in
+another module, in a queue, currently scheduled, etc., a runtime error
+will be generated: \textit{not owner of message}.
   \footnote{The feature does not increase runtime overhead significantly, because
   it uses the object ownership\index{ownership} management (described in
   Section \ref{sec:sim-lib:ownership-management});
@@ -2513,8 +2510,8 @@ else
 \end{note}
 
 The \ttt{getTransmissionChannel()} method searches the connection path each
-time it is called. If performance is important, it is recommended that you
-obtain the transmission channel pointer once, and cache it. When the network topology
+time it is called. If performance is important, it is a good idea to obtain
+the transmission channel pointer once, and then cache it. When the network topology
 changes, the cached channel pointer needs to be updated; section
 \ref{sec:simple-modules:model-change} describes the mechanism that can
 be used to get notifications about topology changes.
@@ -2585,14 +2582,15 @@ call.
 \subsubsection{Aborting Transmissions}
 \label{sec:simple-modules:aborting-transmissions}
 
-Sometimes you want the sender to abort transmission. The support {\opp}
-provides for this task is the \ffunc{forceTransmissionFinishTime()} method
-of channels. This method forcibly overwrites the \textit{transmissionFinishTime}
+Certain protocols, for example Ethernet require the ability to abort
+a transmission before it completes. The support {\opp} provides
+for this task is the \ffunc{forceTransmissionFinishTime()} channel method.
+This method forcibly overwrites the \textit{transmissionFinishTime}
 member of the channel with the given value, allowing the sender to transmit
 another packet without raising the \textit{``channel is currently busy''}
 error. The receiving party needs to be notified about the aborted transmission
-by some user-defined means, for example by sending another packet
-or an out-of-band message.
+by some external means, for example by sending another packet or an
+out-of-band message.
 
 \subsubsection{Implementation of Message Sending}
 \label{sec:simple-modules:implementation-of-message-sending}
@@ -2687,8 +2685,8 @@ If you expect messages to arrive during the wait period, you can
 use the \ffunc{waitAndEnqueue()} function. It takes a pointer to a queue object
 (of class \cclass{cQueue}, described in chapter \ref{cha:sim-lib})
 in addition to the wait interval. Messages that arrive during the
-wait interval will be accumulated in the queue, so you can
-process them after the \ffunc{waitAndEnqueue()} call returned.
+wait interval are accumulated in the queue, and they can be
+processed after the \ffunc{waitAndEnqueue()} call returns.
 
 \begin{cpp}
 cQueue queue("queue");
@@ -2745,8 +2743,8 @@ channel's parent is also the compound module.
 \subsection{The Channel API}
 \label{sec:simple-modules:channel-api}
 
-When subclassing \cclass{Channel}, you have to redefine and provide
-implementations for the following pure virtual member functions:
+When subclassing \cclass{Channel}, the following pure virtual member functions
+need to be overridden:
 
 \begin{itemize}
   \item \ffunc[isTransmissionChannel()]{bool isTransmissionChannel() const}
@@ -3286,10 +3284,10 @@ EV << "This is module [" << module->getIndex() <<
 \end{cpp}
 
 
-\subsection{Module IDs}
+\subsection{Component IDs}
 \label{sec:simple-modules:module-ids}
 
-Every component (module and channel) in the network has a unique ID that
+Every component (module and channel) in the network has an ID that
 can be obtained from \cclass{cComponent}'s \ffunc{getId()} member
 function:
 
@@ -3303,7 +3301,7 @@ dynamically, because IDs of deleted modules or channels are never reused for
 newly created ones.
 
 To look up a component by ID, one needs to use methods of the simulation
-object, \cclass{cSimulation}. \ffunc{getComponent()} expects an ID, and
+manager object, \cclass{cSimulation}. \ffunc{getComponent()} expects an ID, and
 returns the component's pointer if the component still exists, otherwise it
 returns \ttt{nullptr}. The method has two variations, \ffunc{getModule(id)}
 and \ffunc{getChannel(id)}. They return \cclass{cModule} and \cclass{cChannel}
@@ -3361,7 +3359,7 @@ otherwise it is taken to mean an absolute path. For absolute paths,
 inclusion of the toplevel module's name in the path is optional.
 
 The following lines demonstrate relative paths, and find the \ttt{app[3]}
-submodule and the \ttt{gen} submodule of \ttt{app[3]} submodule of the
+submodule and the \ttt{gen} submodule of the \ttt{app[3]} submodule of the
 module in question:
 
 \begin{cpp}
@@ -3729,8 +3727,8 @@ mod->deleteModule();
 Connections can be created using \cclass{cGate}'s \ffunc{connectTo()}
 method. \ffunc{connectTo()} should be invoked on the source gate
 of the connection, and expects the destination gate pointer as
-an argument. (The use of the words \textit{source} and \textit{destination}
-correspond to the direction of the arrow in NED files.)
+an argument. The use of the words \textit{source} and \textit{destination}
+correspond to the direction of the arrow in NED files.
 
 \begin{cpp}
 srcGate->connectTo(destGate);
@@ -3738,7 +3736,7 @@ srcGate->connectTo(destGate);
 
 \ffunc{connectTo()} also accepts a channel object (\ttt{cChannel*}) as an
 additional, optional argument. Similarly to modules, channels can be
-created using their factory object of the type \cclass{cChannelType}:
+created using their factory objects that have the type \cclass{cChannelType}:
 
 \begin{cpp}
 cGate *outGate, *inGate;

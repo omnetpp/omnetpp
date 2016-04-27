@@ -170,8 +170,8 @@ time of the original, not the time of the cloning operation.
   duplication of the encapsulated message until it is really needed;
   see section \ref{sec:messages:reference-counting}.}
 
-If you subclass from \cclass{cMessage} or \cclass{cPacket}, you need
-to reimplement \ffunc{dup()}; the recommended implementation is to delegate
+When subclassing \cclass{cMessage} or \cclass{cPacket}, one needs
+to reimplement \ffunc{dup()}. The recommended implementation is to delegate
 to the copy constructor of the new class:
 
 \begin{cpp}
@@ -193,16 +193,15 @@ taken care of automatically.
 
 Every message object has a unique numeric \textit{message ID}. It is normally
 used for identifying the message in a recorded event log file, but may occasionally
-be useful for other purposes as well. If you clone a message (\ttt{msg->dup()}),
+be useful for other purposes as well. When a message is cloned (\ttt{msg->dup()}),
 the clone will have a different ID.
 
-There is also another ID called \textit{tree ID}. A tree ID starts out with
-the value of the message ID; however, if you clone a message, the clone
-will retain the tree ID of the original. Thus, messages that have the same
-tree ID have been created by cloning the same original message or its
-clones (with one exception, the original message).  The size of \ttt{long}
-is usually enough so that IDs remain unique during a single simulation run
-(i.e. the counter does not wrap).
+There is also another ID called \textit{tree ID}. The tree ID is initialized
+to the message ID. However, when a message is cloned, the clone will retain
+the tree ID of the original. Thus, messages that have been created by cloning
+the same message or its clones will have the same tree ID.  Message IDs are
+of the type \ttt{long}, which is is usually enough so that IDs remain unique
+during the simulation run (i.e. the counter does not wrap).
 
 The methods for obtaining message IDs:
 
@@ -317,12 +316,11 @@ A message is termed \textit{self-message} when it is used
 in such a scenario -- otherwise self-messages are normal messages
 of class \cclass{cMessage} or a class derived from it.
 
-When a message is delivered to a module by the simulation kernel,
-you can call the \ffunc{isSelfMessage()} method to determine if it is
-a self-message; it other words, if it was scheduled with
-\ffunc{scheduleAt()} or was sent with one of the
-\ffunc{send...()} methods. The \ffunc{isScheduled()} method
-returns true if the message is currently scheduled. A scheduled
+When a message is delivered to a module by the simulation kernel, the
+\ffunc{isSelfMessage()} method can be used to determine if it is
+a self-message; that is, whether it was scheduled with \ffunc{scheduleAt()},
+or sent with one of the \ffunc{send...()} methods. The \ffunc{isScheduled()}
+method returns true if the message is currently scheduled. A scheduled
 message can also be cancelled (\ffunc{cancelEvent()}).
 
 \begin{cpp}
@@ -330,7 +328,7 @@ bool isSelfMessage() const;
 bool isScheduled() const;
 \end{cpp}
 
-The methods \ffunc{getSendingTime()} / \cclass{getArrivalTime()} are also
+The methods \ffunc{getSendingTime()} and \cclass{getArrivalTime()} are also
 useful with self-messages: they return the time the message was scheduled
 and arrived (or will arrive; while the message is scheduled, arrival time
 is the time it will be delivered to the module).
@@ -433,9 +431,8 @@ bool isReceptionStart() const;
 \subsection{Encapsulating Packets}
 \label{sec:messages:encapsulating-packets}
 
-It is often necessary to encapsulate a packet\index{packet!encapsulation}
-into another when you are modeling layered protocols of computer networks.
-
+When modeling layered protocols of computer networks, it is commonly
+needed to encapsulate a packet\index{packet!encapsulation} into another.
 The following \cclass{cPacket} methods are associated with encapsulation:
 
 \begin{cpp}
@@ -447,17 +444,17 @@ cPacket *getEncapsulatedPacket() const;
 The \ffunc{encapsulate()} function encapsulates a packet into another one.
 The length of the packet will grow by the length of the encapsulated
 packet. An exception: when the encapsulating (outer) packet has zero
-length, {\opp} assumes it is not a real packet but some out-of-band signal,
+length, {\opp} assumes it is not a real packet but an out-of-band signal,
 so its length is left at zero.
 
 A packet can only hold one encapsulated packet at a time; the second
 \ffunc{encapsulate()} call will result in an error. It is also an error if
 the packet to be encapsulated is not owned by the module.
 
-You can get back the encapsulated packet by calling \ffunc{decapsulate()}.
-\ffunc{decapsulate()} will decrease the length of the packet accordingly,
-except if it was zero. If the length would become negative, an error
-occurs.
+Decapsulation, that is, removing the encapsulated packet, is done by the
+\ffunc{decapsulate()} method. \ffunc{decapsulate()} will decrease the
+length of the packet accordingly, except if it was zero. If the length
+would become negative, an error occurs.
 
 The \ffunc{getEncapsulatedPacket()} function returns a pointer to the
 encapsulated packet, or \ttt{nullptr} if no packet is encapsulated.
@@ -486,10 +483,10 @@ cPacket *payload = udp->decapsulate();
 \subsection{Reference Counting}
 \label{sec:messages:reference-counting}
 
-Since the 3.2 release, {\opp} implements reference counting of
-encapsulated packets, meaning that if you \ffunc{dup()} a packet
-that contains an encapsulated packet, then the encapsulated packet will
-not be duplicated, only a reference count incremented. Duplication of
+Since the 3.2 release, {\opp} implements reference counting of encapsulated
+packets, meaning that when a packet containing an encapsulated packet is
+cloned (\ffunc{dup()}), the encapsulated packet will not be duplicated,
+only a reference count is incremented. Duplication of
 the encapsulated packet is deferred until \ffunc{decapsulate()}
 actually gets called. If the outer packet is deleted without its
 \ffunc{decapsulate()} method ever being called, then the reference
@@ -517,19 +514,18 @@ other packets as well.
 \label{sec:messages:encapsulating-several-packets}
 
 The \cclass{cPacket} class does not directly support encapsulating more
-than one packet, but you can subclass \cclass{cPacket} or \cclass{cMessage}
-to add the necessary functionality. (It is recommended that you
-use the message definition syntax that will be described in chapter
-\ref{cha:msg-def} -- it can spare you some work.)
+than one packet, but one can subclass \cclass{cPacket} or \cclass{cMessage}
+to add the necessary functionality.
 
-You can store the messages in a fixed-size or a dynamically allocated
-array, or you can use STL classes like \ttt{std::vector} or \ttt{std::list}.
-There is one additional ``trick'' that you might not expect: your message
-class has to \textbf{take ownership} of the inserted messages, and
-\textbf{release} them when they are removed from the message. These are
-done via the \ffunc{take()} and \ffunc{drop()} methods. Let us see
-an example which assumes you have added to the class an \ttt{std::list} member
-called \ttt{messages} that stores message pointers:
+Encapsulated packets can be stored in a fixed-size or a dynamically
+allocated array, or in a standard container like \ttt{std::vector}.
+In addition to storage, object ownership needs to be taken care of as well.
+The message class has to \textbf{take ownership} of the inserted messages, and
+\textbf{release} them when they are removed from the message. These tasks are
+done via the \ffunc{take()} and \ffunc{drop()} methods.
+
+Here is an example that assumes that the class has an \ttt{std::list} member
+called \ttt{messages} for storing message pointers:
 
 \begin{cpp}
 void MultiMessage::insertMessage(cMessage *msg)
@@ -545,19 +541,17 @@ void MultiMessage::removeMessage(cMessage *msg)
 }
 \end{cpp}
 
-You will also have to provide an \ffunc{operator=()} method to
-make sure your message objects can be copied and duplicated
-properly -- this is something often needed in simulations
-(think of broadcasts and retransmissions!). Section
-\ref{sec:sim-lib:deriving-new-classes} contains more
-about the things you need to take care of when deriving new classes.
+One also needs to provide an \ffunc{operator=()} method to make sure that
+message objects are copied and duplicated properly. Section
+\ref{sec:sim-lib:deriving-new-classes} covers requirements and conventions
+associated with deriving new classes in more detail.
 
 
 
-\section{Attaching Parameters and Objects}
+\section{Attaching Objects To a Message}
 \label{sec:msgs:attaching-objects}
 
-If you want to add parameters or objects to a message, the preferred
+When parameters or objects need to be added to a message, the preferred
 way to do that is via message definitions, described in chapter
 \ref{cha:msg-def}.
 
@@ -565,43 +559,41 @@ way to do that is via message definitions, described in chapter
 \subsection{Attaching Objects}
 \label{sec:messages:attaching-objects}
 
-The \cclass{cMessage} class has an internal \cclass{cArray} object which can
-carry objects\index{message!attaching objects}. Only objects
-that are derived from \cclass{cObject} (most {\opp} classes are so) can be attached.
-The \ffunc{addObject()}, \ffunc{getObject()}, \ffunc{hasObject()},
-\ffunc{removeObject()} methods use the object name
-as the key to the array. An example:
+The \cclass{cMessage} class has an internal \cclass{cArray} object which
+can carry objects. Only objects that are derived from \cclass{cObject} can
+be attached. The \ffunc{addObject()}, \ffunc{getObject()},
+\ffunc{hasObject()}, \ffunc{removeObject()} methods use the object's name
+(as returned by the \ffunc{getName()} method) as the key to the array.
+
+An example where the sender attaches an object, and the receiver
+checks for the object's existence and obtains a pointer to it:
 
 \begin{cpp}
-cLongHistogram *pklenDistr = new cLongHistogram("pklenDistr");
-msg->addObject(pklenDistr);
-...
-if (msg->hasObject("pklenDistr"))
-{
-   cLongHistogram *pklenDistr =
-       (cLongHistogram *) msg->getObject("pklenDistr");
+// sender:
+cLongHistogram *histogram = new cLongHistogram("histogram");
+msg->addObject(histogram);
+
+// receiver:
+if (msg->hasObject("histogram")) {
+   cObject *obj = msg->getObject("histogram");
+   cLongHistogram *histogram = check_and_cast<cLongHistogram *>(obj);
    ...
 }
 \end{cpp}
 
-You should take care that names of the attached objects don't
-conflict with each other or with \cclass{cMsgPar} parameter names
-(see next section).
-If you do not attach anything to the message and do not call the
-\ffunc{getParList()} function, the internal \cclass{cArray} object
-will not be created. This saves both storage and execution time.
+One needs to take care that names of the attached objects don't
+conflict with each other. Note that message parameters (\cclass{cMsgPar},
+see next section) are also attached the same way, so their names
+also count.
 
-You can attach non-object types (or non-\cclass{cObject} objects) to
-the message\index{message!attaching non-object types} by using
-\cclass{cMsgPar}'s \ttt{void*} pointer 'P') type (see later in the description
-of \cclass{cMsgPar}). An example:
+When no objects are attached to a message (and \ffunc{getParList()} is not
+invoked), the internal \cclass{cArray} object is not created.
+This saves both storage and execution time.
 
-\begin{cpp}
-struct conn_t *conn = new conn_t; // conn_t is a C struct
-msg->addPar("conn") = (void *) conn;
-msg->par("conn").configPointer(nullptr, nullptr, sizeof(struct conn_t));
-\end{cpp}
-
+Non-\cclass{cObject} data can be attached to messages by wrapping them into
+\cclass{cObject}, for example into \cclass{cMsgPar} which has been designed
+expressly for this purpose. \cclass{cMsgPar} will be covered in the next
+section.
 
 \subsection{Attaching Parameters}
 \label{sec:messages:attaching-parameters}
@@ -619,18 +611,18 @@ might account for a large part of execution time, sometimes as much as 80\%.
 Using \cclass{cMsgPar} is also error-prone because \cclass{cMsgPar} objects
 have to be added dynamically and individually to each message object.
 In contrast, subclassing benefits from static type checking:
-if you mistype the name of a field in the C++ code, the compiler
+if one mistypes the name of a field in the C++ code, the compiler
 can detect the mistake.
 
-If you still need \cclass{cMsgPar}s for some reason, here is a short summary.
-At the sender side you can add a new named parameter to the message
+If one still needs \cclass{cMsgPar}s for some reason, here is a short summary.
+At the sender side, one can add a new named parameter to the message
 with the \ffunc{addPar()} member function, then set its value with
 one of the methods \ffunc{setBoolValue()}, \ffunc{setLongValue()},
 \ffunc{setStringValue()}, \ffunc{setDoubleValue()}, \ffunc{setPointerValue()},
 \ffunc{setObjectValue()}, and \ffunc{setXMLValue()}. There are also overloaded
 assignment operators for the corresponding C/C++ types.
 
-At the receiver side, you can look up the parameter object on the message
+At the receiver side, one can look up the parameter object on the message
 by name and obtain a reference to it with the \ffunc{par()} member function.
 \ffunc{hasPar()} can be used to check first whether the message object has a parameter
 object with the given name. Then the value can be read with the methods

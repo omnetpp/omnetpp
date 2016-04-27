@@ -15,16 +15,13 @@ well as inheritance diagrams.
 
 The documentation tool integrates with Doxygen, meaning that it can
 hyperlink simple modules and message classes to their C++ implementation
-classes in the Doxygen documentation. If you also generate the C++
-documentation with some Doxygen features turned on (such as
-\textit{inline-sources} and \textit{referenced-by-relation}, combined with
-\textit{extract-all}, \textit{extract-private} and
-\textit{extract-static}), the result is an easily browsable and very
-informative presentation of the source code. Of course, one still has to
-write documentation comments in the code.
+classes in the Doxygen documentation. If the C++ documentation is generated
+with some Doxygen features turned on (such as \textit{inline-sources} and
+\textit{referenced-by-relation}, combined with \textit{extract-all},
+\textit{extract-private} and \textit{extract-static}), the result is an
+easily browsable and very informative presentation of the source code.
 
-In the 4.0 version, the documentation tool is part of the Eclipse-based
-simulation IDE.
+NED documentation generation is available as part of the OMNeT++ IDE.
 
 
 \section{Documentation Comments}
@@ -57,8 +54,8 @@ simple Gen
 }
 \end{ned}
 
-You can also place comments above parameters and gates. This is useful
-if they need long explanations. Example:
+One can also place comments above parameters and gates, which is better
+suited for long explanations. Example:
 
 \begin{ned}
 //
@@ -67,9 +64,9 @@ if they need long explanations. Example:
 simple Sink
 {
     parameters:
-        // You can turn statistics generation on and off. This is
-        // a very long comment because it has to be described what
-        // statistics are collected (or not).
+        // Turns statistics generation on/off. This is a very long
+        // comment because it has to be described what statistics
+        // are collected.
         bool collectStatistics = default(true);
     gates:
         input in;
@@ -79,10 +76,9 @@ simple Sink
 \subsection{Private Comments}
 \label{sec:neddoc:private-comments}
 
-If you want a comment line \textit{not} to appear in the documentation,
-begin it with \texttt{//\#}. Those lines will be ignored by the
-documentation tool, and can be used to make ``private'' comments
-like \texttt{FIXME} or \texttt{TODO}, or to comment out unused code.
+Lines that start with \texttt{//\#} will not appear in the generated
+documentation. Such lines can be used to make ``private'' comments like
+\texttt{FIXME} or \texttt{TODO}, or to comment out unused code.
 
 \begin{ned}
 //
@@ -130,7 +126,7 @@ will be awkward.
 \section{Referring to Other NED and Message Types}
 \label{sec:neddoc:referring-to-other-ned-and-message-types}
 
-You can reference other NED and message types by name in comments. There
+One can reference other NED and message types by name in comments. There
 are two styles in which references can be written: automatic linking and
 tilde linking. The same style must be following throughout the whole
 project, and the correct one must be selected in the documentation
@@ -141,17 +137,18 @@ generator tool when it is run.
 
 In the automatic linking style, words that match existing NED of message
 types are hyperlinked automatically. It is usually enough to write the
-simple name of the type (e.g. \ttt{TCP}), you don't need to spell out the
-fully qualified type (\ttt{inet.transport.tcp.TCP}), although you can.
+simple name of the type (e.g. \ttt{TCP}), one does not need to spell out the
+fully qualified type (\ttt{inet.transport.tcp.TCP}), although that is also
+allowed.
 
-Automatic hyperlinking is sometimes overly agressive. For example, when you
-write \ttt{IP address} in a comment and an \ttt{IP} module exists
-in the project, it will create a hyperlink to the module, which is probably
-not what you want. You can prevent hyperlinking of a word by inserting a
+Automatic hyperlinking is sometimes overly agressive. For example, when the
+words \textit{IP address} appear in a comment and the project contains an
+\ttt{IP} module, it will create a hyperlink to the module, which is not
+desirable. One can prevent hyperlinking of a word by inserting a
 backslash in front it: \ttt{{\textbackslash}IP address}. The backslash will
 not appear in the HTML output. The \ttt{<nohtml>} tag will also prevent
 hyperlinking words in the enclosed text: \ttt{<nohtml>IP address</nohtml>}.
-On the other hand, if you deliberately want to print a backslash immediately
+On the other hand, if a backslash needs to be printed immediately
 in front of a word (e.g. output \textit{``use {\textbackslash}t to print a Tab''}),
 use either two backslashes (\ttt{use {\textbackslash}{\textbackslash}t...}) or the
 \ttt{<nohtml>} tag (\ttt{<nohtml>use {\textbackslash}t...</nohtml>}).
@@ -179,8 +176,8 @@ subject to hyperlinking: \ttt{{\textasciitilde}TCP},
 \ttt{{\textasciitilde}inet.transport.tcp.TCP}.
 
 To produce a literal tilde followed by an identifier in the output (for example,
-to output \textit{``the {\textasciitilde}TCP() destructor''}), you need to
-double the tilde character: \ttt{the {\textasciitilde}{\textasciitilde}TCP() destructor}.
+to output \textit{``the {\textasciitilde}TCP() destructor''}), the tilde character
+needs to be doubled: \ttt{the {\textasciitilde}{\textasciitilde}TCP() destructor}.
 
 The detailed rules:
 
@@ -201,16 +198,14 @@ The detailed rules:
 \subsection{Paragraphs and Lists}
 \label{sec:neddoc:paragraphs-and-lists}
 
-If you write longer descriptions, you will need text formatting capabilities.
-Text formatting works like in Javadoc or Doxygen -- you can break up the
-text into paragraphs and create bulleted/numbered lists without
-special commands, and use HTML for more fancy formatting.
+When writing documentation comments longer than a few sentences, one often
+needs structuring and formatting facilities. NED provides paragraphs,
+bulleted and numbered lists, and basic formatting support. More
+sophisticated formatting can be achieved using HTML.
 
-Paragraphs are separated by empty lines, like in LaTeX or Doxygen.
-Lines beginning with ``\ttt{-}'' will be turned into bulleted lists,
-and lines beginning with ``\ttt{-\#}'' into numbered lists.
-
-Example:
+Paragraphs can be created by separating text by blanks lines. Lines
+beginning with ``\ttt{-}'' will be turned into bulleted lists, and lines
+beginning with ``\ttt{-\#}'' into numbered lists. An example:
 
 \begin{ned}
 //
@@ -272,11 +267,11 @@ but will be printed verbatim -- for example, \texttt{<what>bar</what>}
 will be rendered literally as ``<what>bar</what>'' (unlike HTML where
 unknown tags are simply ignored, i.e. HTML would display ``bar'').
 
-If you insert links to external pages (web sites), its useful to add
-the \ttt{target="\_blank"} attribute to ensure pages come up in a new
-browser window and not just in the current frame which looks awkward.
-(Alternatively, you can use the \ttt{target="\_top"} attribute
-which replaces all frames in the current browser).
+With links to external pages or web sites, its useful to add the
+\ttt{target="\_blank"} attribute to ensure pages come up in a new browser
+tab, and not in the current frame. Alternatively, one can use the
+\ttt{target="\_top"} attribute which replaces all frames in the current
+browser.
 
 Examples:
 
@@ -288,7 +283,7 @@ Examples:
 //
 \end{ned}
 
-You can also use the \ttt{<a href=..>} tag to create links within the page:
+One can also use the \ttt{<a href=..>} tag to create links within the page:
 
 \begin{ned}
 //
@@ -299,10 +294,10 @@ You can also use the \ttt{<a href=..>} tag to create links within the page:
 //
 \end{ned}
 
-You can use the \texttt{<pre>..</pre>} HTML tag to insert source code examples
+One can use the \texttt{<pre>..</pre>} HTML tag to insert source code examples
 into the documentation. Line breaks and indentation will be preserved,
-but HTML tags continue to be interpreted (or you can turn them off
-with \texttt{<nohtml>}, see later).
+but HTML tags continue to be interpreted (they can be turned off with
+\texttt{<nohtml>}, see later).
 
 Example:
 
@@ -352,11 +347,10 @@ will be rendered approximately as:
 \subsection{Escaping HTML Tags}
 \label{sec:neddoc:escaping-html-tags}
 
-Sometimes you may need to turn off interpreting HTML tags (\ttt{<i>}, \ttt{<b>}, etc.)
-as formatting instructions, and rather you want them to appear as literal
-\ttt{<i>}, \ttt{<b>} text in the documentation. You can achieve this via
-surrounding the text with the \ttt{<nohtml>}...\ttt{</nohtml>} tag.
-For example,
+In some cases, one needs to turn off interpreting HTML tags (\ttt{<i>},
+\ttt{<b>}, etc.) as formatting, and rather include them as literal text in
+the generated documentation. This can be achieved by surrounding the text
+with the \ttt{<nohtml>}...\ttt{</nohtml>} tag. For example,
 
 \begin{ned}
 // Use the <nohtml><i></nohtml> tag (like <tt><nohtml><i>this</i></nohtml><tt>)
@@ -379,8 +373,8 @@ the same. That is, either of the following will do:
 // In \IP networks, routing is...
 \end{ned}
 
-Both will prevent hyperlinking the word \textit{IP} if you happen to have
-an \ttt{IP} module in the NED files.
+Both will prevent hyperlinking the word \textit{IP} in case there is an
+\ttt{IP} module in the project.
 
 
 
@@ -390,27 +384,27 @@ an \ttt{IP} module in the NED files.
 \subsection{Adding a Custom Title Page}
 \label{sec:neddoc:adding-custom-title-page}
 
-The title page is the one that appears in the main frame after
-opening the documentation in the browser. By default it contains
-a boilerplate text with the generic title \textit{``{\opp} Model Documentation''}.
-You probably want to customize that, and at least change the title
-to the name of the documented simulation model.
+The title page is the one that appears in the main frame after opening the
+documentation in the browser. By default, it contains a boilerplate text
+with the title \textit{``{\opp} Model Documentation''}. Model authors will
+probably want to customize that, and at least change the title be more
+specific.
 
-You can supply your own version of the title page adding a \ttt{@titlepage}
-directive to a file-level comment (a comment that appears at the top of
-a NED file, but is separated from the first \ttt{import}, \ttt{channel},
-\ttt{module}, etc. definition by at least one blank line).
-In theory you can place your title page definition into
-any NED or MSG file, but it is probably a good idea to create
-a separate \ttt{package.ned} file for it.
+A title page is defined with a \ttt{@titlepage} directive. It needs to
+appear in a file-level comment.
 
-The lines you write after the \ttt{@titlepage} line up to the next
-\ttt{@page} line (see later) or the end of the comment will be used
-as the title page.
-You probably want to begin with a title because the documentation
-tool doesn't add one (it lets you have full control over the
-page contents). You can use the \ttt{<h1>..</h1>} HTML tag
-to define a title.
+\begin{note}
+A file-level comment is one that appears at the top of a NED file, and is
+separated from any other NED content by at least one \textit{blank line}.
+\end{note}
+
+While one can place the title page definition into any NED or MSG file, it is
+probably a good idea to create a dedicated NED file for it. Lines up to the
+next \ttt{@page} line or the end of the comment (whichever comes first) are
+interpreted as part of the page.
+
+The page should start with a title, as the documentation tool doesn't add
+one. Use the \ttt{<h1>..</h1>} HTML tag for that.
 
 Example:
 
@@ -428,26 +422,23 @@ Example:
 \subsection{Adding Extra Pages}
 \label{sec:neddoc:adding-extra-pages}
 
-You can add new pages to the documentation in a similar way as customizing
-the title page. The directive to be used is \ttt{@page}, and it can
-appear in any file-level comment (see above).
-
-The syntax of the \ttt{@page} directive is the following:
+One can add new pages to the documentation using the \ttt{@page} directive.
+\ttt{@page} may appear in any file-level comment, and has the following
+syntax:
 
 \begin{ned}
 // @page filename.html, Title of the Page
 \end{ned}
 
-Choose a file name that doesn't collide with the files generated
-by the documentation tool (such as \ttt{index.html}). If the file name
-does not end in \ttt{.html} already, it will be appended.
-The page title you supply will appear on the top of the page as well as
-in the page index.
+Choose a file name that doesn't collide with other files generated
+by the documentation tool. If the file name does not end in \ttt{.html},
+it will be appended. The page title will appear at the top of
+the page as well as in the page index.
 
-The lines after the \ttt{@page} line up to the next \ttt{@page} line
-or the end of the comment will be used as the page body.
-You don't need to add a title because the documentation tool
-automatically adds one.
+The lines after the \ttt{@page} line up to the next \ttt{@page} line or the
+end of the comment will be used as the page body. One does not need to add
+a title because the documentation tool automatically inserts the one
+specified in the \ttt{@page} directive.
 
 Example:
 \begin{ned}
@@ -463,10 +454,10 @@ Example:
 //
 \end{ned}
 
-You can create links to the generated pages using standard HTML,
+One can create links to the generated pages using standard HTML,
 using the \ttt{<a href="...">...</a>} tag. All HTML files are
-placed in a single directory, so you don't have to worry about
-specifying directories.
+placed in a single directory, so one doesn't have to worry about
+directories.
 
 Example:
 \begin{ned}
@@ -481,30 +472,30 @@ Example:
 \subsection{Incorporating Externally Created Pages}
 \label{sec:neddoc:externally-created-pages}
 
-You may want to create pages outside the documentation tool
-(e.g. using a HTML editor) and include them in the documentation.
-This is possible, all you have to do is declare such pages with
-the \ttt{@externalpage} directive in any of the NED files, and
-they will be added to the page index. The pages can then be linked to
-from other pages using the HTML \ttt{<a href="...">...</a>} tag.
-
-The \ttt{@externalpage} directive is similar in syntax to \ttt{@page}:
+The \ttt{@externalpage} directive allows one to add externally created
+pages into the generated documentation. \ttt{@externalpage} may appear
+in a file-level comment, and has a similar syntax as \ttt{@page}:
 
 \begin{ned}
 // @externalpage filename.html, Title of the Page
 \end{ned}
 
-The documentation tool does not check if the page exists
-or not. It is your responsibility to copy it manually into
-the directory of the generated documentation, and to make
-sure the hyperlink works.
+The directive causes the page to appear in the page index. However, the
+documentation tool does not check if the page exists, and it is the user's
+responsibility to copy the file into the directory of the generated
+documentation.
+
+External pages can be linked to from other pages using the \ttt{<a
+href="...">...</a>} tag.
+
 
 \section{File Inclusion}
 \label{sec:neddoc:file-inclusion}
 
-You can include content into the documentation comment with the
-\ttt{@include} directive. It expects the path of the file to be incuded
-relative to the file that includes it.
+The \ttt{@include} directive allows one to include the content of a file
+into a documentation comment. \ttt{@include} expects file name or path; if
+a relative path is given, it is interpreted as relative to the file that
+includes it.
 
 The line of the \ttt{@include} directive will be replaced by the
 content of the file. The lines of the included file do not need

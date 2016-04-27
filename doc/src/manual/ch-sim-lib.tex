@@ -23,7 +23,7 @@ library to allow one extending it and using it to its full potential.
 \label{sec:sim-lib:using-omnetpp-library}
 
 Classes in the {\opp} simulation library are part of the \ttt{omnetpp}
-namespace. To use the {\opp} API, you must include the \ttt{omnetpp.h}
+namespace. To use the {\opp} API, one must include the \ttt{omnetpp.h}
 header file and either import the namespace with \ttt{using namespace
 omnetpp}, or qualify names with the \ttt{omnetpp::} prefix.
 
@@ -42,8 +42,8 @@ using namespace omnetpp;
 When writing code that should work with various versions of {\opp}, it is
 often useful to have compile-time access to the {\opp} version in a numeric
 form. The \fmac{OMNETPP\_VERSION} macro exists for that purpose, and it is
-defined by {\opp} to hold the version number as a \textit{major*256+minor}
-value. For example, in {\opp} 4.6 is was defined as
+defined by {\opp} to hold the version number in the form
+\textit{major*256+minor}. For example, in {\opp} 4.6 it was defined as
 
 \begin{cpp}
 #define OMNETPP_VERSION 0x406
@@ -100,16 +100,18 @@ EV << gate->getFullName();  // prints "out[3]"
 \end{cpp}
 
 \begin{note}
-If you don't know the runtime type of an object, prefer \ffunc{getFullName()}
-when printing its name, so you don't miss out the index if the object has one.
+When printing out the name of an object, prefer \ffunc{getFullName()} to
+\ffunc{getName()}, especially if the runtime type is not know. This will
+ensure that the vector index will also be printed if the object has one.
 \end{note}
 
 \cclass{cObject} merely defines these member functions, but they return an
-empty string. Actual storage for a name string is provided by the class
-\cclass{cNamedObject}, which also has a \ffunc{setName()} method. Since
-most library classes are derived from \cclass{cNamedObject}, you can assign
-arbitrary names to objects if {\opp} does not already provides them with
-one.
+empty string. Actual storage for a name string and a \ffunc{setName()}
+method is provided by the class \cclass{cNamedObject}, which is also an
+(indirect) base class for most library classes. Thus, one can assign names
+to nearly all user-created objects. It it also recommended to do so, because
+a name makes an object easier to identify in graphical runtimes like Tkenv
+or Qtenv.
 
 By convention, the object name is the first argument to the constructor
 of every class, and it defaults to the empty string. To create an object with
@@ -138,8 +140,8 @@ instead of just storing the pointer passed to them.\footnote{
 For convenience and efficiency reasons, the empty string \ttt{""}
 and \ttt{nullptr} are treated as interchangeable by library objects.
 That is, \ttt{""} is stored as \ttt{nullptr} but returned as \ttt{""}.
-If you create a message object with either \ttt{nullptr}
-or \ttt{""} as its name string, it will be stored as \ttt{nullptr}
+If one creates a message object with either \ttt{nullptr}
+or \ttt{""} as its name string, it will be stored as \ttt{nullptr},
 and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
 
@@ -170,7 +172,7 @@ In contrast to \ffunc{getName()} and \ffunc{getFullName()} which return
 \ttt{const char *} pointers, \ffunc{getFullPath()} returns
 \ttt{std::string}. This makes no difference when logging via \ttt{EV<<},
 but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument to
-\ffunc{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
+\ffunc{sprintf()}, one needs to write \ttt{getFullPath().c\_str()}.
 
 \begin{cpp}
 char buf[100];
@@ -229,7 +231,7 @@ object instance, as opposed to being considered as part of its contents.
 
 There are several container classes in the library (\cclass{cQueue},
 \cclass{cArray} etc.) For many of them, there is a corresponding
-iterator class that you can use to loop through the objects stored in
+iterator class that one can use to loop through the objects stored in
 the container.
 
 For example:
@@ -281,7 +283,7 @@ statements using the {\opp} logging API.
 The exact way log messages are displayed to the user depends on the user interface.
 In the command-line user interface (Cmdenv\index{Cmdenv}), the log is simply
 written to the standard output. In the graphical user interfaces, Tkenv and Qtenv,
-the main window displays the log output of all modules by default. You can also
+the main window displays the log output of all modules by default. One can also
 open new output windows on a per module basis, these windows automatically filter
 for the log messages of the selected module.
 
@@ -367,9 +369,10 @@ EV_TRACE << "routeUnicastPacket(" << packet << ");" << endl;
 \end{cpp}
 
 \begin{note}
-It is not recommended that you directly use \ffunc{printf()} or \ffunc{std::cout}
-to print log messages -- log output can be controlled more easily from
-\ffilename{omnetpp.ini}, and it is more convenient to view, using Tkenv or Qtenv.
+It is not recommended to use plain \ffunc{printf()} or \ffunc{std::cout} for
+logging. Output from \fmac{EV_INFO} and the other log macros can be controlled
+more easily from \ffilename{omnetpp.ini}, and it is more convenient to view
+using Tkenv or Qtenv.
 \end{note}
 
 The above C++ macros work well from any C++ class, including {\opp} modules. In
@@ -566,11 +569,10 @@ It also contains useful links and references on the topic.
 \subsubsection{The Akaroa RNG}
 \label{sec:sim-lib:akaroa-rng}
 
-When you execute simulations under Akaroa control (see section
-\ref{sec:run-sim:akaroa}), you can also select Akaroa's
-RNG as the RNG underlying for the {\opp} random number functions.
-The Akaroa RNG also has to be selected from \ffilename{omnetpp.ini}
-(section \ref{sec:config-sim:rng-config}).
+When a simulation is executed under Akaroa control (see section
+\ref{sec:run-sim:akaroa}), it is also possible to let {\opp} use Akaroa's
+RNG. This needs to be configured in \ffilename{omnetpp.ini} (section
+\ref{sec:config-sim:rng-config}).
 
 \subsubsection{Other RNGs}
 \label{sec:sim-lib:other-rngs}
@@ -801,13 +803,12 @@ double normal(cRNG *rng, double mean, double stddev);
 \subsection{Random Numbers from Histograms}
 \label{sec:sim-lib:random-numbers-from-histograms}
 
-You can also specify your distribution as a
-histogram\index{distribution!as histogram}. The
-\cclass{cLongHistogram}, \cclass{cDoubleHistogram},
-\cclass{cVarHistogram}, \cclass{cKSplit} or \cclass{cPSquare} classes
-are there to generate random numbers from equi\-dis\-tant-cell or
-equiprobable-cell histograms.  This feature is documented later, with
-the statistical classes.
+One can also specify a distribution as a histogram\index{distribution!as histogram}.
+The \cclass{cLongHistogram}, \cclass{cDoubleHistogram},
+\cclass{cVarHistogram}, \cclass{cKSplit} or \cclass{cPSquare} classes are
+there to generate random numbers from equi\-dis\-tant-cell or
+equiprobable-cell histograms.  This feature is documented later, with the
+statistical classes.
 
 \subsection{Adding New Distributions}
 \label{sec:sim-lib:adding-new-distributions}
@@ -816,9 +817,9 @@ One can easily add support for new distributions. We recommend that
 you write a standalone generator function first. Then you can add
 a \cclass{cRandom} subclass that wraps it, and/or module (channel)
 methods that invoke it with the module's local RNG.
-If you register the function with the \fmac{Define\_NED\_Function()}
+If the function is registered with the \fmac{Define\_NED\_Function()}
 macro (see \ref{sec:sim-lib:defining-ned-functions}), it will be
-possible to use the new distribution in NED files and ini files too.
+possible to use the new distribution in NED files and ini files, as well.
 
 If you need a random number stream that has state, you need to
 subclass from \cclass{cRandom}.
@@ -890,13 +891,12 @@ queue.remove(msg);
 \subsubsection{Priority Queue}
 \label{sec:sim-lib:cqueue-as-priority-queue}
 
-By default, \cclass{cQueue} implements a FIFO, but it can also act as
-a priority queue, that is, it can keep the inserted objects
-ordered\index{queue!order}.  If you want to use this feature, you have
-to provide a function that takes two \cclass{cObject} pointers,
-compares the two objects and returns -1, 0 or 1 as the result (see the
-reference for details).  An example of setting up an ordered
-\cclass{cQueue}:
+By default, \cclass{cQueue} implements a FIFO, but it can also act as a
+priority queue, that is, it can keep the inserted objects
+ordered\index{queue!order}.  To use this feature, one needs to provide a
+comparison function that takes two \cclass{cObject} pointers, and returns
+-1, 0 or 1 (see the reference for details).  An example of setting up an
+ordered \cclass{cQueue}:
 
 \begin{cpp}
 cQueue queue("queue", someCompareFunc);
@@ -1041,11 +1041,10 @@ for (int i = 0; i < array.size(); i++) {
 \label{sec:sim-lib:ctopology-overview}
 
 The \cclass{cTopology} class was designed primarily to support
-routing\index{routing support} in telecommunication or multiprocessor
-networks.
+routing\index{routing support} in communication networks.
 
 A \cclass{cTopology} object stores an abstract representation of the
-network in graph form:
+network in a graph form:
 \begin{itemize}
   \item{each \cclass{cTopology} node corresponds to a \textit{module}
     (simple or compound), and}
@@ -1053,8 +1052,8 @@ network in graph form:
     \textit{series of connecting links}.}
 \end{itemize}
 
-You can specify which modules (either simple or compound) you want to
-include in the graph. The graph will include all connections among the
+One can specify which modules to include in the graph. Compound modules
+may also be selected. The graph will include all connections among the
 selected modules. In the graph, all nodes are at the same level;
 there is no submodule nesting.  Connections which span across compound
 module boundaries are also represented as one graph edge. Graph edges
@@ -1066,20 +1065,21 @@ gate and also to find optimal routes\index{optimal routes}. The
 \cclass{cTopology} object can calculate shortest paths\index{shortest
   path} between nodes for you.
 
-The mapping between the graph (nodes, edges) and network model
-(modules, gates, connections) is preserved: you can easily find
-the corresponding module for a \cclass{cTopology} node and vica versa.
+The mapping between the graph (nodes, edges) and network model (modules,
+gates, connections) is preserved: one can find the corresponding module for
+a \cclass{cTopology} node and vica versa.
 
 
 \subsection{Basic Usage}
 \label{sec:sim-lib:ctopology-basic-usage}
 
-You can extract the network topology into a \cclass{cTopology}
-object by a single function call. You have several ways to select
-which modules you want to include in the topology:
+One can extract the network topology into a \cclass{cTopology}
+object with a single method call. There are several ways to specify
+which modules should be included in the topology:
+
 \begin{itemize}
   \item{by module type}
-  \item{by a parameter's presence and its value}
+  \item{by a parameter's presence and value}
   \item{with a user-supplied boolean function}
 \end{itemize}
 
@@ -1338,10 +1338,11 @@ more concise or more powerful by introducing patterns.
 \subsection{cPatternMatcher}
 \label{sec:sim-lib:cpatternmatcher}
 
-\cclass{cPatternMatcher} holds a pattern string and several option flags, and has
-a boolean \ffunc{matches()} function that lets you check whether the string passed as argument
-matches the pattern with the given flags. The pattern and the flags can be set
-via the constructor or by calling the \ffunc{setPattern()} member function.
+\cclass{cPatternMatcher} holds a pattern string and several option flags,
+and has a \ffunc{matches()} boolean function that determines whether the
+string passed as argument matches the pattern with the given flags. The
+pattern and the flags can be set via the constructor or by calling the
+\ffunc{setPattern()} member function.
 
 The pattern syntax is a variation on Unix \textit{glob}-style patterns. The
 most apparent differences to globbing rules are the distinction between
@@ -1386,7 +1387,7 @@ Sets and negated sets can contain several character ranges and also
 enumeration of characters, for example \ttt{\{\_a-zA-Z0-9\}} or
 \ttt{\{xyzc-f\}}. To include a hyphen in the set, place it at a position
 where it cannot be interpreted as character range, for example
-\ttt{\{a-z-\}} or \ttt{\{-a-z\}}. If you want to include a close brace in
+\ttt{\{a-z-\}} or \ttt{\{-a-z\}}. To include a close brace in
 the set, it must be the first character: \ttt{\{\}a-z\}}, or for a negated
 set: \ttt{\{\textasciicircum\}a-z\}}. A backslash is always taken as
 literal backslash (and NOT as escape character) within set definitions.
@@ -1433,7 +1434,7 @@ EV << matcher.matches("Net.host[0].tcp") << endl;  // -> false
 \label{sec:sim-lib:cmatchexpression}
 
 The \cclass{cMatchExpression} class builds on top of \cclass{cPatternMatcher},
-and lets you determine whether an \textit{object} matches a given pattern
+and lets one determine whether an \textit{object} matches a given pattern
 expression.
 
 A pattern expression consists of elements in the
@@ -1508,7 +1509,7 @@ class SIM_API Matchable
 \end{cpp}
 
 To be able to match instances of an existing class that is not already a
-\ttt{Matchable}, you need to write an adapter class. An adapter class that
+\ttt{Matchable}, one needs to write an adapter class. An adapter class that
 we can look at as an example is \cclass{cMatchableString}. \cclass{cMatchableString}
 makes it possible to match strings with a \cclass{cMatchExpression}, and is part
 of {\opp}:
@@ -1571,7 +1572,7 @@ There are several statistic and result collection classes:
     the distribution of the observations using equidistant
     (equal-sized) cell histograms\index{histogram!equal-sized}.}
   \item{\cclass{cVarHistogram} implements a histogram where cells do not
-    need to be the same size. You can manually add the cell (bin)
+    need to be the same size. One can manually add the cell (bin)
     boundaries, or alternatively, automatically have a partitioning
     created where each bin has the same number of observations (or as
     close to that as possible).}
@@ -1629,9 +1630,9 @@ The distribution estimation\index{distribution!estimation} classes
 \cclass{cPSquare} and \cclass{cKSplit}) are derived from
 \cclass{cDensityEstBase}. Distribution estimation classes (except for
 \cclass{cPSquare}) assume that the observations are within a range.
-You may specify the range explicitly (based on some a-priori information
-about the distribution), or you may let the object precollect a number
-of observations and determine the range from them.
+One may specify the range explicitly (based on some a-priori information
+about the distribution), or let the object precollect a number of
+observations and determine the range from them.
 
 The following member functions exist for setting up the range
 and to specify how many observations should be used for automatically
@@ -1673,7 +1674,7 @@ range.
 \end{figure}
 
 The \ffunc{isTransformed()} function returns \textit{true} when the cells have
-already been set up. You can force range estimation and setting
+already been set up. One can force range estimation and setting
 up the cells by calling the \ffunc{transform()} function.
 
 The observations that fall outside the histogram range will be counted
@@ -1739,7 +1740,6 @@ for (int i = 0; i < histogram.getNumCells(); i++) {
 }
 \end{cpp}
 
-
 The \ffunc[getPDF()]{getPDF(x)} and \ffunc[getCDF()]{getCDF(x)} member functions
 return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
@@ -1748,7 +1748,6 @@ Density Function at a given \textit{x}, respectively.
 \subsubsection{Random Number Generation from Distributions}
 \label{sec:sim-lib:random-number-generation-from-distributions}
 
-
 The \ffunc{random()} member function generates random
 numbers\index{random!numbers} from the distribution stored by the
 object:
@@ -1756,7 +1755,6 @@ object:
 \begin{cpp}
 double rnd = histogram.random();
 \end{cpp}
-
 
 \cclass{cStdDev} assumes normal distribution.
 
@@ -1768,9 +1766,9 @@ function:
 double rnd = (double)rndPar; // random number from the cPSquare
 \end{cpp}
 
+
 \subsubsection{Storing and Loading Distributions}
 \label{sec:sim-lib:storing-and-loading-distributions}
-
 
 The statistic classes have \ffunc{loadFromFile()} member functions
 that read the histogram data from a text file. If you need a custom
@@ -1841,7 +1839,7 @@ boundaries when the histogram has already been transformed.
 
 
 \subsection{The k-split Algorithm}
-\label{sec:sim-lib:ksplit-algorithm}
+\label{sec:sim-lib:ksplit}
 
 \subsubsection{Purpose}
 \label{sec:sim-lib:ksplit-purpose}

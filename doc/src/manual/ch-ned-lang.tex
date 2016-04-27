@@ -82,8 +82,7 @@ other systems like SQL databases, and so on.
 
 \begin{note}
     This chapter is going to explain the NED language gradually, via examples.
-    If you are looking for a more formal and concise treatment, see
-    Appendix \ref{cha:ned-language-grammar}.
+    A more formal and concise treatment can be found in Appendix \ref{cha:ned-language-grammar}.
 \end{note}
 
 
@@ -425,11 +424,11 @@ simple Queue
 }
 \end{ned}
 
-If you have several modules that are all in a common namespace, then a
-better alternative to \fprop{@class} is the \fprop{@namespace} property. The
-C++ namespace given with \fprop{@namespace} will be prepended to the normal
-class name. In the following example, the C++ classes will be
-\ttt{mylib::App}, \ttt{mylib::Router} and \ttt{mylib::Queue}:
+If there are several modules whose C++ implementation classes are in the same
+namespace, a better alternative to \fprop{@class} is the \fprop{@namespace} property.
+The C++ namespace given with \fprop{@namespace} will be prepended to the normal
+class name. In the following example, the C++ classes will be \ttt{mylib::App},
+\ttt{mylib::Router} and \ttt{mylib::Queue}:
 
 \begin{ned}
 @namespace(mylib);
@@ -447,9 +446,10 @@ simple Queue {
 }
 \end{ned}
 
-As you've seen, \fprop{@namespace} can be specified at the file level. Moreover,
-when placed in a file called \ttt{package.ned}, the namespace will apply to
-all files in the same directory and all directories below.
+The \fprop{@namespace} property may not only be specified at file level as
+in the above example, but for packages as well. When placed in a file
+called \ttt{package.ned}, the namespace will apply to all components in
+that package and below.
 
 The implementation C++ classes need to be subclassed from the
 \cclass{cSimpleModule} library class; chapter \ref{cha:simple-modules} of
@@ -627,13 +627,13 @@ channel CustomChannel  // requires a CustomChannel C++ class
 }
 \end{ned}
 
-The practical difference compared to modules is that you rarely need to write you own
-channel C++ class because there are predefined channel types that you can
+The practical difference compared to modules is that one rarely needs to write
+custom channel C++ class because there are predefined channel types that one can
 subclass from, inheriting their C++ code. The predefined types are:
 \ttt{ned.IdealChannel}, \ttt{ned.Delay\-Channel} and \ttt{ned.Datarate\-Channel}.
-(``\ttt{ned}'' is the package name; you can get rid of it if you import the types
-with the \ttt{import ned.*} or similar directive. Packages and imports
-are described in section \ref{sec:ned-lang:packages}.)
+(``\ttt{ned}'' is the package name; one can get rid of it by importing the types
+with the \ttt{import ned.*} directive. Packages and imports are described in
+section \ref{sec:ned-lang:packages}.)
 
 \ttt{IdealChannel} has no parameters, and lets through all messages without
 delay or any side effect. A connection without a channel object
@@ -698,7 +698,7 @@ channel Ethernet100 extends ned.DatarateChannel
     the channel type is not explicitly specified.
 \end{note}
 
-You may add parameters and properties to channels via subclassing, and
+One may add parameters and properties to channels via subclassing, and
 may modify existing ones. In the following example, we introduce distance-based
 calculation of the propagation delay:
 
@@ -710,13 +710,11 @@ channel DatarateChannel2 extends ned.DatarateChannel
 }
 \end{ned}
 
-Parameters are primarily useful as input to the underlying C++ class, but
-even if you reuse the underlying C++ class of built-in channel types, they
-may be read and used by other parts of the model. For example, adding a
-\ttt{cost} parameter (or \fprop{@cost} property) may be observed by the
-routing algorithm and used for routing decisions. The following example
-shows a \ttt{cost} parameter, and annotation using a property
-(\fprop{@backbone}).
+Parameters are primarily intended to be read by the underlying C++ class,
+but new parameters may also be added as annotations to be used by other
+parts of the model. For example, a \ttt{cost} parameter may be used for
+routing decisions in routing module, as shown in the example below. The
+example also shows annotation using properties (\fprop{@backbone}).
 
 \begin{ned}
 channel Backbone extends ned.DatarateChannel
@@ -725,7 +723,6 @@ channel Backbone extends ned.DatarateChannel
     double cost = default(1);
 }
 \end{ned}
-
 
 
 \section{Parameters}
@@ -772,7 +769,7 @@ simple App
 
 Parameters may get their values in several ways: from NED code, from the
 configuration (\ffilename{omnetpp.ini}), or even, interactively from the
-user. NED lets you assign parameters at several places: in subclasses via
+user. NED lets one assign parameters at several places: in subclasses via
 inheritance; in submodule and connection definitions where the NED type is
 instantiated; and in networks and compound modules that directly or
 indirectly contain the corresponding submodule or connection.
@@ -817,8 +814,8 @@ setting cannot be changed from NED or the configuration.
 
 It is not only possible to set a parameter from the compound module that
 contains the submodule, but also from modules higher up in the module tree.
-If you had a network that employed several \ttt{Host} modules, it could be
-defined like this:
+A network that employs several \ttt{Host} modules could be defined like
+this:
 
 \begin{ned}
 network Network
@@ -853,7 +850,7 @@ network Network
 
 Note the use of asterisk to match any index, and \ttt{..} to match index ranges.
 
-If you had a number of individual hosts instead of a submodule vector,
+If there were a number of individual hosts instead of a submodule vector,
 the network definition could look like this:
 
 \begin{ned}
@@ -924,14 +921,14 @@ Network.host*.ping.sendInterval = 500ms    # for the host0,host1,... example
 **.sendInterval = 500ms
 \end{inifile}
 
-One often uses the double asterisk to save typing. You can write
+One often uses the double asterisk to save typing. One can write
 
 \begin{inifile}
 **.ping.sendInterval = 500ms
 \end{inifile}
 
-Or if you are sure that you don't accidentally assign some other
-\ttt{sendInterval} parameter, you can just write
+Or if one is certain that only ping modules have \ttt{sendInterval} parameters,
+the following will suffice:
 
 \begin{inifile}
 **.sendInterval = 500ms
@@ -941,7 +938,7 @@ Parameter assignments in the configuration are described in section
 \ref{sec:config-sim:parameter-settings}.
 
 One can also write expressions, including stochastic expressions, in
-NED files and in ini files as well. For example, here's how you can
+NED files and in ini files as well. For example, here's how one can
 add jitter to the sending of ping packets:
 
 \begin{inifile}
@@ -971,7 +968,7 @@ this will result in an error):
 \end{inifile}
 
 \begin{note}
-    How do you decide whether to assign a parameter from NED or from an ini
+    How can one decide whether to assign a parameter from NED or from an ini
     file? The advantage of ini files is that they allow a cleaner separation of the \textit{model}
     and \textit{experiments}. NED files (together with C++ code) are considered
     to be part of the model, and to be more or less constant. Ini files, on
@@ -1043,7 +1040,7 @@ implementation is expected to re-read the \ttt{serviceTime} parameter
 whenever a value is needed; that is, for every job serviced. Thus, if
 \ttt{serviceTime} is assigned an expression like \ttt{uniform(0.5s, 1.5s)},
 every job will have a different, random service time. To highlight this
-effect, here's how you can have a time-varying parameter by exploiting
+effect, here's how one can have a time-varying parameter by exploiting
 the \ttt{simTime()} NED function that returns the current simulation time:
 
 \begin{inifile}
@@ -1115,9 +1112,9 @@ of parts of the document using an XPath-subset notation, and presents the
 contents in a DOM-like object tree.
 
 This capability can be accessed via the NED parameter type \fkeyword{xml},
-and the \fkeyword{xmldoc()} function. You can point \fkeyword{xml}-type
+and the \fkeyword{xmldoc()} function. One can point \fkeyword{xml}-type
 module parameters to a specific XML file (or to an element inside an XML
-file) via the \fkeyword{xmldoc()} function. You can assign \fkeyword{xml}
+file) via the \fkeyword{xmldoc()} function. One can assign \fkeyword{xml}
 parameters both from NED and from \ffilename{omnetpp.ini}.
 
 The following example declares an \fkeyword{xml} parameter, and assigns an
@@ -1141,10 +1138,12 @@ module Node {
 }
 \end{ned}
 
-It is also possible to assign an XML element within a file to the parameter,
-which is useful if you want to group the input of several modules into
-a single XML file. For example, the following XML file contains two profiles
-with the IDs \textit{gen1} and \textit{gen2}:
+\fkeyword{xmldoc()} also lets one select an element \textit{within} an XML
+file. In case one has a model that contains numerous modules that need XML
+input, this feature allows the user get rid of the countless small XML
+files by aggregating them into a single XML file. For example, the
+following XML file contains two profiles identified with the IDs
+\textit{gen1} and \textit{gen2}:
 
 \begin{filelisting}
 <?xml>
@@ -1159,7 +1158,7 @@ with the IDs \textit{gen1} and \textit{gen2}:
 </root>
 \end{filelisting}
 
-And you can assign each profile to a corresponding submodule using an XPath-like
+And one can assign each profile to a corresponding submodule using an XPath-like
 expression:
 
 \begin{ned}
@@ -1220,7 +1219,7 @@ The gate size can be queried from various NED expressions with the
 \ttt{sizeof()} operator.
 
 NED normally requires that all gates be connected. To relax this
-requirement, you can annotate selected gates with the \fprop{@loose}
+requirement, one can annotate selected gates with the \fprop{@loose}
 property, which turns off the connectivity check for that gate. Also, input
 gates that solely exist so that the module can receive messages via
 \ffunc{sendDirect()} (see \ref{sec:simple-modules:direct-sending}) should
@@ -1478,7 +1477,7 @@ a.g++ <--> Backbone {@display("ls=green,2");} <--> b.g++;
 \end{ned}
 
 When using built-in channel types, the type name can be omitted; it
-will be inferred from the parameters you assign.
+will be inferred from the parameter names.
 
 \begin{ned}
 a.g++ <--> {delay=10ms;} <--> b.g++;
@@ -1535,11 +1534,11 @@ network Network
         hostA.g++ <--> ned.DatarateChannel <--> hostC.g++;
 \end{ned}
 
-Also, it is not always easy to figure out which gate indices map to the
-connections you want to configure. If connection objects could be given
-names to override the default name ``\ttt{channel}'', that would make it
-easier to identify connections in patterns. This feature is planned for
-future {\opp} releases.
+Also, with the \ttt{++} syntax it is not always easy to figure out which
+gate indices map to the connections one needs to configure. If connection
+objects could be given names to override the default name
+``\ttt{channel}'', that would make it easier to identify connections in
+patterns. This feature is described in the next section.
 
 
 \subsection{Channel Names}
@@ -1706,9 +1705,8 @@ for unconnected gates.
 \index{module!compound!patterns}
 \index{topology!patterns}
 
-Several approaches can be used when you want to create complex
-topologies which have a regular structure; three of them are
-described below.
+Several approaches can be used for creating complex topologies that have a
+regular structure; three of them are described below.
 
 
 \subsubsection{``Subgraph of a Full Graph''}
@@ -1780,7 +1778,7 @@ The pattern can also be used to create a random subset of a full
 graph with a fixed number of connections.
 
 In the case of irregular structures where none of the above patterns
-can be employed, you can resort to listing all connections, like you
+can be employed, one can resort to listing all connections, like one
 would do it in most existing simulators.
 
 
@@ -1858,12 +1856,12 @@ module SensorNode like INode
 \end{ned}
 
 The ``\ttt{<nodeType> like INode}'' syntax has an issue when used
-with submodule vectors: does not allow you to specify different types
+with submodule vectors: does not allow one to specify different types
 for different indices. The following syntax is better suited for
 submodule vectors:
 
 The expression between the angle brackets may be left out altogether,
-leaving you with a pair of empty angle brackets, \ttt{<>}:
+leaving a pair of empty angle brackets, \ttt{<>}:
 
 \begin{ned}
 module Node
@@ -1907,7 +1905,7 @@ module Node
 There must be exactly one module type that goes by the simple name \ttt{Ieee80211b}
 and also implements the module interface \ttt{INic}, otherwise an error message
 will be issued. (The imports in \ttt{Node}'s the NED file play no role in the
-type resolution.)  If there are two or more such types, you can remove the ambiguity
+type resolution.)  If there are two or more such types, one can remove the ambiguity
 by specifying the fully qualified module type name, i.e. one that also includes
 the package name:
 
@@ -1979,8 +1977,8 @@ properties are interpreted by NED, by the simulation kernel; other
 properties may be read and used from within the simulation model, or
 provide hints for NED editing tools.
 
-Properties are attached to the type, so you cannot have different properties defined
-per-instance. All instances of modules, connections,
+Properties are attached to the type, so one cannot have different
+properties defined per-instance. All instances of modules, connections,
 parameters, etc. created from any particular location in the NED files have
 identical properties.
 
@@ -2101,13 +2099,13 @@ commas. Wherever \textit{key} is missing, values go on the valuelist of the
 \textit{default key}, the empty string.
 
 Value items may contain words, numbers, string constants and some other
-characters, but not arbitrary strings.
-Whenever the syntax does not permit some value, it should be enclosed in
-quotes. This quoting does not affect the value because
-the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
-and \ttt{@class("TCP")} are exactly the same. If you want the quotes
-to be part of the value, use escaped quotes:
-\ttt{@foo("{\textbackslash}"some string{\textbackslash}"")}.
+characters, but not arbitrary strings. Whenever the syntax does not permit
+some value, it should be enclosed in quotes. This quoting does not affect
+the value because the parser automatically drops one layer of quotes; thus,
+\ttt{@class(TCP)} and \ttt{@class("TCP")} are exactly the same. If the
+quotes themselves need to be part of the value, an extra layer of quotes
+and escaping are the solution: \ttt{@foo("{\textbackslash}"some
+string{\textbackslash}"")}.
 
 There are also some conventions. One can use properties to tag NED
 elements; for example, a \fprop{@host} property could be used to mark all
@@ -2128,12 +2126,12 @@ tag.
 \subsection{Overriding and Extending Property Values}
 \label{sec:ned-lang:overriding-and-extending-property-values}
 
-When you subclass a NED type, use a module type as submodule or use a channel
-type for a connection, you may add new properties to the module or channel,
-or to its parameters and gates, and you can also modify existing properties.
+Properties defined on a module or channel type may be updated both by
+subclassing and when using type as a submodule or connection channel.
+One can add new properties, and also modify existing ones.
 
-When modifying a property, the new property is merged with the old one,
-with a few simple rules. New keys simply get added. If a key already
+When modifying a property, the new property is merged with the old one. The
+rules of merging are fairly simple. New keys simply get added. If a key already
 exists in the old property, items in its valuelist overwrite items on
 the same position in the old property. A single hyphen ($-$) as
 valuelist item serves as ``antivalue'', it removes the item at the
@@ -2199,7 +2197,7 @@ several channel interfaces.
 \begin{important}
     When you extend a simple module type both in NED and in C++, you must
     use the \fprop{@class} property to tell NED to use the new C++ class --
-    otherwise your new module type inherits the C++ class of the base!
+    otherwise the new module type inherits the C++ class of the base!
 \end{important}
 
 Inheritance may:
@@ -2242,22 +2240,21 @@ name conflicts, because names can be qualified with the package name.
 \subsection{Overview}
 \label{sec:ned-lang:packages-overview}
 
-When a simulation is run, you must tell the simulation kernel the
-directory which is the root of your package tree; let's call it
+When a simulation is run, one must tell the simulation kernel the
+directory which is the root of the package tree; let's call it
 \textit{NED source folder}. The simulation kernel will traverse
 the whole directory tree, and load all NED files from every directory.
-You can have several NED directory trees, and their roots (the NED source
-folders) should be given to the simulation kernel in the NEDPATH
-variable. \ttt{NEDPATH} can be specified in several ways: as an environment
+One can have several NED directory trees, and their roots (the NED source
+folders) should be given to the simulation kernel in the \textit{NED path}
+variable. The NED path can be specified in several ways: as an environment
 variable (\ttt{NEDPATH}), as a configuration option (\fconfig{ned-path}),
 or as a command-line option to the simulation runtime (\ttt{-n}). \ttt{NEDPATH} is
 described in detail in chapter \ref{cha:run-sim}.
 
-Directories in a NED source tree correspond to packages. If you have
-NED files in a \ttt{<root>/a/b/c} directory (where \ttt{<root>}
-gets listed in NEDPATH), then the package name is \ttt{a.b.c}.
-The package name has to be explicitly declared at the top of the NED
-files as well, like this:
+Directories in a NED source tree correspond to packages. If NED files are
+in the \ttt{<root>/a/b/c} directory (where \ttt{<root>} is listed in NED
+path), then the package name is \ttt{a.b.c}. The package name has to be
+explicitly declared at the top of the NED files as well, like this:
 
 \begin{ned}
 package a.b.c;
@@ -2281,16 +2278,15 @@ files in that directory and all directories below.
 
 The toplevel \ffilename{package.ned} file can be used to designate the root
 package, which is useful for eliminating a few levels of empty directories
-resulting from the package naming convention. For example, if you have a
-project where you want to have all NED types under the \ttt{org.example.myproject}
-package but don't want to have the directories named \ttt{org}, \ttt{example} and
-\ttt{myproject} in the source tree, then you can put a \ffilename{package.ned}
-file in the source root directory with the package declaration
-\ttt{org.example.myproject}. This will cause a directory \ttt{foo} under the
-root to be interpreted as package \ttt{org.example.myproject.foo}, and NED
-files in them must contain that as package declaration. Only the root
-\ffilename{package.ned} can define the package, \ffilename{package.ned} files
-in subdirectories must follow it.
+resulting from the package naming convention. For example, given a project
+where all NED types are under the \ttt{org.acme.foosim} package, one can
+eliminate the empty directory levels \ttt{org}, \ttt{acme} and \ttt{foosim} by
+creating a \ffilename{package.ned} file in the source root directory with
+the package declaration \ttt{org.example.myproject}. This will cause a
+directory \ttt{foo} under the root to be interpreted as package
+\ttt{org.example.myproject.foo}, and NED files in them must contain that as
+package declaration. Only the root \ffilename{package.ned} can define the
+package, \ffilename{package.ned} files in subdirectories must follow it.
 
 Let's look at the INET Framework as example, which contains hundreds of NED
 files in several dozen packages. The directory structure looks like this:
@@ -2351,7 +2347,7 @@ package) is called \textit{fully qualified name}; without the package
 name (\ttt{Queue}) it is called \textit{simple name}.
 
 Simple names alone are not enough to unambiguously identify a type.
-Here is how you can refer to an existing type:
+Here is how one can refer to an existing type:
 
 \begin{enumerate}
   \item By fully qualified name. This is often cumbersome though,

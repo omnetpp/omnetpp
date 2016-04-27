@@ -116,8 +116,8 @@ Config options come in three flavors, as indicated by the macro names:
 
 The macro arguments are as follows:
 \begin{itemize}
-  \item \textit{ID} is a C++ identifier that will let you refer to
-        the configuration option in \textit{cConfiguration} member functions.
+  \item \textit{ID} is a C++ identifier that lets one refer to the
+        configuration option in \cclass{cConfiguration} member functions.
         (It is actually pointer to a \cclass{cConfigOption} object that
         the macro creates.)
   \item \textit{NAME} is the name of the option (a string).
@@ -164,7 +164,7 @@ cConfiguration *config = getEnvir()->getConfig();
 
 \begin{note}
 The configuration object provides a flattened view of the ini file. Sections
-inheriting from each other are merged for you. Configuration options provided
+inheriting from each other are merged. Configuration options provided
 on the command line in the form \ttt{--option=value} are added first to the object.
 This ensures that the command line options take precedence over the values specified
 in the INI file.
@@ -457,7 +457,7 @@ option.
 \subsection{Overview}
 \label{sec:plugin-exts:configprovider-overview}
 
-The configuration provider extension lets you replace ini files
+The configuration provider extension lets one replace ini files
 with some other storage implementation, for example a database.
 The configuration provider C++ class must implement the
 \cclass{cConfigurationEx} interface, and can be activated with
@@ -511,8 +511,8 @@ looks like the following (see \ttt{src/envir/startup.cc} in the source code):
 \subsection{Providing a Custom Configuration Class}
 \label{sec:plugin-exts:configprovider:custom-class}
 
-To replace the configuration object with your custom implementation,
-you would write the class:
+To replace the configuration object with a custom implementation,
+one needs to subclass \cclass{cConfigurationEx}, register the new class,
 
 \begin{cpp}
 #include "cconfiguration.h"
@@ -540,8 +540,8 @@ As said already, writing a configuration class from scratch can
 be a lot of work, and it may be more practical to reuse
 \cclass{SectionBasedConfiguration} with a different configuration
 reader class. This can be done with \fconfig{sectionbasedconfig-configreader-class}
-config option, interpreted by \cclass{SectionBasedConfiguration}.
-Specify the following in your boot-time ini file:
+config option, which is interpreted by \cclass{SectionBasedConfiguration}.
+Specify the following in the boot-time ini file:
 
 \begin{inifile}
 [General]

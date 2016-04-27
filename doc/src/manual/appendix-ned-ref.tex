@@ -119,7 +119,7 @@ The bodies of \ttt{@statistic} properties have been omitted for brevity from
 the following listing.
 
 \begin{note}
-You can print the full definitions by running \ttt{opp\_run -h neddecls}.
+One can print the full definitions by running \ttt{opp\_run -h neddecls}.
 \end{note}
 
 \begin{ned}
@@ -416,11 +416,10 @@ class, the C++ class name will be composed of the \textit{current namespace} and
 unqualified name of the component.
 
 \begin{important}
-    NED subclassing does not imply subclassing the C++ implementation! If you
-    want to subclass a simple module or channel in NED as well as in C++, you
-    explicitly need to specify the \fprop{@class} property, otherwise the
-    derived simple module or channel will continue to use the C++ class from its
-    super type.
+    Subclassing in NED does not imply subclassing the C++ implementation. If one
+    intends to subclass a simple module or channel in NED as well as in C++, the
+    \fprop{@class} property needs to be explicitly specified in the derived type,
+    otherwise it will continue to use the C++ class from its super type.
 \end{important}
 
 Compound modules will be instantiated with the built-in \cclass{cModule} class,
@@ -830,14 +829,12 @@ Parametric submodule type means that the NED type name is given in a string
 expression. The string expression may be specified locally in the submodule
 declaration, or elsewhere using typename patterns (see later).
 
-Parametric submodule types are syntactically denoted by the presence of a
-pair of angle brackets and the \fkeyword{like} keyword. The angle brackets
-contain the string expression; or if the type is not specified locally,
-they may be empty or may contain a default value for the type name
-(\ttt{default(...)} syntax). The syntax mandates that you also specify a
-module interface type \ref{sec:ned-ref:module-interfaces} (after the
-\fkeyword{like} keyword), which the concrete module type must implement in
-order for it to be eligible to be chosen.
+Parametric submodule types are syntactically denoted by the presence of an
+expression in a pair of angle brackets and the \fkeyword{like} keyword
+followed by a module interface type \ref{sec:ned-ref:module-interfaces}
+that a module type must implement in order to be eligible to be chosen.
+The angle brackets may be empty, contain a string expression, or contain a
+default string expression (\ttt{default(...) syntax).
 
 Examples:
 
@@ -1078,14 +1075,12 @@ Parametric channel type means that the NED type name is given in a string
 expression. The string expression may be specified locally in the connection
 declaration, or elsewhere using typename patterns (see later).
 
-Parametric channel types are syntactically denoted by the presence of a
-pair of angle brackets and the \fkeyword{like} keyword. The angle brackets
-contain the string expression; or if the type is not specified locally,
-they may be empty or may contain a default value for the type name
-(\ttt{default(...)} syntax). The syntax mandates that you also specify a
-channel interface type \ref{sec:ned-ref:module-interfaces} (after the
-\fkeyword{like} keyword), which the concrete channel type must implement in
-order for it to be eligible to be chosen.
+Parametric channel types are syntactically denoted by the presence of an
+expression in a pair of angle brackets and the \fkeyword{like} keyword
+followed by a channel interface type \ref{sec:ned-ref:channel-interfaces}
+that a channel type must implement in order to be eligible to be chosen.
+The angle brackets may be empty, contain a string expression, or contain a
+default string expression (\ttt{default(...) syntax).
 
 Examples:
 
@@ -1720,21 +1715,15 @@ Modulo, power-of and the bitwise operations require their arguments to be
 dimensionless, otherwise the result would depend on the choice of the unit.
 
 \begin{note}
-If you need a floating-point modulo operator that handles units as well, use
-the \ttt{fmod()} function.
+If one needs a floating-point modulo operator that handles units as well,
+the \ttt{fmod()} function can be used.
 \end{note}
 
-%%TODO example
-
 Multiplying two numbers with units is not supported.
-
-%%TODO example
 
 For division, dividing two numbers with units is only supported if the two
 units are convertible (i.e. the result will be dimensionless). Dividing
 a dimensionless number with a number with unit is not supported.
-
-%%TODO example
 
 
 \subsection{Referencing Parameters and Loop Variables}

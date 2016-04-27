@@ -327,7 +327,7 @@ An {\opp} model consists of the following parts:
     that describe the module structure with parameters, gates, etc.
     NED files can be written using any text editor, but the {\opp} IDE
     provides excellent support for two-way graphical and text editing.}
-  \item{Message definitions (\texttt{.msg} files). You can define various message
+  \item{Message definitions (\texttt{.msg} files) that let one define message
     types and add data fields to them. {\opp} will translate message definitions
     into full-fledged C++ classes.}
   \item{Simple module sources. They are C++ files, with \texttt{.h}/\texttt{.cc} suffix.}
@@ -357,14 +357,11 @@ text forms when the simulation program starts.
 \subsubsection{Running the Simulation and Analyzing the Results}
 \label{sec:overview:running-simulation-and-analyzing-results}
 
-The simulation may be compiled as a standalone program executable;
-thus it can be run on other machines without {\opp}
-being present, or it can be created as a shared library. In this case the
-{\opp} shared libraries must be present on that system.
-When the program is started, it first reads all NED files\index{ned!files}
-containing your model topology, then it reads a configuration
-file\index{simulation!configuration file} (usually called
-\texttt{omnetpp.ini}\index{omnetpp.ini}). This file contains settings that
+The simulation may be compiled as a standalone program executable,
+or as a shared library to be run using {\opp}'s \fprog{opp\_run} utility.
+When the program is started, it first reads the NED files\index{ned!files},
+then the configuration file\index{simulation!configuration file} usually called
+\ffilename{omnetpp.ini}. The configuration file contains settings that
 control how the simulation is executed, values for model parameters, etc.
 The configuration file can also prescribe several simulation runs; in
 the simplest case, they will be executed by the simulation program one
@@ -426,10 +423,9 @@ supports this approach.
 \subsection{What Is in the Distribution}
 \label{sec:overview:what-is-in-distribution}
 
-If you installed the source distribution, the {\opp} directory on your system
-should contain the following subdirectories. (If you installed a precompiled
-distribution, some of the directories may be missing, or there might be
-additional directories, e.g. containing software bundled with {\opp}.)
+An {\opp} installation contains the following subdirectories. Depending
+on the platform, there may also be additional directories present, containing
+software bundled with {\opp}.)
 
 The simulation system itself:
 

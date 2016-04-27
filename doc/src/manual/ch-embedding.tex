@@ -19,7 +19,7 @@ The blocks represent the following components:
 \begin{itemize}
   \item{\textbf{Sim} is the simulation kernel and class
     library\index{simulation!kernel}. Sim is a library linked to
-    your simulation program.}
+    simulation programs.}
   \item{\textbf{Envir} is another library that contains all code
     that is common to all the user interfaces. \ffunc{main()} also resides
     in the Envir library. Envir presents itself towards Sim and the executing model
@@ -388,7 +388,7 @@ converted to C++ string constants instead.
 \end{note}
 
 The trick is to write \cclass{cModuleType} and \cclass{cChannelType} objects
-for your simple module, compound module and channel types, and register them
+for simple module, compound module and channel types, and register them
 manually. For example, \cclass{cModuleType} has pure virtual methods called
 \ffunc{createModuleObject()}, \ffunc{addParametersAndGatesTo(module)},
 \ffunc{setupGateVectors(module)}, \ffunc{buildInside(module)}, which you
@@ -451,7 +451,7 @@ simulation.
 \label{sec:embedding:statistics-via-cpp-calls}
 
 Modules in the simulation are C++ objects. If you add the appropriate
-public getter methods to the module classes, you can call them from your
+public getter methods to the module classes, you can call them from the
 main program to obtain statistics. Modules may be looked up with the
 \ffunc{getModuleByPath()} method of \cclass{cSimulation}, then cast to the
 specific module type via \ffunc{check\_and\_cast<>()} so that the getter

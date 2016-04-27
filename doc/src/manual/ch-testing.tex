@@ -95,10 +95,10 @@ This section documents the \fprog{opp\_test}, a versatile tool that is
 helpful for various testing scenarios. \fprog{opp\_test} can be used for
 various types of tests, including unit tests and regression tests. It was
 originally written for testing the {\opp} simulation kernel, but it is
-equally suited for testing functions, classes, modules, or whole
+equally suited for testing functions, classes, modules, and whole
 simulations.
 
-\fprog{opp\_test} is built around a simple concept: it lets you define
+\fprog{opp\_test} is built around a simple concept: it lets one define
 simulations in a concise way, runs them, and checks that the output (result
 files, log, etc.) matches a predefined pattern or patterns. In many cases,
 this approach works better than inserting various assertions into the code
@@ -171,7 +171,7 @@ This was a passing test. What would constitute a fail?
    or any file, etc.)
 \end{itemize}
 
-Normally, you run several tests together. The \ttt{runtest} script accepts
+One normally wants to run several tests together. The \ttt{runtest} script accepts
 several \ttt{.test} files on the command line, and when started without
 arguments, it defaults to \ttt{*.test}, all test files in the current
 directory. At the end of the run, the tool prints summary statistics
@@ -283,17 +283,17 @@ Syntax:
 \end{filelisting}
 
 \ftest{\%description} is customarily written at the top of the \ttt{.test}
-file, and lets you provide a multi-line comment about the purpose of the
+file, and lets one provide a multi-line comment about the purpose of the
 test. It is recommended to invest time into well-written descriptions,
-because determining the original purpose of a test that has become broken
-can often be quite difficult without them.
+because they make determining the original purpose of a test that has
+become broken significantly easier.
 
 
 \subsection{Test Code Generation}
 \label{sec:testing:opptest:test-code-generation}
 
-This section describes the ways you can create C++ source and other files
-into the test directory.
+This section describes the directives used for creating C++ source and
+other files in the test directory.
 
 \subsubsection{\%activity}
 \label{sec:testing:opptest:activity}
@@ -305,9 +305,9 @@ Syntax:
 <body-of-activity()>
 \end{filelisting}
 
-\ftest{\%activity} lets you run test code without the need for much additional boilerplate.
-It generates a simple module that contains a single \ttt{activity()} method, and places
-your code into \ttt{activity()}.
+\ftest{\%activity} lets one write test code without much boilerplate. The
+directive generates a simple module that contains a single \ttt{activity()}
+method with the given code as method body.
 
 A NED file containing the simple module's (barebones) declaration, and an
 ini file to set up the module as a network are also generated.
@@ -323,7 +323,7 @@ Syntax:
 <simple-module-C++-definition>
 \end{filelisting}
 
-\ftest{\%module} lets you define a module class and run it as the only module
+\ftest{\%module} lets one define a module class and run it as the only module
 in the simulation.
 
 A NED file containing the simple module's (barebones) declaration, and an
@@ -346,13 +346,13 @@ Syntax:
 \end{filelisting}
 
 \ftest{\%includes} and \ftest{\%global} are helpers for \ftest{\%activity}
-and \ftest{\%module}, to allow you to insert additional lines into the
+and \ftest{\%module}, and let one insert additional lines into the
 generated C++ code.
 
-They both insert the code block above the module C++ declaration, the only
-difference is in their relation to the C++ namespace: \ftest{\%includes} is
-inserted above (outside) the namespace, and \ftest{\%globals} is inserted
-inside the namespace.
+Both directives insert the code block above the module C++ declaration. The only
+difference is in their relation to the C++ namespace: the body of \ftest{\%includes}
+is inserted above (i.e. outside) the namespace, and the body of \ftest{\%globals}
+is inserted inside the namespace.
 
 
 \subsubsection{The Default Ini File}
@@ -415,7 +415,7 @@ The default ini file is always generated.
 
 In test files, the string \ttt{@TESTNAME@} will be replaced with the test
 case name. Since it is substituted everywhere (C++, NED, msg and ini
-files), you can also write things like \ttt{@TESTNAME@\_function()}, or
+files), one can also write things like \ttt{@TESTNAME@\_function()}, or
 \ttt{printf("this is @TESTNAME@{\textbackslash}n")}.
 
 \subsubsection{Avoiding C++ Name Clashes}
@@ -465,10 +465,10 @@ Syntax:
 <multi-line-regexp>
 \end{filelisting}
 
-These directives let you check for the presence (or absence) of certain text in
-the output. You can check a file, or the standard output or standard error of
-the test program; for the latter two you need to specify \ttt{stdout} or
-\ttt{stderr} as file name. If the file is not found, the test will be marked
+These directives let one check for the presence (or absence) of certain text in
+the output. One can check a file, or the standard output or standard error of
+the test program; for the latter two, \ttt{stdout} and \ttt{stderr} needs to be
+specified as file name, respectively. If the file is not found, the test will be marked
 as \textit{unresolved}. There can be several \ftest{\%contains}-style directives
 in the test file.
 
@@ -526,15 +526,15 @@ Syntax:
 %ignore-exitcode: 1
 \end{filelisting}
 
-\ftest{\%exitcode} and \ftest{\%ignore-exitcode} let you test the exit code of the
+\ftest{\%exitcode} and \ftest{\%ignore-exitcode} let one test the exit code of the
 test program. The former checks that the exit code is one of the numbers specified in
 the directive; the other makes the test framework ignore the exit code.
 
 {\opp} simulations exit with zero if the simulation terminated
 without an error, and some >0 code if a runtime error occurred. Normally,
 a nonzero exit code makes the test fail. However, if the expected outcome
-is a runtime error (e.g. you want to test parameter validation code), you
-can use either \ftest{\%exitcode} to express that, or specify \ftest{\%ignore-exitcode}
+is a runtime error (e.g. for some negative test cases), one can use either
+\ftest{\%exitcode} to express that, or specify \ftest{\%ignore-exitcode}
 and test for the presence of the correct error message in the output.
 
 % FIXME a %postprocess-command nem igy muxik!
@@ -576,15 +576,15 @@ Syntax:
 %testprog: <executable>
 \end{filelisting}
 
-The \ftest{\%env} directive lets you set an environment variable that will
+The \ftest{\%env} directive lets one set an environment variable that will
 be defined when the test program and the potential pre- and post-processing
 commands run. There can be multiple \ftest{\%env} directives in the test
 file.
 
-\ftest{\%extraargs} lets you add extra command-line arguments to the
+\ftest{\%extraargs} lets one add extra command-line arguments to the
 test program (usually the simulation) when it is run.
 
-The \ftest{\%testprog} directive lets you replace the test program.
+The \ftest{\%testprog} directive lets one replace the test program.
 \ftest{\%testprog} also slightly alters the arguments the test program is
 run with. Normally, the test program is launched with the following command
 line:
@@ -599,17 +599,17 @@ When \ftest{\%testprog} is present, it becomes the following:
 $ <custom-testprog> <test-extraargs> <global-extraargs>
 \end{filelisting}
 
-That is, \ttt{-u Cmdenv} and \ttt{<inifilenames>} are removed; this allows you to
-use programs that do not require or understand them, and places you in complete
-command of the arguments list.
+That is, \ttt{-u Cmdenv} and \ttt{<inifilenames>} are removed; this allows one
+to invoke programs that do not require or understand them, and puts the test author
+in complete command of the arguments list.
 
 Note that \ftest{\%extraargs} and \ftest{\%testprog} have an equivalent
 command-line option in \fprog{opp\_test}. (In the text above,
 \ttt{<global-extraargs>} stands for extra args specified to
 \fprog{opp\_test}.)  \ftest{\%env} doesn't need an option in
 \fprog{opp\_test}, because the test program inherits the environment
-variables from \fprog{opp\_test}, so you can just set them in the control
-script, or in the shell you run the tests from.
+variables from \fprog{opp\_test}, so one can just set them in the control
+script, or in the shell one runs the tests from.
 
 
 \subsubsection{\%prerun-command, \%postrun-command}
@@ -625,7 +625,7 @@ Syntax:
 %postrun-command: <command>
 \end{filelisting}
 
-These directives let you run extra commands before/after running the test
+These directives let one run extra commands before/after running the test
 program (i.e. the simulation). There can be multiple pre- and post-run
 commands. The post-run command is useful when the test outcome cannot be determined
 by simple text matching, but requires statistical evaluation or other processing.
@@ -671,12 +671,10 @@ standard output, at the beginning of the line.
 \subsection{opp\_test Synopsys}
 \label{sec:testing:opptest:synopsys}
 
-Little has been said so far what \fprog{opp\_test} actually does, or how you
-can invoke it.
-
-It can be invoked in two modes: file generation and test running. When running
-a test suite, it will actually be run twice, once in file generation mode,
-then in test running mode.
+Little has been said so far what \fprog{opp\_test} actually does, or how it
+is meant to be run. \fprog{opp\_test} has two modes: file generation and
+test running. When running a test suite, \fprog{opp\_test} is actually run
+twice, once in file generation mode, then in test running mode.
 
 File generation mode has the syntax \ttt{opp\_test gen \textit{<options>
 <testfiles>}}. For example:
@@ -855,7 +853,7 @@ differences in floating point arithmetic across platforms.\footnote{There
 are differences between the floating point operations of AMD and Intel
 CPUs. Running under a processor emulator like \fprog{valgrind} may also
 produce a different fingerprint. This is normal. Hint: see gcc options
-\ttt{-mfpmath=sse -msse2}.} Acknowledging this fact, {\opp} lets you list
+\ttt{-mfpmath=sse -msse2}.} Acknowledging this fact, {\opp} lets one list
 several values for a fingerprint, separated by \textit{spaces}, and will
 accept whichever is produced by the simulation. The following example lists
 two alternative values for both fingerprints.
@@ -867,7 +865,7 @@ fingerprint = 53de-64a7/tplx 63dc-ff21/tplx, 9a3f-7ed2/szv da39-91fc/szv
 Note that fingerprint computation has been changed and significantly
 extended in {\opp} version 5.0.\footnote{The old ({\opp} 4.x) fingerprint
 was computed from the module ID and simulation time of each event. To
-reproduce a 4.x fingerprint on {\opp} 5.0 or later, compile {\opp} and your
+reproduce a 4.x fingerprint on {\opp} 5.0 or later, compile {\opp} and the
 model with \ttt{USE\_OMN\-ETPP4x\_FINGER\-PRINTS} defined. Simply setting the
 ingredients to \tbf{ti} is not enough because of additional, subtle changes
 in the simulation kernel.}
@@ -969,7 +967,7 @@ responsible for providing stimuli for the module under test, and (partly)
 for checking the response.
 
 Module tests may be implemented in \ttt{.test} files using the \fprog{opp\_test}
-tool. A \ttt{.test} file allows you to place the test description, the test setup
+tool. A \ttt{.test} file allows one to place the test description, the test setup
 and the expected output into a single, compact file, while large files or files shared
 among several tests may be factored out and only referenced by \ttt{.test} files.
 
@@ -1020,11 +1018,8 @@ statistical computations, one may use \ftest{\%postrun-command} to run an R
 script. The R script may rely on the \ttt{omnetpp} R package for reading
 the result files.
 
-The INET Framework contains statistical tests where you can look for
+The INET Framework contains statistical tests where one can look for
 inspiration.
-
-
-
 
 
 %%% Local Variables:

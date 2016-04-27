@@ -39,7 +39,7 @@ model visualization:
 \end{enumerate}
 
 The following sections will cover the above topics in more detail. But first,
-let us get acquainted with a new \cclass{cModule} virtual method that you
+let us get acquainted with a new \cclass{cModule} virtual method that one
 can redefine and place visualization-related code into.
 
 
@@ -134,8 +134,8 @@ else {
 \label{sec:graphics:refreshdisplay-advantages}
 
 Overriding \ffunc{refreshDisplay()} has several advantages over putting the
-simulation code into \ffunc{handleMessage()}. The first one is, as you have
-probably guessed already, \textit{performance}. When running under Cmdenv,
+simulation code into \ffunc{handleMessage()}. The first one is clearly
+\textit{performance}. When running under Cmdenv,
 the runtime cost of visualization code is literally zero, and when running
 in \textit{Express} mode under Tkenv/Qtenv, it is practically zero because
 the cost of one update is amortized over several hundred thousand or
@@ -152,7 +152,7 @@ are refreshed together.
 
 The third advantage is \textit{separation of concerns.} It is generally
 not a good idea to intermix simulation logic with visualization code,
-and \ffunc{refreshDisplay()} lets you completely separate the two.
+and \ffunc{refreshDisplay()} allows one to completely separate the two.
 
 
 \subsection{Why is \ffunc{refreshDisplay()} const?}
@@ -337,9 +337,9 @@ Appendix \ref{cha:display-strings}.
 \label{sec:graphics:submodule-icons}
 
 By default, modules are displayed with a simple default icon, but {\opp}
-comes with a large set of categorized icons that you can choose from.
+comes with a large set of categorized icons that one can choose from.
 To see what icons are available, look into the \ttt{images/} folder
-in your {\opp} installation. The stock icons installed with {\opp} have
+in the {\opp} installation. The stock icons installed with {\opp} have
 several size variants. Most of them have very small (vs), small (s),
 large (l) and very large (vl) versions.
 
@@ -388,11 +388,11 @@ An example:
 \subsubsection{Shapes}
 \label{sec:graphics:submodule-shapes}
 
-To have a simple but resizable representation for your module, one can use
+To have a simple but resizable representation for a module, one can use
 the \ttt{b} tag to create geometric shapes. Currently, \ttt{oval} and
 \ttt{rectangle} are supported.
 
-The following example displays an oval shape of size 70x30 with a 4-pixel
+The following example displays an oval shape of the size 70x30 with a 4-pixel
 black border and red fill:
 
 \begin{ned}
@@ -490,14 +490,12 @@ submodules:
 
 If a module contains a queue object (\cclass{cQueue}), it is possible to
 let the graphical user interface display the queue length next to the
-module icon. To achieve that, specify the queue object's name (the string
-set via the \ffunc{setName()} method) in the \ttt{q} display string tag.
-{\opp} will find the queue object by traversing the object tree inside
+module icon. To achieve that, one needs to specify the queue object's name
+(the string set via the \ffunc{setName()} method) in the \ttt{q} display string tag.
+{\opp} finds the queue object by traversing the object tree inside
 the module.
 
-For example, if the module contains a \cclass{cQueue} object named
-\ttt{"jobQueue"}, you can can specify \ttt{q=jobQueue} in the display
-string.
+The following example displays the length of the queue named \ttt{"jobQueue"}:
 
 \begin{ned}
 @display("q=jobQueue");
@@ -510,8 +508,8 @@ string.
 \subsubsection{Text and Tooltip}
 \label{sec:graphics:submdule-text-and-tooltip}
 
-You can have a short text displayed next to or above the module icon or
-shape using the \ttt{t} tag. The tag lets you specify the placement (left,
+It is possible to have a short text displayed next to or above the module icon
+or shape using the \ttt{t} tag. The tag lets one specify the placement (left,
 right, above) and the color of the text. To display text in a tooltip, use
 the \ttt{tt} tag.
 
@@ -645,14 +643,15 @@ class Job : public cMessage
 };
 \end{cpp}
 
-Message classes are often defined in \ttt{msg} files (see chapter
-\ref{cha:msg-def}), and you can also have the message compiler
-generate the display string for you. If you add a field named
-\ffunc{displayString} to the message definition, the message compiler will
-generate the \ffunc{setDisplayString()} and \ffunc{getDisplayString()}
-methods into the new class. It also lets you specify an initial value.
+Since message classes are often defined in \ttt{msg} files (see chapter
+\ref{cha:msg-def}), it is often convenient to let the message compiler
+generate the \ffunc{getDisplayString()} method. To achieve that, add a
+string field named \ffunc{displayString} with an initializer to the message
+definition. The message compiler will generate \ffunc{setDisplayString()}
+and \ffunc{getDisplayString()} methods into the new class, and also set the
+initial value in the constructor.
 
-An example message file that shows this possibility:
+An example message file:
 
 \begin{msg}
 message Job
@@ -733,7 +732,7 @@ It is also possible to specify colors in HSB (hue-saturation-brightness) as
 \textit{@hhssbb} (with \textit{h}, \textit{s}, \textit{b} being hex digits).
 HSB makes it easier to scale colors e.g. from white to bright red.
 
-You can produce a transparent background by specifying a hyphen (\textit{"-"})
+One can produce a transparent background by specifying a hyphen (\textit{"-"})
 as background color.
 
 In message display strings, \ttt{kind} can also be used as a special color
@@ -774,9 +773,9 @@ need the exact location of this directory to be able to load the icons.
 Icons are loaded from all directories in the \textit{image path},
 a semicolon-separated list of directories.
 The default image path is compiled into Tkenv and Qtenv with the value
-\ttt{"\textit{<omnetpp>}/\-images;./images"} -- which will work fine
-as long as you don't move the directory, and you will also be able to
-load more icons from the \ttt{images/} subdirectory of the current
+\ttt{"\textit{<omnetpp>}/\-images;./images"}. This works fine (unless the
+{\opp} installation is moved), and the \ttt{./images} part also allows
+icons to be loaded from the \ttt{images/} subdirectory of the current
 directory. As users typically run simulation models from the model's
 directory, this practically means that custom icons placed in the
 \ttt{images/} subdirectory of the model's directory are automatically
@@ -784,7 +783,7 @@ loaded.
 
 The compiled-in image path can be overridden with the \ttt{OMNETPP\_IMAGE\_PATH}
 environment variable. The way of setting environment variables is system
-specific: in Unix, if you are using the bash shell, adding a line
+specific: in Unix, if one is using the bash shell, adding a line
 
 \begin{commandline}
 export OMNETPP_IMAGE_PATH="$HOME/omnetpp/images;./images"
@@ -793,7 +792,7 @@ export OMNETPP_IMAGE_PATH="$HOME/omnetpp/images;./images"
 to \ttt{\textasciitilde/.bashrc} or \ttt{\textasciitilde/.bash\_profile} will do;
 on Windows, environment variables can be set via the \textit{My Computer --> Properties} dialog.
 
-You can extend the image path from \ffilename{omnetpp.ini} with the
+One can extend the image path from \ffilename{omnetpp.ini} with the
 \ttt{image-path} option, which is prepended to the environment
 variable's value.
 
@@ -835,10 +834,6 @@ Sizes are encoded into the icon name's suffix: \ttt{\_vl}, \ttt{\_l},
 display string tag (\ttt{"i=device/router;is=l"}), but not both at the same
 time (we recommend using the \ttt{is} tag.)
 
-%The word "layouting" doesn't appear in the English dictionary, although it seems to appear
-%  commonly in technical articles, etc. on the web. Up to this point, I have changed all
-%  uses of layouting to layout, but I will leave it up to you to decide which one to use.
-%  It sounds wrong to me, but it may be an acceptable usage in your particular domain.
 
 \subsection{Layouting}
 \label{sec:graphics:compound-module-layouting}
@@ -877,7 +872,7 @@ Caveats:
     back so that it fits on the screen, \textit{unless it contains
     any fixed-position module}. (For obvious reasons: if there is a module
     with manually specified position, we don't want to move that one).
-    To prevent rescaling, you can specify a sufficiently large bounding
+    To prevent rescaling, one can specify a sufficiently large bounding
     box in the background display string, e.g. \ttt{"b=2000,3000"}.
   \item Submodule size is ignored by the present layouter, so modules
     with elongated shapes may not be placed ideally.
@@ -903,7 +898,7 @@ changing a module's position is useful when simulating mobile
 networks.
 
 Display strings are stored in \cclass{cDisplayString} objects inside
-channels, modules and gates. \cclass{cDisplayString} also lets you
+channels, modules and gates. \cclass{cDisplayString} also lets one
 manipulate the string.
 
 As far as \cclass{cDisplayString} is concerned, a display string
@@ -919,7 +914,7 @@ class doesn't try to interpret the display string in any way, nor does it
 know the meaning of the different tags; it merely parses the string as data
 elements separated by semicolons, equal signs and commas.
 
-To get a pointer to a \cclass{cDisplayString} object, you can call
+To get a pointer to a \cclass{cDisplayString} object, one can call
 the components's \ffunc{getDisplayString()} method.
 
 \begin{note}
@@ -1103,12 +1098,12 @@ also has a \textit{hierarchical name}. It consists of the names of figures
 in the path from the root figure down to the the figure, joined with dots.
 (The name of the root figure itself is omitted.)
 
-You can get the root figure of the canvas with the \ffunc{getRootFigure()}
-member function, but that is usually unnecessary, because the
-\cclass{cCanvas}, like \cclass{cFigure}, has methods for accessing and
-manipulating its child figures directly.
+One can obtain a pointer to the root figure of the canvas with the
+\ffunc{getRootFigure()} member function, but that is usually unnecessary,
+because the \cclass{cCanvas}, like \cclass{cFigure}, has methods for
+accessing and manipulating its child figures directly.
 
-You can add a child figure using \ffunc{addFigure()}. It has two flavours: one
+One can add a child figure using \ffunc{addFigure()}. It has two flavours: one
 for appending, and one for inserting at a numeric position. The order of
 children is important because it also denotes Z-order. Z-order comes into
 play when children are overlapping on the screen: the first child will be
@@ -1119,7 +1114,7 @@ relative to an existing child figure.
 
 Child figures can be accessed by name (\ffunc{getFigure(name)}), or
 enumerated by index in the child list (\ffunc{getFigure(k)},
-\ffunc{getNumFigures()}). You can obtain the index of a child figure using
+\ffunc{getNumFigures()}). One can obtain the index of a child figure using
 \ffunc{findFigure()}.
 
 The following code illustrates these methods:
@@ -1296,8 +1291,8 @@ They update the matrix to (also) perform the given operation (scaling,
 rotation, skewing or translation), as if left-multiplied by a temporary
 matrix that corresponds to the operation.
 
-The \ffunc{multiply()} method lets you chain transformations: \ttt{t1.multiply(t2)}
-sets \ttt{t1} to the product \ttt{t2*t1}.
+The \ffunc{multiply()} method allows one to combine transformations:
+\ttt{t1.multiply(t2)} sets \ttt{t1} to the product \ttt{t2*t1}.
 
 To transform a point (represented by the class \cclass{cFigure::Point}),
 one can use the \ffunc{applyTo()} method of \cclass{Transform}. The
@@ -1775,7 +1770,7 @@ is blue (although it is indifferent until one calls \ttt{setFilled(true)}).
 
 \begin{note}
 Invoking \ffunc{setFillColor()} alone does not make the shape filled,
-you also need to call \ffunc{setFilled(true)} for that.
+one also needs to call \ffunc{setFilled(true)} for that.
 \end{note}
 
 Shapes can be partially transparent, and opacity can be set individually
@@ -2490,9 +2485,9 @@ or satellites.
 \subsection{The {\opp} API for OpenSceneGraph}
 \label{sec:graphics:opp-api-for-osg}
 
-For 3D visualization, {\opp} basically exposes the OpenSceneGraph API.
-You assemble an OSG scene graph in the model, and give it to {\opp} for
-display. The scene graph can be updated at runtime, and changes will be
+For 3D visualization, {\opp} basically exposes the OpenSceneGraph API. One
+needs to assemble an OSG scene graph in the model, and give it to {\opp}
+for display. The scene graph can be updated at runtime, and changes will be
 reflected in the display.
 
 \begin{note}
@@ -2582,7 +2577,7 @@ ignore them, and the user may also be able to override them interactively,
     specify a manipulator. Several camera manipulators are available:
     \ttt{CAM\_TERRAIN} is suitable for flying above an object or terrain;
     \ttt{CAM\_OVERVIEW} which is similar to the terrain manipulator, but does
-    not allow rolling or looking up (you can see the object only from above);
+    not allow rolling or looking up (one can only see the object from above);
     \ttt{CAM\_TRACKBALL} that allows unrestricted movement centered around an
     object; and \ttt{CAM\_EARTH} that should be used when viewing the whole
     Earth is useful (i.e. modeling satellites). The default setting is to
@@ -2637,8 +2632,9 @@ osgCanvas->setGenericViewpoint(cOsgCanvas::Viewpoint(
 \subsubsection{Making Nodes Selectable}
 \label{sec:graphics:making-osg-nodes-selectable}
 
-If an OSG node represents an object in your simulation, it is very convenient
-if you can select that object for inspection by clicking on the node in the 3D scene.
+If a 3D object in the scene represents a C++ object in the simulation, it
+would often be very convenient to be able to select that object for
+inspection by clicking it with the mouse.
 
 {\opp} provides a wrapper node that associates its children with a particular {\opp}
 object (\cclass{cObject} descendant), making them selectable in the 3D viewer.
@@ -2663,7 +2659,7 @@ example images or 3D models. By default, OSG tries to load these files
 from the current working directory (unless they are given with absolute path).
 However, loading from the folder of the current {\opp} module, from the folder
 of the ini file, or from the image path would often be more convenient.
-{\opp} contains a function that lets you do just that.
+{\opp} contains a function for that purpose.
 
 The \ffunc{resolveResourcePath()} method of modules and channels accepts a
 file name (or relative path) as input, and looks into a number of convenient
@@ -2723,11 +2719,11 @@ void DemoModule::initialize()
 \label{sec:graphics:using-additional-osg-libraries}
 
 OSG and osgEarth are comprised of several libraries. By default, {\opp}
-links only a subset of them to your model: \ttt{osg}, \ttt{osgGA},
-\ttt{osgViewer}, \ttt{osgQt}, \ttt{osgEarth}, \ttt{osgEarthUtil}. If you
-need additional OSG and osgEarth libraries, you need to ensure that those
-libraries are linked to your model as well. The best way to achieve this is
-to use the following code fragment in the \ttt{makefrag} file of your
+links simulations with only a subset of them: \ttt{osg}, \ttt{osgGA},
+\ttt{osgViewer}, \ttt{osgQt}, \ttt{osgEarth}, \ttt{osgEarthUtil}. When
+additional OSG and osgEarth libraries are needed, one needs to ensure that
+those libraries are linked to the model as well. The best way to achieve that
+is to use the following code fragment in the \ttt{makefrag} file of the
 project:
 
 \begin{filelisting}
@@ -2749,10 +2745,10 @@ the presence of OSG/osgEarth in the first place.
 OpenScenegraph is a sizable library with 16+ namespaces and 40+ \cclass{osg::Node}
 subclasses, and we cannot fully document it here due to size constraints. Instead,
 in the next sections we have collected some practical advice and useful code snippets
-to quickly get you started. More information can be found on the openscenegraph.org
+to help the reader get started. More information can be found on the openscenegraph.org
 web site, in dedicated OpenSceneGraph books (some of which are freely available),
-and in other online resources. You will find a list of OSG-related resources
-at the end of this chapter.
+and in other online resources. We list some OSG-related resources at the end of this
+chapter.
 
 \subsubsection{Loading Models}
 \label{sec:graphics:osg-loading-models}
@@ -2898,7 +2894,7 @@ icon->getOrCreateStateSet()->setTextureAttributeAndModes(0, texture);
 icon->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 \end{cpp}
 
-If the image has transparent parts, you also need the following lines:\footnote{These lines
+If the image has transparent parts, one also needs the following lines:\footnote{These lines
 enable blending, and places \ttt{icon} in the \ttt{TRANSPARENT\_BIN}. Normally there are
 two bins, \textit{opaque} and \textit{transparent}. When a scene is rendered, OSG first
 renders the objects in the opaque bin, then the objects in the transparent bin. More bits
@@ -3174,7 +3170,7 @@ the flexibility of osgEarth. osgEarth also defines additional APIs
 to help with coordinate conversions and other tasks. Other than that,
 one's OSG knowledge is also applicable when building osgEarth scenes.
 
-The next sections contain some tips and code fragments to help you get
+The next sections contain some tips and code fragments to help the reader get
 started with osgEarth. As with OSG, there are numerous other sources of
 information, both printed and online, when the info contained herein
 is insufficient.
@@ -3354,7 +3350,7 @@ osgEarth online documentation:
 \subsubsection{Samples}
 \label{sec:graphics:osg-osgearth-samples}
 
-Be sure to check the samples coming with your OpenSceneGraph installation as
+Be sure to check the samples coming with the OpenSceneGraph installation, as
 they contain invaluable information.
 \begin{itemize}
 \item https://github.com/openscenegraph/osg/tree/master/examples

@@ -4,25 +4,24 @@
 \section{Introduction}
 \label{sec:msg-defs:intro}
 
-In practice, you will need to add various fields to \cclass{cMessage} or
-\cclass{cPacket} to make them useful. For example, if you are modelling
-packets in communication networks, you need to have a way to store protocol
-header fields in packets. Since the simulation library is written in C++,
-the natural way of extending \cclass{cMessage}/\cclass{cPacket} is via
-subclassing them. However, because for each field you need to write at
-least three things (a private data member, a getter and a setter method),
-and the resulting class has to integrate with the simulation framework,
-writing the necessary C++ code can be a tedious and time-consuming task.
+In practice, one needs to add various fields to \cclass{cMessage} or
+\cclass{cPacket} to make them useful. For example, when modeling
+communication networks, message/packet objects need to carry protocol
+header fields. Since the simulation library is written in C++, the natural
+way of extending \cclass{cMessage}/\cclass{cPacket} is via subclassing
+them. However, at least three items has to be added to the new class for
+each field (a private data member, a getter and a setter method) and the
+resulting class needs to integrate with the simulation framework, which
+means that writing the necessary C++ code can be a tedious and
+time-consuming task.
 
 {\opp} offers a more convenient way called \textit{message definitions}.
-Message definitions offer you a compact syntax to describe message
-contents, and the corresponding C++ code is automatically generated from
-the definitions. A common complaint about code generators in general is
-lack of flexibility: if you have a different idea how the generated code
-should look, there is little you can do about it. {\opp}, however, allows
-you to extensively customize the generated class. Even if you need to
-heavily customize the generated class, message definitions still save you a
-great deal of manual work.
+Message definitions offer a compact syntax to describe message contents,
+and the corresponding C++ code is automatically generated from the
+definitions. When needed, the generated class can also be customized via
+subclassing. Even when the generated class needs to be heavily customized,
+message definitions can still save the programmer a great deal of manual
+work.
 
 
 \subsection{The First Message Class}
@@ -41,9 +40,9 @@ packet MyPacket
 };
 \end{msg}
 
-It is the task of the \textit{message compiler} is to generate C++ classes
-you can use from your models. The message compiler is normally invoked
-automatically for your \ttt{.msg} files during build.
+It is the task of the \textit{message compiler} to generate C++ classes
+that can be instantiated from C++ model code. The message compiler is
+normally invoked automatically for \ttt{.msg} files during build.
 
 When the message compiler processes \ttt{MyPacket.msg}, it creates the
 following files: \ttt{MyPacket\_m.h} and \ttt{MyPacket\_m.cc}. The
@@ -58,8 +57,8 @@ class MyPacket : public cPacket {
 };
 \end{cpp}
 
-In your C++ files, you can use the \ttt{MyPacket} class by including the
-generated header file:
+In order to use the \ttt{MyPacket} class from a C++ source file, the
+generated header file needs to be included:
 
 \begin{cpp}
 #include "MyPacket_m.h"
@@ -71,10 +70,10 @@ pkt->setSrcAddress(localAddr);
 \end{cpp}
 
 The \ttt{MyPacket\_m.cc} file will contain implementation of the generated
-\ttt{MyPacket} class as well as ``reflection'' code that allows you to
-inspect these data structures under graphical user interfaces. The
-\ttt{MyPacket\_m.cc} file should be compiled and linked into your
-simulation; this is normally taken care of automatically.
+\ttt{MyPacket} class as well as ``reflection'' code that allows inspection of
+these data structures under graphical user interfaces like Qtenv. The
+\ttt{MyPacket\_m.cc} file should be compiled and linked into the simulation;
+this is normally taken care of automatically.
 
 The following sections describe the message syntax and features in detail.
 
@@ -139,8 +138,7 @@ will contain the following methods:
     virtual void setHasPayload(bool hasPayload);
 \end{cpp}
 
-Note that the methods are all declared \fkeyword{virtual} to give you the possibility
-of overriding them in subclasses.
+Note that the methods are all declared \fkeyword{virtual} to allow overriding them.
 
 String fields can also be declared:
 
@@ -170,7 +168,7 @@ the \ttt{const char*} pointer.
 \label{sec:msg-defs:field-data-types}
 
 Data types for fields are not limited to \fkeyword{int} and
-\fkeyword{bool}. You can use several C/C++ and other data types:
+\fkeyword{bool}. Several C/C++ and other data types can be used:
 
 \begin{itemize}
    \item logical: \fkeyword{bool}
@@ -202,7 +200,7 @@ fields to empty string.
 \subsection{Initial Values}
 \label{sec:msg-defs:initial-values}
 
-You can specify initial values for fields. Examples:
+Initial values for fields can be specified after an equal sign, like so:
 
 \begin{msg}
 packet RequestPacket
@@ -215,10 +213,10 @@ packet RequestPacket
 };
 \end{msg}
 
-As you can see, macros and expressions are also accepted as initalizer
-values. The message compiler does not check the syntax of the values, it
-only copies them into the generated C++ file; so if there is an error in
-them, it will be reported by the C++ compiler.
+Macros and expressions are also accepted as initalizer values, as the code
+above demonstrates. The message compiler does not check the syntax of the
+values, it merely copies them into the generated C++ file. If there are
+errors in them, they will be reported by the C++ compiler.
 
 Field initialization statements will be placed into the constructor of the
 generated class.
@@ -227,9 +225,10 @@ generated class.
 \subsection{Enums}
 \label{sec:msg-defs:enums}
 
-You can declare that an \fkeyword{int} (or other integral type) field
-takes values from an enum. The message compiler can then generate code
-that allows graphical user interfaces display the symbolic value of the field.
+Using a \fprop{@enum} property, a field of the type \fkeyword{int} or any
+other integral type can be declared to take its value from an enum. The
+message compiler will then generate code that allows graphical user
+interfaces display the symbolic value of the field.
 
 Example:
 
@@ -281,7 +280,8 @@ packet FooPacket
 \subsection{Fixed-Size Arrays}
 \label{sec:msg-defs:fixed-size-arrays}
 
-You can specify fixed size arrays:
+Fixed-size arrays can be declared with the usual syntax of putting the
+array size in square brackets after the field name:
 
 \begin{msg}
 packet SourceRoutedPacket
@@ -298,15 +298,15 @@ virtual long getRoute(unsigned k) const;
 virtual void setRoute(unsigned k, long route);
 \end{cpp}
 
-If you call the methods with an index that is out of bounds, an exception
-will be thrown.
+When these methods are called with an index that is out of bounds, an
+exception will be thrown.
 
 
 \subsection{Variable-Size Arrays}
 \label{sec:msg-defs:variable-size-arrays}
 
-If the array size is not known in advance, you can declare the field
-to have a variable size:
+If the array size is not known in advance, the field can be declared
+to have a variable size by using an empty pair in brackets:
 
 \begin{msg}
 packet SourceRoutedPacket
@@ -329,17 +329,16 @@ virtual void setRouteArraySize(unsigned n);
 The \ffunc{set...ArraySize()} method internally allocates a new array. Existing
 values in the array will be preserved (copied over to the new array.)
 
-The default array size is zero. This means that you need to call
-\ffunc{set...ArraySize()} with a nonzero argument before you can
-start filling array elements.
+The default array size is zero. This means that \ffunc{set...ArraySize(n)} needs
+to be called before one can start filling array elements.
 
 
 \subsection{Classes and Structs as Fields}
 \label{sec:msg-defs:other-types-as-fields}
 
-In addition to primitive types, you can also use other types (classes,
-structs, typedefs, etc.) as fields. For example, if you have a C++ type
-called \ttt{IPAddress}, you can write the following:
+In addition to primitive types, classes, structs and their typedefs may
+also be used as fields. For example, given a class named \ttt{IPAddress},
+one can write the following:
 
 \begin{msg}
 packet IPPacket
@@ -426,9 +425,9 @@ class Ieee80211DataFrame : public Ieee80211Frame {
 \subsection{Assignment of Inherited Fields}
 \label{sec:msg-defs:assignment-of-inherited-fields}
 
-Message definitions allow you to change the initial value of a field
-defined in an ancestor type. The syntax is similar to that of a field
-definition with initial value, only the data type is missing.
+Message definitions allow for changing the initial value of an inherited
+field. The syntax is similar to that of a field definition with initial
+value, only the data type is missing.
 
 An example:
 
@@ -465,7 +464,7 @@ Ieee80211DataFrame::Ieee80211DataFrame(const char *name, int kind) :
 }
 \end{cpp}
 
-This implementation also lets you initialize \cclass{cMessage} /
+This implementation also lets one initialize \cclass{cMessage} /
 \cclass{cPacket} fields such as message kind or packet length:
 
 \begin{msg}
@@ -533,10 +532,9 @@ class TCPOpenCommand : public TCPCommand
 \section{Structs}
 \label{sec:msg-defs:defining-structs}
 
-You can define C-style structs to be used as fields in message classes,
-``C-style'' meaning ``containing only data and no methods'' (in contrast to
-C++ where a struct is just a class with a different default member
-visibility.)
+Message definitions allow one to define C-style structs, ``C-style''
+meaning ``containing only data and no methods''. These structs can be
+useful as fields in message classes.
 
 The syntax is similar to that of defining messages:
 
@@ -549,10 +547,8 @@ struct Place
 };
 \end{msg}
 
-However, the generated code is different. The generated struct has
-no getter or setter methods, instead the fields are represented
-by public data members. The following code is generated from
-the above definition:
+The generated struct has public data members, and no getter or setter
+methods. The following code is generated from the above definition:
 
 \begin{cpp}
 // generated C++
@@ -642,11 +638,9 @@ The next two sections describe how to do each.
 \subsection{Announcing Types to the Message Compiler}
 \label{sec:msg-defs:announcing-types}
 
-If you want to use a C++ type (a class, struct or typedef) not
-declared with the message syntax in the same file, you have to
-announce those types to the message compiler.
-
-Type annoucements have a similar syntax to those in C++:
+To use a C++ type (class, struct a typedef) defined outside the msg file,
+that type needs to be announced to the message compiler. Type annoucements
+have a similar syntax to those in C++:
 
 \begin{msg}
 struct Point;
@@ -699,11 +693,11 @@ obscure runtime error.
 \subsection{Making the C++ Declarations Available}
 \label{sec:msg-def:making-cpp-declarations-available}
 
-In addition to announcing types to the message compiler, you also have to make
-sure their C++ declarations will be available at compile time so that the
-generated code will actually compile. This can be achieved with
-\fkeyword{cplusplus} blocks that let you inject includes, typedefs,
-class/struct declarations, etc. into the generated header file:
+In addition to announcing types to the message compiler, their C++
+declarations also need to be available at compile time so that the
+generated code will actually compile. This can be ensured using
+\fkeyword{cplusplus} blocks that insert includes, typedefs, class/struct
+declarations, etc. into the generated header file:
 
 \begin{msg}
 cplusplus {{
@@ -712,9 +706,12 @@ typedef std::vector<int> IntVector;
 }}
 \end{msg}
 
-You need a \fkeyword{cplusplus} block even if the desired types are defined
-in a (different) message file, to include the generated header file.
-It is currently not supported to import types from other message files directly.
+A \fkeyword{cplusplus} block is also needed if the desired types are
+defined in a different message file. The block should contain an include
+directive to pull in the header file generated from the other message file.
+It is currently not supported to import types from other message files
+directly,
+
 Example:
 
 \begin{msg}
@@ -967,7 +964,7 @@ in a single \fkeyword{int} or \fkeyword{short}, and yet you want
 to present bits as individual packet fields.
 It is also useful for implementing computed fields.
 
-You can declare any field to be abstract with the following syntax:
+A field is declared abstract by using \fkeyword{abstract } keyword:
 
 \begin{msg}
 packet FooPacket
@@ -977,7 +974,7 @@ packet FooPacket
 };
 \end{msg}
 
-For an \fkeyword{abstract} field, the message compiler generates
+For an abstract field, the message compiler generates
 no data member, and generated getter/setter methods will be pure
 virtual:
 
@@ -985,7 +982,6 @@ virtual:
 virtual bool getUrgentBit() const = 0;
 virtual void setUrgentBit(bool urgentBit) = 0;
 \end{cpp}
-
 
 Usually you'll want to use abstract fields together with
 the Generation Gap pattern, so that you can immediately
