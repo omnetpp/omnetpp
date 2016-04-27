@@ -87,8 +87,6 @@ const QString ModuleInspector::PREF_SHOWARROWHEADS = "showarrowheads";
 
 ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-    isShiftKeyPressed = false;
-
     switchToOsgViewAction = nullptr;
     switchToCanvasViewAction = nullptr;
 
@@ -129,6 +127,7 @@ void ModuleInspector::createViews(bool isTopLevel)
     connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(dragged(QPointF)), this, SLOT(onViewerDragged(QPointF)));
     connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
+    connect(canvasViewer, SIGNAL(marqueeZoom(QRectF,QPoint)), this, SLOT(onMarqueeZoom(QRectF,QPoint)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     QToolBar *toolbar = createToolbar(isTopLevel);
@@ -636,25 +635,38 @@ void ModuleInspector::doubleClick(QMouseEvent *event) {
     }
 
     if(objects.empty() || objects.front() == object) {
-        if(isShiftKeyPressed)
+        if(event->modifiers() & Qt::ShiftModifier)
             zoomOut(event->pos().x(), event->pos().y());
         else
             zoomIn(event->pos().x(), event->pos().y());
     }
 }
 
-void ModuleInspector::keyPressEvent(QKeyEvent *event) {
-    if(event->key() == Qt::Key_Shift)
-        isShiftKeyPressed = true;
-}
-
-void ModuleInspector::keyReleaseEvent(QKeyEvent *event) {
-    if(event->key() == Qt::Key_Shift)
-        isShiftKeyPressed = false;
-}
-
 void ModuleInspector::onViewerDragged(QPointF center) {
     setPref(PREF_CENTER, center.toPoint());
+}
+
+void ModuleInspector::onMarqueeZoom(QRectF rect, QPoint startPos) {
+    qreal rectLongerSide;
+    qreal viewportSide;
+
+    // Zoom factor is based on selection rectangle's longer side
+    if(rect.width() < rect.height()) {
+        rectLongerSide = rect.height();
+        viewportSide = canvasViewer->viewport()->height();
+    } else {
+        rectLongerSide = rect.width();
+        viewportSide = canvasViewer->viewport()->width();
+    }
+
+    if(rectLongerSide != 0.0) {
+        QPointF center = canvasViewer->mapToScene(startPos + rect.center().toPoint()) / getZoomFactor();
+        zoomBy(viewportSide/rectLongerSide);
+
+        center *= getZoomFactor();
+        canvasViewer->centerOn(center);
+        setPref(PREF_CENTER, center);
+    }
 }
 
 void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)

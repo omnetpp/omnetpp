@@ -24,6 +24,7 @@
 #include <QGraphicsView>
 
 class QGraphicsPixmapItem;
+class QRubberBand;
 
 namespace omnetpp {
 
@@ -50,6 +51,8 @@ private:
     bool notDrawn;
     bool needs_redraw;
     CanvasRenderer *canvasRenderer;
+    QRubberBand *rubberBand;
+    QPoint rubberBandStartPos;
 
     std::map<cModule*,QPointF> submodPosMap;  // recalculateLayout() fills this map
 
@@ -101,10 +104,11 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     bool event(QEvent *event) override; // for the alignTopLeft call in the PolishEvent
-    void contextMenuEvent(QContextMenuEvent * event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
     void scrollContentsBy(int dx, int dy) override;
 
     QRectF getSubmodulesRect();
@@ -118,6 +122,7 @@ signals:
     // the parameter will be the center of the view rectangle
     // (in scene coords, not in compound module coords, so scales with zoom)
     void dragged(QPointF);
+    void marqueeZoom(QRectF, QPoint);
 
 public slots:
     void relayoutAndRedrawAll();

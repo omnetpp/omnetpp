@@ -45,9 +45,6 @@ class QTENV_API ModuleInspector : public Inspector
 {
    Q_OBJECT
 
-   private:
-      bool isShiftKeyPressed;
-
    private slots:
       void runUntil();
       void fastRunUntil();
@@ -61,11 +58,10 @@ class QTENV_API ModuleInspector : public Inspector
 
       void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);
-      void keyPressEvent(QKeyEvent *event) override;
-      void keyReleaseEvent(QKeyEvent *event) override;
       void onViewerDragged(QPointF center);
       void createContextMenu(QContextMenuEvent *event);
       void onObjectsPicked(const std::vector<cObject*>&);
+      void onMarqueeZoom(QRectF rect, QPoint startPos);
 
       void layers();
       void toggleLabels();

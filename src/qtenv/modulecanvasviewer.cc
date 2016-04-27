@@ -42,6 +42,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QAction>
+#include <QRubberBand>
 
 #define emit
 
@@ -96,6 +97,8 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     viewport()->setCursor(Qt::ArrowCursor);
     setResizeAnchor(AnchorViewCenter);
 
+    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+
 #ifdef Q_WS_MAC
     // the zoom label was not correctly drawn without this
     setViewportUpdateMode(FullViewportUpdate);
@@ -148,15 +151,33 @@ void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
     case Qt::XButton2:   emit forward();    break;
     default:   /* shut up, compiler! */     break;
     }
-    QGraphicsView::mousePressEvent(event);
+
+    if(event->modifiers() & Qt::ControlModifier) {
+        rubberBandStartPos = event->pos();
+        rubberBand->setGeometry(QRect(rubberBandStartPos, QSize()));
+        rubberBand->show();
+    } else
+        QGraphicsView::mousePressEvent(event);
     viewport()->setCursor(Qt::ArrowCursor);
 }
 
 void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
+    if(rubberBand->isVisible()) {
+        emit marqueeZoom(rubberBand->rect(), rubberBandStartPos);
+        rubberBand->hide();
+    }
+
     viewport()->setCursor(Qt::ArrowCursor);
     emit dragged(mapToScene(viewport()->rect().center()));
+}
+
+void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event) {
+    if(rubberBand->isVisible() && event->modifiers() & Qt::ControlModifier)
+         rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
+    else
+        QGraphicsView::mouseMoveEvent(event);
 }
 
 void ModuleCanvasViewer::wheelEvent(QWheelEvent *event)
