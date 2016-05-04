@@ -62,6 +62,8 @@ protected:
     // assumed to be always centered around the origin.
     QRectF shapeImageBoundingRect() const;
 
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+
 protected slots:
     void onPositionChanged(); // keeping the range items underneath ourselves
 

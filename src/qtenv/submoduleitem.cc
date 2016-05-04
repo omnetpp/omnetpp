@@ -20,9 +20,12 @@
 #include <QGraphicsColorizeEffect>
 #include <omnetpp/cdisplaystring.h>
 #include <omnetpp/cqueue.h>
+#include "common/stringutil.h"
 
 namespace omnetpp {
 namespace qtenv {
+
+using namespace omnetpp::common;
 
 void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 {
@@ -98,11 +101,6 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     } else {
         si->setDecoratorImage(nullptr);
     }
-
-
-    const char *toolTip = ds.getTagArg("tt", 0);
-    si->setToolTip(toolTip);
-
 
     const char *text = ds.getTagArg("t", 0);
     const char *textPosition = ds.getTagArg("t", 1);
@@ -274,6 +272,7 @@ SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
     nameItem = new OutlinedTextItem(this, scene());
     queueItem = new OutlinedTextItem(this, scene());
     textItem = new OutlinedTextItem(this, scene());
+    setAcceptsHoverEvents(true);
 
     connect(this, SIGNAL(xChanged()), this, SLOT(onPositionChanged()));
     connect(this, SIGNAL(yChanged()), this, SLOT(onPositionChanged()));
@@ -493,6 +492,16 @@ void SubmoduleItem::onPositionChanged() {
     for (auto i : rangeItems) {
         i->setPos(pos());
     }
+}
+
+void SubmoduleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+    QString toolTip = QString("(") + getObjectShortTypeName(module) + ") " + module->getFullName() + ", " + module->info().c_str();
+    const char *userTooltip = module->getDisplayString().getTagArg("tt", 0);
+    if (!opp_isempty(userTooltip))
+        toolTip += QString("\n") + userTooltip;
+    setToolTip(toolTip);
+
+    QGraphicsObject::hoverEnterEvent(event);
 }
 
 } // namespace qtenv
