@@ -1,0 +1,48 @@
+%description:
+Verify overriding pattern assignment.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Sub
+{
+    parameters:
+        int p;
+}
+
+module Base
+{
+    parameters:
+        *.p = default(0);
+    submodules:
+        sub: Sub;
+}
+
+module Extended extends Base
+{
+    parameters:
+        *.p = default(1);
+}
+
+network Test
+{
+    submodules:
+        e: Extended;
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.e: Extended {
+            submodules:
+                module Test.e.sub: Sub {
+                    parameters:
+                        p = 1
+                }
+        }
+}
+
