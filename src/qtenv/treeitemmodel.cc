@@ -145,6 +145,8 @@ QVariant TreeItemModel::data(const QModelIndex& index, int role) const
     } else if (role == Qt::UserRole) {
         // returning the raw cObject* - needed to preserve object tree node expansion state
         return QVariant::fromValue(node);
+    } else if (role == Qt::ToolTipRole) {
+        return QString("(") + getObjectShortTypeName(node) + ") " + node->getFullName() + ", " + node->info().c_str();
     }
 
     return QVariant();
