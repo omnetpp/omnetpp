@@ -27,6 +27,7 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
 {
     private:
         simsignal_t busySignal;
+        bool allocated;
 
         SelectionStrategy *selectionStrategy;
 
@@ -46,6 +47,7 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
 
     public:
         virtual bool isIdle() override;
+        virtual void allocate();
 };
 
 }; //namespace

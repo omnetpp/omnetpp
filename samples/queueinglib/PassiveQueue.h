@@ -13,6 +13,7 @@
 #include "QueueingDefs.h"
 #include "IPassiveQueue.h"
 #include "SelectionStrategies.h"
+#include "Job.h"
 
 namespace queueing {
 
@@ -34,6 +35,7 @@ class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
         SelectionStrategy *selectionStrategy;
 
         void queueLengthChanged();
+        void sendJob(Job *job, int gateIndex);
 
     protected:
         virtual void initialize() override;

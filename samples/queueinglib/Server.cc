@@ -21,6 +21,7 @@ Server::Server()
     selectionStrategy = nullptr;
     jobServiced = nullptr;
     endServiceMsg = nullptr;
+    allocated = false;
 }
 
 Server::~Server()
@@ -37,6 +38,7 @@ void Server::initialize()
 
     endServiceMsg = new cMessage("end-service");
     jobServiced = nullptr;
+    allocated = false;
     selectionStrategy = SelectionStrategy::create(par("fetchingAlgorithm"), this, true);
     if (!selectionStrategy)
         throw cRuntimeError("invalid selection strategy");
@@ -46,10 +48,12 @@ void Server::handleMessage(cMessage *msg)
 {
     if (msg == endServiceMsg) {
         ASSERT(jobServiced != nullptr);
+        ASSERT(allocated);
         simtime_t d = simTime() - endServiceMsg->getSendingTime();
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = nullptr;
+        allocated = false;
         emit(busySignal, false);
 
         // examine all input queues, and request a new job from a non empty queue
@@ -61,8 +65,10 @@ void Server::handleMessage(cMessage *msg)
         }
     }
     else {
+        if (!allocated)
+            error("job arrived, but the sender did not call allocate() previously");
         if (jobServiced)
-            throw cRuntimeError("job arrived while already servicing one");
+            throw cRuntimeError("a new job arrived while already servicing one");
 
         jobServiced = check_and_cast<Job *>(msg);
         simtime_t serviceTime = par("serviceTime");
@@ -82,7 +88,12 @@ void Server::finish()
 
 bool Server::isIdle()
 {
-    return jobServiced == nullptr;
+    return !allocated;  // we are idle if nobody has allocated us for processing
+}
+
+void Server::allocate()
+{
+    allocated = true;
 }
 
 }; //namespace

@@ -24,8 +24,10 @@ class QUEUEING_API IServer
 {
     public:
         virtual ~IServer() { };
-        // indicate whether the service is currently idle (ie. no processing is done currently)
+        // indicates whether the service is currently idle (ie. no processing is pending or in progress currently)
         virtual bool isIdle() = 0;
+        // notify the server that we want to allocate it for a job. after calling this we MUST send a job via the server's input gate
+        virtual void allocate() = 0;
 };
 
 }; //namespace

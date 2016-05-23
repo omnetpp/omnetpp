@@ -9,6 +9,7 @@
 
 #include "PassiveQueue.h"
 #include "Job.h"
+#include "IServer.h"
 
 namespace queueing {
 
@@ -65,7 +66,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
     }
     else if (length() == 0) {
         // send through without queueing
-        send(job, "out", k);
+        sendJob(job, k);
     }
     else
         throw cRuntimeError("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
@@ -104,7 +105,14 @@ void PassiveQueue::request(int gateIndex)
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
     emit(queueingTimeSignal, d);
 
-    send(job, "out", gateIndex);
+    sendJob(job, gateIndex);
+}
+
+void PassiveQueue::sendJob(Job *job, int gateIndex)
+{
+    cGate *out = gate("out", gateIndex);
+    send(job, out);
+    check_and_cast<IServer *>(out->getPathEndGate()->getOwnerModule())->allocate();
 }
 
 }; //namespace
