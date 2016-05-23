@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.omnetpp.common.swt.custom;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.CloneableCompatibility;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.TextStyle;
 
 /**
  * <code>StyleRange</code> defines a set of styles for a specified
@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.CloneableCompatibility;
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public class StyleRange extends TextStyle implements CloneableCompatibility {
+public class StyleRange extends TextStyle implements Cloneable {
 
     /**
      * the start offset of the range, zero-based from the document start

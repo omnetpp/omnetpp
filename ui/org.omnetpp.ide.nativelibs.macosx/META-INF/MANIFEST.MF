@@ -6,3 +6,4 @@ Bundle-Version: 5.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.ide.nativelibs;bundle-version="[5.0.0,6.0.0)"
 Eclipse-PlatformFilter: (osgi.os=macosx)
+Eclipse-BundleShape: dir

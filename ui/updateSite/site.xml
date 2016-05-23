@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <description url="http://omnetpp.org/update/omnetppide">
-      OMNeT++ IDE Update Site
-   </description>
-   <feature url="features/org.omnetpp.ide.scave_4.0.0.200903311157.jar" id="org.omnetpp.ide.scave" version="4.0.0.200903311157" os="linux,macosx,win32" arch="x86,x86_64"/>
-</site>

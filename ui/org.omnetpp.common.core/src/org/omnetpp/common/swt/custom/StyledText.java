@@ -8809,8 +8809,9 @@ public void setJustify(boolean justify) {
 public void setKeyBinding(int key, int action) {
     checkWidget();
     int modifierValue = key & SWT.MODIFIER_MASK;
+    int keyInt = key & SWT.KEY_MASK;
     char keyChar = (char)(key & SWT.KEY_MASK);
-    if (Compatibility.isLetter(keyChar)) {
+    if (Character.isDefined(keyInt) && Character.isLetter(keyChar)) {
         // make the keybinding case insensitive by adding it
         // in its upper and lower case form
         char ch = Character.toUpperCase(keyChar);

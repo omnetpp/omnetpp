@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.omnetpp.ide"
-      label="OMNeT++ IDE - Base Features"
+      label="OMNeT++ IDE"
       version="5.0.0.qualifier"
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
@@ -9,27 +9,19 @@
       arch="x86,x86_64">
 
    <requires>
-      <import feature="org.eclipse.cdt"/>
-      <import feature="org.eclipse.emf.common"/>
-      <import feature="org.eclipse.emf.common.ui"/>
-      <import feature="org.eclipse.emf.ecore"/>
-      <import feature="org.eclipse.emf.ecore.edit"/>
-      <import feature="org.eclipse.emf.edit"/>
-      <import feature="org.eclipse.emf.edit.ui"/>
-      <import feature="org.eclipse.gef"/>
-      <import feature="org.eclipse.gmf.runtime.thirdparty"/>
-      <import feature="org.eclipse.platform"/>
+      <import feature="org.eclipse.platform" version="4.6.0.v20160606-1342"/>
+      <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.10.0.201606071959"/>
+      <import feature="org.eclipse.gmf" version="1.10.0.201606071959"/>
+      <import feature="org.eclipse.gef" version="3.11.0.201606061308"/>
+      <import feature="org.eclipse.emf.edit" version="2.12.0.v20160526-0356"/>
+      <import feature="org.eclipse.emf.ecore" version="2.12.0.v20160420-0247"/>
+      <import feature="org.eclipse.emf.ecore.edit" version="2.9.0.v20160526-0356"/>
+      <import feature="org.eclipse.emf.common" version="2.12.0.v20160420-0247"/>
+      <import feature="org.eclipse.cdt" version="9.0.0.201606062011"/>
    </requires>
 
    <plugin
-         id="org.apache.commons.codec"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.logging"
+         id="org.omnetpp.common.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -60,8 +52,7 @@
          id="org.omnetpp.ide.nativelibs"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.omnetpp.ide.nativelibs.linux.x86"
@@ -196,13 +187,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.common.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.visigoths.freemarker"
          download-size="0"
          install-size="0"
@@ -217,48 +201,6 @@
 
    <plugin
          id="org.swtworkbench.xswt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.common.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.common.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.draw2d.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.draw2d.ui.render"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.draw2d.ui.render.awt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.httpcomponents.httpclient"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -1,0 +1,49 @@
+<project>
+ <modelVersion>4.0.0</modelVersion>
+ <parent>
+  <groupId>org.omnetpp.ide</groupId>
+  <artifactId>org.omnetpp.ide.releng</artifactId>
+  <version>5.0.0-SNAPSHOT</version>
+ </parent>
+
+ <groupId>org.omnetpp.ide</groupId>
+ <artifactId>org.omnetpp.ide.product</artifactId>
+ <packaging>eclipse-repository</packaging>
+ <version>5.0.0-SNAPSHOT</version>
+
+ <build>
+  <plugins>
+   <plugin>
+    <groupId>org.eclipse.tycho</groupId>
+    <artifactId>tycho-p2-repository-plugin</artifactId>
+    <version>${tycho.version}</version>
+    <configuration>
+     <includeAllDependencies>true</includeAllDependencies>
+    </configuration>
+   </plugin>
+
+   <plugin>
+    <groupId>org.eclipse.tycho</groupId>
+    <artifactId>tycho-p2-director-plugin</artifactId>
+    <version>${tycho.version}</version>
+    <executions>
+     <execution>
+      <id>create-distribution</id>
+      <goals>
+       <goal>materialize-products</goal>
+       <goal>archive-products</goal>
+      </goals>
+     </execution>
+    </executions>
+    <configuration>
+       <products>
+         <product>
+           <id>org.${what}.ide.product</id>
+         </product>
+       </products>
+     </configuration>
+   </plugin>
+
+  </plugins>
+ </build>
+</project>

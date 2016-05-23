@@ -1,0 +1,4 @@
+#!/bin/sh
+# setting the version in pom.xml and MANIFEST.MF files
+# this must be executed in each project
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -DnewVersion=$1

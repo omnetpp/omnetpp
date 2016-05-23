@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/icons/about-image.png"/>
+      <text>
+         %aboutText
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-name
+&quot;OMNeT++ IDE&quot;
+      </programArgs>
+      <vmArgs>-Xms256m
+      </vmArgs>
+   </launcherArgs>
+
+   <windowImages i16="../../org.omnetpp.main/icons/logo16.png" i32="../../org.omnetpp.main/icons/logo32.png" i48="../../org.omnetpp.main/icons/logo48.png" i64="../../org.omnetpp.main/icons/logo64.png" i128="../../org.omnetpp.main/icons/logo128.png"/>
+
+   <splash
+      location="org.omnetpp.main.omnetpp"
+      startupProgressRect="10,10,298,10"
+      startupMessageRect="10,20,500,25"
+      startupForegroundColor="000000" />
+   <launcher name="omnetpp">
+      <linux icon="../../org.omnetpp.main/icons/logo.xpm"/>
+      <macosx icon="../../org.omnetpp.main/icons/logo.icns"/>
+      <solaris/>
+      <win useIco="true">
+         <ico path="../../org.omnetpp.main/icons/logo.ico"/>
+         <bmp/>
+      </win>
+   </launcher>
+
+   <intro introId="org.eclipse.ui.intro.universal"/>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.egit"/>
+      <feature id="org.eclipse.linuxtools.valgrind"/>
+      <feature id="org.omnetpp.ide.academic"/>
+      <feature id="org.omnetpp.ide.source"/>
+   </features>
+
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+   </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
+
+</product>

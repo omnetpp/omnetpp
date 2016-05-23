@@ -8,6 +8,7 @@ Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.variables,
  org.eclipse.ui,
+ org.eclipse.ui.browser,
  org.eclipse.ui.ide,
  org.eclipse.ui.console,
  org.eclipse.debug.core,
@@ -21,4 +22,3 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.launch,
  org.omnetpp.launch.tabs
-Import-Package: org.eclipse.ui.internal.browser

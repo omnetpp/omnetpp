@@ -14,7 +14,7 @@ package org.omnetpp.common;
  */
 public interface IConstants extends ICoreConstants {
     // whether this version is a COMMERCIAL build or not
-    public static final boolean IS_COMMERCIAL = true;
+    public static final boolean IS_COMMERCIAL = false;
 
     // fonts (use with JFaceResources.getFont(symbolicName); see JFaceResources for others)
     public static final String SMALL_FONT = "org.omnetpp.common.smallFont";

@@ -7,7 +7,6 @@ Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
  org.eclipse.jface
-Eclipse-LazyStart: true
 Export-Package: org.omnetpp.common.engine,
  org.omnetpp.common.engineext,
  org.omnetpp.eventlog.engine,
@@ -15,3 +14,5 @@ Export-Package: org.omnetpp.common.engine,
  org.omnetpp.ned.engine,
  org.omnetpp.scave.engine,
  org.omnetpp.scave.engineext
+Eclipse-LazyStart: true
+Eclipse-BundleShape: dir

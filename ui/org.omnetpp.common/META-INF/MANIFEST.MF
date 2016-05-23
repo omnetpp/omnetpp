@@ -8,12 +8,14 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.filesystem,
  org.eclipse.compare.core,
  org.eclipse.ui,
+ org.eclipse.ui.browser,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator,
  org.eclipse.ui.editors,
  org.eclipse.ui.views,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.jface.text,
+ org.junit,
  org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs,
  org.omnetpp.common.core;visibility:=reexport,
@@ -24,8 +26,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.batik.util;resolution:=optional,
  org.eclipse.gmf.runtime.draw2d.ui;resolution:=optional,
  org.eclipse.gmf.runtime.draw2d.ui.render;resolution:=optional,
- org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional,
- org.junit
+ org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional
 Export-Package: au.com.bytecode.opencsv,
  au.com.bytecode.opencsv.bean,
  org.apache.commons.codec,
@@ -198,4 +199,3 @@ Bundle-ClassPath: .,
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.common.CommonPlugin
 Eclipse-LazyStart: true
-Import-Package: org.eclipse.ui.internal.browser

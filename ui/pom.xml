@@ -1,0 +1,49 @@
+<project>
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>org.omnetpp.ide</groupId>
+ <artifactId>org.omnetpp.ide.root</artifactId>
+ <version>5.0.0-SNAPSHOT</version>
+ <packaging>pom</packaging>
+ <parent>
+   <groupId>org.omnetpp.ide</groupId>
+   <artifactId>org.omnetpp.ide.configuration</artifactId>
+   <version>5.0.0-SNAPSHOT</version>
+  <relativePath>./releng/org.omnetpp.ide.configuration</relativePath>
+ </parent>
+
+ <modules>
+    <module>org.omnetpp.cdt</module>
+    <module>org.omnetpp.cdt.msvc</module>
+    <module>org.omnetpp.common</module>
+    <module>org.omnetpp.common.core</module>
+    <module>org.omnetpp.doc</module>
+    <module>org.omnetpp.eventlogtable</module>
+    <module>org.omnetpp.figures</module>
+    <module>org.omnetpp.ide.nativelibs</module>
+    <module>org.omnetpp.ide.nativelibs.linux.x86</module>
+    <module>org.omnetpp.ide.nativelibs.linux.x86_64</module>
+    <module>org.omnetpp.ide.nativelibs.macosx</module>
+    <module>org.omnetpp.ide.nativelibs.win32.x86</module>
+    <module>org.omnetpp.inifile.editor</module>
+    <module>org.omnetpp.launch</module>
+    <module>org.omnetpp.main</module>
+    <module>org.omnetpp.main.omnest</module>
+    <module>org.omnetpp.main.omnetpp</module>
+    <module>org.omnetpp.msg.editor</module>
+    <module>org.omnetpp.ned.core</module>
+    <module>org.omnetpp.ned.editor</module>
+    <module>org.omnetpp.ned.model</module>
+    <module>org.omnetpp.neddoc</module>
+    <module>org.omnetpp.scave</module>
+    <module>org.omnetpp.scave.builder</module>
+    <module>org.omnetpp.scave.model</module>
+    <module>org.omnetpp.sequencechart</module>
+    <module>org.swtworkbench.xswt</module>
+    <module>org.visigoths.freemarker</module>
+    <module>org.visigoths.freemarker.ide</module>
+
+    <module>features</module>
+    <module>releng</module>
+ </modules>
+
+</project>

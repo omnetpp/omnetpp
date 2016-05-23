@@ -6,7 +6,6 @@ Bundle-Version: 0.3.1.omnetpp
 Bundle-Activator: freemarker.eclipse.FreemarkerPlugin
 Bundle-Vendor: Visigoth Software Society
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.runtime.compatibility,
  org.eclipse.core.resources,
  org.eclipse.debug.ui,
  org.eclipse.jface,

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.omnetpp.ide</groupId>
+  <artifactId>org.omnetpp.ide.configuration</artifactId>
+  <version>5.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <tycho.version>0.25.0</tycho.version>
+    <tycho.extras.version>0.25.0</tycho.extras.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <repo.url>http://download.eclipse.org/releases/neon</repo.url>
+    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.6</update-repo.url>
+  </properties>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>eclipse-tycho</id>
+      <url>https://oss.sonatype.org/content/repositories/public/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>eclipse-cbi</id>
+      <url>https://repo.eclipse.org/content/repositories/releases/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <id>main</id>
+      <url>${repo.url}</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>update</id>
+      <url>${update-repo.url}</url>
+      <layout>p2</layout>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <extensions>true</extensions>
+      </plugin>
+
+      <!-- build for the following platforms -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+         <environments>
+          <environment>
+           <os>linux</os><ws>gtk</ws><arch>x86</arch>
+          </environment>
+          <environment>
+           <os>linux</os><ws>gtk</ws><arch>x86_64</arch>
+          </environment>
+          <environment>
+           <os>win32</os><ws>win32</ws><arch>x86</arch>
+          </environment>
+          <environment>
+           <os>macosx</os><ws>cocoa</ws><arch>x86_64</arch>
+          </environment>
+         </environments>
+        </configuration>
+      </plugin>
+
+      <!-- enable source bundle generation -->
+      <plugin>
+         <groupId>org.eclipse.tycho</groupId>
+         <artifactId>tycho-source-plugin</artifactId>
+         <version>${tycho.version}</version>
+         <executions>
+           <execution>
+             <id>plugin-source</id>
+             <goals>
+               <goal>plugin-source</goal>
+             </goals>
+           </execution>
+         </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <!-- profiles for OMNeT++ and OMNEST builds. Should deal with all differences between the builds -->
+  <profiles>
+    <profile>
+      <id>omnetpp</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-sources</phase>
+                <configuration>
+                  <target>
+                    <replace dir="." token="##VERSION##" value="${VERSION}" />
+                    <replace dir="." token="##BUILDID##" value="${BUILDID}" />
+                    <!-- in org.omnetpp.common -->
+                    <replace dir="." token="IS_COMMERCIAL = true;" value="IS_COMMERCIAL = false;">
+                      <include name="**/*.java" />
+                    </replace>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>omnest</id>
+      <activation>
+        <property>
+          <name>what</name>
+          <value>omnest</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-sources</phase>
+                <configuration>
+                  <target>
+                    <replace dir="." token="##VERSION##" value="${VERSION}" />
+                    <replace dir="." token="##BUILDID##" value="${BUILDID}" />
+                    <replace dir="." token= "intro-omnetpp.png" value="intro-omnest.png" >
+                      <include name="plugin.xml" />
+                    </replace>
+                    <replace dir="." token= "OMNeT++" value="OMNEST" >
+                      <include name="**/*.properties" />
+                      <include name="**/*.java" />
+                      <include name="**/*.htm" />
+                      <include name="**/*.html" />
+                      <include name="**/*.xml" />
+                      <include name="META-INF/MANIFEST.MF" />
+                    </replace>
+                    <replace dir="." token="OMNEST/OMNEST" value="OMNeT++/OMNEST"> <!-- replace back as the previous replace could create OMNEST/OMNEST from the string OMNeT++/OMNEST -->
+                      <include name="**/*.properties" />
+                      <include name="**/*.java" />
+                      <include name="**/*.htm" />
+                      <include name="**/*.html" />
+                      <include name="**/*.xml" />
+                      <include name="META-INF/MANIFEST.MF" />
+                    </replace>
+                    <replace dir="." token="Academic Edition, not for commercial use" value="Commercial Edition">
+                      <include name="**/*.xml" />
+                    </replace>
+                    <!-- in org.omnetpp.common -->
+                    <replace dir="." token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
+                      <include name="**/*.java" />
+                    </replace>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

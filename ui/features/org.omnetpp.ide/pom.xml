@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.omnetpp.ide</groupId>
+  <artifactId>org.omnetpp.ide</artifactId>
+  <version>5.0.0-SNAPSHOT</version>
+  <packaging>eclipse-feature</packaging>
+
+  <parent>
+    <groupId>org.omnetpp.ide</groupId>
+    <artifactId>features</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-source-feature-plugin</artifactId>
+        <version>${tycho.extras.version}</version>
+        <configuration>
+          <excludes>
+            <plugin id="org.omnetpp.ide.nativelibs.linux.x86"/>
+            <plugin id="org.omnetpp.ide.nativelibs.linux.x86_64"/>
+            <plugin id="org.omnetpp.ide.nativelibs.win32.x86"/>
+            <plugin id="org.omnetpp.ide.nativelibs.macosx"/>
+            <plugin id="org.omnetpp.doc"/>
+          </excludes>
+          <includeBinaryFeature>false</includeBinaryFeature>
+        </configuration>
+        <executions>
+          <execution>
+            <id>source-feature</id>
+            <phase>package</phase>
+            <goals>
+              <goal>source-feature</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <executions>
+          <execution>
+            <id>attach-p2-metadata</id>
+            <phase>package</phase>
+            <goals>
+              <goal>p2-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

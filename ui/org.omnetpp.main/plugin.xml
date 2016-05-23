@@ -15,7 +15,7 @@
           		value="Introduction to OMNeT++"/>
           <property
           		name="introBrandingImage"
-			value="product:/icons/intro-image.png"/>
+			value="product:/icons/intro-omnetpp.png"/>
           <property
           		name="introBrandingImageText"
           		value="OMNeT++ Simulation Environment"/>

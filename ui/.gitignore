@@ -1,0 +1,4 @@
+# ignore output of the tycho build process
+*/target/*
+releng/*/target/*
+features/*/target/*

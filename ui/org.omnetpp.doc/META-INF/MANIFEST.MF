@@ -4,6 +4,7 @@ Bundle-Name: OMNeT++ Help
 Bundle-SymbolicName: org.omnetpp.doc;singleton:=true
 Bundle-Version: 5.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
+Eclipse-BundleShape: dir
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.intro,
  org.eclipse.ui.intro.universal,
