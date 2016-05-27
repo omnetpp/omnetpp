@@ -40,7 +40,7 @@ To install the required packages, type in the terminal:
 
   $ sudo apt-get install build-essential gcc g++ bison flex perl \
        tcl-dev tk-dev libxml2-dev zlib1g-dev default-jre \
-       doxygen graphviz libwebkitgtk-1.0-0
+       doxygen graphviz libwebkitgtk-3.0-0
 
 To use Qtenv with 3D visualization support, install the development packages
 for Qt4, OpenSceneGraph (3.2) and the osgEarth (2.5 or later) packages:
@@ -79,7 +79,7 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 The packages:
 
 * required: build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, libxml2-dev,
-zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-1.0-0
+zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-3.0-0
 * recommended: qt4-qmake, libqt4-dev, libqt4-opengl-dev, openscenegraph,
 libopenscenegraph-dev, openscenegraph-plugin-osgearth, osgearth,
 osgearth-data, libosgearth-dev, openmpi-bin, libopenmpi-dev
