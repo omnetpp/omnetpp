@@ -36,6 +36,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -304,8 +305,12 @@ public class ImageFactory {
 
         for (IPath dir : imagePath) {
             URI uri = URIUtil.toURI(dir);
-            IContainer[] containers = workspace.getRoot().findContainersForLocationURI(uri);
-            folders.addAll(Arrays.asList(containers));
+            try {
+                IContainer[] containers = workspace.getRoot().findContainersForLocationURI(uri);
+                folders.addAll(Arrays.asList(containers));
+            } catch (IllegalArgumentException e) {
+                CommonPlugin.log(IStatus.ERROR, "Invalid path segment in OMNETPP_IMAGE_PATH: '" + dir.toOSString()+"'");
+            }
         }
 
         workspaceFoldersInPath = folders.toArray(new IContainer[folders.size()]);

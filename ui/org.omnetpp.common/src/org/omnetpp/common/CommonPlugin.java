@@ -141,7 +141,7 @@ public class CommonPlugin extends AbstractUIPlugin {
     public static ScopedPreferenceStore getConfigurationPreferenceStore() {
         // Create the preference store lazily.
         if (getDefault().configPreferenceStore == null) {
-            getDefault().configPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(), PLUGIN_ID);
+            getDefault().configPreferenceStore = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, PLUGIN_ID);
         }
         return getDefault().configPreferenceStore;
     }
