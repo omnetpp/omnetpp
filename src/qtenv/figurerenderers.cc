@@ -1122,9 +1122,11 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 
             case 'c': {
                 const cPathFigure::CubicBezierCurveRel *bezierRel = static_cast<const cPathFigure::CubicBezierCurveRel*>(command);
-                controlPoint = cFigure::Point(bezierRel->dx2, bezierRel->dy2);
-                painter.cubicTo(bezierRel->dx1, bezierRel->dy1, bezierRel->dx2, bezierRel->dy2, pos.x() + bezierRel->dx,
-                        pos.y() + bezierRel->dy);
+                QPointF controlPoint1(pos.x() + bezierRel->dx1, pos.y() + bezierRel->dy1);
+                QPointF controlPoint2(pos.x() + bezierRel->dx2, pos.y() + bezierRel->dy2);
+                QPointF endPoint(pos.x() + bezierRel->dx, pos.y() + bezierRel->dy);
+                controlPoint = cFigure::Point(controlPoint2.x(), controlPoint2.y());
+                painter.cubicTo(controlPoint1, controlPoint2, endPoint);
                 break;
             }
 
@@ -1152,8 +1154,6 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     }
 
     pathItem->setPath(painter);
-    cFigure::Point offset = pathFigure->getOffset();
-    pathItem->setTransform(QTransform().scale(offset.x, offset.y)); // XXX FIXME scale?! why?!
 }
 
 void PathFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
