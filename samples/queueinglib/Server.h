@@ -47,7 +47,7 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
 
     public:
         virtual bool isIdle() override;
-        virtual void allocate();
+        virtual void allocate() override;
 };
 
 }; //namespace
