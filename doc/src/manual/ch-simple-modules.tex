@@ -218,13 +218,12 @@ simtime_t timeout = (simTime() + SimTime(340, SIMTIME_US)).trunc(SIMTIME_MS);
 
 The implementation of the FES\index{FES} is a crucial factor in the
 performance of a discrete event simulator. In {\opp}, the FES is
-implemented with \textit{binary heap}\index{binary heap}, the most
-widely used data structure for this purpose. Heap is generally considered the best
-algorithm, although exotic data structures like
-\textit{skiplist}\index{skiplist} may perform better than heap in some
-cases. In case you are interested, the FES implementation is in the
-\cclass{cEventHeap} class, but knowledge of the FES implementation is
-not necessary for the typical simulation programmer.
+replaceable, and the default FES implementation uses \textit{binary
+heap}\index{binary heap} as data structure. Binary heap is generally
+considered to be the best FES algorithm for discrete event simulation, as
+it provides a good, balanced performance for most workloads. (Exotic data
+structures like \textit{skiplist}\index{skiplist} may perform better than
+heap in some cases.)
 
 
 \section{Components, Simple Modules, Channels}
@@ -1052,18 +1051,17 @@ a transport layer protocol might look like this:
 \}
 \end{Verbatim}
 
-If you have to handle several connections simultaneously, you may
-dynamically create them as instances of the simple module above.
-Dynamic module creation will be discussed later.
+If there is a need to handle several connections concurrently, dynamically creating
+simple modules to handle each is an option. Dynamic module creation will be discussed
+later.
 
 There are situations when you certainly \textit{do not want} to use \ffunc{activity()}.
-If your \ffunc{activity()} function contains no \ffunc{wait()} and it has
-only one \ffunc{receive()} call at the top of an infinite loop,
-there is no point in using \ttt{activity()} and the code should be written
-with \ttt{handleMessage()}.
-The body of the infinite loop would then become the body to \ffunc{handleMessage()},
+If the \ffunc{activity()} function contains no \ffunc{wait()} and it has only one 
+\ffunc{receive()} at the top of a message handling loop, there is no point in 
+using \ttt{activity()}, and the code should be written with \ttt{handleMessage()}.
+The body of the loop would then become the body of \ffunc{handleMessage()},
 state variables inside \ffunc{activity()} would become data members in
-the module class, and you'd initialize them in \ffunc{initialize()}.
+the module class, and they would be initialized in \ffunc{initialize()}.
 
 Example:
 
@@ -1094,18 +1092,17 @@ void Sink::handleMessage(cMessage *msg)
 \ffunc{activity()} is run in a coroutine\index{coroutine}.
 Coroutines are similar to threads, but are scheduled
 non-preemptively (this is also called cooperative
-multitasking\index{multitasking!cooperative}). From one coroutine you
-can switch to another coroutine by a
-\ttt{transferTo(otherCoroutine)} call. Then this
-coroutine is suspended and \textit{otherCoroutine} will run. Later,
-when \textit{otherCoroutine} does a
-\ttt{transferTo(firstCoroutine)} call, execution of
-the first coroutine will resume from the point of the
-\ttt{transferTo(otherCoroutine)} call.  The full state
-of the coroutine, including local variables are preserved while the
+multitasking\index{multitasking!cooperative}). 
+One can switch from one coroutine to another coroutine by a
+\ttt{transferTo(otherCoroutine)} call, causing the first coroutine
+to be suspended and second one to run. Later, when the 
+second coroutine performs a \ttt{transferTo(firstCoroutine)} call
+to the first one, the execution of the first coroutine will resume
+from the point of the \ttt{transferTo(otherCoroutine)} call. 
+The full state of the coroutine, including local variables are preserved while the
 thread of execution is in other coroutines.  This implies that each
-coroutine must have its own processor stack\index{stack}, and
-\ffunc{transferTo()} involves a switch from one processor stack to
+coroutine has its own CPU stack\index{stack}, and
+\ffunc{transferTo()} involves a switch from one CPU stack to
 another.
 
 Coroutines\index{coroutine} are at the heart of {\opp}, and the
@@ -1114,7 +1111,6 @@ or other functions in the coroutine library, nor does he need to care
 about the coroutine library implementation. It is important to
 understand, however, how the event loop found in discrete event simulators
 works with coroutines.
-
 
 When using coroutines, the event loop\index{event loop} looks like
 this (simplified):
@@ -1200,15 +1196,14 @@ functions are called.
 \subsubsection{Coroutine Stack Size}
 \label{sec:simple-modules:activity:stack-size}
 
-The simulation programmer needs to define the processor stack size\index{coroutine!stack size}
+The simulation programmer needs to define the CPU stack size\index{coroutine!stack size}
 for coroutines. This cannot be automated.
 
-16 or 32 kbytes is usually a good choice, but you may need more if the
-module uses recursive functions or has local variables, which occupy a
-lot of stack space. {\opp} has a built-in mechanism that will usually
-detect if the module stack is too small and overflows\index{stack!overflow}.
-{\opp} can also tell you how much stack space a module actually uses\index{stack!usage},
-so you can find out if you overestimated the stack needs.
+16 or 32 kbytes is usually a good choice, but more space may be needed 
+if the module uses recursive functions or has many/large local variables.
+{\opp} has a built-in mechanism that will usually detect if the module stack
+is too small and overflows\index{stack!overflow}. {\opp} can also report how
+much stack space a module actually uses\index{stack!usage} at runtime.
 
 
 \subsubsection{initialize() and finish() with activity()}
@@ -1269,12 +1264,12 @@ Pros:
 Cons:
 \begin{itemize}
    \item{limited scalability: coroutine stacks can unacceptably increase the
-       memory requirements of the simulation program if you have several
-       thousands or ten thousands of simple modules;}
-   \item{run-time overhead: switching between coroutines is somewhat slower
-       than a simple function call}
-   \item{does not enforce a good programming style: using \ttt{activity()}
-       tends to lead to unreliable, spaghetti code}
+       memory requirements of the simulation program if there are many
+       \ttt{activity()}-based simple modules;}
+   \item{run-time overhead: switching between coroutines is slower than 
+       a simple function call}
+   \item{does not encourage a good programming style: as module complexity
+       grows, \ttt{activity()} tends to become a large, monolythic function.}
 \end{itemize}
 
 In most cases, cons outweigh pros and it is a better idea to use
@@ -1308,9 +1303,9 @@ static class members. They are prone to cause several problems.
 First, they are not reset to their initial values (to zero)
 when you rebuild the simulation in Tkenv/Qtenv, or start another run
 in Cmdenv. This may produce surprising results.
-Second, they prevent you from running your simulation in parallel.
-When using parallel simulation, each partition of your model
-(may) run in a separate process, having its own copy of the
+Second, they prevent you from parallelizing the simulation.
+When using parallel simulation, each partition of the model
+runs in a separate process, having their own copies of
 global variables. This is usually not what you want.
 
 The solution is to encapsulate the variables into simple modules
@@ -1394,10 +1389,9 @@ but otherwise the two are interchangeable.
 
 If you use the \ttt{par("foo")} parameter in expressions (such as
 \ttt{4*par("foo")+2}), the C++ compiler may be unable to decide
-between overloaded operators and report ambiguity. In that case
-you have to clarify by adding either an explicit cast
-(\ttt{(double)par("foo")} or \ttt{(long)par("foo")}) or use
-the \ffunc{doubleValue()} or \ffunc{longValue()} methods.
+between overloaded operators and report ambiguity. This issue can be
+resolved by adding an explicit cast such as \ttt{(double)par("foo")}, 
+or using the \ffunc{doubleValue()} or \ffunc{longValue()} methods.
 
 
 \subsection{Volatile and Non-Volatile Parameters}
@@ -2976,11 +2970,11 @@ in the ini file (see later).
 \subsection{Raising Errors}
 \label{sec:simple-modules:raising-errors}
 
-If your simulation encounters an error condition, you can throw a
-\ttt{cRuntimeError} exception to terminate the simulation with
-an error message (and in case of Cmdenv, a nonzero exit code).
-The \ttt{cRuntimeError} class has a constructor whose argument list
-is similar to \ffunc{printf()}:
+When the simulation encounters an error condition, it can throw a
+\ttt{cRuntimeError} exception to terminate the simulation with an error
+message. (Under Cmdenv, the exception also causes a nonzero program exit
+code). The \ttt{cRuntimeError} class has a constructor with a
+\ffunc{printf()}-like argument list. An example:
 
 \begin{cpp}
 if (windowSize <= 0)
@@ -2990,8 +2984,8 @@ if (windowSize <= 0)
 Do not include newline (\ttt{{\textbackslash}n}), period or exclamation mark
 in the error text; it will be added by {\opp}.
 
-You can achieve the same effect by calling the \ffunc{error()} method of
-\cclass{cModule}
+The same effect can be achieved by calling the \ffunc{error()} method of
+\cclass{cModule}:
 
 \begin{cpp}
 if (windowSize <= 0)
@@ -3061,9 +3055,8 @@ enum {
 };
 \end{cpp}
 
-The actual FSM is embedded in a switch-like statement,
-\fmac{FSM\_Switch()}, where you have cases for entering and leaving
-each state:
+The actual FSM is embedded in a switch-like statement, \fmac{FSM\_Switch()},
+with cases for entering and leaving each state:
 
 \begin{cpp}
 FSM_Switch(fsm)
@@ -3117,18 +3110,15 @@ FSM GenState: entering state SLEEP
 ...
 \end{filelisting}
 
-To enable the above output, you have to \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG}
-before including \ttt{omnetpp.h}.
+To enable the above output, define \fmac{FSM\_DEBUG} before including \ttt{omnetpp.h}.
 
 \begin{cpp}
 #define FSM_DEBUG    // enables debug output from FSMs
 #include <omnetpp.h>
 \end{cpp}
 
-The actual logging is done via the \fmac{FSM\_Print()} macro.
-It is currently defined as follows, but you can change the
-output format by undefining \ttt{FSM\_Print()} after including
-\ffilename{omnetpp.ini} and providing a new definition instead.
+FSMs perform their logging via the \fmac{FSM\_Print()} macro, defined as
+something like this:
 
 \begin{cpp}
 #define FSM_Print(fsm,exiting)
@@ -3137,14 +3127,16 @@ output format by undefining \ttt{FSM\_Print()} after including
       << (fsm).getStateName() << endl)
 \end{cpp}
 
+The log output format can be changed by undefining \ttt{FSM\_Print()} after the
+inclusion of \ffilename{omnetpp.ini}, and providing a new definition.
+
 
 \subsubsection{Implementation}
 \label{sec:simple-modules:fsm-implementation}
 
-The \fmac{FSM\_Switch()} is a macro. It expands to a \ffunc{switch()}
+\fmac{FSM\_Switch()} is a macro. It expands to a \ttt{switch}
 statement embedded in a \ffunc{for()} loop which repeats until the
-FSM\index{FSM} reaches a steady state. (The actual code is rather
-scary, but if you are dying to see it, it is in \texttt{cfsm.h}.)
+FSM reaches a steady state.
 
 Infinite loops are avoided by counting state transitions: if
 an FSM goes through 64 transitions without reaching a steady
@@ -3412,8 +3404,7 @@ To determine the module at the other end of a connection, use
 cModule *neighbour = gate("out")->getNextGate()->getOwnerModule();
 \end{cpp}
 
-For input gates, you would use \ffunc{getPreviousGate()} instead of
-\ffunc{getNextGate()}.
+For input gates, use \ffunc{getPreviousGate()} instead of \ffunc{getNextGate()}.
 
 The endpoints of the connection path are returned by the
 \ffunc{getPathStartGate()} and \ffunc{getPathEndGate()} \cclass{cGate}
@@ -3511,29 +3502,21 @@ void Foo::doSomething()
 \subsection{When To Use}
 \label{sec:simple-modules:dynamic-creation:when-to-use}
 
-In some situations you need to dynamically create and maybe destroy
-modules. For example, when simulating a mobile network,
-you may create a new module whenever a new user enters
-the simulated area, and dispose of them when they leave the area.
+Certain simulation scenarios require the ability to dynamically create
+and destroy modules. For example, simulating the arrival and departure
+of new users in a mobile network may be implemented in terms of adding
+and removing modules during the course of the simulation. Loading and
+instantiating network topology (i.e. nodes and links) from a data file
+is another common technique enabled by dynamic module (and link) creation.
 
-As another example, when implementing a server or a transport
-protocol, it might be convenient to dynamically create modules
-to serve new connections, and dispose of them when the connection
-is closed. (You would write a manager module that receives connection
-requests and creates a module for each connection.
-The Dyna example simulation does something like that.)
-
-Both simple and compound modules can be created dynamically.
-If you create a compound module, all its submodules will be created
-recursively.
-
-It is often convenient to use direct message sending with dynamically
-created modules.
+{\opp} allows both simple and compound modules to be created at runtime.
+When instantiating a compound module, its full internal structure
+(submodules and internal connections) is reproduced.
 
 Once created and started, dynamic modules aren't any different from
-``static'' modules; for example, one could also delete static modules
-during simulation (though it is rarely useful.)
+``static'' modules.
 
+%%TODO they will pick up parameters from the NED/ini file?? via @dynamic
 
 \subsection{Overview}
 \label{sec:simple-modules:dynamic-creation:overview}
@@ -3589,7 +3572,7 @@ cModuleType *moduleType = cModuleType::get("foo.nodes.WirelessNode");
 \end{cpp}
 
 The return value does not need to be checked for \ttt{nullptr}, because
-the function raises an error if the requested NED type was not found.
+the function raises an error if the requested NED type is not found.
 (If this behavior is not what you need, you can use the similar
 \ttt{cModuleType::find()} function, which returns \ttt{nullptr} if the type
 was not found.)
@@ -3751,12 +3734,12 @@ outGate->connectTo(inGate, channel);
 \end{cpp}
 
 The channel object will be owned by the source gate of the connection, and
-you cannot reuse the same channel object with several connections.
+one cannot reuse the same channel object with several connections.
 
-If you need one of the built-in channel types (\cclass{cIdealChannel},
-\cclass{cDelayChannel} or \cclass{cDatarateChannel}), the step to find the
-factory object can be spared, as those classes have static \ffunc{create()}
-functions to create a channel instance. Alternatively, one can use
+Instantiating one of the built-in channel types (\cclass{cIdealChannel},
+\cclass{cDelayChannel} or \cclass{cDatarateChannel}) is somewhat simpler,
+because those classes have static \ffunc{create()} factory functions, and the
+step of finding the factory object can be spared. Alternatively, one can use
 \cclass{cChannelType}'s \ffunc{createIdealChannel()}, \ffunc{createDelayChannel()}
 and \ffunc{createDatarateChannel()} static methods.
 
@@ -4017,7 +4000,7 @@ simple Queue
 }
 \end{ned}
 
-As you can see, signals are declared with the \fprop{@signal} property on
+Signals are declared with the \fprop{@signal} property on
 the module or channel that emits it. (NED properties are described in
 \ref{sec:ned-lang:properties}). The property index corresponds
 to the signal name, and the property's body may declare various attributes
@@ -4047,31 +4030,31 @@ simple PPP
 }
 \end{ned}
 
-The property index may contain wildcards, which is important if you want
-to declare signals whose names are only known at runtime. For example, if
-a module emits signals called \ttt{session-1-seqno}, \ttt{session-2-seqno},
-\ttt{session-3-seqno}, etc. for the individual sessions it handles, you
-can declare those signals as:
+The property index may contain wildcards, which is important for declaring
+signals whose names are only known at runtime. For example, if a module emits
+signals called \ttt{session-1-seqno}, \ttt{session-2-seqno}, \ttt{session-3-seqno},
+etc., those signals can be declared as:
 
 \begin{ned}
     @signal[session-*-seqno]();
 \end{ned}
 
 
-\subsubsection{Enabling Signal Checking}
+\subsubsection{Enabling/Disabling Signal Checking}
 \label{sec:simple-modules:enabling-signal-checking}
 
-In {\opp} 4.x, signal checking is turned off by default. You can turn it
-on with the \fconfig{check-signals} configuration option in \ttt{omnetpp.ini}:
+Starting with {\opp} 5.0, signal checking is turned on by default when the
+simulation kernel is compiled in debug mode, requiring all signals to be
+declared with \fprop{@signal}. (It is turned off in release mode
+simulation kernels due to performance reasons.)
+
+If needed, signal checking can be disabled with the \fconfig{check-signals}
+configuration option:
 
 \begin{inifile}
-check-signals = true
+check-signals = false
 \end{inifile}
 
-It is expected that starting with {\opp} 5.0, signal checking will be
-turned on by default when the simulation kernel is compiled in debug mode.
-It will continue to be turned off in release mode simulation kernels due to
-performance reasons.
 
 
 \subsubsection{Signal Data Objects}

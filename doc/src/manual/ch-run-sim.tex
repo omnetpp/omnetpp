@@ -155,7 +155,7 @@ the need to explicitly link against that library. This approach has several adva
     without the need of linking or compiling.
 \end{itemize}
 
-Use the \ttt{-l libraryname} command line option to load a library dynamically.
+Use the \ttt{-l <libraryname>} command line option to load a library dynamically.
 {\opp} will attempt to load it using the \ffunc{dlopen()} or \ffunc{LoadLibrary()} functions and
 automatically registers all simple modules in the library.
 
@@ -604,7 +604,7 @@ given in the \ttt{runs.ini} file.
 
 Before you execute your simulation batch, you may check how many
 runs are available in the configuration you are using. Use the
-\ttt{-x config} command line option to print the number of runs or
+\ttt{-x <config>} command line option to print the number of runs or
 add the \ttt{-g} to get more details.
 
 \begin{filelisting}

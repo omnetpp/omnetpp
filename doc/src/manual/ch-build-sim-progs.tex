@@ -70,27 +70,26 @@ in subdirectories.
 The most important options are:
 
 \begin{itemize}
-    \item{\ttt{-f, -{}-force} : Force overwriting existing Makefile}
-    \item{\ttt{-o filename} : Name of simulation executable or library to be built.}
-    \item{\ttt{-O directory, -{}-out directory} : Specifies the name of the output directory tree
-                          for out-of-directory build}
-    \item{\ttt{-{}-deep} : Generates a "deep" Makefile. A deep Makefile will
+    \item \ttt{-f, -{}-force} : Force overwriting existing Makefile
+    \item \ttt{-o <filename>} : Name of simulation executable or library to be built.
+    \item \ttt{-O <directory>}, \ttt{-{}-out <directory>} :
+                          Specifies the name of the output directory tree for out-of-directory build
+    \item \ttt{-{}-deep} : Generates a "deep" Makefile. A deep Makefile will
                           cover the whole source tree under the make directory,
-                          not just files in that directory.}
-    \item{\ttt{-r, -{}-recurse} : Causes make to recursively descend into all subdirectories;
-                          subdirectories are expected to contain Makefiles themselves.}
-    \item{\ttt{-X directory, -Xdirectory, -{}-except directory} :
-                          With \ttt{-r} and \ttt{-{}-deep} option: ignore the given directory.}
-    \item{\ttt{-dsubdir, -d subdir, -{}-subdir subdir} :
+                          not just files in that directory.
+    \item \ttt{-r, -{}-recurse} : Causes make to recursively descend into all subdirectories;
+                          subdirectories are expected to contain Makefiles themselves.
+    \item \ttt{-X <directory>}, \ttt{-X<directory>}, \ttt{-{}-except <directory>} :
+                          With \ttt{-r} or \ttt{-{}-deep}: ignore the given directory.
+    \item \ttt{-d<subdir>}, \ttt{-d <subdir>}, \ttt{-{}-subdir <subdir>} :
                           Causes make to switch to the given directory and invoke
-                          a Makefile in that directory.}
-    \item{\ttt{-n, -{}-nolink} :  Produce object files but do not create executable or
-                          library.}
-    \item{\ttt{-s, -{}-make-so} : Build shared library (.so, .dll or .dylib).}
-    \item{\ttt{-a, -{}-make-lib} : Create static library (.a or .lib).}
-    \item{\ttt{-Idir} :   Additional NED and C++ include directory.}
-    \item{\ttt{-Ldir} :   Add a directory to the library path.}
-    \item{\ttt{-llibrary} : Additional library to link against.}
+                          a Makefile in that directory.
+    \item \ttt{-n, -{}-nolink} : Produce object files but do not create an executable or library.
+    \item \ttt{-s, -{}-make-so} : Build shared library (\ttt{.so}, \ttt{.dll} or \ttt{.dylib}).
+    \item \ttt{-a, -{}-make-lib} : Create static library (\ttt{.a} or \ttt{.lib}).
+    \item \ttt{-I<dir>} : Additional C++ include directory.
+    \item \ttt{-L<dir>} : Add a directory to the library path.
+    \item \ttt{-l<library>} : Additional library to link against.
 \end{itemize}
 
 
@@ -175,14 +174,27 @@ $ make V=1
 \subsection{Using External C/C++ Libraries}
 \label{sec:build-sim-progs:using-external-libraries}
 
-If you are using external libraries you should specify the include path for the header files
-with the \ttt{-I} \textit{includedir} option. You should specify this option if you are using
-anything outside of the source directory tree (except the system and {\opp} headers which are
-always included automatically)
+If the simulation model relies on an external library, the following
+\fprog{opp\_makemake} options can be used to make the simulation
+link with the library.
 
-To define an external library to be linked with, use \ttt{-Ldir} to specify
-the directory of the external library and \ttt{-llibrary} to specify the name of the
-external dependency.
+\begin{itemize}
+  \item Use the \ttt{-I<dir>} option to specify the location of
+        the header files. The directory will be added to the compiler's
+        include path. This option is not needed if the header files are
+        at a standard location, e.g. installed under \ttt{/usr/include}
+        on Linux.
+  \item Use the \ttt{-L<dir>} to specify the location of the binaries
+        (static or shared library files.) Again, this option is not needed
+        if the binaries are at a standard place, e.g. under \ttt{/usr/lib}.
+  \item Use the \ttt{-l<libname>} to specify the name of the library.
+        The name is normally the file name without the \ttt{lib} prefix and
+        the file name extension (e.g. \ttt{.a}, \ttt{.so}, \ttt{.dylib}).
+\end{itemize}
+
+For example, linking with a hypothetical \textit{Foo} library installed under
+\ttt{opt/} might require the following additional \fprog{opp\_makemake} options:
+\ttt{-I/opt/foo/include -L/opt/foo/lib -lfoo}.
 
 
 \subsection{Building Directory Trees}
@@ -230,7 +242,7 @@ if there are several \ttt{common.h} file in the project, use includes like
 \begin{note}
 With large projects and projects that are intended to be used by other
 projects, it is not recommended to use the automatic include directories
-feature. Dependent projects may contain header files with conficting names,
+feature. Dependent projects may contain header files with conflicting names,
 leading to unexpected errors in the build process.
 \end{note}
 
@@ -295,6 +307,9 @@ This option will cause the \ttt{<symbol>\_EXPORT} macro will be passed to
 the compiler, causing \ttt{<symbol>\_API} to be defined as \ttt{\_\_declspec(dllexport)} in
 the sources. This step allows Visual C++ to correctly generate DLL exports in Windows.
 \end{note}
+
+%% TODO meg amit pluszban be kell tenni a headerbe!!!
+
 \fi
 
 
@@ -312,8 +327,8 @@ for top level Makefiles.
 The \ttt{-{}-recurse} option automatically discovers subdirectories, but this
 is sometimes inconvenient. Your source directory tree may contain
 parts which need their own hand written Makefile. This can happen if
-you include source files from an other non {\opp} project. With the \ttt{-d dir}
-or \ttt{-{}-subdir dir} option, you can explicitly specify which directories to
+you include source files from an other non {\opp} project. With the \ttt{-d <dir>}
+or \ttt{-{}-subdir <dir>} option, you can explicitly specify which directories to
 recurse into, and also, the directories need not be direct children of the
 current directory.
 
@@ -435,7 +450,7 @@ test_dir: contrib_dir
 Now the last step is to create a top-level Makefile in the root of the project that
 calls the previously created Makefiles in the correct order. We will use the
 \ttt{-{}-nolink} option, exclude every subdirectory from the build (\ttt{-X.}), and explicitly call
-the above Makefiles using \ttt{-d dirname}. \ttt{opp\_makemake} will automatically include
+the above Makefiles using \ttt{-d <dirname>}. \ttt{opp\_makemake} will automatically include
 the above created \ttt{makefrag} file.
 
 \begin{commandline}

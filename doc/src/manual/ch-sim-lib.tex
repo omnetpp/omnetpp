@@ -490,6 +490,8 @@ displayed or recorded anywhere. The \ttt{cEnvir::isLoggingEnabled()} call
 returns false when the output is disabled, such as in ``express'' mode. Thus,
 one can write code like this:
 
+%FIXME a fenti valszeg nem igaz!
+
 \begin{cpp}
 if (!getEnvir()->isLoggingEnabled())
     EV_DEBUG << "CRC: " << computeExpensiveCRC(packet) << endl;
@@ -2997,14 +2999,17 @@ virtual functions.
 \label{sec:sim-lib:cobject-virtual-methods}
 
 Most classes in the simulation class library are descendants of
-\cclass{cObject}. If you want to derive a new class from
-\cclass{cObject} or a \cclass{cObject} descendant, you must redefine
-some member functions so that objects of the new type can fully
-co-operate with other parts of the simulation system. A more or less
-complete list of these functions is presented here. You don't need to
-worry about the length of the list: most functions are not
-absolutely necessary to implement. For example, you do not need to
-redefine \ffunc{forEachChild()} unless your class is a container class.
+\cclass{cObject}. When deriving a new class from \cclass{cObject}
+or a \cclass{cObject} descendant, one must redefine certain member
+functions so that objects of the new class can fully co-operate
+with the simulation library classes. A list of those methods is
+presented below.
+
+\begin{note}
+You don't need to worry about the length of the list: most functions
+are not always required to implement. For example, \ffunc{forEachChild()}
+is only important if the new class is a container.
+\end{note}
 
 The following methods \textbf{must} be implemented:
 
@@ -3026,7 +3031,7 @@ The following methods \textbf{must} be implemented:
         if the object contains pointers to other objects.}
 \end{itemize}
 
-If your class contains other objects subclassed from \cclass{cObject},
+If the new class contains other objects subclassed from \cclass{cObject},
 either via pointers or as a data member, the following function \textbf{should}
 be implemented:
 
@@ -3036,7 +3041,7 @@ be implemented:
         for each object it contains via pointer or as a data member;
         see the API Reference on \cclass{cObject} on how to implement
         \ttt{forEachChild()}. \ffunc{forEachChild()} makes it possible
-        for Tkenv and Qtenv to display the object tree to you, to perform searches on it, etc.
+        for Tkenv and Qtenv to display the object tree, to perform searches on it, etc.
         It is also used by \ffunc{snapshot()} and some other library functions.}
 \end{itemize}
 
