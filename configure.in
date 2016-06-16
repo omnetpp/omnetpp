@@ -872,7 +872,7 @@ fi
 #-----------------------------
 if test "$WITH_OSG" = "yes"; then
   if test -z "$OSG_LIBS"; then
-      OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
+    OSG_LIBS="-losg -losgGA -losgViewer -lOpenThreads"
   fi
   OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
   if test $osg_ok = no; then

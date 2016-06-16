@@ -324,7 +324,7 @@ void ModuleInspector::updateToolbarLayout()
     }
     else {
 #ifdef WITH_OSG
-        osgViewer->getGLWidget()->setLayout(toolbarLayout);
+        osgViewer->setLayout(toolbarLayout);
         // the osg mode never displays scrollbars.
         toolbarLayout->setContentsMargins(toolbarSpacing, toolbarSpacing,
                                           toolbarSpacing, toolbarSpacing);

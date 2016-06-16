@@ -5119,7 +5119,7 @@ fi
 #-----------------------------
 if test "$WITH_OSG" = "yes"; then
   if test -z "$OSG_LIBS"; then
-      OSG_LIBS="-losg -losgGA -losgViewer -losgQt -lOpenThreads"
+    OSG_LIBS="-losg -losgGA -losgViewer -lOpenThreads"
   fi
 
    save_CXXFLAGS=$CXXFLAGS
