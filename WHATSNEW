@@ -1007,6 +1007,10 @@ Core:
    when writing initialization and shutdown code for schedulers, result
    file managers and other extensions.
 
+ - Signal checking has been enabled by default for debug builds. This means
+   that all signals must be declared with @signal in the NED definition of
+   the module type that emits them, unless check-signals=false is configured.
+
  - Channel objects made equal to modules in the sense that now they also have
    IDs (the getId() method was moved from cModule to cComponent, the common base
    class of modules and channels), and they are also registered with cSimulation.
