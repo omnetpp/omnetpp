@@ -60,9 +60,10 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     QAction *toTrackballManipulatorAction;
     QAction *toEarthManipulatorAction;
 
-  protected:
     QWidget *addViewWidget();
     void paintEvent(QPaintEvent* event) override;
+
+    bool event(QEvent *event) override;
 
     void setClearColor(float r, float g, float b, float alpha);
     void setCameraManipulator(cOsgCanvas::CameraManipulatorType type, bool keepView = false);
@@ -85,6 +86,9 @@ class QTENV_API OsgViewer : public QWidget, public osgViewer::CompositeViewer
     QWidget *getGLWidget() const {return glWidget;}
     void refresh();
     void resetViewer();
+
+    // coordinates in local widget frame
+    std::vector<cObject *> objectsAt(const QPoint &pos);
 
   signals:
     void objectsPicked(const std::vector<cObject*>&);

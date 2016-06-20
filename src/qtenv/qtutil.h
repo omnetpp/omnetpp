@@ -190,6 +190,8 @@ const char *stripNamespace(const char *className);
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 
+QString makeComponentTooltip(cComponent *component);
+
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);
 

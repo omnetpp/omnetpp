@@ -17,6 +17,7 @@
 #ifdef WITH_OSG
 
 #include <QDebug>
+#include <QToolTip>
 #include <QResizeEvent>
 #include <osgEarth/Version>
 #if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
@@ -40,6 +41,7 @@ namespace qtenv {
 
 #define emit
 
+// XXX is this still necessary? can be replaced by Qt events?
 class PickHandler : public osgGA::GUIEventHandler
 {
 private:
@@ -143,31 +145,8 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
 
 std::vector<cObject*> PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
 {
-    // printf("pick()\n");
-
-    osgUtil::LineSegmentIntersector::Intersections intersections;
-    std::vector<cObject*> objects;
-
-    if (view->computeIntersections(ea, intersections)) {
-        // looks like the list goes in increasing distance from camera, so we can just pick the first one
-        for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
-            const osg::NodePath& nodePath = hitr->nodePath;
-            if (!nodePath.empty()) {
-                // find cObject pointer node (OmnetppObjectNode) in nodepath, back to front
-                for (int i = nodePath.size()-1; i >= 0; --i) {
-                    if (cObjectOsgNode *objNode = dynamic_cast<cObjectOsgNode*>(nodePath[i])) {
-                        if (cObject *obj = const_cast<cObject *>(objNode->getObject())) {
-                            // qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
-                            if (std::find(objects.begin(), objects.end(), obj) == objects.end()) // filter out duplicates
-                                objects.push_back(obj);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return objects;
+    return viewer->objectsAt(QPoint(ea.getX()-ea.getWindowX(), // to widget local, then invert y
+                                    ea.getWindowHeight() - (ea.getY() - ea.getWindowY())));
 }
 
 
@@ -263,6 +242,32 @@ void OsgViewer::paintEvent(QPaintEvent *event)
     frame();
 }
 
+bool OsgViewer::event(QEvent *event)
+{
+    if (event->type() == QEvent::ToolTip) {
+        QHelpEvent *helpEvent = (QHelpEvent *)event;
+
+        cComponent *comp = nullptr;
+        auto objects = objectsAt(helpEvent->pos());
+        for (auto o : objects) {
+            if ((comp = dynamic_cast<cComponent *>(o)))
+                break;
+        }
+
+        QPoint pos = helpEvent->pos();
+        auto offs = QPoint(10, 10);
+        QRect rect(pos-offs, pos+offs);
+
+        if (comp)
+            QToolTip::showText(helpEvent->globalPos(),
+                               makeComponentTooltip(comp),
+                               this, rect);
+        else
+            QToolTip::hideText();
+    }
+    return QWidget::event(event);
+}
+
 void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
 {
     if (osgCanvas != canvas) {
@@ -321,6 +326,30 @@ void OsgViewer::resetViewer()
     setClearColor(0.9, 0.9, 0.9, 1.0);
     osg::Camera *camera = view->getCamera();
     camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000);
+}
+
+std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
+{
+    osgUtil::LineSegmentIntersector::Intersections intersections;
+    view->computeIntersections(view->getCamera(), osgUtil::Intersector::WINDOW, pos.x(), height() - pos.y(), intersections);
+
+    std::vector<cObject *> objects;
+    for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
+        const osg::NodePath& nodePath = hitr->nodePath;
+        if (!nodePath.empty()) {
+            // find cObject pointer node (OmnetppObjectNode) in nodepath, back to front
+            for (int i = nodePath.size()-1; i >= 0; --i) {
+                if (cObjectOsgNode *objNode = dynamic_cast<cObjectOsgNode*>(nodePath[i])) {
+                    if (cObject *obj = const_cast<cObject *>(objNode->getObject())) {
+                        // qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
+                        if (std::find(objects.begin(), objects.end(), obj) == objects.end()) // filter out duplicates
+                            objects.push_back(obj);
+                    }
+                }
+            }
+        }
+    }
+    return objects;
 }
 
 void OsgViewer::setClearColor(float r, float g, float b, float alpha)

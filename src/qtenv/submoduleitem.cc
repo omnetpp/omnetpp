@@ -16,8 +16,10 @@
 
 #include "submoduleitem.h"
 #include "qtenv.h"
+#include "qtutil.h"
 #include <QDebug>
 #include <QPainter>
+#include <QEvent>
 #include <QGraphicsColorizeEffect>
 #include <omnetpp/cdisplaystring.h>
 #include <omnetpp/cqueue.h>
@@ -39,6 +41,9 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     // replacing $param args with the actual parameter values
     std::string buffer;
     ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
+
+    // we have to set an initial tooltip so we receive further events
+    si->setToolTip(makeComponentTooltip(mod));
 
     bool widthOk, heightOk;
     double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
@@ -267,13 +272,19 @@ QRectF SubmoduleItem::shapeImageBoundingRect() const {
     return rect;
 }
 
+bool SubmoduleItem::event(QEvent *event)
+{
+    if (event->type() == QEvent::ToolTip)
+        setToolTip(makeComponentTooltip(module));
+    return QGraphicsObject::event(event);
+}
+
 SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
     : module(mod), rangeLayer(rangeLayer)
 {
     nameItem = new OutlinedTextItem(this, scene());
     queueItem = new OutlinedTextItem(this, scene());
     textItem = new OutlinedTextItem(this, scene());
-    setAcceptsHoverEvents(true);
 
     connect(this, SIGNAL(xChanged()), this, SLOT(onPositionChanged()));
     connect(this, SIGNAL(yChanged()), this, SLOT(onPositionChanged()));
@@ -502,16 +513,6 @@ void SubmoduleItem::onPositionChanged() {
     for (auto i : rangeItems) {
         i->setPos(pos());
     }
-}
-
-void SubmoduleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
-    QString toolTip = QString("(") + getObjectShortTypeName(module) + ") " + module->getFullName() + ", " + module->info().c_str();
-    const char *userTooltip = module->getDisplayString().getTagArg("tt", 0);
-    if (!opp_isempty(userTooltip))
-        toolTip += QString("\n") + userTooltip;
-    setToolTip(toolTip);
-
-    QGraphicsObject::hoverEnterEvent(event);
 }
 
 } // namespace qtenv

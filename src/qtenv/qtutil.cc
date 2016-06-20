@@ -764,6 +764,15 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     return atof(arg2);
 }
 
+QString makeComponentTooltip(cComponent *comp) {
+    QString toolTip = QString("(") + getObjectShortTypeName(comp) + ") " + comp->getFullName() + ", " + comp->info().c_str();
+    // XXX need to call substituteDisplayStringParamRefs?
+    const char *userTooltip = comp->getDisplayString().getTagArg("tt", 0);
+    if (!opp_isempty(userTooltip))
+        toolTip += QString("\n") + userTooltip;
+    return toolTip;
+}
+
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
 {
     if (insp->getObject() != mod || insp->getType() != INSP_MODULEOUTPUT)
