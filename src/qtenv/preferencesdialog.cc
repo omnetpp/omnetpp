@@ -109,13 +109,14 @@ void PreferencesDialog::init()
     QFont timelineFont = getQtenv()->getTimelineFont();
     QFont canvasFont = getQtenv()->getCanvasFont();
     QFont logBoxFont = getQtenv()->getLogFont();
+    QFont timeFont = getQtenv()->getTimeFont();
 
-    setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont);
+    setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont, timeFont);
     connect(ui->restoreButton, SIGNAL(clicked()), this, SLOT(restoreDefaultFonts()));
 }
 
 void PreferencesDialog::setFontsTabFonts(const QFont &interfaceFont, const QFont &timelineFont,
-                                         const QFont &canvasFont, const QFont &logBoxFont)
+                                         const QFont &canvasFont, const QFont &logBoxFont, const QFont &timeFont)
 {
     ui->userInterfaceBox->setCurrentFont(interfaceFont);
     ui->userInterfaceNumBox->setValue(interfaceFont.pointSize());
@@ -125,6 +126,8 @@ void PreferencesDialog::setFontsTabFonts(const QFont &interfaceFont, const QFont
     ui->canvasNumBox->setValue(canvasFont.pointSize());
     ui->logBox->setCurrentFont(logBoxFont);
     ui->logNumBox->setValue(logBoxFont.pointSize());
+    ui->timeBox->setCurrentFont(timeFont);
+    ui->timeNumBox->setValue(timeFont.pointSize());
 }
 
 void PreferencesDialog::restoreDefaultFonts()
@@ -133,8 +136,9 @@ void PreferencesDialog::restoreDefaultFonts()
     QFont timelineFont = getQtenv()->getDefaultTimelineFont();
     QFont canvasFont = getQtenv()->getDefaultCanvasFont();
     QFont logBoxFont = getQtenv()->getDefaultLogFont();
+    QFont timeFont = getQtenv()->getDefaultTimeFont();
 
-    setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont);
+    setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont, timeFont);
 }
 
 void PreferencesDialog::accept()
@@ -220,6 +224,10 @@ void PreferencesDialog::accept()
     font = ui->logBox->currentFont();
     font.setPointSize(ui->logNumBox->value());
     getQtenv()->setLogFont(font);
+
+    font = ui->timeBox->currentFont();
+    font.setPointSize(ui->timeNumBox->value());
+    getQtenv()->setTimeFont(font);
 
     getQtenv()->updateQtFonts();
 

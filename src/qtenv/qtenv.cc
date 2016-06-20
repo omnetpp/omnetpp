@@ -2126,30 +2126,37 @@ void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level, bool sav
 
 void Qtenv::initFonts()
 {
+    // TODO Check default time font in Windows and Mac
 #ifdef Q_WS_WIN
     // Windows
     defaultFonts.boldFont = getFirstAvailableFontFamily({"Segoe UI", "MS Sans Serif", "Arial"}, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
     defaultFonts.logFont = getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9);
+    defaultFonts.timeFont = defaultFonts.boldFont;
+    defaultFonts.timeFont.setPointSize(12);
 #elif defined(Q_WS_MAC)
     // Mac
     defaultFonts.boldFont = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({"Arial Narrow"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
     defaultFonts.logFont = getFirstAvailableFontFamily({"Monaco", "Courier"}, 13);
+    defaultFonts.timeFont = defaultFonts.boldFont;
+    defaultFonts.timeFont.setPointSize(12);
 #else
     // Linux and other systems
     defaultFonts.boldFont = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L", "FreeSans", "Sans"}, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
     defaultFonts.logFont = getFirstAvailableFontFamily({"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"}, 9);
+    defaultFonts.timeFont = defaultFonts.boldFont;
+    defaultFonts.timeFont.setPointSize(12);
 #endif
-
     boldFont = getPref("font-bold", defaultFonts.boldFont).value<QFont>();
     canvasFont = getPref("font-canvas", defaultFonts.canvasFont).value<QFont>();
     timelineFont = getPref("font-timeline", defaultFonts.timelineFont).value<QFont>();
     logFont = getPref("font-log", defaultFonts.logFont).value<QFont>();
+    timeFont = getPref("font-time", defaultFonts.timeFont).value<QFont>();
 }
 
 // Returns the first font family from the given preference list that is
@@ -2172,15 +2179,17 @@ void Qtenv::saveFonts()
     setPref("font-canvas", canvasFont);
     setPref("font-timeline", timelineFont);
     setPref("font-log", logFont);
+    setPref("font-time", timeFont);
 }
 
 void Qtenv::updateQtFonts()
 {
     emit fontChanged();
-
     mainWindow->setStyleSheet(
                 // if we dont reapply the font here, it will be overwritten with the default, because Qt.
                 "* { font: " + QString::number(boldFont.pointSize()) + "pt " + boldFont.family() + "; } "
+                "QLabel#simTimeLabel, QLabel#eventNumLabel { font: " + QString::number(timeFont.pointSize()) + "pt " + timeFont.family() + ";"
+                "background-color: palette(base); border: 1px solid palette(mid); }"
                 // avoids too tall toolbars on Mac
                 "QToolButton { height: 19px; margin: 0px; }"
                 // makes tool buttons tighty packed

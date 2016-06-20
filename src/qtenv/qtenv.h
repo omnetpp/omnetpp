@@ -192,6 +192,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       QFont timelineFont;
       QFont canvasFont;
       QFont logFont;
+      QFont timeFont;
 
       struct DefaultFonts
       {
@@ -199,6 +200,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
           QFont timelineFont;
           QFont canvasFont;
           QFont logFont;
+          QFont timeFont;
       } defaultFonts;
 
       // these only exist while doRun() runs
@@ -370,20 +372,23 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       const char *getSnapshotFileName()  {return snapshotManager->getFileName();}
       const char *getWindowTitlePrefix() {return windowTitlePrefix.c_str();}
 
-      QFont getBoldFont() {return boldFont;}
-      QFont getTimelineFont() {return timelineFont;}
-      QFont getCanvasFont() {return canvasFont;}
-      QFont getLogFont() {return logFont;}
+      QFont getBoldFont() const {return boldFont;}
+      QFont getTimelineFont() const {return timelineFont;}
+      QFont getCanvasFont() const {return canvasFont;}
+      QFont getLogFont() const {return logFont;}
+      QFont getTimeFont() const {return timeFont;}
 
-      QFont getDefaultBoldFont() {return defaultFonts.boldFont;}
-      QFont getDefaultTimelineFont() {return defaultFonts.timelineFont;}
-      QFont getDefaultCanvasFont() {return defaultFonts.canvasFont;}
-      QFont getDefaultLogFont() {return defaultFonts.logFont;}
+      QFont getDefaultBoldFont() const {return defaultFonts.boldFont;}
+      QFont getDefaultTimelineFont() const {return defaultFonts.timelineFont;}
+      QFont getDefaultCanvasFont() const {return defaultFonts.canvasFont;}
+      QFont getDefaultLogFont() const {return defaultFonts.logFont;}
+      QFont getDefaultTimeFont() const {return defaultFonts.timeFont;}
 
       void setBoldFont(QFont &font) {boldFont = font;}
       void setTimelineFont(QFont &font) {timelineFont = font;}
       void setCanvasFont(QFont &font) {canvasFont = font;}
       void setLogFont(QFont &font) {logFont = font;}
+      void setTimeFont(QFont &font) {timeFont = font;}
 
       void updateQtFonts();
 

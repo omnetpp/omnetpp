@@ -81,22 +81,22 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // add current event status
     simTimeLabel = new QLabel();
     simTimeLabel->setToolTip("Simulation time of last event");
+    simTimeLabel->setTextFormat(Qt::RichText);
     simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
-    simTimeLabel->setStyleSheet("background-color: palette(base); border: 1px solid palette(mid); font-size: 16px;");
+    simTimeLabel->setObjectName("simTimeLabel");
     eventNumLabel = new QLabel();
     eventNumLabel->setToolTip("Event number of last event");
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
-    eventNumLabel->setStyleSheet("background-color: palette(base); border: 1px solid palette(mid); font-size: 16px;");
     eventNumLabel->setAlignment(Qt::Alignment(Qt::AlignVCenter | Qt::AlignRight));
+    eventNumLabel->setObjectName("eventNumLabel");
 
     QHBoxLayout *l = new QHBoxLayout();
-    l->addStretch(0);
-    l->addWidget(eventNumLabel, 1);
-    eventNumLabel->setMaximumWidth(100);
-    eventNumLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
-    l->addWidget(simTimeLabel, 1);
-    simTimeLabel->setMaximumWidth(200);
-    simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum));
+    l->addStretch(1);
+    l->addWidget(eventNumLabel);
+    eventNumLabel->setMinimumWidth(100);
+    eventNumLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
+    l->addWidget(simTimeLabel);
+    simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
     l->setMargin(0);
 
     QWidget *w = new QWidget();
@@ -126,7 +126,6 @@ void MainWindow::displayText(const char *t)
 {
     // ui->textBrowser->append(QString(t));
 }
-
 
 bool MainWindow::isRunning()
 {
@@ -434,7 +433,9 @@ void MainWindow::updateStatusDisplay()
 void MainWindow::updateSimtimeDisplay()
 {
     eventNumLabel->setText("#" + QString::number(getSimulation()->getEventNumber()));
-    simTimeLabel->setText(QString(getSimulation()->getSimTime().str().c_str()) + "s");
+
+    QString simTimeText = getSimulation()->getSimTime().format(SimTime::getScaleExp(), ".", ",", true, "<font color=grey size=3>", " </font>").c_str();
+    simTimeLabel->setText(simTimeText);
     ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->getFES()->getLength())
             +" scheduled / " + QString::number(cMessage::getLiveMessageCount())
             +" existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");

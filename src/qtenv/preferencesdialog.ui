@@ -820,7 +820,7 @@ Padding with spaces:
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <spacer name="fontsSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -856,26 +856,6 @@ Padding with spaces:
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QFontComboBox" name="timeLineBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QFontComboBox" name="canvasBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="2">
            <widget class="QSpinBox" name="canvasNumBox">
             <property name="sizePolicy">
@@ -892,6 +872,16 @@ Padding with spaces:
             </property>
            </widget>
           </item>
+          <item row="1" column="1">
+           <widget class="QFontComboBox" name="timeLineBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="2">
            <widget class="QSpinBox" name="userInterfaceNumBox">
             <property name="sizePolicy">
@@ -905,6 +895,16 @@ Padding with spaces:
             </property>
             <property name="maximum">
              <number>70</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QFontComboBox" name="canvasBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
            </widget>
           </item>
@@ -939,6 +939,19 @@ Padding with spaces:
              <number>70</number>
             </property>
            </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QFontComboBox" name="timeBox"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="timeText">
+            <property name="text">
+             <string>Time:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QSpinBox" name="timeNumBox"/>
           </item>
          </layout>
         </widget>

@@ -51,7 +51,7 @@ private:
 
     void init();
     void setFontsTabFonts(const QFont &interfaceFont, const QFont &timelineFont,
-                          const QFont &canvasFont, const QFont &logBoxFont);
+                          const QFont &canvasFont, const QFont &logBoxFont, const QFont &timeFont);
 };
 
 } // namespace qtenv
