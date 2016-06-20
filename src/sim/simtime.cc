@@ -267,6 +267,57 @@ char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
     return s;
 }
 
+std::string SimTime::format(int prec, const char *decimalSep, const char *digitSep, bool addUnits, const char *beforeUnit, const char *afterUnit) const
+{
+    ASSERT(scaleexp <= 0 && scaleexp >= -18);
+
+    if (prec > 0 || prec < -18)
+        throw cRuntimeError("SimTime::format(): prec=%d out of range, must be in 0..-18", prec);
+
+    if (digitSep && !*digitSep) digitSep = nullptr;
+    if (!beforeUnit) beforeUnit = "";
+    if (!afterUnit) afterUnit = "";
+
+    std::stringstream out;
+    if (t < 0)
+        out << "-";
+
+    char digits[32];
+    sprintf(digits, "%" LL "d", t<0 ? -t : t);
+    int numDigits = strlen(digits);
+
+    int startDecimal = scaleexp + numDigits - 1;
+    int endDecimal = prec;
+
+    if (startDecimal < 0)
+        startDecimal = 0;  // always print seconds
+    if (endDecimal > 0)
+        endDecimal = 0;  // always print seconds
+    if ((endDecimal % 3) != 0 && (addUnits || digitSep))
+        endDecimal = 3*((endDecimal-2)/3); // make it multiple of 3
+
+    const char *units[] = { "s", "ms", "us", "ns", "ps", "fs", "as" };
+
+    for (int decimalPlace = startDecimal; decimalPlace >= endDecimal; decimalPlace--) {
+        int index = (scaleexp + numDigits - 1) - decimalPlace;
+        out << ((index < 0 || index >= numDigits) ? '0' : digits[index]);
+        if (decimalPlace % 3 == 0) {
+            if (addUnits && decimalPlace <= 0 && decimalPlace >= -18) {
+                out << beforeUnit << units[-decimalPlace/3] << afterUnit;
+            }
+            else if (decimalPlace == 0) {
+                if (endDecimal < 0)
+                    out << decimalSep;
+            }
+            else if (digitSep && decimalPlace != endDecimal) {
+                out << digitSep;
+            }
+        }
+    }
+
+    return out.str();
+}
+
 const SimTime SimTime::parse(const char *s)
 {
     try {

@@ -74,6 +74,8 @@ class SIM_API SimTime
     static int64_t maxseconds; // the largest number in seconds that can be represented with this scaleexp
     static bool checkmul;    // when true, multiplications are checked for integer overflow
 
+    static const int SCALEEXP_UNINITIALIZED = 0xffff;
+
   public:
     /**
      * Represents the zero simulation time. Using SimTime::ZERO may be faster
@@ -130,8 +132,10 @@ class SIM_API SimTime
     void overflowNegating();
 
   public:
-    static const int SCALEEXP_UNINITIALIZED = 0xffff;
+    // internal: Formats a time string. Use SIMTIME_MS etc constants for prec. Note: it performs TRUNCATION towards zero, not rounding!
+    std::string format(int prec=getScaleExp(), const char *decimalSep=".", const char *digitSep="", bool addUnits=false, const char *beforeUnit=nullptr, const char *afterUnit=nullptr) const;
 
+  public:
     /** @name Constructors */
     //@{
     /**
