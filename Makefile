@@ -193,14 +193,6 @@ cleanui:
 	    (cd $(OMNETPP_UI_DIR)/$$i && $(MAKE) clean); \
 	done
 
-depend:
-	$(Q)for i in $(BASE); do \
-	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
-	done
-	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); fi;\
-	done
-
 makefiles:
 	$(Q)for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (MAKE="$(MAKE)" opp_makemake -f --deep)); fi;\

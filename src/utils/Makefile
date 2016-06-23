@@ -67,10 +67,6 @@ $O/abspath$(EXE_SUFFIX) : abspath.cc
 	@echo Creating executable: $@
 	$(Q)$(CXX) $(COPTS)  abspath.cc -o $O/abspath$(EXE_SUFFIX)
 
-depend:
-	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) -I../../include -I.. -P\$$O/ -- *.cc *.c
-
 clean:
 	$(qecho) Cleaning...
 	$(Q)rm -rf $O
@@ -78,11 +74,4 @@ clean:
 #	$(Q)rm -f opp_configfilepath
 #	$(Q)rm -f opp_configfilepath.cmd
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/abspath.o: abspath.cc \
-  ../common/ver.h
-$O/opp_lcg32_seedtool.o: opp_lcg32_seedtool.cc \
-  ../common/ver.h
-$O/opp_pefileversion.o: opp_pefileversion.cc
-$O/ln.o: ln.c
-$O/opp_replace.o: opp_replace.c
+-include $(OBJS:%.o=%.d)

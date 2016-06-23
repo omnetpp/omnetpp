@@ -17,12 +17,8 @@ all: genjava
 
 genjava:
 	mkdir -p $(JMODELDIR)
-	$(PERL) etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
-
-depend:
+	$(PERL) etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
 
 clean:
 	-rm -rf $(JMODELDIR)
-
-# DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -64,8 +64,6 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : qmake
 #
 # Targets
 #
-depend:
-
 clean:
 	$(qecho) Cleaning...
 	$(Q)rm -rf $O
@@ -74,3 +72,5 @@ clean:
 missing-dependency:
 	@echo '  *** No QT installation found -- skipping Qtenv.'
 	@echo '  *** Install it, then run ./configure again.'
+
+-include $(OBJS:%.o=%.d)
