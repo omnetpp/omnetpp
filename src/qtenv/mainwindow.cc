@@ -393,7 +393,7 @@ void MainWindow::on_actionRunUntil_triggered()
     eventnumber_t event = runUntilDialog.getEventNumber();
     cMessage *msg = static_cast<cMessage*>(runUntilDialog.getMessage());
 
-    bool untilMode = time.dbl() != 0 || event != 0 || strlen(msg->getDisplayString());
+    bool untilMode = time.dbl() != 0 || event != 0 || msg != nullptr;
     if (isRunning())
     {
         setGuiForRunmode(runModeToMode(mode), untilMode);
