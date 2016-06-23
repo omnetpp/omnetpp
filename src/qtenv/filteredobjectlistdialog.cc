@@ -218,7 +218,7 @@ void FilteredObjectListDialog::onListBoxSelectionChanged(QItemSelection selected
 
 void FilteredObjectListDialog::setSearchEdit(cObject *obj)
 {
-    ui->searchEdit->setText(obj->getFullPath().c_str());
+    ui->searchEdit->setText(obj ? obj->getFullPath().c_str() : "");
 }
 
 QStringList FilteredObjectListDialog::getClassNames()
