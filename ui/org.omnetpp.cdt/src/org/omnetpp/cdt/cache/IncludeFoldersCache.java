@@ -90,6 +90,7 @@ public class IncludeFoldersCache {
         // configuration, see bug #299
         List<IContainer> result;
         synchronized (projectIncludeFolders) {
+            //FIXME TODO: IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
             result = projectIncludeFolders.get(project);
         }
 
@@ -144,6 +145,8 @@ public class IncludeFoldersCache {
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();
+                    if (resource instanceof IProject && !ProjectUtils.hasOmnetppNature((IProject)resource))
+                        return false;  // skip project
                     if (resource instanceof IContainer) {
                         int kind = delta.getKind();
                         if (kind==IResourceDelta.ADDED || kind==IResourceDelta.REMOVED)
@@ -208,10 +211,11 @@ public class IncludeFoldersCache {
      * by the output paths (out/ dirs)
      */
     protected List<IContainer> scanProjectForIncludeFolders(IProject project) throws CoreException {
-
-        List<IContainer> outFolders = new ArrayList<IContainer>();
+        List<IContainer> result = new ArrayList<IContainer>();
         BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
         if (buildSpec != null) {
+            // collect output folders, as they'll need to be excluded from the result
+            List<IContainer> outFolders = new ArrayList<IContainer>();
             for(IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
                 MakemakeOptions mo = buildSpec.getMakemakeOptions(makemakeFolder);
                 String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
@@ -219,45 +223,69 @@ public class IncludeFoldersCache {
                 if (outDir != null && outDir instanceof IContainer)
                     outFolders.add((IContainer) outDir);
             }
+
+            // collect include folders
+            for (IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
+                MakemakeOptions options = buildSpec.getMakemakeOptions(makemakeFolder);
+                if (!options.isDeep || options.noDeepIncludes) {
+                    result.add(makemakeFolder);
+                }
+                else {
+                    collectNonexcludedFolders(makemakeFolder, result, outFolders);
+                }
+            }
         }
+    return result;
 
-        List<IContainer> result = new ArrayList<IContainer>();
+        //TODO: remove "out" folders from the result
 
-        // add project source directories as include dirs for the indexer
-        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
-        // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
-        for (IContainer folder : collectDirs(project)) {
-            boolean dirOk = true;
-            for (IContainer out : outFolders)
-                if (out.getFullPath().isPrefixOf(folder.getFullPath()))
-                    dirOk = false;
-            // do not add as an include dir if it is under one of the out directories
-            if (dirOk)
-                result.add(folder);
-        }
-
-        return result;
+//        List<IContainer> outFolders = new ArrayList<IContainer>();
+//        BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
+//        if (buildSpec != null) {
+//            for(IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
+//                MakemakeOptions mo = buildSpec.getMakemakeOptions(makemakeFolder);
+//                //mo.noDeepIncludes
+//                String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
+//                IResource outDir = project.findMember(outRoot);
+//                if (outDir != null && outDir instanceof IContainer)
+//                    outFolders.add((IContainer) outDir);
+//            }
+//        }
+//
+//        List<IContainer> result = new ArrayList<IContainer>();
+//
+//        // add project source directories as include dirs for the indexer
+//        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
+//        // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
+//        for (IContainer folder : collectDirs(project)) {
+//            boolean dirOk = true;
+//            for (IContainer out : outFolders)
+//                if (out.getFullPath().isPrefixOf(folder.getFullPath()))
+//                    dirOk = false;
+//            // do not add as an include dir if it is under one of the out directories
+//            if (dirOk)
+//                result.add(folder);
+//        }
+//
+//        return result;
     }
 
-    /**
-     * Collects source directories from the project and all dependent projects. Nonexistent,
-     * closed and non-CDT dependent projects will be ignored.
-     */
-    protected List<IContainer> collectDirs(IProject project) throws CoreException {
-        List<IContainer> result = new ArrayList<IContainer>();
+//    protected List<IContainer> collectDirs(IProject project) throws CoreException {
+//        List<IContainer> result = new ArrayList<IContainer>();
+//
+//        // collect dirs from this project
+//        collectDirs(project, result);
+//
+//        // collect directories from referenced projects too
+//        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
+//        for (IProject refProj : referencedProjects)
+//            collectDirs(refProj, result);
+//
+//        return result;
+//    }
 
-        // collect dirs from this project
-        collectDirs(project, result);
-
-        // collect directories from referenced projects too
-        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
-        for (IProject refProj : referencedProjects)
-            collectDirs(refProj, result);
-
-        return result;
-    }
-
-    protected void collectDirs(IProject project, final List<IContainer> result) throws CoreException {
+    protected void collectNonexcludedFolders(IContainer container, final List<IContainer> result, final List<IContainer> outFolders) throws CoreException {
+        IProject project = container.getProject();
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(project);
         if (projDesc == null)
             return; // likely project closed
@@ -265,19 +293,27 @@ public class IncludeFoldersCache {
         final ICSourceEntry[] srcEntries = CDataUtil.makeRelative(project, projDesc.getActiveConfiguration().getSourceEntries());
 
         for (ICSourceEntry srcEntry : srcEntries) {
-            IResource sourceFolder = project.findMember(srcEntry.getFullPath());
-            if (sourceFolder != null) {
-                sourceFolder.accept(new IResourceVisitor() {
+            if (container.getProjectRelativePath().isPrefixOf(srcEntry.getFullPath())) {
+                container.accept(new IResourceVisitor() {
                     public boolean visit(IResource resource) throws CoreException {
-                        if (MakefileTools.isGoodFolder(resource)) {
-                            if (!CDTUtils.isExcluded(resource, srcEntries))
-                                result.add((IContainer)resource);
-                            return true;
-                        }
-                        return false;
+                        if (!MakefileTools.isGoodFolder(resource))
+                            return false;
+                        IContainer container = (IContainer)resource;
+                        if (isUnderOutFolder(container, outFolders))
+                            return false;
+                        if (!CDTUtils.isExcluded(container, srcEntries))
+                            result.add(container);
+                        return true;
                     }
                 });
             }
         }
+    }
+
+    protected boolean isUnderOutFolder(IContainer container, List<IContainer> outFolders) {
+        for (IContainer outFolder : outFolders)
+            if (outFolder.getFullPath().isPrefixOf(container.getFullPath()))
+                return true;
+        return false;
     }
 }
