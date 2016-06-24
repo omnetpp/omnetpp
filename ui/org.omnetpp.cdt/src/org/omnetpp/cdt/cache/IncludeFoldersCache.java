@@ -41,7 +41,8 @@ import org.omnetpp.common.util.StringUtils;
 
 
 /**
- * Keeps track of per-project include folders (basically all folders under source entries).
+ * Keeps track of the include folders we contribute to CDT.
+ * per-project include folders (basically all folders under source entries).
  * Its responsibility is to tell CDT when the include paths have changed.
  *
  * @author Andras
@@ -52,8 +53,8 @@ public class IncludeFoldersCache {
     // access to member variables are synchronized, and we take care not to access CDT while
     // in a synchronized block.
 
-    // include folders for each project
-    private Map<IProject, List<IContainer>> projectIncludeFolders = new HashMap<IProject, List<IContainer>>();
+    // deep-include folders for each project
+    private Map<IProject, List<IContainer>> projectDeepIncludeFolders = new HashMap<IProject, List<IContainer>>();
 
     // if getProjectIncludeFolders() is called when we don't have the info yet, we schedule an asyncExec()
     // job to collect it, and in the job we force CDT to ask us again by invalidating CDT scanner info.
@@ -84,14 +85,14 @@ public class IncludeFoldersCache {
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
-    public List<IContainer> getProjectIncludeFolders(IProject project) {
+    public List<IContainer> getProjectDeepIncludeFolders(IProject project) {
         // Note: we MUST NOT compute the folders here, because this method is called
         // from our ScannerInfoCollector classes that must not access the CDT project
         // configuration, see bug #299
         List<IContainer> result;
-        synchronized (projectIncludeFolders) {
+        synchronized (projectDeepIncludeFolders) {
             //FIXME TODO: IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
-            result = projectIncludeFolders.get(project);
+            result = projectDeepIncludeFolders.get(project);
         }
 
         if (result != null)
@@ -140,6 +141,8 @@ public class IncludeFoldersCache {
             if (event.getDelta() == null || event.getType() != IResourceChangeEvent.POST_CHANGE)
                 return;
 
+            //FIXME rescan also if BuildSpecification has changed!!!!
+
             // collect projects in which a folder has been added or deleted
             final Set<IProject> changedProjects = new HashSet<IProject>();
             event.getDelta().accept(new IResourceDeltaVisitor() {
@@ -184,19 +187,19 @@ public class IncludeFoldersCache {
 
     protected void rescanProject(IProject project) throws CoreException {
         if (!project.isAccessible()) {
-            projectIncludeFolders.remove(project);
+            projectDeepIncludeFolders.remove(project);
             return;
         }
 
         // compute current state
-        List<IContainer> folders = scanProjectForIncludeFolders(project);
+        List<IContainer> folders = collectDeepIncludeFolders(project);
 
         // and if changed, store it and tell CDT to pick it up
         boolean changed = false;
-        synchronized (projectIncludeFolders) {
-            List<IContainer> oldFolders = projectIncludeFolders.get(project);
+        synchronized (projectDeepIncludeFolders) {
+            List<IContainer> oldFolders = projectDeepIncludeFolders.get(project);
             if (!folders.equals(oldFolders)) {
-                projectIncludeFolders.put(project, folders);
+                projectDeepIncludeFolders.put(project, folders);
                 changed = true;
             }
         }
@@ -206,113 +209,66 @@ public class IncludeFoldersCache {
     }
 
     /**
-     * Returns the include folders inside the project and all referenced projects.
-     * This is currently all folders under the source entries, minus those covered
-     * by the output paths (out/ dirs)
+     * Returns all deep-include folders inside the project
      */
-    protected List<IContainer> scanProjectForIncludeFolders(IProject project) throws CoreException {
+    protected List<IContainer> collectDeepIncludeFolders(IProject project) throws CoreException {
         List<IContainer> result = new ArrayList<IContainer>();
         BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
         if (buildSpec != null) {
+            List<IContainer> makeFolders = buildSpec.getMakeFolders();
+            List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
+
             // collect output folders, as they'll need to be excluded from the result
             List<IContainer> outFolders = new ArrayList<IContainer>();
-            for(IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
+            for (IContainer makemakeFolder : makemakeFolders) {
                 MakemakeOptions mo = buildSpec.getMakemakeOptions(makemakeFolder);
                 String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
                 IResource outDir = project.findMember(outRoot);
-                if (outDir != null && outDir instanceof IContainer)
+                if (outDir != null && outDir instanceof IContainer && !outFolders.contains(outDir))
                     outFolders.add((IContainer) outDir);
             }
 
             // collect include folders
-            for (IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
+            for (IContainer makemakeFolder : makemakeFolders) {
                 MakemakeOptions options = buildSpec.getMakemakeOptions(makemakeFolder);
-                if (!options.isDeep || options.noDeepIncludes) {
-                    result.add(makemakeFolder); //FIXME ez llehet nem is kell, ha csak a Path&Symbols szamit, es a deep include-ok
-                }
-                else {
-                    collectNonexcludedFolders(makemakeFolder, result, outFolders);
-                }
+                if (options.isDeep && !options.noDeepIncludes)
+                    collectDeepIncludeFolders(makemakeFolder, result, makeFolders, outFolders);
             }
         }
-    return result;
-
-        //TODO: remove "out" folders from the result
-
-//        List<IContainer> outFolders = new ArrayList<IContainer>();
-//        BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
-//        if (buildSpec != null) {
-//            for(IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
-//                MakemakeOptions mo = buildSpec.getMakemakeOptions(makemakeFolder);
-//                //mo.noDeepIncludes
-//                String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
-//                IResource outDir = project.findMember(outRoot);
-//                if (outDir != null && outDir instanceof IContainer)
-//                    outFolders.add((IContainer) outDir);
-//            }
-//        }
-//
-//        List<IContainer> result = new ArrayList<IContainer>();
-//
-//        // add project source directories as include dirs for the indexer
-//        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
-//        // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
-//        for (IContainer folder : collectDirs(project)) {
-//            boolean dirOk = true;
-//            for (IContainer out : outFolders)
-//                if (out.getFullPath().isPrefixOf(folder.getFullPath()))
-//                    dirOk = false;
-//            // do not add as an include dir if it is under one of the out directories
-//            if (dirOk)
-//                result.add(folder);
-//        }
-//
-//        return result;
+        return result;
     }
 
-//    protected List<IContainer> collectDirs(IProject project) throws CoreException {
-//        List<IContainer> result = new ArrayList<IContainer>();
-//
-//        // collect dirs from this project
-//        collectDirs(project, result);
-//
-//        // collect directories from referenced projects too
-//        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
-//        for (IProject refProj : referencedProjects)
-//            collectDirs(refProj, result);
-//
-//        return result;
-//    }
-
-    protected void collectNonexcludedFolders(IContainer container, final List<IContainer> result, final List<IContainer> outFolders) throws CoreException {
-        IProject project = container.getProject();
+    protected void collectDeepIncludeFolders(final IContainer makemakeFolder, final List<IContainer> result,
+            final List<IContainer> makeFolders, final List<IContainer> outFolders) throws CoreException {
+        IProject project = makemakeFolder.getProject();
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(project);
         if (projDesc == null)
             return; // likely project closed
 
         final ICSourceEntry[] srcEntries = CDataUtil.makeRelative(project, projDesc.getActiveConfiguration().getSourceEntries());
 
-        for (ICSourceEntry srcEntry : srcEntries) {
-            if (container.getProjectRelativePath().isPrefixOf(srcEntry.getFullPath())) {
-                container.accept(new IResourceVisitor() {
-                    public boolean visit(IResource resource) throws CoreException {
-                        if (!MakefileTools.isGoodFolder(resource))
-                            return false;
-                        IContainer container = (IContainer)resource;
-                        if (isUnderOutFolder(container, outFolders))
-                            return false;
-                        if (!CDTUtils.isExcluded(container, srcEntries))
-                            result.add(container);
-                        return true;
-                    }
-                });
+        if (isUnderOneOfFolders(makemakeFolder, outFolders))
+            return;  // whole folder is under an "out" folder (misconfiguration?)
+
+        makemakeFolder.accept(new IResourceVisitor() {
+            public boolean visit(IResource resource) throws CoreException {
+                if (!MakefileTools.isGoodFolder(resource))
+                    return false;  // exclude team-private, etc. folders
+                IContainer container = (IContainer)resource;
+                if (outFolders.contains(container))
+                    return false; // don't descend into an "out" folder
+                if (!container.equals(makemakeFolder) && makeFolders.contains(container))
+                    return false; // don't descend into another makefile's territory
+                if (!CDTUtils.isExcluded(container, srcEntries))
+                    result.add(container);
+                return true;
             }
-        }
+        });
     }
 
-    protected boolean isUnderOutFolder(IContainer container, List<IContainer> outFolders) {
-        for (IContainer outFolder : outFolders)
-            if (outFolder.getFullPath().isPrefixOf(container.getFullPath()))
+    protected boolean isUnderOneOfFolders(IContainer folder, List<IContainer> folders) {
+        for (IContainer f : folders)
+            if (f.getFullPath().isPrefixOf(folder.getFullPath()))
                 return true;
         return false;
     }

@@ -45,7 +45,7 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
 
         // add the folders inside the project and in referenced projects
         // Note: we MUST NOT compute the folders here, we must not access the CDT project configuration, see bug #299
-        List<IContainer> folders = Activator.getIncludeFoldersCache().getProjectIncludeFolders(project);
+        List<IContainer> folders = Activator.getIncludeFoldersCache().getProjectDeepIncludeFolders(project);
         for (IContainer folder : folders)
             includeMap.put(folder.getLocation().toOSString(), false);
 
