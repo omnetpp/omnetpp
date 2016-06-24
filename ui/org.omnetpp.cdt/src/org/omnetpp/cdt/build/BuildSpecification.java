@@ -255,7 +255,7 @@ public class BuildSpecification implements Cloneable {
                 String projectRelativePath = folder.equals(project) ? "." : folder.getProjectRelativePath().toString();
                 dirElement.setAttribute(PATH_ATTR, projectRelativePath);
                 dirElement.setAttribute(TYPE_ATTR, folderSpec.makefileType == MAKEMAKE ? "makemake" : "custom");
-                if (folderSpec.makemakeOptions != null)
+                if (folderSpec.makefileType == MAKEMAKE && folderSpec.makemakeOptions != null)
                     dirElement.setAttribute(MAKEMAKEOPTIONS_ATTR, folderSpec.makemakeOptions.toString());
                 root.appendChild(dirElement);
             }
