@@ -119,7 +119,6 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Compile" page
     private Button deepIncludesCheckbox;
-    private Button autoIncludePathCheckbox;
     private Combo ccextCombo;
     private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
@@ -206,8 +205,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
-        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders under this deep makefile", null);
-        autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatically add other folders where included files are located", "This project and its referenced projects are considered.");
+        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all folders under this deep makefile", null);
         Link pathsPageLink1 = createLink(includeGroup, "NOTE: Additional include directories can be specified in the <A>Paths and symbols</A> page.");
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
@@ -440,7 +438,6 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.addModifyListener(modifyListener);
 
         deepIncludesCheckbox.addSelectionListener(selectionChangeListener);
-        autoIncludePathCheckbox.addSelectionListener(selectionChangeListener);
 
         ccextCombo.addSelectionListener(selectionChangeListener);
         forceCompileForDllCheckbox.addSelectionListener(selectionChangeListener);
@@ -521,7 +518,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         deepIncludesCheckbox.setSelection(!options.noDeepIncludes);
-        autoIncludePathCheckbox.setSelection(options.metaAutoIncludePath);
 
         // "Compile" page
         if (options.ccext == null)
@@ -686,7 +682,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         result.noDeepIncludes = !deepIncludesCheckbox.getSelection();
-        result.metaAutoIncludePath = autoIncludePathCheckbox.getSelection();
 
         // "Compile" page
         String ccextText = ccextCombo.getText().trim().replace(".", "");

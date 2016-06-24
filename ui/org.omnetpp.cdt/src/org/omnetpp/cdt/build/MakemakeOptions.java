@@ -54,7 +54,6 @@ public class MakemakeOptions implements Cloneable {
     // "meta" options (--meta:...): they get interpreted by MetaMakemake,
     // and translated to normal makemake options.
     public boolean metaRecurse = false;
-    public boolean metaAutoIncludePath = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
     public boolean metaFeatureCFlags = true;
@@ -87,7 +86,6 @@ public class MakemakeOptions implements Cloneable {
         result.outRoot = "out";
         result.isDeep = true;
         result.metaRecurse = true;
-        result.metaAutoIncludePath = true;
         result.metaExportLibrary = true;
         result.metaUseExportedLibs = true;
         return result;
@@ -248,7 +246,7 @@ public class MakemakeOptions implements Cloneable {
                 metaRecurse = true;
             }
             else if (arg.equals("--meta:auto-include-path")) {
-                metaAutoIncludePath = true;
+                // ignore -- this option existed until OMNeT++ 5.0, it was removed in version 5.1
             }
             else if (arg.equals("--meta:export-library")) {
                 metaExportLibrary = true;
@@ -349,8 +347,6 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, makefileVariables, "-K");
         if (metaRecurse)
             result.add("--meta:recurse");
-        if (metaAutoIncludePath)
-            result.add("--meta:auto-include-path");
         if (metaExportLibrary)
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
@@ -478,7 +474,6 @@ public class MakemakeOptions implements Cloneable {
         result.makefileVariables.addAll(makefileVariables);
         result.extraArgs.addAll(extraArgs);
         result.metaRecurse = metaRecurse;
-        result.metaAutoIncludePath = metaAutoIncludePath;
         result.metaExportLibrary = metaExportLibrary;
         result.metaUseExportedLibs = metaUseExportedLibs;
         result.metaFeatureCFlags = metaFeatureCFlags;

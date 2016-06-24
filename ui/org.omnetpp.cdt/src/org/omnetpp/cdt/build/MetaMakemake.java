@@ -9,9 +9,6 @@ package org.omnetpp.cdt.build;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
@@ -68,13 +65,8 @@ public class MetaMakemake {
         MakemakeOptions options = buildSpec.getMakemakeOptions(makefileFolder);
         List<IContainer> makeFolders = buildSpec.getMakeFolders();
         IProject project = makefileFolder.getProject();
-//        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getCrossFolderDependencies(project, monitor);
-        Map<IContainer, Set<IContainer>> folderDeps = null; // FIXME remove this
 
         MakemakeOptions translatedOptions = options.clone();
-
-        //Activator.getDependencyCache().dumpPerFileDependencies(project);
-        //DependencyCache.dumpFolderDependencies(folderDeps);
 
         // add -f, and potentially --nmake
         translatedOptions.force = true;
@@ -116,18 +108,6 @@ public class MetaMakemake {
 
             // clear processed setting
             translatedOptions.metaRecurse = false;
-        }
-
-        // add extra include folders (this code assumes that exceptSubdirs are already filled in at this point)
-        if (options.metaAutoIncludePath && folderDeps != null) {
-            for (IContainer srcFolder : folderDeps.keySet())
-                if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs, makeFolders))
-                    for (IContainer dep : folderDeps.get(srcFolder))
-                        if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs, makeFolders)) // only add if "dep" is outside "folder"!
-                            addLocationToDirList(dep, translatedOptions.includeDirs, makefileFolder);
-
-            // clear processed setting
-            translatedOptions.metaAutoIncludePath = false;
         }
 
         ProjectFeaturesManager projectFeatures = new ProjectFeaturesManager(project);

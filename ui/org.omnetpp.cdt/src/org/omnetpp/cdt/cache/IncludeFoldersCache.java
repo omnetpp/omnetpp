@@ -228,7 +228,7 @@ public class IncludeFoldersCache {
             for (IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
                 MakemakeOptions options = buildSpec.getMakemakeOptions(makemakeFolder);
                 if (!options.isDeep || options.noDeepIncludes) {
-                    result.add(makemakeFolder);
+                    result.add(makemakeFolder); //FIXME ez llehet nem is kell, ha csak a Path&Symbols szamit, es a deep include-ok
                 }
                 else {
                     collectNonexcludedFolders(makemakeFolder, result, outFolders);
