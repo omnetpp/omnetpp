@@ -364,8 +364,9 @@ void Qtenv::storeInspectors(bool closeThem)
             if (closeThem) {
                 toBeClosed.push_back(insp);
             }
+
+            index++;
         }
-        index++;
     }
 
     for (auto i : toBeClosed) {
@@ -1923,9 +1924,6 @@ void Qtenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate
 
 void Qtenv::animateDelivery(cMessage *msg)
 {
-    char msgptr[32];
-    ptrToStr(msg, msgptr);
-
     // find suitable inspectors and do animate the message...
     cGate *g = msg->getArrivalGate();
     ASSERT(g);
@@ -1957,9 +1955,6 @@ void Qtenv::onObjectDoubleClicked(cObject *object) {
 
 void Qtenv::animateDeliveryDirect(cMessage *msg)
 {
-    char msgptr[32];
-    ptrToStr(msg, msgptr);
-
     // find suitable inspectors and do animate the message...
     cGate *g = msg->getArrivalGate();
     ASSERT(g);

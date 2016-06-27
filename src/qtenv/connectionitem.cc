@@ -238,6 +238,14 @@ void ConnectionItem::setTextPosition(Qt::Alignment alignment) {
     }
 }
 
+void ConnectionItem::setTextBackgroundColor(const QColor &color) {
+    textItem->setBackgroundBrush(color);
+}
+
+void ConnectionItem::setTextOutlineColor(const QColor &color) {
+    textItem->setPen(color);
+}
+
 void ConnectionItem::setTextColor(const QColor &color) {
     if (textColor != color) {
         textColor = color;

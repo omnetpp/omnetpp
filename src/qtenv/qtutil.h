@@ -86,6 +86,7 @@ protected:
     // we just misuse them in the paint method
     QGraphicsSimpleTextItem *outlineItem; // never has a Brush
     QGraphicsSimpleTextItem *fillItem; // never has a Pen
+    QBrush backgroundBrush;
 
 public:
     OutlinedTextItem(QGraphicsItem *parent = nullptr, QGraphicsScene *scene = nullptr);
@@ -97,6 +98,7 @@ public:
     void setText(const QString &text);
     void setPen(const QPen &pen);
     void setBrush(const QBrush &brush);
+    void setBackgroundBrush(const QBrush &brush);
 };
 
 // Label in the bottom right corner that display zoom factor

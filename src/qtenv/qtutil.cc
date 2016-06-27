@@ -240,6 +240,11 @@ QRectF OutlinedTextItem::boundingRect() const {
 }
 
 void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->save();
+    painter->setBrush(backgroundBrush);
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(boundingRect());
+    painter->restore();
     outlineItem->paint(painter, option, widget);
     fillItem->paint(painter, option, widget);
 }
@@ -254,6 +259,14 @@ void OutlinedTextItem::setPen(const QPen &pen) {
 void OutlinedTextItem::setBrush(const QBrush &brush) {
     if (brush != fillItem->brush()) {
         fillItem->setBrush(brush);
+        update();
+    }
+}
+
+void OutlinedTextItem::setBackgroundBrush(const QBrush &brush)
+{
+    if (backgroundBrush != brush) {
+        backgroundBrush = brush;
         update();
     }
 }

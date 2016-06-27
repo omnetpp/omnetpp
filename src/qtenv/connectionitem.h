@@ -72,6 +72,8 @@ public:
     void setDashOffset(double offset);
     void setText(const QString &text);
     void setTextPosition(Qt::Alignment alignment);
+    void setTextBackgroundColor(const QColor &color);
+    void setTextOutlineColor(const QColor &color);
     void setTextColor(const QColor &color);
     void setLineEnabled(bool enabled);
     void setArrowEnabled(bool enabled);

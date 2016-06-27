@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_ANIMATOR_H
 #define __OMNETPP_QTENV_ANIMATOR_H
 
-#include <list>
+#include <vector>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QObject>
@@ -35,57 +35,66 @@ enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 class GraphicsLayer;
 class ModuleInspector;
 
-struct Animation {
-    enum AnimType {
-        ANIM_ON_CONN,
-        ANIM_METHODCALL,
-        ANIM_SENDDIRECT
-    } type;
 
-    enum AnimDirection {
-        DIR_ASCENT,
-        DIR_DESCENT,
-        DIR_HORIZ
-    } direction;
+class Animation {
+    friend class Animator;
 
-    SendAnimMode mode;
-
-    QString text;
-    cMessage *msg = nullptr;
-
-    float time = 0;
-    float duration;
-    MessageItem *messageItem = nullptr;
-    // only used in senddirect and methodcall modes to temporarily connect the modules
-    ConnectionItem *connectionItem = nullptr;
+protected:
     ModuleInspector *inspector;
 
     QPointF src;
     QPointF dest;
-    void setToTime(float time);
-    void advance(float delta);
-    bool ended();
 
-    int groupIndex = 0;
+    float time = 0;
+    float duration;
 
-    QString info();
+    Animation(ModuleInspector *insp, const QPointF &src, const QPointF &dest, float duration);
 
-    Animation(ModuleInspector *insp, AnimType type, AnimDirection direction, SendAnimMode mode, QPointF src, QPointF dest, cMessage *msg, const QString &text = "");
-    Animation(ModuleInspector *insp, AnimType type, AnimDirection direction, const QPointF &src, const QPointF &dest, cMessage *msg = nullptr, const QString &text = "");
-    ~Animation();
+    virtual QString info() const = 0;
+
+    enum State { PENDING, WAITING, PLAYING, FINISHED, DONE };
+    // PENDING -> init() -> WAITING -> begin() ->
+    // -> PLAYING -> end() -> FINISHED -> cleanup() -> DONE
+    //      ||
+    //  setProgress()
+    State state = PENDING;
+
+public:
+    void advance(float delta); // delta is in seconds
+
+    // all of these (except setProgress) must be called from the subclasses' overrides
+    virtual void init() { state = WAITING; }
+    virtual void begin() { state = PLAYING; }
+    virtual void setProgress(float t) = 0; // t is always 0..1, must set state to FINISHED when t >= 1-epsilon
+    virtual void end() { state = FINISHED; }
+    virtual void cleanup() { state = DONE; }
+
+    // they are "in the same group", so their inits will be called
+    // at the same time, before any of them is played
+    // and their cleanups after all of them has ended
+    virtual bool inSameGroup(const Animation *other) const { return this == other; }
+
+    // they should be played simultaneously - should always imply relatedTo(other)
+    // their begins will be called at the same time,
+    // but the ends are not guaranteed to be synchronized
+    virtual bool concurrentWith(const Animation *other) const { return this == other; }
+
+    virtual ~Animation() { }
 };
 
 class Animator : public QObject
 {
     Q_OBJECT
 
-    std::list<Animation *> animations;
+    std::vector<Animation *> animations;
     std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
 
     static const int frameRate;
     // the max amount of pixels an arriving message will move inside the dest submodule rectangle
     static const double msgEndCreep;
     bool inHurry = false;
+
+    Animation *firstAnimInState(Animation::State state) const;
 
 public:
     explicit Animator();
@@ -109,7 +118,6 @@ public slots:
     void addAnimation(Animation *anim);
     void onFrameTimer();
     void play();
-    bool finished();
     void clear();
     void hurry();
 
