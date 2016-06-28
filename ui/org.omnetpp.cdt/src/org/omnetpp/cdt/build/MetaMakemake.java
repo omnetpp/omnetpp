@@ -20,9 +20,9 @@ import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -280,8 +280,10 @@ public class MetaMakemake {
                 boolean isWorkspacePath = (pathEntry.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) != 0;
                 if (isWorkspacePath) {
                     // convert to file-system path
-                    IFolder pathFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(value));
-                    IPath location = pathFolder.getLocation(); // null if project doesn't exist etc
+                    IPath path = new Path(value);
+                    IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
+                    IContainer folder = (path.segmentCount() == 1) ? wsRoot.getProject(path.segment(0)) : wsRoot.getFolder(path);
+                    IPath location = folder.getLocation(); // null if project doesn't exist etc
                     value = location == null ? null : location.toString();
                 }
                 if (value != null) {
