@@ -160,6 +160,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         // link at bottom
         exportLink = createLink(composite, "<a>Export build tester makefile</a>");
 
+        Label noteLabel = createLabel(composite, "");
+
         // register this page in the CDT property manager (note: if we skip this,
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
@@ -278,6 +280,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         }
 
         treeViewer.setInput(features);
+        if (StringUtils.isNotEmpty(features.getDefinesFileName()))
+            noteLabel.setText("Generated header file: "+ getProject().getName() + "/" + features.getDefinesFileName());
 
         // select enabled features in the checkbox table
         try {
@@ -316,7 +320,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     protected Label createLabel(Composite composite, String text) {
         Label label = new Label(composite, SWT.WRAP);
         label.setText(text);
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false));
         return label;
     }
 
@@ -634,14 +638,16 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             return false;
         }
 
-        // save features enablement state
+        // save features enablement state and generated header
         try {
             List<ProjectFeature> enabledFeatures = getEnabledFeaturesFromTree();
             features.saveFeatureEnablement(enabledFeatures);
+            if (features.getDefinesFileName() != null)
+                features.saveDefinesFile(enabledFeatures);
         }
         catch (CoreException e) {
-            Activator.logError("Cannot store feature enablement state for project " + getProject().getName(), e);
-            errorDialog("Cannot store feature enablement state for project", e);
+            Activator.logError("Cannot store feature enablement state for project " + getProject().getName(), e); //XXX msg
+            errorDialog("Cannot store feature enablement state for project", e);//XXX msg
             return false;
         }
 

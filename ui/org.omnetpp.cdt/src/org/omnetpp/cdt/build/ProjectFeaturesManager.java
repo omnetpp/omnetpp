@@ -8,6 +8,7 @@
 package org.omnetpp.cdt.build;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,18 +23,13 @@ import java.util.Stack;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICFolderDescription;
-import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
-import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -46,6 +42,7 @@ import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.ned.core.INedResources;
@@ -85,8 +82,12 @@ public class ProjectFeaturesManager {
     private static final String ATT_COMPILEFLAGS = "compileFlags";
     private static final String ATT_LINKERFLAGS = "linkerFlags";
     private static final String ATT_CPPSOURCEROOTS = "cppSourceRoots"; // attribute of root element
+    private static final String ATT_DEFINESFILE = "definesFile"; // attribute of root element
     private static final String ATT_ENABLED = "enabled"; // in ".oppfeaturestates"
 
+    private static final String[] ALL_ROOT_ATTRS = new String[] {
+        ATT_CPPSOURCEROOTS, ATT_DEFINESFILE
+    };
     private static final String[] ALL_FEATURE_ATTRS = new String[] {
         ATT_ID, ATT_NAME, ATT_DESCRIPTION, ATT_INITIALLYENABLED, ATT_LABELS, ATT_REQUIRES,
         ATT_NEDPACKAGES, ATT_EXTRASOURCEFOLDERS, ATT_COMPILEFLAGS,  ATT_LINKERFLAGS
@@ -97,6 +98,7 @@ public class ProjectFeaturesManager {
     private Document doc;  // DOM tree of ".oppfeatures"; only kept for validate()
     private Map<String, ProjectFeature> features;  // indexed by Id
     private Set<String> cppSourceRoots = null; // project relative paths of C++ source locations, e.g. "src" in INET; cppSourceRoots==null means the whole project is a C++ source location
+    private String definesFile = null; // project relative path of the header file to be generated
 
     /**
      * Creates an empty object. Use loadFeaturesFile() to populate it with the
@@ -119,6 +121,14 @@ public class ProjectFeaturesManager {
      */
     public boolean isEmpty() {
         return features.isEmpty();
+    }
+
+    /**
+     * Returns the project-relative path of the header file to be generated,
+     * with the defines contributed by the enabled project features.
+     */
+    public String getDefinesFileName() {
+        return definesFile;
     }
 
     /**
@@ -211,6 +221,53 @@ public class ProjectFeaturesManager {
     }
 
     /**
+     * Saves the defines file.
+     */
+    public void saveDefinesFile(List<ProjectFeature> enabledFeatures) throws CoreException {
+        Assert.isTrue(StringUtils.isNotEmpty(getDefinesFileName()));
+
+        Map<String, String> defines = collectDefines(enabledFeatures);
+        String content = makeDefinesFileContent(defines);
+
+        // save the file if its content differs
+        IFile definesFile = project.getFile(new Path(getDefinesFileName()));
+        byte[] bytes = content.getBytes();
+        MakefileTools.ensureFileContent(definesFile, bytes, null);
+    }
+
+    protected String makeDefinesFileContent(Map<String, String> defines) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("// Generated file, do not edit\n\n");
+        String[] symbols = defines.keySet().toArray(new String[0]);
+        Arrays.sort(symbols);
+        for (String symbol : symbols) {
+            String value = defines.get(symbol);
+            sb.append("#ifndef ").append(symbol).append("\n#define ").append(symbol);
+            if (value != null)
+                sb.append(" ").append(value);
+            sb.append("\n#endif\n\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Extract and return the defines from the compile flags of the given features.
+     */
+    protected Map<String, String> collectDefines(List<ProjectFeature> enabledFeatures) throws CoreException {
+        Map<String,String> defines = new HashMap<String,String>();
+        for (ProjectFeature feature : enabledFeatures) {
+            for (String cflag : feature.getCompileFlags().split("\\s+")) {
+                if (cflag.startsWith("-D") && cflag.length() > 2) {
+                    String symbol = cflag.substring(2).replaceFirst("=.*", "");
+                    String value = cflag.contains("=") ? StringUtils.substringAfter(cflag, "=") : null;
+                    defines.put(symbol, value);
+                }
+            }
+        }
+        return defines;
+    }
+
+    /**
      * Populates the object with the contents of the project's feature
      * description file, if one exists. Returns true on success.
      * If the file doesn't exist, it returns false. If the file exists
@@ -267,6 +324,7 @@ public class ProjectFeaturesManager {
         Map<String, ProjectFeature> result = new LinkedHashMap<String, ProjectFeature>();
         Element root = doc.getDocumentElement();
         cppSourceRoots = root.getAttributeNode(ATT_CPPSOURCEROOTS)==null ? null : getListAttribute(root, ATT_CPPSOURCEROOTS);
+        definesFile = getAttribute(root, ATT_DEFINESFILE);
         NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
         int unnamedCount = 0;
         for (int i=0; i<featureElements.getLength(); i++) {
@@ -331,8 +389,9 @@ public class ProjectFeaturesManager {
         // check the DOM tree
         Element root = doc.getDocumentElement();
         for (Node child : toArray(root.getAttributes()))
-            if (!child.getNodeName().equals(ATT_CPPSOURCEROOTS))
+            if (!ArrayUtil.contains(ALL_ROOT_ATTRS, child.getNodeName()))
                 errors.add("<" + root.getNodeName() + ">: ignoring unknown attribute \"" + child.getNodeName() + "\"");
+
         for (Node child : toArray(root.getChildNodes()))
             if (child instanceof Element && !child.getNodeName().equals(ELMNT_FEATURE))
                 errors.add("<" + root.getNodeName() + ">: ignoring unknown child element <" + child.getNodeName() + ">");
@@ -473,8 +532,8 @@ public class ProjectFeaturesManager {
 
         // process the compile options. NOTE: must be kept in sync with validation code in validateFeatures()!
         for (String cflag : cflags) {
-            // we only need to handle -I here, and can simply ignore the rest: -D's are automatically
-            // added to the normal CDT config, and validateFeatures() reports all other options as errors.
+            // we only need to handle -I here, and can simply ignore the rest: -D's are put into the
+            // generated header file, and validateFeatures() reports all other options as errors.
             // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
             if (cflag.startsWith("-I") && cflag.length()>2)
                 makemakeOptions.includeDirs.add(cflag.substring(2));
@@ -524,6 +583,9 @@ public class ProjectFeaturesManager {
         // save them
         ProjectUtils.saveNedFoldersFile(project, nedSourceFoldersConfig);
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
+
+        // fix up defines file
+        saveDefinesFile(getEnabledFeatures());
     }
 
     /**
@@ -663,16 +725,6 @@ public class ProjectFeaturesManager {
         List<IContainer> folders = getAllCxxSourceFolders(feature);
         for (IContainer folder : folders)
             setFolderExcluded(configurations, folder, !enable);
-
-        // add/remove preprocessor symbols
-        // Note: we set it on each source folder (only setting on the root does not seem to be enough)
-        for (String cflag : feature.getCompileFlags().split("\\s+")) {
-            if (cflag.startsWith("-D") && cflag.length()>2) {
-                String symbol = cflag.substring(2).replaceAll("=.*", "");
-                String value = cflag.replaceAll("[^=]*=?(.*)", "$1");
-                setMacroInAllConfigurationsAndFoldersAndLanguages(project, configurations, symbol, enable ? value : null);
-            }
-        }
     }
 
     protected List<IContainer> getAllCxxSourceFolders(ProjectFeature feature) {
@@ -713,57 +765,6 @@ public class ProjectFeaturesManager {
         return false;
     }
 
-    protected static void setMacroInAllConfigurationsAndFoldersAndLanguages(IProject project, ICConfigurationDescription[] configurations, String name, String value) throws WriteAccessException, CoreException {
-        for (ICConfigurationDescription configuration : configurations) {
-            // set it on all source folders
-            List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
-            for (IContainer folder : sourceLocations) {
-                ICFolderDescription folderDescription = CDTUtils.getOrCreateFolderDescription(configuration, folder);
-                ICLanguageSetting[] folderLanguageSettings = folderDescription.getLanguageSettings();
-                for (ICLanguageSetting languageSetting : folderLanguageSettings)
-                    if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO))
-                        CDTUtils.setMacro(languageSetting, name, value);
-            }
-            // also set it on the root folder (this setting may not be effective, but it's more discoverable for the user than folder settings)
-            ICLanguageSetting[] rootLanguageSettings = configuration.getRootFolderDescription().getLanguageSettings();
-            for (ICLanguageSetting languageSetting : rootLanguageSettings)
-                if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO))
-                    CDTUtils.setMacro(languageSetting, name, value);
-        }
-    }
-
-    protected static boolean isMacroOK(IProject project, ICConfigurationDescription[] configurations, String name, String value) throws CoreException {
-        for (ICConfigurationDescription configuration : configurations) {
-            // check it on all source folders
-            List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
-            for (IContainer folder : sourceLocations) {
-                ICFolderDescription folderDescription = CDTUtils.getOrCreateFolderDescription(configuration, folder);
-                ICLanguageSetting[] folderLanguageSettings = folderDescription.getLanguageSettings();
-                for (ICLanguageSetting languageSetting : folderLanguageSettings) {
-                    if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO)) {
-                        ICLanguageSettingEntry macro = CDTUtils.getMacro(languageSetting, name);
-                        if (value==null && macro!=null)
-                            return false;
-                        if (value!=null && (macro==null || !ObjectUtils.equals(macro.getValue(), value)))
-                            return false;
-                    }
-                }
-            }
-            // also check it on the root folder (this setting may not be effective, but it's more discoverable for the user than folder settings)
-            ICLanguageSetting[] rootLanguageSettings = configuration.getRootFolderDescription().getLanguageSettings();
-            for (ICLanguageSetting languageSetting : rootLanguageSettings) {
-                if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO)) {
-                    ICLanguageSettingEntry macro = CDTUtils.getMacro(languageSetting, name);
-                    if (value==null && macro!=null)
-                        return false;
-                    if (value!=null && (macro==null || !ObjectUtils.equals(macro.getValue(), value)))
-                        return false;
-                }
-            }
-        }
-        return true;
-    }
-
     protected void setFolderExcluded(ICConfigurationDescription[] configurations, IContainer folder, boolean exclude) throws CoreException {
         if (!folder.exists())
             return;
@@ -795,7 +796,7 @@ public class ProjectFeaturesManager {
     public static class Problem {
         public ProjectFeature feature;
         public String message;
-        public String toString() {return "\"" + feature.getName() + "\": " + message;}
+        public String toString() {return (feature==null ? "" : "\"" + feature.getName() + "\": ") + message;}
     }
 
     public List<Problem> validateProjectState() throws CoreException {
@@ -853,23 +854,25 @@ public class ProjectFeaturesManager {
                         addProblem(problems, feature, "Feature is disabled but folder " + folder.getFullPath() + " is not excluded from C++ build in at least one configuration");
                 }
             }
+        }
 
-            // check preprocessor symbols
-            // Note: we set it on each source folder (only setting on the root does not seem to be enough)
-            for (String cflag : feature.getCompileFlags().split("\\s+")) {
-                if (cflag.startsWith("-D") && cflag.length()>2) {
-                    String symbol = cflag.substring(2).replaceAll("=.*", "");
-                    String value = cflag.replaceAll("[^=]*=?(.*)", "$1");
-                    boolean isMacroOK = isMacroOK(project, configurations, symbol, enabled ? value : null);
-                    if (!isMacroOK) {
-                        if (enabled)
-                            addProblem(problems, feature, "Feature is enabled but macro " + cflag.substring(2) + " is not set in at least one configuration, folder or language");
-                        else
-                            addProblem(problems, feature, "Feature is disabled but macro " + cflag.substring(2) + " is set in at least one configuration, folder or language");
-                    }
-                }
+        // check that the defines file has the right content
+        if (StringUtils.isNotEmpty(getDefinesFileName())) {
+            IFile definesFile = project.getFile(new Path(getDefinesFileName()));
+            Map<String, String> defines = collectDefines(enabledFeatures);
+            String content = makeDefinesFileContent(defines);
+
+            try {
+                if (!definesFile.exists())
+                    addProblem(problems, null, "Missing defines file " + definesFile.getFullPath());
+                else if (!Arrays.equals(FileUtils.readBinaryFile(definesFile.getContents()), content.getBytes())) // NOTE: byte[].equals does NOT compare content, only references!!!
+                    addProblem(problems, null, "Defines file is out of sync: " + definesFile.getFullPath());
+            }
+            catch (IOException e) {
+                throw Activator.wrapIntoCoreException(e);
             }
         }
+
         return problems;
     }
 
@@ -878,37 +881,6 @@ public class ProjectFeaturesManager {
         problem.feature = feature;
         problem.message = message;
         problems.add(problem);
-    }
-
-    protected static void dumpMacros(IProject project, ICConfigurationDescription[] configurations, String macroNameRegex) {
-        for (ICConfigurationDescription configuration : configurations) {
-            System.out.println("Configuration:" + configuration.getName());
-
-            // check it on all source folders
-            Map<String,ICFolderDescription> folderDescriptions = new HashMap<String, ICFolderDescription>();
-            folderDescriptions.put("<root>", configuration.getRootFolderDescription());
-            List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
-            for (IContainer folder : sourceLocations) {
-                folderDescriptions.put(folder.getFullPath().toString(), CDTUtils.getFolderDescription(configuration, folder));
-            }
-
-            for (String folderName : folderDescriptions.keySet())
-            {
-                System.out.println("  Folder: " + folderName);
-                ICLanguageSetting[] folderLanguageSettings = folderDescriptions.get(folderName).getLanguageSettings();
-                for (ICLanguageSetting languageSetting : folderLanguageSettings) {
-                    System.out.println("    Language:" + languageSetting.getId());  // getLanguageId() returns null!
-                    ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);  // .MACRO
-                    for (ICLanguageSettingEntry e : settingEntries) {
-                        if (macroNameRegex == null || e.getName().matches(macroNameRegex)) {
-                            System.out.println("      " + e.getName() + " = " + e.getValue() +
-                                    "  kind=" + e.getKind() + "  flags=" + e.getFlags() +
-                                    "  (" + e.getClass().getSimpleName() + ")");
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Override

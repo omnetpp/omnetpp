@@ -134,6 +134,7 @@ public class MakefileTools {
     public static void ensureFileContent(IFile file, byte[] bytes, IProgressMonitor monitor) throws CoreException {
         // only overwrites file if its content is not already what's desired
         try {
+            file.refreshLocal(IResource.DEPTH_ZERO, monitor);
             if (!file.exists())
                 file.create(new ByteArrayInputStream(bytes), true, monitor);
             else if (!Arrays.equals(FileUtils.readBinaryFile(file.getContents()), bytes)) // NOTE: byte[].equals does NOT compare content, only references!!!
