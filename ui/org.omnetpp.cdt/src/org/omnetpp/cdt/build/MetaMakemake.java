@@ -44,7 +44,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//FIXME automatic includes from sub-make folders don't work!
 public class MetaMakemake {
     /**
      * Generates Makefile in the given folder. May be a long-running operation, mainly because of
@@ -119,12 +118,8 @@ public class MetaMakemake {
                 if (refBuildSpec != null && refProjDesc != null) {
                     for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
                         MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
-                        if (refOptions != null && refOptions.metaExportIncludePath) {
+                        if (refOptions != null && refOptions.metaExportIncludePath)
                             translatedOptions.includeDirs.addAll(getIncludePathsFor(refMakemakeFolder, refConfiguration));
-                            //TODO or maybe this:
-                            // IContainer includeFolder = TODOOOOOOOOOOOOO;
-                            // addLocationToDirList(includeFolder, translatedOptions.includeDirs, makefileFolder);
-                        }
                     }
                 }
             }
@@ -152,7 +147,7 @@ public class MetaMakemake {
                         if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB) && opt.metaExportLibrary) {
                             String libname = StringUtils.defaultIfEmpty(opt.target, f.getProject().getName());
                             String outdir = StringUtils.defaultIfEmpty(opt.outRoot, "out");
-                            String libdir = makeRelativePath(f.getProject(), makefileFolder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
+                            String libdir = f.getProject().getLocation().append(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
                             translatedOptions.libs.add(libname);
                             translatedOptions.libDirs.add(libdir);
                             if (opt.type==Type.SHAREDLIB && !StringUtils.isEmpty(opt.dllSymbol))
@@ -170,7 +165,7 @@ public class MetaMakemake {
                 MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
                 if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB)) {
                     String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
-                    String libdir = makeRelativePath(f.getProject(), makefileFolder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString(); //FIXME why
+                    String libdir = f.getProject().getLocation().append(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
                     translatedOptions.libDirs.add(libdir);
                     if (opt.type==Type.SHAREDLIB && !StringUtils.isEmpty(opt.dllSymbol))
                         translatedOptions.defines.add(opt.dllSymbol + "_IMPORT");
@@ -304,12 +299,6 @@ public class MetaMakemake {
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
         return CDTUtils.findCplusplusLanguageSetting(languageSettings, forLinker);
-    }
-
-    protected static void addLocationToDirList(IContainer input, List<String> dirList, IContainer reference) {
-        String relativePath = makeRelativePath(input, reference);
-        if (!dirList.contains(input.getLocation().toString()) && !dirList.contains(relativePath))
-            dirList.add(relativePath);
     }
 
     protected static String makeRelativePath(IContainer input, IContainer reference) {
