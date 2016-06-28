@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.common.project.ProjectUtils;
@@ -56,10 +55,7 @@ public class MetaMakemake {
         MakemakeOptions translatedOptions = translateOptions(makefileFolder, buildSpec, configuration, monitor);
         IProject project = makefileFolder.getProject();
 
-        // Activator.getDependencyCache().dumpPerFileDependencies(project);
-
-        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project, monitor);
-        new Makemake().generateMakefile(makefileFolder, translatedOptions, perFileDependencies);
+        new Makemake().generateMakefile(makefileFolder, translatedOptions);
     }
 
     /**
@@ -72,7 +68,8 @@ public class MetaMakemake {
         MakemakeOptions options = buildSpec.getMakemakeOptions(makefileFolder);
         List<IContainer> makeFolders = buildSpec.getMakeFolders();
         IProject project = makefileFolder.getProject();
-        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getCrossFolderDependencies(project, monitor);
+//        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getCrossFolderDependencies(project, monitor);
+        Map<IContainer, Set<IContainer>> folderDeps = null; // FIXME remove this
 
         MakemakeOptions translatedOptions = options.clone();
 

@@ -42,6 +42,7 @@ import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.ProblemsMessageDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
@@ -96,7 +97,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         }
 
         try {
-            return Activator.getDependencyCache().getProjectGroup(getProject(), monitor);
+            return ProjectUtils.getAllReferencedProjects(getProject());
         }
         catch (CoreException e) {
             Activator.logError(e);
@@ -107,7 +108,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
         super.clean(monitor);
-        Activator.getDependencyCache().clean(getProject());
         Activator.getIncludeFoldersCache().clean(getProject());
         getProject().deleteMarkers(MARKER_ID, true, IResource.DEPTH_INFINITE);
     }

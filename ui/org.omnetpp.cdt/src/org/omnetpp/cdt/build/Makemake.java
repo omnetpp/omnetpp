@@ -18,8 +18,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -69,19 +67,19 @@ public class Makemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
+    public void generateMakefile(IContainer folder, String args) throws CoreException, MakemakeException {
         MakemakeOptions options = new MakemakeOptions(args);
         if (!options.getParseErrors().isEmpty())
             throw new MakemakeException(options.getParseErrors().get(0));
-        generateMakefile(folder, options, perFileDeps);
+        generateMakefile(folder, options);
     }
 
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
+    public void generateMakefile(IContainer folder, String[] argv) throws CoreException, MakemakeException {
         MakemakeOptions options = new MakemakeOptions(argv);
-        generateMakefile(folder, options, perFileDeps);
+        generateMakefile(folder, options);
         if (!options.getParseErrors().isEmpty())
             throw new MakemakeException(options.getParseErrors().get(0));
     }
@@ -101,7 +99,7 @@ public class Makemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, final MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
+    public void generateMakefile(IContainer folder, final MakemakeOptions options) throws CoreException, MakemakeException {
         this.folder = folder;
 
         File directory = folder.getLocation().toFile();
@@ -336,27 +334,6 @@ public class Makemake {
         int approximateLinkerLineLength = 500 + estimateLength(objs) + estimateLength(extraObjs) + estimateLength(options.libs) + estimateLength(libDirs);
         boolean isLongLinkerLine = approximateLinkerLineLength > 8000;
 
-        // write dependencies
-        StringBuilder deps = new StringBuilder();
-        //String sep = " ";
-        String sep = " \\\n\t";
-        for (String srcDir : sourceDirs) {
-            IContainer srcFolder = srcDir.equals(".") ? folder : folder.getFolder(new Path(srcDir));
-            Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
-            if (fileDepsMap != null) {
-                for (IFile srcFile : sorted(fileDepsMap.keySet())) {
-                    if (srcFile.getFileExtension().equals(ccExt)) {
-                        String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
-                        deps.append(objFileName + ": ");
-                        deps.append(abs2rel(srcFile.getLocation()).toString());
-                        for (IFile includeFile : sorted(fileDepsMap.get(srcFile)))
-                            deps.append(sep + abs2rel(includeFile.getLocation()).toString());
-                        deps.append("\n");
-                    }
-                }
-            }
-        }
-
         // collect data for the template
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("rem", "");  // allows putting comments into the template
@@ -379,7 +356,6 @@ public class Makemake {
         m.put("-out", isNMake ? "/out:" : "-o ");  // note space after "-o" -- OS/X needs it
         m.put("cc", ccExt);
         m.put("obj", objExt);
-        m.put("deps", deps.toString());
         m.put("exe", options.type == MakemakeOptions.Type.EXE);
         m.put("sharedlib", options.type == MakemakeOptions.Type.SHAREDLIB);
         m.put("staticlib", options.type == MakemakeOptions.Type.STATICLIB);

@@ -21,10 +21,7 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.omnetpp.cdt.cache.DependencyCache;
-import org.omnetpp.cdt.cache.CompressedSourceFileCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
-import org.omnetpp.cdt.cache.Index;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.omnetpp.common.util.StringUtils;
@@ -44,11 +41,8 @@ public class Activator extends AbstractUIPlugin {
 
     private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
     private IncludeFoldersCache includeFoldersCache = new IncludeFoldersCache();
-    private DependencyCache dependencyCache = new DependencyCache();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
     private CProjectChecker cprojectChecker = new CProjectChecker();
-    private CompressedSourceFileCache compressedSourceFileCache = new CompressedSourceFileCache();
-    private Index index = new Index();
 
     /**
      * The constructor
@@ -66,11 +60,8 @@ public class Activator extends AbstractUIPlugin {
 
         projectFeaturesListener.hookListeners();
         includeFoldersCache.hookListeners();
-        dependencyCache.hookListeners();
         newConfigConfigurer.hookListeners();
         cprojectChecker.hookListeners();
-        compressedSourceFileCache.hookListeners();
-        index.hookListeners();
 
         cprojectChecker.checkAllOpenProjects();
 
@@ -91,11 +82,8 @@ public class Activator extends AbstractUIPlugin {
     public void stop(BundleContext context) throws Exception {
         projectFeaturesListener.unhookListeners();
         includeFoldersCache.unhookListeners();
-        dependencyCache.unhookListeners();
         newConfigConfigurer.unhookListeners();
         cprojectChecker.unhookListeners();
-        compressedSourceFileCache.unhookListeners();
-        index.unhookListeners();
 
         plugin = null;
         super.stop(context);
@@ -199,23 +187,11 @@ public class Activator extends AbstractUIPlugin {
         return result;
     }
 
-    public static DependencyCache getDependencyCache() {
-        return getDefault().dependencyCache;
-    }
-
     public static IncludeFoldersCache getIncludeFoldersCache() {
         return getDefault().includeFoldersCache;
     }
 
     public static NewConfigConfigurer getNewConfigConfigurer() {
         return getDefault().newConfigConfigurer;
-    }
-
-    public static CompressedSourceFileCache getCompressedSourceFileCache() {
-        return getDefault().compressedSourceFileCache;
-    }
-
-    public static Index getIndex() {
-        return getDefault().index;
     }
 }

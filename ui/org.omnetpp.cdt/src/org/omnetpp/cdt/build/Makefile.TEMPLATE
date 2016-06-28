@@ -173,7 +173,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### Pattern rules for cc files. For gnu make a single rule is enough;
 ### for nmake we need per-directory rules, plus one for "." (even though
 ### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
-{sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc} $(COPTS_FILE)
+{sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc} $(COPTS_FILE) | msgheaders smheaders
 {sourcedirs:}{~nmake:}	@$(MKPATH) $(dir $@)
 {sourcedirs:}{~nmake:}	$(qecho) "$<"
 {sourcedirs:}{~nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
@@ -240,12 +240,5 @@ cleanall: clean
 {nmake:}	-$(Q)rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
 {~nmake:}	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
-depend:
-	$(qecho) Creating dependencies...
-{sourcedirs:}	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
-{@i:submakedirs}{nmake:}	-cd {i} && if exist Makefile.vc $(MAKE) depend
-{~nmake:}	$(Q)-cd {i} && if [ -f Makefile ]; then $(MAKE) depend; fi
-{/@}
-
-{sourcedirs:}# DO NOT DELETE THIS LINE -- make depend depends on it.
-{sourcedirs:}{deps}
+# include all dependencies
+-include $(OBJS:%.o=%.d)
