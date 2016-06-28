@@ -53,6 +53,8 @@ public class MakemakeOptions implements Cloneable {
     // "meta" options (--meta:...): they get interpreted by MetaMakemake,
     // and translated to normal makemake options.
     public boolean metaRecurse = false;
+    public boolean metaExportIncludePath = false;
+    public boolean metaUseExportedIncludePaths = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
     public boolean metaFeatureCFlags = true;
@@ -73,18 +75,20 @@ public class MakemakeOptions implements Cloneable {
     /**
      * Create makemake options by parsing the given argument list.
      */
-    public MakemakeOptions(String[] argv) {
+    public MakemakeOptions(String[] argv) {  //TODO make this static, and should start from BLANK settings (as opposed to default settings)
         parseArgs(argv);
     }
 
     /**
      * Create a new MakemakeOptions for a new source folder.
      */
-    public static MakemakeOptions createInitial() {
+    public static MakemakeOptions createInitial() {  //TODO rename to makeDefault()? Or, should it be the constructor?
         MakemakeOptions result = new MakemakeOptions();
         result.outRoot = "out";
         result.isDeep = true;
         result.metaRecurse = true;
+        result.metaExportIncludePath = true;
+        result.metaUseExportedIncludePaths = true;
         result.metaExportLibrary = true;
         result.metaUseExportedLibs = true;
         return result;
@@ -247,6 +251,12 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("--meta:auto-include-path")) {
                 // ignore -- this option was removed in OMNeT++ version 5.1
             }
+            else if (arg.equals("--meta:export-include-path")) {
+                metaExportIncludePath = true;
+            }
+            else if (arg.equals("--meta:use-exported-include-paths")) {
+                metaUseExportedIncludePaths = true;
+            }
             else if (arg.equals("--meta:export-library")) {
                 metaExportLibrary = true;
             }
@@ -344,6 +354,10 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, makefileVariables, "-K");
         if (metaRecurse)
             result.add("--meta:recurse");
+        if (metaExportIncludePath)
+            result.add("--meta:export-include-path");
+        if (metaUseExportedIncludePaths)
+            result.add("--meta:use-exported-include-paths");
         if (metaExportLibrary)
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
@@ -470,6 +484,8 @@ public class MakemakeOptions implements Cloneable {
         result.makefileVariables.addAll(makefileVariables);
         result.extraArgs.addAll(extraArgs);
         result.metaRecurse = metaRecurse;
+        result.metaExportIncludePath = metaExportIncludePath;
+        result.metaUseExportedIncludePaths = metaUseExportedIncludePaths;
         result.metaExportLibrary = metaExportLibrary;
         result.metaUseExportedLibs = metaUseExportedLibs;
         result.metaFeatureCFlags = metaFeatureCFlags;

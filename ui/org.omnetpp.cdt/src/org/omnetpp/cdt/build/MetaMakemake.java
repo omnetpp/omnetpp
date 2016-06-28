@@ -9,14 +9,16 @@ package org.omnetpp.cdt.build;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -50,8 +52,6 @@ public class MetaMakemake {
      */
     public static void generateMakefile(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration, IProgressMonitor monitor) throws CoreException, MakemakeException {
         MakemakeOptions translatedOptions = translateOptions(makefileFolder, buildSpec, configuration, monitor);
-        IProject project = makefileFolder.getProject();
-
         new Makemake().generateMakefile(makefileFolder, translatedOptions);
     }
 
@@ -79,18 +79,6 @@ public class MetaMakemake {
         translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder, configuration));
         translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder, configuration));
         translatedOptions.defines.addAll(getMacrosFor(makefileFolder, configuration));
-
-//        // add extra include folders (this code assumes that exceptSubdirs are already filled in at this point)
-//        if (options.metaAutoIncludePath && folderDeps != null) {
-//            for (IContainer srcFolder : folderDeps.keySet())
-//                if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs, makeFolders))
-//                    for (IContainer dep : folderDeps.get(srcFolder))
-//                        if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs, makeFolders)) // only add if "dep" is outside "folder"!
-//                            addLocationToDirList(dep, translatedOptions.includeDirs, makefileFolder);
-//
-//            // clear processed setting
-//            translatedOptions.metaAutoIncludePath = false;
-//        }
 
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
@@ -120,6 +108,29 @@ public class MetaMakemake {
 
             // clear processed setting
             translatedOptions.metaRecurse = false;
+        }
+
+        // add include folders exported from referenced projects
+        if (options.metaUseExportedIncludePaths) {
+            for (IProject referencedProject : referencedProjects) {
+                ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(referencedProject);
+                ICConfigurationDescription refConfiguration = refProjDesc==null ? null : refProjDesc.getActiveConfiguration();
+                BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
+                if (refBuildSpec != null && refProjDesc != null) {
+                    for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
+                        MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
+                        if (refOptions != null && refOptions.metaExportIncludePath) {
+                            translatedOptions.includeDirs.addAll(getIncludePathsFor(refMakemakeFolder, refConfiguration));
+                            //TODO or maybe this:
+                            // IContainer includeFolder = TODOOOOOOOOOOOOO;
+                            // addLocationToDirList(includeFolder, translatedOptions.includeDirs, makefileFolder);
+                        }
+                    }
+                }
+            }
+
+            // clear processed setting
+            translatedOptions.metaUseExportedIncludePaths = false;
         }
 
         ProjectFeaturesManager projectFeatures = new ProjectFeaturesManager(project);

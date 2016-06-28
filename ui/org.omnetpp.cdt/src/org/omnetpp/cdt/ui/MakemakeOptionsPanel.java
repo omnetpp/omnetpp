@@ -118,6 +118,8 @@ public class MakemakeOptionsPanel extends Composite {
     private Text outputDirText;
 
     // "Compile" page
+    private Button exportIncludePathCheckbox;
+    private Button useExportedIncludePathsCheckbox;
     private Combo ccextCombo;
     private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
@@ -204,7 +206,9 @@ public class MakemakeOptionsPanel extends Composite {
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
-        Link pathsPageLink1 = createLink(includeGroup, "Include directories can be specified in the <A>Paths and Symbols</A> property page.");
+        Link pathsPageLink1 = createLink(includeGroup, "NOTE: Include directories can be specified in the <A>Paths and Symbols</A> property page.");
+        exportIncludePathCheckbox = createCheckbox(includeGroup, "Export include path for other projects", null);
+        useExportedIncludePathsCheckbox = createCheckbox(includeGroup, "Add include paths exported from referenced projects", null);
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
@@ -435,6 +439,9 @@ public class MakemakeOptionsPanel extends Composite {
         exportLibraryCheckbox.addSelectionListener(selectionChangeListener);
         outputDirText.addModifyListener(modifyListener);
 
+        exportIncludePathCheckbox.addSelectionListener(selectionChangeListener);
+        useExportedIncludePathsCheckbox.addSelectionListener(selectionChangeListener);
+
         ccextCombo.addSelectionListener(selectionChangeListener);
         forceCompileForDllCheckbox.addSelectionListener(selectionChangeListener);
         dllSymbolText.addModifyListener(modifyListener);
@@ -513,6 +520,8 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.setText(StringUtils.nullToEmpty(options.outRoot));
 
         // "Compile" page
+        exportIncludePathCheckbox.setSelection(options.metaExportIncludePath);
+        useExportedIncludePathsCheckbox.setSelection(options.metaUseExportedIncludePaths);
         if (options.ccext == null)
             ccextCombo.setText(CCEXT_AUTODETECT);
         else
@@ -673,6 +682,8 @@ public class MakemakeOptionsPanel extends Composite {
         result.outRoot = outputDirText.getText();
 
         // "Compile" page
+        result.metaExportIncludePath = exportIncludePathCheckbox.getSelection();
+        result.metaUseExportedIncludePaths = useExportedIncludePathsCheckbox.getSelection();
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.forceCompileForDll = forceCompileForDllCheckbox.getSelection();
