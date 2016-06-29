@@ -118,6 +118,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Text outputDirText;
 
     // "Compile" page
+    private FileListControl includePathList;
     private Button exportIncludePathCheckbox;
     private Button useExportedIncludePathsCheckbox;
     private Combo ccextCombo;
@@ -173,7 +174,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
-        Group group = createGroup(targetPage, "Target type:", 1);
+        Group group = createGroup(targetPage, "Target type", 1);
         targetExecutableRadioButton = createRadioButton(group, "Executable", null);
         targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll, .so or .dylib)", null);
         targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)", null);
@@ -182,7 +183,7 @@ public class MakemakeOptionsPanel extends Composite {
         targetCompileOnlyRadioButton = createRadioButton(group, "No executable or library", null);
         createLabel(group, "NOTE: To prevent the makefile from compiling any source file, exclude this folder from build.");
 
-        Group targetNameGroup = createGroup(targetPage, "Target name:", 2);
+        Group targetNameGroup = createGroup(targetPage, "Target name", 2);
         defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "The default is the project name");
         defaultTargetNameRadionButton.setLayoutData(new GridData());
         ((GridData)defaultTargetNameRadionButton.getLayoutData()).horizontalSpan = 2;
@@ -190,12 +191,12 @@ public class MakemakeOptionsPanel extends Composite {
         targetNameText = new Text(targetNameGroup, SWT.BORDER);
         targetNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        Group outGroup = createGroup(targetPage, "Output:", 2);
+        Group outGroup = createGroup(targetPage, "Output", 2);
         outputDirText = createLabelAndText(outGroup, "Output directory:", "Specify project relative path. When empty, defaults to \"out\".");
 
         // "Scope" page
         scopePage.setLayout(new GridLayout(1,false));
-        Group group1 = createGroup(scopePage, "Select makefile scope:", 1);
+        Group group1 = createGroup(scopePage, "Makefile Scope", 1);
         deepCheckbox = createCheckbox(group1, "Deep compile", "Compile all source files from this subdirectory tree");
         recurseCheckbox = createCheckbox(group1, "Recursive make", "Invoke makefiles any levels under this directory");
         createLabel(group1, "NOTE: To control invocation order in recursive makefiles, add rules to Makefrag on the Custom tab.");
@@ -206,7 +207,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
-        Link pathsPageLink1 = createLink(includeGroup, "NOTE: Include directories can be specified in the <A>Paths and Symbols</A> property page.");
+        includePathList = new FileListControl(includeGroup, "Include directories (-I)", BROWSE_DIR);
         exportIncludePathCheckbox = createCheckbox(includeGroup, "Export include path for other projects", null);
         useExportedIncludePathsCheckbox = createCheckbox(includeGroup, "Add include paths exported from referenced projects", null);
 
@@ -234,7 +235,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
 
-        Group linkGroup = createGroup(linkPage, "Link:", 2);
+        Group linkGroup = createGroup(linkPage, "Link", 2);
         useExportedLibsCheckbox = createCheckbox(linkGroup, "Link with libraries exported from referenced projects", null);
         ((GridData)useExportedLibsCheckbox.getLayoutData()).horizontalSpan = 2;
         createLabel(linkGroup, "User interface libraries to link with:");
@@ -305,7 +306,6 @@ public class MakemakeOptionsPanel extends Composite {
                 gotoPathsAndSymbolsPage();
             }
         };
-        pathsPageLink1.addSelectionListener(gotoListener);
         pathsPageLink2.addSelectionListener(gotoListener);
         pathsPageLink3.addSelectionListener(gotoListener);
 
@@ -520,6 +520,7 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.setText(StringUtils.nullToEmpty(options.outRoot));
 
         // "Compile" page
+        includePathList.setList(options.includeDirs.toArray(new String[]{}));
         exportIncludePathCheckbox.setSelection(options.metaExportIncludePath);
         useExportedIncludePathsCheckbox.setSelection(options.metaUseExportedIncludePaths);
         if (options.ccext == null)
@@ -682,6 +683,7 @@ public class MakemakeOptionsPanel extends Composite {
         result.outRoot = outputDirText.getText();
 
         // "Compile" page
+        result.includeDirs.addAll(Arrays.asList(includePathList.getItems()));
         result.metaExportIncludePath = exportIncludePathCheckbox.getSelection();
         result.metaUseExportedIncludePaths = useExportedIncludePathsCheckbox.getSelection();
         String ccextText = ccextCombo.getText().trim().replace(".", "");
