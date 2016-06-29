@@ -133,8 +133,22 @@ public class MetaMakemake {
 
         // add CFLAGS contributed by enabled project features
         if (options.metaFeatureCFlags) {
-            projectFeatures.addFeatureCFlagsTo(translatedOptions);
+            List<String> cflags = projectFeatures.getFeatureCFlags();
+            for (String cflag : cflags) {
+                // we only need to handle -I here, and can simply ignore the rest: -D's are put into the
+                // generated header file, and validateFeatures() reports all other options as errors.
+                // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
+                if (cflag.startsWith("-I") && cflag.length()>2)
+                    translatedOptions.includeDirs.add(cflag.substring(2));
+            }
+
+            // clear processed setting
             translatedOptions.metaFeatureCFlags = false;
+        }
+
+        if (translatedOptions.metaExportIncludePath) {
+            // no processing required
+            translatedOptions.metaExportIncludePath = false;
         }
 
         // add libraries from other projects, if requested
@@ -175,7 +189,18 @@ public class MetaMakemake {
 
         // add LDFLAGS contributed by enabled project features
         if (options.metaFeatureLDFlags) {
-            projectFeatures.addFeatureLDFlagsTo(translatedOptions);
+            List<String> ldflags = projectFeatures.getFeatureLDFlags();
+            for (String ldflag : ldflags) {
+                // we only need to handle -l and -L here, and can simply ignore the rest:
+                // validateFeatures() already reports them as errors. We can also reject "-L <path>"
+                // (i.e. with a space), because validateFeatures() also complains about it.
+                if (ldflag.startsWith("-l") && ldflag.length()>2)
+                    translatedOptions.libs.add(ldflag.substring(2));
+                else if (ldflag.startsWith("-L")  && ldflag.length()>2)
+                    translatedOptions.libDirs.add(ldflag.substring(2));
+            }
+
+            // clear processed setting
             translatedOptions.metaFeatureLDFlags = false;
         }
 
@@ -190,6 +215,7 @@ public class MetaMakemake {
         // Debug.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
+
 
     /**
      * Returns the (folder-relative) paths of directories excluded from build

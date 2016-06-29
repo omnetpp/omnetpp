@@ -522,43 +522,23 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Adds compile options contributed by the enabled features to makemakeOptions.
-     * Invoked by MetaMakemake to process "--meta:feature-cflags".
+     * Return the compile flags from all enabled features.
      */
-    public void addFeatureCFlagsTo(MakemakeOptions makemakeOptions) throws CoreException {
+    public List<String> getFeatureCFlags() throws CoreException {
         List<String> cflags = new ArrayList<String>();
         for (ProjectFeature f : getEnabledFeatures())
             cflags.addAll(Arrays.asList(f.getCompileFlags().split("\\s+")));
-
-        // process the compile options. NOTE: must be kept in sync with validation code in validateFeatures()!
-        for (String cflag : cflags) {
-            // we only need to handle -I here, and can simply ignore the rest: -D's are put into the
-            // generated header file, and validateFeatures() reports all other options as errors.
-            // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
-            if (cflag.startsWith("-I") && cflag.length()>2)
-                makemakeOptions.includeDirs.add(cflag.substring(2));
-        }
+        return cflags;
     }
 
     /**
-     * Adds linker options contributed by the enabled features to makemakeOptions.
-     * Invoked by MetaMakemake to process "--meta:feature-ldflags".
+     * Return the linker flags from all enabled features.
      */
-    public void addFeatureLDFlagsTo(MakemakeOptions makemakeOptions) throws CoreException {
+    public List<String> getFeatureLDFlags() throws CoreException {
         List<String> ldflags = new ArrayList<String>();
         for (ProjectFeature f : getEnabledFeatures())
             ldflags.addAll(Arrays.asList(f.getLinkerFlags().split("\\s+")));
-
-        // process the linker options. NOTE: must be kept in sync with validation code in validateFeatures()!
-        for (String ldflag : ldflags) {
-            // we only need to handle -l and -L here, and can simply ignore the rest:
-            // validateFeatures() already reports them as errors. We can also reject "-L <path>"
-            // (i.e. with a space), because validateFeatures() also complains about it.
-            if (ldflag.startsWith("-l") && ldflag.length()>2)
-                makemakeOptions.libs.add(ldflag.substring(2));
-            else if (ldflag.startsWith("-L")  && ldflag.length()>2)
-                makemakeOptions.libDirs.add(ldflag.substring(2));
-        }
+        return ldflags;
     }
 
     /**
