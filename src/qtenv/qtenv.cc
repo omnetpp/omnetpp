@@ -707,7 +707,7 @@ bool Qtenv::doRunSimulation()
 
         // display update
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
-            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3)) // do not start new interval at every event
+            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > (unsigned long)opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3)) // do not start new interval at every event
                 speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             callRefreshDisplay();
             refreshInspectors();
