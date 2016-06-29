@@ -299,7 +299,9 @@ void Inspector::goUpInto() //XXX weird name
 void Inspector::closeEvent(QCloseEvent *) {
     if (isToplevelWindow)
         setPref(PREF_GEOM, geometry());
+
     getQtenv()->deleteInspector(this);
+    getQtenv()->storeInspectors(false);
 }
 
 void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)

@@ -116,6 +116,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
 class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 {
    Q_OBJECT
+
    public:
       //
       // state transitions:
@@ -141,7 +142,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       };
       typedef std::vector<sPathEntry> PathVec;
 
-   public:
       QtenvOptions *&opt;          // alias to EnvirBase::opt
 
       // state variables
@@ -325,6 +325,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void callRefreshDisplay();
       void refreshInspectors();
       void redrawInspectors();
+      void storeInspectors(bool closeThem);
+      void restoreInspectors();
       Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);

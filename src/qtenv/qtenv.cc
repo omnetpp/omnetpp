@@ -330,6 +330,104 @@ void Qtenv::restoreOptsFromPrefs() {
     if (pref.isValid()) logBuffer.setMaxNumEntries(pref.toInt());
 }
 
+void Qtenv::storeInspectors(bool closeThem)
+{
+    // erasing the previously stored inspectors from the rc file
+    localPrefs->beginGroup("Inspectors");
+    localPrefs->remove("");
+    localPrefs->endGroup();
+
+    std::vector<Inspector *> toBeClosed;
+
+    int index = 0; // no particular meaning, just a unique identifier
+    for (Inspector *insp : inspectors) {
+        if (insp->isToplevel()) {
+            QString prefix = QString("Inspectors/insp_") + QString::number(index) + "_";
+
+            cObject *obj = insp->getObject();
+
+            int objectId = -1;
+            if (cMessage *msg = dynamic_cast<cMessage *>(obj))
+                objectId = msg->getId();
+            if (cComponent *component = dynamic_cast<cComponent*>(obj))
+                objectId = component->getId();
+
+
+            localPrefs->setValue(prefix + "object", obj->getFullPath().c_str());
+            localPrefs->setValue(prefix + "classname", getObjectShortTypeName(obj));
+            localPrefs->setValue(prefix + "id", objectId);
+            localPrefs->setValue(prefix + "type", insp->getType());
+            localPrefs->setValue(prefix + "geom", insp->geometry());
+            localPrefs->setValue(prefix + "fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
+
+            if (closeThem) {
+                toBeClosed.push_back(insp);
+            }
+        }
+        index++;
+    }
+
+    for (auto i : toBeClosed) {
+        deleteInspector(i);
+    }
+}
+
+void Qtenv::restoreInspectors()
+{
+    int index = 0;
+    while (true) {
+        bool ok = true;
+        QString prefix = QString("Inspectors/insp_") + QString::number(index) + "_";
+
+        QVariant v = localPrefs->value(prefix + "object");
+        ok = ok && v.canConvert<QString>();
+        QString object = v.value<QString>();
+
+        v = localPrefs->value(prefix + "classname");
+        ok = ok && v.canConvert<QString>();
+        QString classname = v.value<QString>();
+
+        v = localPrefs->value(prefix + "id");
+        ok = ok && v.canConvert<int>();
+        int objectId = v.value<int>();
+
+        v = localPrefs->value(prefix + "type");
+        ok = ok && v.canConvert<int>();
+        int type = v.value<int>();
+
+        v = localPrefs->value(prefix + "geom");
+        ok = ok && v.canConvert<QRect>();
+        QRect geom = v.value<QRect>();
+
+        v = localPrefs->value(prefix + "fullscreen");
+        ok = ok && v.canConvert<bool>();
+        bool fullscreen = v.value<bool>();
+
+        if (!ok)
+            break;
+
+        auto o = object.toUtf8(); // we have to save these to variables
+        auto c = classname.toUtf8(); // otherwise they are temporary
+        cFindByPathVisitor visitor(o, c, objectId);
+        visitor.process(getSimulation());
+
+        for (int i = 0; i < visitor.getArraySize(); ++i) {
+            if (!findFirstInspector(visitor.getArray()[i], type, true)) {
+                Inspector *insp = inspect(visitor.getArray()[i], type, true);
+
+                if (fullscreen)
+                    insp->setWindowState(insp->windowState() | Qt::WindowFullScreen);
+                else {
+                    insp->setWindowState(insp->windowState() & ~Qt::WindowFullScreen);
+                    insp->setGeometry(geom);
+                }
+            }
+        }
+
+        ++index;
+    }
+}
+
 Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
@@ -438,15 +536,14 @@ void Qtenv::doRun()
     // SHUTDOWN
     //
 
+    // saving the open toplevel inspectors to the .qtenvrc file
+    storeInspectors(false);
+
     // close all inspectors before exiting
-    for ( ; ; ) {
-        InspectorList::iterator it = inspectors.begin();
-        if (it == inspectors.end())
-            break;
-        Inspector *insp = *it;
-        inspectors.erase(it);
+    for (auto insp : inspectors) {
         delete insp;
     }
+    inspectors.clear();
 
     // clear log
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????
@@ -862,6 +959,7 @@ void Qtenv::newNetwork(const char *networkname)
     try {
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
+            storeInspectors(true);
             if (simulationState != SIM_FINISHCALLED)
                 endRun();
             getSimulation()->deleteNetwork();
@@ -904,6 +1002,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
     try {
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
+            storeInspectors(true);
             if (simulationState != SIM_FINISHCALLED)
                 endRun();
             getSimulation()->deleteNetwork();
@@ -1052,7 +1151,7 @@ void Qtenv::refreshInspectors()
         (*it)->clearObjectChangeFlags();
 
     // try opening "pending" inspectors
-    //TCLKILL CHK(Tcl_VarEval(interp, "inspectorUpdateCallback", TCL_NULL));
+    restoreInspectors();
 }
 
 void Qtenv::redrawInspectors()
