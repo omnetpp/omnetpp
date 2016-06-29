@@ -192,7 +192,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
                 buildSpec.setFolderMakeType(folder, BuildSpecification.CUSTOM);
             else {
                 buildSpec.setFolderMakeType(folder, BuildSpecification.MAKEMAKE);
-                MakemakeOptions options = new MakemakeOptions(args);
+                MakemakeOptions options = MakemakeOptions.parse(args);
                 buildSpec.setMakemakeOptions(folder, options);
             }
         }

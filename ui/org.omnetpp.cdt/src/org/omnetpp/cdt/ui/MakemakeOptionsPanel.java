@@ -559,7 +559,7 @@ public class MakemakeOptionsPanel extends Composite {
 
             if (isPreviewPageSelected()) {
                 // re-parse options text modified by user
-                MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText());
+                MakemakeOptions updatedOptions = MakemakeOptions.parse(optionsText.getText());
                 setErrorMessage(null);
                 if (!updatedOptions.getParseErrors().isEmpty())
                     setErrorMessage("Error: " + updatedOptions.getParseErrors().get(0));
@@ -668,7 +668,7 @@ public class MakemakeOptionsPanel extends Composite {
      * (the buildSpec won't be modified by this dialog.)
      */
     public MakemakeOptions getResult() {
-        MakemakeOptions result = new MakemakeOptions();
+        MakemakeOptions result = MakemakeOptions.createBlank();
 
         // "Scope" page
         result.isDeep = deepCheckbox.getSelection();

@@ -22,7 +22,6 @@ import org.omnetpp.common.util.StringUtils;
  * Value object to represent opp_makemake command-line options in a parsed form.
  * @author Andras
  */
-//TODO support a "copy to bin/ or lib/ directory" meta-option
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
 
@@ -50,40 +49,30 @@ public class MakemakeOptions implements Cloneable {
     public List<String> makefileVariables = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
-    // "meta" options (--meta:...): they get interpreted by MetaMakemake,
-    // and translated to normal makemake options.
+    // "meta" options (--meta:...): they are interpreted by MetaMakemake,
+    // and translated into normal makemake options.
     public boolean metaRecurse = false;
     public boolean metaExportIncludePath = false;
     public boolean metaUseExportedIncludePaths = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
-    public boolean metaFeatureCFlags = true;
-    public boolean metaFeatureLDFlags = true;
+    public boolean metaFeatureCFlags = false;
+    public boolean metaFeatureLDFlags = false;
 
     private List<String> errors = null;
 
     /**
-     * Create makemake options with the default settings.
+     * Create a new blank MakemakeOptions
      */
-    public MakemakeOptions() {
-    }
-
-    public MakemakeOptions(String args) {
-        this(StringUtils.isEmpty(args) ? new String[0] : args.trim().split(" +"));  //XXX doesn't honor quotes! use StrTokenizer?
+    public static MakemakeOptions createBlank() {
+        return new MakemakeOptions();
     }
 
     /**
-     * Create makemake options by parsing the given argument list.
+     * Create a new MakemakeOptions with the default settings
      */
-    public MakemakeOptions(String[] argv) {  //TODO make this static, and should start from BLANK settings (as opposed to default settings)
-        parseArgs(argv);
-    }
-
-    /**
-     * Create a new MakemakeOptions for a new source folder.
-     */
-    public static MakemakeOptions createInitial() {  //TODO rename to makeDefault()? Or, should it be the constructor?
-        MakemakeOptions result = new MakemakeOptions();
+    public static MakemakeOptions createWithDefaultSettings() {
+        MakemakeOptions result = new MakemakeOptions();  // start from blank
         result.outRoot = "out";
         result.isDeep = true;
         result.metaRecurse = true;
@@ -91,13 +80,32 @@ public class MakemakeOptions implements Cloneable {
         result.metaUseExportedIncludePaths = true;
         result.metaExportLibrary = true;
         result.metaUseExportedLibs = true;
+        result.metaFeatureCFlags = true;
+        result.metaFeatureLDFlags = true;
         return result;
     }
 
     /**
-     * Parse the argument list into the member variables
+     * Create makemake options by parsing the given argument list.
      */
-    public void parseArgs(String[] argv) {
+    public static MakemakeOptions parse(String args) {
+        return parse(StringUtils.isEmpty(args) ? new String[0] : args.trim().split(" +"));  //XXX doesn't honor quotes! use StrTokenizer?
+    }
+
+    /**
+     * Create makemake options by parsing the given argument list.
+     */
+    public static MakemakeOptions parse(String[] argv) {
+        MakemakeOptions options = new MakemakeOptions();
+        options.parseArgs(argv);
+        return options;
+    }
+
+    private MakemakeOptions() {
+    }
+
+    private MakemakeOptions parseArgs(String[] argv) {
+        // should start from blank
         errors = null;
 
         // process arguments
@@ -285,9 +293,11 @@ public class MakemakeOptions implements Cloneable {
         for (; i < argv.length; i++) {
             extraArgs.add(argv[i]);
         }
+
+        return this;
     }
 
-    protected boolean checkArg(String[] argv, int i) {
+    private boolean checkArg(String[] argv, int i) {
         if (i+1 >= argv.length) {
             addError("option " + argv[i] +  " requires an argument");
             return false;
@@ -295,7 +305,7 @@ public class MakemakeOptions implements Cloneable {
         return true;
     }
 
-    protected void addError(String message) {
+    private void addError(String message) {
         if (errors == null)
             errors = new ArrayList<String>();
         errors.add(message);

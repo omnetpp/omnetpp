@@ -104,7 +104,7 @@ public class BuildSpecification implements Cloneable {
                 folderSpecs.put(folder, folderSpec = new FolderSpec());
             folderSpec.makefileType = type;
             if (type == MAKEMAKE && folderSpec.makemakeOptions == null)
-                folderSpec.makemakeOptions = MakemakeOptions.createInitial();
+                folderSpec.makemakeOptions = MakemakeOptions.createWithDefaultSettings();
         }
     }
 
@@ -149,7 +149,7 @@ public class BuildSpecification implements Cloneable {
         // add project root immediately
         BuildSpecification buildSpec = new BuildSpecification(project);
         buildSpec.setFolderMakeType(project, MAKEMAKE);
-        buildSpec.setMakemakeOptions(project, MakemakeOptions.createInitial());
+        buildSpec.setMakemakeOptions(project, MakemakeOptions.createWithDefaultSettings());
         return buildSpec;
     }
 
@@ -184,12 +184,12 @@ public class BuildSpecification implements Cloneable {
                     folderSpec.makefileType = dir.getAttribute(TYPE_ATTR).equals("makemake") ? MAKEMAKE : CUSTOM;
                     String args = dir.getAttribute(MAKEMAKEOPTIONS_ATTR);
                     if (!StringUtils.isEmpty(args)) {
-                        folderSpec.makemakeOptions = new MakemakeOptions(args);
+                        folderSpec.makemakeOptions = MakemakeOptions.parse(args);
                         if (!folderSpec.makemakeOptions.getParseErrors().isEmpty())
                             throw Activator.wrapIntoCoreException(new MakemakeException(buildSpecFile.getFullPath() + ": " + folderSpec.makemakeOptions.getParseErrors().get(0)));
                     }
                     if (folderSpec.makefileType == MAKEMAKE && folderSpec.makemakeOptions == null)
-                        folderSpec.makemakeOptions = MakemakeOptions.createInitial();
+                        folderSpec.makemakeOptions = MakemakeOptions.createWithDefaultSettings();
                     buildSpec.folderSpecs.put(folder, folderSpec);
                 }
                 return buildSpec;
@@ -219,7 +219,7 @@ public class BuildSpecification implements Cloneable {
 
                     IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                     if (!StringUtils.isEmpty(args)) {
-                        MakemakeOptions makemakeOptions = new MakemakeOptions(args);
+                        MakemakeOptions makemakeOptions = MakemakeOptions.parse(args);
                         if (!makemakeOptions.getParseErrors().isEmpty())
                             throw Activator.wrapIntoCoreException(new MakemakeException(BUILDSPEC_FILENAME + ": " + makemakeOptions.getParseErrors().get(0)));
                         FolderSpec folderSpec = new FolderSpec();

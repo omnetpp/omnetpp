@@ -68,7 +68,7 @@ public class Makemake {
      * Generates Makefile in the given folder.
      */
     public void generateMakefile(IContainer folder, String args) throws CoreException, MakemakeException {
-        MakemakeOptions options = new MakemakeOptions(args);
+        MakemakeOptions options = MakemakeOptions.parse(args);
         if (!options.getParseErrors().isEmpty())
             throw new MakemakeException(options.getParseErrors().get(0));
         generateMakefile(folder, options);
@@ -78,7 +78,7 @@ public class Makemake {
      * Generates Makefile in the given folder.
      */
     public void generateMakefile(IContainer folder, String[] argv) throws CoreException, MakemakeException {
-        MakemakeOptions options = new MakemakeOptions(argv);
+        MakemakeOptions options = MakemakeOptions.parse(argv);
         generateMakefile(folder, options);
         if (!options.getParseErrors().isEmpty())
             throw new MakemakeException(options.getParseErrors().get(0));
