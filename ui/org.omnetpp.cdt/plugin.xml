@@ -86,7 +86,7 @@
                   id="org.omnetpp.cdt.gnu.toolchain.debug"
                   superClass="org.omnetpp.cdt.gnu.toolchain.base">
                <builder
-                     arguments="MODE=debug CONFIGNAME=${ConfigName}"
+                     arguments="MODE=debug"
                      id="org.omnetpp.cdt.gnu.builder.debug"
                      isAbstract="false"
                      superClass="org.omnetpp.cdt.gnu.builder">
@@ -101,7 +101,7 @@
                   id="org.omnetpp.cdt.gnu.toolchain.release"
                   superClass="org.omnetpp.cdt.gnu.toolchain.base">
                <builder
-                     arguments="MODE=release CONFIGNAME=${ConfigName}"
+                     arguments="MODE=release"
                      id="org.omnetpp.cdt.gnu.builder.release"
                      isAbstract="false"
                      superClass="org.omnetpp.cdt.gnu.builder">
