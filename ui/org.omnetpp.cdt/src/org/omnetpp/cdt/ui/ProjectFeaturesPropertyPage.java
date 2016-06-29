@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
@@ -495,13 +494,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             result += "Some features are missing dependencies. <a href=\"dependency\">Details</a>\n";
 
         // check that CDT and NED state corresponds to the feature selection
-        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
-        if (projectDescription == null)
-            return "Cannot access CDT build information for this project. Is this a C/C++ project?";
-        ICConfigurationDescription[] configurations = projectDescription.getConfigurations();
-        List<Problem> problems;
         try {
-            problems = features.validateProjectState(configurations, nedSourceFoldersConfig, getEnabledFeaturesFromTree());
+            List<Problem> problems = features.validateProjectState();
             if (!problems.isEmpty())
                 result += "Some project settings do not correspond to the enabled features. <a href=\"config\">Details</a>\n";
         }
@@ -530,6 +524,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     }
 
     protected void fixProblem(String problemId) {
+        // note: problemId comes from the "href" attribute of the "a" tag in the link's text: "<a href='problemId'>...</a>"
         if (problemId.equals("oppfeatures")) {
             List<String> problems = features.validateFeatureDescriptions();
             ProblemsMessageDialog.openInformation(getShell(),
@@ -557,11 +552,9 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         // "The project configuration does not correspond to the selected features. [Details]"
         if (problemId.equals("config")) {
             try {
-                ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
-                List<ProjectFeature> enabledFeatures = getEnabledFeaturesFromTree();
-                List<Problem> problems = features.validateProjectState(configurations, nedSourceFoldersConfig, enabledFeatures);
+                List<Problem> problems = features.validateProjectState();
                 if (!problems.isEmpty() && isOkToFixConfigProblems(problems))
-                    features.fixupProjectState(configurations, nedSourceFoldersConfig, enabledFeatures);
+                    features.fixupProjectState();
             }
             catch (CoreException e1) {
                 Activator.logError(e1);
@@ -575,7 +568,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         for (Problem p : problems)
             problemTexts.add(p.toString());
         Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency",
+        return ProblemsMessageDialog.openQuestion(parentShell, "Project Setup Inconsistency",
                 "Some project configuration settings do not correspond to the enabled project features. " +
                 "Do you want to fix the project state?",
                 problemTexts, UIUtils.ICON_ERROR);

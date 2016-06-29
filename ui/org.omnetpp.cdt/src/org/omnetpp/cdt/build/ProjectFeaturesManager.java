@@ -572,28 +572,22 @@ public class ProjectFeaturesManager {
      * Updates project configuration (CDT and NED) so that it reflects the currently enabled features.
      */
     public void fixupProjectState() throws CoreException {
-        // load NED and CDT configuration
+        // load NED and CDT configurations
+        List<ProjectFeature> enabledFeatures = getEnabledFeatures();
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
 
         // fix them up
-        fixupProjectState(configurations, nedSourceFoldersConfig, getEnabledFeatures());
+        fixupExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
+        fixupConfigurations(configurations, enabledFeatures);
 
         // save them
         ProjectUtils.saveNedFoldersFile(project, nedSourceFoldersConfig);
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
 
         // fix up defines file
-        saveDefinesFile(getEnabledFeatures());
-    }
-
-    /**
-     * Shortcut for calling both fixupExcludedNedPackages() and fixupConfigurations().
-     */
-    public void fixupProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
-        fixupExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
-        fixupConfigurations(configurations, enabledFeatures);
+        saveDefinesFile(enabledFeatures);
     }
 
     /**
@@ -815,7 +809,7 @@ public class ProjectFeaturesManager {
      * covered by the features are correctly enabled/disabled, symbols are defined, etc. Errors are returned
      * in a string list.
      */
-    public List<Problem> validateProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
+    protected List<Problem> validateProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
         //dumpMacros(project, configurations, "WITH_.*");
 
         List<Problem> problems = new ArrayList<Problem>();
@@ -866,7 +860,7 @@ public class ProjectFeaturesManager {
                 if (!definesFile.exists())
                     addProblem(problems, null, "Missing defines file " + definesFile.getFullPath());
                 else if (!Arrays.equals(FileUtils.readBinaryFile(definesFile.getContents()), content.getBytes())) // NOTE: byte[].equals does NOT compare content, only references!!!
-                    addProblem(problems, null, "Defines file is out of sync: " + definesFile.getFullPath());
+                    addProblem(problems, null, "Generated defines file is out of date: " + definesFile.getFullPath());
             }
             catch (IOException e) {
                 throw Activator.wrapIntoCoreException(e);
