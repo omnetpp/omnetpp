@@ -344,14 +344,14 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-S");
         if (!ignoreNedFiles)
             add(result, "-N");
-        addOpts2(result, fragmentFiles, "-i");
-        addOpts2(result, submakeDirs, "-d");
-        addOpts1(result, exceptSubdirs, "-X");
+        addOpts1(result, makefileVariables, "-K");
+        addOpts1(result, defines, "-D");
         addOpts1(result, includeDirs, "-I");
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
-        addOpts1(result, defines, "-D");
-        addOpts1(result, makefileVariables, "-K");
+        addOpts2(result, fragmentFiles, "-i");
+        addOpts2(result, submakeDirs, "-d");
+        addOpts1(result, exceptSubdirs, "-X");
         if (metaRecurse)
             result.add("--meta:recurse");
         if (metaExportIncludePath)
