@@ -41,6 +41,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 
     public MakemakeOptionsDialog(Shell parentShell, IContainer folder, BuildSpecification buildSpec) {
         super(parentShell);
+        setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.folder = folder;
         this.buildSpec = buildSpec;
     }
@@ -53,7 +54,6 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        setShellStyle(getShellStyle() | SWT.RESIZE);
         shell.setText("Makemake Options");
     }
 
