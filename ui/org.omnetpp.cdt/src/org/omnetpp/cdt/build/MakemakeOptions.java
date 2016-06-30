@@ -75,6 +75,7 @@ public class MakemakeOptions implements Cloneable {
         MakemakeOptions result = new MakemakeOptions();  // start from blank
         result.outRoot = "out";
         result.isDeep = true;
+        result.includeDirs.add(".");
         result.metaRecurse = true;
         result.metaExportIncludePath = true;
         result.metaUseExportedIncludePaths = true;
