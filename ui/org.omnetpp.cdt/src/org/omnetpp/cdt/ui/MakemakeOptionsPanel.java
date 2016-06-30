@@ -213,6 +213,7 @@ public class MakemakeOptionsPanel extends Composite {
         exportIncludePathCheckbox = createCheckbox(includeGroup, "Export include path for other projects", null);
         useExportedIncludePathsCheckbox = createCheckbox(includeGroup, "Add include paths exported from referenced projects", null);
         useFeatureCFlagsCheckbox = createCheckbox(includeGroup, "Add include dirs and other compile options from enabled project features", null);
+        createLabel(includeGroup, "NOTE: Defines (-D options) contributed by project features will be placed into a generated header file as #define statements instead of being added to the compiler command line.");
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
@@ -320,9 +321,9 @@ public class MakemakeOptionsPanel extends Composite {
     }
 
     protected Label createLabel(Composite composite, String text) {
-        Label label = new Label(composite, SWT.NONE);
+        Label label = new Label(composite, SWT.WRAP);
         label.setText(text);
-        label.setLayoutData(new GridData());
+        label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         return label;
     }
 
