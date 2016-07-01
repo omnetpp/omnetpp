@@ -1557,13 +1557,14 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationD
 void Qtenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
-
+    animator->redrawMessages();
     if (loggingEnabled)
         logBuffer.endSend(msg);
 }
 
 void Qtenv::messageDeleted(cMessage *msg)
 {
+    animator->redrawMessages();
     EnvirBase::messageDeleted(msg);
 }
 

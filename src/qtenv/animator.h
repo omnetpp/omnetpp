@@ -35,82 +35,64 @@ enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 class GraphicsLayer;
 class ModuleInspector;
 
-
 class Animation {
-    friend class Animator;
-
 protected:
-    ModuleInspector *inspector;
-
-    QPointF src;
-    QPointF dest;
-
     float time = 0;
-    float duration;
-
-    Animation(ModuleInspector *insp, const QPointF &src, const QPointF &dest, float duration);
-
-    virtual QString info() const = 0;
-
-    enum State { PENDING, WAITING, PLAYING, FINISHED, DONE };
-    // PENDING -> init() -> WAITING -> begin() ->
-    // -> PLAYING -> end() -> FINISHED -> cleanup() -> DONE
-    //      ||
-    //  setProgress()
-    State state = PENDING;
 
 public:
-    void advance(float delta); // delta is in seconds
+
+    enum State { PENDING, WAITING, PLAYING, FINISHED, DONE } state = PENDING;
+    // PENDING -> init() -> WAITING -> begin() ->
+    // -> PLAYING -> end() -> FINISHED -> cleanup() -> DONE
+    //      '|,      /'
+    //  setProgress()
+
+    virtual void advance(float delta) = 0; // delta is in seconds
+
+    State getState() const { return state; }
+    float getTime() const { return time; }
+    virtual float getDuration() = 0;
+
+    virtual bool isAnimating(cMessage *msg) { return false; }
+
+    // only needed for debugging
+    virtual QString info() const = 0;
 
     // all of these (except setProgress) must be called from the subclasses' overrides
-    virtual void init() { state = WAITING; }
-    virtual void begin() { state = PLAYING; }
-    virtual void setProgress(float t) = 0; // t is always 0..1, must set state to FINISHED when t >= 1-epsilon
-    virtual void end() { state = FINISHED; }
-    virtual void cleanup() { state = DONE; }
-
-    // they are "in the same group", so their inits will be called
-    // at the same time, before any of them is played
-    // and their cleanups after all of them has ended
-    virtual bool inSameGroup(const Animation *other) const { return this == other; }
-
-    // they should be played simultaneously - should always imply relatedTo(other)
-    // their begins will be called at the same time,
-    // but the ends are not guaranteed to be synchronized
-    virtual bool concurrentWith(const Animation *other) const { return this == other; }
+    virtual void init() { state = WAITING; } // when the group is started
+    virtual void begin() { state = PLAYING; } // when this anim is started in the group
+    virtual void end() { state = FINISHED; } // when this anim ended (called by advance)
+    virtual void cleanup() { state = DONE; } // when the group is ended
 
     virtual ~Animation() { }
 };
+
+class SequentialAnimation;
 
 class Animator : public QObject
 {
     Q_OBJECT
 
-    std::vector<Animation *> animations;
+    SequentialAnimation *animation;
     std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
+
+    QTimer timer;
 
     static const int frameRate;
     // the max amount of pixels an arriving message will move inside the dest submodule rectangle
     static const double msgEndCreep;
     bool inHurry = false;
 
-    Animation *firstAnimInState(Animation::State state) const;
-
-
     struct sPathEntry {
        cModule *from; // nullptr if descent
        cModule *to;   // nullptr if ascent
-       sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
     };
     typedef std::vector<sPathEntry> PathVec;
 
     void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-
 public:
     explicit Animator();
-    ~Animator();
-    QTimer timer;
 
     void redrawMessages();
     void animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText);
@@ -119,11 +101,9 @@ public:
     void animateDelivery(cMessage *msg);
     void animateDeliveryDirect(cMessage *msg);
 
-    virtual void animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage *msg, SendAnimMode mode);
-    virtual void animateSenddirectAscent(ModuleInspector *insp, cModule *srcSubmodule, cMessage *msg);
-    virtual void animateSenddirectDescent(ModuleInspector *insp, cModule *destSubmodule, cMessage *msg, SendAnimMode mode);
-    virtual void animateSenddirectHoriz(ModuleInspector *insp, cModule *srcSubmodule, cModule *destSubmodule, cMessage *msg, SendAnimMode mode);
-    virtual void animateSenddirectDelivery(ModuleInspector *insp, cModule *destSubmodule, cMessage *msg);
+    bool isAnimating(cMessage *msg);
+
+    ~Animator();
 
 signals:
     void finish();
@@ -132,6 +112,7 @@ public slots:
     void addAnimation(Animation *anim);
     void onFrameTimer();
     void play();
+    void clearMessages();
     void clear();
     void hurry();
 
