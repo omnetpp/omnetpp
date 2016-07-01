@@ -471,7 +471,7 @@ public class MakemakeOptions implements Cloneable {
 
     @Override
     public MakemakeOptions clone() {
-        MakemakeOptions result = new MakemakeOptions();
+        MakemakeOptions result = createBlank();
         result.isNMake = isNMake;
         result.projectDir = projectDir;
         result.type = type;

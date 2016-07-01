@@ -8,7 +8,9 @@
 package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -58,8 +60,8 @@ import org.omnetpp.cdt.build.MakemakeOptions;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.cdt.build.MetaMakemake;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.FileUtils;
@@ -71,7 +73,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines. Store them separately!
 public class MakemakeOptionsPanel extends Composite {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
@@ -135,7 +136,6 @@ public class MakemakeOptionsPanel extends Composite {
     private FileListControl linkObjectsList;
 
     // "Custom" page
-    private FileListControl makefileVariables;
     private Text makefragText;
     private Text makefragvcText;
     private ToggleLink customPageToggle;
@@ -144,6 +144,11 @@ public class MakemakeOptionsPanel extends Composite {
     // "Preview" page
     private Text optionsText;
     private Text translatedOptionsText;
+
+    // Options without dialog fields
+    private String defaultMode = null;
+    private List<String> defines = new ArrayList<String>();
+    private List<String> makefileVariables = new ArrayList<String>();
 
     // auxiliary variables
     private boolean beingUpdated = false;
@@ -258,11 +263,6 @@ public class MakemakeOptionsPanel extends Composite {
         CTabFolder makefragTabFolder = new CTabFolder(customPage, SWT.TOP | SWT.BORDER);
         makefragTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)makefragTabFolder.getLayoutData()).heightHint = 100;
-
-        Composite variablesComposite = createCTabPage(makefragTabFolder, "Variables");
-        variablesComposite.setLayout(new GridLayout(1, false));
-        createLabel(variablesComposite, "Here you can define additional variables for the makefile:");
-        makefileVariables = new FileListControl(variablesComposite, "Additional makefile variables: (NAME=VALUE syntax, macros allowed)", BROWSE_NONE);
 
         Composite makefragComposite = createCTabPage(makefragTabFolder, "Makefrag");
         makefragComposite.setLayout(new GridLayout(1, false));
@@ -459,8 +459,6 @@ public class MakemakeOptionsPanel extends Composite {
         libsList.addChangeListener(fileListChangeListener);
         linkObjectsList.addChangeListener(fileListChangeListener);
 
-        makefileVariables.addChangeListener(fileListChangeListener);
-
         makefragText.addModifyListener(modifyListener);
         makefragvcText.addModifyListener(modifyListener);
         makefragsList.addChangeListener(fileListChangeListener);
@@ -546,12 +544,14 @@ public class MakemakeOptionsPanel extends Composite {
         libsList.setList(options.libs.toArray(new String[]{}));
         linkObjectsList.setList(options.extraArgs.toArray(new String[]{}));
 
-        // "Variables" page
-        makefileVariables.setList(options.makefileVariables.toArray(new String[]{}));
-
         // "Custom" page
         // Note: makefrag texts need to be set differently
         makefragsList.setList(options.fragmentFiles.toArray(new String[]{}));
+
+        // save options not stored in any GUI element
+        defaultMode = options.defaultMode;
+        defines = new ArrayList<String>(options.defines);
+        makefileVariables = new ArrayList<String>(options.makefileVariables);
 
         // open ToggleLinks if controls are not empty
         if (submakeDirsList.getListControl().getItemCount() != 0)
@@ -709,12 +709,13 @@ public class MakemakeOptionsPanel extends Composite {
         result.libs.addAll(Arrays.asList(libsList.getItems()));
         result.extraArgs.addAll(Arrays.asList(linkObjectsList.getItems()));
 
-        // "Variables" page
-        result.makefileVariables.addAll(Arrays.asList(makefileVariables.getItems()));
-
         // "Custom" page
         result.fragmentFiles.addAll(Arrays.asList(makefragsList.getItems()));
 
+        // Other options
+        result.defaultMode = defaultMode;
+        result.defines.addAll(defines);
+        result.makefileVariables.addAll(makefileVariables);
         return result;
     }
 
