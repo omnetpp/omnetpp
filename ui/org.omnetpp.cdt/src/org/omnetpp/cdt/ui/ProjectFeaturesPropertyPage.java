@@ -568,7 +568,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         for (Problem p : problems)
             problemTexts.add(p.toString());
         Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openQuestion(parentShell, "Project Setup Inconsistency",
+        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency",
                 "Some project configuration settings do not correspond to the enabled project features. " +
                 "Do you want to fix the project state?",
                 problemTexts, UIUtils.ICON_ERROR);

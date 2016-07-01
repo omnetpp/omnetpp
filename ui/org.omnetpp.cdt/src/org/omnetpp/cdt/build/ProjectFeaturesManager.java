@@ -28,8 +28,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICFolderDescription;
+import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
+import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -589,6 +594,18 @@ public class ProjectFeaturesManager {
             boolean enabled = enabledFeatures.contains(feature);
             adjustConfigurations(feature, enabled, configurations);
         }
+
+        // since feature macros are now defined in header files, remove them from the configuration
+        for (ProjectFeature feature : getFeatures()) {
+            for (String cflag : feature.getCompileFlags().split("\\s+")) {
+                if (cflag.startsWith("-D") && cflag.length() > 2) {
+                    String symbol = cflag.substring(2).replaceAll("=.*", "");
+                    if (isMacroSet(project, configurations, symbol))
+                        removeMacroInAllConfigurationsAndFoldersAndLanguages(project, configurations, symbol);
+                }
+            }
+        }
+
     }
 
     /**
@@ -739,6 +756,53 @@ public class ProjectFeaturesManager {
         return false;
     }
 
+    protected static boolean isMacroSet(IProject project, ICConfigurationDescription[] configurations, String name) throws CoreException {
+        for (ICConfigurationDescription configuration : configurations) {
+            // check it on all source folders
+            List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
+            for (IContainer folder : sourceLocations) {
+                ICFolderDescription folderDescription = CDTUtils.getOrCreateFolderDescription(configuration, folder);
+                ICLanguageSetting[] folderLanguageSettings = folderDescription.getLanguageSettings();
+                for (ICLanguageSetting languageSetting : folderLanguageSettings) {
+                    if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO)) {
+                        ICLanguageSettingEntry macro = CDTUtils.getMacro(languageSetting, name);
+                        if (macro != null)
+                            return true;
+                    }
+                }
+            }
+            // also check it on the root folder (this setting may not be effective, but it's more discoverable for the user than folder settings)
+            ICLanguageSetting[] rootLanguageSettings = configuration.getRootFolderDescription().getLanguageSettings();
+            for (ICLanguageSetting languageSetting : rootLanguageSettings) {
+                if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO)) {
+                    ICLanguageSettingEntry macro = CDTUtils.getMacro(languageSetting, name);
+                    if (macro != null)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected static void removeMacroInAllConfigurationsAndFoldersAndLanguages(IProject project, ICConfigurationDescription[] configurations, String name) throws WriteAccessException, CoreException {
+        for (ICConfigurationDescription configuration : configurations) {
+            // set it on all source folders
+            List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
+            for (IContainer folder : sourceLocations) {
+                ICFolderDescription folderDescription = CDTUtils.getOrCreateFolderDescription(configuration, folder);
+                ICLanguageSetting[] folderLanguageSettings = folderDescription.getLanguageSettings();
+                for (ICLanguageSetting languageSetting : folderLanguageSettings)
+                    if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO))
+                        CDTUtils.setMacro(languageSetting, name, null);
+            }
+            // also set it on the root folder (this setting may not be effective, but it's more discoverable for the user than folder settings)
+            ICLanguageSetting[] rootLanguageSettings = configuration.getRootFolderDescription().getLanguageSettings();
+            for (ICLanguageSetting languageSetting : rootLanguageSettings)
+                if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO))
+                    CDTUtils.setMacro(languageSetting, name, null);
+        }
+    }
+
     protected void setFolderExcluded(ICConfigurationDescription[] configurations, IContainer folder, boolean exclude) throws CoreException {
         if (!folder.exists())
             return;
@@ -826,6 +890,20 @@ public class ProjectFeaturesManager {
                 else {
                     if (isFolderExcluded==null || !isFolderExcluded)
                         addProblem(problems, feature, "Feature is disabled but folder " + folder.getFullPath() + " is not excluded from C++ build in at least one configuration");
+                }
+            }
+        }
+
+        // warn if the Paths&Symbols page has some of the defines mentioned in the oppfeatures file
+        outerloop:
+        for (ProjectFeature feature : getFeatures()) {
+            for (String cflag : feature.getCompileFlags().split("\\s+")) {
+                if (cflag.startsWith("-D") && cflag.length() > 2) {
+                    String symbol = cflag.substring(2).replaceAll("=.*", "");
+                    if (isMacroSet(project, configurations, symbol)) {
+                        addProblem(problems, null, "Feature macro " + symbol + " and possibly others are set on the Paths & Symbols page.");
+                        break outerloop;
+                    }
                 }
             }
         }
