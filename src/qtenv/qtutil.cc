@@ -48,6 +48,8 @@
 #include "omnetpp/cwatch.h"
 #include "qtenv.h"
 #include "qtutil.h"
+#include "moduleinspector.h"
+#include "loginspector.h"
 
 using namespace omnetpp::common;
 
@@ -760,6 +762,20 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     std::string buffer;
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
     return atof(arg2);
+}
+
+LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
+{
+    if (insp->getObject() != mod || insp->getType() != INSP_MODULEOUTPUT)
+        return nullptr;
+    return dynamic_cast<LogInspector *>(insp);
+}
+
+ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
+{
+    if (insp->getObject() != mod || insp->getType() != INSP_GRAPHICAL)
+        return nullptr;
+    return dynamic_cast<ModuleInspector *>(insp);
 }
 
 } // namespace qtenv

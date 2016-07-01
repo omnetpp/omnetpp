@@ -96,15 +96,29 @@ class Animator : public QObject
 
     Animation *firstAnimInState(Animation::State state) const;
 
+
+    struct sPathEntry {
+       cModule *from; // nullptr if descent
+       cModule *to;   // nullptr if ascent
+       sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
+    };
+    typedef std::vector<sPathEntry> PathVec;
+
+    void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
+
+
 public:
     explicit Animator();
     ~Animator();
     QTimer timer;
 
     void redrawMessages();
-    virtual void animateMethodcallAscent(ModuleInspector *insp, cModule *srcSubmodule, const char *methodText);
-    virtual void animateMethodcallDescent(ModuleInspector *insp, cModule *destSubmodule, const char *methodText);
-    virtual void animateMethodcallHoriz(ModuleInspector *insp, cModule *srcSubmodule, cModule *destSubmodule, const char *methodText);
+    void animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText);
+    void animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate);
+    void animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
+    void animateDelivery(cMessage *msg);
+    void animateDeliveryDirect(cMessage *msg);
+
     virtual void animateSendOnConn(ModuleInspector *insp, cGate *srcGate, cMessage *msg, SendAnimMode mode);
     virtual void animateSenddirectAscent(ModuleInspector *insp, cModule *srcSubmodule, cMessage *msg);
     virtual void animateSenddirectDescent(ModuleInspector *insp, cModule *destSubmodule, cMessage *msg, SendAnimMode mode);

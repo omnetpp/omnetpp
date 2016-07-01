@@ -1171,20 +1171,6 @@ void Qtenv::redrawInspectors()
         (*it)->redraw();
 }
 
-inline LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
-{
-    if (insp->getObject() != mod || insp->getType() != INSP_MODULEOUTPUT)
-        return nullptr;
-    return dynamic_cast<LogInspector *>(insp);
-}
-
-inline ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
-{
-    if (insp->getObject() != mod || insp->getType() != INSP_GRAPHICAL)
-        return nullptr;
-    return dynamic_cast<ModuleInspector *>(insp);
-}
-
 void Qtenv::createSnapshot(const char *label)
 {
     getSimulation()->snapshot(getSimulation(), label);
@@ -1495,10 +1481,10 @@ void Qtenv::simulationEvent(cEvent *event)
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
         if (arrivalGate->getPreviousGate()) {
-            animateDelivery(msg);
+            animator->animateDelivery(msg);
         }
         else {
-            animateDeliveryDirect(msg);
+            animator->animateDeliveryDirect(msg);
         }
     }
 }
@@ -1536,7 +1522,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagatio
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg))
-        animateSendDirect(msg, msg->getSenderModule(), toGate);
+        animator->animateSendDirect(msg, msg->getSenderModule(), toGate);
 
     if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
@@ -1548,7 +1534,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
-        animateSendHop(msg, srcGate, isLastHop);
+        animator->animateSendHop(msg, srcGate, isLastHop);
     }
 
     if (loggingEnabled)
@@ -1561,7 +1547,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationD
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
-        animateSendHop(msg, srcGate, isLastHop);
+        animator->animateSendHop(msg, srcGate, isLastHop);
     }
 
     if (loggingEnabled)
@@ -1588,65 +1574,14 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
-    if (silent || !animating || !opt->animateMethodCalls)
-        return;
+    if (!silent && animating && opt->animateMethodCalls && methodFmt) {
+        updateGraphicalInspectorsBeforeAnimation();
 
-    if (!methodFmt)
-        return;  // Enter_Method_Silent
+        static char methodText[MAX_METHODCALL];
+        vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
+        methodText[MAX_METHODCALL-1] = '\0';
 
-    if (!fromComp->isModule() || !toComp->isModule())
-        return;  // calls to/from channels are not yet animated
-
-    updateGraphicalInspectorsBeforeAnimation();
-
-    static char methodText[MAX_METHODCALL];
-    vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
-    methodText[MAX_METHODCALL-1] = '\0';
-
-    cModule *from = (cModule *)fromComp;
-    cModule *to = (cModule *)toComp;
-
-    // find modules along the way
-    PathVec pathvec;
-    findDirectPath(from, to, pathvec);
-
-    PathVec::iterator i;
-    int numinsp = 0;
-    for (i = pathvec.begin(); i != pathvec.end(); i++) {
-        if (i->to == nullptr) {
-            // animate ascent from source module
-            cModule *mod = i->from;
-            cModule *enclosingmod = mod->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp) {
-                    numinsp++;
-                    animator->animateMethodcallAscent(insp, mod, methodText);
-                }
-            }
-        }
-        else if (i->from == nullptr) {
-            // animate descent towards destination module
-            cModule *mod = i->to;
-            cModule *enclosingmod = mod->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp) {
-                    numinsp++;
-                    animator->animateMethodcallDescent(insp, mod, methodText);
-                }
-            }
-        }
-        else {
-            cModule *enclosingmod = i->from->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp) {
-                    numinsp++;
-                    animator->animateMethodcallHoriz(insp, i->from, i->to, methodText);
-                }
-            }
-        }
+        animator->animateMethodcall(fromComp, toComp, methodText);
     }
 }
 
@@ -1801,146 +1736,6 @@ void Qtenv::moduleDisplayStringChanged(cModule *module)
     }
 }
 
-void Qtenv::animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
-{
-    cModule *mod = srcGate->getOwnerModule();
-    if (srcGate->getType() == cGate::OUTPUT)
-        mod = mod->getParentModule();
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
-        if (insp)
-            animator->animateSendOnConn(insp, srcGate, msg, (isLastHop ? ANIM_BEGIN : ANIM_THROUGH));
-    }
-}
-
-// helper for animateSendDirect() functions
-static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandchild)
-{
-    if (parentmod == towardsgrandchild)
-        return nullptr;  // shortcut -- we don't have to go up to the top to see we missed
-
-    // search upwards from 'towardsgrandchild'
-    cModule *m = towardsgrandchild;
-    while (m && m->getParentModule() != parentmod)
-        m = m->getParentModule();
-    return m;
-}
-
-void Qtenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
-{
-    // for animation purposes, we assume that the message travels up
-    // in the module hierarchy until it finds the first compound module
-    // that also contains the destination module (possibly somewhere deep),
-    // and then it descends to the destination module. We have to find the
-    // list of modules visited during the travel.
-
-    // first, find "lowest common ancestor" module
-    cModule *commonparent = findCommonAncestor(srcmod, destmod);
-    Assert(commonparent != nullptr);  // commonparent should exist, worst case it's the system module
-
-    // animate the ascent of the message until commonparent (excluding).
-    // The second condition, destmod==commonparent covers case when we're sending
-    // to an output gate of the parent (grandparent, etc) gate.
-    cModule *mod = srcmod;
-    while (mod != commonparent && (mod->getParentModule() != commonparent || destmod == commonparent)) {
-        pathvec.push_back(sPathEntry(mod, nullptr));
-        mod = mod->getParentModule();
-    }
-
-    // animate within commonparent
-    if (commonparent != srcmod && commonparent != destmod) {
-        cModule *from = findSubmoduleTowards(commonparent, srcmod);
-        cModule *to = findSubmoduleTowards(commonparent, destmod);
-        pathvec.push_back(sPathEntry(from, to));
-    }
-
-    // descend from commonparent to destmod
-    mod = findSubmoduleTowards(commonparent, destmod);
-    if (mod && srcmod != commonparent)
-        mod = findSubmoduleTowards(mod, destmod);
-    while (mod) {
-        // animate descent towards destmod
-        pathvec.push_back(sPathEntry(nullptr, mod));
-        // find module 'under' mod, towards destmod (this will return nullptr if mod==destmod)
-        mod = findSubmoduleTowards(mod, destmod);
-    }
-}
-
-void Qtenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate)
-{
-    PathVec pathvec;
-    findDirectPath(srcModule, destGate->getOwnerModule(), pathvec);
-
-    // for checking whether the sendDirect target module is also the final destination of the msg
-    cModule *arrivalmod = destGate->getNextGate()==nullptr ? destGate->getOwnerModule() : nullptr;
-
-    PathVec::iterator i;
-    for (i = pathvec.begin(); i != pathvec.end(); i++) {
-        if (i->to == nullptr) {
-            // ascent
-            cModule *mod = i->from;
-            cModule *enclosingmod = mod->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp)
-                    animator->animateSenddirectAscent(insp, mod, msg);
-            }
-        }
-        else if (i->from == nullptr) {
-            // descent
-            cModule *mod = i->to;
-            cModule *enclosingmod = mod->getParentModule();
-            bool isArrival = (mod == arrivalmod);
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp)
-                    animator->animateSenddirectDescent(insp, mod, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
-            }
-        }
-        else {
-            // level
-            cModule *enclosingmod = i->from->getParentModule();
-            bool isArrival = (i->to == arrivalmod);
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-                if (insp)
-                    animator->animateSenddirectHoriz(insp, i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
-            }
-        }
-    }
-
-    // then remove all arrows
-    for (i = pathvec.begin(); i != pathvec.end(); i++) {
-        cModule *mod = i->from ? i->from : i->to;
-        cModule *enclosingmod = mod->getParentModule();
-
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
-            if (insp)
-                animator->animateSenddirectCleanup(insp); //TODO
-        }
-    }
-}
-
-void Qtenv::animateDelivery(cMessage *msg)
-{
-    // find suitable inspectors and do animate the message...
-    cGate *g = msg->getArrivalGate();
-    ASSERT(g);
-    g = g->getPreviousGate();
-    ASSERT(g);
-
-    cModule *mod = g->getOwnerModule();
-    if (g->getType() == cGate::OUTPUT)
-        mod = mod->getParentModule();
-
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
-        if (insp)
-            animator->animateSendOnConn(insp, g, msg, ANIM_END);
-    }
-}
-
 void Qtenv::onSelectionChanged(cObject *object) {
     mainInspector->setObject(object);
 }
@@ -1950,21 +1745,6 @@ void Qtenv::onObjectDoubleClicked(cObject *object) {
         mainNetworkView->setObject(module);
     } else {
         inspect(object, INSP_DEFAULT, true);
-    }
-}
-
-void Qtenv::animateDeliveryDirect(cMessage *msg)
-{
-    // find suitable inspectors and do animate the message...
-    cGate *g = msg->getArrivalGate();
-    ASSERT(g);
-    cModule *destmod = g->getOwnerModule();
-    cModule *mod = destmod->getParentModule();
-
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
-        if (insp)
-            animator->animateSenddirectDelivery(insp, destmod, msg);
     }
 }
 

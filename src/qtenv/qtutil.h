@@ -32,6 +32,9 @@ class cComponent;
 
 namespace qtenv {
 
+class LogInspector;
+class ModuleInspector;
+
 // does something similar to QGraphicsColorizeEffect,
 // but in a way that matches the Tkenv colorization,
 // and also preserves smooth scaling of pixmaps
@@ -186,6 +189,9 @@ class cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectObjectsVisit
 const char *stripNamespace(const char *className);
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
+
+LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
+ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);
 
 char *voidPtrToStr(void *ptr, char *buffer=nullptr);
 void *strToVoidPtr(const char *s);

@@ -51,7 +51,7 @@ class ObjectTreeInspector;
 
 using namespace envir;
 
-namespace common { class MatchExpression; };
+namespace common { class MatchExpression; }
 
 #define MAX_CLASSNAME  100
 
@@ -134,13 +134,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
           SIM_FINISHCALLED = 6,
           SIM_BUSY = 7  // busy doing active wait
       };
-
-      struct sPathEntry {
-         cModule *from; // nullptr if descent
-         cModule *to;   // nullptr if ascent
-         sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
-      };
-      typedef std::vector<sPathEntry> PathVec;
 
       QtenvOptions *&opt;          // alias to EnvirBase::opt
 
@@ -359,13 +352,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void printEventBanner(cEvent *event);
       void setAnimationSpeed(float speed);
-      void animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
-      void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
-      void animateDelivery(cMessage *msg);
-      void animateDeliveryDirect(cMessage *msg);
       void performAnimations();
-
-      void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
