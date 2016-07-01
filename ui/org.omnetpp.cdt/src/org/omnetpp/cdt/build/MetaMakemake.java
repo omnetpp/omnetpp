@@ -155,38 +155,38 @@ public class MetaMakemake {
             translatedOptions.metaExportIncludePath = false;
         }
 
-        // add libraries from other projects, if requested
-        if (options.metaUseExportedLibs) {
-            for (IProject referencedProject : referencedProjects) {
-                BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
-                if (refBuildSpec != null) {
-                    for (IContainer f : refBuildSpec.getMakemakeFolders()) {
-                        MakemakeOptions opt = refBuildSpec.getMakemakeOptions(f);
-                        if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB) && opt.metaExportLibrary) {
-                            String libname = StringUtils.defaultIfEmpty(opt.target, f.getProject().getName());
-                            String outdir = StringUtils.defaultIfEmpty(opt.outRoot, "out");
-                            String libdir = f.getProject().getLocation().append(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
+        // add libraries from other projects, if requested (but all their -L options)
+        for (IProject referencedProject : referencedProjects) {
+            BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
+            if (refBuildSpec != null) {
+                for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
+                    MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
+                    if (refOptions!=null && (refOptions.type==Type.SHAREDLIB || refOptions.type==Type.STATICLIB) && refOptions.metaExportLibrary) {
+                        String libname = StringUtils.defaultIfEmpty(refOptions.target, refMakemakeFolder.getProject().getName());
+                        String outdir = StringUtils.defaultIfEmpty(refOptions.outRoot, "out");
+                        String libdir = refMakemakeFolder.getProject().getLocation().append(outdir).append("$(CONFIGNAME)").append(refMakemakeFolder.getProjectRelativePath()).toString();
+                        translatedOptions.libDirs.add(libdir);
+                        if (options.metaUseExportedLibs) {
                             translatedOptions.libs.add(libname);
-                            translatedOptions.libDirs.add(libdir);
-                            if (opt.type==Type.SHAREDLIB && !StringUtils.isEmpty(opt.dllSymbol))
-                                translatedOptions.defines.add(opt.dllSymbol + "_IMPORT");
+                            if (refOptions.type==Type.SHAREDLIB && !StringUtils.isEmpty(refOptions.dllSymbol))
+                                translatedOptions.defines.add(refOptions.dllSymbol + "_IMPORT");
                         }
                     }
                 }
             }
-            translatedOptions.metaUseExportedLibs = false;
         }
+        translatedOptions.metaUseExportedLibs = false;
 
         // add paths to other libraries in this project to the library path
         for (IContainer f : buildSpec.getMakemakeFolders()) {
             if (!f.equals(makefileFolder)) {
-                MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
-                if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB)) {
-                    String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
+                MakemakeOptions otherOptions = buildSpec.getMakemakeOptions(f);
+                if (otherOptions!=null && (otherOptions.type==Type.SHAREDLIB || otherOptions.type==Type.STATICLIB)) {
+                    String outdir = StringUtils.isEmpty(otherOptions.outRoot) ? "out" : otherOptions.outRoot; //FIXME hardcoded default!!!
                     String libdir = f.getProject().getLocation().append(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
                     translatedOptions.libDirs.add(libdir);
-                    if (opt.type==Type.SHAREDLIB && !StringUtils.isEmpty(opt.dllSymbol))
-                        translatedOptions.defines.add(opt.dllSymbol + "_IMPORT");
+                    if (otherOptions.type==Type.SHAREDLIB && !StringUtils.isEmpty(otherOptions.dllSymbol))
+                        translatedOptions.defines.add(otherOptions.dllSymbol + "_IMPORT");
                 }
             }
         }
