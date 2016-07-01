@@ -21,6 +21,8 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.omnetpp.cdt.build.BuildSpecFolderRenameDetector;
+import org.omnetpp.cdt.build.MsgFileRemoveDetector;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.omnetpp.common.util.StringUtils;
@@ -41,6 +43,8 @@ public class Activator extends AbstractUIPlugin {
     private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
     private CProjectChecker cprojectChecker = new CProjectChecker();
+    private BuildSpecFolderRenameDetector folderRenameDetector = new BuildSpecFolderRenameDetector();
+    private MsgFileRemoveDetector msgFileRemoveDetector = new MsgFileRemoveDetector();
 
     /**
      * The constructor
@@ -59,6 +63,8 @@ public class Activator extends AbstractUIPlugin {
         projectFeaturesListener.hookListeners();
         newConfigConfigurer.hookListeners();
         cprojectChecker.hookListeners();
+        folderRenameDetector.hookListeners();
+        msgFileRemoveDetector.hookListeners();
 
         cprojectChecker.checkAllOpenProjects();
 
@@ -80,6 +86,8 @@ public class Activator extends AbstractUIPlugin {
         projectFeaturesListener.unhookListeners();
         newConfigConfigurer.unhookListeners();
         cprojectChecker.unhookListeners();
+        folderRenameDetector.unhookListeners();
+        msgFileRemoveDetector.unhookListeners();
 
         plugin = null;
         super.stop(context);
