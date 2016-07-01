@@ -149,6 +149,7 @@ public class MakemakeOptionsPanel extends Composite {
     // Options without dialog fields
     private String defaultMode = null;
     private List<String> defines = new ArrayList<String>();
+    private List<String> libDirs = new ArrayList<String>();
     private List<String> makefileVariables = new ArrayList<String>();
 
     // auxiliary variables
@@ -553,6 +554,7 @@ public class MakemakeOptionsPanel extends Composite {
         // save options not stored in any GUI element
         defaultMode = options.defaultMode;
         defines = new ArrayList<String>(options.defines);
+        libDirs = new ArrayList<String>(options.libDirs);
         makefileVariables = new ArrayList<String>(options.makefileVariables);
 
         // open ToggleLinks if controls are not empty
@@ -720,6 +722,7 @@ public class MakemakeOptionsPanel extends Composite {
         // Other options
         result.defaultMode = defaultMode;
         result.defines.addAll(defines);
+        result.libDirs.addAll(libDirs);
         result.makefileVariables.addAll(makefileVariables);
         return result;
     }
