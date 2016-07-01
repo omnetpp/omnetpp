@@ -83,7 +83,7 @@ public class MetaMakemake {
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
         for (IProject referencedProject : referencedProjects) {
             String name = Makemake.makeSymbolicProjectName(referencedProject);
-            String path = makeRelativePath(referencedProject, makefileFolder);
+            String path = makeFriendlyPath(referencedProject, makefileFolder);
             translatedOptions.makefileVariables.add(name + "=" + path);
         }
 
@@ -365,9 +365,14 @@ public class MetaMakemake {
         return CDTUtils.findCplusplusLanguageSetting(languageSettings, forLinker);
     }
 
-    protected static String makeRelativePath(IContainer input, IContainer reference) {
-        // use relative path if the two projects are in the same directory on the disk, otherwise absolute path
-        if (input.getProject().getLocation().removeLastSegments(1).equals(reference.getProject().getLocation().removeLastSegments(1)))
+    /**
+     * Return relative path if the two projects containing the folders are "close" on the disk, otherwise absolute path.
+     */
+    protected static String makeFriendlyPath(IContainer input, IContainer reference) {
+        IPath wsLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+        boolean bothInWorkspace = wsLocation.isPrefixOf(input.getLocation()) && wsLocation.isPrefixOf(reference.getLocation());
+        boolean inNeighboringProjects = input.getProject().getLocation().removeLastSegments(1).equals(reference.getProject().getLocation().removeLastSegments(1));
+        if (bothInWorkspace || inNeighboringProjects)
             return MakefileTools.makeRelativePath(input.getLocation(), reference.getLocation()).toString();
         else
             return input.getLocation().toString();
