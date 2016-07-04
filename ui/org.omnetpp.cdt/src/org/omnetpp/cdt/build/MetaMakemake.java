@@ -77,13 +77,9 @@ public class MetaMakemake {
         // add -X option for each excluded folder in CDT, and for each sub-makefile
         translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, configuration));
 
-        // add -L and -D options configured in CDT
-        translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder, configuration));
-        translatedOptions.defines.addAll(getMacrosFor(makefileFolder, configuration));
-
-        // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
+        // add symbols for locations of referenced projects (they will be used by toRelative())
         for (IProject referencedProject : ProjectUtils.getAllReferencedOmnetppProjects(project)) {
-            String name = Makemake.makeSymbolicProjectName(referencedProject);
+            String name = makeSymbolicProjectName(referencedProject);
             String path = makeFriendlyPath(referencedProject, makefileFolder);
             translatedOptions.makefileVariables.add(name + "=" + path);
         }
@@ -115,6 +111,10 @@ public class MetaMakemake {
         translatedOptions.metaFeatureCFlags = false;  // they may only contain -D and -I, and -D's are processed elsewhere
         translatedOptions.metaExportIncludePath = false;
         translatedOptions.metaUseExportedIncludePaths = false;
+
+        // add -L and -D options configured in CDT
+        translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder, configuration));
+        translatedOptions.defines.addAll(getMacrosFor(makefileFolder, configuration));
 
         // add libraries from directly referenced projects, if requested (but all their -L options)
         for (IProject referencedProject : ProjectUtils.getReferencedOmnetppProjects(project)) {
@@ -177,6 +177,10 @@ public class MetaMakemake {
         // substitute all ${eclipse_variables}
         translatedOptions.substituteVariables(makefileFolder.getProject());
 
+        // convert paths to relative where convenient
+        translatedOptions.includeDirs = toRelative(translatedOptions.includeDirs, makefileFolder);
+        translatedOptions.libDirs = toRelative(translatedOptions.libDirs, makefileFolder);
+
         // Debug.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
@@ -198,7 +202,7 @@ public class MetaMakemake {
                         MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
                         if (refOptions != null && refOptions.metaExportIncludePath) {
                             List<String> refIncludePath = getIncludePath(refMakemakeFolder, refOptions, refConfiguration, refProjectFeatures, monitor);
-                            result.addAll(refIncludePath); //TODO filter for duplicates
+                            addAllNewOnes(result, refIncludePath);
                         }
                     }
                 }
@@ -230,20 +234,10 @@ public class MetaMakemake {
         return result;
     }
 
-    protected static List<String> toAbsolute(List<String> dirs, IContainer base) {
-        List<String> result = new ArrayList<String>();
-        for (String dir : dirs)
-            result.add(toAbsolute(dir, base));
-        return result;
-    }
-
-    protected static String toAbsolute(String dir, IContainer base) {
-        if (dir.charAt(0) == '$')
-            return dir; // don't mess with makefile variable references, as they may already expand to absolute paths
-        else {
-            Path dirPath = new Path(dir);
-            return dirPath.isAbsolute() ? dir : base.getLocation().append(dirPath).toString();
-        }
+    protected static void addAllNewOnes(List<String> list, List<String> items) {
+        for (String item : items)
+            if (!list.contains(item))
+                list.add(item);
     }
 
     /**
@@ -354,6 +348,66 @@ public class MetaMakemake {
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
         return CDTUtils.findCplusplusLanguageSetting(languageSettings, forLinker);
+    }
+
+    protected static List<String> toAbsolute(List<String> dirs, IContainer baseFolder) {
+        List<String> result = new ArrayList<String>();
+        for (String dir : dirs)
+            result.add(toAbsolute(dir, baseFolder));
+        return result;
+    }
+
+    protected static String toAbsolute(String dir, IContainer baseFolder) {
+        if (dir.charAt(0) == '$')
+            return dir; // don't mess with makefile variable references, as they may already expand to absolute paths
+        else {
+            Path dirPath = new Path(dir);
+            return dirPath.isAbsolute() ? dir : baseFolder.getLocation().append(dirPath).toString();
+        }
+    }
+
+    protected static List<String> toRelative(List<String> dirs, IContainer baseFolder) throws CoreException {
+        List<String> result = new ArrayList<String>();
+        for (String dir : dirs)
+            result.add(toRelative(dir, baseFolder));
+        return result;
+    }
+
+    protected static String toRelative(String location, IContainer baseFolder) throws CoreException {
+        return toRelative(new Path(location), baseFolder).toString();
+    }
+
+    protected static IPath toRelative(IPath location, IContainer baseFolder) throws CoreException {
+        if (!location.isAbsolute()) {
+            // leave relative paths untouched
+            return location;
+        }
+        else if (baseFolder.getProject().getLocation().isPrefixOf(location)) {
+            // location is within the same project, make it relative
+            return MakefileTools.makeRelativePath(location, baseFolder.getLocation());
+        }
+        else {
+            IProject containingProject = null;
+            for (IProject project : ProjectUtils.getAllReferencedOmnetppProjects(baseFolder.getProject())) {
+                if (project.getLocation().isPrefixOf(location)) {
+                    containingProject = project; break;
+                }
+            }
+            if (containingProject != null) {
+                // generate something like $(OTHER_PROJECT_DIR)/some/file
+                IPath projectRelativePath = location.removeFirstSegments(containingProject.getLocation().segmentCount());
+                String symbolicProjectName = MetaMakemake.makeSymbolicProjectName(containingProject);
+                return new Path("$(" + symbolicProjectName + ")").append(projectRelativePath);
+            }
+            else {
+                // points outside the project -- leave it as it is
+                return location;
+            }
+        }
+    }
+
+    public static String makeSymbolicProjectName(IProject project) {
+        return StringUtils.makeValidIdentifier(project.getName()).toUpperCase()+"_PROJ";
     }
 
     /**

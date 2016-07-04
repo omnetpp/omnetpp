@@ -12,16 +12,12 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -56,10 +52,6 @@ public class Makemake {
 
     // parameters for the makemake function
     private IContainer folder;
-
-    // computed
-    private IPath projectLocation;
-    private IPath folderLocation;
 
     public Makemake() {
     }
@@ -103,8 +95,6 @@ public class Makemake {
         this.folder = folder;
 
         File directory = folder.getLocation().toFile();
-        projectLocation = folder.getProject().getLocation();
-        folderLocation = folder.getLocation();
 
         boolean isNMake = options.isNMake;
         boolean isDeep = options.isDeep;
@@ -155,11 +145,7 @@ public class Makemake {
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc");
 
         // determine outDir (defaults to "out")
-        String outDir;
-        IPath outRootPath = new Path(StringUtils.defaultIfEmpty(options.outRoot, "out"));
-        IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
-        IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
-        outDir = outRootRel.toString();
+        String outDir = getOutDir(folder, options.outRoot);
 
         // determine subpath: the project-relative path of this folder
         String subpath = folder.getProjectRelativePath().toString();
@@ -189,12 +175,8 @@ public class Makemake {
             backslashedSourceDirs.add(dir.replace('/', '\\'));
 
         // include dirs and lib dirs
-        for (String i : options.includeDirs)
-            includeDirs.add(abs2rel(i));
-
-        for (String i : options.libDirs)
-            libDirs.add(abs2rel(i));
-
+        includeDirs.addAll(options.includeDirs);
+        libDirs.addAll(options.libDirs);
 
         // try to determine if .cc or .cpp files are used
         String ccExt = options.ccext;
@@ -408,30 +390,19 @@ public class Makemake {
         MakefileTools.ensureFileContent(makefile, bytes, null);
     }
 
-    private static class FileComparator implements Comparator<IFile> {
-        public int compare(IFile o1, IFile o2) {
-            return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
-        }
-    }
-
-    private static IFile[] sorted(Collection<IFile> files) {
-        IFile[] array = files.toArray(new IFile[]{});
-        Arrays.sort(array, new FileComparator());
-        return array;
+    protected String getOutDir(IContainer folder, String outRoot) {
+        IPath outRootPath = new Path(StringUtils.defaultIfEmpty(outRoot, "out"));
+        IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
+        IPath outRootRel = MakefileTools.makeRelativePath(outRootAbs, folder.getLocation());  // "<project>/out"
+        return outRootRel.toString();
     }
 
     public List<String> getSourceDirs(IContainer folder, MakemakeOptions options) throws CoreException {
         //FIXME factor out similar code from makemake body
-        projectLocation = folder.getProject().getLocation();
-        folderLocation = folder.getLocation();
 
         // collect source files
         if (options.isDeep) {
-            String outDir;
-            IPath outRootPath = new Path(StringUtils.defaultIfEmpty(options.outRoot, "out"));
-            IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
-            IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
-            outDir = outRootRel.toString();
+            String outDir = getOutDir(folder, options.outRoot);
 
             List<String> allExcludedDirs = new ArrayList<String>();
             allExcludedDirs.add(outDir);
@@ -512,46 +483,4 @@ public class Makemake {
         return result;
     }
 
-    /**
-     * If path is absolute, converts the path "path" to relative path (relative to
-     * "folderLocation"). All "\" are converted to "/".
-     */
-    protected String abs2rel(String location) throws CoreException {
-        return abs2rel(new Path(location)).toString();
-    }
-
-    protected IPath abs2rel(IPath location) throws CoreException {
-        if (!location.isAbsolute()) {
-            // leave relative paths untouched
-            return location;
-        }
-        else if (projectLocation.isPrefixOf(location)) {
-            // location is within the project, make it relative
-            return MakefileTools.makeRelativePath(location, folderLocation);
-        }
-        else {
-            IProject containingProject = null;
-            for (IProject project : folder.getProject().getReferencedProjects()) { //XXX should use transitive closure of referenced projects!
-                if (project.getLocation().isPrefixOf(location)) {
-                    containingProject = project; break;
-                }
-            }
-            if (containingProject != null) {
-                // generate something like $(OTHER_PROJECT_DIR)/some/file
-                IPath projectRelativePath = location.removeFirstSegments(containingProject.getLocation().segmentCount());
-                String symbolicProjectName = makeSymbolicProjectName(containingProject);
-                return new Path("$(" + symbolicProjectName + ")").append(projectRelativePath);
-            }
-            else {
-                // points outside the project -- leave it as it is
-                return location;
-            }
-        }
-    }
-
-    public static String makeSymbolicProjectName(IProject project) {
-        //FIXME must not begin with number! must not collide with symbolic name of another project!
-        // ==> why not use MakefileTools.generateTargetNames() ??
-        return project.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_PROJ";
-    }
 }
