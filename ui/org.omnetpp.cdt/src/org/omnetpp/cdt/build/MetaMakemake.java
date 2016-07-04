@@ -65,6 +65,9 @@ public class MetaMakemake {
         List<IContainer> makeFolders = buildSpec.getMakeFolders();
         IProject project = makefileFolder.getProject();
 
+        ProjectFeaturesManager projectFeatures = new ProjectFeaturesManager(project);
+        projectFeatures.loadFeaturesFile();
+
         MakemakeOptions translatedOptions = options.clone();
 
         // add -f, and potentially --nmake
@@ -74,14 +77,12 @@ public class MetaMakemake {
         // add -X option for each excluded folder in CDT, and for each sub-makefile
         translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, configuration));
 
-        // add -I, -L and -D options configured in CDT
-        translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder, configuration));
+        // add -L and -D options configured in CDT
         translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder, configuration));
         translatedOptions.defines.addAll(getMacrosFor(makefileFolder, configuration));
 
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
-        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
-        for (IProject referencedProject : referencedProjects) {
+        for (IProject referencedProject : ProjectUtils.getAllReferencedOmnetppProjects(project)) {
             String name = Makemake.makeSymbolicProjectName(referencedProject);
             String path = makeFriendlyPath(referencedProject, makefileFolder);
             translatedOptions.makefileVariables.add(name + "=" + path);
@@ -109,54 +110,14 @@ public class MetaMakemake {
             translatedOptions.metaRecurse = false;
         }
 
-        // add include folders exported from referenced projects
-        if (options.metaUseExportedIncludePaths) {
-            for (IProject referencedProject : referencedProjects) {
-                ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(referencedProject);
-                ICConfigurationDescription refConfiguration = refProjDesc==null ? null : refProjDesc.getActiveConfiguration();
-                BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
-                ProjectFeaturesManager refProjectFeatures = new ProjectFeaturesManager(referencedProject);
-                refProjectFeatures.loadFeaturesFile();
-                if (refBuildSpec != null && refProjDesc != null) {
-                    for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
-                        MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
-                        if (refOptions != null && refOptions.metaExportIncludePath) {
-                            List<String> includePath = getIncludePathFor(refMakemakeFolder, refOptions, refConfiguration, refProjectFeatures, monitor);
-                            translatedOptions.includeDirs.addAll(includePath);
-                        }
-                    }
-                }
-            }
+        // add include folders from this project and exported from referenced projects
+        translatedOptions.includeDirs.addAll(getIncludePath(makefileFolder, options, configuration, projectFeatures, monitor));
+        translatedOptions.metaFeatureCFlags = false;  // they may only contain -D and -I, and -D's are processed elsewhere
+        translatedOptions.metaExportIncludePath = false;
+        translatedOptions.metaUseExportedIncludePaths = false;
 
-            // clear processed setting
-            translatedOptions.metaUseExportedIncludePaths = false;
-        }
-
-        ProjectFeaturesManager projectFeatures = new ProjectFeaturesManager(project);
-        projectFeatures.loadFeaturesFile();
-
-        // add CFLAGS contributed by enabled project features
-        if (options.metaFeatureCFlags) {
-            List<String> cflags = projectFeatures.getFeatureCFlags();
-            for (String cflag : cflags) {
-                // we only need to handle -I here, and can simply ignore the rest: -D's are put into the
-                // generated header file, and validateFeatures() reports all other options as errors.
-                // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
-                if (cflag.startsWith("-I") && cflag.length()>2)
-                    translatedOptions.includeDirs.add(cflag.substring(2));
-            }
-
-            // clear processed setting
-            translatedOptions.metaFeatureCFlags = false;
-        }
-
-        if (translatedOptions.metaExportIncludePath) {
-            // no processing required
-            translatedOptions.metaExportIncludePath = false;
-        }
-
-        // add libraries from other projects, if requested (but all their -L options)
-        for (IProject referencedProject : referencedProjects) {
+        // add libraries from directly referenced projects, if requested (but all their -L options)
+        for (IProject referencedProject : ProjectUtils.getReferencedOmnetppProjects(project)) {
             BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
             if (refBuildSpec != null) {
                 for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
@@ -220,7 +181,33 @@ public class MetaMakemake {
         return translatedOptions;
     }
 
-    protected static List<String> getIncludePathFor(IContainer makefileFolder, MakemakeOptions options, ICConfigurationDescription configuration, ProjectFeaturesManager projectFeatures, IProgressMonitor monitor) throws CoreException {
+    protected static List<String> getIncludePath(IContainer makefileFolder, MakemakeOptions options, ICConfigurationDescription configuration, ProjectFeaturesManager projectFeatures, IProgressMonitor monitor) throws CoreException {
+        List<String> result = getLocalIncludePath(makefileFolder, options, configuration, projectFeatures, monitor);
+
+        // add include folders exported from referenced projects
+        if (options.metaUseExportedIncludePaths) {
+            IProject project = makefileFolder.getProject();
+            for (IProject referencedProject : ProjectUtils.getReferencedOmnetppProjects(project)) {
+                ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(referencedProject);
+                ICConfigurationDescription refConfiguration = refProjDesc==null ? null : refProjDesc.getActiveConfiguration();
+                BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
+                ProjectFeaturesManager refProjectFeatures = new ProjectFeaturesManager(referencedProject);
+                refProjectFeatures.loadFeaturesFile();
+                if (refBuildSpec != null && refProjDesc != null) {
+                    for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
+                        MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
+                        if (refOptions != null && refOptions.metaExportIncludePath) {
+                            List<String> refIncludePath = getIncludePath(refMakemakeFolder, refOptions, refConfiguration, refProjectFeatures, monitor);
+                            result.addAll(refIncludePath); //TODO filter for duplicates
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    protected static List<String> getLocalIncludePath(IContainer makefileFolder, MakemakeOptions options, ICConfigurationDescription configuration, ProjectFeaturesManager projectFeatures, IProgressMonitor monitor) throws CoreException {
         List<String> result = new ArrayList<String>();
 
         // add -I options in local makemake options
@@ -251,8 +238,12 @@ public class MetaMakemake {
     }
 
     protected static String toAbsolute(String dir, IContainer base) {
-        Path dirPath = new Path(dir);
-        return dirPath.isAbsolute() ? dir : base.getLocation().append(dirPath).toString();
+        if (dir.charAt(0) == '$')
+            return dir; // don't mess with makefile variable references, as they may already expand to absolute paths
+        else {
+            Path dirPath = new Path(dir);
+            return dirPath.isAbsolute() ? dir : base.getLocation().append(dirPath).toString();
+        }
     }
 
     /**

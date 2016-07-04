@@ -96,6 +96,26 @@ public class ProjectUtils {
     }
 
     /**
+     * Returns the list of OMNeT++ projects directly referenced by the given project.
+     * Nonexistent and closed projects are ignored.
+     */
+    public static IProject[] getReferencedOmnetppProjects(IProject project) throws CoreException {
+        return getReferencedProjects(project, true);
+    }
+
+    /**
+     * Returns the list of projects directly referenced by the given project.
+     * Nonexistent and closed projects are ignored.
+     */
+    public static IProject[] getReferencedProjects(IProject project, boolean requireOmnetppNature) throws CoreException {
+        List<IProject> result = new ArrayList<IProject>();
+        for (IProject dependency : project.getReferencedProjects())
+            if ((requireOmnetppNature ? isOpenOmnetppProject(dependency) : dependency.isAccessible()))
+                result.add(dependency);
+        return result.toArray(new IProject[]{});
+    }
+
+    /**
      * Returns the transitive closure of OMNeT++ projects referenced from the given project,
      * excluding the project itself. Nonexistent and closed projects are ignored.
      *
@@ -138,7 +158,7 @@ public class ProjectUtils {
         IProjectDescription description = toProject.getDescription();
         IProject[] referencedProjects = description.getReferencedProjects();
         if (!ArrayUtils.contains(referencedProjects, project)) {
-            referencedProjects = (IProject[])ArrayUtils.add(referencedProjects, project);
+            referencedProjects = ArrayUtils.add(referencedProjects, project);
             description.setReferencedProjects(referencedProjects);
             toProject.setDescription(description, monitor);
         }
@@ -191,7 +211,7 @@ public class ProjectUtils {
             return;
         IProjectDescription description = project.getDescription();
         String[] natures = description.getNatureIds();
-        description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
+        description.setNatureIds(ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
         project.setDescription(description, monitor);
         // note: builders are added automatically, by OmnetppNature.configure()
     }
@@ -204,7 +224,7 @@ public class ProjectUtils {
             return;
         IProjectDescription description = project.getDescription();
         String[] natures = description.getNatureIds();
-        description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.OMNETPP_NATURE_ID));
+        description.setNatureIds(ArrayUtils.removeElement(natures, IConstants.OMNETPP_NATURE_ID));
         project.setDescription(description, null);
         // note: builders are removed automatically, by OmnetppNature.deconfigure()
     }
