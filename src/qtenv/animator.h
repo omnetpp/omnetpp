@@ -53,7 +53,7 @@ public:
     float getTime() const { return time; }
     virtual float getDuration() = 0;
 
-    virtual bool isAnimating(cMessage *msg) { return false; }
+    virtual bool willAnimate(cMessage *msg) { return false; }
 
     // only needed for debugging
     virtual QString info() const = 0;
@@ -67,13 +67,14 @@ public:
     virtual ~Animation() { }
 };
 
+class AnimationGroup;
 class SequentialAnimation;
 
 class Animator : public QObject
 {
     Q_OBJECT
 
-    SequentialAnimation *animation;
+    AnimationGroup *animation;
     std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
 
     QTimer timer;
@@ -91,6 +92,17 @@ class Animator : public QObject
 
     void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
+    // just a helper pointer for the "broadcast" grouping
+    AnimationGroup *messageStages = nullptr;
+
+    // for deliveries and "complete", "self-contained"
+    // methodcall sequence animations, will be sequential
+    void insertSerial(Animation *anim);
+
+    // for message hops, this will group each message-send
+    // sequence into parallel stages if enabled
+    void insertConcurrent(Animation *anim, cMessage *msg);
+
 public:
     explicit Animator();
 
@@ -101,7 +113,7 @@ public:
     void animateDelivery(cMessage *msg);
     void animateDeliveryDirect(cMessage *msg);
 
-    bool isAnimating(cMessage *msg);
+    bool willAnimate(cMessage *msg);
 
     ~Animator();
 
@@ -109,7 +121,6 @@ signals:
     void finish();
 
 public slots:
-    void addAnimation(Animation *anim);
     void onFrameTimer();
     void play();
     void clearMessages();

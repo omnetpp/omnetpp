@@ -173,7 +173,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       TimeLineInspector *mainTimeLine;
       ObjectTreeInspector *mainObjectTree;
 
-      Animator *animator;
+      Animator *animator = nullptr;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>

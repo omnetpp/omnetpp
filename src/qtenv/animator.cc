@@ -35,14 +35,6 @@ namespace qtenv {
 class AnimationGroup : public Animation {
 protected:
     std::vector<Animation *> parts;
-    QString info() const override {
-        QString result = "AnimationGroup of " + QString::number(parts.size()) + " parts";
-        for (Animation *a : parts) {
-            result += "\n    - " + a->info().replace("\n", "\n      ");
-        }
-        return result;
-    }
-
     int flags;
 
 public:
@@ -60,6 +52,7 @@ public:
     // called in this groups cleanup().
     // If not set, they will be called in this groups end().
     static const int DEFER_PARTS_CLEANUP = 1 << 1;
+
 
     explicit AnimationGroup(int flags = 0) : flags(flags) { }
 
@@ -81,12 +74,11 @@ public:
         Animation::cleanup();
     }
 
-    bool isAnimating(cMessage *msg) override {
-        for (auto p : parts) {
-            if (p->isAnimating(msg))
-                return true;
-        }
-        return false;
+    bool willAnimate(cMessage *msg) override {
+        return std::any_of(parts.begin(), parts.end(),
+                           [&msg](Animation *p){
+            return p->willAnimate(msg);
+        });
     }
 
     void begin() override {
@@ -102,7 +94,19 @@ public:
         parts.push_back(a);
     }
 
+    const std::vector<Animation *> &getParts() const {
+        return parts;
+    }
+
     void clearInspector(ModuleInspector *insp);
+
+    QString info() const override {
+        QString result = "AnimationGroup of " + QString::number(parts.size()) + " parts";
+        for (Animation *a : parts) {
+            result += "\n    - " + a->info().replace("\n", "\n      ");
+        }
+        return result;
+    }
 
     virtual ~AnimationGroup() {
         for (auto p : parts) delete p;
@@ -150,9 +154,13 @@ public:
 };
 
 class ParallelAnimation : public AnimationGroup {
-    float maxDuration = 0;
-
-    float getDuration() override { return maxDuration; }
+    float getDuration() override {
+        float duration = 0;
+        for (auto p : parts) {
+            duration = std::max(duration, p->getDuration());
+        }
+        return duration;
+    }
 
     void begin() override {
         AnimationGroup::begin();
@@ -164,6 +172,7 @@ class ParallelAnimation : public AnimationGroup {
     }
 
     void advance(float delta) {
+        float duration = getDuration();
         bool somePlaying = false;
         for (auto p : parts) {
             if (p->getState() == PLAYING) {
@@ -189,12 +198,6 @@ public:
     // If unset, each of the parts' own duration will be respected
     static const int STRETCH_TIME = 1 << 8;
     // shift by 8 just to ensure independence from superclass flags
-
-    void addAnimation(Animation *anim) override {
-        AnimationGroup::addAnimation(anim);
-        maxDuration = std::max(maxDuration, anim->getDuration());
-    }
-
 };
 
 class SimpleAnimation : public Animation {
@@ -244,7 +247,7 @@ protected:
     MessageItem *messageItem;
     SendAnimMode mode;
     SendAnimation(ModuleInspector *insp, SendAnimMode mode, const QPointF &src, const QPointF &dest, cMessage *msg, float duration);
-    bool isAnimating(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
+    bool willAnimate(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
     void begin() override;
     void setProgress(float t) override;
     void end() override;
@@ -256,7 +259,8 @@ class SendOnConnAnimation : public SendAnimation {
 public:
     SendOnConnAnimation(ModuleInspector *insp, SendAnimMode mode, const QPointF &src, const QPointF &dest, cMessage *msg);
     QString info() const override { return QString("SendOnConn '") + ((msg && mode != ANIM_END)? msg->getName() : "NULL") + "' mode "
-                + (mode == ANIM_BEGIN ? "begin" : mode == ANIM_END ? "end" : mode == ANIM_THROUGH ? "through" : "INVALID"); }
+                + (mode == ANIM_BEGIN ? "begin" : mode == ANIM_END ? "end" : mode == ANIM_THROUGH ? "through" : "INVALID")
+                + " in " + inspector->QWidget::windowTitle(); }
 };
 
 class SendDirectAnimation : public SendAnimation {
@@ -337,6 +341,55 @@ void Animator::findDirectPath(cModule *srcmod, cModule *destmod, Animator::PathV
     }
 }
 
+void Animator::insertSerial(Animation *anim)
+{
+    // this will reset the staged broadcast message animation
+    messageStages = nullptr;
+    animation->addAnimation(anim);
+}
+
+void Animator::insertConcurrent(Animation *anim, cMessage *msg)
+{
+    if (!messageStages) {
+        // we have to start (again) the concurrent staging
+        messageStages = new SequentialAnimation(AnimationGroup::DEFER_PARTS_INIT);
+        animation->addAnimation(messageStages);
+    }
+
+    auto &parts = messageStages->getParts();
+
+    if (getQtenv()->getPref("concurrent-anim").value<bool>()) {
+        // if we want concurrent "broadcast" animation
+        // lets find the first stage where this message is
+        // is not yet scheduled to animate
+        size_t stage = 0;
+        for (stage = 0; stage < parts.size(); ++stage) {
+            if (!parts[stage]->willAnimate(msg)) {
+                break;
+            }
+        }
+        if (stage >= parts.size()) {
+            // if all stages so far animate this message
+            // (or there aren't any), add a new, empty stage
+            messageStages->addAnimation(new ParallelAnimation(ParallelAnimation::STRETCH_TIME));
+        }
+        // and finally add animation to the stage we just found
+        ((ParallelAnimation*)parts[stage])->addAnimation(anim);
+    } else {
+        // if we don't want concurrent "broadcast" animation
+        // we just check if the last (non-concurrent in this case)
+        // stage belongs to the current message
+        if (!(parts.empty() || parts.back()->willAnimate(msg))) {
+            // and if not, or there aren't any stages yet,
+            // lets add a new, empty stage
+            messageStages = new SequentialAnimation(AnimationGroup::DEFER_PARTS_INIT);
+            animation->addAnimation(messageStages);
+        }
+        // and finally add the animation as a next stage
+        messageStages->addAnimation(anim);
+    }
+}
+
 Animator::Animator()
 {
     timer.setInterval(1000 / frameRate);
@@ -374,7 +427,7 @@ void Animator::redrawMessages() {
                 continue;
             }
 
-            if (!isAnimating(msg) &&
+            if (!willAnimate(msg) &&
                 arrivalMod &&
                 arrivalMod->getParentModule() == moduleInsp->getObject() &&
                 msg->getArrivalGateId() >= 0)
@@ -446,7 +499,12 @@ void Animator::animateMethodcall(cComponent *fromComp, cComponent *toComp, const
         group->addAnimation(subgroup);
     }
 
-    addAnimation(group);
+    // this one i necessary to clean up the arrows after the methodcall ended
+    // this is not using LAZY_CLEANUP, the one above is, and that should be
+    auto container = new SequentialAnimation();
+    container->addAnimation(group);
+
+    insertSerial(container);
 }
 
 void Animator::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate)
@@ -458,8 +516,6 @@ void Animator::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destG
     cModule *arrivalmod = destGate->getNextGate()==nullptr ? destGate->getOwnerModule() : nullptr;
 
     const auto &inspectors = getQtenv()->getInspectors();
-
-    auto group = new SequentialAnimation(AnimationGroup::LAZY_INIT);
 
     PathVec::iterator i;
     for (i = pathvec.begin(); i != pathvec.end(); i++) {
@@ -506,9 +562,8 @@ void Animator::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destG
                 }
             }
         }
-        group->addAnimation(subgroup);
+        insertConcurrent(subgroup, msg);
     }
-    addAnimation(group);
 }
 
 void Animator::animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
@@ -528,7 +583,7 @@ void Animator::animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
         }
     }
 
-    addAnimation(subgroup);
+    insertConcurrent(subgroup, msg);
 }
 
 void Animator::animateDelivery(cMessage *msg)
@@ -557,11 +612,10 @@ void Animator::animateDelivery(cMessage *msg)
             ASSERT(length > 0.0); // there is a minimum bounding box size on the modules, so the edge can't be in the center
             QPointF destPos = connLine.p2() + fromEdgeToCenter / length * std::min(length, msgEndCreep);
 
-
             subgroup->addAnimation(new SendOnConnAnimation(insp, ANIM_END, srcPos, destPos, msg));
         }
     }
-    addAnimation(subgroup);
+    insertSerial(subgroup);
 }
 
 void Animator::animateDeliveryDirect(cMessage *msg)
@@ -581,11 +635,7 @@ void Animator::animateDeliveryDirect(cMessage *msg)
                 SendDirectAnimation::DIR_DELIVERY, ANIM_END, end, end, msg));
         }
     }
-    addAnimation(subgroup);
-}
-
-void Animator::addAnimation(Animation *anim) {
-    animation->addAnimation(anim);
+    insertSerial(subgroup);
 }
 
 void Animator::onFrameTimer() {
@@ -634,6 +684,7 @@ void Animator::clear() {
     delete animation;
     animation = new SequentialAnimation();
 
+    messageStages = nullptr;
     inHurry = false;
 }
 
@@ -656,8 +707,8 @@ void Animator::clearInspector(ModuleInspector *insp) {
 
 //  --------  Animator member definitions  --------
 
-bool Animator::isAnimating(cMessage *msg) {
-    return animation->isAnimating(msg);
+bool Animator::willAnimate(cMessage *msg) {
+    return animation->willAnimate(msg);
 }
 
 //  --------  Animation subclasses' member definitions  --------

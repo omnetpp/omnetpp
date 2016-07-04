@@ -455,18 +455,16 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     localPrefKeys.insert("default-configname");
     localPrefKeys.insert("default-runnumber");
 
-    animator = new Animator();
-
     loadResource();
 }
 
 Qtenv::~Qtenv()
 {
+    delete animator;
     delete localPrefs; // will sync it to disk
     delete globalPrefs; // will sync it to disk
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
-    delete animator;
 }
 
 static void signalHandler(int signum)
@@ -513,6 +511,8 @@ void Qtenv::doRun()
             windowTitlePrefix = tmp;
         }
 
+        animator = new Animator();
+
         mainWindow = new MainWindow(this);
 
         initFonts();
@@ -554,6 +554,9 @@ void Qtenv::doRun()
 
     // clear log
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????
+
+    delete animator;
+    animator = nullptr;
 
     // delete network if not yet done
     if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
@@ -1564,7 +1567,8 @@ void Qtenv::endSend(cMessage *msg)
 
 void Qtenv::messageDeleted(cMessage *msg)
 {
-    animator->redrawMessages();
+    if (animator)
+        animator->redrawMessages();
     EnvirBase::messageDeleted(msg);
 }
 
