@@ -1,0 +1,28 @@
+<features cppSourceRoots="src" definesFile="src/a/features.h">
+    <feature
+        id="af1"
+        name="A Featue 1"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       proja.a.af1
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_AF1 -I../extra"
+        linkerFlags = ""
+        />
+    <feature
+        id="af2"
+        name="A Featue 2"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       proja.a.af2
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_AF2"
+        linkerFlags = ""
+        />
+</features>

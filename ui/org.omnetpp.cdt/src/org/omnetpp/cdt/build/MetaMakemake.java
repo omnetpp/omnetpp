@@ -107,7 +107,7 @@ public class MetaMakemake {
         }
 
         // add include folders from this project and exported from referenced projects
-        translatedOptions.includeDirs.addAll(getIncludePath(makefileFolder, options, configuration, projectFeatures, monitor));
+        translatedOptions.includeDirs = getIncludePath(makefileFolder, options, configuration, projectFeatures, monitor);
         translatedOptions.metaFeatureCFlags = false;  // they may only contain -D and -I, and -D's are processed elsewhere
         translatedOptions.metaExportIncludePath = false;
         translatedOptions.metaUseExportedIncludePaths = false;

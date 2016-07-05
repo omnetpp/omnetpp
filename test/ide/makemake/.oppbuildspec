@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<buildspec version="4.0">
+    <dir makemake-options="-O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_deepincl/makemake_nondeep" type="makemake"/>
+    <dir makemake-options="-O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_nondeep" type="makemake"/>
+    <dir makemake-options="--deep -O out --no-deep-includes --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_nodeepincl" type="makemake"/>
+    <dir makemake-options="-O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_nondeep/makemake_nondeep" type="makemake"/>
+    <dir makemake-options="--deep -O out --no-deep-includes --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_nondeep/makemake_deep_nodeepincl" type="makemake"/>
+    <dir makemake-options="-O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_nodeepincl/makemake_nondeep" type="makemake"/>
+    <dir makemake-options="--deep -O out --no-deep-includes --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_nodeepincl/makemake_deep_nodeepincl" type="makemake"/>
+    <dir makemake-options="-O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_nodeepincl/makemake_deep_deepincl/makemake_nondeep" type="makemake"/>
+    <dir makemake-options="--deep -O out --no-deep-includes --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_deepincl/makemake_deep_nodeepincl" type="makemake"/>
+    <dir makemake-options="--deep -O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_nondeep/makemake_deep_deepincl" type="makemake"/>
+    <dir makemake-options="--nolink -O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="." type="makemake"/>
+    <dir makemake-options="--deep -O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_deepincl" type="makemake"/>
+    <dir makemake-options="--deep -O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_deep_nodeepincl/makemake_deep_deepincl" type="makemake"/>
+    <dir makemake-options="-O out --meta:recurse --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags" path="src_makemake_nondeep/makemake_deep_deepincl/makemake_nondeep" type="makemake"/>
+</buildspec>

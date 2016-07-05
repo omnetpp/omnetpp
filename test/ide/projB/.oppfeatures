@@ -1,0 +1,41 @@
+<features cppSourceRoots="src" definesFile="src/b/features.h">
+    <feature
+        id="bf1"
+        name="B Featue 1"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       projb.b.bf1
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_BF1"
+        linkerFlags = ""
+        />
+    <feature
+        id="bf2"
+        name="B Featue 2"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       projb.b.bf2
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_BF2"
+        linkerFlags = ""
+        />
+    <feature
+        id="bf3"
+        name="B Featue 3"
+        initiallyEnabled = "true"
+        requires = "bf1"
+        labels = ""
+        nedPackages = "
+                       projb.simulations
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_BF3"
+        linkerFlags = ""
+        />
+</features>

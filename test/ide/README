@@ -1,0 +1,26 @@
+
+This directory contains projects for testing the IDE.
+
+
+Testing project build functionality
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For testing makefile generation (makemake) capability in the IDE. Linker/compiler options, include path etc.
+
+Parts: projA, projB, projC
+
+Exercises the following IDE build features:
+- multiple projects
+- multiple makemake folders per project
+- target types: static lib, shared lib, executable
+- linked project (i.e. not directly under the workspace dir)
+- project references, >2 deep
+- project features (.oppfeatures)
+- include folders: defined in CDT (Paths&Symbols page), by project features, and in makemake -I options
+- defines: defined ibn CDT (Paths&Symbols page), by project features, and in makemame -D options
+- message files, used in referenced projects
+
+Pass criteria:
+- project must compile, resulting executable must start
+- content of generated makefiles is checked against a saved copy
+
+

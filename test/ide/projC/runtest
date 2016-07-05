@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo TEST: Checking Makefiles..
+diff src/Makefile src/Makefile.expected >/dev/null || (echo FAILED: src/Makefile is different than the refenence; exit)
+diff ../projB/src/Makefile ../projB/src/Makefile.expected >/dev/null || (echo FAILED: ../projB/src/Makefile is different than the refenence; exit)
+diff ../projB/simulations/Makefile ../projB/simulations/Makefile.expected >/dev/null || (echo FAILED: ../projB/simulations/Makefile is different than the refenence; exit)
+diff ../proj-linked/projA/src/Makefile ../proj-linked/projA/src/Makefile.expected >/dev/null || (echo FAILED: ../proj-linked/projA/src/Makefile is different than the refenence; exit)
+echo PASS: Makefiles have the expected content
+
+echo TEST: Starting the simulation...
+(cd src/c; ../projC >/dev/null -u Cmdenv -r 0 -n ..:../../../projB/simulations:../../../projB/src:../../../proj-linked/projA/src -l ../../../projB/src/projB -l ../../../projB/simulations/projBsamples --debug-on-errors=false omnetpp.ini || (echo FAILED: Simulation cannot be started; exit))
+echo PASS: Simulation started successfully
