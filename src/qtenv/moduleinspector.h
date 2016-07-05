@@ -59,9 +59,11 @@ class QTENV_API ModuleInspector : public Inspector
       void click(QMouseEvent *event);
       void doubleClick(QMouseEvent *event);
       void onViewerDragged(QPointF center);
-      void createContextMenu(QContextMenuEvent *event);
+
       void onObjectsPicked(const std::vector<cObject*>&);
-      void onMarqueeZoom(QRectF rect, QPoint startPos);
+      void onMarqueeZoom(QRectF rect);
+
+      void createContextMenu(const std::vector<cObject*> &objects, const QPoint &globalPos);
 
       void layers();
       void toggleLabels();

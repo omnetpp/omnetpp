@@ -126,8 +126,8 @@ void ModuleInspector::createViews(bool isTopLevel)
     connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
     connect(canvasViewer, SIGNAL(dragged(QPointF)), this, SLOT(onViewerDragged(QPointF)));
-    connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(createContextMenu(QContextMenuEvent*)));
-    connect(canvasViewer, SIGNAL(marqueeZoom(QRectF,QPoint)), this, SLOT(onMarqueeZoom(QRectF,QPoint)));
+    connect(canvasViewer, SIGNAL(contextMenuRequested(std::vector<cObject*>,QPoint)), this, SLOT(createContextMenu(std::vector<cObject*>,QPoint)));
+    connect(canvasViewer, SIGNAL(marqueeZoom(QRectF)), this, SLOT(onMarqueeZoom(QRectF)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     QToolBar *toolbar = createToolbar(isTopLevel);
@@ -646,7 +646,7 @@ void ModuleInspector::onViewerDragged(QPointF center) {
     setPref(PREF_CENTER, center.toPoint());
 }
 
-void ModuleInspector::onMarqueeZoom(QRectF rect, QPoint startPos) {
+void ModuleInspector::onMarqueeZoom(QRectF rect) {
     qreal rectLongerSide;
     qreal viewportSide;
 
@@ -660,7 +660,7 @@ void ModuleInspector::onMarqueeZoom(QRectF rect, QPoint startPos) {
     }
 
     if(rectLongerSide != 0.0) {
-        QPointF center = canvasViewer->mapToScene(startPos + rect.center().toPoint()) / getZoomFactor();
+        QPointF center = canvasViewer->mapToScene(rect.center().toPoint()) / getZoomFactor();
         zoomBy(viewportSide/rectLongerSide);
 
         center *= getZoomFactor();
@@ -683,17 +683,16 @@ void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)
         emit selectionChanged(object);
 }
 
-void ModuleInspector::createContextMenu(QContextMenuEvent *event)
+void ModuleInspector::createContextMenu(const std::vector<cObject*> &objects, const QPoint &globalPos)
 {
     if (!object)
         return;
 
-    std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
-
-    if (objects.empty())
-        objects.push_back(object);
-
-    QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
+    auto o = QVector<cObject*>::fromStdVector(objects);
+    if (o.empty()) {
+            o.push_back(object);
+    }
+    QMenu *menu = InspectorUtil::createInspectorContextMenu(o, this);
 
     bool showLabels = getPref(PREF_SHOWLABELS, true).toBool();
     bool showArrowHeads = getPref(PREF_SHOWARROWHEADS, true).toBool();
@@ -732,7 +731,7 @@ void ModuleInspector::createContextMenu(QContextMenuEvent *event)
     menu->addAction("Export to PDF...", this, SLOT(exportToPdf()));
     menu->addAction("Print...", this, SLOT(print()));
 
-    menu->exec(event->globalPos());
+    menu->exec(globalPos);
     delete menu;
 }
 

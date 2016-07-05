@@ -17,6 +17,7 @@
 #include "submoduleitem.h"
 #include "qtenv.h"
 #include <QDebug>
+#include <QPainter>
 #include <QGraphicsColorizeEffect>
 #include <omnetpp/cdisplaystring.h>
 #include <omnetpp/cqueue.h>
@@ -486,6 +487,15 @@ QRectF SubmoduleItem::boundingRect() const {
 
 void SubmoduleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     // nothing to do here, the child items are painted anyways
+
+    /*
+    // DEBUG
+    painter->save();
+    painter->setBrush(QColor(255, 0, 0, 100));
+    painter->setPen(QColor(0, 255, 0, 100));
+    painter->drawPath(QGraphicsItem::shape());
+    painter->restore();
+    */
 }
 
 void SubmoduleItem::onPositionChanged() {

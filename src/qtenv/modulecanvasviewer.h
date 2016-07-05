@@ -118,11 +118,11 @@ signals:
     void back();
     void forward();
     void doubleClick(QMouseEvent*);
-    void contextMenuRequested(QContextMenuEvent*);
+    void contextMenuRequested(const std::vector<cObject*> &objects, const QPoint &globalPos);
     // the parameter will be the center of the view rectangle
     // (in scene coords, not in compound module coords, so scales with zoom)
     void dragged(QPointF);
-    void marqueeZoom(QRectF, QPoint);
+    void marqueeZoom(QRectF);
 
 public slots:
     void relayoutAndRedrawAll();
@@ -132,7 +132,8 @@ public:
     ~ModuleCanvasViewer();
 
     void setObject(cModule *obj);
-    std::vector<cObject *> getObjectsAt(const QPoint &pos);
+    std::vector<cObject *> getObjectsAt(const QPoint &pos, int threshold = 4);
+    std::vector<cObject *> getObjectsAt(const QRect &rect);
 
     GraphicsLayer *getAnimationLayer() { return animationLayer; }
     CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }

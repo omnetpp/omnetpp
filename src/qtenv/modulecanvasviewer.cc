@@ -152,7 +152,7 @@ void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
     default:   /* shut up, compiler! */     break;
     }
 
-    if(event->modifiers() & Qt::ControlModifier) {
+    if (event->modifiers() & Qt::ControlModifier) {
         rubberBandStartPos = event->pos();
         rubberBand->setGeometry(QRect(rubberBandStartPos, QSize()));
         rubberBand->show();
@@ -165,16 +165,21 @@ void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
     if(rubberBand->isVisible()) {
-        emit marqueeZoom(rubberBand->rect(), rubberBandStartPos);
+        QRect rect = rubberBand->geometry().normalized();
+        if (event->button() == Qt::RightButton) {
+            emit contextMenuRequested(getObjectsAt(rect), event->globalPos());
+        } else
+            emit marqueeZoom(rect);
         rubberBand->hide();
+    } else {
+        emit dragged(mapToScene(viewport()->rect().center()));
     }
 
     viewport()->setCursor(Qt::ArrowCursor);
-    emit dragged(mapToScene(viewport()->rect().center()));
 }
 
 void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event) {
-    if(rubberBand->isVisible() && event->modifiers() & Qt::ControlModifier)
+    if (rubberBand->isVisible() && (event->modifiers() & Qt::ControlModifier))
          rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
     else
         QGraphicsView::mouseMoveEvent(event);
@@ -203,9 +208,13 @@ bool ModuleCanvasViewer::event(QEvent *event)
     return QGraphicsView::event(event);
 }
 
-void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent * event)
+void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent *event)
 {
-    emit contextMenuRequested(event);
+    // if Ctrl is held, ignoring the event, so gathering is possible
+    if (!(event->modifiers() & Qt::ControlModifier)) {
+        auto objects = getObjectsAt(event->pos());
+        emit contextMenuRequested(objects, event->globalPos());
+    }
 }
 
 void ModuleCanvasViewer::relayoutAndRedrawAll()
@@ -729,9 +738,31 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
                        srcAnch, destAnch);
 }
 
-std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(const QPoint &pos)
+std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(const QPoint &pos, int threshold)
 {
     QList<QGraphicsItem*> items = scene()->items(mapToScene(pos));
+    std::vector<cObject*> objects;
+
+    for (auto item : items) {
+        QVariant variant = item->data(1);
+        if (variant.isValid())
+            objects.push_back(variant.value<cObject*>());
+    }
+
+    if (objects.empty() // if nothing, or only the inspected module (big grey rect) was clicked
+            || (objects.size() == 1 && objects[0] == object)) {
+        // then trying again, this time with a small square around pos
+        QPoint offset(threshold, threshold);
+        QRect rect(pos - offset, pos + offset);
+        objects = getObjectsAt(rect);
+    }
+
+    return objects;
+}
+
+std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect &rect)
+{
+    QList<QGraphicsItem*> items = scene()->items(mapToScene(rect));
     std::vector<cObject*> objects;
 
     for (auto item : items) {
