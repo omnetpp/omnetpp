@@ -33,7 +33,6 @@ public class MakemakeOptions implements Cloneable {
     public String target = null;
     public String outRoot = null;
     public boolean isDeep = false;
-    public boolean noDeepIncludes = false;
     public boolean force = false;
     public String defaultMode = null;
     public String userInterface = "ALL";
@@ -143,7 +142,7 @@ public class MakemakeOptions implements Cloneable {
                 exceptSubdirs.add(dir);
             }
             else if (arg.equals("--no-deep-includes")) {
-                noDeepIncludes = true;
+                // ignore -- this option was removed in OMNeT++ version 5.1
             }
             else if (arg.equals("-D") || arg.equals("--define")) {
                 if (checkArg(argv, i))
@@ -246,7 +245,7 @@ public class MakemakeOptions implements Cloneable {
                 metaRecurse = true;
             }
             else if (arg.equals("--meta:auto-include-path")) {
-                // ignore -- this option existed until OMNeT++ 5.0, it was removed in version 5.1
+                // ignore -- this option was removed in OMNeT++ version 5.1
             }
             else if (arg.equals("--meta:export-library")) {
                 metaExportLibrary = true;
@@ -333,8 +332,6 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-p" + dllSymbol);
         if (forceCompileForDll)
             add(result, "-S");
-        if (noDeepIncludes)
-            result.add("--no-deep-includes");
         if (!ignoreNedFiles)
             add(result, "-N");
         addOpts2(result, fragmentFiles, "-i");
@@ -456,7 +453,6 @@ public class MakemakeOptions implements Cloneable {
         result.target = target;
         result.outRoot = outRoot;
         result.isDeep = isDeep;
-        result.noDeepIncludes = noDeepIncludes;
         result.force = force;
         result.defaultMode = defaultMode;
         result.userInterface = userInterface;

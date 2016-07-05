@@ -191,9 +191,6 @@ public class Makemake {
         // include dirs and lib dirs
         for (String i : options.includeDirs)
             includeDirs.add(abs2rel(i));
-        if (!options.noDeepIncludes)
-            for (String i : sourceDirs)
-                includeDirs.add(i);
 
         for (String i : options.libDirs)
             libDirs.add(abs2rel(i));

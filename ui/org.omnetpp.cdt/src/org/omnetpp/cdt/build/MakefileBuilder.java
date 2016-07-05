@@ -108,7 +108,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
         super.clean(monitor);
-        Activator.getIncludeFoldersCache().clean(getProject());
         getProject().deleteMarkers(MARKER_ID, true, IResource.DEPTH_INFINITE);
     }
 

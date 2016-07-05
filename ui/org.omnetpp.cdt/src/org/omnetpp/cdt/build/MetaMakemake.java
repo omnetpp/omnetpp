@@ -80,6 +80,18 @@ public class MetaMakemake {
         translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder, configuration));
         translatedOptions.defines.addAll(getMacrosFor(makefileFolder, configuration));
 
+//        // add extra include folders (this code assumes that exceptSubdirs are already filled in at this point)
+//        if (options.metaAutoIncludePath && folderDeps != null) {
+//            for (IContainer srcFolder : folderDeps.keySet())
+//                if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs, makeFolders))
+//                    for (IContainer dep : folderDeps.get(srcFolder))
+//                        if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs, makeFolders)) // only add if "dep" is outside "folder"!
+//                            addLocationToDirList(dep, translatedOptions.includeDirs, makefileFolder);
+//
+//            // clear processed setting
+//            translatedOptions.metaAutoIncludePath = false;
+//        }
+
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
         for (IProject referencedProject : referencedProjects) {

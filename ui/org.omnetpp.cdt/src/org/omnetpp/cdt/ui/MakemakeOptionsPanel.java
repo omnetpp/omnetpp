@@ -118,7 +118,6 @@ public class MakemakeOptionsPanel extends Composite {
     private Text outputDirText;
 
     // "Compile" page
-    private Button deepIncludesCheckbox;
     private Combo ccextCombo;
     private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
@@ -205,8 +204,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
-        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all folders under this deep makefile", null);
-        Link pathsPageLink1 = createLink(includeGroup, "NOTE: Additional include directories can be specified in the <A>Paths and symbols</A> page.");
+        Link pathsPageLink1 = createLink(includeGroup, "Include directories can be specified in the <A>Paths and Symbols</A> property page.");
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
@@ -221,7 +219,7 @@ public class MakemakeOptionsPanel extends Composite {
         forceCompileForDllCheckbox = createCheckbox(dllGroup, "Force compiling object files for use in DLLs", "Forces defining the FOO_EXPORT macro (where FOO is the DLL export/import symbol) even if the target is not a DLL");
         forceCompileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros");
-        Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
+        Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and Symbols</A> property page.");
         if (!IConstants.IS_COMMERCIAL) {
             // the noncommercial version does not need to show the DLL stuff, because it does not support MSVC;
             // the settings will still be preserved, and also editable via the Preview tab
@@ -240,7 +238,7 @@ public class MakemakeOptionsPanel extends Composite {
         for (String i : new String[] {"All", "Tkenv", "Qtenv", "Cmdenv"}) // note: should be consistent with populate()!
             userInterfaceCombo.add(i);
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
-        Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
+        Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and Symbols</A> property page.");
         linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (wildcards, macros allowed, e.g. $O/subdir/*.o)", BROWSE_NONE);
         linkPageToggle = createToggleLink(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
 
@@ -437,8 +435,6 @@ public class MakemakeOptionsPanel extends Composite {
         exportLibraryCheckbox.addSelectionListener(selectionChangeListener);
         outputDirText.addModifyListener(modifyListener);
 
-        deepIncludesCheckbox.addSelectionListener(selectionChangeListener);
-
         ccextCombo.addSelectionListener(selectionChangeListener);
         forceCompileForDllCheckbox.addSelectionListener(selectionChangeListener);
         dllSymbolText.addModifyListener(modifyListener);
@@ -516,9 +512,6 @@ public class MakemakeOptionsPanel extends Composite {
         exportLibraryCheckbox.setSelection(options.metaExportLibrary);
         outputDirText.setText(StringUtils.nullToEmpty(options.outRoot));
 
-        // "Include" page
-        deepIncludesCheckbox.setSelection(!options.noDeepIncludes);
-
         // "Compile" page
         if (options.ccext == null)
             ccextCombo.setText(CCEXT_AUTODETECT);
@@ -576,7 +569,6 @@ public class MakemakeOptionsPanel extends Composite {
                 useExportedLibsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
                 libsList.setEnabled(type!=Type.NOLINK);
                 linkObjectsList.setEnabled(type!=Type.NOLINK);
-                deepIncludesCheckbox.setEnabled(deepCheckbox.getSelection());
 
                 // clear checkboxes that do not apply to the given target type
                 // NOTE: we don't do it, because we'd lose settings when user
@@ -679,9 +671,6 @@ public class MakemakeOptionsPanel extends Composite {
         result.target = defaultTargetNameRadionButton.getSelection() ? null : targetNameText.getText();
         result.metaExportLibrary = exportLibraryCheckbox.getSelection();
         result.outRoot = outputDirText.getText();
-
-        // "Include" page
-        result.noDeepIncludes = !deepIncludesCheckbox.getSelection();
 
         // "Compile" page
         String ccextText = ccextCombo.getText().trim().replace(".", "");

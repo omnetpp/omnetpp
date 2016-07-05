@@ -71,10 +71,6 @@ $progname [options] [object files or libraries]
                           directory. The directory does not need to be the
                           child of the make directory. When used with --deep,
                           -d also implies -X for that directory.
-    --no-deep-includes    Normally, when a deep makefile is created, all source
-                          directories will get added to the include path.
-                          Specifying this option turns off that behavior, and
-                          lets the user explicitly specify all include dirs.
     -P directory, --projectdir directory
                           Specifies the project root directory. Any absolute
                           path (-I, -L, object file names, etc.) that points
@@ -164,7 +160,6 @@ sub makemake()
     $outRoot = "";
     $isDeep = 0;
     $isRecursive = 0;
-    $noDeepIncludes = 0;
     $force = 0;
     $defaultMode = "";
     $userInterface = "ALL";
@@ -226,7 +221,7 @@ sub makemake()
             push(@exceptSubdirs, $dir);
         }
         elsif ($arg eq "--no-deep-includes") {
-            $noDeepIncludes = 1;
+            # kept for backward compatibility, now this is the default/only mode
         }
         elsif ($arg eq "-D" || $arg eq "--define") {
             push(@defines, shift @ARGV);
@@ -476,11 +471,6 @@ sub makemake()
     @includeDirs = ();
     foreach $i (@tmp) {
         push(@includeDirs, abs2rel($i,$projectDir));
-    }
-    if (!$noDeepIncludes) {
-        foreach $i (@sourceDirs) {
-            push(@includeDirs, $i);
-        }
     }
     @tmp = @libDirs;
     @libDirs = ();

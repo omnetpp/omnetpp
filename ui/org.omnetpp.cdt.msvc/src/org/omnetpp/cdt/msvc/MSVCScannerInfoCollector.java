@@ -18,14 +18,12 @@ import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscovere
 import org.eclipse.cdt.make.core.scannerconfig.IScannerInfoCollector3;
 import org.eclipse.cdt.make.core.scannerconfig.InfoContext;
 import org.eclipse.cdt.make.core.scannerconfig.ScannerInfoTypes;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.OmnetppDirs;
 
@@ -63,12 +61,6 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
 
             // add the omnetpp include directory
             paths.add(new Path(OmnetppDirs.getOmnetppInclDir()));
-
-            // add the folders inside the project and in referenced projects
-            // Note: we MUST NOT compute the folders here, we must not access the CDT project configuration, see bug #299
-            List<IContainer> folders = Activator.getIncludeFoldersCache().getProjectDeepIncludeFolders(project);
-            for (IContainer folder : folders)
-                paths.add(folder.getLocation());
 
             this.paths = paths.toArray(new IPath[]{});
         }

@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.omnetpp.common.util.StringUtils;
@@ -40,7 +39,6 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
-    private IncludeFoldersCache includeFoldersCache = new IncludeFoldersCache();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
     private CProjectChecker cprojectChecker = new CProjectChecker();
 
@@ -59,7 +57,6 @@ public class Activator extends AbstractUIPlugin {
         plugin = this;
 
         projectFeaturesListener.hookListeners();
-        includeFoldersCache.hookListeners();
         newConfigConfigurer.hookListeners();
         cprojectChecker.hookListeners();
 
@@ -81,7 +78,6 @@ public class Activator extends AbstractUIPlugin {
      */
     public void stop(BundleContext context) throws Exception {
         projectFeaturesListener.unhookListeners();
-        includeFoldersCache.unhookListeners();
         newConfigConfigurer.unhookListeners();
         cprojectChecker.unhookListeners();
 
@@ -185,10 +181,6 @@ public class Activator extends AbstractUIPlugin {
             getDefault().getImageRegistry().put(key, result);
         }
         return result;
-    }
-
-    public static IncludeFoldersCache getIncludeFoldersCache() {
-        return getDefault().includeFoldersCache;
     }
 
     public static NewConfigConfigurer getNewConfigConfigurer() {
