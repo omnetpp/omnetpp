@@ -62,8 +62,8 @@ QPainterPath FigureRenderer::PathItem::shape() const {
         // and if the outline is drawn, including that too.
         QPainterPathStroker s;
         // setting up the stroker properly
-        s.setDashPattern(p.dashPattern());
-        s.setDashOffset(p.dashOffset());
+        /*s.setDashPattern(p.dashPattern()); // this was not really necessary
+        s.setDashOffset(p.dashOffset());*/   // but simplified the path too much
         s.setMiterLimit(p.miterLimit());
         s.setJoinStyle(p.joinStyle());
         s.setWidth(p.widthF()); // note the F at the end...
@@ -479,6 +479,11 @@ void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *i
     shapeItem->setBrush(createBrush(shapeFigure));
 }
 
+QGraphicsItem *AbstractShapeFigureRenderer::newItem()
+{
+    return new PathItem();
+}
+
 void AbstractTextFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
@@ -759,7 +764,7 @@ void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figur
 
 QGraphicsItem *ArcFigureRenderer::newItem()
 {
-    QGraphicsPathItem *arcItem = new QGraphicsPathItem();
+    QGraphicsPathItem *arcItem = new PathItem();
     new GraphicsPathArrowItem(arcItem);
     new GraphicsPathArrowItem(arcItem);
     return arcItem;
@@ -875,62 +880,48 @@ void RectangleFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphi
     rectItem->setPath(painter);
 }
 
-QGraphicsItem *RectangleFigureRenderer::newItem()
-{
-    return new QGraphicsPathItem();
-}
-
 void OvalFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cOvalFigure *ovalFigure = static_cast<cOvalFigure *>(figure);
-    QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem *>(item);
+    QGraphicsPathItem *pathItem = static_cast<QGraphicsPathItem *>(item);
 
     cFigure::Rectangle bounds = ovalFigure->getBounds();
-    ellipseItem->setRect(bounds.x, bounds.y, bounds.width, bounds.height);
-}
 
-QGraphicsItem *OvalFigureRenderer::newItem()
-{
-    return new QGraphicsEllipseItem();
+    QPainterPath path;
+    path.addEllipse(bounds.x, bounds.y, bounds.width, bounds.height);
+    pathItem->setPath(path);
 }
 
 void RingFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cRingFigure *ringFigure = static_cast<cRingFigure *>(figure);
     QGraphicsPathItem *ringItem = static_cast<QGraphicsPathItem *>(item);
-    QPainterPath painter;
+    QPainterPath path;
     cFigure::Rectangle bounds = ringFigure->getBounds();
     cFigure::Point center = bounds.getCenter();
-
-    painter.addEllipse(bounds.x, bounds.y, bounds.width, bounds.height);
-
     double innerRx = ringFigure->getInnerRx();
     double innerRy = ringFigure->getInnerRy();
-    painter.addEllipse(center.x-innerRx, center.y-innerRy, 2*innerRx, 2*innerRy);
 
-    ringItem->setPath(painter);
-}
+    path.addEllipse(bounds.x, bounds.y, bounds.width, bounds.height);
+    path.addEllipse(center.x-innerRx, center.y-innerRy, 2*innerRx, 2*innerRy);
 
-QGraphicsItem *RingFigureRenderer::newItem()
-{
-    return new PathItem();
+    ringItem->setPath(path);
 }
 
 void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPieSliceFigure *pieSliceFigure = static_cast<cPieSliceFigure *>(figure);
-    QGraphicsEllipseItem *pieSliceItem = static_cast<QGraphicsEllipseItem *>(item);
+    QGraphicsPathItem *pathItem = static_cast<QGraphicsPathItem *>(item);
     cFigure::Rectangle bounds = pieSliceFigure->getBounds();
-    pieSliceItem->setRect(bounds.x, bounds.y, bounds.width, bounds.height);
+    cFigure::Point center = bounds.getCenter();
 
-    pieSliceItem->setStartAngle(16*pieSliceFigure->getStartAngle()*180/M_PI);
-    double endAngle = std::abs(std::abs(pieSliceFigure->getEndAngle())-std::abs(pieSliceFigure->getStartAngle())) * 180/M_PI;
-    pieSliceItem->setSpanAngle(16*endAngle);
-}
+    QPainterPath path;
 
-QGraphicsItem *PieSliceFigureRenderer::newItem()
-{
-    return new QGraphicsEllipseItem();
+    path.moveTo(center.x, center.y);
+    path.arcTo(bounds.x, bounds.y, bounds.width, bounds.height,
+               pieSliceFigure->getStartAngle()*180/M_PI, pieSliceFigure->getEndAngle()*180/M_PI);
+    path.closeSubpath();
+    pathItem->setPath(path);
 }
 
 void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1001,11 +992,6 @@ void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, F
 
     polyItem->setPen(pen);
     polyItem->setBrush(createBrush(polyFigure));
-}
-
-QGraphicsItem *PolygonFigureRenderer::newItem()
-{
-    return new PathItem();
 }
 
 void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1189,11 +1175,6 @@ void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figu
 
     shapeItem->setPen(pen);
     shapeItem->setBrush(createBrush(pathFigure));
-}
-
-QGraphicsItem *PathFigureRenderer::newItem()
-{
-    return new PathItem();
 }
 
 void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)

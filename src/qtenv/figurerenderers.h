@@ -52,9 +52,12 @@ protected:
     // This class should be used in place of every QGraphicsPathItem
     // (for the polyline, polygon, ring and path figures - these
     // are the ones that can have holes in them) because this
-    // this does not include the filling area in its shape() if
+    // does not include the filling area in its shape() if
     // the figure is not in fact filled. The Qt one does, and it
     // messes up mouse selection (picking, collision detection, etc...)
+    // UPDATE: Turns out, this should be used in all cases where there
+    // is an optional outline with optional fill. So basically, with
+    // ALL shape figures, including simple ovals and rects, piesices, etc,
     class PathItem : public QGraphicsPathItem {
     public:
         using QGraphicsPathItem::QGraphicsPathItem;
@@ -123,6 +126,7 @@ public:
 class AbstractShapeFigureRenderer : public FigureRenderer
 {
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    QGraphicsItem *newItem() override;
 };
 
 //TODO remove?
@@ -192,28 +196,24 @@ class RectangleFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
 };
 
 class OvalFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
 };
 
 class RingFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
 };
 
 class PieSliceFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
 };
 
 class PolygonFigureRenderer : public AbstractShapeFigureRenderer
@@ -221,7 +221,6 @@ class PolygonFigureRenderer : public AbstractShapeFigureRenderer
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
 };
 
 class PathFigureRenderer : public AbstractShapeFigureRenderer
@@ -230,7 +229,6 @@ protected:
     virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform);
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
 };
 
 class TextFigureRenderer : public AbstractTextFigureRenderer
