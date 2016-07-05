@@ -587,6 +587,7 @@ public class MakemakeOptionsPanel extends Composite {
                 exportLibraryCheckbox.setEnabled(type==Type.STATICLIB || type==Type.SHAREDLIB);
                 userInterfaceCombo.setEnabled(targetExecutableRadioButton.getSelection());
                 useExportedLibsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
+                useFeatureLDFlagsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
                 libsList.setEnabled(type!=Type.NOLINK);
                 linkObjectsList.setEnabled(type!=Type.NOLINK);
 
