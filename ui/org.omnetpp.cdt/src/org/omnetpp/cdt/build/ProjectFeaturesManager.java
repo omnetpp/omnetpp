@@ -384,10 +384,21 @@ public class ProjectFeaturesManager {
         if (doc != null)
             validateDomTree(errors);
 
+        if (definesFile.isEmpty() && featuresContainDefines())
+            errors.add("Missing \"" + ATT_DEFINESFILE + "\" attribute on root element, required to specify the header file in which defines (-D) from enabled features are to be generated");
+
         for (ProjectFeature f : getFeatures())
             validateFeatures(f, errors);
 
         return errors;
+    }
+
+    protected boolean featuresContainDefines() {
+        List<String> featureCFlags = getFeatureCFlags(getFeatures());
+        for (String cflag : featureCFlags)
+            if (cflag.substring(0,2).equals("-D"))
+                return true;
+        return false;
     }
 
     protected void validateDomTree(List<String> errors) {
@@ -527,21 +538,21 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Return the compile flags from all enabled features.
+     * Return the compile flags from the given features.
      */
-    public List<String> getFeatureCFlags() throws CoreException {
+    public List<String> getFeatureCFlags(Collection<ProjectFeature> features) {
         List<String> cflags = new ArrayList<String>();
-        for (ProjectFeature f : getEnabledFeatures())
+        for (ProjectFeature f : features)
             cflags.addAll(Arrays.asList(f.getCompileFlags().split("\\s+")));
         return cflags;
     }
 
     /**
-     * Return the linker flags from all enabled features.
+     * Return the linker flags from the given features.
      */
-    public List<String> getFeatureLDFlags() throws CoreException {
+    public List<String> getFeatureLDFlags(Collection<ProjectFeature> features) {
         List<String> ldflags = new ArrayList<String>();
-        for (ProjectFeature f : getEnabledFeatures())
+        for (ProjectFeature f : features)
             ldflags.addAll(Arrays.asList(f.getLinkerFlags().split("\\s+")));
         return ldflags;
     }

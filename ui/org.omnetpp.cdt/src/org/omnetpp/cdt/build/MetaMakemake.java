@@ -154,7 +154,8 @@ public class MetaMakemake {
 
         // add LDFLAGS contributed by enabled project features
         if (options.metaFeatureLDFlags) {
-            List<String> ldflags = projectFeatures.getFeatureLDFlags();
+            List<ProjectFeature> enabledFeatures = projectFeatures.getEnabledFeatures();
+            List<String> ldflags = projectFeatures.getFeatureLDFlags(enabledFeatures);
             for (String ldflag : ldflags) {
                 // we only need to handle -l and -L here, and can simply ignore the rest:
                 // validateFeatures() already reports them as errors. We can also reject "-L <path>"
@@ -222,7 +223,8 @@ public class MetaMakemake {
 
         // add feature CFLAGs if enabled
         if (options.metaFeatureCFlags) {
-            List<String> cflags = projectFeatures.getFeatureCFlags();
+            List<ProjectFeature> enabledFeatures = projectFeatures.getEnabledFeatures();
+            List<String> cflags = projectFeatures.getFeatureCFlags(enabledFeatures);
             for (String cflag : cflags) {
                 // we only need to handle -I here, and can simply ignore the rest: -D's are put into the
                 // generated header file, and validateFeatures() reports all other options as errors.
