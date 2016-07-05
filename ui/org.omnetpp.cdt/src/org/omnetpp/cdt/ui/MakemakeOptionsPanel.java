@@ -121,12 +121,14 @@ public class MakemakeOptionsPanel extends Composite {
     private FileListControl includePathList;
     private Button exportIncludePathCheckbox;
     private Button useExportedIncludePathsCheckbox;
+    private Button useFeatureCFlagsCheckbox;
     private Combo ccextCombo;
     private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
 
     // "Link" page
     private Button useExportedLibsCheckbox;
+    private Button useFeatureLDFlagsCheckbox;
     private Combo userInterfaceCombo;
     private ToggleLink linkPageToggle;
     private FileListControl libsList;
@@ -207,9 +209,10 @@ public class MakemakeOptionsPanel extends Composite {
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
-        includePathList = new FileListControl(includeGroup, "Include directories (-I)", BROWSE_DIR);
+        includePathList = new FileListControl(includeGroup, "Include directories, relative to this makefile (-I)", BROWSE_DIR);
         exportIncludePathCheckbox = createCheckbox(includeGroup, "Export include path for other projects", null);
         useExportedIncludePathsCheckbox = createCheckbox(includeGroup, "Add include paths exported from referenced projects", null);
+        useFeatureCFlagsCheckbox = createCheckbox(includeGroup, "Add include dirs and other compile options from enabled project features", null);
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
@@ -238,6 +241,8 @@ public class MakemakeOptionsPanel extends Composite {
         Group linkGroup = createGroup(linkPage, "Link", 2);
         useExportedLibsCheckbox = createCheckbox(linkGroup, "Link with libraries exported from referenced projects", null);
         ((GridData)useExportedLibsCheckbox.getLayoutData()).horizontalSpan = 2;
+        useFeatureLDFlagsCheckbox = createCheckbox(linkGroup, "Add libraries and other linker options from enabled project features", null);
+        ((GridData)useFeatureLDFlagsCheckbox.getLayoutData()).horizontalSpan = 2;
         createLabel(linkGroup, "User interface libraries to link with:");
         userInterfaceCombo = new Combo(linkGroup, SWT.BORDER | SWT.READ_ONLY);
         for (String i : new String[] {"All", "Tkenv", "Qtenv", "Cmdenv"}) // note: should be consistent with populate()!
@@ -441,6 +446,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         exportIncludePathCheckbox.addSelectionListener(selectionChangeListener);
         useExportedIncludePathsCheckbox.addSelectionListener(selectionChangeListener);
+        useFeatureCFlagsCheckbox.addSelectionListener(selectionChangeListener);
 
         ccextCombo.addSelectionListener(selectionChangeListener);
         forceCompileForDllCheckbox.addSelectionListener(selectionChangeListener);
@@ -448,6 +454,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         userInterfaceCombo.addSelectionListener(selectionChangeListener);
         useExportedLibsCheckbox.addSelectionListener(selectionChangeListener);
+        useFeatureLDFlagsCheckbox.addSelectionListener(selectionChangeListener);
         libsList.addChangeListener(fileListChangeListener);
         linkObjectsList.addChangeListener(fileListChangeListener);
 
@@ -523,6 +530,7 @@ public class MakemakeOptionsPanel extends Composite {
         includePathList.setList(options.includeDirs.toArray(new String[]{}));
         exportIncludePathCheckbox.setSelection(options.metaExportIncludePath);
         useExportedIncludePathsCheckbox.setSelection(options.metaUseExportedIncludePaths);
+        useFeatureCFlagsCheckbox.setSelection(options.metaFeatureCFlags);
         if (options.ccext == null)
             ccextCombo.setText(CCEXT_AUTODETECT);
         else
@@ -533,6 +541,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Link" page
         userInterfaceCombo.setText(StringUtils.capitalize(options.userInterface.toLowerCase()));
         useExportedLibsCheckbox.setSelection(options.metaUseExportedLibs);
+        useFeatureLDFlagsCheckbox.setSelection(options.metaFeatureLDFlags);
         libsList.setList(options.libs.toArray(new String[]{}));
         linkObjectsList.setList(options.extraArgs.toArray(new String[]{}));
 
@@ -686,6 +695,7 @@ public class MakemakeOptionsPanel extends Composite {
         result.includeDirs.addAll(Arrays.asList(includePathList.getItems()));
         result.metaExportIncludePath = exportIncludePathCheckbox.getSelection();
         result.metaUseExportedIncludePaths = useExportedIncludePathsCheckbox.getSelection();
+        result.metaFeatureCFlags = useFeatureCFlagsCheckbox.getSelection();
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.forceCompileForDll = forceCompileForDllCheckbox.getSelection();
@@ -694,6 +704,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();
         result.metaUseExportedLibs = useExportedLibsCheckbox.getSelection();
+        result.metaFeatureLDFlags = useFeatureLDFlagsCheckbox.getSelection();
         result.libs.addAll(Arrays.asList(libsList.getItems()));
         result.extraArgs.addAll(Arrays.asList(linkObjectsList.getItems()));
 
