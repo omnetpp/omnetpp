@@ -7,7 +7,6 @@
 
 package org.omnetpp.cdt.ui;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,19 +17,15 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -61,10 +56,7 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.cdt.build.BuildSpecification;
-import org.omnetpp.cdt.build.MakefileTools;
 import org.omnetpp.cdt.build.ProjectFeature;
-import org.omnetpp.cdt.build.ProjectFeatureTester;
 import org.omnetpp.cdt.build.ProjectFeaturesManager;
 import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.color.ColorFactory;
@@ -93,7 +85,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     protected Link errorMessageLabel;
     protected FilteredCheckboxTree filteredTree;
     protected CheckboxTreeViewer treeViewer;
-    protected Link exportLink;
 
     protected NedSourceFoldersConfiguration nedSourceFoldersConfig;
 
@@ -156,9 +147,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         buttonsArea.setLayout(new GridLayout(1,false));
         Button selectAllButton = createButton(buttonsArea, SWT.PUSH, "&Select All", null);
         Button deselectAllButton = createButton(buttonsArea, SWT.PUSH, "&Deselect All", null);
-
-        // link at bottom
-        exportLink = createLink(composite, "<a>Export build tester makefile</a>");
 
         Label noteLabel = createLabel(composite, "");
 
@@ -258,14 +246,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setAllFeaturesEnabled(false);
-            }
-        });
-
-        // configure "Export" label
-        exportLink.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                exportTestMakemakefile();
             }
         });
 
@@ -656,60 +636,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
         return true;
     }
-
-    protected void exportTestMakemakefile() {
-        try {
-
-            // create tester
-            BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(getProject()); //XXX should actually be the copy edited by ProjectMakemakePropertyPage
-            ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
-            ICConfigurationDescription activeConfiguration = CDTPropertyManager.getProjectDescription(getProject()).getActiveConfiguration();
-            boolean isNmake = CDTUtils.isMsvcConfiguration(activeConfiguration);
-            final String filename = isNmake ? "FeatureBuildTest.vc" : "FeatureBuildTest";
-            final ProjectFeatureTester tester = new ProjectFeatureTester(getProject(), features, buildSpec, nedSourceFoldersConfig, configurations, activeConfiguration);
-
-            // let it generate the file
-            final String[] text = new String[1];
-            ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
-            dialog.run(true, true, new IRunnableWithProgress() {
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        text[0] = tester.makeMakefile(filename, monitor);
-                    }
-                    catch (CoreException e) {
-                        throw new InvocationTargetException(e);
-                    }
-                    finally {
-                        monitor.done();
-                    }
-                }
-            });
-
-            // save
-            IFile file = getProject().getFile(filename);
-            boolean existed = file.exists();
-            if (!file.exists() || MessageDialog.openConfirm(getShell(), "Export", "Overwrite existing " + file.getFullPath().toString() + "?")) {
-                byte[] bytes = text[0].getBytes();
-                MakefileTools.ensureFileContent(file, bytes, null);
-                file.refreshLocal(0, null);
-                if (!existed)
-                    MessageDialog.openInformation(getShell(),
-                            "Export", file.getFullPath().toString() + " created.\n\n" +
-                            "This is a makefile that compiles the project with all features being enabled, with all features being disabled, " +
-                            "and with various other feature combinations. It is useful for developers of the " +
-                            "\"" + getProject().getName() + "\" project for finding compile errors caused by unwanted " +
-                            "feature interdependencies."
-                    );
-            }
-        }
-        catch (InterruptedException e) {
-        }
-        catch (Exception e) {
-            Activator.logError(e);
-            errorDialog(e.getMessage(), e);
-        }
-    }
-
 
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);
