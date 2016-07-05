@@ -115,11 +115,15 @@ public class MetaMakemake {
                 ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(referencedProject);
                 ICConfigurationDescription refConfiguration = refProjDesc==null ? null : refProjDesc.getActiveConfiguration();
                 BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
+                ProjectFeaturesManager refProjectFeatures = new ProjectFeaturesManager(referencedProject);
+                refProjectFeatures.loadFeaturesFile();
                 if (refBuildSpec != null && refProjDesc != null) {
                     for (IContainer refMakemakeFolder : refBuildSpec.getMakemakeFolders()) {
                         MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
-                        if (refOptions != null && refOptions.metaExportIncludePath)
-                            translatedOptions.includeDirs.addAll(getIncludePathsFor(refMakemakeFolder, refConfiguration));
+                        if (refOptions != null && refOptions.metaExportIncludePath) {
+                            List<String> includePath = getIncludePathFor(refMakemakeFolder, refOptions, refConfiguration, refProjectFeatures, monitor);
+                            translatedOptions.includeDirs.addAll(includePath);
+                        }
                     }
                 }
             }
@@ -216,6 +220,40 @@ public class MetaMakemake {
         return translatedOptions;
     }
 
+    protected static List<String> getIncludePathFor(IContainer makefileFolder, MakemakeOptions options, ICConfigurationDescription configuration, ProjectFeaturesManager projectFeatures, IProgressMonitor monitor) throws CoreException {
+        List<String> result = new ArrayList<String>();
+
+        // add -I options in local makemake options
+        result.addAll(toAbsolute(options.includeDirs, makefileFolder));
+
+        // add include folders configured in CDT
+        result.addAll(toAbsolute(getIncludePathsFor(makefileFolder, configuration), makefileFolder));
+
+        // add feature CFLAGs if enabled
+        if (options.metaFeatureCFlags) {
+            List<String> cflags = projectFeatures.getFeatureCFlags();
+            for (String cflag : cflags) {
+                // we only need to handle -I here, and can simply ignore the rest: -D's are put into the
+                // generated header file, and validateFeatures() reports all other options as errors.
+                // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
+                if (cflag.startsWith("-I") && cflag.length()>2)
+                    result.add(toAbsolute(cflag.substring(2), makefileFolder));
+            }
+        }
+        return result;
+    }
+
+    protected static List<String> toAbsolute(List<String> dirs, IContainer base) {
+        List<String> result = new ArrayList<String>();
+        for (String dir : dirs)
+            result.add(toAbsolute(dir, base));
+        return result;
+    }
+
+    protected static String toAbsolute(String dir, IContainer base) {
+        Path dirPath = new Path(dir);
+        return dirPath.isAbsolute() ? dir : base.getLocation().append(dirPath).toString();
+    }
 
     /**
      * Returns the (folder-relative) paths of directories excluded from build
