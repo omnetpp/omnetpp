@@ -102,7 +102,7 @@ public:
 
 public slots:
     void on_actionOneStep_triggered();
-    bool on_actionQuit_triggered();
+    void on_actionQuit_triggered();
     void on_actionRun_triggered();
     void on_actionSetUpConfiguration_triggered();
     void on_actionFastRun_triggered();

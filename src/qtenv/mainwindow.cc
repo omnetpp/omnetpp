@@ -338,32 +338,37 @@ void MainWindow::on_actionOneStep_triggered()
     getQtenv()->getAnimator()->hurry();
 }
 
-// exitOmnetpp
-bool MainWindow::on_actionQuit_triggered()
+void MainWindow::on_actionQuit_triggered()
 {
-    // TODO
-//    global config
-//    if {$config(confirm-exit)} {
-    if (getSimulation()->getSystemModule() != nullptr) {
-        if (isRunning()) {
-            int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
-                        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-            if (ans == QMessageBox::No)
-                return false;
-        }
-        else if (env->getSimulationState() == Qtenv::SIM_READY) {
-            int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
-                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
-            if (ans == QMessageBox::Yes)
-                env->finishSimulation();
-            else if (ans == QMessageBox::Cancel)
-                return false;
-        }
-        else {
-            // #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
+    close();
+}
+
+bool MainWindow::exitOmnetpp()
+{
+    bool confirmExit = env->getPref("confirm-exit", true).value<bool>();
+    if (confirmExit)
+    {
+        if (getSimulation()->getSystemModule() != nullptr) {
+            if (isRunning()) {
+                int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
+                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+                if (ans == QMessageBox::No)
+                    return false;
+            }
+            else if (env->getSimulationState() == Qtenv::SIM_READY) {
+                int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
+                            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+                if (ans == QMessageBox::Yes)
+                    env->finishSimulation();
+                else if (ans == QMessageBox::Cancel)
+                    return false;
+            }
+            else {
+                // TODO
+                // #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
+            }
         }
     }
-//    }
 
     if (isRunning())
         env->setStopSimulationFlag();
@@ -379,9 +384,8 @@ bool MainWindow::on_actionQuit_triggered()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     // will only pop up the dialog in on_actionQuit_triggered
-    // if the sim is running and has not been asked yet to stop
-    if (isRunning() && !env->getStopSimulationFlag()
-            && !on_actionQuit_triggered())
+    // if the sim has not been asked yet to stop
+    if (!env->getStopSimulationFlag() && !exitOmnetpp())
         event->ignore();
 }
 
