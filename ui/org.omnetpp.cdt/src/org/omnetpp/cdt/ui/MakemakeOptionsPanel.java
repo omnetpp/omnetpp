@@ -123,6 +123,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Button exportIncludePathCheckbox;
     private Button useExportedIncludePathsCheckbox;
     private Button useFeatureCFlagsCheckbox;
+    private ToggleLink compilePageToggle;
     private Combo ccextCombo;
     private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
@@ -240,6 +241,7 @@ public class MakemakeOptionsPanel extends Composite {
             dllGroup.setVisible(false);
             ((GridData)dllGroup.getLayoutData()).exclude = true;
         }
+        compilePageToggle = createToggleLink(compilePage, new Control[] {srcGroup, dllGroup, pathsPageLink2});
 
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
@@ -556,6 +558,8 @@ public class MakemakeOptionsPanel extends Composite {
         // open ToggleLinks if controls are not empty
         if (submakeDirsList.getListControl().getItemCount() != 0)
             scopePageToggle.setExpanded(true);
+        if (!ccextCombo.getText().equals(CCEXT_AUTODETECT) || forceCompileForDllCheckbox.getSelection() || !dllSymbolText.getText().isEmpty())
+            compilePageToggle.setExpanded(true);
         if (libsList.getListControl().getItemCount() != 0 || linkObjectsList.getListControl().getItemCount() != 0)
             linkPageToggle.setExpanded(true);
         if (makefragsList.getListControl().getItemCount() != 0)
