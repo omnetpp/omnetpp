@@ -33,6 +33,7 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
     setFont(getQtenv()->getBoldFont());
 
     // collect FES messages for combo
+    long lastMsgId = getQtenv()->getPref("rununtil-msg", -1).value<long long>();
     QList<cObject*> msgPtrs = fesEvents(1000, 0, 1, 1, 1); // exclude non-message events
     ui->msgCombo->addItem("");
     for(cObject *ptr : msgPtrs)
@@ -42,28 +43,16 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
         QString msgLabel = ptr->getFullName() + QString(" (") + getObjectShortTypeName(ptr) + "), " +
                 ptr->info().c_str() + " -- " + buffer;
         ui->msgCombo->addItem(msgLabel, reinterpret_cast<quintptr>(ptr));
+
+        // restore last value
+        if(lastMsgId == static_cast<cMessage *>(ptr)->getId())
+            ui->msgCombo->setCurrentIndex(ui->msgCombo->count() - 1);
     }
 
     ui->stopCheckbox->setChecked(getQtenv()->opt->stopOnMsgCancel);
-
-    // restore last values
-    QVariant variant = getQtenv()->getPref("rununtil-msg");
-    cObject *lastMsg = variant.isValid() ? variant.value<cObject*>() : nullptr;
-    if(lastMsg && msgPtrs.indexOf(lastMsg)!=-1)
-    {
-        char buffer[50];
-        sprintf(buffer, "%p", (void *)lastMsg);
-        QString msgLabel = lastMsg->getFullName() + QString(" (") + getObjectShortTypeName(lastMsg) + "), " +
-                lastMsg->info().c_str() + " -- " + buffer;
-        ui->msgCombo->addItem(msgLabel, reinterpret_cast<quintptr>(lastMsg));
-    }
-
-    variant = getQtenv()->getPref("rununtil-time");
-    ui->timeEdit->setText(variant.isValid() ? variant.value<QString>() : "");
-    variant = getQtenv()->getPref("rununtil-event");
-    ui->eventEdit->setText(variant.isValid() ? variant.value<QString>() : "");
-    variant = getQtenv()->getPref("rununtil-mode");
-    ui->modeComboBox->setCurrentIndex(variant.isValid() ? variant.value<int>() : 0);
+    ui->timeEdit->setText(getQtenv()->getPref("rununtil-time", "").value<QString>());
+    ui->eventEdit->setText(getQtenv()->getPref("rununtil-event", "").value<QString>());
+    ui->modeComboBox->setCurrentIndex(getQtenv()->getPref("rununtil-mode", 0).value<int>());
 }
 
 QList<cObject*> RunUntilDialog::fesEvents(int maxNum, bool wantEvents, bool wantSelfMsgs, bool wantNonSelfMsgs, bool wantSilentMsgs)
@@ -116,7 +105,9 @@ void RunUntilDialog::accept()
 {
     getQtenv()->setPref("rununtil-time", ui->timeEdit->text());
     getQtenv()->setPref("rununtil-event", ui->eventEdit->text());
-    getQtenv()->setPref("rununtil-msg", ui->msgCombo->itemData(ui->msgCombo->currentIndex()));
+
+    cMessage *msg = reinterpret_cast<cMessage*>(ui->msgCombo->itemData(ui->msgCombo->currentIndex()).value<quintptr>());
+    getQtenv()->setPref("rununtil-msg", msg ? (long long)msg->getId(): -1);
     getQtenv()->setPref("rununtil-mode", ui->modeComboBox->currentIndex());
     getQtenv()->opt->stopOnMsgCancel = ui->stopCheckbox->isChecked();
     QDialog::accept();
