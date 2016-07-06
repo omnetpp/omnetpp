@@ -63,8 +63,8 @@ RunSelectionDialog::RunSelectionDialog(const std::string &defaultConfig, int def
         ++configNumber;
     }
 
-    std::string configName = getQtenv()->getPref("default-configname", "").toString().toUtf8().constData();
-    int runNumber = getQtenv()->getPref("default-runnumber", "").toInt();
+    std::string configName = defaultConfig.empty() ? getQtenv()->getPref("default-configname", "").toString().toUtf8().constData() : defaultConfig;
+    int runNumber = defaultRun < 0 ? getQtenv()->getPref("default-runnumber", "").toInt() : defaultRun;
 
     auto it = std::find(configNames.begin(), configNames.end(), configName);
 
@@ -129,6 +129,10 @@ void RunSelectionDialog::configNameChanged(int index)
 
 void RunSelectionDialog::fillRunNumberCombo(const char *configName)
 {
+    // There isn't any config, do not have to fill Combobox
+    if(strlen(configName) == 0 || strcmp(configName, "General") == 0)
+        return;
+
     ui->runNumber->clear();
     int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(configName);
     std::vector<std::string> configVariables = getQtenv()->getConfigEx()->unrollConfig(configName, false);

@@ -393,7 +393,55 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::initialSetUpConfiguration()
 {
-    setupConfiguration(false);
+    // implements File|Set Up a Configuration...
+    if (checkRunning())
+        return;
+
+    std::string config;
+    int run;
+
+    // these are what were specified in either the omnetpp.ini file or as a command line argument
+    std::string defaultConfig = getQtenv()->opt->defaultConfig;
+    int defaultRun = getQtenv()->opt->defaultRun;
+
+    auto qtenvConf = getQtenv()->getConfigEx();
+
+    // if a default isn't given but there is only one config, use that
+    if (defaultConfig.empty() && qtenvConf->getConfigNames().size() == 1)
+        defaultConfig = qtenvConf->getConfigNames().front();
+
+    // if a config is known, and a default run isn't given but there is
+    // only one run in the config, use that
+    if (!defaultConfig.empty() && defaultRun < 0
+            && qtenvConf->getNumRunsInConfig(defaultConfig.c_str()) == 1)
+        defaultRun = 0;
+
+    // if there's still some doubt, lets ask the user.
+    if (defaultConfig.empty() || defaultRun < 0) {
+        // If there isn't any config names, user have to configure network
+        if(qtenvConf->getConfigNames().size() > 0)
+        {
+            RunSelectionDialog dialog(defaultConfig, defaultRun, this);
+            if (dialog.exec()) {
+                config = dialog.getConfigName();
+                run = dialog.getRunNumber();
+            } else { // the dialog was cancelled
+                return;
+            }
+        }
+        else
+        {
+            configureNetwork();
+            return;
+        }
+    } else {
+        // a dialog was not forced, and either there is a default config or there is only one
+        config = defaultConfig.empty() ? qtenvConf->getConfigNames().front() : defaultConfig;
+        // and either there is a default run too, or there is only one run in the config
+        run = defaultRun < 0 ? 0 : defaultRun;
+    }
+    env->newRun(config.c_str(), run);
+    reflectRecordEventlog();
 }
 
 void MainWindow::runSimulation(eMode mode)
@@ -425,7 +473,17 @@ void MainWindow::on_actionRun_triggered()
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
-    setupConfiguration(true);
+    cConfigurationEx *configEx = getQtenv()->getConfigEx();
+    QString config = configEx->getActiveConfigName();
+    int run = configEx->getActiveRunNumber();
+
+    RunSelectionDialog dialog(config.toStdString(), run, this);
+    if (dialog.exec()) {
+        config = dialog.getConfigName().c_str();
+        run = dialog.getRunNumber();
+        env->newRun(config.toStdString().c_str(), run);
+        reflectRecordEventlog();
+    }
 }
 
 // stopSimulation
@@ -687,50 +745,6 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     env->setSilentEventFilters(filters.toStdString().c_str());
 
     env->refreshInspectors();
-}
-
-void MainWindow::setupConfiguration(bool forceDialog)
-{
-    // implements File|Set Up a Configuration...
-    if (checkRunning())
-        return;
-
-    std::string config;
-    int run;
-
-    // these are what were specified in either the omnetpp.ini file or as a command line argument
-    std::string defaultConfig = getQtenv()->opt->defaultConfig;
-    int defaultRun = getQtenv()->opt->defaultRun;
-
-    auto qtenvConf = getQtenv()->getConfigEx();
-
-    // if a default isn't given but there is only one config, use that
-    if (defaultConfig.empty() && qtenvConf->getConfigNames().size() == 1)
-        defaultConfig = qtenvConf->getConfigNames().front();
-
-    // if a config is known, and a default run isn't given but there is
-    // only one run in the config, use that
-    if (!defaultConfig.empty() && defaultRun < 0
-            && qtenvConf->getNumRunsInConfig(defaultConfig.c_str()) == 1)
-        defaultRun = 0;
-
-    // if there's still some doubt, lets ask the user.
-    if (forceDialog || defaultConfig.empty() || defaultRun < 0) {
-        RunSelectionDialog dialog(defaultConfig, defaultRun, this);
-        if (dialog.exec()) {
-            config = dialog.getConfigName();
-            run = dialog.getRunNumber();
-        } else { // the dialog was cancelled
-            return;
-        }
-    } else {
-        // a dialog was not forced, and either there is a default config or there is only one
-        config = defaultConfig.empty() ? qtenvConf->getConfigNames().front() : defaultConfig;
-        // and either there is a default run too, or there is only one run in the config
-        run = defaultRun < 0 ? 0 : defaultRun;
-    }
-    env->newRun(config.c_str(), run);
-    reflectRecordEventlog();
 }
 
 void MainWindow::runUntilMsg(cMessage *msg, int runMode)
@@ -1082,11 +1096,8 @@ void MainWindow::reflectRecordEventlog()
     ui->actionEventlogRecording->setChecked(getQtenv()->getEventlogRecording());
 }
 
-// newNetwork
-void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
+void MainWindow::configureNetwork()
 {
-    // implements File|New network...
-
     if(checkRunning())
         return;
 
@@ -1137,7 +1148,14 @@ void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
         getQtenv()->newNetwork(comboDialog.getSelectedNetName().toStdString().c_str());
         reflectRecordEventlog();
         busy();
-    }
+    };
+}
+
+// newNetwork
+void MainWindow::on_actionSetUpUnconfiguredNetwork_triggered()
+{
+    // implements File|New network...
+    configureNetwork();
 }
 
 void MainWindow::on_actionVerticalLayout_triggered(bool checked)

@@ -35,7 +35,7 @@ class RunSelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit RunSelectionDialog(const std::string &defaultConfig, int defaultRun, QWidget *parent = nullptr);
+    explicit RunSelectionDialog(const std::string &defaultConfig = "", int defaultRun = -1, QWidget *parent = nullptr);
     ~RunSelectionDialog();
 
     std::string getConfigName();
