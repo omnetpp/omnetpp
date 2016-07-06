@@ -857,6 +857,7 @@ bool Qtenv::doRunSimulationExpress()
     logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
+    refreshInspectors();
     QCoreApplication::processEvents();
 
     // OK, let's begin

@@ -170,7 +170,8 @@ void ModuleOutputContentProvider::rebuildIndex() {
 
         LogBuffer::Entry *entry = logBuffer->getEntries()[i];
 
-        if ((!filter || filter->matches(entry)) && isMatchingComponent(entry->componentId))
+        if ((!filter || filter->matches(entry))
+                && (!entry->isEvent() || isMatchingComponent(entry->componentId)))
             currentLineNumber += linesProvider->getNumLines(entry);
     }
 
@@ -228,13 +229,13 @@ EventEntryLinesProvider::EventEntryLinesProvider(ComponentHistory *componentHist
 }
 
 int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry) {
-    int count = entry->isEvent() ? 1 /* the banner line */ : 0;
+    int count = entry->banner ? 1 /* the banner line */ : 0;
     count += entry->lines.size();
     return count;
 }
 
 QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex) {
-    if (entry->isEvent()) {
+    if (entry->banner) {
         if (lineIndex == 0)
             return entry->banner;
         else
@@ -263,13 +264,12 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 
 QList<EventEntryLinesProvider::TabStop> EventEntryLinesProvider::getTabStops(LogBuffer::Entry *entry, int lineIndex) {
     QList<TabStop> tabStops;
-    if (entry->isEvent()) {
-        if (lineIndex == 0) {
-            tabStops.append(TabStop(0, QColor("blue")));
+    if (entry->banner) {
+        if (lineIndex == 0) { // it's a banner, or if no component, an info line
+            tabStops.append(TabStop(0, QColor(entry->componentId <= 0 ? "green" : "blue")));
             return tabStops;
-        } else {
-            lineIndex--;
         }
+        lineIndex--;
     }
 
     if (lineIndex < (int)entry->lines.size()) {
@@ -331,7 +331,7 @@ int EventEntryMessageLinesProvider::findFirstRelevantHop(const LogBuffer::Messag
 
 bool ModuleOutputContentProvider::isMatchingComponent(int componentId)
 {
-    if (componentId == 0 || !inspectedComponent)
+    if (componentId <= 0 || !inspectedComponent)
         return false;
     int inspectedComponentId = inspectedComponent->getId();
     return (componentId == inspectedComponentId || isAncestorModule(componentId, inspectedComponentId))
