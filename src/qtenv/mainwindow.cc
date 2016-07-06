@@ -84,6 +84,9 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     simTimeLabel->setTextFormat(Qt::RichText);
     simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     simTimeLabel->setObjectName("simTimeLabel");
+    simTimeLabel->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    connect(simTimeLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onSimTimeLabelContextMenuRequested(QPoint)));
+
     eventNumLabel = new QLabel();
     eventNumLabel->setToolTip("Event number of last event");
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
@@ -120,6 +123,89 @@ MainWindow::~MainWindow()
     delete eventNumLabel;
     if(filteredObjectListDialog)
         delete filteredObjectListDialog;
+}
+
+void MainWindow::onSimTimeLabelGroupingTriggered()
+{
+    QVariant variant = static_cast<QAction*>(sender())->data();
+
+    simTimeDigitGrouping = (SimTimeDigitGrouping)variant.value<int>();
+    updateSimTimeLabel();
+}
+
+void MainWindow::onSimTimeLabelUnitsTriggered()
+{
+    simTimeUnits = !simTimeUnits;
+    updateSimTimeLabel();
+}
+
+void MainWindow::updateSimTimeLabel()
+{
+    const char *digitSeparator, *decimalSeparator = ".";
+
+    switch(simTimeDigitGrouping)
+    {
+        case SPACE:
+            digitSeparator = " ";
+            decimalSeparator = ". ";
+            break;
+        case COMMA:
+            digitSeparator = ",";
+            break;
+        case APOSTROPHE:
+            digitSeparator = "'";
+            break;
+        case NONE:
+            digitSeparator = "";
+            break;
+    }
+
+    QString simTimeText;
+    if(simTimeUnits)
+        simTimeText = getSimulation()->getSimTime().format(SimTime::getScaleExp(), decimalSeparator, digitSeparator, true, "<small><font color=grey>", " </font></small>").c_str();
+    else
+        simTimeText = getSimulation()->getSimTime().format(SimTime::getScaleExp(), decimalSeparator, digitSeparator).c_str();
+
+    simTimeLabel->setText(simTimeText);
+}
+
+void MainWindow::onSimTimeLabelContextMenuRequested(QPoint pos)
+{
+    QMenu *menu = new QMenu();
+
+    QActionGroup *actionGroup = new QActionGroup(menu);
+
+    //TODO use this once it compiles everywere:
+    //QVector<QPair<QString, int>> elements = {
+    //    {"No digit grouping", NONE},
+    //    {"Group digits with space", SPACE}
+    //    {"Group digits with apostrophe", APOSTROPHE},
+    //    {"Group digits with comma", COMMA}
+    //};
+    QVector<QPair<QString, int>> elements(4);
+    elements[0] = QPair<QString, int>("No digit grouping", NONE);
+    elements[1] = QPair<QString, int>("Group digits with space", SPACE);
+    elements[2] = QPair<QString, int>("Group digits with apostrophe", APOSTROPHE);
+    elements[3] = QPair<QString, int>("Group digits with comma", COMMA);
+
+    QAction *action;
+    for(auto elem : elements)
+    {
+        action = menu->addAction(elem.first, this, SLOT(onSimTimeLabelGroupingTriggered()));
+        action->setData(QVariant::fromValue(elem.second));
+        action->setActionGroup(actionGroup);
+        action->setCheckable(true);
+        if(simTimeDigitGrouping == elem.second)
+            action->setChecked(true);
+    }
+
+    action = menu->addAction("Units", this, SLOT(onSimTimeLabelUnitsTriggered()));
+    action->setCheckable(true);
+    action->setChecked(simTimeUnits);
+
+    menu->exec(simTimeLabel->mapToGlobal(pos));
+
+    delete menu;
 }
 
 void MainWindow::displayText(const char *t)
@@ -434,8 +520,7 @@ void MainWindow::updateSimtimeDisplay()
 {
     eventNumLabel->setText("#" + QString::number(getSimulation()->getEventNumber()));
 
-    QString simTimeText = getSimulation()->getSimTime().format(SimTime::getScaleExp(), ".", ",", true, "<font color=grey size=3>", " </font>").c_str();
-    simTimeLabel->setText(simTimeText);
+    updateSimTimeLabel();
     ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->getFES()->getLength())
             +" scheduled / " + QString::number(cMessage::getLiveMessageCount())
             +" existing / " + QString::number(cMessage::getTotalMessageCount()) + " created");
@@ -761,6 +846,9 @@ void MainWindow::storeGeometry()
 
     getQtenv()->setPref("display-timeline", ui->actionTimeline->isChecked());
     getQtenv()->setPref("display-statusdetails", showStatusDetails);
+
+    getQtenv()->setPref("simtimelabel-digitgrouping", simTimeDigitGrouping);
+    getQtenv()->setPref("simtimelabel-units", simTimeUnits);
 }
 
 void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QList<int> &defaultSizes)
@@ -825,6 +913,10 @@ void MainWindow::restoreGeometry()
     ui->nextEventLabel->setVisible(showStatusDetails);
     ui->nextModuleLabel->setVisible(showStatusDetails);
     ui->nextTimeLabel->setVisible(showStatusDetails);
+
+    // initialize simTimeLabel
+    simTimeDigitGrouping = (SimTimeDigitGrouping)getQtenv()->getPref("simtimelabel-digitgrouping", int(APOSTROPHE)).value<int>();
+    simTimeUnits = getQtenv()->getPref("simtimelabel-units", true).value<bool>();
 }
 
 QSize MainWindow::sizeHint() const

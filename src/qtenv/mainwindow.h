@@ -136,6 +136,9 @@ protected slots:
 
 private slots:
     void onSplitterMoved(int, int);
+    void onSimTimeLabelContextMenuRequested(QPoint pos);
+    void onSimTimeLabelGroupingTriggered();
+    void onSimTimeLabelUnitsTriggered();
     void on_actionLoadNEDFile_triggered();
     void on_actionOpenPrimaryIniFile_triggered();
     void on_actionCreate_Snapshot_triggered();
@@ -162,6 +165,15 @@ private:
     QList<int> defaultTimeLineSize;
     FileEditor *fileEditor;
     QLabel *simTimeLabel, *eventNumLabel;
+    bool simTimeUnits;
+
+    enum SimTimeDigitGrouping
+    {
+        SPACE,
+        COMMA,
+        APOSTROPHE,
+        NONE
+    } simTimeDigitGrouping;
 
     bool checkRunning();
     void runSimulation(eMode mode);
@@ -187,6 +199,12 @@ private:
     void closeStopDialog();
 
     int inputBox(const QString &title, const QString &prompt, QString &variable);
+
+    void updateSimTimeLabel();
+
+    void configureNetwork();
+
+    bool exitOmnetpp();
 };
 
 } // namespace qtenv
