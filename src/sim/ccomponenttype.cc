@@ -156,21 +156,11 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
 
         // find @signal property for this signal
         const char *signalName = cComponent::getSignalName(signalID);
-        std::vector<const char *> declaredSignalNames = getProperties()->getIndicesFor("signal");
-        unsigned int i;
-        for (i = 0; i < declaredSignalNames.size(); i++) {
-            if (strcmp(signalName, declaredSignalNames[i]) == 0)
-                break;
-            if (PatternMatcher::containsWildcards(declaredSignalNames[i]) &&
-                PatternMatcher(declaredSignalNames[i], false, true, true).matches(signalName))
-                break;
-        }
-        if (i == declaredSignalNames.size())
+        cProperty *prop = getSignalDeclaration(signalName);
+        if (!prop)
             throw cRuntimeError("Undeclared signal \"%s\" emitted (@signal missing from NED file?)", signalName);
-        const char *declaredSignalName = declaredSignalNames[i];
 
-        // found; add it to signalsSeen
-        cProperty *prop = getProperties()->get("signal", declaredSignalName);
+        // found; extract info from it, and add signal to signalsSeen
         const char *declaredType = prop->getValue("type");
         SignalDesc& desc = signalsSeen[signalID];
         desc.type = !declaredType ? SIMSIGNAL_UNDEF : getSignalType(declaredType, SIMSIGNAL_OBJECT);
@@ -190,7 +180,7 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
                 throw cRuntimeError("Wrong type \"%s\" in the @signal[%s] property in the \"%s\" NED type, "
                                     "should be one of: long, unsigned long, double, simtime_t, string, or a "
                                     "registered class name optionally followed by a question mark",
-                        declaredType, declaredSignalName, getFullName());
+                        declaredType, prop->getIndex(), getFullName());
         }
         it = signalsSeen.find(signalID);
     }
@@ -239,6 +229,24 @@ void cComponentType::checkSignal(simsignal_t signalID, SimsignalType type, cObje
         throw cRuntimeError("Signal \"%s\" emitted with wrong data type (expected=%s, actual=%s)",
                 cComponent::getSignalName(signalID), getSignalTypeName(desc.type), getSignalTypeName(type));
     }
+}
+
+cProperty *cComponentType::getSignalDeclaration(const char *signalName)
+{
+    std::vector<const char *> declaredSignalNames = getProperties()->getIndicesFor("signal");
+    unsigned int i;
+    for (i = 0; i < declaredSignalNames.size(); i++) {
+        const char *declaredSignalName = declaredSignalNames[i];
+        if (declaredSignalName == nullptr)
+            continue;  // skip index-less @signal
+        if (strcmp(signalName, declaredSignalName) == 0)
+            break;
+        if (PatternMatcher::containsWildcards(declaredSignalName) &&
+            PatternMatcher(declaredSignalName, false, true, true).matches(signalName))
+            break;
+    }
+    bool found = (i != declaredSignalNames.size());
+    return found ? getProperties()->get("signal", declaredSignalNames[i]) : nullptr;
 }
 
 cObjectFactory *cComponentType::lookupClass(const char *className) const

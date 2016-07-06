@@ -29,6 +29,7 @@ namespace omnetpp {
 
 class cModule;
 class cChannel;
+class cProperty;
 class cProperties;
 class cIdealChannel;
 class cDelayChannel;
@@ -123,6 +124,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
     // internal: used by cComponent::emit() methods to validate signals
     virtual void checkSignal(simsignal_t signalID, SimsignalType type, cObject *obj = nullptr);
+
+    // internal: returns the @signal property for the given signal, or nullptr if not found
+    virtual cProperty *getSignalDeclaration(const char *signalName);
 
   public:
     /** @name Constructors, destructor, assignment */
