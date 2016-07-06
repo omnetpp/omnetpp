@@ -54,6 +54,7 @@ public:
     virtual float getDuration() = 0;
 
     virtual bool willAnimate(cMessage *msg) { return false; }
+    virtual bool isEmpty() { return false; }
 
     // only needed for debugging
     virtual QString info() const = 0;

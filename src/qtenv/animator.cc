@@ -76,8 +76,34 @@ public:
 
     bool willAnimate(cMessage *msg) override {
         return std::any_of(parts.begin(), parts.end(),
-                           [&msg](Animation *p){
+                           [&msg](Animation *p) {
             return p->willAnimate(msg);
+        });
+    }
+
+    void prune() {
+        for (auto &p : parts) {
+            // for every group part
+            if (auto g = dynamic_cast<AnimationGroup *>(p)) {
+                // if it is empty, throw it right out
+                if (g->isEmpty()) {
+                    delete p;
+                    p = nullptr; // the nullptrs will be erased from the vector below
+                } else {
+                    // otherwise keep it, but prune it
+                    g->prune();
+                }
+            }
+        }
+
+        // erasing the nullptrs introduced above
+        parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());
+    }
+
+    bool isEmpty() override {
+        return std::all_of(parts.begin(), parts.end(),
+                           [](Animation *p) {
+            return p->isEmpty();
         });
     }
 
@@ -649,10 +675,15 @@ void Animator::onFrameTimer() {
 }
 
 void Animator::play() {
-    qDebug() << "Playing animation:";
-    qDebug() << animation->info();
-
     inHurry = false;
+
+    if (animation->isEmpty()) {
+        // not playing empty animation
+        return;
+    }
+
+    // if not empty, we still prune it, to reduce delay
+    animation->prune();
 
     animation->init();
     animation->begin();
@@ -663,7 +694,7 @@ void Animator::play() {
     loop.exec();
     timer.stop();
 
-    // end is called by itself
+    // end is called by itself in advance()
     animation->cleanup();
 
     redrawMessages();
