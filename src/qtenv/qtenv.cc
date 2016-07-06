@@ -145,7 +145,6 @@ QtenvOptions::QtenvOptions()
     printInitBanners = true;
     shortBanners = false;
     autoupdateInExpress = true;
-    stopOnMsgCancel = true;
     stripNamespace = STRIPNAMESPACE_ALL;
     logFormat = "%l %C: ";
     logLevel = LOGLEVEL_TRACE;
@@ -183,7 +182,6 @@ void Qtenv::storeOptsInPrefs() {
     setPref("bubbles", opt->showBubbles);
     setPref("animation_speed", opt->animationSpeed);
     setPref("expressmode_autoupdate", opt->autoupdateInExpress);
-    setPref("stoponmsgcancel", opt->stopOnMsgCancel);
 
     QString stripNamespaceString;
     switch (opt->stripNamespace) {
@@ -288,9 +286,6 @@ void Qtenv::restoreOptsFromPrefs() {
     pref = getPref("expressmode_autoupdate");
     if (pref.isValid()) opt->autoupdateInExpress = pref.toBool();
 
-    pref = getPref("stoponmsgcancel");
-    if (pref.isValid()) opt->stopOnMsgCancel = pref.toBool();
-
     pref = getPref("stripnamespace");
     if (pref.isValid()) {
         QString stripNamespaceString = pref.toString();
@@ -346,6 +341,7 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     animating = false;
     isConfigRun = false;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    runUntil.stopOnMsgCancel = true;
     gettimeofday(&idleLastUICheck, nullptr);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
@@ -552,7 +548,8 @@ void Qtenv::doOneStep()
     }
 }
 
-void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
+void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
+                          bool stopOnMsgCancel)
 {
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
@@ -561,6 +558,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     runUntil.eventNumber = until_eventnum;
     runUntil.msg = until_msg;
     runUntil.module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runUntil.stopOnMsgCancel = stopOnMsgCancel;
 
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
@@ -624,11 +622,12 @@ void Qtenv::setSimulationRunMode(int mode)
     runMode = mode;
 }
 
-void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
+void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel)
 {
     runUntil.time = until_time;
     runUntil.eventNumber = until_eventnum;
     runUntil.msg = until_msg;
+    runUntil.stopOnMsgCancel = stopOnMsgCancel;
 }
 
 void Qtenv::setSimulationRunUntilModule(cModule *until_module)
@@ -1423,7 +1422,7 @@ void Qtenv::messageScheduled(cMessage *msg)
 
 void Qtenv::messageCancelled(cMessage *msg)
 {
-    if (msg == runUntil.msg && opt->stopOnMsgCancel) {
+    if (msg == runUntil.msg && runUntil.stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
             confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
         runUntil.msg = nullptr;

@@ -96,7 +96,6 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     long updateFreqFast;      // Fast Run updates display every N milliseconds
     long updateFreqExpress;   // Express Run updates display every N milliseconds
     bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
-    bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
     StripNamespace stripNamespace; // whether to display type names with full C++ namespace prefix or not
     std::string logFormat;    // format of the log prefix, see the LogFormatter class
     LogLevel logLevel;        // global log level
@@ -162,6 +161,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
           eventnumber_t eventNumber;  // event number in current "Run Until" execution, or zero
           cMessage *msg;           // stop before this event; also when this message is cancelled
           cModule *module;         // stop before and after events in this module; ignored with EXPRESS mode
+          bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
       } runUntil;
       Speedometer speedometer;
 
@@ -309,10 +309,10 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr);
+      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr, bool stopOnMsgCancel=true);
       void setSimulationRunMode(int runMode);
       int getSimulationRunMode() const {return runMode;}
-      void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
+      void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel=true);
       void setSimulationRunUntilModule(cModule *until_module);
       bool doRunSimulation();
       bool doRunSimulationExpress();

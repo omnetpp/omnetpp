@@ -49,7 +49,7 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
             ui->msgCombo->setCurrentIndex(ui->msgCombo->count() - 1);
     }
 
-    ui->stopCheckbox->setChecked(getQtenv()->opt->stopOnMsgCancel);
+    ui->stopCheckbox->setChecked(getQtenv()->getPref("stoponmsgcancel", true).value<bool>());
     ui->timeEdit->setText(getQtenv()->getPref("rununtil-time", "").value<QString>());
     ui->eventEdit->setText(getQtenv()->getPref("rununtil-event", "").value<QString>());
     ui->modeComboBox->setCurrentIndex(getQtenv()->getPref("rununtil-mode", 0).value<int>());
@@ -101,6 +101,11 @@ Qtenv::eRunMode RunUntilDialog::getMode()
     return Qtenv::eRunMode(ui->modeComboBox->currentIndex() + 1);
 }
 
+bool RunUntilDialog::stopOnMsgCancel()
+{
+    return ui->stopCheckbox->isChecked();
+}
+
 void RunUntilDialog::accept()
 {
     getQtenv()->setPref("rununtil-time", ui->timeEdit->text());
@@ -109,7 +114,7 @@ void RunUntilDialog::accept()
     cMessage *msg = reinterpret_cast<cMessage*>(ui->msgCombo->itemData(ui->msgCombo->currentIndex()).value<quintptr>());
     getQtenv()->setPref("rununtil-msg", msg ? (long long)msg->getId(): -1);
     getQtenv()->setPref("rununtil-mode", ui->modeComboBox->currentIndex());
-    getQtenv()->opt->stopOnMsgCancel = ui->stopCheckbox->isChecked();
+    getQtenv()->setPref("stoponmsgcancel", ui->stopCheckbox->isChecked());
     QDialog::accept();
 }
 

@@ -532,20 +532,21 @@ void MainWindow::on_actionRunUntil_triggered()
     simtime_t time = runUntilDialog.getTime();
     eventnumber_t event = runUntilDialog.getEventNumber();
     cMessage *msg = static_cast<cMessage*>(runUntilDialog.getMessage());
+    bool stopOnMsgCancel = runUntilDialog.stopOnMsgCancel();
 
     bool untilMode = time.dbl() != 0 || event != 0 || msg != nullptr;
     if (isRunning())
     {
         setGuiForRunmode(runMode, untilMode);
         getQtenv()->setSimulationRunMode(runMode);
-        getQtenv()->setSimulationRunUntil(time, event, msg);
+        getQtenv()->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
     } else
     {
         if(!networkReady())
             return;
 
         setGuiForRunmode(runMode, untilMode);
-        getQtenv()->runSimulation(runMode, time, event, msg);
+        getQtenv()->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
         setGuiForRunmode(Qtenv::RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }

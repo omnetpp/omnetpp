@@ -44,6 +44,7 @@ public:
     eventnumber_t getEventNumber();
     cObject *getMessage();
     Qtenv::eRunMode getMode();
+    bool stopOnMsgCancel();
 
 public slots:
     virtual void accept();
