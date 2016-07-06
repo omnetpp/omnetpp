@@ -374,6 +374,10 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
                 for (auto &name : groupNames) {
                     children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name));
                 }
+            } else { // flat mode
+                std::sort(children.begin(), children.end(), [](TreeNode *a, TreeNode *b) {
+                    return a->data(Qt::DisplayRole).toString() < b->data(Qt::DisplayRole).toString();
+                });
             }
         }
     }
