@@ -372,8 +372,8 @@ void SubmoduleItem::setImage(QImage *image) {
             imageItem->setOffset(-image->width() / 2.0f, -image->height() / 2.0f);
             colorizeEffect = new ColorizeEffect();
             imageItem->setGraphicsEffect(colorizeEffect);
+            colorizeEffect->setSmooth(true);
             imageItem->setScale(imageSizeFactor);
-            imageItem->setTransformationMode(Qt::SmoothTransformation);
         }
         updateNameItem();
         realignAnchoredItems();
@@ -404,8 +404,8 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
             // The 2 pixel offset moves it a bit to the right and up.
             decoratorImageItem->setOffset(-decoratorImage->width() + 2, -2);
             decoratorColorizeEffect = new ColorizeEffect();
+            decoratorColorizeEffect->setSmooth(true);
             decoratorImageItem->setGraphicsEffect(decoratorColorizeEffect);
-            decoratorImageItem->setTransformationMode(Qt::SmoothTransformation);
         }
         realignAnchoredItems();
     }
