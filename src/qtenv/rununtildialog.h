@@ -43,7 +43,7 @@ public:
     simtime_t getTime();
     eventnumber_t getEventNumber();
     cObject *getMessage();
-    Qtenv::eRunMode getMode();
+    RunMode getMode();
     bool stopOnMsgCancel();
 
 public slots:

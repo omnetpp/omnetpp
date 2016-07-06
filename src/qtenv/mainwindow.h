@@ -19,6 +19,7 @@
 
 #include <set>
 #include "qtenvdefs.h"
+#include "qtenv.h"
 #include <QMainWindow>
 #include <QModelIndex>
 
@@ -81,10 +82,10 @@ public:
 
     //menuproc.tcl
     bool isRunning();
-    void setGuiForRunmode(int runMode, bool untilMode = false);
+    void setGuiForRunmode(RunMode runMode, bool untilMode = false);
     void setRunUntilModule(Inspector *insp = nullptr);
     bool networkReady();
-    void runUntilMsg(cMessage *msg, int runMode);
+    void runUntilMsg(cMessage *msg, RunMode runMode);
     void excludeMessageFromAnimation(cObject *msg);
 
     // disables all actions and inspectors except the stopAction and ModuleInspectors
@@ -165,7 +166,7 @@ private:
     } simTimeDigitGrouping;
 
     bool checkRunning();
-    void runSimulation(int runMode);
+    void runSimulation(RunMode runMode);
 
     void updatePerformanceDisplay();
     void updateNextEventDisplay();

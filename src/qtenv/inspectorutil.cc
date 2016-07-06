@@ -110,9 +110,9 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
         menu->addSeparator();
         QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", getQtenv(), SLOT(runUntilModule()));
-        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, Qtenv::RUNMODE_NORMAL), insp)));
+        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, RUNMODE_NORMAL), insp)));
         action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", getQtenv(), SLOT(runUntilModule()));
-        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, Qtenv::RUNMODE_FAST), insp)));
+        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, RUNMODE_FAST), insp)));
     }
 
     cMessage *msg = dynamic_cast<cMessage *>(object);
@@ -121,11 +121,11 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         if (msg->isScheduled()) {
             menu->addSeparator();
             action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-            action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_NORMAL)));
+            action->setData(QVariant::fromValue(ActionDataPair(object, RUNMODE_NORMAL)));
             action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-            action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_FAST)));
+            action->setData(QVariant::fromValue(ActionDataPair(object, RUNMODE_FAST)));
             action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-            action->setData(QVariant::fromValue(ActionDataPair(object, Qtenv::RUNMODE_EXPRESS)));
+            action->setData(QVariant::fromValue(ActionDataPair(object, RUNMODE_EXPRESS)));
         }
         menu->addSeparator();
         action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", getQtenv(), SLOT(excludeMessage()));

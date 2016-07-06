@@ -24,7 +24,6 @@
 #include <QFileDialog>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "qtenv.h"
 #include "runselectiondialog.h"
 #include "treeitemmodel.h"
 #include "omnetpp/csimplemodule.h"
@@ -216,7 +215,7 @@ bool MainWindow::isRunning()
     return state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY;
 }
 
-void MainWindow::setGuiForRunmode(int runMode, bool untilMode)
+void MainWindow::setGuiForRunmode(RunMode runMode, bool untilMode)
 {
     ui->actionOneStep->setChecked(false);
     ui->actionRun->setChecked(false);
@@ -224,28 +223,28 @@ void MainWindow::setGuiForRunmode(int runMode, bool untilMode)
     ui->actionExpressRun->setChecked(false);
 
     switch (runMode) {
-        case Qtenv::RUNMODE_STEP:
+        case RUNMODE_STEP:
             ui->actionOneStep->setChecked(true);
             break;
 
-        case Qtenv::RUNMODE_NORMAL:
+        case RUNMODE_NORMAL:
             ui->actionRun->setChecked(true);
             break;
 
-        case Qtenv::RUNMODE_FAST:
+        case RUNMODE_FAST:
             ui->actionFastRun->setChecked(true);
             break;
 
-        case Qtenv::RUNMODE_EXPRESS:
+        case RUNMODE_EXPRESS:
             ui->actionExpressRun->setChecked(true);
             break;
 
-        case Qtenv::RUNMODE_NOT_RUNNING:
+        case RUNMODE_NOT_RUNNING:
             ui->actionRunUntil->setChecked(false);
             break;
     }
 
-    if (runMode == Qtenv::RUNMODE_EXPRESS)
+    if (runMode == RUNMODE_EXPRESS)
         showStopDialog();
     else
         closeStopDialog();
@@ -324,15 +323,15 @@ void MainWindow::on_actionOneStep_triggered()
     // implements Simulate|One step
 
     if (isRunning()) {
-        setGuiForRunmode(Qtenv::RUNMODE_STEP);
+        setGuiForRunmode(RUNMODE_STEP);
         env->setStopSimulationFlag();
     }
     else {
         if (!networkReady())
             return;
-        setGuiForRunmode(Qtenv::RUNMODE_STEP);
+        setGuiForRunmode(RUNMODE_STEP);
         env->doOneStep();
-        setGuiForRunmode(Qtenv::RUNMODE_NOT_RUNNING);
+        setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
 
     getQtenv()->getAnimator()->hurry();
@@ -442,7 +441,7 @@ void MainWindow::initialSetUpConfiguration()
     reflectRecordEventlog();
 }
 
-void MainWindow::runSimulation(int runMode)
+void MainWindow::runSimulation(RunMode runMode)
 {
     if (isRunning()) {
         setGuiForRunmode(runMode);
@@ -454,7 +453,7 @@ void MainWindow::runSimulation(int runMode)
             return;
         setGuiForRunmode(runMode);
         env->runSimulation(runMode);
-        setGuiForRunmode(Qtenv::RUNMODE_NOT_RUNNING);
+        setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
 }
@@ -463,7 +462,7 @@ void MainWindow::runSimulation(int runMode)
 void MainWindow::on_actionRun_triggered()
 {
     // implements Simulate|Run
-    runSimulation(Qtenv::RUNMODE_NORMAL);
+    runSimulation(RUNMODE_NORMAL);
 }
 
 // newRun
@@ -506,14 +505,14 @@ void MainWindow::on_actionStop_triggered()
 void MainWindow::on_actionFastRun_triggered()
 {
     // implements Simulate|Fast Run
-    runSimulation(Qtenv::RUNMODE_FAST);
+    runSimulation(RUNMODE_FAST);
 }
 
 // runExpress
 void MainWindow::on_actionExpressRun_triggered()
 {
     // implements Simulate|Express Run
-    runSimulation(Qtenv::RUNMODE_EXPRESS);
+    runSimulation(RUNMODE_EXPRESS);
 }
 
 // runUntil
@@ -528,7 +527,7 @@ void MainWindow::on_actionRunUntil_triggered()
     if(!runUntilDialog.exec())
         return;
 
-    Qtenv::eRunMode runMode = runUntilDialog.getMode();
+    RunMode runMode = runUntilDialog.getMode();
     simtime_t time = runUntilDialog.getTime();
     eventnumber_t event = runUntilDialog.getEventNumber();
     cMessage *msg = static_cast<cMessage*>(runUntilDialog.getMessage());
@@ -547,7 +546,7 @@ void MainWindow::on_actionRunUntil_triggered()
 
         setGuiForRunmode(runMode, untilMode);
         getQtenv()->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
-        setGuiForRunmode(Qtenv::RUNMODE_NOT_RUNNING);
+        setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
 }
@@ -563,8 +562,8 @@ void MainWindow::updateStatusDisplay()
     if (showStatusDetails) {
         //FIXME: switching between NextEvent Display and Performance Display should be explicit and in the Qtenv class not here! --Andras
         if (env->getSimulationState() == Qtenv::SIM_RUNNING
-                && (env->getSimulationRunMode() == Qtenv::RUNMODE_FAST
-                    || env->getSimulationRunMode() == Qtenv::RUNMODE_EXPRESS))
+                && (env->getSimulationRunMode() == RUNMODE_FAST
+                    || env->getSimulationRunMode() == RUNMODE_EXPRESS))
             updatePerformanceDisplay();
         else
             updateNextEventDisplay();
@@ -744,7 +743,7 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     env->refreshInspectors();
 }
 
-void MainWindow::runUntilMsg(cMessage *msg, int runMode)
+void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
 {
     if (!networkReady())
         return;
@@ -757,7 +756,7 @@ void MainWindow::runUntilMsg(cMessage *msg, int runMode)
     } else {
         setGuiForRunmode(runMode, true);
         env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
-        setGuiForRunmode(Qtenv::RUNMODE_NOT_RUNNING);
+        setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
 }
 
@@ -1038,10 +1037,10 @@ void MainWindow::on_actionDebugNextEvent_triggered()
                 QMessageBox::Ok | QMessageBox::Cancel);
         if(ans == QMessageBox::Ok)
         {
-           setGuiForRunmode(Qtenv::RUNMODE_STEP);
+           setGuiForRunmode(RUNMODE_STEP);
            getSimulation()->requestTrapOnNextEvent();
            on_actionOneStep_triggered();
-           setGuiForRunmode(Qtenv::RUNMODE_NOT_RUNNING);
+           setGuiForRunmode(RUNMODE_NOT_RUNNING);
         }
     }
 }

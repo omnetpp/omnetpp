@@ -2014,7 +2014,7 @@ QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
     return settings->value(key, defaultValue);
 }
 
-void Qtenv::runSimulationLocal(int runMode, cObject *object, Inspector *insp)
+void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp)
 {
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     if (mainWindow->isRunning()) {
@@ -2053,7 +2053,7 @@ void Qtenv::runUntilModule()
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
         ActionDataTriplet objTypePair = variant.value<ActionDataTriplet>();
-        runSimulationLocal(objTypePair.first.second, objTypePair.first.first, objTypePair.second);
+        runSimulationLocal((RunMode)objTypePair.first.second, objTypePair.first.first, objTypePair.second);
     }
 }
 
@@ -2062,7 +2062,7 @@ void Qtenv::runUntilMessage()
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
         QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(objTypePair.first), (RunMode)objTypePair.second);
     }
 }
 

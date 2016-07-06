@@ -243,7 +243,7 @@ QSize LogInspector::sizeHint() const
 void LogInspector::runUntil()
 {
     runUntilAction->setEnabled(false);
-    getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_NORMAL, nullptr, this);
+    getQtenv()->runSimulationLocal(RUNMODE_NORMAL, nullptr, this);
     runUntilAction->setChecked(false);
     runUntilAction->setEnabled(true);
 }
@@ -251,7 +251,7 @@ void LogInspector::runUntil()
 void LogInspector::fastRunUntil()
 {
     fastRunUntilAction->setEnabled(false);
-    getQtenv()->runSimulationLocal(qtenv::Qtenv::eRunMode::RUNMODE_FAST, nullptr, this);
+    getQtenv()->runSimulationLocal(RUNMODE_FAST, nullptr, this);
     fastRunUntilAction->setChecked(false);
     fastRunUntilAction->setEnabled(true);
 }

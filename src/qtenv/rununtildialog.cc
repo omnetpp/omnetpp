@@ -96,9 +96,9 @@ cObject* RunUntilDialog::getMessage()
     return reinterpret_cast<cObject*>(ui->msgCombo->itemData(ui->msgCombo->currentIndex()).value<quintptr>());
 }
 
-Qtenv::eRunMode RunUntilDialog::getMode()
+RunMode RunUntilDialog::getMode()
 {
-    return Qtenv::eRunMode(ui->modeComboBox->currentIndex() + 1);
+    return RunMode(ui->modeComboBox->currentIndex() + 1);
 }
 
 bool RunUntilDialog::stopOnMsgCancel()

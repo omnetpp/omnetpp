@@ -69,6 +69,14 @@ enum StripNamespace
     STRIPNAMESPACE_ALL
 };
 
+enum RunMode {
+    RUNMODE_NORMAL = 1,
+    RUNMODE_FAST = 2,
+    RUNMODE_EXPRESS = 3,
+    RUNMODE_STEP = 4,
+    RUNMODE_NOT_RUNNING = 5
+};
+
 struct QtenvOptions : public omnetpp::envir::EnvirOptions
 {
     QtenvOptions();
@@ -124,14 +132,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
           SIM_ERROR = 5,
           SIM_FINISHCALLED = 6,
           SIM_BUSY = 7  // busy doing active wait
-      };
-
-      enum eRunMode {
-          RUNMODE_NORMAL = 1,
-          RUNMODE_FAST = 2,
-          RUNMODE_EXPRESS = 3,
-          RUNMODE_STEP = 4,
-          RUNMODE_NOT_RUNNING = 5
       };
 
       struct sPathEntry {
@@ -398,7 +398,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void saveFonts();
       QFont getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue = QString());
 
-      void runSimulationLocal(int runMode, cObject *object = nullptr, Inspector *insp = nullptr);
+      void runSimulationLocal(RunMode runMode, cObject *object = nullptr, Inspector *insp = nullptr);
 };
 
 
