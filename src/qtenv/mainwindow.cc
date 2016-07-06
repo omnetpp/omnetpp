@@ -74,7 +74,25 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     slider->setValue(getQtenv()->opt->animationSpeed * 100);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
-    ui->mainToolBar->addWidget(slider);
+
+    // This will hold the toolbar itself, the animation speed
+    // slider (the slider can't be allowed to collapse, since it
+    // can't be inserted into a menu), then a stretch, and
+    // the two event labels at the right.
+    auto toolBarLayout = new QHBoxLayout(ui->toolBarArea);
+    toolBarLayout->setMargin(0);
+
+    // clearing the hack notification, so we won't be caught
+    ui->toolBarArea->setWhatsThis("");
+
+    // This is a HACK, but this will reparent the main toolbar
+    // into this widget without any problems.
+    // It is necessary to make the event labels always visible and
+    // start collapsing the action icons when the window becomes
+    // too narrow instead of the more important labels on the toolbar.
+    toolBarLayout->addWidget(ui->mainToolBar);
+
+    toolBarLayout->addWidget(slider);
 
     // add current event status
     simTimeLabel = new QLabel();
@@ -92,18 +110,25 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     eventNumLabel->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(eventNumLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onEventNumLabelContextMenuRequested(QPoint)));
 
-    QHBoxLayout *l = new QHBoxLayout();
-    l->addStretch(1);
-    l->addWidget(eventNumLabel);
+
+    // this little widget will add a small margin above the two labels
+    QWidget *labelsContainer = new QWidget();
+    QHBoxLayout *labelsLayout = new QHBoxLayout();
+    labelsLayout->setMargin(0);
+    labelsContainer->setLayout(labelsLayout);
+
+    labelsLayout->addWidget(eventNumLabel);
     eventNumLabel->setMinimumWidth(100);
     eventNumLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
-    l->addWidget(simTimeLabel);
+    labelsLayout->addWidget(simTimeLabel);
     simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
-    l->setMargin(0);
 
-    QWidget *w = new QWidget();
-    w->setLayout(l);
-    ui->mainToolBar->addWidget(w);
+    auto margin = centralWidget()->layout()->contentsMargins().right();
+    labelsContainer->setContentsMargins(0, margin, 0, 0);
+
+
+    toolBarLayout->addStretch(1);
+    toolBarLayout->addWidget(labelsContainer);
 
     connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
 
