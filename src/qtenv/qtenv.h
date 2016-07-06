@@ -130,7 +130,9 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       enum eRunMode {
           RUNMODE_NORMAL = 1,
           RUNMODE_FAST = 2,
-          RUNMODE_EXPRESS = 3
+          RUNMODE_EXPRESS = 3,
+          RUNMODE_STEP = 4,
+          RUNMODE_NOT_RUNNING = 5
       };
 
       struct sPathEntry {

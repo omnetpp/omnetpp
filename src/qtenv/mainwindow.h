@@ -58,8 +58,6 @@ class MainWindow : public QMainWindow
     std::set<QObject*> disabledForLayouting;
 
 public:
-    enum eMode { STEP, NORMAL, FAST, EXPRESS, NOT_RUNNING};
-
     explicit MainWindow(Qtenv *env, QWidget *parent = 0);
     ~MainWindow();
 
@@ -81,12 +79,9 @@ public:
     QSize sizeHint() const override;
     bool event(QEvent *event) override;
 
-    static int modeToRunMode(eMode mode);
-    static eMode runModeToMode(int runMode);
-
     //menuproc.tcl
     bool isRunning();
-    void setGuiForRunmode(eMode mode, bool untilMode = false);
+    void setGuiForRunmode(int runMode, bool untilMode = false);
     void setRunUntilModule(Inspector *insp = nullptr);
     bool networkReady();
     void runUntilMsg(cMessage *msg, int runMode);
@@ -170,7 +165,7 @@ private:
     } simTimeDigitGrouping;
 
     bool checkRunning();
-    void runSimulation(eMode mode);
+    void runSimulation(int runMode);
 
     void updatePerformanceDisplay();
     void updateNextEventDisplay();

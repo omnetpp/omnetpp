@@ -2017,17 +2017,16 @@ QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
 
 void Qtenv::runSimulationLocal(int runMode, cObject *object, Inspector *insp)
 {
-    MainWindow::eMode mode = MainWindow::runModeToMode(runMode);
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     if (mainWindow->isRunning()) {
-        mainWindow->setGuiForRunmode(mode);
+        mainWindow->setGuiForRunmode(runMode);
         getQtenv()->setSimulationRunMode(runMode);
         mainWindow->setRunUntilModule(insp);
     }
     else {
         if (!mainWindow->networkReady())
             return;
-        mainWindow->setGuiForRunmode(mode);
+        mainWindow->setGuiForRunmode(runMode);
         if (object == nullptr && insp)
             object = insp->getObject();
 
@@ -2037,7 +2036,7 @@ void Qtenv::runSimulationLocal(int runMode, cObject *object, Inspector *insp)
             return;
         }
         getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
-        mainWindow->setGuiForRunmode(MainWindow::NOT_RUNNING);
+        mainWindow->setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
 }
 
