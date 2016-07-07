@@ -90,6 +90,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     eventNumLabel->setAlignment(Qt::Alignment(Qt::AlignVCenter | Qt::AlignRight));
     eventNumLabel->setObjectName("eventNumLabel");
+    eventNumLabel->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(eventNumLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onEventNumLabelContextMenuRequested(QPoint)));
 
     QHBoxLayout *l = new QHBoxLayout();
     l->addStretch(1);
@@ -125,7 +127,7 @@ void MainWindow::onSimTimeLabelGroupingTriggered()
 {
     QVariant variant = static_cast<QAction*>(sender())->data();
 
-    simTimeDigitGrouping = (SimTimeDigitGrouping)variant.value<int>();
+    simTimeDigitGrouping = (DigitGrouping)variant.value<int>();
     updateSimTimeLabel();
 }
 
@@ -200,6 +202,73 @@ void MainWindow::onSimTimeLabelContextMenuRequested(QPoint pos)
     action->setChecked(simTimeUnits);
 
     menu->exec(simTimeLabel->mapToGlobal(pos));
+
+    delete menu;
+}
+
+void MainWindow::updateEventNumLabel()
+{
+    const char *digitSeparator;
+
+    switch(eventNumDigitGrouping)
+    {
+        case SPACE:
+            digitSeparator = " ";
+            break;
+        case COMMA:
+            digitSeparator = ",";
+            break;
+        case APOSTROPHE:
+            digitSeparator = "'";
+            break;
+        case NONE:
+            digitSeparator = "";
+            break;
+    }
+
+    QString eventNumText = QString("#") + opp_format(getSimulation()->getEventNumber(), digitSeparator).c_str();
+    eventNumLabel->setText(eventNumText);
+}
+
+void MainWindow::onEventNumLabelGroupingTriggered()
+{
+    QVariant variant = static_cast<QAction*>(sender())->data();
+
+    eventNumDigitGrouping = (DigitGrouping)variant.value<int>();
+    updateEventNumLabel();
+}
+
+void MainWindow::onEventNumLabelContextMenuRequested(QPoint pos)
+{
+    QMenu *menu = new QMenu();
+
+    QActionGroup *actionGroup = new QActionGroup(menu);
+
+    //TODO use this once it compiles everywere:
+    //QVector<QPair<QString, int>> elements = {
+    //    {"No digit grouping", NONE},
+    //    {"Group digits with space", SPACE}
+    //    {"Group digits with apostrophe", APOSTROPHE},
+    //    {"Group digits with comma", COMMA}
+    //};
+    QVector<QPair<QString, int>> elements(4);
+    elements[0] = QPair<QString, int>("No digit grouping", NONE);
+    elements[1] = QPair<QString, int>("Group digits with space", SPACE);
+    elements[2] = QPair<QString, int>("Group digits with apostrophe", APOSTROPHE);
+    elements[3] = QPair<QString, int>("Group digits with comma", COMMA);
+
+    QAction *action;
+    for(auto elem : elements)
+    {
+        action = menu->addAction(elem.first, this, SLOT(onEventNumLabelGroupingTriggered()));
+        action->setData(QVariant::fromValue(elem.second));
+        action->setActionGroup(actionGroup);
+        action->setCheckable(true);
+        if(eventNumDigitGrouping == elem.second)
+            action->setChecked(true);
+    }
+
+    menu->exec(eventNumLabel->mapToGlobal(pos));
 
     delete menu;
 }
@@ -572,8 +641,7 @@ void MainWindow::updateStatusDisplay()
 
 void MainWindow::updateSimtimeDisplay()
 {
-    eventNumLabel->setText("#" + QString::number(getSimulation()->getEventNumber()));
-
+    updateEventNumLabel();
     updateSimTimeLabel();
     ui->labelMessageStats->setText("Msg stats: " + QString::number(getSimulation()->getFES()->getLength())
             +" scheduled / " + QString::number(cMessage::getLiveMessageCount())
@@ -859,6 +927,8 @@ void MainWindow::storeGeometry()
 
     getQtenv()->setPref("simtimelabel-digitgrouping", simTimeDigitGrouping);
     getQtenv()->setPref("simtimelabel-units", simTimeUnits);
+
+    getQtenv()->setPref("eventnumlabel-digitgrouping", eventNumDigitGrouping);
 }
 
 void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QList<int> &defaultSizes)
@@ -925,8 +995,11 @@ void MainWindow::restoreGeometry()
     ui->nextTimeLabel->setVisible(showStatusDetails);
 
     // initialize simTimeLabel
-    simTimeDigitGrouping = (SimTimeDigitGrouping)getQtenv()->getPref("simtimelabel-digitgrouping", int(APOSTROPHE)).value<int>();
+    simTimeDigitGrouping = (DigitGrouping)getQtenv()->getPref("simtimelabel-digitgrouping", int(APOSTROPHE)).value<int>();
     simTimeUnits = getQtenv()->getPref("simtimelabel-units", true).value<bool>();
+
+    // initialize eventNumLabel
+    eventNumDigitGrouping = (DigitGrouping)getQtenv()->getPref("eventnumlabel-digitgrouping", int(SPACE)).value<int>();
 }
 
 QSize MainWindow::sizeHint() const

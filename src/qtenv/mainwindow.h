@@ -130,6 +130,8 @@ private slots:
     void onSimTimeLabelContextMenuRequested(QPoint pos);
     void onSimTimeLabelGroupingTriggered();
     void onSimTimeLabelUnitsTriggered();
+    void onEventNumLabelContextMenuRequested(QPoint pos);
+    void onEventNumLabelGroupingTriggered();
     void on_actionLoadNEDFile_triggered();
     void on_actionOpenPrimaryIniFile_triggered();
     void on_actionCreate_Snapshot_triggered();
@@ -157,13 +159,13 @@ private:
     QLabel *simTimeLabel, *eventNumLabel;
     bool simTimeUnits;
 
-    enum SimTimeDigitGrouping
+    enum DigitGrouping
     {
         SPACE,
         COMMA,
         APOSTROPHE,
         NONE
-    } simTimeDigitGrouping;
+    } simTimeDigitGrouping, eventNumDigitGrouping;
 
     bool checkRunning();
     void runSimulation(RunMode runMode);
@@ -191,6 +193,7 @@ private:
     int inputBox(const QString &title, const QString &prompt, QString &variable);
 
     void updateSimTimeLabel();
+    void updateEventNumLabel();
 
     void configureNetwork();
 
