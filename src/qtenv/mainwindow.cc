@@ -79,7 +79,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // add current event status
     simTimeLabel = new QLabel();
     simTimeLabel->setToolTip("Simulation time of last event");
-    simTimeLabel->setTextFormat(Qt::RichText);
     simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     simTimeLabel->setObjectName("simTimeLabel");
     simTimeLabel->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -144,8 +143,8 @@ void MainWindow::updateSimTimeLabel()
     switch(simTimeDigitGrouping)
     {
         case SPACE:
-            digitSeparator = " ";
-            decimalSeparator = ". ";
+            digitSeparator = "<small> </small> ";
+            decimalSeparator = ".";
             break;
         case COMMA:
             digitSeparator = ",";
@@ -176,15 +175,15 @@ void MainWindow::onSimTimeLabelContextMenuRequested(QPoint pos)
     //TODO use this once it compiles everywere:
     //QVector<QPair<QString, int>> elements = {
     //    {"No digit grouping", NONE},
-    //    {"Group digits with space", SPACE}
-    //    {"Group digits with apostrophe", APOSTROPHE},
     //    {"Group digits with comma", COMMA}
+    //    {"Group digits with apostrophe", APOSTROPHE},
+    //    {"Group digits with space", SPACE}
     //};
-    QVector<QPair<QString, int>> elements(4);
-    elements[0] = QPair<QString, int>("No digit grouping", NONE);
-    elements[1] = QPair<QString, int>("Group digits with space", SPACE);
-    elements[2] = QPair<QString, int>("Group digits with apostrophe", APOSTROPHE);
-    elements[3] = QPair<QString, int>("Group digits with comma", COMMA);
+    QVector<QPair<QString, int>> elements;
+    elements.push_back(QPair<QString, int>("&No Digit Grouping", NONE));
+    elements.push_back(QPair<QString, int>("Group Digits with &Comma", COMMA));
+    elements.push_back(QPair<QString, int>("Group Digits with &Apostrophe", APOSTROPHE));
+    elements.push_back(QPair<QString, int>("Group Digits with &Space", SPACE));
 
     QAction *action;
     for(auto elem : elements)
@@ -196,8 +195,9 @@ void MainWindow::onSimTimeLabelContextMenuRequested(QPoint pos)
         if(simTimeDigitGrouping == elem.second)
             action->setChecked(true);
     }
+    menu->addSeparator();
 
-    action = menu->addAction("Units", this, SLOT(onSimTimeLabelUnitsTriggered()));
+    action = menu->addAction("&Display Units", this, SLOT(onSimTimeLabelUnitsTriggered()));
     action->setCheckable(true);
     action->setChecked(simTimeUnits);
 
@@ -213,7 +213,7 @@ void MainWindow::updateEventNumLabel()
     switch(eventNumDigitGrouping)
     {
         case SPACE:
-            digitSeparator = " ";
+            digitSeparator = "<small> </small> ";
             break;
         case COMMA:
             digitSeparator = ",";
@@ -226,7 +226,7 @@ void MainWindow::updateEventNumLabel()
             break;
     }
 
-    QString eventNumText = QString("#") + opp_format(getSimulation()->getEventNumber(), digitSeparator).c_str();
+    QString eventNumText = QString("<font color=grey>#</font>") + opp_format(getSimulation()->getEventNumber(), digitSeparator).c_str();
     eventNumLabel->setText(eventNumText);
 }
 
@@ -247,15 +247,15 @@ void MainWindow::onEventNumLabelContextMenuRequested(QPoint pos)
     //TODO use this once it compiles everywere:
     //QVector<QPair<QString, int>> elements = {
     //    {"No digit grouping", NONE},
-    //    {"Group digits with space", SPACE}
-    //    {"Group digits with apostrophe", APOSTROPHE},
     //    {"Group digits with comma", COMMA}
+    //    {"Group digits with apostrophe", APOSTROPHE},
+    //    {"Group digits with space", SPACE}
     //};
-    QVector<QPair<QString, int>> elements(4);
-    elements[0] = QPair<QString, int>("No digit grouping", NONE);
-    elements[1] = QPair<QString, int>("Group digits with space", SPACE);
-    elements[2] = QPair<QString, int>("Group digits with apostrophe", APOSTROPHE);
-    elements[3] = QPair<QString, int>("Group digits with comma", COMMA);
+    QVector<QPair<QString, int>> elements;
+    elements.push_back(QPair<QString, int>("&No Digit Grouping", NONE));
+    elements.push_back(QPair<QString, int>("Group Digits with &Comma", COMMA));
+    elements.push_back(QPair<QString, int>("Group Digits with &Apostrophe", APOSTROPHE));
+    elements.push_back(QPair<QString, int>("Group Digits with &Space", SPACE));
 
     QAction *action;
     for(auto elem : elements)
@@ -999,7 +999,7 @@ void MainWindow::restoreGeometry()
     simTimeUnits = getQtenv()->getPref("simtimelabel-units", true).value<bool>();
 
     // initialize eventNumLabel
-    eventNumDigitGrouping = (DigitGrouping)getQtenv()->getPref("eventnumlabel-digitgrouping", int(SPACE)).value<int>();
+    eventNumDigitGrouping = (DigitGrouping)getQtenv()->getPref("eventnumlabel-digitgrouping", int(APOSTROPHE)).value<int>();
 }
 
 QSize MainWindow::sizeHint() const
