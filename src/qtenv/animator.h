@@ -108,6 +108,8 @@ public:
     explicit Animator();
 
     void redrawMessages();
+    void removeMessage(cMessage *msg);
+
     void animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText);
     void animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate);
     void animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop);

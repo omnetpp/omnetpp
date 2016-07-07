@@ -125,6 +125,7 @@ public:
     }
 
     void clearInspector(ModuleInspector *insp);
+    void removeMessage(cMessage *msg);
 
     QString info() const override {
         QString result = "AnimationGroup of " + QString::number(parts.size()) + " parts";
@@ -162,6 +163,11 @@ public:
     }
 
     void advance(float delta) {
+        if (currentPart >= parts.size()) {
+            end();
+            return;
+        }
+
         parts[currentPart]->advance(delta);
 
         if (parts[currentPart]->getState() == FINISHED) {
@@ -268,6 +274,7 @@ public:
 
 class SendAnimation : public SimpleAnimation {
     friend class Animator;
+    friend class AnimationGroup;
 protected:
     cMessage *msg;
     MessageItem *messageItem;
@@ -471,6 +478,20 @@ void Animator::redrawMessages() {
             }
         }
     }
+}
+
+void Animator::removeMessage(cMessage *msg)
+{
+    for (auto i = messageItems.begin(); i != messageItems.end(); /* nothing */) {
+        if (i->first.second == msg) {
+            delete i->second;
+            messageItems.erase(i++);
+        }
+        else
+            ++i;
+    }
+
+    animation->removeMessage(msg);
 }
 
 void Animator::animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText)
@@ -875,6 +896,21 @@ void AnimationGroup::clearInspector(ModuleInspector *insp)
             g->clearInspector(insp);
         if (auto s = dynamic_cast<SimpleAnimation *>(p))
             if (s->inspector == insp) {
+                delete p;
+                p = nullptr;
+            }
+    }
+
+    parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());
+}
+
+void AnimationGroup::removeMessage(cMessage *msg)
+{
+    for (auto &p : parts) {
+        if (auto g = dynamic_cast<AnimationGroup *>(p))
+            g->removeMessage(msg);
+        if (auto s = dynamic_cast<SendAnimation *>(p))
+            if (s->msg == msg) {
                 delete p;
                 p = nullptr;
             }
