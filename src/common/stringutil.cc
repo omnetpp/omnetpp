@@ -838,6 +838,23 @@ std::string opp_markup2Latex(const char *s)
     return tmp;
 }
 
+std::string opp_format(int64_t n, const char *digitSep)
+{
+    std::stringstream os;
+    os << n;
+    std::string str = os.str();
+    os.str("");
+
+    for(size_t i = 0; i < str.length(); ++i)
+    {
+        if(i == 0 || (int)(i - str.length()) % 3 != 0)
+            os << str[i];
+        else
+            os << digitSep << str[i];
+    }
+    return os.str();
+}
+
 }  // namespace common
 }  // namespace omnetpp
 
