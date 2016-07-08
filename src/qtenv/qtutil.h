@@ -211,7 +211,7 @@ QString getObjectIcon(cObject *object);
 
 const char *getObjectBaseClass(cObject *object);
 
-const char *getMessageShortInfoString(cMessage *msg);
+QString getMessageShortInfoString(cMessage *msg);
 
 /**
  * Looks up the given parameter

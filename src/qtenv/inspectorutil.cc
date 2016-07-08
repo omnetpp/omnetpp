@@ -236,7 +236,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
             }
             else if(baseClass == "cMessage")
             {
-                const char *shortInfo = getMessageShortInfoString(static_cast<cMessage*>(object));
+                QString shortInfo = getMessageShortInfoString(static_cast<cMessage*>(object));
                 label = label + name + " (" + shortTypeName + ", " + shortInfo + ")";
             }
             else

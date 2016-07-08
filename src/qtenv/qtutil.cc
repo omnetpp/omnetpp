@@ -555,27 +555,24 @@ const char *getObjectBaseClass(cObject *object)
         return object->getClassName();  // return itself as base class
 }
 
-const char *getMessageShortInfoString(cMessage *msg)
+QString getMessageShortInfoString(cMessage *msg)
 {
     cModule *tomodp = msg->getArrivalModule();
     cModule *frommodp = msg->getSenderModule();
-    std::stringstream out;
-    const char *deletedstr = "<deleted module>";
 
-#define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
+    QString modname = tomodp ? tomodp->getFullPath().c_str() : "<deleted module>";
+
     if (!tomodp)
-        out << "new msg";
+        return "new msg";
     else if (msg->getKind() == MK_STARTER)
-        out << "starter for " << MODNAME(tomodp);
+        return "starter for " + modname;
     else if (msg->getKind() == MK_TIMEOUT)
-        out << "timeoutmsg for " << MODNAME(tomodp);
+        return "timeoutmsg for " + modname;
     else if (frommodp == tomodp)
-        out << "selfmsg for " << MODNAME(tomodp);
+        return "selfmsg for " + modname;
     else
-        out << "msg for " << MODNAME(tomodp);
-#undef MODNAME
+        return "msg for " + modname;
 
-    return out.str().c_str();
 }
 
 cModule *findCommonAncestor(cModule *src, cModule *dest)
