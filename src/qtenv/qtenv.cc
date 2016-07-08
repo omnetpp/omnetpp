@@ -1787,7 +1787,10 @@ void Qtenv::bubble(cComponent *component, const char *text)
 
 void Qtenv::confirm(const char *msg)
 {
-    QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok);
+    if (mainWindow)
+        QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok);
+    else
+        ::printf("\n<!> %s\n\n", msg);  // fallback in case Qt didn't fire up correctly
 }
 
 void Qtenv::putsmsg(const char *msg)
