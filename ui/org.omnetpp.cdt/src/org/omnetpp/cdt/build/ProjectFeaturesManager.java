@@ -98,12 +98,21 @@ public class ProjectFeaturesManager {
         ATT_NEDPACKAGES, ATT_EXTRASOURCEFOLDERS, ATT_COMPILEFLAGS,  ATT_LINKERFLAGS
     };
 
+    private static final String DEFINESFILE_BANNER =
+            "//\n" +
+            "// Generated file, do not edit!\n" +
+            "//\n" +
+            "// This file defines symbols contributed by the currently active project features,\n" +
+            "// and it is regenerated every time a project feature is enabled or disabled.\n" +
+            "// See the Project Features dialog in the IDE, and opp_featuretool.\n" +
+            "//\n";
+
     // state
     private IProject project;
     private Document doc;  // DOM tree of ".oppfeatures"; only kept for validate()
     private Map<String, ProjectFeature> features;  // indexed by Id
     private Set<String> cppSourceRoots = null; // project relative paths of C++ source locations, e.g. "src" in INET; cppSourceRoots==null means the whole project is a C++ source location
-    private String definesFile = null; // project relative path of the header file to be generated
+    private IFile definesFile = null; // the header file to be generated
 
     /**
      * Creates an empty object. Use loadFeaturesFile() to populate it with the
@@ -130,9 +139,10 @@ public class ProjectFeaturesManager {
 
     /**
      * Returns the project-relative path of the header file to be generated,
-     * with the defines contributed by the enabled project features.
+     * with the defines contributed by the enabled project features. Returns null
+     * if a defines file is not specified.
      */
-    public String getDefinesFileName() {
+    public IFile getDefinesFile() {
         return definesFile;
     }
 
@@ -229,20 +239,17 @@ public class ProjectFeaturesManager {
      * Saves the defines file.
      */
     public void saveDefinesFile(List<ProjectFeature> enabledFeatures) throws CoreException {
-        Assert.isTrue(StringUtils.isNotEmpty(getDefinesFileName()));
-
         Map<String, String> defines = collectDefines(enabledFeatures);
         String content = makeDefinesFileContent(defines);
 
         // save the file if its content differs
-        IFile definesFile = project.getFile(new Path(getDefinesFileName()));
         byte[] bytes = content.getBytes();
         MakefileTools.ensureFileContent(definesFile, bytes, null);
     }
 
     protected String makeDefinesFileContent(Map<String, String> defines) {
         StringBuilder sb = new StringBuilder();
-        sb.append("// Generated file, do not edit\n\n");
+        sb.append(DEFINESFILE_BANNER);
         String[] symbols = defines.keySet().toArray(new String[0]);
         Arrays.sort(symbols);
         for (String symbol : symbols) {
@@ -329,7 +336,8 @@ public class ProjectFeaturesManager {
         Map<String, ProjectFeature> result = new LinkedHashMap<String, ProjectFeature>();
         Element root = doc.getDocumentElement();
         cppSourceRoots = root.getAttributeNode(ATT_CPPSOURCEROOTS)==null ? null : getListAttribute(root, ATT_CPPSOURCEROOTS);
-        definesFile = getAttribute(root, ATT_DEFINESFILE);
+        String definesFileName = getAttribute(root, ATT_DEFINESFILE);
+        definesFile = StringUtils.isNotEmpty(definesFileName) ? project.getFile(new Path(definesFileName)) : null;
         NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
         int unnamedCount = 0;
         for (int i=0; i<featureElements.getLength(); i++) {
@@ -379,13 +387,15 @@ public class ProjectFeaturesManager {
      * Validates the feature description file, and returns the list of errors found in it as text.
      */
     public List<String> validateFeatureDescriptions() {
+        if (doc == null)
+            return new ArrayList<String>();  // no oppfeatures file loaded
+
         List<String> errors = new ArrayList<String>();
 
-        if (doc != null)
-            validateDomTree(errors);
+        validateDomTree(errors);
 
-        if (definesFile.isEmpty() && featuresContainDefines())
-            errors.add("Missing \"" + ATT_DEFINESFILE + "\" attribute on root element, required to specify the header file in which defines (-D) from enabled features are to be generated");
+        if (definesFile == null)
+            errors.add("Missing or invalid \"" + ATT_DEFINESFILE + "\" attribute on root element, required to specify the header file in which defines (-D) from enabled features are to be generated");
 
         for (ProjectFeature f : getFeatures())
             validateFeatures(f, errors);
@@ -920,8 +930,7 @@ public class ProjectFeaturesManager {
         }
 
         // check that the defines file has the right content
-        if (StringUtils.isNotEmpty(getDefinesFileName())) {
-            IFile definesFile = project.getFile(new Path(getDefinesFileName()));
+        if (definesFile != null) {
             Map<String, String> defines = collectDefines(enabledFeatures);
             String content = makeDefinesFileContent(defines);
 

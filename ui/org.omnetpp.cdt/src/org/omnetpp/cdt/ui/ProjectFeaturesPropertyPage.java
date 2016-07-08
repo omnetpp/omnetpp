@@ -259,8 +259,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         }
 
         treeViewer.setInput(features);
-        if (StringUtils.isNotEmpty(features.getDefinesFileName()))
-            noteLabel.setText("Generated header file: "+ getProject().getName() + "/" + features.getDefinesFileName());
+        if (features.getDefinesFile() != null)
+            noteLabel.setText("Generated header file: "+ features.getDefinesFile().getFullPath().toOSString());
 
         // select enabled features in the checkbox table
         try {
@@ -615,7 +615,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         try {
             List<ProjectFeature> enabledFeatures = getEnabledFeaturesFromTree();
             features.saveFeatureEnablement(enabledFeatures);
-            if (features.getDefinesFileName() != null)
+            if (features.getDefinesFile() != null)
                 features.saveDefinesFile(enabledFeatures);
         }
         catch (CoreException e) {
