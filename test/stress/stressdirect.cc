@@ -27,7 +27,7 @@ void RandomModuleSelector::visit(cObject *object)
         numberOfVisitedModules++;
 
         // this will result in a uniform distribution between modules
-        if (uniform(0, 1) <= 1.0 / numberOfVisitedModules)
+        if (module->uniform(0, 1) <= 1.0 / numberOfVisitedModules)
             selectedModule = module;
     }
     else if (module->hasSubmodules())
