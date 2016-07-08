@@ -185,7 +185,9 @@ QMenu *InspectorUtil::createInspectorContextMenu(cObject* object, Inspector *ins
 QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Inspector *insp)
 {
     QMenu *menu = new QMenu();
-    menu->setFont(getQtenv()->getBoldFont());
+    QFont font = getQtenv()->getBoldFont();
+    menu->setStyleSheet("font: " + QString::number(font.pointSize()) + "pt \"" + font.family() + "\"");
+
     //TODO Is it needed?
     // If there are more than one ptrs, remove the inspector object's own ptr:
     // when someone right-clicks a submodule icon, we don't want the compound
