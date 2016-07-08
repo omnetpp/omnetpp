@@ -203,9 +203,13 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
     }
     else if(objects.size() > 1)
     {
+        const int maxObjects = 20;
+
         //then create a submenu for each object
-        for(cObject *object : objects)
+        for (int i = 0; i < std::min(maxObjects, objects.size()); ++i)
         {
+            cObject *object = objects[i];
+
             const char *name = object->getFullName();
             const char *shortTypeName = getObjectShortTypeName(object);
             QString infoStr = shortTypeName + QString(", ") + object->info().c_str();
@@ -238,6 +242,11 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
 
             QMenu *subMenu = menu->addMenu(label);
             fillInspectorContextMenu(subMenu, object, insp);
+        }
+        if (objects.size() > maxObjects) {
+            menu->addAction("Too many objects, only showing "
+                            + QString::number(maxObjects) + " of "
+                            + QString::number(objects.size()))->setEnabled(false);
         }
     }
 
