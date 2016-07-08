@@ -1108,8 +1108,11 @@ void MainWindow::on_actionFindInspectObjects_triggered()
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     cObject *obj = variant.isValid() ? variant.value<cObject *>() : getQtenv()->getMainObjectInspector()->getObject();
 
-    QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj);
+    // Set mainwindow to dialog's parent, thus it is closed when mainwindow is closed.
+    QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj, this);
     filteredObjectListDialog->setAttribute(Qt::WA_DeleteOnClose);
+    // Force to not insert in its parent as a widget.
+    filteredObjectListDialog->setWindowFlags(Qt::Dialog);
     filteredObjectListDialog->show();
 }
 

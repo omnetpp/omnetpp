@@ -386,6 +386,11 @@ FilteredObjectListDialog::~FilteredObjectListDialog()
     getQtenv()->setPref("objdialog:columnwidths", widths);
     getQtenv()->setPref("filtobjlist-geometry", saveGeometry());
 
+    // When close mainwindow while this dialog is opened, qt call
+    // data method unecessarily and use corrupted pointer, which occurs
+    // sigsegv by dinamic_cast, that's why have to delete model explicitly
+    delete inspectorListBoxView->model();
+
     delete ui;
 }
 
