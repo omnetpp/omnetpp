@@ -92,7 +92,7 @@ protected:
     QColor selectionForegroundColor;
     int toolbarSpacing = 4;
     int leftMargin = 5;
-    int lineHeight, averageCharWidth; // measured from font
+    int baseline, lineSpacing, averageCharWidth; // measured from font
     bool isMonospaceFont;
     int topLineIndex = 0;
     int topLineY = 0; // Y coordinate of where top edge of line topLineIndex gets painted (range: -(lineHeight-1)..0)
@@ -240,8 +240,6 @@ public:
     Pos getSelectionEnd();
 
     void find(QString text, FindOptions options);
-
-    int getLineHeight();
 
     int getMaxVisibleLineWidth();
     int getNumVisibleLines();

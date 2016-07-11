@@ -91,10 +91,10 @@ QFont TextViewerWidget::getMonospaceFont() {
 
 void TextViewerWidget::setFont(QFont font) {
     this->font = font;
+    auto metrics = QFontMetrics(font, viewport());
 
-    auto metrics = QFontMetrics(font);
-
-    lineHeight = metrics.height();
+    baseline = metrics.leading() + metrics.ascent();
+    lineSpacing = metrics.lineSpacing();
     averageCharWidth = metrics.averageCharWidth();
 
     isMonospaceFont = QFontInfo(font).fixedPitch();
@@ -215,15 +215,11 @@ void TextViewerWidget::find(QString text, FindOptions options) {
     viewport()->update();
 }
 
-int TextViewerWidget::getLineHeight() {
-    return lineHeight;
-}
-
 int TextViewerWidget::getMaxVisibleLineWidth() {
-    auto metrics = QFontMetrics(font);
+    auto metrics = QFontMetrics(font, viewport());
     int maxLength = 0;
     // can't use getNumVisibleLines here, that would potentially cause an infinite loop
-    int n = (maximumViewportSize().height() + lineHeight - 1) / lineHeight;
+    int n = (maximumViewportSize().height() + lineSpacing - 1) / lineSpacing;
     for (int lineIndex = topLineIndex; lineIndex < content->getLineCount() && lineIndex < topLineIndex + n; ++lineIndex) {
         auto line = content->getLineText(lineIndex);
         auto tabStops = content->getTabStops(lineIndex);
@@ -234,7 +230,7 @@ int TextViewerWidget::getMaxVisibleLineWidth() {
 
 int TextViewerWidget::getNumVisibleLines() {
     // Counts partially visible lines as well.
-    return (viewport()->height() + lineHeight - 1) / lineHeight;
+    return (viewport()->height() + lineSpacing - 1) / lineSpacing;
 }
 
 int TextViewerWidget::getNumVisibleColumns() {
@@ -272,13 +268,13 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics &metrics, const QSt
 }
 
 Pos TextViewerWidget::getLineColumnAt(int x, int y) {
-    int lineIndex = topLineIndex + (y-topLineY) / lineHeight;
+    int lineIndex = topLineIndex + (y-topLineY) / lineSpacing;
     lineIndex = clip(0, content->getLineCount()-1, lineIndex);
 
     QString line = content->getLineText(lineIndex);
     auto tabStops = content->getTabStops(lineIndex);
 
-    auto metrics = QFontMetrics(font);
+    auto metrics = QFontMetrics(font, viewport());
 
     int tabIndex;
     int offset = 0;
@@ -299,7 +295,7 @@ Pos TextViewerWidget::getLineColumnAt(int x, int y) {
     int column = part.length();
 
     for (int i = 0; i < part.length(); i++) {
-        if (offset + metrics.width(part.left(i+1)) > x) {
+        if (offset + metrics.width(part, i+1) >= x) {
             column = i;
             break;
         }
@@ -551,7 +547,7 @@ void TextViewerWidget::paintEvent(QPaintEvent *event) {
         setFont(painter.font());
     }
 
-    // this has to be after the font has been updated, because then the lineHeight changes, and we need the actual value here
+    // this has to be after the font has been updated, because then the lineSpacing changes, and we need the actual value here
     updateScrollbars();
 
     int numLines = content->getLineCount();
@@ -569,13 +565,13 @@ void TextViewerWidget::paintEvent(QPaintEvent *event) {
     // Drawing the gray highlight under the line in which the caret is-
     // Have to do this before any text painting, otherwise
     // it might paint over some parts of a few letters.
-    int highlightY = startY + (caretLineIndex-topLineIndex) * lineHeight;
+    int highlightY = startY + (caretLineIndex-topLineIndex) * lineSpacing;
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor("lightgray"));
-    painter.drawRect(0, highlightY+2, contentsRect().width(), lineHeight+1);
+    painter.drawRect(0, highlightY, contentsRect().width(), lineSpacing);
 
     // draw the lines
-    for (int y = startY; y < r.y()+r.height() && lineIndex < numLines; y += lineHeight) {
+    for (int y = startY; y < r.y()+r.height() && lineIndex < numLines; y += lineSpacing) {
         drawLine(painter, lineIndex++, x, y);
     }
 }
@@ -605,10 +601,7 @@ void TextViewerWidget::drawLinePart(QPainter &painter, const QFontMetrics &metri
     QString part = line.mid(tabStop.atCharacter, nextTabStopAt - tabStop.atCharacter);
 
     painter.setPen(tabStop.color);
-
-    // the + lineHeight is needed because in this function the y coordinate is the baseline
-    painter.drawText(QPoint(getLinePartOffset(metrics, line, tabStops, partIndex), y + lineHeight), part);
-
+    painter.drawText(QPoint(getLinePartOffset(metrics, line, tabStops, partIndex), y + baseline), part);
 
     // if there is selection, draw it
     if (selectionAnchorLineIndex!=caretLineIndex || selectionAnchorColumn!=caretColumn) {
@@ -617,7 +610,6 @@ void TextViewerWidget::drawLinePart(QPainter &painter, const QFontMetrics &metri
 
         // if lineIndex is in the selected region, redraw the selected part
         if (lineIndex >= selStart.line && lineIndex <= selEnd.line) {
-
             int startColumn = (lineIndex == selStart.line) ? clip(tabStop.atCharacter, nextTabStopAt, selStart.column) : tabStop.atCharacter;
             int endColumn = (lineIndex == selEnd.line) ? clip(tabStop.atCharacter, nextTabStopAt, selEnd.column) : nextTabStopAt;
 
@@ -628,8 +620,8 @@ void TextViewerWidget::drawLinePart(QPainter &painter, const QFontMetrics &metri
 
                 painter.setBrush(selectionBackgroundColor);
                 painter.setPen(selectionForegroundColor);
-                painter.fillRect(startColOffset - 1, y + 1, endColOffset - startColOffset + 1, lineHeight + 1, selectionBackgroundColor);
-                painter.drawText(QPoint(getLineColumnOffset(metrics, line, tabStops, startColumn), y + lineHeight), selection);
+                painter.fillRect(startColOffset, y, endColOffset - startColOffset, lineSpacing, selectionBackgroundColor);
+                painter.drawText(QPoint(getLineColumnOffset(metrics, line, tabStops, startColumn), y + baseline), selection);
                 painter.setBackground(backgroundColor);
                 painter.setPen(foregroundColor);
             }
@@ -640,7 +632,7 @@ void TextViewerWidget::drawLinePart(QPainter &painter, const QFontMetrics &metri
         // draw caret
         painter.setPen(foregroundColor);
         int caretX = getLineColumnOffset(metrics, line, tabStops, caretColumn);
-        painter.drawLine(caretX, y + 2, caretX, y + lineHeight + 2);
+        painter.drawLine(caretX, y, caretX, y + lineSpacing-1);
     }
 }
 
@@ -877,9 +869,9 @@ void TextViewerWidget::alignTopLine() {
 }
 
 void TextViewerWidget::alignBottomLine() {
-    topLineY = viewport()->height() % lineHeight;
+    topLineY = viewport()->height() % lineSpacing;
     if (topLineY > 0)
-        topLineY -= lineHeight;
+        topLineY -= lineSpacing;
 }
 
 void TextViewerWidget::onAutoScrollTimer()
