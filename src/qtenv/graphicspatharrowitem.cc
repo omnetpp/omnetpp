@@ -64,7 +64,8 @@ QPainterPath GraphicsPathArrowItem::shape() const
 }
 
 void GraphicsPathArrowItem::setEndPoints(const QPointF &start, const QPointF &end)
-{    setPos(end);
+{
+    setPos(end);
     setRotation(atan2(end.y() - start.y(), end.x() - start.x()) * 180.0 / M_PI);
 }
 

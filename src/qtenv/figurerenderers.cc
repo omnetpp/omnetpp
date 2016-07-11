@@ -643,11 +643,11 @@ void AbstractLineFigureRenderer::setArrowStyle(cFigure::Arrowhead style, Graphic
                             : style == cFigure::ARROW_SIMPLE ? 0
                             : 1);
 
-    if(pen) {
+    if (pen) {
         arrowItem->setColor(pen->color());
         arrowItem->setLineWidth(pen->widthF());
-        arrowItem->setArrowWidth(std::max(4.0, pen->widthF() * 4));
-        arrowItem->setArrowLength(std::max(4.0, pen->widthF() * 4));
+        arrowItem->setArrowWidth(pen->widthF() * 10);
+        arrowItem->setArrowLength(pen->widthF() * 10);
     }
 }
 
