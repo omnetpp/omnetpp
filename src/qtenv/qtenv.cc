@@ -1489,6 +1489,11 @@ void Qtenv::simulationEvent(cEvent *event)
         else {
             animator->animateDeliveryDirect(msg);
         }
+
+        // deliveries must be played immediately, since we
+        // are right before the processing of the message,
+        // and it would disappear otherwise
+        animator->play();
     }
 }
 

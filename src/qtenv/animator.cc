@@ -825,7 +825,12 @@ void SendAnimation::begin()
 {
     messageItem->setVisible(true);
     messageItem->setPos(src);
+
     SimpleAnimation::begin();
+
+    // this will hide the corresponding static message
+    // item if this anim is a delivery
+    getQtenv()->getAnimator()->redrawMessages();
 }
 
 void SendAnimation::setProgress(float t)
@@ -857,11 +862,14 @@ void SendAnimation::end()
     SimpleAnimation::end();
 
     messageItem->setVisible(false);
+
+    // this will put the static message item
+    // in place of the animated one
     getQtenv()->getAnimator()->redrawMessages();
 }
 
 SendDirectAnimation::SendDirectAnimation(ModuleInspector *insp, Direction dir, SendAnimMode mode, const QPointF &src, const QPointF &dest, cMessage *msg)
-    : SendAnimation(insp, mode, src, dest, msg, (mode == ANIM_END) ? 0.5 : 1), dir(dir)
+    : SendAnimation(insp, mode, src, dest, msg, (dir == DIR_DELIVERY) ? 0.5 : 1), dir(dir)
 {
     auto layer = insp->getAnimationLayer();
     connectionItem = new ConnectionItem(layer);
@@ -871,7 +879,6 @@ SendDirectAnimation::SendDirectAnimation(ModuleInspector *insp, Direction dir, S
     connectionItem->setLineStyle(Qt::DashLine);
     connectionItem->setWidth(2);
     connectionItem->setVisible(false);
-
 }
 
 void SendDirectAnimation::setProgress(float t)
