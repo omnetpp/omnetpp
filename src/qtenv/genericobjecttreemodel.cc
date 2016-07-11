@@ -705,7 +705,9 @@ bool RootNode::hasChildren() {
 }
 
 QVariant RootNode::data(int role) {
-    return getDefaultObjectData(object, role);
+    return (role == Qt::DisplayRole && object)
+        ? QString(object->getFullPath().c_str()) + " (" + getObjectShortTypeName(object) + ")"
+        : getDefaultObjectData(object, role);
 }
 
 QString RootNode::getNodeIdentifier() {
