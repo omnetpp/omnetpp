@@ -691,7 +691,7 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
 
     auto item = new ConnectionItem(submoduleLayer);
     item->setLine(getConnectionLine(gate));
-    ConnectionItemUtil::setupFromDisplayString(item, gate, destGate, twoWayConnection);
+    ConnectionItemUtil::setupFromDisplayString(item, gate, twoWayConnection);
     item->setZValue(-1);
 }
 

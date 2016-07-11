@@ -29,7 +29,7 @@ class ConnectionItem;
 class ConnectionItemUtil {
 public:
     // only stylistic tags are handled here (color, width, style, etc), positioning is in the ModuleCanvasViewer
-    static void setupFromDisplayString(ConnectionItem *ci, cGate *gate, cGate *destGate, bool twoWay);
+    static void setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool twoWay);
 };
 
 class ConnectionItem : public QGraphicsObject
@@ -49,10 +49,11 @@ protected:
     QString text;
     Qt::Alignment textAlignment = Qt::AlignCenter; // Left for source, Right for dest, Center for middle
     QColor textColor = QColor("#005030");
-    bool lineEnabled = true; // disabled for one of the two connection items in a bidirectional connection
+    bool lineEnabled = true;
+    bool halfLength = false;
 
     QGraphicsLineItem *lineItem = nullptr;
-    OutlinedTextItem *textItem = nullptr;
+    OutlinedTextItem *textItem = nullptr; // This is a managed sibling!
     GraphicsPathArrowItem *arrowItem = nullptr;
 
     void updateLineItem();
@@ -77,6 +78,9 @@ public:
     void setTextColor(const QColor &color);
     void setLineEnabled(bool enabled);
     void setArrowEnabled(bool enabled);
+    // This is used in two-way connections to show the styles
+    // in both cGate's cDisplayStrings next to each other.
+    void setHalfLength(bool enabled);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

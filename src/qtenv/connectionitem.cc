@@ -25,7 +25,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate, cGate *destGate, bool twoWay)
+void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool twoWay)
 {
     cChannel *chan = gate->getChannel();
 
@@ -74,7 +74,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     // no need for arrowheads on a bidirectional connection
     ci->setArrowEnabled(!twoWay);
     // only drawing the line from one side if the connection is bidirectional
-    ci->setLineEnabled(!(twoWay && (gate->getOwnerModule() > destGate->getOwnerModule())));
+    ci->setHalfLength(twoWay);
 }
 
 void ConnectionItem::updateLineItem()
@@ -84,11 +84,18 @@ void ConnectionItem::updateLineItem()
         return;
     }
 
+    // shadowing with a local, so we can adjust for half length
+    QPointF dest = this->dest;
+
+    QPointF dir = dest - src;
+    double length = std::sqrt(dir.x() * dir.x() + dir.y() * dir.y());
+
+    if (halfLength)
+        dest = src + dir / 2;
+
     if (arrowItem && arrowItem->isVisible()) {
         // making the end not stick out of the arrowhead
         // the line itself has to be shorter
-        QPointF dir = dest - src;
-        double length = std::sqrt(dir.x() * dir.x() + dir.y() * dir.y());
         lineItem->setLine(QLineF(src, dest - dir / length * lineWidth * 2));
     }
     else {
@@ -150,7 +157,10 @@ ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
     QGraphicsObject(parent)
 {
     lineItem = new QGraphicsLineItem(this);
-    textItem = new OutlinedTextItem(this);
+    // The text has to be a sibling, otherwise the pair line
+    // of a twoway connection would obscure it.
+    textItem = new OutlinedTextItem(parentItem());
+    textItem->setZValue(1);
     // TODO arrowItem disappear when a part of lineItem is out of view.
     arrowItem = new GraphicsPathArrowItem(lineItem);
 }
@@ -279,6 +289,14 @@ void ConnectionItem::setArrowEnabled(bool enabled)
         arrowItem->setVisible(enabled);
         updateLineItem();
         updateArrowItem();
+    }
+}
+
+void ConnectionItem::setHalfLength(bool enabled)
+{
+    if (enabled != halfLength) {
+        halfLength = enabled;
+        updateLineItem();
     }
 }
 
