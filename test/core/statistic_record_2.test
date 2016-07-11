@@ -22,8 +22,8 @@ module Node
     @statistic[rec14](record=max,timeavg,vector);
     @statistic[rec20](record=max,timeavg,vector);
     @statistic[rec21](record=max,timeavg,vector);
-    @statistic[rec30](record=max+1,"max(timeavg)/2","vector(mean)");
-    @statistic[rec31](record=max+1,"max(timeavg)/2","vector(mean)");
+    @statistic[rec30](record=max+1,max(timeavg)/2,vector(mean));
+    @statistic[rec31](record=max+1,max(timeavg)/2,vector(mean));
 }
 
 network Test

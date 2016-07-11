@@ -7,7 +7,7 @@ import testlib.Dump;
 
 module Node
 {
-    @statistic[src0](source="foo-foo"; record=vector);
+    @statistic[src0](source=foo-foo; record=vector);
 }
 
 network Test

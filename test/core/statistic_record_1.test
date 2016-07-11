@@ -9,19 +9,19 @@ module Node
 {
     //TODO: mean($signal+1); mean(fabs($signal)+1); mean($time+1)
     @statistic[rec0](record=mean);
-    @statistic[rec1](record="vector(mean)");
-    @statistic[rec2](record="max(mean(timeavg))");
-    @statistic[rec3](record="mean+1");
-    @statistic[rec4](record="fabs(mean+1)");
-    @statistic[rec5](record="vector(mean+1)");
-    @statistic[rec6](record="histogram(mean+1)");
-    @statistic[rec7](record="1+max(2+mean(3+timeavg))");
-    @statistic[rec8](record="vector(1+max(2+mean(3+timeavg)))");
-//    @statistic[rec9](record="$source"); // FIXME currently does not work
-    @statistic[rec10](record="last($source)");
-    @statistic[rec11](record="$source+5");
-    @statistic[rec12](record="vector($source)");
-    @statistic[rec13](record="vector($source+5)");
+    @statistic[rec1](record=vector(mean));
+    @statistic[rec2](record=max(mean(timeavg)));
+    @statistic[rec3](record=mean+1);
+    @statistic[rec4](record=fabs(mean+1));
+    @statistic[rec5](record=vector(mean+1));
+    @statistic[rec6](record=histogram(mean+1));
+    @statistic[rec7](record=1+max(2+mean(3+timeavg)));
+    @statistic[rec8](record=vector(1+max(2+mean(3+timeavg))));
+//    @statistic[rec9](record=$source); // FIXME currently does not work
+    @statistic[rec10](record=last($source));
+    @statistic[rec11](record=$source+5);
+    @statistic[rec12](record=vector($source));
+    @statistic[rec13](record=vector($source+5));
 }
 
 network Test

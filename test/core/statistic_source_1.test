@@ -10,17 +10,17 @@ module Node
     @statistic[src0](record=vector,histogram);  // no "source=": should use statistic name as signal
     @statistic[src1](source=foo;record=vector,histogram);
     @statistic[src2](source=foo+1;record=vector,histogram);
-    @statistic[src3](source="2*fabs(foo+1)";record=vector,histogram);
-    @statistic[src4](source="mean(foo)";record=vector,histogram);
-    @statistic[src5](source="fabs(mean(foo))";record=vector,histogram);
-    @statistic[src6](source="mean(foo+1)";record=vector,histogram);
-    @statistic[src7](source="3+fabs(mean(foo+1))";record=vector,histogram);
-    @statistic[src8](source="max(mean(timeavg(foo)))";record=vector,histogram);
-    @statistic[src9](source="max(1+mean(2+timeavg(3+foo)))";record=vector,histogram);
-    @statistic[src10](source="foo+bar";record=vector);
-    @statistic[src11](source="max(foo+3*bar)";record=vector);
-    @statistic[src12](source="max(foo)+sin(bar)";record=vector);
-    @statistic[src13](source="max(foo)+min(bar)";record=vector);
+    @statistic[src3](source=2*fabs(foo+1);record=vector,histogram);
+    @statistic[src4](source=mean(foo);record=vector,histogram);
+    @statistic[src5](source=fabs(mean(foo));record=vector,histogram);
+    @statistic[src6](source=mean(foo+1);record=vector,histogram);
+    @statistic[src7](source=3+fabs(mean(foo+1));record=vector,histogram);
+    @statistic[src8](source=max(mean(timeavg(foo)));record=vector,histogram);
+    @statistic[src9](source=max(1+mean(2+timeavg(3+foo)));record=vector,histogram);
+    @statistic[src10](source=foo+bar;record=vector);
+    @statistic[src11](source=max(foo+3*bar);record=vector);
+    @statistic[src12](source=max(foo)+sin(bar);record=vector);
+    @statistic[src13](source=max(foo)+min(bar);record=vector);
 }
 
 network Test
