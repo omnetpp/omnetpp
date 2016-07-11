@@ -1,0 +1,31 @@
+%description:
+Test @statistic(checkSignals=true) on signals of a submodule.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @signal(foo);
+}
+
+network Test
+{
+    parameters:
+        @statistic[src0](source=node.foobar999; record=vector; checkSignals=true);
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%exitcode: 1
+
+%contains: stdout
+Error adding statistic 'src0' to module Test (NED type: Test): error in source=node.foobar999: signal 'foobar999' is not declared on type 'Node'

@@ -1,0 +1,33 @@
+%description:
+Test @statistic(source=<submodule>.<signal>) catches when the submodule does not exist.
+
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @signal(foo);
+      
+}
+
+network Test
+{
+    parameters:
+        @statistic[src0](source=node[999].foo; record=vector);
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%exitcode: 1
+
+%contains: stdout
+Error adding statistic 'src0' to module Test (NED type: Test): error in source=node[999].foo: no module 'node[999]' under 'Test'

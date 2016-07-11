@@ -1,0 +1,29 @@
+%description:
+Test @statistic(checkSignals=true) on the local module.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @statistic[src0](source=foobar999; record=vector; checkSignals=true);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%exitcode: 1
+
+%contains: stdout
+Error adding statistic 'src0' to module Test.node (NED type: Node): error in source=foobar999: signal 'foobar999' is not declared on type 'Node'
