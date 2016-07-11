@@ -698,9 +698,12 @@ QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod) {
 }
 
 QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod) {
-    return mod == object
-            ? compoundModuleItem->getArea()
-            : submoduleGraphicsItems[mod]->boundingRect().translated(getSubmodCoords(mod));
+    if (submoduleGraphicsItems.count(mod) == 0) {
+        return compoundModuleItem->getArea();
+    }
+
+    return submoduleGraphicsItems[mod]->boundingRect()
+               .translated(getSubmodCoords(mod));
 }
 
 QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
