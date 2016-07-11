@@ -31,6 +31,8 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cgate.h"
+
+#include "../include/omnetpp/cstatisticbuilder.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/cdisplaystring.h"
@@ -292,8 +294,10 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     checkChannels();
 
     // notify envir
-    if (chan)
+    if (chan) {
         getEnvir()->configure(chan);
+        chan->addResultRecorders();
+    }
     EVCB.connectionCreated(this);
 #ifdef SIMFRONTEND_SUPPORT
     mod->updateLastChangeSerial();

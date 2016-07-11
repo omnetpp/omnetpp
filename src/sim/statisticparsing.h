@@ -1,5 +1,5 @@
 //==========================================================================
-//  STATISTICPARSER.H - part of
+//  STATISTICPARSING.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,23 +15,22 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_ENVIR_STATISTICPARSER_H
-#define __OMNETPP_ENVIR_ENVIR_STATISTICPARSER_H
+#ifndef __OMNETPP_STATISTICPARSING_H
+#define __OMNETPP_STATISTICPARSING_H
 
 #include "common/expression.h"
 #include "sim/resultrecorders.h"
-#include "envirdefs.h"
 
 namespace omnetpp {
-namespace envir {
-
 
 class FilterOrRecorderReference;
+
+typedef cStatisticBuilder::TristateBool TristateBool;
 
 /**
  * Data structure used when setting up chains of result filters and result recorders
  */
-class ENVIR_API SignalSource
+class SIM_API SignalSource
 {
   private:
     cResultFilter *filter;
@@ -48,7 +47,7 @@ class ENVIR_API SignalSource
     simsignal_t getSignalID() const {return signalID;}
 };
 
-class ENVIR_API StatisticSourceParser
+class SIM_API StatisticSourceParser
 {
   protected:
     typedef omnetpp::common::Expression Expression;
@@ -58,10 +57,11 @@ class ENVIR_API StatisticSourceParser
     SignalSource createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len);
   public:
     StatisticSourceParser() {}
-    SignalSource parse(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
+    SignalSource parse(cComponent *component, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter);
+    static void checkSignalDeclaration(cComponent *component, const char *signalName, TristateBool checkSignalDecl);
 };
 
-class ENVIR_API StatisticRecorderParser
+class SIM_API StatisticRecorderParser
 {
   protected:
     typedef omnetpp::common::Expression Expression;
@@ -76,7 +76,6 @@ class ENVIR_API StatisticRecorderParser
     void parse(const SignalSource& source, const char *recordingMode, cComponent *component, const char *statisticName, cProperty *attrsProperty);
 };
 
-} // namespace envir
 }  // namespace omnetpp
 
 #endif

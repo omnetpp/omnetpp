@@ -39,6 +39,7 @@ class ENVIR_API EnvirUtils
     public:
         static void dumpComponentList(const char *category);
         static void dumpResultRecorders(cComponent *component);
+        static void dumpComponentResultRecorders(cComponent *component);
 };
 
 }  // namespace envir

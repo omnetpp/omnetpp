@@ -40,7 +40,7 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirb
       $O/speedometer.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/cxmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
       $O/eventlogfilemgr.o $O/runattributes.o $O/intervals.o \
-      $O/statisticparser.o $O/visitor.o $O/envirutils.o
+      $O/visitor.o $O/envirutils.o
 
 GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 
@@ -146,3 +146,4 @@ clean:
 	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_run$(EXE_SUFFIX)
 
 -include $(OBJS:%.o=%.d)
+

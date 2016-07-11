@@ -297,20 +297,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Set up RNG mapping for the component
     virtual void setupRNGMapping(cComponent *component);
 
-    // Called from configure(component); adds result recording listeners
-    // for each declared signal (@statistic property) in the component.
-    virtual void addResultRecorders(cComponent *component);
-
-    // Utility function: adds result recording listeners for the given signal (if it's non-null) or for the given @statistic property.
-    // If signal is specified, it will override the source= key in statisticProperty.
-    // The index of statisticProperty is ignored; statisticName will be used as name of the statistic instead.
-    virtual void doAddResultRecorders(cComponent *component, std::string& componentFullPath, const char *statisticName, cProperty *statisticProperty, simsignal_t signal=SIMSIGNAL_NULL);
-
-    // Utility functions for addResultRecorders()
-    std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
-    SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter);
-    void doResultRecorder(const SignalSource& source, const char *mode, cComponent *component, const char *statisticName, cProperty *attrsProperty);
-
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 

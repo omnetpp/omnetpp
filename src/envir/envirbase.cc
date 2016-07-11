@@ -27,6 +27,7 @@
 #include "common/enumstr.h"
 #include "common/opp_ctype.h"
 #include "common/stringtokenizer.h"
+#include "common/stringutil.h"
 #include "common/fileglobber.h"
 #include "common/unitconversion.h"
 #include "common/commonutil.h"
@@ -54,16 +55,16 @@
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/simtime.h"
-#include "omnetpp/cresultrecorder.h"
 #include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "sim/resultfilters.h"
 #include "args.h"
 #include "envirbase.h"
+
+#include "../include/omnetpp/cstatisticbuilder.h"
 #include "envirutils.h"
 #include "appreg.h"
 #include "cxmldoccache.h"
-#include "statisticparser.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/cparsimcomm.h"
@@ -152,8 +153,6 @@ Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHEC
 
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_COMPONENT, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: `**.gen.rng-1=3` maps the local RNG 1 of modules matching `**.gen` to the global RNG 3. The value may be an expression, with the `index` and `ancestorIndex()` operators being potentially very useful. The default is one-to-one mapping, i.e. RNG k of all modules refer to the global RNG k (`for k=0..num-rngs-1`).\nUsage: `<module-full-path>.rng-<local-index>=<global-index>`. Examples: `**.mac.rng-0=1; **.source[*].rng-0=index`");
-Register_PerObjectConfigOption(CFGID_STATISTIC_RECORDING, "statistic-recording", KIND_STATISTIC, CFG_BOOL, "true", "Whether the matching `@statistic` should be recorded. This option lets one completely disable all recording from a @statistic. Disabling a `@statistic` this way is more efficient than specifying `**.scalar-recording=false` and `**.vector-recording=false` together.\nUsage: `<module-full-path>.<statistic-name>.statistic-recording=true/false`.\nExample: `**.ping.roundTripTime.statistic-recording=false`");
-Register_PerObjectConfigOption(CFGID_RESULT_RECORDING_MODES, "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default", "Defines how to calculate results from the matching `@statistic`.\nUsage: `<module-full-path>.<statistic-name>.result-recording-modes=<modes>`. Special values: `default`, `all`: they select the modes listed in the `record` key of `@statistic`; all selects all of them, default selects the non-optional ones (i.e. excludes the ones that end in a question mark). Example values: `vector`, `count`, `last`, `sum`, `mean`, `min`, `max`, `timeavg`, `stats`, `histogram`. More than one values are accepted, separated by commas. Expressions are allowed. Items prefixed with `-` get removed from the list. Example: `**.queueLength.result-recording-modes=default,-vector,+timeavg`");
 
 #define STRINGIZE0(x)    #x
 #define STRINGIZE(x)     STRINGIZE0(x)
@@ -603,6 +602,9 @@ void EnvirBase::setupNetwork(cModuleType *network)
 
     getSimulation()->setupNetwork(network);
     eventlogManager->flush();
+
+    if (opt->debugStatisticsRecording)
+        EnvirUtils::dumpResultRecorders(getSimulation()->getSystemModule());
 }
 
 void EnvirBase::startRun()
@@ -628,198 +630,11 @@ void EnvirBase::preconfigure(cComponent *component)
 
 void EnvirBase::configure(cComponent *component)
 {
-    addResultRecorders(component);
-}
-
-static int search_(std::vector<std::string>& v, const char *s)
-{
-    for (int i = 0; i < (int)v.size(); i++)
-        if (strcmp(v[i].c_str(), s) == 0)
-            return i;
-    return -1;
-}
-
-inline void addIfNotContains_(std::vector<std::string>& v, const char *s)
-{
-    if (search_(v, s) == -1)
-        v.push_back(s);
-}
-
-inline void addIfNotContains_(std::vector<std::string>& v, const std::string& s)
-{
-    if (search_(v, s.c_str()) == -1)
-        v.push_back(s);
-}
-
-void EnvirBase::addResultRecorders(cComponent *component)
-{
-    std::vector<const char *> statisticNames = component->getProperties()->getIndicesFor("statistic");
-    std::string componentFullPath;
-    for (int i = 0; i < (int)statisticNames.size(); i++) {
-        if (componentFullPath.empty())
-            componentFullPath = component->getFullPath();
-        const char *statisticName = statisticNames[i];
-        cProperty *statisticProperty = component->getProperties()->get("statistic", statisticName);
-        ASSERT(statisticProperty != nullptr);
-        doAddResultRecorders(component, componentFullPath, statisticName, statisticProperty, SIMSIGNAL_NULL);
-    }
-
-    if (opt->debugStatisticsRecording)
-        EnvirUtils::dumpResultRecorders(component);
 }
 
 void EnvirBase::addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty)
 {
-    std::string dummy;
-    doAddResultRecorders(component, dummy, statisticName, statisticTemplateProperty, signal);
-}
-
-void EnvirBase::doAddResultRecorders(cComponent *component, std::string& componentFullPath, const char *statisticName, cProperty *statisticProperty, simsignal_t signal)
-{
-    if (componentFullPath.empty())
-        componentFullPath = component->getFullPath();
-    std::string statisticFullPath = componentFullPath + "." + statisticName;
-
-    bool enabled = getConfig()->getAsBool(statisticFullPath.c_str(), CFGID_STATISTIC_RECORDING);
-    if (!enabled)
-        return;
-
-    // collect the list of result recorders
-    std::string modesOption = getConfig()->getAsString(statisticFullPath.c_str(), CFGID_RESULT_RECORDING_MODES, "");
-    std::vector<std::string> modes = extractRecorderList(modesOption.c_str(), statisticProperty);
-
-    // if there are result recorders, add source filters and recorders
-    if (!modes.empty()) {
-        // determine source: use either the signal from the argument list, or the source= key in the @statistic property
-        SignalSource source;
-        if (signal == SIMSIGNAL_NULL) {
-            bool hasSourceKey = statisticProperty->getNumValues("source") > 0;
-            const char *sourceSpec = hasSourceKey ? statisticProperty->getValue("source", 0) : statisticName;
-            source = doStatisticSource(component, statisticName, sourceSpec, opt->warmupPeriod != 0);
-        }
-        else {
-            source = SignalSource(component, signal);
-        }
-
-        // add result recorders
-        for (int j = 0; j < (int)modes.size(); j++)
-            doResultRecorder(source, modes[j].c_str(), component, statisticName, statisticProperty);
-    }
-}
-
-std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption, cProperty *statisticProperty)
-{
-    // "-" means "none"
-    if (!modesOption[0] || (modesOption[0] == '-' && !modesOption[1]))
-        return std::vector<std::string>();
-
-    std::vector<std::string> modes;  // the result
-
-    // if first configured mode starts with '+' or '-', assume "default" as base
-    if (modesOption[0] == '-' || modesOption[0] == '+') {
-        // collect the mandatory record= items from @statistic (those not ending in '?')
-        int n = statisticProperty->getNumValues("record");
-        for (int i = 0; i < n; i++) {
-            const char *m = statisticProperty->getValue("record", i);
-            if (m[strlen(m)-1] != '?')
-                addIfNotContains_(modes, m);
-        }
-    }
-
-    // loop through all modes
-    StringTokenizer tokenizer(modesOption, ",");  // XXX we should ignore commas within parens
-    while (tokenizer.hasMoreTokens()) {
-        const char *mode = tokenizer.nextToken();
-        if (!strcmp(mode, "default")) {
-            // collect the mandatory record= items from @statistic (those not ending in '?')
-            int n = statisticProperty->getNumValues("record");
-            for (int i = 0; i < n; i++) {
-                const char *m = statisticProperty->getValue("record", i);
-                if (m[strlen(m)-1] != '?')
-                    addIfNotContains_(modes, m);
-            }
-        }
-        else if (!strcmp(mode, "all")) {
-            // collect all record= items from @statistic (strip trailing '?' if present)
-            int n = statisticProperty->getNumValues("record");
-            for (int i = 0; i < n; i++) {
-                const char *m = statisticProperty->getValue("record", i);
-                if (m[strlen(m)-1] != '?')
-                    addIfNotContains_(modes, m);
-                else
-                    addIfNotContains_(modes, std::string(m, strlen(m)-1));
-            }
-        }
-        else if (mode[0] == '-') {
-            // remove from modes
-            int k = search_(modes, mode+1);
-            if (k != -1)
-                modes.erase(modes.begin()+k);
-        }
-        else {
-            // add to modes
-            addIfNotContains_(modes, mode[0] == '+' ? mode+1 : mode);
-        }
-    }
-    return modes;
-}
-
-static bool opp_isidentifier(const char *s)
-{
-    if (!opp_isalphaext(s[0]) && s[0] != '_')
-        return false;
-    while (*++s)
-        if (!opp_isalnumext(*s) && s[0] != '_')
-            return false;
-
-    return true;
-}
-
-SignalSource EnvirBase::doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter)
-{
-    try {
-        if (opp_isidentifier(sourceSpec)) {
-            // simple case: just a signal name
-            simsignal_t signalID = cComponent::registerSignal(sourceSpec);
-            if (!needWarmupFilter)
-                return SignalSource(component, signalID);
-            else {
-                WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
-                component->subscribe(signalID, warmupFilter);
-                return SignalSource(warmupFilter);
-            }
-        }
-        else {
-            StatisticSourceParser parser;
-            return parser.parse(component, statisticName, sourceSpec, needWarmupFilter);
-        }
-    }
-    catch (std::exception& e) {
-        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
-                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
-    }
-}
-
-void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordingMode, cComponent *component, const char *statisticName, cProperty *attrsProperty)
-{
-    try {
-        if (opp_isidentifier(recordingMode)) {
-            // simple case: just a plain recorder
-            //TODO if disabled, don't add
-            cResultRecorder *recorder = cResultRecorderDescriptor::get(recordingMode)->create();
-            recorder->init(component, statisticName, recordingMode, attrsProperty);
-            source.subscribe(recorder);
-        }
-        else {
-            // something more complicated: use parser
-            StatisticRecorderParser parser;
-            parser.parse(source, recordingMode, component, statisticName, attrsProperty);
-        }
-    }
-    catch (std::exception& e) {
-        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s': %s",
-                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
-    }
+    cStatisticBuilder(getConfig()).addResultRecorders(component, signal, statisticName, statisticTemplateProperty);
 }
 
 void EnvirBase::readParameter(cPar *par)

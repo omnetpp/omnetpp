@@ -26,6 +26,7 @@
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/crng.h"
 #include "omnetpp/cstatistic.h"
+#include "omnetpp/cstatisticbuilder.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cdisplaystring.h"
@@ -155,6 +156,11 @@ void cComponent::setLogLevel(LogLevel logLevel)
     ASSERT(0 <= logLevel && logLevel <= 7);
     flags &= ~(0x7 << FL_LOGLEVEL_SHIFT);
     flags |= logLevel << FL_LOGLEVEL_SHIFT;
+}
+
+void cComponent::addResultRecorders()
+{
+    cStatisticBuilder(getEnvir()->getConfig()).addResultRecorders(this);
 }
 
 void cComponent::reallocParamv(int size)

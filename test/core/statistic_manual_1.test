@@ -4,9 +4,9 @@ Basic test for instantiating and adding result filters/recorders manually
 %activity:
 simsignal_t signal = registerSignal("foo");
 
-cResultFilter *removeRepeatsFilter = cResultFilterDescriptor::get("removeRepeats")->create();
+cResultFilter *removeRepeatsFilter = cResultFilterType::get("removeRepeats")->create();
 
-cResultRecorder *vectorRecorder = cResultRecorderDescriptor::get("vector")->create();
+cResultRecorder *vectorRecorder = cResultRecorderType::get("vector")->create();
 opp_string_map *attrs = new opp_string_map;
 (*attrs)["title"] = "Queue Length";
 (*attrs)["unit"] = "packets";

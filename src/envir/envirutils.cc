@@ -26,6 +26,7 @@
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/checkandcast.h"
+#include "omnetpp/cchannel.h"
 #include "sim/resultfilters.h"
 #include "args.h"
 #include "appreg.h"
@@ -379,6 +380,18 @@ void EnvirUtils::dumpComponentList(const char *category)
 }
 
 void EnvirUtils::dumpResultRecorders(cComponent *component)
+{
+    dumpComponentResultRecorders(component);
+    if (component->isModule()) {
+        cModule *module = (cModule *)component;
+        for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
+            dumpResultRecorders(*it);
+        for (cModule::ChannelIterator it(module); !it.end(); ++it)
+            dumpResultRecorders(*it);
+    }
+}
+
+void EnvirUtils::dumpComponentResultRecorders(cComponent *component)
 {
     bool componentPathPrinted = false;
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();

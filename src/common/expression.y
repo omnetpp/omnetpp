@@ -82,14 +82,23 @@ LineColumn xpos, xprevpos;
 static Expression::Elem *e;
 static Expression::Resolver *resolver;
 
-static char *expryyconcat(char *s1, char *s2, char *s3=nullptr)
+static char *join(const char *s1, const char *s2, const char *s3=nullptr)
 {
-    char *d = new char[strlen(s1)+strlen(s2)+strlen(s3?s3:"")+4];
+    char *d = new char[strlen(s1) + strlen(s2) + strlen(s3?s3:"") + 4];
     strcpy(d, s1);
     strcat(d, " ");
     strcat(d, s2);
     if (s3) {strcat(d, " "); strcat(d, s3);}
-    delete [] s1; delete [] s2; delete [] s3;
+    return d;
+}
+
+static char *concat(const char *s1, const char *s2, const char *s3=nullptr, const char *s4=nullptr)
+{
+    char *d = new char[strlen(s1) + strlen(s2) + strlen(s3?s3:"") + strlen(s4?s4:"") + 1];
+    strcpy(d, s1);
+    strcat(d, s2);
+    if (s3) strcat(d, s3);
+    if (s4) strcat(d, s4);
     return d;
 }
 
@@ -222,13 +231,25 @@ expr
          ;
 
 simple_expr
-        : identifier
+        : variable
         | literal
         ;
 
-identifier
-        : NAME
+variable
+        : variable2
                 { addVariableRef($1); delete [] $1; }
+        ;
+
+variable2
+        : variable2 '.' segment
+                { $$ = concat($1, ".", $3); delete [] $1; delete [] $3; }
+        | segment
+        ;
+
+segment
+        : NAME
+        | NAME '[' INTCONSTANT ']'
+                { $$ = concat($1, "[", $3, "]"); delete [] $1; delete [] $3; }
         ;
 
 literal
@@ -266,13 +287,13 @@ numliteral
 
 quantity
         : quantity INTCONSTANT NAME
-                { $$ = expryyconcat($1,$2,$3); }
+                { $$ = join($1, $2, $3); delete [] $1; delete [] $2; delete [] $3; }
         | quantity REALCONSTANT NAME
-                { $$ = expryyconcat($1,$2,$3); }
+                { $$ = join($1, $2, $3); delete [] $1; delete [] $2; delete [] $3; }
         | INTCONSTANT NAME
-                { $$ = expryyconcat($1,$2); }
+                { $$ = join($1, $2); delete [] $1; delete [] $2; }
         | REALCONSTANT NAME
-                { $$ = expryyconcat($1,$2); }
+                { $$ = join($1, $2); delete [] $1; delete [] $2; }
         ;
 
 %%

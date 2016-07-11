@@ -21,6 +21,7 @@
 #include <algorithm>
 #include "common/stringutil.h"
 #include "omnetpp/cmodule.h"
+
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cmessage.h"
@@ -1178,7 +1179,8 @@ int cModule::buildInside()
 
     setFlag(FL_BUILDINSIDE_CALLED, true);
 
-    return 0;
+    // configure @statistics here, as they may refer to submodules' signals
+    addResultRecorders();
 }
 
 void cModule::doBuildInside()

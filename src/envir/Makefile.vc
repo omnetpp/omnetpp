@@ -34,7 +34,7 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/logformatter.obj
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
       $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj \
-      $O/statisticparser.obj $O/visitor.obj $O/envirutils.obj
+      $O/visitor.obj $O/envirutils.obj
 
 GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 

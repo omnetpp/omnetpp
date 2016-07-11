@@ -155,6 +155,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: has finalizeParameters() been called?
     bool parametersFinalized() const {return flags&FL_PARAMSFINALIZED;}
 
+    // internal: sets up @statistic-based result recording
+    virtual void addResultRecorders();
+
     // internal: has initialize() been called?
     bool initialized() const {return flags&FL_INITIALIZED;}
 

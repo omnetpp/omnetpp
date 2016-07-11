@@ -1,5 +1,5 @@
 //==========================================================================
-//  STATISTICPARSER.CC - part of
+//  STATISTICPARSING.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,12 +15,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "omnetpp/cmodule.h"
+#include "omnetpp/ccomponenttype.h"
+#include "omnetpp/cstatisticbuilder.h"  // for PROPKEY_STATISTIC_CHECKSIGNALS
 #include "sim/resultfilters.h"  // WarmupFilter, ExpressionFilter
 #include "sim/resultrecorders.h"  // ExpressionRecorder
-#include "statisticparser.h"
+#include "statisticparsing.h"
 
 namespace omnetpp {
-namespace envir {
 
 using namespace omnetpp::common;
 
@@ -69,27 +71,55 @@ class FilterOrRecorderReference : public Expression::Function
 class SourceExpressionResolver : public Expression::Resolver
 {
   protected:
-    cComponent *component;
+    cComponent *context;
     bool needWarmupPeriodFilter;
+    TristateBool checkSignalDecl;
 
   public:
-    SourceExpressionResolver(cComponent *comp, bool needWarmupFilter)
+    SourceExpressionResolver(cComponent *context, bool needWarmupPeriodFilter, TristateBool checkSignalDecl)
     {
-        component = comp;
-        needWarmupPeriodFilter = needWarmupFilter;
+        this->context = context;
+        this->needWarmupPeriodFilter = needWarmupPeriodFilter;
+        this->checkSignalDecl = checkSignalDecl;
     }
 
     virtual Expression::Functor *resolveVariable(const char *varname) override
     {
         // interpret varname as signal name
-        simsignal_t signalID = cComponent::registerSignal(varname);
+        cComponent *signalSourceComponent;
+        simsignal_t signalID;
+        parseSignalPath(varname, signalSourceComponent, signalID);
         if (!needWarmupPeriodFilter)
-            return new SignalSourceReference(SignalSource(component, signalID));
+            return new SignalSourceReference(SignalSource(context, signalID));
         else {
             WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
-            component->subscribe(signalID, warmupFilter);
+            context->subscribe(signalID, warmupFilter);
             return new SignalSourceReference(SignalSource(warmupFilter));
         }
+    }
+
+    void parseSignalPath(const char *signalPath, cComponent *& component, simsignal_t& signalID)
+    {
+        // parse signalPath as <modulePath>.<signalName>
+        const char *signalName;
+        if (strchr(signalPath, '.') == nullptr) {
+            component = context;
+            signalName = signalPath;
+        }
+        else if (cModule *contextModule = dynamic_cast<cModule*>(context)) {
+            const char *lastDot = strrchr(signalPath, '.');
+            std::string modulePath = std::string(".") + std::string(signalPath, lastDot - signalPath);
+            component = contextModule->getModuleByPath(modulePath.c_str());
+            if (!component)
+                throw opp_runtime_error("no module '%s' under '%s'", modulePath.c_str()+1, context->getFullPath().c_str());
+            signalName = lastDot + 1;
+        }
+        else
+            throw opp_runtime_error("signal names qualified with module path may only be used in a @statistic declared on a module");
+
+        StatisticSourceParser::checkSignalDeclaration(component, signalName, checkSignalDecl);
+
+        signalID = cComponent::registerSignal(signalName);
     }
 
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override
@@ -115,11 +145,11 @@ static int countDepth(const std::vector<Expression::Elem>& v, int root)
     return depth;
 }
 
-SignalSource StatisticSourceParser::parse(cComponent *component, const char *statisticName, const char *sourceSpec, bool needWarmupFilter)
+SignalSource StatisticSourceParser::parse(cComponent *component, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
 {
     // parse expression
     Expression expr;
-    SourceExpressionResolver resolver(component, needWarmupFilter);
+    SourceExpressionResolver resolver(component, needWarmupFilter, checkSignalDecl);
     expr.parse(sourceSpec, &resolver);
 
     int exprLen = expr.getExpressionLength();
@@ -280,6 +310,22 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
         }
     }
     return result;
+}
+
+void StatisticSourceParser::checkSignalDeclaration(cComponent *component, const char *signalName, TristateBool checkSignalDecl)
+{
+    // if it's a simple module or a channel, we expect the signal to be declared with @signal.
+    // This behavior can be overridden with the checkSignal=true/false setting.
+    // We can't always check for the presence of the signal declaration, because
+    // a signal also may be emitted by submodules
+
+    if (checkSignalDecl==cStatisticBuilder::TRISTATE_TRUE || (checkSignalDecl==cStatisticBuilder::TRISTATE_DEFAULT && (component->isChannel() || (component->isModule() && ((cModule*)component)->isSimple())))) {
+        omnetpp::cProperty *signalDeclaration = component->getComponentType()->getSignalDeclaration(signalName);
+        if (!signalDeclaration)
+            throw opp_runtime_error("signal '%s' is not declared on type '%s' (you can turn off or force this check by setting %s=false/true)",
+                    signalName, component->getComponentType()->getFullName(), PROPKEY_STATISTIC_CHECKSIGNALS);
+    }
+
 }
 
 //---
@@ -493,6 +539,5 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     return result;  // if makeRecorder=true, we return a nullptr SignalSource (no chaining possible)
 }
 
-}  // namespace envir
 }  // namespace omnetpp
 
