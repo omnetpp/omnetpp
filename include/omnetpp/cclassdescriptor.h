@@ -208,6 +208,8 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     /**
      * Returns the declared type of a field in the described class as a string.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
+     *
+     * @see getFieldDynamicTypeString()
      */
     virtual const char *getFieldTypeString(int field) const = 0;
 
@@ -232,8 +234,25 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual int getFieldArraySize(void *object, int field) const = 0;
 
     /**
+     * Returns the runtime type of the given field as a string if it can be
+     * determined. (This method is relevant if the field contains a pointer or
+     * or an array of pointers to objects with RTTI.) If a runtime type is
+     * not available, nullptr is returned, and the caller should use the
+     * declared type instead (getFieldTypeString()).
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
+     */
+    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const {return nullptr;}
+
+    /**
      * Returns the value of the given field in the given object as a string.
      * For compound fields, the message compiler generates code which calls operator<<.
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
      */
     virtual std::string getFieldValueAsString(void *object, int field, int i) const = 0;
 
@@ -241,6 +260,10 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Sets the value of a field in the given object by parsing the given value string.
      * Returns true if successful, and false if an error occurred or the field
      * does not support setting.
+     *
+     * The field argument must be in the 0..getFieldCount()-1 range.
+     * The i argument must be in the 0..getFieldArraySize()-1 range, or
+     * 0 if the field is not an array.
      */
     virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const = 0;
 

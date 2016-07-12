@@ -1566,6 +1566,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    virtual const char *getFieldProperty(int field, const char *propertyname) const override;\n";
     CC << "    virtual int getFieldArraySize(void *object, int field) const override;\n";
     CC << "\n";
+    CC << "    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;\n";
     CC << "    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;\n";
     CC << "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;\n";
     CC << "\n";
@@ -1826,6 +1827,29 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         }
     }
     CC << "        default: return 0;\n";
+    CC << "    }\n";
+    CC << "}\n";
+    CC << "\n";
+
+    // getFieldDynamicTypeString()
+    CC << "const char *" << info.msgdescclass << "::getFieldDynamicTypeString(void *object, int field, int i) const\n";
+    CC << "{\n";
+    CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    CC << "    if (basedesc) {\n";
+    CC << "        if (field < basedesc->getFieldCount())\n";
+    CC << "            return basedesc->getFieldDynamicTypeString(object,field,i);\n";
+    CC << "        field -= basedesc->getFieldCount();\n";
+    CC << "    }\n";
+    CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
+    CC << "    switch (field) {\n";
+    for (size_t i = 0; i < fieldcount; i++) {
+        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        if (!field.fisprimitivetype && field.fispointer && field.classtype == NONCOBJECT) {
+            CC << "        case " << i << ": ";
+            CC << "{" << field.datatype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value));}\n";
+        }
+    }
+    CC << "        default: return nullptr;\n";
     CC << "    }\n";
     CC << "}\n";
     CC << "\n";
