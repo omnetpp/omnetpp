@@ -72,6 +72,11 @@ static char charToNameFilter(char ch)
     return (isalnum(ch)) ? ch : '_';
 }
 
+inline bool isQualified(const std::string& qname)
+{
+    return qname.find("::") != qname.npos;
+}
+
 static std::string canonicalizeQName(const std::string& namespac, const std::string& name)
 {
     std::string qname;
@@ -84,6 +89,13 @@ static std::string canonicalizeQName(const std::string& namespac, const std::str
     else
         qname = name;
     return qname;
+}
+
+static std::string makeIdentifier(const std::string& qname)
+{
+    std::string tmp = qname;
+    std::transform(tmp.begin(), tmp.end(), tmp.begin(), charToNameFilter);
+    return tmp;
 }
 
 inline std::ostream& operator<<(std::ostream& o, const std::pair<std::string, int>& p)
@@ -879,13 +891,13 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         info.gap = 1;
         info.msgclass = info.msgname + "_Base";
         info.realmsgclass = info.msgname;
-        info.msgdescclass = info.realmsgclass + "Descriptor";
+        info.msgdescclass = makeIdentifier(info.realmsgclass) + "Descriptor";
     }
     else {
         info.gap = 0;
         info.msgclass = info.msgname;
         info.realmsgclass = info.msgname;
-        info.msgdescclass = info.msgclass + "Descriptor";
+        info.msgdescclass = makeIdentifier(info.msgclass) + "Descriptor";
     }
     if (info.msgbase == "") {
         if (info.msgqname == "omnetpp::cObject") {
@@ -962,6 +974,11 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
 
 void MsgCppGenerator::generateClass(const ClassInfo& info)
 {
+    if (isQualified(info.msgclass)) {
+        errors->addError(info.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", info.msgclass.c_str());
+        return;
+    }
+
     H << "/**\n";
     H << " * Class generated from <tt>" << SL(info.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(info.nedElement);
@@ -1433,6 +1450,11 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 #define DD(x)
 void MsgCppGenerator::generateStruct(const ClassInfo& info)
 {
+    if (isQualified(info.msgclass)) {
+        errors->addError(info.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", info.msgclass.c_str());
+        return;
+    }
+
     H << "/**\n";
     H << " * Struct generated from " << SL(info.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
     H << " */\n";
@@ -2003,6 +2025,11 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
 
 void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
 {
+    if (isQualified(enumInfo.enumName)) {
+        errors->addError(enumInfo.nedElement, "type name may not be qualified: '%s'\n", enumInfo.enumName.c_str());
+        return;
+    }
+
     H << "/**\n";
     H << " * Enum generated from <tt>" << SL(enumInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(enumInfo.nedElement);
@@ -2018,6 +2045,7 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     H << "};\n\n";
 
     // TODO generate a Register_Enum() macro call instead
+    // TODO why generating the enum and registering its descriptor (cEnum) aren't separate, independently usable operations as with classes?
     CC << "EXECUTE_ON_STARTUP(\n";
     CC << "    omnetpp::cEnum *e = omnetpp::cEnum::find(\"" << enumInfo.enumQName << "\");\n";
     CC << "    if (!e) omnetpp::enums.getInstance()->add(e = new omnetpp::cEnum(\"" << enumInfo.enumQName << "\"));\n";

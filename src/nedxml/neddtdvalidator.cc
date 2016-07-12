@@ -459,7 +459,6 @@ void NEDDTDValidator::validateElement(EnumElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(EnumFieldsElement *node)
@@ -489,7 +488,6 @@ void NEDDTDValidator::validateElement(MessageElement *node)
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(PacketElement *node)
@@ -501,7 +499,6 @@ void NEDDTDValidator::validateElement(PacketElement *node)
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(ClassElement *node)
@@ -513,7 +510,6 @@ void NEDDTDValidator::validateElement(ClassElement *node)
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(StructElement *node)
@@ -525,7 +521,6 @@ void NEDDTDValidator::validateElement(StructElement *node)
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(FieldElement *node)

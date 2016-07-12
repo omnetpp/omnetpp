@@ -244,7 +244,7 @@
 
 <!ELEMENT enum (comment*, enum-fields?)>
 <!ATTLIST enum
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
@@ -259,25 +259,25 @@
 
 <!ELEMENT message (comment*, (property|field)*)>
 <!ATTLIST message
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT packet (comment*, (property|field)*)>
 <!ATTLIST packet
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT class (comment*, (property|field)*)>
 <!ATTLIST class
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT struct (comment*, (property|field)*)>
 <!ATTLIST struct
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 

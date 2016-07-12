@@ -277,7 +277,7 @@ enum_decl
  * Enum definition
  */
 enum
-        : ENUM NAME '{'
+        : ENUM qname '{'
                 {
                   ps.enump = (EnumElement *)createElementWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
@@ -338,13 +338,13 @@ struct
         ;
 
 message_header
-        : MESSAGE NAME '{'
+        : MESSAGE qname '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageElement *)createElementWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   storeBannerAndRightComments(ps.messagep,@1,@2);
                 }
-        | MESSAGE NAME EXTENDS qname '{'
+        | MESSAGE qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageElement *)createElementWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
@@ -354,13 +354,13 @@ message_header
         ;
 
 packet_header
-        : PACKET NAME '{'
+        : PACKET qname '{'
                 {
                   ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
                   ps.packetp->setName(toString(@2));
                   storeBannerAndRightComments(ps.packetp,@1,@2);
                 }
-        | PACKET NAME EXTENDS qname '{'
+        | PACKET qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
                   ps.packetp->setName(toString(@2));
@@ -370,13 +370,13 @@ packet_header
         ;
 
 class_header
-        : CLASS NAME '{'
+        : CLASS qname '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassElement *)createElementWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   storeBannerAndRightComments(ps.classp,@1,@2);
                 }
-        | CLASS NAME EXTENDS qname '{'
+        | CLASS qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassElement *)createElementWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
@@ -386,13 +386,13 @@ class_header
         ;
 
 struct_header
-        : STRUCT NAME '{'
+        : STRUCT qname '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructElement *)createElementWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   storeBannerAndRightComments(ps.structp,@1,@2);
                 }
-        | STRUCT NAME EXTENDS qname '{'
+        | STRUCT qname EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructElement *)createElementWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
