@@ -112,7 +112,7 @@ class NEDXML_API MsgCppGenerator
             Properties fprops;      // field properties (name, first value of default key)
 
             // data needed for code generation
-            std::string fkind;      // XXX "basic" or "struct" -- TODO use enum or bool
+            bool fisprimitivetype;  // whether primitive or compound type
             ClassType classtype;    // cobject/cnamedobject/cownedobject/...
             std::string datatype;   // member C++ datatype
             std::string argtype;    // setter C++ argument type

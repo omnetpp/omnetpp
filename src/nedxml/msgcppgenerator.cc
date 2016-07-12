@@ -671,17 +671,17 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     // determine field data type
     TypeDescMap::const_iterator tdIt = PRIMITIVE_TYPES.find(it->ftype);
     if (tdIt != PRIMITIVE_TYPES.end()) {
-        it->fkind = "basic";
+        it->fisprimitivetype = true;
         it->ftypeqname = "";  // unused
         it->classtype = FOREIGN;
     }
     else if (it->ftype.empty()) {
         // base class field assignment
         it->classtype = UNKNOWN;
-        it->fkind = "struct"; //FIXME we don't know
+        it->fisprimitivetype = false; //FIXME we don't know
     }
     else {
-        it->fkind = "struct";
+        it->fisprimitivetype = false;
 
         // $ftypeqname
         StringVector found = lookupExistingClassName(it->ftype);
@@ -788,13 +788,13 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
 
     // data type, argument type, conversion to/from string...
     it->maybe_c_str = "";
-    if (it->fkind == "struct") {
+    if (!it->fisprimitivetype) {
         it->datatype = it->ftype;
         it->argtype = str("const ") + it->ftype + "&";
         it->rettype = it->ftype + "&";
         // it->fval = "" unless (it->fval != "");
     }
-    else if (it->fkind == "basic") {
+    else {
         if (tdIt == PRIMITIVE_TYPES.end())
             throw NEDException("internal error - unknown primitive data type '%s'", it->ftype.c_str());
         // defaults:
@@ -813,9 +813,6 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->rettype = "const char *";
             it->maybe_c_str = ".c_str()";
         }
-    }
-    else {
-        throw NEDException("internal error");
     }
 }
 
@@ -1106,7 +1103,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         if (it->fisabstract)
             pure = " = 0";
 
-        bool isstruct = (it->fkind == "struct");
+        bool isstruct = !it->fisprimitivetype;
         std::string constifprimitivetype = (!isstruct ? " const" : "");
         if (it->fisarray && !it->farraysize.empty()) {
             H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
@@ -1180,7 +1177,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
             if (it->fisarray && !it->farraysize.empty()) {
-                if (it->fkind == "basic" && !it->fval.empty()) {
+                if (it->fisprimitivetype && !it->fval.empty()) {
                     CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                     CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
                 }
@@ -1381,7 +1378,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
-            bool isstruct = (it->fkind == "struct");
+            bool isstruct = !it->fisprimitivetype;
             const char *constifprimitivetype = (!isstruct ? " const" : "");
             if (it->fisarray && !it->farraysize.empty()) {
                 CC << "" << it->fsizetype << " " << info.msgclass << "::" << it->getsize << "() const\n";
@@ -1406,7 +1403,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    " << it->fsizetype << " sz = " << it->varsize << " < size ? " << it->varsize << " : size;\n";
                 CC << "    for (" << it->fsizetype << " i=0; i<sz; i++)\n";
                 CC << "        " << it->var << "2[i] = this->" << it->var << "[i];\n";
-                if (it->fkind == "basic") {
+                if (it->fisprimitivetype) {
                     CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        " << it->var << "2[i] = 0;\n";
                 }
@@ -1500,7 +1497,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         if (it->fisarray && it->farraysize.empty())
             throw NEDException("dynamic arrays are not supported in a struct");
         if (it->fisarray && !it->farraysize.empty()) {
-            if (it->fkind == "basic" && !it->fval.empty()) {
+            if (it->fisprimitivetype && !it->fval.empty()) {
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
                 CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
             }
@@ -1655,7 +1652,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             StringVector flags;
             if (it->fisarray)
                 flags.push_back("FD_ISARRAY");
-            if (it->fkind == "struct")
+            if (!it->fisprimitivetype)
                 flags.push_back("FD_ISCOMPOUND");
             if (it->fispointer)
                 flags.push_back("FD_ISPOINTER");
@@ -1664,7 +1661,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             if (it->classtype == COWNEDOBJECT)
                 flags.push_back("FD_ISCOBJECT | FD_ISCOWNEDOBJECT");
 
-            if (it->feditable || (info.generate_setters_in_descriptor && it->fkind == "basic" && it->editNotDisabled))
+            if (it->feditable || (info.generate_setters_in_descriptor && it->fisprimitivetype && it->editNotDisabled))
                 flags.push_back("FD_ISEDITABLE");
             std::string flagss;
             if (flags.empty())
@@ -1846,7 +1843,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        if (field.fkind == "basic" || (field.fkind == "struct" && !field.tostring.empty())) {
+        if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty())) {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 if (field.fisarray) {
@@ -1859,7 +1856,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 CC << "return " << makeFuncall(makeFuncall("pp", field.getter, field.fisarray), field.tostring) << ";\n";
             }
         }
-        else if (field.fkind == "struct") {
+        else if (!field.fisprimitivetype) {
             CC << "        case " << i << ": ";
             if (info.classtype == STRUCT) {
                 CC << "{std::stringstream out; out << pp->" << field.var << (field.fisarray ? "[i]" : "") << "; return out.str();}\n";
@@ -1890,7 +1887,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        if (field.feditable || (info.generate_setters_in_descriptor && field.fkind == "basic" && field.editNotDisabled)) {
+        if (field.feditable || (info.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
             if (field.fromstring.empty()) {
                 errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
                 continue;
@@ -1931,7 +1928,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         for (size_t i = 0; i < fieldcount; i++) {
             const ClassInfo::FieldInfo& field = info.fieldlist[i];
             bool opaque = field.fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-            if (field.fkind == "struct" && !opaque) {
+            if (!field.fisprimitivetype && !opaque) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
             }
         }
@@ -1955,7 +1952,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         bool opaque = field.fopaque;  // # TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        if (field.fkind == "struct" && !opaque) {
+        if (!field.fisprimitivetype && !opaque) {
             std::string cast;
             std::string value;
             if (info.classtype == STRUCT) {
