@@ -261,7 +261,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     }
     else if (type0 == "class-decl") {
         if (!isCobject) {
-            type = FOREIGN;
+            type = NONCOBJECT;
             if (!baseclass.empty()) {
                 errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
             }
@@ -270,7 +270,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
             type = COWNEDOBJECT;
         }
         else if (baseclass == "void") {
-            type = FOREIGN;
+            type = NONCOBJECT;
         }
         else {
             StringVector found = lookupExistingClassName(baseclass);
@@ -673,7 +673,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     if (tdIt != PRIMITIVE_TYPES.end()) {
         it->fisprimitivetype = true;
         it->ftypeqname = "";  // unused
-        it->classtype = FOREIGN;
+        it->classtype = NONCOBJECT;
     }
     else if (it->ftype.empty()) {
         // base class field assignment
@@ -854,15 +854,15 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         else {
             throw NEDException("internal error: invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
         }
-        // if announced earlier as noncpolymorphic, accept that.
+        // if announced earlier as noncobject, accept that.
         if (isClassDeclared(info.msgqname)) {
-            if (getClassType(info.msgqname) == FOREIGN && info.classtype == COBJECT) {
-                info.classtype = FOREIGN;
+            if (getClassType(info.msgqname) == NONCOBJECT && info.classtype == COBJECT) {
+                info.classtype = NONCOBJECT;
             }
         }
     }
     else if (info.msgbase == "void") {
-        info.classtype = FOREIGN;
+        info.classtype = NONCOBJECT;
     }
     else if (info.msgbaseqname != "") {
         info.classtype = getClassType(info.msgbaseqname);

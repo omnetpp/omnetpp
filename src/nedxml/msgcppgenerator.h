@@ -60,7 +60,16 @@ class NEDXML_API MsgCppGenerator
 {
   public:
     typedef std::vector<std::string> StringVector;
-    enum ClassType {UNKNOWN = 0, STRUCT, COBJECT, COWNEDOBJECT, CNAMEDOBJECT, FOREIGN};
+
+    enum ClassType {
+        UNKNOWN = 0,
+        STRUCT,       // struct
+        NONCOBJECT,   // class not derived from cObject
+        COBJECT,      // class derived from cObject
+        COWNEDOBJECT, // class derived from cOwnedObject
+        CNAMEDOBJECT  // class derived from cNamedObject
+    };
+
   protected:
     struct TypeDesc
     {
@@ -112,7 +121,7 @@ class NEDXML_API MsgCppGenerator
             Properties fprops;      // field properties (name, first value of default key)
 
             // data needed for code generation
-            bool fisprimitivetype;  // whether primitive or compound type
+            bool fisprimitivetype;  // whether primitive or compound type (TODO merge into ClassType?)
             ClassType classtype;    // cobject/cnamedobject/cownedobject/...
             std::string datatype;   // member C++ datatype
             std::string argtype;    // setter C++ argument type
