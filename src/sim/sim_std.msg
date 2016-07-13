@@ -661,7 +661,7 @@ class cTopology_Node extends void
     bool enabled @getter(isEnabled) @hint("Node state -- affects graph algorithms such as shortest path");
 
     cTopology_LinkIn *inLink[] @getter(getLinkIn) @sizeGetter(getNumInLinks) @hint("Incoming links of this graph node");
-    cTopology_LinkIn *outLink[] @getter(getLinkOut) @sizeGetter(getNumOutLinks) @hint("Outgoing links of this graph node");
+    cTopology_LinkOut *outLink[] @getter(getLinkOut) @sizeGetter(getNumOutLinks) @hint("Outgoing links of this graph node");
 
     double distanceToTarget @group(shortest path) @hint("After running a shortest path algorithm: distance to the target node");
     cTopology_LinkOut *path[] @sizeGetter(getNumPaths) @group(shortest path) @hint("The next link of the shortest path or paths towards the target node");
