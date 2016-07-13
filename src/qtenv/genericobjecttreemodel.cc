@@ -374,21 +374,22 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
 }
 
 cClassDescriptor *TreeNode::getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex) {
-    cClassDescriptor *fieldDesc = cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
-
     void *fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
+    if (!fieldPtr)
+        return nullptr;
 
-    // we can ask the field object itself for a better (more specialized) descriptor
-    if (fieldPtr && desc->getFieldIsCObject(fieldIndex)) {
-        fieldDesc = (static_cast<cObject *>(fieldPtr))->getDescriptor();
+    if (desc->getFieldIsCObject(fieldIndex)) {
+        cObject *object = static_cast<cObject *>(fieldPtr);
+        return object->getDescriptor();
     }
-    else if (fieldPtr && desc->getFieldIsCompound(fieldIndex)) {
+
+    if (desc->getFieldIsCompound(fieldIndex)) {
         const char *dynamicTypeName = desc->getFieldDynamicTypeString(object, fieldIndex, arrayIndex);
         if (dynamicTypeName)
-            fieldDesc = cClassDescriptor::getDescriptorFor(dynamicTypeName);
+            return cClassDescriptor::getDescriptorFor(dynamicTypeName);
     }
 
-    return fieldDesc;
+    return cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
 }
 
 QVariant TreeNode::getDefaultObjectData(cObject *object, int role) {
