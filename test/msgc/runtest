@@ -1,0 +1,63 @@
+#! /bin/bash
+#
+# Process msg files with an old (trusty) and a new (development/testing) version 
+# of the message compiler, and report the differences.
+#
+
+NEW_MSGC=nedtool
+OLD_MSGC=~/omnetpp-5.0/bin/nedtool
+
+INET_SRC=../../../inet/src
+SAMPLES=../../samples
+SRC=../../src
+
+find $SRC $SAMPLES $INET_SRC -name '*.msg' > list.tmp
+
+rm -rf old new results *_m.*
+mkdir old new results
+
+run_msgc() {
+    msgc=$1
+    msgfile=$2
+    err=$3
+    opts=
+    # hack: sim_std.msg needs special options
+    if echo $msgfile | grep -q sim_std; then
+        opts="-Xnc -Xns"
+    fi
+    
+    echo "RUNNING $msgc -h $msgfile" > $err
+    if $msgc $opts -h $msgfile 2>>$err; then
+        rm $err
+    else
+        echo "ERRORS from $msgc"
+        false
+    fi
+}
+
+for msgfile in $(cat list.tmp); do
+    echo -n "$msgfile... "
+
+    msgfname=$(echo $msgfile | sed 's|.*/||')
+    hfile=${msgfname//.msg/_m.h}
+    ccfile=${msgfname//.msg/_m.cc}
+    
+    run_msgc $OLD_MSGC $msgfile results/$msgfname.err || continue
+    mv $hfile $ccfile old/
+
+    run_msgc $NEW_MSGC $msgfile results/$msgfname.err || continue
+    mv $hfile $ccfile new/
+    
+    hdiff=results/$hfile.diff
+    ccdiff=results/$ccfile.diff
+    
+    diff -u old/$hfile new/$hfile > $hdiff && rm $hdiff
+    diff -u old/$ccfile new/$ccfile > $ccdiff && rm $ccdiff
+    if [ -f $hdiff -o -f $ccdiff ]; then
+        echo DIFF
+    else
+        echo OK
+    fi
+done
+
+
