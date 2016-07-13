@@ -63,6 +63,7 @@ void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)
     }
 
     lastTime = t;
+    lastValue = value;
     getEnvir()->recordInOutputVector(handle, t, value);
 }
 
@@ -126,15 +127,22 @@ void TimeAverageRecorder::collect(simtime_t_cref t, double value, cObject *detai
     lastValue = value;
 }
 
+double TimeAverageRecorder::getTimeAverage() const
+{
+    if (startTime < SIMTIME_ZERO) // empty
+        return NaN;
+
+    simtime_t now = getSimulation()->getSimTime();
+    double lastInterval = SIMTIME_DBL(now - lastTime);
+    double weightedSum = this->weightedSum + lastValue * lastInterval;
+    double interval = SIMTIME_DBL(now - startTime);
+    return weightedSum / interval;
+}
+
 void TimeAverageRecorder::finish(cResultFilter *prev)
 {
-    bool empty = (startTime < SIMTIME_ZERO);
-    simtime_t t = getSimulation()->getSimTime();
-    collect(t, NaN, nullptr);  // to get the last interval counted in; the value is just a dummy
-    double interval = SIMTIME_DBL(t - startTime);
-
     opp_string_map attributes = getStatisticAttributes();
-    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), empty ? NaN : (weightedSum / interval), &attributes);
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), getTimeAverage(), &attributes);
 }
 
 //---
@@ -186,6 +194,11 @@ Expression::Functor *ExpressionRecorder::makeValueVariable()
 Expression::Functor *ExpressionRecorder::makeTimeVariable()
 {
     return new RecTimeVariable();
+}
+
+double ExpressionRecorder::getCurrentValue() const
+{
+    return expr.doubleValue();
 }
 
 void ExpressionRecorder::finish(cResultFilter *prev)

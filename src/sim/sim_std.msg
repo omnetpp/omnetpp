@@ -40,6 +40,9 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
+#include "resultfilters.h"
+#include "resultrecorders.h"
+
 namespace omnetpp {
 
 //
@@ -164,6 +167,7 @@ class cProperties
     cProperty *contents[] @getter(get) @sizeGetter(getNumProperties) @hint("The property list");
 }
 
+class cIListener extends void;
 class cPar extends cObject;
 class cComponentType extends cOwnedObject;
 class cCanvas extends cOwnedObject;
@@ -843,3 +847,176 @@ class cCanvas extends cOwnedObject
     string allTags;
     Color backgroundColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
 }
+
+class cResultListener extends cIListener
+{
+}
+
+class cResultFilter extends cResultListener
+{
+    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate);
+}
+
+class WarmupPeriodFilter extends cResultFilter
+{
+    simtime_t endWarmupPeriod;
+}
+
+class CountFilter extends cResultFilter
+{
+    long count;
+}
+
+class ConstantFilter extends cResultFilter
+{
+    double constant;
+}
+
+class Constant0Filter extends ConstantFilter
+{
+}
+
+class Constant1Filter extends ConstantFilter
+{
+}
+
+class cNumericResultFilter extends cResultFilter
+{
+}
+
+class IdentityFilter extends cNumericResultFilter
+{
+}
+
+class SumFilter extends cNumericResultFilter
+{
+    double sum;
+}
+
+class MeanFilter extends cNumericResultFilter
+{
+    double mean;
+}
+
+class MinFilter extends cNumericResultFilter
+{
+    double min;
+}
+
+class MaxFilter extends cNumericResultFilter
+{
+    double max;
+}
+
+class TimeAverageFilter extends cNumericResultFilter
+{
+    double timeAverage;
+}
+
+class RemoveRepeatsFilter extends cNumericResultFilter
+{
+    double lastValue;
+}
+
+class ExpressionFilter extends cNumericResultFilter
+{
+    string expression @tostring(.str());
+    double currentValue;
+}
+
+class UnaryExpressionFilter extends ExpressionFilter
+{
+}
+
+class NaryExpressionFilter extends ExpressionFilter
+{
+}
+
+class cObjectResultFilter extends cResultFilter
+{
+}
+
+class PacketBytesFilter extends cObjectResultFilter
+{
+}
+
+class PacketBitsFilter extends cObjectResultFilter
+{
+}
+
+class SumPerDurationFilter extends cNumericResultFilter
+{
+    double sumPerDuration;
+}
+
+class cResultRecorder extends cResultListener
+{
+    cComponent *component;
+    string statisticName;
+    string recordingMode;
+}
+
+class cNumericResultRecorder extends cResultRecorder
+{
+}
+
+class VectorRecorder extends cNumericResultRecorder
+{
+    simtime_t lastWriteTime;
+    simtime_t lastValue;
+}
+
+class CountRecorder extends cResultRecorder
+{
+    long count;
+}
+
+class LastValueRecorder extends cNumericResultRecorder
+{
+    double lastValue;
+}
+
+class SumRecorder extends cNumericResultRecorder
+{
+    double sum;
+}
+
+class MeanRecorder extends cNumericResultRecorder
+{
+    double mean;
+}
+
+class MinRecorder extends cNumericResultRecorder
+{
+    double min;
+}
+
+class MaxRecorder extends cNumericResultRecorder
+{
+    double max;
+}
+
+class TimeAverageRecorder extends cNumericResultRecorder
+{
+    double timeAverage;
+}
+
+class StatisticsRecorder extends cNumericResultRecorder
+{
+    cStatistic *statistic;
+}
+
+class StatsRecorder extends StatisticsRecorder
+{
+}
+
+class HistogramRecorder extends StatisticsRecorder
+{
+}
+
+class ExpressionRecorder extends cNumericResultRecorder
+{
+    string expression @tostring(.str());
+    double currentValue;
+}
+

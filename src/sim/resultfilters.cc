@@ -100,7 +100,24 @@ bool TimeAverageFilter::process(simtime_t& t, double& value, cObject *details)
     return true;
 }
 
+double TimeAverageFilter::getTimeAverage() const
+{
+    if (startTime < SIMTIME_ZERO) // empty
+        return NaN;
+
+    simtime_t now = getSimulation()->getSimTime();
+    double lastInterval = SIMTIME_DBL(now - lastTime);
+    double weightedSum = this->weightedSum + lastValue * lastInterval;
+    double interval = SIMTIME_DBL(now - startTime);
+    return weightedSum / interval;
+}
+
 //---
+
+double ExpressionFilter::getCurrentValue() const
+{
+    return expr.doubleValue();
+}
 
 bool UnaryExpressionFilter::process(simtime_t& t, double& value, cObject *details)
 {
@@ -193,6 +210,14 @@ bool SumPerDurationFilter::process(simtime_t& t, double& value, cObject *details
     sum += value;
     value = sum / (t - getSimulation()->getWarmupPeriod());
     return true;
+}
+
+double SumPerDurationFilter::getSumPerDuration() const
+{
+    cSimulation *simulation = getSimulation();
+    simtime_t now = simulation->getSimTime();
+    simtime_t interval = now - simulation->getWarmupPeriod();
+    return sum / interval;
 }
 
 }  // namespace omnetpp

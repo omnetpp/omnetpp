@@ -32,9 +32,8 @@ using omnetpp::common::NEGATIVE_INFINITY;
 
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
-    private:
-        simtime_t_cref getEndWarmupPeriod() {return getSimulation()->getWarmupPeriod();}
     public:
+        virtual simtime_t_cref getEndWarmupPeriod() const {return getSimulation()->getWarmupPeriod();}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
@@ -54,6 +53,7 @@ class SIM_API CountFilter : public cResultFilter
         long count;
     public:
         CountFilter() {count = 0;}
+        long getCount() const {return count;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {count++; fire(this,t,count,details);}
@@ -73,6 +73,7 @@ class SIM_API ConstantFilter : public cResultFilter
         double c;
     public:
         ConstantFilter(double c) {this->c = c;}
+        double getConstant() const {return c;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {fire(this,t,c,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {fire(this,t,c,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {fire(this,t,c,details);}
@@ -120,6 +121,7 @@ class SIM_API SumFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override {sum += value; value = sum; return true;}
     public:
         SumFilter() {sum = 0;}
+        double getSum() const {return sum;}
 };
 
 /**
@@ -134,6 +136,7 @@ class SIM_API MeanFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override {count++; sum += value; value = sum/count; return true;}
     public:
         MeanFilter() {count = 0; sum = 0;}
+        double getMean() const {return sum/count;}
 };
 
 /**
@@ -147,6 +150,7 @@ class SIM_API MinFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override {if (value < min) min = value; value = min; return true;}
     public:
         MinFilter() {min = POSITIVE_INFINITY;}
+        double getMin() const {return min;}
 };
 
 /**
@@ -160,6 +164,7 @@ class SIM_API MaxFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override {if (value > max) max = value; value = max; return true;}
     public:
         MaxFilter() {max = NEGATIVE_INFINITY;}
+        double getMax() const {return max;}
 };
 
 /**
@@ -176,6 +181,7 @@ class SIM_API TimeAverageFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         TimeAverageFilter() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
+        double getTimeAverage() const;
 };
 
 /**
@@ -189,6 +195,7 @@ class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override {bool repeated = (value==prev); prev = value; return !repeated;}
     public:
         RemoveRepeatsFilter() {prev = NaN;}
+        double getLastValue() const {return prev;}
 };
 
 class SIM_API ExpressionFilter : public cNumericResultFilter
@@ -227,9 +234,10 @@ class SIM_API ExpressionFilter : public cNumericResultFilter
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override {currentTime = t; value = expr.doubleValue(); return true;}
     public:
-        Expression& getExpression() {return expr;}
         virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) {throw cRuntimeError("constant expression cannot have variables");};
-        Expression::Functor *makeTimeVariable() {return new TimeVariable(this);} // XXX: unused
+        virtual Expression::Functor *makeTimeVariable() {return new TimeVariable(this);} // XXX: unused
+        Expression& getExpression() {return expr;}
+        double getCurrentValue() const;
 };
 
 /**
@@ -304,6 +312,7 @@ class SIM_API SumPerDurationFilter : public cNumericResultFilter
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         SumPerDurationFilter() {sum = 0;}
+        double getSumPerDuration() const;
 };
 
 }  // namespace omnetpp

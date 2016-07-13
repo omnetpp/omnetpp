@@ -70,6 +70,7 @@ class SIM_API cResultFilter : public cResultListener
         ~cResultFilter();
         virtual void addDelegate(cResultListener *delegate);
         virtual int getNumDelegates() const;
+        cResultListener *getDelegate(int k) const {return delegates[k];}  // unsafe
         std::vector<cResultListener*> getDelegates() const;
         virtual void callFinish(cResultFilter *prev) override;
 };
