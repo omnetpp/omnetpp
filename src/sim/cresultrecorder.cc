@@ -173,20 +173,20 @@ void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t
 
 //----
 
-cResultRecorderDescriptor::cResultRecorderDescriptor(const char *name, cResultRecorder *(*f)())
+cResultRecorderType::cResultRecorderType(const char *name, cResultRecorder *(*f)())
     : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
 }
 
-cResultRecorderDescriptor *cResultRecorderDescriptor::find(const char *name)
+cResultRecorderType *cResultRecorderType::find(const char *name)
 {
-    return dynamic_cast<cResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
+    return dynamic_cast<cResultRecorderType *>(resultRecorders.getInstance()->lookup(name));
 }
 
-cResultRecorderDescriptor *cResultRecorderDescriptor::get(const char *name)
+cResultRecorderType *cResultRecorderType::get(const char *name)
 {
-    cResultRecorderDescriptor *p = find(name);
+    cResultRecorderType *p = find(name);
     if (!p)
         throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
                             "or the recorder was not registered with Register_ResultRecorder()", name);

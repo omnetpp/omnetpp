@@ -207,20 +207,20 @@ void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, c
 
 //---
 
-cResultFilterDescriptor::cResultFilterDescriptor(const char *name, cResultFilter *(*f)())
+cResultFilterType::cResultFilterType(const char *name, cResultFilter *(*f)())
     : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
 }
 
-cResultFilterDescriptor *cResultFilterDescriptor::find(const char *name)
+cResultFilterType *cResultFilterType::find(const char *name)
 {
-    return dynamic_cast<cResultFilterDescriptor *>(resultFilters.getInstance()->lookup(name));
+    return dynamic_cast<cResultFilterType *>(resultFilters.getInstance()->lookup(name));
 }
 
-cResultFilterDescriptor *cResultFilterDescriptor::get(const char *name)
+cResultFilterType *cResultFilterType::get(const char *name)
 {
-    cResultFilterDescriptor *p = find(name);
+    cResultFilterType *p = find(name);
     if (!p)
         throw cRuntimeError("Result filter \"%s\" not found -- perhaps the name is wrong, "
                             "or the filter was not registered with Register_ResultFilter()", name);

@@ -39,7 +39,7 @@ class cResultFilter;
  */
 #define Register_ResultFilter(NAME, CLASSNAME) \
   static omnetpp::cResultFilter *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterDescriptor(NAME,__FILEUNIQUENAME__));)
+  EXECUTE_ON_STARTUP(omnetpp::resultFilters.getInstance()->add(new omnetpp::cResultFilterType(NAME,__FILEUNIQUENAME__));)
 
 
 /**
@@ -122,7 +122,7 @@ class SIM_API cObjectResultFilter : public cResultFilter
  *
  * @ingroup Internals
  */
-class SIM_API cResultFilterDescriptor : public cNoncopyableOwnedObject
+class SIM_API cResultFilterType : public cNoncopyableOwnedObject
 {
   private:
     cResultFilter *(*creatorfunc)();
@@ -131,7 +131,7 @@ class SIM_API cResultFilterDescriptor : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cResultFilterDescriptor(const char *name, cResultFilter *(*f)());
+    cResultFilterType(const char *name, cResultFilter *(*f)());
 
     /**
      * Creates an instance of a particular class by calling the creator
@@ -143,12 +143,12 @@ class SIM_API cResultFilterDescriptor : public cNoncopyableOwnedObject
      * Finds the factory object for the given name. The class must have been
      * registered previously with the Register_ResultFilter() macro.
      */
-    static cResultFilterDescriptor *find(const char *name);
+    static cResultFilterType *find(const char *name);
 
     /**
      * Like find(), but throws an error if the object was not found.
      */
-    static cResultFilterDescriptor *get(const char *name);
+    static cResultFilterType *get(const char *name);
 };
 
 }  // namespace omnetpp

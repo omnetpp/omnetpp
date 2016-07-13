@@ -223,7 +223,7 @@ void cStatisticBuilder::doResultRecorder(const SignalSource& source, const char 
         if (isIdentifier(recordingMode)) {
             // simple case: just a plain recorder
             //TODO if disabled, don't add
-            cResultRecorder *recorder = cResultRecorderDescriptor::get(recordingMode)->create();
+            cResultRecorder *recorder = cResultRecorderType::get(recordingMode)->create();
             recorder->init(component, statisticName, recordingMode, attrsProperty);
             source.subscribe(recorder);
         }

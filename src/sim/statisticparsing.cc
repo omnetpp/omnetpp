@@ -249,7 +249,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     cResultFilter *filter = nullptr;
     if (filterRef) {
         const char *filterName = filterRef->getName();
-        filter = cResultFilterDescriptor::get(filterName)->create();
+        filter = cResultFilterType::get(filterName)->create();
     }
 
     SignalSource result(nullptr);
@@ -463,12 +463,12 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     if (filterOrRecorderRef) {
         const char *name = filterOrRecorderRef->getName();
         if (makeRecorder) {
-            cResultRecorder *recorder = cResultRecorderDescriptor::get(name)->create();
+            cResultRecorder *recorder = cResultRecorderType::get(name)->create();
             recorder->init(component, statisticName, recordingMode, attrsProperty);
             filterOrRecorder = recorder;
         }
         else
-            filterOrRecorder = cResultFilterDescriptor::get(name)->create();
+            filterOrRecorder = cResultFilterType::get(name)->create();
     }
 
     SignalSource result(nullptr);

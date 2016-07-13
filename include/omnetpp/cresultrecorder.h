@@ -40,7 +40,7 @@ class cProperty;
  */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
   static omnetpp::cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
+  EXECUTE_ON_STARTUP(omnetpp::resultRecorders.getInstance()->add(new omnetpp::cResultRecorderType(NAME,__FILEUNIQUENAME__));)
 
 
 /**
@@ -109,7 +109,7 @@ class SIM_API cNumericResultRecorder : public cResultRecorder
  *
  * @ingroup Internals
  */
-class SIM_API cResultRecorderDescriptor : public cNoncopyableOwnedObject
+class SIM_API cResultRecorderType : public cNoncopyableOwnedObject
 {
   private:
     cResultRecorder *(*creatorfunc)();
@@ -118,7 +118,7 @@ class SIM_API cResultRecorderDescriptor : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cResultRecorderDescriptor(const char *name, cResultRecorder *(*f)());
+    cResultRecorderType(const char *name, cResultRecorder *(*f)());
 
     /**
      * Creates an instance of a particular class by calling the creator
@@ -130,12 +130,12 @@ class SIM_API cResultRecorderDescriptor : public cNoncopyableOwnedObject
      * Finds the factory object for the given name. The class must have been
      * registered previously with the Register_ResultRecorder() macro.
      */
-    static cResultRecorderDescriptor *find(const char *name);
+    static cResultRecorderType *find(const char *name);
 
     /**
      * Like find(), but throws an error if the object was not found.
      */
-    static cResultRecorderDescriptor *get(const char *name);
+    static cResultRecorderType *get(const char *name);
 };
 
 }  // namespace omnetpp
