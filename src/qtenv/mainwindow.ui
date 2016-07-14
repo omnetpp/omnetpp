@@ -70,7 +70,7 @@
       <item>
        <widget class="QLabel" name="nextEventLabel">
         <property name="styleSheet">
-         <string notr="true">border: 1px solid palette(mid);</string>
+         <string notr="true">QLabel { border: 1px solid palette(mid); }</string>
         </property>
         <property name="text">
          <string>Next: n/a</string>
@@ -83,7 +83,7 @@
       <item>
        <widget class="QLabel" name="nextModuleLabel">
         <property name="styleSheet">
-         <string notr="true">border: 1px solid palette(mid);</string>
+         <string notr="true">QLabel { border: 1px solid palette(mid); }</string>
         </property>
         <property name="text">
          <string>In: n/a</string>
@@ -96,7 +96,7 @@
       <item>
        <widget class="QLabel" name="nextTimeLabel">
         <property name="styleSheet">
-         <string notr="true">border: 1px solid palette(mid);</string>
+         <string notr="true">QLabel { border: 1px solid palette(mid); }</string>
         </property>
         <property name="text">
          <string>At: n/a</string>
