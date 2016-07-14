@@ -39,6 +39,9 @@ protected:
     int indexInParent = 0;
     std::vector<TreeNode *> children;
 
+    // used by cachedData(), which fills it using data() as needed
+    std::map<int, QVariant> dataCache;
+
     bool filled = false;
     // subclasses should fill the children vector in this function
     // it is only called once per instance, in the first getChild or getChildCount call
@@ -59,6 +62,14 @@ protected:
     static cClassDescriptor *getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
     static QVariant getDefaultObjectData(cObject *object, int role);
 
+    // Only use this indirectly through cachedData()!
+    // The model delegates its data function here, this should behave the same way.
+    //  - if role is DisplayNode, it should return a string
+    //  - if it is DecorationRole, it should optionally return an icon
+    //  - if it is UserRole, it should optionally return a HighlightRange
+    //  etc...
+    virtual QVariant data(int role) = 0;
+
 public:
     TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc);
     TreeNode *getParent();
@@ -68,11 +79,8 @@ public:
     TreeNode *getChild(int index); // will fill the children vector if needed
     QString getFieldName(int fieldIndex);
 
-    // the model delegates its data function here, this should behave the same way
-    // if role is DisplayNode, it should return a string
-    // if it is DecorationRole, it should optionally return an icon
-    // if it is UserRole, it should optionally return a HighlightRange
-    virtual QVariant data(int role) = 0;
+    // see data() and dataCache
+    QVariant cachedData(int role);
 
     virtual bool isEditable();
     virtual bool setData(const QVariant &value, int role);
@@ -256,7 +264,7 @@ int GenericObjectTreeModel::columnCount(const QModelIndex &parent) const {
 
 QVariant GenericObjectTreeModel::data(const QModelIndex &index, int role) const {
     // just delegating to the node pointed by the index
-    QVariant data = static_cast<TreeNode *>(index.internalPointer())->data(role);
+    QVariant data = static_cast<TreeNode *>(index.internalPointer())->cachedData(role);
     if (role == Qt::DisplayRole) {
         data = data.toString().replace("\n", "\\n");
     }
@@ -447,6 +455,12 @@ TreeNode *TreeNode::getChild(int index) {
 
 QString TreeNode::getFieldName(int fieldIndex) {
     return containingDesc->getFieldName(fieldIndex);
+}
+
+QVariant TreeNode::cachedData(int role) {
+    return (dataCache.count(role) == 0) // if not already in
+            ? (dataCache[role] = data(role)) // add it
+            : dataCache[role]; // else just return
 }
 
 bool TreeNode::isEditable() {
