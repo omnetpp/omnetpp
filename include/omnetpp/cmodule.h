@@ -531,7 +531,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      * @see doBuildInside()
      */
-    virtual int buildInside();
+    void buildInside();
     //@}
 
     /** @name Information about the module itself. */

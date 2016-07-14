@@ -1160,7 +1160,7 @@ void cModule::scheduleStart(simtime_t t)
         (*it)->scheduleStart(t);
 }
 
-int cModule::buildInside()
+void cModule::buildInside()
 {
     if (buildInsideCalled())
         throw cRuntimeError(this, "buildInside() already called for this module");
