@@ -21,14 +21,14 @@
 
 #include <QModelIndex>
 
+#include "genericobjecttreemodel.h"
+
 class QLabel;
 class QTreeView;
 class QToolBar;
 
 namespace omnetpp {
 namespace qtenv {
-
-class GenericObjectTreeModel;
 
 class QTENV_API GenericObjectInspector : public Inspector
 {
@@ -37,15 +37,8 @@ class QTENV_API GenericObjectInspector : public Inspector
     // The default mode for these types should be CHILDREN
     static const std::vector<std::string> containerTypes;
     static const QString PREF_MODE;
-
 public:
-    enum Mode {
-        GROUPED,
-        FLAT,
-        CHILDREN,
-        INHERITANCE,
-        //PACKET
-    };
+    using Mode = GenericObjectTreeModel::Mode;
 
 protected:
       QTreeView *treeView;
@@ -56,7 +49,7 @@ protected:
       void addModeActions(QToolBar *toolbar);
       void recreateModel();
 
-      Mode mode = GROUPED;
+      Mode mode = Mode::GROUPED;
       QAction *toGroupedModeAction;
       QAction *toFlatModeAction;
       QAction *toChildrenModeAction;
@@ -69,10 +62,10 @@ protected slots:
 
       void setMode(Mode mode);
 
-      void toGroupedMode()     { setMode(GROUPED);     }
-      void toFlatMode()        { setMode(FLAT);        }
-      void toChildrenMode()    { setMode(CHILDREN);    }
-      void toInheritanceMode() { setMode(INHERITANCE); }
+      void toGroupedMode()     { setMode(Mode::GROUPED);     }
+      void toFlatMode()        { setMode(Mode::FLAT);        }
+      void toChildrenMode()    { setMode(Mode::CHILDREN);    }
+      void toInheritanceMode() { setMode(Mode::INHERITANCE); }
 
 public:
       GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

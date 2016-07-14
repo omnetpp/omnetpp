@@ -48,7 +48,16 @@ class GenericObjectTreeModel : public QAbstractItemModel
     void expandNodesIn(QTreeView *view, const QSet<QString> &ids, const QModelIndex &index);
 
 public:
-    explicit GenericObjectTreeModel(cObject *object, bool grouping, bool inheritance, bool childrenMode, QObject *parent = nullptr);
+    // enum class so we can typedef it in TreeNode and the Inspector
+    enum class Mode {
+        GROUPED,
+        FLAT,
+        CHILDREN,
+        INHERITANCE,
+        //PACKET
+    };
+
+    GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent = nullptr);
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;

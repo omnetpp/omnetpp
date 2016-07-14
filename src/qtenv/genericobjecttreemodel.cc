@@ -47,10 +47,8 @@ protected:
     // it is only called once per instance, in the first getChild or getChildCount call
     virtual void fill() = 0;
 
-    // these will query the respective options from the root
-    virtual bool groupingEnabled();
-    virtual bool inheritanceEnabled();
-    virtual bool childrenModeEnabled();
+    using Mode = GenericObjectTreeModel::Mode;
+    Mode mode;
 
     // these are nullptrs only in the root node
     void *containingObject = nullptr; // may or may not be a cObject, so we need the descriptor for it
@@ -71,7 +69,7 @@ protected:
     virtual QVariant data(int role) = 0;
 
 public:
-    TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc);
+    TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, Mode mode);
     TreeNode *getParent();
     int getIndexInParent();
     virtual bool hasChildren(); // should override this to not fill the children vector if possible
@@ -101,10 +99,10 @@ protected:
 
 public:
     // superClassIndex: up in the inheritance chain, 0 is the most specialized class, and cObject is at the highest level
-    SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex);
+    SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex, Mode mode);
     bool hasChildren() override;
-    QVariant data(int role);
-    QString getNodeIdentifier();
+    QVariant data(int role) override;
+    QString getNodeIdentifier() override;
 };
 
 class ChildObjectNode : public TreeNode {
@@ -113,7 +111,7 @@ protected:
     void fill() override;
 
 public:
-    ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object);
+    ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object, Mode mode);
     bool hasChildren() override;
     QVariant data(int role) override;
     QString getNodeIdentifier() override;
@@ -130,7 +128,7 @@ protected:
 
     void fill() override;
 public:
-    FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex);
+    FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, Mode mode);
 
     bool hasChildren() override;
     QVariant data(int role) override;
@@ -144,18 +142,11 @@ public:
 class RootNode : public TreeNode {
     cObject *object;
 
-    bool grouping = true;
-    bool inheritance = false;
-    bool childrenMode = false;
-
 protected:
-    bool groupingEnabled() override;
-    bool inheritanceEnabled() override;
-    bool childrenModeEnabled() override;
     void fill() override;
 
 public:
-    RootNode(cObject *object, bool grouping, bool inheritance, bool childrenMode);
+    RootNode(cObject *object, Mode mode);
     bool hasChildren() override;
     QVariant data(int role) override;
     QString getNodeIdentifier() override;
@@ -167,7 +158,7 @@ protected:
     std::string groupName;
     void fill() override;
 public:
-    FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName);
+    FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName, Mode mode);
     bool hasChildren() override;
     QVariant data(int role) override;
     QString getNodeIdentifier() override;
@@ -179,7 +170,7 @@ protected:
     int arrayIndex;
     void fill() override;
 public:
-    ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex);
+    ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex, Mode mode);
     bool hasChildren() override;
 
     QVariant data(int role) override;
@@ -214,9 +205,8 @@ void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString> 
     }
 }
 
-GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, bool grouping, bool inheritance, bool childrenMode, QObject *parent) :
-    QAbstractItemModel(parent), rootNode(new RootNode(object, grouping, inheritance, childrenMode))
-{
+GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent)
+    : QAbstractItemModel(parent), rootNode(new RootNode(object, mode)) {
 }
 
 QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex &parent) const {
@@ -305,22 +295,6 @@ GenericObjectTreeModel::~GenericObjectTreeModel() {
 
 // ---- helper class implementations ----
 
-
-bool TreeNode::groupingEnabled() {
-    // the RootNode terminates this recursion by overriding this function
-    return parent->groupingEnabled();
-}
-
-bool TreeNode::inheritanceEnabled() {
-    // the RootNode terminates this recursion by overriding this function
-    return parent->inheritanceEnabled();
-}
-
-bool TreeNode::childrenModeEnabled() {
-    // the RootNode terminates this recursion by overriding this function
-    return parent->childrenModeEnabled();
-}
-
 // the ArrayElementNode contains the children of the element itself
 // but the object pointer in those nodes point to the object that
 // contains the array itself, so we need this parameter
@@ -330,14 +304,17 @@ bool TreeNode::objectHasChildren(void *obj, cClassDescriptor *desc, bool exclude
         return false;
     }
 
-    if (childrenModeEnabled()) {
-        envir::cHasChildrenVisitor visitor((cObject*)obj);
-        visitor.process((cObject*)obj);
-        return visitor.getResult();
-    } else {
-        if (inheritanceEnabled() && !excludeInherited) {
-            return desc->getInheritanceChainLength() > 0;
-        } else {
+    switch (mode) {
+        case Mode::CHILDREN: {
+            envir::cHasChildrenVisitor visitor((cObject*)obj);
+            visitor.process((cObject*)obj);
+            return visitor.getResult();
+        }
+        case Mode::INHERITANCE:
+            if (!excludeInherited)
+                return desc->getInheritanceChainLength() > 0;
+            // if the condition fails, falling through, no return here
+        default: {
             auto base = desc->getBaseClassDescriptor();
             return (excludeInherited && base ? base->getFieldCount() : 0) < desc->getFieldCount();
         }
@@ -352,41 +329,44 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
         return;
     }
 
-    if (childrenModeEnabled()) {
-        envir::cCollectChildrenVisitor visitor((cObject*)of);
-        visitor.process((cObject*)of);
+    switch (mode) {
+        case Mode::CHILDREN: {
+            envir::cCollectChildrenVisitor visitor((cObject*)of);
+            visitor.process((cObject*)of);
 
-        cObject **objs = visitor.getArray();
-        for (int i = 0; i < visitor.getArraySize(); ++i) {
-            children.push_back(new ChildObjectNode(this, i, of, desc, objs[i]));
-        }
-    } else {
-        if (inheritanceEnabled() && !excludeInherited) {
-            for (int i = 0; i < desc->getInheritanceChainLength(); i++) {
-                children.push_back(new SuperClassNode(this, i, of, desc, i));
+            cObject **objs = visitor.getArray();
+            for (int i = 0; i < visitor.getArraySize(); ++i) {
+                children.push_back(new ChildObjectNode(this, i, of, desc, objs[i], mode));
             }
-        } else {
+            break;
+        }
+        case Mode::INHERITANCE:
+            if (!excludeInherited) {
+                for (int i = 0; i < desc->getInheritanceChainLength(); i++)
+                    children.push_back(new SuperClassNode(this, i, of, desc, i, mode));
+                break;
+            }
+            // if the condition fails, falling through, no break here
+        default: { // GROUPED and FLAT have much in common
             int childIndex = 0;
             auto base = desc->getBaseClassDescriptor();
+
             std::set<std::string> groupNames;
             for (int i = excludeInherited && base ? base->getFieldCount() : 0; i < desc->getFieldCount(); ++i) {
                 const char *groupName = desc->getFieldProperty(i, "group");
-                if (groupingEnabled() && groupName) {
+                if (mode == Mode::GROUPED && groupName)
                     groupNames.insert(groupName);
-                } else {
-                    children.push_back(new FieldNode(this, childIndex++, of, desc, i));
-                }
+                else
+                    children.push_back(new FieldNode(this, childIndex++, of, desc, i, mode));
             }
 
-            if (groupingEnabled()) {
-                for (auto &name : groupNames) {
-                    children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name));
-                }
-            } else { // flat mode
+            if (mode == Mode::GROUPED)
+                for (auto &name : groupNames)
+                    children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name, mode));
+            else // FLAT
                 std::sort(children.begin(), children.end(), [](TreeNode *a, TreeNode *b) {
                     return a->data(Qt::DisplayRole).toString() < b->data(Qt::DisplayRole).toString();
                 });
-            }
         }
     }
 }
@@ -420,8 +400,9 @@ QVariant TreeNode::getDefaultObjectData(cObject *object, int role) {
 }
 
 
-TreeNode::TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc)
-    : parent(parent), indexInParent(indexInParent), containingObject(contObject), containingDesc(contDesc) {
+TreeNode::TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, Mode mode)
+    : parent(parent), indexInParent(indexInParent), mode(mode),
+      containingObject(contObject), containingDesc(contDesc) {
 
 }
 
@@ -482,8 +463,8 @@ TreeNode::~TreeNode() {
 }
 
 
-SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex)
-    : TreeNode(parent, indexInParent, contObject, contDesc) {
+SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex, Mode mode)
+    : TreeNode(parent, indexInParent, contObject, contDesc, mode) {
     superDesc = containingDesc;
     for (int i = 0; i < superClassIndex; ++i)
         superDesc = superDesc->getBaseClassDescriptor();
@@ -517,8 +498,8 @@ QString SuperClassNode::getNodeIdentifier() {
 }
 
 
-ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object)
-    : TreeNode(parent, indexInParent, contObject, contDesc), object(object) {
+ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object, Mode mode)
+    : TreeNode(parent, indexInParent, contObject, contDesc, mode), object(object) {
 
 }
 
@@ -556,8 +537,8 @@ void ChildObjectNode::fill() {
 }
 
 
-FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex)
-    : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex) {
+FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, Mode mode)
+    : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex) {
     if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
         object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, 0);
         desc = getDescriptorForField(contObject, contDesc, fieldIndex);
@@ -579,7 +560,7 @@ void FieldNode::fill() {
     if (containingObject && containingDesc && containingDesc->getFieldIsArray(fieldIndex)) {
         int size = containingDesc->getFieldArraySize(containingObject, fieldIndex);
         for (int i = 0; i < size; ++i) {
-            children.push_back(new ArrayElementNode(this, children.size(), containingObject, containingDesc, fieldIndex, i));
+            children.push_back(new ArrayElementNode(this, children.size(), containingObject, containingDesc, fieldIndex, i, mode));
         }
     } else {
         addObjectChildren(object, desc);
@@ -685,27 +666,13 @@ QString FieldNode::getNodeIdentifier() {
             + QString("%1:%2").arg(voidPtrToStr(containingDesc)).arg(fieldIndex);
 }
 
-
-bool RootNode::groupingEnabled() {
-    return grouping;
-}
-
-bool RootNode::inheritanceEnabled() {
-    return inheritance;
-}
-
-bool RootNode::childrenModeEnabled() {
-    return childrenMode;
-}
-
 void RootNode::fill() {
     if (object)
         addObjectChildren(object, cClassDescriptor::getDescriptorFor(object), false);
 }
 
-RootNode::RootNode(cObject *object, bool grouping, bool inheritance, bool childrenMode)
-    : TreeNode(nullptr, 0, nullptr, nullptr), object(object),
-      grouping(grouping), inheritance(inheritance), childrenMode(childrenMode) {
+RootNode::RootNode(cObject *object, Mode mode)
+    : TreeNode(nullptr, 0, nullptr, nullptr, mode), object(object) {
 
 }
 
@@ -733,8 +700,8 @@ cObject *RootNode::getCObjectPointer() {
 }
 
 
-FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName)
-    : TreeNode(parent, indexInParent, contObject, contDesc), groupName(groupName) {
+FieldGroupNode::FieldGroupNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, const std::string &groupName, Mode mode)
+    : TreeNode(parent, indexInParent, contObject, contDesc, mode), groupName(groupName) {
 
 }
 
@@ -760,7 +727,7 @@ void FieldGroupNode::fill() {
     for (int i = 0; i < containingDesc->getFieldCount(); ++i) {
         const char *thisFieldGroup = containingDesc->getFieldProperty(i, "group");
         if (thisFieldGroup && (thisFieldGroup == groupName)) {
-            children.push_back(new FieldNode(this, children.size(), containingObject, containingDesc, i));
+            children.push_back(new FieldNode(this, children.size(), containingObject, containingDesc, i, mode));
         }
     }
 }
@@ -790,8 +757,8 @@ void ArrayElementNode::fill() {
     }
 }
 
-ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex)
-    : TreeNode(parent, indexInParent, contObject, contDesc), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
+ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, int arrayIndex, Mode mode)
+    : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex), arrayIndex(arrayIndex) {
 }
 
 bool ArrayElementNode::hasChildren() {

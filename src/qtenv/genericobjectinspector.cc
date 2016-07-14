@@ -134,7 +134,7 @@ void GenericObjectInspector::addModeActions(QToolBar *toolbar) {
 
 void GenericObjectInspector::recreateModel()
 {
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(object, mode == GROUPED, mode == INHERITANCE, mode == CHILDREN, this);
+    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(object, mode, this);
     treeView->setModel(newModel);
     treeView->reset();
 
@@ -158,7 +158,7 @@ void GenericObjectInspector::mousePressEvent(QMouseEvent *event) {
 void GenericObjectInspector::closeEvent(QCloseEvent *event)
 {
     Inspector::closeEvent(event);
-    setPref(PREF_MODE, mode);
+    setPref(PREF_MODE, (int)mode);
 }
 
 void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
@@ -186,20 +186,13 @@ void GenericObjectInspector::setMode(Mode mode)
 {
     this->mode = mode;
 
-    toGroupedModeAction->setChecked(false);
-    toFlatModeAction->setChecked(false);
-    toChildrenModeAction->setChecked(false);
-    toInheritanceModeAction->setChecked(false);
-
-    switch (mode) {
-    case GROUPED:     toGroupedModeAction->setChecked(true);    break;
-    case FLAT:        toFlatModeAction->setChecked(true);       break;
-    case CHILDREN:    toChildrenModeAction->setChecked(true);   break;
-    case INHERITANCE: toInheritanceModeAction->setChecked(true);break;
-    }
+    toGroupedModeAction->setChecked(mode == Mode::GROUPED);
+    toFlatModeAction->setChecked(mode == Mode::FLAT);
+    toChildrenModeAction->setChecked(mode == Mode::CHILDREN);
+    toInheritanceModeAction->setChecked(mode == Mode::INHERITANCE);
 
     recreateModel();
-    setPref(PREF_MODE, mode);
+    setPref(PREF_MODE, (int)mode);
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj) {
@@ -208,16 +201,16 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
 
     Inspector::doSetObject(obj);
 
-    auto defaultMode = GROUPED;
+    auto defaultMode = Mode::GROUPED;
 
     if (obj
          && obj != getObject()
          && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))) {
-            defaultMode = CHILDREN;
+            defaultMode = Mode::CHILDREN;
     }
 
     // will recreate the model for the new object
-    setMode((Mode)getPref(PREF_MODE, defaultMode).toInt());
+    setMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());
 
     model->expandNodesIn(treeView, expanded);
 }
