@@ -386,7 +386,7 @@ Expression::Value Expression::evaluate() const
     return stk[tos];
 }
 
-bool Expression::boolValue()
+bool Expression::boolValue() const
 {
     Value v = evaluate();
     if (v.type != Value::BOOL)
@@ -394,7 +394,7 @@ bool Expression::boolValue()
     return v.bl;
 }
 
-long Expression::longValue(const char *expectedUnit)
+long Expression::longValue(const char *expectedUnit) const
 {
     Value v = evaluate();
     if (v.type != Value::DBL)
@@ -402,7 +402,7 @@ long Expression::longValue(const char *expectedUnit)
     return (long)(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
 }
 
-double Expression::doubleValue(const char *expectedUnit)
+double Expression::doubleValue(const char *expectedUnit) const
 {
     Value v = evaluate();
     if (v.type != Value::DBL)
@@ -410,7 +410,7 @@ double Expression::doubleValue(const char *expectedUnit)
     return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
 }
 
-std::string Expression::stringValue()
+std::string Expression::stringValue() const
 {
     Value v = evaluate();
     if (v.type != Value::STR)

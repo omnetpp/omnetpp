@@ -343,25 +343,25 @@ class COMMON_API Expression
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue();
+    virtual bool boolValue() const;
 
     /**
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue(const char *expectedUnit=nullptr);
+    virtual long longValue(const char *expectedUnit=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(const char *expectedUnit=nullptr);
+    virtual double doubleValue(const char *expectedUnit=nullptr) const;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue();
+    virtual std::string stringValue() const;
     //@}
 
     /** @name Miscellaneous utility functions. */
