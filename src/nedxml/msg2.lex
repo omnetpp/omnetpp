@@ -86,8 +86,6 @@ using namespace omnetpp::nedxml;
 "extends"                { countChars(); return EXTENDS; }
 "abstract"               { countChars(); return ABSTRACT; }
 "readonly"               { countChars(); return READONLY; }
-"properties"             { countChars(); return PROPERTIES; }
-"fields"                 { countChars(); return FIELDS; }
 
 "bool"                   { countChars(); return BOOLTYPE; }
 "char"                   { countChars(); return CHARTYPE; }

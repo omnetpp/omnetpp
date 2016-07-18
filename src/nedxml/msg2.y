@@ -16,7 +16,7 @@
 
 %token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
-%token EXTENDS FIELDS PROPERTIES ABSTRACT READONLY
+%token EXTENDS ABSTRACT READONLY
 
 %token NAME PROPNAME DOUBLECOLON
 %token INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -403,8 +403,6 @@ struct_header
 
 body
         : opt_fields_and_properties
-          opt_propertiesblock_old
-          opt_fieldsblock_old
           '}' opt_semicolon
                 { ps.msgclassorstruct = nullptr; }
         ;
@@ -642,59 +640,6 @@ property_literal
         | property_literal STRINGCONSTANT
         | CHAR
         | STRINGCONSTANT
-        ;
-
-
-/*
- * Old-style fields block
- */
-opt_fieldsblock_old
-        : FIELDS ':'
-          opt_fields_old
-                { ps.msgfile->setVersion("1"); }
-        |
-        ;
-
-opt_fields_old
-        : fields_old
-        |
-        ;
-
-fields_old
-        : fields_old field
-        | field
-        ;
-
-/*
- * Old-style properties block
- */
-opt_propertiesblock_old
-        : PROPERTIES ':'
-          opt_properties_old
-                { ps.msgfile->setVersion("1"); }
-        |
-        ;
-
-opt_properties_old
-        : properties_old
-        |
-        ;
-
-properties_old
-        : properties_old property_old
-        | property_old
-        ;
-
-property_old
-        : NAME '=' property_value ';'
-                {
-                  ps.property = addProperty(ps.msgclassorstruct, toString(@1));
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  ps.propkey->appendChild($3);
-                  storePos(ps.propkey, @2);
-                  storePos(ps.property, @$);
-                  storeBannerAndRightComments(ps.property,@$);
-                }
         ;
 
 opt_semicolon : ';' | ;
