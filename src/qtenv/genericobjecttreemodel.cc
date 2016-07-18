@@ -587,6 +587,7 @@ QVariant FieldNode::data(int role) {
     // the rest is for the regular, non-root nodes
 
     bool isCObject = containingDesc->getFieldIsCObject(fieldIndex);
+    bool isCompound = containingDesc->getFieldIsCompound(fieldIndex);
     bool isArray = containingDesc->getFieldIsArray(fieldIndex);
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
@@ -598,6 +599,14 @@ QVariant FieldNode::data(int role) {
     QString equals = " = ";
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
+
+    if (isCompound && !isCObject) {
+        // Even if it's not a CObject, it can have a different dynamic type
+        // than the declared static type, which we can get this way.
+        const char *dynamicType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, 0);
+        if (dynamicType && dynamicType[0])
+            objectClassName = QString(" (") + stripNamespace(dynamicType) + ")";
+    }
 
     // the name can be overridden by a label property
     const char *label = containingDesc->getFieldProperty(fieldIndex, "label");
@@ -772,21 +781,33 @@ bool ArrayElementNode::hasChildrenImpl() {
 QVariant ArrayElementNode::data(int role) {
     QString indexEquals = QString("[%1] = ").arg(arrayIndex);
     QString valueInfo = "";
-    cObject *fieldPointer = nullptr;
+    cObject *fieldObjectPointer = nullptr;
 
     if (containingDesc->getFieldIsCObject(fieldIndex)) {
-        fieldPointer = static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
+        fieldObjectPointer = static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
 
-        valueInfo += (fieldPointer
+        valueInfo += (fieldObjectPointer
                         ? QString("(%1) %2")
-                          .arg(getObjectShortTypeName(fieldPointer))
-                          .arg(fieldPointer->getFullName())
+                          .arg(getObjectShortTypeName(fieldObjectPointer))
+                          .arg(fieldObjectPointer->getFullName())
                          : "NULL");
 
-        std::string info = fieldPointer ? fieldPointer->info() : "";
+        std::string info = fieldObjectPointer ? fieldObjectPointer->info() : "";
         if (!info.empty()) {
             valueInfo += ": ";
             valueInfo += info.c_str();
+        }
+    } else if (containingDesc->getFieldIsCompound(fieldIndex)) {
+        const char *fieldType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, arrayIndex);
+        std::string fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex);
+
+        if (fieldType && fieldType[0])
+            valueInfo += QString("(") + stripNamespace(fieldType) + ")";
+
+        if (!fieldValue.empty()) {
+            if (!valueInfo.isEmpty())
+                valueInfo += " ";
+            valueInfo += fieldValue.c_str();
         }
     } else {
         valueInfo = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
@@ -796,7 +817,7 @@ QVariant ArrayElementNode::data(int role) {
     case Qt::DisplayRole:
         return indexEquals + valueInfo;
     case Qt::DecorationRole:
-        return fieldPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldPointer))) : QVariant();
+        return fieldObjectPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldObjectPointer))) : QVariant();
     case Qt::EditRole:
         return valueInfo;
     case Qt::UserRole:
