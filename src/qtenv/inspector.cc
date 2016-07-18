@@ -146,7 +146,10 @@ const QString Inspector::PREF_GEOM = "geom";
 
 QString Inspector::getFullPrefKey(const QString &pref, bool topLevel)
 {
-    return "Inspector_" + QString::number(type) + (topLevel ? "" : "_embedded") + "/" + pref + "_" + (object ? getObjectShortTypeName(object) : "NULL");
+    return "InspectorPreferences/type" + QString::number(type)
+            + (topLevel ? "-toplevel" : "-embedded") + "-"
+            + (object ? getObjectShortTypeName(object) : "NULL") + "-"
+            + pref;
 }
 
 QVariant Inspector::getPref(const QString &pref, const QVariant &defaultValue)

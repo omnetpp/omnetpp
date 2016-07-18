@@ -333,17 +333,17 @@ void Qtenv::restoreOptsFromPrefs() {
 void Qtenv::storeInspectors(bool closeThem)
 {
     // erasing the previously stored inspectors from the rc file
-    localPrefs->beginGroup("Inspectors");
-    localPrefs->remove("");
-    localPrefs->endGroup();
+    QStringList groups = localPrefs->childGroups();
+    for (auto group : groups) {
+        if (group.startsWith("Inspector"))
+            localPrefs->remove(group);
+    }
 
     std::vector<Inspector *> toBeClosed;
 
     int index = 0; // no particular meaning, just a unique identifier
     for (Inspector *insp : inspectors) {
         if (insp->isToplevel()) {
-            QString prefix = QString("Inspectors/insp_") + QString::number(index) + "_";
-
             cObject *obj = insp->getObject();
 
             int objectId = -1;
@@ -352,13 +352,14 @@ void Qtenv::storeInspectors(bool closeThem)
             if (cComponent *component = dynamic_cast<cComponent*>(obj))
                 objectId = component->getId();
 
-
-            localPrefs->setValue(prefix + "object", obj->getFullPath().c_str());
-            localPrefs->setValue(prefix + "classname", getObjectShortTypeName(obj));
-            localPrefs->setValue(prefix + "id", objectId);
-            localPrefs->setValue(prefix + "type", insp->getType());
-            localPrefs->setValue(prefix + "geom", insp->geometry());
-            localPrefs->setValue(prefix + "fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
+            localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
+            localPrefs->setValue("object", obj->getFullPath().c_str());
+            localPrefs->setValue("classname", getObjectShortTypeName(obj));
+            localPrefs->setValue("id", objectId);
+            localPrefs->setValue("type", insp->getType());
+            localPrefs->setValue("geom", insp->geometry());
+            localPrefs->setValue("fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
+            localPrefs->endGroup();
 
             if (closeThem) {
                 toBeClosed.push_back(insp);
@@ -374,57 +375,62 @@ void Qtenv::storeInspectors(bool closeThem)
 
 void Qtenv::restoreInspectors()
 {
-    int index = 0;
-    while (true) {
-        bool ok = true;
-        QString prefix = QString("Inspectors/insp_") + QString::number(index) + "_";
+    QStringList groups = localPrefs->childGroups();
+    for (auto group : groups) {
+        if (group.startsWith("Inspector")) {
+            bool ok = true;
 
-        QVariant v = localPrefs->value(prefix + "object");
-        ok = ok && v.canConvert<QString>();
-        QString object = v.value<QString>();
+            localPrefs->beginGroup(group);
 
-        v = localPrefs->value(prefix + "classname");
-        ok = ok && v.canConvert<QString>();
-        QString classname = v.value<QString>();
+            QVariant v = localPrefs->value("object");
+            ok = ok && v.canConvert<QString>();
+            QString object = v.value<QString>();
 
-        v = localPrefs->value(prefix + "id");
-        ok = ok && v.canConvert<int>();
-        int objectId = v.value<int>();
+            v = localPrefs->value("classname");
+            ok = ok && v.canConvert<QString>();
+            QString classname = v.value<QString>();
 
-        v = localPrefs->value(prefix + "type");
-        ok = ok && v.canConvert<int>();
-        int type = v.value<int>();
+            v = localPrefs->value("id");
+            ok = ok && v.canConvert<int>();
+            int objectId = v.value<int>();
 
-        v = localPrefs->value(prefix + "geom");
-        ok = ok && v.canConvert<QRect>();
-        QRect geom = v.value<QRect>();
+            v = localPrefs->value("type");
+            ok = ok && v.canConvert<int>();
+            int type = v.value<int>();
 
-        v = localPrefs->value(prefix + "fullscreen");
-        ok = ok && v.canConvert<bool>();
-        bool fullscreen = v.value<bool>();
+            v = localPrefs->value("geom");
+            ok = ok && v.canConvert<QRect>();
+            QRect geom = v.value<QRect>();
 
-        if (!ok)
-            break;
+            v = localPrefs->value("fullscreen");
+            ok = ok && v.canConvert<bool>();
+            bool fullscreen = v.value<bool>();
 
-        auto o = object.toUtf8(); // we have to save these to variables
-        auto c = classname.toUtf8(); // otherwise they are temporary
-        cFindByPathVisitor visitor(o, c, objectId);
-        visitor.process(getSimulation());
+            if (!ok) {
+                localPrefs->endGroup();
+                continue;
+            }
 
-        for (int i = 0; i < visitor.getArraySize(); ++i) {
-            if (!findFirstInspector(visitor.getArray()[i], type, true)) {
-                Inspector *insp = inspect(visitor.getArray()[i], type, true);
+            auto o = object.toUtf8(); // we have to save these to variables
+            auto c = classname.toUtf8(); // otherwise they are temporary
+            cFindByPathVisitor visitor(o, c, objectId);
+            visitor.process(getSimulation());
 
-                if (fullscreen)
-                    insp->setWindowState(insp->windowState() | Qt::WindowFullScreen);
-                else {
-                    insp->setWindowState(insp->windowState() & ~Qt::WindowFullScreen);
-                    insp->setGeometry(geom);
+            for (int i = 0; i < visitor.getArraySize(); ++i) {
+                if (!findFirstInspector(visitor.getArray()[i], type, true)) {
+                    Inspector *insp = inspect(visitor.getArray()[i], type, true);
+
+                    if (fullscreen)
+                        insp->setWindowState(insp->windowState() | Qt::WindowFullScreen);
+                    else {
+                        insp->setWindowState(insp->windowState() & ~Qt::WindowFullScreen);
+                        insp->setGeometry(geom);
+                    }
                 }
             }
-        }
 
-        ++index;
+            localPrefs->endGroup();
+        }
     }
 }
 
@@ -2249,11 +2255,25 @@ void Qtenv::initFonts()
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
 #endif
-    boldFont = getPref("font-bold", defaultFonts.boldFont).value<QFont>();
-    canvasFont = getPref("font-canvas", defaultFonts.canvasFont).value<QFont>();
-    timelineFont = getPref("font-timeline", defaultFonts.timelineFont).value<QFont>();
-    logFont = getPref("font-log", defaultFonts.logFont).value<QFont>();
-    timeFont = getPref("font-time", defaultFonts.timeFont).value<QFont>();
+
+    auto initFont = [this](const QString &key, QFont &font, const QFont &defaultFont) {
+        QStringList sl = getPref("Fonts/" + key).toStringList();
+        if (sl.length() == 2) {
+            bool ok = false;
+            int size = sl[1].toInt(&ok);
+            if (ok) {
+                font = QFont(sl[0], size);
+                return;
+            }
+        }
+        font = defaultFont;
+    };
+
+    initFont("bold", boldFont, defaultFonts.boldFont);
+    initFont("canvas", canvasFont, defaultFonts.canvasFont);
+    initFont("timeline", timelineFont, defaultFonts.timelineFont);
+    initFont("log", logFont, defaultFonts.logFont);
+    initFont("time", timeFont, defaultFonts.timeFont);
 }
 
 // Returns the first font family from the given preference list that is
@@ -2272,11 +2292,15 @@ QFont Qtenv::getFirstAvailableFontFamily(std::initializer_list<QString> preferen
 
 void Qtenv::saveFonts()
 {
-    setPref("font-bold", boldFont);
-    setPref("font-canvas", canvasFont);
-    setPref("font-timeline", timelineFont);
-    setPref("font-log", logFont);
-    setPref("font-time", timeFont);
+    auto saveFont = [this](const QString &key, const QFont &font) {
+        setPref("Fonts/" + key, QStringList() << font.family() << QString::number(font.pointSize()));
+    };
+
+    saveFont("bold", boldFont);
+    saveFont("canvas", canvasFont);
+    saveFont("timeline", timelineFont);
+    saveFont("log", logFont);
+    saveFont("time", timeFont);
 }
 
 void Qtenv::updateQtFonts()

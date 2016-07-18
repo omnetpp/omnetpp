@@ -265,10 +265,9 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key, const QVariant &defaultValue = QVariant());
-  signals:
-      void fontChanged();
 
   signals:
+      void fontChanged();
       void animationSpeedChanged(float newSpeed);
 
   public slots:
