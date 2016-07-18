@@ -1102,6 +1102,9 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
         return nullptr;
     }
 
+    connect(inspector, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
+    connect(inspector, SIGNAL(objectDoubleClicked(cObject*)), this, SLOT(onObjectDoubleClicked(cObject *)));
+
     // everything ok, finish inspector
     inspectors.push_back(inspector);
     // TODO geometry
