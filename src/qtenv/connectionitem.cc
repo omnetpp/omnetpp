@@ -143,8 +143,8 @@ void ConnectionItem::updateArrowItem() {
     arrowItem->setVisible(true);
     arrowItem->setColor(lineColor);
     arrowItem->setEndPoints(src, dest);
-    arrowItem->setArrowWidth(std::max(4.0, lineWidth * 4));
-    arrowItem->setArrowLength(std::max(6.0, lineWidth * 6));
+    arrowItem->setArrowWidth(std::max(10.0, lineWidth * 10.0));
+    arrowItem->setArrowLength(std::max(10.0, lineWidth * 10.0));
 }
 
 ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
