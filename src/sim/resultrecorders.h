@@ -38,13 +38,13 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
         simtime_t lastTime;  // to ensure increasing timestamp order
         double lastValue;    // for getCurrentValue()
     protected:
+        virtual void subscribedTo(cResultFilter *prev) override;
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
     public:
         VectorRecorder() {handle = nullptr; lastTime = 0; lastValue = NaN;}
         virtual ~VectorRecorder();
         virtual simtime_t getLastWriteTime() const {return lastTime;}
         virtual double getLastValue() const {return lastValue;}
-        virtual void subscribedTo(cResultFilter *prev) override;
 };
 
 /**
@@ -58,6 +58,7 @@ class SIM_API CountRecorder : public cResultRecorder
     public:
         CountRecorder() {count = 0;}
         long getCount() const {return count;}
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {count++;}
@@ -77,10 +78,10 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
         double lastValue;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {lastValue = value;}
+        virtual void finish(cResultFilter *prev) override;
     public:
         LastValueRecorder() {lastValue = NaN;}
         double getLastValue() const {return lastValue;}
-        virtual void finish(cResultFilter *prev) override;
 };
 
 /**
@@ -92,10 +93,10 @@ class SIM_API SumRecorder : public cNumericResultRecorder
         double sum;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {sum += value;}
+        virtual void finish(cResultFilter *prev) override;
     public:
         SumRecorder() {sum = 0;}
         double getSum() const {return sum;}
-        virtual void finish(cResultFilter *prev) override;
 };
 
 /**
@@ -108,10 +109,10 @@ class SIM_API MeanRecorder : public cNumericResultRecorder
         double sum;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {count++; sum += value;}
+        virtual void finish(cResultFilter *prev) override;
     public:
         MeanRecorder() {count = 0; sum = 0;}
         double getMean() const {return sum/count;}
-        virtual void finish(cResultFilter *prev) override;
 };
 
 /**
@@ -123,10 +124,10 @@ class SIM_API MinRecorder : public cNumericResultRecorder
         double min;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {if (value < min) min = value;}
+        virtual void finish(cResultFilter *prev) override;
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
         double getMin() const {return min;}
-        virtual void finish(cResultFilter *prev) override;
 };
 
 /**
@@ -138,10 +139,10 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
         double max;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {if (value > max) max = value;}
+        virtual void finish(cResultFilter *prev) override;
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
         double getMax() const {return max;}
-        virtual void finish(cResultFilter *prev) override;
 };
 
 /**
@@ -156,10 +157,10 @@ class SIM_API TimeAverageRecorder : public cNumericResultRecorder
         double weightedSum;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
+        virtual void finish(cResultFilter *prev) override;
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
         double getTimeAverage() const;
-        virtual void finish(cResultFilter *prev) override;
 };
 
 /**
@@ -172,11 +173,11 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder, private cObjec
     protected:
         virtual void collect(double value) {statistic->collect(value);}
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {statistic->collect(value);}
+        virtual void finish(cResultFilter *prev) override;
     public:
         StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
         ~StatisticsRecorder() {drop(statistic); delete statistic;}
         virtual cStatistic *getStatistic() const {return statistic;}
-        virtual void finish(cResultFilter *prev) override;
 };
 
 class SIM_API StatsRecorder : public StatisticsRecorder
@@ -203,18 +204,19 @@ class SIM_API ExpressionRecorder : public cNumericResultRecorder
     protected:
         Expression expr;
     public:
-        // current values, valid inside process() only
-        double lastValue;
+        double lastValue; // current values, valid inside process() only, only public for technical reasons
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override {lastValue = value;}
+        virtual void finish(cResultFilter *prev) override;
+    public:
+        // internal methods, only public for technical reasons
+        virtual Expression::Functor *makeValueVariable();
+        virtual Expression::Functor *makeTimeVariable();
     public:
         ExpressionRecorder() {lastValue=NaN;}
         virtual std::string str() const override {return expr.str()+" (ExpressionRecorder)";}
         virtual Expression& getExpression() {return expr;}
-        virtual Expression::Functor *makeValueVariable();
-        virtual Expression::Functor *makeTimeVariable();
         virtual double getCurrentValue() const;
-        virtual void finish(cResultFilter *prev) override;
 };
 
 }  // namespace omnetpp

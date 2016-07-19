@@ -32,8 +32,7 @@ using omnetpp::common::NEGATIVE_INFINITY;
 
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
-    public:
-        virtual simtime_t_cref getEndWarmupPeriod() const {return getSimulation()->getWarmupPeriod();}
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
@@ -41,6 +40,8 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override;
+    public:
+        virtual simtime_t_cref getEndWarmupPeriod() const {return getSimulation()->getWarmupPeriod();}
 };
 
 /**
@@ -51,9 +52,7 @@ class SIM_API CountFilter : public cResultFilter
 {
     protected:
         long count;
-    public:
-        CountFilter() {count = 0;}
-        long getCount() const {return count;}
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {count++; fire(this,t,count,details);}
@@ -61,6 +60,9 @@ class SIM_API CountFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {count++; fire(this,t,count,details);}
+    public:
+        CountFilter() {count = 0;}
+        long getCount() const {return count;}
 };
 
 /**
@@ -71,9 +73,7 @@ class SIM_API ConstantFilter : public cResultFilter
 {
     protected:
         double c;
-    public:
-        ConstantFilter(double c) {this->c = c;}
-        double getConstant() const {return c;}
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {fire(this,t,c,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {fire(this,t,c,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {fire(this,t,c,details);}
@@ -81,6 +81,9 @@ class SIM_API ConstantFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {fire(this,t,c,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {fire(this,t,c,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {fire(this,t,c,details);}
+    public:
+        ConstantFilter(double c) {this->c = c;}
+        double getConstant() const {return c;}
 };
 
 /**
@@ -234,8 +237,10 @@ class SIM_API ExpressionFilter : public cNumericResultFilter
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override {currentTime = t; value = expr.doubleValue(); return true;}
     public:
+        // internal methods, only public for technical reasons
         virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) {throw cRuntimeError("constant expression cannot have variables");};
         virtual Expression::Functor *makeTimeVariable() {return new TimeVariable(this);} // XXX: unused
+    public:
         Expression& getExpression() {return expr;}
         double getCurrentValue() const;
 };
@@ -250,9 +255,11 @@ class SIM_API UnaryExpressionFilter : public ExpressionFilter
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
+        // internal method, only public for technical reasons
+        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override {ASSERT(index == 0); return new ValueVariable(this, &currentValue);}
+    public:
         UnaryExpressionFilter() {}
         virtual std::string str() const override {return expr.str()+" (UnaryExpressionFilter)";}
-        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override {ASSERT(index == 0); return new ValueVariable(this, &currentValue);}
 };
 
 /**
@@ -266,18 +273,18 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
         double *currentValues;
     protected:
         using ExpressionFilter::process;
+        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override;
+        virtual void subscribedTo(cResultFilter *prev) override {}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override;
         virtual bool process(cResultFilter *prev, simtime_t& t, double& value);
-        virtual void subscribedTo(cResultFilter *prev) override {}
     public:
         NaryExpressionFilter(int signalCount) {this->signalCount = signalCount; prevFilters = new cResultFilter*[signalCount]; currentValues = new double[signalCount];}
         virtual ~NaryExpressionFilter() {delete [] prevFilters; delete [] currentValues; }
         virtual std::string str() const override {return expr.str()+" (NaryExpressionFilter)";}
-        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override;
 };
 
 /**
@@ -285,9 +292,10 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
  */
 class SIM_API PacketBytesFilter : public cObjectResultFilter
 {
+    protected:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details) override;
     public:
         using cObjectResultFilter::receiveSignal;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details) override;
 };
 
 /**
@@ -295,9 +303,10 @@ class SIM_API PacketBytesFilter : public cObjectResultFilter
  */
 class SIM_API PacketBitsFilter : public cObjectResultFilter
 {
+    protected:
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details) override;
     public:
         using cObjectResultFilter::receiveSignal;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details) override;
 };
 
 /**
