@@ -340,8 +340,8 @@ class RecorderExpressionResolver : public Expression::Resolver
 
     virtual Expression::Functor *resolveVariable(const char *varname) override
     {
-        // "$source" to mean the source signal; "timeavg" to mean "timeavg($source)"
-        if (strcmp(varname, "$source") == 0)
+        // "$input" to mean the input of the expression; "timeavg" to mean "timeavg($input)"; "$source" is the old name
+        if (strcmp(varname, "$input") == 0 || strcmp(varname, "$source") == 0)
             return new SignalSourceReference(signalSource);
         else
             // argcount=0 means that it refers to the source spec; so "max" and "max()"
@@ -434,7 +434,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     int argLen = filterOrRecorderRef ? len-1 : len;  // often we need to ignore the last element on the stack, which is the filter name itself
 
     // count embedded signal references, unless filter is arg-less (i.e. it has an
-    // implicit source arg, like "record=timeavg" which means "record=timeavg($source)")
+    // implicit source arg, like "record=timeavg" which means "record=timeavg($input)")
     SignalSourceReference *signalSourceReference = nullptr;
     if (!filterOrRecorderRef || filterOrRecorderRef->getNumArgs() > 0) {
         // count SignalSourceReferences (nested filter) - there must be exactly one;
