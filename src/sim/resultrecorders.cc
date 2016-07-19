@@ -67,12 +67,30 @@ void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)
     getEnvir()->recordInOutputVector(handle, t, value);
 }
 
+std::string VectorRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << ": ";
+    if (std::isnan(lastValue))
+        os << "(empty)";
+    else
+        os << "last write: t=" << getLastWriteTime() << " value=" << getLastValue();
+    return os.str();
+}
+
 //---
 
 void CountRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
+}
+
+std::string CountRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getCount();
+    return os.str();
 }
 
 //---
@@ -83,12 +101,26 @@ void LastValueRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), lastValue, &attributes);
 }
 
+std::string LastValueRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getLastValue();
+    return os.str();
+}
+
 //---
 
 void SumRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum, &attributes);
+}
+
+std::string SumRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getSum();
+    return os.str();
 }
 
 //---
@@ -99,6 +131,13 @@ void MeanRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum / count, &attributes);  // note: this is NaN if count==0
 }
 
+std::string MeanRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getMean();
+    return os.str();
+}
+
 //---
 
 void MinRecorder::finish(cResultFilter *prev)
@@ -107,12 +146,26 @@ void MinRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
+std::string MinRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getMin();
+    return os.str();
+}
+
 //---
 
 void MaxRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
+}
+
+std::string MaxRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getMax();
+    return os.str();
 }
 
 //---
@@ -145,12 +198,26 @@ void TimeAverageRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), getTimeAverage(), &attributes);
 }
 
+std::string TimeAverageRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getTimeAverage();
+    return os.str();
+}
+
 //---
 
 void StatisticsRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
+}
+
+std::string StatisticsRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << ": " << getStatistic()->info();
+    return os.str();
 }
 
 StatsRecorder::StatsRecorder() : StatisticsRecorder(new cStdDev())
@@ -173,7 +240,7 @@ class RecValueVariable : public Expression::Variable
     virtual Functor *dup() const override { return new RecValueVariable(owner); }
     virtual const char *getName() const override { return "<lastsignalvalue>"; }
     virtual char getReturnType() const override { return Expression::Value::DBL; }
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override { return owner->lastValue; }
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override { return owner->lastInputValue; }
 };
 
 //XXX currently unused
@@ -205,6 +272,13 @@ void ExpressionRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
+}
+
+std::string ExpressionRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getCurrentValue();
+    return os.str();
 }
 
 }  // namespace omnetpp

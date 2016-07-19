@@ -166,8 +166,8 @@ class cIListener extends void;
 
 class cComponent::SignalData extends void
 {
-   string signalName @hint("Name of signal listened on");
-   cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners);
+    string signalName @hint("Name of signal listened on");
+    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners) @tostring(->str());
 }
 
 class cPar extends cObject;
@@ -857,7 +857,7 @@ class cResultListener extends cIListener
 
 class cResultFilter extends cResultListener
 {
-    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate);
+    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str());
 }
 
 class WarmupPeriodFilter extends cResultFilter
@@ -924,11 +924,13 @@ class RemoveRepeatsFilter extends cNumericResultFilter
 class ExpressionFilter extends cNumericResultFilter
 {
     string expression @tostring(.str());
-    double currentValue;
+    double lastValue;
+    simtime_t lastTimestamp;
 }
 
 class UnaryExpressionFilter extends ExpressionFilter
 {
+    double lastInputValue;
 }
 
 class NaryExpressionFilter extends ExpressionFilter
@@ -955,6 +957,7 @@ class SumPerDurationFilter extends cNumericResultFilter
 class cResultRecorder extends cResultListener
 {
     cComponent *component;
+    string resultName;
     string statisticName;
     string recordingMode;
 }
@@ -966,7 +969,7 @@ class cNumericResultRecorder extends cResultRecorder
 class VectorRecorder extends cNumericResultRecorder
 {
     simtime_t lastWriteTime;
-    simtime_t lastValue;
+    double lastValue;
 }
 
 class CountRecorder extends cResultRecorder
@@ -1001,7 +1004,7 @@ class MaxRecorder extends cNumericResultRecorder
 
 class TimeAverageRecorder extends cNumericResultRecorder
 {
-    double timeAverage;
+    double timeAverage @hint(Computed with the CURRENT simulation time);
 }
 
 class StatisticsRecorder extends cNumericResultRecorder
@@ -1021,5 +1024,6 @@ class ExpressionRecorder extends cNumericResultRecorder
 {
     string expression @tostring(.str());
     double currentValue;
+    double lastInputValue;
 }
 

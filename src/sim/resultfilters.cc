@@ -80,6 +80,67 @@ void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cO
         fire(this, t, obj, details);
 }
 
+std::string WarmupPeriodFilter::str() const
+{
+    std::stringstream os;
+    os << "warmupPeriod = " << getEndWarmupPeriod();
+    return os.str();
+}
+
+//---
+
+std::string CountFilter::str() const
+{
+    std::stringstream os;
+    os << "count = " << getCount();
+    return os.str();
+}
+
+//---
+
+std::string ConstantFilter::str() const
+{
+    std::stringstream os;
+    os << "c = " << getConstant();
+    return os.str();
+}
+
+//---
+
+std::string SumFilter::str() const
+{
+    std::stringstream os;
+    os << "sum = " << getSum();
+    return os.str();
+}
+
+//---
+
+std::string MeanFilter::str() const
+{
+    std::stringstream os;
+    os << "mean = " << getMean();
+    return os.str();
+}
+
+//---
+
+std::string MinFilter::str() const
+{
+    std::stringstream os;
+    os << "min = " << getMin();
+    return os.str();
+}
+
+//---
+
+std::string MaxFilter::str() const
+{
+    std::stringstream os;
+    os << "max = " << getMax();
+    return os.str();
+}
+
 //---
 
 bool TimeAverageFilter::process(simtime_t& t, double& value, cObject *details)
@@ -112,20 +173,42 @@ double TimeAverageFilter::getTimeAverage() const
     return weightedSum / interval;
 }
 
+std::string TimeAverageFilter::str() const
+{
+    std::stringstream os;
+    os << "timeAverage = " << getTimeAverage();
+    return os.str();
+}
+
 //---
 
-double ExpressionFilter::getCurrentValue() const
+std::string RemoveRepeatsFilter::str() const
 {
-    return expr.doubleValue();
+    std::stringstream os;
+    os << "lastValue = " << getLastValue();
+    return os.str();
 }
+
+//---
+
+std::string ExpressionFilter::str() const
+{
+    std::stringstream os;
+    os << expr.str() << " = " << getLastValue();
+    return os.str();
+}
+
+//---
 
 bool UnaryExpressionFilter::process(simtime_t& t, double& value, cObject *details)
 {
-    currentTime = t;
-    currentValue = value;
-    value = expr.doubleValue();
+    lastTimestamp = t;
+    lastInputValue = value;
+    lastOutputValue = value = expr.doubleValue();
     return true;
 }
+
+//---
 
 void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
@@ -168,11 +251,11 @@ void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 
 bool NaryExpressionFilter::process(cResultFilter *prev, simtime_t& t, double& value)
 {
-    currentTime = t;
+    lastTimestamp = t;
     for (int i = 0; i < signalCount; i++) {
         if (prevFilters[i] == prev) {
-            currentValues[i] = value;
-            value = expr.doubleValue();
+            lastInputValues[i] = value;
+            lastOutputValue = value = expr.doubleValue();
             return true;
         }
     }
@@ -183,8 +266,8 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultF
 {
     Assert(0 <= index && index <= signalCount);
     prevFilters[index] = prevFilter;
-    currentValues[index] = NaN;
-    return new ValueVariable(this, &(currentValues[index]));
+    lastInputValues[index] = NaN;
+    return new ValueVariable(this, &(lastInputValues[index]));
 }
 
 //---
@@ -218,6 +301,13 @@ double SumPerDurationFilter::getSumPerDuration() const
     simtime_t now = simulation->getSimTime();
     simtime_t interval = now - simulation->getWarmupPeriod();
     return sum / interval;
+}
+
+std::string SumPerDurationFilter::str() const
+{
+    std::stringstream os;
+    os << "sum/duration = " << getSumPerDuration();
+    return os.str();
 }
 
 }  // namespace omnetpp

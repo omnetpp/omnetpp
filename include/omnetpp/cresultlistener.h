@@ -32,11 +32,9 @@ class cComponent;
  */
 class SIM_API cResultListener : public cIListener
 {
-    public:
-        virtual const char *getClassName() const {return opp_typename(typeid(*this));}
-        virtual std::string str() const {return opp_typename(typeid(*this));}
+    protected:
         static const char *getPooled(const char *s);
-
+    public:
         // simplified API that better supports chaining:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) = 0;

@@ -105,9 +105,9 @@ class SIM_API cObject
     virtual ~cObject();
 
     /**
-     * Returns a pointer to the class name string. This method is implemented
-     * using typeid (C++ RTTI), and it does not need to be overridden
-     * in subclasses.
+     * Returns the (fully qualified) class name. This method is implemented
+     * using typeid (C++ RTTI), and it does not need to be overridden in
+     * subclasses.
      */
     virtual const char *getClassName() const;
 
