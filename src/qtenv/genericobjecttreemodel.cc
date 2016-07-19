@@ -600,7 +600,7 @@ QVariant FieldNode::data(int role) {
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
 
-    if (isCompound && !isCObject) {
+    if (isCompound && !isCObject && !isArray) {
         // Even if it's not a CObject, it can have a different dynamic type
         // than the declared static type, which we can get this way.
         const char *dynamicType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, 0);
@@ -649,7 +649,7 @@ QVariant FieldNode::data(int role) {
     case Qt::DisplayRole:
         return fieldName + arraySize + equals + fieldValue + objectClassName + objectName + objectInfo + editable + " (" + fieldType + ")";
     case Qt::UserRole:
-        return QVariant::fromValue(HighlightRange{fieldName.length() + equals.length(), objectClassName.length() + objectName.length() + fieldValue.length() + objectInfo.length()});
+        return QVariant::fromValue(HighlightRange{fieldName.length() + arraySize.length() + equals.length(), fieldValue.length() + objectClassName.length() + objectName.length() + objectInfo.length()});
     default:
         return QVariant();
     }
