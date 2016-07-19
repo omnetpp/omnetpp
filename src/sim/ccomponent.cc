@@ -335,6 +335,18 @@ void cComponent::recordStatistic(const char *name, cStatistic *stats, const char
 
 //----
 
+const char *cComponent::SignalData::getSignalName() const
+{
+    return cComponent::getSignalName(signalID);
+}
+
+std::string cComponent::SignalData::str() const
+{
+    std::stringstream out;
+    out << "'" << getSignalName() << "': " << countListeners() << " listeners";
+    return out.str();
+}
+
 bool cComponent::SignalData::addListener(cIListener *l)
 {
     if (findListener(l) != -1)
@@ -365,7 +377,7 @@ bool cComponent::SignalData::removeListener(cIListener *l)
     return true;
 }
 
-int cComponent::SignalData::countListeners()
+int cComponent::SignalData::countListeners() const
 {
     if (!listeners)
         return 0;
@@ -375,7 +387,7 @@ int cComponent::SignalData::countListeners()
     return k;
 }
 
-int cComponent::SignalData::findListener(cIListener *l)
+int cComponent::SignalData::findListener(cIListener *l) const
 {
     if (!listeners)
         return -1;

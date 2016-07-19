@@ -47,6 +47,8 @@ class cStatistic;
  */
 class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
+    friend class cComponentDescriptor; // listener lists, etc
+    friend class cComponent__SignalDataDescriptor;
     friend class cPar; // needs to call handleParameterChange()
     friend class cChannel; // allow it to access FL_INITIALIZED and releaseLocalListeners()
     friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
@@ -84,12 +86,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
         cIListener **listeners; // nullptr-terminated array
 
         SignalData() {signalID=SIMSIGNAL_NULL; listeners=nullptr;}
+        const char *getSignalName() const;
+        std::string str() const;
         void dispose() {delete [] listeners;}
         bool addListener(cIListener *l);
         bool removeListener(cIListener *l);
-        int findListener(cIListener *l);
-        int countListeners();
-        bool hasListener() {return listeners && listeners[0];}
+        int findListener(cIListener *l) const;
+        bool hasListener() const {return listeners && listeners[0];}
+        int countListeners() const;
+        cIListener *getListener(int k) const {return listeners[k];} // unsafe
         static bool gt(const SignalData& e1, const SignalData& e2) {return e1.signalID > e2.signalID;}
     };
 
@@ -130,6 +135,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void repairSignalFlags();
     bool computeHasListeners(simsignal_t signalID) const;
     void releaseLocalListeners();
+    const SignalData& getSignalData(int k) const {return (*signalTable)[k];}
+    int getSignalTableSize() const {return signalTable ? signalTable->size() : 0;}
 
   public:
     // internal: used by log mechanism
