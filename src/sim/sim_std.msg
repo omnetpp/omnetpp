@@ -162,11 +162,6 @@ class cProperty extends cObject
     string value @getter(info) @hint("Name and value");
 }
 
-class cProperties
-{
-    cProperty *contents[] @getter(get) @sizeGetter(getNumProperties) @hint("The property list");
-}
-
 class cIListener extends void;
 class cPar extends cObject;
 class cComponentType extends cOwnedObject;
@@ -178,7 +173,7 @@ class cComponent extends cDefaultList
     bool isModule @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
     cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
     cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
-    cProperties *props @getter(getProperties) @label("properties") @group(parameters, gates) @hint("Properties");
+    cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("Properties");
 }
 
 class cChannel extends cComponent
