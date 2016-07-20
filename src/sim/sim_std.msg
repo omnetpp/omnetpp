@@ -174,6 +174,7 @@ class cPar extends cObject;
 class cComponentType extends cOwnedObject;
 class cCanvas extends cOwnedObject;
 class cOsgCanvas extends cOwnedObject;
+class cResultRecorder extends cIListener;
 
 class cComponent extends cDefaultList
 {
@@ -182,6 +183,7 @@ class cComponent extends cDefaultList
     cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
     cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("Properties");
     cComponent::SignalData listenedSignals[] @getter(getSignalData) @sizeGetter(getSignalTableSize) @tostring(.str()) @group(parameters, gates) @hint("Signal listener lists");
+    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @tostring(->str_()) @group(parameters, gates) @hint("Statistical results collected in this component");
 }
 
 class cChannel extends cComponent

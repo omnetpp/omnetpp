@@ -34,7 +34,7 @@ class cProperties;
 class cDisplayString;
 class cRNG;
 class cStatistic;
-
+class cResultRecorder;
 
 /**
  * @brief Common base for module and channel classes.
@@ -54,7 +54,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
     friend class cGate;   // because of repairSignalFlags()
     friend class cSimulation; // sets componentId
-
+    friend class cResultListener; // invalidateCachedResultRecorderLists()
   public:
     enum ComponentKind { KIND_MODULE, KIND_CHANNEL, KIND_OTHER };
 
@@ -123,6 +123,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // whether only signals declared in NED via @signal are allowed to be emitted
     static bool checkSignals;
 
+    // for caching the result of getResultRecorders()
+    struct ResultRecorderList {
+        const cComponent *component;
+        std::vector<cResultRecorder*> recorders;
+    };
+
+    // for getResultRecorders(); static because we don't want to increase cComponent's size
+    static std::vector<ResultRecorderList*> cachedResultRecorderLists;
+
   private:
     SignalData *findSignalData(simsignal_t signalID) const;
     SignalData *findOrCreateSignalData(simsignal_t signalID);
@@ -135,8 +144,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void repairSignalFlags();
     bool computeHasListeners(simsignal_t signalID) const;
     void releaseLocalListeners();
-    const SignalData& getSignalData(int k) const {return (*signalTable)[k];}
-    int getSignalTableSize() const {return signalTable ? signalTable->size() : 0;}
+    const SignalData& getSignalData(int k) const {return (*signalTable)[k];} // for inspectors
+    int getSignalTableSize() const {return signalTable ? signalTable->size() : 0;} // for inspectors
+    void collectResultRecorders(std::vector<cResultRecorder*>& result) const;
 
   public:
     // internal: used by log mechanism
@@ -193,6 +203,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: controls whether signals should be validated against @signal declarations in NED files
     static void setCheckSignals(bool b) {checkSignals = b;}
     static bool getCheckSignals() {return checkSignals;}
+
+    // internal: for inspectors
+    const std::vector<cResultRecorder*>& getResultRecorders() const;
+    static void invalidateCachedResultRecorderLists();
 
   protected:
     /** @name Initialization, finalization, and various other hooks.

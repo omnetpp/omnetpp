@@ -31,6 +31,8 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cenvir.h"
+#include "omnetpp/cresultrecorder.h"
+#include "omnetpp/cresultfilter.h"
 
 using namespace omnetpp::common;
 
@@ -57,6 +59,11 @@ simsignal_t PRE_MODEL_CHANGE = cComponent::registerSignal("PRE_MODEL_CHANGE");
 simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
 
 EXECUTE_ON_SHUTDOWN(cComponent::clearSignalRegistrations());
+
+std::vector<cComponent::ResultRecorderList*> cComponent::cachedResultRecorderLists;
+
+EXECUTE_ON_SHUTDOWN(cComponent::invalidateCachedResultRecorderLists())
+
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
@@ -864,6 +871,53 @@ void cComponent::releaseLocalListeners()
     signalHasAncestorListeners = parent ? (parent->signalHasLocalListeners | parent->signalHasAncestorListeners) : 0; // this only works if releaseLocalListeners() is called top-down
  */
 }
+
+const std::vector<cResultRecorder*>& cComponent::getResultRecorders() const
+{
+    // return cached copy if exists
+    for (int i = 0; i < cachedResultRecorderLists.size(); i++)
+        if (cachedResultRecorderLists[i]->component == this)
+            return cachedResultRecorderLists[i]->recorders;
+
+    // not found, create and cache it
+    ResultRecorderList *recorderList =  new ResultRecorderList;
+    recorderList->component = this;
+    collectResultRecorders(recorderList->recorders);
+    cachedResultRecorderLists.push_back(recorderList);
+    return recorderList->recorders;
+}
+
+static void collectResultRecordersRec(std::vector<cResultRecorder*>& result, cIListener *listener)
+{
+    if (cResultRecorder *recorder = dynamic_cast<cResultRecorder*>(listener))
+        result.push_back(recorder);
+    else if (cResultFilter *filter = dynamic_cast<cResultFilter*>(listener)) {
+        int n = filter->getNumDelegates();
+        for (int i = 0; i < n; i++)
+            collectResultRecordersRec(result, filter->getDelegate(i));
+    }
+}
+
+void cComponent::collectResultRecorders(std::vector<cResultRecorder*>& result) const
+{
+    if (signalTable) {
+        int n = signalTable->size();
+        for (int i = 0; i < n; i++) {
+            cIListener **listeners = (*signalTable)[i].listeners;
+            for (int j = 0; listeners[j]; j++)
+                collectResultRecordersRec(result, listeners[j]);
+        }
+    }
+}
+
+void cComponent::invalidateCachedResultRecorderLists()
+{
+    int n = cachedResultRecorderLists.size();
+    for (unsigned int i = 0; i < n; i++)
+        delete cachedResultRecorderLists[i];
+    cachedResultRecorderLists.clear();
+}
+
 
 }  // namespace omnetpp
 

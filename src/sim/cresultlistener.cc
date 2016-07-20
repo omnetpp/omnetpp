@@ -29,10 +29,12 @@ namespace omnetpp {
 void cResultListener::subscribedTo(cResultFilter *prev)
 {
     ASSERT(getSubscribeCount() == 1);  // except for multi-signal ExpressionRecorders
+    cComponent::invalidateCachedResultRecorderLists();
 }
 
 void cResultListener::unsubscribedFrom(cResultFilter *prev)
 {
+    cComponent::invalidateCachedResultRecorderLists();
     if (getSubscribeCount() == 0)
         delete this;
 }
