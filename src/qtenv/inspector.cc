@@ -68,7 +68,7 @@ int insptypeCodeFromName(const char *name)
 #undef CASE
 }
 
-// ----
+//----
 
 Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget)
@@ -108,7 +108,7 @@ void Inspector::doSetObject(cObject *obj)
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
         object = obj;
-        if(findObjects)
+        if (findObjects)
             findObjects->setData(QVariant::fromValue(object));
         // note that doSetObject() is always followed by refresh(), see setObject()
         emit inspectedObjectChanged(object);
@@ -128,15 +128,16 @@ void Inspector::refresh()
     if (isToplevelWindow)
         refreshTitle();
 
-    if(goBackAction)
+    if (goBackAction)
         goBackAction->setEnabled(canGoBack());
-    if(goForwardAction)
+    if (goForwardAction)
         goForwardAction->setEnabled(canGoForward());
-    if(goUpAction) {
+    if (goUpAction) {
         if (object) {
             cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
             goUpAction->setEnabled(parent);
-        } else {
+        }
+        else {
             goUpAction->setEnabled(false);
         }
     }
@@ -144,7 +145,7 @@ void Inspector::refresh()
 
 const QString Inspector::PREF_GEOM = "geom";
 
-QString Inspector::getFullPrefKey(const QString &pref, bool topLevel)
+QString Inspector::getFullPrefKey(const QString& pref, bool topLevel)
 {
     return "InspectorPreferences/type" + QString::number(type)
             + (topLevel ? "-toplevel" : "-embedded") + "-"
@@ -152,7 +153,7 @@ QString Inspector::getFullPrefKey(const QString &pref, bool topLevel)
             + pref;
 }
 
-QVariant Inspector::getPref(const QString &pref, const QVariant &defaultValue)
+QVariant Inspector::getPref(const QString& pref, const QVariant& defaultValue)
 {
     auto value = getQtenv()->getPref(getFullPrefKey(pref, isTopLevel()));
     // inheriting from the embedded inspector if not found for the toplevel
@@ -161,7 +162,7 @@ QVariant Inspector::getPref(const QString &pref, const QVariant &defaultValue)
     return value.isValid() ? value : defaultValue;
 }
 
-void Inspector::setPref(const QString &pref, const QVariant &value)
+void Inspector::setPref(const QString& pref, const QVariant& value)
 {
     getQtenv()->setPref(getFullPrefKey(pref, isTopLevel()), value);
 }
@@ -229,16 +230,17 @@ void Inspector::removeFromToHistory(cObject *obj)
 void Inspector::firstObjectSet(cObject *obj)
 {
     if (isToplevelWindow) {
-       auto geom = getPref(PREF_GEOM, QRect()).toRect();
+        auto geom = getPref(PREF_GEOM, QRect()).toRect();
 
-       adjustSize();
-       if (!geom.isNull()) {
-           setGeometry(geom);
-       }
+        adjustSize();
+        if (!geom.isNull()) {
+            setGeometry(geom);
+        }
     }
 }
 
-QSize Inspector::sizeHint() const {
+QSize Inspector::sizeHint() const
+{
     return QSize(400, 300);
 }
 
@@ -279,27 +281,28 @@ void Inspector::goBack()
 void Inspector::inspectParent()
 {
     cObject *parentPtr = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
-    if(parentPtr == nullptr)
+    if (parentPtr == nullptr)
         return;
 
-    //inspect in current inspector if possible (and allowed), otherwise open a new one
-    if(supportsObject(parentPtr)) { //TODO && $config(reuse-inspectors)
+    // inspect in current inspector if possible (and allowed), otherwise open a new one
+    if (supportsObject(parentPtr)) {  // TODO && $config(reuse-inspectors)
         setObject(parentPtr);
     }
     else
         getQtenv()->inspect(parentPtr);
 }
 
-void Inspector::goUpInto() //XXX weird name
+void Inspector::goUpInto()  // XXX weird name
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        cObject *object = variant.value<cObject*>();
+        cObject *object = variant.value<cObject *>();
         setObject(object);
     }
 }
 
-void Inspector::closeEvent(QCloseEvent *) {
+void Inspector::closeEvent(QCloseEvent *)
+{
     if (isToplevelWindow)
         setPref(PREF_GEOM, geometry());
 
@@ -324,23 +327,22 @@ void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)
     action->setData(QVariant::fromValue(toolbar->pos()));
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     findObjects = toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find objects (CTRL+S)", mainWindow,
-                       SLOT(on_actionFindInspectObjects_triggered()));
+                SLOT(on_actionFindInspectObjects_triggered()));
 }
 
 void Inspector::inspectAsPopup()
 {
-    if(!object)
+    if (!object)
         return;
 
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if(!variant.isValid())
+    if (!variant.isValid())
         return;
 
     auto typeList = InspectorUtil::supportedInspTypes(object);
 
     QMenu menu;
-    for(auto type : typeList)
-    {
+    for (auto type : typeList) {
         bool state = type == this->type;
         QString label = InspectorUtil::getInspectMenuLabel(type);
         QAction *action = menu.addAction(label, getQtenv(), SLOT(inspect()));
@@ -354,11 +356,11 @@ void Inspector::inspectAsPopup()
 
 void Inspector::namePopup()
 {
-    if(!object)
+    if (!object)
         return;
 
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    if(!variant.isValid())
+    if (!variant.isValid())
         return;
 
     QMenu menu;
@@ -378,6 +380,6 @@ void Inspector::namePopup()
     menu.exec(mapToGlobal(point));
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

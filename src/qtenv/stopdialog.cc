@@ -71,7 +71,8 @@ void StopDialog::keyPressEvent(QKeyEvent *event)
     }
 }
 
-void StopDialog::closeEvent(QCloseEvent *event) {
+void StopDialog::closeEvent(QCloseEvent *event)
+{
     if (getQtenv()->isExpressMode())
         getQtenv()->setStopSimulationFlag();
 
@@ -95,11 +96,11 @@ void StopDialog::show()
         geom.setSize(sizeHint());
     }
 
-
     setGeometry(geom);
 
     QDialog::show();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -21,7 +21,6 @@
 namespace omnetpp {
 namespace qtenv {
 
-
 LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, TextViewerWidget::FindOptions options) :
     QDialog(parent),
     ui(new Ui::LogFindDialog)
@@ -36,15 +35,18 @@ LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, TextViewerWidget
     ui->backwardsCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_BACKWARDS));
 }
 
-LogFindDialog::~LogFindDialog() {
+LogFindDialog::~LogFindDialog()
+{
     delete ui;
 }
 
-QString LogFindDialog::getText() {
+QString LogFindDialog::getText()
+{
     return ui->text->text();
 }
 
-TextViewerWidget::FindOptions LogFindDialog::getOptions() {
+TextViewerWidget::FindOptions LogFindDialog::getOptions()
+{
     TextViewerWidget::FindOptions options;
 
     if (ui->regexpCheckBox->isChecked())
@@ -59,6 +61,6 @@ TextViewerWidget::FindOptions LogFindDialog::getOptions() {
     return options;
 }
 
+}  // namespace qtenv
+}  // namespace omnetpp
 
-} // namespace qtenv
-} // namespace omnetpp

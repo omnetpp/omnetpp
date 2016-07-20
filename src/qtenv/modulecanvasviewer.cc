@@ -137,26 +137,27 @@ void ModuleCanvasViewer::setZoomLabelVisible(bool visible)
     zoomLabel->setVisible(visible);
 }
 
-void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent * event)
+void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::MouseButton::LeftButton)
+    if (event->button() == Qt::MouseButton::LeftButton)
         emit doubleClick(event);
 }
 
 void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
 {
     switch (event->button()) {
-    case Qt::LeftButton: emit click(event); break;
-    case Qt::XButton1:   emit back();       break;
-    case Qt::XButton2:   emit forward();    break;
-    default:   /* shut up, compiler! */     break;
+        case Qt::LeftButton: emit click(event); break;
+        case Qt::XButton1:   emit back();       break;
+        case Qt::XButton2:   emit forward();    break;
+        default:   /* shut up, compiler! */     break;
     }
 
     if (event->modifiers() & Qt::ControlModifier) {
         rubberBandStartPos = event->pos();
         rubberBand->setGeometry(QRect(rubberBandStartPos, QSize()));
         rubberBand->show();
-    } else
+    }
+    else
         QGraphicsView::mousePressEvent(event);
     viewport()->setCursor(Qt::ArrowCursor);
 }
@@ -164,23 +165,26 @@ void ModuleCanvasViewer::mousePressEvent(QMouseEvent *event)
 void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
-    if(rubberBand->isVisible()) {
+    if (rubberBand->isVisible()) {
         QRect rect = rubberBand->geometry().normalized();
         if (event->button() == Qt::RightButton) {
             emit contextMenuRequested(getObjectsAt(rect), event->globalPos());
-        } else
+        }
+        else
             emit marqueeZoom(rect);
         rubberBand->hide();
-    } else {
+    }
+    else {
         emit dragged(mapToScene(viewport()->rect().center()));
     }
 
     viewport()->setCursor(Qt::ArrowCursor);
 }
 
-void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event) {
+void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event)
+{
     if (rubberBand->isVisible() && (event->modifiers() & Qt::ControlModifier))
-         rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
+        rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
     else
         QGraphicsView::mouseMoveEvent(event);
 }
@@ -188,7 +192,7 @@ void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event) {
 void ModuleCanvasViewer::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() & Qt::ControlModifier)
-        event->ignore(); // scroll wheel zooming is handled by the inspector
+        event->ignore();  // scroll wheel zooming is handled by the inspector
     else
         QGraphicsView::wheelEvent(event);
 }
@@ -242,8 +246,7 @@ void ModuleCanvasViewer::relayoutAndRedrawAll()
         QString message = "Module '" + QString(object->getFullName()) + "' " + problem +
                 ", it may take a long time to display the graphics.\n\nDo you want to proceed with drawing?";
         QMessageBox::StandardButton answer = QMessageBox::warning(this, "Warning", message, QMessageBox::Yes | QMessageBox::No);
-        if(answer == QMessageBox::Yes)
-        {
+        if (answer == QMessageBox::Yes) {
             notDrawn = true;
             clear();  // this must be done, still
             return;
@@ -373,8 +376,6 @@ void ModuleCanvasViewer::refreshLayout()
         }
     }
 
-
-
     // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
     qtenv::QtenvGraphLayouterEnvironment qtenvEnvironment(parentModule, ds);
     connect(getQtenv()->getMainWindow()->getStopAction(), SIGNAL(triggered()), &qtenvEnvironment, SLOT(stop()));
@@ -390,8 +391,8 @@ void ModuleCanvasViewer::refreshLayout()
     QGraphicsScene *layoutScene = nullptr;
 
     // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
-    if (submodPosMap.empty() && getQtenv()->opt->showLayouting) { // for realz
-    //if (getQtenv()->opt->showLayouting) { // for debugging
+    if (submodPosMap.empty() && getQtenv()->opt->showLayouting) {  // for realz
+        // if (getQtenv()->opt->showLayouting) { // for debugging
         layoutScene = new QGraphicsScene(this);
 
         setSceneRect(QRectF());
@@ -403,10 +404,10 @@ void ModuleCanvasViewer::refreshLayout()
         getQtenv()->getMainWindow()->enterLayoutingMode();
 
         layouter->setEnvironment(&qtenvEnvironment);
-    } else {
+    }
+    else {
         layouter->setEnvironment(&basicEnvironment);
     }
-
 
     layouter->execute();
     qtenvEnvironment.cleanup();
@@ -620,7 +621,8 @@ QRectF ModuleCanvasViewer::getSubmodulesRect()
     if (submoduleGraphicsItems.empty()) {
         submodulesRect.setWidth(300 * zoomFactor);
         submodulesRect.setHeight(200 * zoomFactor);
-    } else {
+    }
+    else {
         // Neither layer->boundingRect or layer->childrenBoundingRect
         // does what we want here. the former doesn't consider children at all,
         // the latter encloses everything, right down to the leaves.
@@ -693,20 +695,23 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
     item->setZValue(-1);
 }
 
-QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod) {
+QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
+{
     return submodPosMap[mod] * zoomFactor;
 }
 
-QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod) {
+QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
+{
     if (submoduleGraphicsItems.count(mod) == 0) {
         return compoundModuleItem->getArea();
     }
 
     return submoduleGraphicsItems[mod]->boundingRect()
-               .translated(getSubmodCoords(mod));
+                   .translated(getSubmodCoords(mod));
 }
 
-QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
+QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
+{
     char mode = 'a';
 
     QPointF srcAnch(50, 50);
@@ -724,14 +729,18 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
         int x = QString(ds.getTagArg("m", 1)).toInt(&xOk);
         int y = QString(ds.getTagArg("m", 2)).toInt(&yOk);
 
-        if (xOk) srcAnch.setX(x);
-        if (yOk) srcAnch.setY(y);
+        if (xOk)
+            srcAnch.setX(x);
+        if (yOk)
+            srcAnch.setY(y);
 
         x = QString(ds.getTagArg("m", 3)).toInt(&xOk);
         y = QString(ds.getTagArg("m", 4)).toInt(&yOk);
 
-        if (xOk) destAnch.setX(x);
-        if (yOk) destAnch.setY(y);
+        if (xOk)
+            destAnch.setX(x);
+        if (yOk)
+            destAnch.setY(y);
     }
 
     return arrowcoords(getSubmodRect(gate->getOwnerModule()),
@@ -741,19 +750,19 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate) {
                        srcAnch, destAnch);
 }
 
-std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(const QPoint &pos, int threshold)
+std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QPoint& pos, int threshold)
 {
-    QList<QGraphicsItem*> items = scene()->items(mapToScene(pos));
-    std::vector<cObject*> objects;
+    QList<QGraphicsItem *> items = scene()->items(mapToScene(pos));
+    std::vector<cObject *> objects;
 
     for (auto item : items) {
         QVariant variant = item->data(1);
         if (variant.isValid())
-            objects.push_back(variant.value<cObject*>());
+            objects.push_back(variant.value<cObject *>());
     }
 
-    if (objects.empty() // if nothing, or only the inspected module (big grey rect) was clicked
-            || (objects.size() == 1 && objects[0] == object)) {
+    if (objects.empty()  // if nothing, or only the inspected module (big grey rect) was clicked
+        || (objects.size() == 1 && objects[0] == object)) {
         // then trying again, this time with a small square around pos
         QPoint offset(threshold, threshold);
         QRect rect(pos - offset, pos + offset);
@@ -763,15 +772,15 @@ std::vector<cObject*> ModuleCanvasViewer::getObjectsAt(const QPoint &pos, int th
     return objects;
 }
 
-std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect &rect)
+std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect& rect)
 {
-    QList<QGraphicsItem*> items = scene()->items(mapToScene(rect));
-    std::vector<cObject*> objects;
+    QList<QGraphicsItem *> items = scene()->items(mapToScene(rect));
+    std::vector<cObject *> objects;
 
     for (auto item : items) {
         QVariant variant = item->data(1);
         if (variant.isValid())
-            objects.push_back(variant.value<cObject*>());
+            objects.push_back(variant.value<cObject *>());
     }
 
     return objects;
@@ -783,10 +792,11 @@ void ModuleCanvasViewer::clear()
     submoduleLayer->clear();
     bubbleLayer->clear();
     submoduleGraphicsItems.clear();
-    nextEventMarker = nullptr; // because it is on the submodule layer, it has been deleted by that
+    nextEventMarker = nullptr;  // because it is on the submodule layer, it has been deleted by that
 }
 
-void ModuleCanvasViewer::redrawNextEventMarker() {
+void ModuleCanvasViewer::redrawNextEventMarker()
+{
     delete nextEventMarker;
     nextEventMarker = nullptr;
 
@@ -887,7 +897,8 @@ void ModuleCanvasViewer::refresh()
     if (needs_redraw) {
         needs_redraw = false;
         redraw();
-    } else {
+    }
+    else {
         drawEnclosingModule(object);
         refreshFigures();
         redrawNextEventMarker();
@@ -895,9 +906,9 @@ void ModuleCanvasViewer::refresh()
     }
 }
 
-void ModuleCanvasViewer::setZoomFactor(double zoomFactor) {
+void ModuleCanvasViewer::setZoomFactor(double zoomFactor)
+{
     if (this->zoomFactor != zoomFactor) {
-
         // just moving the bubbles where they belong after the zoom, because it's easy
         double ratio = zoomFactor / this->zoomFactor;
         for (auto i : bubbleLayer->childItems())
@@ -910,7 +921,8 @@ void ModuleCanvasViewer::setZoomFactor(double zoomFactor) {
     }
 }
 
-void ModuleCanvasViewer::setImageSizeFactor(double imageSizeFactor) {
+void ModuleCanvasViewer::setImageSizeFactor(double imageSizeFactor)
+{
     if (this->imageSizeFactor != imageSizeFactor) {
         this->imageSizeFactor = imageSizeFactor;
         redraw();
@@ -933,5 +945,6 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
     bubbleLayer->addItem(new BubbleItem(getSubmodCoords(submod), text));
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

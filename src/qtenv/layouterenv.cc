@@ -117,7 +117,7 @@ void QtenvGraphLayouterEnvironment::stop()
     stopFlag = true;
 }
 
-void QtenvGraphLayouterEnvironment::scaleCoords(double &x, double &y)
+void QtenvGraphLayouterEnvironment::scaleCoords(double& x, double& y)
 {
     int vMargin = QFontMetrics(getQtenv()->getCanvasFont()).height()*2;
     int hMargin = 20;
@@ -137,5 +137,6 @@ void QtenvGraphLayouterEnvironment::scaleCoords(double &x, double &y)
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

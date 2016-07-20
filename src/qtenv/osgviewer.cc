@@ -44,22 +44,23 @@ namespace qtenv {
 // XXX is this still necessary? can be replaced by Qt events?
 class PickHandler : public osgGA::GUIEventHandler
 {
-private:
+  private:
     OsgViewer *viewer;
-public:
+
+  public:
     PickHandler(OsgViewer *viewer) : viewer(viewer) {}
     virtual ~PickHandler();
     bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    virtual std::vector<cObject*> pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
+    virtual std::vector<cObject *> pick(osgViewer::View *view, const osgGA::GUIEventAdapter& ea);
 };
 
 PickHandler::~PickHandler()
 {
 }
 
-bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+bool PickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
-    osgViewer::View *view = dynamic_cast<osgViewer::View*>(&aa);
+    osgViewer::View *view = dynamic_cast<osgViewer::View *>(&aa);
     if (!view)
         return false;
 
@@ -77,9 +78,9 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
     // event, and the next object is shown in 2D mode, OSG will not get the release event, and
     // upon coming back to the module in which the doubleclick happened, OSG will think the button
     // is still held down while it is not.
-    static bool lastEventWasDoubleClick = false; // ignoring FRAME events
+    static bool lastEventWasDoubleClick = false;  // ignoring FRAME events
 
-    switch(eventType) {
+    switch (eventType) {
         case osgGA::GUIEventAdapter::PUSH:
             if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON) {
                 auto objects = pick(view, ea);
@@ -93,6 +94,7 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 rightClickY = ea.getY();
             }
             break;
+
         // context menus can't be opened on push, because then only the QMenu would receive
         // the release event, osg wouldn't, and it would think it's stuck in the "down" position
         case osgGA::GUIEventAdapter::RELEASE:
@@ -102,9 +104,10 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 Inspector *insp = InspectorUtil::getContainingInspector(viewer);
                 QMenu *menu;
                 if (!objects.empty() && insp && insp->supportsObject(objects.front())) {
-                    menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), insp);
+                    menu = InspectorUtil::createInspectorContextMenu(QVector<cObject *>::fromStdVector(objects), insp);
                     menu->addSeparator();
-                } else {
+                }
+                else {
                     menu = new QMenu(viewer);
                 }
 
@@ -121,6 +124,7 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 }
             }
             break;
+
         case osgGA::GUIEventAdapter::KEYDOWN:
             if (ea.getKey() == osgGA::GUIEventAdapter::KEY_Space || ea.getKey() == osgGA::GUIEventAdapter::KEY_Return) {
                 osg::ref_ptr<osgGA::GUIEventAdapter> event = new osgGA::GUIEventAdapter(ea);
@@ -133,7 +137,9 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                 }
             }
             break;
-        default:;
+
+        default:
+            ;
     }
 
     lastEventWasDoubleClick = eventType == osgGA::GUIEventAdapter::DOUBLECLICK
@@ -143,19 +149,18 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
     return false;
 }
 
-std::vector<cObject*> PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter &ea)
+std::vector<cObject *> PickHandler::pick(osgViewer::View *view, const osgGA::GUIEventAdapter& ea)
 {
     return viewer->objectsAt(QPoint(ea.getX()-ea.getWindowX(), // to widget local, then invert y
                                     ea.getWindowHeight() - (ea.getY() - ea.getWindowY())));
 }
 
-
 //---
 
 OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
 {
-    setThreadingModel(osgViewer::ViewerBase::SingleThreaded);  //XXX crashes with Multithreaded
-    setContextMenuPolicy(Qt::NoContextMenu); // to prevent the default Qt context handling, we will do it manually
+    setThreadingModel(osgViewer::ViewerBase::SingleThreaded);  // XXX crashes with Multithreaded
+    setContextMenuPolicy(Qt::NoContextMenu);  // to prevent the default Qt context handling, we will do it manually
     // disable the default setting of viewer.done() by pressing Escape.
     setKeyEventSetsDone(0);
 
@@ -170,8 +175,8 @@ OsgViewer::OsgViewer(QWidget *parent) : QWidget(parent)
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
     timer.start(33);  // 60Hz -- TODO make configurable
 
-    QActionGroup *cameraManipulatorActionGroup = new QActionGroup(this); // will provide radiobutton functionality
-    connect(cameraManipulatorActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(setCameraManipulator(QAction*)));
+    QActionGroup *cameraManipulatorActionGroup = new QActionGroup(this);  // will provide radiobutton functionality
+    connect(cameraManipulatorActionGroup, SIGNAL(triggered(QAction *)), this, SLOT(setCameraManipulator(QAction *)));
 
     toTerrainManipulatorAction = new QAction("Terrain", this);
     toTerrainManipulatorAction->setData(cOsgCanvas::CAM_TERRAIN);
@@ -304,9 +309,9 @@ void OsgViewer::applyViewerHints()
     setCameraManipulator(osgCanvas->getCameraManipulatorType());
 
     osg::Camera *camera = view->getCamera();
-    camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000); // reset to sensible values to avoid later calls bump into a singular state
+    camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000);  // reset to sensible values to avoid later calls bump into a singular state
 
-    double widgetAspect = glWidget->geometry().width() / (double) glWidget->geometry().height();
+    double widgetAspect = glWidget->geometry().width() / (double)glWidget->geometry().height();
     setAspectRatio(widgetAspect);
     setFieldOfViewAngle(osgCanvas->getFieldOfViewAngle());
 
@@ -328,7 +333,7 @@ void OsgViewer::resetViewer()
     camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000);
 }
 
-std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
+std::vector<cObject *> OsgViewer::objectsAt(const QPoint& pos)
 {
     osgUtil::LineSegmentIntersector::Intersections intersections;
     view->computeIntersections(view->getCamera(), osgUtil::Intersector::WINDOW, pos.x(), height() - pos.y(), intersections);
@@ -339,10 +344,10 @@ std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
         if (!nodePath.empty()) {
             // find cObject pointer node (OmnetppObjectNode) in nodepath, back to front
             for (int i = nodePath.size()-1; i >= 0; --i) {
-                if (cObjectOsgNode *objNode = dynamic_cast<cObjectOsgNode*>(nodePath[i])) {
+                if (cObjectOsgNode *objNode = dynamic_cast<cObjectOsgNode *>(nodePath[i])) {
                     if (cObject *obj = const_cast<cObject *>(objNode->getObject())) {
                         // qDebug() << "hit omnetpp object" << obj->getClassName() << obj->getFullPath().c_str();
-                        if (std::find(objects.begin(), objects.end(), obj) == objects.end()) // filter out duplicates
+                        if (std::find(objects.begin(), objects.end(), obj) == objects.end())  // filter out duplicates
                             objects.push_back(obj);
                     }
                 }
@@ -364,18 +369,17 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
 
     // all of these are in world coordinates, so expect large-values when using osgEarth
     osg::Vec3d eye, center, up;
-    float distance = 1; // how far the center is from the eye.
+    float distance = 1;  // how far the center is from the eye.
 
     // all of the generic manipulators are OrbitManipulators
-    if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator*>(view->getCameraManipulator()))
+    if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator *>(view->getCameraManipulator()))
         distance = orbitManip->getDistance();
 
     // EarthManipulator just happens to have a similar behaviour and a method with the same name
-    if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(view->getCameraManipulator()))
+    if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator *>(view->getCameraManipulator()))
         distance = earthManip->getDistance();
 
     view->getCamera()->getViewMatrixAsLookAt(eye, center, up, distance);
-
 
     // setting up the new manipulator
 
@@ -389,28 +393,32 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             manipulator = new osgGA::TerrainManipulator;
             toTerrainManipulatorAction->setChecked(true);
             break;
+
         case cOsgCanvas::CAM_OVERVIEW:
             manipulator = new OverviewManipulator;
             toOverviewManipulatorAction->setChecked(true);
             break;
+
         case cOsgCanvas::CAM_TRACKBALL:
             manipulator = new osgGA::TrackballManipulator;
             toTrackballManipulatorAction->setChecked(true);
             break;
+
         case cOsgCanvas::CAM_EARTH:
             manipulator = new osgEarth::Util::EarthManipulator;
             toEarthManipulatorAction->setChecked(true);
             break;
-        case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
+
+        case cOsgCanvas::CAM_AUTO:  /* Impossible, look at the if above, just silencing a warning. */
+            break;
     }
 
     view->setCameraManipulator(manipulator);
 
-
     // restoring the viewpoint into the new manipulator
 
     if (keepView) {
-        if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator*>(manipulator)) {
+        if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator *>(manipulator)) {
             // this was the simplest way to force all kinds of manipulators to the viewpoint
             orbitManip->setHomePosition(eye, center, up);
             orbitManip->home(0);
@@ -418,10 +426,10 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
         }
 
         // and EarthManipulator is a different story as always
-        if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(manipulator)) {
+        if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator *>(manipulator)) {
             auto srs = osgEarth::MapNode::findMapNode(osgCanvas->getScene())->getMap()->getSRS();
 
-            osg::Vec3d geoCenter; // should be longitude, latitude and absolute altitude
+            osg::Vec3d geoCenter;  // should be longitude, latitude and absolute altitude
             srs->transformFromWorld(center, geoCenter);
 
             auto gc = osgEarth::GeoPoint(srs, geoCenter, osgEarth::ALTMODE_ABSOLUTE);
@@ -433,7 +441,7 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             osg::Vec3d localEye = eye * worldToLocal;
             osg::Vec3d localUp = (eye + up) * worldToLocal - localEye;
 
-            double heading = - atan2(localEye.y(), localEye.x()) * 180.0 / M_PI - 90;
+            double heading = -atan2(localEye.y(), localEye.x()) * 180.0 / M_PI - 90;
             double pitch = atan2(localUp.z(), osg::Vec2d(localUp.x(), localUp.y()).length()) * 180.0 / M_PI - 90;
 
             osgEarth::Viewpoint vp("viewpoint", geoCenter.x(), geoCenter.y(), geoCenter.z(), heading, pitch, distance);
@@ -441,15 +449,15 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
         }
     }
 
-
     // setting the home viewpoint if found
 
     if (type == cOsgCanvas::CAM_EARTH) {
-        const osgEarth::Viewpoint &homeViewpoint = osgCanvas->getEarthViewpoint();
+        const osgEarth::Viewpoint& homeViewpoint = osgCanvas->getEarthViewpoint();
         if (homeViewpoint.isValid())
-            ((osgEarth::Util::EarthManipulator*)manipulator)->setHomeViewpoint(homeViewpoint);
-    } else {
-        const cOsgCanvas::Viewpoint &homeViewpoint = osgCanvas->getGenericViewpoint();
+            ((osgEarth::Util::EarthManipulator *)manipulator)->setHomeViewpoint(homeViewpoint);
+    }
+    else {
+        const cOsgCanvas::Viewpoint& homeViewpoint = osgCanvas->getGenericViewpoint();
         if (homeViewpoint.valid)
             manipulator->setHomePosition(homeViewpoint.eye, homeViewpoint.center, homeViewpoint.up);
     }
@@ -497,8 +505,8 @@ void OsgViewer::setCameraManipulator(QAction *sender)
 {
     setCameraManipulator((cOsgCanvas::CameraManipulatorType)sender->data().value<int>(), true);
 }
+}  // qtenv
+}  // omnetpp
 
-} // qtenv
-} // omnetpp
+#endif  // WITH_OSG
 
-#endif // WITH_OSG

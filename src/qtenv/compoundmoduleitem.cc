@@ -33,7 +33,8 @@ void CompoundModuleItem::updateRectangle()
     rectangle->setPen(QPen(outlineColor, outlineWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
 }
 
-void CompoundModuleItem::updateImage() {
+void CompoundModuleItem::updateImage()
+{
     delete imageItem;
     imageItem = nullptr;
     imageContainer->setBrush(Qt::NoBrush);
@@ -46,10 +47,11 @@ void CompoundModuleItem::updateImage() {
             // no pixmap item, but the container item above is drawn with
             // a pixmap brush, using the required image. And that draws tiled.
             imageContainer->setBrush(
-                        QPixmap::fromImage(*image) // Must take zooming into account.
-                        .scaled(image->width() * zoomFactor, image->height() * zoomFactor,
-                                Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        } else {
+                    QPixmap::fromImage(*image)  // Must take zooming into account.
+                            .scaled(image->width() * zoomFactor, image->height() * zoomFactor,
+                            Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+        else {
             // This is the image itself, clipped by the container above, and
             // set to size/position as needed. Not used in tiling mode.
             imageItem = new QGraphicsPixmapItem(imageContainer);
@@ -61,32 +63,38 @@ void CompoundModuleItem::updateImage() {
             imageItem->setTransformationMode(Qt::SmoothTransformation);
 
             switch (imageMode) {
-            case MODE_STRETCH: {
-                imageItem->setScale(1); // undoing the regular zoom scaling
-                QTransform transf; // Stretching to correct size.
-                transf.scale(area.width() / image->width(), area.height() / image->height());
-                imageItem->setTransform(transf);
-                } break;
-            case MODE_TILE:
-                Q_ASSERT(false);
-                // Already handled in the other branch above, this should never execute.
-                break;
-            case MODE_CENTER:
-                // the defaults above do exactly this
-                break;
-            case MODE_FIX: // fixed on the top left corner
-                // no positioning at all, please. the zoom scaling can stay.
-                imageItem->setOffset(0, 0);
-                imageItem->setPos(area.topLeft());
-                break;
-            default:
-                ASSERT2(false, "unhandled image mode");
+                case MODE_STRETCH: {
+                    imageItem->setScale(1);  // undoing the regular zoom scaling
+                    QTransform transf;  // Stretching to correct size.
+                    transf.scale(area.width() / image->width(), area.height() / image->height());
+                    imageItem->setTransform(transf);
+                    break;
+                }
+
+                case MODE_TILE:
+                    Q_ASSERT(false);
+                    // Already handled in the other branch above, this should never execute.
+                    break;
+
+                case MODE_CENTER:
+                    // the defaults above do exactly this
+                    break;
+
+                case MODE_FIX:  // fixed on the top left corner
+                    // no positioning at all, please. the zoom scaling can stay.
+                    imageItem->setOffset(0, 0);
+                    imageItem->setPos(area.topLeft());
+                    break;
+
+                default:
+                    ASSERT2(false, "unhandled image mode");
             }
         }
     }
 }
 
-void CompoundModuleItem::updateGrid() {
+void CompoundModuleItem::updateGrid()
+{
     for (auto l : gridLines)
         delete l;
 
@@ -105,7 +113,7 @@ void CompoundModuleItem::updateGrid() {
     int majorIndex = 1;
 
     while (true) {
-         // the int cast and the half pixel offset is to counteract antialiasing
+        // the int cast and the half pixel offset is to counteract antialiasing
         double majorPos = (int)(majorIndex * gridMajorDistance * zoomFactor) - 0.5;
 
         if (majorPos < area.height()) {
@@ -132,7 +140,7 @@ void CompoundModuleItem::updateGrid() {
         // just avoiding drawing a minor line over a major line
         // (otherwise if the antialiasing smears one of them, it might look ugly)
         if (minorIndex % gridMinorNum != 0) {
-             // the int cast and half pixel offset is to counteract antialiasing
+            // the int cast and half pixel offset is to counteract antialiasing
             double minorPos = (int)(minorIndex * gridMajorDistance * zoomFactor / gridMinorNum) - 0.5;
 
             if (minorPos < area.height()) {
@@ -177,7 +185,8 @@ CompoundModuleItem::CompoundModuleItem(QGraphicsItem *parent) :
     // text items will be at Z = 2
 }
 
-CompoundModuleItem::~CompoundModuleItem() {
+CompoundModuleItem::~CompoundModuleItem()
+{
     for (auto l : gridLines)
         delete l;
     delete rectangle;
@@ -186,7 +195,8 @@ CompoundModuleItem::~CompoundModuleItem() {
     delete modulePath;
 }
 
-void CompoundModuleItem::setZoomFactor(double zoom) {
+void CompoundModuleItem::setZoomFactor(double zoom)
+{
     if (zoomFactor != zoom) {
         zoomFactor = zoom;
         updateRectangle();
@@ -195,7 +205,8 @@ void CompoundModuleItem::setZoomFactor(double zoom) {
     }
 }
 
-void CompoundModuleItem::setArea(QRectF area) {
+void CompoundModuleItem::setArea(QRectF area)
+{
     if (this->area != area) {
         this->area = area;
         updateRectangle();
@@ -205,71 +216,82 @@ void CompoundModuleItem::setArea(QRectF area) {
     }
 }
 
-QRectF CompoundModuleItem::getArea() {
+QRectF CompoundModuleItem::getArea()
+{
     return area;
 }
 
-void CompoundModuleItem::setBackgroundColor(const QColor &color) {
+void CompoundModuleItem::setBackgroundColor(const QColor& color)
+{
     if (backgroundColor != color) {
         backgroundColor = color;
         updateRectangle();
     }
 }
 
-void CompoundModuleItem::setOutlineColor(const QColor &color) {
+void CompoundModuleItem::setOutlineColor(const QColor& color)
+{
     if (outlineColor != color) {
         outlineColor = color;
         updateRectangle();
     }
 }
 
-void CompoundModuleItem::setOutlineWidth(double width) {
+void CompoundModuleItem::setOutlineWidth(double width)
+{
     if (outlineWidth != width) {
         outlineWidth = width;
         updateRectangle();
     }
 }
 
-void CompoundModuleItem::setImage(QImage *image) {
+void CompoundModuleItem::setImage(QImage *image)
+{
     if (this->image != image) {
         this->image = image;
         updateImage();
     }
 }
 
-void CompoundModuleItem::setImageMode(ImageMode mode) {
+void CompoundModuleItem::setImageMode(ImageMode mode)
+{
     if (this->imageMode != mode) {
         this->imageMode = mode;
         updateImage();
     }
 }
 
-void CompoundModuleItem::setGridMajorDistance(double gridDistance) {
+void CompoundModuleItem::setGridMajorDistance(double gridDistance)
+{
     if (gridMajorDistance != gridDistance) {
         gridMajorDistance = gridDistance;
         updateGrid();
     }
 }
 
-void CompoundModuleItem::setGridMinorNum(int minorNum) {
+void CompoundModuleItem::setGridMinorNum(int minorNum)
+{
     if (gridMinorNum != minorNum) {
         gridMinorNum = minorNum;
         updateGrid();
     }
 }
 
-void CompoundModuleItem::setGridColor(const QColor &color) {
+void CompoundModuleItem::setGridColor(const QColor& color)
+{
     if (gridColor != color) {
         gridColor = color;
         updateGrid();
     }
 }
 
-void CompoundModuleItem::setModulePath(const QString &path) {
+void CompoundModuleItem::setModulePath(const QString& path)
+{
     modulePath->setText(path);
 }
 
-int CompoundModuleItem::addText(const CompoundModuleItem::TextData &data) {
+int CompoundModuleItem::addText(const CompoundModuleItem::TextData& data)
+{
     auto item = new OutlinedTextItem(this);
     item->setPos(data.position);
     item->setText(data.text);
@@ -282,10 +304,10 @@ int CompoundModuleItem::addText(const CompoundModuleItem::TextData &data) {
     return texts.length() - 1;
 }
 
-int CompoundModuleItem::addText(const QPointF &pos, const QString &text, const QColor &color) {
-    return addText(TextData{pos, text, color});
+int CompoundModuleItem::addText(const QPointF& pos, const QString& text, const QColor& color)
+{
+    return addText(TextData { pos, text, color });
 }
-
 
 void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cModule *mod, double zoomFactor, QRectF submodulesRect)
 {
@@ -299,8 +321,10 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
 
     QRectF border = submodulesRect;
 
-    if (border.top() < 0) border.setTop(0);
-    if (border.left() < 0) border.setLeft(0);
+    if (border.top() < 0)
+        border.setTop(0);
+    if (border.left() < 0)
+        border.setLeft(0);
 
     // making the margin symmetric
     auto top = border.top();
@@ -320,8 +344,10 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     width = QString(ds.getTagArg("bgb", 0)).toDouble(&widthOk) * zoomFactor;
     height = QString(ds.getTagArg("bgb", 1)).toDouble(&heightOk) * zoomFactor;
 
-    if (widthOk) border.setWidth(width);
-    if (heightOk) border.setHeight(height);
+    if (widthOk)
+        border.setWidth(width);
+    if (heightOk)
+        border.setHeight(height);
 
     cmi->setZoomFactor(zoomFactor);
     cmi->setArea(border);
@@ -332,10 +358,11 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     double outlineWidth;
     bool ok;
     outlineWidth = QString(ds.getTagArg("bgb", 4)).toDouble(&ok);
-    if (!ok) outlineWidth = 2;
+    if (!ok)
+        outlineWidth = 2;
     cmi->setOutlineWidth(outlineWidth);
 
-    cmi->setData(1, QVariant::fromValue((cObject*)mod));
+    cmi->setData(1, QVariant::fromValue((cObject *)mod));
 
     // background tooltip
     cmi->setToolTip(ds.getTagArg("bgtt", 0));
@@ -346,10 +373,10 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
 
     cmi->setImage(imageName[0] ? getQtenv()->icons.getImage(imageName) : nullptr);
     switch (imageMode[0]) {
-    case 's': cmi->setImageMode(CompoundModuleItem::MODE_STRETCH); break;
-    case 'c': cmi->setImageMode(CompoundModuleItem::MODE_CENTER);  break;
-    case 't': cmi->setImageMode(CompoundModuleItem::MODE_TILE);    break;
-    default:  cmi->setImageMode(CompoundModuleItem::MODE_FIX);     break;
+        case 's': cmi->setImageMode(CompoundModuleItem::MODE_STRETCH); break;
+        case 'c': cmi->setImageMode(CompoundModuleItem::MODE_CENTER);  break;
+        case 't': cmi->setImageMode(CompoundModuleItem::MODE_TILE);    break;
+        default:  cmi->setImageMode(CompoundModuleItem::MODE_FIX);     break;
     }
 
     // grid
@@ -380,15 +407,16 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     }
 }
 
-
-QRectF CompoundModuleItem::boundingRect() const {
+QRectF CompoundModuleItem::boundingRect() const
+{
     return area;
 }
 
-void CompoundModuleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void CompoundModuleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     // nothing to do here, the children do the painting
 }
 
+}  // namespace qtenv
+}  // namespace omnetpp
 
-} // namespace qtenv
-} // namespace omnetpp

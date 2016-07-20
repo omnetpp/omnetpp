@@ -372,6 +372,6 @@ void OutputVectorInspector::setConfig(bool autosc, double timefac, double min_y,
         drawingMode = i;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

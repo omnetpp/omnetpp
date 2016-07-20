@@ -169,6 +169,6 @@ void GateInspector::displayStringChanged(cGate *gate)
     // XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

@@ -59,6 +59,6 @@ InspectorFactory *InspectorFactory::get(const char *className)
     return p;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

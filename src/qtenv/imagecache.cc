@@ -76,29 +76,27 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     content.setNameFilters(filters);
     content.setFilter(QDir::Files);
 
-    //# load bitmaps from this directory
-    for(size_t i = 0; i < content.count(); ++i)
-    {
+    // # load bitmaps from this directory
+    for (size_t i = 0; i < content.count(); ++i) {
         QString fileName = content.absoluteFilePath(content[i]);
-        //QPixmap: Cannot create a QPixmap when no GUI is being used
-        //QPixmap: Must construct a QApplication before a QPaintDevice
+        // QPixmap: Cannot create a QPixmap when no GUI is being used
+        // QPixmap: Must construct a QApplication before a QPaintDevice
         QImage *image = new QImage(fileName);
 
-        if(image->isNull())
+        if (image->isNull())
             printf("Could not load image %s\n", fileName.toStdString().c_str());
 
         QStringList stringList = content[i].split(".");
         QString key = prefix;
-        for(int i = 0; i < stringList.size() - 1; ++i)
+        for (int i = 0; i < stringList.size() - 1; ++i)
             key += stringList[i];
         imagesWithSize[key] = image;
     }
 
-    //# recurse into subdirs
+    // # recurse into subdirs
     content.setNameFilters(QStringList("*"));
     content.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-    for(size_t i = 0; i < content.count(); ++i)
-    {
+    for (size_t i = 0; i < content.count(); ++i) {
         QString subDir = content.absoluteFilePath(content[i]);
         QString subPrefix = prefix + content[i] + "/";
         doLoadImages(subDir.toStdString().c_str(), subPrefix.toStdString().c_str());
@@ -108,25 +106,30 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
 QString ImageCache::sizePostfix(IconSize size)
 {
     switch (size) {
-    case EXTRA_SMALL: return "_xs";
-    case VERY_SMALL:  return "_vs";
-    case SMALL:       return "_s";
-    case NORMAL:      return "";
-    case LARGE:       return "_l";
-    case VERY_LARGE:  return "_vl";
-    case EXTRA_LARGE: return "_xl";
-    default: Q_ASSERT(false); return ""; // returning just to silence a warning...
+        case EXTRA_SMALL: return "_xs";
+        case VERY_SMALL:  return "_vs";
+        case SMALL:       return "_s";
+        case NORMAL:      return "";
+        case LARGE:       return "_l";
+        case VERY_LARGE:  return "_vl";
+        case EXTRA_LARGE: return "_xl";
+        default: Q_ASSERT(false); return ""; // returning just to silence a warning...
     }
 }
 
-QImage *ImageCache::getImage(const char *name, const char *size) {
+QImage *ImageCache::getImage(const char *name, const char *size)
+{
     QString sizeText(size);
     IconSize imageSize = NORMAL;
     if (!sizeText.isEmpty()) {
-        if (sizeText[0] == 's') imageSize = SMALL;
-        else if (sizeText[0] == 'l') imageSize = LARGE;
-        else if (sizeText.contains(QRegExp("v.*s.*"))) imageSize = VERY_SMALL;
-        else if (sizeText.contains(QRegExp("v[^s]*l.*"))) imageSize = VERY_LARGE;
+        if (sizeText[0] == 's')
+            imageSize = SMALL;
+        else if (sizeText[0] == 'l')
+            imageSize = LARGE;
+        else if (sizeText.contains(QRegExp("v.*s.*")))
+            imageSize = VERY_SMALL;
+        else if (sizeText.contains(QRegExp("v[^s]*l.*")))
+            imageSize = VERY_LARGE;
     }
 
     return getImage(name, imageSize);
@@ -143,11 +146,12 @@ QImage *ImageCache::getImage(const char *name, IconSize size)
 
 QImage *ImageCache::getImage(const char *nameWithSize)
 {
-    if(imagesWithSize.find(nameWithSize) != imagesWithSize.end())
+    if (imagesWithSize.find(nameWithSize) != imagesWithSize.end())
         return imagesWithSize[nameWithSize];
     // qDebug() << "ImageCache: Image" << nameWithSize << "not found!";
     return unknownImage;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

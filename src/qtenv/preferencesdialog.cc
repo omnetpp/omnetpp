@@ -31,8 +31,7 @@ PreferencesDialog::PreferencesDialog(int defaultPage, QWidget *parent) :
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
 
-    if(defaultPage == InspectorUtil::TAB_NOTDEFINED)
-    {
+    if (defaultPage == InspectorUtil::TAB_NOTDEFINED) {
         QVariant variant = getQtenv()->getPref("preferences-dialog-page");
         ui->tabWidget->setCurrentIndex(variant.isValid() ? variant.value<int>() : 0);
     }
@@ -147,20 +146,18 @@ void PreferencesDialog::accept()
     getQtenv()->opt->updateFreqExpress = ui->express->text().toLong();
     getQtenv()->setSilentEventFilters(ui->excludMsgEdit->toPlainText().toStdString().c_str());
     QString n = ui->overall->text();
-    if(n.isEmpty() || n.toInt() != 0)
-    {
+    if (n.isEmpty() || n.toInt() != 0) {
         int historySize = n.toInt();
-        if(!n.isEmpty() && historySize < 100)
+        if (!n.isEmpty() && historySize < 100)
             historySize = 100;
         getQtenv()->getLogBuffer()->setMaxNumEntries(historySize);
     }
 
     n = ui->scrollback->text();
-    if(n.isEmpty() || n.toInt() != 0)
-    {
+    if (n.isEmpty() || n.toInt() != 0) {
         int scrollBack = n.toInt();
-        if(!n.isEmpty() && scrollBack < 500)
-             scrollBack = 500;
+        if (!n.isEmpty() && scrollBack < 500)
+            scrollBack = 500;
         getQtenv()->opt->scrollbackLimit = scrollBack;
     }
 
@@ -238,12 +235,15 @@ void PreferencesDialog::accept()
     QDialog::accept();
 }
 
-void PreferencesDialog::onAnimationSliderMoved(int value) {
-    if (value > 95 && value < 105) value = 100;
+void PreferencesDialog::onAnimationSliderMoved(int value)
+{
+    if (value > 95 && value < 105)
+        value = 100;
     getQtenv()->setAnimationSpeed(value / 100.0);
 }
 
-void PreferencesDialog::onAnimationSpeedChanged(float speed) {
+void PreferencesDialog::onAnimationSpeedChanged(float speed)
+{
     ui->animSpeedSlider->setValue(speed * 100);
 }
 
@@ -252,5 +252,6 @@ PreferencesDialog::~PreferencesDialog()
     delete ui;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

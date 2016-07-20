@@ -54,27 +54,29 @@ class GenericObjectInspectorFactory : public InspectorFactory
 
 Register_InspectorFactory(GenericObjectInspectorFactory);
 
-// ---- HighlighterItemDelegate declaration ----
+//---- HighlighterItemDelegate declaration ----
 
 // uses a QTextLayout to highlight a part of the displayed text
 // which is given by a HighlightRegion, returned by the tree model
-class HighlighterItemDelegate : public QStyledItemDelegate {
-public:
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+class HighlighterItemDelegate : public QStyledItemDelegate
+{
+  public:
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex& index) const;
 };
 
+//---- GenericObjectInspector implementation ----
 
-// ---- GenericObjectInspector implementation ----
-
-const std::vector<std::string> GenericObjectInspector::containerTypes =
-  {"cArray", "cQueue", "cFutureEventSet", "cSimpleModule",
-   "cModule", "cChannel", "cRegistrationList", "cCanvas"};
+const std::vector<std::string> GenericObjectInspector::containerTypes = {
+    "cArray", "cQueue", "cFutureEventSet", "cSimpleModule",
+    "cModule", "cChannel", "cRegistrationList", "cCanvas"
+};
 
 const QString GenericObjectInspector::PREF_MODE = "mode";
 
-GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f) {
+GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
+{
     treeView = new QTreeView(this);
     treeView->setHeaderHidden(true);
     treeView->setItemDelegate(new HighlighterItemDelegate());
@@ -85,7 +87,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     if (!isTopLevel) {
         // aligning right
-        QWidget* spacer = new QWidget();
+        QWidget *spacer = new QWidget();
         spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         toolbar->addWidget(spacer);
     }
@@ -95,7 +97,8 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     if (isTopLevel) {
         addTopLevelToolBarActions(toolbar);
-    } else {
+    }
+    else {
         goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
         goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
         goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
@@ -116,11 +119,13 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
 }
 
-GenericObjectInspector::~GenericObjectInspector() {
+GenericObjectInspector::~GenericObjectInspector()
+{
     delete model;
 }
 
-void GenericObjectInspector::addModeActions(QToolBar *toolbar) {
+void GenericObjectInspector::addModeActions(QToolBar *toolbar)
+{
     // mode selection
     toGroupedModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_grouped.png"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
     toGroupedModeAction->setCheckable(true);
@@ -144,14 +149,15 @@ void GenericObjectInspector::recreateModel()
     delete model;
     model = newModel;
 
-    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
+    connect(model, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(onDataChanged()));
 }
 
-void GenericObjectInspector::mousePressEvent(QMouseEvent *event) {
+void GenericObjectInspector::mousePressEvent(QMouseEvent *event)
+{
     switch (event->button()) {
-    case Qt::XButton1: goBack();      break;
-    case Qt::XButton2: goForward();   break;
-    default: /* shut up, compiler! */ break;
+        case Qt::XButton1: goBack(); break;
+        case Qt::XButton2: goForward(); break;
+        default: /* shut up, compiler! */ break;
     }
 }
 
@@ -161,20 +167,23 @@ void GenericObjectInspector::closeEvent(QCloseEvent *event)
     setPref(PREF_MODE, (int)mode);
 }
 
-void GenericObjectInspector::onTreeViewActivated(QModelIndex index) {
+void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
+{
     auto object = model->getCObjectPointer(index);
     if (object)
         setObject(object);
 }
 
-void GenericObjectInspector::onDataChanged() {
+void GenericObjectInspector::onDataChanged()
+{
     getQtenv()->refreshInspectors();
 }
 
-void GenericObjectInspector::createContextMenu(QPoint pos) {
+void GenericObjectInspector::createContextMenu(QPoint pos)
+{
     cObject *object = model->getCObjectPointer(treeView->indexAt(pos));
     if (object) {
-        QVector<cObject*> objects;
+        QVector<cObject *> objects;
         objects.push_back(object);
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
         menu->exec(treeView->mapToGlobal(pos));
@@ -195,8 +204,8 @@ void GenericObjectInspector::setMode(Mode mode)
     setPref(PREF_MODE, (int)mode);
 }
 
-void GenericObjectInspector::doSetObject(cObject *obj) {
-
+void GenericObjectInspector::doSetObject(cObject *obj)
+{
     QSet<QString> expanded = model->getExpandedNodesIn(treeView);
 
     Inspector::doSetObject(obj);
@@ -204,9 +213,9 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
     auto defaultMode = Mode::GROUPED;
 
     if (obj
-         && obj != getObject()
-         && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))) {
-            defaultMode = Mode::CHILDREN;
+        && obj != getObject()
+        && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))) {
+        defaultMode = Mode::CHILDREN;
     }
 
     // will recreate the model for the new object
@@ -215,14 +224,15 @@ void GenericObjectInspector::doSetObject(cObject *obj) {
     model->expandNodesIn(treeView, expanded);
 }
 
-void GenericObjectInspector::refresh() {
+void GenericObjectInspector::refresh()
+{
     Inspector::refresh();
     doSetObject(object);
 }
 
-// ---- HighlighterItemDelegate implementation ----
+//---- HighlighterItemDelegate implementation ----
 
-void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     // drawing the selection background and focus rectangle, but no text
     QStyledItemDelegate::paint(painter, option, QModelIndex());
@@ -248,7 +258,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
                            icon.pixmap(option.decorationSize).toImage());
     }
 
-    //Text from item
+    // Text from item
     QString text = index.data(Qt::DisplayRole).toString();
 
     // the formatted regions
@@ -292,7 +302,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     painter->restore();
 }
 
-void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     // setting the initial geometry which covers the entire line
     QStyledItemDelegate::updateEditorGeometry(editor, option, index);
@@ -313,19 +323,20 @@ void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     // moving the editor horizontally and setting its width as computed
     auto geom = editor->geometry();
     geom.translate(editorLeft, 0);
-    geom.setWidth(qMax(20, editorWidth)); // so empty values can be edited too
+    geom.setWidth(qMax(20, editorWidth));  // so empty values can be edited too
     editor->setGeometry(geom);
 }
 
-void HighlighterItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+void HighlighterItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex& index) const
 {
     try {
         QStyledItemDelegate::setModelData(editor, model, index);
-    } catch (std::exception &e) {
+    }
+    catch (std::exception& e) {
         QMessageBox::warning(editor, "Error editing item: " + index.data().toString(), e.what(), QMessageBox::StandardButton::Ok);
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

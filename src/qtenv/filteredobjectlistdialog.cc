@@ -97,7 +97,7 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
 
-    if(ptr == nullptr)
+    if (ptr == nullptr)
         ptr = getSimulation();
 
     setWindowFlags(Qt::WindowStaysOnTopHint);
@@ -112,12 +112,10 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     variant = getQtenv()->getPref("filtobjlist-name");
     QString name = variant.isValid() ? variant.value<QString>() : "";
     variant = getQtenv()->getPref("filtobjlist-width");
-    if(variant.isValid())
-    {
+    if (variant.isValid()) {
         int width = variant.value<int>();
         variant = getQtenv()->getPref("filtobjlist-height");
-        if(variant.isValid())
-        {
+        if (variant.isValid()) {
             int height = variant.value<int>();
             resize(width, height);
         }
@@ -139,7 +137,7 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     variant = getQtenv()->getPref("cat-m", QVariant::fromValue(true));
     ui->modulesCheckBox->setChecked(variant.value<bool>());
     variant = getQtenv()->getPref("cat-p", QVariant::fromValue(true));
-    ui->paramCheckBox->setChecked( variant.value<bool>());
+    ui->paramCheckBox->setChecked(variant.value<bool>());
     variant = getQtenv()->getPref("cat-q", QVariant::fromValue(true));
     ui->queuesCheckBox->setChecked(variant.value<bool>());
     variant = getQtenv()->getPref("cat-s", QVariant::fromValue(true));
@@ -159,11 +157,10 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     inspectorListBoxView->setModel(inspectorListBox);
 
     variant = getQtenv()->getPref("objdialog:columnwidths");
-    if(variant.isValid())
-    {
+    if (variant.isValid()) {
         QString widths = variant.value<QString>();
         QStringList columnWidths = widths.split("#");
-        for(int i = 0; i < columnWidths.size(); ++i)
+        for (int i = 0; i < columnWidths.size(); ++i)
             inspectorListBoxView->setColumnWidth(i, columnWidths[i].toInt());
     }
 
@@ -172,12 +169,12 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     layout->addWidget(inspectorListBoxView);
 
     connect(inspectorListBoxView, SIGNAL(activated(QModelIndex)), this, SLOT(inspect(QModelIndex)));
-    connect(inspectorListBoxView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(onListBoxSelectionChanged(QItemSelection,QItemSelection)));
+    connect(inspectorListBoxView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(onListBoxSelectionChanged(QItemSelection, QItemSelection)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     // geometry
     QByteArray geometry = getQtenv()->getPref("filtobjlist-geometry", QByteArray()).value<QByteArray>();
-    if(!geometry.isEmpty())
+    if (!geometry.isEmpty())
         restoreGeometry(geometry);
 }
 
@@ -188,17 +185,16 @@ void FilteredObjectListDialog::onFontChanged()
 
 void FilteredObjectListDialog::inspect(QModelIndex index)
 {
-    if(!index.isValid())
+    if (!index.isValid())
         return;
 
     QVariant variant = getQtenv()->getPref("outofdate");
     bool outOfDate = variant.isValid() ? variant.value<bool>() : true;
     bool isRunning = getQtenv()->getMainWindow()->isRunning();
 
-    if(outOfDate || isRunning)
-    {
+    if (outOfDate || isRunning) {
         QString advice;
-        if(isRunning)
+        if (isRunning)
             advice = "please stop the simulation and click Refresh first";
         else
             advice = "please click Refresh first";
@@ -209,12 +205,13 @@ void FilteredObjectListDialog::inspect(QModelIndex index)
         return;
     }
 
-    cObject* object = static_cast<cObject*>(index.internalPointer());
+    cObject *object = static_cast<cObject *>(index.internalPointer());
     // XXX should call the future objectPicked method
     getQtenv()->inspect(object, INSP_DEFAULT, true);
 }
 
-void FilteredObjectListDialog::onListBoxSelectionChanged(QItemSelection selected, QItemSelection /*deselected*/) {
+void FilteredObjectListDialog::onListBoxSelectionChanged(QItemSelection selected, QItemSelection  /*deselected*/)
+{
     cObject *object = selected.indexes().front().data(Qt::UserRole).value<cObject *>();
     if (object)
         // XXX should emit signal here, directly calling the handler is not nice, but will work
@@ -231,7 +228,7 @@ QStringList FilteredObjectListDialog::getClassNames()
 
     // get the names
     QStringList classNames;
-    for(int i = 0; i < objsSize; ++i)
+    for (int i = 0; i < objsSize; ++i)
         classNames.push_back(objs[i]->getFullName());
 
     classNames.sort();
@@ -245,8 +242,7 @@ void FilteredObjectListDialog::refresh()
 
     cFindByPathVisitor visitor(fullPath, nullptr, -1);
     visitor.process(getSimulation());
-    if(visitor.getArraySize() == 0)
-    {
+    if (visitor.getArraySize() == 0) {
         QMessageBox::warning(this, "Error",
                 QString("Object to search in (\"") + fullPath + "\") could not be resolved.",
                 QMessageBox::StandardButton::Ok);
@@ -256,37 +252,31 @@ void FilteredObjectListDialog::refresh()
     cObject *rootObject = visitor.getArray()[0];
 
     QString className = ui->comboBox->currentText();
-    if(className.isEmpty())
+    if (className.isEmpty())
         className = "*";
 
-    try
-    {
+    try {
         checkPattern(className.toStdString().c_str());
     }
-    catch(std::exception &e)
-    {
+    catch (std::exception& e) {
         QMessageBox::warning(this, "Qtenv",
                 QString("Class filter pattern \"") + className + "\" has invalid syntax -- using \"*\" instead.",
                 QMessageBox::StandardButton::Ok);
         className = "*";
     }
-
     QString name = ui->fullPathEdit->text();
-    if(name.isEmpty())
+    if (name.isEmpty())
         name = "*";
 
-    try
-    {
+    try {
         checkPattern(name.toStdString().c_str());
     }
-    catch(std::exception &e)
-    {
+    catch (std::exception& e) {
         QMessageBox::warning(this, "Qtenv",
                 QString("Name filter pattern \"") + name + "\" has invalid syntax -- using \"*\" instead.",
                 QMessageBox::StandardButton::Ok);
         className = "*";
     }
-
     // get list
     QVariant variant = getQtenv()->getPref("filtobjlist-maxcount");
     int maxCount = variant.isValid() ? variant.value<int>() : 1000;
@@ -295,29 +285,27 @@ void FilteredObjectListDialog::refresh()
 
     // ask user if too many...
     QMessageBox::StandardButton viewAll = QMessageBox::StandardButton::Ok;
-    if (num == maxCount)
-    {
+    if (num == maxCount) {
         viewAll = QMessageBox::warning(this, "Too many objects",
-                QString("Your query matched at least %1 objects, click OK to display them.").arg(num),
-                QMessageBox::StandardButton::Ok | QMessageBox::StandardButton::Cancel);
+                    QString("Your query matched at least %1 objects, click OK to display them.").arg(num),
+                    QMessageBox::StandardButton::Ok | QMessageBox::StandardButton::Cancel);
     }
 
     // clear listbox
     inspectorListBoxView->model()->removeRow(0);
 
     // insert into listbox
-    if (viewAll == QMessageBox::StandardButton::Ok)
-    {
-        if(num == maxCount)
+    if (viewAll == QMessageBox::StandardButton::Ok) {
+        if (num == maxCount)
             ui->label->setText("The first " + QString::number(num) + " objects found:");
         else
             ui->label->setText("Found " + QString::number(num) + " objects:");
 
-        QVector<cObject*> objects;
-        for(int i = 0; i < num; ++i)
+        QVector<cObject *> objects;
+        for (int i = 0; i < num; ++i)
             objects.push_back(objList[i]);
 
-        static_cast<InspectorListBox*>(inspectorListBoxView->model())->setObjects(objects);
+        static_cast<InspectorListBox *>(inspectorListBoxView->model())->setObjects(objects);
     }
 
     getQtenv()->setPref("outofdate", false);
@@ -331,21 +319,21 @@ cObject **FilteredObjectListDialog::getSubObjectsFilt(cObject *object, const cha
 
     unsigned int category = 0;
 
-    if(ui->modulesCheckBox->isChecked())
+    if (ui->modulesCheckBox->isChecked())
         category |= CATEGORY_MODULES;
-    if(ui->paramCheckBox->isChecked())
+    if (ui->paramCheckBox->isChecked())
         category |= CATEGORY_MODPARAMS;
-    if(ui->queuesCheckBox->isChecked())
+    if (ui->queuesCheckBox->isChecked())
         category |= CATEGORY_QUEUES;
-    if(ui->outVectorsCheckBox->isChecked())
+    if (ui->outVectorsCheckBox->isChecked())
         category |= CATEGORY_STATISTICS;
-    if(ui->messagesCheckBox->isChecked())
+    if (ui->messagesCheckBox->isChecked())
         category |= CATEGORY_MESSAGES;
-    if(ui->gatesCheckBox->isChecked())
+    if (ui->gatesCheckBox->isChecked())
         category |= CATEGORY_CHANSGATES;
-    if(ui->fsmCheckBox->isChecked())
+    if (ui->fsmCheckBox->isChecked())
         category |= CATEGORY_VARIABLES;
-    if(ui->otherCheckBox->isChecked())
+    if (ui->otherCheckBox->isChecked())
         category |= CATEGORY_OTHERS;
 
     // get filtered list
@@ -357,7 +345,7 @@ cObject **FilteredObjectListDialog::getSubObjectsFilt(cObject *object, const cha
 
     cObject **array = visitor.getArray();
     cObject **objs = new cObject *[num];
-    for(int i = 0; i < num; ++i)
+    for (int i = 0; i < num; ++i)
         objs[i] = array[i];
 
     return objs;
@@ -392,7 +380,7 @@ FilteredObjectListDialog::~FilteredObjectListDialog()
     getQtenv()->setPref("filtobjlist-height", height());
 
     QString widths = "";
-    for(int i = 0; i < inspectorListBoxView->model()->columnCount(); ++i)
+    for (int i = 0; i < inspectorListBoxView->model()->columnCount(); ++i)
         widths += QString::number(inspectorListBoxView->columnWidth(i)) + "#";
 
     getQtenv()->setPref("objdialog:columnwidths", widths);
@@ -401,5 +389,6 @@ FilteredObjectListDialog::~FilteredObjectListDialog()
     delete ui;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

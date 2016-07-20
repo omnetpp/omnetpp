@@ -25,8 +25,8 @@
 namespace omnetpp {
 namespace qtenv {
 
-
-void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate, cGate *destGate, bool twoWay) {
+void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate, cGate *destGate, bool twoWay)
+{
     cChannel *chan = gate->getChannel();
 
     cDisplayString ds = chan && chan->hasDisplayString() && chan->parametersFinalized()
@@ -37,7 +37,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     std::string buffer;
     ds = substituteDisplayStringParamRefs(ds, buffer, chan, true);
 
-    ci->setData(1, QVariant::fromValue((cObject*)gate));
+    ci->setData(1, QVariant::fromValue((cObject *)gate));
 
     ci->setToolTip(ds.getTagArg("tt", 0));
 
@@ -45,7 +45,7 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
 
     bool ok;
     double width = QString(ds.getTagArg("ls", 1)).toDouble(&ok);
-    ci->setWidth(width); // will display even with 0 width, as hairline
+    ci->setWidth(width);  // will display even with 0 width, as hairline
 
     // explicit 0 width, so hiding the line completely
     if (ok && width == 0)
@@ -64,9 +64,9 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     const char *textPos = ds.getTagArg("t", 1);
 
     switch (textPos[0]) {
-    case 'l': ci->setTextPosition(Qt::AlignLeft);   break;
-    case 'r': ci->setTextPosition(Qt::AlignRight);  break;
-    default:  ci->setTextPosition(Qt::AlignCenter); break;
+        case 'l': ci->setTextPosition(Qt::AlignLeft);   break;
+        case 'r': ci->setTextPosition(Qt::AlignRight);  break;
+        default:  ci->setTextPosition(Qt::AlignCenter); break;
     }
 
     ci->setTextColor(parseColor(ds.getTagArg("t", 2), QColor("#005030")));
@@ -77,8 +77,9 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     ci->setLineEnabled(!(twoWay && (gate->getOwnerModule() > destGate->getOwnerModule())));
 }
 
-void ConnectionItem::updateLineItem() {
-    if (!lineEnabled || (dest == src)) { // not drawing the line if the conn would be 0 long
+void ConnectionItem::updateLineItem()
+{
+    if (!lineEnabled || (dest == src)) {  // not drawing the line if the conn would be 0 long
         lineItem->setPen(Qt::NoPen);
         return;
     }
@@ -89,21 +90,17 @@ void ConnectionItem::updateLineItem() {
         QPointF dir = dest - src;
         double length = std::sqrt(dir.x() * dir.x() + dir.y() * dir.y());
         lineItem->setLine(QLineF(src, dest - dir / length * lineWidth * 2));
-    } else {
+    }
+    else {
         lineItem->setLine(QLineF(src, dest));
     }
     QPen pen(lineColor, lineWidth);
     pen.setCapStyle(Qt::FlatCap);
 
     switch (lineStyle) {
-    case Qt::DashLine:
-        pen.setDashPattern(QVector<double>() << 2 << 2);
-        break;
-    case Qt::DotLine:
-        pen.setDashPattern(QVector<double>() << 1 << 1);
-        break;
-    default:
-        pen.setStyle(Qt::SolidLine);
+        case Qt::DashLine: pen.setDashPattern(QVector<double>() << 2 << 2); break;
+        case Qt::DotLine: pen.setDashPattern(QVector<double>() << 1 << 1); break;
+        default: pen.setStyle(Qt::SolidLine);
     }
 
     pen.setDashOffset(dashOffset);
@@ -111,7 +108,8 @@ void ConnectionItem::updateLineItem() {
     lineItem->setPen(pen);
 }
 
-void ConnectionItem::updateTextItem() {
+void ConnectionItem::updateTextItem()
+{
     textItem->setText(text);
     textItem->setBrush(textColor);
 
@@ -119,23 +117,24 @@ void ConnectionItem::updateTextItem() {
     QPointF textSize(textRect.width(), textRect.height());
 
     switch (textAlignment) {
-    case Qt::AlignLeft:
-        textItem->setPos(0.75 * src + 0.25 * dest - textSize * 0.5);
-        break;
-    case Qt::AlignRight:
-        textItem->setPos(0.25 * src + 0.75 * dest - textSize * 0.5);
-        break;
-    default: // Center
-        textItem->setPos(0.5 * src + 0.5 * dest
-                          - QPoint(textSize.x() * 0.5,
-                                   ((src.x()==dest.x()) ? (src.y()<dest.y()) : (src.x()<dest.x()))
-                                    ? 0
-                                    : textSize.y()));
+        case Qt::AlignLeft:
+            textItem->setPos(0.75 * src + 0.25 * dest - textSize * 0.5);
+            break;
+        case Qt::AlignRight:
+            textItem->setPos(0.25 * src + 0.75 * dest - textSize * 0.5);
+            break;
+        default: // Center
+            textItem->setPos(0.5 * src + 0.5 * dest
+                              - QPoint(textSize.x() * 0.5,
+                                       ((src.x()==dest.x()) ? (src.y()<dest.y()) : (src.x()<dest.x()))
+                                        ? 0
+                                        : textSize.y()));
     }
 }
 
-void ConnectionItem::updateArrowItem() {
-    if (!arrowItem->isVisible() || (dest == src)) { // no arrow for a 0 long connection
+void ConnectionItem::updateArrowItem()
+{
+    if (!arrowItem->isVisible() || (dest == src)) {  // no arrow for a 0 long connection
         arrowItem->setVisible(false);
         return;
     }
@@ -152,16 +151,18 @@ ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
 {
     lineItem = new QGraphicsLineItem(this);
     textItem = new OutlinedTextItem(this);
-    //TODO arrowItem disappear when a part of lineItem is out of view.
+    // TODO arrowItem disappear when a part of lineItem is out of view.
     arrowItem = new GraphicsPathArrowItem(lineItem);
 }
 
-ConnectionItem::~ConnectionItem() {
+ConnectionItem::~ConnectionItem()
+{
     delete lineItem;
     delete textItem;
 }
 
-void ConnectionItem::setSource(const QPointF &source){
+void ConnectionItem::setSource(const QPointF& source)
+{
     if (src != source) {
         src = source;
         updateLineItem();
@@ -170,7 +171,8 @@ void ConnectionItem::setSource(const QPointF &source){
     }
 }
 
-void ConnectionItem::setDestination(const QPointF &destination) {
+void ConnectionItem::setDestination(const QPointF& destination)
+{
     if (dest != destination) {
         dest = destination;
         updateLineItem();
@@ -179,12 +181,14 @@ void ConnectionItem::setDestination(const QPointF &destination) {
     }
 }
 
-void ConnectionItem::setLine(const QLineF &line) {
+void ConnectionItem::setLine(const QLineF& line)
+{
     setSource(line.p1());
     setDestination(line.p2());
 }
 
-void ConnectionItem::setWidth(double width) {
+void ConnectionItem::setWidth(double width)
+{
     if (width != lineWidth) {
         lineWidth = width;
         updateLineItem();
@@ -192,7 +196,8 @@ void ConnectionItem::setWidth(double width) {
     }
 }
 
-void ConnectionItem::setColor(const QColor &color) {
+void ConnectionItem::setColor(const QColor& color)
+{
     if (color != lineColor) {
         lineColor = color;
         updateLineItem();
@@ -200,7 +205,8 @@ void ConnectionItem::setColor(const QColor &color) {
     }
 }
 
-void ConnectionItem::setLineStyle(Qt::PenStyle style) {
+void ConnectionItem::setLineStyle(Qt::PenStyle style)
+{
     ASSERT2(style == Qt::SolidLine
              || style == Qt::DashLine
              || style == Qt::DotLine,
@@ -212,21 +218,24 @@ void ConnectionItem::setLineStyle(Qt::PenStyle style) {
     }
 }
 
-void ConnectionItem::setDashOffset(double offset) {
+void ConnectionItem::setDashOffset(double offset)
+{
     if (dashOffset != offset) {
         dashOffset = offset;
         updateLineItem();
     }
 }
 
-void ConnectionItem::setText(const QString &text) {
+void ConnectionItem::setText(const QString& text)
+{
     if (this->text != text) {
         this->text = text;
         updateTextItem();
     }
 }
 
-void ConnectionItem::setTextPosition(Qt::Alignment alignment) {
+void ConnectionItem::setTextPosition(Qt::Alignment alignment)
+{
     ASSERT2(alignment == Qt::AlignLeft
              || alignment == Qt::AlignRight
              || alignment == Qt::AlignCenter,
@@ -238,29 +247,34 @@ void ConnectionItem::setTextPosition(Qt::Alignment alignment) {
     }
 }
 
-void ConnectionItem::setTextBackgroundColor(const QColor &color) {
+void ConnectionItem::setTextBackgroundColor(const QColor& color)
+{
     textItem->setBackgroundBrush(color);
 }
 
-void ConnectionItem::setTextOutlineColor(const QColor &color) {
+void ConnectionItem::setTextOutlineColor(const QColor& color)
+{
     textItem->setPen(color);
 }
 
-void ConnectionItem::setTextColor(const QColor &color) {
+void ConnectionItem::setTextColor(const QColor& color)
+{
     if (textColor != color) {
         textColor = color;
         updateTextItem();
     }
 }
 
-void ConnectionItem::setLineEnabled(bool enabled) {
+void ConnectionItem::setLineEnabled(bool enabled)
+{
     if (enabled != lineEnabled) {
         lineEnabled = enabled;
         updateLineItem();
     }
 }
 
-void ConnectionItem::setArrowEnabled(bool enabled) {
+void ConnectionItem::setArrowEnabled(bool enabled)
+{
     if (enabled != arrowItem->isVisible()) {
         arrowItem->setVisible(enabled);
         updateLineItem();
@@ -268,18 +282,21 @@ void ConnectionItem::setArrowEnabled(bool enabled) {
     }
 }
 
-QRectF ConnectionItem::boundingRect() const{
-    return QRectF(src, dest).normalized() // adjusting to make it easier to pick
-            .adjusted(-clickThreshold, -clickThreshold, clickThreshold, clickThreshold);
+QRectF ConnectionItem::boundingRect() const
+{
+    return QRectF(src, dest).normalized()  // adjusting to make it easier to pick
+                   .adjusted(-clickThreshold, -clickThreshold, clickThreshold, clickThreshold);
 }
 
-void ConnectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void ConnectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     // nothing to do here
 }
 
 // so the tooltip will not appear while hovering anywhere in the bounding rect, only on the line
-QPainterPath ConnectionItem::shape() const {
-    QPainterPath shape = lineItem->shape(); // even if it is not enabled, because it is most likely half of a bidirectional
+QPainterPath ConnectionItem::shape() const
+{
+    QPainterPath shape = lineItem->shape();  // even if it is not enabled, because it is most likely half of a bidirectional
 
     // expanding the path to make the connection easier to pick
     // thanks: http://stackoverflow.com/a/5732289
@@ -290,5 +307,6 @@ QPainterPath ConnectionItem::shape() const {
     return (stroker.createStroke(shape) + shape).simplified();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

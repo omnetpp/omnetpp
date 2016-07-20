@@ -22,7 +22,8 @@
 namespace omnetpp {
 namespace qtenv {
 
-FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure) {
+FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure)
+{
     return FigureRenderer::getRendererFor(figure);
 }
 
@@ -39,7 +40,7 @@ void CanvasRenderer::setLayer(GraphicsLayer *layer, cCanvas *canvas, GraphicsLay
     this->canvas = canvas;
     this->networkLayer = networkLayer;
 
-    if(networkLayer)
+    if (networkLayer)
         this->layer->addItem(networkLayer);
 
     // ASSERT(canvas);
@@ -54,7 +55,7 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
 
 void CanvasRenderer::redraw(FigureRenderingHints *hints)
 {
-    if(networkLayer)
+    if (networkLayer)
         layer->removeItem(networkLayer);
 
     layer->clear();
@@ -66,9 +67,8 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
         transform.scale(hints->zoom);
         drawFigureRec(canvas->getRootFigure(), transform, hints);
     }
-    else
-    {
-        if(networkLayer)
+    else {
+        if (networkLayer)
             layer->addItem(networkLayer);
     }
 }
@@ -127,9 +127,10 @@ void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& pa
         for (int i = 0; i < figure->getNumFigures(); i++)
             drawFigureRec(figure->getFigure(i), transform, hints);
 
-        if(canvas->getSubmodulesLayer() == figure)
-            if(networkLayer)
+        if (canvas->getSubmodulesLayer() == figure)
+            if (networkLayer)
                 layer->addItem(networkLayer);
+
     }
 }
 
@@ -179,5 +180,6 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform&
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -29,10 +29,10 @@ ComboSelectionDialog::ComboSelectionDialog(QString netName, QStringList networkN
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
 
-    if(!netName.isEmpty() && !networkNames.contains(netName))
+    if (!netName.isEmpty() && !networkNames.contains(netName))
         ui->comboBox->addItem(netName);
     ui->comboBox->addItems(networkNames);
-    if(!netName.isEmpty())
+    if (!netName.isEmpty())
         ui->comboBox->setCurrentIndex(ui->comboBox->findText(netName));
 }
 
@@ -46,5 +46,6 @@ QString ComboSelectionDialog::getSelectedNetName()
     return ui->comboBox->currentText();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

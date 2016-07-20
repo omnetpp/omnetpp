@@ -19,12 +19,13 @@
 #include "omnetpp/cmessage.h"
 #include "logbuffer.h"
 
-#define emit // Qt...
+#define emit    // Qt...
 
 namespace omnetpp {
 namespace qtenv {
 
-bool LogBuffer::Entry::isEvent() {
+bool LogBuffer::Entry::isEvent()
+{
     return componentId > 0;
 }
 
@@ -174,7 +175,7 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 
 void LogBuffer::endSend(cMessage *msg)
 {
-    emit messageSendAdded(); // TODO but endSend() is not called when msg is discarded in the channel!
+    emit messageSendAdded();  // TODO but endSend() is not called when msg is discarded in the channel!
 }
 
 void LogBuffer::setMaxNumEntries(int limit)
@@ -240,6 +241,6 @@ void LogBuffer::dump() const
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

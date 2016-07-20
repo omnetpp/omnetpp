@@ -359,6 +359,6 @@ QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, /
     return QLineF(src_x, src_y, dest_x, dest_y);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

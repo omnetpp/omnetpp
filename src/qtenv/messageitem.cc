@@ -23,13 +23,14 @@ namespace qtenv {
 
 QVector<QColor> MessageItemUtil::msgKindColors;
 
-void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, double imageSizeFactor) {
+void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, double imageSizeFactor)
+{
     if (msgKindColors.isEmpty())
         msgKindColors << "red" << "green" << "blue" << "white" << "yellow" << "cyan" << "magenta" << "black";
 
     cDisplayString ds = msg->getDisplayString();
 
-    mi->setData(1, QVariant::fromValue((cObject*)msg));
+    mi->setData(1, QVariant::fromValue((cObject *)msg));
 
     QtenvOptions *opt = getQtenv()->opt;
 
@@ -41,14 +42,14 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
     mi->setText(label);
 
     if (!ds.str()[0] && opt->penguinMode)
-        ds = "i=abstract/penguin_s"; // ^^,
+        ds = "i=abstract/penguin_s";  // ^^,
 
     // no zoom factor, it doesn't affect messages
     mi->setImageSizeFactor(imageSizeFactor);
 
     QColor kindColor = msgKindColors[msg->getKind() % msgKindColors.size()];
 
-    if (!ds.str()[0]) { // default little red dot
+    if (!ds.str()[0]) {  // default little red dot
         QColor color = opt->animationMsgColors ? kindColor : "red";
         mi->setShape(MessageItem::SHAPE_OVAL);
         mi->setWidth(10);
@@ -56,13 +57,16 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
         mi->setFillColor(color);
         mi->setOutlineColor(color);
         mi->setImage(nullptr);
-    } else { // as defined in the dispstr
+    }
+    else {  // as defined in the dispstr
         bool widthOk, heightOk;
         double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
         double shapeHeight = QString(ds.getTagArg("b", 1)).toDouble(&heightOk);
 
-        if (!widthOk) shapeWidth = shapeHeight;
-        if (!heightOk) shapeHeight = shapeWidth;
+        if (!widthOk)
+            shapeWidth = shapeHeight;
+        if (!heightOk)
+            shapeHeight = shapeWidth;
         if (!widthOk && !heightOk) {
             shapeWidth = 10;
             shapeHeight = 10;
@@ -115,69 +119,79 @@ MessageItem::MessageItem(QGraphicsItem *parent) :
     updateShapeItem();
 }
 
-MessageItem::~MessageItem() {
+MessageItem::~MessageItem()
+{
     delete shapeItem;
     delete imageItem;
     delete textItem;
 }
 
-void MessageItem::setImageSizeFactor(double imageSize) {
+void MessageItem::setImageSizeFactor(double imageSize)
+{
     if (imageSizeFactor != imageSize) {
         imageSizeFactor = imageSize;
         updateImageItem();
     }
 }
 
-void MessageItem::setText(const QString &text) {
+void MessageItem::setText(const QString& text)
+{
     if (this->text != text) {
         this->text = text;
         updateTextItem();
     }
 }
 
-void MessageItem::setShape(Shape shape) {
+void MessageItem::setShape(Shape shape)
+{
     if (this->shape != shape) {
         this->shape = shape;
         updateShapeItem();
     }
 }
 
-void MessageItem::setWidth(double width) {
+void MessageItem::setWidth(double width)
+{
     if (shapeWidth != width) {
         shapeWidth = width;
         updateShapeItem();
     }
 }
 
-void MessageItem::setHeight(double height) {
+void MessageItem::setHeight(double height)
+{
     if (shapeHeight != height) {
         shapeHeight = height;
         updateShapeItem();
     }
 }
 
-void MessageItem::setFillColor(const QColor &color) {
+void MessageItem::setFillColor(const QColor& color)
+{
     if (this->shapeFillColor != color) {
         this->shapeFillColor = color;
         updateShapeItem();
     }
 }
 
-void MessageItem::setOutlineColor(const QColor &color) {
+void MessageItem::setOutlineColor(const QColor& color)
+{
     if (this->shapeOutlineColor != color) {
         this->shapeOutlineColor = color;
         updateShapeItem();
     }
 }
 
-void MessageItem::setOutlineWidth(double width) {
+void MessageItem::setOutlineWidth(double width)
+{
     if (shapeOutlineWidth != width) {
         shapeOutlineWidth = width;
         updateShapeItem();
     }
 }
 
-void MessageItem::setImage(QImage *image) {
+void MessageItem::setImage(QImage *image)
+{
     if (this->image != image) {
         this->image = image;
         updateImageItem();
@@ -185,27 +199,32 @@ void MessageItem::setImage(QImage *image) {
     }
 }
 
-void MessageItem::setImageColor(const QColor &color) {
+void MessageItem::setImageColor(const QColor& color)
+{
     if (colorizeEffect) {
         colorizeEffect->setColor(color);
     }
 }
 
-void MessageItem::setImageColorPercentage(int percent) {
+void MessageItem::setImageColorPercentage(int percent)
+{
     if (colorizeEffect) {
         colorizeEffect->setStrength(percent / 100.0f);
     }
 }
 
-QRectF MessageItem::boundingRect() const {
+QRectF MessageItem::boundingRect() const
+{
     return shapeImageBoundingRect();
 }
 
-void MessageItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void MessageItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     // nothing to do here
 }
 
-QRectF MessageItem::shapeImageBoundingRect() const {
+QRectF MessageItem::shapeImageBoundingRect() const
+{
     QRectF rect;
     if (imageItem) {
         QRectF imageRect = imageItem->boundingRect();
@@ -223,14 +242,16 @@ QRectF MessageItem::shapeImageBoundingRect() const {
     return rect;
 }
 
-void MessageItem::updateTextItem() {
+void MessageItem::updateTextItem()
+{
     textItem->setText(text);
     QRectF textRect = textItem->boundingRect();
     QRectF mainRect = shapeImageBoundingRect();
     textItem->setPos(-textRect.width() / 2, mainRect.height() / 2);
 }
 
-void MessageItem::updateShapeItem() {
+void MessageItem::updateShapeItem()
+{
     delete shapeItem;
     shapeItem = nullptr;
 
@@ -240,15 +261,9 @@ void MessageItem::updateShapeItem() {
     rect = rect.adjusted(shapeOutlineWidth / 2, shapeOutlineWidth / 2, -shapeOutlineWidth / 2, -shapeOutlineWidth / 2);
 
     switch (shape) {
-    case SHAPE_OVAL:
-        shapeItem = new QGraphicsEllipseItem(rect, this);
-        break;
-    case SHAPE_RECT:
-        shapeItem = new QGraphicsRectItem(rect, this);
-        break;
-    default:
-        // nothing
-        break;
+        case SHAPE_OVAL: shapeItem = new QGraphicsEllipseItem(rect, this); break;
+        case SHAPE_RECT: shapeItem = new QGraphicsRectItem(rect, this); break;
+        default: break; // nothing
     }
 
     if (shapeItem) {
@@ -261,7 +276,8 @@ void MessageItem::updateShapeItem() {
     updateTextItem();
 }
 
-void MessageItem::updateImageItem() {
+void MessageItem::updateImageItem()
+{
     delete imageItem;
     imageItem = nullptr;
 
@@ -278,5 +294,6 @@ void MessageItem::updateImageItem() {
     updateTextItem();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -53,7 +53,7 @@ class LogInspectorFactory : public InspectorFactory
   public:
     LogInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override { return dynamic_cast<cComponent*>(obj) != nullptr; }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cComponent *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_MODULEOUTPUT; }
     double getQualityAsDefault(cObject *object) override { return 0.5; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new LogInspector(parent, isTopLevel, this); }
@@ -62,7 +62,8 @@ class LogInspectorFactory : public InspectorFactory
 Register_InspectorFactory(LogInspectorFactory);
 
 LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
-    : Inspector(parent, isTopLevel, f) {
+    : Inspector(parent, isTopLevel, f)
+{
     logBuffer = getQtenv()->getLogBuffer();
 
     componentHistory = getQtenv()->getComponentHistory();
@@ -74,13 +75,13 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     textWidget = new TextViewerWidget(this);
     textWidget->setFont(getQtenv()->getLogFont());
     QToolBar *toolBar = createToolbar(isTopLevel);
-    if(isTopLevel)
+    if (isTopLevel)
         layout->addWidget(toolBar);
 
     layout->addWidget(textWidget);
-    connect(textWidget, SIGNAL(caretMoved(int,int)), this, SLOT(onCaretMoved(int, int)));
-    connect(textWidget, SIGNAL(rightClicked(QPoint,int,int)), this, SLOT(onRightClicked(QPoint,int, int)));
-    parent->setMinimumSize(100, 50); // caution: too small widget height with heading displayed may cause notification loop!
+    connect(textWidget, SIGNAL(caretMoved(int, int)), this, SLOT(onCaretMoved(int, int)));
+    connect(textWidget, SIGNAL(rightClicked(QPoint, int, int)), this, SLOT(onRightClicked(QPoint, int, int)));
+    parent->setMinimumSize(100, 50);  // caution: too small widget height with heading displayed may cause notification loop!
 
     /*
     stringContent = new StringTextViewerContentProvider(
@@ -110,7 +111,8 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     setMode(LOG);
 }
 
-LogInspector::~LogInspector() {
+LogInspector::~LogInspector()
+{
     if (mode == MESSAGES) {
         saveColumnWidths();
     }
@@ -128,8 +130,7 @@ const QString LogInspector::PREF_SAVE_FILENAME = "savefilename";
 QToolBar *LogInspector::createToolbar(bool isTopLevel)
 {
     QToolBar *toolBar = new QToolBar();
-    if(isTopLevel)
-    {
+    if (isTopLevel) {
         addTopLevelToolBarActions(toolBar);
 
         toolBar->addSeparator();
@@ -158,8 +159,7 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()))->setShortcut(
                     QKeySequence(Qt::Key_F8));
     }
-    else
-    {
+    else {
         toolBar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard (Ctrl+C)",
                            textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
         toolBar->addAction(QIcon(":/tools/icons/tools/find.png"), "Find string in window (Ctrl+F)",
@@ -197,22 +197,24 @@ void LogInspector::addModeActions(QToolBar *toolBar)
     toolBar->addAction(toLogModeAction);
 }
 
-void LogInspector::setMode(Mode m) {
+void LogInspector::setMode(Mode m)
+{
     if (mode == MESSAGES) {
         saveColumnWidths();
     }
 
     switch (m) {
-    case LOG:
-        toLogModeAction->setChecked(true);
-        toMessagesModeAction->setChecked(false);
-        textWidget->setContentProvider(new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), LOG));
-        break;
-    case MESSAGES:
-        toMessagesModeAction->setChecked(true);
-        toLogModeAction->setChecked(false);
-        textWidget->setContentProvider(new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), MESSAGES));
-        break;
+        case LOG:
+            toLogModeAction->setChecked(true);
+            toMessagesModeAction->setChecked(false);
+            textWidget->setContentProvider(new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), LOG));
+            break;
+
+        case MESSAGES:
+            toMessagesModeAction->setChecked(true);
+            toLogModeAction->setChecked(false);
+            textWidget->setContentProvider(new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), MESSAGES));
+            break;
     }
 
     mode = m;
@@ -232,7 +234,7 @@ void LogInspector::doSetObject(cObject *obj)
 
 cComponent *LogInspector::getInspectedObject()
 {
-    return static_cast<cComponent*>(object);
+    return static_cast<cComponent *>(object);
 }
 
 QSize LogInspector::sizeHint() const
@@ -262,15 +264,16 @@ void LogInspector::stopSimulation()
     mainWindow->on_actionStop_triggered();
 }
 
-void LogInspector::refresh() {
+void LogInspector::refresh()
+{
     Inspector::refresh();
     textWidget->onContentChanged();
     textWidget->update();
     textWidget->viewport()->update();
 }
 
-
-void LogInspector::onFindButton() {
+void LogInspector::onFindButton()
+{
     auto dialog = new LogFindDialog(this, lastFindText, lastFindOptions);
     if (dialog->exec() == QDialog::Accepted) {
         lastFindText = dialog->getText();
@@ -281,7 +284,8 @@ void LogInspector::onFindButton() {
     delete dialog;
 }
 
-void LogInspector::onFilterButton() {
+void LogInspector::onFilterButton()
+{
     auto dialog = new LogFilterDialog(this, dynamic_cast<cModule *>(getInspectedObject()), excludedModuleIds);
     if (dialog->exec() == QDialog::Accepted) {
         excludedModuleIds = dialog->getExcludedModuleIds();
@@ -294,48 +298,56 @@ void LogInspector::onFilterButton() {
     delete dialog;
 }
 
-void LogInspector::onCaretMoved(int lineIndex, int column) {
-    auto msg = (cMessage*)textWidget->getContentProvider()->getUserData(lineIndex);
+void LogInspector::onCaretMoved(int lineIndex, int column)
+{
+    auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
     if (msg)
         emit selectionChanged(msg);
 }
 
-void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column) {
-    auto msg = (cMessage*)textWidget->getContentProvider()->getUserData(lineIndex);
+void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
+{
+    auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
     if (msg) {
         QMenu *menu = InspectorUtil::createInspectorContextMenu(msg, this);
         menu->exec(globalPos);
     }
 }
 
-void LogInspector::findAgain() {
+void LogInspector::findAgain()
+{
     if (!lastFindText.isEmpty())
         textWidget->find(lastFindText, lastFindOptions);
 }
 
-void LogInspector::findAgainReverse() {
+void LogInspector::findAgainReverse()
+{
     if (!lastFindText.isEmpty())
         textWidget->find(lastFindText, lastFindOptions ^ TextViewerWidget::FIND_BACKWARDS);
 }
 
-void LogInspector::toMessagesMode() {
+void LogInspector::toMessagesMode()
+{
     setMode(MESSAGES);
 }
 
-void LogInspector::toLogMode() {
+void LogInspector::toLogMode()
+{
     setMode(LOG);
 }
 
-void LogInspector::saveColumnWidths() {
+void LogInspector::saveColumnWidths()
+{
     auto widths = textWidget->getColumnWidths();
     if (!widths.isEmpty() && std::all_of(widths.begin(), widths.end(),
-                                         [](const QVariant &v){ return v.isValid(); } )) {
+                [](const QVariant& v) { return v.isValid(); })) {
         setPref(PREF_COLUMNWIDTHS, widths);
     }
 }
 
-void LogInspector::restoreColumnWidths() {
-        textWidget->setColumnWidths(getPref(PREF_COLUMNWIDTHS, QList<QVariant>()).toList());
+void LogInspector::restoreColumnWidths()
+{
+    textWidget->setColumnWidths(getPref(PREF_COLUMNWIDTHS, QList<QVariant>()).toList());
 }
 
 void LogInspector::saveContent()
@@ -352,13 +364,13 @@ void LogInspector::saveContent()
 
     QTextStream out(&file);
 
-    for(int i = 0; i < lineNumber; ++i)
+    for (int i = 0; i < lineNumber; ++i)
         out << textWidget->getContentProvider()->getLineText(i);
 
     file.close();
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

@@ -78,9 +78,8 @@ void ObjectTreeInspector::refresh()
 void ObjectTreeInspector::createContextMenu(QPoint pos)
 {
     QModelIndex index = view->indexAt(pos);
-    if(index.isValid())
-    {
-        QVector<cObject*> objects;
+    if (index.isValid()) {
+        QVector<cObject *> objects;
         objects.push_back(model->getObjectFromIndex(index));
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
         menu->exec(mapToGlobal(pos));
@@ -90,8 +89,7 @@ void ObjectTreeInspector::createContextMenu(QPoint pos)
 
 void ObjectTreeInspector::onClick(QModelIndex index)
 {
-    if(index.isValid())
-    {
+    if (index.isValid()) {
         cObject *object = model->getObjectFromIndex(index);
         emit selectionChanged(object);
     }
@@ -99,12 +97,12 @@ void ObjectTreeInspector::onClick(QModelIndex index)
 
 void ObjectTreeInspector::onDoubleClick(QModelIndex index)
 {
-    if(index.isValid())
-    {
+    if (index.isValid()) {
         cObject *object = model->getObjectFromIndex(index);
         emit objectDoubleClicked(object);
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

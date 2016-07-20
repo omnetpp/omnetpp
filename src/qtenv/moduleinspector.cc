@@ -66,8 +66,7 @@ class ModuleInspectorFactory : public InspectorFactory
 
     bool supportsObject(cObject *obj) override { return dynamic_cast<cModule *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
-    double getQualityAsDefault(cObject *object) override
-    {
+    double getQualityAsDefault(cObject *object) override {
         cModule *mod = dynamic_cast<cModule *>(object);
         return mod && mod->hasSubmodules() ? 3.0 : 0.9;
     }
@@ -123,10 +122,10 @@ void ModuleInspector::createViews(bool isTopLevel)
 
     connect(canvasViewer, SIGNAL(back()), this, SLOT(goBack()));
     connect(canvasViewer, SIGNAL(forward()), this, SLOT(goForward()));
-    connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(click(QMouseEvent*)));
-    connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent*)), this, SLOT(doubleClick(QMouseEvent*)));
+    connect(canvasViewer, SIGNAL(click(QMouseEvent *)), this, SLOT(click(QMouseEvent *)));
+    connect(canvasViewer, SIGNAL(doubleClick(QMouseEvent *)), this, SLOT(doubleClick(QMouseEvent *)));
     connect(canvasViewer, SIGNAL(dragged(QPointF)), this, SLOT(onViewerDragged(QPointF)));
-    connect(canvasViewer, SIGNAL(contextMenuRequested(std::vector<cObject*>,QPoint)), this, SLOT(createContextMenu(std::vector<cObject*>,QPoint)));
+    connect(canvasViewer, SIGNAL(contextMenuRequested(std::vector<cObject *>, QPoint)), this, SLOT(createContextMenu(std::vector<cObject *>, QPoint)));
     connect(canvasViewer, SIGNAL(marqueeZoom(QRectF)), this, SLOT(onMarqueeZoom(QRectF)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
@@ -137,7 +136,7 @@ void ModuleInspector::createViews(bool isTopLevel)
 
 #ifdef WITH_OSG
     osgViewer = new OsgViewer();
-    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject*>&)), this, SLOT(onObjectsPicked(const std::vector<cObject*>&)));
+    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject *>&)), this, SLOT(onObjectsPicked(const std::vector<cObject *>&)));
     stackedLayout->addWidget(osgViewer);
 #endif
 
@@ -147,13 +146,14 @@ void ModuleInspector::createViews(bool isTopLevel)
 
     bool onApple = false;
 #ifdef Q_WS_MAC
-    onApple = true; // couldn't get the toolbar to paint over the OsgViewer on Mac, maybe it will work with Qt5
+    onApple = true;  // couldn't get the toolbar to paint over the OsgViewer on Mac, maybe it will work with Qt5
 #endif
 
     if (isTopLevel || onApple) {
         layout->addWidget(toolbar, 0, (onApple && !isTopLevel) ? Qt::AlignRight : (Qt::Alignment)0);
         layout->addLayout(stackedLayout);
-    } else {
+    }
+    else {
         toolbarLayout = new QGridLayout(canvasViewer);
         canvasViewer->setLayout(toolbarLayout);
         toolbarLayout->addWidget(toolbar, 0, 0, Qt::AlignRight | Qt::AlignTop);
@@ -173,8 +173,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 
     if (isTopLevel)
         addTopLevelToolBarActions(toolbar);
-    else
-    {
+    else {
         // general
         goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
         goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
@@ -229,7 +228,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     Inspector::doSetObject(obj);
 
-    cModule *module = dynamic_cast<cModule*>(obj);
+    cModule *module = dynamic_cast<cModule *>(obj);
 
     canvasViewer->setObject(module);
     canvasViewer->clear();
@@ -245,7 +244,6 @@ void ModuleInspector::doSetObject(cObject *obj)
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
-
         // so they will appear on the correct places with the updated zoom levels.
         getQtenv()->getAnimator()->redrawMessages();
     }
@@ -267,7 +265,7 @@ void ModuleInspector::doSetObject(cObject *obj)
 #ifdef WITH_OSG
 cOsgCanvas *ModuleInspector::getOsgCanvas()
 {
-    cModule *module = dynamic_cast<cModule*>(getObject());
+    cModule *module = dynamic_cast<cModule *>(getObject());
     cOsgCanvas *osgCanvas = module ? module->getOsgCanvasIfExists() : nullptr;
     return osgCanvas;
 }
@@ -277,14 +275,16 @@ void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
     osgViewer->setOsgCanvas(osgCanvas);
     switchToOsgViewAction->setEnabled(osgCanvas != nullptr);
 }
-#endif // WITH_OSG
+
+#endif  // WITH_OSG
 
 QSize ModuleInspector::sizeHint() const
 {
     return QSize(600, 500);
 }
 
-void ModuleInspector::updateToolbarLayout() {
+void ModuleInspector::updateToolbarLayout()
+{
     if (!toolbarLayout)
         return;
 
@@ -292,10 +292,11 @@ void ModuleInspector::updateToolbarLayout() {
         canvasViewer->setLayout(toolbarLayout);
 
         toolbarLayout->setContentsMargins(
-                    toolbarSpacing, toolbarSpacing,
-                    canvasViewer->verticalScrollBar()->width() + toolbarSpacing,
-                    canvasViewer->horizontalScrollBar()->height() + toolbarSpacing);
-    } else {
+                toolbarSpacing, toolbarSpacing,
+                canvasViewer->verticalScrollBar()->width() + toolbarSpacing,
+                canvasViewer->horizontalScrollBar()->height() + toolbarSpacing);
+    }
+    else {
 #ifdef WITH_OSG
         osgViewer->getGLWidget()->setLayout(toolbarLayout);
         // the osg mode never displays scrollbars.
@@ -315,7 +316,7 @@ cCanvas *ModuleInspector::getCanvas()
 void ModuleInspector::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() & Qt::ControlModifier) {
-        int d = event->delta() / 120; // see the Qt docs for the division
+        int d = event->delta() / 120;  // see the Qt docs for the division
         if (d < 0)
             while (d++ < 0)
                 zoomOut(event->x(), event->y());
@@ -324,12 +325,14 @@ void ModuleInspector::wheelEvent(QWheelEvent *event)
                 zoomIn(event->x(), event->y());
 
         event->accept();
-    } else {
+    }
+    else {
         Inspector::wheelEvent(event);
     }
 }
 
-void ModuleInspector::resizeEvent(QResizeEvent *event) {
+void ModuleInspector::resizeEvent(QResizeEvent *event)
+{
     Inspector::resizeEvent(event);
     updateToolbarLayout();
 }
@@ -365,7 +368,6 @@ void ModuleInspector::clearObjectChangeFlags()
         canvas->getRootFigure()->clearChangeFlags();
 }
 
-
 bool ModuleInspector::needsRedraw()
 {
     return canvasViewer->getNeedsRedraw();
@@ -386,7 +388,7 @@ void ModuleInspector::stopSimulation()
     getQtenv()->getMainWindow()->getStopAction()->trigger();
 }
 
-//Relayout the compound module, and resize the window accordingly.
+// Relayout the compound module, and resize the window accordingly.
 
 void ModuleInspector::relayout()
 {
@@ -404,11 +406,13 @@ void ModuleInspector::zoomOut(int x, int y)
     zoomBy(1.0 / getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble(), true, x, y);
 }
 
-void ModuleInspector::increaseIconSize() {
+void ModuleInspector::increaseIconSize()
+{
     zoomIconsBy(1.25);
 }
 
-void ModuleInspector::decreaseIconSize() {
+void ModuleInspector::decreaseIconSize()
+{
     zoomIconsBy(0.8);
 }
 
@@ -419,29 +423,29 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 
     double zoomFactor = getZoomFactor();
 
-    if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
-    {
+    if ((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000)) {
         int cx = canvasViewer->viewport()->width() / 2;
         int cy = canvasViewer->viewport()->height() / 2;
 
-        //remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
-        if(x == 0) x = cx;
-        if(y == 0) y = cy;
+        // remember canvas scroll position, we'll need it to zoom in/out around ($x,$y)
+        if (x == 0)
+            x = cx;
+        if (y == 0)
+            y = cy;
 
         QPointF oldModulePos = canvasViewer->mapToScene(x, y) / zoomFactor;
 
-        //update zoom factor and redraw
+        // update zoom factor and redraw
         double newZoomFactor = zoomFactor * mult;
 
-        //snap to true (note: this is not desirable when zoom is set programmatically to fit network into window)
-        if(snaptoone) {
+        // snap to true (note: this is not desirable when zoom is set programmatically to fit network into window)
+        if (snaptoone) {
             double m = mult < 1 ? 1.0/mult : mult;
             double a = 1 - 0.9*(1 - 1.0/m);
             double b = 1 + 0.9*(m - 1);
-            if(newZoomFactor > a && newZoomFactor < b)
+            if (newZoomFactor > a && newZoomFactor < b)
                 newZoomFactor = 1;
         }
-
 
         // so animations will not wander around at the old module positions
         getQtenv()->getAnimator()->clearInspector(this);
@@ -472,11 +476,13 @@ void ModuleInspector::resetOsgView()
 #endif
 }
 
-double ModuleInspector::getZoomFactor() {
+double ModuleInspector::getZoomFactor()
+{
     return getPref(PREF_ZOOMFACTOR, 1).toDouble();
 }
 
-double ModuleInspector::getImageSizeFactor() {
+double ModuleInspector::getImageSizeFactor()
+{
     return getPref(PREF_ICONSCALE, 1).toDouble();
 }
 
@@ -540,7 +546,7 @@ int ModuleInspector::getDefaultLayoutSeed()
     const cDisplayString blank;
     cModule *parentModule = static_cast<cModule *>(object);
     const cDisplayString& ds = parentModule && parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-    long seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentModule, 1);
+    long seed = resolveLongDispStrArg(ds.getTagArg("bgl", 4), parentModule, 1);
     return seed;
 }
 
@@ -618,48 +624,53 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
     return 0;
 }
 
-void ModuleInspector::click(QMouseEvent *event) {
+void ModuleInspector::click(QMouseEvent *event)
+{
     auto objects = canvasViewer->getObjectsAt(event->pos());
     if (!objects.empty())
         emit selectionChanged(objects.front());
 }
 
-void ModuleInspector::doubleClick(QMouseEvent *event) {
+void ModuleInspector::doubleClick(QMouseEvent *event)
+{
     auto objects = canvasViewer->getObjectsAt(event->pos());
 
     if (!objects.empty()) {
         if (supportsObject(objects.front()))
             setObject(objects.front());
-        else    // If this inspector supports object then no need to inspect one more time.
+        else  // If this inspector supports object then no need to inspect one more time.
             emit objectDoubleClicked(objects.front());
     }
 
-    if(objects.empty() || objects.front() == object) {
-        if(event->modifiers() & Qt::ShiftModifier)
+    if (objects.empty() || objects.front() == object) {
+        if (event->modifiers() & Qt::ShiftModifier)
             zoomOut(event->pos().x(), event->pos().y());
         else
             zoomIn(event->pos().x(), event->pos().y());
     }
 }
 
-void ModuleInspector::onViewerDragged(QPointF center) {
+void ModuleInspector::onViewerDragged(QPointF center)
+{
     setPref(PREF_CENTER, center.toPoint());
 }
 
-void ModuleInspector::onMarqueeZoom(QRectF rect) {
+void ModuleInspector::onMarqueeZoom(QRectF rect)
+{
     qreal rectLongerSide;
     qreal viewportSide;
 
     // Zoom factor is based on selection rectangle's longer side
-    if(rect.width() < rect.height()) {
+    if (rect.width() < rect.height()) {
         rectLongerSide = rect.height();
         viewportSide = canvasViewer->viewport()->height();
-    } else {
+    }
+    else {
         rectLongerSide = rect.width();
         viewportSide = canvasViewer->viewport()->width();
     }
 
-    if(rectLongerSide != 0.0) {
+    if (rectLongerSide != 0.0) {
         QPointF center = canvasViewer->mapToScene(rect.center().toPoint()) / getZoomFactor();
         zoomBy(viewportSide/rectLongerSide);
 
@@ -669,10 +680,10 @@ void ModuleInspector::onMarqueeZoom(QRectF rect) {
     }
 }
 
-void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)
+void ModuleInspector::onObjectsPicked(const std::vector<cObject *>& objects)
 {
     cObject *object = nullptr;
-    for (auto &o : objects) {
+    for (auto& o : objects) {
         if (o) {
             object = o;
             break;
@@ -683,14 +694,14 @@ void ModuleInspector::onObjectsPicked(const std::vector<cObject*>& objects)
         emit selectionChanged(object);
 }
 
-void ModuleInspector::createContextMenu(const std::vector<cObject*> &objects, const QPoint &globalPos)
+void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, const QPoint& globalPos)
 {
     if (!object)
         return;
 
-    auto o = QVector<cObject*>::fromStdVector(objects);
+    auto o = QVector<cObject *>::fromStdVector(objects);
     if (o.empty()) {
-            o.push_back(object);
+        o.push_back(object);
     }
     QMenu *menu = InspectorUtil::createInspectorContextMenu(o, this);
 
@@ -701,7 +712,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject*> &objects, co
     menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
 
     menu->addSeparator();
-    //TODO not working these "Show" menu points
+    // TODO not working these "Show" menu points
     QAction *action = menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
     action->setCheckable(true);
     action->setChecked(showLabels);
@@ -743,8 +754,8 @@ void ModuleInspector::exportToPdf()
 
     QString fileName = getObjectShortTypeName(object) + QString(".pdf");
     fileName = QFileDialog::getSaveFileName(this, tr("Export to PDF"), fileName,
-                                                    tr("PDF files (*.pdf)"));
-    if(!fileName.endsWith(".pdf", Qt::CaseInsensitive))
+                tr("PDF files (*.pdf)"));
+    if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
         fileName += ".pdf";
 
     printer.setOutputFileName(fileName);
@@ -763,7 +774,7 @@ void ModuleInspector::print()
     renderToPrinter(printer);
 }
 
-void ModuleInspector::renderToPrinter(QPrinter &printer)
+void ModuleInspector::renderToPrinter(QPrinter& printer)
 {
     QPainter painter;
     canvasViewer->setZoomLabelVisible(false);
@@ -785,8 +796,7 @@ void ModuleInspector::runPreferencesDialog()
 void ModuleInspector::layers()
 {
     CanvasRenderer *canvasRenderer = canvasViewer->getCanvasRenderer();
-    if(!canvasRenderer->hasCanvas())
-    {
+    if (!canvasRenderer->hasCanvas()) {
         QMessageBox::warning(this, tr("Warning"), tr("No default canvas has been created for this module yet."),
                 QMessageBox::Ok);
         return;
@@ -797,8 +807,7 @@ void ModuleInspector::layers()
     QString exceptTags = canvasRenderer->getExceptTags().c_str();
 
     LayersDialog *layersDialog = new LayersDialog(allTags, enabledTags, exceptTags);
-    if(QDialog::Accepted == layersDialog->exec())
-    {
+    if (QDialog::Accepted == layersDialog->exec()) {
         QString enabledTags = layersDialog->getEnabledTags().join(" ");
         QString exceptTags = layersDialog->getExceptTags().join(" ");
         canvasRenderer->setEnabledTags(enabledTags.toStdString().c_str());
@@ -827,14 +836,14 @@ void ModuleInspector::toggleArrowheads()
     redraw();
 }
 
-void ModuleInspector::zoomIconsBy(double mult) {
+void ModuleInspector::zoomIconsBy(double mult)
+{
     if (!object)
         return;
 
     double imageSizeFactor = getPref(PREF_ICONSCALE, 1.0).toDouble();
 
-    if((mult < 1 && imageSizeFactor>0.1) || (mult > 1 && imageSizeFactor < 5))
-    {
+    if ((mult < 1 && imageSizeFactor > 0.1) || (mult > 1 && imageSizeFactor < 5)) {
         double newImageSizeFactor = imageSizeFactor * mult;
         setPref(PREF_ICONSCALE, newImageSizeFactor);
         canvasViewer->setImageSizeFactor(newImageSizeFactor);
@@ -866,7 +875,7 @@ void ModuleInspector::switchToCanvasView()
     stackedLayout->setCurrentWidget(canvasViewer);
     updateToolbarLayout();
 
-#ifdef WITH_OSG // otherwise these don't exist
+#ifdef WITH_OSG  // otherwise these don't exist
     switchToCanvasViewAction->setChecked(true);
     switchToOsgViewAction->setChecked(false);
 #endif
@@ -875,7 +884,7 @@ void ModuleInspector::switchToCanvasView()
     canvasRelayoutAction->setVisible(true);
     canvasZoomInAction->setVisible(true);
     canvasZoomOutAction->setVisible(true);
-#ifdef WITH_OSG // otherwise this doesn't exist
+#ifdef WITH_OSG  // otherwise this doesn't exist
     resetOsgViewAction->setVisible(false);
 #endif
 
@@ -884,12 +893,13 @@ void ModuleInspector::switchToCanvasView()
     // if couldn't read a valid center pref, aligning the top left corners
     // (but if yes, it still has to be called, just with false)
     canvasViewer->recalcSceneRect(center.isNull());
-    //otherwise restoring the viewport
+    // otherwise restoring the viewport
     if (!center.isNull())
         canvasViewer->centerOn(center);
 
     setPref(PREF_MODE, 0);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

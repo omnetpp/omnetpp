@@ -86,11 +86,11 @@ void CanvasViewer::setZoomFactor(double zoomFactor)
 
 void CanvasViewer::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton)
         emit click(event);
 }
 
-void CanvasViewer::contextMenuEvent(QContextMenuEvent * event)
+void CanvasViewer::contextMenuEvent(QContextMenuEvent *event)
 {
     emit contextMenuRequested(event);
 }
@@ -119,15 +119,15 @@ void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
     hints->defaultFontSize = scene()->font().pointSize() * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
 }
 
-std::vector<cObject*> CanvasViewer::getObjectsAt(const QPoint &pos)
+std::vector<cObject *> CanvasViewer::getObjectsAt(const QPoint& pos)
 {
-    QList<QGraphicsItem*> items = scene()->items(mapToScene(pos));
-    std::vector<cObject*> objects;
+    QList<QGraphicsItem *> items = scene()->items(mapToScene(pos));
+    std::vector<cObject *> objects;
 
     for (auto item : items) {
         QVariant variant = item->data(1);
         if (variant.isValid())
-            objects.push_back(variant.value<cObject*>());
+            objects.push_back(variant.value<cObject *>());
     }
 
     return objects;
@@ -161,5 +161,6 @@ void CanvasViewer::clear()
     figureLayer->clear();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

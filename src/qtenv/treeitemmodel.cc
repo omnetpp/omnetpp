@@ -140,12 +140,15 @@ QVariant TreeItemModel::data(const QModelIndex& index, int role) const
         QString text = node->getFullName() + QString(" (") + getObjectShortTypeName(node) + ")"
             +(id >= 0 ? "(id=" + QString::number(id) + QString(")") : "");
         return QVariant(text);
-    } else if (role == Qt::DecorationRole) {
+    }
+    else if (role == Qt::DecorationRole) {
         return QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(node)));
-    } else if (role == Qt::UserRole) {
+    }
+    else if (role == Qt::UserRole) {
         // returning the raw cObject* - needed to preserve object tree node expansion state
         return QVariant::fromValue(node);
-    } else if (role == Qt::ToolTipRole) {
+    }
+    else if (role == Qt::ToolTipRole) {
         return QString("(") + getObjectShortTypeName(node) + ") " + node->getFullName() + ", " + node->info().c_str();
     }
 
@@ -163,7 +166,7 @@ bool TreeItemModel::hasChildren(const QModelIndex& parent) const
     return visitor.getResult();
 }
 
-void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant> &list, QModelIndex idx)
+void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant>& list, QModelIndex idx)
 {
     if (view->isExpanded(idx)) {
         // adding the pointer of the current node to the list because it is expanded in the view
@@ -175,7 +178,8 @@ void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant> &list, QMo
         for (int row = 0; row < rowCount(idx); ++row) {
             getExpandedItems(view, list, idx.child(row, 0));
         }
-    } else {
+    }
+    else {
         // this is the root node, so we index the model itself in the iteration
         for (int row = 0; row < rowCount(); ++row) {
             getExpandedItems(view, list, index(row, 0));
@@ -183,7 +187,7 @@ void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant> &list, QMo
     }
 }
 
-void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant> &list, QModelIndex idx)
+void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant>& list, QModelIndex idx)
 {
     if (list.contains(idx.data(Qt::UserRole))) {
         // expanding the node in the view because it is in the list
@@ -195,7 +199,8 @@ void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant> &list, QM
         for (int row = 0; row < rowCount(idx); ++row) {
             expandItems(view, list, idx.child(row, 0));
         }
-    } else {
+    }
+    else {
         // this is the root node, so we index the model itself in the iteration
         for (int row = 0; row < rowCount(); ++row) {
             expandItems(view, list, index(row, 0));
@@ -203,6 +208,6 @@ void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant> &list, QM
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

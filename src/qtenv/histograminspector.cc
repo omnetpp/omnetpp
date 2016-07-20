@@ -149,6 +149,6 @@ void HistogramInspector::getCellInfo(char *buf, int cell)
             );
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

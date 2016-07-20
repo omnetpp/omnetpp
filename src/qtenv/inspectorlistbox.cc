@@ -29,12 +29,12 @@ QModelIndex InspectorListBox::index(int row, int column, const QModelIndex&) con
             : createIndex(row, column, objects[row]);
 }
 
-int InspectorListBox::rowCount(const QModelIndex &parent) const
+int InspectorListBox::rowCount(const QModelIndex& parent) const
 {
     return objects.size();
 }
 
-int InspectorListBox::columnCount(const QModelIndex &parent) const
+int InspectorListBox::columnCount(const QModelIndex& parent) const
 {
     return 3;
 }
@@ -52,11 +52,9 @@ void InspectorListBox::sort(int i, Qt::SortOrder order)
     beginResetModel();
     // qDebug() << "Sort" << order;
     qSort(objects.begin(), objects.end(),
-          [i, order](cObject *arg1, cObject *arg2) -> bool
-          {
+          [i, order](cObject *arg1, cObject *arg2) -> bool {
               QString first, second;
-              switch(i)
-              {
+              switch(i) {
                   case 0:
                       first = getObjectShortTypeName(arg1);
                       second = getObjectShortTypeName(arg2);
@@ -92,27 +90,28 @@ void InspectorListBox::sort(int i, Qt::SortOrder order)
     endResetModel();
 }
 
-QVariant InspectorListBox::data(const QModelIndex &index, int role) const
+QVariant InspectorListBox::data(const QModelIndex& index, int role) const
 {
-    if(objects.size() < index.row())
-    {
+    if (objects.size() < index.row()) {
         // qDebug() << "object is nullptr";
         return QVariant();
     }
 
     if (role == Qt::DisplayRole) {
         QString label;
-        switch(index.column())
-        {
+        switch (index.column()) {
             case 0:
                 label = getObjectShortTypeName(objects[index.row()]);
                 break;
+
             case 1:
                 label = objects[index.row()]->getFullPath().c_str();
                 break;
+
             case 2:
                 label = objects[index.row()]->info().c_str();
                 break;
+
             case 3:
                 char buffer[50];
                 sprintf(buffer, "%p", (void *)objects[index.row()]);
@@ -120,20 +119,23 @@ QVariant InspectorListBox::data(const QModelIndex &index, int role) const
                 break;
         }
         return QVariant::fromValue(label);
-    } else if (role == Qt::DecorationRole && index.column() == 0) {
+    }
+    else if (role == Qt::DecorationRole && index.column() == 0) {
         return QVariant::fromValue(QIcon(":/objects/icons/objects/" + getObjectIcon(objects[index.row()])));
-    } else if (role == Qt::UserRole)
+    }
+    else if (role == Qt::UserRole)
         return QVariant::fromValue(objects[index.row()]);
 
     return QVariant();
 }
 
-void InspectorListBox::setObjects(QVector<cObject*> objects)
+void InspectorListBox::setObjects(QVector<cObject *> objects)
 {
     beginResetModel();
     this->objects = objects;
     endResetModel();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -22,7 +22,7 @@
 #include "osgcanvasinspector.h"
 #include "osgviewer.h"
 #include "omnetpp/cosgcanvas.h"
-#include <osgDB/ReadFile>  //TMP
+#include <osgDB/ReadFile>  // TMP
 
 namespace omnetpp {
 namespace qtenv {
@@ -32,7 +32,7 @@ class OsgCanvasInspectorFactory : public InspectorFactory
   public:
     OsgCanvasInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override { return dynamic_cast<cOsgCanvas*>(obj) != nullptr; }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cOsgCanvas *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new OsgCanvasInspector(parent, isTopLevel, this); }
@@ -44,9 +44,9 @@ OsgCanvasInspector::OsgCanvasInspector(QWidget *parent, bool isTopLevel, Inspect
 {
     osgViewer = new OsgViewer();
     QGridLayout *grid = new QGridLayout;
-    grid->addWidget( osgViewer, 0, 0 );
+    grid->addWidget(osgViewer, 0, 0);
     grid->setMargin(0);
-    setLayout( grid );
+    setLayout(grid);
 }
 
 OsgCanvasInspector::~OsgCanvasInspector()
@@ -57,8 +57,8 @@ void OsgCanvasInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
 
-    cOsgCanvas *osgCanvas = dynamic_cast<cOsgCanvas*>(obj);
-    osgViewer->setOsgCanvas(osgCanvas); // note: increases scene's reference count
+    cOsgCanvas *osgCanvas = dynamic_cast<cOsgCanvas *>(obj);
+    osgViewer->setOsgCanvas(osgCanvas);  // note: increases scene's reference count
 }
 
 void OsgCanvasInspector::refresh()
@@ -67,7 +67,8 @@ void OsgCanvasInspector::refresh()
     osgViewer->refresh();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif  // WITH_OSG
+

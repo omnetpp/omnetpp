@@ -52,7 +52,8 @@ QVector<int> InspectorUtil::supportedInspTypes(cObject *object)
     return insp_types;
 }
 
-Inspector *InspectorUtil::getContainingInspector(QWidget *widget) {
+Inspector *InspectorUtil::getContainingInspector(QWidget *widget)
+{
     QWidget *curr = widget;
     while (curr) {
         Inspector *insp = dynamic_cast<Inspector *>(curr);
@@ -67,8 +68,7 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
 {
     // add "Go Info" if applicable
     QString name = object->getFullName();
-    if(insp && object != insp->getObject() && insp->supportsObject(object))
-    {
+    if (insp && object != insp->getObject() && insp->supportsObject(object)) {
         QAction *action = menu->addAction("Go Into '" + name + "'", insp, SLOT(goUpInto()));
         action->setData(QVariant::fromValue(object));
         menu->addSeparator();
@@ -78,28 +78,12 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     for (int type : supportedInspTypes(object)) {
         QString label;
         switch (type) {
-            case INSP_DEFAULT:
-                label = "Open Best View";
-                break;
-
-            case INSP_OBJECT:
-                label = "Open Details";
-                break;
-
-            case INSP_GRAPHICAL:
-                label = "Open Graphical View";
-                break;
-
-            case INSP_MODULEOUTPUT:
-                label = "Open Component Log";
-                break;
-
-            case INSP_OBJECTTREE:
-                label = "Open Object Tree";
-                break;
-
-            default:
-                qDebug() << "Unsupported inspector type " << type << " in context menu";
+            case INSP_DEFAULT: label = "Open Best View"; break;
+            case INSP_OBJECT: label = "Open Details"; break;
+            case INSP_GRAPHICAL: label = "Open Graphical View"; break;
+            case INSP_MODULEOUTPUT: label = "Open Component Log"; break;
+            case INSP_OBJECTTREE: label = "Open Object Tree"; break;
+            default: qDebug() << "Unsupported inspector type " << type << " in context menu";
         }
         label += QString(" for '") + name + "'";
         QAction *action = menu->addAction(label, getQtenv(), SLOT(inspect()));
@@ -140,7 +124,7 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
 
         addLoglevel(LOGLEVEL_TRACE, "Trace", comp, logLevelActionGroup, subMenu);
         addLoglevel(LOGLEVEL_DEBUG, "Debug", comp, logLevelActionGroup, subMenu);
-        addLoglevel(LOGLEVEL_DETAIL,"Detail", comp, logLevelActionGroup, subMenu);
+        addLoglevel(LOGLEVEL_DETAIL, "Detail", comp, logLevelActionGroup, subMenu);
         addLoglevel(LOGLEVEL_INFO, "Info", comp, logLevelActionGroup, subMenu);
         addLoglevel(LOGLEVEL_WARN, "Warn", comp, logLevelActionGroup, subMenu);
         addLoglevel(LOGLEVEL_ERROR, "Error", comp, logLevelActionGroup, subMenu);
@@ -175,57 +159,51 @@ void InspectorUtil::addLoglevel(LogLevel level, QString levelInStr, cComponent *
     action->setActionGroup(logLevelActionGroup);
 }
 
-QMenu *InspectorUtil::createInspectorContextMenu(cObject* object, Inspector *insp)
+QMenu *InspectorUtil::createInspectorContextMenu(cObject *object, Inspector *insp)
 {
-    QVector<cObject*> obj;
+    QVector<cObject *> obj;
     obj.push_back(object);
     return createInspectorContextMenu(obj, insp);
 }
 
-QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Inspector *insp)
+QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject *> objects, Inspector *insp)
 {
     QMenu *menu = new QMenu();
     QFont font = getQtenv()->getBoldFont();
     menu->setStyleSheet("font: " + QString::number(font.pointSize()) + "pt \"" + font.family() + "\"");
 
-    //TODO Is it needed?
+    // TODO Is it needed?
     // If there are more than one ptrs, remove the inspector object's own ptr:
     // when someone right-clicks a submodule icon, we don't want the compound
     // module to be in the list.
-    if(insp && objects.size() > 1)
-    {
+    if (insp && objects.size() > 1) {
         cObject *object = insp->getObject();
-        if(objects.indexOf(object) >= 0 && objects.indexOf(object) < objects.size())
-        objects.remove(objects.indexOf(object));
+        if (objects.indexOf(object) >= 0 && objects.indexOf(object) < objects.size())
+            objects.remove(objects.indexOf(object));
     }
 
-    if(objects.size() == 1)
-    {
+    if (objects.size() == 1) {
         fillInspectorContextMenu(menu, objects[0], insp);
     }
-    else if(objects.size() > 1)
-    {
+    else if (objects.size() > 1) {
         const int maxObjects = 20;
 
-        //then create a submenu for each object
-        for (int i = 0; i < std::min(maxObjects, objects.size()); ++i)
-        {
+        // then create a submenu for each object
+        for (int i = 0; i < std::min(maxObjects, objects.size()); ++i) {
             cObject *object = objects[i];
 
             const char *name = object->getFullName();
             const char *shortTypeName = getObjectShortTypeName(object);
             QString infoStr = shortTypeName + QString(", ") + object->info().c_str();
-            if(infoStr.size() > 30)
-            {
+            if (infoStr.size() > 30) {
                 infoStr.truncate(30);
                 infoStr += "...";
             }
 
             std::string baseClass = getObjectBaseClass(object);
             QString label;
-            if(baseClass == "cGate")
-            {
-                cGate *nextGate = static_cast<cGate*>(object)->getNextGate();
+            if (baseClass == "cGate") {
+                cGate *nextGate = static_cast<cGate *>(object)->getNextGate();
                 const char *nextGateName = object->getFullName();
                 cObject *owner = object->getOwner();
                 const char *ownerName = owner->getFullName();
@@ -234,9 +212,8 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
 
                 label = ownerName + QString(".") + name + " --> " + nextGateOwnerName + "." + nextGateName;
             }
-            else if(baseClass == "cMessage")
-            {
-                QString shortInfo = getMessageShortInfoString(static_cast<cMessage*>(object));
+            else if (baseClass == "cMessage") {
+                QString shortInfo = getMessageShortInfoString(static_cast<cMessage *>(object));
                 label = label + name + " (" + shortTypeName + ", " + shortInfo + ")";
             }
             else
@@ -252,14 +229,11 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject*> objects, Insp
         }
     }
 
-    if(insp)
-    {
+    if (insp) {
         cObject *object = insp->getObject();
-        if(object)
-        {
+        if (object) {
             cObject *parent = dynamic_cast<cComponent *>(object) ? ((cComponent *)object)->getParentModule() : object->getOwner();
-            if(parent && insp->supportsObject(parent))
-            {
+            if (parent && insp->supportsObject(parent)) {
                 menu->addSeparator();
                 QAction *action = menu->addAction("Go Up", insp, SLOT(goUpInto()));
                 action->setData(QVariant::fromValue(parent));
@@ -319,19 +293,15 @@ void InspectorUtil::preferencesDialog(eTab defaultPage)
 
 QString InspectorUtil::getInspectMenuLabel(int typeCode)
 {
-    switch(typeCode)
-    {
-        case INSP_DEFAULT:
-            return "Open Best View";
-        case INSP_OBJECT:
-            return "Open Details";
-        case INSP_GRAPHICAL:
-            return "Open Graphical View";
-        case INSP_MODULEOUTPUT:
-            return"Open Component Log";
+    switch(typeCode) {
+        case INSP_DEFAULT: return "Open Best View";
+        case INSP_OBJECT: return "Open Details";
+        case INSP_GRAPHICAL: return "Open Graphical View";
+        case INSP_MODULEOUTPUT: return "Open Component Log";
     }
     return "";
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

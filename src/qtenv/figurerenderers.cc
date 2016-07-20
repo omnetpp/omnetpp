@@ -49,14 +49,15 @@ Register_Class(ImageFigureRenderer);
 Register_Class(IconFigureRenderer);
 Register_Class(PixmapFigureRenderer);
 
-QPainterPath FigureRenderer::PathItem::shape() const {
+QPainterPath FigureRenderer::PathItem::shape() const
+{
     QPainterPath result;
 
-    const QBrush &b = brush();
-    const QPen &p = pen();
+    const QBrush& b = brush();
+    const QPen& p = pen();
 
     if (b != Qt::NoBrush && b.color().alpha() > 0)
-        result += path(); // if we are filled visibly, including the insides
+        result += path();  // if we are filled visibly, including the insides
 
     if (p != Qt::NoPen && p.color().alpha() > 0) {
         // and if the outline is drawn, including that too.
@@ -66,7 +67,7 @@ QPainterPath FigureRenderer::PathItem::shape() const {
         s.setDashOffset(p.dashOffset());*/   // but simplified the path too much
         s.setMiterLimit(p.miterLimit());
         s.setJoinStyle(p.joinStyle());
-        s.setWidth(p.widthF()); // note the F at the end...
+        s.setWidth(p.widthF());  // note the F at the end...
         s.setCapStyle(p.capStyle());
         // and adding the outline to the path
         result += s.createStroke(path());
@@ -337,33 +338,17 @@ QPen FigureRenderer::createPen(const cAbstractLineFigure *figure, FigureRenderin
 
     Qt::PenStyle style;
     switch (figure->getLineStyle()) {
-        case cFigure::LINE_SOLID:
-            style = Qt::SolidLine;
-            break;
-
-        case cFigure::LINE_DOTTED:
-            style = Qt::DotLine;
-            break;
-
-        case cFigure::LINE_DASHED:
-            style = Qt::DashLine;
-            break;
+        case cFigure::LINE_SOLID: style = Qt::SolidLine; break;
+        case cFigure::LINE_DOTTED: style = Qt::DotLine; break;
+        case cFigure::LINE_DASHED: style = Qt::DashLine; break;
     }
     pen.setStyle(style);
 
     Qt::PenCapStyle cap;
     switch (figure->getCapStyle()) {
-        case cFigure::CAP_BUTT:
-            cap = Qt::FlatCap;
-            break;
-
-        case cFigure::CAP_SQUARE:
-            cap = Qt::SquareCap;
-            break;
-
-        case cFigure::CAP_ROUND:
-            cap = Qt::RoundCap;
-            break;
+        case cFigure::CAP_BUTT: cap = Qt::FlatCap; break;
+        case cFigure::CAP_SQUARE: cap = Qt::SquareCap; break;
+        case cFigure::CAP_ROUND: cap = Qt::RoundCap; break;
     }
     pen.setCapStyle(cap);
 
@@ -383,17 +368,9 @@ QPen FigureRenderer::createPen(const cAbstractShapeFigure *figure, FigureRenderi
 
         Qt::PenStyle style;
         switch (figure->getLineStyle()) {
-            case cFigure::LINE_SOLID:
-                style = Qt::SolidLine;
-                break;
-
-            case cFigure::LINE_DOTTED:
-                style = Qt::DotLine;
-                break;
-
-            case cFigure::LINE_DASHED:
-                style = Qt::DashLine;
-                break;
+            case cFigure::LINE_SOLID: style = Qt::SolidLine; break;
+            case cFigure::LINE_DOTTED: style = Qt::DotLine; break;
+            case cFigure::LINE_DASHED: style = Qt::DashLine; break;
         }
         pen.setStyle(style);
     }
@@ -455,19 +432,22 @@ QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure, FigureRenderingHi
     QGraphicsItem *item = newItem();
     if (item) {
         setItemGeometryProperties(figure, item, hints);
-        item->setData(1, QVariant::fromValue((cObject*)figure));
+        item->setData(1, QVariant::fromValue((cObject *)figure));
         for (auto c : item->childItems())
             if (c)
-                c->setData(1, QVariant::fromValue((cObject*)figure));
+                c->setData(1, QVariant::fromValue((cObject *)figure));
+
     }
     return item;
 }
 
-void FigureRenderer::refreshGeometry(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) {
+void FigureRenderer::refreshGeometry(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
+{
     setItemGeometryProperties(figure, item, hints);
 }
 
-void FigureRenderer::refreshVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) {
+void FigureRenderer::refreshVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
+{
     createVisual(figure, item, hints);
 }
 
@@ -505,53 +485,18 @@ void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem
     QRectF bounds = item->boundingRect();
     QPointF anchor;
     switch (textFigure->getAnchor()) {
-        case cFigure::ANCHOR_CENTER:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_N:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
-            break;
-
-        case cFigure::ANCHOR_E:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_S:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
-            break;
-
-        case cFigure::ANCHOR_W:
-            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_NE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y);
-            break;
-
-        case cFigure::ANCHOR_SE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
-            break;
-
-        case cFigure::ANCHOR_SW:
-            anchor = QPointF(pos.x, pos.y - bounds.height());
-            break;
-
-        case cFigure::ANCHOR_NW:
-            anchor = QPointF(pos.x, pos.y);
-            break;
-
-        case cFigure::ANCHOR_BASELINE_START:
-            anchor = QPointF(pos.x, pos.y - fontMetric.ascent());
-            break;
-
-        case cFigure::ANCHOR_BASELINE_MIDDLE:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - fontMetric.ascent());
-            break;
-
-        case cFigure::ANCHOR_BASELINE_END:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - fontMetric.ascent());
-            break;
+        case cFigure::ANCHOR_CENTER: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2); break;
+        case cFigure::ANCHOR_N: anchor = QPointF(pos.x - bounds.width()/2, pos.y); break;
+        case cFigure::ANCHOR_E: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2); break;
+        case cFigure::ANCHOR_S: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()); break;
+        case cFigure::ANCHOR_W: anchor = QPointF(pos.x, pos.y - bounds.height()/2); break;
+        case cFigure::ANCHOR_NE: anchor = QPointF(pos.x - bounds.width(), pos.y); break;
+        case cFigure::ANCHOR_SE: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()); break;
+        case cFigure::ANCHOR_SW: anchor = QPointF(pos.x, pos.y - bounds.height()); break;
+        case cFigure::ANCHOR_NW: anchor = QPointF(pos.x, pos.y); break;
+        case cFigure::ANCHOR_BASELINE_START: anchor = QPointF(pos.x, pos.y - fontMetric.ascent()); break;
+        case cFigure::ANCHOR_BASELINE_MIDDLE: anchor = QPointF(pos.x - bounds.width()/2, pos.y - fontMetric.ascent()); break;
+        case cFigure::ANCHOR_BASELINE_END: anchor = QPointF(pos.x - bounds.width(), pos.y - fontMetric.ascent()); break;
     }
 
     setTransform(transform, item, &anchor);
@@ -576,46 +521,18 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsIte
     QPointF anchor;
 
     switch (imageFigure->getAnchor()) {
-        case cFigure::ANCHOR_CENTER:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_N:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y);
-            break;
-
-        case cFigure::ANCHOR_E:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_S:
-            anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height());
-            break;
-
-        case cFigure::ANCHOR_W:
-            anchor = QPointF(pos.x, pos.y - bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_NE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y);
-            break;
-
-        case cFigure::ANCHOR_SE:
-            anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height());
-            break;
-
-        case cFigure::ANCHOR_SW:
-            anchor = QPointF(pos.x, pos.y - bounds.height());
-            break;
-
-        case cFigure::ANCHOR_NW:
-            anchor = QPointF(pos.x, pos.y);
-            break;
-
-        case cFigure::ANCHOR_BASELINE_START:
-        case cFigure::ANCHOR_BASELINE_MIDDLE:
-        case cFigure::ANCHOR_BASELINE_END:
-            break;
+        case cFigure::ANCHOR_CENTER: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2); break;
+        case cFigure::ANCHOR_N: anchor = QPointF(pos.x - bounds.width()/2, pos.y); break;
+        case cFigure::ANCHOR_E: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2); break;
+        case cFigure::ANCHOR_S: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()); break;
+        case cFigure::ANCHOR_W: anchor = QPointF(pos.x, pos.y - bounds.height()/2); break;
+        case cFigure::ANCHOR_NE: anchor = QPointF(pos.x - bounds.width(), pos.y); break;
+        case cFigure::ANCHOR_SE: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()); break;
+        case cFigure::ANCHOR_SW: anchor = QPointF(pos.x, pos.y - bounds.height()); break;
+        case cFigure::ANCHOR_NW: anchor = QPointF(pos.x, pos.y); break;
+        case cFigure::ANCHOR_BASELINE_START:  // no break
+        case cFigure::ANCHOR_BASELINE_MIDDLE: // no break
+        case cFigure::ANCHOR_BASELINE_END: break;  //FIXME leave anchor uninitialized...?
     }
 
     setTransform(transform, item, &anchor);
@@ -623,11 +540,11 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsIte
 
 void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, QPen *pen)
 {
-    GraphicsPathArrowItem *startArrow = dynamic_cast<GraphicsPathArrowItem*>(lineItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = dynamic_cast<GraphicsPathArrowItem*>(lineItem->childItems()[1]);
+    GraphicsPathArrowItem *startArrow = dynamic_cast<GraphicsPathArrowItem *>(lineItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = dynamic_cast<GraphicsPathArrowItem *>(lineItem->childItems()[1]);
 
-    const auto &start = lineFigure->getStart();
-    const auto &end = lineFigure->getEnd();
+    const auto& start = lineFigure->getStart();
+    const auto& end = lineFigure->getEnd();
 
     setArrowStyle(lineFigure->getStartArrowhead(), startArrow, pen);
     startArrow->setEndPoints(QPointF(end.x, end.y), QPointF(start.x, start.y));
@@ -681,11 +598,10 @@ QGraphicsItem *LineFigureRenderer::newItem()
 
 void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, QPen *pen)
 {
-    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(arcItem->childItems()[1]);
+    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[1]);
 
-    if(arcFigure->getStartArrowhead() != cFigure::ARROW_NONE)
-    {
+    if (arcFigure->getStartArrowhead() != cFigure::ARROW_NONE) {
         auto b = arcFigure->getBounds();
         cFigure::Point center = b.getCenter();
         cFigure::Point radii = b.getSize() / 2;
@@ -714,9 +630,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
     else
         startArrow->setVisible(false);
 
-
-    if(arcFigure->getEndArrowhead() != cFigure::ARROW_NONE)
-    {
+    if (arcFigure->getEndArrowhead() != cFigure::ARROW_NONE) {
         auto b = arcFigure->getBounds();
         QPointF center(b.getCenter().x, b.getCenter().y);
 
@@ -772,10 +686,10 @@ QGraphicsItem *ArcFigureRenderer::newItem()
 
 void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, QPen *pen)
 {
-    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem*>(polyItem->childItems()[1]);
+    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(polyItem->childItems()[0]);
+    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(polyItem->childItems()[1]);
 
-    const auto &points = polyFigure->getPoints();
+    const auto& points = polyFigure->getPoints();
 
     if (points.size() < 2) {
         // can't display arrow on a polyline without at least two points
@@ -784,23 +698,21 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
         return;
     }
 
-    if(polyFigure->getStartArrowhead() != cFigure::ARROW_NONE)
-    {
+    if (polyFigure->getStartArrowhead() != cFigure::ARROW_NONE) {
         startArrow->setVisible(true);
         setArrowStyle(polyFigure->getStartArrowhead(), startArrow, pen);
-        const auto &from = points[1];
-        const auto &to = points[0];
+        const auto& from = points[1];
+        const auto& to = points[0];
         startArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
     }
     else
         startArrow->setVisible(false);
 
-    if(polyFigure->getEndArrowhead() != cFigure::ARROW_NONE)
-    {
+    if (polyFigure->getEndArrowhead() != cFigure::ARROW_NONE) {
         endArrow->setVisible(true);
         setArrowStyle(polyFigure->getEndArrowhead(), endArrow, pen);
-        const auto &from = points[points.size() - 2];
-        const auto &to = points[points.size() - 1];
+        const auto& from = points[points.size() - 2];
+        const auto& to = points[points.size() - 1];
         endArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
     }
     else
@@ -1008,76 +920,76 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
         QPointF pos = painter.currentPosition();
         switch (command->code) {
             case 'M': {
-                const cPathFigure::MoveTo *moveTo = static_cast<const cPathFigure::MoveTo*>(command);
+                const cPathFigure::MoveTo *moveTo = static_cast<const cPathFigure::MoveTo *>(command);
                 painter.moveTo(moveTo->x, moveTo->y);
                 break;
             }
 
             case 'm': {
-                const cPathFigure::MoveRel *moveRel = static_cast<const cPathFigure::MoveRel*>(command);
+                const cPathFigure::MoveRel *moveRel = static_cast<const cPathFigure::MoveRel *>(command);
                 painter.moveTo(pos.x() + moveRel->dx, pos.y() + moveRel->dy);
                 break;
             }
 
             case 'L': {
-                const cPathFigure::LineTo *lineTo = static_cast<const cPathFigure::LineTo*>(command);
+                const cPathFigure::LineTo *lineTo = static_cast<const cPathFigure::LineTo *>(command);
                 painter.lineTo(lineTo->x, lineTo->y);
                 break;
             }
 
             case 'l': {
-                const cPathFigure::LineRel *lineRel = static_cast<const cPathFigure::LineRel*>(command);
+                const cPathFigure::LineRel *lineRel = static_cast<const cPathFigure::LineRel *>(command);
                 painter.lineTo(pos.x() + lineRel->dx, pos.y() + lineRel->dy);
                 break;
             }
 
             case 'H': {
-                const cPathFigure::HorizLineTo *horizLineTo = static_cast<const cPathFigure::HorizLineTo*>(command);
+                const cPathFigure::HorizLineTo *horizLineTo = static_cast<const cPathFigure::HorizLineTo *>(command);
                 painter.lineTo(horizLineTo->x, pos.y());
                 break;
             }
 
             case 'h': {
-                const cPathFigure::HorizLineRel *horizLineRel = static_cast<const cPathFigure::HorizLineRel*>(command);
+                const cPathFigure::HorizLineRel *horizLineRel = static_cast<const cPathFigure::HorizLineRel *>(command);
                 painter.lineTo(pos.x() + horizLineRel->dx, pos.y());
                 break;
             }
 
             case 'V': {
-                const cPathFigure::VertLineTo *vertLineTo = static_cast<const cPathFigure::VertLineTo*>(command);
+                const cPathFigure::VertLineTo *vertLineTo = static_cast<const cPathFigure::VertLineTo *>(command);
                 painter.lineTo(pos.x(), vertLineTo->y);
                 break;
             }
 
             case 'v': {
-                const cPathFigure::VertLineRel *vertLineRel = static_cast<const cPathFigure::VertLineRel*>(command);
+                const cPathFigure::VertLineRel *vertLineRel = static_cast<const cPathFigure::VertLineRel *>(command);
                 painter.lineTo(pos.x(), pos.y() + vertLineRel->dy);
                 break;
             }
 
             case 'A': {
-                const cPathFigure::ArcTo *arcTo = static_cast<const cPathFigure::ArcTo*>(command);
+                const cPathFigure::ArcTo *arcTo = static_cast<const cPathFigure::ArcTo *>(command);
                 arcToUsingBezier(painter, pos.x(), pos.y(), arcTo->x, arcTo->y, arcTo->rx, arcTo->ry,
                         arcTo->phi, arcTo->largeArc, arcTo->sweep, false);
                 break;
             }
 
             case 'a': {
-                const cPathFigure::ArcRel *arcRel = static_cast<const cPathFigure::ArcRel*>(command);
+                const cPathFigure::ArcRel *arcRel = static_cast<const cPathFigure::ArcRel *>(command);
                 arcToUsingBezier(painter, pos.x(), pos.y(), arcRel->dx, arcRel->dy, arcRel->rx, arcRel->ry,
                         arcRel->phi, arcRel->largeArc, arcRel->sweep, true);
                 break;
             }
 
             case 'Q': {
-                const cPathFigure::CurveTo *curveTo = static_cast<const cPathFigure::CurveTo*>(command);
+                const cPathFigure::CurveTo *curveTo = static_cast<const cPathFigure::CurveTo *>(command);
                 controlPoint = cFigure::Point(curveTo->x1, curveTo->y1);
                 painter.quadTo(controlPoint.x, controlPoint.y, curveTo->x, curveTo->y);
                 break;
             }
 
             case 'q': {
-                const cPathFigure::CurveRel *curveRel = static_cast<const cPathFigure::CurveRel*>(command);
+                const cPathFigure::CurveRel *curveRel = static_cast<const cPathFigure::CurveRel *>(command);
                 QPointF pos = painter.currentPosition();
                 controlPoint = cFigure::Point(pos.x() + curveRel->dx1, pos.y() + curveRel->dy1);
                 painter.quadTo(controlPoint.x, controlPoint.y, pos.x() + curveRel->dx, pos.y() + curveRel->dy);
@@ -1085,21 +997,21 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             }
 
             case 'T': {
-                const cPathFigure::SmoothCurveTo *smoothCurveTo = static_cast<const cPathFigure::SmoothCurveTo*>(command);
+                const cPathFigure::SmoothCurveTo *smoothCurveTo = static_cast<const cPathFigure::SmoothCurveTo *>(command);
                 calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
-                                   smoothCurveTo->x, smoothCurveTo->y);
+                        smoothCurveTo->x, smoothCurveTo->y);
                 break;
             }
 
             case 't': {
-                const cPathFigure::SmoothCurveRel *smoothCurveRel = static_cast<const cPathFigure::SmoothCurveRel*>(command);
+                const cPathFigure::SmoothCurveRel *smoothCurveRel = static_cast<const cPathFigure::SmoothCurveRel *>(command);
                 calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
-                                   smoothCurveRel->dx, smoothCurveRel->dy, true);
+                        smoothCurveRel->dx, smoothCurveRel->dy, true);
                 break;
             }
 
             case 'C': {
-                const cPathFigure::CubicBezierCurveTo *bezierTo = static_cast<const cPathFigure::CubicBezierCurveTo*>(command);
+                const cPathFigure::CubicBezierCurveTo *bezierTo = static_cast<const cPathFigure::CubicBezierCurveTo *>(command);
                 controlPoint = cFigure::Point(bezierTo->x2, bezierTo->y2);
                 painter.cubicTo(bezierTo->x1, bezierTo->y1, bezierTo->x2, bezierTo->y2, bezierTo->x,
                         bezierTo->y);
@@ -1107,7 +1019,7 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             }
 
             case 'c': {
-                const cPathFigure::CubicBezierCurveRel *bezierRel = static_cast<const cPathFigure::CubicBezierCurveRel*>(command);
+                const cPathFigure::CubicBezierCurveRel *bezierRel = static_cast<const cPathFigure::CubicBezierCurveRel *>(command);
                 QPointF controlPoint1(pos.x() + bezierRel->dx1, pos.y() + bezierRel->dy1);
                 QPointF controlPoint2(pos.x() + bezierRel->dx2, pos.y() + bezierRel->dy2);
                 QPointF endPoint(pos.x() + bezierRel->dx, pos.y() + bezierRel->dy);
@@ -1117,16 +1029,16 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             }
 
             case 'S': {
-                const cPathFigure::SmoothCubicBezierCurveTo *sBezierTo = static_cast<const cPathFigure::SmoothCubicBezierCurveTo*>(command);
+                const cPathFigure::SmoothCubicBezierCurveTo *sBezierTo = static_cast<const cPathFigure::SmoothCubicBezierCurveTo *>(command);
                 calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
-                                       sBezierTo->x2, sBezierTo->y2, sBezierTo->x, sBezierTo->y);
+                        sBezierTo->x2, sBezierTo->y2, sBezierTo->x, sBezierTo->y);
                 break;
             }
 
             case 's': {
-                const cPathFigure::SmoothCubicBezierCurveRel *sBezierRel = static_cast<const cPathFigure::SmoothCubicBezierCurveRel*>(command);
+                const cPathFigure::SmoothCubicBezierCurveRel *sBezierRel = static_cast<const cPathFigure::SmoothCubicBezierCurveRel *>(command);
                 calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
-                                       sBezierRel->dx2, sBezierRel->dy2, sBezierRel->dx, sBezierRel->dy, true);
+                        sBezierRel->dx2, sBezierRel->dy2, sBezierRel->dx, sBezierRel->dy, true);
                 i += 4;
                 break;
             }
@@ -1279,7 +1191,7 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
 {
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
     QImage *image = getQtenv()->icons.getImage(imageFigure->getImageName(), "");
-    if(image->isNull())
+    if (image->isNull())
         qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
 
@@ -1323,9 +1235,8 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
     QGraphicsPixmapItem *pixmapItem = static_cast<QGraphicsPixmapItem *>(item);
 
     QImage image(pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(), QImage::Format_ARGB32);
-    for(int x = 0; x < image.width(); ++x)
-        for(int y = 0; y < image.height(); ++y)
-        {
+    for (int x = 0; x < image.width(); ++x)
+        for (int y = 0; y < image.height(); ++y) {
             cFigure::RGBA rgba = pixmapFigure->getPixel(x, y);
             image.setPixel(x, y, qRgba(rgba.red, rgba.green, rgba.blue, rgba.alpha));
         }
@@ -1337,7 +1248,7 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
     pixmapItem->setPixmap(QPixmap::fromImage(image));
 }
 
-void IconFigureRenderer::setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset) const
+void IconFigureRenderer::setTransform(const cFigure::Transform& transform, QGraphicsItem *item, const QPointF *offset) const
 {
     //TODO It's similar to Tkenv but not exactly
     QTransform qTrans;
@@ -1345,6 +1256,6 @@ void IconFigureRenderer::setTransform(const cFigure::Transform &transform, QGrap
     item->setTransform(qTrans);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

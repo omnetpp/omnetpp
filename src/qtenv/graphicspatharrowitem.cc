@@ -24,9 +24,9 @@ void GraphicsPathArrowItem::updatePolygon()
 {
     QPolygonF polygon;
     polygon.append(QPointF(0, 0));
-    polygon.append(QPointF(-arrowLength,             -arrowWidth / 2));
-    polygon.append(QPointF(-arrowLength * fillRatio,  0));
-    polygon.append(QPointF(-arrowLength,              arrowWidth / 2));
+    polygon.append(QPointF(-arrowLength, -arrowWidth / 2));
+    polygon.append(QPointF(-arrowLength * fillRatio, 0));
+    polygon.append(QPointF(-arrowLength, arrowWidth / 2));
 
     setPolygon(polygon);
 }
@@ -37,7 +37,7 @@ GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
     // uncomment this if you want the arrowheads to keep their shape
     // even if the line on which they are placed is heavily transformed:
     // (also see similar comments in figurerenderers.cc)
-    //setFlags(QGraphicsItem::ItemIgnoresTransformations);
+    // setFlags(QGraphicsItem::ItemIgnoresTransformations);
     setFillRule(Qt::WindingFill);
     updatePolygon();
     setPen(QPen(QColor("black"), 1, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
@@ -63,7 +63,7 @@ QPainterPath GraphicsPathArrowItem::shape() const
     return result;
 }
 
-void GraphicsPathArrowItem::setEndPoints(const QPointF &start, const QPointF &end)
+void GraphicsPathArrowItem::setEndPoints(const QPointF& start, const QPointF& end)
 {
     setPos(end);
     setRotation(atan2(end.y() - start.y(), end.x() - start.x()) * 180.0 / M_PI);
@@ -77,7 +77,7 @@ void GraphicsPathArrowItem::setFillRatio(double ratio)
     }
 }
 
-void GraphicsPathArrowItem::setColor(const QColor &color)
+void GraphicsPathArrowItem::setColor(const QColor& color)
 {
     auto p = pen();
     p.setColor(color);
@@ -95,16 +95,19 @@ void GraphicsPathArrowItem::setLineWidth(double width)
     }
 }
 
-void GraphicsPathArrowItem::setArrowWidth(double width) {
+void GraphicsPathArrowItem::setArrowWidth(double width)
+{
     if (width != arrowWidth) {
         arrowWidth = width;
         updatePolygon();
     }
 }
 
-void GraphicsPathArrowItem::setArrowLength(double length) {
+void GraphicsPathArrowItem::setArrowLength(double length)
+{
     if (length != arrowLength) {
         arrowLength = length;
         updatePolygon();
     }
 }
+

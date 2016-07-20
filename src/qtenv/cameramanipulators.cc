@@ -31,8 +31,8 @@ OverviewManipulator::OverviewManipulator(int flags)
 
 OverviewManipulator::OverviewManipulator(const OverviewManipulator& tm, const osg::CopyOp& copyOp)
     : osg::Object(tm, copyOp),
-      inherited(tm, copyOp),
-      _previousUp(tm._previousUp)
+    inherited(tm, copyOp),
+    _previousUp(tm._previousUp)
 {
     setVerticalAxisFixed(true);
 }
@@ -40,11 +40,10 @@ OverviewManipulator::OverviewManipulator(const OverviewManipulator& tm, const os
 // taken from TerrainManipulator, just ripped off the non-fixed-vertical-axis bits
 void OverviewManipulator::setByMatrix(const Matrixd& matrix)
 {
-    Vec3d lookVector(-matrix(2,0),-matrix(2,1),-matrix(2,2));
-    Vec3d eye(matrix(3,0),matrix(3,1),matrix(3,2));
+    Vec3d lookVector(-matrix(2, 0), -matrix(2, 1), -matrix(2, 2));
+    Vec3d eye(matrix(3, 0), matrix(3, 1), matrix(3, 2));
 
-    if (!_node)
-    {
+    if (!_node) {
         _center = eye + lookVector;
         _distance = lookVector.length();
         _rotation = matrix.getRotate();
@@ -57,7 +56,8 @@ void OverviewManipulator::setByMatrix(const Matrixd& matrix)
 // taken from TerrainManipulator, just ripped off the non-fixed-vertical-axis bits
 void OverviewManipulator::setTransformation(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up)
 {
-    if (!_node) return;
+    if (!_node)
+        return;
 
     // compute rotation matrix
     Vec3d lv(center-eye);
@@ -67,11 +67,12 @@ void OverviewManipulator::setTransformation(const osg::Vec3d& eye, const osg::Ve
     // note LookAt = inv(CF)*inv(RM)*inv(T) which is equivalent to:
     // inv(R) = CF*LookAt.
 
-    _rotation = Matrixd::lookAt(eye,center,up).getRotate().inverse();
+    _rotation = Matrixd::lookAt(eye, center, up).getRotate().inverse();
     _previousUp = getUpVector(getCoordinateFrame(_center));
 }
 
-bool OverviewManipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy) {
+bool OverviewManipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy)
+{
     // saving the original distance
     double distance = getDistance();
 
@@ -81,7 +82,7 @@ bool OverviewManipulator::performMovementLeftMouseButton(const double eventTimeD
     // then if the eye got below the center, snapping it back a bit
     auto matrix = getMatrix();
     // from the function above
-    Vec3d eye(matrix(3,0),matrix(3,1), matrix(3,2));
+    Vec3d eye(matrix(3, 0), matrix(3, 1), matrix(3, 2));
     // not that far low!
     eye.z() = std::max(getCenter().z(), eye.z());
 
@@ -97,10 +98,10 @@ bool OverviewManipulator::performMovementLeftMouseButton(const double eventTimeD
 }
 
 // same as in TerrainManipulator
-bool OverviewManipulator::performMovementMiddleMouseButton( const double eventTimeDelta, const double dx, const double dy )
+bool OverviewManipulator::performMovementMiddleMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
     // pan model.
-    double scale = -0.3f * _distance * getThrowScale( eventTimeDelta );
+    double scale = -0.3f * _distance * getThrowScale(eventTimeDelta);
 
     Matrixd rotation_matrix;
     rotation_matrix.makeRotate(_rotation);
@@ -122,21 +123,18 @@ bool OverviewManipulator::performMovementMiddleMouseButton( const double eventTi
 
     _center += dv;
 
-    if (_node.valid())
-    {
+    if (_node.valid()) {
         // now reorientate the coordinate frame to the frame coords.
         Vec3d new_localUp = getUpVector(getCoordinateFrame(_center));
 
         Quat pan_rotation;
-        pan_rotation.makeRotate(localUp,new_localUp);
+        pan_rotation.makeRotate(localUp, new_localUp);
 
-        if (!pan_rotation.zeroRotation())
-        {
+        if (!pan_rotation.zeroRotation()) {
             _rotation = _rotation * pan_rotation;
             _previousUp = new_localUp;
         }
-        else
-        {
+        else {
             OSG_INFO<<"New up orientation nearly inline - no need to rotate"<<std::endl;
         }
     }
@@ -151,7 +149,7 @@ bool OverviewManipulator::performMovementRightMouseButton(const double eventTime
 
     auto matrix = getMatrix();
     // from the setByMatrix function
-    Vec3d lookVector(-matrix(2,0),-matrix(2,1),-matrix(2,2));
+    Vec3d lookVector(-matrix(2, 0), -matrix(2, 1), -matrix(2, 2));
 
     Vec3d side = osg::Vec3d(0, 0, 1) ^ lookVector;
     side.normalize();
@@ -162,8 +160,8 @@ bool OverviewManipulator::performMovementRightMouseButton(const double eventTime
     return true;
 }
 
+}  // namespace omnetpp
+}  // namespace omnetpp
 
-} // namespace omnetpp
-} // namespace omnetpp
+#endif  // WITH_OSG
 
-#endif // WITH_OSG

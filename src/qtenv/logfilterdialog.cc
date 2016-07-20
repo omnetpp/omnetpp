@@ -22,12 +22,13 @@
 namespace omnetpp {
 namespace qtenv {
 
-void LogFilterDialog::addModuleChildren(cModule *module, QTreeWidgetItem *item, const std::set<int> &excludedModuleIds) {
+void LogFilterDialog::addModuleChildren(cModule *module, QTreeWidgetItem *item, const std::set<int>& excludedModuleIds)
+{
     if (module) {
         for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
             QTreeWidgetItem *childItem = new QTreeWidgetItem(item, QStringList(getTextForModule(*it)));
             item->addChild(childItem);
-            childItem->setData(0, Qt::UserRole, QVariant::fromValue((void*)(*it)));
+            childItem->setData(0, Qt::UserRole, QVariant::fromValue((void *)(*it)));
 
             childItem->setCheckState(0, (excludedModuleIds.count((*it)->getId()) == 1) ? Qt::Unchecked : Qt::Checked);
 
@@ -36,18 +37,20 @@ void LogFilterDialog::addModuleChildren(cModule *module, QTreeWidgetItem *item, 
     }
 }
 
-QString LogFilterDialog::getTextForModule(cModule *module) {
+QString LogFilterDialog::getTextForModule(cModule *module)
+{
     return QString(module->getFullName()) + " (" + getObjectShortTypeName(module) + ") (id=" + QString::number(module->getId()) + ")";
 }
 
-void LogFilterDialog::onItemChanged(QTreeWidgetItem *item, int column) {
+void LogFilterDialog::onItemChanged(QTreeWidgetItem *item, int column)
+{
     int count = item->childCount();
     for (int i = 0; i < count; ++i) {
         item->child(i)->setCheckState(0, item->checkState(0));
     }
 }
 
-LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int> &excludedModuleIds) :
+LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int>& excludedModuleIds) :
     QDialog(parent),
     ui(new Ui::logfilterdialog)
 {
@@ -58,12 +61,12 @@ LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std
 
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget, QStringList(getTextForModule(rootModule)));
     ui->treeWidget->addTopLevelItem(item);
-    item->setData(0, Qt::UserRole, QVariant::fromValue((void*)rootModule));
+    item->setData(0, Qt::UserRole, QVariant::fromValue((void *)rootModule));
     item->setCheckState(0, (excludedModuleIds.count(rootModule->getId()) == 1) ? Qt::Unchecked : Qt::Checked);
 
     addModuleChildren(rootModule, item, excludedModuleIds);
 
-    connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(onItemChanged(QTreeWidgetItem*, int)));
+    connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onItemChanged(QTreeWidgetItem *, int)));
 
     ui->treeWidget->expandItem(item);
 }
@@ -73,7 +76,8 @@ LogFilterDialog::~LogFilterDialog()
     delete ui;
 }
 
-std::set<int> LogFilterDialog::getExcludedModuleIds() {
+std::set<int> LogFilterDialog::getExcludedModuleIds()
+{
     std::set<int> result;
 
     QTreeWidgetItemIterator it(ui->treeWidget);
@@ -86,5 +90,6 @@ std::set<int> LogFilterDialog::getExcludedModuleIds() {
     return result;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

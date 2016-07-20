@@ -89,12 +89,12 @@ namespace qtenv {
 // Register the Qtenv user interface
 //
 #ifdef PREFER_QTENV
-#define QTENV_PRIORITY 30
+#define QTENV_PRIORITY    30
 #else
-#define QTENV_PRIORITY 15
+#define QTENV_PRIORITY    15
 #endif
 
-Register_OmnetApp("Qtenv", Qtenv, QTENV_PRIORITY, "Qt-based graphical user interface");  //note: priority to be changed to 30 when Qtenv becomes the default
+Register_OmnetApp("Qtenv", Qtenv, QTENV_PRIORITY, "Qt-based graphical user interface");  // note: priority to be changed to 30 when Qtenv becomes the default
 
 //
 // The following function can be used to force linking with Qtenv; specify
@@ -104,7 +104,7 @@ extern "C" QTENV_API void qtenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" QTENV_API void _qtenv_lib() {}
 
-#define LL                             INT64_PRINTF_FORMAT
+#define LL    INT64_PRINTF_FORMAT
 
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
@@ -151,7 +151,8 @@ QtenvOptions::QtenvOptions()
     scrollbackLimit = 10000;
 }
 
-void Qtenv::storeOptsInPrefs() {
+void Qtenv::storeOptsInPrefs()
+{
     setPref("updatefreq_fast_ms", QVariant::fromValue<int>(opt->updateFreqFast));
     setPref("updatefreq_express_ms", QVariant::fromValue<int>(opt->updateFreqExpress));
     setPref("event_banners", opt->printEventBanners);
@@ -171,9 +172,9 @@ void Qtenv::storeOptsInPrefs() {
 
     QString layouterChoiceString;
     switch (opt->layouterChoice) {
-    case LAYOUTER_FAST:     layouterChoiceString = "fast";     break;
-    case LAYOUTER_ADVANCED: layouterChoiceString = "advanced"; break;
-    case LAYOUTER_AUTO:     layouterChoiceString = "auto";     break;
+        case LAYOUTER_FAST:     layouterChoiceString = "fast";     break;
+        case LAYOUTER_ADVANCED: layouterChoiceString = "advanced"; break;
+        case LAYOUTER_AUTO:     layouterChoiceString = "auto";     break;
     }
     setPref("layouterchoice", layouterChoiceString);
 
@@ -185,9 +186,9 @@ void Qtenv::storeOptsInPrefs() {
 
     QString stripNamespaceString;
     switch (opt->stripNamespace) {
-    case STRIPNAMESPACE_NONE:    stripNamespaceString = "none";    break;
-    case STRIPNAMESPACE_OMNETPP: stripNamespaceString = "omnetpp"; break;
-    case STRIPNAMESPACE_ALL:     stripNamespaceString = "all";     break;
+        case STRIPNAMESPACE_NONE:    stripNamespaceString = "none";    break;
+        case STRIPNAMESPACE_OMNETPP: stripNamespaceString = "omnetpp"; break;
+        case STRIPNAMESPACE_ALL:     stripNamespaceString = "all";     break;
     }
     setPref("stripnamespace", stripNamespaceString);
 
@@ -195,14 +196,14 @@ void Qtenv::storeOptsInPrefs() {
 
     QString logLevelString;
     switch (opt->logLevel) {
-    case LOGLEVEL_OFF:  logLevelString = "off";  break;
-    case LOGLEVEL_FATAL:  logLevelString = "fatal";  break;
-    case LOGLEVEL_ERROR:  logLevelString = "error";  break;
-    case LOGLEVEL_WARN:   logLevelString = "warn";   break;
-    case LOGLEVEL_INFO:   logLevelString = "info";   break;
-    case LOGLEVEL_DETAIL: logLevelString = "detail"; break;
-    case LOGLEVEL_DEBUG:  logLevelString = "debug";  break;
-    case LOGLEVEL_TRACE:  logLevelString = "trace";  break;
+        case LOGLEVEL_OFF:  logLevelString = "off";  break;
+        case LOGLEVEL_FATAL:  logLevelString = "fatal";  break;
+        case LOGLEVEL_ERROR:  logLevelString = "error";  break;
+        case LOGLEVEL_WARN:   logLevelString = "warn";   break;
+        case LOGLEVEL_INFO:   logLevelString = "info";   break;
+        case LOGLEVEL_DETAIL: logLevelString = "detail"; break;
+        case LOGLEVEL_DEBUG:  logLevelString = "debug";  break;
+        case LOGLEVEL_TRACE:  logLevelString = "trace";  break;
     }
     setPref("logLevel", logLevelString);
 
@@ -210,124 +211,160 @@ void Qtenv::storeOptsInPrefs() {
     setPref("logbuffer_maxnumevents", logBuffer.getMaxNumEntries());
 }
 
-void Qtenv::restoreOptsFromPrefs() {
+void Qtenv::restoreOptsFromPrefs()
+{
     auto pref = getPref("updatefreq_fast_ms");
-    if (pref.isValid()) opt->updateFreqFast = pref.toLongLong();
+    if (pref.isValid())
+        opt->updateFreqFast = pref.toLongLong();
 
     pref = getPref("updatefreq_express_ms");
-    if (pref.isValid()) opt->updateFreqExpress = pref.toLongLong();
+    if (pref.isValid())
+        opt->updateFreqExpress = pref.toLongLong();
 
     pref = getPref("event_banners");
-    if (pref.isValid()) opt->printEventBanners = pref.toBool();
+    if (pref.isValid())
+        opt->printEventBanners = pref.toBool();
 
     pref = getPref("init_banners");
-    if (pref.isValid()) opt->printInitBanners = pref.toBool();
+    if (pref.isValid())
+        opt->printInitBanners = pref.toBool();
 
     pref = getPref("short_banners");
-    if (pref.isValid()) opt->shortBanners = pref.toBool();
+    if (pref.isValid())
+        opt->shortBanners = pref.toBool();
 
     pref = getPref("animation_enabled");
-    if (pref.isValid()) opt->animationEnabled = pref.toBool();
+    if (pref.isValid())
+        opt->animationEnabled = pref.toBool();
 
     pref = getPref("nexteventmarkers");
-    if (pref.isValid()) opt->showNextEventMarkers = pref.toBool();
+    if (pref.isValid())
+        opt->showNextEventMarkers = pref.toBool();
 
     pref = getPref("senddirect_arrows");
-    if (pref.isValid()) opt->showSendDirectArrows = pref.toBool();
+    if (pref.isValid())
+        opt->showSendDirectArrows = pref.toBool();
 
     pref = getPref("anim_methodcalls");
-    if (pref.isValid()) opt->animateMethodCalls = pref.toBool();
+    if (pref.isValid())
+        opt->animateMethodCalls = pref.toBool();
 
     pref = getPref("methodcalls_delay");
-    if (pref.isValid()) opt->methodCallAnimDelay = pref.toInt();
+    if (pref.isValid())
+        opt->methodCallAnimDelay = pref.toInt();
 
     pref = getPref("animation_msgnames");
-    if (pref.isValid()) opt->animationMsgNames = pref.toBool();
+    if (pref.isValid())
+        opt->animationMsgNames = pref.toBool();
 
     pref = getPref("animation_msgclassnames");
-    if (pref.isValid()) opt->animationMsgClassNames = pref.toBool();
+    if (pref.isValid())
+        opt->animationMsgClassNames = pref.toBool();
 
     pref = getPref("animation_msgcolors");
-    if (pref.isValid()) opt->animationMsgColors = pref.toBool();
+    if (pref.isValid())
+        opt->animationMsgColors = pref.toBool();
 
     pref = getPref("silent_event_filters");
-    if (pref.isValid()) setSilentEventFilters(pref.toString().toStdString().c_str());
+    if (pref.isValid())
+        setSilentEventFilters(pref.toString().toStdString().c_str());
 
     pref = getPref("penguin_mode");
-    if (pref.isValid()) opt->penguinMode = pref.toBool();
+    if (pref.isValid())
+        opt->penguinMode = pref.toBool();
 
     pref = getPref("showlayouting");
-    if (pref.isValid()) opt->showLayouting = pref.toBool();
+    if (pref.isValid())
+        opt->showLayouting = pref.toBool();
 
     pref = getPref("layouterchoice");
     if (pref.isValid()) {
         QString layouterChoiceString = pref.toString();
         if (layouterChoiceString == "fast") {
             opt->layouterChoice = LAYOUTER_FAST;
-        } else if (layouterChoiceString == "advanced") {
+        }
+        else if (layouterChoiceString == "advanced") {
             opt->layouterChoice = LAYOUTER_ADVANCED;
-        } else if (layouterChoiceString == "auto") {
+        }
+        else if (layouterChoiceString == "auto") {
             opt->layouterChoice = LAYOUTER_AUTO;
         }
     }
 
     pref = getPref("arrangevectorconnections");
-    if (pref.isValid()) opt->arrangeVectorConnections = pref.toBool();
+    if (pref.isValid())
+        opt->arrangeVectorConnections = pref.toBool();
 
     pref = getPref("iconminsize");
-    if (pref.isValid()) opt->iconMinimumSize = pref.toInt();
+    if (pref.isValid())
+        opt->iconMinimumSize = pref.toInt();
 
     pref = getPref("bubbles");
-    if (pref.isValid()) opt->showBubbles = pref.toBool();
+    if (pref.isValid())
+        opt->showBubbles = pref.toBool();
 
     pref = getPref("animation_speed");
-    if (pref.isValid()) setAnimationSpeed(pref.toDouble());
+    if (pref.isValid())
+        setAnimationSpeed(pref.toDouble());
 
     pref = getPref("expressmode_autoupdate");
-    if (pref.isValid()) opt->autoupdateInExpress = pref.toBool();
+    if (pref.isValid())
+        opt->autoupdateInExpress = pref.toBool();
 
     pref = getPref("stripnamespace");
     if (pref.isValid()) {
         QString stripNamespaceString = pref.toString();
         if (stripNamespaceString == "none") {
             opt->stripNamespace = STRIPNAMESPACE_NONE;
-        } else if (stripNamespaceString == "omnetpp") {
+        }
+        else if (stripNamespaceString == "omnetpp") {
             opt->stripNamespace = STRIPNAMESPACE_OMNETPP;
-        } else if (stripNamespaceString == "all") {
+        }
+        else if (stripNamespaceString == "all") {
             opt->stripNamespace = STRIPNAMESPACE_ALL;
         }
     }
 
     pref = getPref("logformat");
-    if (pref.isValid()) opt->logFormat = pref.toString().toStdString().c_str();
+    if (pref.isValid())
+        opt->logFormat = pref.toString().toStdString().c_str();
 
     pref = getPref("logLevel");
     if (pref.isValid()) {
         QString logLevelString = pref.toString();
         if (logLevelString == "off") {
             opt->logLevel = LOGLEVEL_OFF;
-        } else if (logLevelString == "fatal") {
+        }
+        else if (logLevelString == "fatal") {
             opt->logLevel = LOGLEVEL_FATAL;
-        } else if (logLevelString == "error") {
+        }
+        else if (logLevelString == "error") {
             opt->logLevel = LOGLEVEL_ERROR;
-        } else if (logLevelString == "warn") {
+        }
+        else if (logLevelString == "warn") {
             opt->logLevel = LOGLEVEL_WARN;
-        } else if (logLevelString == "info") {
+        }
+        else if (logLevelString == "info") {
             opt->logLevel = LOGLEVEL_INFO;
-        } else if (logLevelString == "detail") {
+        }
+        else if (logLevelString == "detail") {
             opt->logLevel = LOGLEVEL_DETAIL;
-        } else if (logLevelString == "debug") {
+        }
+        else if (logLevelString == "debug") {
             opt->logLevel = LOGLEVEL_DEBUG;
-        } else if (logLevelString == "trace") {
+        }
+        else if (logLevelString == "trace") {
             opt->logLevel = LOGLEVEL_TRACE;
         }
     }
 
     pref = getPref("scrollbacklimit");
-    if (pref.isValid()) opt->scrollbackLimit = pref.toInt();
+    if (pref.isValid())
+        opt->scrollbackLimit = pref.toInt();
 
     pref = getPref("logbuffer_maxnumevents");
-    if (pref.isValid()) logBuffer.setMaxNumEntries(pref.toInt());
+    if (pref.isValid())
+        logBuffer.setMaxNumEntries(pref.toInt());
 }
 
 void Qtenv::storeInspectors(bool closeThem)
@@ -341,7 +378,7 @@ void Qtenv::storeInspectors(bool closeThem)
 
     std::vector<Inspector *> toBeClosed;
 
-    int index = 0; // no particular meaning, just a unique identifier
+    int index = 0;  // no particular meaning, just a unique identifier
     for (Inspector *insp : inspectors) {
         if (insp->isToplevel()) {
             cObject *obj = insp->getObject();
@@ -349,7 +386,7 @@ void Qtenv::storeInspectors(bool closeThem)
             int objectId = -1;
             if (cMessage *msg = dynamic_cast<cMessage *>(obj))
                 objectId = msg->getId();
-            if (cComponent *component = dynamic_cast<cComponent*>(obj))
+            if (cComponent *component = dynamic_cast<cComponent *>(obj))
                 objectId = component->getId();
 
             localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
@@ -412,8 +449,8 @@ void Qtenv::restoreInspectors()
                 continue;
             }
 
-            auto o = object.toUtf8(); // we have to save these to variables
-            auto c = classname.toUtf8(); // otherwise they are temporary
+            auto o = object.toUtf8();  // we have to save these to variables
+            auto c = classname.toUtf8();  // otherwise they are temporary
             cFindByPathVisitor visitor(o, c, objectId);
             visitor.process(getSimulation());
 
@@ -461,8 +498,8 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 Qtenv::~Qtenv()
 {
     delete animator;
-    delete localPrefs; // will sync it to disk
-    delete globalPrefs; // will sync it to disk
+    delete localPrefs;  // will sync it to disk
+    delete globalPrefs;  // will sync it to disk
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
         delete silentEventFilters[i];
 }
@@ -526,7 +563,7 @@ void Qtenv::doRun()
 
         mainWindow->show();
 
-        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject*)), mainLogView, SLOT(setObject(cObject*)));
+        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *)), mainLogView, SLOT(setObject(cObject *)));
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -538,7 +575,6 @@ void Qtenv::doRun()
     catch (std::exception& e) {
         throw;
     }
-
     //
     // SHUTDOWN
     //
@@ -612,7 +648,7 @@ void Qtenv::doOneStep()
     animating = true;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     updateStatusDisplay();
-    simulationState = SIM_RUNNING; // currently must come after updateStatusDisplay(), because it depends on it...
+    simulationState = SIM_RUNNING;  // currently must come after updateStatusDisplay(), because it depends on it...
 
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
@@ -622,7 +658,7 @@ void Qtenv::doOneStep()
             getSimulation()->executeEvent(event);
             performAnimations();
         }
-        simulationState = SIM_READY; // currently must precede updateStatusDisplay(), because it depends on it...
+        simulationState = SIM_READY;  // currently must precede updateStatusDisplay(), because it depends on it...
         callRefreshDisplay();
         updateStatusDisplay();
         refreshInspectors();
@@ -684,7 +720,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
             else
                 cont = doRunSimulation();
         }
-        if (runMode != RUNMODE_NORMAL) // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
+        if (runMode != RUNMODE_NORMAL)  // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
             callRefreshDisplay();
         simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
@@ -814,7 +850,7 @@ bool Qtenv::doRunSimulation()
 
         // display update
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
-            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > (unsigned long)opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3)) // do not start new interval at every event
+            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > (unsigned long)opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3))  // do not start new interval at every event
                 speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             callRefreshDisplay();
             refreshInspectors();
@@ -996,7 +1032,6 @@ void Qtenv::newNetwork(const char *networkname)
         displayException(e);
         simulationState = SIM_ERROR;
     }
-
     // update GUI
     auto module = getSimulation()->getSystemModule();
     mainNetworkView->setObject(module);
@@ -1044,7 +1079,6 @@ void Qtenv::newRun(const char *configname, int runnumber)
         displayException(e);
         simulationState = SIM_ERROR;
     }
-
     // update GUI
     auto module = getSimulation()->getSystemModule();
     mainNetworkView->setObject(module);
@@ -1102,8 +1136,8 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
         return nullptr;
     }
 
-    connect(inspector, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
-    connect(inspector, SIGNAL(objectDoubleClicked(cObject*)), this, SLOT(onObjectDoubleClicked(cObject *)));
+    connect(inspector, SIGNAL(selectionChanged(cObject *)), this, SLOT(onSelectionChanged(cObject *)));
+    connect(inspector, SIGNAL(objectDoubleClicked(cObject *)), this, SLOT(onObjectDoubleClicked(cObject *)));
 
     // everything ok, finish inspector
     inspectors.push_back(inspector);
@@ -1119,8 +1153,8 @@ Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *paren
     Inspector *insp = factory->createInspector(parent, false);
     inspectors.push_back(insp);
 
-    connect(insp, SIGNAL(selectionChanged(cObject*)), this, SLOT(onSelectionChanged(cObject*)));
-    connect(insp, SIGNAL(objectDoubleClicked(cObject*)), this, SLOT(onObjectDoubleClicked(cObject *)));
+    connect(insp, SIGNAL(selectionChanged(cObject *)), this, SLOT(onSelectionChanged(cObject *)));
+    connect(insp, SIGNAL(objectDoubleClicked(cObject *)), this, SLOT(onObjectDoubleClicked(cObject *)));
 
     insp->refresh();
     return insp;
@@ -1274,7 +1308,8 @@ void Qtenv::printEventBanner(cEvent *event)
     logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
 }
 
-void Qtenv::setAnimationSpeed(float speed) {
+void Qtenv::setAnimationSpeed(float speed)
+{
     opt->animationSpeed = speed;
     setPref("animation_speed", opt->animationSpeed);
     emit animationSpeedChanged(speed);
@@ -1348,7 +1383,7 @@ bool Qtenv::isSilentEvent(cMessage *msg)
     return false;
 }
 
-// =========================================================================
+//=========================================================================
 
 void Qtenv::readOptions()
 {
@@ -1545,7 +1580,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
     EnvirBase::messageSendHop(msg, srcGate);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
+        bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
         animator->animateSendHop(msg, srcGate, isLastHop);
     }
 
@@ -1558,7 +1593,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationD
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        bool isLastHop = srcGate->getNextGate()==msg->getArrivalGate();
+        bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
         animator->animateSendHop(msg, srcGate, isLastHop);
     }
 
@@ -1751,14 +1786,17 @@ void Qtenv::moduleDisplayStringChanged(cModule *module)
     }
 }
 
-void Qtenv::onSelectionChanged(cObject *object) {
+void Qtenv::onSelectionChanged(cObject *object)
+{
     mainInspector->setObject(object);
 }
 
-void Qtenv::onObjectDoubleClicked(cObject *object) {
+void Qtenv::onObjectDoubleClicked(cObject *object)
+{
     if (cModule *module = dynamic_cast<cModule *>(object)) {
         mainNetworkView->setObject(module);
-    } else {
+    }
+    else {
         inspect(object, INSP_DEFAULT, true);
     }
 }
@@ -1842,8 +1880,7 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
     layout->addWidget(edit);
 
     QCheckBox *checkBox;
-    if(checkboxLabel)
-    {
+    if (checkboxLabel) {
         checkBox = new QCheckBox(checkboxLabel);
         layout->addWidget(checkBox);
     }
@@ -1855,11 +1892,11 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
 
     dialog->setLayout(layout);
 
-    if(dialog->exec() == QDialog::Rejected)
+    if (dialog->exec() == QDialog::Rejected)
         return false;
 
     outResult = edit->text().toStdString();
-    if(checkBox)
+    if (checkBox)
         inoutCheckState = checkBox->isChecked();
 
     delete dialog;
@@ -1887,7 +1924,7 @@ bool Qtenv::askyesno(const char *question)
                                   QMessageBox::Yes | QMessageBox::No)) { // XXX: should allow cancel?
         case QMessageBox::Yes: return true;
         case QMessageBox::No:  return false;
-        default:               throw cRuntimeError(E_CANCEL);
+        default: throw cRuntimeError(E_CANCEL);
     }
 }
 
@@ -1896,13 +1933,14 @@ unsigned Qtenv::getExtraStackForEnvir() const
     return opt->extraStack;
 }
 
-QPoint Qtenv::getDefaultStopDialogCorner(const QPoint &offset)
+QPoint Qtenv::getDefaultStopDialogCorner(const QPoint& offset)
 {
     auto insp = getQtenv()->getMainModuleInspector();
-    return insp->mapToGlobal(insp->contentsRect().topRight() + offset); // not covering the toolbar
+    return insp->mapToGlobal(insp->contentsRect().topRight() + offset);  // not covering the toolbar
 }
 
-void Qtenv::setPref(const QString &key, const QVariant &value) {
+void Qtenv::setPref(const QString& key, const QVariant& value)
+{
     auto settings = (localPrefKeys.contains(key) ? localPrefs : globalPrefs);
     if (value.isValid())
         settings->setValue(key, value);
@@ -1910,7 +1948,8 @@ void Qtenv::setPref(const QString &key, const QVariant &value) {
         settings->remove(key);
 }
 
-QVariant Qtenv::getPref(const QString &key, const QVariant &defaultValue) {
+QVariant Qtenv::getPref(const QString& key, const QVariant& defaultValue)
+{
     QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
     return settings->value(key, defaultValue);
 }
@@ -2004,9 +2043,9 @@ void Qtenv::setComponentLogLevel()
 // the level of one of its ancestor components
 void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level, bool save)
 {
-    cCollectObjectsOfTypeVisitor<cComponent> v; // should include the component itself
+    cCollectObjectsOfTypeVisitor<cComponent> v;  // should include the component itself
     v.process(component);
-    cComponent **objs = (cComponent**)v.getArray();
+    cComponent **objs = (cComponent **)v.getArray();
 
     for (int i = 0; i < v.getArraySize(); ++i) {
         // have to remove the explicitly saved loglevels of the children, so
@@ -2028,26 +2067,26 @@ void Qtenv::initFonts()
     // TODO Check default time font in Windows and Mac
 #ifdef Q_WS_WIN
     // Windows
-    defaultFonts.boldFont = getFirstAvailableFontFamily({"Segoe UI", "MS Sans Serif", "Arial"}, 9);
+    defaultFonts.boldFont = getFirstAvailableFontFamily({ "Segoe UI", "MS Sans Serif", "Arial" }, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
-    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily({"DejaVu Sans Mono", "Courier New", "Consolas", "Terminal"}, 9);
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Segoe Condensed", "Gill Sans MT Condensed", "Liberation Sans Narrow" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily({ "DejaVu Sans Mono", "Courier New", "Consolas", "Terminal" }, 9);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
 #elif defined(Q_WS_MAC)
     // Mac
-    defaultFonts.boldFont = getFirstAvailableFontFamily({"Lucida Grande", "Helvetica"}, 13);
+    defaultFonts.boldFont = getFirstAvailableFontFamily({ "Lucida Grande", "Helvetica" }, 13);
     defaultFonts.canvasFont = defaultFonts.boldFont;
-    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Arial Narrow"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily({"Monaco", "Courier"}, 13);
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Arial Narrow" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily({ "Monaco", "Courier" }, 13);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
 #else
     // Linux and other systems
-    defaultFonts.boldFont = getFirstAvailableFontFamily({"Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L", "FreeSans", "Sans"}, 9);
+    defaultFonts.boldFont = getFirstAvailableFontFamily({ "Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L", "FreeSans", "Sans" }, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
-    defaultFonts.timelineFont = getFirstAvailableFontFamily({"Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed"}, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
-    defaultFonts.logFont = getFirstAvailableFontFamily({"Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier"}, 9);
+    defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Ubuntu Condensed", "Arial Narrow", "DejaVu Sans Condensed" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
+    defaultFonts.logFont = getFirstAvailableFontFamily({ "Ubuntu Mono", "DejaVu Sans Mono", "Courier New", "FreeMono", "Courier" }, 9);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
 #endif
@@ -2076,11 +2115,10 @@ void Qtenv::initFonts()
 // available on the system. If none are available, returns defaultValue.
 QFont Qtenv::getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue)
 {
-    for(QString str : preferenceList)
-    {
+    for (QString str : preferenceList) {
         QFontDatabase fontDb;
         QFont font = fontDb.font(str, "Normal", pointSize);
-        if(font != QFont())
+        if (font != QFont())
             return font;
     }
     return defaultValue;
@@ -2122,7 +2160,7 @@ void Qtenv::updateQtFonts()
         );
 }
 
-// ======================================================================
+//======================================================================
 // dummy function to force Unix linkers collect all symbols needed
 
 void _dummy_for_genericobjectinspector();
@@ -2146,6 +2184,6 @@ void _dummy_func()
     _dummy_for_objecttreeinspector();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

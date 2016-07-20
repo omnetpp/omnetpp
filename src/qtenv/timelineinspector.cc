@@ -51,9 +51,9 @@ TimeLineInspector::TimeLineInspector(QWidget *parent, bool isTopLevel, Inspector
     layout->addWidget(timeLine, 0, 0);
     layout->setMargin(0);
 
-    connect(timeLine, SIGNAL(contextMenuRequested(QVector<cObject*>,QPoint)), this, SLOT(createContextMenu(QVector<cObject*>,QPoint)));
-    connect(timeLine, SIGNAL(click(cObject*)), this, SLOT(setObjectToObjectInspector(cObject*)));
-    connect(timeLine, SIGNAL(doubleClick(cObject*)), this, SLOT(openInspector(cObject*)));
+    connect(timeLine, SIGNAL(contextMenuRequested(QVector<cObject *>, QPoint)), this, SLOT(createContextMenu(QVector<cObject *>, QPoint)));
+    connect(timeLine, SIGNAL(click(cObject *)), this, SLOT(setObjectToObjectInspector(cObject *)));
+    connect(timeLine, SIGNAL(doubleClick(cObject *)), this, SLOT(openInspector(cObject *)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 }
 
@@ -63,16 +63,14 @@ void TimeLineInspector::onFontChanged()
     timeLine->setMessageLabelFont(getQtenv()->getTimelineFont());
 }
 
-void TimeLineInspector::createContextMenu(QVector<cObject*> objects, QPoint globalPos)
+void TimeLineInspector::createContextMenu(QVector<cObject *> objects, QPoint globalPos)
 {
-    if(objects.size())
-    {
+    if (objects.size()) {
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
         menu->exec(globalPos);
         delete menu;
     }
-    else
-    {
+    else {
         QMenu *menu = new QMenu();
         menu->addAction("Timeline Settings...", this, SLOT(runPreferencesDialog()));
         menu->exec(globalPos);
@@ -80,7 +78,7 @@ void TimeLineInspector::createContextMenu(QVector<cObject*> objects, QPoint glob
     }
 }
 
-void TimeLineInspector::setObjectToObjectInspector(cObject* object)
+void TimeLineInspector::setObjectToObjectInspector(cObject *object)
 {
     emit selectionChanged(object);
 }
@@ -105,5 +103,6 @@ double TimeLineInspector::getInitHeight()
     return timeLine->getInitHeight();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -53,113 +53,136 @@ TimeLineGraphicsView::TimeLineGraphicsView() :
     colorList.append(Qt::GlobalColor::black);
     msgKindFillColors = colorList;
     msgKindBorderColors = colorList;
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // TODO it can still be scrolled with the mouse however...
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);  // TODO it can still be scrolled with the mouse however...
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
-int TimeLineGraphicsView::getMinExponent() {
+int TimeLineGraphicsView::getMinExponent()
+{
     return minExponent;
 }
 
-void TimeLineGraphicsView::setMinExponent(int minExponent) {
+void TimeLineGraphicsView::setMinExponent(int minExponent)
+{
     this->minExponent = minExponent;
     update();
 }
 
-int TimeLineGraphicsView::getMaxExponent() {
+int TimeLineGraphicsView::getMaxExponent()
+{
     return maxExponent;
 }
 
-void TimeLineGraphicsView::setMaxExponent(int maxExponent) {
+void TimeLineGraphicsView::setMaxExponent(int maxExponent)
+{
     this->maxExponent = maxExponent;
     update();
 }
 
-void TimeLineGraphicsView::setAdaptiveExponents(bool value) {
+void TimeLineGraphicsView::setAdaptiveExponents(bool value)
+{
     setAdaptiveMinExponent(value);
     setAdaptiveMaxExponent(value);
 }
 
-bool TimeLineGraphicsView::isAdaptiveMinExponent() {
+bool TimeLineGraphicsView::isAdaptiveMinExponent()
+{
     return adaptiveMinExponent;
 }
 
-void TimeLineGraphicsView::setAdaptiveMinExponent(bool adaptiveMinExponent) {
+void TimeLineGraphicsView::setAdaptiveMinExponent(bool adaptiveMinExponent)
+{
     this->adaptiveMinExponent = adaptiveMinExponent;
     update();
 }
 
-bool TimeLineGraphicsView::isAdaptiveMaxExponent() {
+bool TimeLineGraphicsView::isAdaptiveMaxExponent()
+{
     return adaptiveMaxExponent;
 }
 
-void TimeLineGraphicsView::setAdaptiveMaxExponent(bool adaptiveMaxExponent) {
+void TimeLineGraphicsView::setAdaptiveMaxExponent(bool adaptiveMaxExponent)
+{
     this->adaptiveMaxExponent = adaptiveMaxExponent;
     update();
 }
 
-bool TimeLineGraphicsView::getDrawMinorTicks() {
-   return drawMinorTicks;
+bool TimeLineGraphicsView::getDrawMinorTicks()
+{
+    return drawMinorTicks;
 }
 
-void TimeLineGraphicsView::setDrawMinorTicks(bool drawMinorTicks) {
-   this->drawMinorTicks = drawMinorTicks;
-   update();
+void TimeLineGraphicsView::setDrawMinorTicks(bool drawMinorTicks)
+{
+    this->drawMinorTicks = drawMinorTicks;
+    update();
 }
 
-bool TimeLineGraphicsView::getShowTickLabels() {
-   return enableTickLabels;
+bool TimeLineGraphicsView::getShowTickLabels()
+{
+    return enableTickLabels;
 }
 
-void TimeLineGraphicsView::setShowTickLabels(bool enableTickLabels) {
-   this->enableTickLabels = enableTickLabels;
-   update();
+void TimeLineGraphicsView::setShowTickLabels(bool enableTickLabels)
+{
+    this->enableTickLabels = enableTickLabels;
+    update();
 }
 
-bool TimeLineGraphicsView::getShowMessageLabels() {
+bool TimeLineGraphicsView::getShowMessageLabels()
+{
     return enableMessageLabels;
 }
 
-void TimeLineGraphicsView::setShowMessageLabels(bool enableMessageLabels) {
+void TimeLineGraphicsView::setShowMessageLabels(bool enableMessageLabels)
+{
     this->enableMessageLabels = enableMessageLabels;
     update();
 }
 
-QFont TimeLineGraphicsView::getTickLabelFont() {
+QFont TimeLineGraphicsView::getTickLabelFont()
+{
     return tickLabelFont;
 }
 
-void TimeLineGraphicsView::setTickLabelFont(QFont tickLabelFont) {
+void TimeLineGraphicsView::setTickLabelFont(QFont tickLabelFont)
+{
     this->tickLabelFont = tickLabelFont;
     update();
 }
 
-QFont TimeLineGraphicsView::getMessageLabelFont() {
+QFont TimeLineGraphicsView::getMessageLabelFont()
+{
     return messageLabelFont;
 }
 
-void TimeLineGraphicsView::setMessageLabelFont(QFont messageLabelFont) {
+void TimeLineGraphicsView::setMessageLabelFont(QFont messageLabelFont)
+{
     this->messageLabelFont = messageLabelFont;
     update();
 }
 
-int TimeLineGraphicsView::getDefaultNumMessageLabelRows() {
+int TimeLineGraphicsView::getDefaultNumMessageLabelRows()
+{
     return defaultNumMessageLabelRows;
 }
 
-void TimeLineGraphicsView::setDefaultNumMessageLabelRows(int defaultNumMessageLabelRows) {
+void TimeLineGraphicsView::setDefaultNumMessageLabelRows(int defaultNumMessageLabelRows)
+{
     this->defaultNumMessageLabelRows = defaultNumMessageLabelRows;
 }
 
-QVector<cModule*> TimeLineGraphicsView::getModulePathsMessageFilter() {
+QVector<cModule *> TimeLineGraphicsView::getModulePathsMessageFilter()
+{
     return modules;
 }
 
-void TimeLineGraphicsView::setModulePathsMessageFilter(QVector<cModule*> modules) {
+void TimeLineGraphicsView::setModulePathsMessageFilter(QVector<cModule *> modules)
+{
     this->modules = modules;
 }
 
-QVector<cMessage*> TimeLineGraphicsView::getMessages()
+QVector<cMessage *> TimeLineGraphicsView::getMessages()
 {
     QVariant variant = getQtenv()->getPref("timeline-maxnumevents");
     int maxNum = variant.isValid() ? variant.value<int>() : 10;
@@ -173,7 +196,7 @@ QVector<cMessage*> TimeLineGraphicsView::getMessages()
     cFutureEventSet *fes = getSimulation()->getFES();
     fes->sort();
     int fesLen = fes->getLength();
-    QVector<cMessage*> messages;
+    QVector<cMessage *> messages;
     for (int i = 0; maxNum > 0 && i < fesLen; i++, maxNum--) {
         cEvent *event = fes->get(i);
         if (!event->isMessage())
@@ -185,17 +208,19 @@ QVector<cMessage*> TimeLineGraphicsView::getMessages()
             if (!wantSilentMsgs && getQtenv()->isSilentEvent(msg))
                 continue;
         }
-        messages.push_back(static_cast<cMessage*>(event));
+        messages.push_back(static_cast<cMessage *>(event));
     }
 
     return messages;
 }
 
-void TimeLineGraphicsView::resizeEvent(QResizeEvent *event) {
+void TimeLineGraphicsView::resizeEvent(QResizeEvent *event)
+{
     rebuildScene();
 }
 
-void TimeLineGraphicsView::updateMinExponent(simtime_t now, QVector<cMessage*> messages) {
+void TimeLineGraphicsView::updateMinExponent(simtime_t now, QVector<cMessage *> messages)
+{
     if (messages.size() == 0)
         return;  // nothing to do
 
@@ -220,7 +245,8 @@ void TimeLineGraphicsView::updateMinExponent(simtime_t now, QVector<cMessage*> m
     }
 }
 
-void TimeLineGraphicsView::updateMaxExponent(simtime_t now, QVector<cMessage*> messages) {
+void TimeLineGraphicsView::updateMaxExponent(simtime_t now, QVector<cMessage *> messages)
+{
     if (messages.size() == 0)
         return;  // nothing to do
 
@@ -234,14 +260,15 @@ void TimeLineGraphicsView::updateMaxExponent(simtime_t now, QVector<cMessage*> m
     }
 }
 
-int TimeLineGraphicsView::getXForExponent(double exp) {
+int TimeLineGraphicsView::getXForExponent(double exp)
+{
     exp = std::max((double)minExponent, std::min((double)maxExponent, exp));
     int x = minExponentX + (int)((maxExponentX-minExponentX) * (exp - minExponent) / (maxExponent - minExponent));  // map [min,max] to [margin,width-margin]
     return x;
 }
 
-QString TimeLineGraphicsView::getTickLabel(int mantissa, int exp) {
-    //Assert.isTrue(mantissa >= 1 && mantissa <= 9);
+QString TimeLineGraphicsView::getTickLabel(int mantissa, int exp)
+{
     QString unit;
     if (exp < -15) {unit = "as"; exp += 18;}
     else if (exp < -12) {unit = "fs"; exp += 15;}
@@ -254,26 +281,29 @@ QString TimeLineGraphicsView::getTickLabel(int mantissa, int exp) {
     return label;
 }
 
-int TimeLineGraphicsView::getXForTimeDelta(simtime_t delta) {
-   return getXForExponent(log10(delta.dbl()));
+int TimeLineGraphicsView::getXForTimeDelta(simtime_t delta)
+{
+    return getXForExponent(log10(delta.dbl()));
 }
 
-QVector<int> TimeLineGraphicsView::computeMessageCoordinates(simtime_t now, QVector<cMessage*> messages) {
+QVector<int> TimeLineGraphicsView::computeMessageCoordinates(simtime_t now, QVector<cMessage *> messages)
+{
     // count how many messages are exactly for "now"
     int i = 0;
-    for (i = 0; i < messages.size() && messages[i]->getArrivalTime() == now; i++);
+    for (i = 0; i < messages.size() && messages[i]->getArrivalTime() == now; i++)
+        ;
     int numNow = i;
 
     // place those messages in the zero-delta (+0s) area
     QVector<int> coords;
-    double dx = std::min(5.0, (zeroEndX-zeroStartX) / (double)numNow); // spacing: depending on available space, but maximum 5 pixels
+    double dx = std::min(5.0, (zeroEndX-zeroStartX) / (double)numNow);  // spacing: depending on available space, but maximum 5 pixels
     double x = (zeroStartX+zeroEndX)/2 - (numNow-1)*dx/2;
     for (i = 0; i < numNow; i++, x += dx)
         coords.push_back((int)x);
 
     // place other messages on the axis
-    double smallestExp = (numNow < messages.size()) ? log10((messages[numNow]->getArrivalTime() - now).dbl()) : nan("") /*unused*/;
-    double largestExp = (messages.size() > 0) ? log10((messages[messages.size()-1]->getArrivalTime() - now).dbl()) : nan("") /*unused*/;
+    double smallestExp = (numNow < messages.size()) ? log10((messages[numNow]->getArrivalTime() - now).dbl()) : nan("")  /*unused*/;
+    double largestExp = (messages.size() > 0) ? log10((messages[messages.size()-1]->getArrivalTime() - now).dbl()) : nan("")  /*unused*/;
 
     for (i = numNow; i < messages.size(); i++) {
         simtime_t delta = messages[i]->getArrivalTime() - now;
@@ -294,8 +324,9 @@ QVector<int> TimeLineGraphicsView::computeMessageCoordinates(simtime_t now, QVec
     return coords;
 }
 
-void TimeLineGraphicsView::paintMessages(QVector<cMessage*> messages, bool wantHighlighted, int messageLabelHeight, int numRows) {
-    QVector<int> labelRowLastX; // right edge of last label written in each row, with [0] being the bottom and [numRows-1] the top line
+void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool wantHighlighted, int messageLabelHeight, int numRows)
+{
+    QVector<int> labelRowLastX;  // right edge of last label written in each row, with [0] being the bottom and [numRows-1] the top line
     for (int i = 0; i < numRows; i++)
         labelRowLastX.push_back(INT_MIN);
     int bottomLabelRowY = axisY-3 - messageLabelHeight;
@@ -323,6 +354,7 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage*> messages, bool wantH
             for (row = 0; row < numRows; row++)
                 if (labelRowLastX[row] < labelX)
                     break;
+
             if (row < numRows) {
                 QBrush brush(Qt::SolidPattern);
                 QColor color = Qt::GlobalColor::black;
@@ -342,7 +374,8 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage*> messages, bool wantH
     }
 }
 
-bool TimeLineGraphicsView::matches(cMessage *object) {
+bool TimeLineGraphicsView::matches(cMessage *object)
+{
     cMessage *msg = object;
     cModule *module = msg->getArrivalModule();
     QString moduleFullPath = module->getFullPath().c_str();
@@ -356,14 +389,16 @@ bool TimeLineGraphicsView::matches(cMessage *object) {
         if (moduleFullPath.length() >= filterModulePathLength)
             if (filterModulePathLength < 2 || moduleFullPath[filterModulePathLength-2] == filterModulePath[filterModulePathLength-2])
                 if (moduleFullPath.startsWith(filterModulePath))  // this is the most expensive operation
-                    if (moduleFullPath.length() == filterModulePathLength || moduleFullPath[filterModulePathLength]=='.')
+                    if (moduleFullPath.length() == filterModulePathLength || moduleFullPath[filterModulePathLength] == '.')
                         return true;
+
     }
     return false;
 }
 
-void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int x, int y) {
-    int colorIndex = message->getKind() & 0x07; // not "x % 8" because it yields negative numbers for negative msgkind!
+void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int x, int y)
+{
+    int colorIndex = message->getKind() & 0x07;  // not "x % 8" because it yields negative numbers for negative msgkind!
     QColor brushColor = msgKindFillColors[colorIndex];
     brushColor.setAlpha(active ? 255 : 40);
     QColor penColor = msgKindBorderColors[colorIndex];
@@ -373,48 +408,46 @@ void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int
     ellipse->setData(1, QVariant::fromValue(message));
 
     QString toolTip = QString("(") + getObjectShortTypeName(message) + ") " + message->getFullName();
-    if(!message->info().empty())
+    if (!message->info().empty())
         toolTip += QString(", ") + message->info().c_str();
     ellipse->setToolTip(toolTip);
 }
 
-void TimeLineGraphicsView::mousePressEvent(QMouseEvent *event) {
-    if(event->button() == Qt::RightButton) {
-        QVector<cObject*> objects = getObjectsUnderCursor(mapToScene(event->pos()));
+void TimeLineGraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+        QVector<cObject *> objects = getObjectsUnderCursor(mapToScene(event->pos()));
         emit contextMenuRequested(objects, mapToGlobal(event->pos()));
     }
-    else if(event->button() == Qt::LeftButton)
-    {
-        QVector<cObject*> objects = getObjectsUnderCursor(mapToScene(event->pos()));
-        if(objects.size() > 0)
+    else if (event->button() == Qt::LeftButton) {
+        QVector<cObject *> objects = getObjectsUnderCursor(mapToScene(event->pos()));
+        if (objects.size() > 0)
             emit click(objects[0]);
     }
-
 }
 
 void TimeLineGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
-        QVector<cObject*> objects = getObjectsUnderCursor(mapToScene(event->pos()));
-        if(objects.size() != 0)
+    if (event->button() == Qt::LeftButton) {
+        QVector<cObject *> objects = getObjectsUnderCursor(mapToScene(event->pos()));
+        if (objects.size() != 0)
             emit doubleClick(objects[0]);
     }
 }
 
-QVector<cObject*> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
+QVector<cObject *> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
 {
     // cursor position plus minus 2 pixel
     QRectF rect(pos.x() - 2, pos.y() - 2, 4, 4);
-    QList<QGraphicsItem*> items = scene()->items(rect);
-    if(items.size() == 0)
-        return QVector<cObject*>();
+    QList<QGraphicsItem *> items = scene()->items(rect);
+    if (items.size() == 0)
+        return QVector<cObject *>();
 
-    QVector<cObject*> objects;
-    for(int i = 0; i < items.size(); ++i) {
+    QVector<cObject *> objects;
+    for (int i = 0; i < items.size(); ++i) {
         QVariant variant = items[i]->data(1);
-        if(variant.isValid())
-            objects.push_back(variant.value<cMessage*>());
+        if (variant.isValid())
+            objects.push_back(variant.value<cMessage *>());
     }
     return objects;
 }
@@ -432,13 +465,13 @@ void TimeLineGraphicsView::rebuildScene()
 {
     setSceneRect(0, contentsRect().height() * (2/3), contentsRect().width(), contentsRect().height());
 
-    if(scene() == nullptr)
+    if (scene() == nullptr)
         qDebug() << "TimeLineGraphicsView::rebuildScene: scene must be set";
 
     scene()->clear();
     simtime_t now = getSimulation()->getSimTime();
 
-    QVector<cMessage*> messages = getMessages();
+    QVector<cMessage *> messages = getMessages();
     setRenderHints(QPainter::Antialiasing);
 
     QRectF r = rect();
@@ -477,7 +510,7 @@ void TimeLineGraphicsView::rebuildScene()
 
     // draw zero delta tray
     scene()->setBackgroundBrush(QPalette().background());
-    int h=5;
+    int h = 5;
     scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-3, axisY+h, pen);
     scene()->addLine(zeroEndX+3, axisY-h, zeroEndX+3, axisY+h, pen);
     scene()->addLine(zeroStartX-3, axisY-h, zeroStartX-1, axisY-h, pen);
@@ -496,8 +529,7 @@ void TimeLineGraphicsView::rebuildScene()
 
             // label
             if (showTickLabels && (!reduceTickLabels || exp % 3 == 0)) {
-
-                QString label = getTickLabel(1,exp);
+                QString label = getTickLabel(1, exp);
                 simpleText.setText(label);
                 int labelWidth = simpleText.boundingRect().width();
 
@@ -511,7 +543,7 @@ void TimeLineGraphicsView::rebuildScene()
 
         if (drawMinorTicks)
             for (int i = 2; i <= 9; i++) {
-                int x = getXForTimeDelta(SimTime(i,(SimTimeUnit)exp));
+                int x = getXForTimeDelta(SimTime(i, (SimTimeUnit)exp));
                 scene()->addLine(x, axisY-2, x, axisY+2);
             }
     }
@@ -538,9 +570,10 @@ void TimeLineGraphicsView::rebuildScene()
     int numRows = (axisY-3) / messageLabelHeight;  // we can place message labels in multiple rows, depending on available space
 
     if (modules.size())
-        paintMessages(messages, false, messageLabelHeight, numRows); // draw non-highlighted (alpha) msgs first
+        paintMessages(messages, false, messageLabelHeight, numRows);  // draw non-highlighted (alpha) msgs first
     paintMessages(messages, true, messageLabelHeight, numRows);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -49,8 +49,10 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
     double shapeHeight = QString(ds.getTagArg("b", 1)).toDouble(&heightOk);
 
-    if (!widthOk) shapeWidth = shapeHeight;
-    if (!heightOk) shapeHeight = shapeWidth;
+    if (!widthOk)
+        shapeWidth = shapeHeight;
+    if (!heightOk)
+        shapeHeight = shapeWidth;
     if (!widthOk && !heightOk) {
         shapeWidth = 40;
         shapeHeight = 24;
@@ -74,7 +76,6 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     int outlineWidth = QString(ds.getTagArg("b", 5)).toInt(&ok);
     si->setOutlineWidth(ok ? outlineWidth : 2);
 
-
     const char *imageName = ds.getTagArg("i", 0);
 
     if (!imageName[0] && shape == SubmoduleItem::SHAPE_NONE)
@@ -87,12 +88,12 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         const char *imageColor = ds.getTagArg("i", 1);
         si->setImageColor(parseColor(imageColor));
         si->setImageColorPercentage((ds.getNumArgs("i") == 2 && strlen(ds.getTagArg("i", 1)) > 0)
-                                      ? 30 // color given, but no percentage
-                                      : QString(ds.getTagArg("i", 2)).toDouble());
-    } else {
+                ? 30  // color given, but no percentage
+                : QString(ds.getTagArg("i", 2)).toDouble());
+    }
+    else {
         si->setImage(nullptr);
     }
-
 
     const char *decoratorImageName = ds.getTagArg("i2", 0);
     if (decoratorImageName[0]) {
@@ -102,9 +103,10 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         const char *decoratorImageColor = ds.getTagArg("i2", 1);
         si->setDecoratorImageColor(parseColor(decoratorImageColor));
         si->setDecoratorImageColorPercentage((ds.getNumArgs("i2") == 2 && strlen(ds.getTagArg("i2", 1)) > 0)
-                                             ? 30 // color given, but no percentage
-                                               : QString(ds.getTagArg("i2", 2)).toDouble());
-    } else {
+                ? 30  // color given, but no percentage
+                : QString(ds.getTagArg("i2", 2)).toDouble());
+    }
+    else {
         si->setDecoratorImage(nullptr);
     }
 
@@ -114,9 +116,9 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 
     SubmoduleItem::TextPos textPos;
     switch (textPosition[0]) {
-    case 'l': textPos = SubmoduleItem::TEXTPOS_LEFT;  break;
-    case 'r': textPos = SubmoduleItem::TEXTPOS_RIGHT; break;
-    default:  textPos = SubmoduleItem::TEXTPOS_TOP;   break;
+        case 'l': textPos = SubmoduleItem::TEXTPOS_LEFT;  break;
+        case 'r': textPos = SubmoduleItem::TEXTPOS_RIGHT; break;
+        default:  textPos = SubmoduleItem::TEXTPOS_TOP;   break;
     }
     auto color = parseColor(textColor);
     if (!color.isValid()) {
@@ -157,7 +159,8 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     si->setQueueText(queueText);
 }
 
-void SubmoduleItem::updateNameItem() {
+void SubmoduleItem::updateNameItem()
+{
     if (nameItem) {
         QString label = name;
         if (vectorIndex >= 0) {
@@ -168,7 +171,8 @@ void SubmoduleItem::updateNameItem() {
     }
 }
 
-void SubmoduleItem::realignAnchoredItems() {
+void SubmoduleItem::realignAnchoredItems()
+{
     auto mainBounds = shapeImageBoundingRect();
 
     // the info text label
@@ -177,18 +181,20 @@ void SubmoduleItem::realignAnchoredItems() {
         QPointF pos;
 
         switch (textPos) {
-        case TEXTPOS_LEFT:
-            pos.setX(mainBounds.left() - textBounds.width());
-            pos.setY(mainBounds.top());
-            break;
-        case TEXTPOS_RIGHT:
-            pos.setX(mainBounds.right());
-            pos.setY(mainBounds.top());
-            break;
-        case TEXTPOS_TOP:
-            pos.setX(mainBounds.center().x() - textBounds.width() / 2.0f);
-            pos.setY(mainBounds.top() - textBounds.height());
-            break;
+            case TEXTPOS_LEFT:
+                pos.setX(mainBounds.left() - textBounds.width());
+                pos.setY(mainBounds.top());
+                break;
+
+            case TEXTPOS_RIGHT:
+                pos.setX(mainBounds.right());
+                pos.setY(mainBounds.top());
+                break;
+
+            case TEXTPOS_TOP:
+                pos.setX(mainBounds.center().x() - textBounds.width() / 2.0f);
+                pos.setY(mainBounds.top() - textBounds.height());
+                break;
         }
 
         textItem->setPos(pos);
@@ -202,10 +208,11 @@ void SubmoduleItem::realignAnchoredItems() {
     if (decoratorImageItem)
         decoratorImageItem->setPos(mainBounds.width() / 2, -mainBounds.height() / 2);
 
-    updateNameItem(); // the name is anchored too in some sense
+    updateNameItem();  // the name is anchored too in some sense
 }
 
-void SubmoduleItem::updateShapeItem() {
+void SubmoduleItem::updateShapeItem()
+{
     if (shapeItem) {
         shapeItem->setBrush(shapeFillColor.isValid() ? shapeFillColor : QColor("#8080ff"));
         auto pen = shapeOutlineWidth == 0
@@ -217,7 +224,7 @@ void SubmoduleItem::updateShapeItem() {
         pen.setJoinStyle(Qt::MiterJoin);
         shapeItem->setPen(pen);
 
-        auto w = shapeWidth * zoomFactor - shapeOutlineWidth; // so the outline grows inwards
+        auto w = shapeWidth * zoomFactor - shapeOutlineWidth;  // so the outline grows inwards
         auto h = shapeHeight * zoomFactor - shapeOutlineWidth;
         if (auto ellipseItem = dynamic_cast<QGraphicsEllipseItem *>(shapeItem))
             ellipseItem->setRect(-w / 2.0, -h / 2.0, w, h);
@@ -228,13 +235,14 @@ void SubmoduleItem::updateShapeItem() {
     }
 }
 
-void SubmoduleItem::adjustRangeItem(int i) {
-    RangeData &data = ranges[i];
+void SubmoduleItem::adjustRangeItem(int i)
+{
+    RangeData& data = ranges[i];
     QGraphicsEllipseItem *range = rangeItems[i];
     // the actual item radius, correcting for zoom and to make the outline grow inwards only
     double corrR = data.radius * zoomFactor - data.outlineWidth / 2.0;
     range->setRect(-corrR, -corrR, 2 * corrR, 2 * corrR);
-    range->setZValue(-data.radius); // bigger ranges go under smaller ones
+    range->setZValue(-data.radius);  // bigger ranges go under smaller ones
     QColor fillColorTransp = data.fillColor;
     fillColorTransp.setAlphaF(data.fillColor.alphaF() * 0.5);
     range->setBrush(data.fillColor.isValid() ? QBrush(fillColorTransp) : Qt::NoBrush);
@@ -242,7 +250,8 @@ void SubmoduleItem::adjustRangeItem(int i) {
     range->setPos(pos());
 }
 
-QRectF SubmoduleItem::shapeImageBoundingRect() const {
+QRectF SubmoduleItem::shapeImageBoundingRect() const
+{
     QRectF rect;
     if (imageItem) {
         QRectF imageRect = imageItem->boundingRect();
@@ -298,7 +307,8 @@ SubmoduleItem::~SubmoduleItem()
     }
 }
 
-void SubmoduleItem::setZoomFactor(double zoom) {
+void SubmoduleItem::setZoomFactor(double zoom)
+{
     if (zoomFactor != zoom) {
         zoomFactor = zoom;
         updateShapeItem();
@@ -309,7 +319,8 @@ void SubmoduleItem::setZoomFactor(double zoom) {
     }
 }
 
-void SubmoduleItem::setImageSizeFactor(double imageSize) {
+void SubmoduleItem::setImageSizeFactor(double imageSize)
+{
     if (imageSizeFactor != imageSize) {
         imageSizeFactor = imageSize;
         if (imageItem)
@@ -320,7 +331,8 @@ void SubmoduleItem::setImageSizeFactor(double imageSize) {
     }
 }
 
-void SubmoduleItem::setShape(Shape shape) {
+void SubmoduleItem::setShape(Shape shape)
+{
     if (shape != this->shape) {
         this->shape = shape;
 
@@ -328,51 +340,57 @@ void SubmoduleItem::setShape(Shape shape) {
         shapeItem = nullptr;
 
         switch (shape) {
-        case SHAPE_NONE: /* nothing to do here */                    break;
-        case SHAPE_OVAL: shapeItem = new QGraphicsEllipseItem(this); break;
-        case SHAPE_RECT: shapeItem = new QGraphicsRectItem(this);    break;
+            case SHAPE_NONE: /* nothing to do here */ break;
+            case SHAPE_OVAL: shapeItem = new QGraphicsEllipseItem(this); break;
+            case SHAPE_RECT: shapeItem = new QGraphicsRectItem(this); break;
         }
 
         updateShapeItem();
     }
 }
 
-void SubmoduleItem::setWidth(double width) {
+void SubmoduleItem::setWidth(double width)
+{
     if (this->shapeWidth != width) {
         this->shapeWidth = width;
         updateShapeItem();
     }
 }
 
-void SubmoduleItem::setHeight(double height) {
+void SubmoduleItem::setHeight(double height)
+{
     if (this->shapeHeight != height) {
         this->shapeHeight = height;
         updateShapeItem();
     }
 }
 
-void SubmoduleItem::setFillColor(const QColor &color) {
+void SubmoduleItem::setFillColor(const QColor& color)
+{
     if (shapeFillColor != color) {
         shapeFillColor = color;
         updateShapeItem();
     }
 }
 
-void SubmoduleItem::setOutlineColor(const QColor &color) {
+void SubmoduleItem::setOutlineColor(const QColor& color)
+{
     if (shapeOutlineColor != color) {
         shapeOutlineColor = color;
         updateShapeItem();
     }
 }
 
-void SubmoduleItem::setOutlineWidth(double width) {
+void SubmoduleItem::setOutlineWidth(double width)
+{
     if (shapeOutlineWidth != width) {
         shapeOutlineWidth = width;
         updateShapeItem();
     }
 }
 
-void SubmoduleItem::setImage(QImage *image) {
+void SubmoduleItem::setImage(QImage *image)
+{
     if (this->image != image) {
         this->image = image;
         delete imageItem;
@@ -391,19 +409,22 @@ void SubmoduleItem::setImage(QImage *image) {
     }
 }
 
-void SubmoduleItem::setImageColor(const QColor &color) {
+void SubmoduleItem::setImageColor(const QColor& color)
+{
     if (colorizeEffect) {
         colorizeEffect->setColor(color);
     }
 }
 
-void SubmoduleItem::setImageColorPercentage(int percent) {
+void SubmoduleItem::setImageColorPercentage(int percent)
+{
     if (colorizeEffect) {
         colorizeEffect->setWeight(percent / 100.0);
     }
 }
 
-void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
+void SubmoduleItem::setDecoratorImage(QImage *decoratorImage)
+{
     if (this->decoratorImage != decoratorImage) {
         this->decoratorImage = decoratorImage;
         delete decoratorImageItem;
@@ -422,33 +443,38 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage) {
     }
 }
 
-void SubmoduleItem::setDecoratorImageColor(const QColor &color) {
+void SubmoduleItem::setDecoratorImageColor(const QColor& color)
+{
     if (decoratorColorizeEffect) {
         decoratorColorizeEffect->setColor(color);
     }
 }
 
-void SubmoduleItem::setDecoratorImageColorPercentage(int percent) {
+void SubmoduleItem::setDecoratorImageColorPercentage(int percent)
+{
     if (decoratorColorizeEffect) {
         decoratorColorizeEffect->setWeight(percent / 100.0);
     }
 }
 
-void SubmoduleItem::setName(const QString &text) {
+void SubmoduleItem::setName(const QString& text)
+{
     if (name != text) {
         name = text;
         updateNameItem();
     }
 }
 
-void SubmoduleItem::setVectorIndex(int index) {
+void SubmoduleItem::setVectorIndex(int index)
+{
     if (vectorIndex != index) {
         vectorIndex = index;
         updateNameItem();
     }
 }
 
-void SubmoduleItem::setQueueText(const QString &queueText) {
+void SubmoduleItem::setQueueText(const QString& queueText)
+{
     if (this->queueText != queueText) {
         this->queueText = queueText;
         queueItem->setText(queueText);
@@ -456,7 +482,8 @@ void SubmoduleItem::setQueueText(const QString &queueText) {
     }
 }
 
-void SubmoduleItem::setInfoText(const QString &text, TextPos pos, const QColor &color) {
+void SubmoduleItem::setInfoText(const QString& text, TextPos pos, const QColor& color)
+{
     if (this->text != text || textColor != color || pos != textPos) {
         this->text = text;
         textPos = pos;
@@ -467,20 +494,23 @@ void SubmoduleItem::setInfoText(const QString &text, TextPos pos, const QColor &
     }
 }
 
-void SubmoduleItem::setRangeLayer(GraphicsLayer *layer) {
+void SubmoduleItem::setRangeLayer(GraphicsLayer *layer)
+{
     if (layer != rangeLayer) {
         rangeLayer = layer;
-        for (auto &i : rangeItems) {
+        for (auto& i : rangeItems) {
             rangeLayer->addItem(i);
         }
     }
 }
 
-int SubmoduleItem::addRangeItem(double radius, double outlineWidth, const QColor &fillColor, const QColor &outlineColor) {
-    return addRangeItem(RangeData{radius, outlineWidth, fillColor, outlineColor});
+int SubmoduleItem::addRangeItem(double radius, double outlineWidth, const QColor& fillColor, const QColor& outlineColor)
+{
+    return addRangeItem(RangeData { radius, outlineWidth, fillColor, outlineColor });
 }
 
-int SubmoduleItem::addRangeItem(const RangeData &data) {
+int SubmoduleItem::addRangeItem(const RangeData& data)
+{
     auto range = new QGraphicsEllipseItem();
 
     ranges.append(data);
@@ -492,11 +522,13 @@ int SubmoduleItem::addRangeItem(const RangeData &data) {
     return rangeItems.length() - 1;
 }
 
-QRectF SubmoduleItem::boundingRect() const {
+QRectF SubmoduleItem::boundingRect() const
+{
     return shapeImageBoundingRect();
 }
 
-void SubmoduleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void SubmoduleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     // nothing to do here, the child items are painted anyways
 
     /*
@@ -509,11 +541,13 @@ void SubmoduleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     */
 }
 
-void SubmoduleItem::onPositionChanged() {
+void SubmoduleItem::onPositionChanged()
+{
     for (auto i : rangeItems) {
         i->setPos(pos());
     }
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

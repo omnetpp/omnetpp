@@ -118,6 +118,6 @@ void ComponentHistory::clear()
     components.clear();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

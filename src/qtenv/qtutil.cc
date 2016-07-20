@@ -56,40 +56,44 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace qtenv {
 
+//---- GraphicsLayer implementation ----
 
-// ---- GraphicsLayer implementation ----
-
-QRectF GraphicsLayer::boundingRect() const {
-    return QRectF(); // doesn't matter
+QRectF GraphicsLayer::boundingRect() const
+{
+    return QRectF();  // doesn't matter
 }
 
-void GraphicsLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void GraphicsLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     // nothing here...
 }
 
-void GraphicsLayer::addItem(QGraphicsItem *item) {
+void GraphicsLayer::addItem(QGraphicsItem *item)
+{
     item->setParentItem(this);
 }
 
-void GraphicsLayer::removeItem(QGraphicsItem *item) {
+void GraphicsLayer::removeItem(QGraphicsItem *item)
+{
     item->setParentItem(nullptr);
 }
 
-void GraphicsLayer::clear() {
+void GraphicsLayer::clear()
+{
     while (!childItems().isEmpty())
         delete childItems()[0];
 }
 
-// ---- end of GraphicsLayer ----
+//---- end of GraphicsLayer ----
 
-// ---- ZoomLabel implementation ----
+//---- ZoomLabel implementation ----
 
 ZoomLabel::ZoomLabel()
 {
     setText("ZoomLabel");
 }
 
-void ZoomLabel::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+void ZoomLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QFont f = font();
     f.setBold(true);
@@ -103,7 +107,7 @@ void ZoomLabel::paint(QPainter * painter, const QStyleOptionGraphicsItem * optio
 
 void ZoomLabel::setZoomFactor(double zoomFactor)
 {
-    if(this->zoomFactor == zoomFactor)
+    if (this->zoomFactor == zoomFactor)
         return;
 
     this->zoomFactor = zoomFactor;
@@ -111,15 +115,17 @@ void ZoomLabel::setZoomFactor(double zoomFactor)
     update();
 }
 
-// ---- end of ZoomLabel ----
+//---- end of ZoomLabel ----
 
-// ---- ColorizeEffect implementation ----
+//---- ColorizeEffect implementation ----
 
-QColor ColorizeEffect::getColor() {
+QColor ColorizeEffect::getColor()
+{
     return color;
 }
 
-void ColorizeEffect::setColor(const QColor &color) {
+void ColorizeEffect::setColor(const QColor& color)
+{
     if (this->color != color) {
         this->color = color;
         changed = true;
@@ -127,11 +133,13 @@ void ColorizeEffect::setColor(const QColor &color) {
     }
 }
 
-double ColorizeEffect::getWeight() {
+double ColorizeEffect::getWeight()
+{
     return weight;
 }
 
-void ColorizeEffect::setWeight(double weight) {
+void ColorizeEffect::setWeight(double weight)
+{
     if (this->weight != weight) {
         this->weight = weight;
         changed = true;
@@ -139,11 +147,13 @@ void ColorizeEffect::setWeight(double weight) {
     }
 }
 
-bool ColorizeEffect::getSmooth() {
+bool ColorizeEffect::getSmooth()
+{
     return smooth;
 }
 
-void ColorizeEffect::setSmooth(double smooth) {
+void ColorizeEffect::setSmooth(double smooth)
+{
     if (this->smooth != smooth) {
         this->smooth = smooth;
         smooth = true;
@@ -151,7 +161,8 @@ void ColorizeEffect::setSmooth(double smooth) {
     }
 }
 
-void ColorizeEffect::draw(QPainter *painter) {
+void ColorizeEffect::draw(QPainter *painter)
+{
     if (changed) {
         cachedImage = sourcePixmap(Qt::LogicalCoordinates, &offset, NoPad).toImage();
 
@@ -161,9 +172,9 @@ void ColorizeEffect::draw(QPainter *painter) {
             double bdest = color.blueF();
 
             for (int y = 0; y < cachedImage.height(); y++) {
-                QRgb *scanLine = reinterpret_cast<QRgb*>(cachedImage.scanLine(y));
+                QRgb *scanLine = reinterpret_cast<QRgb *>(cachedImage.scanLine(y));
                 for (int x = 0; x < cachedImage.width(); x++) {
-                    QRgb &pixel = scanLine[x];
+                    QRgb& pixel = scanLine[x];
 
                     int r = qRed(pixel);
                     int g = qGreen(pixel);
@@ -189,7 +200,8 @@ void ColorizeEffect::draw(QPainter *painter) {
     painter->restore();
 }
 
-void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags flags) {
+void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags flags)
+{
     if (flags.testFlag(SourceAttached)
             || flags.testFlag(SourceDetached)
             || flags.testFlag(SourceBoundingRectChanged))
@@ -197,10 +209,9 @@ void ColorizeEffect::sourceChanged(QGraphicsEffect::ChangeFlags flags) {
     update();
 }
 
-// ---- end of ColorizeEffect ----
+//---- end of ColorizeEffect ----
 
-
-// ---- OutlinedTextItem implementation ----
+//---- OutlinedTextItem implementation ----
 
 OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsItem(parent)
@@ -212,7 +223,7 @@ OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
 
     outlineItem->setBrush(Qt::NoBrush);
     QColor col = parseColor("grey82");
-    col.setAlphaF(0.6); // 4 pixels wide, so 2 pixels will go outwards
+    col.setAlphaF(0.6);  // 4 pixels wide, so 2 pixels will go outwards
     outlineItem->setPen(QPen(col, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
     fillItem->setPen(Qt::NoPen);
@@ -224,12 +235,14 @@ OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 }
 
-OutlinedTextItem::~OutlinedTextItem() {
+OutlinedTextItem::~OutlinedTextItem()
+{
     delete fillItem;
     delete outlineItem;
 }
 
-void OutlinedTextItem::setText(const QString &text) {
+void OutlinedTextItem::setText(const QString& text)
+{
     if (text != fillItem->text()) {
         fillItem->setText(text);
         outlineItem->setText(text);
@@ -237,11 +250,13 @@ void OutlinedTextItem::setText(const QString &text) {
     }
 }
 
-QRectF OutlinedTextItem::boundingRect() const {
+QRectF OutlinedTextItem::boundingRect() const
+{
     return fillItem->boundingRect().united(outlineItem->boundingRect());
 }
 
-void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     painter->save();
     painter->setBrush(backgroundBrush);
     painter->setPen(Qt::NoPen);
@@ -251,21 +266,23 @@ void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     fillItem->paint(painter, option, widget);
 }
 
-void OutlinedTextItem::setPen(const QPen &pen) {
+void OutlinedTextItem::setPen(const QPen& pen)
+{
     if (pen != outlineItem->pen()) {
         outlineItem->setPen(pen);
         update();
     }
 }
 
-void OutlinedTextItem::setBrush(const QBrush &brush) {
+void OutlinedTextItem::setBrush(const QBrush& brush)
+{
     if (brush != fillItem->brush()) {
         fillItem->setBrush(brush);
         update();
     }
 }
 
-void OutlinedTextItem::setBackgroundBrush(const QBrush &brush)
+void OutlinedTextItem::setBackgroundBrush(const QBrush& brush)
 {
     if (backgroundBrush != brush) {
         backgroundBrush = brush;
@@ -273,23 +290,24 @@ void OutlinedTextItem::setBackgroundBrush(const QBrush &brush)
     }
 }
 
-// ---- end of OutlinedTextItem ----
+//---- end of OutlinedTextItem ----
 
+//---- BubbleItem implementation ----
 
-// ---- BubbleItem implementation ----
-
-BubbleItem::BubbleItem(QPointF position, const QString &text, QGraphicsItem *parent)
+BubbleItem::BubbleItem(QPointF position, const QString& text, QGraphicsItem *parent)
     : QGraphicsObject(parent), text(text)
 {
     setPos(position);
     timer.singleShot(1000 / (0.1 + getQtenv()->opt->animationSpeed), this, SLOT(onTimerElapsed()));
 }
 
-void BubbleItem::onTimerElapsed() {
-    delete this; // BOOM!
+void BubbleItem::onTimerElapsed()
+{
+    delete this;  // BOOM!
 }
 
-QRectF BubbleItem::boundingRect() const {
+QRectF BubbleItem::boundingRect() const
+{
     QFontMetrics metrics(getQtenv()->getCanvasFont());
     double textWidth = metrics.width(text);
     double textHeight = metrics.height();
@@ -301,7 +319,8 @@ QRectF BubbleItem::boundingRect() const {
                   margin + textHeight + vertOffset + 2);
 }
 
-void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     QFontMetrics metrics(getQtenv()->getCanvasFont());
 
     double textWidth = metrics.width(text);
@@ -325,7 +344,7 @@ void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     painter->save();
     painter->setPen(QPen(QColor("black"), 0));
-    painter->setBrush(QColor(248, 248, 216)); // yellowish
+    painter->setBrush(QColor(248, 248, 216));  // yellowish
     painter->drawPath(path);
     // uses the pen as color, also have to move up by the descent, to align the baseline
     painter->setFont(getQtenv()->getCanvasFont());
@@ -333,10 +352,10 @@ void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->restore();
 }
 
-// ---- end of BubbleItem ----
+//---- end of BubbleItem ----
 
-
-QColor parseColor(const QString &name, const QColor &fallbackColor) {
+QColor parseColor(const QString& name, const QColor& fallbackColor)
+{
     if (name.isEmpty())
         return fallbackColor;
 
@@ -347,12 +366,12 @@ QColor parseColor(const QString &name, const QColor &fallbackColor) {
         uint8_t r, g, b;
         omnetpp::common::parseColor(name.toStdString().c_str(), r, g, b);
         return QColor(r, g, b);
-    } catch (std::runtime_error &e) {
+    }
+    catch (std::runtime_error& e) {
         qDebug() << "Failed to parse color" << name << "because:" << e.what();
         return fallbackColor;
     }
 }
-
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
 
@@ -395,7 +414,7 @@ bool cFindByPathVisitor::idMatches(cObject *obj)
     // only messages and components have IDs
     if (cMessage *msg = dynamic_cast<cMessage *>(obj))
         return msg->getId() == objectId;
-    if (cComponent *component = dynamic_cast<cComponent*>(obj))
+    if (cComponent *component = dynamic_cast<cComponent *>(obj))
         return component->getId() == objectId;
     return true;
 }
@@ -468,7 +487,7 @@ void *strToVoidPtr(const char *s)
     return ptr;
 }
 
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 QString getObjectIcon(cObject *object)
 {
@@ -520,37 +539,37 @@ const char *getObjectBaseClass(cObject *object)
     if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
         return "cPlaceholderModule";
     else if (dynamic_cast<cSimpleModule *>(object))
-        return"cSimpleModule";
+        return "cSimpleModule";
     else if (dynamic_cast<cModule *>(object))
-        return"cModule";
+        return "cModule";
     else if (dynamic_cast<cMessage *>(object))
-        return"cMessage";
+        return "cMessage";
     else if (dynamic_cast<cArray *>(object))
-        return"cArray";
+        return "cArray";
     else if (dynamic_cast<cQueue *>(object))
-        return"cQueue";
+        return "cQueue";
     else if (dynamic_cast<cGate *>(object))
-        return"cGate";
+        return "cGate";
     else if (dynamic_cast<cPar *>(object))
-        return"cPar";
+        return "cPar";
     else if (dynamic_cast<cChannel *>(object))
-        return"cChannel";
+        return "cChannel";
     else if (dynamic_cast<cOutVector *>(object))
-        return"cOutVector";
+        return "cOutVector";
     else if (dynamic_cast<cStatistic *>(object))
-        return"cStatistic";
+        return "cStatistic";
     else if (dynamic_cast<cFutureEventSet *>(object))
-        return"cFutureEventSet";
+        return "cFutureEventSet";
     else if (dynamic_cast<cWatchBase *>(object))
-        return"cWatchBase";
+        return "cWatchBase";
     else if (dynamic_cast<cCanvas *>(object))
-        return"cCanvas";
+        return "cCanvas";
     else if (dynamic_cast<cFigure *>(object))
-        return"cFigure";
+        return "cFigure";
     else if (dynamic_cast<cSimulation *>(object))
-        return"cSimulation";
+        return "cSimulation";
     else if (dynamic_cast<cRegistrationList *>(object))
-        return"cRegistrationList";
+        return "cRegistrationList";
     else
         return object->getClassName();  // return itself as base class
 }
@@ -572,7 +591,6 @@ QString getMessageShortInfoString(cMessage *msg)
         return "selfmsg for " + modname;
     else
         return "msg for " + modname;
-
 }
 
 cModule *findCommonAncestor(cModule *src, cModule *dest)
@@ -629,7 +647,7 @@ bool isAPL()
     return OMNETPP_EDITION[0] == 'A';
 }
 
-// ----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 cPar *displayStringPar(const char *parname, cComponent *component, bool searchparent)
 {
@@ -661,6 +679,7 @@ bool displayStringContainsParamRefs(const char *dispstr)
     for (const char *s = dispstr; *s; s++)
         if (*s == '$' && (*(s+1) == '{' || opp_isalphaext(*(s+1))))
             return true;
+
 
     return false;
 }
@@ -761,7 +780,8 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     return atof(arg2);
 }
 
-QString makeComponentTooltip(cComponent *comp) {
+QString makeComponentTooltip(cComponent *comp)
+{
     QString toolTip = QString("(") + getObjectShortTypeName(comp) + ") " + comp->getFullName() + ", " + comp->info().c_str();
     // XXX need to call substituteDisplayStringParamRefs?
     const char *userTooltip = comp->getDisplayString().getTagArg("tt", 0);
@@ -784,6 +804,6 @@ ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
     return dynamic_cast<ModuleInspector *>(insp);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

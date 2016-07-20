@@ -34,11 +34,10 @@ LayersDialog::LayersDialog(QString allTags, QString enabledTags, QString exceptT
     this->enabledTags = QString(enabledTags).split(' ', QString::SkipEmptyParts);
     this->exceptTags = QString(exceptTags).split(' ', QString::SkipEmptyParts);
 
-    QVBoxLayout *showFigLayout = static_cast<QVBoxLayout*>(ui->showFigWidget->layout());
-    QVBoxLayout *hideFigLayout = static_cast<QVBoxLayout*>(ui->hideFigWidget->layout());
+    QVBoxLayout *showFigLayout = static_cast<QVBoxLayout *>(ui->showFigWidget->layout());
+    QVBoxLayout *hideFigLayout = static_cast<QVBoxLayout *>(ui->hideFigWidget->layout());
 
-    for(QString tag : this->allTags)
-    {
+    for (QString tag : this->allTags) {
         QCheckBox *chkBox = new QCheckBox(tag);
         QCheckBox *exceptChkBox = new QCheckBox(tag);
 
@@ -60,9 +59,9 @@ LayersDialog::LayersDialog(QString allTags, QString enabledTags, QString exceptT
 
 void LayersDialog::clickOnShowFig(bool checked)
 {
-    QCheckBox *chkBox = static_cast<QCheckBox*>(sender());
+    QCheckBox *chkBox = static_cast<QCheckBox *>(sender());
     int index = ui->showFigWidget->layout()->indexOf(chkBox);
-    QCheckBox *exceptChkBox = static_cast<QCheckBox*>(ui->hideFigWidget->layout()->itemAt(index)->widget());
+    QCheckBox *exceptChkBox = static_cast<QCheckBox *>(ui->hideFigWidget->layout()->itemAt(index)->widget());
 
     exceptChkBox->setVisible(!checked);
     exceptChkBox->setChecked(false);
@@ -71,22 +70,19 @@ void LayersDialog::clickOnShowFig(bool checked)
 void LayersDialog::accept()
 {
     enabledTags.clear();
-    for(QObject *child : ui->showFigWidget->children())
-    {
-        QCheckBox *chkBox = dynamic_cast<QCheckBox*>(child);
-        if(chkBox && chkBox->isChecked())
+    for (QObject *child : ui->showFigWidget->children()) {
+        QCheckBox *chkBox = dynamic_cast<QCheckBox *>(child);
+        if (chkBox && chkBox->isChecked())
             enabledTags.push_back(chkBox->text());
     }
 
     exceptTags.clear();
-    for(QObject *child : ui->hideFigWidget->children())
-    {
-        QCheckBox *chkBox = dynamic_cast<QCheckBox*>(child);
-        if(chkBox && chkBox->isVisible() && chkBox->isChecked())
+    for (QObject *child : ui->hideFigWidget->children()) {
+        QCheckBox *chkBox = dynamic_cast<QCheckBox *>(child);
+        if (chkBox && chkBox->isVisible() && chkBox->isChecked())
             exceptTags.push_back(chkBox->text());
     }
     QDialog::accept();
-
 }
 
 LayersDialog::~LayersDialog()
@@ -94,5 +90,6 @@ LayersDialog::~LayersDialog()
     delete ui;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

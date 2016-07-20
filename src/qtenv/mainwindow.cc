@@ -110,7 +110,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     eventNumLabel->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(eventNumLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onEventNumLabelContextMenuRequested(QPoint)));
 
-
     // this little widget will add a small margin above the two labels
     QWidget *labelsContainer = new QWidget();
     QHBoxLayout *labelsLayout = new QHBoxLayout();
@@ -125,7 +124,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     auto margin = centralWidget()->layout()->contentsMargins().right();
     labelsContainer->setContentsMargins(0, margin, 0, 0);
-
 
     toolBarLayout->addStretch(1);
     toolBarLayout->addWidget(labelsContainer);
@@ -149,7 +147,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onSimTimeLabelGroupingTriggered()
 {
-    QVariant variant = static_cast<QAction*>(sender())->data();
+    QVariant variant = static_cast<QAction *>(sender())->data();
 
     simTimeDigitGrouping = (DigitGrouping)variant.value<int>();
     updateSimTimeLabel();
@@ -165,8 +163,7 @@ void MainWindow::updateSimTimeLabel()
 {
     const char *digitSeparator, *decimalSeparator = ".";
 
-    switch(simTimeDigitGrouping)
-    {
+    switch (simTimeDigitGrouping) {
         case SPACE:
             digitSeparator = "<small> </small> ";
             decimalSeparator = ".";
@@ -183,7 +180,7 @@ void MainWindow::updateSimTimeLabel()
     }
 
     QString simTimeText;
-    if(simTimeUnits)
+    if (simTimeUnits)
         simTimeText = getSimulation()->getSimTime().format(SimTime::getScaleExp(), decimalSeparator, digitSeparator, true, "<small><font color=grey>", " </font></small>").c_str();
     else
         simTimeText = getSimulation()->getSimTime().format(SimTime::getScaleExp(), decimalSeparator, digitSeparator).c_str();
@@ -211,13 +208,12 @@ void MainWindow::onSimTimeLabelContextMenuRequested(QPoint pos)
     elements.push_back(QPair<QString, int>("Group Digits with &Space", SPACE));
 
     QAction *action;
-    for(auto elem : elements)
-    {
+    for (auto elem : elements) {
         action = menu->addAction(elem.first, this, SLOT(onSimTimeLabelGroupingTriggered()));
         action->setData(QVariant::fromValue(elem.second));
         action->setActionGroup(actionGroup);
         action->setCheckable(true);
-        if(simTimeDigitGrouping == elem.second)
+        if (simTimeDigitGrouping == elem.second)
             action->setChecked(true);
     }
     menu->addSeparator();
@@ -235,8 +231,7 @@ void MainWindow::updateEventNumLabel()
 {
     const char *digitSeparator;
 
-    switch(eventNumDigitGrouping)
-    {
+    switch (eventNumDigitGrouping) {
         case SPACE:
             digitSeparator = "<small> </small> ";
             break;
@@ -257,7 +252,7 @@ void MainWindow::updateEventNumLabel()
 
 void MainWindow::onEventNumLabelGroupingTriggered()
 {
-    QVariant variant = static_cast<QAction*>(sender())->data();
+    QVariant variant = static_cast<QAction *>(sender())->data();
 
     eventNumDigitGrouping = (DigitGrouping)variant.value<int>();
     updateEventNumLabel();
@@ -283,13 +278,12 @@ void MainWindow::onEventNumLabelContextMenuRequested(QPoint pos)
     elements.push_back(QPair<QString, int>("Group Digits with &Space", SPACE));
 
     QAction *action;
-    for(auto elem : elements)
-    {
+    for (auto elem : elements) {
         action = menu->addAction(elem.first, this, SLOT(onEventNumLabelGroupingTriggered()));
         action->setData(QVariant::fromValue(elem.second));
         action->setActionGroup(actionGroup);
         action->setCheckable(true);
-        if(eventNumDigitGrouping == elem.second)
+        if (eventNumDigitGrouping == elem.second)
             action->setChecked(true);
     }
 
@@ -351,7 +345,7 @@ void MainWindow::showStopDialog()
     stopDialog->show();
     setEnabled(false);
     stopDialog->setEnabled(true);
-    QApplication::processEvents(); // so the dialog will show up immediately
+    QApplication::processEvents();  // so the dialog will show up immediately
 }
 
 void MainWindow::closeStopDialog()
@@ -364,17 +358,17 @@ void MainWindow::enterLayoutingMode()
 {
     ASSERT(disabledForLayouting.empty());
 
-    for (auto c : findChildren<QObject*>()) {
-        auto action = dynamic_cast<QAction*>(c);
+    for (auto c : findChildren<QObject *>()) {
+        auto action = dynamic_cast<QAction *>(c);
         if (action && action->isEnabled() && action != ui->actionStop) {
             disabledForLayouting.insert(action);
             action->setEnabled(false);
         }
 
-        auto inspector = dynamic_cast<Inspector*>(c);
+        auto inspector = dynamic_cast<Inspector *>(c);
         // ModuleInspectors themselves aren't disabled, so the STOP button
         // will still work them and any other actions are disabled anyways
-        if (inspector && inspector->isEnabled() && !dynamic_cast<ModuleInspector*>(inspector)) {
+        if (inspector && inspector->isEnabled() && !dynamic_cast<ModuleInspector *>(inspector)) {
             disabledForLayouting.insert(inspector);
             inspector->setEnabled(false);
         }
@@ -384,11 +378,11 @@ void MainWindow::enterLayoutingMode()
 void MainWindow::exitLayoutingMode()
 {
     for (auto c : disabledForLayouting) {
-        auto action = dynamic_cast<QAction*>(c);
+        auto action = dynamic_cast<QAction *>(c);
         if (action)
             action->setEnabled(true);
 
-        auto inspector = dynamic_cast<Inspector*>(c);
+        auto inspector = dynamic_cast<Inspector *>(c);
         if (inspector)
             inspector->setEnabled(true);
     }
@@ -439,8 +433,7 @@ void MainWindow::on_actionQuit_triggered()
 bool MainWindow::exitOmnetpp()
 {
     bool confirmExit = env->getPref("confirm-exit", true).value<bool>();
-    if (confirmExit)
-    {
+    if (confirmExit) {
         if (getSimulation()->getSystemModule() != nullptr) {
             if (isRunning()) {
                 int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
@@ -510,22 +503,22 @@ void MainWindow::initialSetUpConfiguration()
     // if there's still some doubt, lets ask the user.
     if (defaultConfig.empty() || defaultRun < 0) {
         // If there isn't any config names, user have to configure network
-        if(qtenvConf->getConfigNames().size() > 0)
-        {
+        if (qtenvConf->getConfigNames().size() > 0) {
             RunSelectionDialog dialog(defaultConfig, defaultRun, this);
             if (dialog.exec()) {
                 config = dialog.getConfigName();
                 run = dialog.getRunNumber();
-            } else { // the dialog was cancelled
+            }
+            else {  // the dialog was cancelled
                 return;
             }
         }
-        else
-        {
+        else {
             configureNetwork();
             return;
         }
-    } else {
+    }
+    else {
         // a dialog was not forced, and either there is a default config or there is only one
         config = defaultConfig.empty() ? qtenvConf->getConfigNames().front() : defaultConfig;
         // and either there is a default run too, or there is only one run in the config
@@ -618,24 +611,23 @@ void MainWindow::on_actionRunUntil_triggered()
         return;
 
     RunUntilDialog runUntilDialog;
-    if(!runUntilDialog.exec())
+    if (!runUntilDialog.exec())
         return;
 
     RunMode runMode = runUntilDialog.getMode();
     simtime_t time = runUntilDialog.getTime();
     eventnumber_t event = runUntilDialog.getEventNumber();
-    cMessage *msg = static_cast<cMessage*>(runUntilDialog.getMessage());
+    cMessage *msg = static_cast<cMessage *>(runUntilDialog.getMessage());
     bool stopOnMsgCancel = runUntilDialog.stopOnMsgCancel();
 
     bool untilMode = time.dbl() != 0 || event != 0 || msg != nullptr;
-    if (isRunning())
-    {
+    if (isRunning()) {
         setGuiForRunmode(runMode, untilMode);
         getQtenv()->setSimulationRunMode(runMode);
         getQtenv()->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
-    } else
-    {
-        if(!networkReady())
+    }
+    else {
+        if (!networkReady())
             return;
 
         setGuiForRunmode(runMode, untilMode);
@@ -645,7 +637,8 @@ void MainWindow::on_actionRunUntil_triggered()
     }
 }
 
-void MainWindow::onSliderValueChanged(int value) {
+void MainWindow::onSliderValueChanged(int value)
+{
     getQtenv()->setAnimationSpeed(value / 100.0);
 }
 
@@ -846,7 +839,8 @@ void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
         setGuiForRunmode(runMode, true);
         env->setSimulationRunMode(runMode);
         env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
-    } else {
+    }
+    else {
         setGuiForRunmode(runMode, true);
         env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
@@ -925,10 +919,9 @@ void MainWindow::storeGeometry()
 {
     env->setPref("mainwindow-geom", geometry());
 
-    if(ui->actionTimeline->isChecked())
+    if (ui->actionTimeline->isChecked())
         saveSplitter("mainwin-main-splittersizes", ui->mainSplitter);
-    else
-    {
+    else {
         QList<QVariant> sizes;
         sizes.clear();
         sizes.append(timeLineSize[0]);
@@ -942,7 +935,8 @@ void MainWindow::storeGeometry()
     if (ui->splitter_2->orientation() == Qt::Horizontal) {
         saveSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
         env->setPref("mainwin-right-splitter-orientation", "horiz");
-    } else {
+    }
+    else {
         saveSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
         env->setPref("mainwin-right-splitter-orientation", "vert");
     }
@@ -956,15 +950,16 @@ void MainWindow::storeGeometry()
     getQtenv()->setPref("eventnumlabel-digitgrouping", eventNumDigitGrouping);
 }
 
-void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QList<int> &defaultSizes)
+void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QList<int>& defaultSizes)
 {
-    QList<QVariant> sizes = env->getPref(prefName).value<QList<QVariant >>();
+    QList<QVariant> sizes = env->getPref(prefName).value<QList<QVariant> >();
     QList<int> intSizes;
 
     if (sizes.size() >= 2) {
         intSizes.append(sizes[0].toInt());
         intSizes.append(sizes[1].toInt());
-    } else {
+    }
+    else {
         intSizes = defaultSizes;
     }
 
@@ -976,12 +971,13 @@ void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QL
 void MainWindow::restoreGeometry()
 {
     QRect geom = env->getPref("mainwindow-geom").toRect();
-    if (geom.isValid()) setGeometry(geom);
+    if (geom.isValid())
+        setGeometry(geom);
 
     // set timeline initial size if there is no qtenv.ini
     QList<int> sizes;
-    TimeLineInspector *timeLineInsp = static_cast<TimeLineInspector*>(ui->timeLine->children()[0]);
-    connect(ui->mainSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved(int, int)));
+    TimeLineInspector *timeLineInsp = static_cast<TimeLineInspector *>(ui->timeLine->children()[0]);
+    connect(ui->mainSplitter, SIGNAL(splitterMoved(int, int)), this, SLOT(onSplitterMoved(int, int)));
     double timeLineHeight = timeLineInsp->getInitHeight();
     sizes.append(timeLineHeight);
     sizes.append(ui->mainSplitter->height() - timeLineHeight);
@@ -1001,7 +997,8 @@ void MainWindow::restoreGeometry()
         ui->splitter_2->setOrientation(Qt::Horizontal);
         ui->actionHorizontalLayout->setChecked(true);
         restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2, defaultSizes);
-    } else if (orient == "vert") {
+    }
+    else if (orient == "vert") {
         ui->splitter_2->setOrientation(Qt::Vertical);
         ui->actionVerticalLayout->setChecked(true);
         restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
@@ -1072,8 +1069,7 @@ void MainWindow::on_actionPreferences_triggered()
 
 void MainWindow::on_actionTimeline_toggled(bool isSunken)
 {
-    if(!isSunken)
-    {
+    if (!isSunken) {
         timeLineSize = ui->mainSplitter->sizes().at(0) == 0 ? defaultTimeLineSize : ui->mainSplitter->sizes();
         QList<int> sizes = timeLineSize;
         sizes[0] = 0;
@@ -1081,21 +1077,19 @@ void MainWindow::on_actionTimeline_toggled(bool isSunken)
     }
     else
         ui->mainSplitter->setSizes(timeLineSize);
-
-
 }
 
 void MainWindow::onSplitterMoved(int, int)
 {
     // It is needed in case when hide timeline with toolbar button and after
     // is displayed by splitterMoved signal, thus it can be avoided glint.
-    if(ui->mainSplitter->sizes().at(0) != 0)
+    if (ui->mainSplitter->sizes().at(0) != 0)
         timeLineSize = defaultTimeLineSize;
     ui->actionTimeline->setChecked(ui->mainSplitter->sizes().at(0) != 0);
-
 }
 
-void MainWindow::onAnimationSpeedChanged(float speed) {
+void MainWindow::onAnimationSpeedChanged(float speed)
+{
     slider->setValue(speed * 100);
 }
 
@@ -1112,7 +1106,7 @@ void MainWindow::on_actionFindInspectObjects_triggered()
 {
     // implements Find/inspect objects...
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    cObject *obj = variant.isValid() ? variant.value<cObject*>() : getQtenv()->getMainObjectInspector()->getObject();
+    cObject *obj = variant.isValid() ? variant.value<cObject *>() : getQtenv()->getMainObjectInspector()->getObject();
 
     QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj);
     filteredObjectListDialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -1122,23 +1116,22 @@ void MainWindow::on_actionFindInspectObjects_triggered()
 // debugNextEvent
 void MainWindow::on_actionDebugNextEvent_triggered()
 {
-    //implements Simulate|Debug next event
+    // implements Simulate|Debug next event
 
-    if(isRunning())
+    if (isRunning())
         QMessageBox::warning(this, tr("Error"), tr("Simulation is currently running -- please stop it first."),
                 QMessageBox::Ok);
     else {
         if (!networkReady())
             return;
         int ans = QMessageBox::warning(this, tr("Confirm"),
-                             tr("Trigger debugger breakpoint for the next simulation event?\nNote: If you are not running under a debugger, this will likely result in a crash."),
-                QMessageBox::Ok | QMessageBox::Cancel);
-        if(ans == QMessageBox::Ok)
-        {
-           setGuiForRunmode(RUNMODE_STEP);
-           getSimulation()->requestTrapOnNextEvent();
-           on_actionOneStep_triggered();
-           setGuiForRunmode(RUNMODE_NOT_RUNNING);
+                    tr("Trigger debugger breakpoint for the next simulation event?\nNote: If you are not running under a debugger, this will likely result in a crash."),
+                    QMessageBox::Ok | QMessageBox::Cancel);
+        if (ans == QMessageBox::Ok) {
+            setGuiForRunmode(RUNMODE_STEP);
+            getSimulation()->requestTrapOnNextEvent();
+            on_actionOneStep_triggered();
+            setGuiForRunmode(RUNMODE_NOT_RUNNING);
         }
     }
 }
@@ -1155,14 +1148,13 @@ void MainWindow::reflectRecordEventlog()
 
 void MainWindow::configureNetwork()
 {
-    if(checkRunning())
+    if (checkRunning())
         return;
 
     // get list of network names
-    QVector<cModuleType*> networks;
+    QVector<cModuleType *> networks;
     cRegistrationList *types = componentTypes.getInstance();
-    for (int i = 0; i < types->size(); i++)
-    {
+    for (int i = 0; i < types->size(); i++) {
         cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
         if (t && t->isNetwork())
             networks.push_back(t);
@@ -1170,15 +1162,14 @@ void MainWindow::configureNetwork()
     const char *localPackage = getQtenv()->getLocalPackage().c_str();
     QStringList networkNames;
     QStringList localNetworkNames;
-    for(cModuleType *net : networks)
-    {
+    for (cModuleType *net : networks) {
         const char *networkName = net->getName();
         const char *networkQName = net->getFullName();
         char result[100];
         strcpy(result, localPackage);
         strcat(result, ".");
         strcat(result, networkName);
-        if(strcmp(result, networkQName) == 0)
+        if (strcmp(result, networkQName) == 0)
             localNetworkNames.push_back(networkName);
         else
             networkNames.push_back(networkQName);
@@ -1197,15 +1188,15 @@ void MainWindow::configureNetwork()
     cModuleType *networkType = getSimulation()->getNetworkType();
     const char *netName = networkType ? networkType->getName() : nullptr;
     ComboSelectionDialog comboDialog(netName, localNetworkNames);
-    if(comboDialog.exec() == QDialog::Accepted)
-    {
+    if (comboDialog.exec() == QDialog::Accepted) {
         busy("Setting up network...");
         //TODO
         //inspectorList:addAll 1
         getQtenv()->newNetwork(comboDialog.getSelectedNetName().toStdString().c_str());
         reflectRecordEventlog();
         busy();
-    };
+    }
+    ;
 }
 
 // newNetwork
@@ -1220,11 +1211,12 @@ void MainWindow::on_actionVerticalLayout_triggered(bool checked)
     if (ui->splitter_2->orientation() == Qt::Horizontal)
         saveSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
 
-    if (checked) { // it just got pressed
+    if (checked) {  // it just got pressed
         ui->actionHorizontalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Vertical);
         restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
-    } else { // not letting the user uncheck the action
+    }
+    else {  // not letting the user uncheck the action
         ui->actionVerticalLayout->setChecked(true);
     }
 }
@@ -1234,11 +1226,12 @@ void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
     if (ui->splitter_2->orientation() == Qt::Vertical)
         saveSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
 
-    if (checked) { // it just got pressed
+    if (checked) {  // it just got pressed
         ui->actionVerticalLayout->setChecked(false);
         ui->splitter_2->setOrientation(Qt::Horizontal);
         restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
-    } else { // not letting the user uncheck the action
+    }
+    else {  // not letting the user uncheck the action
         ui->actionHorizontalLayout->setChecked(true);
     }
 }
@@ -1246,8 +1239,8 @@ void MainWindow::on_actionHorizontalLayout_triggered(bool checked)
 void MainWindow::on_actionFlipWindowLayout_triggered()
 {
     switch (ui->splitter_2->orientation()) {
-    case Qt::Horizontal: ui->actionVerticalLayout->trigger(); break;
-    case Qt::Vertical: ui->actionHorizontalLayout->trigger(); break;
+        case Qt::Horizontal: ui->actionVerticalLayout->trigger(); break;
+        case Qt::Vertical: ui->actionHorizontalLayout->trigger(); break;
     }
 }
 
@@ -1286,10 +1279,9 @@ void MainWindow::on_actionLoadNEDFile_triggered()
     QString lastNedFile = getQtenv()->getPref("last-nedfile", ".").value<QString>();
 
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open NED file"), lastNedFile, tr("NED Files (*.ned);;All files (*)"));
+                tr("Open NED file"), lastNedFile, tr("NED Files (*.ned);;All files (*)"));
 
-    if(!fileName.isNull())
-    {
+    if (!fileName.isNull()) {
         getQtenv()->setPref("last-nedfile", fileName);
         getQtenv()->loadNedFile(fileName.toStdString().c_str());
 
@@ -1300,18 +1292,17 @@ void MainWindow::on_actionLoadNEDFile_triggered()
 void MainWindow::on_actionOpenPrimaryIniFile_triggered()
 {
     QString fileName = getQtenv()->getIniFileName();
-    if(fileName.isEmpty())
-    {
+    if (fileName.isEmpty()) {
         QMessageBox::information(this, tr("Info"), tr("The current configuration manager doesn't use file input."),
                 QMessageBox::Ok);
-       return;
+        return;
     }
 
     fileEditor->setFile(fileName);
     fileEditor->show();
 }
 
-int MainWindow::inputBox(const QString &title, const QString &prompt, QString &variable)
+int MainWindow::inputBox(const QString& title, const QString& prompt, QString& variable)
 {
     QDialog *dialog = new QDialog(this);
     QVBoxLayout *layout = new QVBoxLayout();
@@ -1340,13 +1331,12 @@ int MainWindow::inputBox(const QString &title, const QString &prompt, QString &v
 // implements File|Create snapshot
 void MainWindow::on_actionCreate_Snapshot_triggered()
 {
-    if(!networkPresent())
+    if (!networkPresent())
         return;
 
     QString variable = "";
 
-    if(inputBox("Snapshot", "Enter label for current simulation snapshot:", variable) == QDialog::Accepted)
-    {
+    if (inputBox("Snapshot", "Enter label for current simulation snapshot:", variable) == QDialog::Accepted) {
         getQtenv()->createSnapshot(variable.toStdString().c_str());
 
         QString msg = QString(getQtenv()->getSnapshotFileName()).isEmpty()
@@ -1360,40 +1350,37 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
 void MainWindow::on_actionConcludeSimulation_triggered()
 {
     // check state is not SIM_RUNNING
-    if(checkRunning())
+    if (checkRunning())
         return;
 
     // check state is not SIM_NONET
-    if(!networkPresent())
+    if (!networkPresent())
         return;
 
     // check state is not SIM_FINISHCALLED
-    if(getQtenv()->getSimulationState() == Qtenv::SIM_FINISHCALLED)
-    {
-       QMessageBox::information(this, tr("Error"), tr("finish() has been invoked already."), QMessageBox::Ok);
-       return;
+    if (getQtenv()->getSimulationState() == Qtenv::SIM_FINISHCALLED) {
+        QMessageBox::information(this, tr("Error"), tr("finish() has been invoked already."), QMessageBox::Ok);
+        return;
     }
 
     // check state is not SIM_ERROR
-    if(getQtenv()->getSimulationState() == Qtenv::SIM_ERROR)
-    {
-       QMessageBox::StandardButton ans =
-               QMessageBox::question(this, tr("Warning"),
-                                    "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
-                                    QMessageBox::Yes | QMessageBox::No);
+    if (getQtenv()->getSimulationState() == Qtenv::SIM_ERROR) {
+        QMessageBox::StandardButton ans =
+            QMessageBox::question(this, tr("Warning"),
+                    "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
+                    QMessageBox::Yes | QMessageBox::No);
 
-       if(ans == QMessageBox::No)
-           return;
+        if (ans == QMessageBox::No)
+            return;
     }
-    else
-    {
-       QMessageBox::StandardButton ans =
-               QMessageBox::question(this, tr("Question"),
-                                     "Do you want to conclude this simulation run and invoke finish() on all modules?",
-                                     QMessageBox::Yes | QMessageBox::No);
+    else {
+        QMessageBox::StandardButton ans =
+            QMessageBox::question(this, tr("Question"),
+                    "Do you want to conclude this simulation run and invoke finish() on all modules?",
+                    QMessageBox::Yes | QMessageBox::No);
 
-       if(ans == QMessageBox::No)
-           return;
+        if (ans == QMessageBox::No)
+            return;
     }
 
     busy("Invoking finish() on all modules...");
@@ -1405,7 +1392,7 @@ void MainWindow::on_actionConcludeSimulation_triggered()
 void MainWindow::on_actionNetwork_triggered()
 {
     // implements Inspect|Toplevel modules...
-    if(!networkPresent())
+    if (!networkPresent())
         return;
 
     getQtenv()->inspect(getSimulation()->getSystemModule(), INSP_DEFAULT, true);
@@ -1461,9 +1448,10 @@ void MainWindow::on_actionInspectByPointer_triggered()
     // implements Inspect|By pointer...
     QString pointer = "ptr";
     int ok = inputBox("Inspect by pointer...", "Enter pointer (invalid pointer may cause segmentation fault!):", pointer);
-    if(ok == QDialog::Accepted)
+    if (ok == QDialog::Accepted)
         getQtenv()->inspect(strToPtr(pointer.toStdString().c_str()), INSP_DEFAULT, true);
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

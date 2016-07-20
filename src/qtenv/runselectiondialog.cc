@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-RunSelectionDialog::RunSelectionDialog(const std::string &defaultConfig, int defaultRun, QWidget *parent) :
+RunSelectionDialog::RunSelectionDialog(const std::string& defaultConfig, int defaultRun, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RunSelectionDialog)
 {
@@ -42,9 +42,9 @@ RunSelectionDialog::RunSelectionDialog(const std::string &defaultConfig, int def
         if (name == "") {
             isBase = true;
             continue;
-        } else
-            if (firstConfigName.empty())
-                firstConfigName = name;
+        }
+        else if (firstConfigName.empty())
+            firstConfigName = name;
 
         std::string desc = getQtenv()->getConfigEx()->getConfigDescription(name.c_str());
         int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(name.c_str());
@@ -107,7 +107,7 @@ std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
     leaves.insert(leaves.end(), hasderivedconfig.begin(),
             hasderivedconfig.end());
 
-    return leaves; // it will be implicitly moved
+    return leaves;  // it will be implicitly moved
 }
 
 std::string RunSelectionDialog::getConfigName()
@@ -130,7 +130,7 @@ void RunSelectionDialog::configNameChanged(int index)
 void RunSelectionDialog::fillRunNumberCombo(const char *configName)
 {
     // There isn't any config, do not have to fill Combobox
-    if(strlen(configName) == 0 || strcmp(configName, "General") == 0)
+    if (strlen(configName) == 0 || strcmp(configName, "General") == 0)
         return;
 
     ui->runNumber->clear();
@@ -155,5 +155,6 @@ void RunSelectionDialog::accept()
     QDialog::accept();
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

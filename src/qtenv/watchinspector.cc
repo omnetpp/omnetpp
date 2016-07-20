@@ -37,8 +37,7 @@ class WatchInspectorFactory : public InspectorFactory
   public:
     WatchInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override
-    {
+    bool supportsObject(cObject *obj) override {
         // Return true if it's a watch for a simple type (int, double, string etc).
         // For structures, we prefer the normal GenericObjectInspector.
         // Currently we're prepared for cStdVectorWatcherBase.
@@ -91,6 +90,6 @@ void WatchInspector::commit()
     Inspector::commit();  // must be there after all changes
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
 

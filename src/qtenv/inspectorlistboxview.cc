@@ -41,9 +41,9 @@ InspectorListBoxView::InspectorListBoxView(QWidget *parent)
 
     verticalHeader()->setVisible(false);
     #if QT_VERSION >= 0x050000
-        verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     #else
-        verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     #endif
 
     setShowGrid(false);
@@ -68,13 +68,13 @@ void InspectorListBoxView::setModel(QAbstractItemModel *model)
 void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)
 {
     QModelIndex index = selectionModel()->currentIndex();
-    if(!index.isValid())
+    if (!index.isValid())
         return;
 
     QVariant variant = index.data(Qt::UserRole);
-    object = variant.isValid() ? variant.value<cObject*>() : nullptr;
+    object = variant.isValid() ? variant.value<cObject *>() : nullptr;
 
-    if(!object)
+    if (!object)
         return;
 
     variant = getQtenv()->getPref("outofdate");
@@ -89,5 +89,6 @@ void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)
     delete menu;
 }
 
-} // namespace qtenv
-} // namespace omnetpp
+}  // namespace qtenv
+}  // namespace omnetpp
+

@@ -66,8 +66,8 @@ CanvasInspector::CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFact
     contentLayout->addWidget(canvasViewer);
     contentLayout->setMargin(0);
 
-    connect(canvasViewer, SIGNAL(click(QMouseEvent*)), this, SLOT(onClick(QMouseEvent*)));
-    connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent*)), this, SLOT(onContextMenuRequested(QContextMenuEvent*)));
+    connect(canvasViewer, SIGNAL(click(QMouseEvent *)), this, SLOT(onClick(QMouseEvent *)));
+    connect(canvasViewer, SIGNAL(contextMenuRequested(QContextMenuEvent *)), this, SLOT(onContextMenuRequested(QContextMenuEvent *)));
 }
 
 CanvasInspector::~CanvasInspector()
@@ -159,9 +159,8 @@ void CanvasInspector::zoomBy(double mult)
     QVariant variant = getQtenv()->getPref(prefName);
     double zoomFactor = variant.isValid() ? variant.value<double>() : 1;
 
-    if((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000))
-    {
-        //update zoom factor and redraw
+    if ((mult < 1 && zoomFactor > 0.001) || (mult > 1 && zoomFactor < 1000)) {
+        // update zoom factor and redraw
         double newZoomFactor = zoomFactor * mult;
 
         // Snaptoone always 1
@@ -181,7 +180,8 @@ void CanvasInspector::zoomBy(double mult)
     }
 }
 
-void CanvasInspector::onClick(QMouseEvent *event) {
+void CanvasInspector::onClick(QMouseEvent *event)
+{
     auto objects = canvasViewer->getObjectsAt(event->pos());
     if (!objects.empty())
         getQtenv()->onSelectionChanged(objects.front());
@@ -189,11 +189,10 @@ void CanvasInspector::onClick(QMouseEvent *event) {
 
 void CanvasInspector::onContextMenuRequested(QContextMenuEvent *event)
 {
-    std::vector<cObject*> objects = canvasViewer->getObjectsAt(event->pos());
+    std::vector<cObject *> objects = canvasViewer->getObjectsAt(event->pos());
 
-    if(objects.size())
-    {
-        QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject*>::fromStdVector(objects), this);
+    if (objects.size()) {
+        QMenu *menu = InspectorUtil::createInspectorContextMenu(QVector<cObject *>::fromStdVector(objects), this);
 
         menu->addSeparator();
         // TODO Create Select Layers dialog
@@ -207,9 +206,8 @@ void CanvasInspector::onContextMenuRequested(QContextMenuEvent *event)
         menu->exec(event->globalPos());
         delete menu;
     }
-
 }
 
-} // namespace omnetpp
-} // namespace omnetpp
+}  // namespace omnetpp
+}  // namespace omnetpp
 
