@@ -27,6 +27,7 @@
 #include <qtenv/inspector.h>
 #include <inspectorfactory.h>
 #include "preferencesdialog.h"
+#include "genericobjectinspector.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -66,25 +67,25 @@ Inspector *InspectorUtil::getContainingInspector(QWidget *widget)
 
 void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp)
 {
-    // add "Go Info" if applicable
+    // add "Go Into" and "View in Embedded" if applicable
     QString name = object->getFullName();
-    if (insp && object != insp->getObject() && insp->supportsObject(object)) {
-        QAction *action = menu->addAction("Go Into '" + name + "'", insp, SLOT(goUpInto()));
-        action->setData(QVariant::fromValue(object));
+    if (insp && object != insp->getObject()) {
+        if (insp->supportsObject(object)) {
+            menu->addAction("Go Into '" + name + "'", insp, SLOT(goUpInto()))
+                ->setData(QVariant::fromValue(object));
+        }
+
+        menu->addAction("View '" + name + "' in Object Inspector", getQtenv()->getMainObjectInspector(), SLOT(goUpInto()))
+            ->setData(QVariant::fromValue(object));
+
         menu->addSeparator();
     }
 
     // add inspector types supported by the object
     for (int type : supportedInspTypes(object)) {
-        QString label;
-        switch (type) {
-            case INSP_DEFAULT: label = "Open Best View"; break;
-            case INSP_OBJECT: label = "Open Details"; break;
-            case INSP_GRAPHICAL: label = "Open Graphical View"; break;
-            case INSP_MODULEOUTPUT: label = "Open Component Log"; break;
-            case INSP_OBJECTTREE: label = "Open Object Tree"; break;
-            default: qDebug() << "Unsupported inspector type " << type << " in context menu";
-        }
+        QString label = getInspectMenuLabel(type);
+        if (label.isEmpty())
+            qDebug() << "Unsupported inspector type " << type << " in context menu";
         label += QString(" for '") + name + "'";
         QAction *action = menu->addAction(label, getQtenv(), SLOT(inspect()));
         action->setData(QVariant::fromValue(ActionDataPair(object, type)));
@@ -298,8 +299,9 @@ QString InspectorUtil::getInspectMenuLabel(int typeCode)
         case INSP_OBJECT: return "Open Details";
         case INSP_GRAPHICAL: return "Open Graphical View";
         case INSP_MODULEOUTPUT: return "Open Component Log";
+        case INSP_OBJECTTREE: return "Open Object Tree";
+        default: return "";
     }
-    return "";
 }
 
 }  // namespace qtenv
