@@ -25,13 +25,17 @@ class GraphicsPathArrowItem : public QGraphicsPolygonItem
     double arrowWidth = 6;
     double arrowLength = 4;
     double fillRatio = 0.75;
-    double lineWidth = 1;
-QPointF start, end;
+
     void updatePolygon();
+
 public:
     GraphicsPathArrowItem(QGraphicsItem *parent);
 
     QPainterPath shape() const override;
+
+    // Sets the size of the arrow so it fits
+    // a line of penWidth width well.
+    void setSizeForPenWidth(double penWidth, double scale = 1.0);
 
     void setEndPoints(const QPointF &start, const QPointF &end);
 

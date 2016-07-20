@@ -538,7 +538,7 @@ void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsIte
     setTransform(transform, item, &anchor);
 }
 
-void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, QPen *pen)
+void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, double zoom)
 {
     GraphicsPathArrowItem *startArrow = dynamic_cast<GraphicsPathArrowItem *>(lineItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = dynamic_cast<GraphicsPathArrowItem *>(lineItem->childItems()[1]);
@@ -546,26 +546,42 @@ void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *l
     const auto& start = lineFigure->getStart();
     const auto& end = lineFigure->getEnd();
 
-    setArrowStyle(lineFigure->getStartArrowhead(), startArrow, pen);
     startArrow->setEndPoints(QPointF(end.x, end.y), QPointF(start.x, start.y));
-
-    setArrowStyle(lineFigure->getEndArrowhead(), endArrow, pen);
     endArrow->setEndPoints(QPointF(start.x, start.y), QPointF(end.x, end.y));
+
+    setArrowStyle(lineFigure, startArrow, endArrow, zoom);
 }
 
-void AbstractLineFigureRenderer::setArrowStyle(cFigure::Arrowhead style, GraphicsPathArrowItem *arrowItem, QPen *pen)
+void AbstractLineFigureRenderer::setArrowStyle(cAbstractLineFigure *figure, GraphicsPathArrowItem *startItem, GraphicsPathArrowItem *endItem, double zoom)
 {
-    arrowItem->setVisible(style != cFigure::ARROW_NONE);
-    arrowItem->setFillRatio(style == cFigure::ARROW_BARBED ? 0.75
-                            : style == cFigure::ARROW_SIMPLE ? 0
+    auto lc = figure->getLineColor();
+    QColor color(lc.red, lc.green, lc.blue, figure->getLineOpacity()*255);
+    double scale = figure->getZoomLineWidth() ? 1.0 : (1.0 / zoom);
+
+
+    auto startStyle = figure->getStartArrowhead();
+
+    startItem->setVisible(startStyle != cFigure::ARROW_NONE);
+    startItem->setFillRatio(startStyle == cFigure::ARROW_BARBED ? 0.75
+                            : startStyle == cFigure::ARROW_SIMPLE ? 0
                             : 1);
 
-    if (pen) {
-        arrowItem->setColor(pen->color());
-        arrowItem->setLineWidth(pen->widthF());
-        arrowItem->setArrowWidth(pen->widthF() * 10);
-        arrowItem->setArrowLength(pen->widthF() * 10);
-    }
+    startItem->setColor(color);
+    startItem->setLineWidth(scale * figure->getLineWidth());
+    startItem->setSizeForPenWidth(figure->getLineWidth(), scale);
+
+
+    auto endStyle = figure->getEndArrowhead();
+
+    endItem->setVisible(endStyle != cFigure::ARROW_NONE);
+    endItem->setFillRatio(endStyle == cFigure::ARROW_BARBED ? 0.75
+                            : endStyle == cFigure::ARROW_SIMPLE ? 0
+                            : 1);
+
+    endItem->setColor(color);
+
+    endItem->setLineWidth(scale * figure->getLineWidth());
+    endItem->setSizeForPenWidth(figure->getLineWidth(), scale);
 }
 
 void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -576,16 +592,15 @@ void LineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     QPointF end(lineFigure->getEnd().x, lineFigure->getEnd().y);
 
     lineItem->setLine(QLineF(start, end));
-    setArrows(lineFigure, lineItem);
+    setArrows(lineFigure, lineItem, hints->zoom);
 }
 
 void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cLineFigure *lineFigure = static_cast<cLineFigure *>(figure);
     QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem *>(item);
-    QPen pen = createPen(lineFigure, hints);
     lineItem->setPen(createPen(lineFigure, hints));
-    setArrows(lineFigure, lineItem, &pen);
+    setArrows(lineFigure, lineItem, hints->zoom);
 }
 
 QGraphicsItem *LineFigureRenderer::newItem()
@@ -596,7 +611,7 @@ QGraphicsItem *LineFigureRenderer::newItem()
     return lineItem;
 }
 
-void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, QPen *pen)
+void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, double zoom)
 {
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[1]);
@@ -615,7 +630,6 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         cFigure::Point tangent(-sin(angle) * radii.x, -cos(angle) * radii.y);
 
         startArrow->setVisible(true);
-        setArrowStyle(arcFigure->getStartArrowhead(), startArrow, pen);
 
         cFigure::Point start = center + delta + tangent;
         cFigure::Point end = center + delta;
@@ -645,11 +659,12 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         QPointF tangent(-sin(angle) * radii.x(), -cos(angle) * radii.y());
 
         endArrow->setVisible(true);
-        setArrowStyle(arcFigure->getEndArrowhead(), endArrow, pen);
         endArrow->setEndPoints(center + delta - tangent, center + delta);
     }
     else
         endArrow->setVisible(false);
+
+    setArrowStyle(arcFigure, startArrow, endArrow, zoom);
 }
 
 void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -663,7 +678,7 @@ void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem
     painter.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, arcFigure->getStartAngle()*180/M_PI, qAbs(arcFigure->getStartAngle()-arcFigure->getEndAngle())*180/M_PI);
     arcItem->setPath(painter);
 
-    setArrows(arcFigure, arcItem);
+    setArrows(arcFigure, arcItem, hints->zoom);
 }
 
 void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -673,7 +688,7 @@ void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figur
     QPen pen = createPen(arcFigure, hints);
     arcItem->setPen(pen);
 
-    setArrows(arcFigure, arcItem, &pen);
+    setArrows(arcFigure, arcItem, hints->zoom);
 }
 
 QGraphicsItem *ArcFigureRenderer::newItem()
@@ -684,7 +699,7 @@ QGraphicsItem *ArcFigureRenderer::newItem()
     return arcItem;
 }
 
-void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, QPen *pen)
+void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, FigureRenderer::PathItem *polyItem, double zoom)
 {
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(polyItem->childItems()[0]);
     GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(polyItem->childItems()[1]);
@@ -700,7 +715,6 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
 
     if (polyFigure->getStartArrowhead() != cFigure::ARROW_NONE) {
         startArrow->setVisible(true);
-        setArrowStyle(polyFigure->getStartArrowhead(), startArrow, pen);
         const auto& from = points[1];
         const auto& to = points[0];
         startArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
@@ -710,13 +724,14 @@ void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, PathItem *po
 
     if (polyFigure->getEndArrowhead() != cFigure::ARROW_NONE) {
         endArrow->setVisible(true);
-        setArrowStyle(polyFigure->getEndArrowhead(), endArrow, pen);
         const auto& from = points[points.size() - 2];
         const auto& to = points[points.size() - 1];
         endArrow->setEndPoints(QPointF(from.x, from.y), QPointF(to.x, to.y));
     }
     else
         endArrow->setVisible(false);
+
+    setArrowStyle(polyFigure, startArrow, endArrow, zoom);
 }
 
 void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -751,7 +766,7 @@ void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
 
     polyItem->setPath(painter);
 
-    setArrows(polyFigure, polyItem);
+    setArrows(polyFigure, polyItem, hints->zoom);
 }
 
 void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -770,7 +785,7 @@ void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, 
 
     polyItem->setPen(pen);
 
-    setArrows(polyFigure, polyItem, &pen);
+    setArrows(polyFigure, polyItem, hints->zoom);
 }
 
 QGraphicsItem *PolylineFigureRenderer::newItem()

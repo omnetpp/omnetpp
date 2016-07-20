@@ -156,13 +156,13 @@ protected:
 class AbstractLineFigureRenderer : public FigureRenderer
 {
 protected:
-    void setArrowStyle(cFigure::Arrowhead style, GraphicsPathArrowItem *arrowItem, QPen *pen);
+    void setArrowStyle(cAbstractLineFigure *figure, GraphicsPathArrowItem *startItem, GraphicsPathArrowItem *endItem, double zoom = 1.0);
 };
 
 class LineFigureRenderer : public AbstractLineFigureRenderer
 {
 private:
-    void setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, QPen *pen = nullptr);
+    void setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, double zoom = 1.0);
 
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
@@ -173,7 +173,7 @@ protected:
 class ArcFigureRenderer : public AbstractLineFigureRenderer
 {
 private:
-    void setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, QPen *pen = nullptr);
+    void setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, double zoom = 1.0);
 
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
@@ -184,7 +184,7 @@ protected:
 class PolylineFigureRenderer : public AbstractLineFigureRenderer
 {
 private:
-    void setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, QPen *pen = nullptr);
+    void setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, double zoom = 1.0);
 
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);

@@ -83,16 +83,13 @@ void GraphicsPathArrowItem::setColor(const QColor& color)
     p.setColor(color);
     setPen(p);
     setBrush(color);
-    setEndPoints(start, end);
 }
 
 void GraphicsPathArrowItem::setLineWidth(double width)
 {
-    if (width != lineWidth) {
-        auto p = pen();
-        p.setWidthF(width);
-        setPen(p);
-    }
+    auto p = pen();
+    p.setWidthF(width);
+    setPen(p);
 }
 
 void GraphicsPathArrowItem::setArrowWidth(double width)
@@ -111,3 +108,9 @@ void GraphicsPathArrowItem::setArrowLength(double length)
     }
 }
 
+void GraphicsPathArrowItem::setSizeForPenWidth(double penWidth, double scale)
+{
+    double size = (1.25 * penWidth + 10) * scale;
+    setArrowWidth(size);
+    setArrowLength(size);
+}
