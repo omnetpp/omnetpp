@@ -245,6 +245,8 @@ void ModuleInspector::doSetObject(cObject *obj)
 
             canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
             canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
+            canvasViewer->setShowModuleNames(getPref(PREF_SHOWLABELS, true).toBool());
+            canvasViewer->setShowArrowHeads(getPref(PREF_SHOWARROWHEADS, true).toBool());
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -828,8 +830,9 @@ void ModuleInspector::toggleLabels()
     if (!object)
         return;
 
-    setPref(PREF_SHOWLABELS, !getPref(PREF_SHOWLABELS, true).toBool());
-    redraw();
+    bool show = !getPref(PREF_SHOWLABELS, true).toBool();
+    setPref(PREF_SHOWLABELS, show);
+    canvasViewer->setShowModuleNames(show);
 }
 
 void ModuleInspector::toggleArrowheads()
@@ -837,8 +840,9 @@ void ModuleInspector::toggleArrowheads()
     if (!object)
         return;
 
-    setPref(PREF_SHOWARROWHEADS, !getPref(PREF_SHOWARROWHEADS, true).toBool());
-    redraw();
+    bool show = !getPref(PREF_SHOWARROWHEADS, true).toBool();
+    setPref(PREF_SHOWARROWHEADS, show);
+    canvasViewer->setShowArrowHeads(show);
 }
 
 void ModuleInspector::zoomIconsBy(double mult)

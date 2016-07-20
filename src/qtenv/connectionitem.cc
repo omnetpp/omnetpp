@@ -173,9 +173,9 @@ void ConnectionItem::setSource(const QPointF& source)
 {
     if (src != source) {
         src = source;
-        updateLineItem();
         updateTextItem();
         updateArrowItem();
+        updateLineItem();
     }
 }
 
@@ -183,9 +183,9 @@ void ConnectionItem::setDestination(const QPointF& destination)
 {
     if (dest != destination) {
         dest = destination;
-        updateLineItem();
         updateTextItem();
         updateArrowItem();
+        updateLineItem();
     }
 }
 
@@ -199,8 +199,8 @@ void ConnectionItem::setWidth(double width)
 {
     if (width != lineWidth) {
         lineWidth = width;
-        updateLineItem();
         updateArrowItem();
+        updateLineItem();
     }
 }
 
@@ -208,8 +208,8 @@ void ConnectionItem::setColor(const QColor& color)
 {
     if (color != lineColor) {
         lineColor = color;
-        updateLineItem();
         updateArrowItem();
+        updateLineItem();
     }
 }
 
@@ -285,8 +285,8 @@ void ConnectionItem::setArrowEnabled(bool enabled)
 {
     if (enabled != arrowItem->isVisible()) {
         arrowItem->setVisible(enabled);
-        updateLineItem();
         updateArrowItem();
+        updateLineItem();
     }
 }
 

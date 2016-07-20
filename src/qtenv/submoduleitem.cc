@@ -465,6 +465,11 @@ void SubmoduleItem::setName(const QString& text)
     }
 }
 
+void SubmoduleItem::setNameVisible(bool visible)
+{
+    nameItem->setVisible(visible);
+}
+
 void SubmoduleItem::setVectorIndex(int index)
 {
     if (vectorIndex != index) {

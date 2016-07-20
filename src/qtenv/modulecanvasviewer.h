@@ -38,6 +38,7 @@ namespace qtenv {
 class GraphicsLayer;
 class CompoundModuleItem;
 class SubmoduleItem;
+class ConnectionItem;
 struct FigureRenderingHints;
 class CanvasRenderer;
 
@@ -58,6 +59,7 @@ private:
 
     CompoundModuleItem *compoundModuleItem = nullptr;
     std::map<cModule*, SubmoduleItem*> submoduleGraphicsItems;
+    std::map<cGate*, ConnectionItem*> connectionGraphicsItems;
 
     GraphicsLayer *backgroundLayer;
     GraphicsLayer *rangeLayer;
@@ -70,6 +72,8 @@ private:
 
     double zoomFactor = 1;
     double imageSizeFactor = 1;
+    bool showModuleNames;
+    bool showArrowHeads;
 
     ZoomLabel *zoomLabel;
 
@@ -144,6 +148,8 @@ public:
 
     void setZoomFactor(double zoomFactor);
     void setImageSizeFactor(double imageSizeFactor);
+    void setShowModuleNames(bool show);
+    void setShowArrowHeads(bool show);
 
     void bubble(cComponent *subcomponent, const char *text);
 

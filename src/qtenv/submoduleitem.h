@@ -143,6 +143,7 @@ public:
     void setDecoratorImageColorPercentage(int percent);
 
     void setName(const QString &text);
+    void setNameVisible(bool visible);
     void setVectorIndex(int index);
     void setQueueText(const QString &queueText);
     void setInfoText(const QString &text, TextPos pos, const QColor &color);

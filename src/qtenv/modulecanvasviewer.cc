@@ -599,6 +599,7 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
     item->setZoomFactor(zoomFactor);
     item->setImageSizeFactor(imageSizeFactor);
     item->setPos(getSubmodCoords(submod));
+    item->setNameVisible(showModuleNames);
     submoduleGraphicsItems[submod] = item;
     item->setParentItem(submoduleLayer);
 }
@@ -692,7 +693,11 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
     auto item = new ConnectionItem(submoduleLayer);
     item->setLine(getConnectionLine(gate));
     ConnectionItemUtil::setupFromDisplayString(item, gate, twoWayConnection);
+    connectionGraphicsItems[gate] = item;
     item->setZValue(-1);
+    // The !twoWayConnection is a tiny bit of duplicated
+    // logic with setupFromDisplayString, but oh well...
+    item->setArrowEnabled(!twoWayConnection && showArrowHeads);
 }
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
@@ -792,6 +797,7 @@ void ModuleCanvasViewer::clear()
     submoduleLayer->clear();
     bubbleLayer->clear();
     submoduleGraphicsItems.clear();
+    connectionGraphicsItems.clear();
     nextEventMarker = nullptr;  // because it is on the submodule layer, it has been deleted by that
 }
 
@@ -926,6 +932,27 @@ void ModuleCanvasViewer::setImageSizeFactor(double imageSizeFactor)
     if (this->imageSizeFactor != imageSizeFactor) {
         this->imageSizeFactor = imageSizeFactor;
         redraw();
+    }
+}
+
+void ModuleCanvasViewer::setShowModuleNames(bool show)
+{
+    if (showModuleNames != show) {
+        showModuleNames = show;
+        for (auto i : submoduleGraphicsItems) {
+            i.second->setNameVisible(show);
+        }
+    }
+}
+
+void ModuleCanvasViewer::setShowArrowHeads(bool show)
+{
+    if (showArrowHeads != show) {
+        showArrowHeads = show;
+        for (auto i : connectionGraphicsItems) {
+            // not enabling arrowheads on two-way connections
+            i.second->setArrowEnabled(show && !i.second->isHalfLength());
+        }
     }
 }
 

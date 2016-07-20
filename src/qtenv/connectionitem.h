@@ -77,10 +77,13 @@ public:
     void setTextOutlineColor(const QColor &color);
     void setTextColor(const QColor &color);
     void setLineEnabled(bool enabled);
+    bool isLineEnabled() const { return lineEnabled; }
     void setArrowEnabled(bool enabled);
+    bool isArrowEnabled() const { return arrowItem->isVisible(); }
     // This is used in two-way connections to show the styles
     // in both cGate's cDisplayStrings next to each other.
     void setHalfLength(bool enabled);
+    bool isHalfLength() const { return halfLength; }
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
