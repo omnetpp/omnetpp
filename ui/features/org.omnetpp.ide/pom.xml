@@ -21,9 +21,8 @@
         <version>${tycho.extras.version}</version>
         <configuration>
           <excludes>
-            <plugin id="org.omnetpp.ide.nativelibs.linux.x86"/>
             <plugin id="org.omnetpp.ide.nativelibs.linux.x86_64"/>
-            <plugin id="org.omnetpp.ide.nativelibs.win32.x86"/>
+            <plugin id="org.omnetpp.ide.nativelibs.win32.x86_64"/>
             <plugin id="org.omnetpp.ide.nativelibs.macosx"/>
             <plugin id="org.omnetpp.doc"/>
           </excludes>

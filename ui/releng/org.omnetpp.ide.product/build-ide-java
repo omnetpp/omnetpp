@@ -46,12 +46,12 @@ cp -rlf ide/linux64/features ide
 rm -rf ide/linux64/plugins
 rm -rf ide/linux64/features
 
-cp -rl win32/win32/x86 ide
-mv ide/x86 ide/win32
-cp -rlf ide/win32/plugins ide
-cp -rlf ide/win32/features ide
-rm -rf ide/win32/plugins
-rm -rf ide/win32/features
+cp -rl win32/win32/x86_64 ide
+mv ide/x86_64 ide/win64
+cp -rlf ide/win64/plugins ide
+cp -rlf ide/win64/features ide
+rm -rf ide/win64/plugins
+rm -rf ide/win64/features
 
 cp -rl macosx/cocoa/x86_64 ide
 mv ide/x86_64 ide/macosx

@@ -85,6 +85,14 @@ typedef std::vector<IMessageDependency *> IMessageDependencyList;
    return $jnicall;
 }
 
+%typemap(jni)    uintptr_t "jlong"
+%typemap(jtype)  uintptr_t "long"
+%typemap(jstype) uintptr_t "long"
+%typemap(javain) uintptr_t "$javainput"
+%typemap(javaout) uintptr_t {
+   return $jnicall;
+}
+
 %include "std_common.i"
 %include "std_string.i"
 %include "std_set.i"     // our custom version

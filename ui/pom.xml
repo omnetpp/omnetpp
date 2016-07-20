@@ -20,10 +20,9 @@
     <module>org.omnetpp.eventlogtable</module>
     <module>org.omnetpp.figures</module>
     <module>org.omnetpp.ide.nativelibs</module>
-    <module>org.omnetpp.ide.nativelibs.linux.x86</module>
     <module>org.omnetpp.ide.nativelibs.linux.x86_64</module>
     <module>org.omnetpp.ide.nativelibs.macosx</module>
-    <module>org.omnetpp.ide.nativelibs.win32.x86</module>
+    <module>org.omnetpp.ide.nativelibs.win32.x86_64</module>
     <module>org.omnetpp.inifile.editor</module>
     <module>org.omnetpp.launch</module>
     <module>org.omnetpp.main</module>
