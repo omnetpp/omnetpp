@@ -412,7 +412,6 @@ Total number of messages created since start of the simulation</string>
    <addaction name="actionEventlogRecording"/>
    <addaction name="separator"/>
    <addaction name="actionFindInspectObjects"/>
-   <addaction name="actionFilterMainWindowContents"/>
    <addaction name="separator"/>
    <addaction name="actionVerticalLayout"/>
    <addaction name="actionHorizontalLayout"/>
@@ -622,21 +621,6 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
-   </property>
-  </action>
-  <action name="actionFilterMainWindowContents">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/filter.png</normaloff>:/tools/icons/tools/filter.png</iconset>
-   </property>
-   <property name="text">
-    <string>Filter Main Window Contents</string>
-   </property>
-   <property name="toolTip">
-    <string>Filter main window contents (Ctrl+H)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+H</string>
    </property>
   </action>
   <action name="actionVerticalLayout">
