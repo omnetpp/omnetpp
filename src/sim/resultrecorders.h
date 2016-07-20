@@ -45,7 +45,7 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
         virtual ~VectorRecorder();
         virtual simtime_t getLastWriteTime() const {return lastTime;}
         virtual double getLastValue() const {return lastValue;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -68,7 +68,7 @@ class SIM_API CountRecorder : public cResultRecorder
     public:
         CountRecorder() {count = 0;}
         long getCount() const {return count;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -84,7 +84,7 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
     public:
         LastValueRecorder() {lastValue = NaN;}
         double getLastValue() const {return lastValue;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -100,7 +100,7 @@ class SIM_API SumRecorder : public cNumericResultRecorder
     public:
         SumRecorder() {sum = 0;}
         double getSum() const {return sum;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -117,7 +117,7 @@ class SIM_API MeanRecorder : public cNumericResultRecorder
     public:
         MeanRecorder() {count = 0; sum = 0;}
         double getMean() const {return sum/count;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -133,7 +133,7 @@ class SIM_API MinRecorder : public cNumericResultRecorder
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
         double getMin() const {return min;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -149,7 +149,7 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
         double getMax() const {return max;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -168,7 +168,7 @@ class SIM_API TimeAverageRecorder : public cNumericResultRecorder
     public:
         TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
         double getTimeAverage() const;
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 /**
@@ -186,7 +186,7 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder, private cObjec
         StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
         ~StatisticsRecorder() {drop(statistic); delete statistic;}
         virtual cStatistic *getStatistic() const {return statistic;}
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 class SIM_API StatsRecorder : public StatisticsRecorder
@@ -226,7 +226,7 @@ class SIM_API ExpressionRecorder : public cNumericResultRecorder
         virtual Expression& getExpression() {return expr;}
         double getLastInputValue() const {return lastInputValue;}
         double getCurrentValue() const;
-        virtual std::string str() const override;
+        virtual std::string str_() const override;
 };
 
 }  // namespace omnetpp

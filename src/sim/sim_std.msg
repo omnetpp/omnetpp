@@ -167,7 +167,7 @@ class cIListener extends void;
 class cComponent::SignalData extends void
 {
     string signalName @hint("Name of signal listened on");
-    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners) @tostring(->str());
+    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners) @tostring(->str_());
 }
 
 class cPar extends cObject;
@@ -857,7 +857,7 @@ class cResultListener extends cIListener
 
 class cResultFilter extends cResultListener
 {
-    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str());
+    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str_());
 }
 
 class WarmupPeriodFilter extends cResultFilter

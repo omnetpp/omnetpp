@@ -78,12 +78,12 @@ class SIM_API cIListener
      * using typeid (C++ RTTI), and it does not need to be overridden in
      * subclasses.
      */
-    virtual const char *getClassName() const;
+    virtual const char *getClassName_() const;
 
     /**
      * Return information about the object on a single line
      */
-    virtual std::string str() const;
+    virtual std::string str_() const;
 
     /**
      * Receive an emitted signal. Note that cIListener declares several

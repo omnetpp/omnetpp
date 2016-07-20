@@ -160,18 +160,18 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 
 void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
-    throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
+    throw cRuntimeError("%s: Cannot convert const char * to double", getClassName_());
 }
 
 void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
-    throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());
+    throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName_());
 }
 
 //---
 
-#define THROW(t)    throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
+#define THROW(t)    throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName_(), t);
 
 void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {

@@ -418,7 +418,7 @@ void EnvirUtils::dumpComponentResultRecorders(cComponent *component)
 void EnvirUtils::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     std::string indent(4*depth+8, ' ');
-    std::cout << indent << listener->str();
+    std::cout << indent << listener->str_();
     if (cResultRecorder *resultRecorder = dynamic_cast<cResultRecorder *>(listener))
         std::cout << " ==> " << resultRecorder->getResultName();
     std::cout << "\n";

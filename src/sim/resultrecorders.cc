@@ -59,7 +59,7 @@ void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)
     if (t < lastTime) {
         throw cRuntimeError("%s: Cannot record data with an earlier timestamp (t=%s) "
                             "than the previously recorded value (t=%s)",
-                getClassName(), SIMTIME_STR(t), SIMTIME_STR(lastTime));
+                getClassName_(), SIMTIME_STR(t), SIMTIME_STR(lastTime));
     }
 
     lastTime = t;
@@ -67,7 +67,7 @@ void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)
     getEnvir()->recordInOutputVector(handle, t, value);
 }
 
-std::string VectorRecorder::str() const
+std::string VectorRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << ": ";
@@ -86,7 +86,7 @@ void CountRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), count, &attributes);
 }
 
-std::string CountRecorder::str() const
+std::string CountRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getCount();
@@ -101,7 +101,7 @@ void LastValueRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), lastValue, &attributes);
 }
 
-std::string LastValueRecorder::str() const
+std::string LastValueRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getLastValue();
@@ -116,7 +116,7 @@ void SumRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum, &attributes);
 }
 
-std::string SumRecorder::str() const
+std::string SumRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getSum();
@@ -131,7 +131,7 @@ void MeanRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum / count, &attributes);  // note: this is NaN if count==0
 }
 
-std::string MeanRecorder::str() const
+std::string MeanRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getMean();
@@ -146,7 +146,7 @@ void MinRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), isPositiveInfinity(min) ? NaN : min, &attributes);
 }
 
-std::string MinRecorder::str() const
+std::string MinRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getMin();
@@ -161,7 +161,7 @@ void MaxRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), isNegativeInfinity(max) ? NaN : max, &attributes);
 }
 
-std::string MaxRecorder::str() const
+std::string MaxRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getMax();
@@ -198,7 +198,7 @@ void TimeAverageRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), getTimeAverage(), &attributes);
 }
 
-std::string TimeAverageRecorder::str() const
+std::string TimeAverageRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getTimeAverage();
@@ -213,7 +213,7 @@ void StatisticsRecorder::finish(cResultFilter *prev)
     getEnvir()->recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
 }
 
-std::string StatisticsRecorder::str() const
+std::string StatisticsRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << ": " << getStatistic()->info();
@@ -274,7 +274,7 @@ void ExpressionRecorder::finish(cResultFilter *prev)
     getEnvir()->recordScalar(getComponent(), getResultName().c_str(), expr.doubleValue(), &attributes);
 }
 
-std::string ExpressionRecorder::str() const
+std::string ExpressionRecorder::str_() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getCurrentValue();

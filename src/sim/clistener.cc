@@ -89,12 +89,12 @@ cIListener::~cIListener()
     }
 }
 
-const char *cIListener::getClassName() const
+const char *cIListener::getClassName_() const
 {
     return opp_typename(typeid(*this));
 }
 
-std::string cIListener::str() const
+std::string cIListener::str_() const
 {
     return "";
 }

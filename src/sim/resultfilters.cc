@@ -80,7 +80,7 @@ void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cO
         fire(this, t, obj, details);
 }
 
-std::string WarmupPeriodFilter::str() const
+std::string WarmupPeriodFilter::str_() const
 {
     std::stringstream os;
     os << "warmupPeriod = " << getEndWarmupPeriod();
@@ -89,7 +89,7 @@ std::string WarmupPeriodFilter::str() const
 
 //---
 
-std::string CountFilter::str() const
+std::string CountFilter::str_() const
 {
     std::stringstream os;
     os << "count = " << getCount();
@@ -98,7 +98,7 @@ std::string CountFilter::str() const
 
 //---
 
-std::string ConstantFilter::str() const
+std::string ConstantFilter::str_() const
 {
     std::stringstream os;
     os << "c = " << getConstant();
@@ -107,7 +107,7 @@ std::string ConstantFilter::str() const
 
 //---
 
-std::string SumFilter::str() const
+std::string SumFilter::str_() const
 {
     std::stringstream os;
     os << "sum = " << getSum();
@@ -116,7 +116,7 @@ std::string SumFilter::str() const
 
 //---
 
-std::string MeanFilter::str() const
+std::string MeanFilter::str_() const
 {
     std::stringstream os;
     os << "mean = " << getMean();
@@ -125,7 +125,7 @@ std::string MeanFilter::str() const
 
 //---
 
-std::string MinFilter::str() const
+std::string MinFilter::str_() const
 {
     std::stringstream os;
     os << "min = " << getMin();
@@ -134,7 +134,7 @@ std::string MinFilter::str() const
 
 //---
 
-std::string MaxFilter::str() const
+std::string MaxFilter::str_() const
 {
     std::stringstream os;
     os << "max = " << getMax();
@@ -173,7 +173,7 @@ double TimeAverageFilter::getTimeAverage() const
     return weightedSum / interval;
 }
 
-std::string TimeAverageFilter::str() const
+std::string TimeAverageFilter::str_() const
 {
     std::stringstream os;
     os << "timeAverage = " << getTimeAverage();
@@ -182,7 +182,7 @@ std::string TimeAverageFilter::str() const
 
 //---
 
-std::string RemoveRepeatsFilter::str() const
+std::string RemoveRepeatsFilter::str_() const
 {
     std::stringstream os;
     os << "lastValue = " << getLastValue();
@@ -191,7 +191,7 @@ std::string RemoveRepeatsFilter::str() const
 
 //---
 
-std::string ExpressionFilter::str() const
+std::string ExpressionFilter::str_() const
 {
     std::stringstream os;
     os << expr.str() << " = " << getLastValue();
@@ -303,7 +303,7 @@ double SumPerDurationFilter::getSumPerDuration() const
     return sum / interval;
 }
 
-std::string SumPerDurationFilter::str() const
+std::string SumPerDurationFilter::str_() const
 {
     std::stringstream os;
     os << "sum/duration = " << getSumPerDuration();
