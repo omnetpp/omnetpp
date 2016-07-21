@@ -88,6 +88,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     if (!isTopLevel) {
         // aligning right
         QWidget *spacer = new QWidget();
+        spacer->setAutoFillBackground(true);
         spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         toolbar->addWidget(spacer);
     }
@@ -97,6 +98,12 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     if (isTopLevel) {
         addTopLevelToolBarActions(toolbar);
+
+        // this is to fill the remaining space on the toolbar, replacing the ugly default gradient on Mac
+        QWidget *stretch = new QWidget(toolbar);
+        stretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        stretch->setAutoFillBackground(true);
+        toolbar->addWidget(stretch);
     }
     else {
         goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));

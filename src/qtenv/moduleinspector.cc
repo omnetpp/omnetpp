@@ -214,7 +214,12 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     switchToCanvasViewAction = action;
 #endif
 
+    // this is to fill the remaining space on the toolbar, replacing the ugly default gradient on Mac
     toolbar->setAutoFillBackground(true);
+    QWidget *stretch = new QWidget(toolbar);
+    stretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    stretch->setAutoFillBackground(true);
+    toolbar->addWidget(stretch);
 
     return toolbar;
 }

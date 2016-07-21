@@ -2148,10 +2148,12 @@ void Qtenv::updateQtFonts()
                 // avoids too tall toolbars on Mac
                 "QToolButton { height: 19px; margin: 0px; }"
                 // makes tool buttons tighty packed
-                "QToolBar { spacing: 0px; }"
-                // all toolbars except the main one at the top of the window need this to paint their background
-                "#centralWidget QToolBar { background: palette(window);  }"
+                "QToolBar { spacing: 0px; background: palette(window); }"
           #ifdef Q_WS_MAC // Mac-specific workarounds
+                // replacing the ugly default gradient
+                "QToolBar::separator { background: palette(window); }"
+                "QToolButton { background: palette(window); }"
+
                 // as a workaround to a Qt4 bug, should be unnecessary with Qt5
                 // (vertical splitter handles had white background without this,
                 // but this makes the little dots on them disappear...)

@@ -130,6 +130,8 @@ const QString LogInspector::PREF_SAVE_FILENAME = "savefilename";
 QToolBar *LogInspector::createToolbar(bool isTopLevel)
 {
     QToolBar *toolBar = new QToolBar();
+    toolBar->setAutoFillBackground(true);
+
     if (isTopLevel) {
         addTopLevelToolBarActions(toolBar);
 
@@ -158,6 +160,12 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
 
         toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()))->setShortcut(
                     QKeySequence(Qt::Key_F8));
+
+        // this is to fill the remaining space on the toolbar, replacing the ugly default gradient on Mac
+        QWidget *stretch = new QWidget(toolBar);
+        stretch->setAutoFillBackground(true);
+        stretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        toolBar->addWidget(stretch);
     }
     else {
         toolBar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard (Ctrl+C)",
