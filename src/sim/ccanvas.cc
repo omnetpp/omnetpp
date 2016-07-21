@@ -22,6 +22,7 @@
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cproperties.h"
+#include "omnetpp/csimulation.h"  // getEnvir()
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/opp_string.h"
@@ -483,6 +484,64 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
     return points;
 }
 
+cFigure::Rectangle cFigure::computeBoundingBox(const Point& position, const Point& size, double ascent, Anchor anchor)
+{
+    Point topleft;
+    switch (anchor) {
+        case cFigure::ANCHOR_CENTER:
+            topleft.x = position.x - size.x / 2;
+            topleft.y = position.y - size.y / 2;
+            break;
+        case cFigure::ANCHOR_N:
+            topleft.x = position.x - size.x / 2;
+            topleft.y = position.y;
+            break;
+        case cFigure::ANCHOR_E:
+            topleft.x = position.x;
+            topleft.y = position.y - size.y / 2;
+            break;
+        case cFigure::ANCHOR_S:
+            topleft.x = position.x - size.x / 2;
+            topleft.y = position.y - size.y;
+            break;
+        case cFigure::ANCHOR_W:
+            topleft.x = position.x - size.x;
+            topleft.y = position.y - size.y / 2;
+            break;
+        case cFigure::ANCHOR_NW:
+            topleft.x = position.x;
+            topleft.y = position.y;
+            break;
+        case cFigure::ANCHOR_NE:
+            topleft.x = position.x - size.x;
+            topleft.y = position.y;
+            break;
+        case cFigure::ANCHOR_SE:
+            topleft.x = position.x - size.x;
+            topleft.y = position.y - size.y;
+            break;
+        case cFigure::ANCHOR_SW:
+            topleft.x = position.x;
+            topleft.y = position.y - size.y;
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+            topleft.x = position.x;
+            topleft.y = position.y - ascent;
+            break;
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+            topleft.x = position.x - size.x / 2;
+            topleft.y = position.y - ascent;
+            break;
+        case cFigure::ANCHOR_BASELINE_END:
+            topleft.x = position.x - size.x;
+            topleft.y = position.y - ascent;
+            break;
+        default:
+            throw cRuntimeError("Unexpected anchor %d", anchor);
+    }
+    return Rectangle(topleft.x, topleft.y, size.x, size.y);
+}
+
 cFigure::Rectangle cFigure::parseBounds(cProperty *property)
 {
     if (property->containsKey(PKEY_BOUNDS)) {
@@ -502,78 +561,7 @@ cFigure::Rectangle cFigure::parseBounds(cProperty *property)
         Point size = parsePoint(property, PKEY_SIZE, 0);
         const char *anchorStr = property->getValue(PKEY_ANCHOR);
         Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
-        Point p1, p2;
-        switch (anchor) {
-            case cFigure::ANCHOR_CENTER:
-                p1.x = p.x - size.x / 2;
-                p1.y = p.y - size.y / 2;
-                p2.x = p.x + size.x / 2;
-                p2.y = p.y + size.y / 2;
-                break;
-
-            case cFigure::ANCHOR_N:
-                p1.x = p.x - size.x / 2;
-                p1.y = p.y;
-                p2.x = p.x + size.x / 2;
-                p2.y = p.y + size.y;
-                break;
-
-            case cFigure::ANCHOR_E:
-                p1.x = p.x;
-                p1.y = p.y - size.y / 2;
-                p2.x = p.x + size.x;
-                p2.y = p.y + size.y / 2;
-                break;
-
-            case cFigure::ANCHOR_S:
-            case cFigure::ANCHOR_BASELINE_MIDDLE:
-                p1.x = p.x - size.x / 2;
-                p1.y = p.y - size.y;
-                p2.x = p.x + size.x / 2;
-                p2.y = p.y;
-                break;
-
-            case cFigure::ANCHOR_W:
-                p1.x = p.x - size.x;
-                p1.y = p.y - size.y / 2;
-                p2.x = p.x;
-                p2.y = p.y + size.y / 2;
-                break;
-
-            case cFigure::ANCHOR_NW:
-                p1.x = p.x;
-                p1.y = p.y;
-                p2.x = p.x + size.x;
-                p2.y = p.y + size.y;
-                break;
-
-            case cFigure::ANCHOR_NE:
-                p1.x = p.x - size.x;
-                p1.y = p.y;
-                p2.x = p.x;
-                p2.y = p.y + size.y;
-                break;
-
-            case cFigure::ANCHOR_SE:
-            case cFigure::ANCHOR_BASELINE_END:
-                p1.x = p.x - size.x;
-                p1.y = p.y - size.y;
-                p2.x = p.x;
-                p2.y = p.y;
-                break;
-
-            case cFigure::ANCHOR_SW:
-            case cFigure::ANCHOR_BASELINE_START:
-                p1.x = p.x;
-                p1.y = p.y - size.y;
-                p2.x = p.x + size.x;
-                p2.y = p.y;
-                break;
-
-            default:
-                throw cRuntimeError("Unexpected anchor %d", anchor);
-        }
-        return Rectangle(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+        return computeBoundingBox(p, size, size.y, anchor);
     }
 }
 
@@ -2931,6 +2919,13 @@ void cAbstractTextFigure::setText(const char* text)
     fireInputDataChange();
 }
 
+cFigure::Rectangle cAbstractTextFigure::getBounds() const
+{
+    int width, height, ascent;
+    getEnvir()->getTextExtent(getFont(), getText(), width, height, ascent);
+    return computeBoundingBox(position, Point(width, height), ascent, anchor);
+}
+
 //----
 
 cTextFigure& cTextFigure::operator=(const cTextFigure& other)
@@ -3030,7 +3025,6 @@ void cAbstractImageFigure::moveLocal(double dx, double dy)
     fireGeometryChange();
 }
 
-
 void cAbstractImageFigure::setPosition(const Point& position)
 {
     if (position == this->position)
@@ -3099,6 +3093,19 @@ void cAbstractImageFigure::setTintAmount(double tintAmount)
     fireVisualChange();
 }
 
+cFigure::Rectangle cAbstractImageFigure::getBounds() const
+{
+    Point size = Point(width, height);
+    if (size.x == 0 || size.y == 0) {
+        Point defaultSize = getDefaultSize();
+        if (size.x == 0)
+            size.x = defaultSize.x;
+        if (size.y == 0)
+            size.y = defaultSize.y;
+    }
+    return computeBoundingBox(position, size, size.y, anchor);
+}
+
 //----
 
 std::string cImageFigure::info() const
@@ -3144,6 +3151,13 @@ void cImageFigure::setImageName(const char* imageName)
         return;
     this->imageName = imageName;
     fireInputDataChange();
+}
+
+cFigure::Point cImageFigure::getDefaultSize() const
+{
+    int width, height;
+    getEnvir()->getImageSize(getImageName(), width, height);
+    return Point(width, height);
 }
 
 //----
@@ -3201,6 +3215,11 @@ const char **cPixmapFigure::getAllowedPropertyKeys() const
         concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
+}
+
+cFigure::Point cPixmapFigure::getDefaultSize() const
+{
+    return Point(pixmap.getWidth(), pixmap.getHeight());
 }
 
 void cPixmapFigure::setPixmap(const Pixmap& pixmap)

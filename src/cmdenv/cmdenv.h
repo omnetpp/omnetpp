@@ -86,6 +86,9 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual unsigned getExtraStackForEnvir() const override;
      virtual void debug(const char *fmt,...);
 
+     virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
+     virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+
    protected:
      virtual void displayException(std::exception& ex) override;
      virtual void doRun() override;

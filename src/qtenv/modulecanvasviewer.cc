@@ -553,8 +553,9 @@ void ModuleCanvasViewer::refreshFigures()
 
 void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 {
-    hints->defaultFont = font().family().toStdString();
-    hints->defaultFontSize = font().pixelSize();
+    QFont canvasFont = getQtenv()->getCanvasFont();
+    hints->defaultFont = canvasFont.family().toStdString();
+    hints->defaultFontSize = canvasFont.pointSize();
     hints->zoom = zoomFactor;
 }
 

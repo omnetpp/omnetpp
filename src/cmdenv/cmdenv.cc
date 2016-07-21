@@ -685,6 +685,18 @@ bool Cmdenv::idle()
     return sigintReceived;
 }
 
+void Cmdenv::getImageSize(const char *imageName, int& outWidth, int& outHeight)
+{
+    outWidth = outHeight = 32;
+}
+
+void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent)
+{
+    outWidth = 10 * strlen(text);
+    outHeight = 12;
+    outAscent = 8;
+}
+
 void Cmdenv::printUISpecificHelp()
 {
     std::cout << "Cmdenv-specific options:\n";

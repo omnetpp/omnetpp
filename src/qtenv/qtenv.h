@@ -23,6 +23,7 @@
 #include "envir/speedometer.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
+#include "omnetpp/ccanvas.h"
 #include "qtenvdefs.h"
 #include "logbuffer.h"
 #include "componenthistory.h"
@@ -233,6 +234,9 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       virtual bool isGUI() const override {return true;}
       virtual bool isExpressMode() const override {return runMode == RUNMODE_EXPRESS;}
+
+      virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
+      virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
 
       virtual void bubble(cComponent *component, const char *text) override;
 

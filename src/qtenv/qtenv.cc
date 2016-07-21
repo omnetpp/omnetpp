@@ -1743,6 +1743,45 @@ void Qtenv::displayStringChanged(cComponent *component)
         channelDisplayStringChanged(channel);
 }
 
+void Qtenv::getImageSize(const char *imageName, int& outWidth, int& outHeight)
+{
+    auto size = icons.getImage(imageName)->size();
+    outWidth = size.width();
+    outHeight = size.height();
+}
+
+void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent)
+{
+    std::string typeFace = font.typeface.c_str();
+    if (typeFace.empty())
+        typeFace = canvasFont.family().toStdString();
+
+    int pointSize = font.pointSize;
+    if (pointSize <= 0)
+        pointSize = canvasFont.pointSize();
+
+    QFont f(typeFace.c_str(), pointSize);
+
+    f.setBold(font.style & cFigure::FONT_BOLD);
+    f.setItalic(font.style & cFigure::FONT_ITALIC);
+    f.setUnderline(font.style & cFigure::FONT_UNDERLINE);
+
+    QFontMetricsF metrics(f);
+
+    QStringList lines = QString(text).split(QChar('\n'));
+
+    double w = 0;
+    for (const auto &l : lines)
+        w = std::max(metrics.width(l), w);
+
+    outWidth = std::ceil(w);
+    // No need to account for interline leading, or use lineSpacing,
+    // as the default QGraphicsSimpleTextItem (wrongly) uses line
+    // height to advance the baseline, so this is "correct".
+    outHeight = std::ceil(lines.length() * metrics.height());
+    outAscent = std::round(metrics.ascent());
+}
+
 void Qtenv::channelDisplayStringChanged(cChannel *channel)
 {
     cGate *gate = channel->getSourceGate();

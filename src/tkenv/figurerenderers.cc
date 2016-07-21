@@ -214,10 +214,10 @@ void FigureRenderer::font(const cFigure::Font& font, FigureRenderingHints *hints
     argv[argc++] = "-fontfamily";
     argv[argc++] = !font.typeface.empty() ? font.typeface.c_str() : hints->defaultFont.c_str();
 
-    int points = font.pointSize > 0 ? font.pointSize : hints->defaultFontSize;
+    int points = (font.pointSize > 0 ? font.pointSize : hints->defaultFontSize);
     argv[argc++] = "-fontsize";
     char *buf = getBuf(16);
-    sprintf(buf, "%d", points);
+    sprintf(buf, "%d", (int)std::round((double)points * (16.0/12))); // scaling correction for 96 DPI (1 point i 1/72 inch)
     argv[argc++] = buf;
 
     argv[argc++] = "-fontweight";

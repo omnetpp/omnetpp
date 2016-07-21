@@ -692,7 +692,7 @@ void ModuleInspector::fillFigureRenderingHints(FigureRenderingHints *hints)
 
     Tcl_Eval(interp, "font actual CanvasFont -size");
     s = Tcl_GetStringResult(interp);
-    hints->defaultFontSize = opp_atol(s) * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+    hints->defaultFontSize = opp_atol(s);
 }
 
 void ModuleInspector::refreshSubmodules()

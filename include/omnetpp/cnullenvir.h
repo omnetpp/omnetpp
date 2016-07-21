@@ -109,6 +109,9 @@ class SIM_API cNullEnvir : public cEnvir
     virtual bool isGUI() const override  {return false;}
     virtual bool isExpressMode() const override {return false;}
 
+    virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override {unsupported();}
+    virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override {unsupported();}
+
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text) override  {}
     virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) override  {unsupported(); return "";}

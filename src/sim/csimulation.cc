@@ -853,6 +853,8 @@ class StaticEnv : public cEnvir
     virtual unsigned long getUniqueNumber() override  { unsupported(); return 0; }
     virtual bool idle() override  { return false; }
     virtual void attachDebugger() override {}
+    virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override {unsupported();}
+    virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override {unsupported();}
 
     // lifecycle listeners
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override {}

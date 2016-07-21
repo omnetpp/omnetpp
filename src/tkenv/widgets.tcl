@@ -594,3 +594,19 @@ proc canScrollY {w} {
         return [expr $contentHeight > $widgetHeight]
     }
 }
+
+proc getTextExtent {fontFamily pointSize weight slant text} {
+    catch {destroy .c}
+
+    tkp::canvas .c
+    set id [.c create ptext 0 0 -text $text -fontfamily $fontFamily -fontsize $pointSize -fontweight $weight -fontslant $slant]
+    set bbox [.c bbox $id]
+    destroy .c
+
+    catch {font delete tmp}
+    font create tmp -family $fontFamily -size $pointSize -weight $weight
+    set ascent [font metrics tmp -ascent]
+    font delete tmp
+
+    return [list {*}$bbox $ascent]
+}

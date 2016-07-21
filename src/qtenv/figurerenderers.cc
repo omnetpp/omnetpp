@@ -1111,12 +1111,20 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     textItem->setText(QObject::trUtf8(textFigure->getText()));
 
     cFigure::Font font = textFigure->getFont();
-    QFont qFont(font.typeface.c_str());
+
+    std::string typeface = font.typeface;
+    if (typeface.empty())
+        typeface = hints->defaultFont;
+
+    int pointSize = font.pointSize;
+    if (pointSize <= 0)
+        pointSize = hints->defaultFontSize;
+
+    QFont qFont(typeface.c_str(), pointSize);
 
     qFont.setBold(font.style & cFigure::FONT_BOLD);
     qFont.setItalic(font.style & cFigure::FONT_ITALIC);
     qFont.setUnderline(font.style & cFigure::FONT_UNDERLINE);
-    qFont.setPixelSize(font.pointSize <= 0 ? 16 : font.pointSize);
 
     textItem->setFont(qFont);
 }

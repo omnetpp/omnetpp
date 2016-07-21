@@ -316,6 +316,7 @@ class SIM_API cFigure : public cOwnedObject
         static Transform parseTransform(cProperty *property, const char *key);
         static Font parseFont(cProperty *property, const char *key);
         static void concatArrays(const char **dest, const char **first, const char **second);
+        static Rectangle computeBoundingBox(const Point& position, const Point& size, double ascent, Anchor anchor);
 
     public:
         // internal:
@@ -1438,6 +1439,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         virtual void setPosition(const Point& position);
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor);
+        virtual Rectangle getBounds() const;  // under Cmdenv this computes with a made-up number as size
         virtual const Color& getColor() const  {return color;}
         virtual void setColor(const Color& color);
         virtual double getOpacity() const  {return opacity;}
@@ -1543,6 +1545,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         void copy(const cAbstractImageFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual Point getDefaultSize() const = 0;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1567,6 +1570,7 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual void setPosition(const Point& position);
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor);
+        virtual Rectangle getBounds() const;  // under Cmdenv this computes with a made-up number as size
         virtual double getWidth() const  {return width;}
         virtual void setWidth(double width);  // zero means "unset"
         virtual double getHeight() const  {return height;}
@@ -1600,6 +1604,7 @@ class SIM_API cImageFigure : public cAbstractImageFigure
         void copy(const cImageFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual Point getDefaultSize() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
@@ -1620,6 +1625,8 @@ class SIM_API cImageFigure : public cAbstractImageFigure
         //@{
         virtual const char *getImageName() const  {return imageName.c_str();}
         virtual void setImageName(const char* imageName);
+        virtual int getImageNaturalWidth() const {return getDefaultSize().x;} // under Cmdenv it returns a made-up number
+        virtual int getImageNaturalHeight() const  {return getDefaultSize().y;}
         //@}
 };
 
@@ -1669,6 +1676,7 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         void copy(const cPixmapFigure& other);
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
+        virtual Point getDefaultSize() const override;
     public:
         /** @name Constructors, destructor, assignment. */
         //@{

@@ -207,6 +207,9 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
 
       virtual bool idle() override;
 
+      virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
+      virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+
       // with Tkenv, activity() modules need extra stack
       virtual unsigned getExtraStackForEnvir() const override;
 

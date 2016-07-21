@@ -23,6 +23,7 @@
 #include "opp_string.h"
 #include "clistener.h"  // for simsignal_t
 #include "clifecyclelistener.h"
+#include "ccanvas.h"
 
 namespace omnetpp {
 
@@ -507,6 +508,26 @@ class SIM_API cEnvir
      * is true for "yes", and false for "no".
      */
     virtual bool askYesNo(const char *fmt,...);
+
+    /**
+     * Returns the size of the image with the given name (e.g. "block/switch_l")
+     * in pixels. If the image does not exist, it returns the size of the
+     * "unknown" icon (as that is the image actually displayed). Non-GUI
+     * environments like Cmdenv may return made-up (but not completely
+     * unrealistic) numbers.
+     *
+     * This method is used by some methods of cImageFigure, e.g. getBounds().
+     */
+    virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) = 0;
+
+    /**
+     * Returns the size and ascent of the bounding box of the text when rendered
+     * with the given font in the GUI. Non-GUI environments like Cmdenv may return
+     * made-up (but not completely unrealistic) numbers.
+     *
+     * This method is used by some methods of cTextFigure, e.g. getBounds().
+     */
+    virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) = 0;
     //@}
 
     /** @name Access to RNGs. */

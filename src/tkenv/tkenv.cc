@@ -1806,6 +1806,52 @@ bool Tkenv::askyesno(const char *question)
     return Tcl_GetStringResult(interp)[0] == 'y';
 }
 
+void Tkenv::getImageSize(const char *imageName, int& outWidth, int& outHeight)
+{
+    const char *image = Tcl_GetVar2(interp, "bitmaps", TCLCONST(imageName), TCL_GLOBAL_ONLY);
+    if (!image)
+        image = Tcl_GetVar2(interp, "icons", "unknown", TCL_GLOBAL_ONLY);
+    ASSERT(image);
+
+    CHK(Tcl_VarEval(interp, "image width ", image, TCL_NULL));
+    outWidth = opp_atol(Tcl_GetStringResult(interp));
+
+    CHK(Tcl_VarEval(interp, "image height ", image, TCL_NULL));
+    outHeight = opp_atol(Tcl_GetStringResult(interp));
+}
+
+void Tkenv::getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent)
+{
+    Tcl_Eval(interp, "font actual CanvasFont -family");
+    std::string defaultFont = Tcl_GetStringResult(interp);
+
+    Tcl_Eval(interp, "font actual CanvasFont -size");
+    int defaultSize = opp_atol(Tcl_GetStringResult(interp));
+
+    int argc = 0;
+    const char *argv[100];
+    argv[argc++] = "getTextExtent";
+    argv[argc++] = font.typeface.empty() ? defaultFont.c_str() : font.typeface.c_str();
+    char buf[16]; // scaling correction for 96 DPI (1 point i 1/72 inch)
+    argv[argc++] = opp_itoa(buf, (int)std::ceil((font.pointSize <= 0 ? defaultSize : (double)font.pointSize) * (16.0/12.0)));
+    argv[argc++] = (font.style & cFigure::FONT_BOLD) ? "bold" : "normal";
+    argv[argc++] = (font.style & cFigure::FONT_ITALIC) ? "italic" : "normal";
+    argv[argc++] = text;
+
+    Tcl_CmdInfo cmdInfo;
+    int success = Tcl_GetCommandInfo(interp, TCLCONST("getTextExtent"), &cmdInfo);
+    ASSERT(success == 1);
+
+    invokeTclCommand(interp, &cmdInfo, argc, argv);
+
+    const char *result = Tcl_GetStringResult(interp);
+    double x1, y1, x2, y2, ascent;
+    sscanf(result, "%lf %lf %lf %lf %lf", &x1, &y1, &x2, &y2, &ascent);
+    outWidth = x2 - x1 - 2; // the -2 is to remove the antialiasing fuzz.
+    outHeight = y2 - y1 - 2; // should also include the outline, but figures dont use it. YET. XXX
+    outAscent = ascent;
+}
+
 unsigned Tkenv::getExtraStackForEnvir() const
 {
     return opt->extraStack;

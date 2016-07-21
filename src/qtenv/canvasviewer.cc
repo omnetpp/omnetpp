@@ -115,8 +115,8 @@ void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
 */
     hints->defaultFont = scene()->font().family().toStdString();
 
-    //TODO pixelSize() or pointSize()
-    hints->defaultFontSize = scene()->font().pointSize() * 16 / 10;  // FIXME figure out conversion factor (point to pixel?)...
+    //TODO use getQtenv()->getCanvasFont()
+    hints->defaultFontSize = scene()->font().pointSize();
 }
 
 std::vector<cObject *> CanvasViewer::getObjectsAt(const QPoint& pos)
