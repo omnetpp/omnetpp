@@ -42,8 +42,8 @@ QMAKE_CFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 QMAKE_MOC += $$(OPP_DEFINES)
 
 # add QT modules
-# QT *= core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+QT *= core gui opengl
+greaterThan(QT_MAJOR_VERSION, 4): QT *= widgets printsupport
 
 SOURCES += mainwindow.cc \
     arrow.cc \
@@ -156,8 +156,6 @@ INCLUDEPATH += ../../../../src ../../../../include
 
 # next line is for the QtCreator only to be able to show the OMNeT++ sources (not needed for the actual build process)
 INCLUDEPATH += .. ../../include
-
-INCLUDEPATH += /usr/include/qt4/QtOpenGL /usr/X11R6/include  #FIXME HACK! needed of osg, but probably should go into configure
 
 FORMS += mainwindow.ui \
     runselectiondialog.ui \

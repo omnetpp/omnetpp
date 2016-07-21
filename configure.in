@@ -812,7 +812,7 @@ else
             fi
             # Test on Mac OS X using the local QT framework
             if test $qt_ok = no; then
-                OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL")
+                OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL -framework QtWidgets -framework QtPrintSupport")
             fi
             # finally fall back to use pkg-config (if available)
             if test $qt_ok = no; then
@@ -872,7 +872,7 @@ fi
 #-----------------------------
 if test "$WITH_OSG" = "yes"; then
   if test -z "$OSG_LIBS"; then
-    OSG_LIBS="-losg -losgGA -losgViewer -lOpenThreads"
+    OSG_LIBS="-losg -losgGA -losgViewer -losgUtil -lOpenThreads"
   fi
   OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
   if test $osg_ok = no; then
