@@ -156,10 +156,9 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         fastRunUntilAction = toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)",
                                                 this, SLOT(fastRunUntil()));
         fastRunUntilAction->setCheckable(true);
-        fastRunUntilAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
+        fastRunUntilAction->setShortcut(Qt::CTRL + Qt::Key_F4);
 
-        toolBar->addAction(QIcon(":/tools/icons/tools/stop.png"), "Stop the simulation (F8)", this, SLOT(stopSimulation()))->setShortcut(
-                    QKeySequence(Qt::Key_F8));
+        toolBar->addAction(getQtenv()->getMainWindow()->getStopAction());
 
         // this is to fill the remaining space on the toolbar, replacing the ugly default gradient on Mac
         QWidget *stretch = new QWidget(toolBar);

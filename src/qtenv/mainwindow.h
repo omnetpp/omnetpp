@@ -73,6 +73,7 @@ public:
     QWidget *getLogInspectorArea();
     QWidget *getTimeLineArea();
     QAction *getStopAction();
+    QAction *getFindObjectsAction();
 
     void storeGeometry();
     void restoreGeometry();

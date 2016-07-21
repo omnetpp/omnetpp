@@ -374,9 +374,7 @@ void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)
     toolButton->setMenu(copyContextMenu);
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    MainWindow *mainWindow = getQtenv()->getMainWindow();
-    findObjects = toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find objects (CTRL+S)", mainWindow,
-                SLOT(on_actionFindInspectObjects_triggered()));
+    toolbar->addAction(getQtenv()->getMainWindow()->getFindObjectsAction());
 }
 
 }  // namespace qtenv

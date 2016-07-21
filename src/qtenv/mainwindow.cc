@@ -807,6 +807,11 @@ QAction *MainWindow::getStopAction()
     return ui->actionStop;
 }
 
+QAction *MainWindow::getFindObjectsAction()
+{
+    return ui->actionFindInspectObjects;
+}
+
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
 {
     const char *cl = getObjectShortTypeName(msg);
