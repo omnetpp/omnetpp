@@ -164,7 +164,7 @@ class cProperty extends cObject
 
 class cIListener extends void;
 
-class cComponent::SignalData extends void
+class cComponent::SignalListenerList extends void
 {
     string signalName @hint("Name of signal listened on");
     cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners) @tostring(->str_());
@@ -182,7 +182,7 @@ class cComponent extends cDefaultList
     cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
     cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
     cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("Properties");
-    cComponent::SignalData listenedSignals[] @getter(getSignalData) @sizeGetter(getSignalTableSize) @tostring(.str()) @group(parameters, gates) @hint("Signal listener lists");
+    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @tostring(.str()) @group(parameters, gates) @hint("Signal listener lists");
     cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @tostring(->str_()) @group(parameters, gates) @hint("Statistical results collected in this component");
 }
 

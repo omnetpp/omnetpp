@@ -48,7 +48,7 @@ class cResultRecorder;
 class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
     friend class cComponentDescriptor; // listener lists, etc
-    friend class cComponent__SignalDataDescriptor;
+    friend class cComponent__SignalListenerListDescriptor;  // sim_std.msg
     friend class cPar; // needs to call handleParameterChange()
     friend class cChannel; // allow it to access FL_INITIALIZED and releaseLocalListeners()
     friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
@@ -80,12 +80,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     mutable cDisplayString *displayString; // created on demand
 
-    struct SignalData //TODO rename to SignalListenerList
-    {
+    struct SignalListenerList {
         simsignal_t signalID;
         cIListener **listeners; // nullptr-terminated array
 
-        SignalData() {signalID=SIMSIGNAL_NULL; listeners=nullptr;}
+        SignalListenerList() {signalID=SIMSIGNAL_NULL; listeners=nullptr;}
         const char *getSignalName() const;
         std::string str() const;
         void dispose() {delete [] listeners;}
@@ -95,10 +94,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
         bool hasListener() const {return listeners && listeners[0];}
         int countListeners() const;
         cIListener *getListener(int k) const {return listeners[k];} // unsafe
-        static bool gt(const SignalData& e1, const SignalData& e2) {return e1.signalID > e2.signalID;}
+        static bool gt(const SignalListenerList& e1, const SignalListenerList& e2) {return e1.signalID > e2.signalID;}
     };
 
-    typedef std::vector<SignalData> SignalTable;
+    typedef std::vector<SignalListenerList> SignalTable;
     SignalTable *signalTable; // ordered by signalID so we can do binary search
 
     // string-to-simsignal_t mapping
@@ -128,15 +127,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     static std::vector<ResultRecorderList*> cachedResultRecorderLists;
 
   private:
-    SignalData *findSignalData(simsignal_t signalID) const;
-    SignalData *findOrCreateSignalData(simsignal_t signalID);
+    SignalListenerList *findListenerList(simsignal_t signalID) const;
+    SignalListenerList *findOrCreateListenerList(simsignal_t signalID);
     void throwInvalidSignalID(simsignal_t signalID) const;
-    void removeSignalData(simsignal_t signalID);
+    void removeListenerList(simsignal_t signalID);
     void checkNotFiring(simsignal_t, cIListener **listenerList);
     template<typename T> void fire(cComponent *src, simsignal_t signalID, T x, cObject *details);
     void fireFinish();
     void releaseLocalListeners();
-    const SignalData& getSignalData(int k) const {return (*signalTable)[k];} // for inspectors
+    const SignalListenerList& getListenerList(int k) const {return (*signalTable)[k];} // for inspectors
     int getSignalTableSize() const {return signalTable ? signalTable->size() : 0;} // for inspectors
     void collectResultRecorders(std::vector<cResultRecorder*>& result) const;
 

@@ -338,19 +338,19 @@ void cComponent::recordStatistic(const char *name, cStatistic *stats, const char
 
 //----
 
-const char *cComponent::SignalData::getSignalName() const
+const char *cComponent::SignalListenerList::getSignalName() const
 {
     return cComponent::getSignalName(signalID);
 }
 
-std::string cComponent::SignalData::str() const
+std::string cComponent::SignalListenerList::str() const
 {
     std::stringstream out;
     out << "'" << getSignalName() << "': " << countListeners() << " listeners";
     return out.str();
 }
 
-bool cComponent::SignalData::addListener(cIListener *l)
+bool cComponent::SignalListenerList::addListener(cIListener *l)
 {
     if (findListener(l) != -1)
         return false;  // already subscribed
@@ -366,7 +366,7 @@ bool cComponent::SignalData::addListener(cIListener *l)
     return true;
 }
 
-bool cComponent::SignalData::removeListener(cIListener *l)
+bool cComponent::SignalListenerList::removeListener(cIListener *l)
 {
     int k = findListener(l);
     if (k == -1)
@@ -380,7 +380,7 @@ bool cComponent::SignalData::removeListener(cIListener *l)
     return true;
 }
 
-int cComponent::SignalData::countListeners() const
+int cComponent::SignalListenerList::countListeners() const
 {
     if (!listeners)
         return 0;
@@ -390,7 +390,7 @@ int cComponent::SignalData::countListeners() const
     return k;
 }
 
-int cComponent::SignalData::findListener(cIListener *l) const
+int cComponent::SignalListenerList::findListener(cIListener *l) const
 {
     if (!listeners)
         return -1;
@@ -447,7 +447,7 @@ void cComponent::clearSignalRegistrations()
     signalNameMapping = nullptr;
 }
 
-cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
+cComponent::SignalListenerList *cComponent::findListenerList(simsignal_t signalID) const
 {
     // note: we could use std::binary_search() instead of linear search here,
     // but the number of signals that have listeners is likely to be small (<10),
@@ -461,23 +461,23 @@ cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
     return nullptr;
 }
 
-cComponent::SignalData *cComponent::findOrCreateSignalData(simsignal_t signalID)
+cComponent::SignalListenerList *cComponent::findOrCreateListenerList(simsignal_t signalID)
 {
-    SignalData *data = findSignalData(signalID);
-    if (!data) {
+    SignalListenerList *listenerList = findListenerList(signalID);
+    if (!listenerList) {
         if (!signalTable)
             signalTable = new SignalTable;
 
         // add new entry
-        signalTable->push_back(SignalData());
-        data = &(*signalTable)[signalTable->size()-1];
-        data->signalID = signalID;
+        signalTable->push_back(SignalListenerList());
+        listenerList = &(*signalTable)[signalTable->size()-1];
+        listenerList->signalID = signalID;
 
         // sort signalTable[] so we can do binary search by signalID
-        std::sort(signalTable->begin(), signalTable->end(), SignalData::gt);
-        data = findSignalData(signalID);  // must find it again because sort() moved it
+        std::sort(signalTable->begin(), signalTable->end(), SignalListenerList::gt);
+        listenerList = findListenerList(signalID);  // must find it again because sort() moved it
     }
-    return data;
+    return listenerList;
 }
 
 void cComponent::throwInvalidSignalID(simsignal_t signalID) const
@@ -488,8 +488,8 @@ void cComponent::throwInvalidSignalID(simsignal_t signalID) const
 void cComponent::checkNotFiring(simsignal_t signalID, cIListener **listenerList)
 {
     // Check that the given listener list is not being notified.
-    // NOTE: we use the listener list and not SignalData* for a reason:
-    // SignalData may get moved as a result of new signals being subscribed
+    // NOTE: we use the listener list and not ListenerList* for a reason:
+    // ListenerList may get moved as a result of new signals being subscribed
     // (they are stored in an std::vector!), so checking for pointer equality
     // would be no good. Move does not change the listener list pointer.
     if (listenerList)
@@ -499,7 +499,7 @@ void cComponent::checkNotFiring(simsignal_t signalID, cIListener **listenerList)
                                           "while its listeners are being notified, signalID=%d", signalID);
 }
 
-void cComponent::removeSignalData(simsignal_t signalID)
+void cComponent::removeListenerList(simsignal_t signalID)
 {
     if (signalTable) {
         // find in signal table
@@ -596,9 +596,9 @@ template<typename T>
 void cComponent::fire(cComponent *source, simsignal_t signalID, T x, cObject *details)
 {
     // notify local listeners if there are any
-    SignalData *data = findSignalData(signalID);
-    if (data) {
-        cIListener **listeners = data->listeners;
+    SignalListenerList *listenerList = findListenerList(signalID);
+    if (listenerList) {
+        cIListener **listeners = listenerList->listeners;
         if (notificationSP >= NOTIFICATION_STACK_SIZE)
             throw cRuntimeError(this, "emit(): recursive notification stack overflow, signalID=%d", signalID);
 
@@ -638,9 +638,9 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
         throw cRuntimeError("subscribe(): not a valid signal: signalID=%d", signalID);
 
     // add to local listeners
-    SignalData *data = findOrCreateSignalData(signalID);
-    checkNotFiring(signalID, data->listeners);
-    if (!data->addListener(listener))
+    SignalListenerList *listenerList = findOrCreateListenerList(signalID);
+    checkNotFiring(signalID, listenerList->listeners);
+    if (!listenerList->addListener(listener))
         throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
     signalListenerCount[signalID]++;
     listener->subscribeCount++;
@@ -654,15 +654,15 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
         throw cRuntimeError("unsubscribe(): not a valid signal: signalID=%d", signalID);
 
     // remove from local listeners list
-    SignalData *data = findSignalData(signalID);
-    if (!data)
+    SignalListenerList *listenerList = findListenerList(signalID);
+    if (!listenerList)
         return;
-    checkNotFiring(signalID, data->listeners);
-    if (!data->removeListener(listener))
+    checkNotFiring(signalID, listenerList->listeners);
+    if (!listenerList->removeListener(listener))
         return;  // was already removed
 
-    if (!data->hasListener())
-        removeSignalData(signalID);
+    if (!listenerList->hasListener())
+        removeListenerList(signalID);
 
     signalListenerCount[signalID]--;
     listener->subscribeCount--;
@@ -673,8 +673,8 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
 
 bool cComponent::isSubscribed(simsignal_t signalID, cIListener *listener) const
 {
-    SignalData *data = findSignalData(signalID);
-    return data && data->findListener(listener) != -1;
+    SignalListenerList *listenerList = findListenerList(signalID);
+    return listenerList && listenerList->findListener(listener) != -1;
 }
 
 void cComponent::subscribe(const char *signalName, cIListener *listener)
@@ -704,10 +704,10 @@ std::vector<simsignal_t> cComponent::getLocalListenedSignals() const
 std::vector<cIListener *> cComponent::getLocalSignalListeners(simsignal_t signalID) const
 {
     std::vector<cIListener *> result;
-    SignalData *data = findSignalData(signalID);
-    if (data && data->hasListener())
-        for (int i = 0; data->listeners[i]; i++)
-            result.push_back(data->listeners[i]);
+    SignalListenerList *listenerList = findListenerList(signalID);
+    if (listenerList && listenerList->hasListener())
+        for (int i = 0; listenerList->listeners[i]; i++)
+            result.push_back(listenerList->listeners[i]);
     return result;
 }
 
@@ -717,16 +717,16 @@ void cComponent::releaseLocalListeners()
     // because it would result in a "pure virtual method called" error
     if (signalTable) {
         while (signalTable && !signalTable->empty()) {
-            SignalData& signalData = signalTable->front();
-            simsignal_t signalID = signalData.signalID;
+            SignalListenerList& listenerList = signalTable->front();
+            simsignal_t signalID = listenerList.signalID;
 
-            // unsubscribe listeners. Note: a "while (signalData.hasListener())"
-            // loop would not work, because the last unsubscribe deletes signalData
+            // unsubscribe listeners. Note: a "while (listenerList.hasListener())"
+            // loop would not work, because the last unsubscribe deletes listenerList
             // as well. This "unsubscribe n times" method chosen here has problems if new
             // listeners get subscribed inside the unsubscribed() hook though.
-            int n = signalData.countListeners();
+            int n = listenerList.countListeners();
             for (int i = 0; i < n; i++)
-                unsubscribe(signalID, signalData.listeners[0]);
+                unsubscribe(signalID, listenerList.listeners[0]);
         }
         delete signalTable;
         signalTable = nullptr;
