@@ -2150,8 +2150,8 @@ void Qtenv::updateQtFonts()
                 "background-color: palette(base); border: 1px solid palette(mid); }"
                 // avoids too tall toolbars on Mac
                 "QToolButton { height: 19px; margin: 0px; }"
-                // makes tool buttons tighty packed
-                "QToolBar { spacing: 0px; background: palette(window); }"
+                // makes tool buttons tighty packed, background explicitly painted, frame disabled
+                "QToolBar { spacing: 0px; background: palette(window); border-style: none; }"
           #ifdef Q_WS_MAC // Mac-specific workarounds
                 // replacing the ugly default gradient
                 "QToolBar::separator { background: palette(window); }"
