@@ -136,6 +136,7 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
+      void updateBeforeAnimation();
 
       bool needsRedraw();
 

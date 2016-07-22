@@ -835,10 +835,31 @@ void ModuleCanvasViewer::redrawNextEventMarker()
 void ModuleCanvasViewer::refreshSubmodules()
 {
     for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
-//        CHK(Tcl_VarEval(interp, "ModuleInspector:refreshSubmodule ",
-//                        windowName, " ",
-//                        ptrToStr(*it),
-//                        TCL_NULL));
+        cModule *submod = *it;
+        if (submoduleGraphicsItems.count(submod)) {
+            auto item = submoduleGraphicsItems[submod];
+            SubmoduleItemUtil::setupFromDisplayString(item, submod);
+            item->setPos(getSubmodCoords(submod));
+        }
+    }
+}
+
+void ModuleCanvasViewer::refreshConnections()
+{
+    auto refr = [this](cModule *mod) {
+        for (cModule::GateIterator it(mod); !it.end(); ++it) {
+            cGate *gate = *it;
+            if (connectionGraphicsItems.count(gate)) {
+                ConnectionItem *item = connectionGraphicsItems[gate];
+                ConnectionItemUtil::setupFromDisplayString(item, gate, item->isHalfLength());
+                item->setLine(getConnectionLine(gate));
+            }
+        }
+    };
+
+    refr(object);
+    for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
+        refr(*it);
     }
 }
 
@@ -853,8 +874,6 @@ void ModuleCanvasViewer::redraw()
     fillFigureRenderingHints(&hints);
     canvasRenderer->redraw(&hints);
 
-    updateBackgroundColor();
-
     zoomLabel->setFont(getQtenv()->getCanvasFont());
     updateZoomLabelPos();
 
@@ -865,21 +884,7 @@ void ModuleCanvasViewer::redraw()
     refreshSubmodules();
 }
 
-void ModuleCanvasViewer::updateBackgroundColor()
-{
-    //TODO szukseges-e a getCanvas() a ModuleInspector classban?
-    /*
-    cCanvas *canvas = getCanvas();
-    if (canvas) {
-        char buf[16];
-        cFigure::Color color = canvas->getBackgroundColor();
-        sprintf(buf, "#%2.2x%2.2x%2.2x", color.red, color.green, color.blue);
-        //CHK(Tcl_VarEval(interp, this->canvas, " config -bg {", buf, "}", TCL_NULL));
-    }
-    */
-}
-
-void ModuleCanvasViewer::refresh()
+void ModuleCanvasViewer::refresh(bool updateNextEventMarker)
 {
     if (!object) {
         clear();
@@ -897,8 +902,6 @@ void ModuleCanvasViewer::refresh()
     fillFigureRenderingHints(&hints);
     canvasRenderer->refresh(&hints);
 
-    updateBackgroundColor();
-
     // redraw modules only if really needed
     if (needs_redraw) {
         needs_redraw = false;
@@ -907,7 +910,8 @@ void ModuleCanvasViewer::refresh()
     else {
         drawEnclosingModule(object);
         refreshFigures();
-        redrawNextEventMarker();
+        if (updateNextEventMarker)
+            redrawNextEventMarker();
         refreshSubmodules();
     }
 }

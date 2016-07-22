@@ -375,6 +375,12 @@ void ModuleInspector::clearObjectChangeFlags()
         canvas->getRootFigure()->clearChangeFlags();
 }
 
+void ModuleInspector::updateBeforeAnimation()
+{
+    canvasViewer->refresh(false);
+    refreshOsgViewer();
+}
+
 bool ModuleInspector::needsRedraw()
 {
     return canvasViewer->getNeedsRedraw();
@@ -520,7 +526,7 @@ void ModuleInspector::connectionDeleted(cGate *srcgate)
 
 void ModuleInspector::displayStringChanged(cModule *)
 {
-    canvasViewer->setNeedsRedraw();
+    canvasViewer->refreshSubmodules();
 }
 
 void ModuleInspector::displayStringChanged()
@@ -530,7 +536,7 @@ void ModuleInspector::displayStringChanged()
 
 void ModuleInspector::displayStringChanged(cGate *)
 {
-    canvasViewer->setNeedsRedraw();
+    canvasViewer->refreshConnections();
 }
 
 void ModuleInspector::bubble(cComponent *subcomponent, const char *text)

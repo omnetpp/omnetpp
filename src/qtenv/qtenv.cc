@@ -656,6 +656,8 @@ void Qtenv::doOneStep()
         cEvent *event = getSimulation()->takeNextEvent();
         if (event) {  // takeNextEvent() not interrupted
             getSimulation()->executeEvent(event);
+            callRefreshDisplay();
+            updateGraphicalInspectorsBeforeAnimation();
             performAnimations();
         }
         simulationState = SIM_READY;  // currently must precede updateStatusDisplay(), because it depends on it...
@@ -843,6 +845,8 @@ bool Qtenv::doRunSimulation()
 
         // do a simulation step
         getSimulation()->executeEvent(event);
+        callRefreshDisplay();
+        updateGraphicalInspectorsBeforeAnimation();
         performAnimations();
 
         // flush so that output from different modules don't get mixed
@@ -1219,10 +1223,9 @@ void Qtenv::createSnapshot(const char *label)
 
 void Qtenv::updateGraphicalInspectorsBeforeAnimation()
 {
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
-        if (dynamic_cast<ModuleInspector *>(insp) && static_cast<ModuleInspector *>(insp)->needsRedraw()) {
-            insp->refresh();
+    for (auto i : inspectors) {
+        if (auto insp = dynamic_cast<ModuleInspector *>(i)) {
+            insp->updateBeforeAnimation();
         }
     }
 }

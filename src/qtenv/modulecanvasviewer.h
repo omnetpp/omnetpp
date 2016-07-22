@@ -85,7 +85,6 @@ private:
     void refreshFigures();
     void redrawModules();
     void redrawNextEventMarker();
-    void refreshSubmodules();
 
     // updates submodPosMap (new modules, changed display strings, etc.)
     void refreshLayout();
@@ -99,8 +98,6 @@ private:
     void drawConnection(cGate *gate);
 
     void fillFigureRenderingHints(FigureRenderingHints *hints);
-
-    void updateBackgroundColor();
 
     void updateZoomLabelPos();
 
@@ -143,7 +140,7 @@ public:
     CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }
 
     void redraw();
-    void refresh();
+    void refresh(bool updateNextEventMarker = true);
     void recalcSceneRect(bool alignTopLeft = false);
 
     void setZoomFactor(double zoomFactor);
@@ -163,6 +160,9 @@ public:
     void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
     void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
     void incLayoutSeed() { ++layoutSeed; }
+
+    void refreshSubmodules();
+    void refreshConnections();
 
     void setZoomLabelVisible(bool visible);
 };
