@@ -43,7 +43,7 @@ class Tester : public cSimpleModule, public cListener
   public:
     Tester() : cSimpleModule(16384) {}
     virtual void activity();
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details);
 };
 
 Define_Module(Tester);
@@ -107,9 +107,9 @@ void Tester::activity()
                 }
             EV << "REPARENTING NODE " << nodes[m]->getFullPath() << ", new parent: " << nodes[p]->getFullPath() << "\n";
             // node must be disconnected for reparenting
-            for (cModule::GateIterator i(nodes[m]); !i.end(); i++)
-                if (i()->isConnectedOutside())
-                    disconnectOutside(i());
+            for (cModule::GateIterator it(nodes[m]); !it.end(); ++it)
+                if ((*it)->isConnectedOutside())
+                    disconnectOutside(*it);
 
             nodes[m]->changeParentTo(nodes[p]);
         }
@@ -162,13 +162,11 @@ void Tester::activity()
     }
 }
 
-void Tester::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void Tester::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *)
 {
     Enter_Method_Silent();
 
     EV << "Got " << obj->getClassName() << " " << obj->info() << " from " << source->getFullPath() << "\n";
-
-    getSimulation()->getSystemModule()->checkSignalConsistency();
 
     if (dynamic_cast<cPostModuleDeleteNotification *>(obj)) {
         EV << "  - LISTENER: NODE DELETED\n";
