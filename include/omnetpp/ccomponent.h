@@ -80,7 +80,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     mutable cDisplayString *displayString; // created on demand
 
-    struct SignalData
+    struct SignalData //TODO rename to SignalListenerList
     {
         simsignal_t signalID;
         cIListener **listeners; // nullptr-terminated array
@@ -101,10 +101,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     typedef std::vector<SignalData> SignalTable;
     SignalTable *signalTable; // ordered by signalID so we can do binary search
 
-    // flags to speed up emit() for signals 0..63 when there are no or few listeners
-    uint64_t signalHasLocalListeners;    // bit[k]==1: signalID k has local listeners
-    uint64_t signalHasAncestorListeners; // bit[k]==1: signalID k has listener in parent or in any ancestor component
-
     // string-to-simsignal_t mapping
     static struct SignalNameMapping {
         std::map<std::string,simsignal_t> signalNameToID;
@@ -112,9 +108,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     } *signalNameMapping;  // must be dynamically allocated on first access so that registerSignal() can be invoked from static initialization code
     static int lastSignalID;
 
-    // dynamic assignment of signalHasLocalListeners/signalHasAncestorListeners bits (64 of them) to signalIDs
-    static std::vector<uint64_t> signalMasks;  // index: signalID, value: mask (1<<bitIndex), or 0xffff... for "unfilled"
-    static int firstFreeSignalMaskBitIndex; // 0..63; 64 means "all sold out"
+    // for hasListeners()/mayHaveListeners()
+    static std::vector<int> signalListenerCount;  // index: signalID, value: number of listeners anywhere
 
     // stack of listener lists being notified, to detect concurrent modification
     static cIListener **notificationStack[];
@@ -135,14 +130,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
   private:
     SignalData *findSignalData(simsignal_t signalID) const;
     SignalData *findOrCreateSignalData(simsignal_t signalID);
+    void throwInvalidSignalID(simsignal_t signalID) const;
     void removeSignalData(simsignal_t signalID);
     void checkNotFiring(simsignal_t, cIListener **listenerList);
-    template<typename T> void fire(cComponent *src, simsignal_t signalID, const uint64_t& mask, T x, cObject *details);
+    template<typename T> void fire(cComponent *src, simsignal_t signalID, T x, cObject *details);
     void fireFinish();
-    void signalListenerAdded(simsignal_t signalID, uint64_t mask);
-    void signalListenerRemoved(simsignal_t signalID, uint64_t mask);
-    void repairSignalFlags();
-    bool computeHasListeners(simsignal_t signalID) const;
     void releaseLocalListeners();
     const SignalData& getSignalData(int k) const {return (*signalTable)[k];} // for inspectors
     int getSignalTableSize() const {return signalTable ? signalTable->size() : 0;} // for inspectors
@@ -184,10 +176,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: used from Tkenv: find out if this module has a display string.
     // getDisplayString() would create the object immediately which we want to avoid.
     bool hasDisplayString();
-
-    // internal: checks consistency of signal listener flags
-    virtual void checkLocalSignalConsistency() const;
-    virtual void checkSignalConsistency() const;
 
     // internal: clears per-run signals-related data structures; to be invoked before each simulation run
     static void clearSignalState();
@@ -928,26 +916,25 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * If producing a value for a signal has a significant runtime cost, this
      * method can be used to check beforehand whether the given signal possibly
-     * has any listeners at all -- if not, emitting the signal can be skipped.
-     * This functions is significantly more efficient than hasListeners()
-     * (amortizes in constant time), but may return "false positive".
+     * has any listeners at all. if not, emitting the signal can be skipped.
+     * This method has a constant cost but may return false positive.
      */
     bool mayHaveListeners(simsignal_t signalID) const {
-        uint64_t mask = getSignalMask(signalID);
-        return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for mask==0
+        if (signalID < 0 || signalID > lastSignalID)
+            throwInvalidSignalID(signalID);
+        return signalListenerCount[signalID] > 0;
     }
 
     /**
-     * Returns true if the given signal has any listeners. For some signals
-     * this method has a significant overhead (linear to the number of hierarchy
-     * levels in the network).
+     * Returns true if the given signal has any listeners. In the current
+     * implementation, this involves checking listener lists in ancestor
+     * modules until the first listener is found, or up to the root.
+     * This method may be useful if producing the data for an emit()
+     * call would be expensive compared to a hasListeners() call.
      *
      * @see mayHaveListeners()
      */
-    bool hasListeners(simsignal_t signalID) const {
-        uint64_t mask = getSignalMask(signalID);
-        return mask ? ((signalHasLocalListeners|signalHasAncestorListeners) & mask) : computeHasListeners(signalID);
-    }
+    bool hasListeners(simsignal_t signalID) const;
     //@}
 
     /** @name Subscribing to simulation signals. */

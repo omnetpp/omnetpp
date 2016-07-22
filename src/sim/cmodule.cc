@@ -178,9 +178,6 @@ void cModule::insertSubmodule(cModule *mod)
         firstSubmodule = mod;
     lastSubmodule = mod;
 
-    // update cached signal state
-    mod->repairSignalFlags();
-
     // cached module getFullPath() possibly became invalid
     lastModuleFullPathModule = nullptr;
 }
@@ -203,9 +200,6 @@ void cModule::removeSubmodule(cModule *mod)
 
     // this is not strictly needed but makes it cleaner
     mod->prevSibling = mod->nextSibling = nullptr;
-
-    // update cached signal state
-    mod->repairSignalFlags();
 
     // cached module getFullPath() possibly became invalid
     lastModuleFullPathModule = nullptr;

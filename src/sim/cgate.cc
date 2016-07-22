@@ -334,9 +334,6 @@ void cGate::installChannel(cChannel *chan)
     channel = chan;
     channel->setSourceGate(this);
     take(channel);
-
-    // update cached signal state
-    channel->repairSignalFlags();
 }
 
 void cGate::disconnect()
