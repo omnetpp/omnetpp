@@ -74,18 +74,6 @@ class SIM_API cIListener
     virtual ~cIListener();
 
     /**
-     * Returns the (fully qualified) class name. This method is implemented
-     * using typeid (C++ RTTI), and it does not need to be overridden in
-     * subclasses.
-     */
-    virtual const char *getClassName_() const;
-
-    /**
-     * Return information about the object on a single line
-     */
-    virtual std::string str_() const;
-
-    /**
      * Receive an emitted signal. Note that cIListener declares several
      * overloaded receiveSignal() methods, one for each data type (except
      * that all integer types are merged to the long and unsigned long

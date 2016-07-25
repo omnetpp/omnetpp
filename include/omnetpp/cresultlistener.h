@@ -35,6 +35,18 @@ class SIM_API cResultListener : public cIListener
     protected:
         static const char *getPooled(const char *s);
     public:
+        /**
+         * Returns the (fully qualified) class name. This method is implemented
+         * using typeid (C++ RTTI), and it does not need to be overridden in
+         * subclasses.
+         */
+        virtual const char *getClassName() const;
+
+        /**
+         * Return information about the object on a single line
+         */
+        virtual std::string str() const;
+
         // simplified API that better supports chaining:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) = 0;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) = 0;

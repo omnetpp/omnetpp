@@ -167,7 +167,7 @@ class cIListener extends void;
 class cComponent::SignalListenerList extends void
 {
     string signalName @hint("Name of signal listened on");
-    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners) @tostring(->str_());
+    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @tostring(->str()) for cResultListeners
 }
 
 class cPar extends cObject;
@@ -183,7 +183,7 @@ class cComponent extends cDefaultList
     cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
     cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("Properties");
     cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @tostring(.str()) @group(parameters, gates) @hint("Signal listener lists");
-    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @tostring(->str_()) @group(parameters, gates) @hint("Statistical results collected in this component");
+    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @tostring(->str()) @group(parameters, gates) @hint("Statistical results collected in this component");
 }
 
 class cChannel extends cComponent
@@ -859,7 +859,7 @@ class cResultListener extends cIListener
 
 class cResultFilter extends cResultListener
 {
-    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str_());
+    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str());
 }
 
 class WarmupPeriodFilter extends cResultFilter

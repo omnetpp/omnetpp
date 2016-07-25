@@ -89,16 +89,6 @@ cIListener::~cIListener()
     }
 }
 
-const char *cIListener::getClassName_() const
-{
-    return opp_typename(typeid(*this));
-}
-
-std::string cIListener::str_() const
-{
-    return "";
-}
-
 //---
 
 void cListener::unsupportedType(simsignal_t signalID, const char *dataType)

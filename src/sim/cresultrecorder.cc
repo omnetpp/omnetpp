@@ -162,13 +162,13 @@ void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t
 
 void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details)
 {
-    throw cRuntimeError("%s: Cannot convert const char * to double", getClassName_());
+    throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
 void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
-    throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName_());
+    throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());
 }
 
 //----

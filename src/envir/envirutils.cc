@@ -27,7 +27,8 @@
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cchannel.h"
-#include "sim/resultfilters.h"
+#include "sim/resultfilters.h"  // ExpressionFilter
+#include "sim/resultrecorders.h"  // ExpressionRecorder
 #include "args.h"
 #include "appreg.h"
 #include "envirutils.h"
@@ -418,7 +419,14 @@ void EnvirUtils::dumpComponentResultRecorders(cComponent *component)
 void EnvirUtils::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     std::string indent(4*depth+8, ' ');
-    std::cout << indent << listener->str_();
+    std::cout << indent;
+    if (ExpressionRecorder *expressionRecorder = dynamic_cast<ExpressionRecorder *>(listener))
+        std::cout << expressionRecorder->getExpression().str() << " (" << listener->getClassName() << ")";
+    else if (ExpressionFilter *expressionFilter = dynamic_cast<ExpressionFilter *>(listener))
+        std::cout << expressionFilter->getExpression().str() << " (" << listener->getClassName() << ")";
+    else
+        std::cout << listener->getClassName();
+
     if (cResultRecorder *resultRecorder = dynamic_cast<cResultRecorder *>(listener))
         std::cout << " ==> " << resultRecorder->getResultName();
     std::cout << "\n";
