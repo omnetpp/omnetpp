@@ -162,7 +162,7 @@ class SIM_API cEnvir
     virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
 
     /** Part of the beginSend() sequence. @see beginSend() */
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) = 0;
 
     /** Closes a beginSend() sequence. @see beginSend() */
     virtual void endSend(cMessage *msg) = 0;

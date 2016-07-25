@@ -74,7 +74,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void beginSend(cMessage *msg) override  {}
     virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override  {}
     virtual void messageSendHop(cMessage *msg, cGate *srcGate) override  {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) override  {}
     virtual void endSend(cMessage *msg) override  {}
     virtual void messageCreated(cMessage *msg) override  {}
     virtual void messageCloned(cMessage *msg, cMessage *clone) override  {}

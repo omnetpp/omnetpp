@@ -1591,9 +1591,9 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
         logBuffer.messageSendHop(msg, srcGate);
 }
 
-void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
 {
-    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();

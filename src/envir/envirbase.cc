@@ -895,10 +895,10 @@ void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
         eventlogManager->messageSendHop(msg, srcGate);
 }
 
-void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
 {
     if (recordEventlog)
-        eventlogManager->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+        eventlogManager->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
 }
 
 void EnvirBase::endSend(cMessage *msg)

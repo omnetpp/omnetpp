@@ -152,6 +152,7 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    sg int senderGateId              // id of the gate at the source module from which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay as the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
+   del bool discard false           // whether the channel has discarded the message
 }
 
 CM CreateMessageEntry : MessageEntry // creating a message

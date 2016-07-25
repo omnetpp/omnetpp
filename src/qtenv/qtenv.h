@@ -219,7 +219,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       virtual void beginSend(cMessage *msg) override;
       virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
       virtual void messageSendHop(cMessage *msg, cGate *srcGate) override;
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) override;
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) override;
       virtual void endSend(cMessage *msg) override;
       virtual void messageDeleted(cMessage *msg) override;
       virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent) override;

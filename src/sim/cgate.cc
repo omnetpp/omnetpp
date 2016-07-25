@@ -469,9 +469,9 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
         if (!channel->isTransmissionChannel()) {
             cChannel::result_t tmp;
             channel->processMessage(msg, t, tmp);
+            EVCB.messageSendHop(msg, this, tmp.delay, SIMTIME_ZERO, tmp.discard);  // tmp.duration ignored for non-transmission channels
             if (tmp.discard)
                 return false;
-            EVCB.messageSendHop(msg, this, tmp.delay, SIMTIME_ZERO);  // tmp.duration ignored for non-transmission channels
             return nextGate->deliver(msg, t + tmp.delay);
         }
         else {
@@ -496,11 +496,11 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
             // process
             cChannel::result_t tmp;
             channel->processMessage(msg, t, tmp);
-            if (tmp.discard)
-                return false;
             if (isPacket)
                 ((cPacket *)msg)->setDuration(tmp.duration);
-            EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration);
+            EVCB.messageSendHop(msg, this, tmp.delay, tmp.duration, tmp.discard);
+            if (tmp.discard)
+                return false;
             return nextGate->deliver(msg, t + tmp.delay);
         }
     }

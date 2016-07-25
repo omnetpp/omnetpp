@@ -470,10 +470,10 @@ void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate)
     }
 }
 
-void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
 {
     if (isCombinedRecordingEnabled) {
-        EventLogWriter::recordSendHopEntry_sm_sg_pd_td(feventlog, srcGate->getOwnerModule()->getId(), srcGate->getId(), propagationDelay, transmissionDelay);
+        EventLogWriter::recordSendHopEntry_sm_sg_pd_td_del(feventlog, srcGate->getOwnerModule()->getId(), srcGate->getId(), propagationDelay, transmissionDelay, discard);
         entryIndex++;
     }
 }

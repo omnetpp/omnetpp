@@ -390,7 +390,7 @@ class SIM_API cIEventlogManager : public cObject
     virtual void beginSend(cMessage *msg) = 0;
     virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
     virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard) = 0;
     virtual void endSend(cMessage *msg) = 0;
     virtual void messageCreated(cMessage *msg) = 0;
     virtual void messageCloned(cMessage *msg, cMessage *clone) = 0;
