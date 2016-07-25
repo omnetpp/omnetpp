@@ -112,7 +112,16 @@ public:
  * @author Andras
  */
 class AbstractEventEntryLinesProvider {
+protected:
+    int inspectedComponentId;
+    const std::set<int>& excludedComponents;
+    ComponentHistory *componentHistory;
+
 public:
+    AbstractEventEntryLinesProvider(int inspectedComponentId, const std::set<int>& excludedComponents, ComponentHistory *componentHistory)
+        : inspectedComponentId(inspectedComponentId), excludedComponents(excludedComponents), componentHistory(componentHistory) {
+    }
+
     using TabStop = TextViewerWidget::TabStop;
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
     virtual QString getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
@@ -122,9 +131,13 @@ public:
 
 
 class EventEntryLinesProvider : public AbstractEventEntryLinesProvider {
-    ComponentHistory *componentHistory;
+    // helpers
+    bool isAncestorModule(int componentId, int potentialAncestorModuleId);
+    bool isMatchingComponent(int componentId);
+
 public:
-    EventEntryLinesProvider(ComponentHistory *componentHistory);
+    using AbstractEventEntryLinesProvider::AbstractEventEntryLinesProvider;
+
     int getNumLines(LogBuffer::Entry *entry) override;
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
     virtual QList<TabStop> getTabStops(LogBuffer::Entry *entry, int lineIndex) override;
@@ -132,16 +145,16 @@ public:
 
 class EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
 protected:
-    cComponent *inspectedObject;
-    ComponentHistory *componentHistory;
-
     static cMessagePrinter *chooseMessagePrinter(cMessage *msg);
 
-    int findFirstRelevantHop(const LogBuffer::MessageSend& msgsend, int fromHop);
+    bool isMatchingMessageSend(const LogBuffer::MessageSend& msgSend);
+    std::vector<int> findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend);
+    LogBuffer::MessageSend& messageSendForLineIndex(LogBuffer::Entry *entry, int lineIndex);
 
-    QString getMessageSrcDest(const LogBuffer::MessageSend &msg);
+    QString getRelevantHopsString(const LogBuffer::MessageSend &msg);
+
 public:
-    EventEntryMessageLinesProvider(cComponent *inspectedObject, ComponentHistory *componentHistory);
+    using AbstractEventEntryLinesProvider::AbstractEventEntryLinesProvider;
 
     int getNumLines(LogBuffer::Entry *entry) override;
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
@@ -177,21 +190,20 @@ class ModuleOutputContentProvider: public TextViewerContentProvider {
 
     std::set<int> excludedModuleIds;
 
-    bool isMatchingComponent(int componentId);
-    bool isAncestorModule(int componentId, int potentialAncestorModuleId);
-
     // cached data
-    int lineCount = 1;
+    int lineCount = 1; // the empty line
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode);
 
-    LogBuffer *getLogBuffer();
-    AbstractEventEntryLinesProvider *getLinesProvider();
+    LogBuffer *getLogBuffer() { return logBuffer; }
+    ComponentHistory *getComponentHistory() { return componentHistory; }
+    cComponent *getInspectedComponent() { return inspectedComponent; }
+    AbstractEventEntryLinesProvider *getLinesProvider() { return linesProvider; }
 
     void setFilter(AbstractEventEntryFilter *filter);
-    AbstractEventEntryFilter *getFilter();
+    AbstractEventEntryFilter *getFilter() { return filter; }
 
     void setExcludedModuleIds(std::set<int> excludedModuleIds);
 

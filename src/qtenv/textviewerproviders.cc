@@ -26,27 +26,17 @@ ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponen
     componentHistory(qtenv->getComponentHistory()),
     inspectedComponent(inspectedComponent)
 {
-    if (mode == LogInspector::MESSAGES) {
-        linesProvider = new EventEntryMessageLinesProvider(inspectedComponent, componentHistory);
-    }
-    else {
-        linesProvider = new EventEntryLinesProvider(componentHistory);
-    }
+    int componentId = inspectedComponent ? inspectedComponent->getId() : -1;
+
+    if (mode == LogInspector::MESSAGES)
+        linesProvider = new EventEntryMessageLinesProvider(componentId, excludedModuleIds, componentHistory);
+    else
+        linesProvider = new EventEntryLinesProvider(componentId, excludedModuleIds, componentHistory);
 
     connect(logBuffer, SIGNAL(logEntryAdded()), this, SLOT(onContentAdded()));
     connect(logBuffer, SIGNAL(logLineAdded()), this, SLOT(onContentAdded()));
     connect(logBuffer, SIGNAL(messageSendAdded()), this, SLOT(onContentAdded()));
     connect(logBuffer, SIGNAL(entryDiscarded(LogBuffer::Entry *)), this, SLOT(onEntryDiscarded(LogBuffer::Entry *)));
-}
-
-LogBuffer *ModuleOutputContentProvider::getLogBuffer()
-{
-    return logBuffer;
-}
-
-AbstractEventEntryLinesProvider *ModuleOutputContentProvider::getLinesProvider()
-{
-    return linesProvider;
 }
 
 void ModuleOutputContentProvider::setFilter(AbstractEventEntryFilter *filter)
@@ -56,11 +46,6 @@ void ModuleOutputContentProvider::setFilter(AbstractEventEntryFilter *filter)
         invalidateIndex();
         emit textChanged();
     }
-}
-
-AbstractEventEntryFilter *ModuleOutputContentProvider::getFilter()
-{
-    return filter;
 }
 
 void ModuleOutputContentProvider::setExcludedModuleIds(std::set<int> excludedModuleIds)
@@ -130,7 +115,7 @@ bool ModuleOutputContentProvider::showHeaders()
 QStringList ModuleOutputContentProvider::getHeaders()
 {
     return mode == LogInspector::MESSAGES
-            ? QStringList("Event#") << "Time" << "Src/Dest" << "Name" << "Info"
+            ? QStringList("Event#") << "Time" << "Relevant Hops" << "Name" << "Info"
             : QStringList("prefix") << "line";
 }
 
@@ -186,9 +171,10 @@ void ModuleOutputContentProvider::rebuildIndex()
 
         LogBuffer::Entry *entry = logBuffer->getEntries()[i];
 
-        if ((!filter || filter->matches(entry))
-                && (!entry->isEvent() || isMatchingComponent(entry->componentId)))
-            currentLineNumber += linesProvider->getNumLines(entry);
+        if (filter && !filter->matches(entry)) // currently not even necessary, filter is always null
+            continue;
+
+        currentLineNumber += linesProvider->getNumLines(entry);
     }
 
     lineCount = currentLineNumber + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
@@ -247,13 +233,44 @@ QStringList StringTextViewerContentProvider::getHeaders()
     return QStringList("part1") << "part2" << "part3" << "part4" << "part5";
 }
 
-EventEntryLinesProvider::EventEntryLinesProvider(ComponentHistory *componentHistory)
-    : componentHistory(componentHistory)
+bool EventEntryLinesProvider::isAncestorModule(int componentId, int potentialAncestorModuleId)
 {
+    cComponent *component = getSimulation()->getComponent(componentId);
+    if (component) {
+        // more efficient version for live modules
+        while (component) {
+            if (component->getId() == potentialAncestorModuleId)
+                return true;
+            component = component->getParentModule();
+        }
+    }
+    else {
+        while (componentId != -1) {
+            if (componentId == potentialAncestorModuleId)
+                return true;
+            componentId = componentHistory->getParentModuleId(componentId);
+        }
+    }
+    return false;
+}
+
+bool EventEntryLinesProvider::isMatchingComponent(int componentId)
+{
+    if (componentId <= 0)
+        return false;
+
+    return (componentId > 0)
+            && (componentId == inspectedComponentId
+                || isAncestorModule(componentId, inspectedComponentId));
 }
 
 int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
 {
+    if (entry->isEvent() && (
+                !isMatchingComponent(entry->componentId)
+                || excludedComponents.count(entry->componentId) > 0))
+        return 0;
+
     int count = entry->banner ? 1  /* the banner line */ : 0;
     count += entry->lines.size();
     return count;
@@ -332,108 +349,108 @@ cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *
     return bestPrinter;
 }
 
-int EventEntryMessageLinesProvider::findFirstRelevantHop(const LogBuffer::MessageSend& msgsend, int fromHop)
+bool EventEntryMessageLinesProvider::isMatchingMessageSend(const LogBuffer::MessageSend &msgSend)
 {
-    // A hop is relevant (visible in the inspected compound module) when both
-    // src and dest are either this module or a direct submodule of it.
-    // Normally there is only one relevant hop in a msgsend, although degenerate modules
-    // (such as a compound module wired inside like this: in-->out) may result in several hops.
+    auto relevantHops = findRelevantHopModuleIds(msgSend);
+    return (!relevantHops.empty()
+            && excludedComponents.count(relevantHops.front()) == 0
+            && excludedComponents.count(relevantHops.back()) == 0);
+}
 
-    int inspectedComponentId = inspectedObject->getId();
-    int srcModuleId = msgsend.hopModuleIds[fromHop];
-    bool isSrcOk = srcModuleId == inspectedComponentId || componentHistory->getParentModuleId(srcModuleId) == inspectedComponentId;
-    int n = msgsend.hopModuleIds.size();
-    for (int i = fromHop; i < n-1; i++) {
-        int destModuleId = msgsend.hopModuleIds[i+1];
-        bool isDestOk = destModuleId == inspectedComponentId || componentHistory->getParentModuleId(destModuleId) == inspectedComponentId;
-        if (isSrcOk && isDestOk)
-            return i;
-        isSrcOk = isDestOk;
+std::vector<int> EventEntryMessageLinesProvider::findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend)
+{
+    std::vector<int> relevantModuleIds;
+    auto& hops = msgSend.hopModuleIds;
+
+
+    for (int hop : hops) {
+        if (hop == inspectedComponentId ||
+                componentHistory->getParentModuleId(hop) == inspectedComponentId)
+            relevantModuleIds.push_back(hop);
     }
-    return -1;
+
+    // If we only found a single relevant module, and it happens to be
+    // the inspected component itself, adding the previous and next hops
+    // into the result, so we can show something useful.
+    if (relevantModuleIds.size() == 1 && relevantModuleIds.front() == inspectedComponentId) {
+        auto iter = std::find(hops.begin(), hops.end(), inspectedComponentId);
+
+        if (iter != hops.begin())
+            relevantModuleIds.insert(relevantModuleIds.begin(), *(iter - 1));
+
+        if (iter + 1 != hops.end())
+            relevantModuleIds.push_back(*(iter + 1));
+    }
+
+    return relevantModuleIds;
 }
 
-bool ModuleOutputContentProvider::isMatchingComponent(int componentId)
+LogBuffer::MessageSend &EventEntryMessageLinesProvider::messageSendForLineIndex(LogBuffer::Entry *entry, int lineIndex)
 {
-    if (componentId <= 0 || !inspectedComponent)
-        return false;
-    int inspectedComponentId = inspectedComponent->getId();
-    return (componentId == inspectedComponentId || isAncestorModule(componentId, inspectedComponentId))
-           && (excludedModuleIds.count(componentId) == 0);
-}
-
-bool ModuleOutputContentProvider::isAncestorModule(int componentId, int potentialAncestorModuleId)
-{
-    cComponent *component = getSimulation()->getComponent(componentId);
-    if (component) {
-        // more efficient version for live modules
-        while (component) {
-            if (component->getId() == potentialAncestorModuleId)
-                return true;
-            component = component->getParentModule();
+    int i = 0;
+    for (auto& msgSend : entry->msgs) {
+        if (isMatchingMessageSend(msgSend)) {
+            if (lineIndex == i)
+                return msgSend;
+            else
+                ++i;
         }
     }
-    else {
-        while (componentId != -1) {
-            if (componentId == potentialAncestorModuleId)
-                return true;
-            componentId = componentHistory->getParentModuleId(componentId);
-        }
-    }
-    return false;
+    ASSERT(false);
+    return entry->msgs.front(); // meh.
 }
 
-QString EventEntryMessageLinesProvider::getMessageSrcDest(const LogBuffer::MessageSend& msgsend)
+QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::MessageSend& msgsend)
 {
-    int hopIndex = findFirstRelevantHop(msgsend, 0);
+    std::vector<int> hops = findRelevantHopModuleIds(msgsend);
+
+    if (hops.size() == 2 && hops.front() == inspectedComponentId && hops.back() == inspectedComponentId)
+        return "---->";
+
     QString result;
 
-    int inspectedComponentId = inspectedObject->getId();
-    if (hopIndex != -1) {
-        int srcModuleId = msgsend.hopModuleIds[hopIndex];
-        int destModuleId = msgsend.hopModuleIds[hopIndex+1];
-        bool hasSrc = srcModuleId != inspectedComponentId;
-        bool hasDest = destModuleId != inspectedComponentId;
-        if (hasSrc)
-            result += componentHistory->getComponentFullName(srcModuleId);
-        if (hasSrc && hasDest)
+    bool first = true;
+    for (int i = 0; i < (int)hops.size(); ++i) {
+        QString hopName = componentHistory->getComponentFullName(hops[i]);
+
+        if (hops[i] == inspectedComponentId) {
+            if (i == 0) {
+                result += "---> ";
+                continue;
+            } else if (i == (int)hops.size() - 1) {
+                result += " --->";
+                continue;
+            }
+        }
+
+        if (!first)
             result += " --> ";
-        else if (hasSrc)
-            result += " --->";
-        else if (hasDest)
-            result += "---> ";
-        else
-            result += "---->";
-        if (hasDest)
-            result += componentHistory->getComponentFullName(destModuleId);
+        result += hopName;
+        first = false;
     }
-    else if (msgsend.hopModuleIds.front() == inspectedComponentId) {
-        result += componentHistory->getComponentFullName(inspectedComponentId);
-        result += " --->";
+
+    /* // Loads of debug output
+    qDebug() << "----";
+    qDebug() << "inspected:" << inspectedComponentId << componentHistory->getComponentFullPath(inspectedComponentId).c_str();
+    qDebug() << "messagehops:";
+    for (auto id : msgsend.hopModuleIds) {
+        qDebug() << id << componentHistory->getComponentFullPath(id).c_str();
     }
-    else if (msgsend.hopModuleIds.back() == inspectedComponentId) {
-        result += "---> ";
-        result += componentHistory->getComponentFullName(inspectedComponentId);
+    qDebug() << "relevant hops";
+    for (auto id : hops) {
+        qDebug() << id << componentHistory->getComponentFullPath(id).c_str();
     }
-    else {
-        ASSERT(false);
-    }
+    qDebug() << "result:" << result;
+    */
 
     return result;
 }
 
-EventEntryMessageLinesProvider::EventEntryMessageLinesProvider(cComponent *inspectedObject, ComponentHistory *componentHistory)
-    : inspectedObject(inspectedObject), componentHistory(componentHistory)
-{
-}
-
 int EventEntryMessageLinesProvider::getNumLines(LogBuffer::Entry *entry)
 {
-    int inspectedModuleId = inspectedObject->getId();
     int n = 0;
     for (auto& msgSend : entry->msgs) {
-        int hopIndex = findFirstRelevantHop(msgSend, 0);
-        if (hopIndex != -1 || msgSend.hopModuleIds.front() == inspectedModuleId || msgSend.hopModuleIds.back() == inspectedModuleId) {
+        if (isMatchingMessageSend(msgSend)) {
             ++n;
         }
     }
@@ -442,72 +459,53 @@ int EventEntryMessageLinesProvider::getNumLines(LogBuffer::Entry *entry)
 
 QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
-    int inspectedModuleId = inspectedObject->getId();
-    int i = 0;
-    for (auto& msgSend : entry->msgs) {
-        int hopIndex = findFirstRelevantHop(msgSend, 0);
-        // this message should be displayed
-        if (hopIndex != -1 || msgSend.hopModuleIds.front() == inspectedModuleId || msgSend.hopModuleIds.back() == inspectedModuleId) {
-            if (lineIndex == i) {
-                break;
-            }
-            else {
-                ++i;
-            }
-        }
-    }
+    LogBuffer::MessageSend& messageSend = messageSendForLineIndex(entry, lineIndex);
+    cMessage *msg = messageSend.msg;
 
-    if (lineIndex < (int)entry->msgs.size()) {
-        cMessage *msg = entry->msgs[lineIndex].msg;
+    QString eventNumber = QString::number(entry->eventNumber);
 
-        QString eventNumber = QString::number(entry->eventNumber);
+    QString text = "#" + eventNumber + " ";
+    text += entry->simtime.str().c_str();
+    text += " ";
+    text += getRelevantHopsString(messageSend);
+    text += " ";
+    text += msg->getName();
+    text += " ";
 
-        QString text = "#" + eventNumber + " ";
-        text += entry->simtime.str().c_str();
-        text += " ";
-        text += getMessageSrcDest(entry->msgs[lineIndex]);
-        text += " ";
-        text += msg->getName();
-        text += " ";
+    cMessagePrinter *printer = chooseMessagePrinter(msg);
+    std::stringstream os;
+    if (printer)
+        printer->printMessage(os, msg);
+    else
+        os << "[no message printer for this object]";
 
-        cMessagePrinter *printer = chooseMessagePrinter(msg);
-        std::stringstream os;
-        if (printer)
-            printer->printMessage(os, msg);
-        else
-            os << "[no message printer for this object]";
+    text += os.str().c_str();
 
-        text += os.str().c_str();
-
-        return text;
-    }
-
-    throw std::runtime_error("log entry line index out of bounds");
+    return text;
 }
 
 QList<EventEntryMessageLinesProvider::TabStop> EventEntryMessageLinesProvider::getTabStops(LogBuffer::Entry *entry, int lineIndex)
 {
+    LogBuffer::MessageSend& messageSend = messageSendForLineIndex(entry, lineIndex);
+
     QList<TabStop> tabStops;
+    int column = 0;
 
-    if (lineIndex < (int)entry->msgs.size()) {
-        int column = 0;
+    tabStops.append(TabStop(column, QColor("dimgray")));
+    column += 1 + QString::number(entry->eventNumber).length() + 1;
 
-        tabStops.append(TabStop(column, QColor("dimgray")));
-        column += 1 + QString::number(entry->eventNumber).length() + 1;
+    tabStops.append(TabStop(column, QColor("dimgray")));
+    column += entry->simtime.str().length() + 1;
 
-        tabStops.append(TabStop(column, QColor("dimgray")));
-        column += entry->simtime.str().length() + 1;
+    tabStops.append(TabStop(column, QColor("green")));
+    column += getRelevantHopsString(messageSend).length() + 1;
 
-        tabStops.append(TabStop(column, QColor("green")));
-        column += getMessageSrcDest(entry->msgs[lineIndex]).length() + 1;
+    tabStops.append(TabStop(column, QColor("brown")));
+    column += strlen(messageSend.msg->getName()) + 1;
 
-        tabStops.append(TabStop(column, QColor("brown")));
-        column += strlen(entry->msgs[lineIndex].msg->getName()) + 1;
+    tabStops.append(TabStop(column, QColor("black")));
 
-        tabStops.append(TabStop(column, QColor("black")));
-
-        return tabStops;
-    }
+    return tabStops;
 
     throw std::runtime_error("log entry line index out of bounds");
 }

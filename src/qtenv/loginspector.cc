@@ -204,31 +204,21 @@ void LogInspector::addModeActions(QToolBar *toolBar)
     toolBar->addAction(toLogModeAction);
 }
 
-void LogInspector::setMode(Mode m)
+void LogInspector::setMode(Mode mode)
 {
-    if (mode == MESSAGES) {
+    if (this->mode == MESSAGES)
         saveColumnWidths();
-    }
 
-    switch (m) {
-        case LOG:
-            toLogModeAction->setChecked(true);
-            toMessagesModeAction->setChecked(false);
-            textWidget->setContentProvider(new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), LOG));
-            break;
+    toLogModeAction->setChecked(mode == LOG);
+    toMessagesModeAction->setChecked(mode == MESSAGES);
+    auto provider = new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), mode);
+    provider->setExcludedModuleIds(excludedModuleIds);
+    textWidget->setContentProvider(provider);
 
-        case MESSAGES:
-            toMessagesModeAction->setChecked(true);
-            toLogModeAction->setChecked(false);
-            textWidget->setContentProvider(new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), MESSAGES));
-            break;
-    }
+    this->mode = mode;
 
-    mode = m;
-
-    if (mode == MESSAGES) {
+    if (mode == MESSAGES)
         restoreColumnWidths();
-    }
 
     setPref(PREF_MODE, mode);
 }
@@ -236,6 +226,7 @@ void LogInspector::setMode(Mode m)
 void LogInspector::doSetObject(cObject *obj)
 {
     Inspector::doSetObject(obj);
+    excludedModuleIds.clear();
     setMode((Mode)getPref(PREF_MODE, getMode()).toInt());
 }
 
