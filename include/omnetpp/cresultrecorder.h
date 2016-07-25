@@ -63,6 +63,7 @@ class SIM_API cResultRecorder : public cResultListener
         virtual opp_string_map getStatisticAttributes(); // order: manualAttrs, then attrsProperty
         virtual opp_string_map getStatisticAttributesFrom(cProperty *property);
         virtual void tweakTitle(opp_string& title);
+        virtual void callFinish(cResultFilter *prev) override;
 
     public:
         /**
@@ -78,7 +79,6 @@ class SIM_API cResultRecorder : public cResultListener
         virtual const char *getStatisticName() const {return statisticName;}
         virtual const char *getRecordingMode() const {return recordingMode;}
         virtual std::string getResultName() const {return std::string(getStatisticName())+":"+getRecordingMode();}
-        virtual void callFinish(cResultFilter *prev) override;
 };
 
 /**
@@ -94,7 +94,7 @@ class SIM_API cNumericResultRecorder : public cResultRecorder
     protected:
         // all receiveSignal() methods either throw error or delegate here.
         virtual void collect(simtime_t_cref t, double value, cObject *details) = 0;
-    public:
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;

@@ -65,6 +65,7 @@ class SIM_API cResultFilter : public cResultListener
         void fire(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details);
         void fire(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details);
         void fire(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details);
+        virtual void callFinish(cResultFilter *prev) override;
     public:
         cResultFilter();
         ~cResultFilter();
@@ -72,7 +73,6 @@ class SIM_API cResultFilter : public cResultListener
         virtual int getNumDelegates() const;
         cResultListener *getDelegate(int k) const {return delegates[k];}  // unsafe
         std::vector<cResultListener*> getDelegates() const;
-        virtual void callFinish(cResultFilter *prev) override;
 };
 
 /**
@@ -89,7 +89,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
         // all receiveSignal() methods either throw error or delegate here;
         // return value: whether to invoke chained listeners (true) or to swallow the value (false)
         virtual bool process(simtime_t& t, double& value, cObject *details) = 0;
-    public:
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
@@ -109,7 +109,7 @@ class SIM_API cNumericResultFilter : public cResultFilter
  */
 class SIM_API cObjectResultFilter : public cResultFilter
 {
-    public:
+    protected:
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
