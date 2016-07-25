@@ -394,6 +394,11 @@ FilteredObjectListDialog::~FilteredObjectListDialog()
     delete ui;
 }
 
+void FilteredObjectListDialog::invalidate()
+{
+    static_cast<InspectorListBox*>(inspectorListBoxView->model())->setObjects(QVector<cObject*>(0));
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
 

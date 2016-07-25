@@ -40,6 +40,9 @@ public:
     explicit FilteredObjectListDialog(cObject *ptr, QWidget *parent = 0);
     ~FilteredObjectListDialog();
 
+public slots:
+    void invalidate();
+
 private slots:
     void refresh();
     void inspect(QModelIndex index);

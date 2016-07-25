@@ -47,6 +47,8 @@
 
 #include <QDebug>
 
+#define emit
+
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -561,6 +563,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
 
     RunSelectionDialog dialog(config.toStdString(), run, this);
     if (dialog.exec()) {
+        emit setNewNetwork();
         config = dialog.getConfigName().c_str();
         run = dialog.getRunNumber();
         env->newRun(config.toStdString().c_str(), run);
@@ -635,6 +638,8 @@ void MainWindow::on_actionRunUntil_triggered()
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
+
+
 }
 
 void MainWindow::onSliderValueChanged(int value)
@@ -1119,6 +1124,7 @@ void MainWindow::on_actionFindInspectObjects_triggered()
     // Force to not insert in its parent as a widget.
     filteredObjectListDialog->setWindowFlags(Qt::Dialog);
     filteredObjectListDialog->show();
+    connect(this, SIGNAL(setNewNetwork()), filteredObjectListDialog, SLOT(invalidate()));
 }
 
 // debugNextEvent
@@ -1204,7 +1210,6 @@ void MainWindow::configureNetwork()
         reflectRecordEventlog();
         busy();
     }
-    ;
 }
 
 // newNetwork

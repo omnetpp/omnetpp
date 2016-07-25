@@ -147,6 +147,9 @@ private slots:
     void on_actionSupportedConfigurationOption_triggered();
     void on_actionInspectByPointer_triggered();
 
+signals:
+    void setNewNetwork();
+
 private:
     Ui::MainWindow *ui;
     Qtenv *env;
