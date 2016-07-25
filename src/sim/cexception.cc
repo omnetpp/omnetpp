@@ -127,7 +127,7 @@ void cException::storeContext()
 
 void cException::exitIfStartupError()
 {
-    if (!cStaticFlag::isSet()) {
+    if (!cStaticFlag::insideMain()) {
         // note: ev may not be available at this time
         fprintf(stderr, "<!> Error during startup/shutdown: %s. Aborting.", what());
         abort();

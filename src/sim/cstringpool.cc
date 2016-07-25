@@ -51,7 +51,7 @@ void cStringPool::dump() const
 
 const char *cStringPool::get(const char *s)
 {
-    if (!cStaticFlag::isSet()) {
+    if (!cStaticFlag::insideMain()) {
         fprintf(stderr, "ERROR: cStringPool::get(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s);
         return omnetpp::opp_strdup(s);
     }
@@ -75,7 +75,7 @@ const char *cStringPool::get(const char *s)
 
 const char *cStringPool::peek(const char *s) const
 {
-    if (!cStaticFlag::isSet()) {
+    if (!cStaticFlag::insideMain()) {
         fprintf(stderr, "ERROR: cStringPool::peek(\"%s\") invoked outside main() -- please do not use cStringPool from global objects", s);
         return nullptr;
     }
@@ -92,7 +92,7 @@ void cStringPool::release(const char *s)
         return;
     if (!alive)
         return;  // prevents crash when stringpool is a global object, and program exits via exit()
-    if (!cStaticFlag::isSet()) {
+    if (!cStaticFlag::insideMain()) {
         fprintf(stderr, "Warning: cStringPool::release(): string \"%s\" released too late, after main() already exited\n", s);
         return;
     }

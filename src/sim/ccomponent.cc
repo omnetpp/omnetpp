@@ -411,7 +411,7 @@ simsignal_t cComponent::registerSignal(const char *name)
         simsignal_t signalID = ++lastSignalID;
         signalNameMapping->signalNameToID[name] = signalID;
         signalNameMapping->signalIDToName[signalID] = name;
-        if (cStaticFlag::isSet()) { // signalListenerCount[] is guaranteed to be initialized
+        if (cStaticFlag::insideMain()) { // otherwise signalListenerCount[] may not have been initialized by C++ yet
             signalListenerCount.push_back(0);
             ASSERT(signalListenerCount.size() == lastSignalID+1);
         }

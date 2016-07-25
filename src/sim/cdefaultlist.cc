@@ -42,14 +42,14 @@ cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
     // careful: if we are a global variable (ctor called before main()),
     // then insert() may get called before constructor and it invoked
     // construct() already.
-    if (cStaticFlag::isSet() || capacity == 0)
+    if (cStaticFlag::insideMain() || capacity == 0)
         construct();
 
     // if we're invoked before main, then we are a global variable (dynamic
     // instances of cDefaultList are not supposed to be created
     // before main()) --> remove ourselves from ownership tree because
     // we shouldn't be destroyed via operator delete
-    if (!cStaticFlag::isSet())
+    if (!cStaticFlag::insideMain())
         removeFromOwnershipTree();
 }
 

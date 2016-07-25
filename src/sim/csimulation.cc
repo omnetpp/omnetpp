@@ -87,7 +87,7 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
 {
-    ASSERT(cStaticFlag::isSet());  // cannot be instantiated as global variable
+    ASSERT(cStaticFlag::insideMain());  // cannot be instantiated as global variable
 
     envir = env;
 
@@ -862,7 +862,7 @@ class StaticEnv : public cEnvir
 
 void StaticEnv::undisposedObject(cObject *obj)
 {
-    if (!cStaticFlag::isSet()) {
+    if (!cStaticFlag::insideMain()) {
         ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: "
                  "(%s)`%s' at %p\n", obj->getClassName(), obj->getFullPath().c_str(), obj);
     }

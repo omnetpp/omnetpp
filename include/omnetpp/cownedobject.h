@@ -282,10 +282,9 @@ class SIM_API cStaticFlag
   public:
     cStaticFlag()  {staticFlag = true;}
     ~cStaticFlag() {staticFlag = false;}
-    static void set(bool b) {staticFlag = b;}
-    static void setExiting() {exitingFlag = true;}
+    static bool insideMain() {return staticFlag;}
     static bool isExiting() {return exitingFlag;}
-    static bool isSet() {return staticFlag;}
+    static void setExiting() {exitingFlag = true;}
 };
 
 SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject *p);
