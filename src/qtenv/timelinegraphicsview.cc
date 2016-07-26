@@ -277,7 +277,11 @@ QString TimeLineGraphicsView::getTickLabel(int mantissa, int exp)
     else if (exp < -3) {unit = "us"; exp += 6;}
     else if (exp < 0) {unit = "ms"; exp += 3;}
     else unit = "s";
-    QString label = "+" + (abs(exp)<=3 ? SimTime(mantissa, (SimTimeUnit)exp).str().c_str() : mantissa + QString("e") + exp) + unit;
+    QString label = QString("+")
+            + (abs(exp) <= 3
+                  ? QString::fromStdString(SimTime(mantissa, (SimTimeUnit)exp).str())
+                  : QString("%1e%2").arg(mantissa).arg(exp))
+            + unit;
     return label;
 }
 
