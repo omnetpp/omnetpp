@@ -61,7 +61,9 @@ class TreeNode
     void addObjectChildren(void *of, cClassDescriptor *desc, bool excludeInherited = false);
 
     static cClassDescriptor *getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
-    static QVariant getDefaultObjectData(cObject *object, int role);
+
+    QVariant getDefaultObjectData(cObject *object, int role);
+    QString getObjectFullNameOrPath(cObject *object);
 
     // Only use this indirectly through cachedData()!
     // The model delegates its data function here, this should behave the same way.
@@ -91,6 +93,11 @@ class TreeNode
 
     // returns a nullptr where not applicable
     virtual cObject *getCObjectPointer();
+    // Will always return a valid cObject (unless nullptr is inspected)
+    // and it will be the object that has this node in its node.
+    // (This is entirely separate from cObject ownership, consider sender
+    // and arrival modules/gates in a message, etc.)
+    virtual cObject *getContainingCObjectPointer();
 
     virtual ~TreeNode();
 };
@@ -436,11 +443,20 @@ QVariant TreeNode::getDefaultObjectData(cObject *object, int role)
 
         case Qt::ToolTipRole:
         case Qt::DisplayRole:
-            return object ? QString(object->getFullName()) + " (" + getObjectShortTypeName(object) + ")" : "no object selected";
+            return object ? getObjectFullNameOrPath(object) + " (" + getObjectShortTypeName(object) + ")" : "no object selected";
 
         default:
             return QVariant();
     }
+}
+
+QString TreeNode::getObjectFullNameOrPath(cObject *object)
+{
+    return !object
+            ? "no object selected"
+            : object->getOwner() == getContainingCObjectPointer()
+              ? object->getFullName()
+              : object->getFullPath().c_str();
 }
 
 TreeNode::TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, Mode mode)
@@ -516,6 +532,18 @@ bool TreeNode::setData(const QVariant& value, int role)
 
 cObject *TreeNode::getCObjectPointer()
 {
+    return nullptr;
+}
+
+cObject *TreeNode::getContainingCObjectPointer()
+{
+    TreeNode *anc = parent;
+    while (anc) {
+        cObject *obj = anc->getCObjectPointer();
+        if (obj)
+            return obj;
+        anc = anc->parent;
+    }
     return nullptr;
 }
 
@@ -645,7 +673,7 @@ QVariant FieldNode::data(int role)
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
     QString objectClassName = objectCasted ? (QString(" (") + getObjectShortTypeName(objectCasted) + ")") : "";
-    QString objectName = objectCasted ? QString(" ") + objectCasted->getFullName() : "";
+    QString objectName = objectCasted ? QString(" ") + getObjectFullNameOrPath(objectCasted): "";
     QString arraySize;
     QString fieldValue;
     QString objectInfo;
@@ -858,7 +886,7 @@ QVariant ArrayElementNode::data(int role)
         valueInfo += (fieldObjectPointer
                         ? QString("(%1) %2")
                           .arg(getObjectShortTypeName(fieldObjectPointer))
-                          .arg(fieldObjectPointer->getFullName())
+                          .arg(getObjectFullNameOrPath(fieldObjectPointer))
                          : "NULL");
 
         std::string info = fieldObjectPointer ? fieldObjectPointer->info() : "";
