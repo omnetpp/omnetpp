@@ -683,12 +683,21 @@ void TextViewerWidget::drawLinePart(QPainter& painter, const QFontMetrics& metri
             if (startColumn != endColumn) {
                 int startColOffset = getLineColumnOffset(metrics, line, tabStops, startColumn);
                 int endColOffset = getLineColumnOffset(metrics, line, tabStops, endColumn);
-                QString selection = line.mid(startColumn, endColumn - startColumn);
+                QRect selectionRect(startColOffset, y, endColOffset - startColOffset, lineSpacing);
 
                 painter.setBrush(selectionBackgroundColor);
                 painter.setPen(selectionForegroundColor);
-                painter.fillRect(startColOffset, y, endColOffset - startColOffset, lineSpacing, selectionBackgroundColor);
-                painter.drawText(QPoint(getLineColumnOffset(metrics, line, tabStops, startColumn), y + baseline), selection);
+                painter.fillRect(selectionRect, selectionBackgroundColor);
+
+                // We have to draw the whole linePart again - not just the selected text - and
+                // clip it to the selected area, because tabs are expanded based on where the
+                // text drawing was started, and it was not matching up the unselected text
+                // "underneath", when only the selected part was drawn again.
+                painter.save();
+                painter.setClipRect(selectionRect);
+                painter.drawText(QPoint(getLinePartOffset(metrics, line, tabStops, partIndex), y + baseline), part);
+                painter.restore();
+
                 painter.setBackground(backgroundColor);
                 painter.setPen(foregroundColor);
             }
