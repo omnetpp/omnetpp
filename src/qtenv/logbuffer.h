@@ -46,6 +46,7 @@ class QTENV_API LogBuffer : public QObject
     struct MessageSend {
         cMessage *msg;
         std::vector<int> hopModuleIds; //TODO also: txStartTime, propagationDelay, duration for each hop
+        bool discarded = false;
     };
     struct Entry {
         eventnumber_t eventNumber = 0; // 0 for initialization, >0 afterwards

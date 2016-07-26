@@ -126,7 +126,7 @@ class AnimationGroup : public Animation
     }
 
     void clearInspector(ModuleInspector *insp);
-    void removeMessage(cMessage *msg);
+    void removeMessagePointer(cMessage *msg);
 
     QString info() const override {
         QString result = "AnimationGroup of " + QString::number(parts.size()) + " parts";
@@ -295,6 +295,7 @@ class SendAnimation : public SimpleAnimation
     MessageItem *messageItem;
     SendAnimMode mode;
     SendAnimation(ModuleInspector *insp, SendAnimMode mode, const QPointF& src, const QPointF& dest, cMessage *msg, float duration);
+    void removeMessagePointer();
     bool willAnimate(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
     void begin() override;
     void setProgress(float t) override;
@@ -503,18 +504,14 @@ void Animator::redrawMessages()
     }
 }
 
-void Animator::removeMessage(cMessage *msg)
+void Animator::removeMessagePointer(cMessage *msg)
 {
-    for (auto i = messageItems.begin(); i != messageItems.end();  /* nothing */) {
-        if (i->first.second == msg) {
-            delete i->second;
-            messageItems.erase(i++);
-        }
-        else
-            ++i;
+    for (auto i : messageItems) {
+        if (i.first.second == msg)
+            i.second->setData(1, QVariant());
     }
 
-    animation->removeMessage(msg);
+    animation->removeMessagePointer(msg);
 }
 
 void Animator::animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText)
@@ -856,6 +853,10 @@ SendAnimation::SendAnimation(ModuleInspector *insp, SendAnimMode mode, const QPo
     messageItem->setZValue(1);
 }
 
+void SendAnimation::removeMessagePointer() {
+    messageItem->setData(1, QVariant());
+}
+
 void SendAnimation::begin()
 {
     messageItem->setVisible(true);
@@ -947,16 +948,14 @@ void AnimationGroup::clearInspector(ModuleInspector *insp)
     parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());
 }
 
-void AnimationGroup::removeMessage(cMessage *msg)
+void AnimationGroup::removeMessagePointer(cMessage *msg)
 {
     for (auto& p : parts) {
         if (auto g = dynamic_cast<AnimationGroup *>(p))
-            g->removeMessage(msg);
+            g->removeMessagePointer(msg);
         if (auto s = dynamic_cast<SendAnimation *>(p))
-            if (s->msg == msg) {
-                delete p;
-                p = nullptr;
-            }
+            if (s->msg == msg)
+                s->removeMessagePointer();
     }
 
     parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());

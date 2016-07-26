@@ -1616,7 +1616,7 @@ void Qtenv::endSend(cMessage *msg)
 void Qtenv::messageDeleted(cMessage *msg)
 {
     if (animator)
-        animator->removeMessage(msg);
+        animator->removeMessagePointer(msg);
     EnvirBase::messageDeleted(msg);
 }
 

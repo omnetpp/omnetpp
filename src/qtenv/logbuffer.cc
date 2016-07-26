@@ -175,9 +175,12 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
     MessageSend& msgsend = entry->msgs.back();
     ASSERT(!msgsend.msg || msgsend.msg->getId() == msg->getId());
 
-    // the message was discarded, so it will not arrive, endSend() will not be called,
-    if (discard) // but we have to make a copy anyway
+    if (discard) {
+        // the message was discarded, so it will not arrive, endSend() will not be called,
+        // but we have to make a copy anyway
         msgsend.msg = msg->privateDup();
+        msgsend.discarded = true;
+    }
 
     msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
 }

@@ -362,7 +362,6 @@ std::vector<int> EventEntryMessageLinesProvider::findRelevantHopModuleIds(const 
     std::vector<int> relevantModuleIds;
     auto& hops = msgSend.hopModuleIds;
 
-
     for (int hop : hops) {
         if (hop == inspectedComponentId ||
                 componentHistory->getParentModuleId(hop) == inspectedComponentId)

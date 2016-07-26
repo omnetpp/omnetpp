@@ -108,7 +108,6 @@ public:
     explicit Animator();
 
     void redrawMessages();
-    void removeMessage(cMessage *msg);
 
     void animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText);
     void animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate);
@@ -130,9 +129,14 @@ public slots:
     void clear();
     void hurry();
 
-    // removes any animation and items on the given inspector,
-    // so it can be deleted safely. called from the ModuleInspector dtor
+    // Removes any animation and items on the given inspector,
+    // so it can be deleted safely. called from the ModuleInspector dtor.
     void clearInspector(ModuleInspector *insp);
+
+    // Removes the cMessage* data from any (static or animated) items
+    // that had msg set on them as data(1), so they will not point
+    // to an invalid, already deleted message.
+    void removeMessagePointer(cMessage *msg);
 };
 
 } // namespace qtenv
