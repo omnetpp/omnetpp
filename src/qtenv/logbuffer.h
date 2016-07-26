@@ -83,7 +83,7 @@ class QTENV_API LogBuffer : public QObject
     void beginSend(cMessage *msg);
     void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
     void messageSendHop(cMessage *msg, cGate *srcGate);
-    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard);
     void endSend(cMessage *msg);
 
     void setMaxNumEntries(int limit); // when exceeded, oldest entries are discarded

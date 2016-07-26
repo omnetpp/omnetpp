@@ -1601,7 +1601,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationD
     }
 
     if (loggingEnabled)
-        logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+        logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
 }
 
 void Qtenv::endSend(cMessage *msg)

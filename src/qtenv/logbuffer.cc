@@ -141,7 +141,7 @@ void LogBuffer::beginSend(cMessage *msg)
     Entry *entry = entries.back();
     entry->msgs.push_back(MessageSend());
     MessageSend& msgsend = entry->msgs.back();
-    msgsend.msg = msg->privateDup();
+    msgsend.msg = nullptr;
     msgsend.hopModuleIds.push_back(msg->getSenderModuleId());
 }
 
@@ -150,7 +150,7 @@ void LogBuffer::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propag
     ASSERT(!entries.empty());
     Entry *entry = entries.back();
     MessageSend& msgsend = entry->msgs.back();
-    ASSERT(msgsend.msg->getId() == msg->getId());
+    ASSERT(!msgsend.msg || msgsend.msg->getId() == msg->getId());
 
     std::vector<cModule *> hops;
     resolveSendDirectHops(msg->getSenderModule(), toGate->getOwnerModule(), hops);
@@ -164,18 +164,32 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate)
     ASSERT(!entries.empty());
     Entry *entry = entries.back();
     MessageSend& msgsend = entry->msgs.back();
-    ASSERT(msgsend.msg->getId() == msg->getId());
+    ASSERT(!msgsend.msg || msgsend.msg->getId() == msg->getId());
     msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
 }
 
-void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
 {
-    messageSendHop(msg, srcGate);  // TODO store propagationDelay and transmissionDelay as well
+    ASSERT(!entries.empty());
+    Entry *entry = entries.back();
+    MessageSend& msgsend = entry->msgs.back();
+    ASSERT(!msgsend.msg || msgsend.msg->getId() == msg->getId());
+
+    // the message was discarded, so it will not arrive, endSend() will not be called,
+    if (discard) // but we have to make a copy anyway
+        msgsend.msg = msg->privateDup();
+
+    msgsend.hopModuleIds.push_back(srcGate->getNextGate()->getOwnerModule()->getId());
 }
 
 void LogBuffer::endSend(cMessage *msg)
 {
-    emit messageSendAdded();  // TODO but endSend() is not called when msg is discarded in the channel!
+    ASSERT(!entries.empty());
+    Entry *entry = entries.back();
+    MessageSend& msgsend = entry->msgs.back();
+    // the message has arrived, we have to make a copy
+    msgsend.msg = msg->privateDup();
+    emit messageSendAdded();
 }
 
 void LogBuffer::setMaxNumEntries(int limit)
