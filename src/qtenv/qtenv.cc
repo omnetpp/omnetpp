@@ -1224,9 +1224,10 @@ void Qtenv::createSnapshot(const char *label)
 void Qtenv::updateGraphicalInspectorsBeforeAnimation()
 {
     for (auto i : inspectors) {
-        if (auto insp = dynamic_cast<ModuleInspector *>(i)) {
+        if (auto insp = dynamic_cast<ModuleInspector *>(i))
             insp->updateBeforeAnimation();
-        }
+        if (auto insp = dynamic_cast<LogInspector *>(i))
+            insp->refresh();
     }
 }
 

@@ -179,6 +179,8 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
         // the message was discarded, so it will not arrive, endSend() will not be called,
         // but we have to make a copy anyway
         msgsend.msg = msg->privateDup();
+        // clearing the previous arrival module/gate, since it did not really arrive
+        msgsend.msg->setArrival(0, 0);
         msgsend.discarded = true;
     }
 

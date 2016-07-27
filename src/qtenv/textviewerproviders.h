@@ -148,7 +148,7 @@ protected:
     static cMessagePrinter *chooseMessagePrinter(cMessage *msg);
 
     bool isMatchingMessageSend(const LogBuffer::MessageSend& msgSend);
-    std::vector<int> findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend);
+    std::vector<int> findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend, bool *lastHopIncluded = nullptr);
     LogBuffer::MessageSend& messageSendForLineIndex(LogBuffer::Entry *entry, int lineIndex);
 
     QString getRelevantHopsString(const LogBuffer::MessageSend &msg);

@@ -357,15 +357,22 @@ bool EventEntryMessageLinesProvider::isMatchingMessageSend(const LogBuffer::Mess
             && excludedComponents.count(relevantHops.back()) == 0);
 }
 
-std::vector<int> EventEntryMessageLinesProvider::findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend)
+std::vector<int> EventEntryMessageLinesProvider::findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend, bool *lastHopIncluded)
 {
+    if (lastHopIncluded)
+        *lastHopIncluded = false;
+
     std::vector<int> relevantModuleIds;
     auto& hops = msgSend.hopModuleIds;
 
-    for (int hop : hops) {
+    for (int i = 0; i < (int)hops.size(); ++i) {
+        int hop = hops[i];
         if (hop == inspectedComponentId ||
-                componentHistory->getParentModuleId(hop) == inspectedComponentId)
+                componentHistory->getParentModuleId(hop) == inspectedComponentId) {
             relevantModuleIds.push_back(hop);
+            if (lastHopIncluded && (i == (int)hops.size() - 1))
+                *lastHopIncluded = true;
+        }
     }
 
     // If we only found a single relevant module, and it happens to be
@@ -379,6 +386,9 @@ std::vector<int> EventEntryMessageLinesProvider::findRelevantHopModuleIds(const 
 
         if (iter + 1 != hops.end())
             relevantModuleIds.push_back(*(iter + 1));
+
+        if (lastHopIncluded && (iter + 2 == hops.end()))
+             *lastHopIncluded = true;
     }
 
     return relevantModuleIds;
@@ -401,31 +411,40 @@ LogBuffer::MessageSend &EventEntryMessageLinesProvider::messageSendForLineIndex(
 
 QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::MessageSend& msgsend)
 {
-    std::vector<int> hops = findRelevantHopModuleIds(msgsend);
-
-    if (hops.size() == 2 && hops.front() == inspectedComponentId && hops.back() == inspectedComponentId)
-        return "---->";
+    bool lastHopIncluded;
+    std::vector<int> hops = findRelevantHopModuleIds(msgsend, &lastHopIncluded);
+    bool lastIsDiscard = lastHopIncluded && msgsend.discarded;
 
     QString result;
 
-    bool first = true;
-    for (int i = 0; i < (int)hops.size(); ++i) {
-        QString hopName = componentHistory->getComponentFullName(hops[i]);
+    if (hops.size() == 2 && hops.front() == inspectedComponentId && hops.back() == inspectedComponentId)
+        result = "---->";
+    else {
+        bool first = true;
+        for (int i = 0; i < (int)hops.size(); ++i) {
+            QString hopName = componentHistory->getComponentFullName(hops[i]);
 
-        if (hops[i] == inspectedComponentId) {
-            if (i == 0) {
-                result += "---> ";
-                continue;
-            } else if (i == (int)hops.size() - 1) {
-                result += " --->";
-                continue;
+            if (hops[i] == inspectedComponentId) {
+                if (i == 0) {
+                    result += "---> ";
+                    continue;
+                } else if (i == (int)hops.size() - 1) {
+                    result += " --->";
+                    continue;
+                }
             }
-        }
 
-        if (!first)
-            result += " --> ";
-        result += hopName;
-        first = false;
+            if (!first)
+                result += " --> ";
+            result += hopName;
+            first = false;
+        }
+    }
+
+    if (lastIsDiscard) {
+        int lastIndex = result.lastIndexOf("->");
+        bool isLongArrow = lastIndex >= 2 && result[lastIndex-2] == '-';
+        result.replace(lastIndex, 2, isLongArrow ? "X-->" : "X->");
     }
 
     /* // Loads of debug output
@@ -439,6 +458,7 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
     for (auto id : hops) {
         qDebug() << id << componentHistory->getComponentFullPath(id).c_str();
     }
+    qDebug() << "lastHopIncluded:" << lastHopIncluded << "discarded:" << msgsend.discarded << "lastIsDiscard:" << lastIsDiscard;
     qDebug() << "result:" << result;
     */
 
