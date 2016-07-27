@@ -191,7 +191,7 @@ class ModuleOutputContentProvider: public TextViewerContentProvider {
     std::set<int> excludedModuleIds;
 
     // cached data
-    int lineCount = 1; // the empty line
+    int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
 
 public:

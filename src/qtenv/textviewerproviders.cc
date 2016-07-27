@@ -76,11 +76,19 @@ int ModuleOutputContentProvider::getLineCount()
 {
     if (!isIndexValid())
         rebuildIndex();
-    return lineCount;
+    int numDiscarded = logBuffer->getNumEntriesDiscarded();
+    return lineCount + (numDiscarded > 0 ? 1 : 0);
 }
 
 QString ModuleOutputContentProvider::getLineText(int lineIndex)
 {
+    int numDiscarded = logBuffer->getNumEntriesDiscarded();
+    if (numDiscarded > 0) {
+        if (lineIndex == 0)
+            return QString("[Partial history, %1 earlier entries already discarded]").arg(numDiscarded);
+        --lineIndex;
+    }
+
     Q_ASSERT(lineIndex >= 0 && lineIndex < lineCount);
     if (lineIndex == lineCount-1)  // empty last line
         return "";
@@ -95,6 +103,16 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
 QList<ModuleOutputContentProvider::TabStop> ModuleOutputContentProvider::getTabStops(int lineIndex)
 {
     QList<TabStop> tabStops;
+
+    int numDiscarded = logBuffer->getNumEntriesDiscarded();
+    if (numDiscarded > 0) {
+        if (lineIndex == 0) {
+            tabStops.append(TabStop(0, QColor("red")));
+            return tabStops;
+        }
+        --lineIndex;
+    }
+
     Q_ASSERT(lineIndex >= 0 && lineIndex < lineCount);
     if (lineIndex == lineCount-1) {  // empty last line
         tabStops.append(TabStop(0, QColor()));
@@ -121,6 +139,13 @@ QStringList ModuleOutputContentProvider::getHeaders()
 
 void *ModuleOutputContentProvider::getUserData(int lineIndex)
 {
+    int numDiscarded = logBuffer->getNumEntriesDiscarded();
+    if (numDiscarded > 0) {
+        if (lineIndex == 0)
+            return nullptr;
+        --lineIndex;
+    }
+
     if (mode != LogInspector::MESSAGES)
         return nullptr;
 
@@ -137,8 +162,11 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
 
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
 {
+    // The lineIndex parameter here is already corrected for the single
+    // line offset caused by the "incomplete history" notification.
     if (!isIndexValid())
         rebuildIndex();
+
     int entryIndex = std::upper_bound(
                 entryStartLineNumbers.begin(),
                 entryStartLineNumbers.end(),
