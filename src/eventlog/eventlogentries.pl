@@ -241,7 +241,7 @@ print ENTRIES_CC_FILE
 //
 //=========================================================================
 
-#include <stdio.h>
+#include <cstdio>
 #include \"event.h\"
 #include \"eventlogentries.h\"
 #include \"common/stringutil.h\"
@@ -470,7 +470,7 @@ print FACTORY_CC_FILE
 //
 //=========================================================================
 
-#include <stdio.h>
+#include <cstdio>
 #include \"event.h\"
 #include \"eventlogentryfactory.h\"
 

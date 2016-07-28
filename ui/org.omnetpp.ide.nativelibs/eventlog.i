@@ -52,7 +52,7 @@ typedef omnetpp::common::FileReader FileReader;
 typedef omnetpp::common::opp_runtime_error opp_runtime_error;
 typedef omnetpp::common::BigDecimal BigDecimal;
 
-typedef unsigned long ptr_t;
+typedef uintptr_t ptr_t;
 typedef int64_t eventnumber_t;
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne

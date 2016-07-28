@@ -180,8 +180,13 @@ typedef int64_t file_offset_t;  // off_t on Linux
 // Note2: on 64-bit platforms, gcc defines int64_t to be long, so
 // we need to use %ld (%lld generates warnings). We recognize 64-bit
 // platforms by __WORDSIZE (from <bits/wordsize.h>, #included by <limits.h>)
+// (except MinGW-w64 where wordsize is not defined as 64 and long is only 32-bit,
+// so we need 'll' there
 //
-#if defined(_MSC_VER) || defined(__MINGW32__)
+// Note3: It would be probably better to use the PRId64 macro here which is available
+// in C++11. See: http://en.cppreference.com/w/cpp/types/integer
+//
+#if defined(_MSC_VER) || (defined(__MINGW32__) && !defined(__MINGW64__))
 #   define INT64_PRINTF_FORMAT   "I64"
 #elif __WORDSIZE == 64 && !defined(__APPLE__)
 #   define INT64_PRINTF_FORMAT   "l"
