@@ -20,13 +20,14 @@
 
 #include "common/expression.h"
 #include "omnetpp/cresultrecorder.h"
-#include "omnetpp/cstatistic.h"
 
 namespace omnetpp {
 
 using omnetpp::common::NaN;
 using omnetpp::common::POSITIVE_INFINITY;
 using omnetpp::common::NEGATIVE_INFINITY;
+
+class cStatistic;
 
 /**
  * @brief Listener for recording a signal to an output vector
@@ -174,17 +175,17 @@ class SIM_API TimeAverageRecorder : public cNumericResultRecorder
 /**
  * @brief Listener for recording signal values via a cStatistic
  */
-class SIM_API StatisticsRecorder : public cNumericResultRecorder, private cObject /*so it can own the statistic object*/
+class SIM_API StatisticsRecorder : public cNumericResultRecorder
 {
     protected:
         cStatistic *statistic;
     protected:
-        virtual void collect(double value) {statistic->collect(value);}
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {statistic->collect(value);}
+        virtual void collect(double value);
+        virtual void collect(simtime_t_cref t, double value, cObject* details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        StatisticsRecorder(cStatistic *stat) {statistic = stat; take(statistic);}
-        ~StatisticsRecorder() {drop(statistic); delete statistic;}
+        StatisticsRecorder(cStatistic* stat);
+        ~StatisticsRecorder();
         virtual cStatistic *getStatistic() const {return statistic;}
         virtual std::string str() const override;
 };

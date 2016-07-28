@@ -18,6 +18,7 @@
 #include "omnetpp/cproperty.h"
 #include "omnetpp/chistogram.h"
 #include "omnetpp/csimulation.h"
+#include "omnetpp/cstatistic.h"
 #include "resultrecorders.h"
 
 namespace omnetpp {
@@ -206,6 +207,27 @@ std::string TimeAverageRecorder::str() const
 }
 
 //---
+
+StatisticsRecorder::StatisticsRecorder(cStatistic *stat)
+{
+    statistic = stat;
+    statistic->removeFromOwnershipTree();
+}
+
+StatisticsRecorder::~StatisticsRecorder()
+{
+    delete statistic;
+}
+
+void StatisticsRecorder::collect(double value)
+{
+    statistic->collect(value);
+}
+
+void StatisticsRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    statistic->collect(value);
+}
 
 void StatisticsRecorder::finish(cResultFilter *prev)
 {
