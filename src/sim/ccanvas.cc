@@ -718,18 +718,27 @@ cFigure::Font cFigure::parseFont(const char *s)
 {
     // syntax: (<default>, 8pt, bold italic underline)
     cFigure::Font font;
-    std::vector<std::string> tokens = cStringTokenizer(s, "(), ").asVector();
-    if (tokens.size() == 0)
-        return font;
-    if (tokens[0] != "<default>")
-        font.typeface = tokens[0];
-    if (tokens.size() >= 2)
-        font.pointSize = strtol(tokens[1].c_str(), nullptr, 10);
-    for (int i = 2; i < (int)tokens.size(); i++) {
-        if (tokens[i] == "bold") font.style |= cFigure::FONT_BOLD;
-        else if (tokens[i] == "italic") font.style |= cFigure::FONT_ITALIC;
-        else if (tokens[i] == "underline") font.style |= cFigure::FONT_UNDERLINE;
-        else throw cRuntimeError("Invalid font style '%s'", tokens[i].c_str());
+    if (*s == '(') s++;
+    const char *comma = strchr(s, ',');
+    std::string typeface = comma ? std::string(s, comma-s) : s;
+    typeface = opp_trim(typeface.c_str());
+    if (typeface != "<default>")
+        font.typeface = typeface;
+    if (comma) {
+        std::vector<std::string> items = cStringTokenizer(comma+1, "(), ").asVector();
+        for (int i = 0; i < (int)items.size(); i++) {
+            std::string item = opp_trim(items[i].c_str());
+            if (opp_isdigit(item[0]))
+                font.pointSize = strtol(item.c_str(), nullptr, 10);
+            else if (item == "bold")
+                font.style |= cFigure::FONT_BOLD;
+            else if (item == "italic")
+                font.style |= cFigure::FONT_ITALIC;
+            else if (item == "underline")
+                font.style |= cFigure::FONT_UNDERLINE;
+            else
+                throw cRuntimeError("Invalid font style '%s'", item.c_str());
+        }
     }
     return font;
 }
