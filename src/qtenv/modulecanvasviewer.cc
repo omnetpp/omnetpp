@@ -950,7 +950,7 @@ void ModuleCanvasViewer::setShowModuleNames(bool show)
     }
 }
 
-void ModuleCanvasViewer::setShowArrowHeads(bool show)
+void ModuleCanvasViewer::setShowArrowheads(bool show)
 {
     if (showArrowHeads != show) {
         showArrowHeads = show;

@@ -66,8 +66,8 @@ class QTENV_API ModuleInspector : public Inspector
       void createContextMenu(const std::vector<cObject*> &objects, const QPoint &globalPos);
 
       void layers();
-      void toggleLabels();
-      void toggleArrowheads();
+      void showLabels(bool show);
+      void showArrowheads(bool show);
       void zoomIconsBy(double mult);
       void resetOsgView();
 
@@ -98,6 +98,8 @@ class QTENV_API ModuleInspector : public Inspector
       QAction *canvasZoomInAction;
       QAction *canvasZoomOutAction;
       QAction *resetOsgViewAction;
+      QAction *showModuleNamesAction;
+      QAction *showArrowheadsAction;
       QAction *increaseIconSizeAction;
       QAction *decreaseIconSizeAction;
 

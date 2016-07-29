@@ -93,12 +93,27 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     parent->setMinimumSize(20, 20);
     switchToCanvasView();
 
+    showModuleNamesAction = new QAction("Show Module Names", this);
+    connect(showModuleNamesAction, SIGNAL(triggered(bool)), this, SLOT(showLabels(bool)));
+    showModuleNamesAction->setShortcut(Qt::CTRL | Qt::Key_L);
+    showModuleNamesAction->setCheckable(true);
+    showModuleNamesAction->setChecked(getPref(PREF_SHOWLABELS, true).toBool());
+    addAction(showModuleNamesAction);
+
+    showArrowheadsAction = new QAction("Show Arrowheads", this);
+    connect(showArrowheadsAction, SIGNAL(triggered(bool)), this, SLOT(showArrowheads(bool)));
+    showArrowheadsAction->setShortcut(Qt::CTRL | Qt::Key_A);
+    showArrowheadsAction->setCheckable(true);
+    showArrowheadsAction->setChecked(getPref(PREF_SHOWARROWHEADS, true).toBool());
+    addAction(showArrowheadsAction);
+
     increaseIconSizeAction = new QAction("Increase Icon Size", this);
-    increaseIconSizeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+    increaseIconSizeAction->setShortcut(Qt::CTRL | Qt::Key_I);
     connect(increaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(increaseIconSize()));
     addAction(increaseIconSizeAction);
+
     decreaseIconSizeAction = new QAction("Decrease Icon Size", this);
-    decreaseIconSizeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+    decreaseIconSizeAction->setShortcut(Qt::CTRL | Qt::Key_O);
     connect(decreaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(decreaseIconSize()));
     addAction(decreaseIconSizeAction);
 }
@@ -183,19 +198,19 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 
     toolbar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this, SLOT(runUntil()));
     QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)", this, SLOT(fastRunUntil()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_4));
+    action->setShortcut(Qt::CTRL | Qt::Key_F4);
     toolbar->addAction(getQtenv()->getMainWindow()->getStopAction());
     toolbar->addSeparator();
 
     // canvas-specfic
     action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+    action->setShortcut(Qt::CTRL | Qt::Key_R);
     canvasRelayoutAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+Plus)", this, SLOT(zoomIn()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
+    action->setShortcut(Qt::CTRL | Qt::Key_M);
     canvasZoomInAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+Minus)", this, SLOT(zoomOut()));
-    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
+    action->setShortcut(Qt::CTRL + Qt::Key_N);
     canvasZoomOutAction = action;
 
 #ifdef WITH_OSG
@@ -246,7 +261,7 @@ void ModuleInspector::doSetObject(cObject *obj)
             canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
             canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
             canvasViewer->setShowModuleNames(getPref(PREF_SHOWLABELS, true).toBool());
-            canvasViewer->setShowArrowHeads(getPref(PREF_SHOWARROWHEADS, true).toBool());
+            canvasViewer->setShowArrowheads(getPref(PREF_SHOWARROWHEADS, true).toBool());
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -718,38 +733,29 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
     }
     QMenu *menu = InspectorUtil::createInspectorContextMenu(o, this);
 
-    bool showLabels = getPref(PREF_SHOWLABELS, true).toBool();
-    bool showArrowHeads = getPref(PREF_SHOWARROWHEADS, true).toBool();
-
     menu->addSeparator();
     menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
 
     menu->addSeparator();
-    // TODO not working these "Show" menu points
-    QAction *action = menu->addAction("Show Module Names", this, SLOT(toggleLabels()), QKeySequence(Qt::CTRL + Qt::Key_L));
-    action->setCheckable(true);
-    action->setChecked(showLabels);
-    action = menu->addAction("Show Arrowheads", this, SLOT(toggleArrowheads()), QKeySequence(Qt::CTRL + Qt::Key_A));
-    action->setCheckable(true);
-    action->setChecked(showArrowHeads);
+    menu->addAction(showModuleNamesAction);
+    menu->addAction(showArrowheadsAction);
 
     menu->addSeparator();
-
     menu->addAction(increaseIconSizeAction);
     menu->addAction(decreaseIconSizeAction);
 
     menu->addSeparator();
-    menu->addAction("Zoom In", this, SLOT(zoomIn()), QKeySequence(Qt::CTRL + Qt::Key_Plus));
-    menu->addAction("Zoom Out", this, SLOT(zoomOut()), QKeySequence(Qt::CTRL + Qt::Key_Minus));
-    menu->addAction("Re-Layout", canvasViewer, SLOT(relayoutAndRedrawAll()), QKeySequence(Qt::CTRL + Qt::Key_R));
+    menu->addAction(canvasZoomInAction);
+    menu->addAction(canvasZoomOutAction);
+    menu->addAction(canvasRelayoutAction);
 
     menu->addSeparator();
-    action = menu->addAction("Layouting Settings...", this, SLOT(runPreferencesDialog()));
-    action->setData(InspectorUtil::TAB_LAYOUTING);
-    action = menu->addAction("Animation Settings...", this, SLOT(runPreferencesDialog()));
-    action->setData(InspectorUtil::TAB_ANIMATION);
-    action = menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()));
-    action->setData(InspectorUtil::TAB_FILTERING);
+    menu->addAction("Layouting Settings...", this, SLOT(runPreferencesDialog()))
+            ->setData(InspectorUtil::TAB_LAYOUTING);
+    menu->addAction("Animation Settings...", this, SLOT(runPreferencesDialog()))
+            ->setData(InspectorUtil::TAB_ANIMATION);
+    menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()))
+            ->setData(InspectorUtil::TAB_FILTERING);
 
     menu->addSeparator();
     menu->addAction("Export to PDF...", this, SLOT(exportToPdf()));
@@ -831,24 +837,22 @@ void ModuleInspector::layers()
     delete layersDialog;
 }
 
-void ModuleInspector::toggleLabels()
+void ModuleInspector::showLabels(bool show)
 {
     if (!object)
         return;
 
-    bool show = !getPref(PREF_SHOWLABELS, true).toBool();
     setPref(PREF_SHOWLABELS, show);
     canvasViewer->setShowModuleNames(show);
 }
 
-void ModuleInspector::toggleArrowheads()
+void ModuleInspector::showArrowheads(bool show)
 {
     if (!object)
         return;
 
-    bool show = !getPref(PREF_SHOWARROWHEADS, true).toBool();
     setPref(PREF_SHOWARROWHEADS, show);
-    canvasViewer->setShowArrowHeads(show);
+    canvasViewer->setShowArrowheads(show);
 }
 
 void ModuleInspector::zoomIconsBy(double mult)

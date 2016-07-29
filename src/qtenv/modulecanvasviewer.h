@@ -146,7 +146,7 @@ public:
     void setZoomFactor(double zoomFactor);
     void setImageSizeFactor(double imageSizeFactor);
     void setShowModuleNames(bool show);
-    void setShowArrowHeads(bool show);
+    void setShowArrowheads(bool show);
 
     void bubble(cComponent *subcomponent, const char *text);
 
