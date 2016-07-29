@@ -434,7 +434,6 @@ QPointF FigureRenderer::getAnchorOffset(cFigure::Anchor anchor, double width, do
     return -offset;
 }
 
-// TODO setScaleLineWidth when is in omnet++
 void FigureRenderer::setTransform(const cFigure::Transform& transform, QGraphicsItem *item, const QPointF *offset) const
 {
     QTransform qTrans(transform.a, transform.b, 0, transform.c, transform.d, 0, transform.t1, transform.t2, 1);
@@ -532,6 +531,38 @@ void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem
     setTransform(transform, item, &anchor);
 }
 
+void AbstractImageFigureRenderer::setImageTransform(cAbstractImageFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform, double naturalWidth, double naturalHeight, bool translateOnly)
+{
+    double width = figure->getWidth();
+    if (width <= 0)
+        width = naturalWidth;
+
+    double height = figure->getHeight();
+    if (height <= 0)
+        height = naturalHeight;
+
+    cFigure::Point pos = figure->getPosition();
+    QPointF translation = getAnchorOffset(figure->getAnchor(), width, height);
+
+    QTransform qTrans;
+    if (translateOnly) {
+        cFigure::Point p = transform.applyTo(pos);
+        translation.rx() += p.x;
+        translation.ry() += p.y;
+    } else {
+        qTrans = QTransform(transform.a, transform.b, 0,
+                            transform.c, transform.d, 0,
+                            transform.t1, transform.t2, 1);
+        translation.rx() += pos.x;
+        translation.ry() += pos.y;
+    }
+
+    qTrans.translate(translation.x(), translation.y());
+    qTrans.scale(width / naturalWidth, height / naturalHeight);
+
+    item->setTransform(qTrans);
+}
+
 void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
@@ -540,32 +571,6 @@ void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, 
         refreshGeometry(figure, item, hints);
         refreshTransform(figure, item, transform);
     }
-}
-
-void AbstractImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
-{
-    cAbstractImageFigure *imageFigure = static_cast<cAbstractImageFigure *>(figure);
-
-    QRectF bounds = item->boundingRect();
-    cFigure::Point pos = imageFigure->getPosition();
-    QPointF anchor;
-
-    switch (imageFigure->getAnchor()) {
-        case cFigure::ANCHOR_CENTER: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2); break;
-        case cFigure::ANCHOR_N: anchor = QPointF(pos.x - bounds.width()/2, pos.y); break;
-        case cFigure::ANCHOR_E: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2); break;
-        case cFigure::ANCHOR_S: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()); break;
-        case cFigure::ANCHOR_W: anchor = QPointF(pos.x, pos.y - bounds.height()/2); break;
-        case cFigure::ANCHOR_NE: anchor = QPointF(pos.x - bounds.width(), pos.y); break;
-        case cFigure::ANCHOR_SE: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()); break;
-        case cFigure::ANCHOR_SW: anchor = QPointF(pos.x, pos.y - bounds.height()); break;
-        case cFigure::ANCHOR_NW: anchor = QPointF(pos.x, pos.y); break;
-        case cFigure::ANCHOR_BASELINE_START:  // no break
-        case cFigure::ANCHOR_BASELINE_MIDDLE: // no break
-        case cFigure::ANCHOR_BASELINE_END: break;  //FIXME leave anchor uninitialized...?
-    }
-
-    setTransform(transform, item, &anchor);
 }
 
 void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, double zoom)
@@ -1198,15 +1203,7 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
     if (image->isNull())
         qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
     QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
-
-    auto transMode = imageFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
-            ? Qt::FastTransformation : Qt::SmoothTransformation;
-
-    if (imageFigure->getWidth() != 0 && imageFigure->getHeight() != 0)
-        imageItem->setPixmap(QPixmap::fromImage(image->scaled(imageFigure->getWidth(), imageFigure->getHeight(),
-            Qt::IgnoreAspectRatio, transMode)));
-    else
-        imageItem->setPixmap(QPixmap::fromImage(*image));
+    imageItem->setPixmap(QPixmap::fromImage(*image));
 }
 
 void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1228,6 +1225,13 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
     imageItem->setGraphicsEffect(colorizeEffect);
 }
 
+void ImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
+{
+    cImageFigure *imageFigure = dynamic_cast<cImageFigure *>(figure);
+    ASSERT(imageFigure);
+    setImageTransform(imageFigure, item, transform, imageFigure->getImageNaturalWidth(), imageFigure->getImageNaturalHeight(), false);
+}
+
 QGraphicsItem *ImageFigureRenderer::newItem()
 {
     return new QGraphicsPixmapItem();
@@ -1235,35 +1239,40 @@ QGraphicsItem *ImageFigureRenderer::newItem()
 
 void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
-    cPixmapFigure *pixmapFigure = static_cast<cPixmapFigure *>(figure);
-    QGraphicsPixmapItem *pixmapItem = static_cast<QGraphicsPixmapItem *>(item);
+    cPixmapFigure *pixmapFigure = dynamic_cast<cPixmapFigure *>(figure);
+    QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem *>(item);
+    ASSERT(pixmapFigure);
+    ASSERT(pixmapItem);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) // this is when QImage::Format_RGBA8888 got added
+    const cFigure::Pixmap& pixmap = pixmapFigure->getPixmap();
+    QImage image(pixmap.buffer(), pixmap.getWidth(), pixmap.getHeight(), QImage::Format_RGBA8888);
+#else // we have to manually copy each pixel
     QImage image(pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(), QImage::Format_ARGB32);
     for (int x = 0; x < image.width(); ++x)
         for (int y = 0; y < image.height(); ++y) {
             cFigure::RGBA rgba = pixmapFigure->getPixel(x, y);
             image.setPixel(x, y, qRgba(rgba.red, rgba.green, rgba.blue, rgba.alpha));
         }
+#endif
 
-    Qt::TransformationMode transMode =
-        pixmapFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
-            ? Qt::FastTransformation : Qt::SmoothTransformation;
-    image = image.scaled(pixmapFigure->getWidth(), pixmapFigure->getHeight(), Qt::IgnoreAspectRatio, transMode);
     pixmapItem->setPixmap(QPixmap::fromImage(image));
+}
+
+void PixmapFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
+{
+    cPixmapFigure *pixmapFigure = dynamic_cast<cPixmapFigure *>(figure);
+    ASSERT(pixmapFigure);
+    ASSERT(item);
+    setImageTransform(pixmapFigure, item, transform, pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(), false);
 }
 
 void IconFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
 {
-    cAbstractImageFigure *iconFigure = static_cast<cAbstractImageFigure *>(figure);
-
-    QRectF bounds = item->boundingRect();
-    QPointF anchor = bounds.topLeft() + getAnchorOffset(iconFigure->getAnchor(), bounds.width(), bounds.height());
-
-    QTransform qTrans;
-    cFigure::Point p = transform.applyTo(iconFigure->getPosition());
-    qTrans.translate(p.x, p.y);
-    qTrans.translate(anchor.x(), anchor.y());
-    item->setTransform(qTrans);
+    cIconFigure *iconFigure = dynamic_cast<cIconFigure *>(figure);
+    ASSERT(iconFigure);
+    ASSERT(item);
+    setImageTransform(iconFigure, item, transform, iconFigure->getImageNaturalWidth(), iconFigure->getImageNaturalHeight(), true);
 }
 
 }  // namespace qtenv
