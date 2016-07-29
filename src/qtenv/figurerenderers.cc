@@ -123,7 +123,7 @@ cFigure::Point FigureRenderer::polarToCartesian(cFigure::Point center, double rx
 }
 
 // from mozilla
-double FigureRenderer::calcVectorAngle(double ux, double uy, double vx, double vy) const
+double FigureRenderer::calcVectorAngle(double ux, double uy, double vx, double vy)
 {
     double ta = atan2(uy, ux);
     double tb = atan2(vy, vx);
@@ -134,14 +134,14 @@ double FigureRenderer::calcVectorAngle(double ux, double uy, double vx, double v
         return 2.0*M_PI - (ta-tb);
 }
 
-bool FigureRenderer::doubleEquals(double x, double y) const
+bool FigureRenderer::doubleEquals(double x, double y)
 {
     return fabs(x - y) < DBL_EPSILON;
 }
 
 // http://www.w3.org/TR/SVG/implnote.html#ArcConversionEndpointToCenter
 FigureRenderer::ArcShape FigureRenderer::endPointToCentralFromArcParameters(double startX, double startY, double endX, double endY, bool largeArcFlag, bool sweepFlag,
-        double& rx, double& ry, double angle, double& centerX, double& centerY, double& startAngle, double& sweepLength) const
+        double& rx, double& ry, double angle, double& centerX, double& centerY, double& startAngle, double& sweepLength)
 {
     /* 1. Treat out-of-range parameters as described in
      * http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
@@ -390,6 +390,50 @@ QBrush FigureRenderer::createBrush(const cAbstractShapeFigure *figure) const
         return QBrush(Qt::NoBrush);
 }
 
+QPointF FigureRenderer::getAnchorOffset(cFigure::Anchor anchor, double width, double height, double ascent)
+{
+    QPointF offset;
+
+    switch (anchor) {
+        case cFigure::ANCHOR_CENTER:
+        case cFigure::ANCHOR_N:
+        case cFigure::ANCHOR_S:
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+            offset.setX(width/2);
+            break;
+        case cFigure::ANCHOR_E:
+        case cFigure::ANCHOR_NE:
+        case cFigure::ANCHOR_SE:
+        case cFigure::ANCHOR_BASELINE_END:
+            offset.setX(width);
+            break;
+        default:
+            break;
+    }
+
+    switch (anchor) {
+        case cFigure::ANCHOR_CENTER:
+        case cFigure::ANCHOR_E:
+        case cFigure::ANCHOR_W:
+            offset.setY(height/2);
+            break;
+        case cFigure::ANCHOR_S:
+        case cFigure::ANCHOR_SE:
+        case cFigure::ANCHOR_SW:
+            offset.setY(height);
+            break;
+        case cFigure::ANCHOR_BASELINE_START:
+        case cFigure::ANCHOR_BASELINE_MIDDLE:
+        case cFigure::ANCHOR_BASELINE_END:
+            offset.setY(ascent);
+            break;
+        default:
+            break;
+    }
+
+    return -offset;
+}
+
 // TODO setScaleLineWidth when is in omnet++
 void FigureRenderer::setTransform(const cFigure::Transform& transform, QGraphicsItem *item, const QPointF *offset) const
 {
@@ -479,25 +523,11 @@ void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem
     QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
 
-    cFigure::Point pos = textFigure->getPosition();
+    QPointF pos(textFigure->getPosition().x, textFigure->getPosition().y);
 
-    QFontMetrics fontMetric(textItem->font());
+    QFontMetricsF fontMetric(textItem->font());
     QRectF bounds = item->boundingRect();
-    QPointF anchor;
-    switch (textFigure->getAnchor()) {
-        case cFigure::ANCHOR_CENTER: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()/2); break;
-        case cFigure::ANCHOR_N: anchor = QPointF(pos.x - bounds.width()/2, pos.y); break;
-        case cFigure::ANCHOR_E: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()/2); break;
-        case cFigure::ANCHOR_S: anchor = QPointF(pos.x - bounds.width()/2, pos.y - bounds.height()); break;
-        case cFigure::ANCHOR_W: anchor = QPointF(pos.x, pos.y - bounds.height()/2); break;
-        case cFigure::ANCHOR_NE: anchor = QPointF(pos.x - bounds.width(), pos.y); break;
-        case cFigure::ANCHOR_SE: anchor = QPointF(pos.x - bounds.width(), pos.y - bounds.height()); break;
-        case cFigure::ANCHOR_SW: anchor = QPointF(pos.x, pos.y - bounds.height()); break;
-        case cFigure::ANCHOR_NW: anchor = QPointF(pos.x, pos.y); break;
-        case cFigure::ANCHOR_BASELINE_START: anchor = QPointF(pos.x, pos.y - fontMetric.ascent()); break;
-        case cFigure::ANCHOR_BASELINE_MIDDLE: anchor = QPointF(pos.x - bounds.width()/2, pos.y - fontMetric.ascent()); break;
-        case cFigure::ANCHOR_BASELINE_END: anchor = QPointF(pos.x - bounds.width(), pos.y - fontMetric.ascent()); break;
-    }
+    QPointF anchor = pos + getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent());
 
     setTransform(transform, item, &anchor);
 }
@@ -1150,58 +1180,9 @@ void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item,
     QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
 
-    QFontMetrics fontMetric(textItem->font());
+    QFontMetricsF fontMetric(textItem->font());
     QRectF bounds = item->boundingRect();
-    QPointF anchor;
-    switch (textFigure->getAnchor()) {
-        case cFigure::ANCHOR_CENTER:
-            anchor = QPointF(-bounds.width()/2, -bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_N:
-            anchor = QPointF(-bounds.width()/2, 0);
-            break;
-
-        case cFigure::ANCHOR_E:
-            anchor = QPointF(-bounds.width(), -bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_S:
-            anchor = QPointF(-bounds.width()/2, -bounds.height());
-            break;
-
-        case cFigure::ANCHOR_W:
-            anchor = QPointF(0, -bounds.height()/2);
-            break;
-
-        case cFigure::ANCHOR_NE:
-            anchor = QPointF(-bounds.width(), 0);
-            break;
-
-        case cFigure::ANCHOR_SE:
-            anchor = QPointF(-bounds.width(), -bounds.height());
-            break;
-
-        case cFigure::ANCHOR_SW:
-            anchor = QPointF(0, -bounds.height());
-            break;
-
-        case cFigure::ANCHOR_NW:
-            anchor = QPointF(0, 0);
-            break;
-
-        case cFigure::ANCHOR_BASELINE_START:
-            anchor = QPointF(0, -fontMetric.ascent());
-            break;
-
-        case cFigure::ANCHOR_BASELINE_MIDDLE:
-            anchor = QPointF(-bounds.width()/2, -fontMetric.ascent());
-            break;
-
-        case cFigure::ANCHOR_BASELINE_END:
-            anchor = QPointF(-bounds.width(), -fontMetric.ascent());
-            break;
-    }
+    QPointF anchor = bounds.topLeft() + getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent());
 
     QTransform qTrans;
     cFigure::Point p = transform.applyTo(textFigure->getPosition());
@@ -1271,11 +1252,17 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
     pixmapItem->setPixmap(QPixmap::fromImage(image));
 }
 
-void IconFigureRenderer::setTransform(const cFigure::Transform& transform, QGraphicsItem *item, const QPointF *offset) const
+void IconFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
 {
-    //TODO It's similar to Tkenv but not exactly
+    cAbstractImageFigure *iconFigure = static_cast<cAbstractImageFigure *>(figure);
+
+    QRectF bounds = item->boundingRect();
+    QPointF anchor = bounds.topLeft() + getAnchorOffset(iconFigure->getAnchor(), bounds.width(), bounds.height());
+
     QTransform qTrans;
-    qTrans.translate(transform.a*offset->x(), transform.d*offset->y());
+    cFigure::Point p = transform.applyTo(iconFigure->getPosition());
+    qTrans.translate(p.x, p.y);
+    qTrans.translate(anchor.x(), anchor.y());
     item->setTransform(qTrans);
 }
 

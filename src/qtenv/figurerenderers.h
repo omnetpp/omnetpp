@@ -46,7 +46,7 @@ struct FigureRenderingHints
             zoom(1), defaultFont("Arial"), defaultFontSize(12){}
 };
 
-class FigureRenderer : public cObject // for because Register_Class() takes cObject*
+class FigureRenderer : public cObject // because Register_Class() takes cObject*
 {
 protected:
     // This class should be used in place of every QGraphicsPathItem
@@ -70,16 +70,16 @@ private:
     enum ArcShape { ARC_NOTHING, ARC_LINE, ARC_ARC };
     static std::map<std::string, FigureRenderer*> rendererCache;
 
-    inline bool doubleEquals(double x, double y) const;
-    double calcVectorAngle(double ux, double uy, double vx, double vy) const;
-    ArcShape endPointToCentralFromArcParameters(double startX, double startY,
-                                            double endX, double endY,
-                                            bool largeArcFlag, bool sweepFlag,
-                                            double &rx, double &ry, double angle,
-                                            double &centerX, double &centerY,
-                                            double &startAngle, double &sweepLength) const;
+    static inline bool doubleEquals(double x, double y);
+    static double calcVectorAngle(double ux, double uy, double vx, double vy);
+    static ArcShape endPointToCentralFromArcParameters(
+            double startX, double startY, double endX, double endY,
+            bool largeArcFlag, bool sweepFlag, double &rx, double &ry, double angle,
+            double &centerX, double &centerY, double &startAngle, double &sweepLength);
 
 protected:
+
+    static QPointF getAnchorOffset(cFigure::Anchor anchor, double width, double height, double ascent = 0);
 
     inline cFigure::Point polarToCartesian(cFigure::Point center, double rx, double ry, double rad) const;
     void arcToUsingBezier(QPainterPath &painter, double currentX,
@@ -263,7 +263,8 @@ protected:
 class IconFigureRenderer : public ImageFigureRenderer
 {
 protected:
-    virtual void setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset) const;
+    virtual void setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset) const {}
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform);
 };
 
 } // namespace qtenv
