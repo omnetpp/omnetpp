@@ -1411,28 +1411,33 @@ if test -d ide ; then
   if test ! -d ide/configuration ; then
     echo Configuring the IDE...
     case $PLATFORM in
+    win32.x86_64)
+        cp -r ide/win64/* ide
+        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
+        ;;
     win32.x86)
         cp -r ide/win32/* ide
         echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
+        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
         ;;
     linux.x86_64)
         cp -r ide/linux64/* ide
         echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
+        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
         ;;
     linux.x86)
         cp -r ide/linux/* ide
         echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
+        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
         ;;
     macosx)
         cp -r ide/macosx/* ide
         echo osgi.instance.area.default=../../../../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
+        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
         ;;
     *)
-        echo IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel. Not configured.
+        echo IDE is supported only on: Linux, Windows, macOS. Not configured.
         ;;
     esac
   fi
