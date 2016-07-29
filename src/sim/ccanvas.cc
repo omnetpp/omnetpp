@@ -497,7 +497,7 @@ cFigure::Rectangle cFigure::computeBoundingBox(const Point& position, const Poin
             topleft.y = position.y;
             break;
         case cFigure::ANCHOR_E:
-            topleft.x = position.x;
+            topleft.x = position.x - size.x;
             topleft.y = position.y - size.y / 2;
             break;
         case cFigure::ANCHOR_S:
@@ -505,7 +505,7 @@ cFigure::Rectangle cFigure::computeBoundingBox(const Point& position, const Poin
             topleft.y = position.y - size.y;
             break;
         case cFigure::ANCHOR_W:
-            topleft.x = position.x - size.x;
+            topleft.x = position.x;
             topleft.y = position.y - size.y / 2;
             break;
         case cFigure::ANCHOR_NW:
