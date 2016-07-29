@@ -203,14 +203,14 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     toolbar->addSeparator();
 
     // canvas-specfic
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout (Ctrl+R)", this, SLOT(relayout()));
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout", this, SLOT(relayout()));
     action->setShortcut(Qt::CTRL | Qt::Key_R);
     canvasRelayoutAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+M)", this, SLOT(zoomIn()));
-    action->setShortcut(Qt::CTRL | Qt::Key_M);
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in", this, SLOT(zoomIn()));
+    action->setShortcut(Qt::CTRL | Qt::Key_Plus);
     canvasZoomInAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+N)", this, SLOT(zoomOut()));
-    action->setShortcut(Qt::CTRL + Qt::Key_N);
+    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out", this, SLOT(zoomOut()));
+    action->setShortcut(Qt::CTRL + Qt::Key_Minus);
     canvasZoomOutAction = action;
 
 #ifdef WITH_OSG
