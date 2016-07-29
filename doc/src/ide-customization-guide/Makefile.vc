@@ -31,7 +31,7 @@ pdf: catalog cover
 	$(XSLTPROC) --nonet --xinclude --stringparam output pdf --output tmp.xml trans.xsl tmp0.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	call $(FOP) -fo tmp.fo -c ..\fop.xconf -pdf tmp.pdf
+	call $(FOP) -fo tmp.fo -c fop.xconf -pdf tmp.pdf
 	$(PDFTK) C=cover.pdf B=../cover/copyright.pdf D=tmp.pdf cat C B D3-end output ide-customization-guide.pdf dont_ask
 	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml tmp0.xml tmp.pdf
 

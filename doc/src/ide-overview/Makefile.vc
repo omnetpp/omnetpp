@@ -23,7 +23,7 @@ pdf: catalog
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	call $(FOP) -fo tmp.fo -c ..\fop.xconf -pdf ide-overview.pdf
+	call $(FOP) -fo tmp.fo -c fop.xconf -pdf ide-overview.pdf
 	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml
 
 clean:

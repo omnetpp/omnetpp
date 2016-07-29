@@ -68,7 +68,7 @@ pdf: docbook cover
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-developersguide.pdf
+	$(FOP) -fo tmp.fo -c fop.xconf -pdf ide-developersguide.pdf
 	pdftk ide-developersguide.pdf dump_data > tmp.metadata
 	perl -i -pe 's/#160;/#32;/g' tmp.metadata
 	pdftk C=cover.pdf B=../cover/copyright.pdf D=ide-developersguide.pdf cat C B D3-end output tmp.pdf

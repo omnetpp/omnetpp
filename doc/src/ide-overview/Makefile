@@ -34,7 +34,7 @@ pdf:
 	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf ide-overview.pdf
+	$(FOP) -fo tmp.fo -c fop.xconf -pdf ide-overview.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
 	cp ide-overview.pdf ../../IDE-Overview.pdf
 
