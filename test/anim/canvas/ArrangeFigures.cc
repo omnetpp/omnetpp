@@ -15,12 +15,6 @@ void ArrangeFigures::initialize()
     // them vertically (using translate()), and label them with their
     // source @figure property
     
-    EV << getEnvir()->getImageSize("block/app2").str() << endl;
-    EV << getEnvir()->getImageSize("block/app2_s").str() << endl;
-    
-    EV << getEnvir()->getTextExtent(cFigure::Font("Arial", 12), "Lorem Ipsum").str() << endl;
-    EV << getEnvir()->getTextExtent(cFigure::Font("Arial", 12), "Lorem Ipsum\nDolor sit Amet").str() << endl;
-
     double dy = 0;
     cCanvas *canvas = getCanvas();
     cProperties *properties = getProperties();
