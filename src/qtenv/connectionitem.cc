@@ -117,6 +117,7 @@ void ConnectionItem::updateTextItem()
 {
     textItem->setText(text);
     textItem->setBrush(textColor);
+    textItem->setVisible(isVisible());
 
     QRectF textRect = textItem->boundingRect();
     QPointF textSize(textRect.width(), textRect.height());
@@ -158,7 +159,8 @@ ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
     // The text has to be a sibling, otherwise the pair line
     // of a twoway connection would obscure it.
     textItem = new OutlinedTextItem(parentItem());
-    textItem->setZValue(1);
+    textItem->setZValue(1); // connect is to update visibility
+    connect(this, SIGNAL(visibleChanged()), this, SLOT(updateTextItem()));
     // TODO arrowItem disappear when a part of lineItem is out of view.
     arrowItem = new GraphicsPathArrowItem(lineItem);
 }

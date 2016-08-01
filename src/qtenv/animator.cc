@@ -275,6 +275,7 @@ class MethodcallAnimation : public SimpleAnimation
 
   public:
     MethodcallAnimation(ModuleInspector *insp, cModule *srcMod, cModule *destMod, const char *text);
+    void begin() override;
     void setProgress(float t) override;
     void cleanup() override;
     QString info() const override {
@@ -808,23 +809,28 @@ MethodcallAnimation::MethodcallAnimation(ModuleInspector *insp, cModule *srcMod,
 
     auto layer = insp->getAnimationLayer();
     connectionItem = new ConnectionItem(layer);
+    connectionItem->setVisible(false);
+    connectionItem->setLineEnabled(false);
+    connectionItem->setArrowEnabled(false);
     connectionItem->setSource(src);
     connectionItem->setDestination(dest);
     connectionItem->setColor("red");
     connectionItem->setLineStyle(Qt::DashLine);
-    connectionItem->setWidth(2);
     connectionItem->setText(text);
     connectionItem->setTextPosition(Qt::AlignCenter);
     connectionItem->setTextColor("black");
     connectionItem->setTextBackgroundColor("#F0F0F0");
     connectionItem->setTextOutlineColor("transparent");
-    connectionItem->setVisible(false);
+}
+
+void MethodcallAnimation::begin()
+{
+    connectionItem->setVisible(true);
+    SimpleAnimation::begin();
 }
 
 void MethodcallAnimation::setProgress(float t)
 {
-    connectionItem->setVisible(t > 0);
-
     bool enabled = (t > 0.2 && t < 0.4) || (t > 0.6);
     connectionItem->setLineEnabled(enabled);
     connectionItem->setArrowEnabled(enabled);
@@ -909,23 +915,19 @@ SendDirectAnimation::SendDirectAnimation(ModuleInspector *insp, Direction dir, S
 {
     auto layer = insp->getAnimationLayer();
     connectionItem = new ConnectionItem(layer);
+    connectionItem->setVisible(false);
     connectionItem->setSource(src);
     connectionItem->setDestination(dest);
     connectionItem->setColor("blue");
     connectionItem->setLineStyle(Qt::DashLine);
-    connectionItem->setWidth(2);
-    connectionItem->setVisible(false);
 }
 
 void SendDirectAnimation::setProgress(float t)
 {
-    if (dir == DIR_DELIVERY) {
-        bool visible = (t < 0.2) || (t > 0.4 && t < 0.6) || (t > 0.8);
-        messageItem->setVisible(visible);
-    }
-    else {
+    if (dir == DIR_DELIVERY)
+        messageItem->setVisible((t < 0.2) || (t > 0.4 && t < 0.6) || (t > 0.8));
+    else
         SendAnimation::setProgress(t);
-    }
 }
 
 SendDirectAnimation::~SendDirectAnimation()

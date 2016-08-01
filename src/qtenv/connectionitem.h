@@ -56,6 +56,7 @@ protected:
     OutlinedTextItem *textItem = nullptr; // This is a managed sibling!
     GraphicsPathArrowItem *arrowItem = nullptr;
 
+protected slots:
     void updateLineItem();
     void updateTextItem();
     void updateArrowItem();
