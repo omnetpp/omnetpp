@@ -445,6 +445,15 @@ const char *stripNamespace(const char *className)
     return className;
 }
 
+int getObjectId(cObject *object) {
+    int id = -1;
+    if (cMessage *msg = dynamic_cast<cMessage *>(object))
+        id = msg->getId();
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        id = component->getId();
+    return id;
+}
+
 const char *getObjectShortTypeName(cObject *object)
 {
     if (cComponent *component = dynamic_cast<cComponent *>(object))

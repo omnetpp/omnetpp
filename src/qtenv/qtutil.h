@@ -187,6 +187,7 @@ class cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectObjectsVisit
 // Utility functions:
 //
 const char *stripNamespace(const char *className);
+int getObjectId(cObject *object);
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 

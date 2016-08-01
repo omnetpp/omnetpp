@@ -109,7 +109,10 @@ public slots:
    signals:
       void selectionChanged(cObject *object);
       void objectDoubleClicked(cObject *object);
-      void inspectedObjectChanged(cObject *object);
+      // Had to make the new object the first parameter, because the signal
+      // can be bound to slots only taking a single parameter, and
+      // this way those ones get only the new object, not the old one.
+      void inspectedObjectChanged(cObject *newObject, cObject *oldObject);
 
    public:
       typedef QPair<omnetpp::cObject*, int> ActionDataPair;

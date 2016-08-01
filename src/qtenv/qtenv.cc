@@ -383,16 +383,10 @@ void Qtenv::storeInspectors(bool closeThem)
         if (insp->isToplevel()) {
             cObject *obj = insp->getObject();
 
-            int objectId = -1;
-            if (cMessage *msg = dynamic_cast<cMessage *>(obj))
-                objectId = msg->getId();
-            if (cComponent *component = dynamic_cast<cComponent *>(obj))
-                objectId = component->getId();
-
             localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
             localPrefs->setValue("object", obj->getFullPath().c_str());
             localPrefs->setValue("classname", getObjectShortTypeName(obj));
-            localPrefs->setValue("id", objectId);
+            localPrefs->setValue("id", getObjectId(obj));
             localPrefs->setValue("type", insp->getType());
             localPrefs->setValue("geom", insp->geometry());
             localPrefs->setValue("fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
@@ -408,6 +402,56 @@ void Qtenv::storeInspectors(bool closeThem)
 
     for (auto i : toBeClosed) {
         deleteInspector(i);
+    }
+}
+
+void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
+{
+    if (!newObject || !oldObject)
+        return;
+
+    Inspector *inspector = dynamic_cast<Inspector *>(sender());
+    ASSERT(inspector);
+
+    QStringList groups = localPrefs->childGroups();
+    for (auto group : groups) {
+        if (group.startsWith("Inspector")) {
+            bool ok = true;
+
+            localPrefs->beginGroup(group);
+
+            QVariant v = localPrefs->value("object");
+            ok = ok && v.canConvert<QString>();
+            QString object = v.value<QString>();
+
+            v = localPrefs->value("classname");
+            ok = ok && v.canConvert<QString>();
+            QString classname = v.value<QString>();
+
+            v = localPrefs->value("id");
+            ok = ok && v.canConvert<int>();
+            int objectId = v.value<int>();
+
+            v = localPrefs->value("type");
+            ok = ok && v.canConvert<int>();
+            int type = v.value<int>();
+
+            if (!ok) {
+                localPrefs->endGroup();
+                continue;
+            }
+
+            if (object == oldObject->getFullPath().c_str()
+                    && classname == getObjectShortTypeName(oldObject)
+                    && objectId == getObjectId(oldObject)
+                    && type == inspector->getType()) {
+                localPrefs->setValue("object", newObject->getFullPath().c_str());
+                localPrefs->setValue("classname", getObjectShortTypeName(newObject));
+                localPrefs->setValue("id", getObjectId(newObject));
+            }
+
+            localPrefs->endGroup();
+        }
     }
 }
 
@@ -563,7 +607,7 @@ void Qtenv::doRun()
 
         mainWindow->show();
 
-        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *)), mainLogView, SLOT(setObject(cObject *)));
+        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -1142,6 +1186,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
 
     connect(inspector, SIGNAL(selectionChanged(cObject *)), this, SLOT(onSelectionChanged(cObject *)));
     connect(inspector, SIGNAL(objectDoubleClicked(cObject *)), this, SLOT(onObjectDoubleClicked(cObject *)));
+    connect(inspector, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), this, SLOT(updateStoredInspector(cObject *,cObject *)));
 
     // everything ok, finish inspector
     inspectors.push_back(inspector);

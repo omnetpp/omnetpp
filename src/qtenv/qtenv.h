@@ -278,6 +278,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void excludeMessage();
       void utilitiesSubMenu();
 
+      void updateStoredInspector(cObject *newObject, cObject *oldObject); // Inspector* is the sender
+
       // will get the cComponent pointer and LogLevel in an
       // ActionDataPair from the data of the sender QAction
       void setComponentLogLevel();

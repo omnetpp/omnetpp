@@ -149,6 +149,7 @@ void Inspector::doSetObject(cObject *obj)
     if (obj != object) {
         if (obj && !supportsObject(obj))
             throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
+        cObject *oldObject = object;
         object = obj;
         if (findObjects)
             findObjects->setData(QVariant::fromValue(object));
@@ -157,7 +158,7 @@ void Inspector::doSetObject(cObject *obj)
         createCopyContextMenu();
 
         // note that doSetObject() is always followed by refresh(), see setObject()
-        emit inspectedObjectChanged(object);
+        emit inspectedObjectChanged(object, oldObject);
     }
 }
 
