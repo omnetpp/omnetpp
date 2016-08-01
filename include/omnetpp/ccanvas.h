@@ -1738,11 +1738,10 @@ class SIM_API cCanvas : public cOwnedObject
         cFigure::Color backgroundColor;
         cFigure *rootFigure;
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
-    protected:
-        virtual void parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap) const;
-        virtual cFigure *createFigure(const char *type) const ;
     public:
         // internal:
+        virtual cFigure *parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap) const;
+        virtual cFigure *createFigure(const char *type) const;
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);
         virtual uint64_t parseTags(const char *s);

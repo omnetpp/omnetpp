@@ -3348,7 +3348,7 @@ void cCanvas::addFiguresFrom(cProperties *properties)
     }
 }
 
-void cCanvas::parseFigure(cProperty *property, std::map<cFigure *, double>& orderMap) const
+cFigure *cCanvas::parseFigure(cProperty *property, std::map<cFigure *, double>& orderMap) const
 {
     try {
         const char *path = property->getIndex();
@@ -3386,6 +3386,7 @@ void cCanvas::parseFigure(cProperty *property, std::map<cFigure *, double>& orde
         }
 
         figure->parse(property);
+        return figure;
     }
     catch (std::exception& e) {
         throw cRuntimeError(this, "Error creating figure from NED property @%s: %s", property->getFullName(), e.what());

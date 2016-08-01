@@ -296,5 +296,23 @@ void cProperty::erase(const char *key)
     }
 }
 
+void cProperty::updateWith(const cProperty *property)
+{
+    const std::vector<const char *>& keys = property->getKeys();
+    for (int i = 0; i < (int)keys.size(); i++) {
+        const char *key = keys[i];
+        if (!containsKey(key))
+            addKey(key);
+        int n = property->getNumValues(key);
+        for (int index = 0; index < n; index++) {
+            const char *value = property->getValue(key, index);
+            if (value && value[0]) {  // is set
+                bool isAntivalue = strcmp(value, "-")==0;
+                setValue(key, index, isAntivalue ? "" : value);
+            }
+        }
+    }
+}
+
 }  // namespace omnetpp
 

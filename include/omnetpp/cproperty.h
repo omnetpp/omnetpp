@@ -68,6 +68,9 @@ class SIM_API cProperty : public cNamedObject
     CharPtrVector& getValuesVector(const char *key) const;
 
   public:
+    // internal: merge a property onto this one
+    virtual void updateWith(const cProperty *property);
+
     // internal: locks the object against modifications. It cannot be unlocked
     // -- one must copy contents to an unlocked object, or call dup()
     // (new objects are created in unlocked state).
@@ -207,7 +210,7 @@ class SIM_API cProperty : public cNamedObject
      * Specify "" or DEFAULTKEY for the default key. If the key
      * does not exist or the index is out of bounds, nullptr is returned.
      */
-    virtual const char *getValue(const char *key, int index=0) const;
+    virtual const char *getValue(const char *key="", int index=0) const;
 
     /**
      * Replaces a value for the given key in the property. Specify "" or
