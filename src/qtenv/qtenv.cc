@@ -892,9 +892,12 @@ bool Qtenv::doRunSimulation()
 
         // do a simulation step
         getSimulation()->executeEvent(event);
-        callRefreshDisplay();
-        updateGraphicalInspectorsBeforeAnimation();
-        performAnimations();
+
+        if (animating) {
+            callRefreshDisplay();
+            updateGraphicalInspectorsBeforeAnimation();
+            performAnimations();
+        }
 
         // flush so that output from different modules don't get mixed
         cLogProxy::flushLastLine();
