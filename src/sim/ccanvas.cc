@@ -1702,12 +1702,10 @@ void cAbstractShapeFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    if ((s = property->getValue(PKEY_LINECOLOR)) != nullptr) {
-        if (opp_isblank(s))
-            setOutlined(false);
-        else
-            setLineColor(parseColor(s));
-    }
+    if ((s = property->getValue(PKEY_LINECOLOR)) != nullptr)
+        setLineColor(parseColor(s));
+    else if (property->containsKey(PKEY_LINECOLOR)) // but it's empty
+        setOutlined(false);
     if ((s = property->getValue(PKEY_FILLCOLOR)) != nullptr) {
         setFillColor(parseColor(s));
         setFilled(true);
