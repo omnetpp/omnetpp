@@ -97,6 +97,8 @@ QFont TextViewerWidget::getMonospaceFont()
 
 void TextViewerWidget::setFont(QFont font)
 {
+    linePartOffsetCache.clear();
+
     this->font = font;
     auto metrics = QFontMetrics(font, viewport());
 
@@ -241,8 +243,7 @@ int TextViewerWidget::getMaxVisibleLineWidth()
     int n = (maximumViewportSize().height() + lineSpacing - 1) / lineSpacing;
     for (int lineIndex = topLineIndex; lineIndex < content->getLineCount() && lineIndex < topLineIndex + n; ++lineIndex) {
         auto line = content->getLineText(lineIndex);
-        auto tabStops = content->getTabStops(lineIndex);
-        maxLength = std::max(maxLength, getLineColumnOffset(metrics, line, tabStops, line.length()) + horizontalScrollOffset);
+        maxLength = std::max(maxLength, getLineColumnOffset(metrics, lineIndex, line.length()));
     }
     return maxLength;
 }
@@ -259,32 +260,42 @@ int TextViewerWidget::getNumVisibleColumns()
     return (viewport()->width() + averageCharWidth - 1) / averageCharWidth;
 }
 
-int TextViewerWidget::getLinePartOffset(const QFontMetrics& metrics, const QString& line, const QList<TabStop>& tabStops, int partIndex)
+int TextViewerWidget::getLinePartOffset(const QFontMetrics& metrics, int lineIndex, int partIndex)
 {
-    int offset = horizontalMargin - horizontalScrollOffset;
+    int cacheKey = lineIndex * 100 + partIndex;
+
+    if (linePartOffsetCache.count(cacheKey))
+        return linePartOffsetCache[cacheKey];
+
+    auto tabStops = content->getTabStops(lineIndex);
+    auto line = content->getLineText(lineIndex);
+
+    int offset = horizontalMargin;
     for (int i = 0; i < tabStops.size(); ++i) {
         bool last = (i == tabStops.size() - 1);
         QString part = line.mid(tabStops[i].atCharacter, last ? -1 : (tabStops[i+1].atCharacter - tabStops[i].atCharacter));
         // the + lineHeight is needed because in this function the y coordinate is the baseline
-        int partX = std::max(offset, header->sectionPosition(i) - horizontalScrollOffset);
-        if (partIndex == i) {
-            return partX;
-        }
+        int partX = std::max(offset, header->sectionPosition(i));
+        if (partIndex == i)
+            return linePartOffsetCache[cacheKey] = partX;
         offset = partX + metrics.width(part);
     }
 
     throw std::runtime_error("partIndex out of bounds");
 }
 
-int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, const QString& line, const QList<TextViewerWidget::TabStop>& tabStops, int columnIndex)
+int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineIndex, int columnIndex)
 {
+    auto tabStops = content->getTabStops(lineIndex);
+    auto line = content->getLineText(lineIndex);
+
     int tabIndex = tabStops.size()-1;
     while (tabIndex > 0 && tabStops[tabIndex].atCharacter > columnIndex) {
         --tabIndex;
     }
     tabIndex = clip(0, tabStops.size()-1, tabIndex);
 
-    int offset = getLinePartOffset(metrics, line, tabStops, tabIndex)
+    int offset = getLinePartOffset(metrics, lineIndex, tabIndex)
                   + metrics.width(line.mid(tabStops[tabIndex].atCharacter,
                                            columnIndex - tabStops[tabIndex].atCharacter));
     return offset;
@@ -303,17 +314,18 @@ Pos TextViewerWidget::getLineColumnAt(int x, int y)
     int tabIndex;
     int offset = 0;
 
-    for (tabIndex = tabStops.size() - 1; tabIndex > 0; --tabIndex) {  // not checking the 0., if we got there, we must certainly stop
-        offset = getLinePartOffset(metrics, line, tabStops, tabIndex);
+    x += horizontalScrollOffset;
 
-        if (offset < x) {
+    for (tabIndex = tabStops.size() - 1; tabIndex > 0; --tabIndex) {  // not checking the 0., if we got there, we must certainly stop
+        offset = getLinePartOffset(metrics, lineIndex, tabIndex);
+
+        if (offset <= x)
             break;
-        }
     }
     // just to be safe
     tabIndex = clip(0, tabStops.size()-1, tabIndex);
 
-    offset = getLinePartOffset(metrics, line, tabStops, tabIndex);
+    offset = getLinePartOffset(metrics, lineIndex, tabIndex);
 
     QString part = line.mid(tabStops[tabIndex].atCharacter, (tabIndex == tabStops.size() -1) ? -1 : (tabStops[tabIndex+1].atCharacter - tabStops[tabIndex].atCharacter));
     int column = part.length();
@@ -589,9 +601,8 @@ void TextViewerWidget::resizeEvent(QResizeEvent *event)
 
 void TextViewerWidget::paintEvent(QPaintEvent *event)
 {
-    if (contentChangedFlag) {
+    if (contentChangedFlag)
         handleContentChange();
-    }
 
     QPainter painter(viewport());
 
@@ -636,9 +647,8 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     painter.drawRect(0, highlightY, contentsRect().width(), lineSpacing);
 
     // draw the lines
-    for (int y = startY; y < r.y()+r.height() && lineIndex < numLines; y += lineSpacing) {
+    for (int y = startY; y < r.y()+r.height() && lineIndex < numLines; y += lineSpacing)
         drawLine(painter, lineIndex++, x, y);
-    }
 }
 
 void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y)
@@ -667,8 +677,10 @@ void TextViewerWidget::drawLinePart(QPainter& painter, const QFontMetrics& metri
     int nextTabStopAt = last ? line.length() : tabStops[partIndex + 1].atCharacter;
     QString part = line.mid(tabStop.atCharacter, nextTabStopAt - tabStop.atCharacter);
 
+    QPoint partPosition(getLinePartOffset(metrics, lineIndex, partIndex) - horizontalScrollOffset, y + baseline);
+
     painter.setPen(tabStop.color);
-    painter.drawText(QPoint(getLinePartOffset(metrics, line, tabStops, partIndex), y + baseline), part);
+    painter.drawText(partPosition, part);
 
     // if there is selection, draw it
     if (selectionAnchorLineIndex != caretLineIndex || selectionAnchorColumn != caretColumn) {
@@ -681,25 +693,27 @@ void TextViewerWidget::drawLinePart(QPainter& painter, const QFontMetrics& metri
             int endColumn = (lineIndex == selEnd.line) ? clip(tabStop.atCharacter, nextTabStopAt, selEnd.column) : nextTabStopAt;
 
             if (startColumn != endColumn) {
-                int startColOffset = getLineColumnOffset(metrics, line, tabStops, startColumn);
-                int endColOffset = getLineColumnOffset(metrics, line, tabStops, endColumn);
-                QRect selectionRect(startColOffset, y, endColOffset - startColOffset, lineSpacing);
+                int startColOffset = getLineColumnOffset(metrics, lineIndex, startColumn);
+                int endColOffset = getLineColumnOffset(metrics, lineIndex, endColumn);
+                QRect selectionRect(startColOffset - horizontalScrollOffset, y, endColOffset - startColOffset, lineSpacing);
 
-                painter.setBrush(selectionBackgroundColor);
-                painter.setPen(selectionForegroundColor);
-                painter.fillRect(selectionRect, selectionBackgroundColor);
+                if (selectionRect.isValid()) {
+                    painter.setBrush(selectionBackgroundColor);
+                    painter.setPen(selectionForegroundColor);
+                    painter.fillRect(selectionRect, selectionBackgroundColor);
 
-                // We have to draw the whole linePart again - not just the selected text - and
-                // clip it to the selected area, because tabs are expanded based on where the
-                // text drawing was started, and it was not matching up the unselected text
-                // "underneath", when only the selected part was drawn again.
-                painter.save();
-                painter.setClipRect(selectionRect);
-                painter.drawText(QPoint(getLinePartOffset(metrics, line, tabStops, partIndex), y + baseline), part);
-                painter.restore();
+                    // We have to draw the whole linePart again - not just the selected text - and
+                    // clip it to the selected area, because tabs are expanded based on where the
+                    // text drawing was started, and it was not matching up the unselected text
+                    // "underneath", when only the selected part was drawn again.
+                    painter.save();
+                    painter.setClipRect(selectionRect);
+                    painter.drawText(partPosition, part);
+                    painter.restore();
 
-                painter.setBackground(backgroundColor);
-                painter.setPen(foregroundColor);
+                    painter.setBackground(backgroundColor);
+                    painter.setPen(foregroundColor);
+                }
             }
         }
     }
@@ -707,7 +721,7 @@ void TextViewerWidget::drawLinePart(QPainter& painter, const QFontMetrics& metri
     if (lineIndex == caretLineIndex && caretShown && hasFocus()) {
         // draw caret
         painter.setPen(foregroundColor);
-        int caretX = getLineColumnOffset(metrics, line, tabStops, caretColumn);
+        int caretX = getLineColumnOffset(metrics, lineIndex, caretColumn) - horizontalScrollOffset;
         painter.drawLine(caretX, y, caretX, y + lineSpacing-1);
     }
 }
@@ -910,14 +924,15 @@ void TextViewerWidget::updateScrollbars(bool allowStickingToBottom)
             alignBottomLine();
         }
     }
-    else {  // content fits on the viewport entirely
+    else  // content fits on the viewport entirely
         alignTopLine();
-    }
 }
 
 void TextViewerWidget::handleContentChange()
 {
-    Q_ASSERT(content->getLineCount() > 0);  // , "content must be at least one line");
+    linePartOffsetCache.clear();
+
+    ASSERT2(content->getLineCount() > 0, "content must be at least one line");
 
     // adjust caret and selection line index
     int oldCaretLineIndex = caretLineIndex;
@@ -1015,6 +1030,7 @@ void TextViewerWidget::onCaretBlinkTimer()
 
 void TextViewerWidget::onHeaderSectionResized(int logicalIndex, int oldSize, int newSize)
 {
+    linePartOffsetCache.clear();
     viewport()->update();
 }
 
@@ -1030,9 +1046,8 @@ void TextViewerWidget::copySelection()
     }
     else {
         text = content->getLineText(start.line).mid(start.column).trimmed() + "\n";
-        for (int l = start.line + 1; l < end.line; ++l) {
+        for (int l = start.line + 1; l < end.line; ++l)
             text += content->getLineText(l).trimmed() + "\n";
-        }
         text += content->getLineText(end.line).left(end.column).trimmed();
     }
 
@@ -1072,12 +1087,10 @@ void TextViewerWidget::scrolledVertically(int value)
     int diff = value - topLineIndex;
 
     // aesthetics
-    if (diff > 0) {
+    if (diff > 0)
         alignBottomLine();
-    }
-    else if (diff < 0) {
+    else if (diff < 0)
         alignTopLine();
-    }
 
     topLineIndex = value;
 
@@ -1090,9 +1103,9 @@ Pos::Pos(int line, int column) : line(line), column(column)
 
 bool Pos::operator<(const Pos& other)
 {
-    if (line != other.line)
-        return line < other.line;
-    return column < other.column;
+    return line != other.line
+            ? line < other.line
+            : column < other.column;
 }
 
 bool Pos::operator==(const Pos& other)

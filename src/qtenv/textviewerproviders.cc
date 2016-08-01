@@ -63,6 +63,8 @@ void ModuleOutputContentProvider::refresh()
 
 void ModuleOutputContentProvider::invalidateIndex()
 {
+    lineCache.clear();
+    tabStopCache.clear();
     lineCount = -1;
     entryStartLineNumbers.clear();
 }
@@ -93,11 +95,14 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
     if (lineIndex == lineCount-1)  // empty last line
         return "";
 
+    if (lineCache.count(lineIndex) > 0)
+        return lineCache[lineIndex];
+
     int entryIndex = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     Q_ASSERT(!filter || filter->matches(eventEntry));
 
-    return linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
+    return lineCache[lineIndex] = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
 }
 
 QList<ModuleOutputContentProvider::TabStop> ModuleOutputContentProvider::getTabStops(int lineIndex)
@@ -119,10 +124,13 @@ QList<ModuleOutputContentProvider::TabStop> ModuleOutputContentProvider::getTabS
         return tabStops;
     }
 
+    if (tabStopCache.count(lineIndex) > 0)
+        return tabStopCache[lineIndex];
+
     int entryIndex = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     Q_ASSERT(!filter || filter->matches(eventEntry));
-    return linesProvider->getTabStops(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
+    return tabStopCache[lineIndex] = linesProvider->getTabStops(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
 }
 
 bool ModuleOutputContentProvider::showHeaders()

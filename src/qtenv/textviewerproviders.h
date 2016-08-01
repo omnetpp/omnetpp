@@ -193,6 +193,8 @@ class ModuleOutputContentProvider: public TextViewerContentProvider {
     // cached data
     int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
+    std::map<int, QString> lineCache;
+    std::map<int, QList<TabStop>> tabStopCache;
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode);

@@ -70,6 +70,8 @@ public:
         TabStop(int at, const QColor &col);
     };
 
+    std::map<int, int> linePartOffsetCache;
+
 protected:
     enum ScrollDirection {
         SCROLL_NONE,
@@ -245,10 +247,10 @@ public:
     int getNumVisibleLines();
     int getNumVisibleColumns();
 
-    // measured from the left edge of the viewport (includes margin, scrolling, etc...)
-    int getLinePartOffset(const QFontMetrics &metrics, const QString &line, const QList<TabStop> &tabStops, int partIndex);
-    // the x coordinate of a column in a given line
-    int getLineColumnOffset(const QFontMetrics &metrics, const QString &line, const QList<TabStop> &tabStops, int columnIndex);
+    // measured from the left edge of the viewport (includes margin, header positions, but not scrolling!)
+    int getLinePartOffset(const QFontMetrics &metrics, int lineIndex, int partIndex);
+    // the x coordinate of a column in a given line, not including scrolling
+    int getLineColumnOffset(const QFontMetrics &metrics, int lineIndex, int columnIndex);
     Pos getLineColumnAt(int x, int y);
 };
 
