@@ -714,11 +714,11 @@ class cXMLElement
 
 class cFigure extends cOwnedObject
 {
-    int id;
-    bool visible @getter(isVisible) @editable;
-    string tags @editable;
-    Transform transform @editable @tostring(.str()) @fromstring(cFigure::parseTransform($));
-    cFigure *children[] @getter(getFigure) @sizeGetter(getNumFigures);
+    int id @group(figure);
+    bool visible @group(figure) @getter(isVisible) @editable;
+    string tags @group(figure) @editable;
+    Transform transform @group(figure) @editable @tostring(.str()) @fromstring(cFigure::parseTransform($));
+    cFigure *children[] @group(figure) @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
 class cGroupFigure extends cFigure
@@ -727,93 +727,93 @@ class cGroupFigure extends cFigure
 
 class cAbstractLineFigure extends cFigure
 {
-    Color lineColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    int lineStyle @editable @enum(omnetpp::cFigure::LineStyle);
-    double lineWidth @editable;
-    double lineOpacity @editable;
-    int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
-    int startArrowhead @editable @enum(omnetpp::cFigure::Arrowhead);
-    int endArrowhead @editable @enum(omnetpp::cFigure::Arrowhead);
-    bool zoomLineWidth @editable;
+    Color lineColor @group(line) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    int lineStyle @group(line) @editable @enum(omnetpp::cFigure::LineStyle);
+    double lineWidth @group(line) @editable;
+    double lineOpacity @group(line) @editable;
+    int capStyle @group(line) @editable @enum(omnetpp::cFigure::CapStyle);
+    int startArrowhead @group(line) @editable @enum(omnetpp::cFigure::Arrowhead);
+    int endArrowhead @group(line) @editable @enum(omnetpp::cFigure::Arrowhead);
+    bool zoomLineWidth @group(line) @editable;
 }
 
 class cLineFigure extends cAbstractLineFigure
 {
-    Point start @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    Point end @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point start @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point end @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
 }
 
 class cArcFigure extends cAbstractLineFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
-    double startAngle @editable;
-    double endAngle @editable;
+    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    double startAngle @group(geometry) @editable;
+    double endAngle @group(geometry) @editable;
 }
 
 class cPolylineFigure extends cAbstractLineFigure
 {
-    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    bool smooth @editable;
-    int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
+    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    bool smooth @group(geometry) @editable;
+    int joinStyle @group(line) @editable @enum(omnetpp::cFigure::JoinStyle);
 }
 
 class cAbstractShapeFigure extends cFigure
 {
-    bool outlined @getter(isOutlined) @editable;
-    bool filled @getter(isFilled) @editable;
-    Color lineColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    Color fillColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    int lineStyle @editable @enum(cFigure::LineStyle);
-    double lineWidth @editable;
-    double lineOpacity @editable;
-    double fillOpacity @editable;
-    bool zoomLineWidth @editable;
+    bool outlined @group(outline) @getter(isOutlined) @editable;
+    bool filled @group(fill) @getter(isFilled) @editable;
+    Color lineColor @group(outline) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    Color fillColor @group(fill) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    int lineStyle @group(outline) @editable @enum(cFigure::LineStyle);
+    double lineWidth @group(outline) @editable;
+    double lineOpacity @group(outline) @editable;
+    double fillOpacity @group(fill) @editable;
+    bool zoomLineWidth @group(outline) @editable;
 }
 
 class cRectangleFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
-    double cornerRx @editable;
-    double cornerRy @editable;
+    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    double cornerRx @group(geometry) @editable;
+    double cornerRy @group(geometry) @editable;
 }
 
 class cOvalFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
 }
 
 class cPieSliceFigure extends cAbstractShapeFigure
 {
-    Rectangle bounds @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
-    double startAngle @editable;
-    double endAngle @editable;
+    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    double startAngle @group(geometry) @editable;
+    double endAngle @group(geometry) @editable;
 }
 
 class cPolygonFigure extends cAbstractShapeFigure
 {
-    Point points[] @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    bool smooth @editable;
-    int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
-    int fillRule @editable @enum(omnetpp::cFigure::FillRule);
+    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    bool smooth @group(geometry) @editable;
+    int joinStyle @group(outline) @editable @enum(omnetpp::cFigure::JoinStyle);
+    int fillRule @group(fill) @editable @enum(omnetpp::cFigure::FillRule);
 }
 
 class cPathFigure extends cAbstractShapeFigure
 {
-    string path @editable;
-    Point offset @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    int joinStyle @editable @enum(omnetpp::cFigure::JoinStyle);
-    int capStyle @editable @enum(omnetpp::cFigure::CapStyle);
-    int fillRule @editable @enum(omnetpp::cFigure::FillRule);
+    string path @group(geometry) @editable;
+    Point offset @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    int joinStyle @group(outline) @editable @enum(omnetpp::cFigure::JoinStyle);
+    int capStyle @group(outline) @editable @enum(omnetpp::cFigure::CapStyle);
+    int fillRule @group(fill) @editable @enum(omnetpp::cFigure::FillRule);
 }
 
 class cAbstractTextFigure extends cFigure
 {
-    Point position @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    int anchor @editable @enum(omnetpp::cFigure::Anchor);
-    string text @editable;
-    Font font @editable @tostring(.str()) @fromstring(cFigure::parseFont($));
-    Color color @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    double opacity @editable;
+    Point position @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    int anchor @group(geometry) @editable @enum(omnetpp::cFigure::Anchor);
+    string text @group(text) @editable;
+    Font font @group(text) @editable @tostring(.str()) @fromstring(cFigure::parseFont($));
+    Color color @group(text) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    double opacity @group(text) @editable;
 }
 
 class cTextFigure extends cAbstractTextFigure
@@ -826,14 +826,14 @@ class cLabelFigure extends cAbstractTextFigure
 
 class cAbstractImageFigure extends cFigure
 {
-    Point position @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    int anchor @editable @enum(omnetpp::cFigure::Anchor);
-    double width @editable;
-    double height @editable;
-    int interpolation @editable @enum(omnetpp::cFigure::Interpolation);
-    double opacity @editable;
-    Color tintColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    double tintAmount @editable;
+    Point position @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    int anchor @group(geometry) @editable @enum(omnetpp::cFigure::Anchor);
+    double width @group(geometry) @editable;
+    double height @group(geometry) @editable;
+    int interpolation @group(image) @editable @enum(omnetpp::cFigure::Interpolation);
+    double opacity @group(image) @editable;
+    Color tintColor @group(image) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    double tintAmount @group(image) @editable;
 }
 
 class cImageFigure extends cAbstractImageFigure
