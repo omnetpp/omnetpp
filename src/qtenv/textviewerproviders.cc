@@ -132,9 +132,20 @@ bool ModuleOutputContentProvider::showHeaders()
 
 QStringList ModuleOutputContentProvider::getHeaders()
 {
-    return mode == LogInspector::MESSAGES
-            ? QStringList("Event#") << "Time" << "Relevant Hops" << "Name" << "Info"
-            : QStringList("prefix") << "line";
+    QStringList result;
+
+    switch (mode) {
+        case LogInspector::LOG:
+            result << "prefix" << "line";
+            break;
+        case LogInspector::MESSAGES:
+            result << "Event#" << "Time" << "Relevant Hops" << "Name" << "Info";
+            for (int i = 1; i < 10; ++i)
+                result << "";
+            break;
+    }
+
+    return result;
 }
 
 void *ModuleOutputContentProvider::getUserData(int lineIndex)
@@ -526,7 +537,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
     else
         os << "[no message printer for this object]";
 
-    text += os.str().c_str();
+    text += QString(os.str().c_str()).replace('\t', ' ');
 
     return text;
 }
@@ -550,11 +561,24 @@ QList<EventEntryMessageLinesProvider::TabStop> EventEntryMessageLinesProvider::g
     tabStops.append(TabStop(column, QColor("brown")));
     column += strlen(messageSend.msg->getName()) + 1;
 
-    tabStops.append(TabStop(column, QColor("black")));
+    cMessagePrinter *printer = chooseMessagePrinter(messageSend.msg);
+    std::stringstream os;
+    if (printer)
+        printer->printMessage(os, messageSend.msg);
+    else
+        os << "[no message printer for this object]";
+
+    QString info = os.str().c_str();
+
+    int tabIndex = 0;
+    while (true) {
+        tabStops.append(TabStop(column + tabIndex, QColor("black")));
+        tabIndex = info.indexOf('\t', tabIndex) + 1;
+        if (tabIndex <= 0)
+            break;
+    }
 
     return tabStops;
-
-    throw std::runtime_error("log entry line index out of bounds");
 }
 
 ModulePathsEventEntryFilter::ModulePathsEventEntryFilter(const QStringList& moduleFullPaths, ComponentHistory *componentHistory)

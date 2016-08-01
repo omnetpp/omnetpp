@@ -261,7 +261,7 @@ int TextViewerWidget::getNumVisibleColumns()
 
 int TextViewerWidget::getLinePartOffset(const QFontMetrics& metrics, const QString& line, const QList<TabStop>& tabStops, int partIndex)
 {
-    int offset = leftMargin - horizontalScrollOffset;
+    int offset = horizontalMargin - horizontalScrollOffset;
     for (int i = 0; i < tabStops.size(); ++i) {
         bool last = (i == tabStops.size() - 1);
         QString part = line.mid(tabStops[i].atCharacter, last ? -1 : (tabStops[i+1].atCharacter - tabStops[i].atCharacter));
@@ -623,7 +623,7 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     Q_ASSERT(topLineIndex >= 0 && topLineIndex <= std::max(0, numLines-numVisibleLines));
     Q_ASSERT(numLines == 0 || (caretLineIndex >= 0 && caretLineIndex < numLines));
 
-    int x = leftMargin - horizontalScrollOffset;
+    int x = horizontalMargin - horizontalScrollOffset;
     int lineIndex = topLineIndex;
     int startY = topLineY;
 
@@ -894,7 +894,7 @@ void TextViewerWidget::updateScrollbars(bool allowStickingToBottom)
 
     int viewportWidth = viewport()->width();
     hsb->setMinimum(0);
-    hsb->setMaximum(std::max(0, getMaxVisibleLineWidth() - viewportWidth));
+    hsb->setMaximum(std::max(0, getMaxVisibleLineWidth() - viewportWidth + horizontalMargin));
     hsb->setPageStep(viewportWidth);
     hsb->setSingleStep(4);
 
