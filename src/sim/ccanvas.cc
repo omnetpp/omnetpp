@@ -3203,13 +3203,15 @@ void cPixmapFigure::parse(cProperty *property)
         height = opp_atoul(s);
     if (width > 0 || height > 0)
         setPixmap(Pixmap(width, height));
+    if ((s = property->getValue(PKEY_FILLCOLOR)) != nullptr)
+        pixmap.fill(parseColor(s), 1); // initial fill color
 }
 
 const char **cPixmapFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_RESOLUTION, nullptr };
+        const char *localKeys[] = { PKEY_RESOLUTION, PKEY_FILLCOLOR, nullptr };
         concatArrays(keys, cAbstractImageFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
