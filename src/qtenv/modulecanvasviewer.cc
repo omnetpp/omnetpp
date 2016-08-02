@@ -640,7 +640,7 @@ QRectF ModuleCanvasViewer::getSubmodulesRect()
 void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
 {
     const int margin = 10;
-    if (compoundModuleItem) {
+    if (object && compoundModuleItem) {
         auto rect = compoundModuleItem->boundingRect()
                       .united(getSubmodulesRect())
                       .adjusted(-margin, -margin, margin, margin); // leaving a bit of a margin
@@ -795,6 +795,7 @@ std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect& rect)
 void ModuleCanvasViewer::clear()
 {
     // everything on the animationLayer is handled by the Animator, so don't touch that!
+    backgroundLayer->clear();
     submoduleLayer->clear();
     bubbleLayer->clear();
     submoduleGraphicsItems.clear();

@@ -268,6 +268,10 @@ void ModuleInspector::doSetObject(cObject *obj)
         }
         // so they will appear on the correct places with the updated zoom levels.
         getQtenv()->getAnimator()->redrawMessages();
+    } else {
+        canvasViewer->setZoomFactor(1);
+        if (isToplevel())
+            setEnabled(false);
     }
 
 #ifdef WITH_OSG
@@ -403,12 +407,14 @@ bool ModuleInspector::needsRedraw()
 
 void ModuleInspector::runUntil()
 {
-    getQtenv()->runSimulationLocal(RUNMODE_NORMAL, nullptr, this);
+    if (object)
+        getQtenv()->runSimulationLocal(RUNMODE_NORMAL, nullptr, this);
 }
 
 void ModuleInspector::fastRunUntil()
 {
-    getQtenv()->runSimulationLocal(RUNMODE_FAST, nullptr, this);
+    if (object)
+        getQtenv()->runSimulationLocal(RUNMODE_FAST, nullptr, this);
 }
 
 void ModuleInspector::stopSimulation()
@@ -907,16 +913,21 @@ void ModuleInspector::switchToCanvasView()
     resetOsgViewAction->setVisible(false);
 #endif
 
-    QPointF center = getPref(PREF_CENTER, QPointF()).toPointF();
+    if (object) {
+        QPointF center = getPref(PREF_CENTER, QPointF()).toPointF();
 
-    // if couldn't read a valid center pref, aligning the top left corners
-    // (but if yes, it still has to be called, just with false)
-    canvasViewer->recalcSceneRect(center.isNull());
-    // otherwise restoring the viewport
-    if (!center.isNull())
-        canvasViewer->centerOn(center);
+        // if couldn't read a valid center pref, aligning the top left corners
+        // (but if yes, it still has to be called, just with false)
+        canvasViewer->recalcSceneRect(center.isNull());
+        // otherwise restoring the viewport
+        if (!center.isNull())
+            canvasViewer->centerOn(center);
 
-    setPref(PREF_MODE, 0);
+        setPref(PREF_MODE, 0);
+    }
+    else {
+        canvasViewer->setSceneRect(QRect());
+    }
 }
 
 }  // namespace qtenv

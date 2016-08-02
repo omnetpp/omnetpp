@@ -383,6 +383,9 @@ void Qtenv::storeInspectors(bool closeThem)
         if (insp->isToplevel()) {
             cObject *obj = insp->getObject();
 
+            if (!obj)
+                continue;
+
             localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
             localPrefs->setValue("object", obj->getFullPath().c_str());
             localPrefs->setValue("classname", getObjectShortTypeName(obj));
@@ -1544,10 +1547,6 @@ void Qtenv::objectDeleted(cObject *object)
 
         insp->objectDeleted(object);
 
-        if (insp->getObject() == object && insp->isToplevel()) {
-            inspectors.erase(it);
-            delete insp;
-        }
         it = next;
     }
 }
