@@ -352,6 +352,8 @@ QPen FigureRenderer::createPen(const cAbstractLineFigure *figure, FigureRenderin
     }
     pen.setCapStyle(cap);
 
+    pen.setJoinStyle(Qt::MiterJoin);
+
     return pen;
 }
 
@@ -373,6 +375,9 @@ QPen FigureRenderer::createPen(const cAbstractShapeFigure *figure, FigureRenderi
             case cFigure::LINE_DASHED: style = Qt::DashLine; break;
         }
         pen.setStyle(style);
+
+        pen.setJoinStyle(Qt::MiterJoin);
+        pen.setCapStyle(Qt::FlatCap);
     }
     else
         pen.setStyle(Qt::NoPen);
