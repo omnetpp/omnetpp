@@ -114,14 +114,6 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
     return renderer;
 }
 
-cFigure::Point FigureRenderer::polarToCartesian(cFigure::Point center, double rx, double ry, double rad) const
-{
-    return cFigure::Point(
-            center.x + rx * cos(rad),
-            center.y - ry * sin(rad)
-            );
-}
-
 // from mozilla
 double FigureRenderer::calcVectorAngle(double ux, double uy, double vx, double vy)
 {
@@ -713,11 +705,12 @@ void ArcFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem
     QGraphicsPathItem *arcItem = static_cast<QGraphicsPathItem *>(item);
 
     cFigure::Rectangle bounds = arcFigure->getBounds();
-    cFigure::Point startPoint = polarToCartesian(bounds.getCenter(), bounds.width/2, bounds.height/2, arcFigure->getStartAngle());
-    QPainterPath painter(QPointF(startPoint.x, startPoint.y));
-    painter.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, arcFigure->getStartAngle()*180/M_PI, qAbs(arcFigure->getStartAngle()-arcFigure->getEndAngle())*180/M_PI);
-    arcItem->setPath(painter);
-
+    double start = arcFigure->getStartAngle()*180/M_PI;
+    double end = arcFigure->getEndAngle()*180/M_PI;
+    QPainterPath path;
+    path.arcMoveTo(bounds.x, bounds.y, bounds.width, bounds.height, start);
+    path.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, start, end - start);
+    arcItem->setPath(path);
     setArrows(arcFigure, arcItem, hints->zoom);
 }
 
