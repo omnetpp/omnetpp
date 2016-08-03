@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="5.1.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/icons/about-image.png"/>
