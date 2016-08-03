@@ -48,7 +48,7 @@ WITH_QTENV=yes
 #
 # Set to "yes" to use Qtenv as the default graphical runtime environment (instead of Tkenv)
 #
-PREFER_QTENV=no
+PREFER_QTENV=yes
 
 #
 # Set to "yes" to enable OpenSceneGraph and osgEarth support in Qtenv
@@ -126,7 +126,7 @@ EMBED_TCL_CODE=yes
 
 # Select which Qt version you prefer to use.
 # Possible values: 4, 5. Any other value will disable building Qtenv
-QT_VERSION=4
+QT_VERSION=5
 
 #
 # Compiler and linker options for Qt
