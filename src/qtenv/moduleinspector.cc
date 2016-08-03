@@ -670,14 +670,12 @@ void ModuleInspector::doubleClick(QMouseEvent *event)
 {
     auto objects = canvasViewer->getObjectsAt(event->pos());
 
-    if (!objects.empty()) {
+    if (!objects.empty() && objects.front() != object) {
         if (supportsObject(objects.front()))
             setObject(objects.front());
         else  // If this inspector supports object then no need to inspect one more time.
             emit objectDoubleClicked(objects.front());
-    }
-
-    if (objects.empty() || objects.front() == object) {
+    } else {
         if (event->modifiers() & Qt::ShiftModifier)
             zoomOut(event->pos().x(), event->pos().y());
         else
