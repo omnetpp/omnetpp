@@ -32,13 +32,6 @@ echo Post processing IDE installation files...
 rm -rf ide
 mkdir -p ide
 
-cp -rl linux/gtk/x86 ide
-mv ide/x86 ide/linux32
-cp -rlf ide/linux32/plugins ide
-cp -rlf ide/linux32/features ide
-rm -rf ide/linux32/plugins
-rm -rf ide/linux32/features
-
 cp -rl linux/gtk/x86_64 ide
 mv ide/x86_64 ide/linux64
 cp -rlf ide/linux64/plugins ide
