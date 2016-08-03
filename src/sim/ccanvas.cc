@@ -3428,14 +3428,19 @@ cFigure *cCanvas::createFigure(const char *type) const
     else if (!strcmp(type, "pixmap"))
         figure = new cPixmapFigure();
     else {
-        // find registered class named "<type>Figure" or "c<type>Figure"
-        std::string className = std::string("c") + type + "Figure";
-        className[1] = opp_toupper(className[1]);
-        cObjectFactory *factory = cObjectFactory::find(className.c_str() + 1);  // type without leading "c"
+        // find implementor class
+        cObjectFactory *factory = cObjectFactory::find(type);  // try as is
+        std::string className;
+        if (!factory) {
+            // try capitalizing and adding "Figure" (mind possibly present namespace!)
+            className = std::string(type) + "Figure";
+            int pos = className.rfind("::");
+            int nameStart = pos==std::string::npos ? 0 : pos+2;
+            className[nameStart] = opp_toupper(className[nameStart]);
+            factory = cObjectFactory::find(className.c_str());
+        }
         if (!factory)
-            factory = cObjectFactory::find(className.c_str());  // try with leading "c"
-        if (!factory)
-            throw cRuntimeError("No figure class registered with name '%s' or '%s'", className.c_str() + 1, className.c_str());
+            throw cRuntimeError("Implementation class for figure not found (tried '%s' and '%s')", type, className.c_str());
         cObject *obj = factory->createOne();
         figure = dynamic_cast<cFigure *>(obj);
         if (!figure)
