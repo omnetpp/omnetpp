@@ -1424,7 +1424,7 @@ if test -d ide ; then
         ;;
     macosx)
         cp -r ide/macosx/* ide
-        echo osgi.instance.area.default=../../../../samples >>ide/configuration/config.ini
+        echo osgi.instance.area.default=../../../../../samples >>ide/Eclipse.app/Contents/Eclipse/configuration/config.ini
         rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
         ;;
     *)
