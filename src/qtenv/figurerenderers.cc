@@ -518,14 +518,18 @@ void AbstractTextFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, i
 
 void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
-    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
-    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
+    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
+    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
+
+    ASSERT(textFigure);
+    ASSERT(textItem);
 
     QPointF pos(textFigure->getPosition().x, textFigure->getPosition().y);
 
     QFontMetricsF fontMetric(textItem->font());
-    QRectF bounds = item->boundingRect();
-    QPointF anchor = pos + getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent());
+    QRectF bounds = textItem->textRect();
+    QPointF anchor = pos + getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent())
+            + (bounds.bottomRight() - textItem->boundingRect().bottomRight()) / 2;
 
     setTransform(transform, item, &anchor);
 }
@@ -1149,7 +1153,11 @@ void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figu
 void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
-    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
+    OutlinedTextItem *textItem = static_cast<OutlinedTextItem *>(item);
+
+    ASSERT(textFigure);
+    ASSERT(textItem);
+
     textItem->setText(QObject::trUtf8(textFigure->getText()));
 
     cFigure::Font font = textFigure->getFont();
@@ -1173,33 +1181,41 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 
 void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
-    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
-    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
+    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
+    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
+
+    ASSERT(textFigure);
+    ASSERT(textItem);
 
     cFigure::Color color = textFigure->getColor();
-    QColor qColor(color.red, color.green, color.blue, textFigure->getOpacity()*255);
-    textItem->setPen(QPen(Qt::NoPen));
-    textItem->setBrush(QBrush(qColor));
+    textItem->setBrush(QColor(color.red, color.green, color.blue));
+    textItem->setOpacity(textFigure->getOpacity());
 }
 
 QGraphicsItem *TextFigureRenderer::newItem()
 {
-    return new QGraphicsSimpleTextItem();
+    return new OutlinedTextItem();
 }
 
 void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
 {
-    QGraphicsSimpleTextItem *textItem = static_cast<QGraphicsSimpleTextItem *>(item);
-    cAbstractTextFigure *textFigure = static_cast<cAbstractTextFigure *>(figure);
+    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
+    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
+
+    ASSERT(textFigure);
+    ASSERT(textItem);
 
     QFontMetricsF fontMetric(textItem->font());
-    QRectF bounds = item->boundingRect();
-    QPointF anchor = bounds.topLeft() + getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent());
+    QRectF bounds = textItem->textRect();
+    auto pos = textFigure->getPosition();
+    QPointF offset = (bounds.bottomRight() - textItem->boundingRect().bottomRight()) / 2;
+    QPointF anchor = getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent());
 
     QTransform qTrans;
-    cFigure::Point p = transform.applyTo(textFigure->getPosition());
+    cFigure::Point p = transform.applyTo(pos);
     qTrans.translate(p.x, p.y);
     qTrans.translate(anchor.x(), anchor.y());
+    qTrans.translate(offset.x(), offset.y());
     item->setTransform(qTrans);
 }
 

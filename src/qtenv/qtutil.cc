@@ -252,7 +252,15 @@ void OutlinedTextItem::setText(const QString& text)
 
 QRectF OutlinedTextItem::boundingRect() const
 {
-    return fillItem->boundingRect().united(outlineItem->boundingRect());
+    QRectF rect = fillItem->boundingRect();
+    double width = outlineItem->pen().widthF();
+    rect.adjust(0, 0, width, width);
+    return rect;
+}
+
+QRectF OutlinedTextItem::textRect() const
+{
+    return fillItem->boundingRect();
 }
 
 void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -262,8 +270,19 @@ void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     painter->setPen(Qt::NoPen);
     painter->drawRect(boundingRect());
     painter->restore();
+    painter->save();
+    double halfWidth = outlineItem->pen().widthF() / 2;
+    painter->translate(halfWidth, halfWidth);
     outlineItem->paint(painter, option, widget);
     fillItem->paint(painter, option, widget);
+    painter->restore();
+}
+
+void OutlinedTextItem::setFont(const QFont &font)
+{
+    outlineItem->setFont(font);
+    fillItem->setFont(font);
+    update();
 }
 
 void OutlinedTextItem::setPen(const QPen& pen)

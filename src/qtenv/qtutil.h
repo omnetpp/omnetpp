@@ -24,6 +24,7 @@
 #include <QGraphicsEffect>
 #include <QIcon>
 #include <QTimer>
+#include <QFont>
 
 namespace omnetpp {
 
@@ -96,8 +97,12 @@ public:
     virtual ~OutlinedTextItem();
 
     QRectF boundingRect() const;
+    QRectF textRect() const;
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+    QFont font() const { return fillItem->font(); }
+    void setFont(const QFont &font);
     void setText(const QString &text);
     void setPen(const QPen &pen);
     void setBrush(const QBrush &brush);
