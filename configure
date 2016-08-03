@@ -7025,7 +7025,7 @@ CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
+ac_config_files="$ac_config_files Makefile.inc"
 
 
 #----------------------
@@ -7855,7 +7855,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
-    "test/core/runtest") CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -8305,14 +8304,6 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-
-chmod +x src/utils/opp_makemake
-chmod +x src/utils/opp_test
-chmod +x src/utils/opp_makedep
-chmod +x src/utils/omnest
-chmod +x src/utils/omnetpp
-chmod +x src/utils/opp_test
-chmod +x test/core/runtest
 
 (
 cd src/common && cp ver.h.base ver.h && \

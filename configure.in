@@ -1262,7 +1262,6 @@ CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
 #----------------------
 AC_CONFIG_FILES(
   Makefile.inc
-  test/core/runtest
 )
 
 #----------------------
@@ -1387,14 +1386,6 @@ AC_SUBST(PLATFORM)
 # Generate files
 #
 AC_OUTPUT
-
-chmod +x src/utils/opp_makemake
-chmod +x src/utils/opp_test
-chmod +x src/utils/opp_makedep
-chmod +x src/utils/omnest
-chmod +x src/utils/omnetpp
-chmod +x src/utils/opp_test
-chmod +x test/core/runtest
 
 (
 cd src/common && cp ver.h.base ver.h && \
