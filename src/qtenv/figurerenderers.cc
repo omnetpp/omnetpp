@@ -877,10 +877,17 @@ void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
 
     QPainterPath path;
 
+    double start = pieSliceFigure->getStartAngle()*180/M_PI;
+    double end = pieSliceFigure->getEndAngle()*180/M_PI;
+
+    // This is here to move the spoke to the end angle if there is more than 1.0 pie, c:
+    // but keep it at the start if there is less than -1.0 pie. :c
+    start = std::max(start, end - 360);
+
     path.moveTo(center.x, center.y);
-    path.arcTo(bounds.x, bounds.y, bounds.width, bounds.height,
-               pieSliceFigure->getStartAngle()*180/M_PI, pieSliceFigure->getEndAngle()*180/M_PI);
+    path.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, start, end - start);
     path.closeSubpath();
+
     pathItem->setPath(path);
 }
 
