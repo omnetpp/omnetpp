@@ -1,0 +1,145 @@
+%description:
+Stress test for the FES data structure, with special regard to the optimization
+for zero-delay events (circbuf).
+
+%file: test.ned
+
+simple Test {
+    @isNetwork(true);
+}
+
+%file: test.cc
+
+#include <vector>
+#include <algorithm>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  protected:
+    cEventHeap *fes; // the real FES
+    std::vector<cMessage*> shadowFes;
+    simtime_t lastEventTime = -1;
+  public:
+    virtual void initialize() override;
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void scheduleAt(simtime_t t, cMessage *msg) override;
+    virtual cMessage *cancelEvent(cMessage *msg) override;
+    void compareFes();
+    void dumpFes();
+};
+
+Define_Module(Test);
+
+void Test::initialize()
+{
+    fes = check_and_cast<cEventHeap*>(getSimulation()->getFES());
+    scheduleAt(simTime(), new cMessage());
+}
+
+void Test::handleMessage(cMessage *msg)
+{
+    if (getSimulation()->getEventNumber() > 100000)
+        endSimulation();
+
+    EV << "processing " << msg->getName() << endl;
+
+    if (shadowFes.empty() || shadowFes.front() != msg)
+        throw cRuntimeError("Wrong message delivered");
+
+    if (msg->getArrivalTime() < lastEventTime) // note: the same does not work for priority, because it's possible to schedule an event for the current simtime with a smaller priority than the current event
+        throw cRuntimeError("Out-of-order message delivered");
+    lastEventTime = msg->getArrivalTime();
+
+    delete msg;
+    shadowFes.erase(shadowFes.begin());
+
+    compareFes();
+
+    // cancel a random msg
+    if (!fes->isEmpty() && dblrand() < 0.1) {
+        int k = intrand(fes->getLength());
+        //fes.sort(); -- add this when viewing in Qtenv, to make Cmdenv and Qtenv are consistent (Qtenv inspectors also sort!)
+        delete cancelEvent(check_and_cast<cMessage*>(fes->get(k)));
+    }
+
+    // schedule a random number of messages
+    int n = fes->isEmpty() ? intuniform(1,3) : fes->getLength() < 20 ? intuniform(0,2) : 0;
+    for (int i = 0; i < n; i++) {
+        simtime_t t = dblrand() < 0.7 ? simTime() : simTime() + intuniform(1,3); // t=now is typical in real workloads
+        int prio = dblrand() < 0.7 ? 0 : intuniform(-2,2);  // prio=0 is typical in real workloads
+
+        char name[100];
+        sprintf(name, "msg t=%s prio=%d cause=#%d", t.str().c_str(), prio, (int)getSimulation()->getEventNumber());
+        cMessage *msg = new cMessage(name);
+
+        msg->setSchedulingPriority(prio);
+        scheduleAt(t, msg);
+    }
+}
+
+void Test::scheduleAt(simtime_t t, cMessage *msg)
+{
+    EV << "scheduling " << msg->getName() << endl;
+
+    cSimpleModule::scheduleAt(t, msg);
+
+    shadowFes.push_back(msg);
+
+    std::sort(shadowFes.begin(), shadowFes.end(),
+        [] (const cMessage *a, const cMessage *b) {return a->shouldPrecede(b);});
+
+    compareFes();
+}
+
+cMessage *Test::cancelEvent(cMessage *msg)
+{
+    EV << "cancelling " << msg->getName() << endl;
+
+    cSimpleModule::cancelEvent(msg);
+
+    auto it = std::find(shadowFes.begin(), shadowFes.end(), msg);
+    if (it != shadowFes.end())
+        shadowFes.erase(it);
+
+    compareFes();
+
+    return msg;
+}
+
+void Test::compareFes()
+{
+    fes->sort();
+    int n = fes->getLength();
+    ASSERT(shadowFes.size() == n);
+    for (int i = 0; i < n; i++) {
+        if (fes->get(i) != shadowFes[i]) {
+            dumpFes();
+            throw cRuntimeError("Inconsistency!");
+        }
+    }
+}
+
+void Test::dumpFes()
+{
+    fes->sort();
+    int n = fes->getLength();
+    ASSERT(shadowFes.size() == n);
+    EV << "FES\t\t\t\t\tshadow FES\n";
+    for (int i = 0; i < n; i++) {
+        cMessage *fesMsg = check_and_cast<cMessage*>(fes->get(i));
+        cMessage *shadowMsg = shadowFes[i];
+        EV << fesMsg->getName() << " insOrder=" << fesMsg->getInsertOrder() << "\t\t"
+           <<  shadowMsg->getName() << " insOrder=" << shadowMsg->getInsertOrder();
+        if (fesMsg != shadowMsg)
+            EV << "  <------- MISMATCH";
+        EV << endl;
+    }
+}
+
+}; //namespace
+

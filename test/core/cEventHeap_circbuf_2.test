@@ -31,6 +31,10 @@ void Test::initialize()
 {
     scheduleAt(simTime()+1, new cMessage("timer1"));
     scheduleAt(simTime()+1, new cMessage("timer2"));
+
+    cMessage *msg0 = new cMessage("timer0");
+    msg0->setSchedulingPriority(-1);  // should precede previous ones
+    scheduleAt(simTime()+1, msg0);
 }
 
 void Test::handleMessage(cMessage *msg)
@@ -49,6 +53,8 @@ void Test::handleMessage(cMessage *msg)
 }; //namespace
 
 %contains-regex: stdout
+received: timer0
+.*
 received: timer1
 .*
 received: timer2
