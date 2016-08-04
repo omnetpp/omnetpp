@@ -1,23 +1,7 @@
-<!-- 
-MapQuest - Open Aerial Map
-LOD 1-12 worldwide; 12+ US-only.
-http://developer.mapquest.com/web/products/open/map
-
-NOTE: You are responsible for abiding by the provider's terms of service:
-http://developer.mapquest.com/web/info/terms-of-use
-
-TIP: set your OSG_NUM_HTTP_DATABASE_THREADS to 4 or more!
--->
-
-<map name="MapQuest Open Aerial" type="geocentric" version="2">
- 
-    <image name="mapquest_open_aerial" driver="xyz">
-        <url>http://oatile[1234].mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg</url>
-        <profile>spherical-mercator</profile>
-        <cache type="filesystem">0
-            <path>cache</path>
-        </cache>
-        <!-- <cache_policy usage="cache_only"/> -->
-        <nodata_image>http://oatile3.mqcdn.com/tiles/1.0.0/sat/13/636/6210.jpg</nodata_image>
+<map name="simple" type="geocentric" version="2">
+    <image driver="osg">
+        <!-- Texture saved from http://pics-about-space.com/nasa-world-map-texture -->
+        <url>earth.jpg</url>
+        <profile>global-geodetic</profile>
     </image>
 </map>
