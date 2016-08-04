@@ -2238,6 +2238,14 @@ OMNETPP_BUILDID="internal"
 # Edition identifier in banner: Academic / Commercial / Evaluation
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
+# IDE executable name
+if test "$OMNETPP_PRODUCT" = "OMNeT++"; then
+    OMNETPP_IDE_EXECUTABLE="omnetpp"
+else
+    OMNETPP_IDE_EXECUTABLE="omnest"
+fi
+
+
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
@@ -8317,7 +8325,7 @@ echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 # Test it the IDE was already configured. If not, copy the platform specific
 # files to the IDE root directory
 if test -d ide ; then
-  if test ! -d ide/configuration ; then
+  if test ! -d ide/configuration -a ! -d ide/$OMNETPP_IDE_EXECUTABLE.app/Contents/Eclipse/configuration; then
     echo Configuring the IDE...
     case $PLATFORM in
     win32.x86_64)
@@ -8343,6 +8351,9 @@ if test -d ide ; then
     macosx)
         cp -r ide/macosx/* ide
         echo osgi.instance.area.default=../../../../../samples >>ide/Eclipse.app/Contents/Eclipse/configuration/config.ini
+        mv ide/features ide/Eclipse.app/Contents/Eclipse
+        mv ide/plugins ide/Eclipse.app/Contents/Eclipse
+        mv ide/Eclipse.app ide/$OMNETPP_IDE_EXECUTABLE.app
         rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
         ;;
     *)

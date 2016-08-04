@@ -16,7 +16,7 @@ if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
   exit 1;
 fi
 
-if test ! -d $IDEDIR/configuration; then
+if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/$LAUNCHER.app/Contents/Eclipse/configuration; then
   echo "The IDE is not yet configured. Please run the 'configure' script in the installation root folder!"
   exit 1;
 fi
@@ -41,7 +41,7 @@ case $PLATFORM in
 	open -a $IDEDIR/${LAUNCHER}.app --args $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
         ;;
 *)
-	echo OMNEST IDE is supported only on: Linux, Windows and MacOS X
+	echo OMNEST IDE is supported only on: Linux, Windows and macOS
 	exit 1
         ;;
 esac
