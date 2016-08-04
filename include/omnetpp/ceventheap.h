@@ -41,7 +41,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     int heapCapacity;         // allocated size of the heap[] array
     unsigned long insertCount; // counts insertions
 
-    // circular buffer for events scheduled for the current simtime (quite frequent)
+    // circular buffer for events scheduled for the current simtime (quite frequent); acts as FIFO
     cEvent **cb;              // size of the circular buffer
     int cbsize;               // always power of 2
     int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
@@ -55,6 +55,10 @@ class SIM_API cEventHeap : public cFutureEventSet
     int cblength() const  {return (cbtail-cbhead) & (cbsize-1);}
     cEvent *cbget(int k)  {return cb[(cbhead+k) & (cbsize-1)];}
     void cbgrow();
+
+    void heapInsert(cEvent *event);
+    void cbInsert(cEvent *event);
+    void flushCb();
 
   public:
     /** @name Constructors, destructor, assignment */

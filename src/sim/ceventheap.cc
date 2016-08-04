@@ -116,7 +116,6 @@ void cEventHeap::forEachChild(cVisitor *v)
     for (int i = 1; i <= heapLength; i++)
         if (heap[i])
             v->visit(heap[i]);
-
 }
 
 void cEventHeap::clear()
@@ -188,38 +187,55 @@ void cEventHeap::insert(cEvent *event)
 {
     take(event);
 
-    if (event->getArrivalTime() == simTime() && event->getSchedulingPriority() == 0 && (heapLength == 0 || heap[1]->getArrivalTime() != simTime())) {
-        // scheduled for *now* -- use circular buffer
-        cb[cbtail] = event;
-        event->heapIndex = CBHEAPINDEX(cbtail);
-        CBINC(cbtail);
-        if (cbtail == cbhead)
-            cbgrow();
-    }
-    else {
-        // use heap
-        int i, j;
-
-        event->insertOrder = insertCount++;
-
-        if (++heapLength > heapCapacity) {
-            heapCapacity *= 2;
-            cEvent **newHeap = new cEvent *[heapCapacity+1];
-            for (i = 1; i <= heapLength-1; i++)
-                newHeap[i] = heap[i];
-            delete[] heap;
-            heap = newHeap;
+    // is event eligible for putting it into the cb?
+    bool eligible = false;
+    simtime_t now = simTime();
+    if (event->getArrivalTime() == now) {
+        ASSERT(cbhead == cbtail || cb[cbhead]->getArrivalTime() == now); // causality violation
+        if (event->getSchedulingPriority() == 0) {
+            if (heapLength == 0 || heap[1]->getArrivalTime() > now)
+                eligible = true;
         }
-
-        for (j = heapLength; j > 1; j = i) {
-            i = j>>1;
-            if (*heap[i] <= *event)  // direction
-                break;
-
-            (heap[j] = heap[i])->heapIndex = j;
-        }
-        (heap[j] = event)->heapIndex = j;
+        else if (event->getSchedulingPriority() < 0)
+            flushCb();  // move all events into the heap
     }
+
+    if (eligible)
+        cbInsert(event);
+    else
+        heapInsert(event);
+}
+
+void cEventHeap::cbInsert(cEvent *event)
+{
+    cb[cbtail] = event;
+    event->heapIndex = CBHEAPINDEX(cbtail);
+    CBINC(cbtail);
+    if (cbtail == cbhead)
+        cbgrow();
+}
+
+void cEventHeap::heapInsert(cEvent *event)
+{
+    event->insertOrder = insertCount++;
+
+    if (++heapLength > heapCapacity) {
+        heapCapacity *= 2;
+        cEvent **newHeap = new cEvent *[heapCapacity+1];
+        for (int i = 1; i <= heapLength-1; i++)
+            newHeap[i] = heap[i];
+        delete[] heap;
+        heap = newHeap;
+    }
+
+    int i, j;
+    for (j = heapLength; j > 1; j = i) {
+        i = j>>1;
+        if (*heap[i] <= *event)  // direction
+            break;
+        (heap[j] = heap[i])->heapIndex = j;
+    }
+    (heap[j] = event)->heapIndex = j;
 }
 
 void cEventHeap::cbgrow()
@@ -234,6 +250,13 @@ void cEventHeap::cbgrow()
     cbhead = 0;
     cbtail = cbsize;
     cbsize = newsize;
+}
+
+void cEventHeap::flushCb()
+{
+    for (int i = cbhead; i != cbtail; CBINC(i))
+        heapInsert(cb[i]);
+    cbtail = cbhead;
 }
 
 void cEventHeap::shiftup(int from)
