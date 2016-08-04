@@ -189,6 +189,8 @@ void cEventHeap::insert(cEvent *event)
 {
     take(event);
 
+    event->insertOrder = insertCount++;
+
     if (!useCb) {
         heapInsert(event);
         return;
@@ -224,8 +226,6 @@ void cEventHeap::cbInsert(cEvent *event)
 
 void cEventHeap::heapInsert(cEvent *event)
 {
-    event->insertOrder = insertCount++;
-
     if (++heapLength > heapCapacity) {
         heapCapacity *= 2;
         cEvent **newHeap = new cEvent *[heapCapacity+1];
