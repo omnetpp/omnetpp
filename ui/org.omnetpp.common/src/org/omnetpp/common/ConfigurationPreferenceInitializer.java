@@ -43,16 +43,20 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
                 return omnetppRootEnvPath;
         }
 
-        Path platformPath = new Path(Platform.getInstallLocation().getURL().getFile());
-        if (containsConfigFiles(platformPath.removeLastSegments(1)))
-            return platformPath.removeLastSegments(1);
+        // look for the Makefile.inc or configuser.vc in parent directories
+        IPath path = new Path(Platform.getInstallLocation().getURL().getFile());
+        while (!path.isEmpty() && !path.isRoot()) {
+            path = path.removeLastSegments(1);
+            if (containsConfigFiles(path))
+                return path;
+        }
 
+        // determine the omnetpp_root during development
         String bundleLocationStr = CommonPlugin.getDefault().getBundle().getLocation(); // during development, this will be "reference:file:/C:/.../omnetpp/ui/org.omnetpp.common"
         Path bundleLocation = cleanupBundleLocation(bundleLocationStr);
         if (bundleLocation.removeLastSegments(1).lastSegment().equals("ui"))
             return bundleLocation.removeLastSegments(2);
 
-        // TODO look for the Makefile.inc or configuser.vc in parent directories etc.
         return new Path("");
     }
 
