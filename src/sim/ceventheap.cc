@@ -80,6 +80,7 @@ cEventHeap::cEventHeap(const char *name, int intialCapacity) : cFutureEventSet(n
     cbsize = 4;  // must be power of 2!
     cb = new cEvent *[cbsize];
     cbhead = cbtail = 0;
+    useCb = true;
 }
 
 cEventHeap::cEventHeap(const cEventHeap& other) : cFutureEventSet(other)
@@ -143,6 +144,7 @@ void cEventHeap::copy(const cEventHeap& other)
     cbhead = other.cbhead;
     cbtail = other.cbtail;
     cbsize = other.cbsize;
+    useCb = other.useCb;
     delete[] cb;
     cb = new cEvent *[cbsize];
     for (int i = cbhead; i != cbtail; CBINC(i))
@@ -186,6 +188,11 @@ void cEventHeap::sort()
 void cEventHeap::insert(cEvent *event)
 {
     take(event);
+
+    if (!useCb) {
+        heapInsert(event);
+        return;
+    }
 
     // is event eligible for putting it into the cb?
     bool eligible = false;

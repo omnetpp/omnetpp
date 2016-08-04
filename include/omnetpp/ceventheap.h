@@ -45,6 +45,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     cEvent **cb;              // size of the circular buffer
     int cbsize;               // always power of 2
     int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
+    bool useCb;               // for disabling cb
 
   private:
     void copy(const cEventHeap& other);
@@ -59,6 +60,11 @@ class SIM_API cEventHeap : public cFutureEventSet
     void heapInsert(cEvent *event);
     void cbInsert(cEvent *event);
     void flushCb();
+
+  public:
+    // internal:
+    bool getUseCb() const {return useCb;}
+    void setUseCb(bool b) {ASSERT(cbhead==cbtail); useCb = b;}
 
   public:
     /** @name Constructors, destructor, assignment */
