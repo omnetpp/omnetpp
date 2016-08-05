@@ -273,7 +273,8 @@ void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     painter->save();
     double halfWidth = outlineItem->pen().widthF() / 2;
     painter->translate(halfWidth + offset.x(), halfWidth + offset.y());
-    outlineItem->paint(painter, option, widget);
+    if (haloEnabled)
+        outlineItem->paint(painter, option, widget);
     fillItem->paint(painter, option, widget);
     painter->restore();
 }
@@ -313,6 +314,14 @@ void OutlinedTextItem::setOffset(const QPointF& offset)
 {
     if (this->offset != offset) {
         this->offset = offset;
+        update();
+    }
+}
+
+void OutlinedTextItem::setHaloEnabled(bool enabled)
+{
+    if (enabled != haloEnabled) {
+        haloEnabled = enabled;
         update();
     }
 }

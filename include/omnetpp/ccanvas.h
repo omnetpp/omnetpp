@@ -1447,6 +1447,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         Point position;
         Color color;  // note: tkpath's text supports separate colors and opacity for fill and outline -- ignore because probably SWT doesn't support it!
         double opacity;
+        bool halo;
         Font font;
         std::string text;
         Anchor anchor;
@@ -1457,7 +1458,7 @@ class SIM_API cAbstractTextFigure : public cFigure
     public:
         /** @name Constructors, destructor, assignment. */
         //@{
-        explicit cAbstractTextFigure(const char *name=nullptr) : cFigure(name), color(BLACK), opacity(1), anchor(ANCHOR_NW) {}
+        explicit cAbstractTextFigure(const char *name=nullptr) : cFigure(name), color(BLACK), opacity(1), halo(false), anchor(ANCHOR_NW) {}
         cAbstractTextFigure(const cAbstractTextFigure& other) : cFigure(other) {copy(other);}
         cAbstractTextFigure& operator=(const cAbstractTextFigure& other);
         //@}
@@ -1484,6 +1485,9 @@ class SIM_API cAbstractTextFigure : public cFigure
         virtual void setColor(const Color& color);
         virtual double getOpacity() const  {return opacity;}
         virtual void setOpacity(double opacity);
+        virtual bool getHalo() const  {return halo;}
+        virtual void setHalo(bool enabled); // note: in Qtenv, halo may be slow to render for large-sized "text" figures (but OK for "label" figures)
+
         virtual const Font& getFont() const  {return font;}
         virtual void setFont(Font font);
         virtual const char *getText() const  {return text.c_str();}

@@ -90,7 +90,9 @@ protected:
     // we just misuse them in the paint method
     QGraphicsSimpleTextItem *outlineItem; // never has a Brush
     QGraphicsSimpleTextItem *fillItem; // never has a Pen
+
     QBrush backgroundBrush;
+    bool haloEnabled = true;
 
     QPointF offset;
 
@@ -110,6 +112,7 @@ public:
     void setBrush(const QBrush &brush);
     void setBackgroundBrush(const QBrush &brush);
     void setOffset(const QPointF& offset);
+    void setHaloEnabled(bool enabled);
 };
 
 // Label in the bottom right corner that display zoom factor

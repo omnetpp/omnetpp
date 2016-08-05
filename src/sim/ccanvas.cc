@@ -127,6 +127,7 @@ static const char *PKEY_TEXT = "text";
 static const char *PKEY_FONT = "font";
 static const char *PKEY_COLOR = "color";
 static const char *PKEY_OPACITY = "opacity";
+static const char *PKEY_HALO = "halo";
 static const char *PKEY_IMAGE = "image";
 static const char *PKEY_RESOLUTION = "resolution";
 static const char *PKEY_INTERPOLATION = "interpolation";
@@ -2814,6 +2815,7 @@ void cAbstractTextFigure::copy(const cAbstractTextFigure& other)
     setPosition(other.getPosition());
     setColor(other.getColor());
     setOpacity(other.getOpacity());
+    setHalo(getHalo());
     setFont(other.getFont());
     setText(other.getText());
     setAnchor(other.getAnchor());
@@ -2846,6 +2848,8 @@ void cAbstractTextFigure::parse(cProperty *property)
         setColor(parseColor(s));
     if ((s = property->getValue(PKEY_OPACITY)) != nullptr)
         setOpacity(opp_atof(s));
+    if ((s = property->getValue(PKEY_HALO)) != nullptr)
+        setHalo(parseBool(s));
     if (property->containsKey(PKEY_FONT))
         setFont(parseFont(property, PKEY_FONT));
     if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
@@ -2899,6 +2903,14 @@ void cAbstractTextFigure::setOpacity(double opacity)
         return;
     ENSURE_RANGE01(opacity);
     this->opacity = opacity;
+    fireVisualChange();
+}
+
+void cAbstractTextFigure::setHalo(bool halo)
+{
+    if (halo == this->halo)
+        return;
+    this->halo = halo;
     fireVisualChange();
 }
 

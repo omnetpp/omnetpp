@@ -817,6 +817,7 @@ class cAbstractTextFigure extends cFigure
     Font font @group(text) @editable @tostring(.str()) @fromstring(cFigure::parseFont($));
     Color color @group(text) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
     double opacity @group(text) @editable;
+    bool halo @group(text) @editable;
 }
 
 class cTextFigure extends cAbstractTextFigure
