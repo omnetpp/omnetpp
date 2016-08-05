@@ -255,12 +255,12 @@ QRectF OutlinedTextItem::boundingRect() const
     QRectF rect = fillItem->boundingRect();
     double width = outlineItem->pen().widthF();
     rect.adjust(0, 0, width, width);
-    return rect;
+    return rect.translated(offset);
 }
 
 QRectF OutlinedTextItem::textRect() const
 {
-    return fillItem->boundingRect();
+    return fillItem->boundingRect().translated(offset);
 }
 
 void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -272,7 +272,7 @@ void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     painter->restore();
     painter->save();
     double halfWidth = outlineItem->pen().widthF() / 2;
-    painter->translate(halfWidth, halfWidth);
+    painter->translate(halfWidth + offset.x(), halfWidth + offset.y());
     outlineItem->paint(painter, option, widget);
     fillItem->paint(painter, option, widget);
     painter->restore();
@@ -305,6 +305,14 @@ void OutlinedTextItem::setBackgroundBrush(const QBrush& brush)
 {
     if (backgroundBrush != brush) {
         backgroundBrush = brush;
+        update();
+    }
+}
+
+void OutlinedTextItem::setOffset(const QPointF& offset)
+{
+    if (this->offset != offset) {
+        this->offset = offset;
         update();
     }
 }

@@ -93,8 +93,7 @@ void ArrangeFigures::initialize()
                 figureColumnProperty->setIndex(newIndex.c_str());
 
                 // instantiate figure from the updated property
-                std::map<cFigure*,double> dummy;
-                cFigure *copy = getCanvas()->parseFigure(figureColumnProperty, dummy);
+                cFigure *copy = getCanvas()->parseFigure(figureColumnProperty);
                 delete figureColumnProperty;
                 copy->move(xoffset, yoffset);
                 xoffset += columnWidth;

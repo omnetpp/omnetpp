@@ -41,8 +41,8 @@ protected:
 protected:
     void assertCanvas();
     virtual FigureRenderer *getRendererFor(cFigure *figure);
-    virtual void drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints);
-    virtual void refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints, bool ancestorTransformChanged = false);
+    virtual void drawFigureRec(cFigure *figure, FigureRenderingHints *hints);
+    virtual void refreshFigureRec(cFigure *figure, FigureRenderingHints *hints);
     virtual bool fulfillsTagFilter(cFigure *figure);
 
 public:

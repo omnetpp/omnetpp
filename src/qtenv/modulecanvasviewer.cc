@@ -89,6 +89,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr, networkLayer);
+    networkLayer->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 
     // that beautiful green shade behind everything
     setBackgroundBrush(QColor("#a0e0a0"));
@@ -711,8 +712,10 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
         double horizExcess = std::max(0.0, viewport()->width() - rect.width());
         double vertExcess = std::max(0.0, viewport()->height() - rect.height());
 
+        auto figuresRect = figureLayer->mapToScene(figureLayer->childrenBoundingRect()).boundingRect();
+
         rect = rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess)
-                 .united(figureLayer->childrenBoundingRect() // including canvas figures
+                 .united(figuresRect // including canvas figures
                            .adjusted(-margin, -margin, margin, margin)); // leaving a bit of a margin
 
         setSceneRect(rect);

@@ -30,6 +30,7 @@ namespace tkenv {
 std::map<std::string, FigureRenderer *> FigureRenderer::rendererCache;
 
 Register_Class(NullRenderer);
+Register_Class(GroupFigureRenderer);
 Register_Class(LineFigureRenderer);
 Register_Class(ArcFigureRenderer);
 Register_Class(PolylineFigureRenderer);

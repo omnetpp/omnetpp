@@ -716,6 +716,7 @@ class cFigure extends cOwnedObject
 {
     int id @group(figure);
     bool visible @group(figure) @getter(isVisible) @editable;
+    double zIndex @group(figure) @editable;
     string tooltip @group(figure) @editable;
     cObject *associatedObject @group(figure);
     string tags @group(figure) @editable;

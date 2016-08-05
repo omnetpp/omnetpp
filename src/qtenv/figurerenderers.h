@@ -37,13 +37,10 @@ namespace omnetpp {
 namespace qtenv {
 
 struct FigureRenderingHints
-{
-        double zoom;
-        std::string defaultFont;
-        int defaultFontSize;
-
-        FigureRenderingHints() :
-            zoom(1), defaultFont("Arial"), defaultFontSize(12){}
+{ // all of these should be overwritten before use
+    double zoom = 1;
+    std::string defaultFont = "Arial";
+    int defaultFontSize = 12;
 };
 
 class FigureRenderer : public cObject // because Register_Class() takes cObject*
@@ -99,14 +96,14 @@ protected:
                                 double x, double y, bool isRel = false) const;
 
     QPen createPen(const cAbstractLineFigure *figure, FigureRenderingHints *hints) const;
-    QPen createPen(const cAbstractShapeFigure * figure, FigureRenderingHints *hints) const;
+    QPen createPen(const cAbstractShapeFigure *figure, FigureRenderingHints *hints) const;
     QBrush createBrush(const cAbstractShapeFigure *figure) const;
 
-    virtual void setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset = nullptr) const;
+    virtual void setTransform(const cFigure::Transform& transform, QGraphicsItem *item) const;
 
     virtual void refreshGeometry(cFigure* figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void refreshVisual(cFigure* figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform);
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
 
     virtual QGraphicsItem *newItem() = 0;
     QGraphicsItem *createGeometry(cFigure *figure, FigureRenderingHints *hints);
@@ -118,8 +115,8 @@ public:
     virtual ~FigureRenderer() {}
 
     static FigureRenderer *getRendererFor(cFigure *figure);
-    QGraphicsItem *render(cFigure *figure, GraphicsLayer *layer, const cFigure::Transform &transform, FigureRenderingHints *hints);
-    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
+    QGraphicsItem *render(cFigure *figure, GraphicsLayer *layer, FigureRenderingHints *hints);
+    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints);
 };
 
 class AbstractShapeFigureRenderer : public FigureRenderer
@@ -128,29 +125,27 @@ class AbstractShapeFigureRenderer : public FigureRenderer
     QGraphicsItem *newItem() override;
 };
 
-//TODO remove?
-class AbstractTextFigureRenderer : public FigureRenderer
-{
-protected:
-    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform);
-};
-
 class AbstractImageFigureRenderer : public FigureRenderer
 {
 protected:
-    virtual void setTransform(const cFigure::Transform &transform, QGraphicsItem *item, const QPointF *offset) const override { }
-    void setImageTransform(cAbstractImageFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform, double naturalWidth, double naturalHeight, bool translateOnly);
-    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform &transform, FigureRenderingHints *hints);
+    void setImageTransform(cAbstractImageFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform, double naturalWidth, double naturalHeight, bool translateOnly, double zoom);
+    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints);
 };
 
 class NullRenderer : public FigureRenderer
 {
 protected:
-    virtual void setTransform(const cFigure::Transform&, QGraphicsItem*, const QPointF* = 0) const {}
     virtual QGraphicsItem *newItem() { return nullptr; }
     virtual void createVisual(cFigure*, QGraphicsItem*, FigureRenderingHints *hints) {}
     virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*, FigureRenderingHints *hints) {}
+};
+
+class GroupFigureRenderer : public FigureRenderer
+{
+protected:
+    virtual QGraphicsItem *newItem() { return new GraphicsLayer(); }
+    virtual void createVisual(cFigure*, QGraphicsItem*, FigureRenderingHints *) {}
+    virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*, FigureRenderingHints *) {}
 };
 
 class AbstractLineFigureRenderer : public FigureRenderer
@@ -226,24 +221,24 @@ protected:
 class PathFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform);
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
 };
 
-class TextFigureRenderer : public AbstractTextFigureRenderer
+class TextFigureRenderer : public FigureRenderer
 {
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints);
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
     virtual QGraphicsItem *newItem();
 };
 
 class LabelFigureRenderer : public TextFigureRenderer
 {
 protected:
-    virtual void setTransform(const cFigure::Transform&, QGraphicsItem *item, const QPointF* = 0) const {}
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform);
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
 };
 
 class ImageFigureRenderer : public AbstractImageFigureRenderer
@@ -251,7 +246,7 @@ class ImageFigureRenderer : public AbstractImageFigureRenderer
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
     virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform) override;
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
     virtual QGraphicsItem *newItem() override;
 };
 
@@ -259,13 +254,13 @@ class PixmapFigureRenderer : public ImageFigureRenderer
 {
 protected:
     virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform) override;
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
 };
 
 class IconFigureRenderer : public ImageFigureRenderer
 {
 protected:
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform) override;
+    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
 };
 
 } // namespace qtenv

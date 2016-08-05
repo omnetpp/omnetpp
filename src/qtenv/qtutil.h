@@ -92,6 +92,8 @@ protected:
     QGraphicsSimpleTextItem *fillItem; // never has a Pen
     QBrush backgroundBrush;
 
+    QPointF offset;
+
 public:
     OutlinedTextItem(QGraphicsItem *parent = nullptr, QGraphicsScene *scene = nullptr);
     virtual ~OutlinedTextItem();
@@ -107,6 +109,7 @@ public:
     void setPen(const QPen &pen);
     void setBrush(const QBrush &brush);
     void setBackgroundBrush(const QBrush &brush);
+    void setOffset(const QPointF& offset);
 };
 
 // Label in the bottom right corner that display zoom factor

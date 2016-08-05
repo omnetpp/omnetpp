@@ -34,6 +34,7 @@ namespace omnetpp {
 namespace qtenv {
 
 Register_Class(NullRenderer);
+Register_Class(GroupFigureRenderer);
 Register_Class(LineFigureRenderer);
 Register_Class(ArcFigureRenderer);
 Register_Class(PolylineFigureRenderer);
@@ -431,41 +432,42 @@ QPointF FigureRenderer::getAnchorOffset(cFigure::Anchor anchor, double width, do
     return -offset;
 }
 
-void FigureRenderer::setTransform(const cFigure::Transform& transform, QGraphicsItem *item, const QPointF *offset) const
+void FigureRenderer::setTransform(const cFigure::Transform& transform, QGraphicsItem *item) const
 {
-    QTransform qTrans(transform.a, transform.b, 0, transform.c, transform.d, 0, transform.t1, transform.t2, 1);
-    if (offset)
-        qTrans.translate(offset->x(), offset->y());
-    item->setTransform(qTrans);
+    item->setTransform(QTransform(
+                           transform.a,  transform.b,  0,
+                           transform.c,  transform.d,  0,
+                           transform.t1, transform.t2, 1));
 }
 
-QGraphicsItem *FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, const cFigure::Transform& transform, FigureRenderingHints *hints)
+QGraphicsItem *FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, FigureRenderingHints *hints)
 {
     QGraphicsItem *item = createGeometry(figure, hints);
     createVisual(figure, item, hints);
-    refreshTransform(figure, item, transform);
+    refreshTransform(figure, item, hints);
 
     if (item) {
         item->setParentItem(layer);
         item->setData(ITEMDATA_TOOLTIP, QString(figure->getTooltip()));
+        item->setZValue(figure->getZIndex());
     }
 
     return item;
 }
 
-void FigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
+void FigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
         refreshVisual(figure, item, hints);
     if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA))
         refreshGeometry(figure, item, hints);
     if (what & cFigure::CHANGE_TRANSFORM)
-        refreshTransform(figure, item, transform);
+        refreshTransform(figure, item, hints);
 }
 
-void FigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
+void FigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
-    setTransform(transform, item);
+    setTransform(figure->getTransform(), item);
 }
 
 QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure, FigureRenderingHints *hints)
@@ -491,6 +493,7 @@ void FigureRenderer::refreshVisual(cFigure *figure, QGraphicsItem *item, FigureR
 {
     createVisual(figure, item, hints);
     item->setData(ITEMDATA_TOOLTIP, QString(figure->getTooltip()));
+    item->setZValue(figure->getZIndex());
 }
 
 void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -506,35 +509,7 @@ QGraphicsItem *AbstractShapeFigureRenderer::newItem()
     return new PathItem();
 }
 
-void AbstractTextFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
-{
-    if (what & cFigure::CHANGE_VISUAL)
-        refreshVisual(figure, item, hints);
-    if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM)) {
-        refreshGeometry(figure, item, hints);
-        refreshTransform(figure, item, transform);
-    }
-}
-
-void AbstractTextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
-{
-    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
-    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
-
-    ASSERT(textFigure);
-    ASSERT(textItem);
-
-    QPointF pos(textFigure->getPosition().x, textFigure->getPosition().y);
-
-    QFontMetricsF fontMetric(textItem->font());
-    QRectF bounds = textItem->textRect();
-    QPointF anchor = pos + getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent())
-            + (bounds.bottomRight() - textItem->boundingRect().bottomRight()) / 2;
-
-    setTransform(transform, item, &anchor);
-}
-
-void AbstractImageFigureRenderer::setImageTransform(cAbstractImageFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform, double naturalWidth, double naturalHeight, bool translateOnly)
+void AbstractImageFigureRenderer::setImageTransform(cAbstractImageFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform, double naturalWidth, double naturalHeight, bool translateOnly, double zoom)
 {
     double width = figure->getWidth();
     if (width <= 0)
@@ -545,34 +520,39 @@ void AbstractImageFigureRenderer::setImageTransform(cAbstractImageFigure *figure
         height = naturalHeight;
 
     cFigure::Point pos = figure->getPosition();
-    QPointF translation = getAnchorOffset(figure->getAnchor(), width, height);
+    QPointF offset = getAnchorOffset(figure->getAnchor(), width, height);
 
     QTransform qTrans;
     if (translateOnly) {
-        cFigure::Point p = transform.applyTo(pos);
-        translation.rx() += p.x;
-        translation.ry() += p.y;
+        cFigure::Point p = figure->getTransform().applyTo(pos) * zoom;
+        offset.rx() += p.x;
+        offset.ry() += p.y;
     } else {
         qTrans = QTransform(transform.a, transform.b, 0,
                             transform.c, transform.d, 0,
                             transform.t1, transform.t2, 1);
-        translation.rx() += pos.x;
-        translation.ry() += pos.y;
+        offset.rx() += pos.x;
+        offset.ry() += pos.y;
     }
 
-    qTrans.translate(translation.x(), translation.y());
-    qTrans.scale(width / naturalWidth, height / naturalHeight);
+    QPointF scale(width / naturalWidth, height / naturalHeight);
 
-    item->setTransform(qTrans);
+    QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem *>(item);
+    ASSERT(pixmapItem);
+
+    pixmapItem->setOffset(offset.x() / scale.x(), offset.y() / scale.y());
+
+    qTrans.scale(scale.x(), scale.y());
+    pixmapItem->setTransform(qTrans);
 }
 
-void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, const cFigure::Transform& transform, FigureRenderingHints *hints)
+void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints)
 {
     if (what & cFigure::CHANGE_VISUAL)
         refreshVisual(figure, item, hints);
     if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM)) {
         refreshGeometry(figure, item, hints);
-        refreshTransform(figure, item, transform);
+        refreshTransform(figure, item, hints);
     }
 }
 
@@ -652,40 +632,36 @@ QGraphicsItem *LineFigureRenderer::newItem()
 void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, double zoom)
 {
     GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[1]);
 
-    if (arcFigure->getStartArrowhead() != cFigure::ARROW_NONE) {
+    { // should set the arrow up even if it isn't visible, so the bounding box is in the right place (even if empty)
         auto b = arcFigure->getBounds();
-        cFigure::Point center = b.getCenter();
-        cFigure::Point radii = b.getSize() / 2;
+        QPointF center(b.getCenter().x, b.getCenter().y);
+        QPointF radii(b.width/2, b.height/2);
 
         double angle = arcFigure->getStartAngle();
 
         // this is from the center towards the end of the arc
-        cFigure::Point delta(cos(angle) * radii.x, -sin(angle) * radii.y);
+        QPointF delta(cos(angle) * radii.x(), -sin(angle) * radii.y());
 
         // this is the direction in which the arc ends
-        cFigure::Point tangent(-sin(angle) * radii.x, -cos(angle) * radii.y);
+        QPointF tangent(-sin(angle) * radii.x(), -cos(angle) * radii.y());
 
-        startArrow->setVisible(true);
-
-        cFigure::Point start = center + delta + tangent;
-        cFigure::Point end = center + delta;
-
-        startArrow->setEndPoints(QPointF(start.x, start.y), QPointF(end.x, end.y));
+        startArrow->setEndPoints(center + delta + tangent, center + delta);
         // use these two instead of the one above to make the arrowheads keep their
         // shapes even if the line they are on is transformed heavily (incomplete)
         // (also see the similar comment in graphicspatharrowitem.cc)
         //cFigure::Point transfDir = arcFigure->getTransform().applyTo(end) - arcFigure->getTransform().applyTo(start);
         //startArrow->setEndPoints(QPointF(end.x - transfDir.x, end.y - transfDir.y), QPointF(end.x, end.y));
     }
-    else
-        startArrow->setVisible(false);
 
-    if (arcFigure->getEndArrowhead() != cFigure::ARROW_NONE) {
+    startArrow->setVisible(arcFigure->getStartArrowhead() != cFigure::ARROW_NONE);
+
+
+    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[1]);
+
+    {
         auto b = arcFigure->getBounds();
         QPointF center(b.getCenter().x, b.getCenter().y);
-
         QPointF radii(b.width/2, b.height/2);
 
         double angle = arcFigure->getEndAngle();
@@ -696,11 +672,11 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
         // this is the direction in which the arc begins
         QPointF tangent(-sin(angle) * radii.x(), -cos(angle) * radii.y());
 
-        endArrow->setVisible(true);
         endArrow->setEndPoints(center + delta - tangent, center + delta);
     }
-    else
-        endArrow->setVisible(false);
+
+    endArrow->setVisible(arcFigure->getEndArrowhead() != cFigure::ARROW_NONE);
+
 
     setArrowStyle(arcFigure, startArrow, endArrow, zoom);
 }
@@ -1112,14 +1088,10 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
         prevCommand = command->code;
     }
 
-    pathItem->setPath(painter);
-}
+    auto o = pathFigure->getOffset();
+    painter.translate(o.x, o.y);
 
-void PathFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
-{
-    cFigure::Point offset = static_cast<cPathFigure *>(figure)->getOffset();
-    QPointF qOffset = QPointF(offset.x, offset.y);
-    setTransform(transform, item, &qOffset);
+    pathItem->setPath(painter);
 }
 
 void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1158,7 +1130,16 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     ASSERT(textFigure);
     ASSERT(textItem);
 
-    textItem->setText(QObject::trUtf8(textFigure->getText()));
+    textItem->setText(QString::fromUtf8(textFigure->getText()));
+}
+
+void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
+{
+    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
+    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
+
+    ASSERT(textFigure);
+    ASSERT(textItem);
 
     cFigure::Font font = textFigure->getFont();
 
@@ -1177,19 +1158,44 @@ void TextFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     qFont.setUnderline(font.style & cFigure::FONT_UNDERLINE);
 
     textItem->setFont(qFont);
-}
-
-void TextFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
-{
-    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
-    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
-
-    ASSERT(textFigure);
-    ASSERT(textItem);
 
     cFigure::Color color = textFigure->getColor();
     textItem->setBrush(QColor(color.red, color.green, color.blue));
     textItem->setOpacity(textFigure->getOpacity());
+    textItem->setHaloEnabled(textFigure->getHalo());
+}
+
+// XXX: necessary? sufficient? could we have a cleaner solution?
+void TextFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints)
+{
+    if (what & cFigure::CHANGE_VISUAL)
+        refreshVisual(figure, item, hints);
+    if (what & (cFigure::CHANGE_GEOMETRY | cFigure::CHANGE_INPUTDATA | cFigure::CHANGE_TRANSFORM)) {
+        refreshGeometry(figure, item, hints);
+        refreshTransform(figure, item, hints);
+    }
+}
+
+void TextFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
+{
+    OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
+    cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
+
+    ASSERT(textFigure);
+    ASSERT(textItem);
+
+    cFigure::Point p = textFigure->getPosition();
+
+    QPointF offset(p.x, p.y);
+
+    QFontMetricsF fontMetric(textItem->font());
+    QRectF textRect = textItem->textRect();
+    offset += getAnchorOffset(textFigure->getAnchor(), textRect.width(), textRect.height(), fontMetric.ascent())
+            + (textRect.bottomRight() - textItem->boundingRect().bottomRight()) / 2; // outline offset
+
+    textItem->setOffset(offset);
+
+    setTransform(figure->getTransform(), item);
 }
 
 QGraphicsItem *TextFigureRenderer::newItem()
@@ -1197,7 +1203,7 @@ QGraphicsItem *TextFigureRenderer::newItem()
     return new OutlinedTextItem();
 }
 
-void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform& transform)
+void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     OutlinedTextItem *textItem = dynamic_cast<OutlinedTextItem *>(item);
     cAbstractTextFigure *textFigure = dynamic_cast<cAbstractTextFigure *>(figure);
@@ -1205,18 +1211,18 @@ void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item,
     ASSERT(textFigure);
     ASSERT(textItem);
 
-    QFontMetricsF fontMetric(textItem->font());
-    QRectF bounds = textItem->textRect();
-    auto pos = textFigure->getPosition();
-    QPointF offset = (bounds.bottomRight() - textItem->boundingRect().bottomRight()) / 2;
-    QPointF anchor = getAnchorOffset(textFigure->getAnchor(), bounds.width(), bounds.height(), fontMetric.ascent());
+    item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 
-    QTransform qTrans;
-    cFigure::Point p = transform.applyTo(pos);
-    qTrans.translate(p.x, p.y);
-    qTrans.translate(anchor.x(), anchor.y());
-    qTrans.translate(offset.x(), offset.y());
-    item->setTransform(qTrans);
+    cFigure::Point p = figure->getTransform().applyTo(textFigure->getPosition()) * hints->zoom;
+
+    QPointF offset(p.x, p.y);
+
+    QFontMetricsF fontMetric(textItem->font());
+    QRectF textRect = textItem->textRect();
+    offset += getAnchorOffset(textFigure->getAnchor(), textRect.width(), textRect.height(), fontMetric.ascent())
+            + (textRect.bottomRight() - textItem->boundingRect().bottomRight()) / 2; // outline offset
+
+    textItem->setOffset(offset);
 }
 
 void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1248,11 +1254,13 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
     imageItem->setGraphicsEffect(colorizeEffect);
 }
 
-void ImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
+void ImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cImageFigure *imageFigure = dynamic_cast<cImageFigure *>(figure);
     ASSERT(imageFigure);
-    setImageTransform(imageFigure, item, transform, imageFigure->getImageNaturalWidth(), imageFigure->getImageNaturalHeight(), false);
+    setImageTransform(imageFigure, item, figure->getTransform(),
+                      imageFigure->getImageNaturalWidth(), imageFigure->getImageNaturalHeight(),
+                      false, hints->zoom);
 }
 
 QGraphicsItem *ImageFigureRenderer::newItem()
@@ -1282,20 +1290,27 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
     pixmapItem->setPixmap(QPixmap::fromImage(image));
 }
 
-void PixmapFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
+void PixmapFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPixmapFigure *pixmapFigure = dynamic_cast<cPixmapFigure *>(figure);
     ASSERT(pixmapFigure);
     ASSERT(item);
-    setImageTransform(pixmapFigure, item, transform, pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(), false);
+    setImageTransform(pixmapFigure, item, figure->getTransform(),
+                      pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(),
+                      false, hints->zoom);
 }
 
-void IconFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform)
+void IconFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cIconFigure *iconFigure = dynamic_cast<cIconFigure *>(figure);
     ASSERT(iconFigure);
     ASSERT(item);
-    setImageTransform(iconFigure, item, transform, iconFigure->getImageNaturalWidth(), iconFigure->getImageNaturalHeight(), true);
+
+    item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+
+    setImageTransform(iconFigure, item, figure->getTransform(),
+                      iconFigure->getImageNaturalWidth(), iconFigure->getImageNaturalHeight(),
+                      true, hints->zoom);
 }
 
 }  // namespace qtenv

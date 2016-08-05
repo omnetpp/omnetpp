@@ -59,18 +59,15 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
         layer->removeItem(networkLayer);
 
     layer->clear();
+    layer->setScale(hints->zoom);
     items.clear();
 
     // draw
-    if (canvas) {
-        cFigure::Transform transform;
-        transform.scale(hints->zoom);
-        drawFigureRec(canvas->getRootFigure(), transform, hints);
-    }
-    else {
+    if (canvas)
+        drawFigureRec(canvas->getRootFigure(), hints);
+    else
         if (networkLayer)
             layer->addItem(networkLayer);
-    }
 }
 
 // TODO: delete comment when cRuntimeError class is available
@@ -112,20 +109,24 @@ void CanvasRenderer::setExceptTags(const char *tags)
     exceptTagBits = canvas->parseTags(tags);
 }
 
-void CanvasRenderer::drawFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints)
+void CanvasRenderer::drawFigureRec(cFigure *figure, FigureRenderingHints *hints)
 {
     if (figure->isVisible() && fulfillsTagFilter(figure)) {
-        cFigure::Transform transform(parentTransform);
-        figure->updateParentTransform(transform);
-
         FigureRenderer *renderer = getRendererFor(figure);
-        QGraphicsItem *item = renderer->render(figure, layer, transform, hints);
+        QGraphicsItem *item = renderer->render(figure, layer, hints);
 
-        if (item)
+        if (item) {
             items[figure] = item;
 
+            auto parentFigure = figure->getParentFigure();
+            auto parentItem = items.count(parentFigure) > 0 ? items[parentFigure] : layer;
+            item->setParentItem(parentItem);
+
+            item->setZValue(figure->getZIndex());
+        }
+
         for (int i = 0; i < figure->getNumFigures(); i++)
-            drawFigureRec(figure->getFigure(i), transform, hints);
+            drawFigureRec(figure->getFigure(i), hints);
 
         if (canvas->getSubmodulesLayer() == figure)
             if (networkLayer)
@@ -146,38 +147,23 @@ void CanvasRenderer::refresh(FigureRenderingHints *hints)
             // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
         }
         else if (changes != 0) {
-            cFigure::Transform transform;
-            // TODO fillFigureRenderingHints in ModuleInspector class
-            transform.scale(hints->zoom);
-            refreshFigureRec(rootFigure, transform, hints);
+            refreshFigureRec(rootFigure, hints);
             // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
         }
     }
 }
 
-void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform& parentTransform, FigureRenderingHints *hints, bool ancestorTransformChanged)
+void CanvasRenderer::refreshFigureRec(cFigure *figure, FigureRenderingHints *hints)
 {
     uint8_t localChanges = figure->getLocalChangeFlags();
     uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
 
-    if (localChanges & cFigure::CHANGE_TRANSFORM)
-        ancestorTransformChanged = true;  // must refresh this figure and its entire subtree
+    if (localChanges)
+        getRendererFor(figure)->refresh(figure, items[figure], localChanges, hints);
 
-    if (localChanges || subtreeChanges || ancestorTransformChanged) {
-        cFigure::Transform transform(parentTransform);
-        figure->updateParentTransform(transform);
-
-        uint8_t what = localChanges | (ancestorTransformChanged ? cFigure::CHANGE_TRANSFORM : 0);
-        if (what) {
-            FigureRenderer *renderer = getRendererFor(figure);
-            renderer->refresh(figure, items[figure], what, transform, hints);
-        }
-
-        if (subtreeChanges || ancestorTransformChanged) {
-            for (int i = 0; i < figure->getNumFigures(); i++)
-                refreshFigureRec(figure->getFigure(i), transform, hints, ancestorTransformChanged);
-        }
-    }
+    if (subtreeChanges)
+        for (int i = 0; i < figure->getNumFigures(); i++)
+            refreshFigureRec(figure->getFigure(i), hints);
 }
 
 }  // namespace qtenv

@@ -103,6 +103,14 @@ class TKENV_API NullRenderer : public AbstractCanvasItemFigureRenderer
         virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints) override {}
 };
 
+class TKENV_API GroupFigureRenderer : public AbstractCanvasItemFigureRenderer
+{
+    protected:
+        virtual const char *getItemType() override {return "group";}
+        virtual std::string getCoords(cFigure *figure, Tcl_Interp *interp, const cFigure::Transform& transform, FigureRenderingHints *hints) override {return "0 0 0 0";}
+        virtual void addOptions(cFigure *figure, int8_t what, Tcl_Interp *interp, int& argc, const char *argv[], const cFigure::Transform& transform, FigureRenderingHints *hints) override {}
+};
+
 class TKENV_API AbstractLineFigureRenderer : public AbstractCanvasItemFigureRenderer
 {
     protected:

@@ -98,7 +98,7 @@ static const char *PKEY_VISIBLE = "visible";
 static const char *PKEY_TOOLTIP = "tooltip";
 static const char *PKEY_TAGS = "tags";
 static const char *PKEY_TRANSFORM = "transform";
-static const char *PKEY_CHILDZ = "childZ";
+static const char *PKEY_ZINDEX = "zIndex";
 static const char *PKEY_BOUNDS = "bounds";
 static const char *PKEY_POS = "pos";
 static const char *PKEY_POINTS = "points";
@@ -462,7 +462,7 @@ std::string cFigure::Pixmap::str() const
 
 //----
 
-cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId), visible(true),
+cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId), zIndex(0), visible(true),
         tooltip(nullptr), associatedObject(nullptr), tags(nullptr), tagBits(0),
         localChanges(0), subtreeChanges(0)
 {
@@ -832,6 +832,8 @@ void cFigure::parse(cProperty *property)
         setVisible(parseBool(s));
     if ((s = property->getValue(PKEY_TOOLTIP)) != nullptr)
         setTooltip(s);
+    if ((s = property->getValue(PKEY_ZINDEX)) != nullptr)
+        setZIndex(opp_atof(s));
     int numTags = property->getNumValues(PKEY_TAGS);
     if (numTags > 0) {
         std::string tags;
@@ -869,7 +871,7 @@ bool cFigure::isAllowedPropertyKey(const char *key) const
 
 const char **cFigure::getAllowedPropertyKeys() const
 {
-    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_TOOLTIP, PKEY_TAGS, PKEY_CHILDZ, PKEY_TRANSFORM, nullptr};
+    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_ZINDEX, PKEY_TOOLTIP, PKEY_TAGS, PKEY_TRANSFORM, nullptr};
     return keys;
 }
 
@@ -893,6 +895,7 @@ cFigure *cFigure::dupTree() const
 void cFigure::copy(const cFigure& other)
 {
     setVisible(other.isVisible());
+    setZIndex(getZIndex());
     setTooltip(other.getTooltip());
     setAssociatedObject(other.getAssociatedObject());
     setTags(other.getTags());
@@ -979,27 +982,10 @@ void cFigure::addFigureBelow(cFigure *figure, cFigure *referenceFigure)
     addFigure(figure, refPos);
 }
 
-inline double getZ(cFigure *figure, const std::map<cFigure *, double>& orderMap)
+void cFigure::insertChild(cFigure *figure)
 {
-    const double defaultZ = 0.0;
-    std::map<cFigure *, double>::const_iterator it = orderMap.find(figure);
-    return (it == orderMap.end()) ? defaultZ : it->second;
-}
-
-struct LessZ
-{
-    std::map<cFigure *, double>& orderMap;
-    LessZ(std::map<cFigure *, double>& orderMap) : orderMap(orderMap) {}
-    bool operator()(cFigure *figure1, cFigure *figure2) { return getZ(figure1, orderMap) < getZ(figure2, orderMap); }
-};
-
-void cFigure::insertChild(cFigure *figure, std::map<cFigure *, double>& orderMap)
-{
-    // Assuming that existing children are z-ordered, insert a new child at the appropriate place.
-    // Z-order comes from the orderMap; if a figure is not in the map, its Z is assumed to be zero.
     take(figure);
-    std::vector<cFigure *>::iterator it = std::upper_bound(children.begin(), children.end(), figure, LessZ(orderMap));
-    children.insert(it, figure);
+    children.push_back(figure);
     refreshTagBits();
     fireStructuralChange();
 }
@@ -3353,17 +3339,15 @@ bool cCanvas::containsCanvasItems(cProperties *properties)
 
 void cCanvas::addFiguresFrom(cProperties *properties)
 {
-    std::map<cFigure *, double> orderMap;
-
     // Note: the following code assumes that parent figures precede their children, otherwise a "parent not found" error will occur
     for (int i = 0; i < properties->getNumProperties(); i++) {
         cProperty *property = properties->get(i);
         if (property->isName("figure"))
-            parseFigure(property, orderMap);
+            parseFigure(property);
     }
 }
 
-cFigure *cCanvas::parseFigure(cProperty *property, std::map<cFigure *, double>& orderMap) const
+cFigure *cCanvas::parseFigure(cProperty *property) const
 {
     try {
         const char *path = property->getIndex();
@@ -3391,10 +3375,7 @@ cFigure *cCanvas::parseFigure(cProperty *property, std::map<cFigure *, double>& 
             const char *type = opp_nulltoempty(property->getValue(PKEY_TYPE));
             figure = createFigure(type);
             figure->setName(name);
-            const char *order = property->getValue(PKEY_CHILDZ);
-            if (order)
-                orderMap[figure] = opp_atof(order);
-            parent->insertChild(figure, orderMap);
+            parent->insertChild(figure);
         }
         else {
             figure->raiseToTop();

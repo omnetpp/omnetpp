@@ -292,6 +292,7 @@ class SIM_API cFigure : public cOwnedObject
         static int lastId;
         static cStringPool stringPool;
         int id;
+        double zIndex;
         bool visible; // treated as structural change, for simpler handling
         const char *tooltip; // stringpool'd
         cObject *associatedObject;
@@ -344,7 +345,7 @@ class SIM_API cFigure : public cOwnedObject
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
-        void insertChild(cFigure *figure, std::map<cFigure*,double>& orderMap);
+        void insertChild(cFigure *figure);
         void refreshTagBits();
         void refreshTagBitsRec();
         int64_t getTagBits() const {return tagBits;}
@@ -432,6 +433,16 @@ class SIM_API cFigure : public cOwnedObject
          * translate(), scale(), rotate(), skewx()/skewy() methods.
          */
         virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
+
+        /**
+         * Returns the z-index of the figure.
+         */
+        virtual double getZIndex() const {return zIndex;}
+
+        /**
+         * Sets the z-index of the figure.
+         */
+        virtual void setZIndex(double zIndex) {this->zIndex = zIndex; fireStructuralChange();}
 
         /**
          * Returns the tooltip of the figure, or nullptr if it does not have one.
@@ -564,6 +575,8 @@ class SIM_API cFigure : public cOwnedObject
          * Inserts the given figure to the list of children at the given position.
          */
         virtual void addFigure(cFigure *figure, int pos);
+
+//TODO comment: primary source of z-order is the z-index field, which is left unchanged by raise/lower/addBelow/addAbove methods!!!
 
         /**
          * Inserts the given figure into the child list after the reference figure.
@@ -704,7 +717,7 @@ class SIM_API cGroupFigure : public cFigure
         //@{
         virtual cGroupFigure *dup() const override  {return new cGroupFigure(*this);}
         virtual std::string info() const override;
-        virtual const char *getRendererClassName() const override {return "";} // non-visual figure
+        virtual const char *getRendererClassName() const override {return "GroupFigureRenderer";}
         virtual void moveLocal(double dx, double dy) override {}
         //@}
 };
@@ -1767,7 +1780,7 @@ class SIM_API cCanvas : public cOwnedObject
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
     public:
         // internal:
-        virtual cFigure *parseFigure(cProperty *property, std::map<cFigure*,double>& orderMap) const;
+        virtual cFigure *parseFigure(cProperty *property) const;
         virtual cFigure *createFigure(const char *type) const;
         static bool containsCanvasItems(cProperties *properties);
         virtual void addFiguresFrom(cProperties *properties);

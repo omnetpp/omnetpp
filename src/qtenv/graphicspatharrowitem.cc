@@ -69,6 +69,11 @@ QPainterPath GraphicsPathArrowItem::shape() const
     return result;
 }
 
+QRectF GraphicsPathArrowItem::boundingRect() const
+{
+    return isVisible() ? QGraphicsPolygonItem::boundingRect() : QRectF();
+}
+
 void GraphicsPathArrowItem::setEndPoints(const QPointF& start, const QPointF& end)
 {
     setPos(end);
