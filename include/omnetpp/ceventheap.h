@@ -39,7 +39,7 @@ class SIM_API cEventHeap : public cFutureEventSet
     cEvent **heap;            // heap array  (heap[0] always empty)
     int heapLength;           // number of elements on the heap
     int heapCapacity;         // allocated size of the heap[] array
-    unsigned long insertCount; // counts insertions
+    eventnumber_t insertCount; // counts insertions; needed because heap's insert is not stable (does not keep order)
 
     // circular buffer for events scheduled for the current simtime (quite frequent); acts as FIFO
     cEvent **cb;              // size of the circular buffer

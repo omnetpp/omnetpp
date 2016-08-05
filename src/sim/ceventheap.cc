@@ -57,7 +57,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 
 cEventHeap::cEventHeap(const char *name, int intialCapacity) : cFutureEventSet(name)
 {
-    insertCount = 0L;
+    insertCount = 0;
 
     heapLength = 0;
     heapCapacity = intialCapacity;
