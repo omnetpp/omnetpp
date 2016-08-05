@@ -38,11 +38,7 @@ Register_Class(cEventHeap);
 
 inline bool operator>(cEvent& a, cEvent& b)
 {
-    return a.getArrivalTime() > b.getArrivalTime() ? true :
-           a.getArrivalTime() < b.getArrivalTime() ? false :
-           (a.getSchedulingPriority() > b.getSchedulingPriority()) ? true :
-           (a.getSchedulingPriority() < b.getSchedulingPriority()) ? false :
-           a.getInsertOrder() > b.getInsertOrder();
+    return b.shouldPrecede(&a);
 }
 
 inline bool operator<=(cEvent& a, cEvent& b)
@@ -54,17 +50,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 {
     cEvent *m1 = *(cEvent **)p1;
     cEvent *m2 = *(cEvent **)p2;
-
-    if (m1->getArrivalTime() < m2->getArrivalTime())
-        return -1;
-    if (m1->getArrivalTime() > m2->getArrivalTime())
-        return 1;
-
-    int dpri = m1->getSchedulingPriority() - m2->getSchedulingPriority();
-    if (dpri)
-        return dpri;
-
-    return (m1->getInsertOrder() < m2->getInsertOrder()) ? -1 : 1;
+    return cEvent::compareBySchedulingOrder(m1, m2);
 }
 
 //----

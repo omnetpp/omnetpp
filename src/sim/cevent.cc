@@ -118,3 +118,26 @@ cEvent& cEvent::operator=(const cEvent& event)
     return *this;
 }
 
+bool cEvent::shouldPrecede(const cEvent *other) const
+{
+    return getArrivalTime() < other->getArrivalTime() ? true :
+           getArrivalTime() > other->getArrivalTime() ? false :
+           getSchedulingPriority() == other->getSchedulingPriority() ? getInsertOrder() < other->getInsertOrder() :
+           getSchedulingPriority() < other->getSchedulingPriority() ? true :
+           getSchedulingPriority() > other->getSchedulingPriority() ? false :
+           getInsertOrder() < other->getInsertOrder();
+}
+
+int cEvent::compareBySchedulingOrder(const cEvent *a, const cEvent *b)
+{
+    if (a->getArrivalTime() < b->getArrivalTime())
+        return -1;
+    if (a->getArrivalTime() > b->getArrivalTime())
+        return 1;
+
+    int priorityDiff = a->getSchedulingPriority() - b->getSchedulingPriority();
+    if (priorityDiff)
+        return priorityDiff;
+
+    return a->getInsertOrder() < b->getInsertOrder() ? -1 : 1; // they cannot be equal
+}

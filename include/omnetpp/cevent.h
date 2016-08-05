@@ -70,6 +70,9 @@ class SIM_API cEvent : public cOwnedObject
     // internal: used by the parallel simulation kernel.
     virtual int getSrcProcId() const {return -1;}
 
+    // internal: utility function
+    static int compareBySchedulingOrder(const cEvent *a, const cEvent *b);
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
@@ -192,6 +195,15 @@ class SIM_API cEvent : public cOwnedObject
      * object being deleted. Stale events are discarded by the scheduler.
      */
     virtual bool isStale() {return false;}
+
+    /**
+     * Returns true if this event precedes the given one in scheduling order,
+     * and false otherwise. Scheduling order is defined by the arrival time
+     * first, the scheduling priority second, and the scheduling order (a.k.a
+     * FES insertion order) third. Note that this method generally only
+     * produces useful results for events inserted in the FES.
+     */
+    bool shouldPrecede(const cEvent *event) const;
 
     /**
      * This method performs the action associated with the event. When a
