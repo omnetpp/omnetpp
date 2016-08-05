@@ -1,15 +1,25 @@
 module Pieslice
 {
     @class(ArrangeFigures);
-    @display("bgb=1000,1200");
+    @arrange(startPos=50,100; lineSpacing=120; columnWidth=70);
+    @display("bgb=1200,1100");
 
-    @figure[pc1](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250);
-    @figure[pc2](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; fillColor=#0000ff);
-    @figure[pc3](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; lineColor=#ff0000);
-    @figure[pc4](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; lineWidth=3);
-    @figure[pc5](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; lineStyle=solid);
-    @figure[pc6](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; lineStyle=dotted);
-    @figure[pc7](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; lineStyle=dashed);
-    @figure[pc8](type=pieslice; pos=10,0; size=40,10; startAngle=0; endAngle=250; fillColor=#0000ff; lineColor=#ff0000; lineWidth=3; lineStyle=dashed);
+    @addColumn[0](endAngle=-60; lineWidth=2; fillColor=green);
+    @addColumn[1](endAngle=0; lineWidth=2; fillColor=green);
+    @addColumn[2](endAngle=60; lineWidth=2; fillColor=green);
+    @addColumn[3](endAngle=120; lineWidth=2; fillColor=green);
+    @addColumn[4](endAngle=180; lineWidth=2; fillColor=green);
+    @addColumn[5](endAngle=240; lineWidth=2; fillColor=green);
+    @addColumn[6](endAngle=360; lineWidth=2; fillColor=green);
+    @addColumn[7](endAngle=420; lineWidth=2; fillColor=green);
+
+    @figure[ps01](type=pieslice; pos=0,0; size=50,100; startAngle=-60);
+    @figure[ps02](type=pieslice; pos=0,0; size=50,100; startAngle=0);
+    @figure[ps03](type=pieslice; pos=0,0; size=50,100; startAngle=60);
+    @figure[ps04](type=pieslice; pos=0,0; size=50,100; startAngle=120);
+    @figure[ps05](type=pieslice; pos=0,0; size=50,100; startAngle=180);
+    @figure[ps06](type=pieslice; pos=0,0; size=50,100; startAngle=240);
+    @figure[ps07](type=pieslice; pos=0,0; size=50,100; startAngle=360);
+    @figure[ps08](type=pieslice; pos=0,0; size=50,100; startAngle=420);
 }
 

@@ -1,4 +1,4 @@
-module Anchor
+module ShapeAnchor
 {
     @display("bgb=800,500");
 

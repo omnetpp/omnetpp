@@ -1,15 +1,19 @@
 module Oval
 {
     @class(ArrangeFigures);
-    @display("bgb=1000,1200");
+    @arrange(startPos=100,100; lineSpacing=70; columnWidth=70);
+    @display("bgb=1000,500");
 
-    @figure[ov1](type=oval; pos=10,0; size=190,10);
-    @figure[ov2](type=oval; pos=10,0; size=190,10; fillColor=#0000ff);
-    @figure[ov3](type=oval; pos=10,0; size=190,10; lineColor=#ff0000);
-    @figure[ov4](type=oval; pos=10,0; size=190,10; lineWidth=3);
-    @figure[ov5](type=oval; pos=10,0; size=190,10; lineStyle=solid);
-    @figure[ov6](type=oval; pos=10,0; size=190,10; lineStyle=dotted);
-    @figure[ov7](type=oval; pos=10,0; size=190,10; lineStyle=dashed);
-    @figure[ov8](type=oval; pos=10,0; size=190,10; fillColor=#0000ff; lineColor=#ff0000; lineWidth=3; lineStyle=dashed);
+    @addColumn[0](fillColor=green; lineWidth=2);
+    @addColumn[1](fillColor=green; lineWidth=2; size=0,);
+    @addColumn[2](fillColor=green; lineWidth=2; size=10,);
+    @addColumn[3](fillColor=green; lineWidth=2; size=30,);
+    @addColumn[4](fillColor=green; lineWidth=2; size=50,);
+    
+    @figure[ov1](type=oval; anchor=center; pos=0,0);
+    @figure[ov2](type=oval; anchor=center; pos=0,0; size=,0);
+    @figure[ov3](type=oval; anchor=center; pos=0,0; size=,10);
+    @figure[ov4](type=oval; anchor=center; pos=0,0; size=,30);
+    @figure[ov5](type=oval; anchor=center; pos=0,0; size=,50);
 }
 

@@ -1,26 +1,26 @@
 module Polygon
 {
     @class(ArrangeFigures);
-    @display("bgb=1000,1200");
+    @arrange(startPos=50,50; lineSpacing=70; columnWidth=70);
+    @display("bgb=1000,600");
 
-    @figure[pgn00](type=polygon; points=10,0,30,18,100,5,200,5,200,0);
-    @figure[pgn01](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080);
-    @figure[pgn02](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineColor=#00ff00);
-    @figure[pgn04](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineStyle=solid);
-    @figure[pgn05](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineStyle=dashed);
-    @figure[pgn06](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineStyle=dotted);
-    @figure[pgn09](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineWidth=3; lineStyle=solid);
-    @figure[pgn08](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineWidth=3; lineStyle=dashed);
-    @figure[pgn10](type=polygon; points=10,0,30,18,100,5,200,5,200,0; fillColor=#808080; lineWidth=3; lineStyle=dotted);
+    @addColumn[0](smooth=false; fillRule=nonzero; fillColor=green; lineWidth=2);
+    @addColumn[1](smooth=false; fillRule=evenodd; fillColor=green; lineWidth=2);
 
-    @figure[pgn20](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true);
-    @figure[pgn21](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080);
-    @figure[pgn22](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineColor=#00ff00);
-    @figure[pgn24](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineStyle=solid);
-    @figure[pgn25](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineStyle=dashed);
-    @figure[pgn26](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineStyle=dotted);
-    @figure[pgn29](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineWidth=3; lineStyle=solid);
-    @figure[pgn28](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineWidth=3; lineStyle=dashed);
-    @figure[pgn30](type=polygon; points=10,0,30,18,100,5,200,5,200,0; smooth=true; fillColor=#808080; lineWidth=3; lineStyle=dotted);
+    @addColumn[2](smooth=true; fillRule=nonzero; fillColor=green; lineWidth=2);
+    @addColumn[3](smooth=true; fillRule=evenodd; fillColor=green; lineWidth=2);
+
+
+    @figure[pgn00](type=polygon; points=0,0, 40,0, 50,50);
+    @figure[pgn01](type=polygon; points=0,0, 0,40, 50,50);
+
+    @figure[pgn02](type=polygon; points=0,0, 20,-10, 40,0, 50,50);
+    @figure[pgn03](type=polygon; points=0,0, 20,-10, 0,40, 50,50);
+
+    @figure[pgn04](type=polygon; points=0,0, 40,40, 10,40, 50,0, 50,50, 0,50);
+    @figure[pgn05](type=polygon; points=0,0, 40,40, 40,10, 0,50, 50,50, 50,0);
+
+    @figure[pgn06](type=polygon; points=5,0, 50,0, 50,50, 0,50, 0,10, 40,10, 40,40, 10,40, 10,20, 30,20, 30,30, 20,30, 5,20);
+    @figure[pgn07](type=polygon; points=0,5, 0,50, 50,50, 50,0, 10,0, 10,40, 40,40, 40,10, 20,10, 20,30, 30,30, 30,20, 20,5);
 }
 
