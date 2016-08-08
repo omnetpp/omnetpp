@@ -352,7 +352,9 @@ void MainWindow::showStopDialog()
 
 void MainWindow::closeStopDialog()
 {
-    stopDialog->close();
+    if (stopDialog->isVisible())
+        stopDialog->close();
+
     setEnabled(true);
 }
 

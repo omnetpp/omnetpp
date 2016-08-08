@@ -55,6 +55,8 @@ protected:
       QAction *toChildrenModeAction;
       QAction *toInheritanceModeAction;
 
+      void doSetMode(Mode mode);
+
 protected slots:
       void onTreeViewActivated(QModelIndex index);
       void onDataChanged();

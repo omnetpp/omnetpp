@@ -119,7 +119,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     layout->setSpacing(0);
     parent->setMinimumSize(20, 20);
 
-    setMode(mode);
+    doSetMode(mode);
 
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
@@ -157,6 +157,21 @@ void GenericObjectInspector::recreateModel()
     model = newModel;
 
     connect(model, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(onDataChanged()));
+}
+
+void GenericObjectInspector::doSetMode(Mode mode)
+{
+    if (this->mode != mode) {
+        this->mode = mode;
+        setPref(PREF_MODE, (int)mode);
+    }
+
+    toGroupedModeAction->setChecked(mode == Mode::GROUPED);
+    toFlatModeAction->setChecked(mode == Mode::FLAT);
+    toChildrenModeAction->setChecked(mode == Mode::CHILDREN);
+    toInheritanceModeAction->setChecked(mode == Mode::INHERITANCE);
+
+    recreateModel();
 }
 
 void GenericObjectInspector::mousePressEvent(QMouseEvent *event)
@@ -200,15 +215,8 @@ void GenericObjectInspector::createContextMenu(QPoint pos)
 
 void GenericObjectInspector::setMode(Mode mode)
 {
-    this->mode = mode;
-
-    toGroupedModeAction->setChecked(mode == Mode::GROUPED);
-    toFlatModeAction->setChecked(mode == Mode::FLAT);
-    toChildrenModeAction->setChecked(mode == Mode::CHILDREN);
-    toInheritanceModeAction->setChecked(mode == Mode::INHERITANCE);
-
-    recreateModel();
-    setPref(PREF_MODE, (int)mode);
+    if (this->mode != mode)
+        doSetMode(mode);
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj)
@@ -226,7 +234,7 @@ void GenericObjectInspector::doSetObject(cObject *obj)
     }
 
     // will recreate the model for the new object
-    setMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());
+    doSetMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());
 
     model->expandNodesIn(treeView, expanded);
 }
