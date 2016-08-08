@@ -834,6 +834,9 @@ class StaticEnv : public cEnvir
     virtual void attachDebugger() override {}
     virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override {unsupported();}
     virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override {unsupported();}
+    virtual double getAnimationTime() const override {return 0;}
+    virtual double getAnimationSpeed() const override {return 0;}
+    virtual double getRemainingAnimationHoldTime() const override {return 0;}
 
     // lifecycle listeners
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override {}

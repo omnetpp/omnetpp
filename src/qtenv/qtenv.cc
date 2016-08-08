@@ -1824,6 +1824,22 @@ void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, int& outW
     outAscent = std::round(metrics.ascent());
 }
 
+double Qtenv::getAnimationTime() const
+{
+    //TOOD
+}
+
+double Qtenv::getAnimationSpeed() const
+{
+    //TOOD
+}
+
+
+double Qtenv::getRemainingAnimationHoldTime() const
+{
+    //TOOD
+}
+
 void Qtenv::channelDisplayStringChanged(cChannel *channel)
 {
     cGate *gate = channel->getSourceGate();

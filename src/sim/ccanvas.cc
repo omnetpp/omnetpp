@@ -3423,7 +3423,7 @@ void cPixmapFigure::setPixelOpacity(int x, int y, double opacity)
 
 //------
 
-cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160))
+cCanvas::cCanvas(const char *name) : cOwnedObject(name), backgroundColor(cFigure::Color(160,224,160)), animationHoldEndTime(0)
 {
     rootFigure = new cGroupFigure("rootFigure");
     take(rootFigure);
@@ -3669,6 +3669,21 @@ std::vector<std::string> cCanvas::getAllTagsAsVector() const
     for (std::map<std::string, int>::const_iterator it = tagBitIndex.begin(); it != tagBitIndex.end(); ++it)
         result.push_back(it->first);
     return result;
+}
+
+void cCanvas::setAnimationSpeed(double animationSpeed, const cObject *source)
+{
+    if (animationSpeed <= 0)
+        animationSpeedMap.erase(source);
+    else
+        animationSpeedMap[source] = animationSpeed;
+}
+
+void cCanvas::holdSimulationFor(double animationTimeDelta)
+{
+    double t = getEnvir()->getAnimationTime() + animationTimeDelta;
+    if (t > animationHoldEndTime)
+        animationHoldEndTime = t;
 }
 
 }  // namespace omnetpp

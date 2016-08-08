@@ -2878,6 +2878,8 @@ class SIM_API cCanvas : public cOwnedObject
         cFigure *rootFigure;
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
         static std::map<std::string,cObjectFactory*> figureTypes;
+        std::map<const cObject*,double> animationSpeedMap;  // maps source to animationSpeed
+        double animationHoldEndTime; // the effective one will be the maximum endTime of all visible canvases
     public:
         // internal:
         virtual cFigure *parseFigure(cProperty *property) const;
@@ -2887,6 +2889,8 @@ class SIM_API cCanvas : public cOwnedObject
         virtual uint64_t parseTags(const char *s);
         virtual std::string getTags(uint64_t tagBits);
         void dumpSupportedPropertyKeys(std::ostream& out) const;
+        const std::map<const cObject*,double>& getAnimationSpeedMap() const {return animationSpeedMap;}  // for e.g. Qtenv
+        double getAnimationHoldEndTime() const {return animationHoldEndTime;}  // for e.g. Qtenv
     private:
         void copy(const cCanvas& other);
     public:
@@ -3037,6 +3041,13 @@ class SIM_API cCanvas : public cOwnedObject
          */
         virtual std::vector<std::string> getAllTagsAsVector() const;
         //@}
+
+        /** @name Animation. */
+        //@{
+        virtual void setAnimationSpeed(double animationSpeed, const cObject *source);  // stored in (object,speed) map; the slowest one (=minimum) will take effect (this is just a request); 0 and negative values remove setting
+        virtual void holdSimulationFor(double animationTimeDelta);  // just animate (no event processing) for the given interval from the current animation time; simulation time does not progress during this interval
+        //@}
+
 };
 
 }  // namespace omnetpp

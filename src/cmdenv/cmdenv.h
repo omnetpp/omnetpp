@@ -88,6 +88,9 @@ class CMDENV_API Cmdenv : public EnvirBase
 
      virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
      virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+     virtual double getAnimationTime() const override {return 0;}
+     virtual double getAnimationSpeed() const override {return 0;}
+     virtual double getRemainingAnimationHoldTime() const override {return 0;}
 
    protected:
      virtual void displayException(std::exception& ex) override;

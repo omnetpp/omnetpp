@@ -237,6 +237,9 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
       virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+      virtual double getAnimationTime() const override;
+      virtual double getAnimationSpeed() const override;
+      virtual double getRemainingAnimationHoldTime() const override;
 
       virtual void bubble(cComponent *component, const char *text) override;
 
