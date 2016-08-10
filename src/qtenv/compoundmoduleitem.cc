@@ -362,10 +362,8 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
         outlineWidth = 2;
     cmi->setOutlineWidth(outlineWidth);
 
-    cmi->setData(1, QVariant::fromValue((cObject *)mod));
-
-    // background tooltip
-    cmi->setToolTip(ds.getTagArg("bgtt", 0));
+    cmi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)mod));
+    cmi->setData(ITEMDATA_TOOLTIP, QString(ds.getTagArg("bgtt", 0)));
 
     // background image
     const char *imageName = ds.getTagArg("bgi", 0);

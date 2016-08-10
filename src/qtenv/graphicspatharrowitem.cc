@@ -19,10 +19,15 @@
 #include <cmath>
 #include <QPen>
 #include <QDebug>
+#include "qtutil.h"
+
+namespace omnetpp {
+namespace qtenv {
 
 void GraphicsPathArrowItem::updatePolygon()
 {
     QPolygonF polygon;
+
     polygon.append(QPointF(0, 0));
     polygon.append(QPointF(-arrowLength, -arrowWidth / 2));
     polygon.append(QPointF(-arrowLength * fillRatio, 0));
@@ -41,7 +46,8 @@ GraphicsPathArrowItem::GraphicsPathArrowItem(QGraphicsItem *parent)
     setFillRule(Qt::WindingFill);
     updatePolygon();
     setPen(QPen(QColor("black"), 1, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
-    setData(1, parentItem()->data(1));
+    setData(ITEMDATA_COBJECT, parentItem()->data(ITEMDATA_COBJECT));
+    setData(ITEMDATA_TOOLTIP, parentItem()->data(ITEMDATA_TOOLTIP));
 }
 
 QPainterPath GraphicsPathArrowItem::shape() const
@@ -114,3 +120,6 @@ void GraphicsPathArrowItem::setSizeForPenWidth(double penWidth, double scale)
     setArrowWidth(size);
     setArrowLength(size);
 }
+
+}  // namespace qtenv
+}  // namespace omnetpp

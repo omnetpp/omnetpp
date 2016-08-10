@@ -191,7 +191,12 @@ int getObjectId(cObject *object);
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
 
-QString makeComponentTooltip(cComponent *component);
+// these are the custom data "slot" indices used in QGraphicsItems
+constexpr int ITEMDATA_COBJECT = 1;
+// see modulecanvasviewer.cc for why this is necessary, and setToolTip isn't usable
+constexpr int ITEMDATA_TOOLTIP = 2;
+
+QString makeObjectTooltip(cObject *obj);
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);

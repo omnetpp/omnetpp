@@ -30,7 +30,7 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
 
     cDisplayString ds = msg->getDisplayString();
 
-    mi->setData(1, QVariant::fromValue((cObject *)msg));
+    mi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)msg));
 
     QtenvOptions *opt = getQtenv()->opt;
 

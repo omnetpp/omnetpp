@@ -43,6 +43,7 @@
 #include <QApplication>
 #include <QAction>
 #include <QRubberBand>
+#include <QToolTip>
 
 #define emit
 
@@ -77,8 +78,8 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     scene()->addItem(zoomLabelLayer);
 
     GraphicsLayer *networkLayer = new GraphicsLayer();
-    networkLayer->addItem(submoduleLayer);
     networkLayer->addItem(rangeLayer);
+    networkLayer->addItem(submoduleLayer);
     networkLayer->addItem(animationLayer);
 
     zoomLabel = new ZoomLabel();
@@ -96,6 +97,8 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     // otherwise it would be a hand, that's why this is in mousePressEvent and mouseReleaseEvent too
     viewport()->setCursor(Qt::ArrowCursor);
     setResizeAnchor(AnchorViewCenter);
+
+    setMouseTracking(true);
 
     rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
 
@@ -130,6 +133,48 @@ void ModuleCanvasViewer::updateZoomLabelPos()
 {
     QPointF size = mapToScene(viewport()->size().width(), viewport()->size().height());
     zoomLabel->setPos(size.x() - zoomLabel->boundingRect().width() - 4, size.y() - zoomLabel->boundingRect().height() - 4);
+}
+
+QString ModuleCanvasViewer::gatherTooltips(const QPoint &pos, int threshold)
+{
+    QString tip = gatherTooltips(QRect(pos, pos));
+
+    if (tip.isEmpty())
+        tip = gatherTooltips(QRect(pos, pos).adjusted(-threshold, -threshold, threshold, threshold));
+
+    return tip;
+}
+
+QString ModuleCanvasViewer::gatherTooltips(const QRect& rect)
+{
+    auto items = scene()->items(mapToScene(rect));
+
+    QString tip;
+
+    // The individial items' setToolTip() method cannot be used
+    // because that way they are stealing the ToolTip event,
+    // and then the viewer itself doesn't have a chance to collect
+    // all the relevant tooltips for every component/message/figure
+    // under the cursor, and aggregate them.
+    // So we have to store their tooltips as custom user data.
+    for (auto i : items) {
+        QString itemTip = i->data(ITEMDATA_TOOLTIP).toString();
+
+        if (itemTip.isEmpty()) {
+            cObject *itemObject = i->data(ITEMDATA_COBJECT).value<cObject *>();
+
+            if (itemObject && itemObject != object)
+                itemTip = makeObjectTooltip(itemObject);
+        }
+
+        if (!itemTip.isEmpty()) {
+            if (!tip.isEmpty())
+                tip += "\n";
+            tip += itemTip;
+        }
+    }
+
+    return tip;
 }
 
 void ModuleCanvasViewer::setZoomLabelVisible(bool visible)
@@ -183,6 +228,9 @@ void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 
 void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event)
 {
+    if (QToolTip::isVisible())
+        QToolTip::showText(event->globalPos(), gatherTooltips(event->pos()), this);
+
     if (rubberBand->isVisible() && (event->modifiers() & Qt::ControlModifier))
         rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
     else
@@ -206,8 +254,21 @@ void ModuleCanvasViewer::resizeEvent(QResizeEvent *event)
 
 bool ModuleCanvasViewer::event(QEvent *event)
 {
-    if (event->type() == QEvent::Polish || event->type() == QEvent::PolishRequest)
-        recalcSceneRect(true);
+    switch (event->type()) {
+        case QEvent::Polish:
+        case QEvent::PolishRequest:
+            recalcSceneRect(true);
+            break;
+
+        case QEvent::ToolTip: {
+            auto helpEvent = static_cast<QHelpEvent *>(event);
+            QToolTip::showText(helpEvent->globalPos(), gatherTooltips(helpEvent->pos()), this);
+            break;
+        }
+
+        default:
+            break;
+    }
 
     return QGraphicsView::event(event);
 }
@@ -596,7 +657,7 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
 {
     auto item = new SubmoduleItem(submod, rangeLayer);
     SubmoduleItemUtil::setupFromDisplayString(item, submod);
-    item->setData(1, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
+    item->setData(ITEMDATA_COBJECT, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
     item->setZoomFactor(zoomFactor);
     item->setImageSizeFactor(imageSizeFactor);
     item->setPos(getSubmodCoords(submod));
@@ -758,17 +819,10 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
 
 std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QPoint& pos, int threshold)
 {
-    QList<QGraphicsItem *> items = scene()->items(mapToScene(pos));
-    std::vector<cObject *> objects;
-
-    for (auto item : items) {
-        QVariant variant = item->data(1);
-        if (variant.isValid())
-            objects.push_back(variant.value<cObject *>());
-    }
+    std::vector<cObject *> objects = getObjectsAt(QRect(pos, pos));
 
     if (objects.empty()  // if nothing, or only the inspected module (big grey rect) was clicked
-        || (objects.size() == 1 && objects[0] == object)) {
+            || (objects.size() == 1 && objects[0] == object)) {
         // then trying again, this time with a small square around pos
         QPoint offset(threshold, threshold);
         QRect rect(pos - offset, pos + offset);
@@ -784,9 +838,22 @@ std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect& rect)
     std::vector<cObject *> objects;
 
     for (auto item : items) {
-        QVariant variant = item->data(1);
-        if (variant.isValid())
-            objects.push_back(variant.value<cObject *>());
+        auto obj = item->data(ITEMDATA_COBJECT).value<cObject *>();
+
+        if (!obj)
+            continue;
+
+        for (auto fig = dynamic_cast<cFigure *>(obj); fig; fig = fig->getParentFigure()) {
+            auto assocObj = fig->getAssociatedObject();
+
+            if (assocObj && std::find(objects.begin(), objects.end(), assocObj) == objects.end()) {
+                objects.push_back(assocObj);
+                break;
+            }
+        }
+
+        if (std::find(objects.begin(), objects.end(), obj) == objects.end())
+            objects.push_back(obj);
     }
 
     return objects;

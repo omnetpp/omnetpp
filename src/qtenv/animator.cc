@@ -860,7 +860,7 @@ SendAnimation::SendAnimation(ModuleInspector *insp, SendAnimMode mode, const QPo
 }
 
 void SendAnimation::removeMessagePointer() {
-    messageItem->setData(1, QVariant());
+    messageItem->setData(ITEMDATA_COBJECT, QVariant());
 }
 
 void SendAnimation::begin()

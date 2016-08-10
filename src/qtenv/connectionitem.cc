@@ -37,9 +37,8 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
     std::string buffer;
     ds = substituteDisplayStringParamRefs(ds, buffer, chan, true);
 
-    ci->setData(1, QVariant::fromValue((cObject *)gate));
-
-    ci->setToolTip(ds.getTagArg("tt", 0));
+    ci->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)gate));
+    ci->setData(ITEMDATA_TOOLTIP, ds.getTagArg("tt", 0));
 
     ci->setColor(parseColor(ds.getTagArg("ls", 0), QColor("black")));
 

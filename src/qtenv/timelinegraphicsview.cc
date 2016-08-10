@@ -369,7 +369,7 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
                 simpleTextItem->setFont(messageLabelFont);
                 simpleTextItem->setBrush(brush);
                 simpleTextItem->setPos(labelX, bottomLabelRowY - row*messageLabelHeight);
-                simpleTextItem->setData(1, QVariant::fromValue(msg));
+                simpleTextItem->setData(ITEMDATA_COBJECT, QVariant::fromValue(msg));
 
                 scene()->addItem(simpleTextItem);
                 labelRowLastX[row] = labelX + labelWidth;
@@ -409,7 +409,7 @@ void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int
     penColor.setAlpha(active ? 255 : 40);
 
     QGraphicsItem *ellipse = scene()->addEllipse(x-2, y-4, 5, 9, QPen(penColor), QBrush(brushColor));
-    ellipse->setData(1, QVariant::fromValue(message));
+    ellipse->setData(ITEMDATA_COBJECT, QVariant::fromValue(message));
 
     QString toolTip = QString("(") + getObjectShortTypeName(message) + ") " + message->getFullName();
     if (!message->info().empty())
@@ -449,7 +449,7 @@ QVector<cObject *> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
 
     QVector<cObject *> objects;
     for (int i = 0; i < items.size(); ++i) {
-        QVariant variant = items[i]->data(1);
+        QVariant variant = items[i]->data(ITEMDATA_COBJECT);
         if (variant.isValid())
             objects.push_back(variant.value<cMessage *>());
     }

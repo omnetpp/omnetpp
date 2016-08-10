@@ -20,6 +20,9 @@
 #include <QGraphicsPolygonItem>
 #include "qtenvdefs.h"
 
+namespace omnetpp {
+namespace qtenv {
+
 class GraphicsPathArrowItem : public QGraphicsPolygonItem
 {
     double arrowWidth = 6;
@@ -45,5 +48,8 @@ public:
     void setColor(const QColor &color);
     void setLineWidth(double width);
 };
+
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif // __OMNETPP_QTENV_GRAPHICSPATHARROWITEM_H

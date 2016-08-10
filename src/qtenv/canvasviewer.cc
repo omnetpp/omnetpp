@@ -125,7 +125,7 @@ std::vector<cObject *> CanvasViewer::getObjectsAt(const QPoint& pos)
     std::vector<cObject *> objects;
 
     for (auto item : items) {
-        QVariant variant = item->data(1);
+        QVariant variant = item->data(ITEMDATA_COBJECT);
         if (variant.isValid())
             objects.push_back(variant.value<cObject *>());
     }

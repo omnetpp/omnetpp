@@ -95,6 +95,7 @@ const int cFigure::NUM_GOOD_LIGHT_COLORS = sizeof(GOOD_LIGHT_COLORS) / sizeof(GO
 
 static const char *PKEY_TYPE = "type";
 static const char *PKEY_VISIBLE = "visible";
+static const char *PKEY_TOOLTIP = "tooltip";
 static const char *PKEY_TAGS = "tags";
 static const char *PKEY_TRANSFORM = "transform";
 static const char *PKEY_CHILDZ = "childZ";
@@ -462,7 +463,8 @@ std::string cFigure::Pixmap::str() const
 //----
 
 cFigure::cFigure(const char *name) : cOwnedObject(name), id(++lastId), visible(true),
-        tags(nullptr), tagBits(0), localChanges(0), subtreeChanges(0)
+        tooltip(nullptr), associatedObject(nullptr), tags(nullptr), tagBits(0),
+        localChanges(0), subtreeChanges(0)
 {
 }
 
@@ -828,6 +830,8 @@ void cFigure::parse(cProperty *property)
     const char *s;
     if ((s = property->getValue(PKEY_VISIBLE)) != nullptr)
         setVisible(parseBool(s));
+    if ((s = property->getValue(PKEY_TOOLTIP)) != nullptr)
+        setTooltip(s);
     int numTags = property->getNumValues(PKEY_TAGS);
     if (numTags > 0) {
         std::string tags;
@@ -865,7 +869,7 @@ bool cFigure::isAllowedPropertyKey(const char *key) const
 
 const char **cFigure::getAllowedPropertyKeys() const
 {
-    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_TAGS, PKEY_CHILDZ, PKEY_TRANSFORM, nullptr};
+    static const char *keys[] = { PKEY_TYPE, PKEY_VISIBLE, PKEY_TOOLTIP, PKEY_TAGS, PKEY_CHILDZ, PKEY_TRANSFORM, nullptr};
     return keys;
 }
 
@@ -889,6 +893,8 @@ cFigure *cFigure::dupTree() const
 void cFigure::copy(const cFigure& other)
 {
     setVisible(other.isVisible());
+    setTooltip(other.getTooltip());
+    setAssociatedObject(other.getAssociatedObject());
     setTags(other.getTags());
     setTransform(other.getTransform());
 }
@@ -913,9 +919,18 @@ std::string cFigure::info() const
     return "";
 }
 
+void cFigure::setTooltip(const char *tooltip)
+{
+    if (opp_strcmp(this->tooltip, tooltip) == 0)
+        return;
+    stringPool.release(this->tooltip);
+    this->tooltip = stringPool.get(tooltip);
+    fire(CHANGE_VISUAL);
+}
+
 void cFigure::setTags(const char *tags)
 {
-    if (omnetpp::opp_strcmp(this->tags, tags) == 0)
+    if (opp_strcmp(this->tags, tags) == 0)
         return;
     const char *oldTags = this->tags;
     this->tags = stringPool.get(tags);

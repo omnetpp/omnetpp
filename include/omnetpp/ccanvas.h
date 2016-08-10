@@ -293,6 +293,8 @@ class SIM_API cFigure : public cOwnedObject
         static cStringPool stringPool;
         int id;
         bool visible; // treated as structural change, for simpler handling
+        const char *tooltip; // stringpool'd
+        cObject *associatedObject;
         Transform transform;
         std::vector<cFigure*> children;
         const char *tags; // stringpool'd
@@ -430,6 +432,31 @@ class SIM_API cFigure : public cOwnedObject
          * translate(), scale(), rotate(), skewx()/skewy() methods.
          */
         virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
+
+        /**
+         * Returns the tooltip of the figure, or nullptr if it does not have one.
+         */
+        virtual const char *getTooltip() const {return tooltip;}
+
+        /**
+         * Sets the tooltip of the figure.
+         */
+        virtual void setTooltip(const char *tooltip);
+
+        /**
+         * Returns the simulation object associated with this figure, or nullptr
+         * if it does not have one. The GUI may use this function to provide a
+         * shortcut access to the specified object, e.g. select the object in an
+         * inspector when the user clicks the figure.
+         */
+        virtual cObject *getAssociatedObject() const {return associatedObject;}
+
+        /**
+         * Sets the simulation object associated with this figure. The user is
+         * responsible for ensuring that the pointer is valid (the corresponding
+         * object exists), and remains valid while it is associated with the figure.
+         */
+        virtual void setAssociatedObject(cObject *obj) {associatedObject = obj; fireInputDataChange();}
 
         /**
          * Returns the space-separated list of the tags associated with the figure.

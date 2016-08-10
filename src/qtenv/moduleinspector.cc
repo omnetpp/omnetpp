@@ -661,8 +661,9 @@ int ModuleInspector::getSubmodQLen(int argc, const char **argv)
 void ModuleInspector::click(QMouseEvent *event)
 {
     auto objects = canvasViewer->getObjectsAt(event->pos());
-    if (!objects.empty())
+    if (!objects.empty()) {
         emit selectionChanged(objects.front());
+    }
 }
 
 void ModuleInspector::doubleClick(QMouseEvent *event)

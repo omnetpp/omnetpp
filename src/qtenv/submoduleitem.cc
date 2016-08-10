@@ -42,9 +42,6 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     std::string buffer;
     ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
 
-    // we have to set an initial tooltip so we receive further events
-    si->setToolTip(makeComponentTooltip(mod));
-
     bool widthOk, heightOk;
     double shapeWidth = QString(ds.getTagArg("b", 0)).toDouble(&widthOk);
     double shapeHeight = QString(ds.getTagArg("b", 1)).toDouble(&heightOk);
@@ -279,13 +276,6 @@ QRectF SubmoduleItem::shapeImageBoundingRect() const
     }
 
     return rect;
-}
-
-bool SubmoduleItem::event(QEvent *event)
-{
-    if (event->type() == QEvent::ToolTip)
-        setToolTip(makeComponentTooltip(module));
-    return QGraphicsObject::event(event);
 }
 
 SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)

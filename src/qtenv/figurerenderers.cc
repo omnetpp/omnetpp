@@ -443,11 +443,12 @@ QGraphicsItem *FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, con
 {
     QGraphicsItem *item = createGeometry(figure, hints);
     createVisual(figure, item, hints);
-
     refreshTransform(figure, item, transform);
 
-    if (item)
+    if (item) {
         item->setParentItem(layer);
+        item->setData(ITEMDATA_TOOLTIP, QString(figure->getTooltip()));
+    }
 
     return item;
 }
@@ -472,10 +473,10 @@ QGraphicsItem *FigureRenderer::createGeometry(cFigure *figure, FigureRenderingHi
     QGraphicsItem *item = newItem();
     if (item) {
         setItemGeometryProperties(figure, item, hints);
-        item->setData(1, QVariant::fromValue((cObject *)figure));
+        item->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)figure));
         for (auto c : item->childItems())
             if (c)
-                c->setData(1, QVariant::fromValue((cObject *)figure));
+                c->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)figure));
 
     }
     return item;
@@ -489,6 +490,7 @@ void FigureRenderer::refreshGeometry(cFigure *figure, QGraphicsItem *item, Figur
 void FigureRenderer::refreshVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     createVisual(figure, item, hints);
+    item->setData(ITEMDATA_TOOLTIP, QString(figure->getTooltip()));
 }
 
 void AbstractShapeFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)

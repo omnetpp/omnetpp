@@ -101,6 +101,10 @@ private:
 
     void updateZoomLabelPos();
 
+    // similar logic as in getObjectsAt()
+    QString gatherTooltips(const QPoint& pos, int threshold = 4);
+    QString gatherTooltips(const QRect& rect);
+
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;

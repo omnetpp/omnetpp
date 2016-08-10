@@ -62,8 +62,6 @@ protected:
     // assumed to be always centered around the origin.
     QRectF shapeImageBoundingRect() const;
 
-    bool event(QEvent *event) override;
-
 protected slots:
     void onPositionChanged(); // keeping the range items underneath ourselves
 

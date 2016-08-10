@@ -16,16 +16,18 @@ network CanvasTest
         textColor: TextColor                   { @display("p=200,150"); }
         textOpacity: TextOpacity               { @display("p=300,150"); }
         textFont: TextFont                     { @display("p=400,150"); }
-        
+
         imageAnchor: ImageAnchor               { @display("p=100,250"); }
         imageOpacity: ImageOpacity             { @display("p=200,250"); }
         imageInterpolation: ImageInterpolation { @display("p=300,250"); }
         imageColorization: ImageColorization   { @display("p=400,250"); }
 
+        tooltip: Tooltip                       { @display("p=500,250"); }
+        associatedObject: AssociatedObject     { @display("p=600,250"); }
 
         line: Line           { @display("p=100,450"); }
         polyline: Polyline   { @display("p=200,450"); }
-        
+
         arc: Arc             { @display("p=300,450"); }
         pieslice: Pieslice   { @display("p=400,450"); }
 
@@ -33,8 +35,8 @@ network CanvasTest
         oval: Oval           { @display("p=600,450"); }
         rectangle: Rectangle { @display("p=700,450"); }
 
-        polygon : Polygon    { @display("p=800,450"); }
-        
+        polygon: Polygon     { @display("p=800,450"); }
+
         text: Text           { @display("p=100,650"); }
         label: Label         { @display("p=200,650"); }
         image: Image         { @display("p=300,650"); }

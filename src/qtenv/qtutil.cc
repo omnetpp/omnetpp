@@ -789,14 +789,24 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     return atof(arg2);
 }
 
-QString makeComponentTooltip(cComponent *comp)
+QString makeObjectTooltip(cObject *obj)
 {
-    QString toolTip = QString("(") + getObjectShortTypeName(comp) + ") " + comp->getFullName() + ", " + comp->info().c_str();
-    // XXX need to call substituteDisplayStringParamRefs?
-    const char *userTooltip = comp->getDisplayString().getTagArg("tt", 0);
-    if (!opp_isempty(userTooltip))
-        toolTip += QString("\n") + userTooltip;
-    return toolTip;
+    if (auto fig = dynamic_cast<cFigure *>(obj)) {
+        cObject *assocObj = fig->getAssociatedObject();
+        // If two figures are associated to each other,
+        // we have to avoid the infinite recursion.
+        if (assocObj && !dynamic_cast<cFigure*>(assocObj))
+            return makeObjectTooltip(assocObj);
+    }
+
+    if (auto comp = dynamic_cast<cComponent *>(obj)) {
+        const char *userTooltip = comp->getDisplayString().getTagArg("tt", 0);
+        if (!opp_isempty(userTooltip))
+            return userTooltip;
+    }
+
+    return QString("(") + getObjectShortTypeName(obj) + ") "
+            + obj->getFullName() + ", " + obj->info().c_str();
 }
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)

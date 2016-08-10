@@ -716,6 +716,8 @@ class cFigure extends cOwnedObject
 {
     int id @group(figure);
     bool visible @group(figure) @getter(isVisible) @editable;
+    string tooltip @group(figure) @editable;
+    cObject *associatedObject @group(figure);
     string tags @group(figure) @editable;
     Transform transform @group(figure) @editable @tostring(.str()) @fromstring(cFigure::parseTransform($));
     cFigure *children[] @group(figure) @getter(getFigure) @sizeGetter(getNumFigures);
