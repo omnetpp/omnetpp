@@ -420,9 +420,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     simtime_t guessNextSimtime();
 
     /**
-     * The scheduler function. Returns the next event from the FES, and
-     * also advances the simulation time to the time of that event.
-     *
+     * The scheduler function. Returns the next event from the FES.
      * If there is no more event (FES is empty), it throws cTerminationException.
      *
      * A nullptr return value means that there is no error but execution
