@@ -107,6 +107,7 @@ void Server::handleMessage(cMessage *msg)
                 char buf[32];
                 sprintf(buf, "Collision! (%ld frames)", currentCollisionNumFrames);
                 bubble(buf);
+                getParentModule()->getCanvas()->holdSimulationFor(par("animationHoldTimeOnCollision"));
             }
         }
         channelBusy = true;

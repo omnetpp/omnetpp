@@ -17,10 +17,10 @@ simple Host
         @signal[state](type="long");
         @statistic[radioState](source="state";title="Radio state";enum="IDLE=0,TRANSMIT=1";record=vector);
         double txRate @unit(bps);         // transmission rate
-        double radioDelay @unit(s);       // propagation delay of radio link
         volatile int pkLenBits @unit(b);  // packet length in bits
         volatile double iaTime @unit(s);  // packet interarrival time
         double slotTime @unit(s);         // zero means no slots (pure Aloha)
+        bool controlAnimationSpeed = default(true);
         @display("i=device/pc_s");
 }
 

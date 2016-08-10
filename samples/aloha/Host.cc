@@ -20,6 +20,7 @@ Host::Host()
 
 Host::~Host()
 {
+    delete lastPacket;
     cancelAndDelete(endTxEvent);
 }
 
@@ -31,7 +32,6 @@ void Host::initialize()
         throw cRuntimeError("server not found");
 
     txRate = par("txRate");
-    radioDelay = par("radioDelay");
     iaTime = &par("iaTime");
     pkLenBits = &par("pkLenBits");
 
@@ -47,12 +47,28 @@ void Host::initialize()
     WATCH((int&)state);
     WATCH(pkCounter);
 
+    x = intrand(1000);
+    y = intrand(1000);
+
+    double dist = std::sqrt((x - 500) * (x-500) + (y-500) * (y-500));
+    radioDelay = lightToReachOneMeter * dist;
+
+    lastTransmission = new cRingFigure();
+    lastTransmission->setFillColor(cFigure::GOOD_LIGHT_COLORS[getId() % cFigure::NUM_GOOD_LIGHT_COLORS]);
+    lastTransmission->setFillOpacity(0.5);
+    lastTransmission->setFilled(true);
+    lastTransmission->setVisible(false);
+    getParentModule()->getCanvas()->addFigure(lastTransmission);
+
     scheduleAt(getNextTransmissionTime(), endTxEvent);
 }
 
 void Host::handleMessage(cMessage *msg)
 {
     ASSERT(msg == endTxEvent);
+
+    if (par("controlAnimationSpeed").boolValue())
+        getParentModule()->getCanvas()->setAnimationSpeed(1e-6, this);
 
     if (state == IDLE) {
         // generate packet and schedule timer when it ends
@@ -67,6 +83,11 @@ void Host::handleMessage(cMessage *msg)
         pk->setBitLength(pkLenBits->longValue());
         simtime_t duration = pk->getBitLength() / txRate;
         sendDirect(pk, radioDelay, duration, server->gate("in"));
+
+        delete lastPacket;
+        lastPacket = pk->dup();
+        lastTransmission->setAssociatedObject(lastPacket);
+        lastPacketStarted = simTime();
 
         scheduleAt(simTime()+duration, endTxEvent);
     }
@@ -96,7 +117,40 @@ simtime_t Host::getNextTransmissionTime()
 
 void Host::refreshDisplay() const
 {
+    double animSpeed = 0.1;
+    if (lastPacket) {
+        auto st = simTime();
+
+        auto frontDelta = st - lastPacketStarted;
+        auto backDelta = st - (lastPacketStarted + lastPacket->getDuration());
+
+        double frontRadius = std::min(10000.0, frontDelta / lightToReachOneMeter);
+        double backRadius = backDelta / lightToReachOneMeter;
+
+        if (backRadius > 10000) {
+            lastTransmission->setVisible(false);
+            lastTransmission->setAssociatedObject(nullptr);
+        }
+        else {
+            lastTransmission->setVisible(true);
+            lastTransmission->setBounds(cFigure::Rectangle(x - frontRadius, y - frontRadius, 2*frontRadius, 2*frontRadius));
+            lastTransmission->setInnerRadius(std::max(0.0, backRadius));
+        }
+
+        if ((frontRadius >= 0 && frontRadius < 1000) || (backRadius >= 0 && backRadius < 1000))
+            animSpeed = 1e-6;
+    }
+    else
+        lastTransmission->setVisible(false);
+
+    if (par("controlAnimationSpeed").boolValue())
+        getParentModule()->getCanvas()->setAnimationSpeed(animSpeed, this);
+
+    getDisplayString().setTagArg("p", 0, x);
+    getDisplayString().setTagArg("p", 1, y);
+
     getDisplayString().setTagArg("t", 2, "#808000");
+
     if (state == IDLE) {
         getDisplayString().setTagArg("i", 1, "");
         getDisplayString().setTagArg("t", 0, "");

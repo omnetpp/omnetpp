@@ -37,6 +37,16 @@ class Host : public cSimpleModule
     simsignal_t stateSignal;
     int pkCounter;
 
+    // position on the canvas
+    int x, y;
+
+    // 1/c in seconds
+    const simtime_t lightToReachOneMeter = 3.33564095e-9;
+
+    cPacket *lastPacket = nullptr;
+    cRingFigure *lastTransmission;
+    simtime_t lastPacketStarted = 0;
+
   public:
     Host();
     virtual ~Host();
