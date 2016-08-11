@@ -51,6 +51,18 @@ OMNEST/OMNeT++ uses the LibXML2 installation bundled with the OS. On Windows,
 it is bundled with OMNEST/OMNeT++.
 
 
+SQLite
+------
+SQLite is a software library that implements a self-contained, serverless,
+zero-configuration, transactional SQL database engine. The SQLite code is
+in Public Domain (https://www.sqlite.org/copyright.html)
+
+OMNEST/OMNeT++ uses SQLite to record simulation results in an easily
+accessible format.
+
+SQLite is part of the OMNEST/OMNeT++ source code.
+
+
 Tcl/Tk
 ------
 The Tkenv simulation execution environment is based on Tcl/Tk, an open-source
@@ -215,6 +227,5 @@ component.
 
 ___________________________________________________________________________
 Trademarks.
-Windows is a trademark of Microsoft Corporation. 
+Windows is a trademark of Microsoft Corporation.
 OS X is a trademark of Apple Inc.
-
