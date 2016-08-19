@@ -795,8 +795,9 @@ QString makeObjectTooltip(cObject *obj)
         cObject *assocObj = fig->getAssociatedObject();
         // If two figures are associated to each other,
         // we have to avoid the infinite recursion.
-        if (assocObj && !dynamic_cast<cFigure*>(assocObj))
-            return makeObjectTooltip(assocObj);
+        return (assocObj && !dynamic_cast<cFigure*>(assocObj))
+                ? makeObjectTooltip(assocObj)
+                : "";
     }
 
     if (auto comp = dynamic_cast<cComponent *>(obj)) {
