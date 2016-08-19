@@ -118,41 +118,41 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         default:  textPos = SubmoduleItem::TEXTPOS_TOP;   break;
     }
     auto color = parseColor(textColor);
-    if (!color.isValid()) {
+    if (!color.isValid())
         color = QColor("blue");
-    }
     si->setInfoText(text, textPos, color);
 
-    int rangeIndex = 0;
-    while (true) {
-        // the first indexed is r1
-        std::string tagName = (QString("r") + ((rangeIndex > 0) ? QString::number(rangeIndex) : "")).toStdString();
-        if (!ds.containsTag(tagName.c_str()))
-            break;
+    si->clearRangeItems();
+    for (int i = 0; i < ds.getNumTags(); ++i) {
+        bool ok = true;
 
-        double r = QString(ds.getTagArg(tagName.c_str(), 0)).toDouble();
-        QColor rangeFillColor = parseColor(ds.getTagArg(tagName.c_str(), 1));
-        QColor rangeOutlineColor = parseColor(ds.getTagArg(tagName.c_str(), 2));
-        bool ok;
-        int rangeOutlineWidth = QString(ds.getTagArg(tagName.c_str(), 3)).toInt(&ok);
-        if (!ok) {
+        auto tagName = ds.getTagName(i);
+        if (tagName[0] != 'r')
+            ok = false;
+
+        for (int i = 1; tagName[i] && ok; ++i)
+            if (tagName[i] < '0' || tagName[i] > '9')
+                ok = false;
+
+        if (!ok)
+            continue;
+
+        double r = QString(ds.getTagArg(i, 0)).toDouble();
+        QColor rangeFillColor = parseColor(ds.getTagArg(i, 1));
+        QColor rangeOutlineColor = parseColor(ds.getTagArg(i, 2));
+
+        int rangeOutlineWidth = QString(ds.getTagArg(i, 3)).toInt(&ok);
+        if (!ok)
             rangeOutlineWidth = 1;
-        }
-        if (!rangeOutlineColor.isValid() && rangeOutlineWidth > 0) {
+        if (!rangeOutlineColor.isValid() && rangeOutlineWidth > 0)
             rangeOutlineColor = QColor("black");
-        }
         si->addRangeItem(r, rangeOutlineWidth, rangeFillColor, rangeOutlineColor);
-
-        ++rangeIndex;
     }
 
     QString queueText;
-    if (ds.containsTag("q")) {
-        auto queueName = ds.getTagArg("q", 0);
-        cQueue *q = dynamic_cast<cQueue *>(mod->findObject(queueName));
-        if (q)
+    if (ds.containsTag("q"))
+        if (cQueue *q = dynamic_cast<cQueue *>(mod->findObject(ds.getTagArg("q", 0))))
             queueText = QString("q: %1").arg(q->getLength());
-    }
     si->setQueueText(queueText);
 }
 
@@ -292,9 +292,7 @@ SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
 
 SubmoduleItem::~SubmoduleItem()
 {
-    for (auto i : rangeItems) {
-        delete i;
-    }
+    clearRangeItems();
 }
 
 void SubmoduleItem::setZoomFactor(double zoom)
@@ -515,6 +513,15 @@ int SubmoduleItem::addRangeItem(const RangeData& data)
     adjustRangeItem(rangeItems.length() - 1);
 
     return rangeItems.length() - 1;
+}
+
+void SubmoduleItem::clearRangeItems()
+{
+    for (auto r : rangeItems)
+        delete r;
+
+    rangeItems.clear();
+    ranges.clear();
 }
 
 QRectF SubmoduleItem::boundingRect() const

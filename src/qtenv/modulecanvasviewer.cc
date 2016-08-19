@@ -338,7 +338,7 @@ void ModuleCanvasViewer::refreshLayout()
 {
     static bool inProgress = false;
 
-    if (inProgress)
+    if (inProgress || !object)
         return;
 
     inProgress = true;
@@ -906,6 +906,7 @@ void ModuleCanvasViewer::redrawNextEventMarker()
 
 void ModuleCanvasViewer::refreshSubmodules()
 {
+    refreshLayout();
     for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
         cModule *submod = *it;
         if (submoduleGraphicsItems.count(submod)) {

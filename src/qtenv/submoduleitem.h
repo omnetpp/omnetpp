@@ -152,6 +152,8 @@ public:
     int addRangeItem(double radius, double outlineWidth, const QColor &fillColor, const QColor &outlineColor);
     int addRangeItem(const RangeData &data);
 
+    void clearRangeItems();
+
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
