@@ -379,9 +379,11 @@ void cDensityEstBase::saveToFile(FILE *f) const
     fprintf(f, "%d\t #= num_firstvals\n", numPrecollected);
 
     fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues != nullptr);
-    if (precollectedValues)
-        for (int i = 0; i < numValues; i++)
+    if (precollectedValues) {
+        int count = (int) std::min(numValues, (long)numPrecollected);
+        for (int i = 0; i < count; i++)
             fprintf(f, " %lg\n", precollectedValues[i]);
+    }
 
 }
 
