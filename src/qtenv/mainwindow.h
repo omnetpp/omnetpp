@@ -118,6 +118,8 @@ public slots:
     void on_actionSetUpUnconfiguredNetwork_triggered();
     void on_actionAbout_OMNeT_Qtenv_triggered();
 
+    void showFindObjectsDialog(cObject *obj);
+
 protected slots:
     void on_actionVerticalLayout_triggered(bool checked);
     void on_actionHorizontalLayout_triggered(bool checked);

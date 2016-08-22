@@ -28,6 +28,7 @@
 #include <inspectorfactory.h>
 #include "preferencesdialog.h"
 #include "genericobjectinspector.h"
+#include "mainwindow.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -142,12 +143,18 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     action = subMenu->addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTR)));
     subMenu->addSeparator();
+
     action = subMenu->addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLPATH)));
     action = subMenu->addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLNAME)));
     action = subMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
+
+    menu->addSeparator();
+    menu->addAction("Find Objects in '" + name + "'", getQtenv()->getMainWindow(), SLOT(on_actionFindInspectObjects_triggered()))
+            ->setData(QVariant::fromValue(object));
+
 }
 
 void InspectorUtil::addLoglevel(LogLevel level, QString levelInStr, cComponent *comp, QActionGroup *logLevelActionGroup,

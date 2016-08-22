@@ -74,8 +74,8 @@ class QTENV_API Inspector : public QWidget
       QAction *goUpAction = nullptr;
       QAction *findObjects = nullptr;
 
-      QMenu *inspectContextMenu;
-      QMenu *copyContextMenu;
+      QMenu *inspectDropdownMenu;
+      QMenu *copyDropdownMenu;
 
       static const QString PREF_GEOM;
 
@@ -94,13 +94,15 @@ class QTENV_API Inspector : public QWidget
       void closeEvent(QCloseEvent *) override;
 
       void addTopLevelToolBarActions(QToolBar *toolbar);
-      void createInspectContextMenu();
-      void createCopyContextMenu();
-public slots:
+      void createInspectDropdownMenu();
+      void createCopyDropdownMenu();
+
+   public slots:
       virtual void setObject(cObject *object);
       virtual void goBack();
       virtual void goForward();
       virtual void inspectParent();
+      virtual void findObjectsWithin();
 
    protected slots:
       // Context menu's action's slot

@@ -1118,15 +1118,7 @@ void MainWindow::on_actionFindInspectObjects_triggered()
 {
     // implements Find/inspect objects...
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
-    cObject *obj = variant.isValid() ? variant.value<cObject *>() : getQtenv()->getMainObjectInspector()->getObject();
-
-    // Set mainwindow to dialog's parent, thus it is closed when mainwindow is closed.
-    QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj, this);
-    filteredObjectListDialog->setAttribute(Qt::WA_DeleteOnClose);
-    // Force to not insert in its parent as a widget.
-    filteredObjectListDialog->setWindowFlags(Qt::Dialog);
-    filteredObjectListDialog->show();
-    connect(this, SIGNAL(setNewNetwork()), filteredObjectListDialog, SLOT(invalidate()));
+    showFindObjectsDialog(variant.value<cObject *>());
 }
 
 // debugNextEvent
@@ -1287,6 +1279,17 @@ void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
     delete frameLayout;
     delete buttonBox;
     delete about;
+}
+
+void MainWindow::showFindObjectsDialog(cObject *obj)
+{
+    // Set mainwindow to dialog's parent, thus it is closed when mainwindow is closed.
+    QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj, this);
+    filteredObjectListDialog->setAttribute(Qt::WA_DeleteOnClose);
+    // Force to not insert in its parent as a widget.
+    filteredObjectListDialog->setWindowFlags(Qt::Dialog);
+    filteredObjectListDialog->show();
+    connect(this, SIGNAL(setNewNetwork()), filteredObjectListDialog, SLOT(invalidate()));
 }
 
 void MainWindow::on_actionLoadNEDFile_triggered()

@@ -34,6 +34,7 @@
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"
+#include "genericobjectinspector.h"
 
 #define emit
 
@@ -74,8 +75,8 @@ int insptypeCodeFromName(const char *name)
 Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget)
 {
-    inspectContextMenu = new QMenu(this);
-    copyContextMenu = new QMenu(this);
+    inspectDropdownMenu = new QMenu(this);
+    copyDropdownMenu = new QMenu(this);
     factory = f;
     object = nullptr;
     type = f->getInspectorType();
@@ -93,8 +94,8 @@ Inspector::~Inspector()
 {
     if (isToplevelWindow)
         setPref(PREF_GEOM, geometry());
-    delete inspectContextMenu;
-    delete copyContextMenu;
+    delete inspectDropdownMenu;
+    delete copyDropdownMenu;
 }
 
 const char *Inspector::getClassName() const
@@ -107,40 +108,46 @@ bool Inspector::supportsObject(cObject *object) const
     return factory->supportsObject(object);
 }
 
-void Inspector::createInspectContextMenu()
+void Inspector::createInspectDropdownMenu()
 {
-    if(!object)
+    if (!object)
         return;
 
     auto typeList = InspectorUtil::supportedInspTypes(object);
 
-    inspectContextMenu->clear();
-    for(auto type : typeList)
-    {
+    inspectDropdownMenu->clear();
+
+    inspectDropdownMenu->addAction("View in Embedded Object Inspector",
+                                   getQtenv()->getMainObjectInspector(), SLOT(goUpInto()))
+        ->setData(QVariant::fromValue(object));
+    inspectDropdownMenu->addSeparator();
+
+    for(auto type : typeList) {
         bool state = type == this->type;
         QString label = InspectorUtil::getInspectMenuLabel(type);
-        QAction *action = inspectContextMenu->addAction(label, getQtenv(), SLOT(inspect()));
+        QAction *action = inspectDropdownMenu->addAction(label, getQtenv(), SLOT(inspect()));
         action->setDisabled(state);
         action->setData(QVariant::fromValue(ActionDataPair(object, type)));
     }
 }
 
-void Inspector::createCopyContextMenu()
+void Inspector::createCopyDropdownMenu()
 {
-    if(!object)
+    if (!object)
         return;
 
-    copyContextMenu->clear();
-    QAction *action = copyContextMenu->addAction("Copy Pointer With Cast (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
+    copyDropdownMenu->clear();
+    QAction *action = copyDropdownMenu->addAction("Copy Pointer With Cast (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_PTRWITHCAST)));
-    action = copyContextMenu->addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
+    action = copyDropdownMenu->addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_PTR)));
-    copyContextMenu->addSeparator();
-    action = copyContextMenu->addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
+    copyDropdownMenu->addSeparator();
+
+    action = copyDropdownMenu->addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_FULLPATH)));
-    action = copyContextMenu->addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
+    action = copyDropdownMenu->addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_FULLNAME)));
-    action = copyContextMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
+    action = copyDropdownMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
     action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_CLASSNAME)));
 }
 
@@ -154,8 +161,8 @@ void Inspector::doSetObject(cObject *obj)
         if (findObjects)
             findObjects->setData(QVariant::fromValue(object));
         // create context menus
-        createInspectContextMenu();
-        createCopyContextMenu();
+        createInspectDropdownMenu();
+        createCopyDropdownMenu();
 
         // note that doSetObject() is always followed by refresh(), see setObject()
         emit inspectedObjectChanged(object, oldObject);
@@ -339,6 +346,11 @@ void Inspector::inspectParent()
         getQtenv()->inspect(parentPtr);
 }
 
+void Inspector::findObjectsWithin()
+{
+    emit getQtenv()->getMainWindow()->showFindObjectsDialog(object);
+}
+
 void Inspector::goUpInto()  // XXX weird name
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
@@ -367,15 +379,16 @@ void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)
 
     QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/inspectas.png"), "Inspect");
     QToolButton* toolButton = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
-    toolButton->setMenu(inspectContextMenu);
+    toolButton->setMenu(inspectDropdownMenu);
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
     action = toolbar->addAction(QIcon(":/tools/icons/tools/copyptr.png"), "Copy name, type or pointer");
     toolButton = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
-    toolButton->setMenu(copyContextMenu);
+    toolButton->setMenu(copyDropdownMenu);
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    toolbar->addAction(getQtenv()->getMainWindow()->getFindObjectsAction());
+    toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find/inspect objects", this, SLOT(findObjectsWithin()))
+            ->setShortcut(Qt::CTRL | Qt::Key_S);
 }
 
 }  // namespace qtenv

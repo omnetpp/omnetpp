@@ -97,8 +97,14 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
 
-    if (ptr == nullptr)
-        ptr = getSimulation();
+    if (ptr == nullptr) {
+        cFindByPathVisitor visitor(getQtenv()->getPref("filtobjlist-rootobject").toByteArray());
+        visitor.process(getSimulation());
+
+        ptr = (visitor.getArraySize() > 0)
+                ? visitor.getArray()[0]
+                : getSimulation();
+    }
 
     setWindowFlags(Qt::WindowStaysOnTopHint);
     ui->comboBox->setToolTip(classNamePattern);
@@ -238,13 +244,13 @@ QStringList FilteredObjectListDialog::getClassNames()
 void FilteredObjectListDialog::refresh()
 {
     // resolve root object
-    const char *fullPath = ui->searchEdit->text().toStdString().c_str();
+    std::string fullPath = ui->searchEdit->text().toStdString();
 
-    cFindByPathVisitor visitor(fullPath, nullptr, -1);
+    cFindByPathVisitor visitor(fullPath.c_str());
     visitor.process(getSimulation());
     if (visitor.getArraySize() == 0) {
         QMessageBox::warning(this, "Error",
-                QString("Object to search in (\"") + fullPath + "\") could not be resolved.",
+                QString("Object to search in (\"") + fullPath.c_str() + "\") could not be resolved.",
                 QMessageBox::StandardButton::Ok);
         return;
     }
@@ -363,6 +369,7 @@ void FilteredObjectListDialog::checkPattern(const char *pattern)
 
 FilteredObjectListDialog::~FilteredObjectListDialog()
 {
+    getQtenv()->setPref("filtobjlist-rootobject", QVariant::fromValue(ui->searchEdit->text()));
     getQtenv()->setPref("filtobjlist-class", QVariant::fromValue(ui->comboBox->currentText()));
     getQtenv()->setPref("filtobjlist-name", QVariant::fromValue(ui->fullPathEdit->text()));
 
