@@ -611,6 +611,7 @@ void Qtenv::doRun()
         mainWindow->show();
 
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
+        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
 
         setLogFormat(opt->logFormat.c_str());
 
