@@ -311,7 +311,7 @@ void cPSquare::saveToFile(FILE *f) const
 
     fprintf(f, "#= q[]\n");
     for (i = 0; i < numCells+2; i++)
-        fprintf(f, " %g\n", q[i]);
+        fprintf(f, " %lg\n", q[i]);
 }
 
 void cPSquare::loadFromFile(FILE *f)
@@ -328,7 +328,7 @@ void cPSquare::loadFromFile(FILE *f)
 
     freadvarsf(f, "#= q[]");
     for (i = 0; i < numCells+2; i++)
-        freadvarsf(f, " %g", q+i);
+        freadvarsf(f, " %lg", q+i);
 }
 
 }  // namespace omnetpp

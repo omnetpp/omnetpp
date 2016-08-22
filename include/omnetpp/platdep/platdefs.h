@@ -68,5 +68,11 @@
 #  define nullptr  0
 #endif
 
+#if defined __GNUC__
+#  define _OPP_GNU_ATTRIBUTE(x)  __attribute__(x)
+#else
+#  define _OPP_GNU_ATTRIBUTE(x)
+#endif
+
 #endif
 

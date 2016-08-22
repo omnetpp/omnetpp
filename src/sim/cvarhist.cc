@@ -426,7 +426,7 @@ void cVarHistogram::saveToFile(FILE *f) const
     fprintf(f, "%d\t #= bin_bounds[] exists\n", cellLowerBounds != nullptr);
     if (cellLowerBounds)
         for (int i = 0; i < maxNumCells+1; i++)
-            fprintf(f, " %g\n", cellLowerBounds[i]);
+            fprintf(f, " %lg\n", cellLowerBounds[i]);
 
 }
 
@@ -452,7 +452,7 @@ void cVarHistogram::loadFromFile(FILE *f)
     if (containsCellsLowerBounds) {
         cellLowerBounds = new double[maxNumCells+1];
         for (int i = 0; i < maxNumCells+1; i++)
-            freadvarsf(f, " %g", cellLowerBounds + i);
+            freadvarsf(f, " %lg", cellLowerBounds + i);
     }
 }
 

@@ -373,15 +373,15 @@ void cDensityEstBase::saveToFile(FILE *f) const
 
     fprintf(f, "%d\t #= transformed\n", transformed);
     fprintf(f, "%d\t #= range_mode\n", rangeMode);
-    fprintf(f, "%g\t #= range_ext_factor\n", rangeExtFactor);
-    fprintf(f, "%g %g\t #= range\n", rangeMin, rangeMax);
+    fprintf(f, "%lg\t #= range_ext_factor\n", rangeExtFactor);
+    fprintf(f, "%lg %g\t #= range\n", rangeMin, rangeMax);
     fprintf(f, "%lu %lu\t #= cell_under, cell_over\n", cellUnder, cellOver);
     fprintf(f, "%d\t #= num_firstvals\n", numPrecollected);
 
     fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues != nullptr);
     if (precollectedValues)
         for (int i = 0; i < numValues; i++)
-            fprintf(f, " %g\n", precollectedValues[i]);
+            fprintf(f, " %lg\n", precollectedValues[i]);
 
 }
 
@@ -392,20 +392,20 @@ void cDensityEstBase::loadFromFile(FILE *f)
     int tmp;
     freadvarsf(f, "%d\t #= transformed", &tmp); transformed = tmp;
     freadvarsf(f, "%d\t #= range_mode", &rangeMode);
-    freadvarsf(f, "%g\t #= range_ext_factor", &rangeExtFactor);
-    freadvarsf(f, "%g %g\t #= range", &rangeMin, &rangeMax);
+    freadvarsf(f, "%lg\t #= range_ext_factor", &rangeExtFactor);
+    freadvarsf(f, "%lg %lg\t #= range", &rangeMin, &rangeMax);
     freadvarsf(f, "%lu %lu\t #= cell_under, cell_over", &cellUnder, &cellOver);
-    freadvarsf(f, "%ld\t #= num_firstvals", &numPrecollected);
+    freadvarsf(f, "%d\t #= num_firstvals", &numPrecollected);
 
-    int firstvals_exists;
-    freadvarsf(f, "%d\t #= firstvals[] exists", &firstvals_exists);
+    int hasPrecollectedValues;
+    freadvarsf(f, "%d\t #= firstvals[] exists", &hasPrecollectedValues);
 
     delete[] precollectedValues;
     precollectedValues = nullptr;
-    if (firstvals_exists) {
+    if (hasPrecollectedValues) {
         precollectedValues = new double[numPrecollected];
         for (int i = 0; i < numValues; i++)
-            freadvarsf(f, " %g", precollectedValues + i);
+            freadvarsf(f, " %lg", &precollectedValues[i]);
     }
 }
 

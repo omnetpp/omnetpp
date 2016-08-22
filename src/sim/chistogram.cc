@@ -457,13 +457,13 @@ double cHistogram::getCellValue(int k) const
 void cHistogram::saveToFile(FILE *f) const
 {
     cHistogramBase::saveToFile(f);
-    fprintf(f, "%g\t #= cellsize\n", cellSize);
+    fprintf(f, "%lg\t #= cellsize\n", cellSize);
 }
 
 void cHistogram::loadFromFile(FILE *f)
 {
     cHistogramBase::loadFromFile(f);
-    freadvarsf(f, "%g\t #= cellsize", &cellSize);
+    freadvarsf(f, "%lg\t #= cellsize", &cellSize);
 }
 
 cLongHistogram& cLongHistogram::operator=(const cLongHistogram& res)

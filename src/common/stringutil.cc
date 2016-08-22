@@ -227,7 +227,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
                 fmt += 3;
             }
             else if (fmt[1] == 'g') {
-                k += sscanf(s, "%lg%n", va_arg(va, double *), &n);
+                k += sscanf(s, "%g%n", va_arg(va, float *), &n);
                 s += n;
                 fmt += 2;
             }

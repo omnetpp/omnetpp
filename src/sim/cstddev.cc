@@ -233,9 +233,9 @@ void cStdDev::saveToFile(FILE *f) const
 {
     fprintf(f, "\n#\n# (%s) %s\n#\n", getClassName(), getFullPath().c_str());
     fprintf(f, "%ld\t #= num_vals\n", numValues);
-    fprintf(f, "%g %g\t #= min, max\n", minValue, maxValue);
-    fprintf(f, "%g\t #= sum\n", sumValues);
-    fprintf(f, "%g\t #= square sum\n", sumSquaredValues);
+    fprintf(f, "%lg %lg\t #= min, max\n", minValue, maxValue);
+    fprintf(f, "%lg\t #= sum\n", sumValues);
+    fprintf(f, "%lg\t #= square sum\n", sumSquaredValues);
 }
 
 void cStdDev::loadFromFile(FILE *f)
@@ -245,9 +245,9 @@ void cStdDev::loadFromFile(FILE *f)
     freadvarsf(f, "");
     freadvarsf(f, "");
     freadvarsf(f, "%ld\t #= num_vals", &numValues);
-    freadvarsf(f, "%g %g\t #= min, max", &minValue, &maxValue);
-    freadvarsf(f, "%g\t #= sum", &sumValues);
-    freadvarsf(f, "%g\t #= square sum", &sumSquaredValues);
+    freadvarsf(f, "%lg %lg\t #= min, max", &minValue, &maxValue);
+    freadvarsf(f, "%lg\t #= sum", &sumValues);
+    freadvarsf(f, "%lg\t #= square sum", &sumSquaredValues);
 }
 
 //----
@@ -382,19 +382,19 @@ double cWeightedStdDev::getVariance() const
 void cWeightedStdDev::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);
-    fprintf(f, "%g\t #= sum_weights\n", sumWeights);
-    fprintf(f, "%g\t #= sum_weighted_vals\n", sumWeightedValues);
-    fprintf(f, "%g\t #= sum_squared_weights\n", sumSquaredWeights);
-    fprintf(f, "%g\t #= sum_weights_squared_vals\n", sumWeightedSquaredValues);
+    fprintf(f, "%lg\t #= sum_weights\n", sumWeights);
+    fprintf(f, "%lg\t #= sum_weighted_vals\n", sumWeightedValues);
+    fprintf(f, "%lg\t #= sum_squared_weights\n", sumSquaredWeights);
+    fprintf(f, "%lg\t #= sum_weights_squared_vals\n", sumWeightedSquaredValues);
 }
 
 void cWeightedStdDev::loadFromFile(FILE *f)
 {
     cStdDev::loadFromFile(f);
-    freadvarsf(f, "%g\t #= sum_weights", &sumWeights);
-    freadvarsf(f, "%g\t #= sum_weighted_vals", &sumWeightedValues);
-    freadvarsf(f, "%g\t #= sum_squared_weights", &sumSquaredWeights);
-    freadvarsf(f, "%g\t #= sum_weights_squared_vals", &sumWeightedSquaredValues);
+    freadvarsf(f, "%lg\t #= sum_weights", &sumWeights);
+    freadvarsf(f, "%lg\t #= sum_weighted_vals", &sumWeightedValues);
+    freadvarsf(f, "%lg\t #= sum_squared_weights", &sumSquaredWeights);
+    freadvarsf(f, "%lg\t #= sum_weights_squared_vals", &sumWeightedSquaredValues);
 }
 
 }  // namespace omnetpp
