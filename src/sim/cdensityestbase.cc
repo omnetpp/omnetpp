@@ -389,7 +389,8 @@ void cDensityEstBase::loadFromFile(FILE *f)
 {
     cStdDev::loadFromFile(f);
 
-    freadvarsf(f, "%d\t #= transformed", &transformed);
+    int tmp;
+    freadvarsf(f, "%d\t #= transformed", &tmp); transformed = tmp;
     freadvarsf(f, "%d\t #= range_mode", &rangeMode);
     freadvarsf(f, "%g\t #= range_ext_factor", &rangeExtFactor);
     freadvarsf(f, "%g %g\t #= range", &rangeMin, &rangeMax);
