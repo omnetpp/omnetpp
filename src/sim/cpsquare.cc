@@ -60,7 +60,7 @@ cPSquare::cPSquare(const char *name, int cells) : cDensityEstBase(name)
 
     for (int i = 0; i <= numCells+1; i++) {
         n[i] = i;
-        q[i] = -1e50;  // this should be -(max(double))
+        q[i] = -DBL_MAX;
     }
 }
 
