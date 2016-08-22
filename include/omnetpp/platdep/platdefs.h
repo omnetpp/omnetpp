@@ -74,5 +74,16 @@
 #  define _OPP_GNU_ATTRIBUTE(x)
 #endif
 
+// choose coroutine library if unspecified
+#if !defined(USE_WIN32_FIBERS) && !defined(USE_POSIX_COROUTINES) && !defined(USE_PORTABLE_COROUTINES)
+#  if defined _WIN32
+#    define USE_WIN32_FIBERS
+#  elif HAVE_SWAPCONTEXT
+#    define USE_POSIX_COROUTINES
+#  else
+#    define USE_PORTABLE_COROUTINES
+#  endif
+#endif
+
 #endif
 

@@ -19,21 +19,13 @@
 #include "platdep/platmisc.h"  // for <windows.h>
 #include "simkerneldefs.h"
 
-// select coroutine library
-#ifdef _WIN32
-#  define USE_WIN32_FIBERS
-#else
-#  ifdef HAVE_SWAPCONTEXT
-#    define USE_POSIX_COROUTINES
-#  else
-#    define USE_PORTABLE_COROUTINES
-#  endif
+#if !defined(USE_WIN32_FIBERS) && !defined(USE_POSIX_COROUTINES) && !defined(USE_PORTABLE_COROUTINES)
+#error "Coroutine library choice not specified"
 #endif
 
 #ifdef USE_POSIX_COROUTINES
 #include <ucontext.h>
 #endif
-
 
 namespace omnetpp {
 
