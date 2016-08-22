@@ -47,11 +47,13 @@ cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
     copy(r);
 }
 
-cPSquare::cPSquare(const char *name, int b) : cDensityEstBase(name)
+cPSquare::cPSquare(const char *name, int cells) : cDensityEstBase(name)
 {
     transformed = true;
+    delete [] precollectedValues;
+    precollectedValues = nullptr;
 
-    numCells = b;
+    numCells = cells;
     numObs = 0;
     n = new int[numCells+2];
     q = new double[numCells+2];
