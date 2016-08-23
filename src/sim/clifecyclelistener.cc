@@ -17,8 +17,14 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/clifecyclelistener.h"
+#include "omnetpp/csimulation.h"
 
 namespace omnetpp {
+
+cISimulationLifecycleListener::~cISimulationLifecycleListener()
+{
+    getEnvir()->removeLifecycleListener(this);
+}
 
 const char *cISimulationLifecycleListener::getSimulationLifecycleEventName(SimulationLifecycleEventType eventType)
 {

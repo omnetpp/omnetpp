@@ -186,7 +186,7 @@ enum SimulationLifecycleEventType
 class SIM_API cISimulationLifecycleListener
 {
   public:
-    virtual ~cISimulationLifecycleListener() {}
+    virtual ~cISimulationLifecycleListener();
 
     /**
      * The main listener method, called on simulation lifecycle events.
