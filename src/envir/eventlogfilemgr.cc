@@ -104,7 +104,7 @@ EventlogFileManager::EventlogFileManager()
     recordingIntervals = nullptr;
     keyframeBlockSize = 1000;
     clearInternalState();
-    configure();
+    envir->addLifecycleListener(this);
 }
 
 EventlogFileManager::~EventlogFileManager()
@@ -129,23 +129,21 @@ void EventlogFileManager::clearInternalState()
 
 void EventlogFileManager::configure()
 {
-    envir->addLifecycleListener(this);
-
-    // setup eventlog object printer
+    // set up object printer
     delete objectPrinter;
     objectPrinter = nullptr;
     const char *eventLogMessageDetailPattern = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
     if (eventLogMessageDetailPattern)
         objectPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
 
-    // setup eventlog recording intervals
+    // set up recording intervals
+    delete recordingIntervals;
+    recordingIntervals = new Intervals();
     const char *text = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
-    if (text) {
-        recordingIntervals = new Intervals();
+    if (text)
         recordingIntervals->parse(text);
-    }
 
-    // setup filename
+    // query filename
     filename = envir->getConfig()->getAsFilename(CFGID_EVENTLOG_FILE);
     dynamic_cast<EnvirBase *>(envir)->processFileName(filename);
 }
@@ -154,6 +152,7 @@ void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType,
 {
     switch (eventType) {
         case LF_PRE_NETWORK_SETUP:
+            configure();
             if (envir->getConfig()->getAsBool(CFGID_RECORD_EVENTLOG)) {
                 if (!isOpen()) {
                     open();
