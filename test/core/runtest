@@ -4,7 +4,7 @@
 # without args, runs all *.test files in the current directory
 #
 
-MAKE=make
+MAKE="make -j6"
 
 TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi

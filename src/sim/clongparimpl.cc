@@ -167,10 +167,15 @@ std::string cLongParImpl::str() const
 {
     if (flags & FL_ISEXPR)
         return expr->str();
-
-    char buf[32];
-    sprintf(buf, "%ld", val);
-    return buf;
+    else {
+        char buf[32];
+        sprintf(buf, "%ld", val);
+        const char *unit = getUnit();
+        if (!unit)
+            return buf;
+        else
+            return std::string(buf) + unit;
+    }
 }
 
 void cLongParImpl::parse(const char *text)

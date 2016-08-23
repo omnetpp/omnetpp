@@ -167,10 +167,15 @@ std::string cDoubleParImpl::str() const
 {
     if (flags & FL_ISEXPR)
         return expr->str();
-
-    char buf[32];
-    sprintf(buf, "%g", val);
-    return buf;
+    else {
+        char buf[32];
+        sprintf(buf, "%g", val);
+        const char *unit = getUnit();
+        if (!unit)
+            return buf;
+        else
+            return std::string(buf) + unit;
+    }
 }
 
 void cDoubleParImpl::parse(const char *text)
