@@ -9,7 +9,7 @@ CDATA sections are merged with normal text nodes.
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
-node->debugDump();
+EV << node->getXML();
 
 %contains: stdout
 <bar>text with cdata section and normal text</bar>

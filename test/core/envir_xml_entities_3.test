@@ -18,7 +18,7 @@ Hello!
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
-node->debugDump();
+EV << node->getXML();
 
 %contains: stdout
 <foo>Hello!

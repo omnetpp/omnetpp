@@ -20,7 +20,7 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
-node->debugDump();
+EV << node->getXML();
 
 %contains: stdout
 <bar att="xml rulez!">Hey, xml rulez!</bar>

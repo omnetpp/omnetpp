@@ -374,6 +374,11 @@ COMMON_API std::string opp_latexInsertBreaks(const char *s);
 COMMON_API std::string opp_markup2Latex(const char *s);
 
 /**
+ * XML-quote the string.
+ */
+COMMON_API std::string opp_xmlQuote(const std::string& str);
+
+/**
  * Convert number to digit separated string.
  */
 COMMON_API std::string opp_format(int64_t n, const char *digitSep);

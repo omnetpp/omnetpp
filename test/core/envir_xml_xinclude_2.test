@@ -19,7 +19,7 @@ Tests XInclude support in XML documents. xinclude in an other xincluded file.
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("foo.xml");
-node->debugDump();
+EV << node->getXML();
 
 %contains-regex: stdout
 <foo>\s*<bar>\s*<leaf>test</leaf>\s*</bar>\s*</foo>

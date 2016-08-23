@@ -134,11 +134,16 @@ class SIM_API cXMLElement
     static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr, ParamResolver *resolver=nullptr);
 
     // internal
-    std::string tostr(int level) const;
+    virtual void print(std::ostream& os, int indentLevel) const;
 
   public:
     /** @name Common properties */
     //@{
+
+    /**
+     * Returns a one-line description of the element.
+     */
+    virtual std::string str() const;
 
     /**
      * Returns the element name.
@@ -172,6 +177,11 @@ class SIM_API cXMLElement
      * Returns attributes as a const (immutable) std::map.
      */
     virtual const cXMLAttributeMap& getAttributes() const;
+
+    /**
+     * Returns the subtree as an XML fragment.
+     */
+    virtual std::string getXML() const;
     //@}
 
     /** @name Generic access to children and siblings */
@@ -308,12 +318,6 @@ class SIM_API cXMLElement
      * and returns nullptr if the element is not found.
      */
     virtual cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=nullptr, ParamResolver *resolver=nullptr) const;
-
-    /**
-     * Prints detailedInfo() on EV.
-     */
-    virtual void debugDump() const;
-
     //@}
 };
 

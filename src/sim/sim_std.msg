@@ -708,6 +708,7 @@ class cXMLElement
     string sourceLocation @hint("Location this XML element was parsed from");
     bool hasAttributes @getter(hasAttributes) @hint("Whether this XML element has attributes");
     bool hasChildren @getter(hasChildren) @hint("Whether this XML element has child elements");
+    string xml @getter(getXML) @hint("Element tree as XML fragment");
 }
 
 class cFigure extends cOwnedObject

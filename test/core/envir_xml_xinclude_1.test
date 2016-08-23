@@ -13,7 +13,7 @@ Tests XInclude support in XML documents. No DTD validation
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("foo.xml");
-node->debugDump();
+EV << node->getXML();
 
 %contains-regex: stdout
 <foo>\s*<bar>test</bar>\s*</foo>

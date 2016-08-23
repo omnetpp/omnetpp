@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include "common/opp_ctype.h"
+#include "common/stringutil.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
@@ -51,12 +52,29 @@ cXMLElement::cXMLElement(const char *tagName, const char *srclocation, cXMLEleme
 
 cXMLElement::~cXMLElement()
 {
-    if (parent) {
+    if (parent)
         parent->removeChild(this);
-    }
-    while (firstChild) {
+
+    while (firstChild)
         delete removeChild(firstChild);
-    }
+}
+
+std::string cXMLElement::str() const
+{
+    std::stringstream os;
+    os << "<" << getTagName();
+    cXMLAttributeMap map = getAttributes();
+    for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); ++it)
+        os << " " << it->first << "=\"" << opp_xmlQuote(it->second.c_str()) << "\"";
+    if (!*getNodeValue() && !getFirstChild())
+        os << "/>";
+    else
+        os << ">...</" << getTagName() << ">";
+
+    const char *loc = getSourceLocation();
+    if (!opp_isempty(loc))
+        os << " @" << loc;
+    return os.str();
 }
 
 const char *cXMLElement::getTagName() const
@@ -282,38 +300,37 @@ cXMLElement *cXMLElement::getElementByPath(const char *pathExpr, cXMLElement *ro
                                                    root ? root->getParentNode() : nullptr);
 }
 
-std::string cXMLElement::tostr(int depth) const
+void cXMLElement::print(std::ostream& os, int indentLevel) const
 {
-    std::stringstream os;
-    int i;
-    for (i = 0; i < depth; i++)
+    for (int i = 0; i < indentLevel; i++)
         os << "  ";
     os << "<" << getTagName();
     cXMLAttributeMap map = getAttributes();
     for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); ++it)
-        os << " " << it->first << "=\"" << it->second << "\"";
+        os << " " << it->first << "=\"" << opp_xmlQuote(it->second.c_str()) << "\"";
     if (!*getNodeValue() && !getFirstChild()) {
         os << "/>\n";
-        return os.str();
+        return;
     }
     os << ">";
-    os << getNodeValue();
+    os << opp_xmlQuote(getNodeValue());
     if (!getFirstChild()) {
         os << "</" << getTagName() << ">\n";
-        return os.str();
+        return;
     }
     os << "\n";
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
-        os << child->tostr(depth + 1);
-    for (i = 0; i < depth; i++)
+        child->print(os, indentLevel + 1);
+    for (int i = 0; i < indentLevel; i++)
         os << "  ";
     os << "</" << getTagName() << ">\n";
-    return os.str();
 }
 
-void cXMLElement::debugDump() const
+std::string cXMLElement::getXML() const
 {
-    EV << tostr(0);
+    std::stringstream os;
+    print(os, 0);
+    return os.str();
 }
 
 //---------------

@@ -162,24 +162,6 @@ std::string cSimulation::getFullPath() const
     return getFullName();
 }
 
-static std::string xmlQuote(const std::string& str)
-{
-    if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>'))
-        return str;
-
-    std::stringstream out;
-    for (const char *s = str.c_str(); *s; s++) {
-        char c = *s;
-        if (c == '<')
-            out << "&lt;";
-        else if (c == '>')
-            out << "&gt;";
-        else
-            out << c;
-    }
-    return out.str();
-}
-
 class cSnapshotWriterVisitor : public cVisitor
 {
   protected:
@@ -191,8 +173,8 @@ class cSnapshotWriterVisitor : public cVisitor
 
     virtual void visit(cObject *obj) override {
         std::string indent(2 * indentLevel, ' ');
-        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << xmlQuote(obj->getFullPath()) << "\">\n";
-        os << indent << "  <info>" << xmlQuote(obj->str()) << "</info>\n";
+        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << opp_xmlQuote(obj->getFullPath()) << "\">\n";
+        os << indent << "  <info>" << opp_xmlQuote(obj->str()) << "</info>\n";
         indentLevel++;
         obj->forEachChild(this);
         indentLevel--;
@@ -216,10 +198,10 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
     os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     os << "<snapshot\n";
-    os << "    object=\"" << xmlQuote(object->getFullPath()) << "\"\n";
-    os << "    label=\"" << xmlQuote(label ? label : "") << "\"\n";
-    os << "    simtime=\"" << xmlQuote(SIMTIME_STR(simTime())) << "\"\n";
-    os << "    network=\"" << xmlQuote(networkType ? networkType->getName() : "") << "\"\n";
+    os << "    object=\"" << opp_xmlQuote(object->getFullPath()) << "\"\n";
+    os << "    label=\"" << opp_xmlQuote(label ? label : "") << "\"\n";
+    os << "    simtime=\"" << opp_xmlQuote(SIMTIME_STR(simTime())) << "\"\n";
+    os << "    network=\"" << opp_xmlQuote(networkType ? networkType->getName() : "") << "\"\n";
     os << "    >\n";
 
     cSnapshotWriterVisitor v(os);

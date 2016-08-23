@@ -12,7 +12,7 @@ name prefix; xmlns attribute may or may not be removed (parser dependent).
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("test.xml");
-node->debugDump();
+EV << node->getXML();
 
 %contains-regex: stdout
 <foo.*>[ \n]*

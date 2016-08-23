@@ -838,6 +838,26 @@ std::string opp_markup2Latex(const char *s)
     return tmp;
 }
 
+std::string opp_xmlQuote(const std::string& str)
+{
+    if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>') && !strchr(str.c_str(), '"'))
+        return str;
+
+    std::stringstream out;
+    for (const char *s = str.c_str(); *s; s++) {
+        char c = *s;
+        if (c == '<')
+            out << "&lt;";
+        else if (c == '>')
+            out << "&gt;";
+        else if (c == '"')
+            out << "&quot;";
+        else
+            out << c;
+    }
+    return out.str();
+}
+
 std::string opp_format(int64_t n, const char *digitSep)
 {
     std::stringstream os;
@@ -845,9 +865,8 @@ std::string opp_format(int64_t n, const char *digitSep)
     std::string str = os.str();
     os.str("");
 
-    for(size_t i = 0; i < str.length(); ++i)
-    {
-        if(i == 0 || (int)(i - str.length()) % 3 != 0)
+    for (size_t i = 0; i < str.length(); ++i) {
+        if (i == 0 || (int)(i - str.length()) % 3 != 0)
             os << str[i];
         else
             os << digitSep << str[i];

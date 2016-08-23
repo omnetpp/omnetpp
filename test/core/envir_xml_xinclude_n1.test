@@ -9,7 +9,7 @@ Tests XInclude error reporting when xincluded file file is missing.
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("foo.xml");
-node->debugDump();
+EV << node->getXML();
 
 %exitcode: 1
 

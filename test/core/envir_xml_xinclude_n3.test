@@ -19,7 +19,7 @@ Tests XInclude error reporting when a well formed, xincluded file does not confo
 
 %activity:
 cXMLElement *node = getEnvir()->getXMLDocument("foo.xml");
-node->debugDump();
+EV << node->getXML();
 
 %exitcode: 1
 
