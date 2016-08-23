@@ -1013,9 +1013,6 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     else if (!strcmp(field, "info")) {
         Tcl_SetResult(interp, TCLCONST(object->str().c_str()), TCL_VOLATILE);
     }
-    else if (!strcmp(field, "detailedInfo")) {
-        Tcl_SetResult(interp, TCLCONST(object->detailedInfo().c_str()), TCL_VOLATILE);
-    }
     else if (!strcmp(field, "displayString")) {
         if (cModule *module = dynamic_cast<cModule *>(object)) {
             const char *str = module->hasDisplayString() && module->parametersFinalized() ? module->getDisplayString().str() : "";

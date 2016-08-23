@@ -97,7 +97,7 @@ class noncobject foreign::IPAddressVector;
 class noncobject foreign::Options;
 
 class Dummy {
-    string str = "Hello";
+    string s = "Hello";
 
     ::IPAddress addr;
     ::Opaque opaque;
@@ -146,8 +146,7 @@ className="inet::Dummy"
 fullName=""
 fullPath=""
 info=""
-detailedInfo=""
-str="Hello"
+s="Hello"
 addr="<IPAddress>"
 opaque=""
 intvec="{13} (size=1)"

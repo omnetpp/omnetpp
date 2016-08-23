@@ -199,21 +199,6 @@ double cStdDev::getStddev() const
     return sqrt(getVariance());
 }
 
-std::string cStdDev::detailedInfo() const
-{
-    std::stringstream os;
-    os << "  Number of values = " << numValues << "\n";
-    if (numValues == 1)
-        os << "  Value          = " << minValue << "\n";
-    else if (numValues > 0) {
-        os << "  Mean value     = " << getMean() << "\n";
-        os << "  Standard dev.  = " << getStddev() << "\n";
-        os << "  Minimal value  = " << getMin() << "\n";
-        os << "  Maximal value  = " << getMax() << "\n";
-    }
-    return os.str();
-}
-
 void cStdDev::clearResult()
 {
     numValues = 0;

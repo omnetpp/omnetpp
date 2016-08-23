@@ -333,40 +333,6 @@ void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, doubl
     os << buf;
 }
 
-std::string cDensityEstBase::detailedInfo() const
-{
-    std::stringstream os;
-    os << cStdDev::detailedInfo();
-
-    if (!isTransformed()) {
-        ASSERT(precollectedValues || numValues == 0);
-        os << "Values collected so far: ";
-        for (int i = 0; i < numValues; i++)
-            os << (i == 0 ? "" : ", ") << precollectedValues[i];
-        os << "\n";
-    }
-    else {
-        // transformed
-        const int pictureWidth = 55;
-        double max = 0;  // biggest cell value
-        int nc = getNumCells();
-        int k;
-        double d;
-        for (k = 0; k < nc; k++)
-            if ((d = getCellValue(k)) > max)
-                max = d;
-
-        double a = (double)pictureWidth / max;
-
-        os << "Distribution density function:\n";
-        for (k = 0; k < nc; k++)
-            plotline(os, "< ", getBasepoint(k), (k == 0 ? cellUnder : getCellValue(k-1)), a);
-        plotline(os, ">=", getBasepoint(nc), cellOver, a);
-        os << "\n";
-    }
-    return os.str();
-}
-
 void cDensityEstBase::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);

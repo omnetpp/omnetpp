@@ -76,11 +76,6 @@ std::string cPar::str() const
     return p->str();
 }
 
-std::string cPar::detailedInfo() const
-{
-    return p->detailedInfo() + " " + getProperties()->str();
-}
-
 cParImpl *cPar::copyIfShared()
 {
     if (p->isShared()) {

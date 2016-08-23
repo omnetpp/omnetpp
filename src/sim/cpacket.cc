@@ -120,11 +120,6 @@ void cPacket::forEachChild(cVisitor *v)
     }
 }
 
-std::string cPacket::detailedInfo() const
-{
-    return "";  // all fields are available via reflection, no point in repeating them here
-}
-
 void cPacket::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM

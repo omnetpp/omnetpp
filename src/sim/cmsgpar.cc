@@ -204,14 +204,6 @@ string cMsgPar::str() const
     }
 }
 
-std::string cMsgPar::detailedInfo() const
-{
-    std::stringstream os;
-    os << "  Type:  " << typeChar << '\n';
-    os << "  Value: " << str().c_str() << '\n';
-    return os.str();
-}
-
 void cMsgPar::forEachChild(cVisitor *v)
 {
     if (typeChar == 'T') {

@@ -311,14 +311,9 @@ std::string cXMLElement::tostr(int depth) const
     return os.str();
 }
 
-std::string cXMLElement::detailedInfo() const
-{
-    return tostr(0);
-}
-
 void cXMLElement::debugDump() const
 {
-    EV << detailedInfo();
+    EV << tostr(0);
 }
 
 //---------------

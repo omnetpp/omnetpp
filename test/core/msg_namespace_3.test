@@ -77,7 +77,6 @@ class @TESTNAME@::Msg1 {
     string fullName = ""
     string fullPath = ""
     string info = ""
-    string detailedInfo = ""
     int i = 90
     int e = "20 (SECOND)"
     @TESTNAME@_other::Base member = class @TESTNAME@_other::Base {
@@ -85,7 +84,6 @@ class @TESTNAME@::Msg1 {
         string fullName = ""
         string fullPath = ""
         string info = ""
-        string detailedInfo = ""
         int i = 90
         int e = "20 (SECOND)"
     }
@@ -96,7 +94,6 @@ class @TESTNAME@::Msg2 {
     string fullName = ""
     string fullPath = ""
     string info = ""
-    string detailedInfo = ""
     int i = 9
     int e = "1 (FIRST)"
     @TESTNAME@_Base member = class @TESTNAME@_Base {
@@ -104,7 +101,6 @@ class @TESTNAME@::Msg2 {
         string fullName = ""
         string fullPath = ""
         string info = ""
-        string detailedInfo = ""
         int i = 9
         int e = "1 (FIRST)"
     }
@@ -115,7 +111,6 @@ class @TESTNAME@::Msg3 {
     string fullName = ""
     string fullPath = ""
     string info = ""
-    string detailedInfo = ""
     int i = 900
     int e = "300 (THIRD)"
     Base member = class @TESTNAME@::Base {
@@ -123,7 +118,6 @@ class @TESTNAME@::Msg3 {
         string fullName = ""
         string fullPath = ""
         string info = ""
-        string detailedInfo = ""
         int i = 900
         int e = "300 (THIRD)"
     }

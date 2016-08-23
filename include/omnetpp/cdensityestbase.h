@@ -136,11 +136,6 @@ class SIM_API cDensityEstBase : public cStdDev
     /* No dup() because this is an abstract class. */
 
     /**
-     * Produces a multi-line description of the object's contents.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.

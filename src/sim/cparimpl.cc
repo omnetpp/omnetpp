@@ -75,23 +75,6 @@ void cParImpl::parsimUnpack(cCommBuffer *buffer)
     //TBD
 }
 
-std::string cParImpl::detailedInfo() const
-{
-    std::stringstream out;
-    out << cPar::getTypeName(getType()) << " " << getName();
-    if (containsValue()) {
-        if (isSet())
-            out << " = " << str();
-        else
-            out << " = default(" << str() << ")";
-        out << " isExpression=" << (isExpression() ? "true" : "false");
-    }
-    else {
-        out << " (unassigned)";
-    }
-    return out.str();
-}
-
 cParImpl *cParImpl::dup() const
 {
     throw cRuntimeError(this, E_CANTDUP);  // cannot instantiate an abstract class

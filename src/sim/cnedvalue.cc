@@ -104,8 +104,7 @@ std::string cNEDValue::str() const
         case BOOL: return bl ? "true" : "false";
         case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
         case STR:  return opp_quotestr(s.c_str());
-        case XML:  return xml->detailedInfo();
-                   //or: return std::string("<")+xml->getTagName()+" ... >, " + opp_nulltoempty(xml->getSourceLocation());
+        case XML:  return xml->str();
         default:   throw cRuntimeError("internal error: bad cNEDValue type");
     }
 }

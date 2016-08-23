@@ -143,12 +143,6 @@ class SIM_API cPacket : public cMessage
     virtual std::string str() const override;
 
     /**
-     * Produces a multi-line description of the object's contents.
-     * See cObject for more details.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */

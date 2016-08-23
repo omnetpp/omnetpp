@@ -125,14 +125,8 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns the value in text form.
-     * @see detailedInfo()
      */
     virtual std::string str() const override;
-
-    /**
-     * Returns a long description of the object.
-     */
-    virtual std::string detailedInfo() const override;
 
     /**
      * Returns the component (module/channel) this parameter belongs to.

@@ -263,20 +263,6 @@ double cPSquare::getCellValue(int k) const
     return n[k+2] - n[k+1] + (k == 0);
 }
 
-std::string cPSquare::detailedInfo() const
-{
-    std::stringstream os;
-    os << cDensityEstBase::detailedInfo();
-
-    int nn = numObs <= numCells+1 ? numObs : numCells+1;
-
-    os << "\n  The quantiles (#(observations: observation<=marker)):\n";
-    os << "      #observations\t<=marker\n";
-    for (int i = 1; i <= nn; i++)
-        os << "       " << n[i] << "\t " << q[i] << endl;
-    return os.str();
-}
-
 double cPSquare::getCDF(double x) const
 {
     // returns 0..1; uses linear approximation between two markers

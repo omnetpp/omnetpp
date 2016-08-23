@@ -149,16 +149,10 @@ class SIM_API cObject
     const cObject *getThisPtr() const  {return this;}  //Note: nonvirtual
 
     /**
-     * Can be redefined to produce a one-line description of object.
-     * The string appears in the graphical user interface (Tkenv) e.g. when
-     * the object is displayed in a listbox. The returned string should
-     * possibly be at most 80-100 characters long, and must not contain
-     * newline.
-     *
-     * @see detailedInfo()
+     * Produce a one-line description of the object. The string is displayed
+     * at various places e.g. in graphical user interfaces.
      */
     virtual std::string str() const;
-
 
     /**
      * Deprecated, use str() instead. This method also delegates to str().
@@ -166,12 +160,9 @@ class SIM_API cObject
     _OPPDEPRECATED virtual std::string info() const {return str();}
 
     /**
-     * Can be redefined to produce a detailed, multi-line, arbitrarily long
-     * description of the object. The string appears in the graphical
-     * user interface (Tkenv) together with other object data (e.g. class name)
-     * wherever it is feasible to display a multi-line string.
+     * Deprecated. This method returns an empty string.
      */
-    virtual std::string detailedInfo() const;
+    _OPPDEPRECATED virtual std::string detailedInfo() const {return "";}
 
     /**
      * Should be redefined in subclasses to create an exact copy of this object.

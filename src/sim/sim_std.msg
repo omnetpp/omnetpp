@@ -128,7 +128,6 @@ class cObject
     string fullName @group(base) @hint("If object is part of a module/gate vector: name with index");
     string fullPath @group(base) @hint("Hierarchical name, composed of full names of this object and its owners/parents") @eventlog(skip);
     string info @getter(str) @group(base) @hint("Text provided by the object's \"str()\" method") @eventlog(skip);
-    string detailedInfo @getter(detailedInfo) @group(base) @hint("Text provided by the object's \"detailedInfo\" method") @eventlog(skip);
 }
 
 class cNamedObject extends cObject
@@ -709,7 +708,6 @@ class cXMLElement
     string sourceLocation @hint("Location this XML element was parsed from");
     bool hasAttributes @getter(hasAttributes) @hint("Whether this XML element has attributes");
     bool hasChildren @getter(hasChildren) @hint("Whether this XML element has child elements");
-    string detailedInfo @getter(detailedInfo) @label(contents);
 }
 
 class cFigure extends cOwnedObject

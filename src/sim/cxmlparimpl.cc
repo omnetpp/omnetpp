@@ -50,11 +50,6 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
     copy(other);
 }
 
-std::string cXMLParImpl::detailedInfo() const
-{
-    return (flags & FL_ISEXPR) ? "<expression>" : val == nullptr ? "nullptr" : val->detailedInfo();
-}
-
 void cXMLParImpl::parsimPack(cCommBuffer *buffer) const
 {
     //TBD

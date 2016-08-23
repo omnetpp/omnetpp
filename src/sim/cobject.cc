@@ -66,11 +66,6 @@ std::string cObject::str() const
     return std::string();
 }
 
-std::string cObject::detailedInfo() const
-{
-    return std::string();
-}
-
 cObject *cObject::dup() const
 {
     throw cRuntimeError("The dup() method, declared in cObject, is not "

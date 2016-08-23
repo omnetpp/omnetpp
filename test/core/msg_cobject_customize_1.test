@@ -60,7 +60,6 @@ class @TESTNAME@::MyClass {
     string fullName = myclass
     string fullPath = Test.myclass
     string info = ""
-    string detailedInfo = ""
     string name = myclass
     int b = 5
     int i = 11

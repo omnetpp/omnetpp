@@ -72,11 +72,6 @@ class SIM_API cXMLParImpl : public cParImpl
     virtual cXMLParImpl *dup() const override  {return new cXMLParImpl(*this);}
 
     /**
-     * Returns a multi-line description of the contained XML element.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Serializes the object into a buffer.
      */
     virtual void parsimPack(cCommBuffer *buffer) const override;

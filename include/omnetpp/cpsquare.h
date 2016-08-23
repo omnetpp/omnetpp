@@ -79,12 +79,6 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual cPSquare *dup() const override  {return new cPSquare(*this);}
 
     /**
-     * Produces a multi-line description of the object's contents.
-     * See cObject for more details.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.

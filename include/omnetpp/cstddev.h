@@ -80,12 +80,6 @@ class SIM_API cStdDev : public cStatistic
     virtual std::string str() const override;
 
     /**
-     * Produces a multi-line description of the object.
-     * See cObject for more details.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.

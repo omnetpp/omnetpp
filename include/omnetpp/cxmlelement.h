@@ -136,6 +136,7 @@ class SIM_API cXMLElement
     // internal
     std::string tostr(int level) const;
 
+  public:
     /** @name Common properties */
     //@{
 
@@ -313,13 +314,6 @@ class SIM_API cXMLElement
      */
     virtual void debugDump() const;
 
-    /**
-     * Returns tree contents in an XML-like format. This method is only
-     * useful for debugging, because it does not perform necessary escaping
-     * in text nodes and attribute values, so the output is not necessarily
-     * well-formed XML.
-     */
-    virtual std::string detailedInfo() const;
     //@}
 };
 

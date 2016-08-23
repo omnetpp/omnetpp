@@ -56,7 +56,6 @@ className: non-struct
 fullName: non-struct
 fullPath: non-struct
 info: non-struct
-detailedInfo: non-struct
 addr: IPAddress5
 inetAddr1: inet5::IPAddress5
 inetAddr2: inet5::IPAddress5

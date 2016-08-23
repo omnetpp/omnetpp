@@ -99,11 +99,6 @@ class SIM_API cParImpl : public cNamedObject
     /** @name Redefined cObject member functions */
     //@{
     /**
-     * Returns a long description of the object.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Redefined change return type to cParImpl.
      */
     virtual cParImpl *dup() const override;

@@ -35,11 +35,6 @@ std::string cDynamicModuleType::str() const
     return getDecl()->str();
 }
 
-std::string cDynamicModuleType::detailedInfo() const
-{
-    return getDecl()->getNedSource();
-}
-
 cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been

@@ -49,7 +49,6 @@ class @TESTNAME@::SomePacket {
     string fullName = some
     string fullPath = Test.some
     string info = "(new msg)"
-    string detailedInfo = ""
     string name = some
     short schedulingPriority = 0
     cObject *targetObject = nullptr

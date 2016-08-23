@@ -39,7 +39,6 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
     cStdVectorWatcherBase(const char *name) : cWatchBase(name) {desc = nullptr;}
 
     virtual std::string str() const override;
-    virtual std::string detailedInfo() const override;
     virtual bool supportsAssignment() const override {return false;}
 
     virtual const char *getElemTypeName() const = 0;

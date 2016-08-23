@@ -73,11 +73,6 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual std::string str() const override;
 
     /**
-     * Produces a detailed, multi-line description.
-     */
-    virtual std::string detailedInfo() const override;
-
-    /**
      * Returns true if the module type was declared with the "network" keyword.
      */
     virtual bool isNetwork() const override;
