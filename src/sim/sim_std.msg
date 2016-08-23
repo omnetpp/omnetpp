@@ -239,6 +239,7 @@ class cSimpleModule extends cModule
 
 class cComponentType extends cNoncopyableOwnedObject
 {
+    string nedSource @getter(getNedSource) @hint("NED source of component if available");
 }
 
 class cModuleType extends cComponentType

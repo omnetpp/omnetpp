@@ -30,11 +30,6 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
 }
 
-std::string cDynamicModuleType::str() const
-{
-    return getDecl()->str();
-}
-
 cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
@@ -42,6 +37,16 @@ cNEDDeclaration *cDynamicModuleType::getDecl() const
     cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
     ASSERT(decl->getType() == cNEDDeclaration::SIMPLE_MODULE || decl->getType() == cNEDDeclaration::COMPOUND_MODULE);
     return decl;
+}
+
+std::string cDynamicModuleType::str() const
+{
+    return getDecl()->str();
+}
+
+std::string cDynamicModuleType::getNedSource() const
+{
+    return getDecl()->getNedSource();
 }
 
 bool cDynamicModuleType::isNetwork() const
