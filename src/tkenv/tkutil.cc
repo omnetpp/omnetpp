@@ -283,7 +283,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
                     "-text {", "  "  /*padding*/, getObjectShortTypeName(obj), "} ",
                     "-values {",
                     TclQuotedString(fullpath ? obj->getFullPath().c_str() : obj->getFullName()).get(), " ",
-                    TclQuotedString(obj->info().c_str()).get(), " ", ptr,
+                    TclQuotedString(obj->str().c_str()).get(), " ", ptr,
                     "}",
                     TCL_NULL));
 }

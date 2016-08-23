@@ -111,7 +111,7 @@ class NEDXML_API NEDTypeInfo
     /**
      * Returns a one-line summary (base class, implemented interfaces, etc)
      */
-    virtual std::string info() const;
+    virtual std::string str() const;
 
     /**
      * Returns the NED declaration.

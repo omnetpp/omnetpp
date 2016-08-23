@@ -38,11 +38,11 @@ cProxyGate::cProxyGate() : cGate()
     data = nullptr;
 }
 
-std::string cProxyGate::info() const
+std::string cProxyGate::str() const
 {
     std::stringstream out;
     out << "remote:(procId=" << remoteProcId << ",modId=" << remoteModuleId << ",gateId=" << remoteGateId << ") ";
-    out << cGate::info();
+    out << cGate::str();
     return out.str();
 }
 

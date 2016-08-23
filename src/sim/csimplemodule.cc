@@ -241,7 +241,7 @@ cSimpleModule::~cSimpleModule()
     // are discarded in the scheduler when they're met.
 }
 
-std::string cSimpleModule::info() const
+std::string cSimpleModule::str() const
 {
     std::stringstream out;
     out << "id=" << getId();

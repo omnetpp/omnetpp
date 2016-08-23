@@ -67,7 +67,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 
     // new functions
     cRunnableEnvir *createOne()  {return creatorfunc();}
-    std::string info() const override {return desc;}
+    std::string str() const override {return desc;}
     int getScore()  {return scor;}
 
     static cOmnetAppRegistration *chooseBest();

@@ -22,7 +22,7 @@
 
 using namespace omnetpp;
 
-std::string cParsimSynchronizer::info() const
+std::string cParsimSynchronizer::str() const
 {
     return "parsim scheduler";
 }

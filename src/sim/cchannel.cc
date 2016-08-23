@@ -53,13 +53,13 @@ cChannel::~cChannel()
     releaseLocalListeners();
 }
 
-std::string cChannel::info() const
+std::string cChannel::str() const
 {
     // print all parameters
     std::stringstream out;
     for (int i = 0; i < getNumParams(); i++) {
         cPar& p = const_cast<cChannel *>(this)->par(i);
-        out << p.getFullName() << "=" << p.info() << " ";
+        out << p.getFullName() << "=" << p.str() << " ";
     }
     return out.str();
 }

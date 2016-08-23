@@ -367,7 +367,7 @@ void EventlogFileManager::simulationEvent(cEvent *event)
         if (isCombinedRecordingEnabled) {
             fprintf(feventlog, "\n");
             cFingerprintCalculator *fp = simulation->getFingerprintCalculator();
-            EventLogWriter::recordEventEntry_e_t_m_ce_msg_f(feventlog, eventNumber, simulation->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId(), (fp ? fp->info().c_str() : nullptr));
+            EventLogWriter::recordEventEntry_e_t_m_ce_msg_f(feventlog, eventNumber, simulation->getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId(), (fp ? fp->str().c_str() : nullptr));
             entryIndex = 0;
             removeBeginSendEntryReference(msg);
             recordKeyframe();

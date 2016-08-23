@@ -140,7 +140,7 @@ class SIM_API cPacket : public cMessage
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Produces a multi-line description of the object's contents.

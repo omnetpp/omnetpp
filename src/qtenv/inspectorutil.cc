@@ -202,7 +202,7 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject *> objects, Ins
 
             const char *name = object->getFullName();
             const char *shortTypeName = getObjectShortTypeName(object);
-            QString infoStr = shortTypeName + QString(", ") + object->info().c_str();
+            QString infoStr = shortTypeName + QString(", ") + object->str().c_str();
             if (infoStr.size() > 30) {
                 infoStr.truncate(30);
                 infoStr += "...";

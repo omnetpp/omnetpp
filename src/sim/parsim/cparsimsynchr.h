@@ -71,7 +71,7 @@ class SIM_API cParsimSynchronizer : public cScheduler
     /**
      * Return "parsim scheduler" as description.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Pass cParsimSynchronizer the objects it has to cooperate with.

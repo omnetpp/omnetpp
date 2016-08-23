@@ -75,7 +75,7 @@ cTopology::~cTopology()
     clear();
 }
 
-std::string cTopology::info() const
+std::string cTopology::str() const
 {
     std::stringstream out;
     out << "n=" << nodes.size();

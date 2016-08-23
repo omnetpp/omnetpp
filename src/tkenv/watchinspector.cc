@@ -73,7 +73,7 @@ void WatchInspector::refresh()
 
     cWatchBase *watch = static_cast<cWatchBase *>(object);
     setLabel(".main.name.l", watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
-    setEntry(".main.name.e", watch ? watch->info().c_str() : "n/a");
+    setEntry(".main.name.e", watch ? watch->str().c_str() : "n/a");
 }
 
 void WatchInspector::commit()

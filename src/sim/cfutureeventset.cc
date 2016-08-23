@@ -25,7 +25,7 @@
 
 namespace omnetpp {
 
-std::string cFutureEventSet::info() const
+std::string cFutureEventSet::str() const
 {
     if (isEmpty())
         return std::string("empty");

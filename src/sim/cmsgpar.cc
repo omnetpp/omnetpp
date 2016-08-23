@@ -126,44 +126,82 @@ void cMsgPar::deleteOld()
 //----------------------------------------------------------------------
 // redefine virtual cOwnedObject funcs
 
-std::string cMsgPar::info() const
-{
-    std::stringstream out;
 
-    // append useful info
+string cMsgPar::str() const
+{
+    char bb[128];
+    bb[0] = 0;
     cNEDMathFunction *ff;
+    const char *fn;
     const char *s;
+
     switch (typeChar) {
-        case 'S': s = ls.sht ? ss.str:ls.str;
-                  if (!s) s = "";
-                  out << "\"" << s << "\" (S)";
-                  break;
-        case 'L': out << lng.val << " (L)"; break;
-        case 'D': out << dbl.val << " (D)"; break;
-        case 'T': out << (dtr.res ? dtr.res->getFullPath().c_str():"null") << " (T)"; break;
-        case 'P': out << ptr.ptr << " (P)"; break;
-        case 'O': out << (obj.obj ? obj.obj->getFullPath().c_str():"null") << " (O)"; break;
-        case 'F': ff = cNEDMathFunction::findByPointer(func.f);
-                  out << (ff ? ff->getName() : "unknown") << "(";
-                  switch (func.argc) {
-                    case 0: out << ")"; break;
-                    case 1: out << func.p1; break;
-                    case 2: out << func.p1 << "," << func.p2; break;
-                    case 3: out << func.p1 << "," << func.p2 << "," << func.p3; break;
-                    case 4: out << func.p1 << "," << func.p2 << "," << func.p3 << "," << func.p4; break;
-                    default:out << ") with " << func.argc << " args"; break;
-                  };
-                  out << " (F)";
-                  break;
-        case 'B': out << (lng.val?"true":"false") << " (B)"; break;
-        case 'M': if (xmlp.node)
-                      out << "<" << xmlp.node->getTagName() << "> from " << xmlp.node->getSourceLocation() << " (M)";
-                  else
-                      out << "null (M)";
-                  break;
-        default : out << "? (unknown type)"; break;
+        case 'S':
+            s = ls.sht ? ss.str : ls.str;
+            return string("\"") + s + "\"";
+
+        case 'B':
+            return string(lng.val ? "true" : "false");
+
+        case 'L':
+            sprintf(bb, "%ld", lng.val);
+            return string(bb);
+
+        case 'D':
+            sprintf(bb, "%g", dbl.val);
+            return string(bb);
+
+        case 'F':
+            ff = cNEDMathFunction::findByPointer(func.f);
+            fn = ff ? ff->getName() : "unknown";
+            switch (func.argc) {
+                case 0:
+                    sprintf(bb, "()");
+                    break;
+
+                case 1:
+                    sprintf(bb, "(%g)", func.p1);
+                    break;
+
+                case 2:
+                    sprintf(bb, "(%g,%g)", func.p1, func.p2);
+                    break;
+
+                case 3:
+                    sprintf(bb, "(%g,%g,%g)", func.p1, func.p2, func.p3);
+                    break;
+
+                case 4:
+                    sprintf(bb, "(%g,%g,%g,%g)", func.p1, func.p2, func.p3, func.p4);
+                    break;
+
+                default:
+                    sprintf(bb, "() with %d args", func.argc);
+                    break;
+            }
+            ;
+            return string(fn) + bb;
+
+        case 'T':
+            return string("distribution ") + (dtr.res ? dtr.res->getFullPath().c_str() : "nullptr");
+
+        case 'P':
+            sprintf(bb, "pointer %p", ptr.ptr);
+            return string(bb);
+
+        case 'O':
+            return string("object ") + (obj.obj ? obj.obj->getFullPath().c_str() : "nullptr");
+
+        case 'M':
+            if (xmlp.node)
+                return string("<") + xmlp.node->getTagName() + "> from " + xmlp.node->getSourceLocation();
+            else
+                return string("nullptr");
+            break;
+
+        default:
+            return string("???");
     }
-    return out.str();
 }
 
 std::string cMsgPar::detailedInfo() const
@@ -658,83 +696,6 @@ void cMsgPar::beforeChange()
 void cMsgPar::afterChange()
 {
     changedFlag = true;
-}
-
-string cMsgPar::str() const
-{
-    char bb[128];
-    bb[0] = 0;
-    cNEDMathFunction *ff;
-    const char *fn;
-    const char *s;
-
-    switch (typeChar) {
-        case 'S':
-            s = ls.sht ? ss.str : ls.str;
-            return string("\"") + s + "\"";
-
-        case 'B':
-            return string(lng.val ? "true" : "false");
-
-        case 'L':
-            sprintf(bb, "%ld", lng.val);
-            return string(bb);
-
-        case 'D':
-            sprintf(bb, "%g", dbl.val);
-            return string(bb);
-
-        case 'F':
-            ff = cNEDMathFunction::findByPointer(func.f);
-            fn = ff ? ff->getName() : "unknown";
-            switch (func.argc) {
-                case 0:
-                    sprintf(bb, "()");
-                    break;
-
-                case 1:
-                    sprintf(bb, "(%g)", func.p1);
-                    break;
-
-                case 2:
-                    sprintf(bb, "(%g,%g)", func.p1, func.p2);
-                    break;
-
-                case 3:
-                    sprintf(bb, "(%g,%g,%g)", func.p1, func.p2, func.p3);
-                    break;
-
-                case 4:
-                    sprintf(bb, "(%g,%g,%g,%g)", func.p1, func.p2, func.p3, func.p4);
-                    break;
-
-                default:
-                    sprintf(bb, "() with %d args", func.argc);
-                    break;
-            }
-            ;
-            return string(fn) + bb;
-
-        case 'T':
-            return string("distribution ") + (dtr.res ? dtr.res->getFullPath().c_str() : "nullptr");
-
-        case 'P':
-            sprintf(bb, "pointer %p", ptr.ptr);
-            return string(bb);
-
-        case 'O':
-            return string("object ") + (obj.obj ? obj.obj->getFullPath().c_str() : "nullptr");
-
-        case 'M':
-            if (xmlp.node)
-                return string("<") + xmlp.node->getTagName() + "> from " + xmlp.node->getSourceLocation();
-            else
-                return string("nullptr");
-            break;
-
-        default:
-            return string("???");
-    }
 }
 
 static bool parseQuotedString(string& str, const char *& s)  //FIXME use opp_parsequotedstr() instead!

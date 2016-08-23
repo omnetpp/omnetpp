@@ -125,11 +125,6 @@ cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& othe
     return *this;
 }
 
-std::string cDynamicExpression::info() const
-{
-    return str();
-}
-
 void cDynamicExpression::setExpression(Elem e[], int n)
 {
     delete[] elems;

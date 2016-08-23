@@ -918,7 +918,7 @@ void cFigure::forEachChild(cVisitor *v)
         v->visit(children[i]);
 }
 
-std::string cFigure::info() const
+std::string cFigure::str() const
 {
     return "";
 }
@@ -1217,7 +1217,7 @@ cGroupFigure& cGroupFigure::operator=(const cGroupFigure& other)
     return *this;
 }
 
-std::string cGroupFigure::info() const
+std::string cGroupFigure::str() const
 {
     return "";
 }
@@ -1239,7 +1239,7 @@ cPanelFigure& cPanelFigure::operator=(const cPanelFigure& other)
     return *this;
 }
 
-std::string cPanelFigure::info() const
+std::string cPanelFigure::str() const
 {
     std::stringstream os;
     os << "at " << getPosition();
@@ -1297,7 +1297,7 @@ cAbstractLineFigure& cAbstractLineFigure::operator=(const cAbstractLineFigure& o
     return *this;
 }
 
-std::string cAbstractLineFigure::info() const
+std::string cAbstractLineFigure::str() const
 {
     return "";
 }
@@ -1417,7 +1417,7 @@ cLineFigure& cLineFigure::operator=(const cLineFigure& other)
     return *this;
 }
 
-std::string cLineFigure::info() const
+std::string cLineFigure::str() const
 {
     std::stringstream os;
     os << getStart() << " to " << getEnd();
@@ -1485,7 +1485,7 @@ cArcFigure& cArcFigure::operator=(const cArcFigure& other)
     return *this;
 }
 
-std::string cArcFigure::info() const
+std::string cArcFigure::str() const
 {
     std::stringstream os;
     os << getBounds() << ", " << floor(rad2deg(getStartAngle())) << " to " << floor(rad2deg(getEndAngle())) << " degrees";
@@ -1578,7 +1578,7 @@ cPolylineFigure& cPolylineFigure::operator=(const cPolylineFigure& other)
     return *this;
 }
 
-std::string cPolylineFigure::info() const
+std::string cPolylineFigure::str() const
 {
     std::stringstream os;
     for (int i = 0; i < (int)points.size(); i++)
@@ -1694,7 +1694,7 @@ cAbstractShapeFigure& cAbstractShapeFigure::operator=(const cAbstractShapeFigure
     return *this;
 }
 
-std::string cAbstractShapeFigure::info() const
+std::string cAbstractShapeFigure::str() const
 {
     return "";
 }
@@ -1827,7 +1827,7 @@ cRectangleFigure& cRectangleFigure::operator=(const cRectangleFigure& other)
     return *this;
 }
 
-std::string cRectangleFigure::info() const
+std::string cRectangleFigure::str() const
 {
     std::stringstream os;
     os << getBounds();
@@ -1909,7 +1909,7 @@ cOvalFigure& cOvalFigure::operator=(const cOvalFigure& other)
     return *this;
 }
 
-std::string cOvalFigure::info() const
+std::string cOvalFigure::str() const
 {
     std::stringstream os;
     os << getBounds();
@@ -1968,7 +1968,7 @@ cRingFigure& cRingFigure::operator=(const cRingFigure& other)
     return *this;
 }
 
-std::string cRingFigure::info() const
+std::string cRingFigure::str() const
 {
     std::stringstream os;
     os << getBounds();
@@ -2052,7 +2052,7 @@ cPieSliceFigure& cPieSliceFigure::operator=(const cPieSliceFigure& other)
     return *this;
 }
 
-std::string cPieSliceFigure::info() const
+std::string cPieSliceFigure::str() const
 {
     std::stringstream os;
     os << getBounds();
@@ -2146,7 +2146,7 @@ cPolygonFigure& cPolygonFigure::operator=(const cPolygonFigure& other)
     return *this;
 }
 
-std::string cPolygonFigure::info() const
+std::string cPolygonFigure::str() const
 {
     std::stringstream os;
     for (int i = 0; i < (int)points.size(); i++)
@@ -2268,7 +2268,7 @@ cPathFigure& cPathFigure::operator=(const cPathFigure& other)
     return *this;
 }
 
-std::string cPathFigure::info() const
+std::string cPathFigure::str() const
 {
     return getPath();
 }
@@ -2830,7 +2830,7 @@ cAbstractTextFigure& cAbstractTextFigure::operator=(const cAbstractTextFigure& o
     return *this;
 }
 
-std::string cAbstractTextFigure::info() const
+std::string cAbstractTextFigure::str() const
 {
     std::stringstream os;
     os << "\"" << getText() << "\" at " << getPosition();
@@ -3119,7 +3119,7 @@ cFigure::Rectangle cAbstractImageFigure::getBounds() const
 
 //----
 
-std::string cImageFigure::info() const
+std::string cImageFigure::str() const
 {
     std::stringstream os;
     os << "\"" << getImageName() << "\" at " << getPosition();
@@ -3183,7 +3183,7 @@ cIconFigure& cIconFigure::operator=(const cIconFigure& other)
 
 //----
 
-std::string cPixmapFigure::info() const
+std::string cPixmapFigure::str() const
 {
     std::stringstream os;
     os << "(" << getPixmapWidth() << " x " << getPixmapHeight() << ") at " << getPosition();
@@ -3332,7 +3332,7 @@ void cCanvas::forEachChild(cVisitor *v)
     rootFigure->forEachChild(v);  // skip the root figure from the tree
 }
 
-std::string cCanvas::info() const
+std::string cCanvas::str() const
 {
     std::stringstream os;
     os << rootFigure->getNumFigures() << " toplevel figure(s)";

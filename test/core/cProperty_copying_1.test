@@ -1,5 +1,5 @@
 %description:
-Tests cProperty dup() and info().
+Tests cProperty dup() and str().
 
 %global:
 #include <string.h>
@@ -17,7 +17,7 @@ prop->addKey("barkey");
 prop->addKey("bazkey");
 
 cProperty *prop2 = prop->dup();
-EV << prop->info() << " --> " << prop2->info() << "\n";
+EV << prop->str() << " --> " << prop2->str() << "\n";
 
 delete prop;
 delete prop2;

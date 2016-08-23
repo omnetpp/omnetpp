@@ -24,4 +24,4 @@ message Foo {
 %activity:
 
 Foo tmp;
-EV << tmp.info() << "\n";
+EV << tmp.str() << "\n";

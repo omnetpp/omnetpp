@@ -84,7 +84,7 @@ cEventHeap::~cEventHeap()
     delete[] cb;
 }
 
-std::string cEventHeap::info() const
+std::string cEventHeap::str() const
 {
     if (isEmpty())
         return std::string("empty");

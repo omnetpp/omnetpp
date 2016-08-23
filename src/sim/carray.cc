@@ -125,7 +125,7 @@ cArray& cArray::operator=(const cArray& other)
     return *this;
 }
 
-std::string cArray::info() const
+std::string cArray::str() const
 {
     if (last == -1)
         return std::string("empty");

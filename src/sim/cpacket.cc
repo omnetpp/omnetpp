@@ -59,7 +59,7 @@ cPacket::~cPacket()
 #endif
 }
 
-std::string cPacket::info() const  //FIXME revise
+std::string cPacket::str() const  //FIXME revise
 {
 //    if (tomod<0)
 //        return std::string("(new msg)");

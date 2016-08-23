@@ -74,7 +74,7 @@ cUniform& cUniform::operator=(const cUniform& other)
     return *this;
 }
 
-std::string cUniform::info() const
+std::string cUniform::str() const
 {
     std::stringstream out;
     out << "a=" << a << ", b=" << b;
@@ -103,7 +103,7 @@ const cExponential& cExponential::operator=(const cExponential& other)
     return *this;
 }
 
-std::string cExponential::info() const
+std::string cExponential::str() const
 {
     std::stringstream out;
     out << "mean=" << mean;
@@ -133,7 +133,7 @@ cNormal& cNormal::operator=(const cNormal& other)
     return *this;
 }
 
-std::string cNormal::info() const
+std::string cNormal::str() const
 {
     std::stringstream out;
     out << "mean=" << mean << ", stddev=" << stddev;
@@ -163,7 +163,7 @@ cTruncNormal& cTruncNormal::operator=(const cTruncNormal& other)
     return *this;
 }
 
-std::string cTruncNormal::info() const
+std::string cTruncNormal::str() const
 {
     std::stringstream out;
     out << "mean=" << mean << ", stddev=" << stddev;
@@ -193,7 +193,7 @@ cGamma& cGamma::operator=(const cGamma& other)
     return *this;
 }
 
-std::string cGamma::info() const
+std::string cGamma::str() const
 {
     std::stringstream out;
     out << "alpha=" << alpha << ", theta=" << theta;
@@ -223,7 +223,7 @@ cBeta& cBeta::operator=(const cBeta& other)
     return *this;
 }
 
-std::string cBeta::info() const
+std::string cBeta::str() const
 {
     std::stringstream out;
     out << "alpha1=" << alpha1 << ", alpha2=" << alpha2;
@@ -253,7 +253,7 @@ cErlang& cErlang::operator=(const cErlang& other)
     return *this;
 }
 
-std::string cErlang::info() const
+std::string cErlang::str() const
 {
     std::stringstream out;
     out << "k=" << k << ", mean=" << mean;
@@ -282,7 +282,7 @@ cChiSquare& cChiSquare::operator=(const cChiSquare& other)
     return *this;
 }
 
-std::string cChiSquare::info() const
+std::string cChiSquare::str() const
 {
     std::stringstream out;
     out << "k=" << k;
@@ -311,7 +311,7 @@ cStudentT& cStudentT::operator=(const cStudentT& other)
     return *this;
 }
 
-std::string cStudentT::info() const
+std::string cStudentT::str() const
 {
     std::stringstream out;
     out << "i=" << i;
@@ -341,7 +341,7 @@ cCauchy& cCauchy::operator=(const cCauchy& other)
     return *this;
 }
 
-std::string cCauchy::info() const
+std::string cCauchy::str() const
 {
     std::stringstream out;
     out << "a=" << a << ", b=" << b;
@@ -372,7 +372,7 @@ cTriang& cTriang::operator=(const cTriang& other)
     return *this;
 }
 
-std::string cTriang::info() const
+std::string cTriang::str() const
 {
     std::stringstream out;
     out << "a=" << a << ", b=" << b << ", c=" << c;
@@ -402,7 +402,7 @@ cWeibull& cWeibull::operator=(const cWeibull& other)
     return *this;
 }
 
-std::string cWeibull::info() const
+std::string cWeibull::str() const
 {
     std::stringstream out;
     out << "a=" << a << ", b=" << b;
@@ -433,7 +433,7 @@ cParetoShifted& cParetoShifted::operator=(const cParetoShifted& other)
     return *this;
 }
 
-std::string cParetoShifted::info() const
+std::string cParetoShifted::str() const
 {
     std::stringstream out;
     out << "a=" << a << ", b=" << b << ", c=" << c;
@@ -463,7 +463,7 @@ cIntUniform& cIntUniform::operator=(const cIntUniform& other)
     return *this;
 }
 
-std::string cIntUniform::info() const
+std::string cIntUniform::str() const
 {
     std::stringstream out;
     out << "a=" << a << ", b=" << b;
@@ -492,7 +492,7 @@ cBernoulli& cBernoulli::operator=(const cBernoulli& other)
     return *this;
 }
 
-std::string cBernoulli::info() const
+std::string cBernoulli::str() const
 {
     std::stringstream out;
     out << "p=" << p;
@@ -522,7 +522,7 @@ cBinomial& cBinomial::operator=(const cBinomial& other)
     return *this;
 }
 
-std::string cBinomial::info() const
+std::string cBinomial::str() const
 {
     std::stringstream out;
     out << "n=" << n << ", p=" << p;
@@ -551,7 +551,7 @@ cGeometric& cGeometric::operator=(const cGeometric& other)
     return *this;
 }
 
-std::string cGeometric::info() const
+std::string cGeometric::str() const
 {
     std::stringstream out;
     out << "p=" << p;
@@ -581,7 +581,7 @@ cNegBinomial& cNegBinomial::operator=(const cNegBinomial& other)
     return *this;
 }
 
-std::string cNegBinomial::info() const
+std::string cNegBinomial::str() const
 {
     std::stringstream out;
     out << "n=" << n << ", p=" << p;
@@ -610,7 +610,7 @@ cPoisson& cPoisson::operator=(const cPoisson& other)
     return *this;
 }
 
-std::string cPoisson::info() const
+std::string cPoisson::str() const
 {
     std::stringstream out;
     out << "lambda=" << lambda;

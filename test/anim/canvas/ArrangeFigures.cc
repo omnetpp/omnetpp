@@ -55,7 +55,7 @@ void ArrangeFigures::initialize()
     for (int i = 0; i < (int)addColumnPropertyIndices.size(); i++) {
         const char *index = addColumnPropertyIndices[i];
         cProperty *addColumnProperty = properties->get("addColumn", index);
-        addLabel(addColumnProperty->info().c_str(), startPosX + (i+1)*columnWidth, startPosY-35+(i%3)*15, cFigure::ANCHOR_SW);
+        addLabel(addColumnProperty->str().c_str(), startPosX + (i+1)*columnWidth, startPosY-35+(i%3)*15, cFigure::ANCHOR_SW);
     }
 
     // distribute the figures and add labels for them
@@ -107,7 +107,7 @@ void ArrangeFigures::initialize()
             }
 
             // generate label
-            addLabel(figureProperty->info().c_str(), xoffset, yoffset, cFigure::ANCHOR_NW);
+            addLabel(figureProperty->str().c_str(), xoffset, yoffset, cFigure::ANCHOR_NW);
             yoffset += lineSpacing;
         }
     }

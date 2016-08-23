@@ -61,7 +61,7 @@ std::string cObject::getFullPath() const
         return getOwner()->getFullPath() + "." + getFullName();
 }
 
-std::string cObject::info() const
+std::string cObject::str() const
 {
     return std::string();
 }

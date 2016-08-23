@@ -39,9 +39,9 @@ cNEDDeclaration *cDynamicChannelType::getDecl() const
     return decl;
 }
 
-std::string cDynamicChannelType::info() const
+std::string cDynamicChannelType::str() const
 {
-    return getDecl()->info();
+    return getDecl()->str();
 }
 
 std::string cDynamicChannelType::detailedInfo() const

@@ -53,7 +53,7 @@ cFSM& cFSM::operator=(const cFSM& vs)
     return *this;
 }
 
-std::string cFSM::info() const
+std::string cFSM::str() const
 {
     std::stringstream out;
     if (!stateName)

@@ -56,7 +56,7 @@ cQueue::~cQueue()
     clear();
 }
 
-std::string cQueue::info() const
+std::string cQueue::str() const
 {
     if (n == 0)
         return std::string("empty");

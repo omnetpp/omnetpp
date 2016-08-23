@@ -71,14 +71,14 @@ const char *cPar::getName() const
     return p->getName();
 }
 
-std::string cPar::info() const
+std::string cPar::str() const
 {
-    return p->info();
+    return p->str();
 }
 
 std::string cPar::detailedInfo() const
 {
-    return p->detailedInfo() + " " + getProperties()->info();
+    return p->detailedInfo() + " " + getProperties()->str();
 }
 
 cParImpl *cPar::copyIfShared()
@@ -140,11 +140,6 @@ const char *cPar::getTypeName(Type t)
 
 // note: the following one-liners should really be inline functions, but
 // they can't be put into cpar.h because of declaration order.
-
-std::string cPar::str() const
-{
-    return p->str();
-}
 
 cPar::Type cPar::getType() const
 {

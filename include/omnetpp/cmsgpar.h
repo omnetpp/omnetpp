@@ -169,10 +169,10 @@ class SIM_API cMsgPar : public cOwnedObject
     virtual cMsgPar *dup() const override  {return new cMsgPar(*this);}
 
     /**
-     * Produces a one-line description of the object's contents.
+     * Returns the value in text form.
      * See cObject for more details.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Produces a multi-line description of the object's contents.
@@ -406,11 +406,6 @@ class SIM_API cMsgPar : public cOwnedObject
 
     /** @name Convert to/from text representation. */
     //@{
-    /**
-     * Returns the value in text form.
-     */
-    virtual std::string str() const;
-
     /**
      * This function tries to interpret the argument text as a type
      * typed value (L=long, S=string, etc). type=='?' (the default)

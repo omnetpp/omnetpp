@@ -1559,10 +1559,10 @@ void EnvirBase::checkFingerprint()
         return;
 
     if (fingerprint->checkFingerprint())
-        printfmsg("Fingerprint successfully verified: %s", fingerprint->info().c_str());
+        printfmsg("Fingerprint successfully verified: %s", fingerprint->str().c_str());
     else
         printfmsg("Fingerprint mismatch! calculated: %s, expected: %s",
-                fingerprint->info().c_str(), cfg->getAsString(CFGID_FINGERPRINT).c_str());
+                fingerprint->str().c_str(), cfg->getAsString(CFGID_FINGERPRINT).c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)

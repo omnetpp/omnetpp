@@ -39,9 +39,9 @@ class APolygon : public cObject
     int n;
     int edgeLen;
     APolygon(int nsides, int edgeLength) {n=nsides; edgeLen=edgeLength;}
-    std::string info() const override {
+    std::string str() const override {
         std::stringstream out;
-        out << "n=" << n << ", edgeLen=" << edgeLen << " (printed by info())";
+        out << "n=" << n << ", edgeLen=" << edgeLen << " (printed by str())";
         return out.str();
     }
 };
@@ -95,7 +95,7 @@ void WatchTest::activity()
     WATCH_RW(point_rw);
 
     //
-    // Structs/classes via cObject and info(); no structdesc.
+    // Structs/classes via cObject and str(); no structdesc.
     //
     APolygon poly_WATCH(5, 100);
     WATCH(poly_WATCH);

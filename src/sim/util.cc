@@ -325,9 +325,9 @@ void _sim_dummy_func()
     cMersenneTwister mt;
     mt.intRand();
     cKSplit ks;
-    ks.info();
+    ks.str();
     cPSquare ps;
-    ps.info();
+    ps.str();
     cStringTokenizer tok("");
     tok.nextToken();
     std_sim_descriptor_dummy();
@@ -340,9 +340,9 @@ void _sim_dummy_func()
     cPacketQueue pq;
     (void)pq;
     cFSM fsm;
-    fsm.info();
+    fsm.str();
     cOutVector ov;
-    ov.info();
+    ov.str();
     cVarHistogram vh;
     vh.draw();
 #ifdef USE_OMNETPP4x_FINGERPRINTS

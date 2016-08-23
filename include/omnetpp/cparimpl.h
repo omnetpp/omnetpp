@@ -99,12 +99,6 @@ class SIM_API cParImpl : public cNamedObject
     /** @name Redefined cObject member functions */
     //@{
     /**
-     * Returns a one-line description of the object.
-     * @see detailedInfo()
-     */
-    virtual std::string info() const override;
-
-    /**
      * Returns a long description of the object.
      */
     virtual std::string detailedInfo() const override;
@@ -305,11 +299,6 @@ class SIM_API cParImpl : public cNamedObject
      * See cDynamicExpression::Elem::CONSTSUBEXPR.
      */
     virtual void evaluateConstSubexpressions(cComponent *context);
-
-    /**
-     * Returns the value in text form.
-     */
-    virtual std::string str() const = 0;
 
     /**
      * Convert the value from string, and store the result.

@@ -121,7 +121,7 @@ const char *cProperty::getFullName() const
     return propfullname;
 }
 
-std::string cProperty::info() const
+std::string cProperty::str() const
 {
     std::stringstream os;
     os << "@" << getFullName();

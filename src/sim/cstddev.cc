@@ -57,7 +57,7 @@ cStdDev::cStdDev(const char *s) : cStatistic(s)
     minValue = maxValue = 0;
 }
 
-std::string cStdDev::info() const
+std::string cStdDev::str() const
 {
     std::stringstream out;
     out << "n=" << getCount()
@@ -252,7 +252,7 @@ void cStdDev::loadFromFile(FILE *f)
 
 //----
 
-std::string cWeightedStdDev::info() const
+std::string cWeightedStdDev::str() const
 {
     std::stringstream out;
     out << "n=" << getCount()

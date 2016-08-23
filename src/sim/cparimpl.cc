@@ -75,11 +75,6 @@ void cParImpl::parsimUnpack(cCommBuffer *buffer)
     //TBD
 }
 
-std::string cParImpl::info() const
-{
-    return str();
-}
-
 std::string cParImpl::detailedInfo() const
 {
     std::stringstream out;

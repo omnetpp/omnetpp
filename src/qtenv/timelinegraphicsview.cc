@@ -412,8 +412,8 @@ void TimeLineGraphicsView::drawMessageSymbol(cMessage *message, bool active, int
     ellipse->setData(ITEMDATA_COBJECT, QVariant::fromValue(message));
 
     QString toolTip = QString("(") + getObjectShortTypeName(message) + ") " + message->getFullName();
-    if (!message->info().empty())
-        toolTip += QString(", ") + message->info().c_str();
+    if (!message->str().empty())
+        toolTip += QString(", ") + message->str().c_str();
     ellipse->setToolTip(toolTip);
 }
 

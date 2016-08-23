@@ -89,7 +89,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Produces a one-line description of the object's contents.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     //@}
 
     /** @name Member access. */

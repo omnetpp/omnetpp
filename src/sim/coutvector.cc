@@ -75,7 +75,7 @@ void cOutVector::setName(const char *nam)
     }
 }
 
-std::string cOutVector::info() const
+std::string cOutVector::str() const
 {
     if (!handle)
         return std::string("(no values recorded yet)");

@@ -132,7 +132,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
         /** @name Redefined cObject member functions. */
         //@{
         virtual cOsgCanvas *dup() const override {return new cOsgCanvas(*this);}
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name OSG scene. */

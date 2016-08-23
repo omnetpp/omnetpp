@@ -57,7 +57,7 @@ public:
     virtual bool isEmpty() { return false; }
 
     // only needed for debugging
-    virtual QString info() const = 0;
+    virtual QString str() const = 0;
 
     // all of these (except setProgress) must be called from the subclasses' overrides
     virtual void init() { state = WAITING; } // when the group is started

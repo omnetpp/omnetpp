@@ -73,7 +73,7 @@ void WatchInspector::refresh()
     cWatchBase *watch = static_cast<cWatchBase *>(object);
 
     editor->setEnabled(watch->supportsAssignment());
-    editor->setText(watch ? watch->info().c_str() : "n/a");
+    editor->setText(watch ? watch->str().c_str() : "n/a");
     label->setText(watch ? (std::string(watch->getClassName())+" "+watch->getName()).c_str() : "n/a");
 }
 

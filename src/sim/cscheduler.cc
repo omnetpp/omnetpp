@@ -41,7 +41,7 @@ cScheduler::~cScheduler()
 {
 }
 
-std::string cScheduler::info() const
+std::string cScheduler::str() const
 {
     return "(no scheduler info provided)";
 }
@@ -65,7 +65,7 @@ void cScheduler::lifecycleEvent(SimulationLifecycleEventType eventType, cObject 
 
 Register_Class(cSequentialScheduler);
 
-std::string cSequentialScheduler::info() const
+std::string cSequentialScheduler::str() const
 {
     return "";  // NOTE: Do not change this to "sequential scheduler"! As this scheduler is the "nothing special" scheduler, we don't want to advertise its presence.
 }
@@ -106,7 +106,7 @@ cRealTimeScheduler::~cRealTimeScheduler()
 {
 }
 
-std::string cRealTimeScheduler::info() const
+std::string cRealTimeScheduler::str() const
 {
     if (!doScaling)
         return "real-time scheduling";

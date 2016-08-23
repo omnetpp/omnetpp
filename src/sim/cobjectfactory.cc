@@ -31,7 +31,7 @@ cObjectFactory::cObjectFactory(const char *name, cObject *(*creatorf)(), void *(
     this->description = description ? description : "";
 }
 
-std::string cObjectFactory::info() const
+std::string cObjectFactory::str() const
 {
     if (description.empty())
         return "";

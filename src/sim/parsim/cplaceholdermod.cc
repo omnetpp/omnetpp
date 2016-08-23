@@ -41,7 +41,7 @@ cPlaceholderModule::~cPlaceholderModule()
 {
 }
 
-std::string cPlaceholderModule::info() const
+std::string cPlaceholderModule::str() const
 {
     std::stringstream out;
     out << "id=" << getId() << ", PLACEHOLDER";

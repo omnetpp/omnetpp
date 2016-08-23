@@ -69,7 +69,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
     /**
      * Redefined here to display remoteProcId, remoteModId and remoteGateId.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     //@}
 
     /** @name Redefined cGate member functions */

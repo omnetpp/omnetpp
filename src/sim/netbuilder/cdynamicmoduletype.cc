@@ -30,9 +30,9 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
 }
 
-std::string cDynamicModuleType::info() const
+std::string cDynamicModuleType::str() const
 {
-    return getDecl()->info();
+    return getDecl()->str();
 }
 
 std::string cDynamicModuleType::detailedInfo() const

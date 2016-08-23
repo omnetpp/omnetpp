@@ -54,7 +54,7 @@ cEvent::~cEvent()
 {
 }
 
-std::string cEvent::info() const
+std::string cEvent::str() const
 {
     if (arrivalTime == getSimulation()->getSimTime())
         return "(now)";

@@ -93,7 +93,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Packing and unpacking cannot be supported with this class.

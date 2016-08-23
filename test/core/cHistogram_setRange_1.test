@@ -85,9 +85,9 @@ for (int i=0; i<FIRSTVALS+10; i++)
         EV << "\n";
     }
 
-    // test info() and detailedInfo()
+    // test str() and detailedInfo()
     for (int k=0; k<nh; k++) {
-        h[k]->info();
+        h[k]->str();
         h[k]->detailedInfo();
     }
 

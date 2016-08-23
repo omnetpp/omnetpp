@@ -157,7 +157,7 @@ void cModule::setNameAndIndex(const char *s, int i, int n)
     updateFullName();
 }
 
-std::string cModule::info() const
+std::string cModule::str() const
 {
     std::stringstream out;
     out << "id=" << getId();

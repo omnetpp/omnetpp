@@ -80,7 +80,7 @@ cOsgCanvas& cOsgCanvas::operator=(const cOsgCanvas& other)
     return *this;
 }
 
-std::string cOsgCanvas::info() const
+std::string cOsgCanvas::str() const
 {
     if (scene == nullptr)
         return "(empty)";

@@ -13,7 +13,7 @@ Omit abstract classes and classes without default constructor.
    class b = a; \
    if (dynamic_cast<cNamedObject*>(&a) && strcmp(((cNamedObject&)a).getName(), ((cNamedObject&)b).getName())) \
       EV << "FAIL name: "#class << endl; \
-   if (dynamic_cast<cObject*>(&a) && ((cObject&)a).info() != ((cObject&)b).info()) \
+   if (dynamic_cast<cObject*>(&a) && ((cObject&)a).str() != ((cObject&)b).str()) \
       EV << "FAIL info: "#class << endl; \
 }
 

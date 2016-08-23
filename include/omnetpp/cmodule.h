@@ -449,7 +449,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Overridden to add the module ID.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     //@}
 
     /** @name Setting up the module. */

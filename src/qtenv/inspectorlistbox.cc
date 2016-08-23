@@ -68,8 +68,8 @@ void InspectorListBox::sort(int i, Qt::SortOrder order)
                                  first.toLower() < second.toLower() :
                                  first.toLower() > second.toLower();
                   case 2:
-                      first = arg1->info().c_str();
-                      second = arg2->info().c_str();
+                      first = arg1->str().c_str();
+                      second = arg2->str().c_str();
                       return order == Qt::SortOrder::AscendingOrder ?
                                  first.toLower() < second.toLower() :
                                  first.toLower() > second.toLower();
@@ -109,7 +109,7 @@ QVariant InspectorListBox::data(const QModelIndex& index, int role) const
                 break;
 
             case 2:
-                label = objects[index.row()]->info().c_str();
+                label = objects[index.row()]->str().c_str();
                 break;
 
             case 3:

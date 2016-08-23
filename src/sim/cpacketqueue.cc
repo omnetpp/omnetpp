@@ -57,7 +57,7 @@ cPacketQueue& cPacketQueue::operator=(const cPacketQueue& queue)
     return *this;
 }
 
-std::string cPacketQueue::info() const
+std::string cPacketQueue::str() const
 {
     if (isEmpty())
         return std::string("empty");

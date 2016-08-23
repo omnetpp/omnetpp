@@ -166,7 +166,7 @@ void Tester::receiveSignal(cComponent *source, simsignal_t signalID, cObject *ob
 {
     Enter_Method_Silent();
 
-    EV << "Got " << obj->getClassName() << " " << obj->info() << " from " << source->getFullPath() << "\n";
+    EV << "Got " << obj->getClassName() << " " << obj->str() << " from " << source->getFullPath() << "\n";
 
     if (dynamic_cast<cPostModuleDeleteNotification *>(obj)) {
         EV << "  - LISTENER: NODE DELETED\n";

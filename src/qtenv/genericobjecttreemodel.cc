@@ -600,7 +600,7 @@ bool ChildObjectNode::hasChildrenImpl()
 QVariant ChildObjectNode::data(int role)
 {
     QString defaultText = getDefaultObjectData(object, Qt::DisplayRole).value<QString>();
-    QString infoText = object->info().c_str();
+    QString infoText = object->str().c_str();
     switch (role) {
         case Qt::DisplayRole: return defaultText + (infoText.isEmpty() ? "" : (QString(" ") + infoText));
         case Qt::UserRole: return QVariant::fromValue(HighlightRange{defaultText.length(), infoText.isEmpty() ? 0 : infoText.length() + 1});
@@ -702,7 +702,7 @@ QVariant FieldNode::data(int role)
 
     if (!isArray && isCObject) {
         if (objectCasted) {
-            objectInfo = objectCasted->info().c_str();
+            objectInfo = objectCasted->str().c_str();
             if (objectInfo.length() > 0) {
                 objectInfo = QString(": ") + objectInfo;
             }
@@ -889,7 +889,7 @@ QVariant ArrayElementNode::data(int role)
                           .arg(getObjectFullNameOrPath(fieldObjectPointer))
                          : "NULL");
 
-        std::string info = fieldObjectPointer ? fieldObjectPointer->info() : "";
+        std::string info = fieldObjectPointer ? fieldObjectPointer->str() : "";
         if (!info.empty()) {
             valueInfo += ": ";
             valueInfo += info.c_str();

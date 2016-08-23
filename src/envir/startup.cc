@@ -196,7 +196,7 @@ int setupUserInterface(int argc, char *argv[])
                          "Available ones are:\n", appName.c_str());
                 cRegistrationList *a = omnetapps.getInstance();
                 for (int i = 0; i < a->size(); i++)
-                    ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->info().c_str());
+                    ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->str().c_str());
 
                 throw cRuntimeError("Could not start user interface '%s'", appName.c_str());
             }

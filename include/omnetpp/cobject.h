@@ -48,7 +48,7 @@ class cOwnedObject;
  * and using cObject as a base class does not add anything to the size
  * of an object, because a class with a virtual function already has a vptr.
  * Subclasses are expected to redefine member functions such as dup(),
- * info(), forEachChild(), etc.
+ * str(), forEachChild(), etc.
  *
  * Note: The (cPolymorphic, cObject) classes in \opp versions 2.x and 3.x
  * were renamed to (cObject, cOwnedObject) in version 4.0.
@@ -157,7 +157,13 @@ class SIM_API cObject
      *
      * @see detailedInfo()
      */
-    virtual std::string info() const;
+    virtual std::string str() const;
+
+
+    /**
+     * Deprecated, use str() instead. This method also delegates to str().
+     */
+    _OPPDEPRECATED virtual std::string info() const {return str();}
 
     /**
      * Can be redefined to produce a detailed, multi-line, arbitrarily long

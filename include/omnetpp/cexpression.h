@@ -65,10 +65,9 @@ class SIM_API cExpression : public cObject
     virtual cExpression *dup() const override {copyNotSupported(); return nullptr;}
 
     /**
-     * Produces a one-line description of the object's contents.
-     * See cObject for more details.
+     * Converts the expression to string.
      */
-    virtual std::string info() const override {return "";}
+    virtual std::string str() const override {return "";}
 
     /**
      * Redefined to "de-inherit" it.
@@ -124,11 +123,6 @@ class SIM_API cExpression : public cObject
 
     /** @name Miscellaneous utility functions. */
     //@{
-    /**
-     * Converts the expression to string.
-     */
-    virtual std::string str() const = 0;
-
     /**
      * Interprets the string as an expression, and store it.
      * If the text cannot be parsed, an exception is thrown, which

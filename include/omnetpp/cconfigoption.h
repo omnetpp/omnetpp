@@ -88,7 +88,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
 
     /** @name Redefined cObject methods */
     //@{
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     //@}
 
     /** @name Getter methods */

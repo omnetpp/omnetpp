@@ -59,7 +59,7 @@ cConfigOption::cConfigOption(const char *name, ObjectKind kind, Type type, const
         throw opp_runtime_error("Per-object config option name must contain hyphen, check Register_PerObjectConfigOption() macros: %s", name);
 }
 
-std::string cConfigOption::info() const
+std::string cConfigOption::str() const
 {
     std::stringstream out;
     out << (isPerObject_ ? "per-object " : "");

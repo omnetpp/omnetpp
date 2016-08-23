@@ -112,7 +112,7 @@ void GateInspector::redraw()
                         srcgateptr, " ",
                         destgateptr, " ",
                         chanptr, " ",
-                        TclQuotedString(chan ? chan->info().c_str() : "").get(), " ",
+                        TclQuotedString(chan ? chan->str().c_str() : "").get(), " ",
                         TclQuotedString(dispstr).get(), " ",
                         TCL_NULL));*/
     }

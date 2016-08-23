@@ -278,7 +278,7 @@ void EnvirUtils::dumpComponentList(const char *category)
                 const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "???";
                 const char *desc = nf ? nf->getDescription() : mf ? mf->getDescription() : "???";
                 if (fcat == category) {
-                    std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+                    std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
                     if (desc)
                         std::cout << "    " << desc << "\n";
                 }
@@ -316,7 +316,7 @@ void EnvirUtils::dumpComponentList(const char *category)
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
         std::cout << "\n";
     }
@@ -327,7 +327,7 @@ void EnvirUtils::dumpComponentList(const char *category)
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
     }
 
@@ -338,7 +338,7 @@ void EnvirUtils::dumpComponentList(const char *category)
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
     }
 
@@ -349,7 +349,7 @@ void EnvirUtils::dumpComponentList(const char *category)
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
     }
 

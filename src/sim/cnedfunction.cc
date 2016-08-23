@@ -165,7 +165,7 @@ cNEDValue cNEDFunction::invoke(cComponent *context, cNEDValue argv[], int argc)
     return f(context, argv, argc);
 }
 
-std::string cNEDFunction::info() const
+std::string cNEDFunction::str() const
 {
     return getSignature();
 }

@@ -103,7 +103,7 @@ cMessage::~cMessage()
         liveMsgCount--;
 }
 
-std::string cMessage::info() const
+std::string cMessage::str() const
 {
     if (targetModuleId < 0)
         return std::string("(new msg)");

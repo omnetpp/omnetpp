@@ -65,9 +65,9 @@ cDatarateChannel *cDatarateChannel::create(const char *name)
     return dynamic_cast<cDatarateChannel *>(cChannelType::getDatarateChannelType()->create(name));
 }
 
-std::string cDatarateChannel::info() const
+std::string cDatarateChannel::str() const
 {
-    return cChannel::info();
+    return cChannel::str();
 }
 
 void cDatarateChannel::initialize()

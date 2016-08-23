@@ -124,10 +124,10 @@ class SIM_API cPar : public cObject
     virtual const char *getName() const override;
 
     /**
-     * Returns a one-line description of the object.
+     * Returns the value in text form.
      * @see detailedInfo()
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Returns a long description of the object.
@@ -348,11 +348,6 @@ class SIM_API cPar : public cObject
      * evaluation.
      */
     void convertToConst();
-
-    /**
-     * Returns the value in text form.
-     */
-    std::string str() const;
 
     /**
      * Converts the value from string, and stores the result.

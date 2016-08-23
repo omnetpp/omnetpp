@@ -76,13 +76,6 @@ cEnum& cEnum::operator=(const cEnum& other)
     return *this;
 }
 
-std::string cEnum::info() const
-{
-    if (valueToNameMap.size() == 0)
-        return std::string("empty");
-    return str();
-}
-
 void cEnum::insert(int value, const char *name)
 {
     valueToNameMap[value] = name;
@@ -170,6 +163,9 @@ cEnum *cEnum::registerValues(int firstValue, ...)
 
 std::string cEnum::str() const
 {
+    if (valueToNameMap.size() == 0)
+        return std::string("<empty>");
+
     std::stringstream out;
     for (std::map<std::string, int>::const_iterator it = nameToValueMap.begin(); it != nameToValueMap.end(); ++it) {
         if (it != nameToValueMap.begin())

@@ -95,7 +95,7 @@ class SIM_API cOmnetpp4xFingerprintCalculator : public cFingerprintCalculator
     virtual ~cOmnetpp4xFingerprintCalculator();
 
     virtual cOmnetpp4xFingerprintCalculator *dup() const override { return new cOmnetpp4xFingerprintCalculator(); }
-    virtual std::string info() const override { return hasher->str(); }
+    virtual std::string str() const override { return hasher->str(); }
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
@@ -215,7 +215,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual ~cSingleFingerprintCalculator();
 
     virtual cSingleFingerprintCalculator *dup() const override { return new cSingleFingerprintCalculator(); }
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;
@@ -261,7 +261,7 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
     virtual ~cMultiFingerprintCalculator();
 
     virtual cMultiFingerprintCalculator *dup() const override { return new cMultiFingerprintCalculator(static_cast<cFingerprintCalculator *>(prototype->dup())); }
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     virtual void initialize(const char *expectedFingerprints, cConfiguration *cfg, int index=-1) override;
 
     virtual void addEvent(cEvent *event) override;

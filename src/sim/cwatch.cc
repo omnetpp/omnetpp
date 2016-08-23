@@ -27,7 +27,7 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-std::string cWatch_stdstring::info() const
+std::string cWatch_stdstring::str() const
 {
     return opp_quotestr(r.c_str());
 }

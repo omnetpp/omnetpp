@@ -225,7 +225,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
    { "opp_getobjectparent",  getObjectParent_cmd      }, // args: <pointer>  ret: <parentptr>
-   { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
+   { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: str()
    { "opp_getmessageshortinfostring",getMessageShortInfoString_cmd}, // args: <msg_pointer>  ret: a short info string containing only the src and destination of the message
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
    { "opp_getcomponenttypeobject",getComponentTypeObject_cmd}, // args: <pointer> ret: cComponentType
@@ -939,7 +939,7 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
         return TCL_ERROR;
     }
 
-    Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
+    Tcl_SetResult(interp, TCLCONST(object->str().c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
@@ -1011,7 +1011,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
         Tcl_SetResult(interp, TCLCONST(getObjectShortTypeName(object)), TCL_VOLATILE);
     }
     else if (!strcmp(field, "info")) {
-        Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
+        Tcl_SetResult(interp, TCLCONST(object->str().c_str()), TCL_VOLATILE);
     }
     else if (!strcmp(field, "detailedInfo")) {
         Tcl_SetResult(interp, TCLCONST(object->detailedInfo().c_str()), TCL_VOLATILE);

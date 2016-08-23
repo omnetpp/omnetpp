@@ -94,10 +94,9 @@ class SIM_API cEnum : public cOwnedObject
     virtual cEnum *dup() const override  {return new cEnum(*this);}
 
     /**
-     * Produces a one-line description of the object's contents.
-     * See cObject for more details.
+     * Returns a textual representation of this enum.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     //@}
 
     /** @name Insertion and lookup. */
@@ -141,11 +140,6 @@ class SIM_API cEnum : public cOwnedObject
      * Returns a map with the enum members (names as key, and numeric value map value).
      */
     std::map<std::string,int> getNameValueMap() const {return nameToValueMap;}
-
-    /**
-     * Returns a textual representation of this enum.
-     */
-    std::string str() const;
     //@}
 
     /** @name cEnum lookup. */

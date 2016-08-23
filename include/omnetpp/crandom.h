@@ -87,7 +87,7 @@ class SIM_API cUniform : public cRandom
         cUniform(const cUniform& other) : cRandom(other) {copy(other);}
         virtual cUniform *dup() const override {return new cUniform(*this);}
         cUniform& operator =(const cUniform& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -126,7 +126,7 @@ class SIM_API cExponential : public cRandom
         cExponential(const cExponential& other) : cRandom(other) {copy(other);}
         virtual cExponential *dup() const override {return new cExponential(*this);}
         const cExponential& operator =(const cExponential& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -165,7 +165,7 @@ class SIM_API cNormal : public cRandom
         cNormal(const cNormal& other) : cRandom(other) {copy(other);}
         virtual cNormal *dup() const override {return new cNormal(*this);}
         cNormal& operator =(const cNormal& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -206,7 +206,7 @@ class SIM_API cTruncNormal : public cRandom
         cTruncNormal(const cTruncNormal& other) : cRandom(other) {copy(other);}
         virtual cTruncNormal *dup() const override {return new cTruncNormal(*this);}
         cTruncNormal& operator =(const cTruncNormal& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -247,7 +247,7 @@ class SIM_API cGamma : public cRandom
         cGamma(const cGamma& other) : cRandom(other) {copy(other);}
         virtual cGamma *dup() const override {return new cGamma(*this);}
         cGamma& operator =(const cGamma& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -288,7 +288,7 @@ class SIM_API cBeta : public cRandom
         cBeta(const cBeta& other) : cRandom(other) {copy(other);}
         virtual cBeta *dup() const override {return new cBeta(*this);}
         cBeta& operator =(const cBeta& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -329,7 +329,7 @@ class SIM_API cErlang : public cRandom
         cErlang(const cErlang& other) : cRandom(other) {copy(other);}
         virtual cErlang *dup() const override {return new cErlang(*this);}
         cErlang& operator =(const cErlang& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -369,7 +369,7 @@ class SIM_API cChiSquare : public cRandom
         cChiSquare(const cChiSquare& other) : cRandom(other) {copy(other);}
         virtual cChiSquare *dup() const override {return new cChiSquare(*this);}
         cChiSquare& operator =(const cChiSquare& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -407,7 +407,7 @@ class SIM_API cStudentT : public cRandom
         cStudentT(const cStudentT& other) : cRandom(other) {copy(other);}
         virtual cStudentT *dup() const override {return new cStudentT(*this);}
         cStudentT& operator =(const cStudentT& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -446,7 +446,7 @@ class SIM_API cCauchy : public cRandom
         cCauchy(const cCauchy& other) : cRandom(other) {copy(other);}
         virtual cCauchy *dup() const override {return new cCauchy(*this);}
         cCauchy& operator =(const cCauchy& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -488,7 +488,7 @@ class SIM_API cTriang : public cRandom
         cTriang(const cTriang& other) : cRandom(other) {copy(other);}
         virtual cTriang *dup() const override {return new cTriang(*this);}
         cTriang& operator =(const cTriang& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -531,7 +531,7 @@ class SIM_API cWeibull : public cRandom
         cWeibull(const cWeibull& other) : cRandom(other) {copy(other);}
         virtual cWeibull *dup() const override {return new cWeibull(*this);}
         cWeibull& operator =(const cWeibull& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -573,7 +573,7 @@ class SIM_API cParetoShifted : public cRandom
         cParetoShifted(const cParetoShifted& other) : cRandom(other) {copy(other);}
         virtual cParetoShifted *dup() const override {return new cParetoShifted(*this);}
         cParetoShifted& operator =(const cParetoShifted& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -618,7 +618,7 @@ class SIM_API cIntUniform : public cRandom
         cIntUniform(const cIntUniform& other) : cRandom(other) {copy(other);}
         virtual cIntUniform *dup() const override {return new cIntUniform(*this);}
         cIntUniform& operator =(const cIntUniform& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -658,7 +658,7 @@ class SIM_API cBernoulli : public cRandom
         cBernoulli(const cBernoulli& other) : cRandom(other) {copy(other);}
         virtual cBernoulli *dup() const override {return new cBernoulli(*this);}
         cBernoulli& operator =(const cBernoulli& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -697,7 +697,7 @@ class SIM_API cBinomial : public cRandom
         cBinomial(const cBinomial& other) : cRandom(other) {copy(other);}
         virtual cBinomial *dup() const override {return new cBinomial(*this);}
         cBinomial& operator =(const cBinomial& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -737,7 +737,7 @@ class SIM_API cGeometric : public cRandom
         cGeometric(const cGeometric& other) : cRandom(other) {copy(other);}
         virtual cGeometric *dup() const override {return new cGeometric(*this);}
         cGeometric& operator =(const cGeometric& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -776,7 +776,7 @@ class SIM_API cNegBinomial : public cRandom
         cNegBinomial(const cNegBinomial& other) : cRandom(other) {copy(other);}
         virtual cNegBinomial *dup() const override {return new cNegBinomial(*this);}
         cNegBinomial& operator =(const cNegBinomial& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */
@@ -816,7 +816,7 @@ class SIM_API cPoisson : public cRandom
         cPoisson(const cPoisson& other) : cRandom(other) {copy(other);}
         virtual cPoisson *dup() const override {return new cPoisson(*this);}
         cPoisson& operator =(const cPoisson& other);
-        virtual std::string info() const override;
+        virtual std::string str() const override;
         //@}
 
         /** @name Parameters. */

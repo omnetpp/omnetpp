@@ -149,7 +149,7 @@ QVariant TreeItemModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(node);
     }
     else if (role == Qt::ToolTipRole) {
-        return QString("(") + getObjectShortTypeName(node) + ") " + node->getFullName() + ", " + node->info().c_str();
+        return QString("(") + getObjectShortTypeName(node) + ") " + node->getFullName() + ", " + node->str().c_str();
     }
 
     return QVariant();

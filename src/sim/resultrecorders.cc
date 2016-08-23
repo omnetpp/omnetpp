@@ -238,7 +238,7 @@ void StatisticsRecorder::finish(cResultFilter *prev)
 std::string StatisticsRecorder::str() const
 {
     std::stringstream os;
-    os << getResultName() << ": " << getStatistic()->info();
+    os << getResultName() << ": " << getStatistic()->str();
     return os.str();
 }
 

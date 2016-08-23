@@ -92,7 +92,7 @@ cNEDMathFunction::cNEDMathFunction(const char *name, MathFunc4Args f, int ac, co
                             "number of arguments %d, should be 4", name, ac);
 }
 
-std::string cNEDMathFunction::info() const
+std::string cNEDMathFunction::str() const
 {
     std::stringstream out;
     out << "double " << getName() << "(";

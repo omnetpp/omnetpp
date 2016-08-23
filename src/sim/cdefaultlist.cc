@@ -150,7 +150,7 @@ void cDefaultList::takeAllObjectsFrom(cDefaultList& other)
         take(other.defaultListGet(0));
 }
 
-std::string cDefaultList::info() const
+std::string cDefaultList::str() const
 {
     std::stringstream out;
     out << "n=" << numObjs;

@@ -128,10 +128,10 @@ class AnimationGroup : public Animation
     void clearInspector(ModuleInspector *insp);
     void removeMessagePointer(cMessage *msg);
 
-    QString info() const override {
+    QString str() const override {
         QString result = "AnimationGroup of " + QString::number(parts.size()) + " parts";
         for (Animation *a : parts) {
-            result += "\n    - " + a->info().replace("\n", "\n      ");
+            result += "\n    - " + a->str().replace("\n", "\n      ");
         }
         return result;
     }
@@ -186,7 +186,7 @@ class SequentialAnimation : public AnimationGroup
         }
     }
 
-    QString info() const override { return "Sequential" + AnimationGroup::info(); }
+    QString str() const override { return "Sequential" + AnimationGroup::str(); }
 };
 
 class ParallelAnimation : public AnimationGroup
@@ -226,7 +226,7 @@ class ParallelAnimation : public AnimationGroup
         }
     }
 
-    QString info() const override { return "Parallel" + AnimationGroup::info(); }
+    QString str() const override { return "Parallel" + AnimationGroup::str(); }
 
   public:
 
@@ -278,7 +278,7 @@ class MethodcallAnimation : public SimpleAnimation
     void begin() override;
     void setProgress(float t) override;
     void cleanup() override;
-    QString info() const override {
+    QString str() const override {
         return QString("MethodCall '") + text + "' from "
                + (srcMod ? srcMod->getFullName() : "NULL") + " to " +  (destMod ? destMod->getFullName() : "NULL");
     }
@@ -309,7 +309,7 @@ class SendOnConnAnimation : public SendAnimation
 {
   public:
     SendOnConnAnimation(ModuleInspector *insp, SendAnimMode mode, const QPointF& src, const QPointF& dest, cMessage *msg);
-    QString info() const override {
+    QString str() const override {
         return QString("SendOnConn '") + ((msg && mode != ANIM_END) ? msg->getName() : "NULL") + "' mode "
                + (mode == ANIM_BEGIN ? "begin" : mode == ANIM_END ? "end" : mode == ANIM_THROUGH ? "through" : "INVALID")
                + " in " + inspector->QWidget::windowTitle();
@@ -330,7 +330,7 @@ class SendDirectAnimation : public SendAnimation
     void init() override { connectionItem->setVisible(getQtenv()->opt->showSendDirectArrows); }
     void setProgress(float t) override;
     void cleanup() override { connectionItem->setVisible(false); }
-    QString info() const override {
+    QString str() const override {
         return QString("SendDirect '") + ((msg && dir != DIR_DELIVERY) ? msg->getName() : "NULL") + "' mode "
                + (mode == ANIM_BEGIN ? "begin" : mode == ANIM_END ? "end" : mode == ANIM_THROUGH ? "through" : "INVALID") + " "
                + (dir == DIR_ASCENT ? "ascent" : dir == DIR_DESCENT ? "descent" : dir == DIR_HORIZ ? "horiz" : dir == DIR_DELIVERY ? "delivery" : "INVALID");

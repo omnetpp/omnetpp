@@ -64,7 +64,7 @@ class SIM_API cDynamicChannelType : public cChannelType
     /**
      * Produces a one-line description.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Produces a detailed, multi-line description.

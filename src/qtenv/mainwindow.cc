@@ -775,7 +775,7 @@ void MainWindow::updateNetworkRunDisplay()
 {
     const char *configName = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
     const char *network = !getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName();
-    std::string scheduler = getSimulation()->getScheduler()->info();
+    std::string scheduler = getSimulation()->getScheduler()->str();
     const char *sep = scheduler.empty() ? "" : " - ";
 
     // TODO

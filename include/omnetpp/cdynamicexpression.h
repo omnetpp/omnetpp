@@ -196,6 +196,7 @@ class SIM_API cDynamicExpression : public cExpression
         virtual char getReturnType() const = 0;
         virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) = 0;
         virtual std::string str(std::string args[], int numargs) = 0;
+        using cObject::str;
     };
 
   protected:
@@ -239,10 +240,10 @@ class SIM_API cDynamicExpression : public cExpression
     virtual cDynamicExpression *dup() const override  {return new cDynamicExpression(*this);}
 
     /**
-     * Produces a one-line description of the object's contents.
+     * Converts the expression to string.
      * See cObject for more details.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     // Note: parsimPack()/parsimUnpack() de-inherited in cExpression.
     //@}
@@ -296,11 +297,6 @@ class SIM_API cDynamicExpression : public cExpression
 
     /** @name Miscellaneous utility functions. */
     //@{
-    /**
-     * Converts the expression to string.
-     */
-    virtual std::string str() const override;
-
     /**
      * Interprets the string as an expression, and stores it.
      */

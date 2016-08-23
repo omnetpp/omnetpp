@@ -3,7 +3,7 @@ Tests cProperty keys and values
 
 %global:
 #include <string.h>
-#define PRINTINFO     EV << prop->info() << "\n";
+#define PRINTINFO     EV << prop->str() << "\n";
 #define PRINTKEY(k)   EV << "key(" << (k?k:"nullptr") << "): has=" << (prop->containsKey(k)?"yes":"no") << " len=" << (prop->containsKey(k) ? prop->getNumValues(k) : -1) << "\n";
 
 %activity:

@@ -40,7 +40,7 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
         char buffer[50];
         sprintf(buffer, "%p", (void *)ptr);
         QString msgLabel = ptr->getFullName() + QString(" (") + getObjectShortTypeName(ptr) + "), " +
-                ptr->info().c_str() + " -- " + buffer;
+                ptr->str().c_str() + " -- " + buffer;
         ui->msgCombo->addItem(msgLabel, reinterpret_cast<quintptr>(ptr));
 
         // restore last value

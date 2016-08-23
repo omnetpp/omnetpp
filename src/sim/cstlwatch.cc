@@ -137,7 +137,7 @@ void *cStdVectorWatcherDescriptor::getFieldStructValuePointer(void *object, int 
 
 //--------------------------------
 
-std::string cStdVectorWatcherBase::info() const
+std::string cStdVectorWatcherBase::str() const
 {
     if (size() == 0)
         return std::string("empty");

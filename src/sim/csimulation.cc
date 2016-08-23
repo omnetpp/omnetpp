@@ -192,7 +192,7 @@ class cSnapshotWriterVisitor : public cVisitor
     virtual void visit(cObject *obj) override {
         std::string indent(2 * indentLevel, ' ');
         os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << xmlQuote(obj->getFullPath()) << "\">\n";
-        os << indent << "  <info>" << xmlQuote(obj->info()) << "</info>\n";
+        os << indent << "  <info>" << xmlQuote(obj->str()) << "</info>\n";
         std::string details = obj->detailedInfo();
         if (!details.empty())
             os << indent << "  <detailedinfo>" << xmlQuote(details) << "</detailedinfo>\n";

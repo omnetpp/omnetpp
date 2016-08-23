@@ -34,7 +34,7 @@ cRegistrationList::~cRegistrationList()
         dropAndDelete(vec[i]);
 }
 
-std::string cRegistrationList::info() const
+std::string cRegistrationList::str() const
 {
     if (vec.empty())
         return std::string("empty");

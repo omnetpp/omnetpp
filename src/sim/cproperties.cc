@@ -62,7 +62,7 @@ cProperties& cProperties::operator=(const cProperties& other)
     return *this;
 }
 
-std::string cProperties::info() const
+std::string cProperties::str() const
 {
     if (propv.empty())
         return "";

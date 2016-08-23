@@ -188,7 +188,7 @@ std::string NEDTypeInfo::getCxxNamespace() const
     return getPackageProperty("namespace");
 }
 
-std::string NEDTypeInfo::info() const
+std::string NEDTypeInfo::str() const
 {
     std::stringstream out;
     if (numExtendsNames() > 0) {

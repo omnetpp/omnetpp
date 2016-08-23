@@ -95,7 +95,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     //@}
 
     /** @name Setting and getting channel parameters. */

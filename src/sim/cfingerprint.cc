@@ -158,7 +158,7 @@ void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, 
     parseResultMatcher(getListItem(cfg->getAsString(CFGID_FINGERPRINT_RESULTS), index).c_str());
 }
 
-std::string cSingleFingerprintCalculator::info() const
+std::string cSingleFingerprintCalculator::str() const
 {
     return hasher->str() + "/" + ingredients;
 }
@@ -436,11 +436,11 @@ bool cMultiFingerprintCalculator::checkFingerprint() const
     return true;
 }
 
-std::string cMultiFingerprintCalculator::info() const
+std::string cMultiFingerprintCalculator::str() const
 {
     std::stringstream stream;
     for_each_element_const(
-        stream << ", " << element->info();
+        stream << ", " << element->str();
     );
     return stream.str().substr(2);
 }

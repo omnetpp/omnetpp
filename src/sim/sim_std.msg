@@ -127,7 +127,7 @@ class cObject
     string className @group(base) @hint("C++ class name") @eventlog(skip);
     string fullName @group(base) @hint("If object is part of a module/gate vector: name with index");
     string fullPath @group(base) @hint("Hierarchical name, composed of full names of this object and its owners/parents") @eventlog(skip);
-    string info @getter(info) @group(base) @hint("Text provided by the object's \"info\" method") @eventlog(skip);
+    string info @getter(str) @group(base) @hint("Text provided by the object's \"str()\" method") @eventlog(skip);
     string detailedInfo @getter(detailedInfo) @group(base) @hint("Text provided by the object's \"detailedInfo\" method") @eventlog(skip);
 }
 
@@ -159,7 +159,7 @@ class cProperty extends cObject
 {
     bool isImplicit @getter(isImplicit) @group(fields);
     string index @group(fields);
-    string value @getter(info) @hint("Name and value");
+    string value @getter(str) @hint("Name and value");
 }
 
 class cIListener extends void;

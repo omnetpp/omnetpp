@@ -156,7 +156,7 @@ const char *cGate::getFullName() const
     return gateFullnamePool.get(tmp);  // non-refcounted stringpool
 }
 
-std::string cGate::info() const
+std::string cGate::str() const
 {
     const char *arrow;
     cGate const *g = nullptr;
@@ -186,7 +186,7 @@ std::string cGate::info() const
     out << "." << g->getFullName();
 
     if (chan)
-        out << ", (" << chan->getComponentType()->getFullName() << ")" << chan->getFullName() << " " << chan->info();
+        out << ", (" << chan->getComponentType()->getFullName() << ")" << chan->getFullName() << " " << chan->str();
 
     return out.str();
 }

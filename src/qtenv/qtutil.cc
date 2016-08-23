@@ -843,7 +843,7 @@ QString makeObjectTooltip(cObject *obj)
     }
 
     return QString("(") + getObjectShortTypeName(obj) + ") "
-            + obj->getFullName() + ", " + obj->info().c_str();
+            + obj->getFullName() + ", " + obj->str().c_str();
 }
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)

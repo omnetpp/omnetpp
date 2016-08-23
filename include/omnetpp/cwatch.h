@@ -70,7 +70,7 @@ class cGenericReadonlyWatch : public cWatchBase
     cGenericReadonlyWatch(const char *name, const T& x) : cWatchBase(name), r(x) {}
     virtual const char *getClassName() const override {return opp_typename(typeid(T));}
     virtual bool supportsAssignment() const override {return false;}
-    virtual std::string info() const override
+    virtual std::string str() const override
     {
         std::stringstream out;
         out << r;
@@ -93,7 +93,7 @@ class cGenericAssignableWatch : public cWatchBase
     cGenericAssignableWatch(const char *name, T& x) : cWatchBase(name), r(x) {}
     virtual const char *getClassName() const override {return opp_typename(typeid(T));}
     virtual bool supportsAssignment() const override {return true;}
-    virtual std::string info() const override
+    virtual std::string str() const override
     {
         std::stringstream out;
         out << r;
@@ -118,7 +118,7 @@ class SIM_API cWatch_bool : public cWatchBase
     cWatch_bool(const char *name, bool& x) : cWatchBase(name), r(x) {}
     virtual const char *getClassName() const override {return "bool";}
     virtual bool supportsAssignment() const override {return true;}
-    virtual std::string info() const override
+    virtual std::string str() const override
     {
         return r ? "true" : "false";
     }
@@ -140,7 +140,7 @@ class SIM_API cWatch_char : public cWatchBase
     cWatch_char(const char *name, char& x) : cWatchBase(name), r(x) {}
     virtual const char *getClassName() const override {return "char";}
     virtual bool supportsAssignment() const override {return true;}
-    virtual std::string info() const override
+    virtual std::string str() const override
     {
         std::stringstream out;
         out << "'" << ((unsigned char)r<32 ? ' ' : r) << "' (" << int(r) << ")";
@@ -167,7 +167,7 @@ class SIM_API cWatch_uchar : public cWatchBase
     cWatch_uchar(const char *name, unsigned char& x) : cWatchBase(name), r(x) {}
     virtual const char *getClassName() const override {return "unsigned char";}
     virtual bool supportsAssignment() const override {return true;}
-    virtual std::string info() const override
+    virtual std::string str() const override
     {
         std::stringstream out;
         out << "'" << (char)(r<' ' ? ' ' : r) << "' (" << int(r) << ")";
@@ -194,7 +194,7 @@ class SIM_API cWatch_stdstring : public cWatchBase
     cWatch_stdstring(const char *name, std::string& x) : cWatchBase(name), r(x) {}
     virtual const char *getClassName() const override {return "std::string";}
     virtual bool supportsAssignment() const override {return true;}
-    virtual std::string info() const override;
+    virtual std::string str() const override;
     virtual void assign(const char *s) override;
 };
 
@@ -209,7 +209,7 @@ class SIM_API cWatch_cObject : public cWatchBase
   public:
     cWatch_cObject(const char *name, cObject& ref) : cWatchBase(name), r(ref) {}
     virtual const char *getClassName() const override {return r.getClassName();}
-    virtual std::string info() const override {return r.info();}
+    virtual std::string str() const override {return r.str();}
     virtual bool supportsAssignment() const override {return false;}
     virtual cClassDescriptor *getDescriptor() const override {return r.getDescriptor();}
 };
@@ -225,7 +225,7 @@ class SIM_API cWatch_cObjectPtr : public cWatchBase
   public:
     cWatch_cObjectPtr(const char *name, cObject *&ptr) : cWatchBase(name), rp(ptr) {}
     virtual const char *getClassName() const override {return rp? rp->getClassName() : "n/a";}
-    virtual std::string info() const override {return rp ? rp->info() : "<null>";}
+    virtual std::string str() const override {return rp ? rp->str() : "<null>";}
     virtual bool supportsAssignment() const override {return false;}
     virtual cClassDescriptor *getDescriptor() const override {return rp ? rp->getDescriptor() : nullptr;}
 };

@@ -63,7 +63,7 @@ void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, cons
 void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     EV << "SIGNAL from "; printFrom(source, signalID);
-    EV << ", class " << obj->getClassName() << ", info: " << obj->info() << "\n";
+    EV << ", class " << obj->getClassName() << ", info: " << obj->str() << "\n";
 }
 
 void NoisyListener::finish(cComponent *component, simsignal_t signalID)
