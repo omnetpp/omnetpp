@@ -82,8 +82,9 @@ class SIM_API cPar : public cObject
     cComponent *evalContext;
 
   private:
-    // private constructor -- only cComponent is allowed to create parameters
+    // private constructor and destructor -- only cComponent is allowed to create parameters
     cPar() {ownerComponent = evalContext = nullptr; p = nullptr;}
+    virtual ~cPar();
     // internal, called from cComponent
     void init(cComponent *ownercomponent, cParImpl *p);
     // internal
@@ -113,10 +114,12 @@ class SIM_API cPar : public cObject
 #endif
 
   public:
+    /** @name Redefined cObject methods */
+    //@{
     /**
-     * Destructor.
+     * Assignment operator.
      */
-    virtual ~cPar();
+    void operator=(const cPar& other);
 
     /**
      * Returns the parameter name.
@@ -133,12 +136,13 @@ class SIM_API cPar : public cObject
      * Note: return type is cObject only for technical reasons, it can be
      * safely cast to cComponent.
      */
-    virtual cObject *getOwner() const override;
+    virtual cObject *getOwner() const override; // note: cannot return cComponent* (covariant return type) due to declaration order
 
     /**
-     * Assignment
+     * Calls v->visit(this) for contained objects.
+     * See cObject for more details.
      */
-    void operator=(const cPar& other);
+    virtual void forEachChild(cVisitor *v) override;
     //@}
 
     /** @name Type, flags. */
@@ -257,7 +261,6 @@ class SIM_API cPar : public cObject
      * @see getEvaluationContext(), isExpression(), setExpression()
      */
     void setEvaluationContext(cComponent *ctx)  {evalContext = ctx;}
-
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */

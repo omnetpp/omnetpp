@@ -60,6 +60,13 @@ void cXMLParImpl::parsimUnpack(cCommBuffer *buffer)
     //TBD
 }
 
+void cXMLParImpl::forEachChild(cVisitor *v, cComponent *context)
+{
+    cXMLElement *element = xmlValue(context);
+    if (element)
+        v->visit(element);
+}
+
 void cXMLParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "XML");
@@ -166,11 +173,8 @@ std::string cXMLParImpl::str() const
 {
     if (flags & FL_ISEXPR)
         return expr->str();
-
-    if (val)
-        return std::string("<") + val->getTagName() + "> from " + val->getSourceLocation();
     else
-        return std::string("nullptr");
+        return val ? val->str() : "nullptr";
 }
 
 void cXMLParImpl::parse(const char *text)

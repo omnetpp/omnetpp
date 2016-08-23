@@ -70,8 +70,10 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  *
  * @ingroup SimSupport
  */
-class SIM_API cXMLElement
+class SIM_API cXMLElement : public cObject, noncopyable
 {
+    friend class cXMLElementDescriptor; // getAttr(i), getChild(i), etc.
+
   public:
     /**
      * @brief Base class for classes that resolve parameters ($PARAM) that occur in
@@ -133,17 +135,47 @@ class SIM_API cXMLElement
     // internal: matches from root element
     static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr, ParamResolver *resolver=nullptr);
 
+  private:
     // internal
     virtual void print(std::ostream& os, int indentLevel) const;
 
+    // internal, for inspectors only; O(n) complexity!
+    int getNumAttrs() const;
+    std::string getAttr(int index) const;
+    int getNumChildren() const;
+    cXMLElement *getChild(int index) const;
+
   public:
-    /** @name Common properties */
+    /** @name Redefined cObject methods. */
     //@{
+    /**
+     * Returns the tag name as object name.
+     */
+    virtual const char *getName() const override {return getTagName();}
 
     /**
      * Returns a one-line description of the element.
      */
-    virtual std::string str() const;
+    virtual std::string str() const override;
+
+    /**
+     * Returns the parent element.
+     */
+    virtual cObject *getOwner() const override {return getParentNode();}
+
+    /**
+     * Enables traversing the object tree, performing some operation on
+     * each object. The operation is encapsulated in the particular subclass
+     * of cVisitor.
+     *
+     * This method should be redefined in every subclass to call v->visit(obj)
+     * for every obj object contained.
+     */
+    virtual void forEachChild(cVisitor *v) override;
+    //@}
+
+    /** @name Common properties */
+    //@{
 
     /**
      * Returns the element name.
@@ -169,7 +201,7 @@ class SIM_API cXMLElement
     virtual const char *getAttribute(const char *attr) const;
 
     /**
-     * Returns true if the node has attributes
+     * Returns true if the element has attributes
      */
     virtual bool hasAttributes() const;
 
@@ -192,7 +224,7 @@ class SIM_API cXMLElement
     virtual cXMLElement *getParentNode() const;
 
     /**
-     * Returns true if the node has children.
+     * Returns true if the element has child elements.
      */
     virtual bool hasChildren() const;
 
@@ -216,7 +248,7 @@ class SIM_API cXMLElement
      * the child list:
      *
      * <pre>
-     * for (cXMLElement *child=node->getFirstChild(); child; child = child->getNextSibling())
+     * for (cXMLElement *child=element->getFirstChild(); child; child = child->getNextSibling())
      * {
      *    ...
      * }
@@ -246,7 +278,7 @@ class SIM_API cXMLElement
      * to loop through elements with a certain tag name in the child list:
      *
      * <pre>
-     * for (cXMLElement *child=node->getFirstChildWithTag("foo"); child; child = child->getNextSiblingWithTag("foo"))
+     * for (cXMLElement *child=element->getFirstChildWithTag("foo"); child; child = child->getNextSiblingWithTag("foo"))
      * {
      *     ...
      * }
@@ -301,18 +333,18 @@ class SIM_API cXMLElement
      *
      * Examples:
      *  - <tt>.</tt> -- this element
-     *  - <tt>./foo</tt> -- first "foo" child of this node
+     *  - <tt>./foo</tt> -- first "foo" child of this element
      *  - <tt>foo</tt> -- same as <tt>./foo</tt> (initial <tt>./</tt> can be omitted)
-     *  - <tt>./foo</tt> -- first "foo" child of this node
-     *  - <tt>./foo/bar</tt> -- first "bar" child of first "foo" child of this node
-     *  - <tt>.//bar</tt> -- first "bar" anywhere under this node (depth-first search!)
-     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this node (remove the spaces!)
-     *  - <tt>./foo[0]</tt> -- first "foo" child of this node
-     *  - <tt>./foo[1]</tt> -- second "foo" child of this node
+     *  - <tt>./foo</tt> -- first "foo" child of this element
+     *  - <tt>./foo/bar</tt> -- first "bar" child of first "foo" child of this element
+     *  - <tt>.//bar</tt> -- first "bar" anywhere under this element (depth-first search!)
+     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this element (remove the spaces!)
+     *  - <tt>./foo[0]</tt> -- first "foo" child of this element
+     *  - <tt>./foo[1]</tt> -- second "foo" child of this element
      *  - <tt>./foo[@color='green']</tt> -- first "foo" child which has attribute "color" with value "green"
-     *  - <tt>.//bar[1]</tt> -- a "bar" anywhere under this node which is the second "bar" among its siblings
-     *  - <tt>.// * [@color='yellow']</tt> -- an element anywhere under this node with attribute color="yellow" (remove the spaces!)
-     *  - <tt>.// * [@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" node (remove the spaces!)
+     *  - <tt>.//bar[1]</tt> -- a "bar" anywhere under this element which is the second "bar" among its siblings
+     *  - <tt>.// * [@color='yellow']</tt> -- an element anywhere under this element with attribute color="yellow" (remove the spaces!)
+     *  - <tt>.// * [@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" element (remove the spaces!)
      *
      * The method throws an exception if the path expression is invalid,
      * and returns nullptr if the element is not found.

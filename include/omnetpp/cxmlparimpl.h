@@ -193,6 +193,11 @@ class SIM_API cXMLParImpl : public cParImpl
      * Object comparison.
      */
     virtual int compare(const cParImpl *other) const override;
+
+    /**
+     * Visits the XML element
+     */
+    virtual void forEachChild(cVisitor *v, cComponent *context) override;
     //@}
 };
 

@@ -702,13 +702,13 @@ class cTopology extends cOwnedObject
     cTopology_Node *node[] @sizeGetter(getNumNodes) @hint("List of nodes in this topology object");
 }
 
-class cXMLElement
+class cXMLElement extends cObject
 {
     string tagName @hint("XML element tag");
     string nodeValue @hint("Contents of text node inside this XML element");
     string sourceLocation @hint("Location this XML element was parsed from");
-    bool hasAttributes @getter(hasAttributes) @hint("Whether this XML element has attributes");
-    bool hasChildren @getter(hasChildren) @hint("Whether this XML element has child elements");
+    string attributes[] @getter(getAttr) @sizeGetter(getNumAttrs) @hint("Attributes");
+    cXMLElement *children[] @getter(getChild) @sizeGetter(getNumChildren) @hint("Child elements");
     string xml @getter(getXML) @hint("Element tree as XML fragment");
 }
 

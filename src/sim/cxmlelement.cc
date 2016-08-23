@@ -73,8 +73,14 @@ std::string cXMLElement::str() const
 
     const char *loc = getSourceLocation();
     if (!opp_isempty(loc))
-        os << " @" << loc;
+        os << " at " << loc;
     return os.str();
+}
+
+void cXMLElement::forEachChild(cVisitor *v)
+{
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
+        v->visit(child);
 }
 
 const char *cXMLElement::getTagName() const
@@ -324,6 +330,37 @@ void cXMLElement::print(std::ostream& os, int indentLevel) const
     for (int i = 0; i < indentLevel; i++)
         os << "  ";
     os << "</" << getTagName() << ">\n";
+}
+
+int cXMLElement::getNumAttrs() const
+{
+    return getAttributes().size();
+}
+
+std::string cXMLElement::getAttr(int index) const
+{
+    cXMLAttributeMap map = getAttributes();
+    cXMLAttributeMap::iterator it = map.begin();
+    for (int i = 0; i < index && it != map.end(); i++)
+        ++it;
+    ASSERT(it != map.end());
+    return it->first + "=\"" + opp_xmlQuote(it->second.c_str()) + "\"";
+}
+
+int cXMLElement::getNumChildren() const
+{
+    int n = 0;
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
+        n++;
+    return n;
+}
+
+cXMLElement *cXMLElement::getChild(int index) const
+{
+    cXMLElement *child = getFirstChild();
+    for (int i = 0; i < index && child; i++)
+        child = child->getNextSibling();
+    return child;
 }
 
 std::string cXMLElement::getXML() const

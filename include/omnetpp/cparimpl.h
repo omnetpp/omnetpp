@@ -306,16 +306,19 @@ class SIM_API cParImpl : public cNamedObject
      * Factory method: creates a parameter object representing the given type.
      */
     static cParImpl *createWithType(Type type);
-    //@}
-
-    /** @name Compare functions */
-    //@{
 
     /**
      * Compares two cParImpls, including name, type, flags, stored value or expression.
      * Makes it possible to use cParImpl as a key in std::map or std::set.
      */
     virtual int compare(const cParImpl *other) const;
+
+    /**
+     * Needed for cPar's forEachChild().
+     */
+    virtual void forEachChild(cVisitor *v, cComponent *context) {}
+
+    using cObject::forEachChild;
     //@}
 
     /** @name Statistics. */

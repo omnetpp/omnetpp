@@ -186,7 +186,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the owner module of this gate.
      */
-    virtual cObject *getOwner() const override;
+    virtual cObject *getOwner() const override; // note: cannot return cModule* (covariant return type) due to declaration order
     //@}
 
     /**

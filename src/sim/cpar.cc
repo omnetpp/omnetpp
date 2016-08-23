@@ -90,6 +90,11 @@ cObject *cPar::getOwner() const
     return ownerComponent;
 }
 
+void cPar::forEachChild(cVisitor *v)
+{
+    return p->forEachChild(v, ownerComponent);
+}
+
 void cPar::operator=(const cPar& other)
 {
     // this method is not used by the sim kernel, only (rarely) by some
