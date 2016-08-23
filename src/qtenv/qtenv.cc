@@ -655,7 +655,9 @@ void Qtenv::doRun()
     }
     inspectors.clear();
 
+#ifdef WITH_OSG
     OsgViewer::uninit();
+#endif
 
     // clear log
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????

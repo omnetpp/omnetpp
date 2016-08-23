@@ -20,6 +20,7 @@
 #include <QToolTip>
 #include <QMenu>
 #include <QResizeEvent>
+#include <QOffscreenSurface>
 #include <osgEarth/Version>
 #if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
     #include <osgEarthUtil/Sky>
@@ -33,6 +34,7 @@
 #include <osg/TexGenNode>
 #include <osgUtil/Optimizer>
 #include <osg/Depth>
+#include <osg/DeleteHandler>
 #include "omnetpp/osgutil.h"
 #include "inspectorutil.h"
 #include "osgviewer.h"
@@ -46,7 +48,32 @@ namespace qtenv {
 //  --------  GraphicsWindow  --------
 
 class GraphicsWindow : public osgViewer::GraphicsWindowEmbedded {
-    OsgViewer *v;
+    OsgViewer *v = nullptr;
+    GLContext *c = nullptr;
+    QOffscreenSurface *s = nullptr;
+
+    static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *traits) {
+        QSurfaceFormat format;
+
+        format.setRedBufferSize(traits->red);
+        format.setGreenBufferSize(traits->green);
+        format.setBlueBufferSize(traits->blue);
+
+        format.setAlphaBufferSize(traits->alpha);
+        format.setDepthBufferSize(traits->depth);
+        format.setStencilBufferSize(traits->stencil);
+        format.setSamples(traits->samples);
+
+        format.setSwapBehavior(traits->doubleBuffer
+                               ? QSurfaceFormat::DoubleBuffer
+                               : QSurfaceFormat::SingleBuffer);
+
+        format.setSwapInterval(traits->vsync ? 1 : 0);
+        format.setStereo(traits->quadBufferStereo);
+
+        return format;
+    }
+
 public:
     GraphicsWindow(OsgViewer *v, int x, int y, int w, int h) : GraphicsWindowEmbedded(x, y, w, h), v(v) {
         auto state = new osg::State;
@@ -57,41 +84,111 @@ public:
         state->setContextID(osg::GraphicsContext::createNewContextID());
     }
 
+    GraphicsWindow(osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t) {
+        c = new GLContext();
+        s = new QOffscreenSurface();
+        s->setFormat(traitsToSurfaceFormat(t));
+        auto state = new osg::State;
+        setState(state);
+        state->setGraphicsContext(this);
+        // This ID is just an internal unique handle for OSG,
+        // real context creation is done entirely by Qt.
+        state->setContextID(osg::GraphicsContext::createNewContextID());
+    }
+
+    void resizedImplementation(int x, int y, int width, int height) override {
+        setDefaultFboId(c ? c->defaultFramebufferObject() : v->defaultFramebufferObject());
+
+        GraphicsWindowEmbedded::resizedImplementation(x, y, width, height); // ?
+        if (v) v->resize(width, height), v->update();
+    }
+
+    bool realizeImplementation() override {
+        if (c) {
+            s->create();
+            bool ret = c->create();
+            setDefaultFboId(c->defaultFramebufferObject());
+            return ret;
+        }
+        else {
+            setDefaultFboId(v->defaultFramebufferObject());
+            return true;
+        }
+    }
+
     bool makeCurrentImplementation() override {
-        v->makeCurrent();
+        if (c)
+            c->makeCurrent(s);
+        else
+            v->makeCurrent();
+
         return true;
     }
 
     bool releaseContextImplementation() override {
-        v->doneCurrent();
+        c ? c->doneCurrent() : v->doneCurrent();
         return true;
     }
 
-    virtual bool valid() const {
-        return v->isValid();
+    bool isRealizedImplementation() const override {
+        return c || v->context();
     }
 
-    virtual bool isRealizedImplementation() const {
-        return v->context();
-    }
-
-    virtual void swapBuffersImplementation() {
-        #ifdef OSGVIEWER_OLD_QT
-            v->swapBuffers();
-        #endif
-
-        #ifdef OSGVIEWER_NEW_QT
-            // No manual buffer swapping, as in the newer QOpenGLWidget
-            // all rendering is done in a magical way into an FBO,
-            // and this will basically blit that onto the screen.
-
-            // Well except of course on Mac it has to be done differently...
-            #ifdef Q_OS_MAC
-                v->context()->swapBuffers(v->context()->surface());
+    void swapBuffersImplementation() override {
+        if (v) {
+            #ifdef OSGVIEWER_OLD_QT
+                v->swapBuffers();
             #endif
 
-            v->update();
-        #endif
+            #ifdef OSGVIEWER_NEW_QT
+                // No manual buffer swapping, as in the newer QOpenGLWidget
+                // all rendering is done in a magical way into an FBO,
+                // and this will basically blit that onto the screen.
+
+                // Well except of course on Mac it has to be done differently...
+                #ifdef Q_OS_MAC
+                    v->context()->swapBuffers(v->context()->surface());
+                #endif
+
+                v->update();
+            #endif
+        }
+    }
+};
+
+//  --------  WindowingSystemInterface  --------
+
+// pretty much copied from osgQt::QtWindowingSystem
+struct WindowingSystemInterface : public osg::GraphicsContext::WindowingSystemInterface {
+
+    static WindowingSystemInterface *getInterface() {
+        static WindowingSystemInterface *interface = new WindowingSystemInterface;
+        return interface;
+    }
+
+    unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier&) override {
+        return 0; // not implemented
+    }
+
+    void getScreenSettings(const osg::GraphicsContext::ScreenIdentifier&, osg::GraphicsContext::ScreenSettings&) override {
+        // not implemented
+    }
+
+    void enumerateScreenSettings(const osg::GraphicsContext::ScreenIdentifier&, osg::GraphicsContext::ScreenSettingsList&) {
+        // not implemented
+    }
+
+    osg::GraphicsContext *createGraphicsContext(osg::GraphicsContext::Traits *traits) override {
+        return traits->pbuffer
+                ? nullptr // no pbuffer support
+                : new GraphicsWindow(traits);
+    }
+
+    ~WindowingSystemInterface() {
+        if (auto dh = osg::Referenced::getDeleteHandler()) {
+            dh->setNumFramesToRetainObjects(0);
+            dh->flushAll();
+        }
     }
 };
 
@@ -145,6 +242,8 @@ osg::ref_ptr<osgViewer::CompositeViewer> OsgViewer::viewer = nullptr;
 OsgViewer::OsgViewer(QWidget *parent): GLWidget(parent)
 {
     if (!viewer.valid()) { // this is the validity of the pointer, not of the viewer
+        osg::GraphicsContext::setWindowingSystemInterface(WindowingSystemInterface::getInterface());
+
         viewer = new osgViewer::CompositeViewer();
 
         // Multithreaded rendering does not play well with the fact that
