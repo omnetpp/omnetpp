@@ -2156,7 +2156,7 @@ void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level, bool sav
 void Qtenv::initFonts()
 {
     // TODO Check default time font in Windows and Mac
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     // Windows
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Segoe UI", "MS Sans Serif", "Arial" }, 9);
     defaultFonts.canvasFont = defaultFonts.boldFont;
@@ -2164,14 +2164,14 @@ void Qtenv::initFonts()
     defaultFonts.logFont = getFirstAvailableFontFamily({ "DejaVu Sans Mono", "Courier New", "Consolas", "Terminal" }, 9);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
-#elif defined(Q_WS_MAC)
+#elif defined(Q_OS_MAC)
     // Mac
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Lucida Grande", "Helvetica" }, 13);
     defaultFonts.canvasFont = defaultFonts.boldFont;
     defaultFonts.timelineFont = getFirstAvailableFontFamily({ "Arial Narrow" }, defaultFonts.boldFont.pointSize(), defaultFonts.boldFont);
     defaultFonts.logFont = getFirstAvailableFontFamily({ "Monaco", "Courier" }, 13);
     defaultFonts.timeFont = defaultFonts.boldFont;
-    defaultFonts.timeFont.setPointSize(12);
+    defaultFonts.timeFont.setPointSize(16);
 #else
     // Linux and other systems
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Ubuntu", "Arial", "Verdana", "Helvetica", "Tahoma", "DejaVu Sans", "Nimbus Sans L", "FreeSans", "Sans" }, 9);
