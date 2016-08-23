@@ -67,6 +67,7 @@
 #include "treeitemmodel.h"
 #include "timelineinspector.h"
 #include "objecttreeinspector.h"
+#include <osgviewer.h>
 
 #ifdef Q_OS_MAC
 #include <Carbon/Carbon.h> // for the TransformProcessType magic on startup
@@ -653,6 +654,8 @@ void Qtenv::doRun()
         delete insp;
     }
     inspectors.clear();
+
+    OsgViewer::uninit();
 
     // clear log
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????

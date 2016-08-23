@@ -121,6 +121,16 @@ void HeartBeat::start() {
     }
 }
 
+void HeartBeat::uninit() {
+    ASSERT2(instance, "No HeartBeat instance exists upon uninit()");
+
+    instance->timer.stop();
+    instance->viewer = nullptr;
+
+    delete instance;
+    instance = nullptr;
+}
+
 void HeartBeat::timerEvent(QTimerEvent *event) {
     if ((viewer->getRunFrameScheme() == osgViewer::CompositeViewer::CONTINUOUS)
             || viewer->checkNeedToDoFrame()) {
@@ -325,6 +335,12 @@ void OsgViewer::resetViewer()
     view->requestRedraw();
 }
 
+void OsgViewer::uninit()
+{
+    HeartBeat::uninit();
+    viewer = nullptr;
+}
+
 std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
 {
     osgUtil::LineSegmentIntersector::Intersections intersections;
@@ -350,6 +366,7 @@ std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
 OsgViewer::~OsgViewer()
 {
     viewer->removeView(view);
+    view = nullptr;
     graphicsWindow->close(false);
 }
 

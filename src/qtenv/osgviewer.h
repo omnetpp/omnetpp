@@ -69,6 +69,7 @@ class HeartBeat : public QObject {
 public:
     static void init(osg::ref_ptr<osgViewer::CompositeViewer> viewer);
     static void start();
+    static void uninit();
 };
 
 class QTENV_API OsgViewer : public GLWidget
@@ -140,6 +141,8 @@ class QTENV_API OsgViewer : public GLWidget
 
     void refresh();
     void resetViewer();
+
+    static void uninit();
 
     // coordinates in local widget frame
     std::vector<cObject *> objectsAt(const QPoint &pos);
