@@ -127,7 +127,7 @@ class SIM_API cPacket : public cMessage
     cPacket& operator=(const cPacket& packet);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cObject/cMessage member functions. */
     //@{
 
     /**
@@ -166,6 +166,12 @@ class SIM_API cPacket : public cMessage
      * Returns true.
      */
     virtual bool isPacket() const override {return true;}
+
+    /**
+     * Returns the encapsulated packet's display string if it has one,
+     * otherwise returns the empty string. Override as needed.
+     */
+    virtual const char *getDisplayString() const override;
     //@}
 
     /** @name Length and bit error flag */

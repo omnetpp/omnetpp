@@ -220,6 +220,11 @@ void cPacket::_detachEncapMsg()
 
 #endif
 
+const char *cPacket::getDisplayString() const
+{
+    return encapsulatedPacket ? encapsulatedPacket->getDisplayString() : "";
+}
+
 void cPacket::setBitLength(int64_t l)
 {
     if (l < 0)
