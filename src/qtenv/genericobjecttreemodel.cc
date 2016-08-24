@@ -717,7 +717,7 @@ QVariant FieldNode::data(int role)
 
     // the apostrophes have to be there when showing the value and when calculating the highlight range
     // but not in the editor or the tooltip
-    if ((role == Qt::DisplayRole || role == Qt::UserRole) && fieldType == "string")
+    if ((role == Qt::DisplayRole || role == Qt::UserRole) && fieldType == "string" && !isArray)
         fieldValue = "'" + fieldValue + "'";
 
     if (isArray || fieldValue.isEmpty())
@@ -792,9 +792,19 @@ bool RootNode::hasChildrenImpl()
 
 QVariant RootNode::data(int role)
 {
-    return (role == Qt::DisplayRole && object)
-        ? QString(object->getFullPath().c_str()) + " (" + getObjectShortTypeName(object) + ")"
-        : getDefaultObjectData(object, role);
+    if (!object)
+        return getDefaultObjectData(object, role);
+
+    QString pathAndType = QString(object->getFullPath().c_str()) + " (" + getObjectShortTypeName(object) + ")";
+    QString infoText = object->str().c_str();
+    if (!infoText.isEmpty())
+        infoText = " " + infoText;
+
+    switch (role) {
+        case Qt::DisplayRole: return pathAndType + infoText;
+        case Qt::UserRole: return QVariant::fromValue(HighlightRange { pathAndType.length(), infoText.length() });
+        default: return getDefaultObjectData(object, role);
+    }
 }
 
 QString RootNode::getNodeIdentifier()
@@ -876,7 +886,7 @@ bool ArrayElementNode::hasChildrenImpl()
 
 QVariant ArrayElementNode::data(int role)
 {
-    QString indexEquals = QString("[%1] = ").arg(arrayIndex);
+    QString indexEquals = QString("[%1] ").arg(arrayIndex);
     QString valueInfo = "";
     cObject *fieldObjectPointer = nullptr;
 
