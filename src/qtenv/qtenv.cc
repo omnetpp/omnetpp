@@ -68,6 +68,10 @@
 #include "timelineinspector.h"
 #include "objecttreeinspector.h"
 
+#ifdef Q_OS_MAC
+#include <Carbon/Carbon.h> // for the TransformProcessType magic on startup
+#endif
+
 #define emit
 
 using namespace omnetpp::common;
@@ -580,8 +584,14 @@ void Qtenv::doRun()
         static char *argv[] = { arg, nullptr };
         app = new QApplication(argc, argv);
 
-        // needs to be set here too, the setting in the Designer wasn't enough on Mac
-        app->setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
+#ifdef Q_OS_MAC
+        ProcessSerialNumber psn;
+        GetCurrentProcess(&psn);
+
+        // This dance is necessary to make the Apple Menu work immediately after launch.
+        TransformProcessType(&psn, kProcessTransformToBackgroundApplication);
+        TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+#endif
 
         globalPrefs = new QSettings(QDir::homePath() + "/.qtenvrc", QSettings::IniFormat);
         localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
@@ -608,7 +618,15 @@ void Qtenv::doRun()
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
         mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
 
+        QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
+
         mainWindow->show();
+        mainWindow->raise(); // Part of the hack for Apple Menu functionality, see a few lines up.
+
+        QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
+
+        // needs to be set here too, the setting in the Designer wasn't enough on Mac
+        QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
 
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));

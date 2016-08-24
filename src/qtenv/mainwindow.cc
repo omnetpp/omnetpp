@@ -131,11 +131,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     toolBarLayout->addWidget(labelsContainer);
 
     connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
-
-    // if we trigger the action here directly, it will block the initialization
-    // this way the main window will be shown before the setup dialog
-    // because the timer event is processed in the event loop
-    QTimer::singleShot(0, this, SLOT(initialSetUpConfiguration()));
 }
 
 MainWindow::~MainWindow()
@@ -1043,9 +1038,15 @@ QSize MainWindow::sizeHint() const
 
 bool MainWindow::event(QEvent *event)
 {
-    if (event->type() == QEvent::Polish || event->type() == QEvent::PolishRequest) {
+    if (event->type() == QEvent::Show) {
         restoreGeometry();
+        // Not calling the function directly here, as it is a blocking operation
+        // (shows and execs a dialog), so it would hold up the initialization of
+        // the MainWindow. This way it'll be done a bit later, in the next event
+        // loop iteration, after 0 millisec delay, so still (almost) immediately.
+        QTimer::singleShot(0, this, SLOT(initialSetUpConfiguration()));
     }
+
     return QMainWindow::event(event);
 }
 

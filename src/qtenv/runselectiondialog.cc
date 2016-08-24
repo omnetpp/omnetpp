@@ -81,6 +81,9 @@ RunSelectionDialog::RunSelectionDialog(const std::string& defaultConfig, int def
     ui->runNumber->setCurrentIndex(runNumber);
 
     connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(configNameChanged(int)));
+
+    // needs to be set here too, the setting in the Designer wasn't enough on Mac
+    QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128w.png"));
 }
 
 RunSelectionDialog::~RunSelectionDialog()
