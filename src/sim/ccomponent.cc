@@ -265,9 +265,7 @@ bool cComponent::hasDisplayString()
 cDisplayString& cComponent::getDisplayString() const
 {
     if (!displayString) {
-        // set display string (it may depend on parameter values via "$param" references)
-        if (!parametersFinalized())
-            throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
+        // note: do not throw exceptions
         cProperties *props = getProperties();
         cProperty *prop = props->get("display");
         const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : nullptr;
