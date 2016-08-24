@@ -84,6 +84,12 @@ public:
             // No manual buffer swapping, as in the newer QOpenGLWidget
             // all rendering is done in a magical way into an FBO,
             // and this will basically blit that onto the screen.
+
+            // Well except of course on Mac it has to be done differently...
+            #ifdef Q_OS_MAC
+                v->context()->swapBuffers(v->context()->surface());
+            #endif
+
             v->update();
         #endif
     }
