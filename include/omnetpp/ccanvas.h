@@ -525,7 +525,7 @@ class SIM_API cFigure : public cOwnedObject
          * Finds the given figure among the children of this figure, and returns
          * its index. If it is not found, -1 is returned.
          */
-        virtual int findFigure(cFigure *figure) const;
+        virtual int findFigure(const cFigure *figure) const;
 
         /**
          * Returns true of this figure has child figures, and false otherwise.
@@ -557,11 +557,6 @@ class SIM_API cFigure : public cOwnedObject
          * The above syntax is similar to the one used by cModule::getModuleByPath()
          */
         virtual cFigure *getFigureByPath(const char *path) const;
-
-        /**
-         * Remove this figure from the child list of its parent figure.
-         */
-        virtual cFigure *removeFromParent(); //TODO in wrong group...
         //@}
 
         /** @name Managing child figures. */
@@ -576,17 +571,15 @@ class SIM_API cFigure : public cOwnedObject
          */
         virtual void addFigure(cFigure *figure, int pos);
 
-//TODO comment: primary source of z-order is the z-index field, which is left unchanged by raise/lower/addBelow/addAbove methods!!!
-
         /**
          * Inserts the given figure into the child list after the reference figure.
          */
-        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure);
+        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAfter(referenceFigure);}
 
         /**
          * Inserts the given figure into the child list before the reference figure.
          */
-        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure);
+        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBefore(referenceFigure);}
 
         /**
          * Remove the given figure from the child list. An error is raised if
@@ -603,6 +596,16 @@ class SIM_API cFigure : public cOwnedObject
 
         /** @name Changing the Z-order of this figure. */
         //@{
+        virtual bool isAbove(const cFigure *figure) const;
+        virtual bool isBelow(const cFigure *figure) const;
+        virtual void insertAfter(const cFigure *figure);
+        virtual void insertBefore(const cFigure *figure);
+
+        /**
+         * Remove this figure from the child list of its parent figure.
+         */
+        virtual cFigure *removeFromParent();
+
         /**
          * If this figure precedes (i.e. is drawn below) the given figure
          * in the parent figure's child list, move it directly after.
@@ -1331,10 +1334,10 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         struct MoveRel : PathItem { double dx; double dy; };  // m
         struct LineTo : PathItem { double x; double y; };  // L
         struct LineRel : PathItem { double dx; double dy; };  // l
-        struct HorizLineTo : PathItem { double x; };  // H
-        struct HorizLineRel : PathItem { double dx; };  // h
-        struct VertLineTo : PathItem { double y; };  // V
-        struct VertLineRel : PathItem { double dy; };  // v
+        struct HorizontalLineTo : PathItem { double x; };  // H
+        struct HorizontalLineRel : PathItem { double dx; };  // h
+        struct VerticalLineTo : PathItem { double y; };  // V
+        struct VerticalLineRel : PathItem { double dy; };  // v
         struct ArcTo : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double x; double y; }; // A
         struct ArcRel : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double dx; double dy; }; // a
         struct CurveTo : PathItem { double x1; double y1; double x; double y; }; // Q
@@ -1413,13 +1416,13 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual void addArcTo(double rx, double ry, double phi, bool largeArc, bool sweep, double x, double y); // A rx ry phi largeArc sweep x y
         virtual void addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy); // a rx ry phi largeArc sweep dx dy
         virtual void addCurveTo(double x1, double y1, double x, double y); // Q x1 y1 x y
-        virtual void addCurveRel(double dx1, double dy1, double dx, double dy); // q x1 y1 dx dy
+        virtual void addCurveRel(double dx1, double dy1, double dx, double dy); // q dx1 dy1 dx dy
         virtual void addSmoothCurveTo(double x, double y); // T x y
         virtual void addSmoothCurveRel(double dx, double dy); // t dx dy
         virtual void addCubicBezierCurveTo(double x1, double y1, double x2, double y2, double x, double y); // C x1 y1 x2 y2 x y
-        virtual void addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy); // c x1 y1 x2 y2 dx dy
+        virtual void addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy); // c dx1 dy1 dx2 dy2 dx dy
         virtual void addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y); // S x2 y2 x y
-        virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s x2 y2 dx dy
+        virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s dx2 dy2 dx dy
         virtual void addClosePath(); // Z
         //@}
 };
@@ -1480,7 +1483,7 @@ class SIM_API cAbstractTextFigure : public cFigure
         virtual void setPosition(const Point& position);
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor);
-        virtual Rectangle getBounds() const;  // under Cmdenv this computes with a made-up number as size
+        virtual Rectangle getBounds() const;
         virtual const Color& getColor() const  {return color;}
         virtual void setColor(const Color& color);
         virtual double getOpacity() const  {return opacity;}
@@ -1614,12 +1617,12 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual void setPosition(const Point& position);
         virtual Anchor getAnchor() const  {return anchor;}
         virtual void setAnchor(Anchor anchor);
-        virtual Rectangle getBounds() const;  // under Cmdenv this computes with a made-up number as size
         virtual double getWidth() const  {return width;}
-        virtual void setWidth(double width);  // zero means "unset"
+        virtual void setWidth(double width);
         virtual double getHeight() const  {return height;}
         virtual void setHeight(double height); // zero means "unset"
         virtual void setSize(double width, double height) {setWidth(width); setHeight(height);}
+        virtual Rectangle getBounds() const;
         virtual Interpolation getInterpolation() const {return interpolation;}
         virtual void setInterpolation(Interpolation interpolation);
         virtual double getOpacity() const  {return opacity;}
@@ -1669,7 +1672,7 @@ class SIM_API cImageFigure : public cAbstractImageFigure
         //@{
         virtual const char *getImageName() const  {return imageName.c_str();}
         virtual void setImageName(const char* imageName);
-        virtual int getImageNaturalWidth() const {return getDefaultSize().x;} // under Cmdenv it returns a made-up number
+        virtual int getImageNaturalWidth() const {return getDefaultSize().x;}
         virtual int getImageNaturalHeight() const  {return getDefaultSize().y;}
         //@}
 };
@@ -1820,14 +1823,14 @@ class SIM_API cCanvas : public cOwnedObject
         virtual cFigure *getRootFigure() const {return rootFigure;}
         virtual void addFigure(cFigure *figure) {rootFigure->addFigure(figure);}
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}
-        virtual void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {rootFigure->addFigureAbove(figure, referenceFigure);}
-        virtual void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {rootFigure->addFigureBelow(figure, referenceFigure);}
-        virtual cFigure *removeFigure(int pos) {return rootFigure->removeFigure(pos);}
+        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAfter(referenceFigure);}
+        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBefore(referenceFigure);}
         virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeFigure(figure);}
+        virtual cFigure *removeFigure(int pos) {return rootFigure->removeFigure(pos);}
         virtual int findFigure(const char *name) const  {return rootFigure->findFigure(name);}
         virtual int findFigure(cFigure *figure) const  {return rootFigure->findFigure(figure);}
         virtual bool hasFigures() const {return rootFigure->containsFigures();}
-        virtual int getNumFigures() const {return rootFigure->getNumFigures();} // note: returns the number of *child* figures, not the total number
+        virtual int getNumFigures() const {return rootFigure->getNumFigures();}
         virtual cFigure *getFigure(int pos) const {return rootFigure->getFigure(pos);}
         virtual cFigure *getFigure(const char *name) const  {return rootFigure->getFigure(name);}
         //@}

@@ -159,7 +159,7 @@ void ArrangeFigures::addReferenceLine(cFigure *figure)
         if (polyline->getSmooth()) {
             cPolylineFigure *reference = new cPolylineFigure("ref");
             reference->setLineOpacity(0.4);
-            polyline->getParentFigure()->addFigureBelow(reference, polyline);
+            polyline->getParentFigure()->addFigureBefore(reference, polyline);
             reference->setPoints(polyline->getPoints());
         }
     }
@@ -167,7 +167,7 @@ void ArrangeFigures::addReferenceLine(cFigure *figure)
         if (polygon->getSmooth()) {
             cPolygonFigure *reference = new cPolygonFigure("ref");
             reference->setLineOpacity(0.4);
-            polygon->getParentFigure()->addFigureBelow(reference, polygon);
+            polygon->getParentFigure()->addFigureBefore(reference, polygon);
             reference->setPoints(polygon->getPoints());
         }
     }

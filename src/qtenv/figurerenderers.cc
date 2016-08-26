@@ -981,25 +981,25 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             }
 
             case 'H': {
-                const cPathFigure::HorizLineTo *horizLineTo = static_cast<const cPathFigure::HorizLineTo *>(command);
+                const cPathFigure::HorizontalLineTo *horizLineTo = static_cast<const cPathFigure::HorizontalLineTo *>(command);
                 painter.lineTo(horizLineTo->x, pos.y());
                 break;
             }
 
             case 'h': {
-                const cPathFigure::HorizLineRel *horizLineRel = static_cast<const cPathFigure::HorizLineRel *>(command);
+                const cPathFigure::HorizontalLineRel *horizLineRel = static_cast<const cPathFigure::HorizontalLineRel *>(command);
                 painter.lineTo(pos.x() + horizLineRel->dx, pos.y());
                 break;
             }
 
             case 'V': {
-                const cPathFigure::VertLineTo *vertLineTo = static_cast<const cPathFigure::VertLineTo *>(command);
+                const cPathFigure::VerticalLineTo *vertLineTo = static_cast<const cPathFigure::VerticalLineTo *>(command);
                 painter.lineTo(pos.x(), vertLineTo->y);
                 break;
             }
 
             case 'v': {
-                const cPathFigure::VertLineRel *vertLineRel = static_cast<const cPathFigure::VertLineRel *>(command);
+                const cPathFigure::VerticalLineRel *vertLineRel = static_cast<const cPathFigure::VerticalLineRel *>(command);
                 painter.lineTo(pos.x(), pos.y() + vertLineRel->dy);
                 break;
             }

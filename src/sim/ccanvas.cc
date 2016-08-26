@@ -967,20 +967,24 @@ void cFigure::addFigure(cFigure *figure, int pos)
     fireStructuralChange();
 }
 
-void cFigure::addFigureAbove(cFigure *figure, cFigure *referenceFigure)
+void cFigure::insertAfter(const cFigure *referenceFigure)
 {
-    int refPos = findFigure(referenceFigure);
-    if (refPos == -1)
-        throw cRuntimeError(this, "addFigureAbove(): reference figure is not a child");
-    addFigure(figure, refPos + 1);
+    cFigure *parent = referenceFigure->getParentFigure();
+    if (!parent)
+        throw cRuntimeError(this, "insertAfter(): reference figure has no parent");
+    int refPos = parent->findFigure(referenceFigure);
+    ASSERT(refPos != -1);
+    parent->addFigure(this, refPos + 1);
 }
 
-void cFigure::addFigureBelow(cFigure *figure, cFigure *referenceFigure)
+void cFigure::insertBefore(const cFigure *referenceFigure)
 {
-    int refPos = findFigure(referenceFigure);
-    if (refPos == -1)
-        throw cRuntimeError(this, "addFigureBelow(): reference figure is not a child");
-    addFigure(figure, refPos);
+    cFigure *parent = referenceFigure->getParentFigure();
+    if (!parent)
+        throw cRuntimeError(this, "insertBefore(): reference figure has no parent");
+    int refPos = parent->findFigure(referenceFigure);
+    ASSERT(refPos != -1);
+    parent->addFigure(this, refPos);
 }
 
 void cFigure::insertChild(cFigure *figure)
@@ -994,7 +998,9 @@ void cFigure::insertChild(cFigure *figure)
 cFigure *cFigure::removeFromParent()
 {
     cFigure *parent = getParentFigure();
-    return !parent ? this : parent->removeFigure(this);
+    if (!parent)
+        throw cRuntimeError(this, "removeFromParent(): figure has no parent");
+    return parent->removeFigure(this);
 }
 
 cFigure *cFigure::removeFigure(int pos)
@@ -1024,7 +1030,7 @@ int cFigure::findFigure(const char *name) const
     return -1;
 }
 
-int cFigure::findFigure(cFigure *figure) const
+int cFigure::findFigure(const cFigure *figure) const
 {
     for (int i = 0; i < (int)children.size(); i++)
         if (children[i] == figure)
@@ -1141,40 +1147,63 @@ void cFigure::clearChangeFlags()
     localChanges = subtreeChanges = 0;
 }
 
-void cFigure::raiseAbove(cFigure *figure)
+bool cFigure::isAbove(const cFigure *figure) const
 {
     cFigure *parent = getParentFigure();
-    if (!parent)
-        throw cRuntimeError(this, "raiseAbove(): figure has no parent figure");
-    int myPos = parent->findFigure(this);
-    int refPos = parent->findFigure(figure);
-    if (refPos == -1)
-        throw cRuntimeError(this, "raiseAbove(): reference figure must have the same parent");
-    if (myPos < refPos) {
-        parent->children.erase(parent->children.begin() + myPos);  // note: reference figure will be shifted down
-        parent->children.insert(parent->children.begin() + refPos, this);
-        fireStructuralChange();
+    if (!parent || figure->getParentFigure() != parent)
+        throw cRuntimeError(this, "isAbove(): figures do not share the same parent (or have no parent)");
+    double zDiff = getZIndex() - figure->getZIndex();
+    if (zDiff > 0)
+        return true;
+    else if (zDiff < 0)
+        return false;
+    else {
+        int myPos = parent->findFigure(this);
+        int otherPos = parent->findFigure(figure);
+        return myPos > otherPos;
+    }
+}
+
+bool cFigure::isBelow(const cFigure *figure) const
+{
+    cFigure *parent = getParentFigure();
+    if (!parent || figure->getParentFigure() != parent)
+        throw cRuntimeError(this, "isBelow(): figures do not share the same parent (or have no parent)");
+    double zDiff = getZIndex() - figure->getZIndex();
+    if (zDiff > 0)
+        return false;
+    else if (zDiff < 0)
+        return true;
+    else {
+        int myPos = parent->findFigure(this);
+        int otherPos = parent->findFigure(figure);
+        return myPos < otherPos;
+    }
+}
+
+void cFigure::raiseAbove(cFigure *figure)
+{
+    if (isBelow(figure)) {
+        removeFromParent();
+        if (getZIndex() < figure->getZIndex())
+            setZIndex(figure->getZIndex());
+        insertAfter(figure);
     }
 }
 
 void cFigure::lowerBelow(cFigure *figure)
 {
-    cFigure *parent = getParentFigure();
-    if (!parent)
-        throw cRuntimeError(this, "lowerBelow(): figure has no parent figure");
-    int myPos = parent->findFigure(this);
-    int refPos = parent->findFigure(figure);
-    if (refPos == -1)
-        throw cRuntimeError(this, "lowerBelow(): reference figure must have the same parent");
-    if (myPos > refPos) {
-        parent->children.erase(parent->children.begin() + myPos);
-        parent->children.insert(parent->children.begin() + refPos, this);
-        fireStructuralChange();
+    if (isAbove(figure)) {
+        removeFromParent();
+        if (getZIndex() > figure->getZIndex())
+            setZIndex(figure->getZIndex());
+        insertBefore(figure);
     }
 }
 
 void cFigure::raiseToTop()
 {
+    // move to back
     cFigure *parent = getParentFigure();
     if (!parent)
         throw cRuntimeError(this, "raiseToTop(): figure has no parent figure");
@@ -1184,10 +1213,15 @@ void cFigure::raiseToTop()
         parent->children.push_back(this);
         fireStructuralChange();
     }
+    // figure needs to have a higher or equal Z-index than others
+    for (int i = 0; i < (int)children.size(); i++)
+        if (children[i]->getZIndex() > getZIndex())
+            setZIndex(children[i]->getZIndex());
 }
 
 void cFigure::lowerToBottom()
 {
+    // move to front
     cFigure *parent = getParentFigure();
     if (!parent)
         throw cRuntimeError(this, "lowerToBottom(): figure has no parent figure");
@@ -1197,6 +1231,10 @@ void cFigure::lowerToBottom()
         parent->children.insert(parent->children.begin(), this);
         fireStructuralChange();
     }
+    // figure needs to have a lower or equal Z-index than others
+    for (int i = 0; i < (int)children.size(); i++)
+        if (children[i]->getZIndex() < getZIndex())
+            setZIndex(children[i]->getZIndex());
 }
 
 void cFigure::move(double dx, double dy)
@@ -2485,22 +2523,22 @@ const char *cPathFigure::getPath() const
                 break;
             }
             case 'H': {
-                HorizLineTo *item = static_cast<HorizLineTo*>(base);
+                HorizontalLineTo *item = static_cast<HorizontalLineTo*>(base);
                 os << item->x;
                 break;
             }
             case 'h': {
-                HorizLineRel *item = static_cast<HorizLineRel*>(base);
+                HorizontalLineRel *item = static_cast<HorizontalLineRel*>(base);
                 os << item->dx;
                 break;
             }
             case 'V': {
-                VertLineTo *item = static_cast<VertLineTo*>(base);
+                VerticalLineTo *item = static_cast<VerticalLineTo*>(base);
                 os << item->y;
                 break;
             }
             case 'v': {
-                VertLineRel *item = static_cast<VertLineRel*>(base);
+                VerticalLineRel *item = static_cast<VerticalLineRel*>(base);
                 os << item->dy;
                 break;
             }
@@ -2626,7 +2664,7 @@ void cPathFigure::addLineRel(double dx, double dy)
 
 void cPathFigure::addHorizontalLineTo(double x)
 {
-    HorizLineTo *item = new HorizLineTo();
+    HorizontalLineTo *item = new HorizontalLineTo();
     item->code = 'H';
     item->x = x;
     addItem(item);
@@ -2634,7 +2672,7 @@ void cPathFigure::addHorizontalLineTo(double x)
 
 void cPathFigure::addHorizontalLineRel(double dx)
 {
-    HorizLineRel *item = new HorizLineRel();
+    HorizontalLineRel *item = new HorizontalLineRel();
     item->code = 'h';
     item->dx = dx;
     addItem(item);
@@ -2642,7 +2680,7 @@ void cPathFigure::addHorizontalLineRel(double dx)
 
 void cPathFigure::addVerticalLineTo(double y)
 {
-    VertLineTo *item = new VertLineTo();
+    VerticalLineTo *item = new VerticalLineTo();
     item->code = 'V';
     item->y = y;
     addItem(item);
@@ -2650,7 +2688,7 @@ void cPathFigure::addVerticalLineTo(double y)
 
 void cPathFigure::addVerticalLineRel(double dy)
 {
-    VertLineRel *item = new VertLineRel();
+    VerticalLineRel *item = new VerticalLineRel();
     item->code = 'v';
     item->dy = dy;
     addItem(item);

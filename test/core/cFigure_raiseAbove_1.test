@@ -103,9 +103,7 @@ a->raiseToTop() ==>  f c b d e a
 negative test cases:
 x->lowerToBottom() ==> (cGroupFigure)x: lowerToBottom(): figure has no parent figure
 x->raiseToTop() ==> (cGroupFigure)x: raiseToTop(): figure has no parent figure
-a->raiseAbove(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: raiseAbove(): reference figure must have the same parent
-a->lowerBelow(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: lowerBelow(): reference figure must have the same parent
-x->raiseAbove(a) ==> (cGroupFigure)x: raiseAbove(): figure has no parent figure
-x->lowerBelow(a) ==> (cGroupFigure)x: lowerBelow(): figure has no parent figure
-
-
+a->raiseAbove(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: isBelow(): figures do not share the same parent (or have no parent)
+a->lowerBelow(x) ==> (cGroupFigure)Test.canvas.rootFigure.a: isAbove(): figures do not share the same parent (or have no parent)
+x->raiseAbove(a) ==> (cGroupFigure)x: isBelow(): figures do not share the same parent (or have no parent)
+x->lowerBelow(a) ==> (cGroupFigure)x: isAbove(): figures do not share the same parent (or have no parent)
