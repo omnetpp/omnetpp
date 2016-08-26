@@ -27,6 +27,10 @@ class cCanvas;
 class cProperty;
 class cProperties;
 
+//TODO: doc: default values as precise enum names
+//TODO: doc: @figure attributes for each figure type
+//TODO: doc: revise class descriptions
+
 /**
  * @brief A lightweight graphical object for cCanvas.
  *
@@ -152,9 +156,9 @@ class SIM_API cFigure : public cOwnedObject
         struct SIM_API Font {
             /** @name Font attributes. */
             //@{
-            std::string typeface; // empty string means default font
-            int pointSize;  // zero or negative value means default size
-            uint8_t style;  // binary OR of FontStyle constants
+            std::string typeface; ///< Typeface of the font. An empty string means the default font.
+            int pointSize;  ///< Font size in points. A zero or negative value means the default size.
+            uint8_t style;  ///< Font style. Binary OR of FontStyle constants such as FONT_BOLD.
             //@}
             /** @name Methods. */
             //@{
@@ -165,15 +169,31 @@ class SIM_API cFigure : public cOwnedObject
             //@}
         };
 
+        /** @brief Font style constants: FONT_NONE, FONT_BOLD, etc. @ingroup Canvas */
         enum FontStyle { FONT_NONE=0, FONT_BOLD=1, FONT_ITALIC=2, FONT_UNDERLINE=4 };
+
+        /** @brief Line style constants: LINE_SOLID, LINE_DOTTED, etc. @ingroup Canvas */
         enum LineStyle { LINE_SOLID, LINE_DOTTED, LINE_DASHED };
+
+        /** @brief Line cap style constants: CAP_BUTT, CAP_SQUARE, etc. @ingroup Canvas */
         enum CapStyle { CAP_BUTT, CAP_SQUARE, CAP_ROUND };
+
+        /** @brief Line join style constants: JOIN_BEVEL, JOIN_MITER, etc. @ingroup Canvas */
         enum JoinStyle { JOIN_BEVEL, JOIN_MITER, JOIN_ROUND };
+
+        /** @brief Fill rule constants: FILL_EVENODD, FILL_NONZERO. @ingroup Canvas */
         enum FillRule { FILL_EVENODD, FILL_NONZERO };
+
+        /** @brief Arrowhead style constants: ARROW_NONE, ARROW_SIMPLE, etc. @ingroup Canvas */
         enum Arrowhead { ARROW_NONE, ARROW_SIMPLE, ARROW_TRIANGLE, ARROW_BARBED };
+
+        /** @brief Image interpolation mode constants: INTERPOLATION_NONE, INTERPOLATION_FAST, etc. @ingroup Canvas */
         enum Interpolation { INTERPOLATION_NONE, INTERPOLATION_FAST, INTERPOLATION_BEST };
+
+        /** @brief Anchoring mode constants: ANCHOR_CENTER, ANCHOR_N, etc. @ingroup Canvas */
         enum Anchor {ANCHOR_CENTER, ANCHOR_N, ANCHOR_E, ANCHOR_S, ANCHOR_W, ANCHOR_NW, ANCHOR_NE, ANCHOR_SE, ANCHOR_SW, ANCHOR_BASELINE_START, ANCHOR_BASELINE_MIDDLE, ANCHOR_BASELINE_END };
-        //enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
+
+        //TODO enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
 
         /**
          * @brief Homogeneous 2D transformation matrix (last row is not stored).
@@ -186,7 +206,7 @@ class SIM_API cFigure : public cOwnedObject
          * @ingroup Canvas
          */
         struct SIM_API Transform {
-            /** @name Components of the pixel. */
+            /** @name Elements of the transformation matrix. */
             //@{
             double a, b, c, d, t1, t2;
             //@}
@@ -435,12 +455,17 @@ class SIM_API cFigure : public cOwnedObject
         virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
 
         /**
-         * Returns the z-index of the figure.
+         * Returns the Z-index of the figure.
          */
         virtual double getZIndex() const {return zIndex;}
 
         /**
-         * Sets the z-index of the figure.
+         * Sets the Z-index of the figure. The Z-index specifies the stacking
+         * order of figures under the same parent. A figure with a greater
+         * Z-index is always in front of an element with a lower Z-index.
+         * For figures with the same Z-index, their relative order in the
+         * parent's child list defines the stacking order. (A later figure
+         * is in front of the earlier ones.)
          */
         virtual void setZIndex(double zIndex) {this->zIndex = zIndex; fireStructuralChange();}
 
@@ -450,7 +475,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual const char *getTooltip() const {return tooltip;}
 
         /**
-         * Sets the tooltip of the figure.
+         * Sets the tooltip of the figure. Pass nullptr to clear the tooltip.
          */
         virtual void setTooltip(const char *tooltip);
 
@@ -487,7 +512,7 @@ class SIM_API cFigure : public cOwnedObject
         /** @name Accessing the parent figure and child figures. */
         //@{
         /**
-         * Returns the figure of this figure, or nullptr if it has none.
+         * Returns the parent figure of this figure, or nullptr if it has none.
          */
         virtual cFigure *getParentFigure() const {return dynamic_cast<cFigure*>(getOwner());}
 
@@ -511,7 +536,8 @@ class SIM_API cFigure : public cOwnedObject
         virtual cFigure *getFigure(int pos) const;
 
         /**
-         * Return a child figure by name, or nullptr if there is no such child figure.
+         * Returns the first child figure with the given name, or nullptr if
+         * there is no such figure.
          */
         virtual cFigure *getFigure(const char *name) const;
 
@@ -528,7 +554,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual int findFigure(const cFigure *figure) const;
 
         /**
-         * Returns true of this figure has child figures, and false otherwise.
+         * Returns true if this figure has child figures, and false otherwise.
          */
         virtual bool containsFigures() const {return !children.empty();}
 
@@ -544,8 +570,8 @@ class SIM_API cFigure : public cOwnedObject
          * module name ^ (caret) stands for the parent figure. If the path starts
          * with a dot or caret, it is understood as relative to this figure,
          * otherwise it is taken to mean an absolute path (i.e. relative to the
-         * root figure, see getRootFigure()). Returns nullptr if the
-         * figure was not found.
+         * root figure, see getRootFigure()). Returns nullptr if the figure
+         * was not found.
          *
          * Examples:
          *   - "." means this figure;
@@ -562,75 +588,112 @@ class SIM_API cFigure : public cOwnedObject
         /** @name Managing child figures. */
         //@{
         /**
-         * Appends the given figure to the list of children.
+         * Appends the given figure to the child list of this figure.
          */
         virtual void addFigure(cFigure *figure);
 
         /**
-         * Inserts the given figure to the list of children at the given position.
+         * Inserts the given figure into the child list of this figure at
+         * the given position. Note that relative order in the child list
+         * only affects stacking order if the respective figures have the
+         * same Z-index.
          */
         virtual void addFigure(cFigure *figure, int pos);
 
         /**
-         * Inserts the given figure into the child list after the reference figure.
+         * Deprecated due to the introduction of Z-index, use insertAfter() instead.
          */
         _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAfter(referenceFigure);}
 
         /**
-         * Inserts the given figure into the child list before the reference figure.
+         * Deprecated due to the introduction of Z-index, use insertBefore() instead.
          */
         _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBefore(referenceFigure);}
 
         /**
-         * Remove the given figure from the child list. An error is raised if
-         * the figure is not a child of this figure.
+         * Removes the given figure from the child list of this figure.
+         * An error is raised if the figure is not a child of this figure.
+         *
+         * Prefer removeFromParent() to this method.
          */
         virtual cFigure *removeFigure(cFigure *figure);
 
         /**
-         * Remove the kth figure from the child list. An error is raised if pos
-         * is not in the range 0..getNumFigures()-1.
+         * Removes the kth figure from the child list of this figure. An error
+         * is raised if pos is not in the range 0..getNumFigures()-1.
+         *
+         * Prefer removeFromParent() to this method.
          */
         virtual cFigure *removeFigure(int pos);
         //@}
 
-        /** @name Changing the Z-order of this figure. */
+        /** @name Managing stacking order */
         //@{
+        /**
+         * Returns true if this figure is above the given reference figure
+         * in stacking order, based on their Z-index values and their relative
+         * order in the parent's child list, and false if not. The method
+         * throws an error if the two figures are not under the same parent.
+         */
         virtual bool isAbove(const cFigure *figure) const;
+
+        /**
+         * Returns true if this figure is below the given reference figure
+         * in stacking order, based on their Z-index values and their relative
+         * order in the parent's child list, and false if not. The method
+         * throws an error if the two figures are not under the same parent.
+         */
         virtual bool isBelow(const cFigure *figure) const;
+
+        /**
+         * Inserts this figure after the given reference figure in its parent's
+         * child list. Note that relative order in the child list only affects
+         * stacking order if the respective figures have the same Z-index.
+         */
         virtual void insertAfter(const cFigure *figure);
+
+        /**
+         * Inserts this figure in front of the given reference figure in its
+         * parent's child list. Note that relative order in the child list only
+         * affects stacking order if the respective figures have the same Z-index.
+         */
         virtual void insertBefore(const cFigure *figure);
 
         /**
          * Remove this figure from the child list of its parent figure.
+         * It has no effect if the figure has no parent figure.
          */
         virtual cFigure *removeFromParent();
 
         /**
-         * If this figure precedes (i.e. is drawn below) the given figure
-         * in the parent figure's child list, move it directly after.
-         * An error is raised if the two figures do not share the same parent.
+         * If this figure is below the given reference figure in stacking order,
+         * move the it directly above. This is achieved by updating its Z-index
+         * if needed, and moving it in the parent's child list. An error is
+         * raised if the two figures do not share the same parent.
          */
         virtual void raiseAbove(cFigure *figure);
 
         /**
-         * If this figure follows (i.e. is drawn above) the given figure
-         * in the parent figure's child list, move it directly before.
-         * An error is raised if the two figures do not share the same parent.
+         * If this figure is above the given reference figure in stacking order,
+         * move the it directly below. This is achieved by updating its Z-index
+         * if needed, and moving it in the parent's child list. An error is
+         * raised if the two figures do not share the same parent.
          */
         virtual void lowerBelow(cFigure *figure);
 
         /**
-         * Move this figure to the end of the child list in its parent, so that
-         * it is drawn above all its siblings. It is an error if this figure
-         * has no parent.
+         * Raise this figure above all other figures in stacking order. This is
+         * achieved by updating its Z-index if needed (setting it to be at least
+         * the maximum of the Z-indices of the other figures), and moving it in the
+         * parent's child list. It is an error if this figure has no parent.
          */
         virtual void raiseToTop();
 
         /**
-         * Move this figure to the beginning of the child list in its parent,
-         * so that it is drawn below all its siblings. It is an error if this
-         * figure has no parent.
+         * Raise this figure above all other figures in stacking order. This is
+         * achieved by updating its Z-index if needed (setting it to be at most
+         * the minimum of the Z-indices of the other figures), and moving it in the
+         * parent's child list. It is an error if this figure has no parent.
          */
         virtual void lowerToBottom();
         //@}
@@ -769,6 +832,18 @@ class SIM_API cPanelFigure : public cFigure
         //@{
         virtual const Point& getPosition() const  {return position;}
         virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
+
+        /**
+         * By default, the (0,0) point in cPanelFigure's coordinate system will be mapped
+         * to the given position (i.e. getPosition()) in the parent figure's coordinate system.
+         * By setting an offset, one can change (0,0) to an arbitrary point. E.g. by setting
+         * offset=(100,0), the (100,0) point will be mapped to the given position, i.e.
+         * panel contents will be appear 100 pixels to the left (given there are no transforms set).
+         */
+        //TODO properly add "offset"
+        virtual const Point& getOffset() const  {return offset;}
+        virtual void setOffset(const Point& offset)  {this->offset = offset; fireGeometryChange();}
+
         //@}
 };
 #endif
@@ -820,21 +895,96 @@ class SIM_API cAbstractLineFigure : public cFigure
 
         /** @name Figure attributes */
         //@{
+        /**
+         * Returns the line color of the figure.
+         */
         virtual const Color& getLineColor() const  {return lineColor;}
+
+        /**
+         * Sets the line color of the figure. The default color is black.
+         */
         virtual void setLineColor(const Color& lineColor);
+
+        /**
+         * Returns the line width of the figure. Note that the actual line
+         * width will also be affected by the figure transformations and,
+         * if zoomLineWidth is set, by the zoom level as well.
+         */
         virtual double getLineWidth() const  {return lineWidth;}
+
+        /**
+         * Sets the line width of the figure. The number must be
+         * positive (zero is not allowed). The default line width is 1.
+         * See also setZoomLineWidth().
+         */
         virtual void setLineWidth(double lineWidth);
+
+        /**
+         * Returns the line opacity of the figure, a number in the [0,1] interval.
+         */
         virtual double getLineOpacity() const  {return lineOpacity;}
+
+        /**
+         * Sets the line opacity of the figure. The argument must be a number
+         * in the [0,1] interval. The default opacity is 1.0.
+         */
         virtual void setLineOpacity(double lineOpacity);
+
+        /**
+         * Returns the line style of the figure.
+         */
         virtual LineStyle getLineStyle() const  {return lineStyle;}
+
+        /**
+         * Sets the line style of the figure (dotted, dashed, etc.)
+         * The default line style is solid.
+         */
         virtual void setLineStyle(LineStyle lineStyle);
+
+        /**
+         * Returns the cap style for the figure's line.
+         */
         virtual CapStyle getCapStyle() const {return capStyle;}
+
+        /**
+         * Sets the cap style for the figure's line. The default cap style
+         * is butt.
+         */
         virtual void setCapStyle(CapStyle capStyle);
+
+        /**
+         * Returns the type of the arrowhead at the start of the line.
+         */
         virtual Arrowhead getStartArrowhead() const  {return startArrowhead;}
+
+        /**
+         * Sets the type of the arrowhead at the start of the line.
+         * The default is no arrowhead.
+         */
         virtual void setStartArrowhead(Arrowhead startArrowhead);
+
+        /**
+         * Returns the type of the arrowhead at the end of the line.
+         */
         virtual Arrowhead getEndArrowhead() const  {return endArrowhead;}
+
+        /**
+         * Sets the type of the arrowhead at the end of the line.
+         * The default is no arrowhead.
+         */
         virtual void setEndArrowhead(Arrowhead endArrowhead);
+
+        /**
+         * Returns true if zoom level affects the line width the figure is
+         * drawn with, and false if it does not.
+         */
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
+
+        /**
+         * Sets the flag that controls whether zoom level should affect
+         * the line width the figure is drawn with. The default setting
+         * is false, i.e. zoom does not affect line width.
+         */
         virtual void setZoomLineWidth(bool zoomLineWidth);
         //@}
 };
@@ -872,11 +1022,26 @@ class SIM_API cLineFigure : public cAbstractLineFigure
         virtual const char *getRendererClassName() const override {return "LineFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the start point of the line segment.
+         */
         virtual const Point& getStart() const  {return start;}
+
+        /**
+         * Sets the start point of the line segment.
+         */
         virtual void setStart(const Point& start);
+
+        /**
+         * Returns the end point of the line segment.
+         */
         virtual const Point& getEnd() const  {return end;}
+
+        /**
+         * Sets the end point of the line segment.
+         */
         virtual void setEnd(const Point& end);
         //@}
 };
@@ -887,6 +1052,16 @@ class SIM_API cLineFigure : public cAbstractLineFigure
  * An arc's geometry is determined by the bounding box of the circle or ellipse
  * the arc is part of, and the start and end angles. Other properties such as
  * color and line style are inherited from cAbstractLineFigure.
+ *
+ * For the start and end angles, zero points east, and angles are measured in
+ * the counter-clockwise direction. Values outside the (0,2*PI) interval are
+ * accepted for both angles.
+ *
+ * The arc is drawn from the start angle to the end angle in <i>counter-clockwise</i>
+ * direction. In non-edge cases, the end angle should be in the (startAngle,
+ * startAngle + 2*PI) interval. If the end angle equals or is less than the
+ * start angle, nothing is drawn. If the end angle equals startAngle+2*PI
+ * or is greater than that, a full circle is drawn.
  *
  * @ingroup Canvas
  */
@@ -916,26 +1091,56 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual const char *getRendererClassName() const override {return "ArcFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the bounding box of the axis-aligned circle or ellipse
+         * the arc is part of.
+         */
         virtual const Rectangle& getBounds() const  {return bounds;}
+
+        /**
+         * Sets the bounding box of the axis-aligned circle or ellipse
+         * the arc is part of.
+         */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Returns the start angle of the arc in radians. See the class
+         * documentation for details on how the arc is drawn.
+         */
         virtual double getStartAngle() const {return startAngle;}
+
+        /**
+         * Sets the start angle of the arc in radians. See the class
+         * documentation for details on how the arc is drawn.
+         */
         virtual void setStartAngle(double startAngle);
+
+        /**
+         * Returns the end angle of the arc in radians. See the class
+         * documentation for details on how the arc is drawn.
+         */
         virtual double getEndAngle() const {return endAngle;}
+
+        /**
+         * Sets the end angle of the arc in radians. See the class
+         * documentation for details on how the arc is drawn.
+         */
         virtual void setEndAngle(double endAngle);
         //@}
 };
 
 /**
- * @brief A figure that displays a line consisting of multiple connecting
- * straight line segments.
+ * @brief A figure that displays a line that consists of multiple connecting
+ * straight line segments or of a single smooth curve.
  *
  * The class stores geometry information as a sequence of points. The line
  * may be <i>smoothed</i>. A smoothed line is drawn as a series of Bezier
  * curves, which touch the start point of the first line segment, the
  * end point of the last line segment, and the midpoints of intermediate
  * line segments, while intermediate points serve as control points.
+ * To add corners to a smoothed curve, duplicate points.
  *
  * Additional properties such as color and line style are inherited from
  * cAbstractLineFigure.
@@ -972,19 +1177,78 @@ class SIM_API cPolylineFigure : public cAbstractLineFigure
         virtual const char *getRendererClassName() const override {return "PolylineFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the points that define the polyline.
+         */
         virtual const std::vector<Point>& getPoints() const  {return points;}
+
+        /**
+         * Sets the points that define the polyline.
+         */
         virtual void setPoints(const std::vector<Point>& points);
+
+        /**
+         * Returns the number of points. Equivalent to getPoints().size().
+         */
         virtual int getNumPoints() const {return points.size();}
+
+        /**
+         * Returns the ith point. The index must be in the 0..getNumPoints()-1
+         * interval.
+         */
         virtual const Point& getPoint(int i) const {checkIndex(i); return points[i];}
+
+        /**
+         * Sets the ith point. The index must be in the 0..getNumPoints()-1 interval.
+         */
         virtual void setPoint(int i, const Point& point);
+
+        /**
+         * Appends a point.
+         */
         virtual void addPoint(const Point& point);
+
+        /**
+         * Removes the ith point. The index must be in the 0..getNumPoints()-1 interval.
+         */
         virtual void removePoint(int i);
+
+        /**
+         * Inserts a point at position i, shifting up the point at and above index i.
+         * The index must be in the 0..getNumPoints()-1 interval.
+         */
         virtual void insertPoint(int i, const Point& point);
+
+        /**
+         * Returns true if the figure is rendered as a smoothed curve, and
+         * false if as a sequence of connecting of straight line segments.
+         * See the class description for details on how the points define
+         * the curve in the smoothed case.
+         */
         virtual bool getSmooth() const {return smooth;}
+
+        /**
+         * Sets the flag that determines whether connecting straight line segments
+         * or a single smooth curve should be drawn. See the class description for
+         * details on how the points define the curve in the smoothed case.
+         * The default value is false (no smoothing).
+         */
         virtual void setSmooth(bool smooth);
+        //@}
+
+        /** @name Styling */
+        //@{
+        /**
+         * Returns the join style line segments will be connected with.
+         */
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
+
+        /**
+         * Sets the join style line segments will be connected with. The
+         * default join style is miter.
+         */
         virtual void setJoinStyle(JoinStyle joinStyle);
         //@}
 };
@@ -1040,25 +1304,113 @@ class SIM_API cAbstractShapeFigure : public cFigure
         virtual void parse(cProperty *property) override;
         //@}
 
-        /** @name Figure attributes */
+        /** @name Styling */
         //@{
+        /**
+         * Returns true if the figure rendered as filled, and false if not.
+         */
         virtual bool isFilled() const  {return filled;}
+
+        /**
+         * Sets the flag that controls whether the figure should be filled.
+         * The default setting is false (unfilled).
+         */
         virtual void setFilled(bool filled);
+
+        /**
+         * Returns true if the figure's outline is to be drawn, and false if not.
+         */
         virtual bool isOutlined() const  {return outlined;}
+
+        /**
+         * Sets the flag that controls whether the figure's outline should be
+         * drawn. The default setting is true.
+         */
         virtual void setOutlined(bool outlined);
+
+        /**
+         * Returns the color of the figure's outline.
+         */
         virtual const Color& getLineColor() const  {return lineColor;}
+
+        /**
+         * Sets the color of the figure's outline. The default outline color
+         * is black.
+         */
         virtual void setLineColor(const Color& lineColor);
+
+        /**
+         * Returns the fill color of the figure.
+         */
         virtual const Color& getFillColor() const  {return fillColor;}
+
+        /**
+         * Sets the fill color of the figure. Note that setting the fill color
+         * in itself does not make the figure filled, calling setFilled(true)
+         * is also needed. The default fill color is blue.
+         */
         virtual void setFillColor(const Color& fillColor);
+
+        /**
+         * Returns the line style of the figure's outline.
+         */
         virtual LineStyle getLineStyle() const  {return lineStyle;}
+
+        /**
+         * Sets the line style of the figure's outline (dotted, dashed, etc.)
+         * The default line style is solid.
+         */
         virtual void setLineStyle(LineStyle lineStyle);
+
+        /**
+         * Returns the line width of the figure's outline. Note that the actual line
+         * width will also be affected by the figure transformations and,
+         * if zoomLineWidth is set, by the zoom level as well.
+         */
         virtual double getLineWidth() const  {return lineWidth;}
-        virtual void setLineWidth(double lineWidth);   // note: rendering of zero-width lines undefined
+
+        /**
+         * Sets the line width of the figure's outline. The number must be
+         * positive (zero is not allowed). The default line width is 1.
+         * See also setZoomLineWidth().
+         */
+        virtual void setLineWidth(double lineWidth);
+
+        /**
+         * Returns the opacity of the figure's outline, a number in the
+         * [0,1] interval.
+         */
         virtual double getLineOpacity() const  {return lineOpacity;}
+
+        /**
+         * Sets the opacity of the figure's outline. The argument must be a
+         * number in the [0,1] interval. The default opacity is 1.0.
+         */
         virtual void setLineOpacity(double lineOpacity);
+
+        /**
+         * Returns the opacity of the figure's fill, a number in the
+         * [0,1] interval.
+         */
         virtual double getFillOpacity() const  {return fillOpacity;}
+
+        /**
+         * Sets the opacity of the figure's fill. The argument must be a
+         * number in the [0,1] interval. The default opacity is 1.0.
+         */
         virtual void setFillOpacity(double fillOpacity);
+
+        /**
+         * Returns true if zoom level affects the line width the figure's
+         * outline is drawn with, and false if it does not.
+         */
         virtual bool getZoomLineWidth() const {return zoomLineWidth;}
+
+        /**
+         * Sets the flag that controls whether zoom level should affect
+         * the line width the figure's outline is drawn with. The default
+         * setting is false, i.e. zoom does not affect line width.
+         */
         virtual void setZoomLineWidth(bool zoomLineWidth);
         //@}
 };
@@ -1098,14 +1450,44 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         virtual const char *getRendererClassName() const override {return "RectangleFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the rectangle that defines the figure's geometry.
+         */
         virtual const Rectangle& getBounds() const  {return bounds;}
+
+        /**
+         * Sets the rectangle that defines the figure's geometry.
+         */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Sets both the horizontal and vertical (x and y) corner radii to
+         * the same value.
+         */
         virtual void setCornerRadius(double r)  {setCornerRx(r);setCornerRy(r);}
+
+        /**
+         * Returns the horizontal radius of the rectangle's rounded corners.
+         */
         virtual double getCornerRx() const  {return cornerRx;}
+
+        /**
+         * Sets the horizontal radius of the rectangle's rounded corners.
+         * Specify 0 to turn off rounded corners. The default is 0.
+         */
         virtual void setCornerRx(double rx);
+
+        /**
+         * Returns the vertical radius of the rectangle's rounded corners.
+         */
         virtual double getCornerRy() const  {return cornerRy;}
+
+        /**
+         * Sets the vertical radius of the rectangle's rounded corners.
+         * Specify 0 to turn off rounded corners. The default is 0.
+         */
         virtual void setCornerRy(double ry);
         //@}
 };
@@ -1144,9 +1526,16 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
         virtual const char *getRendererClassName() const override {return "OvalFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the rectangle that defines the figure's geometry.
+         */
         virtual const Rectangle& getBounds() const  {return bounds;}
+
+        /**
+         * Sets the rectangle that defines the figure's geometry.
+         */
         virtual void setBounds(const Rectangle& bounds);
         //@}
 };
@@ -1187,14 +1576,43 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
         virtual const char *getRendererClassName() const override {return "RingFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the rectangle that defines the ring's outer circle or ellipse.
+         */
         virtual const Rectangle& getBounds() const  {return bounds;}
+
+        /**
+         * Sets the rectangle that defines the ring's outer circle or ellipse.
+         */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Sets the ring's inner curve to a circle with the given radius.
+         * This method sets the horizontal and vertical inner radii to the
+         * same value.
+         */
         virtual void setInnerRadius(double r)   {setInnerRx(r);setInnerRy(r);}
+
+        /**
+         * Returns the horizontal radius of the ring's inner circle or ellipse.
+         */
         virtual double getInnerRx() const  {return innerRx;}
+
+        /**
+         * Sets the horizontal radius of the ring's inner circle or ellipse.
+         */
         virtual void setInnerRx(double rx);
+
+        /**
+         * Returns the vertical radius of the ring's inner circle or ellipse.
+         */
         virtual double getInnerRy() const  {return innerRy;}
+
+        /**
+         * Sets the vertical radius of the ring's inner circle or ellipse.
+         */
         virtual void setInnerRy(double ry);
         //@}
 };
@@ -1204,10 +1622,25 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
  * axis-aligned disc or filled ellipse.
  *
  * A pie slice is determined by the bounding box of the full disc or ellipse,
- * and a start and an end angle. The outline of the pie slice consists of
- * an arc and two radii. As with all shape figures, drawing of both the
- * outline and the fill are optional. Line and fill color, and several
- * other properties are inherited from cAbstractShapeFigure.
+ * and a start and an end angle. The outline of the pie slice in non-degenerate
+ * cases consists of an arc, and two straight lines from the center of the pie
+ * to the end points of the arc.
+ *
+ * For the start and end angles, zero points east, and angles are measured in
+ * the counter-clockwise direction. Values outside the (0,2*PI) interval are
+ * accepted for both angles.
+ *
+ * As with all shape figures, drawing of both the outline and the fill are
+ * optional. Line and fill color, and several other properties are inherited
+ * from cAbstractShapeFigure.
+ *
+ * The pie slice is drawn from the start angle to the end angle in <i>counter-
+ * clockwise</i> direction. In non-degenerate cases, the end angle should be
+ * in the (startAngle, startAngle + 2*PI) interval. If the end angle equals to
+ * or is less than the start angle, only a straight line is drawn from the
+ * center to the circumference. If the end angle equals startAngle+2*PI
+ * or is greater than that, a full circle or ellipse, and a straight line from
+ * the center to the circumference at angle endAngle is drawn.
  *
  * @ingroup Canvas
  */
@@ -1237,13 +1670,42 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
         virtual const char *getRendererClassName() const override {return "PieSliceFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the bounding box of the axis-aligned circle or ellipse
+         * the pie slice is part of.
+         */
         virtual const Rectangle& getBounds() const  {return bounds;}
+
+        /**
+         * Sets the bounding box of the axis-aligned circle or ellipse
+         * the pie slice is part of.
+         */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Returns the start angle of the pie slice in radians. See the class
+         * documentation for details on how the pie slice is drawn.
+         */
         virtual double getStartAngle() const {return startAngle;}
+
+        /**
+         * Sets the start angle of the pie slice in radians. See the class
+         * documentation for details on how the pie slice is drawn.
+         */
         virtual void setStartAngle(double startAngle);
+
+        /**
+         * Returns the end angle of the pie slice in radians. See the class
+         * documentation for details on how the pie slice is drawn.
+         */
         virtual double getEndAngle() const {return endAngle;}
+
+        /**
+         * Sets the end angle of the pie slice in radians. See the class
+         * documentation for details on how the pie slice is drawn.
+         */
         virtual void setEndAngle(double endAngle);
         //@}
 };
@@ -1291,21 +1753,92 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
         virtual const char *getRendererClassName() const override {return "PolygonFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the points that define the polyline.
+         */
         virtual const std::vector<Point>& getPoints() const  {return points;}
+
+        /**
+         * Sets the points that define the polyline.
+         */
         virtual void setPoints(const std::vector<Point>& points);
+
+        /**
+         * Returns the number of points. Equivalent to getPoints().size().
+         */
         virtual int getNumPoints() const {return points.size();}
+
+        /**
+         * Returns the ith point. The index must be in the 0..getNumPoints()-1
+         * interval.
+         */
         virtual const Point& getPoint(int i) const {checkIndex(i); return points[i];}
+
+        /**
+         * Sets the ith point. The index must be in the 0..getNumPoints()-1 interval.
+         */
         virtual void setPoint(int i, const Point& point);
+
+        /**
+         * Appends a point.
+         */
         virtual void addPoint(const Point& point);
+
+        /**
+         * Removes the ith point. The index must be in the 0..getNumPoints()-1 interval.
+         */
         virtual void removePoint(int i);
+
+        /**
+         * Inserts a point at position i, shifting up the points at and above index i.
+         * The index must be in the 0..getNumPoints()-1 interval.
+         */
         virtual void insertPoint(int i, const Point& point);
+
+        /**
+         * Returns true if the figure is rendered as a closed smooth curve, and
+         * false if as a polygon. See the class description for details.
+         */
         virtual bool getSmooth() const {return smooth;}
+
+        /**
+         * Sets the flag that determines whether a polygon or a smooth closed
+         * curve should be drawn. See the class description for details on how
+         * the points define the curve in the smoothed case.
+         */
         virtual void setSmooth(bool smooth);
+        //@}
+
+        /** @name Styling */
+        //@{
+        /**
+         * Returns the join style line segments will be connected with.
+         */
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
+
+        /**
+         * Sets the join style line segments will be connected with.
+         * The default join style is miter.
+         */
         virtual void setJoinStyle(JoinStyle joinStyle);
+
+        /**
+         * Returns the fill rule of the polygon. This attribute is only
+         * important with filled, self-intersecting polygons. The
+         * interpretation of the fill rule is consistent with its SVG
+         * definition.
+         */
         virtual FillRule getFillRule() const {return fillRule;}
+
+        /**
+         * Sets the fill rule of the polygon. This attribute is only important
+         * with filled, self-intersecting polygons.  The interpretation of
+         * the fill rule is consistent with its SVG definition.
+         *
+         * The default fill rule is evenodd.
+         */
         virtual void setFillRule(FillRule fillRule);
         //@}
 };
@@ -1329,26 +1862,26 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
 class SIM_API cPathFigure : public cAbstractShapeFigure
 {
     public:
-        struct PathItem { char code; };
-        struct MoveTo : PathItem { double x; double y; };  // M
-        struct MoveRel : PathItem { double dx; double dy; };  // m
-        struct LineTo : PathItem { double x; double y; };  // L
-        struct LineRel : PathItem { double dx; double dy; };  // l
-        struct HorizontalLineTo : PathItem { double x; };  // H
-        struct HorizontalLineRel : PathItem { double dx; };  // h
-        struct VerticalLineTo : PathItem { double y; };  // V
-        struct VerticalLineRel : PathItem { double dy; };  // v
-        struct ArcTo : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double x; double y; }; // A
-        struct ArcRel : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double dx; double dy; }; // a
-        struct CurveTo : PathItem { double x1; double y1; double x; double y; }; // Q
-        struct CurveRel : PathItem { double dx1; double dy1; double dx; double dy; }; // q
-        struct SmoothCurveTo : PathItem { double x; double y; }; // T
-        struct SmoothCurveRel : PathItem { double dx; double dy; }; // t
-        struct CubicBezierCurveTo : PathItem { double x1; double y1; double x2; double y2; double x; double y; }; // C
-        struct CubicBezierCurveRel : PathItem { double dx1; double dy1; double dx2; double dy2; double dx; double dy; }; // c
-        struct SmoothCubicBezierCurveTo : PathItem { double x2; double y2; double x; double y; }; // S
-        struct SmoothCubicBezierCurveRel : PathItem { double dx2; double dy2; double dx; double dy; }; // s
-        struct ClosePath : PathItem { }; // Z
+        struct PathItem { char code; }; ///< Represents an item in a cPathFigure path
+        struct MoveTo : PathItem { double x; double y; };  ///< Represents the "M" path command with parameters
+        struct MoveRel : PathItem { double dx; double dy; };  ///< Represents the "m" path command with parameters
+        struct LineTo : PathItem { double x; double y; };  ///< Represents the "L" path command with parameters
+        struct LineRel : PathItem { double dx; double dy; };  ///< Represents the "l" path command with parameters
+        struct HorizontalLineTo : PathItem { double x; };  ///< Represents the "H" path command with parameters
+        struct HorizontalLineRel : PathItem { double dx; };  ///< Represents the "h" path command with parameters
+        struct VerticalLineTo : PathItem { double y; };  ///< Represents the "V" path command with parameters
+        struct VerticalLineRel : PathItem { double dy; };  ///< Represents the "v" path command with parameters
+        struct ArcTo : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double x; double y; }; ///< Represents the "A" path command with parameters
+        struct ArcRel : PathItem { double rx; double ry; double phi; bool largeArc; bool sweep; double dx; double dy; }; ///< Represents the "a" path command with parameters
+        struct CurveTo : PathItem { double x1; double y1; double x; double y; }; ///< Represents the "Q" path command with parameters
+        struct CurveRel : PathItem { double dx1; double dy1; double dx; double dy; }; ///< Represents the "q" path command with parameters
+        struct SmoothCurveTo : PathItem { double x; double y; }; ///< Represents the "T" path command with parameters
+        struct SmoothCurveRel : PathItem { double dx; double dy; }; ///< Represents the "t" path command with parameters
+        struct CubicBezierCurveTo : PathItem { double x1; double y1; double x2; double y2; double x; double y; }; ///< Represents the "C" path command with parameters
+        struct CubicBezierCurveRel : PathItem { double dx1; double dy1; double dx2; double dy2; double dx; double dy; }; ///< Represents the "c" path command with parameters
+        struct SmoothCubicBezierCurveTo : PathItem { double x2; double y2; double x; double y; }; ///< Represents the "S" path command with parameters
+        struct SmoothCubicBezierCurveRel : PathItem { double dx2; double dy2; double dx; double dy; }; ///< Represents the "s" path command with parameters
+        struct ClosePath : PathItem { }; ///< Represents the "Z" path command
 
     private:
         std::vector<PathItem*> path;
@@ -1386,43 +1919,283 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         virtual const char *getRendererClassName() const override {return "PathFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Styling */
         //@{
+        /**
+         * Returns the join style line segments will be connected with.
+         */
         virtual JoinStyle getJoinStyle() const {return joinStyle;}
+
+        /**
+         * Sets the join style line segments will be connected with.
+         * The default join style is miter.
+         */
         virtual void setJoinStyle(JoinStyle joinStyle);
+
+        /**
+         * Returns the cap style for the figure's line.
+         */
         virtual CapStyle getCapStyle() const {return capStyle;}
+
+        /**
+         * Sets the cap style for the figure's line. The default cap style
+         * is butt.
+         */
         virtual void setCapStyle(CapStyle capStyle);
+
+        /**
+         * Returns the fill rule of the path. This attribute is only important
+         * with closed, filled, self-intersecting paths (and those that contain
+         * such parts). The interpretation of the fill rule is consistent
+         * with its SVG definition.
+         */
         virtual FillRule getFillRule() const {return fillRule;}
+
+        /**
+         * Sets the fill rule of the path. This attribute is only important
+         * with closed, filled, self-intersecting paths (and those that contain
+         * such parts). The interpretation of the fill rule is consistent
+         * with its SVG definition.
+         *
+         * The default fill rule is evenodd.
+         */
         virtual void setFillRule(FillRule fillRule);
+        //@}
+
+        /** @name Geometry */
+        //@{
         virtual const Point& getOffset() const {return offset;}
         virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange(); fireTransformChange();}
         //@}
 
         /** @name Path manipulation */
         //@{
+        /**
+         * Returns the path as a string.
+         */
         virtual const char *getPath() const;
+
+        /**
+         * Sets the path from a string. It will be parsed, made available
+         * via the getNumPathItems(), getPathItem() methods, and may be
+         * further modified with the "add" methods.
+         */
         virtual void setPath(const char *path);
+
+        /**
+         * Returns the number of path items.
+         */
         virtual int getNumPathItems() const {return path.size();}
+
+        /**
+         * Returns the kth path item. The returned item may be cast to the
+         * appropriate subtype (MoveTo, MoveRel, etc.) after examining
+         * its <tt>code</tt> field.
+         */
         virtual const PathItem *getPathItem(int k) const {return path[k];}
+
+        /**
+         * Clears the path by discarding its path items.
+         */
         virtual void clearPath();
+
+        /**
+         * Appends a MoveTo item to the path. It will move the "pen" to (x,y),
+         * and begin a new subpath. Paths should begin with a MoveTo.
+         *
+         * SVG equivalent: "M <x> <y>"
+         */
         virtual void addMoveTo(double x, double y);  // M x y
+
+        /**
+         * Appends a MoveRel item to the path. It will move the "pen" from
+         * the current point (lastx,lasty) to (lastx+dx,lasty+dy), and begin
+         * a new subpath.
+         *
+         * SVG equivalent: "m <dx> <dy>"
+         */
         virtual void addMoveRel(double dx, double dy);  // m dx dy
+
+        /**
+         * Appends a LineTo item to the path. It will draw a line from the last
+         * point to (x,y).
+         *
+         * SVG equivalent: "L <x> <y>"
+         */
         virtual void addLineTo(double x, double y);  // L x y
+
+        /**
+         * Appends a LineRel item to the path. It will draw a line
+         * from the current point (lastx, lasty) to (lastx+dx, lasty+dy).
+         *
+         * SVG equivalent: "l <dx> <dy>"
+         */
         virtual void addLineRel(double dx, double dy);  // l dx dy
+
+        /**
+         * Appends a HorizontalLineTo item to the path. It will draw a line
+         * from the current point (lastx, lasty) to (x, lasty).
+         *
+         * SVG equivalent: "H <x>"
+         */
         virtual void addHorizontalLineTo(double x);  // H x
+
+        /**
+         * Appends a HorizontalLineRel item to the path. It will draw a line
+         * from the current point (lastx, lasty) to (lastx+dx, lasty).
+         *
+         * SVG equivalent: "h <dx>"
+         */
         virtual void addHorizontalLineRel(double dx);  // h dx
+
+        /**
+         * Appends a VerticalLineTo item to the path. It will draw a line
+         * from the current point (lastx, lasty) to the (lastx, y) point.
+         *
+         * SVG equivalent: "V <y>"
+         */
         virtual void addVerticalLineTo(double y);  // V y
+
+        /**
+         * Appends a VerticalLineRel item to the path. It will draw a line
+         * from the current point (lastx, lasty) to (lastx, lasty+dy).
+         *
+         * SVG equivalent: "v <dy>"
+         */
         virtual void addVerticalLineRel(double dy);  // v dy
+
+        /**
+         * Appends an ArcTo item to the path. It will draw an arc from the last
+         * point to the (x,y) point. The size and orientation of the ellipse
+         * are defined by two radii (rx, ry) and a phi rotation angle. The
+         * center of the ellipse is calculated automatically to satisfy the
+         * constraints imposed by the other parameters. The largeArc and sweep
+         * flags determine which of the four possible arcs are chosen. If
+         * largeArc=true, then one of the larger (greater than 180 degrees)
+         * arcs are chosen, otherwise one of the the smaller ones. If
+         * sweep=true, the arc will be drawn in the "positive-angle" direction,
+         * otherwise in the negative-angle direction.
+         *
+         * SVG equivalent: "A <rx> <ry> <phi> <largeArc> <sweep> <x> <y>"
+         */
         virtual void addArcTo(double rx, double ry, double phi, bool largeArc, bool sweep, double x, double y); // A rx ry phi largeArc sweep x y
+
+        /**
+         * Appends an ArcRel item to the path. It will draw an arc from the last
+         * point (lastx, lasty) to (lastx+dx, lasty+dy). Just as with
+         * addArcTo(), the size and orientation of the ellipse are defined
+         * by two radii (rx, ry) and a phi rotation angle. The center of the
+         * ellipse is calculated automatically to satisfy the constraints
+         * imposed by the other parameters. The largeArc and sweep flags
+         * determine which of the four possible arcs are chosen. If
+         * largeArc=true, then one of the larger (greater than 180 degrees)
+         * arcs are chosen, otherwise one of the the smaller ones. If
+         * sweep=true, the arc will be drawn in the "positive-angle" direction,
+         * otherwise in the negative-angle direction.
+         *
+         * SVG equivalent: "a <rx> <ry> <phi> <largeArc> <sweep> <dx> <dy>"
+         */
         virtual void addArcRel(double rx, double ry, double phi, bool largeArc, bool sweep, double dx, double dy); // a rx ry phi largeArc sweep dx dy
+
+        /**
+         * Appends a CurveTo item to the path. It will draw a quadratic Bezier curve
+         * from the current point to (x,y) using (x1,y1) as the control point.
+         *
+         * SVG equivalent: "Q <x1> <y1> <x> <y>"
+         */
         virtual void addCurveTo(double x1, double y1, double x, double y); // Q x1 y1 x y
+
+        /**
+         * Appends a CurveRel item to the path. It will draw a quadratic Bezier curve
+         * from the current point (lastx, lasty) to (lastx+dx, lasty+dy) using
+         * (lastx+dx1, lasty+dy1) as the control point.
+         *
+         * SVG equivalent: "q <dx1> <dy1> <dx> <dy>"
+         */
         virtual void addCurveRel(double dx1, double dy1, double dx, double dy); // q dx1 dy1 dx dy
+
+        /**
+         * Appends a SmoothCurveTo item to the path. It will draw a quadratic
+         * Bezier curve from the current point to (x,y). The control point is
+         * assumed to be the reflection of the control point on the previous
+         * command relative to the current point. (If there is no previous
+         * command or if the previous command was not a quadratic Bezier curve
+         * command such as Q, q, T or t, assume the control point is coincident
+         * with the current point.)
+         *
+         * SVG equivalent: "T <x> <y>"
+         */
         virtual void addSmoothCurveTo(double x, double y); // T x y
+
+        /**
+         * Appends a SmoothCurveRel item to the path. It will draw a quadratic
+         * Bezier curve from the current point (lastx, lasty) to (last+dx, lasty+dy).
+         * The control point is assumed to be the reflection of the control
+         * point on the previous command relative to the current point.
+         * (If there is no previous command or if the previous command was
+         * not a quadratic Bezier curve command such as Q, q, T or t, assume
+         * the control point is coincident with the current point.)
+         *
+         * SVG equivalent: "t <dx> <dy>"
+         */
         virtual void addSmoothCurveRel(double dx, double dy); // t dx dy
+
+        /**
+         * Appends a CubicBezierCurveTo item to the path. It will draw a cubic
+         * Bezier curve from the current point to (x,y) using (x1,y1) as the
+         * control point at the beginning of the curve and (x2,y2) as the
+         * control point at the end of the curve.
+         *
+         * SVG equivalent: "C <x1> <y1> <x2> <y2> <x> <y>"
+         */
         virtual void addCubicBezierCurveTo(double x1, double y1, double x2, double y2, double x, double y); // C x1 y1 x2 y2 x y
+
+        /**
+         * Appends a CubicBezierCurveRel item to the path. It will draw a cubic
+         * Bezier curve from the current point (lastx, lasty) to (lastx+dx, lasty+dy)
+         * using (lastx+dx1, lasty+dy1) as the control point at the beginning
+         * of the curve and (lastx+dx2, lasty+dy2) as the control point at the
+         * end of the curve.
+         *
+         * SVG equivalent: "c <dx1> <dy1> <dx2> <dy2> <dx> <dy>"
+         */
         virtual void addCubicBezierCurveRel(double dx1, double dy1, double dx2, double dy2, double dx, double dy); // c dx1 dy1 dx2 dy2 dx dy
+
+        /**
+         * Appends a SmoothCubicBezierCurveTo item to the path. It will draw
+         * a cubic Bezier curve from the current point to (x,y).
+         * The first control point is assumed to be the reflection of the
+         * second control point on the previous command relative to the last
+         * point. (If there is no previous command or if the previous command was
+         * not a cubic Bezier command such as C, c, S or s, assume the first
+         * control point is coincident with the current point.) (x2,y2) is the
+         * second control point (i.e., the control point at the end of the curve).
+         *
+         * SVG equivalent: "S <x2> <y2> <x> <y>"
+         */
         virtual void addSmoothCubicBezierCurveTo(double x2, double y2, double x, double y); // S x2 y2 x y
+
+        /**
+         * Appends a SmoothCubicBezierCurveRel item to the path. It will draw
+         * a cubic Bezier curve from the current point (lastx, lasty) to (lastx+dx,
+         * lasty+dy). The first control point is assumed to be the reflection
+         * of the second control point on the previous command relative to the last
+         * point. (If there is no previous command or if the previous command was
+         * not a cubic Bezier command such as C, c, S or s, assume the first
+         * control point is coincident with the current point.) (lastx+dx2, lasty+dy2)
+         * is the second control point (i.e., the control point at the end of the curve).
+         *
+         * SVG equivalent: "s <dx2> <dy2> <dx> <dy>"
+         */
         virtual void addSmoothCubicBezierCurveRel(double dx2, double dy2, double dx, double dy); // s dx2 dy2 dx dy
+
+        /**
+         * Appends a ClosePath item to the path. It will close the current subpath
+         * by drawing a straight line from the current point to current subpath's
+         * initial point.
+         *
+         * SVG equivalent: "Z" or "z"
+         */
         virtual void addClosePath(); // Z
         //@}
 };
@@ -1477,23 +2250,118 @@ class SIM_API cAbstractTextFigure : public cFigure
         virtual void moveLocal(double dx, double dy) override;
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the position of the text. The position and the anchoring
+         * mode jointly determine the placement of the text item; see the
+         * class description for details.
+         */
         virtual const Point& getPosition() const  {return position;}
-        virtual void setPosition(const Point& position);
-        virtual Anchor getAnchor() const  {return anchor;}
-        virtual void setAnchor(Anchor anchor);
-        virtual Rectangle getBounds() const;
-        virtual const Color& getColor() const  {return color;}
-        virtual void setColor(const Color& color);
-        virtual double getOpacity() const  {return opacity;}
-        virtual void setOpacity(double opacity);
-        virtual bool getHalo() const  {return halo;}
-        virtual void setHalo(bool enabled); // note: in Qtenv, halo may be slow to render for large-sized "text" figures (but OK for "label" figures)
 
+        /**
+         * Sets the position of the text. The position and the anchoring
+         * mode jointly determine the placement of the text item; see the
+         * class description for details.
+         */
+        virtual void setPosition(const Point& position);
+
+        /**
+         * Returns the anchoring mode of the text. The position and the
+         * anchoring mode jointly determine the placement of the text item;
+         * see the class description for details.
+         */
+        virtual Anchor getAnchor() const  {return anchor;}
+
+        /**
+         * Sets the anchoring mode of the text. The position and the anchoring
+         * mode jointly determine the placement of the text item; see the
+         * class description for details.
+         */
+        virtual void setAnchor(Anchor anchor);
+
+        /**
+         * Returns the bounding box of the text figure.
+         *
+         * Caveat: Note that the figure itself only has a position and an anchor
+         * available for computing the bounding box, size (and for some cases
+         * ascent height) need to be supplied by the user interface of the
+         * simulation (cEnvir). The result depends on the details of font
+         * rendering and other factors, so the returned numbers and their
+         * accuracy may vary across user interfaces (Qtenv vs. Tkenv), operating
+         * systems or even installations. Cmdenv and other non-GUI environments
+         * may return completely made-up (but not entirely unrealistic) numbers.
+         *
+         * @see cEnvir::getTextExtent()
+         */
+        virtual Rectangle getBounds() const;
+        //@}
+
+        /** @name Styling */
+        //@{
+        /**
+         * Returns the text color.
+         */
+        virtual const Color& getColor() const  {return color;}
+
+        /**
+         * Sets the text color. The default color is black.
+         */
+        virtual void setColor(const Color& color);
+
+        /**
+         * Returns the opacity of the figure, a number in the [0,1] interval.
+         */
+        virtual double getOpacity() const  {return opacity;}
+
+        /**
+         * Sets the line opacity of the figure. The argument must be a number
+         * in the [0,1] interval. The default opacity is 1.0.
+         */
+        virtual void setOpacity(double opacity);
+
+        /**
+         * Returns true if a "halo" is displayed around the text.
+         */
+        virtual bool getHalo() const  {return halo;}
+
+        /**
+         * Sets the flag that controls whether a partially transparent "halo"
+         * should be displayed around the text. The halo improves the
+         * readability of the text when it is displayed over a background
+         * that has similar color as the text, or when it overlaps with other
+         * text items. The default setting is false (no halo).
+         *
+         * Note: in Qtenv, halo may be slow to render for text figures
+         * (cTextFigure) under some circumstances. There is no such penalty
+         * for label figures (cLabelFigure).
+         */
+        virtual void setHalo(bool enabled);
+
+        /**
+         * Returns the font used for the figure.
+         */
         virtual const Font& getFont() const  {return font;}
+
+        /**
+         * Sets the font to be used for the figure. The default font has no
+         * specific typeface or size set, allowing the UI to use its preferred
+         * font.
+         */
         virtual void setFont(Font font);
+        //@}
+
+        /** @name Input */
+        //@{
+        /**
+         * Returns the text to be displayed.
+         */
         virtual const char *getText() const  {return text.c_str();}
+
+        /**
+         * Sets the text to be displayed. The text may contain newline and tab
+         * characters ("\n", "\t") for formatting.
+         */
         virtual void setText(const char* text);
         //@}
 };
@@ -1574,7 +2442,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
  * Images may be rendered as partially transparent, which is controlled
  * by the opacity property, a [0,1] real number. (The rendering process
  * will combine this property with the transparency information contained
- * within the image, i.e. the alpha channel.)
+ * in the image, i.e. the alpha channel.)
  *
  * @ingroup Canvas
  */
@@ -1611,25 +2479,139 @@ class SIM_API cAbstractImageFigure : public cFigure
         virtual void moveLocal(double dx, double dy) override;
         //@}
 
-        /** @name Figure attributes */
+        /** @name Geometry */
         //@{
+        /**
+         * Returns the position of the image. The position and the anchoring
+         * mode jointly determine the placement of the image; see the class
+         * description for details.
+         */
         virtual const Point& getPosition() const  {return position;}
+
+        /**
+         * Sets the position of the image. The position and the anchoring
+         * mode jointly determine the placement of the image; see the
+         * class description for details.
+         */
         virtual void setPosition(const Point& position);
+
+        /**
+         * Returns the anchoring mode of the image. The position and the
+         * anchoring mode jointly determine the placement of the image;
+         * see the class description for details.
+         */
         virtual Anchor getAnchor() const  {return anchor;}
+
+        /**
+         * Sets the anchoring mode of the image. The position and the
+         * anchoring mode jointly determine the placement of the image;
+         * see the class description for details.
+         */
         virtual void setAnchor(Anchor anchor);
+
+        /**
+         * Returns zero if the image is displayed with its "natural" width,
+         * or the width (a positive number) if it is scaled.
+         */
         virtual double getWidth() const  {return width;}
+
+        /**
+         * Sets the width of the image figure. Use this method if you want
+         * to display the image at a size different from its "natural" size.
+         * To clear this setting, specify 0 as parameter. The default value
+         * is 0 (natural width).
+         */
         virtual void setWidth(double width);
+
+        /**
+         * Returns zero if the image is displayed with its "natural" height,
+         * or the height (a positive number) if it is scaled.
+         */
         virtual double getHeight() const  {return height;}
+
+        /**
+         * Sets the height of the image figure. Use this method if you want
+         * to display the image at a size different from its "natural" size.
+         * To clear this setting, specify 0 as parameter. The default value
+         * is 0 (natural height).
+         */
         virtual void setHeight(double height); // zero means "unset"
+
+        /**
+         * Sets the image figure's width and height together. Delegates to
+         * setWidth() and setHeight().
+         */
         virtual void setSize(double width, double height) {setWidth(width); setHeight(height);}
+
+        /**
+         * Returns the image's bounds in the current coordinate system.
+         *
+         * Caveat: for cImageFigure/cIconFigure, when no explicit size is
+         * specified for the image using setWidth()/setHeight() and the
+         * simulation is running under Cmdenv or another non-GUI environment,
+         * the image size used for the bounds computation may be a guess or
+         * a made-up size, as Cmdenv does not actually load the images files.
+         *
+         * @see cEnvir::getImageSize().
+         */
         virtual Rectangle getBounds() const;
+        //@}
+
+        /** @name Styling */
+        //@{
+        /**
+         * Returns the interpolation mode for the image. The interpolation mode
+         * determines how the image is scaled to the size it is rendered with
+         * on the screen.
+         */
         virtual Interpolation getInterpolation() const {return interpolation;}
+
+        /**
+         * Sets the interpolation mode for the image. The interpolation mode
+         * determines how the image is scaled to the size it is rendered with
+         * on the screen. The default interpolation mode is "fast".
+         */
         virtual void setInterpolation(Interpolation interpolation);
+
+        /**
+         * Returns the opacity of the figure.
+         */
         virtual double getOpacity() const  {return opacity;}
+
+        /**
+         * Sets the opacity of the figure. The argument must be a number
+         * in the [0,1] interval. The default opacity is 1.0.
+         */
         virtual void setOpacity(double opacity);
+
+        /**
+         * Returns the tint color of the figure.
+         */
         virtual const Color& getTintColor() const  {return tintColor;}
+
+        /**
+         * Sets the tint color of the figure. The tint color and the tint
+         * amount jointly determine the colorization of the figure.
+         * The default tint color is blue.
+         *
+         * @see setTintAmount()
+         */
         virtual void setTintColor(const Color& tintColor);
+
+        /**
+         * Returns the tint amount of the figure, a number in the [0,1]
+         * interval.
+         */
         virtual double getTintAmount() const  {return tintAmount;}
+
+        /**
+         * Sets the tint amount of the figure. The argument must be a number
+         * in the [0,1] interval. The tint color and the tint amount jointly
+         * determine the colorization of the figure. The default tint amount
+         * is 0.
+         *
+         * @see setTintColor()
+         */
         virtual void setTintAmount(double tintAmount);
         //@}
 };
@@ -1670,9 +2652,41 @@ class SIM_API cImageFigure : public cAbstractImageFigure
 
         /** @name Figure attributes */
         //@{
+        /**
+         * Returns the string that identifies the image to display.
+         */
         virtual const char *getImageName() const  {return imageName.c_str();}
+
+        /**
+         * Sets the image to display. The imageName parameter must identify an
+         * image loaded from the \opp image path, in the form also used by the
+         * display string "i" tag: with subdirectory names but without filename
+         * extension. Examples: "block/queue" or "device/switch_vl".
+         */
         virtual void setImageName(const char* imageName);
+
+        /**
+         * Returns the "natural" width of the image. For raster images, this is
+         * the width of the image in pixels.
+         *
+         * Caveat: when the simulation is running under Cmdenv or another
+         * non-GUI environment, the returned width may be a guess or a made-up
+         * number, as Cmdenv does not actually load the images files.
+         *
+         * @see cAbstractImageFigure::getBounds(), cEnvir::getImageSize()
+         */
         virtual int getImageNaturalWidth() const {return getDefaultSize().x;}
+
+        /**
+         * Returns the "natural" height of the image. For raster images, this is
+         * the height of the image in pixels.
+         *
+         * Caveat: when the simulation is running under Cmdenv or another
+         * non-GUI environment, the returned height may be a guess or a made-up
+         * number, as Cmdenv does not actually load the images files.
+         *
+         * @see cAbstractImageFigure::getBounds(), cEnvir::getImageSize()
+         */
         virtual int getImageNaturalHeight() const  {return getDefaultSize().y;}
         //@}
 };
@@ -1741,22 +2755,48 @@ class SIM_API cPixmapFigure : public cAbstractImageFigure
         virtual const char *getRendererClassName() const override {return "PixmapFigureRenderer";}
         //@}
 
-        /** @name Figure attributes */
+        /** @name Pixmap manipulation */
         //@{
+        /**
+         * Returns the displayed pixmap. It must not be modified directly (e.g.
+         * after casting away the const modifier), because the GUI would not be
+         * notified about the change. Use the pixel manipulation methods of the
+         * figure class, or make a copy of the pixmap, update it, and then set it
+         * back on the figure using setPixmap().
+         */
         virtual const Pixmap& getPixmap() const {return pixmap;}
+
+        /**
+         * Sets the pixmap to be displayed. Note that this involves copying
+         * the pixmap data.
+         */
         virtual void setPixmap(const Pixmap& pixmap);
+
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual int getPixmapHeight() const {return pixmap.getHeight();}
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual int getPixmapWidth() const {return pixmap.getWidth();}
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void setPixmapSize(int width, int height, const RGBA& fill); // nondestructive, set *newly added* pixels with this color and opacity
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void setPixmapSize(int width, int height, const Color& color, double opacity);  // nondestructive, fills *newly added* pixels with this color and opacity
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void fillPixmap(const RGBA& fill);
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void fillPixmap(const Color& color, double opacity);
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual const RGBA getPixel(int x, int y) const {return pixmap.pixel(x, y);}
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void setPixel(int x, int y, const RGBA& argb);
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void setPixel(int x, int y, const Color& color, double opacity = 1.0);
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual const Color getPixelColor(int x, int y) const {return pixmap.getColor(x,y);}
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void setPixelColor(int x, int y, const Color& color);
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual double getPixelOpacity(int x, int y) const {return pixmap.getOpacity(x,y);}
+        /** Delegates to the similar method of the contained Pixmap instance. */
         virtual void setPixelOpacity(int x, int y, double opacity);
         //@}
 };
@@ -1814,37 +2854,134 @@ class SIM_API cCanvas : public cOwnedObject
 
         /** @name Canvas attributes. */
         //@{
+        /**
+         * Returns the background color of the canvas.
+         */
         virtual const cFigure::Color& getBackgroundColor() const {return backgroundColor;}
+
+        /**
+         * Sets the background color of the canvas.
+         */
         virtual void setBackgroundColor(const cFigure::Color& color) {this->backgroundColor = color;}
         //@}
 
         /** @name Managing child figures. */
         //@{
+        /**
+         * Returns the root figure of the canvas. The root figure has no visual
+         * appearance, it solely serves as a container for other figures.
+         */
         virtual cFigure *getRootFigure() const {return rootFigure;}
+
+        /**
+         * Appends the given figure to the child list of the root figure.
+         */
         virtual void addFigure(cFigure *figure) {rootFigure->addFigure(figure);}
+
+        /**
+         * Inserts the given figure into the child list of the root figure at
+         * the given position. Note that relative order in the child list
+         * only affects stacking order if the respective figures have the
+         * same Z-index.
+         */
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}
+
+        /**
+         * Deprecated due to the introduction of Z-index, use cFigure::insertAfter() instead.
+         */
         _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAfter(referenceFigure);}
+
+        /**
+         * Deprecated due to the introduction of Z-index, use cFigure::insertBefore() instead.
+         */
         _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBefore(referenceFigure);}
+
+        /**
+         * Removes the given figure from the child list of the root figure.
+         * An error is raised if the figure is not a child of the root figure.
+         */
         virtual cFigure *removeFigure(cFigure *figure) {return rootFigure->removeFigure(figure);}
+
+        /**
+         * Removes the kth figure from the child list of the root figure. An error
+         * is raised if pos is not in the range 0..getNumFigures()-1.
+         */
         virtual cFigure *removeFigure(int pos) {return rootFigure->removeFigure(pos);}
+
+        /**
+         * Finds the first figure with the given name among the children of
+         * the root figure, and returns its index. If there is no such figure,
+         * -1 is returned.
+         */
         virtual int findFigure(const char *name) const  {return rootFigure->findFigure(name);}
+
+        /**
+         * Finds the given figure among the children of the root figure, and
+         * returns its index. If it is not found, -1 is returned.
+         */
         virtual int findFigure(cFigure *figure) const  {return rootFigure->findFigure(figure);}
+
+        /**
+         * Returns true if this canvas contains any figures (apart from the
+         * root figure), and false otherwise.
+         */
         virtual bool hasFigures() const {return rootFigure->containsFigures();}
+
+        /**
+         * Returns the number of the root figure's child figures.
+         */
         virtual int getNumFigures() const {return rootFigure->getNumFigures();}
+
+        /**
+         * Returns the kth figure in the child list of the root figure. The
+         * index must be in the range 0..getNumFigures()-1. An out-of-bounds
+         * index will cause a runtime error.
+         */
         virtual cFigure *getFigure(int pos) const {return rootFigure->getFigure(pos);}
+
+        /**
+         * Returns the first child figure of the root figure with the given name,
+         * or nullptr if there is no such figure.
+         */
         virtual cFigure *getFigure(const char *name) const  {return rootFigure->getFigure(name);}
         //@}
 
         /** @name Accessing the figure tree. */
         //@{
-        virtual cFigure *getSubmodulesLayer() const; // may return nullptr (extra canvases don't have submodules)
+        /**
+         * Returns the figure that (conceptionally) contains the figures
+         * displaying the submodules and connection arrows in the compound
+         * module. It may be used for positioning figures in Z order relative
+         * to submodules.  This method returns nullptr for extra canvases that
+         * don't display submodules.
+         */
+        virtual cFigure *getSubmodulesLayer() const;
+
+        /**
+         * Returns the first figure with the given name in the figure tree of
+         * the canvas, or nullptr if there is no such figure.
+         */
         virtual cFigure *findFigureRecursively(const char *name) const {return rootFigure->findFigureRecursively(name);}
+
+        /**
+         * Returns the figure identified by the given path, a string of figure
+         * names separated by dots. See cFigure::getFigureByPath().
+         */
         virtual cFigure *getFigureByPath(const char *path) const {return rootFigure->getFigureByPath(path);}
         //@}
 
         /** @name Figure tags. */
         //@{
+        /**
+         * Returns the union of the tags used by figures in this canvas as a
+         * single space-separated string.
+         */
         virtual std::string getAllTags() const;
+
+        /**
+         * Returns the union of the tags used by figures in this canvas as a
+         * vector of strings.
+         */
         virtual std::vector<std::string> getAllTagsAsVector() const;
         //@}
 };
@@ -1853,5 +2990,4 @@ class SIM_API cCanvas : public cOwnedObject
 
 
 #endif
-
 
