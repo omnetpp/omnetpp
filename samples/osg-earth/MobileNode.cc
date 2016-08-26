@@ -97,7 +97,7 @@ void MobileNode::initialize(int stage)
             rangeStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_TO_TERRAIN;
             rangeStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
             rangeNode = new CircleNode(mapNode.get(), GeoPoint::INVALID, Linear(txRange, Units::METERS), rangeStyle);
-            locatorNode->addChild(rangeNode);
+            mapNode->getModelLayerGroup()->addChild(rangeNode);
         }
 
         // create a node containing a track showing the past trail of the model
@@ -108,7 +108,7 @@ void MobileNode::initialize(int stage)
             trailStyle.getOrCreate<AltitudeSymbol>()->technique() = AltitudeSymbol::TECHNIQUE_DRAPE;
             auto geoSRS = mapNode->getMapSRS()->getGeographicSRS();
             trailNode = new FeatureNode(mapNode.get(), new Feature(new LineString(), geoSRS));
-            locatorNode->addChild(trailNode);
+            mapNode->getModelLayerGroup()->addChild(trailNode);
         }
 
         // add the locator node to the scene
@@ -158,7 +158,8 @@ void MobileNode::handleMessage(cMessage *msg)
     // update the trail data based on the new position
     if (trailNode) {
         // store the new position to be able to create a track later
-        trail.push_back(osg::Vec3d(getLongitude(), getLatitude(), 0));
+        // adding a bit of vertical offset to avoid z-fighting
+        trail.push_back(osg::Vec3d(getLongitude(), getLatitude(), 1));
 
         // if trail is at max length, remove the oldest point to keep it at "trailLength"
         if (trail.size() > trailLength)
