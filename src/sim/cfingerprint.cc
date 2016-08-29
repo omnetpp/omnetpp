@@ -86,7 +86,8 @@ Register_PerRunConfigOption(CFGID_FINGERPRINT_RESULTS, "fingerprint-results", CF
 
 const char *cSingleFingerprintCalculator::MatchableObject::getAsString() const
 {
-    return object->getFullPath().c_str();
+    attributeValue = object->getFullPath();
+    return attributeValue.c_str();
 }
 
 const char *cSingleFingerprintCalculator::MatchableObject::getAsString(const char *attribute) const
