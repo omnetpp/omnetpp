@@ -23,8 +23,8 @@ P(canvas->addFigure(c));
 P(canvas->addFigure(e));
 P(canvas->addFigure(d,1));
 P(canvas->addFigure(a,0));
-P(canvas->addFigureBelow(b,c));
-P(canvas->addFigureAbove(f,e));
+P(b->insertBefore(c));
+P(f->insertAfter(e));
 
 EV << "\nno-ops:\n";
 P("initial");
@@ -74,8 +74,8 @@ canvas->addFigure(c) ==>  c
 canvas->addFigure(e) ==>  c e
 canvas->addFigure(d,1) ==>  c d e
 canvas->addFigure(a,0) ==>  a c d e
-canvas->addFigureBelow(b,c) ==>  a b c d e
-canvas->addFigureAbove(f,e) ==>  a b c d e f
+b->insertBefore(c) ==>  a b c d e
+f->insertAfter(e) ==>  a b c d e f
 
 no-ops:
 "initial" ==>  a b c d e f
