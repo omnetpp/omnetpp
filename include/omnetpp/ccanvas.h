@@ -336,7 +336,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual void fire(uint8_t flags);
         static Point parsePoint(cProperty *property, const char *key, int index);
         static std::vector<Point> parsePoints(cProperty *property, const char *key);
-        static Rectangle parseBounds(cProperty *property);
+        static Rectangle parseBounds(cProperty *property, const Rectangle& defaults);
         static Transform parseTransform(cProperty *property, const char *key);
         static Font parseFont(cProperty *property, const char *key);
         static void concatArrays(const char **dest, const char **first, const char **second);

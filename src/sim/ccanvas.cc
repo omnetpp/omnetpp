@@ -547,7 +547,7 @@ cFigure::Rectangle cFigure::computeBoundingBox(const Point& position, const Poin
     return Rectangle(topleft.x, topleft.y, size.x, size.y);
 }
 
-cFigure::Rectangle cFigure::parseBounds(cProperty *property)
+cFigure::Rectangle cFigure::parseBounds(cProperty *property, const Rectangle& defaults)
 {
     if (property->containsKey(PKEY_BOUNDS)) {
         if (property->containsKey(PKEY_POS) || property->containsKey(PKEY_SIZE) || property->containsKey(PKEY_ANCHOR))
@@ -562,8 +562,8 @@ cFigure::Rectangle cFigure::parseBounds(cProperty *property)
         int numCoords = property->getNumValues(PKEY_POS);
         if (numCoords != 2)
             throw cRuntimeError("%s: two coordinates expected", PKEY_POS);
-        Point p = parsePoint(property, PKEY_POS, 0);
-        Point size = parsePoint(property, PKEY_SIZE, 0);
+        Point p = property->containsKey(PKEY_POS) ? parsePoint(property, PKEY_POS, 0) : Point(defaults.x, defaults.y);
+        Point size = property->containsKey(PKEY_SIZE) ? parsePoint(property, PKEY_SIZE, 0) : Point(defaults.width, defaults.height);
         const char *anchorStr = property->getValue(PKEY_ANCHOR);
         Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
         return computeBoundingBox(p, size, size.y, anchor);
@@ -1468,8 +1468,10 @@ void cLineFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
-    setStart(parsePoint(property, PKEY_POINTS, 0));
-    setEnd(parsePoint(property, PKEY_POINTS, 2));
+    if (property->containsKey(PKEY_POINTS)) {
+        setStart(parsePoint(property, PKEY_POINTS, 0));
+        setEnd(parsePoint(property, PKEY_POINTS, 2));
+    }
 }
 
 const char **cLineFigure::getAllowedPropertyKeys() const
@@ -1536,7 +1538,7 @@ void cArcFigure::parse(cProperty *property)
 {
     cAbstractLineFigure::parse(property);
 
-    setBounds(parseBounds(property));
+    setBounds(parseBounds(property, getBounds()));
 
     const char *s;
     if ((s = property->getValue(PKEY_STARTANGLE)) != nullptr)
@@ -1631,7 +1633,8 @@ void cPolylineFigure::parse(cProperty *property)
     cAbstractLineFigure::parse(property);
 
     const char *s;
-    setPoints(parsePoints(property, PKEY_POINTS));
+    if (property->containsKey(PKEY_POINTS))
+        setPoints(parsePoints(property, PKEY_POINTS));
     if ((s = property->getValue(PKEY_SMOOTH, 0)) != nullptr)
         setSmooth(parseBool(s));
     if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != nullptr)
@@ -1878,7 +1881,7 @@ void cRectangleFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    setBounds(parseBounds(property));
+    setBounds(parseBounds(property, getBounds()));
     const char *s;
     if ((s = property->getValue(PKEY_CORNERRADIUS, 0)) != nullptr) {
         setCornerRx(opp_atof(s));
@@ -1960,7 +1963,7 @@ void cOvalFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    setBounds(parseBounds(property));
+    setBounds(parseBounds(property, getBounds()));
 }
 
 const char **cOvalFigure::getAllowedPropertyKeys() const
@@ -2019,7 +2022,7 @@ void cRingFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    setBounds(parseBounds(property));
+    setBounds(parseBounds(property, getBounds()));
     const char *s;
     if ((s = property->getValue(PKEY_INNERSIZE, 0)) != nullptr) {
         setInnerRx(opp_atof(s) / 2);
@@ -2103,7 +2106,7 @@ void cPieSliceFigure::parse(cProperty *property)
 {
     cAbstractShapeFigure::parse(property);
 
-    setBounds(parseBounds(property));
+    setBounds(parseBounds(property, getBounds()));
 
     const char *s;
     if ((s = property->getValue(PKEY_STARTANGLE)) != nullptr)
@@ -2199,7 +2202,8 @@ void cPolygonFigure::parse(cProperty *property)
     cAbstractShapeFigure::parse(property);
 
     const char *s;
-    setPoints(parsePoints(property, PKEY_POINTS));
+    if (property->containsKey(PKEY_POINTS))
+        setPoints(parsePoints(property, PKEY_POINTS));
     if ((s = property->getValue(PKEY_SMOOTH, 0)) != nullptr)
         setSmooth(parseBool(s));
     if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != nullptr)
@@ -2882,8 +2886,10 @@ void cAbstractTextFigure::parse(cProperty *property)
     cFigure::parse(property);
 
     const char *s;
-    setPosition(parsePoint(property, PKEY_POS, 0));
-    setText(opp_nulltoempty(property->getValue(PKEY_TEXT)));
+    if (property->containsKey(PKEY_POS))
+        setPosition(parsePoint(property, PKEY_POS, 0));
+    if ((s = property->getValue(PKEY_TEXT)) != nullptr)
+        setText(s);
     if ((s = property->getValue(PKEY_COLOR)) != nullptr)
         setColor(parseColor(s));
     if ((s = property->getValue(PKEY_OPACITY)) != nullptr)
@@ -3040,12 +3046,15 @@ void cAbstractImageFigure::parse(cProperty *property)
         setHeight(size.y);
     }
     else {
-        setPosition(parsePoint(property, PKEY_POS, 0));
+        if (property->containsKey(PKEY_POS))
+            setPosition(parsePoint(property, PKEY_POS, 0));
         if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
             setAnchor(parseAnchor(s));
-        Point size = parsePoint(property, PKEY_SIZE, 0);
-        setWidth(size.x);
-        setHeight(size.y);
+        if (property->containsKey(PKEY_SIZE)) {
+            Point size = parsePoint(property, PKEY_SIZE, 0);
+            setWidth(size.x);
+            setHeight(size.y);
+        }
     }
     if ((s = property->getValue(PKEY_INTERPOLATION)) != nullptr)
         setInterpolation(parseInterpolation(s));
@@ -3182,8 +3191,11 @@ void cImageFigure::copy(const cImageFigure& other)
 
 void cImageFigure::parse(cProperty *property)
 {
-    setImageName(opp_nulltoempty(property->getValue(PKEY_IMAGE)));
     cAbstractImageFigure::parse(property);
+
+    const char *s;
+    if ((s = property->getValue(PKEY_IMAGE)) != nullptr)
+        setImageName(s);
 }
 
 const char **cImageFigure::getAllowedPropertyKeys() const
