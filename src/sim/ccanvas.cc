@@ -136,6 +136,8 @@ static const char *PKEY_TINT = "tint";
 int cFigure::lastId = 0;
 cStringPool cFigure::stringPool;
 
+std::map<std::string,cObjectFactory*> cCanvas::figureTypes;
+
 #define ENSURE_RANGE01(var)  {if (var < 0 || var > 1) throw cRuntimeError(this, #var " must be in the range [0,1]");}
 #define ENSURE_NONNEGATIVE(var)  {if (var < 0) throw cRuntimeError(this, #var " cannot be negative");}
 #define ENSURE_POSITIVE(var)  {if (var <= 0) throw cRuntimeError(this, #var " cannot be negative or zero");}
@@ -3439,6 +3441,15 @@ cFigure *cCanvas::parseFigure(cProperty *property) const
     }
 }
 
+inline std::string capitalizeClassName(const std::string className)
+{
+	std::string result = className;
+	size_t pos = result.rfind("::");
+	size_t nameStart = pos==std::string::npos ? 0 : pos+2;
+	result[nameStart] = opp_toupper(result[nameStart]);
+	return result;
+}
+
 cFigure *cCanvas::createFigure(const char *type) const
 {
     cFigure *figure;
@@ -3475,19 +3486,25 @@ cFigure *cCanvas::createFigure(const char *type) const
     else if (!strcmp(type, "pixmap"))
         figure = new cPixmapFigure();
     else {
-        // find implementor class
-        cObjectFactory *factory = cObjectFactory::find(type);  // try as is
-        std::string className;
-        if (!factory) {
-            // try capitalizing and adding "Figure" (mind possibly present namespace!)
-            className = std::string(type) + "Figure";
-            int pos = className.rfind("::");
-            int nameStart = pos==std::string::npos ? 0 : pos+2;
-            className[nameStart] = opp_toupper(className[nameStart]);
-            factory = cObjectFactory::find(className.c_str());
+        std::map<std::string, cObjectFactory*>::iterator it = figureTypes.find(type);
+        cObjectFactory *factory;
+        if (it != figureTypes.end())
+            factory = it->second;
+        else {
+            std::string className1 = type;
+            std::string className2 = capitalizeClassName(className1);
+            std::string className3 = className2 + "Figure";
+
+            factory = cObjectFactory::find(className1.c_str());
+            if (!factory)
+                factory = cObjectFactory::find(className2.c_str());
+            if (!factory)
+                factory = cObjectFactory::find(className3.c_str());
+            if (!factory)
+                throw cRuntimeError("Implementation class for figure not found (tried '%s', '%s' and '%s')",
+                        className1.c_str(), className2.c_str(), className3.c_str());
+            figureTypes[type] = factory;
         }
-        if (!factory)
-            throw cRuntimeError("Implementation class for figure not found (tried '%s' and '%s')", type, className.c_str());
         cObject *obj = factory->createOne();
         figure = dynamic_cast<cFigure *>(obj);
         if (!figure)

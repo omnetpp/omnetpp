@@ -26,6 +26,7 @@ namespace omnetpp {
 class cCanvas;
 class cProperty;
 class cProperties;
+class cObjectFactory;
 
 //TODO: doc: default values as precise enum names
 //TODO: doc: @figure attributes for each figure type
@@ -2825,6 +2826,7 @@ class SIM_API cCanvas : public cOwnedObject
         cFigure::Color backgroundColor;
         cFigure *rootFigure;
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
+        static std::map<std::string,cObjectFactory*> figureTypes;
     public:
         // internal:
         virtual cFigure *parseFigure(cProperty *property) const;
