@@ -363,6 +363,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
         virtual const char **getAllowedPropertyKeys() const;
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
+        virtual void callRefreshDisplay(); // call refreshDisplay(), and recurse to its children
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
@@ -734,6 +735,12 @@ class SIM_API cFigure : public cOwnedObject
          * figures.
          */
         virtual void move(double dx, double dy);
+
+        /**
+         * TODO
+         * only local updates!
+         */
+        virtual void refreshDisplay() {}
 
         /**
          * Returns the name of the class responsible for rendering this figure.

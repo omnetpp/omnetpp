@@ -153,6 +153,8 @@ void ModuleInspector::refresh()
         redraw();
     }
     else {
+        if (canvas)
+            canvas->getRootFigure()->callRefreshDisplay();
         refreshFigures();
         redrawNextEventMarker();
         redrawMessages();
@@ -208,6 +210,9 @@ void ModuleInspector::redraw()
         CHK(Tcl_VarEval(interp, canvas, " delete all", TCL_NULL));
         return;
     }
+
+    if (cCanvas *canvas = getCanvas())
+        canvas->getRootFigure()->callRefreshDisplay();
 
     updateBackgroundColor();
 

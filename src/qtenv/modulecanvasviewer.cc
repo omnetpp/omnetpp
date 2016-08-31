@@ -939,9 +939,8 @@ void ModuleCanvasViewer::refreshConnections()
 void ModuleCanvasViewer::redraw()
 {
     clear();
-    if (object == nullptr) {
+    if (object == nullptr)
         return;
-    }
 
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
@@ -970,6 +969,9 @@ void ModuleCanvasViewer::refresh(bool updateNextEventMarker)
     cCanvas *canvas = object->getCanvasIfExists();
     if (canvas != nullptr && !canvasRenderer->hasCanvas())  // canvas was recently created
         canvasRenderer->setCanvas(canvas);
+
+    if (canvas)
+        canvas->getRootFigure()->callRefreshDisplay();
 
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);

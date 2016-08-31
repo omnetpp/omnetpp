@@ -139,6 +139,8 @@ void CanvasViewer::redraw()
     if (object == nullptr)
         return;
 
+    object->getRootFigure()->callRefreshDisplay();
+
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);
     getCanvasRenderer()->redraw(&hints);
@@ -150,6 +152,8 @@ void CanvasViewer::refresh()
         clear();
         return;
     }
+
+    object->getRootFigure()->callRefreshDisplay();
 
     FigureRenderingHints hints;
     fillFigureRenderingHints(&hints);

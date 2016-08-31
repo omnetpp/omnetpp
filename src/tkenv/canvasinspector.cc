@@ -101,6 +101,8 @@ void CanvasInspector::refresh()
         return;
     }
 
+    getCanvas()->getRootFigure()->callRefreshDisplay();
+
     updateBackgroundColor();
 
     FigureRenderingHints hints;
@@ -110,6 +112,8 @@ void CanvasInspector::refresh()
 
 void CanvasInspector::redraw()
 {
+    getCanvas()->getRootFigure()->callRefreshDisplay();
+
     updateBackgroundColor();
 
     FigureRenderingHints hints;

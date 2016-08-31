@@ -887,6 +887,13 @@ void cFigure::concatArrays(const char **dest, const char **first, const char **s
     *dest = nullptr;
 }
 
+void cFigure::callRefreshDisplay()
+{
+    refreshDisplay();
+    for (int i = 0; i < (int)children.size(); i++)
+        children[i]->callRefreshDisplay();
+}
+
 cFigure *cFigure::dupTree() const
 {
     cFigure *result = dup();
