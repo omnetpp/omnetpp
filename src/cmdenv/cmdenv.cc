@@ -225,10 +225,10 @@ void Cmdenv::doRun()
             return;
         }
 
-        // we'll return nonzero exitcode if any run was terminated with error
-        bool hadError = false;
-
+        int numRuns = 0;
+        int numErrors = 0;
         for ( ; runiterator() != -1; runiterator++) {
+            numRuns++;
             int runNumber = runiterator();
             bool networkSetupDone = false;
             bool startrunDone = false;
@@ -286,7 +286,7 @@ void Cmdenv::doRun()
                 notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
             }
             catch (std::exception& e) {
-                hadError = true;
+                numErrors++;
                 loggingEnabled = true;
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -298,7 +298,7 @@ void Cmdenv::doRun()
                     endRun();
                 }
                 catch (std::exception& e) {
-                    hadError = true;
+                    numErrors++;
                     notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
@@ -310,7 +310,7 @@ void Cmdenv::doRun()
                     getSimulation()->deleteNetwork();
                 }
                 catch (std::exception& e) {
-                    hadError = true;
+                    numErrors++;
                     notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
@@ -321,9 +321,12 @@ void Cmdenv::doRun()
                 break;
         }
 
+        if (numRuns > 1)
+            ::fprintf(fout, "\nDone %d simulation runs, %d successful, %d error%s\n", numRuns, numRuns-numErrors, numErrors, numErrors==1 ? "" : "s");
+
         ::fflush(fout);
 
-        exitCode = hadError ? 1 : sigintReceived ? 2 : 0;
+        exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
     }
 }
 
