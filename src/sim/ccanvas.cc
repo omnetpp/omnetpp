@@ -2895,25 +2895,25 @@ void cAbstractTextFigure::parse(cProperty *property)
     const char *s;
     if (property->containsKey(PKEY_POS))
         setPosition(parsePoint(property, PKEY_POS, 0));
+    if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
+        setAnchor(parseAnchor(s));
     if ((s = property->getValue(PKEY_TEXT)) != nullptr)
         setText(s);
+    if (property->containsKey(PKEY_FONT))
+        setFont(parseFont(property, PKEY_FONT));
     if ((s = property->getValue(PKEY_COLOR)) != nullptr)
         setColor(parseColor(s));
     if ((s = property->getValue(PKEY_OPACITY)) != nullptr)
         setOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_HALO)) != nullptr)
         setHalo(parseBool(s));
-    if (property->containsKey(PKEY_FONT))
-        setFont(parseFont(property, PKEY_FONT));
-    if ((s = property->getValue(PKEY_ANCHOR)) != nullptr)
-        setAnchor(parseAnchor(s));
 }
 
 const char **cAbstractTextFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, PKEY_TEXT, PKEY_COLOR, PKEY_OPACITY, PKEY_FONT, PKEY_ANCHOR, nullptr};
+        const char *localKeys[] = { PKEY_POS, PKEY_ANCHOR, PKEY_TEXT, PKEY_FONT, PKEY_COLOR, PKEY_OPACITY, PKEY_HALO, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
