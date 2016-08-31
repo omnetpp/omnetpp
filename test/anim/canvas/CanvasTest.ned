@@ -16,6 +16,8 @@ network CanvasTest
         textColor: TextColor                   { @display("p=200,150"); }
         textOpacity: TextOpacity               { @display("p=300,150"); }
         textFont: TextFont                     { @display("p=400,150"); }
+        textHalo: TextHalo                     { @display("p=500,150"); }
+        textUtf8: TextUtf8                     { @display("p=600,150"); }
 
         imageAnchor: ImageAnchor               { @display("p=100,250"); }
         imageOpacity: ImageOpacity             { @display("p=200,250"); }
