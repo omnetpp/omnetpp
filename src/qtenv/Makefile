@@ -28,6 +28,11 @@ IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS) $(O
 # disable warnings for cleaner output on MinGW/clang
 CFLAGS+=$(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
 
+# Required only on Mac OS X
+ifeq ("$(PLATFORM)", "macosx")
+LDFLAGS += -framework Carbon
+endif
+
 all: $(QTENV_IF_POSSIBLE)
 
 qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
