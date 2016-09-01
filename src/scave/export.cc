@@ -22,6 +22,7 @@
 #include <functional>
 #include "common/opp_ctype.h"
 #include "common/commonutil.h"
+#include "common/stringutil.h"
 #include "scaveutils.h"
 #include "export.h"
 
@@ -170,12 +171,19 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
 {
     DataSorter sorter(&manager);
     scalars = sorter.groupAndAlign(idlist, groupBy);
-
     // add a column for each grouping field
     if (groupBy.hasField(ResultItemField::FILE))
         header.push_back(Column("File", STRING));
     if (groupBy.hasField(ResultItemField::RUN))
         header.push_back(Column("Run", STRING));
+
+    RunList *runList = manager.getUniqueRuns(idlist);
+    StringSet *runAttrNames = manager.getUniqueRunAttributeNames(runList);
+    for (auto name : *runAttrNames)
+        header.push_back(Column((std::string)"runattr:"+name, STRING));
+    delete runAttrNames;
+    delete runList;
+
     if (groupBy.hasField(ResultItemField::MODULE))
         header.push_back(Column("Module", STRING));
     if (groupBy.hasField(ResultItemField::NAME))
@@ -259,6 +267,8 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
                 return *scalar.moduleNameRef;
             else if (c.name == "Name")
                 return *scalar.nameRef;
+            else if (opp_stringbeginswith(c.name.c_str(), "runattr:"))
+                return scalar.fileRunRef->runRef->getAttribute(opp_substringafter(c.name, ":").c_str());
         }
     }
     return "";
