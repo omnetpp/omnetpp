@@ -158,7 +158,7 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, FigureRenderingHints *hin
     uint8_t localChanges = figure->getLocalChangeFlags();
     uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
 
-    if (localChanges)
+    if (localChanges && items.count(figure))
         getRendererFor(figure)->refresh(figure, items[figure], localChanges, hints);
 
     if (subtreeChanges)
