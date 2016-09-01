@@ -1,3 +1,30 @@
+2016-08-23  Andras Varga
+
+	* MsgCppGenerator: follow sim.kernel change: info() renamed to str()
+
+2016-07-12  Andras Varga
+
+	* MsgCppGenerator: follow sim.kernel change: generate
+	getFieldDynamicTypeString() method into cClassDescriptors
+
+2016-07-18  Andras Varga
+
+	* msg grammar: remove support for old (3.x) format;
+	"properties" and "fields" are no longer keywords
+
+2016-07-12  Andras Varga
+
+	* MsgCppGenerator: some internal cleanup
+
+2016-07-12  Andras Varga
+
+	* msg files: allow generating descriptors for existing inner classes.
+	Syntax example: class cComponent::SignalData {... }
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-01  Andras Varga

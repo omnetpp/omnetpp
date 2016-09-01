@@ -1,3 +1,289 @@
+2016-08-24  Andras Varga
+
+	* cComponent: getDisplayString(): do not throw exception. The "Cannot access
+	display string yet: parameters not yet set up" exception does not seem to be
+	necessary or useful any more.
+
+2016-08-23  Andras Varga
+
+	* XML elements and XML parameters became made inspectable:
+	  - cXMLParImpl::forEachChild() visits the contained cXMLElement
+	  - cXMLElement::forEachChild() visits contained elements
+	  - sim_std.msg: better descriptor for cXMLElement
+
+2016-08-23  Andras Varga
+
+	* cISimulationLifecycleListener's destructor to deregister the
+	listener.
+
+2016-08-23  Andras Varga
+
+	* cComponentType: implemented getNedSource()
+
+2016-08-23  Andras Varga
+
+	* cPacket: getDisplayString() to fall back to the encapsulated
+	packet's display string
+
+2016-08-23  Andras Varga
+
+	* cPar: fix: unit was missing from info string (str()). This was apparent
+	in Qtenv/Tkenv inspectors, and made it difficult to edit the value.
+
+2016-08-23  Andras Varga
+
+	* cXMLElement: added str(), getXML()
+
+2016-08-23  Andras Varga
+
+	* cObject and subclasses: detailedInfo() removed. See include/ChangeLog
+	for more info.
+
+2016-08-23  Andras Varga
+
+	* cObject and subclasses: rename info() to str(). See include/ChangeLog
+	for more info.
+
+2016-08-05  Andras Varga
+
+	* cAbstractTextFigure: implemented "halo" attribute
+
+2016-08-05  Andras Varga
+
+	* cFigure: changed "childZ" parse-time attribute into "zIndex", a
+	proper field in cFigure.
+
+2016-08-22  Andras Varga
+
+	* cDensityEstBase: saveToFile() fix; bug caused cPSquare to save an
+	array of uninitialized values.
+
+2016-08-22  Andras Varga
+
+	* cStatistic and subclasses: loadFromFile() made safer:
+	- use GNU's __attribute__(format(...)) for checking freadvarsf() args
+	- opp_vsscanf(): more compliant to standard sscanf() (%lg to mean double)
+	- %g -> %lg (follow opp_vsscanf change)
+
+2016-08-22  Andras Varga
+
+	* cDensityEstBase: bugfix in loadFromFile(): freadvarsf() read an int
+	into a bool variable. Bug caused the Histograms sample to crash in the
+	2nd and subsequent runs	(when user chose "Yes" to "Load previously
+	saved data?" question) on 64-bit architectures.
+
+2016-08-22  Andras Varga
+
+	* cPSquare: use proper constant -DBL_MAX (instead of -1e50)
+
+2016-08-22  Andras Varga
+
+	* cPSquare: fix: ctor to deallocate precollectedValues[] which is unused
+	by this class.
+
+2016-08-10  Andras Varga
+
+	* cFigure: implemented tooltip and assocatedObject
+
+2016-08-02  Andras Varga
+
+	* cPixmapFigure: added support for "fillColor" @figure attribute (initial
+	fill for the pixmap)
+
+2016-08-01  Andras Varga
+
+	* cAbstractShapeFigure: fix: in @figure, lineColor=<nothing> didn't work
+	as a means of setting outlined=false
+
+2016-07-29  Andras Varga
+
+	* cFigure: fix bounding box computation for anchor modes ANCHOR_E and
+	ANCHOR_W. Affects several figure classes.
+
+2016-08-01  Andras Varga
+
+	* cProperty: implemented internal method updateWith()
+
+2016-08-05  Andras Varga
+
+	* cEvent: follow change: insertOrder needs to be eventnumber_t to prevent
+	overflow
+
+2016-08-05  Andras Varga
+
+	* cEvent: implemented comparison functions shouldPrecede() and
+	compareBySchedulingOrder()
+
+2016-08-04  Andras Varga
+
+	* cEventHeap: adjustment: insertOrder was not updated in the circbuf case
+	(but was not used either)
+
+2016-08-04  Andras Varga
+
+	* cEventHeap: implemented setUseCb(false)
+
+2016-08-04  Andras Varga
+
+	* cEventHeap: fix: events scheduled for current simulation time w/
+	negative priority were handled incorrectly
+
+2016-08-03  Andras Varga
+
+	* canvas: changed class name lookup for the @figure "type" attribute.
+	Previous code did not play well with namespaces. Now, the type name
+	is first tried "as is", second, by capitalizing it, and third, by also
+	appending "Figure". That is, a figure class named inet::FooFigure can
+	be referred to as "inet::foo", "inet::Foo" and "inet::FooFigure".
+
+2016-08-01  TÖRÖK Attila
+
+	* sim_std.msg: Figure fields grouped (added @group annotations).
+
+2016-07-29  TÖRÖK Attila
+
+	* sim_std.msg: ANCHOR_BASELINE_xxx constants were missing from the enum
+
+2016-07-21  Andras Varga
+
+	* cAbstractTextFigure,cAbstractImageFigure: implemented getBounds(),
+	using cEnvir's new getImageSize() and getTextExtent() methods.
+
+2016-07-28  Andras Varga
+
+	* cFigure: fixed font parsing in inspectors (parseFont() method)
+
+2016-07-28  Andras Varga
+
+	* StatisticsRecorder: removed cObject as private base class. This fixes
+	crash when inspecting the owner of HistogramRecorder's inner cStatitistic.
+
+	Reason for the crash: when mapping the value returned by getOwner() to
+	HistogramRecorder, the pointer value will be off (will point to the
+	cObject part instead of the start of the object).
+
+	This cannot be easily fixed, as multiple inheritance is not mapped well
+	into cClassDescriptors.
+
+	Workaround: StatisticsRecorder no longer owns the cStatitistic object
+	(but calls removeFromOwnershipTree() on it instead) so it no longer needs
+	to be a cObject.
+
+2016-07-25  Andras Varga
+
+	* cSimpleModule, cEnvir: messageSendHop(): added "discard" parameter;
+	also: moved call site to include message's last hop. This is needed
+	e.g. for Qtenv's message log view (we want to clone the msg while it
+	still exists).
+
+2016-07-25  Andras Varga
+
+	* cResultListener: added getClassName() (note: str() was added earlier)
+
+2016-07-25  Andras Varga
+
+	* cStaticFlag: isSet() renamd to isMainRunning()
+
+2016-07-22  Andras Varga
+
+	* cComponent: internal change: SignalData renamed to SignalListenerList
+
+2016-07-22  Andras Varga
+
+	* cComponent: signal mayHaveListeners() / hasListeners() reimplemented.
+
+	Use global data structure to store which signals have listeners at all,
+	anywhere. This replaces per-module int64 masks.
+
+	Rationale:
+	- if a signal has listeners in one place in a module (i.e. in one host),
+	  it is very likely to have listeners in most other places (i.e. all
+	  hosts) as well
+	- efficient for unlimited signals, not only for the first 64
+	- straightforward implementation
+	- possibly increased performance? as the "mask" argument has been reomved
+	  from fire() method; less check at each ancestor, etc.
+	- cComponent became 2*64bit = 16 bytes smaller
+
+2016-07-20  Andras Varga
+
+	* sim_std.msg: allow inspecting result recorders by adding a result[]
+	field to cComponent.
+
+2016-07-19  Andras Varga
+
+	* @statistic parser: accept $input as (preferred) synonym for $source
+
+2016-07-19  Andras Varga
+
+	* Added str() to cResultListener, and implemented it for result filters
+	and recorders
+
+2016-07-19  Andras Varga
+
+	* Result recorders and filters: receiveSignal() and other methods made
+	protected. They only need to be public in the base class.
+
+2016-07-19  Andras Varga
+
+	* sim_std.msg: allow inspecting listener lists by adding a
+	listenedSignals[] field to cComponent.
+
+2016-07-19  Andras Varga
+
+	* sim_std.msg: "properties" array in cComponent is now accessible with
+	fewer levels
+
+2016-04-19  Andras Varga
+
+	* Follow cEnvir change: remove messageSent_OBSOLETE(), a relic from
+	OMNeT++ 3.x.
+
+2016-07-13  Andras Varga
+
+	* sim_std.msg: describe result filters/recorders
+
+2016-07-13  Andras Varga
+
+	* cResultRecorderDescriptor renamed to cResultRecorderType, and
+	cResultFilterDescriptor renamed to cResultFilterType. Reason:
+	Now that cResultFilter and cResultDescriptor will be in the sim_std.msg,
+	the orignal names collide with the names of message-compiler generated
+	descriptor classes.
+
+2016-07-14  Andras Varga
+
+	* cModule: buildInside() retval changed from int to void
+
+2016-07-11  Andras Varga
+
+	* Factored out a StatisticBuilder class from EnvirBase, and moved it
+	into the sim.kernel. Details:
+	- defer configuring statistics recording to the end of buildInside() --
+	  this is needed for next item
+	- @statistic source to accept signals qualified with module path
+	- check source signals in @statistic (default: check if it's a simple
+	  module or channel; force with checkSignals key in @signal)
+	- code to use symbolic constants for property names
+
+2016-07-06  Andras Varga
+
+	* cComponentType: factored out getSignalDeclaration()
+
+2016-07-13  Andras Varga
+
+	* sim_std.msg: fix ancient bug in cTopology descriptor (LinIn/LinkOut
+	mismatch)
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
+2016-06-20  Andras Varga
+
+	* SimTime: added format(), currently as internal function for time display
+	in Qtenv/Tkenv
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-13  Andras Varga

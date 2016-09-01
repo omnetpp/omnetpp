@@ -1,3 +1,235 @@
+2016-08-04  Rudolf Hornig
+
+	* While detecting the omnetpp_root directory, check all parent
+	directories for Makefile.inc
+
+2016-08-03  Rudolf Hornig
+
+	* build: removed 32-bit linux support for the IDE
+
+2016-07-20  Rudolf Hornig
+
+	* build: The native IDE build script now creates Windows 64, Linux 64 and
+	macOS shared libraries.
+
+2016-05-23  Rudolf Hornig
+
+	* The IDE build system is now using Eclipse 4.6 and Maven/Tycho
+
+2016-05-27  Rudolf Hornig
+
+	* Removed deprecated construct + handled IllegalArgumentException when
+	invalid path is entered in the IMAGE_PATH
+
+2016-07-08  Andras Varga
+
+	* Project Features: features.h banner change, and more fixes
+
+	- fix NPE when opening Project Features dialog for a project with no
+	  features defined
+	- String getDefinesFileName() -> IFile getDefinesFile()
+
+2016-07-05  Andras Varga
+
+	* test/ide: added IDE test projects for testing the linker/compiler
+	options, include path etc. [Rudi]
+
+	Exercises the following IDE build features:
+	- multiple projects
+	- multiple makemake folders per project
+	- target types: static lib, shared lib, executable
+	- linked project (i.e. not directly under the workspace dir)
+	- project references, >2 deep
+	- project features (.oppfeatures)
+	- include folders: defined in CDT (Paths&Symbols page), by project
+	  features, and in makemake -I options
+	- defines: defined ibn CDT (Paths&Symbols page), by project features, and
+	  in makemame -D options
+	- message files, used in referenced projects
+
+	Pass criteria:
+	- project must compile, resulting executable must start
+	- content of generated makefiles is checked against a saved copy
+
+2016-07-05  Andras Varga
+
+	* ProjectFeaturesManager: warn for missing definesFile attribute
+
+2016-07-01  Andras Varga
+
+	* ProjectFeaturesManager: offer removing "WITH_TCP" etc macros from
+	CDT configuration. Now they come from header file, and only cause
+	confusion.
+
+2016-07-01  Andras Varga
+
+	* Added BuildSpecFolderRenameDetector, MsgFileRemoveDetector
+
+	They:
+	- remove _m.cc/h files when their msg is deleted
+	- make .oppbuildspec files follow folder renames
+
+2016-07-04  Andras Varga
+
+	* MetaMakemake: convert paths to relative for makemake
+
+2016-07-04  Andras Varga
+
+	* MetaMakemake: collect include path recursively; linker settings:
+	only use directly referenced projects
+
+2016-07-01  Andras Varga
+
+	* MetaMakemake: renames; add -L for referenced projects even if we
+	dont automatically link with their libs
+
+2016-07-01  Andras Varga
+
+	* MetaMakemake: better values for the FOO_PROJ=... variables
+
+2016-07-05  Andras Varga
+
+	* MetaMakemake: fix include path exported from referenced projects
+
+2016-06-29  Andras Varga
+
+	* MetaMakemake: refactor: split up addFeatureCFlagsTo() /
+	addFeatureLDFlagsTo()
+
+2016-07-01  Andras Varga
+
+	* MakemakeOptionsPanel: remember manually added -L options
+
+2016-07-05  Andras Varga
+
+	* MakemakeOptionsPanel: Compile tab: put some options under a More>>>
+	link
+
+2016-07-05  Andras Varga
+
+	* MakemakeOptionsPanel: disable useFeatureLDFlagsCheckbox if not
+	applicable
+
+2016-07-01  Andras Varga
+
+	* MakemakeOptionsPanel: don't lose manually entered options in the
+	Preview pane
+
+2016-06-30  Andras Varga
+
+	* MakemakeOptionsPanel: added note, wrap label
+
+2016-07-05  Andras Varga
+
+	* MakemakeOptionsPanel: added checkboxes for metaFeatureCFlags and
+	metaFeatureLDFlags
+
+2016-06-30  Andras Varga
+
+	* MakemakeOptionsPanel: make MakemakeOptionsDialog resizable
+
+2016-06-29  Andras Varga
+
+	* MakemakeOptionsPanel: added Include directories listbox to the
+	Compile page
+
+2016-06-30  Andras Varga
+
+	* MakemakeOptions: added "." as default include dir
+
+2016-06-29  Andras Varga
+
+	* MakemakeOptions: change order of generated options
+
+2016-06-29  Rudolf Hornig
+
+	* Build: for gmake builds removed the CONFIGNAME from the invokation
+	command line.
+
+	Make will use the automatically detected toolchain name (detected by
+	./configure). In practice this means that once a project is built from
+	the IDE, issuing a make command from the command line will not rebuild it
+	from scratch.
+
+2016-06-29  Andras Varga
+
+	* Project Features property page: validate the saved project state,
+	not the edited one
+
+2016-07-05  Andras Varga
+
+	* Project Features property page: removed "Export build tester
+	makefile" feature. We now have an opp_featuretool-based shell script
+	for the same purpose.
+
+2016-06-28  Andras Varga
+
+	* Project Features: handle defines with generated header file instead
+	of macros in the CDT project configuration. Needs definesFile="..."
+	in the root element of .oppfeatures
+
+	* ProjectFeaturesPropertyPage: display name of generated header file
+
+2016-06-28  Andras Varga
+
+	* Metamakemake: use absolute paths for -L, it will be converted
+	to relative inside the Makemake class later (in a better way than
+	makeRelativePath() can)
+
+2016-06-28  Andras Varga
+
+	* Added metaExportIncludePath, metaUseExportedIncludePaths
+
+2016-07-05  Andras Varga
+
+	* Removed deep-includes option from the IDE and opp_makemake
+
+	As it turned out, it was not all that useful (too error-prone
+	for large projects like INET where it was originally targeted)
+
+2016-06-24  Andras Varga
+
+	* IncludeFoldersCache: cache deep-include folders ONLY (based on
+	makemake options)
+
+	Don't add non-deepinclude makemake folders to the include path -- if
+	that's needed, it should be done explicitly in the Paths&Symbols page.
+
+2016-06-24  Andras Varga
+
+	* Makemake: removed Autoinclude option -- always use include folders
+	from the Path&Symbols page
+
+	It was convenient but a messy, for example the -I options in the generate
+	Makefiles did not match with the contents of the Paths&Symbols page.
+
+	Better make everything explicit -- and more predictable.
+
+2016-06-24  Andras Varga
+
+	* IncludeFoldersCache changes:
+	1. fix: skip non-omnetpp projects
+	2. rewrite to discover and maintain list of include folders, base on makemake options
+
+2016-06-28  Andras Varga
+
+	* Removed dependency cache from the IDE.
+
+	Remaining issue: MetaMakemake used to take automatic include folders from
+	DependencyCache, this no longer works
+
+2016-06-24  Andras Varga
+
+	* Fix: don't save makemake options for non-makemake folders
+
+2016-06-28  Andras Varga
+
+	* Fix long-standing MetaMakemake bug
+
+2016-06-23  Rudolf Hornig
+
+	* Makefile now uses compiler-generated dependency files.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------
@@ -18,11 +250,11 @@
 
 2013-10-15  Rudolf Hornig
 
-    Fixed the launcher not to throw error if the toolchain is clang.
+	Fixed the launcher not to throw error if the toolchain is clang.
 
 2013-10-14  Rudolf Hornig
 
-    Now using Eclipse 4.3.1 as base for the IDE
+	Now using Eclipse 4.3.1 as base for the IDE
 
 2013-09-13  Tamas Borbely
 
@@ -32,25 +264,25 @@
 	are displayed. (Folder name is hardcoded now; this will be configurable
 	in future releases).
 
-    Additional changes:
-    - Launch dialog contains a field to specify the --tkenv-image-path option;
-      by default its value is populated with the image path of the project
-      containing the working directory.
-    - Added ${opp_image_path:dir} variable substitution.
-    - Caches are invalidated if OMNETPP_IMAGE_PATH, the project dependencies, or
-      the image directories or files have changed.
+	Additional changes:
+	- Launch dialog contains a field to specify the --tkenv-image-path option;
+	  by default its value is populated with the image path of the project
+	  containing the working directory.
+	- Added ${opp_image_path:dir} variable substitution.
+	- Caches are invalidated if OMNETPP_IMAGE_PATH, the project dependencies, or
+	  the image directories or files have changed.
 
-    Also: NED palette scales images to 16x16 and 24x24. Previously the aspect
-    ratio was kept.
+	Also: NED palette scales images to 16x16 and 24x24. Previously the aspect
+	ratio was kept.
 
 2013-10-01  Andras Varga
 
-    Scave: name of 'substract' filter changed to 'subtract' (typo)
+	Scave: name of 'substract' filter changed to 'subtract' (typo)
 
 2013-09-30  Levente Meszaros
 
-    Sequence Chart: Fixed error handling when the error occurs in paint during
-    startup.
+	Sequence Chart: Fixed error handling when the error occurs in paint during
+	startup.
 
 2013-09-12  ------ omnetpp-4.3.1 released ------
 

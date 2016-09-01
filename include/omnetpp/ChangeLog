@@ -1,3 +1,192 @@
+2016-08-23  Andras Varga
+
+	* cXMLElement now subclasses from cObject
+
+2016-08-23  Andras Varga
+
+	* cISimulationLifecycleListener: destructor removes the listener
+	from cEnvir. (Has no effect is it was already deregistered.)
+
+2016-08-23  Andras Varga
+
+	* cComponentType: added getNedSource() method.
+
+2016-08-23  Andras Varga
+
+	* cPacket: getDisplayString() changed to fall back to the encapsulated
+	packet's display string
+
+2016-08-23  Andras Varga
+
+	* cXMLElement: added str() and getXML() methods. debugDump() was removed
+	(use EV << element->getXML() instead).
+
+2016-08-23  Andras Varga
+
+	* cObject and subclasses: detailedInfo() method removed.
+
+	The few detailedInfo() method with useful functionality were:
+	- cXMLElement's detailedInfo() returned quasi-XML
+	- cChannelType etc returned NED source via detailedInfo()
+	
+	The following methods are added in their place: cXMLElement::getXML(),
+	cComponentType::getNedSource().
+
+2016-08-23  Andras Varga
+
+	* cObject and subclasses: renamed info() to str().
+
+	Reason: consistency, as many existing classes use str() (figure utility
+	classes like rectangle, point, color; expression classes; etc.)
+
+	Note: some existing str()'s such as cPar and cDynamicExpression have to
+	produce formal (i.e. parseable) output
+
+2016-08-10  Andras Varga
+
+	* cSimulation: fix doxygen comment of takeNextEvent()
+
+2016-08-05  Andras Varga
+
+	* cAbstractTextFigure: added setHalo()
+
+2016-08-05  Andras Varga
+
+	* cFigure: added setZIndex(). In @figure, "zIndex" replaces "childZ" 
+	which was only used at parse time but not stored in figures afterwards.
+	
+2016-08-22  Andras Varga
+
+	* Selection of coroutine library (USE_WIN32_FIBERS/USE_POSIX_COROUTINES/
+	USE_PORTABLE_COROUTINES) moved to platdefs.h, and now can be overridden
+	from the compiler command line (-D).
+
+2016-08-10  Andras Varga
+
+	* cFigure: added setTooltip() and setAssociatedObject()
+
+	A canvas item's actual tooltip in Qtenv etc. will be determined as follows:
+	   1. Use cFigure::getTooltip() if not empty, else:
+	   2. Use tooltip of figure's associatedObject (e.g. associated module's
+	      "tt" display string tag) if not empty, else:
+	   3. Use associatedObject's default tooltip (name, class, info string)
+
+2016-08-01  Andras Varga
+
+	* cProperty: getValue(key,index) now has a default value for the key 
+	argument too.
+	
+	* cProperty: added updateWith() internal public method
+	
+	* cCanvas: parseFigure() abd createFigure() made public internal
+
+2016-08-05  Andras Varga
+
+	* cEvent: fix: insertOrder needs to be eventnumber_t to prevent
+	overflow
+
+2016-08-05  Andras Varga
+
+	* cEvent: added shouldPrecede() public, and compareBySchedulingOrder()
+	internal method.
+
+2016-08-04  Andras Varga
+
+	* cEventHeap: added setUseCb() internal method as a way to allow 
+	disabling the cb (FIFO for storing events scheduled for the current
+	simulation time with priority 0)
+
+2016-08-04  Andras Varga
+
+	* cEventHeap: fix: events scheduled for current simulation time w/
+	negative priority were handled incorrectly
+
+2016-07-21  Andras Varga
+
+	* cEnvir: added getImageSize() and getTextExtent() methods
+	
+	* cAbstractImage/cAbstractText: added getBounds() method
+	
+	* cImageFigure: added getImageNaturalWidth() / getImageNaturalHeight()
+
+2016-07-25  Andras Varga
+
+	* cEnvir: messageSendHop(): add "discard" parameter.
+
+2016-07-25  Andras Varga
+
+	* cResultListener, cResultFilter, cResultRecorder: visibility change
+	(public -> protected) of inherited processing methods.
+
+2016-07-25  Andras Varga
+
+	* cResultListener: added getClassName() and str() methods.
+
+	Rationale: it was not added to cIListener, because multiple inheritance
+	with cObject (e.g. module classes that are also listeners) would cause
+	compile errors in existing code due to method ambiguity.
+
+2016-07-25  Andras Varga
+
+	* cStaticFlag: isSet() method renamed to isMainRunning().
+
+2016-07-22  Andras Varga
+
+	* cComponent: internal struct SignalData renamed to SignalListenerList.
+
+2016-07-22  Andras Varga
+
+	* cComponent: mayHaveListeners() now has a constant cost but may return 
+	false positive, due to change implementation strategy. See sim/ChangeLog
+	for details.
+
+2016-07-19  Andras Varga
+
+	* cComponent: added internal methods to allow inspecting listener 
+	lists
+
+2016-07-12  Andras Varga
+
+	* cClassDescriptor: added getFieldDynamicTypeString() that returns
+	the dynamic type of an object.
+
+2016-04-19  Andras Varga
+
+	* cEnvir: removed messageSent_OBSOLETE(), a relic from OMNeT++ 3.x.
+
+2016-04-19  Andras Varga
+
+	* cModule: arrived() made public. Overriding arrived() makes it
+	possible to do custom processing at the destination module of
+	a send() call immediately, still within the send() call.
+
+2016-07-13  Andras Varga
+
+	* Renames: cResultRecorderDescriptor -> cResultRecorderType,
+	cResultFilterDescriptor -> cResultFilterType
+
+	Now that cResultFilter and cResultDescriptor will be in the sim_std.msg
+	file, the original names collide with the message-compiler generated
+	descriptor classes.
+
+2016-07-14  Andras Varga
+
+	* cModule::buildInside(): retval changed from int to void
+
+2016-07-11  Andras Varga
+
+	* Added cStatisticBuilder internal class, as part of the change where
+	setting up statistics recording was moved from EnvirBase	into the sim. 
+	kernel.
+
+2016-07-06  Andras Varga
+
+	* cComponentType: factored out getSignalDeclaration(), currently internal
+
+2016-06-20  Andras Varga
+
+	* SimTime: added format() method, currently as internal function
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-01  Andras Varga

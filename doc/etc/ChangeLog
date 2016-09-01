@@ -1,3 +1,13 @@
+2016-07-12  Andras Varga
+
+	* ned2.dtd: "name" attribute of "class", "struct", "message", "packet",
+	and "enum" elements changed from NMTOKEN to CDATA, to allow generating 
+	descriptors for existing inner classes.
+
+2016-04-20  Andras Varga
+
+	* ned2/ and misc/ consolidated under etc/ and _internal/old
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------
@@ -77,4 +87,3 @@
 	  so that they can hold namespace prefix
 
 2009-03-12  ------ omnetpp-4.0 released ------
-

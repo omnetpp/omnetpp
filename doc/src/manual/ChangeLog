@@ -104,42 +104,41 @@
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
-
 2003-06-15  Andras Varga
 
 	* major revision -- see history.tex for details. Changes we made
 	on a local copy of files, then checked in at once.
 
 	* see relevant parts of history.tex below, copied here on 2008-05-26:
-            Mentioned Grace and ROOT in section "Visualizing...".
-            Added section "Using STL in message classes".
-            "Design of OMNeT++" chapter revised, extended, and renamed to
-            "Customization and Embedding".
-            Added "Interpreting Cmdenv output" section to the
-            "Running the Simulation" chapter. Added section about Akaroa
-            in "Running the Simulation" chapter. Expanded section about
-            writing shell scripts to control the simulation.
-            Added background info about RNGs and warning about old RNG
-            in "Class Library" chapter;
-            revised/extended "Deriving new classes" section in same chapter.
-            Bibliography converted to Bibtex, expanded and cleaned up;
-            citations added to text.
-            "Parallel Simulation" chapter: contents removed until new PDES
-            implementation gets released.
-            Revised and reorganized NED chapter. Section about message
-            sending/receiving and other simple module related functions
-            moved to chapter "Simple Modules"; cMessage treatment from
-            "Simulation Library" merged with message subclassing chapter
-            into new chapter "Messages". Deprecated cPacket.
-            Removed sections "Simulation techniques" and
-            "Coding conventions", and their useful fragments were incorporated
-            elsewhere. Added/created sections about message transmission
-            modeling, and using global variables. Added sections explaining
-            how to implement broadcasts and retransmissions. Revised section
-            about dynamic module creation. Deprecated putaside-queue,
-            receiveNew(), receiveOn().
-            Added section "Object ownership management"; removed section
-            on "Using shared objects".
+	    Mentioned Grace and ROOT in section "Visualizing...".
+	    Added section "Using STL in message classes".
+	    "Design of OMNeT++" chapter revised, extended, and renamed to
+	    "Customization and Embedding".
+	    Added "Interpreting Cmdenv output" section to the
+	    "Running the Simulation" chapter. Added section about Akaroa
+	    in "Running the Simulation" chapter. Expanded section about
+	    writing shell scripts to control the simulation.
+	    Added background info about RNGs and warning about old RNG
+	    in "Class Library" chapter;
+	    revised/extended "Deriving new classes" section in same chapter.
+	    Bibliography converted to Bibtex, expanded and cleaned up;
+	    citations added to text.
+	    "Parallel Simulation" chapter: contents removed until new PDES
+	    implementation gets released.
+	    Revised and reorganized NED chapter. Section about message
+	    sending/receiving and other simple module related functions
+	    moved to chapter "Simple Modules"; cMessage treatment from
+	    "Simulation Library" merged with message subclassing chapter
+	    into new chapter "Messages". Deprecated cPacket.
+	    Removed sections "Simulation techniques" and
+	    "Coding conventions", and their useful fragments were incorporated
+	    elsewhere. Added/created sections about message transmission
+	    modeling, and using global variables. Added sections explaining
+	    how to implement broadcasts and retransmissions. Revised section
+	    about dynamic module creation. Deprecated putaside-queue,
+	    receiveNew(), receiveOn().
+	    Added section "Object ownership management"; removed section
+	    on "Using shared objects".
 
 2003-04-30  Andras Varga
 
@@ -148,7 +147,6 @@
 
 	* usman.tex: removed OPNET and Parsec comparisons (ch-parsec.tex,
 	 ch-opnet.tex) from the manual
-
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
@@ -189,4 +187,3 @@ Summer 2002
 2001-10-23  Andras Varga
 
 	* Updated to reflect changes since 2.1 release (see include/ChangeLog)
-

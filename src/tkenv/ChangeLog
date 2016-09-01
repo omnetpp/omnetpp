@@ -1,3 +1,38 @@
+2016-08-23  Andras Varga
+
+	* Follow sim. kernel change: info() renamed to str(), detailedInfo()
+	removed.
+
+2016-08-05  Attila Torok
+
+	* Updated Tkenv for cGroupFigure change (added GroupFigureRenderer).
+	Note: support for figure zIndex (just introduced in the sim.kernel)
+	is not implemented in Tkenv, and probably never will be, as focus
+	is shifting towards Qtenv.
+
+2016-07-21  Attila Torok
+
+	* Implemented cEnvir::getImageSize() and getTextExtent().
+
+2016-07-25  Andras Varga
+
+	* Follow cEnvir change: messageSendHop() gained "discard" parameter.
+
+2016-04-19  Andras Varga
+
+	* Changed not to rely on the now-removed cEnvir::messageSent_OBSOLETE()
+	method, a relic from OMNeT++ 3.x.
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
+2016-04-13  Andras Varga
+
+	* Fix: "Update now" button in the Express dialog did nothing e.g. in
+	the Aloha sample, because refreshDisplay() methods were not called
+	by Tkenv.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-13  Andras Varga

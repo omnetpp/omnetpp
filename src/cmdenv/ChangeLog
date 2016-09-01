@@ -1,3 +1,12 @@
+2016-07-21  Attila Torok
+
+	* Added dummy implementations for cEnvir::getImageSize() and
+	getTextExtent()
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-31  Levente Meszaros

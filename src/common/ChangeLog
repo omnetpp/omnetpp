@@ -1,3 +1,29 @@
+2016-08-23  Andras Varga
+
+	* stringutil.h: added opp_xmlQuote()
+
+2016-08-22  Andras Varga
+
+	* opp_vsscanf(): %g to mean float not double, for consistency with scanf()
+
+2016-07-15  Andras Varga
+
+	* Expression: evaluator methods made const
+
+2016-07-11  Andras Varga
+
+	* Expression: parser: allow variables with a syntax of module paths,
+	i.e. dot-separated sequence of name or name[index] segments.
+
+2016-07-07  Mihaly Palenik
+
+	* stringutil.h: added opp_format() for formatting integers with digit
+	groups.
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------

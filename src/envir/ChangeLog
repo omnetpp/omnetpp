@@ -1,3 +1,36 @@
+2016-08-23  Andras Varga
+
+	* EventlogFileManager: fix: filename was always "General-0.elog"
+
+2016-08-23  Andras Varga
+
+	* Follow sim.kernel change: renamed info() to str()
+
+2016-07-25  Andras Varga
+
+	* EnvirBase: follow sim. kernel change: messageSendHop() gained a
+	"discard" parameter
+
+2016-04-19  Andras Varga
+
+	* EnvirBase: removed messageSent_OBSOLETE(), a relic from OMNeT++ 3.x
+
+2016-07-11  Andras Varga
+
+	* EnvirBase: Factored out a StatisticBuilder class, and moved it
+	into the sim.kernel
+
+	* Further improvements in @statistic configuration, see sim/ChangeLog.
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
+2016-04-13  Andras Varga
+
+	* Speedometer: added getNumEventsSinceIntervalStart(); camelize
+	variable names
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-31  Levente Meszaros

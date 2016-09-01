@@ -89,14 +89,13 @@
 2002-02-24  Andras Varga
 
 	* opp_test.pl: To make it easier to create new test cases from
-        existing ones, removed %name from test file syntax; now test name
-        is derived from the file name. Cleaned up error handling.
-        Changed some command-line switches. Introduced {} as synonym for
-        @TESTNAME@. Improved reporting.
+	existing ones, removed %name from test file syntax; now test name
+	is derived from the file name. Cleaned up error handling.
+	Changed some command-line switches. Introduced {} as synonym for
+	@TESTNAME@. Improved reporting.
 
-        * runtest: accepts command-line args
+	* runtest: accepts command-line args
 
 2002-02-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* runtest: Create directory work if it doesn't exist.
-

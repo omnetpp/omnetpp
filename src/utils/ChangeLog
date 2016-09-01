@@ -1,13 +1,32 @@
+2016-07-05  Andras Varga
+
+	* opp_makemake: removed support for deep includes. The
+	--no-deep-includes option (used to turn off deep includes) is
+	still accepted for backward compatibility, and is a no-op.
+
+	As it turned out, deep includes is not good for large projects
+	(error-prone), and not needed for small projects. It was removed
+	from the IDE as well.
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
+2016-06-22  Rudolf Hornig
+
+	* opp_makemake changed to generate makefiles that use compiler-generated
+	dependency files
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-04  Zoltan Bojthe
 
-	featuretool: shows error when a NED package mentioned in a feature does
+	* featuretool: shows error when a NED package mentioned in a feature does
 	not have a corresponding folder (may also be caused by missing .nedfolders)
 
 2016-03-17  Zoltan Bojthe
 
-	opp_featuretool: nedfolders file is not required
+	* opp_featuretool: nedfolders file is not required
 
 2016-03-10  ------ omnetpp-5.0rc released ------
 

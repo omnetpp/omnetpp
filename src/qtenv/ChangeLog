@@ -1,3 +1,457 @@
+2016-08-24  Andras Varga
+
+	* Object inspector refinements:
+	  1. no "=" for array elements 
+	  2. fix: no empty quote pair for string arrays 
+	  3. display info string for root element
+
+2016-08-23  Andras Varga
+
+	* Follow change: info() renamed to str()
+
+2016-08-22  Attila Török
+
+	* Fixes for 'find objects' dialog, added as menu option. Inspector
+	menus renamed: context -> dropdown.
+
+2016-08-22  Attila Török
+
+	* Main ObjectInspector always follows inspected object change in
+	main ModuleInspector.
+
+2016-08-19  Attila Török
+
+	* Fixes for SubmoduleItem parsing from DisplayString (range circles,
+	position change).
+
+2016-08-08  Attila Török
+
+	* Avoid setting values unnecessarily in QSettings at every event.
+
+2016-08-03  Attila Török
+
+	* Module inspector: Not zooming when entering a submodule with double
+	click.
+
+2016-08-05  Attila Török
+
+	* Canvas: implemented setHalo() to text items
+
+2016-08-05  Andras Varga
+
+	* Canvas: implemented cFigure's "zIndex" field
+
+2016-08-03  Attila Török
+
+	* Text figures now use OutlinedTextItem for rendering.
+
+2016-08-19  Attila Török
+
+	* Disable default tooltip for cFigures (was not too useful).
+
+2016-08-22  Andras Varga
+
+	* qtenv-extra-stack increased to 80K. Somewhat tested with 
+	USE_PORTABLE_COROUTINES that can display actual stack usage 
+	in Qtenv (in module inspector), seems to be enough.
+
+2016-08-10  Attila Török
+
+	* Canvas: implemented figure tooltip and assocatedObject support
+
+	- Figure tooltip fallback chain:
+	   1. Use cFigure::getTooltip() if not empty, else:
+	   2. Use tooltip of figure's associatedObject (e.g. associated module's
+	      "tt" display string tag) if not empty, else:
+	   3. Use assciateObject's default tooltip (name, class, info string)
+
+2016-08-03  Attila Török
+
+	* Pieslice figure renderer fixed.
+
+2016-07-25  Mihály Palenik
+
+	* FilteredObjectListDialog: fix crash
+
+2016-08-01  Attila Török
+
+	* Only call refreshDisplay and performAnimations occasionally in
+	fast mode.
+
+2016-08-02  Attila Török
+
+	* Improved arc figure rendering.
+
+2016-08-02  Attila Török
+
+	* Figures have flat caps and miter joins where not customizable.
+
+2016-08-02  Attila Török
+
+	* ModuleInspector no longer crashes when the inspected object is
+	deleted.
+
+2016-08-01  Attila Török
+
+	* Content caching in TextViewer* classes.
+
+2016-08-01  Attila Török
+
+	* Log inspector: Align message info into multiple columns at tab
+	characters.
+
+2016-08-01  Attila Török
+
+	* Minor tweaks on animations and ConnectionItem.
+
+2016-08-01  Attila Török
+
+	* Restored inspectors not reopened with old object upon stepping
+	after navigation.
+
+2016-07-29  Attila Török
+
+	* Image-type figures keep their resolution when width/height is
+	specified.
+
+2016-07-29  Attila Török
+
+	* Zoom shortcuts changed: N -> minus, M -> plus.
+
+2016-07-29  Attila Török
+
+	* Correct anchoring of label and icon figures.
+
+2016-07-29  Attila Török
+
+	* ModuleInspector action hotkeys working.
+
+2016-07-21  Attila Török
+
+	* Canvas: implemented cEnvir's getImageSize() and getTextExtent() methods
+
+2016-07-20  Attila Török
+
+	* 'View in Embedded...' option in Inspector context menu.
+
+2016-07-26  Attila Török
+
+	* Object inspector: Display full path of objects if they are shown in
+	the tree not under their owner.
+
+2016-07-27  Attila Török
+
+	* Incomplete history notification in LogInspector.
+
+2016-07-27  Attila Török
+
+	* Message deletion displayed in LogInspector.
+
+2016-07-26  Attila Török
+
+	* Message deletion properly handled by Animator.
+
+2016-07-26  Attila Török
+
+	* LogBuffer: Message duplication in endSend, and on hop with
+	discard.
+
+2016-07-26  Attila Török
+
+	* Text viewer: Matching tab expansion in [un]selected text.
+
+2016-07-25  Attila Török
+
+	* LogInspector improvements in messages mode.
+
+2016-07-25  Andras Varga
+
+	* Follow change: messageSendHop(): added "discard" parameter; also: moved call
+	site to include message's last hop. Needed for Qtenv's message log view 
+	(we want to clone the msg while it still exists)
+
+2016-07-26  Attila Török
+
+	* Timeline: Tick label formatting corrected.
+
+2016-07-22  Attila Török
+
+	* Toolbar style and icon tweaks.
+
+2016-07-22  Attila Török
+
+	* refreshDisplay() before performAnimations().
+
+2016-07-20  Attila Török
+
+	* Module inspector: added module name and arrowhead visibility switches.
+
+2016-07-21  Attila Török
+
+	* Action hotkey fixes in inspectors.
+
+2016-07-20  Attila Török
+
+	* Better arrowhead size for thick lines.
+
+2016-07-21  Rudolf Hornig
+
+	* Main toolbar restored and style adjusted on Mac. (Attila)
+
+2016-07-20  Attila Török
+
+	* 'Filter Main Window Contents' action removed.
+
+2016-07-11  Attila Török
+
+	* Two-way connections drawn as two half-long lines.
+
+2016-07-15  Mihaly Palenik
+
+	* Inspector: fix toolbar's dropdown menu position
+
+2016-07-08  Mihály Palenik
+
+	* Fix closing behaviour of Find Objects dialog
+
+2016-07-20  Andras Varga
+
+	* Indentation & formatting using _scripts/reformat + manual review
+
+2016-07-19  Attila Török
+
+	* Object Inspector: Correct highlight for compound array fields.
+
+2016-07-18  Attila Török
+
+	* Object Inspector: getFieldDynamicTypeString support.
+
+2016-07-18  Attila Török
+
+	* Object selection and inspection in toplevel inspectors. This means
+	that if a cObject is clicked in any (embedded or toplevel) inspector, the
+	embedded object inspector will be set to that object. Also if any cObject
+	is double clicked in any (embedded or toplevel) inspector, it will be
+	inspected appropriately.
+
+2016-07-18  Attila Török
+
+	* Bigger connection line arrowheads.
+
+2016-07-18  Attila Török
+
+	* GenericObjectTreeModel: hasChildren optimized.
+
+2016-07-14  Attila Török
+
+	* GenericObjectTreeModel::mode is a single enum, not three bools.
+
+2016-07-14  Attila Török
+
+	* Data caching in GenericObjectTreeModel.
+
+2016-07-14  Attila Török
+
+	* Prevent status row ToolTips inheriting wrong stylesheet.
+
+2016-07-11  Attila Török
+
+	* GenericObjectInspector: Root node displays object full path.
+
+2016-07-11  Attila Török
+
+	* Module inspector: Crash fix in getSubmodRect.
+
+2016-07-11  Attila Török
+
+	* Arrowheads on figures now respect zoomLineWidth.
+
+2016-07-11  Attila Török
+
+	* Better font handling in TextViewerWidget.
+
+2016-07-08  Attila Török
+
+	* Fixed getMessageShortInfoString.
+
+2016-07-08  Attila Török
+
+	* UI font respected on inspector submenus.
+
+2016-07-08  Attila Török
+
+	* putsmsg() and confirm() use printf() before Qt init.
+
+2016-07-08  Attila Török
+
+	* Object list truncation in inspector context menus.
+
+2016-06-20  Attila Török
+
+	* Tooltips for cObjectNodes in OsgViewer.
+
+2016-07-06  Attila Török
+
+	* Main window: Toolbar and status layout tweaks.
+
+2016-07-06  Attila Török
+
+	* Log inspector: Info banners are now displayed.
+
+2016-07-06  Attila Török
+
+	* Object inspector: Nodes in flat mode are sorted alphabetically.
+
+2016-07-06  Attila Török
+
+	* Smooth scaling for submodule (decor)image
+
+2016-07-05  Attila Török
+
+	* Module inspector: Context menu with drag, added a few px threshold
+	for clicking.
+
+2016-07-05  Attila Török
+
+	* Unfilled figures can be clicked through now.
+
+2016-07-11  Attila Török
+
+	* Animator: Message deliveries fixed.
+
+2016-07-07  Attila Török
+
+	* Crash fix in Animator on message deletion.
+
+2016-07-06  Attila Török
+
+	* Animation tree pruning, shortcut for empty animations.
+
+2016-07-04  Attila Török
+
+	* Broadcast animation.
+
+2016-07-01  Attila Török
+
+	* ParallelAnimation, SequentialAnimation.
+
+2016-07-01  Attila Török
+
+	* animate* functions and PathVec stuff moved from Qtenv to Animator.
+
+2016-06-27  Attila Török
+
+	* Animation types split into separate classes.
+
+2016-04-19  Andras Varga
+
+	* Follow change: removed messageSent_OBSOLETE(), a relic from OMNeT++ 3.x
+
+2016-07-18  Attila Török
+
+	* .qtenvrc grouping cleanup, key changes, nicer font format.
+
+2016-06-29  Attila Török
+
+	* Inspector windows made persistent between runs.
+
+2016-06-29  Attila Török
+
+	* Silenced a sign-compare warning.
+
+2016-07-07  Andras Varga
+
+	* Fine-tuned simtime end event number context menu and formatting
+
+2016-07-07  Mihaly Palenik
+
+	* Added context menu to eventNumLabel
+
+2016-07-06  Mihaly Palenik
+
+	* Moved RunMode to toplevel
+
+2016-07-06  Mihaly Palenik
+
+	* Moved stopOnMsgCancel from QtenvOptions to RunUntil
+
+2016-07-06  Andras Varga
+
+	* Merged two runMode enums
+
+2016-07-05  Mihály Palenik
+
+	* Fix behaviour of exit messages
+
+2016-07-06  Andras Varga
+
+	* RunUntilDialog: store/restore msg
+
+2016-04-25  Mihaly Palenik
+
+	* FilteredObjectListDialog: store/restore geometry
+
+2016-07-06  Andras Varga
+
+	* Fix and refactoring related to config/run selection and network
+	selection dialogs
+
+2016-07-06  Andras Varga
+
+	* Added simTimeLabel context menu
+
+2016-06-23  Andras Varga
+
+	* Main window: fix "run until message"
+
+2016-06-23  Mihály Palenik
+
+	* FilteredObjectListDialog: Fix crash
+
+2016-06-23  Rudolf Hornig
+
+	Makefile now uses compiler-generated dependency files.
+
+2016-05-06  Mihaly Palenik
+
+	* Added tooltip to treeitemmodel's entry
+
+2016-05-04  Mihály Palenik
+
+	* Added tooltip to submodules in moduleinspector
+
+2016-06-20  Andras Varga
+
+	* Format time display string + add time font to preferences dialog
+
+	* Improves layouting of simTimeLabel and eventNumLabel
+
+2016-06-13  Mihaly Palenik
+
+	* Fix PathFigureRenderer
+
+2016-04-27  Mihaly Palenik
+
+	* Implemented marquee zoom for module inspector, changed double click
+	zoom
+
+2016-04-25  Mihaly Palenik
+
+	* Implemented double-click zoom-in and zoom-out in module inspector
+
+2016-04-25  Mihaly Palenik
+
+	* Changed Run Until dialog's title
+
+2016-04-25  Mihaly Palenik
+
+	* Capitalized items in "Set Log Level for ..." submenu
+
+2016-04-13  Andras Varga
+
+	* Fix: "Update now" button in Express dialog did nothing e.g.
+	in Aloha (refreshDisplay() methods were not called)
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-13  Andras Varga
@@ -167,7 +621,7 @@
 	* submoduleitem: Icons are no longer colored if the weight is an empty string.
 	* fileeditor: Changed the handling of QActions, F3 works now.
 	* Flip window layout action fixed.
-	* Implemented Qtenv::askyesno().
+	* Implemented *:askyesno().
 	* Splitter ratio now correctly saved and restored in both orientations.
 	* Fixed a few compiler warnings here and there.
 	* Increase/Decrease icon size shortcuts now work, fixed crashes when
@@ -199,7 +653,7 @@
 
 2015-04-21  Andras Varga
 
-	* Qtenv: Added defunct Tkenv code as scaffolding for the code.
+	* * Added defunct Tkenv code as scaffolding for the code.
 	(Tcl_VarEval() and other Tcl API functions have been replaced with
 	dummy functions, so the original Tkenv code compiles but does
 	nothing for the moment.)

@@ -1,3 +1,17 @@
+2016-07-28  Rudolf Hornig
+
+	* Fix for proper MinGW-w64 build.
+
+2016-07-25  Andras Varga
+
+	* Added 'discard' field to SendHopEntry in eventlogentries.txt.
+	See related cEnvir::messageSendHop() change in the simulation
+	kernel.
+
+2016-06-23  Rudolf Hornig
+
+	* The makefile now uses compiler-generated dependency files.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-06  Levente Meszaros

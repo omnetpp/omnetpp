@@ -1,3 +1,11 @@
+2016-08-23  Andras Varga
+
+	* Follow change: info() renamed to str()
+
+2016-04-19  Andras Varga
+
+	* Follow change: messageSent_OBSOLETE() removed
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-04-01  Zoltan Bojthe
