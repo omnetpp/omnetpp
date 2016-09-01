@@ -1581,6 +1581,11 @@ void cArcFigure::setBounds(const Rectangle& bounds)
     fireGeometryChange();
 }
 
+void cArcFigure::setPosition(const Point& position, Anchor anchor)
+{
+    setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
+}
+
 void cArcFigure::setStartAngle(double startAngle)
 {
     if (startAngle == this->startAngle)
@@ -1925,6 +1930,11 @@ void cRectangleFigure::setBounds(const Rectangle& bounds)
     fireGeometryChange();
 }
 
+void cRectangleFigure::setPosition(const Point& position, Anchor anchor)
+{
+    setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
+}
+
 void cRectangleFigure::setCornerRx(double cornerRx)
 {
     if (cornerRx == this->cornerRx)
@@ -2000,6 +2010,11 @@ void cOvalFigure::setBounds(const Rectangle& bounds)
     fireGeometryChange();
 }
 
+void cOvalFigure::setPosition(const Point& position, Anchor anchor)
+{
+    setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
+}
+
 //----
 
 void cRingFigure::copy(const cRingFigure& other)
@@ -2064,6 +2079,11 @@ void cRingFigure::setBounds(const Rectangle& bounds)
     ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
+}
+
+void cRingFigure::setPosition(const Point& position, Anchor anchor)
+{
+    setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
 }
 
 void cRingFigure::setInnerRx(double innerRx)
@@ -2147,6 +2167,11 @@ void cPieSliceFigure::setBounds(const Rectangle& bounds)
     ENSURE_NONNEGATIVE(bounds.height);
     this->bounds = bounds;
     fireGeometryChange();
+}
+
+void cPieSliceFigure::setPosition(const Point& position, Anchor anchor)
+{
+    setBounds(computeBoundingBox(position, Point(bounds.width, bounds.height), bounds.height, anchor));
 }
 
 void cPieSliceFigure::setStartAngle(double startAngle)

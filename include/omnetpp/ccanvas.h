@@ -1114,6 +1114,12 @@ class SIM_API cArcFigure : public cAbstractLineFigure
         virtual void setBounds(const Rectangle& bounds);
 
         /**
+         * Utility function. Moves the bounding box so that its point
+         * denoted by anchor will be at the given position.
+         */
+        virtual void setPosition(const Point& position, Anchor anchor);
+
+        /**
          * Returns the start angle of the arc in radians. See the class
          * documentation for details on how the arc is drawn.
          */
@@ -1471,6 +1477,12 @@ class SIM_API cRectangleFigure : public cAbstractShapeFigure
         virtual void setBounds(const Rectangle& bounds);
 
         /**
+         * Utility function. Moves the bounding box so that its point
+         * denoted by anchor will be at the given position.
+         */
+        virtual void setPosition(const Point& position, Anchor anchor);
+
+        /**
          * Sets both the horizontal and vertical (x and y) corner radii to
          * the same value.
          */
@@ -1545,6 +1557,12 @@ class SIM_API cOvalFigure : public cAbstractShapeFigure
          * Sets the rectangle that defines the figure's geometry.
          */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Utility function. Moves the bounding box so that its point
+         * denoted by anchor will be at the given position.
+         */
+        virtual void setPosition(const Point& position, Anchor anchor);
         //@}
 };
 
@@ -1595,6 +1613,12 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
          * Sets the rectangle that defines the ring's outer circle or ellipse.
          */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Utility function. Moves the bounding box so that its point
+         * denoted by anchor will be at the given position.
+         */
+        virtual void setPosition(const Point& position, Anchor anchor);
 
         /**
          * Sets the ring's inner curve to a circle with the given radius.
@@ -1691,6 +1715,12 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
          * the pie slice is part of.
          */
         virtual void setBounds(const Rectangle& bounds);
+
+        /**
+         * Utility function. Moves the bounding box so that its point
+         * denoted by anchor will be at the given position.
+         */
+        virtual void setPosition(const Point& position, Anchor anchor);
 
         /**
          * Returns the start angle of the pie slice in radians. See the class
