@@ -57,11 +57,9 @@
 #include "omnetpp/simtime.h"
 #include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "sim/resultfilters.h"
+#include "omnetpp/cstatisticbuilder.h"
 #include "args.h"
 #include "envirbase.h"
-
-#include "../include/omnetpp/cstatisticbuilder.h"
 #include "envirutils.h"
 #include "appreg.h"
 #include "cxmldoccache.h"

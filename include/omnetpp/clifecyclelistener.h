@@ -164,7 +164,7 @@ enum SimulationLifecycleEventType
  * vector/scalar managers, parallel simulation algorithms and so on. The
  * lifecycle of a such plug-in class is managed by \opp, so one can use
  * their constructor to add the listener to cEnvir, and the destructor
- * to remove it.
+ * to remove it. (The latter is done automatically.)
  *
  * Notifications always refer to the active simulation (see
  * cSimulation::getActiveSimulation()).
@@ -186,6 +186,9 @@ enum SimulationLifecycleEventType
 class SIM_API cISimulationLifecycleListener
 {
   public:
+    /**
+     * The destructor removes the listener from cEnvir if it is still added.
+     */
     virtual ~cISimulationLifecycleListener();
 
     /**
