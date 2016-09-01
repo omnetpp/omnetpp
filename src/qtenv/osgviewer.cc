@@ -35,6 +35,7 @@
 #include <osgUtil/Optimizer>
 #include <osg/Depth>
 #include <osg/DeleteHandler>
+#include <osg/Version>
 #include "omnetpp/osgutil.h"
 #include "inspectorutil.h"
 #include "osgviewer.h"
@@ -158,12 +159,11 @@ public:
 
 //  --------  WindowingSystemInterface  --------
 
-// pretty much copied from osgQt::QtWindowingSystem
 struct WindowingSystemInterface : public osg::GraphicsContext::WindowingSystemInterface {
 
     static WindowingSystemInterface *getInterface() {
-        static WindowingSystemInterface *interface = new WindowingSystemInterface;
-        return interface;
+        static WindowingSystemInterface *intf = new WindowingSystemInterface;
+        return intf;
     }
 
     unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier&) override {
@@ -242,7 +242,11 @@ osg::ref_ptr<osgViewer::CompositeViewer> OsgViewer::viewer = nullptr;
 OsgViewer::OsgViewer(QWidget *parent): GLWidget(parent)
 {
     if (!viewer.valid()) { // this is the validity of the pointer, not of the viewer
+#if OSG_VERSION_GREATER_OR_EQUAL(3, 5, 0)
+        osg::GraphicsContext::getWindowingSystemInterfaces()->addWindowingSystemInterface(WindowingSystemInterface::getInterface());
+#else
         osg::GraphicsContext::setWindowingSystemInterface(WindowingSystemInterface::getInterface());
+#endif
 
         viewer = new osgViewer::CompositeViewer();
 
