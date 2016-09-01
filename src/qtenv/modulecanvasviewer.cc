@@ -989,6 +989,12 @@ void ModuleCanvasViewer::refresh(bool updateNextEventMarker)
             redrawNextEventMarker();
         refreshSubmodules();
     }
+
+    if (QToolTip::isVisible()) {
+        auto pos = mapFromGlobal(QCursor::pos());
+        if (rect().contains(pos))
+            QToolTip::showText(QCursor::pos(), gatherTooltips(pos), this);
+    }
 }
 
 void ModuleCanvasViewer::setZoomFactor(double zoomFactor)
