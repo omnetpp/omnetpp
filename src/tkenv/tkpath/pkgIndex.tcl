@@ -1,7 +1,8 @@
 namespace eval ::tkpath {
     proc load_package {dir} {
         switch -glob "$::tcl_platform(os)/$::tcl_platform(machine)" {
-            "Windows NT/*" {set sharedlib libtkpath0.3.3.dll}
+            "Windows NT/i?86" {set sharedlib libtkpath0.3.3.dll}
+            "Windows NT/amd64" {set sharedlib libtkpath0.3.3-64.dll}
             "Darwin/*"     {set sharedlib libtkpath0.3.3.dylib}
             "Linux/i?86"   {set sharedlib libtkpath0.3.3.so}
             "Linux/x86_64" {set sharedlib libtkpath0.3.3-64.so}

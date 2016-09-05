@@ -195,7 +195,7 @@ cNEDValue Sizeof::evaluate(cComponent *context, cNEDValue args[], int numargs)
         cModule *siblingModule = module->getSubmodule(ident.c_str(), 0);  // returns nullptr if submodule is not a vector
         if (!siblingModule && module->getSubmodule(ident.c_str()))
             return 1L;  // return 1 if submodule exists but not a vector
-        return (long)siblingModule ? siblingModule->getVectorSize() : 0L;
+        return (long)(siblingModule ? siblingModule->getVectorSize() : 0L);
     }
 }
 
