@@ -28,10 +28,14 @@ void OsgScene::initialize()
 
     osg::Node *scene = osgDB::readNodeFile(par("sceneFile"));  // read the scene data
     if (!scene)
-        throw cRuntimeError("Could not read scene file \"%s\"", par("scene").stringValue());
+        throw cRuntimeError("Could not read scene file \"%s\"", par("sceneFile").stringValue());
 
     if (par("isEarthStyle"))
+#ifdef WITH_OSGEARTH
         osgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);  // we need a different camera manipulator to display terrains
+#else
+        throw cRuntimeError("This example requires osgEarth installed!");
+#endif
 
     osgCanvas->setScene(scene);
 }

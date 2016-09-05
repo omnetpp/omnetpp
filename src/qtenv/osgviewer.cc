@@ -21,6 +21,8 @@
 #include <QMenu>
 #include <QResizeEvent>
 #include <QOffscreenSurface>
+
+#ifdef WITH_OSGEARTH
 #include <osgEarth/Version>
 #if OSGEARTH_VERSION_GREATER_OR_EQUAL(2, 6, 0)
     #include <osgEarthUtil/Sky>
@@ -29,6 +31,8 @@
 #endif
 #include <osgEarth/MapNode>
 #include <osgEarthUtil/EarthManipulator>
+#endif
+
 #include <osgGA/TerrainManipulator>
 #include <osgGA/TrackballManipulator>
 #include <osg/TexGenNode>
@@ -295,10 +299,12 @@ OsgViewer::OsgViewer(QWidget *parent): GLWidget(parent)
     toTrackballManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
     toTrackballManipulatorAction->setCheckable(true);
 
+#ifdef WITH_OSGEARTH
     toEarthManipulatorAction = new QAction("Earth", this);
     toEarthManipulatorAction->setData(cOsgCanvas::CAM_EARTH);
     toEarthManipulatorAction->setActionGroup(cameraManipulatorActionGroup);
     toEarthManipulatorAction->setCheckable(true);
+#endif
 
     view = new osgViewer::View;
     view->getDatabasePager()->setUnrefImageDataAfterApplyPolicy(true,false);
@@ -379,7 +385,9 @@ void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
         refresh();
         if (osgCanvas != nullptr) {
             applyViewerHints();
+#ifdef WITH_OSGEARTH
             toEarthManipulatorAction->setEnabled(osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_EARTH);
+#endif
         }
         else
             resetViewer();
@@ -396,9 +404,11 @@ void OsgViewer::refresh()
         view->setSceneData(scene);
         viewer->addView(view);
 
+#ifdef WITH_OSGEARTH
         auto sky = osgEarth::findTopMostNodeOfType<osgEarth::Util::SkyNode>(scene);
         if (sky)
             sky->attach(view);
+#endif
     }
     view->requestRedraw();
 }
@@ -500,9 +510,11 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
     if (auto orbitManip = dynamic_cast<osgGA::OrbitManipulator*>(view->getCameraManipulator()))
         distance = orbitManip->getDistance();
 
+#ifdef WITH_OSGEARTH
     // EarthManipulator just happens to have a similar behaviour and a method with the same name
     if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(view->getCameraManipulator()))
         distance = earthManip->getDistance();
+#endif
 
     view->getCamera()->getViewMatrixAsLookAt(eye, center, up, distance);
 
@@ -512,7 +524,11 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
     osgGA::CameraManipulator *manipulator = nullptr;
 
     if (type == cOsgCanvas::CAM_AUTO)
+#ifdef WITH_OSGEARTH
         type = osgCanvas->getViewerStyle() == cOsgCanvas::STYLE_GENERIC ? cOsgCanvas::CAM_OVERVIEW : cOsgCanvas::CAM_EARTH;
+#else
+        type = cOsgCanvas::CAM_OVERVIEW;
+#endif
 
     switch (type) {
         case cOsgCanvas::CAM_TERRAIN:
@@ -527,10 +543,12 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             manipulator = new osgGA::TrackballManipulator;
             toTrackballManipulatorAction->setChecked(true);
             break;
+#ifdef WITH_OSGEARTH
         case cOsgCanvas::CAM_EARTH:
             manipulator = new osgEarth::Util::EarthManipulator;
             toEarthManipulatorAction->setChecked(true);
             break;
+#endif
         case cOsgCanvas::CAM_AUTO: /* Impossible, look at the if above, just silencing a warning. */ break;
     }
 
@@ -547,6 +565,7 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             orbitManip->setDistance(distance);
         }
 
+#ifdef WITH_OSGEARTH
         // and EarthManipulator is a different story as always
         if (auto earthManip = dynamic_cast<osgEarth::Util::EarthManipulator*>(manipulator)) {
             auto srs = osgEarth::MapNode::findMapNode(osgCanvas->getScene())->getMap()->getSRS();
@@ -569,16 +588,20 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
             osgEarth::Viewpoint vp("viewpoint", geoCenter.x(), geoCenter.y(), geoCenter.z(), heading, pitch, distance);
             earthManip->setViewpoint(vp);
         }
+#endif
     }
 
 
     // setting the home viewpoint if found
 
+#ifdef WITH_OSGEARTH
     if (type == cOsgCanvas::CAM_EARTH) {
         const osgEarth::Viewpoint &homeViewpoint = osgCanvas->getEarthViewpoint();
         if (homeViewpoint.isValid())
             ((osgEarth::Util::EarthManipulator*)manipulator)->setHomeViewpoint(homeViewpoint);
-    } else {
+    } else
+#endif
+    {
         const cOsgCanvas::Viewpoint &homeViewpoint = osgCanvas->getGenericViewpoint();
         if (homeViewpoint.valid)
             manipulator->setHomePosition(homeViewpoint.eye, homeViewpoint.center, homeViewpoint.up);
@@ -616,7 +639,9 @@ QMenu *OsgViewer::createCameraManipulatorMenu()
     menu->addAction(toTerrainManipulatorAction);
     menu->addAction(toOverviewManipulatorAction);
     menu->addAction(toTrackballManipulatorAction);
+#ifdef WITH_OSGEARTH
     menu->addAction(toEarthManipulatorAction);
+#endif
     return menu;
 }
 

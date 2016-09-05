@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifdef WITH_OSG
+#if defined(WITH_OSG) && defined(WITH_OSGEARTH)
 #include <osgDB/ReadFile>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Viewpoint>

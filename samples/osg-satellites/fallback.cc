@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef WITH_OSG
+#if !defined(WITH_OSG) || !defined(WITH_OSGEARTH)
 #include <omnetpp.h>
 
 // fallbac code used in case OpenSceneGraph and osgEarth is not present on the system

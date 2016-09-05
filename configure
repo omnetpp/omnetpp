@@ -587,6 +587,7 @@ LIBOBJS
 PLATFORM
 JAVA_LIBS
 JAVA_CFLAGS
+WITH_OSGEARTH
 WITH_OSG
 WITH_QTENV
 WITH_TKENV
@@ -729,6 +730,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -808,6 +810,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -1060,6 +1063,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1197,7 +1209,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1350,6 +1362,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -2362,7 +2375,7 @@ else
         # on NT, set total stack size
         LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
-    *-*-mingw*)
+    i686-*-mingw*)
         OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         mingw=yes
         jni_platform=win32
@@ -2382,6 +2395,31 @@ else
         if test "$cross_compiling" = no ; then
             CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
+        fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
+        ;;
+    x86_64-*-mingw*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
+        mingw=yes
+        jni_platform=win32
+        PLATFORM=win32.x86_64
+        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
+        # when the variable is passed to tkenv.cc. See bug#785
+        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+        # otherwise exceptions can't be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+
+        # If we are building on windows (native compile) we have to add the /usr/lib and
+        # /usr/include directories as they are not added by default, but they are needed
+        # to properly find the Tcl/Tk, LibXML2 libraries.
+        if test "$cross_compiling" = no ; then
+            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
@@ -5145,13 +5183,21 @@ rm -f core conftest.err conftest.$ac_objext \
 
   if test $osg_ok = no; then
     OSG_LIBS=""
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&5
-$as_echo "$as_me: WARNING: Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!" >&2;}
+    as_fn_error $? "Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. Set WITH_OSG=no in configure.user to disable this feature or install the development package for OpenSceneGraph." "$LINENO" 5
   else
-      # OpenSceneGraph found, detect osgEarth, too
-      if test -z "$OSGEARTH_LIBS"; then
-          OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+      # OpenSceneGraph found
+      # on Linux we have to link the executables directly with these libs
+      if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
+        SYS_LIBS+=" $OSG_LIBS"
       fi
+      # models can detect whether OSG is present based on the presence of WITH_OSG macro
+      DEFINES="$DEFINES -DWITH_OSG"
+
+      # detect osgEarth, too
+      if test "$WITH_OSGEARTH" = "yes"; then
+        if test -z "$OSGEARTH_LIBS"; then
+            OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+        fi
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5186,16 +5232,17 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-      if test $osgearth_ok = no; then
-        OSGEARTH_LIBS=""
-        as_fn_error $? "Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required." "$LINENO" 5
-      else
-          # on MAC and Windows we don't have to link the executables directly with these libs
-          if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
-            SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
-          fi
-          # models can detect whether OSG is present based on the presence of WITH_OSG macro
-          DEFINES="$DEFINES -DWITH_OSG"
+        if test $osgearth_ok = no; then
+          OSGEARTH_LIBS=""
+          as_fn_error $? "Cannot find osgEarth. Set WITH_OSGEARTH=no in configure.user to disable this feature or install osgEarth." "$LINENO" 5
+        else
+            # on Linux we have to link the executables directly with these libs
+            if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
+              SYS_LIBS+=" $OSGEARTH_LIBS"
+            fi
+            # models can detect whether osgEarth is present based on the presence of WITH_OSGEARTH macro
+            DEFINES="$DEFINES -DWITH_OSGEARTH"
+        fi
       fi
   fi
 fi # WITH_OSG
@@ -6768,6 +6815,42 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
     fi
+    if test $libxml_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE -I/mingw64/include/libxml2"
+   LIBS="-lxml2"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libxml/parser.h>
+int
+main ()
+{
+xmlInitParser();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; libxml_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    fi
 fi
 if test -n "$EXPAT_LIBS"; then
 
@@ -7027,6 +7110,7 @@ ac_config_files="$ac_config_files Makefile.inc"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 

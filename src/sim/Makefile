@@ -72,19 +72,20 @@ OBJS= $(OBJS_STD)
 GENERATED_SOURCES= expr.tab.hh expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
 
 ifeq ($(WITH_NETBUILDER),yes)
-OBJS += $(OBJS_NETBUILDER)
-IMPLIBS += -loppnedxml$D
+  OBJS += $(OBJS_NETBUILDER)
+  IMPLIBS += -loppnedxml$D
 endif
 
-ifneq ($(OSG_LIBS),)
-IMPLIBS += -losg -lOpenThreads
-GENERATED_SOURCES += sim_std_osg_m.cc sim_std_osg_m.h
-OBJS_STD += $O/sim_std_osg_m.o 
+ifeq ($(WITH_OSG),yes)
+  IMPLIBS += -losg -lOpenThreads
+  GENERATED_SOURCES += sim_std_osg_m.cc sim_std_osg_m.h
+  OBJS_STD += $O/sim_std_osg_m.o 
+
+  ifeq ($(WITH_OSGEARTH),yes)
+    IMPLIBS += -losgEarth
+  endif
 endif
 
-ifneq ($(OSGEARTH_LIBS),)
-IMPLIBS += -losgEarth
-endif
 
 ifeq ($(WITH_PARSIM),yes)
 OBJS += $(OBJS_PARSIM)

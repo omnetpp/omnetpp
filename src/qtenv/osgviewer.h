@@ -42,7 +42,9 @@
 #include <osgViewer/View>
 #include <osg/Camera>
 #include <osgGA/TrackballManipulator>
+#ifdef WITH_OSGEARTH
 #include <osgEarthUtil/EarthManipulator>
+#endif
 
 class QMenu;
 

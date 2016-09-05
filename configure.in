@@ -263,7 +263,7 @@ else
         # on NT, set total stack size
         LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
-    *-*-mingw*)
+    i686-*-mingw*)
         OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
         mingw=yes
         jni_platform=win32
@@ -283,6 +283,31 @@ else
         if test "$cross_compiling" = no ; then
             CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
+        fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
+        ;;
+    x86_64-*-mingw*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
+        mingw=yes
+        jni_platform=win32
+        PLATFORM=win32.x86_64
+        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
+        # when the variable is passed to tkenv.cc. See bug#785
+        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+        # otherwise exceptions can't be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+
+        # If we are building on windows (native compile) we have to add the /usr/lib and
+        # /usr/include directories as they are not added by default, but they are needed
+        # to properly find the Tcl/Tk, LibXML2 libraries.
+        if test "$cross_compiling" = no ; then
+            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
@@ -877,23 +902,33 @@ if test "$WITH_OSG" = "yes"; then
   OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
   if test $osg_ok = no; then
     OSG_LIBS=""
-    AC_MSG_WARN([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. At least the development version of libopenscenegraph package must be installed!])
+    AC_MSG_ERROR([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. Set WITH_OSG=no in configure.user to disable this feature or install the development package for OpenSceneGraph.])
   else
-      # OpenSceneGraph found, detect osgEarth, too
-      if test -z "$OSGEARTH_LIBS"; then
-          OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+      # OpenSceneGraph found
+      # on Linux we have to link the executables directly with these libs
+      if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
+        SYS_LIBS+=" $OSG_LIBS"
       fi
-      OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS_RELEASE $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
-      if test $osgearth_ok = no; then
-        OSGEARTH_LIBS=""
-        AC_MSG_ERROR([Cannot find osgEarth. At least the development version of libosgearth and the openscenegraph-plugin-osgearth package is required.])
-      else
-          # on MAC and Windows we don't have to link the executables directly with these libs
-          if test "$PLATFORM" != "win32" -a "$PLATFORM" != "macosx"; then
-            SYS_LIBS+=" $OSG_LIBS $OSGEARTH_LIBS"
-          fi
-          # models can detect whether OSG is present based on the presence of WITH_OSG macro
-          DEFINES="$DEFINES -DWITH_OSG"
+      # models can detect whether OSG is present based on the presence of WITH_OSG macro
+      DEFINES="$DEFINES -DWITH_OSG"
+
+      # detect osgEarth, too
+      if test "$WITH_OSGEARTH" = "yes"; then
+        if test -z "$OSGEARTH_LIBS"; then
+            OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
+        fi
+        OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS_RELEASE $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
+        if test $osgearth_ok = no; then
+          OSGEARTH_LIBS=""
+          AC_MSG_ERROR([Cannot find osgEarth. Set WITH_OSGEARTH=no in configure.user to disable this feature or install osgEarth.])
+        else
+            # on Linux we have to link the executables directly with these libs
+            if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
+              SYS_LIBS+=" $OSGEARTH_LIBS"
+            fi
+            # models can detect whether osgEarth is present based on the presence of WITH_OSGEARTH macro
+            DEFINES="$DEFINES -DWITH_OSGEARTH"
+        fi
       fi
   fi
 fi # WITH_OSG
@@ -1185,6 +1220,10 @@ else
         OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/mingw32/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
+    if test $libxml_ok = no; then
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/mingw64/include/libxml2, -lxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
+    fi
 fi
 if test -n "$EXPAT_LIBS"; then
     OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS_RELEASE $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
@@ -1384,6 +1423,7 @@ AC_SUBST(WITH_PARSIM)
 AC_SUBST(WITH_TKENV)
 AC_SUBST(WITH_QTENV)
 AC_SUBST(WITH_OSG)
+AC_SUBST(WITH_OSGEARTH)
 
 AC_SUBST(JAVA_CFLAGS)
 AC_SUBST(JAVA_LIBS)

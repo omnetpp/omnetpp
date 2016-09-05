@@ -51,7 +51,9 @@ class SIM_API cOsgCanvas : public cOwnedObject
          */
         enum ViewerStyle {
             STYLE_GENERIC, ///< For generic (non-osgEarth) OSG models
+#ifdef WITH_OSGEARTH
             STYLE_EARTH    ///< For osgEarth models
+#endif
         };
 
         typedef cFigure::Color Color;
@@ -65,7 +67,9 @@ class SIM_API cOsgCanvas : public cOwnedObject
             CAM_TERRAIN,   ///< Suitable for flying above an object or terrain
             CAM_OVERVIEW,  ///< Similar to TERRAIN, but only allows seeing the object from above
             CAM_TRACKBALL, ///< Allows unrestricted movement centered around an object
+#ifdef WITH_OSGEARTH
             CAM_EARTH      ///< Useful when viewing osgEarth scenes
+#endif
         };
 
         // this is only needed to simplify the Viewpoint hint
@@ -114,8 +118,10 @@ class SIM_API cOsgCanvas : public cOwnedObject
 
         Viewpoint *genericViewpoint; // never nullptr
 
+#ifdef WITH_OSGEARTH
         // osgEarth-specific viewer hints
         osgEarth::Viewpoint *earthViewpoint; // never nullptr
+#endif
 
     private:
         void copy(const cOsgCanvas& other);
@@ -262,6 +268,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
         const Viewpoint& getGenericViewpoint() const {return *genericViewpoint;}
         //@}
 
+#ifdef WITH_OSGEARTH
         /** @name osgEarth-related viewer hints. */
         //@{
         /**
@@ -274,6 +281,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
          */
         const osgEarth::Viewpoint& getEarthViewpoint() const {return *earthViewpoint;}
         //@}
+#endif
 };
 
 } // namespace omnetpp

@@ -51,9 +51,14 @@ WITH_QTENV=yes
 PREFER_QTENV=yes
 
 #
-# Set to "yes" to enable OpenSceneGraph and osgEarth support in Qtenv
+# Set to "yes" to enable OpenSceneGraph and support in Qtenv
 #
 WITH_OSG=yes
+
+#
+# Set to "yes" to enable osgEarth support in Qtenv (requires OpenScreenGraph enabled)
+#
+WITH_OSGEARTH=yes
 
 #
 # Set to "yes" to enable simulation executables to load NED files dynamically.
