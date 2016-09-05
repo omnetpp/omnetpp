@@ -129,10 +129,6 @@ USE_CXX11=yes
 #
 EMBED_TCL_CODE=yes
 
-# Select which Qt version you prefer to use.
-# Possible values: 4, 5. Any other value will disable building Qtenv
-QT_VERSION=5
-
 #
 # Compiler and linker options for Qt
 #
