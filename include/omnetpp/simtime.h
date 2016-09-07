@@ -40,7 +40,8 @@ enum SimTimeUnit
     SIMTIME_US = -6,
     SIMTIME_NS = -9,
     SIMTIME_PS = -12,
-    SIMTIME_FS = -15
+    SIMTIME_FS = -15,
+    SIMTIME_AS = -18
 };
 
 /**
