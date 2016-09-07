@@ -555,6 +555,9 @@ void MainWindow::on_actionRun_triggered()
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
+    if (checkRunning())
+        return;
+
     cConfigurationEx *configEx = getQtenv()->getConfigEx();
     QString config = configEx->getActiveConfigName();
     int run = configEx->getActiveRunNumber();
