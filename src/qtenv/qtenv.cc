@@ -619,6 +619,9 @@ void Qtenv::doRun()
         mainTimeLine = static_cast<TimeLineInspector *>(addEmbeddedInspector(InspectorFactory::get("TimeLineInspectorFactory"), mainWindow->getTimeLineArea()));
         mainObjectTree = static_cast<ObjectTreeInspector *>(addEmbeddedInspector(InspectorFactory::get("ObjectTreeInspectorFactory"), mainWindow->getObjectTreeArea()));
 
+        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
+        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
+
         QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
 
         mainWindow->show();
@@ -632,8 +635,6 @@ void Qtenv::doRun()
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
         QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
 
-        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
-        connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
 
         setLogFormat(opt->logFormat.c_str());
 
