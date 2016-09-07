@@ -624,7 +624,10 @@ void Qtenv::doRun()
         mainWindow->show();
         mainWindow->raise(); // Part of the hack for Apple Menu functionality, see a few lines up.
 
-        QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
+        mainWindow->restoreGeometry();
+        mainWindow->initialSetUpConfiguration();
+
+        //QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
 
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
         QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
@@ -1984,7 +1987,7 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
         const char *checkboxLabel, const char *defaultValue,
         std::string& outResult, bool& inoutCheckState)
 {
-    QDialog *dialog = new QDialog();
+    QDialog *dialog = new QDialog(mainWindow);
     dialog->setFont(boldFont);
     dialog->setWindowTitle(title);
 

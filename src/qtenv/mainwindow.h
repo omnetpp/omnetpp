@@ -79,7 +79,6 @@ public:
     void restoreGeometry();
 
     QSize sizeHint() const override;
-    bool event(QEvent *event) override;
 
     //menuproc.tcl
     bool isRunning();

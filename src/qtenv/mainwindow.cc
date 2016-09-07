@@ -474,6 +474,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
 }
 
+// XXX why is this in MainWindow, and not in Qtenv?
 void MainWindow::initialSetUpConfiguration()
 {
     // implements File|Set Up a Configuration...
@@ -1036,20 +1037,6 @@ QSize MainWindow::sizeHint() const
     return QSize(1200, 600);
 }
 
-bool MainWindow::event(QEvent *event)
-{
-    if (event->type() == QEvent::Show) {
-        restoreGeometry();
-        // Not calling the function directly here, as it is a blocking operation
-        // (shows and execs a dialog), so it would hold up the initialization of
-        // the MainWindow. This way it'll be done a bit later, in the next event
-        // loop iteration, after 0 millisec delay, so still (almost) immediately.
-        QTimer::singleShot(0, this, SLOT(initialSetUpConfiguration()));
-    }
-
-    return QMainWindow::event(event);
-}
-
 // rebuild
 void MainWindow::on_actionRebuildNetwork_triggered()
 {
@@ -1155,6 +1142,7 @@ void MainWindow::reflectRecordEventlog()
     ui->actionEventlogRecording->setChecked(getQtenv()->getEventlogRecording());
 }
 
+// XXX why is this in MainWindow, and not in Qtenv?
 void MainWindow::configureNetwork()
 {
     if (checkRunning())
