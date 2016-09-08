@@ -6893,7 +6893,7 @@ CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile.inc"
+ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 
 
 #----------------------
@@ -7724,6 +7724,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
+    "src/qtenv/qtenv.pri") CONFIG_FILES="$CONFIG_FILES src/qtenv/qtenv.pri" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

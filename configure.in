@@ -1273,6 +1273,7 @@ CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
 #----------------------
 AC_CONFIG_FILES(
   Makefile.inc
+  src/qtenv/qtenv.pri
 )
 
 #----------------------
