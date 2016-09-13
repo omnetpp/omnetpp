@@ -106,10 +106,12 @@ namespace envir {
 using std::ostream;
 
 #define CREATE_BY_CLASSNAME(var, classname, baseclass, description) \
-    baseclass *var ## _tmp = (baseclass *)createOne(classname); \
+  do { \
+    cObject *var ## _tmp = createOne(classname); \
     var = dynamic_cast<baseclass *>(var ## _tmp); \
     if (!var) \
-        throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
+        throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname); \
+  } while(false)
 
 Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
