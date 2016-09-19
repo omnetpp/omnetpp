@@ -1,8 +1,36 @@
+2016-09-01  Andras Varga
+
+	* Canvas: added getPosition() to arc, rectangle, oval, ring, and
+	pieslice figures.
+
+2016-09-05  Rudolf Hornig
+
+	* cOsgCanvas: understand WITH_OSGEARTH.
+
+2016-08-31  Andras Varga
+
+	* Canvas: added support for self-refreshing figures (cFigure::
+	refreshDisplay()).
+
+2016-08-30  Andras Varga
+
+	* Canvas: parse() methods not to overwrite settings that are not
+	 specified in @figure. This will allow settings set e.g. in the
+	 constructor to take effect
+
+2016-08-29  Benjamin Seregi
+
+	* Fingerprint: fix: getAsString() returned a dangling pointer.
+
+2016-08-26  Andras Varga
+
+	* Canvas: follow API changes, see include/ChangeLog
+
 2016-08-24  Andras Varga
 
-	* cComponent: getDisplayString(): do not throw exception. The "Cannot access
-	display string yet: parameters not yet set up" exception does not seem to be
-	necessary or useful any more.
+	* cComponent: getDisplayString(): do not throw exception. The
+	"Cannot access display string yet: parameters not yet set up"
+	exception does not seem to be necessary or useful any more.
 
 2016-08-23  Andras Varga
 

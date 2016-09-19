@@ -1,3 +1,7 @@
+2016-08-31  Andras Varga
+
+	* Added support for self-refreshing figures (cFigure::refreshDisplay())
+
 2016-08-23  Andras Varga
 
 	* Follow sim. kernel change: info() renamed to str(), detailedInfo()

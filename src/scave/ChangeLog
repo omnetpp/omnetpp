@@ -1,3 +1,7 @@
+2016-09-01  Rudolf Hornig
+
+	* scavetool: include run attributes in scalar data exports
+
 2016-06-23  Rudolf Hornig
 
 	* The makefile now uses compiler-generated dependency files.

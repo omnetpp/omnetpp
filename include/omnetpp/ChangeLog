@@ -1,3 +1,42 @@
+2016-09-07  Zoltan Bojthe
+
+	* SimTime: added SIMTIME_AS (= -18) to SimTimeUnit enum
+
+2016-09-06  Andras Varga
+
+	* Canvas: added parseBounds() overload for backward compatibility
+
+2016-09-01  Andras Varga
+
+	* Canvas: added setPosition(position, anchor) to arc, rectangle,
+	oval, ring, and pieslice figures
+
+2016-09-05  Rudolf Hornig
+
+	* cOsgCanvas: understand WITH_OSGEARTH
+
+2016-08-31  Andras Varga
+
+	* Canvas: added support for self-refreshing figures. Figures
+	must override a cFigure::refreshDisplay().
+
+2016-08-26  Andras Varga
+
+	* Canvas: documented figure methods for Doxygen
+
+2016-08-26  Andras Varga
+
+	* Canvas: API changes, mostly necessitated by the introduction of
+	setZIndex() (as stacking order is no longer fully determined by
+	the order of child figures).
+	  - behavior change on raiseAbove()/lowerBelow()/raiseToTop()/lowerToBottom().
+	    They need to deal with Z-index too.
+	  - deprecated addFigureAbove() and addFigureBelow()
+	  - added insertAfter()/insertBefore(), isAbove()/isBelow()
+	  - added some const annotations
+	  - some path item classes renamed (HorizLineTo/VertLineTo to
+	    HorizontalLineTo/VerticalLineto)
+
 2016-08-23  Andras Varga
 
 	* cXMLElement now subclasses from cObject
@@ -28,7 +67,7 @@
 	The few detailedInfo() method with useful functionality were:
 	- cXMLElement's detailedInfo() returned quasi-XML
 	- cChannelType etc returned NED source via detailedInfo()
-	
+
 	The following methods are added in their place: cXMLElement::getXML(),
 	cComponentType::getNedSource().
 
@@ -52,9 +91,9 @@
 
 2016-08-05  Andras Varga
 
-	* cFigure: added setZIndex(). In @figure, "zIndex" replaces "childZ" 
+	* cFigure: added setZIndex(). In @figure, "zIndex" replaces "childZ"
 	which was only used at parse time but not stored in figures afterwards.
-	
+
 2016-08-22  Andras Varga
 
 	* Selection of coroutine library (USE_WIN32_FIBERS/USE_POSIX_COROUTINES/
@@ -73,11 +112,11 @@
 
 2016-08-01  Andras Varga
 
-	* cProperty: getValue(key,index) now has a default value for the key 
+	* cProperty: getValue(key,index) now has a default value for the key
 	argument too.
-	
+
 	* cProperty: added updateWith() internal public method
-	
+
 	* cCanvas: parseFigure() abd createFigure() made public internal
 
 2016-08-05  Andras Varga
@@ -92,7 +131,7 @@
 
 2016-08-04  Andras Varga
 
-	* cEventHeap: added setUseCb() internal method as a way to allow 
+	* cEventHeap: added setUseCb() internal method as a way to allow
 	disabling the cb (FIFO for storing events scheduled for the current
 	simulation time with priority 0)
 
@@ -104,9 +143,9 @@
 2016-07-21  Andras Varga
 
 	* cEnvir: added getImageSize() and getTextExtent() methods
-	
+
 	* cAbstractImage/cAbstractText: added getBounds() method
-	
+
 	* cImageFigure: added getImageNaturalWidth() / getImageNaturalHeight()
 
 2016-07-25  Andras Varga
@@ -136,13 +175,13 @@
 
 2016-07-22  Andras Varga
 
-	* cComponent: mayHaveListeners() now has a constant cost but may return 
+	* cComponent: mayHaveListeners() now has a constant cost but may return
 	false positive, due to change implementation strategy. See sim/ChangeLog
 	for details.
 
 2016-07-19  Andras Varga
 
-	* cComponent: added internal methods to allow inspecting listener 
+	* cComponent: added internal methods to allow inspecting listener
 	lists
 
 2016-07-12  Andras Varga
@@ -176,7 +215,7 @@
 2016-07-11  Andras Varga
 
 	* Added cStatisticBuilder internal class, as part of the change where
-	setting up statistics recording was moved from EnvirBase	into the sim. 
+	setting up statistics recording was moved from EnvirBase	into the sim.
 	kernel.
 
 2016-07-06  Andras Varga

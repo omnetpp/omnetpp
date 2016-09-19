@@ -1,7 +1,7 @@
 2016-07-12  Andras Varga
 
 	* ned2.dtd: "name" attribute of "class", "struct", "message", "packet",
-	and "enum" elements changed from NMTOKEN to CDATA, to allow generating 
+	and "enum" elements changed from NMTOKEN to CDATA, to allow generating
 	descriptors for existing inner classes.
 
 2016-04-20  Andras Varga

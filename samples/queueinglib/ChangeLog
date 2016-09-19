@@ -1,13 +1,3 @@
-2016-06-16  Andras Varga
-
-	samples: missing "override"
-
-2016-05-23  Rudolf Hornig
-
-	samples: fixed a race condition in queueinglib
-
------------ lines above this marker have been added from git log -----------
-
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------

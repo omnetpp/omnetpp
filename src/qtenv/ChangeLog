@@ -1,39 +1,66 @@
+2016-09-05  Rudolf Hornig
+
+	* Obey WITH_OSGEARTH: allow disabling the osgEarth integration in
+	configure.user while still using OpenSceneGraph.
+
+2016-06-16  Attila Torok
+
+	* OsgViewer rewrite, works with both Qt4 and Qt5. Based on osgQt and
+	https://github.com/Submanifold/QtOSG. osgQt is no longer used, it's not
+	Qt5 compatible at all. Only tested on Fedora 23/24 x86_64.
+
+2016-08-24  Rudolf Hornig
+
+	* Workaround to make the menubar work on Mac OS right after launch.
+
+2016-08-23  Rudolf Hornig
+
+	* Default fonts on Qt5 fixed.
+
+2016-08-31  Andras Varga
+
+	* Added support for self-refreshing figures (cFigure::refreshDisplay())
+
+2016-08-26  Andras Varga
+
+	* Follow Canvas API changes
+
 2016-08-24  Andras Varga
 
 	* Object inspector refinements:
-	  1. no "=" for array elements 
-	  2. fix: no empty quote pair for string arrays 
+	  1. no "=" for array elements
+	  2. fix: no empty quote pair for string arrays
 	  3. display info string for root element
 
 2016-08-23  Andras Varga
 
 	* Follow change: info() renamed to str()
 
-2016-08-22  Attila Török
+2016-08-22  Attila Torok
 
-	* Fixes for 'find objects' dialog, added as menu option. Inspector
+	* Fixes for 'Find Objects' dialog, added as menu option. Inspector
 	menus renamed: context -> dropdown.
 
-2016-08-22  Attila Török
+2016-08-22  Attila Torok
 
 	* Main ObjectInspector always follows inspected object change in
 	main ModuleInspector.
 
-2016-08-19  Attila Török
+2016-08-19  Attila Torok
 
 	* Fixes for SubmoduleItem parsing from DisplayString (range circles,
 	position change).
 
-2016-08-08  Attila Török
+2016-08-08  Attila Torok
 
 	* Avoid setting values unnecessarily in QSettings at every event.
 
-2016-08-03  Attila Török
+2016-08-03  Attila Torok
 
 	* Module inspector: Not zooming when entering a submodule with double
 	click.
 
-2016-08-05  Attila Török
+2016-08-05  Attila Torok
 
 	* Canvas: implemented setHalo() to text items
 
@@ -41,21 +68,21 @@
 
 	* Canvas: implemented cFigure's "zIndex" field
 
-2016-08-03  Attila Török
+2016-08-03  Attila Torok
 
 	* Text figures now use OutlinedTextItem for rendering.
 
-2016-08-19  Attila Török
+2016-08-19  Attila Torok
 
 	* Disable default tooltip for cFigures (was not too useful).
 
 2016-08-22  Andras Varga
 
-	* qtenv-extra-stack increased to 80K. Somewhat tested with 
-	USE_PORTABLE_COROUTINES that can display actual stack usage 
+	* qtenv-extra-stack increased to 80K. Somewhat tested with
+	USE_PORTABLE_COROUTINES that can display actual stack usage
 	in Qtenv (in module inspector), seems to be enough.
 
-2016-08-10  Attila Török
+2016-08-10  Attila Torok
 
 	* Canvas: implemented figure tooltip and assocatedObject support
 
@@ -65,7 +92,7 @@
 	      "tt" display string tag) if not empty, else:
 	   3. Use assciateObject's default tooltip (name, class, info string)
 
-2016-08-03  Attila Török
+2016-08-03  Attila Torok
 
 	* Pieslice figure renderer fixed.
 
@@ -73,124 +100,124 @@
 
 	* FilteredObjectListDialog: fix crash
 
-2016-08-01  Attila Török
+2016-08-01  Attila Torok
 
 	* Only call refreshDisplay and performAnimations occasionally in
 	fast mode.
 
-2016-08-02  Attila Török
+2016-08-02  Attila Torok
 
 	* Improved arc figure rendering.
 
-2016-08-02  Attila Török
+2016-08-02  Attila Torok
 
 	* Figures have flat caps and miter joins where not customizable.
 
-2016-08-02  Attila Török
+2016-08-02  Attila Torok
 
 	* ModuleInspector no longer crashes when the inspected object is
 	deleted.
 
-2016-08-01  Attila Török
+2016-08-01  Attila Torok
 
 	* Content caching in TextViewer* classes.
 
-2016-08-01  Attila Török
+2016-08-01  Attila Torok
 
 	* Log inspector: Align message info into multiple columns at tab
 	characters.
 
-2016-08-01  Attila Török
+2016-08-01  Attila Torok
 
 	* Minor tweaks on animations and ConnectionItem.
 
-2016-08-01  Attila Török
+2016-08-01  Attila Torok
 
 	* Restored inspectors not reopened with old object upon stepping
 	after navigation.
 
-2016-07-29  Attila Török
+2016-07-29  Attila Torok
 
 	* Image-type figures keep their resolution when width/height is
 	specified.
 
-2016-07-29  Attila Török
+2016-07-29  Attila Torok
 
 	* Zoom shortcuts changed: N -> minus, M -> plus.
 
-2016-07-29  Attila Török
+2016-07-29  Attila Torok
 
 	* Correct anchoring of label and icon figures.
 
-2016-07-29  Attila Török
+2016-07-29  Attila Torok
 
 	* ModuleInspector action hotkeys working.
 
-2016-07-21  Attila Török
+2016-07-21  Attila Torok
 
 	* Canvas: implemented cEnvir's getImageSize() and getTextExtent() methods
 
-2016-07-20  Attila Török
+2016-07-20  Attila Torok
 
 	* 'View in Embedded...' option in Inspector context menu.
 
-2016-07-26  Attila Török
+2016-07-26  Attila Torok
 
 	* Object inspector: Display full path of objects if they are shown in
 	the tree not under their owner.
 
-2016-07-27  Attila Török
+2016-07-27  Attila Torok
 
 	* Incomplete history notification in LogInspector.
 
-2016-07-27  Attila Török
+2016-07-27  Attila Torok
 
 	* Message deletion displayed in LogInspector.
 
-2016-07-26  Attila Török
+2016-07-26  Attila Torok
 
 	* Message deletion properly handled by Animator.
 
-2016-07-26  Attila Török
+2016-07-26  Attila Torok
 
 	* LogBuffer: Message duplication in endSend, and on hop with
 	discard.
 
-2016-07-26  Attila Török
+2016-07-26  Attila Torok
 
 	* Text viewer: Matching tab expansion in [un]selected text.
 
-2016-07-25  Attila Török
+2016-07-25  Attila Torok
 
 	* LogInspector improvements in messages mode.
 
 2016-07-25  Andras Varga
 
 	* Follow change: messageSendHop(): added "discard" parameter; also: moved call
-	site to include message's last hop. Needed for Qtenv's message log view 
+	site to include message's last hop. Needed for Qtenv's message log view
 	(we want to clone the msg while it still exists)
 
-2016-07-26  Attila Török
+2016-07-26  Attila Torok
 
 	* Timeline: Tick label formatting corrected.
 
-2016-07-22  Attila Török
+2016-07-22  Attila Torok
 
 	* Toolbar style and icon tweaks.
 
-2016-07-22  Attila Török
+2016-07-22  Attila Torok
 
 	* refreshDisplay() before performAnimations().
 
-2016-07-20  Attila Török
+2016-07-20  Attila Torok
 
 	* Module inspector: added module name and arrowhead visibility switches.
 
-2016-07-21  Attila Török
+2016-07-21  Attila Torok
 
 	* Action hotkey fixes in inspectors.
 
-2016-07-20  Attila Török
+2016-07-20  Attila Torok
 
 	* Better arrowhead size for thick lines.
 
@@ -198,11 +225,11 @@
 
 	* Main toolbar restored and style adjusted on Mac. (Attila)
 
-2016-07-20  Attila Török
+2016-07-20  Attila Torok
 
 	* 'Filter Main Window Contents' action removed.
 
-2016-07-11  Attila Török
+2016-07-11  Attila Torok
 
 	* Two-way connections drawn as two half-long lines.
 
@@ -218,15 +245,15 @@
 
 	* Indentation & formatting using _scripts/reformat + manual review
 
-2016-07-19  Attila Török
+2016-07-19  Attila Torok
 
 	* Object Inspector: Correct highlight for compound array fields.
 
-2016-07-18  Attila Török
+2016-07-18  Attila Torok
 
 	* Object Inspector: getFieldDynamicTypeString support.
 
-2016-07-18  Attila Török
+2016-07-18  Attila Torok
 
 	* Object selection and inspection in toplevel inspectors. This means
 	that if a cObject is clicked in any (embedded or toplevel) inspector, the
@@ -234,112 +261,112 @@
 	is double clicked in any (embedded or toplevel) inspector, it will be
 	inspected appropriately.
 
-2016-07-18  Attila Török
+2016-07-18  Attila Torok
 
 	* Bigger connection line arrowheads.
 
-2016-07-18  Attila Török
+2016-07-18  Attila Torok
 
 	* GenericObjectTreeModel: hasChildren optimized.
 
-2016-07-14  Attila Török
+2016-07-14  Attila Torok
 
 	* GenericObjectTreeModel::mode is a single enum, not three bools.
 
-2016-07-14  Attila Török
+2016-07-14  Attila Torok
 
 	* Data caching in GenericObjectTreeModel.
 
-2016-07-14  Attila Török
+2016-07-14  Attila Torok
 
 	* Prevent status row ToolTips inheriting wrong stylesheet.
 
-2016-07-11  Attila Török
+2016-07-11  Attila Torok
 
 	* GenericObjectInspector: Root node displays object full path.
 
-2016-07-11  Attila Török
+2016-07-11  Attila Torok
 
 	* Module inspector: Crash fix in getSubmodRect.
 
-2016-07-11  Attila Török
+2016-07-11  Attila Torok
 
 	* Arrowheads on figures now respect zoomLineWidth.
 
-2016-07-11  Attila Török
+2016-07-11  Attila Torok
 
 	* Better font handling in TextViewerWidget.
 
-2016-07-08  Attila Török
+2016-07-08  Attila Torok
 
 	* Fixed getMessageShortInfoString.
 
-2016-07-08  Attila Török
+2016-07-08  Attila Torok
 
 	* UI font respected on inspector submenus.
 
-2016-07-08  Attila Török
+2016-07-08  Attila Torok
 
 	* putsmsg() and confirm() use printf() before Qt init.
 
-2016-07-08  Attila Török
+2016-07-08  Attila Torok
 
 	* Object list truncation in inspector context menus.
 
-2016-06-20  Attila Török
+2016-06-20  Attila Torok
 
 	* Tooltips for cObjectNodes in OsgViewer.
 
-2016-07-06  Attila Török
+2016-07-06  Attila Torok
 
 	* Main window: Toolbar and status layout tweaks.
 
-2016-07-06  Attila Török
+2016-07-06  Attila Torok
 
 	* Log inspector: Info banners are now displayed.
 
-2016-07-06  Attila Török
+2016-07-06  Attila Torok
 
 	* Object inspector: Nodes in flat mode are sorted alphabetically.
 
-2016-07-06  Attila Török
+2016-07-06  Attila Torok
 
 	* Smooth scaling for submodule (decor)image
 
-2016-07-05  Attila Török
+2016-07-05  Attila Torok
 
 	* Module inspector: Context menu with drag, added a few px threshold
 	for clicking.
 
-2016-07-05  Attila Török
+2016-07-05  Attila Torok
 
 	* Unfilled figures can be clicked through now.
 
-2016-07-11  Attila Török
+2016-07-11  Attila Torok
 
 	* Animator: Message deliveries fixed.
 
-2016-07-07  Attila Török
+2016-07-07  Attila Torok
 
 	* Crash fix in Animator on message deletion.
 
-2016-07-06  Attila Török
+2016-07-06  Attila Torok
 
 	* Animation tree pruning, shortcut for empty animations.
 
-2016-07-04  Attila Török
+2016-07-04  Attila Torok
 
 	* Broadcast animation.
 
-2016-07-01  Attila Török
+2016-07-01  Attila Torok
 
 	* ParallelAnimation, SequentialAnimation.
 
-2016-07-01  Attila Török
+2016-07-01  Attila Torok
 
 	* animate* functions and PathVec stuff moved from Qtenv to Animator.
 
-2016-06-27  Attila Török
+2016-06-27  Attila Torok
 
 	* Animation types split into separate classes.
 
@@ -347,15 +374,15 @@
 
 	* Follow change: removed messageSent_OBSOLETE(), a relic from OMNeT++ 3.x
 
-2016-07-18  Attila Török
+2016-07-18  Attila Torok
 
 	* .qtenvrc grouping cleanup, key changes, nicer font format.
 
-2016-06-29  Attila Török
+2016-06-29  Attila Torok
 
 	* Inspector windows made persistent between runs.
 
-2016-06-29  Attila Török
+2016-06-29  Attila Torok
 
 	* Silenced a sign-compare warning.
 

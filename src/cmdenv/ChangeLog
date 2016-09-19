@@ -1,3 +1,8 @@
+2016-08-31  Andras Varga
+
+	* Print summary at the end when doing multiple runs:
+	"Done %d simulation runs, %d successful, %d errors"
+
 2016-07-21  Attila Torok
 
 	* Added dummy implementations for cEnvir::getImageSize() and
