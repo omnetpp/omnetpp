@@ -18,7 +18,7 @@
 #define __OMNETPP_QTENV_IMAGECACHE_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include "qtenvdefs.h"
 
 class QImage;
@@ -33,7 +33,7 @@ enum IconSize { EXTRA_SMALL, VERY_SMALL, SMALL, NORMAL, LARGE, VERY_LARGE, EXTRA
 class ImageCache
 {
 private:
-    std::map<QString, QImage*> imagesWithSize;
+    std::unordered_map<std::string, QImage*> imagesWithSize;
 
     void doLoadImages(const char *dir, const char *prefix = "");
 
@@ -41,7 +41,7 @@ private:
     // This is returned when no image is found with the given name.
     QImage *unknownImage;
 
-    static QString sizePostfix(IconSize size);
+    static const char *sizePostfix(IconSize size);
 
 public:
     ImageCache();

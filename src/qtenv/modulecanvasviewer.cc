@@ -983,7 +983,6 @@ void ModuleCanvasViewer::refresh(bool updateNextEventMarker)
         redraw();
     }
     else {
-        drawEnclosingModule(object);
         refreshFigures();
         if (updateNextEventMarker)
             redrawNextEventMarker();

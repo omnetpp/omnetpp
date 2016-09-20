@@ -77,6 +77,12 @@ QPainterPath FigureRenderer::PathItem::shape() const
     return result;
 }
 
+QRectF FigureRenderer::PathItem::boundingRect() const
+{
+    float pw = pen().widthF();
+    return path().boundingRect().adjusted(-pw, -pw, pw, pw);
+}
+
 /* // only for debugging
 void FigureRenderer::PathItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QGraphicsPathItem::paint(painter, option, widget);

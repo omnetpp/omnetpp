@@ -19,7 +19,7 @@
 #include <QDir>
 #include <QImage>
 #include <QPixmap>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QDebug>
 
 #include "common/fileutil.h"
@@ -87,9 +87,9 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
             printf("Could not load image %s\n", fileName.toStdString().c_str());
 
         QStringList stringList = content[i].split(".");
-        QString key = prefix;
+        std::string key = prefix;
         for (int i = 0; i < stringList.size() - 1; ++i)
-            key += stringList[i];
+            key += stringList[i].toStdString();
         imagesWithSize[key] = image;
     }
 
@@ -103,7 +103,7 @@ void ImageCache::doLoadImages(const char *dir, const char *prefix)
     }
 }
 
-QString ImageCache::sizePostfix(IconSize size)
+const char *ImageCache::sizePostfix(IconSize size)
 {
     switch (size) {
         case EXTRA_SMALL: return "_xs";
@@ -119,16 +119,18 @@ QString ImageCache::sizePostfix(IconSize size)
 
 QImage *ImageCache::getImage(const char *name, const char *size)
 {
-    QString sizeText(size);
+    static QRegularExpression revs("v.*s.*", QRegularExpression::OptimizeOnFirstUsageOption);
+    static QRegularExpression revl("v[^s]*l.*", QRegularExpression::OptimizeOnFirstUsageOption);
+
     IconSize imageSize = NORMAL;
-    if (!sizeText.isEmpty()) {
-        if (sizeText[0] == 's')
+    if (size && size[0]) {
+        if (size[0] == 's')
             imageSize = SMALL;
-        else if (sizeText[0] == 'l')
+        else if (size[0] == 'l')
             imageSize = LARGE;
-        else if (sizeText.contains(QRegExp("v.*s.*")))
+        else if (revs.match(size).hasMatch())
             imageSize = VERY_SMALL;
-        else if (sizeText.contains(QRegExp("v[^s]*l.*")))
+        else if (revl.match(size).hasMatch())
             imageSize = VERY_LARGE;
     }
 
@@ -138,7 +140,7 @@ QImage *ImageCache::getImage(const char *name, const char *size)
 QImage *ImageCache::getImage(const char *name, IconSize size)
 {
     QString nameWithSize = name;
-    QString postfix = sizePostfix(size);
+    const char *postfix = sizePostfix(size);
     if (!nameWithSize.endsWith(postfix))
         nameWithSize += postfix;
     return getImage((nameWithSize).toStdString().c_str());
@@ -146,10 +148,8 @@ QImage *ImageCache::getImage(const char *name, IconSize size)
 
 QImage *ImageCache::getImage(const char *nameWithSize)
 {
-    if (imagesWithSize.find(nameWithSize) != imagesWithSize.end())
-        return imagesWithSize[nameWithSize];
-    // qDebug() << "ImageCache: Image" << nameWithSize << "not found!";
-    return unknownImage;
+    auto i = imagesWithSize.find(nameWithSize);
+    return i != imagesWithSize.end() ? i->second : unknownImage;
 }
 
 }  // namespace qtenv

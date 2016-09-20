@@ -59,6 +59,7 @@ protected:
     public:
         using QGraphicsPathItem::QGraphicsPathItem;
         QPainterPath shape() const override;
+        QRectF boundingRect() const override;
         //For debugging purposes only:
         //void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) override;
     };
