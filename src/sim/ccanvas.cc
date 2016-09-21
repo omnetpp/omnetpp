@@ -932,6 +932,30 @@ std::string cFigure::str() const
     return "";
 }
 
+void cFigure::setVisible(bool visible)
+{
+    if (this->visible != visible) {
+        this->visible = visible;
+        fireStructuralChange();
+    }
+}
+
+void cFigure::setTransform(const Transform& transform)
+{
+    if (!(this->transform == transform)) {
+        this->transform = transform;
+        fireTransformChange();
+    }
+}
+
+void cFigure::setZIndex(double zIndex)
+{
+    if (this->zIndex != zIndex) {
+        this->zIndex = zIndex;
+        fireStructuralChange();
+    }
+}
+
 void cFigure::setTooltip(const char *tooltip)
 {
     if (opp_strcmp(this->tooltip, tooltip) == 0)
@@ -939,6 +963,14 @@ void cFigure::setTooltip(const char *tooltip)
     stringPool.release(this->tooltip);
     this->tooltip = stringPool.get(tooltip);
     fire(CHANGE_VISUAL);
+}
+
+void cFigure::setAssociatedObject(cObject *obj)
+{
+    if (associatedObject != obj) {
+        associatedObject = obj;
+        fireInputDataChange();
+    }
 }
 
 void cFigure::setTags(const char *tags)
@@ -2858,6 +2890,15 @@ void cPathFigure::addClosePath()
 void cPathFigure::moveLocal(double dx, double dy)
 {
     setOffset(Point(getOffset()).translate(dx, dy));
+}
+
+void cPathFigure::setOffset(const Point& offset)
+{
+    if (!(this->offset == offset)) {
+        this->offset = offset;
+        fireGeometryChange();
+        fireTransformChange();
+    }
 }
 
 void cPathFigure::setJoinStyle(JoinStyle joinStyle)

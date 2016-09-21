@@ -442,7 +442,7 @@ class SIM_API cFigure : public cOwnedObject
          * to false will cause the whole figure subtree to be omitted from
          * rendering.
          */
-        virtual void setVisible(bool visible) {this->visible = visible; fireStructuralChange();}
+        virtual void setVisible(bool visible);
 
         /**
          * Returns the transform associated with this figure.
@@ -455,7 +455,7 @@ class SIM_API cFigure : public cOwnedObject
          * The transform may also be modified with the various
          * translate(), scale(), rotate(), skewx()/skewy() methods.
          */
-        virtual void setTransform(const Transform& transform) {this->transform = transform; fireTransformChange();}
+        virtual void setTransform(const Transform& transform);
 
         /**
          * Returns the Z-index of the figure.
@@ -470,7 +470,7 @@ class SIM_API cFigure : public cOwnedObject
          * parent's child list defines the stacking order. (A later figure
          * is in front of the earlier ones.)
          */
-        virtual void setZIndex(double zIndex) {this->zIndex = zIndex; fireStructuralChange();}
+        virtual void setZIndex(double zIndex);
 
         /**
          * Returns the tooltip of the figure, or nullptr if it does not have one.
@@ -495,7 +495,7 @@ class SIM_API cFigure : public cOwnedObject
          * responsible for ensuring that the pointer is valid (the corresponding
          * object exists), and remains valid while it is associated with the figure.
          */
-        virtual void setAssociatedObject(cObject *obj) {associatedObject = obj; fireInputDataChange();}
+        virtual void setAssociatedObject(cObject *obj);
 
         /**
          * Returns the space-separated list of the tags associated with the figure.
@@ -2003,8 +2003,21 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
 
         /** @name Geometry */
         //@{
+        /**
+         * Returns the coordinate offset of the path. A nonzero offset
+         * causes the path to appear translated by the given amount in the
+         * local coordinate system.
+         */
         virtual const Point& getOffset() const {return offset;}
-        virtual void setOffset(const Point& offset) {this->offset = offset; fireGeometryChange(); fireTransformChange();}
+
+        /**
+         * Sets the coordinate offset of the path. Setting a nonzero offset
+         * causes the path to appear translated by the given amount in the
+         * local coordinate system. The elements of the path remain unchanged.
+         * This method primarily exists so that moveLocal() can be a
+         * constant-time operation.
+         */
+        virtual void setOffset(const Point& offset);
         //@}
 
         /** @name Path manipulation */
