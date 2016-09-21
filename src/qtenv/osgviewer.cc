@@ -87,6 +87,17 @@ public:
         // This ID is just an internal unique handle for OSG,
         // real context creation is done entirely by Qt.
         state->setContextID(osg::GraphicsContext::createNewContextID());
+        v->setFormat(traitsToSurfaceFormat(getTraits()));
+    }
+
+    GraphicsWindow(OsgViewer *v, osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t), v(v) {
+        auto state = new osg::State;
+        setState(state);
+        state->setGraphicsContext(this);
+        // This ID is just an internal unique handle for OSG,
+        // real context creation is done entirely by Qt.
+        state->setContextID(osg::GraphicsContext::createNewContextID());
+        v->setFormat(traitsToSurfaceFormat(t));
     }
 
     GraphicsWindow(osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t) {
@@ -274,7 +285,14 @@ OsgViewer::OsgViewer(QWidget *parent): GLWidget(parent)
         HeartBeat::init(viewer);
     }
 
-    graphicsWindow = new GraphicsWindow(this, x(), y(), width(), height());
+    auto traits = new osg::GraphicsContext::Traits;
+    traits->x = x();
+    traits->y = y();
+    traits->width = width();
+    traits->height = height();
+    traits->samples = 4; // XXX make this configurable?
+
+    graphicsWindow = new GraphicsWindow(this, traits);
 
     // to prevent the default Qt context menu handling, we will do it manually
     setContextMenuPolicy(Qt::NoContextMenu);
