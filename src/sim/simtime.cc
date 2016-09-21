@@ -236,14 +236,14 @@ char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
 
     // convert digits
     bool negative = t < 0;
-    if (negative)
-        t = -t;
+    if (!negative)
+        t = -t;  // make t negative! otherwise we can't handle INT64_MIN (as it has no positive equivalent)
 
     bool skipzeros = true;
     int decimalplace = scaleexp;
     do {
         int64_t res = t / 10;
-        int digit = t - (10 * res);
+        int digit = 10*res - t;  // note: t is negative!
 
         if (skipzeros && (digit != 0 || decimalplace >= 0))
             skipzeros = false;

@@ -5,11 +5,22 @@ Tests for SimTime::ttoa.
 char *endp;
 char buf[64];
 
-EV << "zero0:  " << SimTime::ttoa(buf, 0, 0, endp) << "\n";
-EV << "zero10: " << SimTime::ttoa(buf, 0, -10, endp) << "\n";
-EV << "zero18: " << SimTime::ttoa(buf, 0, -18, endp) << "\n";
+int64_t t = 0;
+EV << "zero0:  " << SimTime::ttoa(buf, t, 0, endp) << "\n";
+EV << "zero10: " << SimTime::ttoa(buf, t, -10, endp) << "\n";
+EV << "zero18: " << SimTime::ttoa(buf, t, -18, endp) << "\n";
 
-int64_t t = 12345;
+t = INT64_MIN;
+EV << "-max0:  " << SimTime::ttoa(buf, t, 0, endp) << "\n";
+EV << "-max10: " << SimTime::ttoa(buf, t, -10, endp) << "\n";
+EV << "-max18: " << SimTime::ttoa(buf, t, -18, endp) << "\n";
+
+t = INT64_MAX;
+EV << "max0:  " << SimTime::ttoa(buf, t, 0, endp) << "\n";
+EV << "max10: " << SimTime::ttoa(buf, t, -10, endp) << "\n";
+EV << "max18: " << SimTime::ttoa(buf, t, -18, endp) << "\n";
+
+t = 12345;
 for (int exp=0; exp<=18; exp++)
 {
     EV << "exp=" << -exp << ":\n";
@@ -22,6 +33,16 @@ for (int exp=0; exp<=18; exp++)
 EV << ".\n";
 
 %contains: stdout
+zero0:  0
+zero10: 0
+zero18: 0
+-max0:  -9223372036854775808
+-max10: -922337203.6854775808
+-max18: -9.223372036854775808
+max0:  9223372036854775807
+max10: 922337203.6854775807
+max18: 9.223372036854775807
+exp=0:
  -12345
  12345
  123450
