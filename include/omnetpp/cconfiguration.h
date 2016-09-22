@@ -427,10 +427,16 @@ class SIM_API cConfigurationEx : public cConfiguration
 
     /**
      * This method returns an array of the following form: (key1, value1,
+     * key2, value2,...), where keys and values correspond to entries in the
+     * active configuration.
+     */
+    virtual std::vector<const char *> getKeyValuePairs() const = 0;
+
+    /**
+     * This method returns an array of the following form: (key1, value1,
      * key2, value2,...), where keys and values correspond to parameter
-     * assignments in the configuration. This method is inefficient, and
-     * should not be used for anything else than writing the header of
-     * result files.
+     * assignments in the active configuration. This method could be
+     * useful for writing the header of result files.
      */
     virtual std::vector<const char *> getParameterKeyValuePairs() const = 0;
 

@@ -75,6 +75,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     typedef std::set<std::string> StringSet;
     StringSet basedirs;  // stores ini file locations (absolute paths)
 
+    std::vector<KeyValue1> entries; // entries of the activated configuration, with itervars substituted
+
     // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,KeyValue1> config;  //XXX use const char * and CommonStringPool
 
@@ -241,6 +243,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<const char *> getMatchingConfigKeys(const char *pattern) const override;
     virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override;
     virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const override;
+    virtual std::vector<const char *> getKeyValuePairs() const override;
     virtual std::vector<const char *> getParameterKeyValuePairs() const override;
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override;

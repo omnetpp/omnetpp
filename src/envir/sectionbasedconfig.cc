@@ -312,9 +312,11 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
+
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
+    entries.clear();
     for (int i = 0; i < (int)commandLineOptions.size(); i++) {
         KeyValue1& e = commandLineOptions[i];
         std::string value = substituteVariables(e.getValue());
@@ -823,6 +825,7 @@ static int selectNext(const SectionChainList& sectionChains)
 
 void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
 {
+    entries.push_back(entry);
     const std::string& key = entry.key;
     const char *lastDot = strrchr(key.c_str(), '.');
     if (!lastDot && !PatternMatcher::containsWildcards(key.c_str())) {
@@ -1246,24 +1249,27 @@ bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char 
     }
 }
 
+std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs() const
+{
+    std::vector<const char *> result;
+    for (int i = 0; i < (int)entries.size(); i++) {
+        const KeyValue1& entry = entries[i];
+        result.push_back(entry.getKey());
+        result.push_back(entry.getValue());
+    }
+    return result;
+}
 
 std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs() const
 {
-    // we resolve the section chain again, and search through all ancestor sections
-    //TODO it would be better if the flattened entry list or the section chain were stored by activateConfig()
     std::vector<const char *> result;
-    std::vector<int> sectionChain = resolveSectionChain(activeConfig.c_str());
-    for (int i = 0; i < (int)sectionChain.size(); i++) {
-        int sectionId = sectionChain[i];
-        for (int i = 0; i < ini->getNumEntries(sectionId); i++) {
-            // if it's a parameter assignment or typename line, add it to the result
-            const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, i);
-            const char *lastDotPos = strrchr(entry.getKey(), '.');
-            bool containsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
-            if (lastDotPos && !containsHyphen) {
-                result.push_back(entry.getKey());
-                result.push_back(entry.getValue());
-            }
+    for (int i = 0; i < (int)entries.size(); i++) {
+        const KeyValue1& entry = entries[i];
+        const char *lastDotPos = strrchr(entry.getKey(), '.');
+        bool containsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
+        if (lastDotPos && !containsHyphen) {
+            result.push_back(entry.getKey());
+            result.push_back(entry.getValue());
         }
     }
     return result;
