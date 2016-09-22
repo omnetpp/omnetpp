@@ -126,36 +126,6 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
     return false;
 }
 
-QtenvOptions::QtenvOptions()
-{
-    // note: these values will be overwritten in setup()/readOptions() before taking effect
-    updateFreqFast = 500;
-    updateFreqExpress = 1000;
-    animationEnabled = true;
-    showNextEventMarkers = true;
-    showSendDirectArrows = true;
-    animateMethodCalls = true;
-    methodCallAnimDelay = 200;
-    animationMsgNames = true;
-    animationMsgClassNames = true;
-    animationMsgColors = true;
-    penguinMode = false;
-    showLayouting = false;
-    layouterChoice = LAYOUTER_AUTO;
-    arrangeVectorConnections = false;
-    iconMinimumSize = 5;
-    showBubbles = true;
-    animationSpeed = 1.5;
-    printEventBanners = true;
-    printInitBanners = true;
-    shortBanners = false;
-    autoupdateInExpress = true;
-    stripNamespace = STRIPNAMESPACE_ALL;
-    logFormat = "%l %C: ";
-    logLevel = LOGLEVEL_TRACE;
-    scrollbackLimit = 10000;
-}
-
 void Qtenv::storeOptsInPrefs()
 {
     setPref("updatefreq_fast_ms", QVariant::fromValue<int>(opt->updateFreqFast));

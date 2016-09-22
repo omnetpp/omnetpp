@@ -80,35 +80,35 @@ enum RunMode {
 
 struct QtenvOptions : public omnetpp::envir::EnvirOptions
 {
-    QtenvOptions();
-    size_t extraStack;        // per-module extra stack for activity() modules
-    std::string defaultConfig; // automatically set up this config at startup
-    int  defaultRun;          // automatically set up this run (of the default config) at startup
-    bool printInitBanners;    // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
-    bool printEventBanners;   // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
-    bool shortBanners;        // controls detail of event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
-    bool animationEnabled;    // msg animation
-    bool showNextEventMarkers;// display next event marker (red frame around modules)
-    bool showSendDirectArrows;// flash arrows when doing sendDirect() animation
-    bool animateMethodCalls;  // animate method calls
-    int  methodCallAnimDelay; // hold animation of method calls (millisec)
-    bool animationMsgNames;   // msg animation: display message name or not
-    bool animationMsgClassNames; // msg animation: display message class name or not
-    bool animationMsgColors;  // msg animation: display msg kind as color code or not
-    bool penguinMode;         // msg animation: message appearance
-    bool showLayouting;       // show layouting process in graphical module inspectors
-    LayouterChoice layouterChoice; // which new layouting algorithm to use
-    bool arrangeVectorConnections; // arrange connections on vector gates parallel to each other
-    int iconMinimumSize;      // minimum size of icons when zooming out
-    bool showBubbles;         // show result of bubble() calls
-    double animationSpeed;    // msg animation speed: 0=slow 1=norm 2=fast
-    long updateFreqFast;      // Fast Run updates display every N milliseconds
-    long updateFreqExpress;   // Express Run updates display every N milliseconds
-    bool autoupdateInExpress; // update inspectors at every display refresh in EXPRESS mode or not
-    StripNamespace stripNamespace; // whether to display type names with full C++ namespace prefix or not
-    std::string logFormat;    // format of the log prefix, see the LogFormatter class
-    LogLevel logLevel;        // global log level
-    int scrollbackLimit;      // global setting for all LogInspectors
+    // note: these values will be overwritten in setup()/readOptions() before taking effect
+    size_t extraStack;                     // per-module extra stack for activity() modules
+    std::string defaultConfig;             // automatically set up this config at startup
+    int  defaultRun;                       // automatically set up this run (of the default config) at startup
+    bool printInitBanners = true;          // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool printEventBanners = true;         // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool shortBanners = false;             // controls detail of event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool animationEnabled = true;          // msg animation
+    bool showNextEventMarkers = true;      // display next event marker (red frame around modules)
+    bool showSendDirectArrows = true;      // flash arrows when doing sendDirect() animation
+    bool animateMethodCalls = true;        // animate method calls
+    int  methodCallAnimDelay = 500;        // hold animation of method calls (millisec)
+    bool animationMsgNames = true;         // msg animation: display message name or not
+    bool animationMsgClassNames = true;    // msg animation: display message class name or not
+    bool animationMsgColors = true;        // msg animation: display msg kind as color code or not
+    bool penguinMode = false;              // msg animation: message appearance
+    bool showLayouting = false;            // show layouting process in graphical module inspectors
+    LayouterChoice layouterChoice = LAYOUTER_AUTO; // which new layouting algorithm to use
+    bool arrangeVectorConnections = false; // arrange connections on vector gates parallel to each other
+    int iconMinimumSize = 5;               // minimum size of icons when zooming out
+    bool showBubbles = true;               // show result of bubble() calls
+    double animationSpeed = 1.0;     // the scaling of animationTime relative to real time
+    long updateFreqFast = 500;             // Fast Run updates display every N milliseconds
+    long updateFreqExpress = 1000;         // Express Run updates display every N milliseconds
+    bool autoupdateInExpress = true;       // update inspectors at every display refresh in EXPRESS mode or not
+    StripNamespace stripNamespace = STRIPNAMESPACE_ALL; // whether to display type names with full C++ namespace prefix or not
+    std::string logFormat = "%l %C: ";     // format of the log prefix, see the LogFormatter class
+    LogLevel logLevel = LOGLEVEL_TRACE;    // global log level
+    int scrollbackLimit = 10000;           // global setting for all LogInspectors
 };
 
 /**
