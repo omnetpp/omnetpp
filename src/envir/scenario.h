@@ -59,26 +59,6 @@ class ENVIR_API Scenario
     int getIteratorPosition(const char *varid) const;
 
   public:
-    /**
-     * Used in resolving and generating scenarios, it implements a $x iteration variable.
-     * Currently just delegates to SectionBasedConfiguration::getIterationVariable().
-     */
-    class VariableReference : public Expression::Variable
-    {
-      private:
-        Scenario *hostnode;
-        std::string varname;
-      public:
-        VariableReference(Scenario *node, const char *name) {hostnode = node; varname = name;}
-        virtual ~VariableReference() {}
-        virtual Expression::Functor *dup() const override {return new VariableReference(hostnode, varname.c_str());}
-        virtual const char *getName() const override {return varname.c_str();}
-        virtual char getReturnType() const override {return Expression::Value::DBL;}
-        virtual Expression::Value evaluate(Expression::Value args[], int numargs) override
-            {return hostnode->getIterationVariableValue(varname.c_str());}
-    };
-
-  public:
     Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraint);
     ~Scenario();
 
