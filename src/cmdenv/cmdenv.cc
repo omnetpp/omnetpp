@@ -238,7 +238,7 @@ void Cmdenv::doRun()
 
                 cfg->activateConfig(opt->configName.c_str(), runNumber);
 
-                const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
+                const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS);
                 if (itervars && strlen(itervars) > 0)
                     ::fprintf(fout, "Scenario: %s\n", itervars);
                 ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));

@@ -48,7 +48,7 @@ class cConfigOption;
 #define CFGVAR_REPETITION       "repetition"
 #define CFGVAR_SEEDSET          "seedset"
 #define CFGVAR_ITERATIONVARS    "iterationvars"   // without $repetition
-#define CFGVAR_ITERATIONVARS2   "iterationvars2"  // with $repetition
+#define CFGVAR_ITERATIONVARSF   "iterationvarsf"  // same, sanitized for use in file names
 //@}
 
 /**

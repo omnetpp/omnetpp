@@ -21,6 +21,7 @@
 #include <cerrno>
 #include <cmath>  // HUGE_VAL
 #include <clocale>
+#include <algorithm>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
 #include "opp_ctype.h"
@@ -453,6 +454,20 @@ char *opp_strlwr(char *s)
     return txt;
 }
 
+std::string opp_strlower(const char *s)
+{
+    std::string tmp = opp_nulltoempty(s);
+    std::transform(tmp.begin(), tmp.end(), tmp.begin(), opp_tolower);
+    return tmp;
+}
+
+std::string opp_strupper(const char *s)
+{
+    std::string tmp = opp_nulltoempty(s);
+    std::transform(tmp.begin(), tmp.end(), tmp.begin(), opp_toupper);
+    return tmp;
+}
+
 std::string opp_join(const char *separator, const char *s1, const char *s2)
 {
     if (opp_isempty(s1))
@@ -686,6 +701,38 @@ const char *opp_findmatchingparen(const char *s)
     return parens > 0 ? nullptr : s;
 }
 
+static bool isInvalidChar(char c)  // illegal or trouble-causing
+{
+    // see http://www.mtu.edu/umc/services/digital/writing/characters-avoid/
+    return c < ' ' || c >= 127 || strchr("/\\:?*<>|'`\"$%{}^&", c) != nullptr;
+}
+
+std::string opp_sanitizeFileName(const std::string& fileName)
+{
+    std::string tmp = fileName;
+    tmp.erase(std::remove_if(tmp.begin(), tmp.end(), &isInvalidChar), tmp.end());
+    return tmp;
+}
+
+std::string opp_filenameencode(const std::string& src)
+{
+    std::stringstream os;
+    for (std::string::const_iterator iter = src.begin(); iter != src.end(); ++iter) {
+        char c = *iter;
+        if (c == ' ')
+            os << "_";
+        else if (c == '_')
+            os << "#_";
+        else if (c == '#')
+            os << "##";
+        else if (c < ' ' || c >= 127 || strchr("/\\:?*<>|'`\"$%{}^&", c))
+            os << "#" << std::hex << std::setw(2) << (int)c;
+        else
+            os << c;
+    }
+    return os.str();
+}
+
 inline char hexToChar(char first, char second)
 {
     int digit;
@@ -788,7 +835,7 @@ std::string opp_latexInsertBreaks(const char *s)
 
     char ch;
     char previousCh;
-    for (int i = 0; i < tmp.length(); i++) {
+    for (int i = 0; i < (int)tmp.length(); i++) {
         ch = tmp[i];
         // avoid putting a break opportunity into cFoo
         if (i != 0 && previousCh != 'c' && opp_isalpha(previousCh) && opp_isalpha(ch) && opp_islower(previousCh) && opp_isupper(ch)) {

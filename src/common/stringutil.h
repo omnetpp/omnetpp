@@ -228,14 +228,24 @@ COMMON_API std::string opp_substringafterlast(const std::string& str, const std:
 COMMON_API char *opp_concat(const char *s1, const char *s2, const char *s3=nullptr, const char *s4=nullptr);
 
 /**
- * Converts the string to uppercase. Returns a pointer to  the argument.
+ * Converts the string to upper case in-place. Returns a pointer to  the argument.
  */
 COMMON_API char *opp_strupr(char *s);
 
 /**
- * Converts the string to lowercase. Returns a pointer to  the argument.
+ * Converts the string to lower case in-place. Returns a pointer to  the argument.
  */
 COMMON_API char *opp_strlwr(char *s);
+
+/**
+ * Converts the string to lower case, and returns the result.
+ */
+COMMON_API std::string opp_strlower(const char *s);
+
+/**
+ * Converts the string to upper case, and returns the result.
+ */
+COMMON_API std::string opp_strupper(const char *s);
 
 /**
  * If either s1 or s2 is empty, returns the other one, otherwise returns
@@ -345,6 +355,21 @@ COMMON_API const char *opp_findmatchingquote(const char *s);
  * be caused by an unterminated string constant.
  */
 COMMON_API const char *opp_findmatchingparen(const char *s);
+
+/**
+ * Remove illegal characters from a string, so that it is safe to use as a
+ * file name. Characters that have special meaning in various shells or are
+ * also removed. The file name should not contain a directory part, because
+ * slashes (and backslashes) are also removed from the string.
+ */
+COMMON_API std::string opp_sanitizeFileName(const std::string& fileName);
+
+/**
+ * Encode a string for use as (part of) a file name, in a URLEncode-like
+ * manner (but e.g. using '#' instead '%', because '%' is interpreted by the
+ * Windows shell as variable or arg reference).
+ */
+COMMON_API std::string opp_filenameencode(const std::string& src);
 
 /**
  * Decode an URL-encoded string.

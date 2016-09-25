@@ -23,6 +23,7 @@
 #include "common/stringtokenizer.h"
 #include "common/stringtokenizer2.h"
 #include "common/stringutil.h"
+#include "common/fileutil.h"
 #include "omnetpp/cconfigreader.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/globals.h"
@@ -74,8 +75,8 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
     { CFGVAR_REPETITION,       "The iteration number in `0..N-1`, where `N` is the value of the `repeat` configuration option" },
     { CFGVAR_SEEDSET,          "Value of the `seed-set` configuration option" },
     { CFGVAR_ITERATIONVARS,    "Concatenation of all user-defined iteration variables in `name=value` form" },
-    { CFGVAR_ITERATIONVARS2,   "Concatenation of all user-defined iteration variables in `name=value` form, plus `${repetition}`" },
-    { nullptr,                    nullptr }
+    { CFGVAR_ITERATIONVARSF,   "Like ${iterationvars}, but sanitized for use as part of file names" },
+    { nullptr,                 nullptr }
 };
 
 #define VARPOS_PREFIX    std::string("&")
@@ -352,16 +353,19 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
         variables[varid] = scenario->getVariable(varid);
     }
 
-    // assemble ${iterationvars}
-    std::string iterationvars, iterationvars2;
+    // assemble ${iterationvars} and ${iterationvarsf}
+    std::string iterationvars, iterationvarsf;
     for (int i = 0; i < (int)itervars.size(); i++) {
-        std::string txt = "$" + itervars[i].varName + "=" + scenario->getVariable(itervars[i].varId.c_str());
-        if (itervars[i].varName != CFGVAR_REPETITION)
-            iterationvars += std::string(i > 0 ? ", " : "") + txt;
-        iterationvars2 += std::string(i > 0 ? ", " : "") + txt;
+        if (itervars[i].varName != CFGVAR_REPETITION) {
+            std::string varAndValue = itervars[i].varName + "=" + scenario->getVariable(itervars[i].varId.c_str());
+            iterationvars += std::string(iterationvars.empty() ? "" : ", ") + "$" + varAndValue;
+            iterationvarsf += std::string(iterationvarsf.empty() ? "" : ",") + opp_filenameencode(varAndValue); // without dollar and space
+        }
     }
+    if (!iterationvarsf.empty())
+        iterationvarsf += "-";  // for filenames
     variables[CFGVAR_ITERATIONVARS] = iterationvars;
-    variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
+    variables[CFGVAR_ITERATIONVARSF] = iterationvarsf;
 
     // experiment/measurement/replication must be done as last, because they may depend on the above vars
     variables[CFGVAR_SEEDSET] = resolveConfigOption(CFGID_SEED_SET, sectionChain);
