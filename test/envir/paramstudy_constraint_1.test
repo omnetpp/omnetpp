@@ -7,11 +7,12 @@ Tests scenario generation: basic constraint
 *.b = ${y=1..5}
 constraint = $x < $y
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 10
+
 Run 0: $x=1, $y=2, $repetition=0
 Run 1: $x=1, $y=3, $repetition=0
 Run 2: $x=1, $y=4, $repetition=0

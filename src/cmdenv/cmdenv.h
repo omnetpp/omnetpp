@@ -32,7 +32,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
 {
     CmdenvOptions();
     std::string configName;
-    std::string runsToExec;
+    std::string runFilter;
     size_t extraStack;
     std::string outputFile;
     bool expressMode;

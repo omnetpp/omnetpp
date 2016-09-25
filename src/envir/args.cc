@@ -121,7 +121,7 @@ const char *ArgList::optionValue(char c, int k) const
 {
     if (shortOpts.find(c) == shortOpts.end())
         return nullptr;
-    const std::vector<std::string>& v = shortOpts.find(c)->second;  // VC++ has problems with shortOpts[c]
+    const std::vector<std::string>& v = shortOpts.find(c)->second;
     return (k >= 0 && k < (int)v.size()) ? v[k].c_str() : nullptr;
 }
 

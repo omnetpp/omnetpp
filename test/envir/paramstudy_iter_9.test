@@ -6,11 +6,12 @@ Tests scenario generation: empty inner loops
 *.a = ${x=6,1}
 *.b = ${y=$x..5}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 5
+
 Run 0: $x=1, $y=1, $repetition=0
 Run 1: $x=1, $y=2, $repetition=0
 Run 2: $x=1, $y=3, $repetition=0

@@ -1,0 +1,83 @@
+%description:
+Tests the '-q runconfig' command line option
+
+%inifile: omnetpp.ini
+
+[Config Scenario]
+repeat = 2
+Aloha.numHosts = ${numHosts=10,20}
+Aloha.host[*].iaTime = exponential(${mean=1,3}s)
+
+%extraargs: -c Scenario -q runconfig
+
+%contains: stdout
+Setting up Cmdenv...
+
+Config: Scenario
+Number of runs: 8
+
+Run 0: $numHosts=10, $mean=1, $repetition=0
+	repeat = 2
+	Aloha.numHosts = 10
+	Aloha.host[*].iaTime = exponential(1s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 1: $numHosts=10, $mean=1, $repetition=1
+	repeat = 2
+	Aloha.numHosts = 10
+	Aloha.host[*].iaTime = exponential(1s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 2: $numHosts=10, $mean=3, $repetition=0
+	repeat = 2
+	Aloha.numHosts = 10
+	Aloha.host[*].iaTime = exponential(3s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 3: $numHosts=10, $mean=3, $repetition=1
+	repeat = 2
+	Aloha.numHosts = 10
+	Aloha.host[*].iaTime = exponential(3s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 4: $numHosts=20, $mean=1, $repetition=0
+	repeat = 2
+	Aloha.numHosts = 20
+	Aloha.host[*].iaTime = exponential(1s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 5: $numHosts=20, $mean=1, $repetition=1
+	repeat = 2
+	Aloha.numHosts = 20
+	Aloha.host[*].iaTime = exponential(1s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 6: $numHosts=20, $mean=3, $repetition=0
+	repeat = 2
+	Aloha.numHosts = 20
+	Aloha.host[*].iaTime = exponential(3s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+Run 7: $numHosts=20, $mean=3, $repetition=1
+	repeat = 2
+	Aloha.numHosts = 20
+	Aloha.host[*].iaTime = exponential(3s)
+	network = Test
+	cmdenv-express-mode = false
+	cmdenv-log-prefix = ""
+
+End.

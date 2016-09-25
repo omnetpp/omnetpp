@@ -297,14 +297,11 @@ void Tkenv::doRun()
 
 void Tkenv::printUISpecificHelp()
 {
-    std::cout << "Tkenv-specific options:\n";
-    std::cout << "  -c <configname>\n";
-    std::cout << "                Select a given configuration for execution. With inifile-based\n";
-    std::cout << "                configuration database, this selects the [Config <configname>]\n";
-    std::cout << "                section; the default is the [General] section.\n";
-    std::cout << "                See also: -r.\n";
-    std::cout << "  -r <run>      Set up the specified run number in the configuration selected with\n";
-    std::cout << "                the -c option\n";
+    std::cout << "\n";
+    std::cout << "Tkenv-specific information:\n";
+    std::cout << "    Tkenv allows the user to select a simulation run interactively.\n";
+    std::cout << "    The -c and -r options only serve as hints or default values for\n";
+    std::cout << "    the GUI.\n";
 }
 
 void Tkenv::rebuildSim()

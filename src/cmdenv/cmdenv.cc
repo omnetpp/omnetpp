@@ -155,7 +155,7 @@ void Cmdenv::readOptions()
     // note: configname and runstoexec will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
     opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
-    opt->runsToExec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
+    opt->runFilter = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
     opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
@@ -193,43 +193,27 @@ void Cmdenv::doRun()
         // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
         // invokes readOptions()).
 
-        const char *configName = args->optionValue('c');
-        if (configName)
-            opt->configName = configName;
+        opt->configName = opp_nulltoempty(args->optionValue('c'));
         if (opt->configName.empty())
             opt->configName = "General";
 
-        const char *runsToExec = args->optionValue('r');
-        if (runsToExec)
-            opt->runsToExec = runsToExec;
+        opt->runFilter = opp_nulltoempty(args->optionValue('r'));
 
-        // if the list of runs is not given explicitly, must execute all runs
-        if (opt->runsToExec.empty()) {
-            int n = cfg->getNumRunsInConfig(opt->configName.c_str());  // note: may throw exception
-            if (n == 0) {
-                printfmsg("Error: Configuration `%s' generates 0 runs", opt->configName.c_str());
-                exitCode = 1;
-                return;
-            }
-            else {
-                char buf[32];
-                sprintf(buf, (n == 1 ? "%d" : "0..%d"), n-1);
-                opt->runsToExec = buf;
-            }
+        std::vector<int> runNumbers;
+        try {
+            runNumbers = resolveRunFilter(opt->configName.c_str(), opt->runFilter.c_str());
         }
-
-        EnumStringIterator runiterator(opt->runsToExec.c_str());
-        if (runiterator.hasError()) {
-            printfmsg("Error parsing list of runs to execute: `%s'", opt->runsToExec.c_str());
+        catch (std::exception& e) {
+            displayException(e);
             exitCode = 1;
             return;
         }
 
         int numRuns = 0;
         int numErrors = 0;
-        for ( ; runiterator() != -1; runiterator++) {
+        for (int i = 0; i < (int)runNumbers.size(); i++) {
             numRuns++;
-            int runNumber = runiterator();
+            int runNumber = runNumbers[i];
             bool networkSetupDone = false;
             bool startrunDone = false;
             try {
@@ -242,8 +226,6 @@ void Cmdenv::doRun()
                 if (itervars && strlen(itervars) > 0)
                     ::fprintf(fout, "Scenario: %s\n", itervars);
                 ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
-
-                // cfg->dump();
 
                 readPerRunOptions();
 
@@ -702,23 +684,11 @@ void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, int& out
 
 void Cmdenv::printUISpecificHelp()
 {
-    std::cout << "Cmdenv-specific options:\n";
-    std::cout << "  -c <configname>\n";
-    std::cout << "                Select a given configuration for execution. With inifile-based\n";
-    std::cout << "                configuration database, this selects the [Config <configname>]\n";
-    std::cout << "                section; the default is the [General] section.\n";
-    std::cout << "                See also: -r.\n";
-    std::cout << "  -r <runs>     Execute the specified runs in the configuration selected with the\n";
-    std::cout << "                -c option. <runs> is a comma-separated list of run numbers or\n";
-    std::cout << "                run number ranges, for example 1,2,5-10. When not present, all\n";
-    std::cout << "                runs of that configuration will be executed.\n";
-    std::cout << "  -a            Print all config names and number of runs it them, and exit.\n";
-    std::cout << "  -x <configname>\n";
-    std::cout << "                Print the number of runs in the given configuration, and exit.\n";
-    std::cout << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
-    std::cout << "                variables, etc. -G provides more details than -g.\n";
-    std::cout << "  -X <configname>\n";
-    std::cout << "                Print the fallback chain of the given configuration, and exit.\n";
+    std::cout << "\n";
+    std::cout << "Cmdenv-specific information:\n";
+    std::cout << "    Cmdenv executes all runs denoted by the -c and -r options. The number\n";
+    std::cout << "    of runs executed and the number of runs that ended with an error are\n";
+    std::cout << "    reported at the end.\n";
 }
 
 unsigned Cmdenv::getExtraStackForEnvir() const

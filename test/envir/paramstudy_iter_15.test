@@ -6,11 +6,12 @@ Tests scenario generation: variable substitution
 *.a = ${x=1+1}
 *.b = ${y=$x*2,($x)*2,$x..$x}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 3
+
 Run 0: $x=1+1, $y=1+1*2, $repetition=0
 Run 1: $x=1+1, $y=(1+1)*2, $repetition=0
 Run 2: $x=1+1, $y=2, $repetition=0

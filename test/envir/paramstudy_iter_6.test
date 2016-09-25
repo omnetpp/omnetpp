@@ -5,11 +5,12 @@ Tests scenario generation: unnamed variables with alpha values
 [Config Test]
 *.a = ${alpha,beta,gamma}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 3
+
 Run 0: $0=alpha, $repetition=0
 Run 1: $0=beta, $repetition=0
 Run 2: $0=gamma, $repetition=0

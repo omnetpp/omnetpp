@@ -6,11 +6,12 @@ Tests scenario generation: functions in the constraint expression
 *.a = ${x=-10..10}
 constraint = fabs($x) >= 9
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 4
+
 Run 0: $x=-10, $repetition=0
 Run 1: $x=-9, $repetition=0
 Run 2: $x=9, $repetition=0

@@ -6,7 +6,7 @@ Tests scenario generation: parallel iterations: not enough values
 **.a = ${i=1..4}
 **.b = ${100,200 ! i}
 
-%extraargs: -G -x Test
+%extraargs: -c Test -q runs
 
 %exitcode: 1
 

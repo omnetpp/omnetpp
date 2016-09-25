@@ -6,25 +6,25 @@ Tests scenario generation: parallel iterations
 **.a = ${i=10..40 step 10}
 **.b = ${100,200,300,400! i}
 
-%extraargs: -G -x Test
+%extraargs: -c Test -q rundetails
 
 %contains: stdout
 Config: Test
 Number of runs: 4
-Run 0:
-	# $i=10, $0=100, $repetition=0
+
+Run 0: $i=10, $0=100, $repetition=0
 	**.a = 10
 	**.b = 100
-Run 1:
-	# $i=20, $0=200, $repetition=0
+
+Run 1: $i=20, $0=200, $repetition=0
 	**.a = 20
 	**.b = 200
-Run 2:
-	# $i=30, $0=300, $repetition=0
+
+Run 2: $i=30, $0=300, $repetition=0
 	**.a = 30
 	**.b = 300
-Run 3:
-	# $i=40, $0=400, $repetition=0
+
+Run 3: $i=40, $0=400, $repetition=0
 	**.a = 40
 	**.b = 400
 

@@ -7,25 +7,25 @@ Tests scenario generation: non-numeric enumerated values
 *.b = ${y="Hapci", "Morgo"}
 constraint = $x!=0
 
-%extraargs: -G -x Test
+%extraargs: -c Test -q rundetails
 
 %contains: stdout
 Config: Test
 Number of runs: 4
-Run 0:
-	# $x=1, $y="Hapci", $repetition=0
+
+Run 0: $x=1, $y="Hapci", $repetition=0
 	*.a = 1
 	*.b = "Hapci"
-Run 1:
-	# $x=1, $y="Morgo", $repetition=0
+
+Run 1: $x=1, $y="Morgo", $repetition=0
 	*.a = 1
 	*.b = "Morgo"
-Run 2:
-	# $x=2, $y="Hapci", $repetition=0
+
+Run 2: $x=2, $y="Hapci", $repetition=0
 	*.a = 2
 	*.b = "Hapci"
-Run 3:
-	# $x=2, $y="Morgo", $repetition=0
+
+Run 3: $x=2, $y="Morgo", $repetition=0
 	*.a = 2
 	*.b = "Morgo"
 

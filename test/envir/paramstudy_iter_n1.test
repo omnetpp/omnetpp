@@ -6,7 +6,7 @@ Tests scenario generation: referring to nonexistent iteration variable
 *.foo = ${x=1..5}
 *.bar = ${bubu}
 
-%extraargs: -G -x Test
+%extraargs: -c Test -q runs
 
 %exitcode: 1
 

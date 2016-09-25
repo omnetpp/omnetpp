@@ -9,11 +9,12 @@ Tests scenario generation: primes
 *.d = ${($a>5&&$a%5==0?1:0)..0}
 *.e = ${($a>7&&$a%7==0?1:0)..0}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 30
+
 Run 0: $a=2, $0=0, $1=0, $2=0, $3=0, $repetition=0
 Run 1: $a=3, $0=0, $1=0, $2=0, $3=0, $repetition=0
 Run 2: $a=5, $0=0, $1=0, $2=0, $3=0, $repetition=0

@@ -8,11 +8,12 @@ Tests scenario generation: factoring example
 *.c = ${c=$b..10}
 *.d = ${($a==$b*$c?0:1)..0}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 15
+
 Run 0: $a=4, $b=2, $c=2, $0=0, $repetition=0
 Run 1: $a=6, $b=2, $c=3, $0=0, $repetition=0
 Run 2: $a=8, $b=2, $c=4, $0=0, $repetition=0

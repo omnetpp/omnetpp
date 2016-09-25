@@ -1,5 +1,5 @@
 %description:
-Tests the -x command line option
+Tests the '-q runnumbers' command line option
 
 %inifile: omnetpp.ini
 
@@ -8,12 +8,14 @@ repeat = 2
 Aloha.numHosts = ${numHosts=10,20}
 Aloha.host[*].iaTime = exponential(${mean=1,3}s)
 
-%extraargs: -x Scenario
+%extraargs: -c Scenario -q runnumbers
 
 %contains: stdout
 Setting up Cmdenv...
 
 Config: Scenario
 Number of runs: 8
+
+Run numbers: 0 1 2 3 4 5 6 7
 
 End.

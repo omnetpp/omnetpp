@@ -7,33 +7,33 @@ Tests scenario generation: referring to existing iteration variables
 *.bar = ${x} + ${y}
 constraint = $x*$y <= 400
 
-%extraargs: -G -x Test
+%extraargs: -c Test -q rundetails
 
 %contains: stdout
 Config: Test
 Number of runs: 6
-Run 0:
-	# $x=100, $y=1, $repetition=0
+
+Run 0: $x=100, $y=1, $repetition=0
 	*.foo = 100 + 1
 	*.bar = 100 + 1
-Run 1:
-	# $x=100, $y=2, $repetition=0
+
+Run 1: $x=100, $y=2, $repetition=0
 	*.foo = 100 + 2
 	*.bar = 100 + 2
-Run 2:
-	# $x=100, $y=3, $repetition=0
+
+Run 2: $x=100, $y=3, $repetition=0
 	*.foo = 100 + 3
 	*.bar = 100 + 3
-Run 3:
-	# $x=200, $y=1, $repetition=0
+
+Run 3: $x=200, $y=1, $repetition=0
 	*.foo = 200 + 1
 	*.bar = 200 + 1
-Run 4:
-	# $x=200, $y=2, $repetition=0
+
+Run 4: $x=200, $y=2, $repetition=0
 	*.foo = 200 + 2
 	*.bar = 200 + 2
-Run 5:
-	# $x=300, $y=1, $repetition=0
+
+Run 5: $x=300, $y=1, $repetition=0
 	*.foo = 300 + 1
 	*.bar = 300 + 1
 

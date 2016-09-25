@@ -6,25 +6,25 @@ Tests scenario generation: parallel iterations: named parallel iterator
 **.a = ${i=1..4}
 **.b = ${foo=100,200,300,400 ! i}
 
-%extraargs: -G -x Test
+%extraargs: -c Test -q rundetails
 
 %contains: stdout
 Config: Test
 Number of runs: 4
-Run 0:
-	# $i=1, $foo=100, $repetition=0
+
+Run 0: $i=1, $foo=100, $repetition=0
 	**.a = 1
 	**.b = 100
-Run 1:
-	# $i=2, $foo=200, $repetition=0
+
+Run 1: $i=2, $foo=200, $repetition=0
 	**.a = 2
 	**.b = 200
-Run 2:
-	# $i=3, $foo=300, $repetition=0
+
+Run 2: $i=3, $foo=300, $repetition=0
 	**.a = 3
 	**.b = 300
-Run 3:
-	# $i=4, $foo=400, $repetition=0
+
+Run 3: $i=4, $foo=400, $repetition=0
 	**.a = 4
 	**.b = 400
 

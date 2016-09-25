@@ -6,7 +6,7 @@ Tests scenario generation: type error
 *.a = ${x="1"}
 *.b = ${y=1..$x}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %exitcode: 1
 

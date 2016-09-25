@@ -122,6 +122,12 @@ bool MatchExpression::matches(const Matchable *object)
     return stk[tos];
 }
 
+const char *MatchableStringMap::getAsString(const char *attribute) const
+{
+    std::map<std::string,std::string>::const_iterator it = stringMap.find(attribute);
+    return it == stringMap.end() ? nullptr : it->second.c_str();
+}
+
 }  // namespace common
 }  // namespace omnetpp
 

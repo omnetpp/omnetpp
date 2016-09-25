@@ -7,11 +7,12 @@ Tests scenario generation: inner loops with string values
 *.b = ${y="1","2","3"}
 *.c = ${z=$x+$y}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 9
+
 Run 0: $x="a", $y="1", $z="a"+"1", $repetition=0
 Run 1: $x="a", $y="2", $z="a"+"2", $repetition=0
 Run 2: $x="a", $y="3", $z="a"+"3", $repetition=0

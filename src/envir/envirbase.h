@@ -157,6 +157,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // leave to subclasses: virtual bool askyesno(const char *msg);
     virtual std::string makeDebuggerCommand();
     static void crashHandler(int signum);
+    virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
+    virtual void printRunInfo(const char *configName, const char *runFilter, const char *query);
 
   public:
     EnvirBase();

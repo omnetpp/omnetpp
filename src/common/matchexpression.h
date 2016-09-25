@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "commondefs.h"
 #include "exception.h"
 
@@ -159,6 +160,20 @@ class COMMON_API MatchableString : public MatchExpression::Matchable
     MatchableString(const char *s) {str = s;}
     virtual const char *getAsString() const override {return str.c_str();}
     virtual const char *getAsString(const char *attribute) const override {return nullptr;}
+};
+
+/**
+ * Wrapper to make a string map matchable with MatchExpression.
+ */
+class COMMON_API MatchableStringMap : public MatchExpression::Matchable
+{
+  private:
+    std::string defaultValue;
+    std::map<std::string,std::string> stringMap;
+  public:
+    MatchableStringMap(const std::string& defaultValue, const std::map<std::string,std::string>& map) : defaultValue(defaultValue), stringMap(map) {}
+    virtual const char *getAsString() const override {return defaultValue.c_str();}
+    virtual const char *getAsString(const char* attribute) const override;
 };
 
 } // namespace common

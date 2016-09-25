@@ -401,7 +401,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
     }
 }
 
-std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *configName, bool detailed) const
+std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(const char *configName) const
 {
     // extract all iteration vars from values within this section
     std::vector<int> sectionChain = resolveSectionChain(configName);
@@ -412,35 +412,33 @@ std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *con
 
     // setupVariables() overwrites variables[], so we need to save/restore it
     StringMap savedVariables = variables;
+    std::string savedRunId = runId;
 
     // iterate over all runs in the scenario
     try {
         Scenario scenario(itervars, constraint);
-        std::vector<std::string> result;
+        std::vector<RunInfo> result;
         if (scenario.restart()) {
             for (;;) {
-                // generate a string for the current run
-                std::string runstring;
-                if (!detailed) {
-                    runstring = scenario.str();
-                }
-                else {
-                    // itervars, plus all entries that contain ${..}
-                    runstring += std::string("\t# ") + scenario.str() + "\n";
-                    (const_cast<SectionBasedConfiguration *>(this))->setupVariables(configName, result.size(), &scenario, sectionChain);
-                    for (int i = 0; i < (int)sectionChain.size(); i++) {
-                        int sectionId = sectionChain[i];
-                        for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
-                            // add entry to our tables
-                            const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
-                            if (strstr(entry.getValue(), "${") != nullptr) {
-                                std::string actualValue = substituteVariables(entry.getValue(), sectionId, entryId);
-                                runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
-                            }
+                RunInfo runInfo;
+                runInfo.info = scenario.str();
+                (const_cast<SectionBasedConfiguration *>(this))->setupVariables(configName, result.size(), &scenario, sectionChain);
+                runInfo.runAttrs = variables;
+
+                // collect entries that contain ${..}
+                std::string tmp;
+                for (int i = 0; i < (int)sectionChain.size(); i++) {
+                    int sectionId = sectionChain[i];
+                    for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
+                        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+                        if (strstr(entry.getValue(), "${") != nullptr) {
+                            std::string expandedValue = substituteVariables(entry.getValue(), sectionId, entryId);
+                            tmp += std::string(entry.getKey()) + " = " + expandedValue + "\n";
                         }
                     }
                 }
-                result.push_back(runstring);
+                runInfo.configBrief = tmp;
+                result.push_back(runInfo);
 
                 // move to the next run
                 if (!scenario.next())
@@ -448,10 +446,12 @@ std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *con
             }
         }
         (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
+        (const_cast<SectionBasedConfiguration *>(this))->runId = savedRunId;
         return result;
     }
     catch (std::exception& e) {
         (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
+        (const_cast<SectionBasedConfiguration *>(this))->runId = savedRunId;
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
 }

@@ -5,7 +5,7 @@ Tests scenario generation
 [Config Bogus]
 *.a = ${a=1,2,korte}
 
-%extraargs: -G -x NoSuchConfig
+%extraargs: -c NoSuchConfig -q runs
 
 %exitcode: 1
 %contains: stderr

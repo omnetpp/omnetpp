@@ -103,7 +103,7 @@ int setupUserInterface(int argc, char *argv[])
 
         // args
         ArgList args;
-        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:agGvw");
+        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvw");
 
         //
         // First, load the ini file. It might contain the name of the user interface

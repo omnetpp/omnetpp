@@ -16,6 +16,8 @@
 #ifndef __OMNETPP_CCONFIGURATION_H
 #define __OMNETPP_CCONFIGURATION_H
 
+#include <string>
+#include <map>
 #include <vector>
 #include "simkerneldefs.h"
 #include "cobject.h"
@@ -77,6 +79,15 @@ class SIM_API cConfiguration : public cObject
         virtual const char *getKey() const = 0;
         virtual const char *getValue() const = 0;
         virtual const char *getBaseDirectory() const = 0;
+    };
+
+    /**
+     * @brief Struct used by unrollConfig() to return information.
+     */
+    struct RunInfo {
+        std::string info; // concatenated
+        std::map<std::string,std::string> runAttrs; // run attributes
+        std::string configBrief; // config options that contain inifile variables (${foo}), expanded
     };
 
   public:
@@ -346,8 +357,10 @@ class SIM_API cConfigurationEx : public cConfiguration
      * iteration variables; with detailed==true, each run generates a multi-line
      * string containing the config entries that contain iterations or iteration
      * variable references. This method is primarily for debugging purposes.
+     *
+     * TODO update description
      */
-    virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed=true) const = 0;
+    virtual std::vector<RunInfo> unrollConfig(const char *configName) const = 0;
 
     /**
      * Returns the name of the currently active configuration.

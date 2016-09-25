@@ -140,7 +140,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     NullKeyValue nullEntry;
 
     // predefined variables (${configname} etc) and iteration variables. id-to-value map.
-    // Also stores iterator positions (i.e. the iteration counter), with key "&varname"
+    // Also stores iterator positions (i.e. the iteration counter), with key "&varname".
     typedef std::map<std::string,std::string> StringMap;
     StringMap variables;
 
@@ -235,7 +235,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<std::string> getBaseConfigs(const char *configName) const override;
     virtual std::vector<std::string> getConfigChain(const char *configName) const override;
     virtual int getNumRunsInConfig(const char *configName) const override;
-    virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed) const override;
+    virtual std::vector<RunInfo> unrollConfig(const char *configName) const override;
     virtual const char *getActiveConfigName() const override;
     virtual int getActiveRunNumber() const override;
     virtual const char *getConfigValue(const char *key) const override;

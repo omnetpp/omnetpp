@@ -9,11 +9,12 @@ Tests scenario generation: nesting with empty loops
 *.d = ${d=($a%5==0?1:0)..0}
 *.e = ${e=($a%7==0?1:0)..0}
 
-%extraargs: -g -x Test
+%extraargs: -c Test -q runs
 
 %contains: stdout
 Config: Test
 Number of runs: 1
+
 Run 0: $a=1, $b=0, $c=0, $d=0, $e=0, $repetition=0
 
 End.

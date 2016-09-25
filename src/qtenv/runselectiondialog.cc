@@ -138,10 +138,10 @@ void RunSelectionDialog::fillRunNumberCombo(const char *configName)
 
     ui->runNumber->clear();
     int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(configName);
-    std::vector<std::string> configVariables = getQtenv()->getConfigEx()->unrollConfig(configName, false);
+    std::vector<cConfiguration::RunInfo> runDescriptions = getQtenv()->getConfigEx()->unrollConfig(configName);
 
     for (int i = 0; i < runs; ++i)
-        ui->runNumber->addItem(QString::number(i) + " (" + configVariables[i].c_str() + ")", QVariant(i));
+        ui->runNumber->addItem(QString::number(i) + " (" + runDescriptions[i].info.c_str() + ")", QVariant(i));
 
     ui->runNumber->setDisabled(ui->runNumber->count() < 2);
 }

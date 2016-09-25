@@ -1,5 +1,5 @@
 %description:
-Tests that command-line --repeat has an effect on -x output
+Tests that command-line --repeat has an effect on -q output
 
 %inifile: omnetpp.ini
 
@@ -7,11 +7,12 @@ Tests that command-line --repeat has an effect on -x output
 Aloha.numHosts = ${numHosts=10,20}
 Aloha.host[*].iaTime = exponential(${mean=1,3}s)
 
-%extraargs: -x Scenario -g --repeat=5
+%extraargs: -c Scenario -q runs --repeat=5
 
 %contains: stdout
 Config: Scenario
 Number of runs: 20
+
 Run 0: $numHosts=10, $mean=1, $repetition=0
 Run 1: $numHosts=10, $mean=1, $repetition=1
 Run 2: $numHosts=10, $mean=1, $repetition=2

@@ -6,7 +6,7 @@ Tests scenario generation
 *.a = ${a=1,2,korte}
 constraint = $bubu > 1
 
-%extraargs: -g -x Bogus
+%extraargs: -c Bogus -q runs
 
 %exitcode: 1
 %contains: stderr

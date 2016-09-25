@@ -1,0 +1,19 @@
+%description:
+Tests the -q numruns command line option
+
+%inifile: omnetpp.ini
+
+[Config Scenario]
+repeat = 2
+Aloha.numHosts = ${numHosts=10,20}
+Aloha.host[*].iaTime = exponential(${mean=1,3}s)
+
+%extraargs: -c Scenario -q numruns
+
+%contains: stdout
+Setting up Cmdenv...
+
+Config: Scenario
+Number of runs: 8
+
+End.

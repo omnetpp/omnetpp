@@ -62,6 +62,7 @@
 #include "envirbase.h"
 #include "envirutils.h"
 #include "appreg.h"
+#include "valueiterator.h"
 #include "cxmldoccache.h"
 
 #ifdef WITH_PARSIM
@@ -285,7 +286,7 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:agGvw");  // TODO share spec with startup.cc!
+    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvw");  // TODO share spec with startup.cc!
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
@@ -336,53 +337,127 @@ bool EnvirBase::simulationRequired()
         return false;
     }
 
-    // '-x' option: print number of runs in the given config, and exit (overrides configname)
-    const char *configToPrint = args->optionValue('x');
-    if (configToPrint) {
-        //
-        // IMPORTANT: the simulation launcher will parse the output of this
-        // option, so it should be modified with care and the two kept in sync
-        // (see OmnetppLaunchUtils.getSimulationRunInfo()).
-        //
-        // Rules:
-        // (1) the number of runs should appear on the rest of the line
-        //     after the "Number of runs:" text
-        // (2) per-run information lines should span from the "Number of runs:"
-        //     line until the next blank line ("\n\n").
-        //
+    // try processing -q option
+    const char *configName = args->optionValue('c');
+    const char *runFilter = args->optionValue('r');
+    const char *query = args->optionValue('q');
 
-        // '-g'/'-G' options: modifies -x: print unrolled config, iteration variables, etc as well
-        bool unrollBrief = args->optionGiven('g');
-        bool unrollDetailed = args->optionGiven('G');
-
-        std::cout <<"\n";
-        std::cout <<"Config: " << configToPrint << "\n";
-        std::cout <<"Number of runs: " << cfg->getNumRunsInConfig(configToPrint) << "\n";
-
-        if (unrollBrief || unrollDetailed) {
-            std::vector<std::string> runs = cfg->unrollConfig(configToPrint, unrollDetailed);
-            const char *fmt = unrollDetailed ? "Run %d:\n%s" : "Run %d: %s\n";
-            for (int i = 0; i < (int)runs.size(); i++)
-                std::cout << opp_stringf(fmt, i, runs[i].c_str());
-        }
-        return false;
+    // legacy options that map to -q
+    if (args->optionGiven('x')) {
+        std::cout << "\nWarning: deprecated option -x (will be removed in future version), use -q instead\n";
+        configName = args->optionValue('x');
+        if (args->optionGiven('G'))
+            query = "rundetails";
+        else if (args->optionGiven('g'))
+            query = "runs";
+        else
+            query = "numruns";
+    }
+    else if (args->optionGiven('X')) {
+        std::cout << "\nWarning: deprecated option -X (will be removed in a future version), use -q instead\n";
+        configName = args->optionValue('X');
+        query = "sectioninheritance";
     }
 
-    // -X option: print fallback chain of the given config, and exit
-    configToPrint = args->optionValue('X');
-    if (configToPrint) {
-        std::cout << "\n";
-        std::vector<std::string> configNames = cfg->getConfigChain(configToPrint);
-        for (int i = 0; i < (int)configNames.size(); i++) {
-            std::string configName = configNames[i];
-            if (configName != "General")
-                std::cout << "Config ";
-            std::cout << configName << "\n";
+    // process -q
+    if (query) {
+        if (!configName) {
+            std::cout << "\nError: configuration not specified (-c option)\n";
+            return false;
         }
+        printRunInfo(configName, runFilter, query);
         return false;
     }
 
     return true;
+}
+
+void EnvirBase::printRunInfo(const char *configName, const char *runFilter, const char *query)
+{
+    //
+    // IMPORTANT: the simulation launcher will parse the output of this
+    // option, so it should be modified with care and the two kept in sync
+    // (see OmnetppLaunchUtils.getSimulationRunInfo()).
+    //
+    // Rules:
+    // (1) the number of runs should appear on the rest of the line
+    //     after the "Number of runs:" text
+    // (2) per-run information lines should span from the "Number of runs:"
+    //     line until the next blank line ("\n\n").
+    //
+
+    std::string q = opp_strlower(query); // make match case-insensitive
+    std::cout << "\n";
+
+    if (q.find("run") != q.npos) {
+        std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
+        std::cout <<"Config: " << configName << "\n";
+        std::cout <<"Number of runs: " << cfg->getNumRunsInConfig(configName) << "\n";
+        if (!opp_isblank(runFilter))
+            std::cout <<"Number of runs selected: " << runNumbers.size() << "\n";
+
+        std::vector<cConfiguration::RunInfo> runInfos = cfg->unrollConfig(configName);
+        if (q == "numruns") {
+            // nothing
+        }
+        else if (q == "runnumbers") {
+            std::cout << "\n";
+            std::cout << "Run numbers:";
+            for (int runNumber : runNumbers)
+                std::cout << " " << runNumber;
+            std::cout << "\n";
+        }
+        else if (q == "runs") {
+            std::cout << "\n";
+            for (int runNumber : runNumbers) {
+                const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
+                std::cout << "Run " << runNumber << ": " << runInfo.info << "\n";
+            }
+        }
+        else if (q == "rundetails") {
+            std::cout << "\n";
+            for (int runNumber : runNumbers) {
+                const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
+                std::cout << "Run " << runNumber << ": " << runInfo.info << "\n";
+                std::cout << opp_indentlines(runInfo.configBrief.c_str(), "\t");
+                if (runNumber != runNumbers.back())
+                    std::cout << "\n";
+            }
+        }
+        else if (q == "runconfig") {
+            std::cout << "\n";
+            for (int runNumber : runNumbers) {
+                const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
+                std::cout << "Run " << runNumber << ": " << runInfo.info << "\n";
+                cfg->activateConfig(configName, runNumber);
+                std::vector<const char *> keysValues = cfg->getKeyValuePairs();
+                for (int i = 0; i < (int)keysValues.size(); i += 2) {
+                    const char *key = keysValues[i];
+                    const char *value = keysValues[i+1];
+                    std::cout << "\t" << key << " = " << value << "\n";
+                }
+                if (runNumber != runNumbers.back())
+                    std::cout << "\n";
+            }
+        }
+        else {
+            std::cout << "Error: unrecognized -q argument '" << q << "'\n";
+            exitCode = 1;
+        }
+    }
+    else if (q == "sectioninheritance") {
+        std::vector<std::string> configNames = cfg->getConfigChain(configName);
+        for (int i = 0; i < (int)configNames.size(); i++) {
+            std::string configName = configNames[i];
+            if (configName != "General")
+                configName = "Config " + configName;
+            std::cout << configName << "\n";
+        }
+    }
+    else {
+        std::cout << "Error: unrecognized -q argument '" << q << "'\n";
+        exitCode = 1;
+    }
 }
 
 bool EnvirBase::setup()
@@ -492,11 +567,35 @@ void EnvirBase::printHelp()
     std::cout << "Command line options:\n";
     std::cout << "  <inifile> or -f <inifile>\n";
     std::cout << "                Use the given ini file instead of omnetpp.ini. More than one\n";
-    std::cout << "                ini files can be loaded this way.\n";
-    std::cout << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv\n";
-    std::cout << "                and Tkenv. To make a user interface available, you need\n";
-    std::cout << "                to link the simulation executable with the Cmdenv/Tkenv\n";
-    std::cout << "                library, or load it as shared library via the -l option.\n";
+    std::cout << "                ini file can be specified.\n";
+    std::cout << "  --<configuration-option>=<value>\n";
+    std::cout << "                Configuration options can be specified on the command line,\n";
+    std::cout << "                and they take precedence over options specified in the\n";
+    std::cout << "                ini file(s). Examples:\n";
+    std::cout << "                      --debug-on-errors=true\n";
+    std::cout << "                      --record-eventlog=true\n";
+    std::cout << "                      --sim-time-limit=1000s\n";
+    std::cout << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv,\n";
+    std::cout << "                Qtenv and Tkenv. Specify -h userinterfaces to see the list\n";
+    std::cout << "                of the user interfaces available in your simulation program.\n";
+    std::cout << "  -c <configname>\n";
+    std::cout << "                Select a configuration for execution. With inifile-based\n";
+    std::cout << "                configuration database, this selects the [Config <configname>]\n";
+    std::cout << "                section; the default is the [General] section.\n";
+    std::cout << "                See also: -r.\n";
+    std::cout << "  -r <runfilter>\n";
+    std::cout << "                With -c: select runs from the specified configuration. A\n";
+    std::cout << "                missing -r option selects all runs in the given configuration.\n";
+    std::cout << "                <runfilter> is either a comma-separated list of run numbers or\n";
+    std::cout << "                run number ranges (for example 1,2,5-10), or a match expression.\n";
+    std::cout << "                The match expression may contain a wildcard pattern that is\n";
+    std::cout << "                matched against the iteration variables string (see -q runs),\n";
+    std::cout << "                matchers for individual iteration variables in the\n";
+    std::cout << "                name(valuepattern) syntax, or their combination using AND and\n";
+    std::cout << "                OR. Parentheses may be used to change evaluation order. Values\n";
+    std::cout << "                containing spaces etc need to be enclosed in quotes. Patterns\n";
+    std::cout << "                may contain elements matching numeric ranges, in the {a..b}\n";
+    std::cout << "                syntax. See also: -q.\n";
     std::cout << "  -n <nedpath>  When present, overrides the NEDPATH environment variable.\n";
     std::cout << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
     std::cout << "                The file name should be given without the .so or .dll suffix\n";
@@ -511,18 +610,37 @@ void EnvirBase::printHelp()
     std::cout << "                with an error even if no available port was found. A plain\n";
     std::cout << "                minus sign will turn off the built-in web server.\n";
     std::cout << "                The default value is \"8000+\".\n";
-    std::cout << "  --<configuration-key>=<value>\n";
-    std::cout << "                Any configuration option can be specified on the command\n";
-    std::cout << "                line, and it takes precedence over settings specified in the\n";
-    std::cout << "                ini file(s). Examples:\n";
-    std::cout << "                      --debug-on-errors=true\n";
-    std::cout << "                      --record-eventlog=true\n";
-    std::cout << "                      --sim-time-limit=1000s\n";
-    std::cout << "  -v            Print version and build info.\n";
+    std::cout << "  -v            Print version and build info, and exit.\n";
+    std::cout << "  -a            Print all config names and number of runs in them, and exit.\n";
+    std::cout << "  -q <what>     To be used together with -c and -r. Prints information about\n";
+    std::cout << "                the specified configuration and runs, and exits.\n";
+    std::cout << "    -q numruns  Prints the number of runs in the given configuration and the\n";
+    std::cout << "                number of runs selected by the run filter (-r option).\n";
+    std::cout << "    -q runnumbers\n";
+    std::cout << "                Prints the run numbers of the runs selected by the run filter\n";
+    std::cout << "                (-r option).\n";
+    std::cout << "    -q runs     Like -q numruns, but also prints one line of information with the\n";
+    std::cout << "                iteration variables about each run that the run filter matches.\n";
+    std::cout << "    -q rundetails\n";
+    std::cout << "                Like -q numruns, but also prints the values of the iteration\n";
+    std::cout << "                variables and a summary of the configuration (the expanded\n";
+    std::cout << "                values of configuration entries that contain iteration variables)\n";
+    std::cout << "                for each matching run.\n";
+    std::cout << "    -q runconfig\n";
+    std::cout << "                Like -q numruns, but also prints the values of the iteration\n";
+    std::cout << "                variables and the full configuration for each matching run.\n";
+    std::cout << "    -q sectioninheritance\n";
+    std::cout << "                Print the section fallback chain of the specified configuration.\n";
+    std::cout << "  -x <configname>\n";
+    std::cout << "                Obsolete form of -c <configname> -q numruns\n";
+    std::cout << "  -g            With -x: Obsolete form of -c <configname> -q runs\n";
+    std::cout << "  -G            With -x: Obsolete form of -c <configname> -q rundetails\n";
+    std::cout << "  -X <configname>\n";
+    std::cout << "                Obsolete form of -c <configname> -q sectioninheritance\n";
     std::cout << "  -h            Print this help and exit.\n";
     std::cout << "  -h <category> Lists registered components:\n";
-    std::cout << "    -h config         Prints the list of available config options\n";
-    std::cout << "    -h configdetails  Prints the list of available config options, with\n";
+    std::cout << "    -h config         Prints the list of available configuration options\n";
+    std::cout << "    -h configdetails  Prints the list of available configuration options, with\n";
     std::cout << "                      their documentation\n";
     std::cout << "    -h userinterfaces Lists available user interfaces (see -u option)\n";
     std::cout << "    -h classes        Lists registered C++ classes (including module classes)\n";
@@ -536,7 +654,6 @@ void EnvirBase::printHelp()
     std::cout << "    -h resultrecorders Lists result recorders\n";
     std::cout << "    -h figures        Lists available figure types\n";
     std::cout << "    -h all            Union of all the above\n";
-    std::cout << "\n";
 
     // print specific help for each user interface
     cRegistrationList *table = omnetapps.getInstance();
@@ -620,6 +737,51 @@ void EnvirBase::endRun()  // FIXME eliminate???
 }
 
 //-------------------------------------------------------------
+
+std::vector<int> EnvirBase::resolveRunFilter(const char *configName, const char *runFilter)
+{
+    std::vector<int> runNumbers;
+
+    if (opp_isblank(runFilter)) {
+        int numRuns = cfg->getNumRunsInConfig(configName);
+        for (int i = 0; i < numRuns; i++)
+            runNumbers.push_back(i);
+        return runNumbers;
+    }
+
+    // if filter contains a list of run numbers (e.g. "0..4,9,12"), parse it accordingly
+    if (strspn (runFilter, "0123456789,.- ") == strlen(runFilter)) {
+        EnumStringIterator it(runFilter);
+        int runNumber;
+        do {
+            runNumber = it();
+            if (runNumber != -1)
+                runNumbers.push_back(runNumber);
+            it++;
+        } while (runNumber != -1);
+        if (it.hasError())
+            throw cRuntimeError("Error parsing list of runs to execute: `%s'", runFilter);
+    }
+    else {
+        // evaluate filter as constraint expression
+        std::vector<cConfiguration::RunInfo> runDescriptions = cfg->unrollConfig(configName);
+        for (int runNumber = 0; runNumber < (int) runDescriptions.size(); runNumber++) {
+            try {
+                cConfiguration::RunInfo runInfo = runDescriptions[runNumber];
+                std::string expandedRunFilter = opp_substitutevariables(runFilter, runInfo.runAttrs);
+                ValueIterator::Expr expr(expandedRunFilter.c_str());
+                expr.substituteVariables(ValueIterator::VariableMap());
+                expr.evaluate();
+                if (expr.boolValue())
+                    runNumbers.push_back(runNumber);
+            }
+            catch (std::exception& e) {
+                throw cRuntimeError("Cannot evaluate run filter: %s", e.what());
+            }
+        }
+    }
+    return runNumbers;
+}
 
 void EnvirBase::preconfigure(cComponent *component)
 {
