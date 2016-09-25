@@ -168,7 +168,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
      * varname's iterator are advanced in lockstep.
      */
     struct IterationVariable {
-        std::string varId;   // identifies the variable, see above
+        std::string varId;   // identifies the variable, see above  ---FIXME this is surely not needed!!!!!!
         std::string varName; // printable variable name ("x"); may be a generated one like "0"; never empty
         std::string value;   // "1,2,5..10"; never empty
         std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation

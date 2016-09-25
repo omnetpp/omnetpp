@@ -19,7 +19,9 @@
 #include <algorithm>
 #include <sstream>
 #include "common/stringutil.h"
+#include "common/stringtokenizer.h"
 #include "common/unitconversion.h"
+#include "common/stlutil.h"
 #include "omnetpp/cexception.h"
 #include "scenario.h"
 #include "valueiterator.h"
@@ -29,90 +31,84 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
-Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraintText) :
-    vars(iterationVariables)
+Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraintText, const char *nestingSpec)
 {
-    // store the constraint
-    constraint = nullptr;
-    if (constraintText) {
-        constraint = new ValueIterator::Expr(constraintText);
-    }
-
-    // fill the variable tables
-    variterators.resize(vars.size());
-    for (int i = 0; i < (int)vars.size(); i++) {
-        ASSERT(!vars[i].varId.empty() && !vars[i].value.empty());
+    // store the variables along with their value iterators
+    for (auto& var : iterationVariables) {
+        ASSERT(!var.varId.empty() && !var.value.empty());
+        auto& varExt = variablesByName[var.varId]; // add to map
+        static_cast<IterationVariable&>(varExt) = var;
         try {
-            variterators[i].parse(vars[i].value.c_str());
+            varExt.iterator.parse(var.value.c_str());
         }
         catch (std::exception& e) {
-            throw cRuntimeError("Cannot parse iteration variable '%s' (%s in %s)",
-                    vars[i].varName.c_str(), e.what(), vars[i].value.c_str());
+            throw cRuntimeError("Cannot parse iteration variable '%s' (%s in %s)", var.varName.c_str(), e.what(), var.value.c_str());
         }
+        variables.push_back(&varExt); // point into the map
     }
 
-    // create map for variable lookup
-    for (int i = 0; i < (int)vars.size(); i++) {
-        varmap[vars[i].varId] = &variterators[i];
-    }
+    for (auto var : variables)
+        iteratorsByName[var->varName] = &var->iterator;
+
+
+    // store the constraint
+    constraint = constraintText ? new ValueIterator::Expr(constraintText) : nullptr;
 
     // check for undefined variables early, for better error reporting
-    for (int i = 0; i < (int)vars.size(); i++) {
-        const std::set<std::string>& referencedVars = variterators[i].getReferencedVariableNames();
-        for (std::set<std::string>::const_iterator varname = referencedVars.begin(); varname != referencedVars.end(); ++varname)
-            if (varmap.find(*varname) == varmap.end())
-                throw cRuntimeError("Undefined variable $%s, referenced from the definition of $%s (%s)",
-                        varname->c_str(), vars[i].varName.c_str(), vars[i].value.c_str());
-
-
-        if (!vars[i].parvar.empty()) {
-            if (varmap.find(vars[i].parvar) == varmap.end())
-                throw cRuntimeError("Undefined variable $%s, referenced from the definition of $%s as parallel variable",
-                        vars[i].parvar.c_str(), vars[i].varName.c_str());
+    for (auto iteration : variables) {
+        std::string& varName = iteration->varName;
+        std::set<std::string> referencedVars = iteration->iterator.getReferencedVariableNames();
+        for (auto referencedVar : referencedVars)
+            if (!containsKey(variablesByName, referencedVar))
+                throw cRuntimeError("Undefined variable $%s, referenced from the definition of $%s (%s)", referencedVar.c_str(), varName.c_str(), iteration->value.c_str());
+        std::string& parvar = iteration->parvar;
+        if (!parvar.empty()) {
+            if (!containsKey(variablesByName, parvar))
+                throw cRuntimeError("Undefined variable $%s, referenced from the definition of $%s as parallel variable", parvar.c_str(), varName.c_str());
         }
     }
 
     // determine sort order (loop nesting order) of the variables
+    std::vector<std::string> varNames = resolveNestingOrderSpec(nestingSpec);
 
+    // Reorder variables if needed.
     // Strategy: use index as the pool of variables not yet processed.
     // In each step, pick one variable from the index that does not refer to
     // the ones still in the index, remove it from the index and add
     // it to the sort order as the next innermost loop. If we cannot find
     // any such variable, there is a cycle among the remaining ones.
 
-    std::map<std::string, int> index;
-    for (int i = 0; i < (int)vars.size(); i++)
-        index[vars[i].varId] = i;
-    sortOrder.clear();
-    while (!index.empty()) {
-        // find one variable that is references only variables removed from the index (i.e. outer variables)
-        int indexOfVar = -1;
-        for (int i = 0; i < (int)vars.size(); ++i) {
-            if (index.find(vars[i].varId) != index.end()) {
-                bool allReferencedVariablesAreAdded = true;
-                std::set<std::string> varrefs = variterators[i].getReferencedVariableNames();
-                if (!vars[i].parvar.empty())
-                    varrefs.insert(vars[i].parvar);
-                for (std::set<std::string>::const_iterator v = varrefs.begin(); v != varrefs.end(); ++v)
-                    if (index.find(*v) != index.end()) {
-                        allReferencedVariablesAreAdded = false;
-                        break;
-                    }
+    std::vector<std::string> orderedVarNames;  // result
 
-                if (allReferencedVariablesAreAdded) {
-                    indexOfVar = i;
-                    break;
-                }
+    while (!varNames.empty()) {
+        // find one variable that references only variables no longer in varNames[] (i.e. outer variables)
+        std::string selectedVar;
+        for (auto varName : varNames) {
+            auto var = variablesByName[varName];
+            bool ok = true;
+            std::set<std::string> referencedVars = var.iterator.getReferencedVariableNames();
+            if (!var.parvar.empty())
+                referencedVars.insert(var.parvar);
+            for (auto referencedVar : referencedVars)
+                if (contains(varNames, referencedVar))
+                    ok = false;
+            if (ok) {
+                selectedVar = varName;
+                break;
             }
         }
 
-        if (indexOfVar >= 0) {
-            sortOrder.push_back(indexOfVar);
-            index.erase(vars[indexOfVar].varId);
-        }
-        else
+        if (selectedVar.empty())
             throw cRuntimeError("Cycle detected in iteration variable references");
+
+        orderedVarNames.push_back(selectedVar);
+        erase(varNames, indexOf(varNames, selectedVar));
     }
+
+    // rebuild variables[] based on orderedVarNames[]
+    variables.clear();
+    for (auto varName : orderedVarNames)
+        variables.push_back(&variablesByName[varName]);
 
     restart();
 }
@@ -122,9 +118,45 @@ Scenario::~Scenario()
     delete constraint;
 }
 
-Expression::Value Scenario::getIterationVariableValue(const char *varname)
+std::vector<std::string> Scenario::resolveNestingOrderSpec(const char *orderSpec)
 {
-    std::string value = getVariable(varname);
+    std::vector<std::string> orderedNames = StringTokenizer(orderSpec, ", ").asVector();
+
+    // check names are valid, and there's only one '*'
+    for (std::string orderedName : orderedNames)
+        if (orderedName != "*" && !containsKey(variablesByName, orderedName))
+            throw cRuntimeError("Undefined variable $%s specified as part of the iteration variable nesting order", orderedName.c_str());
+    if (count(orderedNames, std::string("*")) > 1)
+        throw cRuntimeError("Iteration variable nesting order may only contain one '*'");
+
+    // insert remaining variables at the "*", or at the end if there is none
+    int insertionPoint = indexOf(orderedNames, std::string("*"));
+    if (insertionPoint != -1)
+        erase(orderedNames, insertionPoint); // remove '*'
+    else
+        insertionPoint = orderedNames.size();
+    for (auto var : variables) {
+        std::string varName = var->varId;
+        if (!contains(orderedNames, varName))
+            insert(orderedNames, insertionPoint++, varName);
+    }
+
+    ASSERT(orderedNames.size() == variables.size());
+
+    return orderedNames;
+}
+
+std::vector<std::string> Scenario::getIterationVariableNames() const
+{
+    std::vector<std::string> result;
+    for (auto var: variables)
+        result.push_back(var->varId);
+    return result;
+}
+
+Expression::Value Scenario::getIterationVariableValue(const char *varName)
+{
+    std::string value = getVariable(varName);
     try {
         if (value[0] == '"')
             return opp_parsequotedstr(value.c_str());  // strips quotes
@@ -136,7 +168,7 @@ Expression::Value Scenario::getIterationVariableValue(const char *varname)
             return UnitConversion::parseQuantity(value.c_str());  // converts to double  FIXME units should NOT be accepted here!!!!!
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Wrong value for iteration variable %s: %s", varname, e.what());
+        throw cRuntimeError("Wrong value for iteration variable %s: %s", varName, e.what());
     }
 }
 
@@ -155,17 +187,17 @@ int Scenario::getNumRuns()
 
 bool Scenario::restart()
 {
-    if (variterators.size() == 0)
+    if (variables.empty())
         return true;  // it is valid to have no iterations at all
 
     // reset all iterators; must be done in the nesting order (innermost
     // loop first), because start values may depend on vars of outer loops
     // If any of them are immediately at end(), step the outer loop and retry.
-    // If there is no valid state return false.
-    for (int i = 0; i < (int)sortOrder.size(); i++) {
-        int j = sortOrder[i];
-        variterators[j].restart(varmap);
-        if (variterators[j].end()) {
+    // If there is no valid state, return false.
+    for (size_t i = 0; i < variables.size(); i++) {
+        IterationVariableExt *var = variables[i];
+        var->iterator.restart(iteratorsByName);
+        if (var->iterator.end()) {
             // step outer vars and retry
             if (i == 0 || !incOuter(i))
                 return false;
@@ -200,10 +232,10 @@ bool Scenario::incOuter(int n)
     // try incrementing iteration variables in inner->outer order
     int i;
     for (i = n-1; i >= 0; i--) {
-        int k = sortOrder[i];
-        if (!isParallelIteration(k)) {
-            variterators[k]++;
-            if (!variterators[k].end())
+        IterationVariableExt *var = variables[i];
+        if (var->parvar.empty()) {
+            var->iterator++;
+            if (!var->iterator.end())
                 break;  // if incrementing was OK, we're done
         }
     }
@@ -213,17 +245,18 @@ bool Scenario::incOuter(int n)
         return false;
 
     // restart inner variables in outer->inner order, update parallel variables
-    for (int j = i+1; j < (int)sortOrder.size(); ++j) {
-        int k = sortOrder[j];
-        if (isParallelIteration(k)) {
-            int pos = getIteratorPosition(vars[k].parvar.c_str());
-            bool ok = variterators[k].gotoPosition(pos, varmap);
+    for (int j = i+1; j < (int)variables.size(); ++j) {
+        IterationVariableExt *var = variables[j];
+        if (!var->parvar.empty()) {
+            IterationVariableExt *otherIteration = &variablesByName[var->parvar];
+            int pos = otherIteration->iterator.getPosition();
+            bool ok = var->iterator.gotoPosition(pos, iteratorsByName);
             if (!ok)
-                throw cRuntimeError("parallel iterator ${...!%s} does not have enough values", vars[k].parvar.c_str());
+                throw cRuntimeError("parallel iterator ${...!%s} does not have enough values", var->parvar.c_str());
         }
         else {
-            variterators[k].restart(varmap);
-            if (variterators[k].end()) {
+            var->iterator.restart(iteratorsByName);
+            if (var->iterator.end()) {
                 if (j == 0 || !incOuter(j))
                     return false;
                 --j;
@@ -237,7 +270,7 @@ bool Scenario::incOuter(int n)
 bool Scenario::evaluateConstraint()
 {
     try {
-        constraint->substituteVariables(varmap);
+        constraint->substituteVariables(iteratorsByName);
         constraint->evaluate();
         return constraint->boolValue();
     }
@@ -254,36 +287,34 @@ void Scenario::gotoRun(int runNumber)
     for (int i = 0; i < runNumber; i++)
         if (!next())
             throw cRuntimeError("Run number %d is out of range", runNumber);
-
 }
 
-std::string Scenario::getVariable(const char *varid) const
+std::string Scenario::getVariable(const char *varId) const
 {
-    std::map<std::string, ValueIterator *>::const_iterator it = varmap.find(varid);
-    if (it == varmap.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varid);
-    ValueIterator *valueIter = it->second;
-    if (valueIter->end())
-        throw cRuntimeError("Variable '%s' has no more values", varid);
-    return valueIter->get();
+    auto it = variablesByName.find(varId);
+    if (it == variablesByName.end())
+        throw cRuntimeError("Unknown iteration variable: %s", varId);
+    const IterationVariableExt& var = it->second;
+    if (var.iterator.end())
+        throw cRuntimeError("Variable '%s' has no more values", varId);
+    return var.iterator.get();
 }
 
-int Scenario::getIteratorPosition(const char *varid) const
+int Scenario::getIteratorPosition(const char *varId) const
 {
-    std::map<std::string, ValueIterator *>::const_iterator it = varmap.find(varid);
-    if (it == varmap.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varid);
-    return it->second->getPosition();
+    auto it = variablesByName.find(varId);
+    if (it == variablesByName.end())
+        throw cRuntimeError("Unknown iteration variable: %s", varId);
+    const IterationVariableExt& var = it->second;
+    return var.iterator.getPosition();
 }
 
 std::string Scenario::str() const
 {
     std::stringstream out;
-    for (int i = 0; i < (int)sortOrder.size(); i++) {
-        int j = sortOrder[i];
-        out << (i > 0 ? ", " : "") << "$" << vars[j].varName << "=" << variterators[j].get();
-    }
-    return out.str();
+    for (auto var : variables)
+        out << ", $" << var->varName << "=" << var->iterator.get();
+    return out.str().substr(2);
 }
 
 }  // namespace envir

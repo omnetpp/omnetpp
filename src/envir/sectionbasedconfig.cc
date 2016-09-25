@@ -47,6 +47,7 @@ Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectio
 Register_PerRunConfigOption(CFGID_DESCRIPTION, "description", CFG_STRING, nullptr, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigOption(CFGID_EXTENDS, "extends", CFG_STRING, nullptr, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigOption(CFGID_CONSTRAINT, "constraint", CFG_STRING, nullptr, "For scenarios. Contains an expression that iteration variables (`${}` syntax) must satisfy for that simulation to run. Example: `$i < $j+1`.");
+Register_PerRunConfigOption(CFGID_ITERATION_NESTING_ORDER, "iteration-nesting-order", CFG_STRING, nullptr, "Specifies the loop nesting order for iteration variables (`${}` syntax). The value is a comma-separated list of iteration variables; the list may also contain at most one asterisk. Variables that are not explicitly listed will be inserted at the position of the asterisk, or appended to the list if there is no asterisk. The first variable will become the outermost loop, and the last one the innermost loop. Example: `repetition,numHosts,*,iaTime`.");
 Register_PerRunConfigOption(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as `${repetition}`. See also: `seed-set` key.");
 Register_PerRunConfigOption(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRING, "${configname}", "Identifies the simulation experiment (which consists of several, potentially repeated measurements). This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigOption(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
@@ -296,12 +297,15 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // extract all iteration vars from values within this section
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
-    // see if there's a constraint given
+    // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
+    const char *nestingSpec = internalGetValue(sectionChain, CFGID_ITERATION_NESTING_ORDER->getName(), nullptr);
+
+    if (strcmp(configName,"General")==0 && runNumber==0) nestingSpec = "";  //FIXME hack to work around startup problem
 
     // determine the values to substitute into the iteration vars (${...})
     try {
-        Scenario scenario(itervars, constraint);
+        Scenario scenario(itervars, constraint, nestingSpec);
         int numRuns = scenario.getNumRuns();
         if (runNumber < 0 || runNumber >= numRuns)
             throw cRuntimeError("Run number %d is out of range for configuration `%s': it contains %d run(s)", runNumber, configName, numRuns);
@@ -349,17 +353,15 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
     // store iteration variables, and also their "positions" (iteration count) as "&varid"
-    const std::vector<IterationVariable>& itervars = scenario->getIterationVariables();
-    for (int i = 0; i < (int)itervars.size(); i++) {
-        const char *varid = itervars[i].varId.c_str();
-        variables[varid] = scenario->getVariable(varid);
-    }
+    std::vector<std::string> varNames = scenario->getIterationVariableNames();
+    for (std::string varName : varNames)
+        variables[varName] = scenario->getVariable(varName.c_str());
 
     // assemble ${iterationvars} and ${iterationvarsf}
     std::string iterationvars, iterationvarsf;
-    for (int i = 0; i < (int)itervars.size(); i++) {
-        if (itervars[i].varName != CFGVAR_REPETITION) {
-            std::string varAndValue = itervars[i].varName + "=" + scenario->getVariable(itervars[i].varId.c_str());
+    for (std::string varName : varNames) {
+        if (varName != CFGVAR_REPETITION) {
+            std::string varAndValue = varName + "=" + scenario->getVariable(varName.c_str());
             iterationvars += std::string(iterationvars.empty() ? "" : ", ") + "$" + varAndValue;
             iterationvarsf += std::string(iterationvarsf.empty() ? "" : ",") + opp_filenameencode(varAndValue); // without dollar and space
         }
@@ -394,7 +396,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
 
     // count the runs and return the result
     try {
-        return Scenario(v, constraint).getNumRuns();
+        return Scenario(v, constraint, "").getNumRuns();
     }
     catch (std::exception& e) {
         throw cRuntimeError("Error while computing the number of runs in config %s: %s", configName, e.what());
@@ -407,8 +409,9 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
     std::vector<int> sectionChain = resolveSectionChain(configName);
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
-    // see if there's a constraint given
+    // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
+    const char *nestingSpec = internalGetValue(sectionChain, CFGID_ITERATION_NESTING_ORDER->getName(), nullptr);
 
     // setupVariables() overwrites variables[], so we need to save/restore it
     StringMap savedVariables = variables;
@@ -416,7 +419,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
 
     // iterate over all runs in the scenario
     try {
-        Scenario scenario(itervars, constraint);
+        Scenario scenario(itervars, constraint, nestingSpec);
         std::vector<RunInfo> result;
         if (scenario.restart()) {
             for (;;) {

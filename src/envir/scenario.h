@@ -41,31 +41,31 @@ class ENVIR_API Scenario
     typedef SectionBasedConfiguration::IterationVariable IterationVariable;
 
   private:
-    // the input
-    const std::vector<IterationVariable>& vars;
+    struct IterationVariableExt : IterationVariable {
+        ValueIterator iterator;
+    };
+    std::map<std::string,IterationVariableExt> variablesByName;  // varId-to-iteration
+    std::vector<IterationVariableExt*> variables; // in nesting order, innermost first
     ValueIterator::Expr *constraint;
 
-    // the iteration variables, named (${x=1..5}) and unnamed (${1..5})
-    std::vector<ValueIterator> variterators; // indices correspond to vars[]
-    std::map<std::string, ValueIterator*> varmap; // varid-to-iterator
-    std::vector<int> sortOrder; // permutation of indeces of vars/variterators defining the nesting of loops (innermost first)
+    std::map<std::string,ValueIterator*> iteratorsByName;  // only for IterationVariable
 
   private:
-    bool inc() { return incOuter(vars.size()); }
+    bool inc() { return incOuter(variables.size()); }
     bool incOuter(int n);
-    bool isParallelIteration(int index) { return !vars[index].parvar.empty(); }
     bool evaluateConstraint();
     Expression::Value getIterationVariableValue(const char *varname);
     int getIteratorPosition(const char *varid) const;
+    std::vector<std::string> resolveNestingOrderSpec(const char *orderSpec);
 
   public:
-    Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraint);
+    Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraint, const char *nestingSpec);
     ~Scenario();
 
     /**
-     * Returns the constructor parameter, unchanged.
+     * Returns the iteration variable names.
      */
-    const std::vector<IterationVariable>& getIterationVariables() const {return vars;}
+    std::vector<std::string> getIterationVariableNames() const;
 
     /**
      * Counts the number of runs this scenario generates.
