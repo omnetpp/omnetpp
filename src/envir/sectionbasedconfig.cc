@@ -591,27 +591,29 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         outValue.assign(valuebegin, valueend-valuebegin);
     if (parvarbegin)
         outParvar.assign(parvarbegin, parvarend-parvarbegin);
-    // printf("DBG: var=`%s', value=`%s', parvar=`%s'\n", outVarname.c_str(), outValue.c_str(), outParvar.c_str());
 }
 
 std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId) const
 {
     std::string result = opp_nulltoempty(text);
     int k = 0;  // counts "${" occurrences
-    const char *pos, *endPos;
-    while ((pos = strstr(result.c_str(), "${")) != nullptr) {
+    size_t pos = 0;
+    while ((pos = result.find("${", pos)) != std::string::npos) {
         std::string varname, iterationstring, parvar;
-        parseVariable(pos, varname, iterationstring, parvar, endPos);
-        std::string value;
+        const char *endPtr;
+        parseVariable(result.c_str() + pos, varname, iterationstring, parvar, endPtr);
+        size_t endPos = endPtr - result.c_str();
 
         // handle named and unnamed iteration variable references
         std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
         StringMap::const_iterator it = variables.find(varid.c_str());
         if (it == variables.end())
             throw cRuntimeError("no such variable: ${%s}", varid.c_str());
-        value = it->second;
+        std::string value = it->second;
 
-        result.replace(pos-result.c_str(), endPos-pos+1, value);
+        result.replace(pos, endPos-pos+1, value);
+        pos += value.length(); // skip over contents just inserted
+
         k++;
     }
     return result;
