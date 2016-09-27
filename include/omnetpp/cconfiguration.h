@@ -285,7 +285,9 @@ class SIM_API cConfigurationEx : public cConfiguration
      * Initializes configuration object from "boot-time" configuration
      * (omnetpp.ini). For example, if a particular cConfiguration subclass
      * uses a database as data source, it may take the connection parameters
-     * from the "boot-time" configuration.
+     * from the "boot-time" configuration. This method makes global config
+     * immediately available, i.e. there is no need for an additional
+     * activateConfig() call.
      */
     virtual void initializeFrom(cConfiguration *bootConfig) = 0;
 

@@ -115,14 +115,17 @@ SectionBasedConfiguration::~SectionBasedConfiguration()
 
 void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini)
 {
+    ASSERT(activeConfig.empty()); // only allow setConfigurationReader() during setup
     clear();
     this->ini = ini;
     nullEntry.setBaseDirectory(ini->getDefaultBaseDirectory());
     sectionChains.assign(ini->getNumSections(), std::vector<int>());
+    activateGlobalConfig();
 }
 
 void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string, std::string>& options, const char *baseDir)
 {
+    ASSERT(activeConfig.empty()); // only allow setCommandLineConfigOptions() during setup
     commandLineOptions.clear();
     const std::string *basedirRef = getPooledBaseDir(baseDir);
     for (StringMap::const_iterator it = options.begin(); it != options.end(); ++it) {
@@ -143,6 +146,7 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
             throw cRuntimeError("Missing value for command-line configuration option --%s", key);
         commandLineOptions.push_back(KeyValue1(basedirRef, key, value));
     }
+    activateGlobalConfig();
 }
 
 void SectionBasedConfiguration::clear()
@@ -150,6 +154,7 @@ void SectionBasedConfiguration::clear()
     // note: this gets called between activateConfig() calls, so "ini" must NOT be nullptr'ed out here
     activeConfig = "";
     activeRunNumber = 0;
+    entries.clear();
     config.clear();
     suffixGroups.clear();
     wildcardSuffixGroup.entries.clear();
@@ -166,7 +171,7 @@ void SectionBasedConfiguration::initializeFrom(cConfiguration *bootConfig)
     if (!reader)
         throw cRuntimeError("Class \"%s\" is not subclassed from cConfigurationReader", classname.c_str());
     reader->initializeFrom(bootConfig);
-    setConfigurationReader(reader);
+    setConfigurationReader(reader); // implies activateGlobalConfig()
 }
 
 const char *SectionBasedConfiguration::getFileName() const
@@ -284,6 +289,28 @@ int SectionBasedConfiguration::resolveConfigName(const char *configName) const
     return id;
 }
 
+void SectionBasedConfiguration::activateGlobalConfig()
+{
+    clear();
+    for (int i = 0; i < (int)commandLineOptions.size(); i++) {
+        KeyValue1& e = commandLineOptions[i];
+        std::string value = e.getValue(); // note: no substituteVariables(), too early for that
+        const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
+        addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
+    }
+    int sectionId = resolveConfigName("General");
+    if (sectionId != -1) {
+        for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
+            // add entry to our tables
+            const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
+            std::string value = e.getValue(); // note: no substituteVariables(), too early for that
+            const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
+            addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
+        }
+    }
+
+}
+
 void SectionBasedConfiguration::activateConfig(const char *configName, int runNumber)
 {
     clear();
@@ -300,8 +327,6 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
     const char *nestingSpec = internalGetValue(sectionChain, CFGID_ITERATION_NESTING_ORDER->getName(), nullptr);
-
-    if (strcmp(configName,"General")==0 && runNumber==0) nestingSpec = "";  //FIXME hack to work around startup problem
 
     // determine the values to substitute into the iteration vars (${...})
     try {
@@ -320,7 +345,6 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
-    entries.clear();
     for (int i = 0; i < (int)commandLineOptions.size(); i++) {
         KeyValue1& e = commandLineOptions[i];
         std::string value = substituteVariables(e.getValue());

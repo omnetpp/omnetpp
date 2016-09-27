@@ -176,6 +176,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
   private:
     void clear();
+    void activateGlobalConfig();
     int internalFindSection(const char *section) const;
     int internalGetSectionId(const char *section) const;
     int internalFindEntry(int sectionId, const char *key) const;

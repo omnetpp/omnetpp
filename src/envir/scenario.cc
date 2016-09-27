@@ -52,7 +52,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
 
 
     // store the constraint
-    constraint = constraintText ? new ValueIterator::Expr(constraintText) : nullptr;
+    constraint = !opp_isempty(constraintText) ? new ValueIterator::Expr(constraintText) : nullptr;
 
     // check for undefined variables early, for better error reporting
     for (auto iteration : variables) {

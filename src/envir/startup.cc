@@ -130,7 +130,6 @@ int setupUserInterface(int argc, char *argv[])
         bootConfig = new SectionBasedConfiguration();
         bootConfig->setConfigurationReader(inifile);
         bootConfig->setCommandLineConfigOptions(args.getLongOptions(), getWorkingDir().c_str());
-        bootConfig->activateConfig("General", 0);
 
         //
         // Load all libraries specified on the command line ('-l' options),
@@ -155,7 +154,6 @@ int setupUserInterface(int argc, char *argv[])
             // create custom configuration object
             CREATE_BY_CLASSNAME(config, configClass.c_str(), cConfigurationEx, "configuration");
             config->initializeFrom(bootConfig);
-            config->activateConfig("General", 0);
             delete bootConfig;
             bootConfig = nullptr;
 
