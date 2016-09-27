@@ -20,6 +20,7 @@
 #include <set>
 #include "qtenvdefs.h"
 #include "qtenv.h"
+#include "ui_mainwindow.h"
 #include <QMainWindow>
 #include <QModelIndex>
 
@@ -31,10 +32,6 @@ class QWidget;
 class QSlider;
 class QSplitter;
 class QLabel;
-
-namespace Ui {
-class MainWindow;
-}
 
 namespace omnetpp {
 
@@ -67,13 +64,13 @@ public:
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
 
-    QWidget *getMainInspectorArea();
-    QWidget *getObjectTreeArea();
-    QWidget *getObjectInspectorArea();
-    QWidget *getLogInspectorArea();
-    QWidget *getTimeLineArea();
-    QAction *getStopAction();
-    QAction *getFindObjectsAction();
+    QWidget *getMainInspectorArea() { return ui->mainArea; }
+    QWidget *getObjectTreeArea() { return ui->treeView; }
+    QWidget *getObjectInspectorArea() { return ui->objectInspector; }
+    QWidget *getLogInspectorArea() { return ui->logInspector; }
+    QWidget *getTimeLineArea() { return ui->timeLine; }
+    QAction *getStopAction() { return ui->actionStop; }
+    QAction *getFindObjectsAction() { return ui->actionFindInspectObjects; }
 
     void storeGeometry();
     void restoreGeometry();
@@ -99,10 +96,10 @@ public:
 public slots:
     void on_actionOneStep_triggered();
     void on_actionQuit_triggered();
-    void on_actionRun_triggered();
+    void on_actionRun_triggered() { runSimulation(RUNMODE_NORMAL); }
     void on_actionSetUpConfiguration_triggered();
-    void on_actionFastRun_triggered();
-    void on_actionExpressRun_triggered();
+    void on_actionFastRun_triggered() { runSimulation(RUNMODE_FAST); }
+    void on_actionExpressRun_triggered() { runSimulation(RUNMODE_EXPRESS); }
     void on_actionRunUntil_triggered();
     void onSliderValueChanged(int value);
     void on_actionRebuildNetwork_triggered();

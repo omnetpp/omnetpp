@@ -19,6 +19,7 @@
 
 #include "animator.h"
 #include "inspector.h"
+#include "modulecanvasviewer.h"
 
 class QAction;
 class QStackedLayout;
@@ -28,6 +29,7 @@ class QToolBar;
 class QPrinter;
 
 namespace omnetpp {
+
 class cObject;
 class cModule;
 class cGate;
@@ -37,7 +39,6 @@ class cOsgCanvas;
 namespace qtenv {
 
 class CanvasRenderer;
-class ModuleCanvasViewer;
 class OsgViewer;
 
 
@@ -48,12 +49,11 @@ class QTENV_API ModuleInspector : public Inspector
    private slots:
       void runUntil();
       void fastRunUntil();
-      void stopSimulation();
       void relayout();
       void zoomIn(int x = 0, int y = 0);
       void zoomOut(int x = 0, int y = 0);
-      void increaseIconSize();
-      void decreaseIconSize();
+      void increaseIconSize() { zoomIconsBy(1.25); }
+      void decreaseIconSize() { zoomIconsBy(0.8); }
       void runPreferencesDialog();
 
       void click(QMouseEvent *event);
@@ -114,7 +114,6 @@ class QTENV_API ModuleInspector : public Inspector
 
    protected:
       cCanvas *getCanvas();
-      static const char *animModeToStr(SendAnimMode mode);
 
       void createViews(bool isTopLevel);
       QToolBar *createToolbar(bool isTopLevel);
@@ -124,7 +123,7 @@ class QTENV_API ModuleInspector : public Inspector
       void setOsgCanvas(cOsgCanvas *osgCanvas);
 #endif
 
-      QSize sizeHint() const override;
+      QSize sizeHint() const override { return QSize(600, 500); }
       void wheelEvent(QWheelEvent *event) override;
       void resizeEvent(QResizeEvent *event) override;
       void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
@@ -140,18 +139,13 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void clearObjectChangeFlags() override;
       void updateBeforeAnimation();
 
-      bool needsRedraw();
+      bool needsRedraw() { return canvasViewer->getNeedsRedraw(); }
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed();
-      virtual int getLayoutSeed(int argc, const char **argv);
-      virtual int setLayoutSeed(int argc, const char **argv);
-      virtual int getSubmoduleCount(int argc, const char **argv);
-      virtual int getSubmodQ(int argc, const char **argv);
-      virtual int getSubmodQLen(int argc, const char **argv);
 
       // drawing methods:
-      virtual void redraw() override;
+      virtual void redraw() override { canvasViewer->redraw(); }
 
       // notifications from envir:
       virtual void submoduleCreated(cModule *newmodule);
@@ -161,14 +155,14 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged();
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringChanged(cGate *gate);
-      virtual void bubble(cComponent *subcomponent, const char *text);
+      virtual void bubble(cComponent *subcomponent, const char *text) { canvasViewer->bubble(subcomponent, text); }
 
       double getZoomFactor();
       double getImageSizeFactor();
 
-      GraphicsLayer *getAnimationLayer();
-      QPointF getSubmodCoords(cModule *mod);
-      QLineF getConnectionLine(cGate *gate);
+      GraphicsLayer *getAnimationLayer() { return canvasViewer->getAnimationLayer(); }
+      QPointF getSubmodCoords(cModule *mod) { return canvasViewer->getSubmodCoords(mod); }
+      QLineF getConnectionLine(cGate *gate) { return canvasViewer->getConnectionLine(gate); }
 };
 
 } // namespace qtenv

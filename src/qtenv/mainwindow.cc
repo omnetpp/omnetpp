@@ -545,13 +545,6 @@ void MainWindow::runSimulation(RunMode runMode)
     }
 }
 
-// runNormal
-void MainWindow::on_actionRun_triggered()
-{
-    // implements Simulate|Run
-    runSimulation(RUNMODE_NORMAL);
-}
-
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
@@ -592,20 +585,6 @@ void MainWindow::on_actionStop_triggered()
     // set stoplayouting 1
 }
 
-// runFast
-void MainWindow::on_actionFastRun_triggered()
-{
-    // implements Simulate|Fast Run
-    runSimulation(RUNMODE_FAST);
-}
-
-// runExpress
-void MainWindow::on_actionExpressRun_triggered()
-{
-    // implements Simulate|Express Run
-    runSimulation(RUNMODE_EXPRESS);
-}
-
 // runUntil
 void MainWindow::on_actionRunUntil_triggered()
 {
@@ -639,8 +618,6 @@ void MainWindow::on_actionRunUntil_triggered()
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
-
-
 }
 
 void MainWindow::onSliderValueChanged(int value)
@@ -781,41 +758,6 @@ void MainWindow::updateNetworkRunDisplay()
 //    if {$configname==""} {set configName "n/a"}
 //    if {$network==""} {set network "(no network)"}
     ui->labelConfigName->setText(QString(configName) + " #" + QString::number(env->getConfigEx()->getActiveRunNumber()) + ": " + network + sep + scheduler.c_str());
-}
-
-QWidget *MainWindow::getMainInspectorArea()
-{
-    return ui->mainArea;
-}
-
-QWidget *MainWindow::getObjectTreeArea()
-{
-    return ui->treeView;
-}
-
-QWidget *MainWindow::getObjectInspectorArea()
-{
-    return ui->objectInspector;
-}
-
-QWidget *MainWindow::getLogInspectorArea()
-{
-    return ui->logInspector;
-}
-
-QWidget *MainWindow::getTimeLineArea()
-{
-    return ui->timeLine;
-}
-
-QAction *MainWindow::getStopAction()
-{
-    return ui->actionStop;
-}
-
-QAction *MainWindow::getFindObjectsAction()
-{
-    return ui->actionFindInspectObjects;
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)

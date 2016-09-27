@@ -179,11 +179,6 @@ void ModuleInspector::createViews(bool isTopLevel)
     }
 }
 
-void ModuleInspector::onFontChanged()
-{
-    canvasViewer->setFont(getQtenv()->getCanvasFont());
-}
-
 QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 {
     QToolBar *toolbar = new QToolBar();
@@ -306,9 +301,9 @@ void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
 
 #endif  // WITH_OSG
 
-QSize ModuleInspector::sizeHint() const
+void ModuleInspector::onFontChanged()
 {
-    return QSize(600, 500);
+    canvasViewer->setFont(getQtenv()->getCanvasFont());
 }
 
 void ModuleInspector::updateToolbarLayout()
@@ -384,11 +379,6 @@ void ModuleInspector::refreshOsgViewer()
 #endif
 }
 
-void ModuleInspector::redraw()
-{
-    canvasViewer->redraw();
-}
-
 void ModuleInspector::clearObjectChangeFlags()
 {
     cCanvas *canvas = getCanvas();
@@ -402,11 +392,6 @@ void ModuleInspector::updateBeforeAnimation()
     refreshOsgViewer();
 }
 
-bool ModuleInspector::needsRedraw()
-{
-    return canvasViewer->getNeedsRedraw();
-}
-
 void ModuleInspector::runUntil()
 {
     if (object)
@@ -417,11 +402,6 @@ void ModuleInspector::fastRunUntil()
 {
     if (object)
         getQtenv()->runSimulationLocal(RUNMODE_FAST, nullptr, this);
-}
-
-void ModuleInspector::stopSimulation()
-{
-    getQtenv()->getMainWindow()->getStopAction()->trigger();
 }
 
 // Relayout the compound module, and resize the window accordingly.
@@ -440,16 +420,6 @@ void ModuleInspector::zoomIn(int x, int y)
 void ModuleInspector::zoomOut(int x, int y)
 {
     zoomBy(1.0 / getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble(), true, x, y);
-}
-
-void ModuleInspector::increaseIconSize()
-{
-    zoomIconsBy(1.25);
-}
-
-void ModuleInspector::decreaseIconSize()
-{
-    zoomIconsBy(0.8);
 }
 
 void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
@@ -522,11 +492,6 @@ double ModuleInspector::getImageSizeFactor()
     return getPref(PREF_ICONSCALE, 1).toDouble();
 }
 
-GraphicsLayer *ModuleInspector::getAnimationLayer()
-{
-    return canvasViewer->getAnimationLayer();
-}
-
 void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
     canvasViewer->setNeedsRedraw();
@@ -562,21 +527,6 @@ void ModuleInspector::displayStringChanged(cGate *)
     canvasViewer->refreshConnections();
 }
 
-void ModuleInspector::bubble(cComponent *subcomponent, const char *text)
-{
-    canvasViewer->bubble(subcomponent, text);
-}
-
-QPointF ModuleInspector::getSubmodCoords(cModule *mod)
-{
-    return canvasViewer->getSubmodCoords(mod);
-}
-
-QLineF ModuleInspector::getConnectionLine(cGate *gate)
-{
-    return canvasViewer->getConnectionLine(gate);
-}
-
 int ModuleInspector::getDefaultLayoutSeed()
 {
     const cDisplayString blank;
@@ -586,86 +536,11 @@ int ModuleInspector::getDefaultLayoutSeed()
     return seed;
 }
 
-int ModuleInspector::getLayoutSeed(int argc, const char **argv)
-{/*
-    if (argc != 1) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    //Tcl_SetObjResult(interp, Tcl_NewIntObj((int)layoutSeed));
-    return TCL_OK;*/
-    return 0;
-}
-
-int ModuleInspector::setLayoutSeed(int argc, const char **argv)
-{/*
-    if (argc != 2) {
-        Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        return TCL_ERROR;
-    }
-    canvasViewer->setLayoutSeed(atol(argv[1]));
-    return TCL_OK;*/
-    return 0;
-}
-
-int ModuleInspector::getSubmoduleCount(int argc, const char **argv)
-{
-    if (argc != 1) {
-        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        //TCLKILL return TCL_ERROR;
-    }
-    int count = 0;
-    for (cModule::SubmoduleIterator it(static_cast<cModule *>(object)); !it.end(); ++it)
-        count++;
-    //TCLKILL Tcl_SetObjResult(interp, Tcl_NewIntObj(count));
-    //TCLKILL return TCL_OK;
-    return 0;
-}
-
-int ModuleInspector::getSubmodQ(int argc, const char **argv)
-{
-    // args: <module ptr> <qname>
-    if (argc != 3) {
-        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        //TCLKILL return TCL_ERROR;
-    }
-
-    cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
-    const char *qname = argv[2];
-    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
-    char buf[21];
-    ptrToStr(q, buf);
-    //TCLKILL Tcl_SetResult(interp, buf, TCL_VOLATILE);
-    //TCLKILL return TCL_OK;
-    return 0;
-}
-
-int ModuleInspector::getSubmodQLen(int argc, const char **argv)
-{
-    // args: <module ptr> <qname>
-    if (argc != 3) {
-        //TCLKILL Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC);
-        //TCLKILL return TCL_ERROR;
-    }
-
-    cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
-    const char *qname = argv[2];
-    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));  // FIXME THIS MUST BE REFINED! SEARCHES WAY TOO DEEEEEP!!!!
-    if (!q) {
-        //TCLKILL Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
-        //TCLKILL return TCL_OK;
-    }
-    //TCLKILL Tcl_SetObjResult(interp, Tcl_NewIntObj(q->getLength()));
-    //TCLKILL return TCL_OK;
-    return 0;
-}
-
 void ModuleInspector::click(QMouseEvent *event)
 {
     auto objects = canvasViewer->getObjectsAt(event->pos());
-    if (!objects.empty()) {
+    if (!objects.empty())
         emit selectionChanged(objects.front());
-    }
 }
 
 void ModuleInspector::doubleClick(QMouseEvent *event)
@@ -718,12 +593,11 @@ void ModuleInspector::onMarqueeZoom(QRectF rect)
 void ModuleInspector::onObjectsPicked(const std::vector<cObject *>& objects)
 {
     cObject *object = nullptr;
-    for (auto& o : objects) {
+    for (auto& o : objects)
         if (o) {
             object = o;
             break;
         }
-    }
 
     if (object)
         emit selectionChanged(object);
@@ -735,9 +609,9 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
         return;
 
     auto o = QVector<cObject *>::fromStdVector(objects);
-    if (o.empty()) {
+    if (o.empty())
         o.push_back(object);
-    }
+
     QMenu *menu = InspectorUtil::createInspectorContextMenu(o, this);
 
     menu->addSeparator();
