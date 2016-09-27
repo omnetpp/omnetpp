@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/env python3
 #
 # Generates a makefile that executes several simulation runs, and
 # optionally invokes "make" as well.
@@ -6,217 +6,212 @@
 # Author: Andras Varga
 #
 
-use Cwd;
-use Config;
-use IO::File; # for temp files
-use POSIX qw(tmpnam);
+import argparse
+import os
+import sys
+import re
+import subprocess
+import tempfile
+import multiprocessing
+import math
 
-#TODO: ha nincs -u, rakja bele
-#TODO: ha nincs -r, talalja ki
-#TODO: tamogassa a -r1,2 szintaxist is (space nelkul!)
+description = """\
+Execute a number of OMNeT++ simulation runs, making use of multiple CPUs and
+multiple processes. In the simplest case, you would invoke it like this:
 
-sub makeMakefile();
+% opp_runall ./simprog -c Foo
 
-$ARG0 = $0;
-$originalArgs = $ARG0 . " " . join(" ", @ARGV);
+where "simprog" is an OMNeT++ simulation program, and "Foo" is an omnetpp.ini
+configuration, containing iteration variables and/or specifying multiple
+repetitions.
 
-$tempfilename = "";
+The first positional (non-option) argument and all following arguments are
+treated as the simulation command (simulation program and its arguments).
+Options intended for opp_runall should come before the the simulation command.
 
-$verbose = 0;
-@simProg = "";
-@simProgArgs = ();
-$jOption = "";
-$makefileToExport = "";
+To limit the set of simulation runs to be performed, add a -r <runfilter>
+argument to the simulation command.
 
-makeMakefile();
-exit 0;
+opp_run runs simulations in several batches, making sure to keep all CPUs
+busy. Runs of a batch execute sequentially, inside the same Cmdenv process.
+The batch size as well as the number of CPUs to use can be overridden.
+
+Command-line options:
+"""
+
+epilog = """\
+Operation: opp_runall invokes "./simprog -c Foo" with the "-q runnumbers"
+extra command-line arguments to figure out how many (and which) simulation
+runs it needs to perform, then runs them using multiple Cmdenv processes.
+opp_runall exploits GNU Make's -j option to support multiple CPUs or cores:
+the commands to perform the simulation runs are written into a temporary
+Makefile, and run using "make" with the appropriate -j option. The Makefile
+may be exported for inspection.
+"""
+
+class Runall:
+	def __init__(self):
+		self.verbose = False
+
+	def run(self):
+		opts = self.parseArgs()
+
+		origwd = os.getcwd()
+		if opts.directory != None:
+			self.changeDir(opts.directory)
+
+		runNumbers = self.resolveRunNumbers(opts.simProgArgs)
+
+		batchSize = opts.batchsize if opts.batchsize != None else min(5, math.ceil(len(runNumbers) / opts.jobs))
+		self.chatter("batch size: " + str(batchSize))
+		makefileContent = self.createMakefileContent(opts.simProgArgs, runNumbers, batchSize)
+
+		if opts.export != None:
+			self.changeDir(origwd)
+			self.saveFile(opts.export, makefileContent)
+		else:
+			self.runMakefile(makefileContent, opts.jobs)
+		sys.exit(0)
+
+	def parseArgs(self):
+		parser = argparse.ArgumentParser(description=description, epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
+		parser.add_argument('simProgArgs', metavar='SIMULATION_COMMAND',  nargs=argparse.REMAINDER, help='Simulation command to execute. It should specify the name of the configuration that contains the parameter study (-c CONFIGNAME), and optionally a run filter (-r FILTEREXPR)')
+		parser.add_argument('-e', '--export', metavar='MAKEFILE', nargs='?', const='Runfile', default=None, help='Export a makefile that runs the simulations.')
+		parser.add_argument('-b', '--batchsize', metavar='N', type=int, default=None, help='Number of simulation runs per Cmdenv instance. Defaults to approximately #runs/#jobs but maximum 5.')
+		parser.add_argument('-j', '--jobs', metavar='N', type=int, help='Allow N processes to run at once. Defaults to the number of CPU cores.')
+		parser.add_argument('-V', '--verbose', action='store_true', help='Print extra information useful for debugging.')
+		parser.add_argument('-C', '--directory', metavar='DIR', help='Change to the given directory before doing anything.')
+
+		try:
+			opts = parser.parse_args()
+			self.verbose = opts.verbose
+		except IOError as e:
+			fail(e)
+		if not opts.simProgArgs:
+			parser.print_help()
+			sys.exit(0)
+
+		if opts.jobs == None:
+			try:
+				opts.jobs = multiprocessing.cpu_count()
+				self.chatter("detected " + str(opts.jobs) + " cpus")
+			except NotImplementedError:
+				self.chatter("could not detect number of cpus (not implemented in this python instance)")
+
+		return opts
+
+	def changeDir(self, directory):
+			self.chatter("changing into directory: " + directory)
+			try:
+				os.chdir(directory)
+			except IOError as e:
+				self.fail("Cannot change directory: " + str(e))
+
+	def resolveRunNumbers(self, simProgArgs):
+		tmpArgs = simProgArgs + ["-s", "-q", "runnumbers"]
+		self.chatter("running: " + " ".join(tmpArgs))
+		try:
+			output = subprocess.check_output(tmpArgs)
+		except subprocess.CalledProcessError as e:
+			self.fail(simProgArgs[0] + " [...] -q runnumbers returned nonzero exit status")
+		except IOError as e:
+			self.fail("Cannot execute " + simProgArgs[0] + " [...] -q runnumbers: " + str(e))
+
+		try:
+			output = output.decode("utf-8")
+			runNumbers = [int(num) for num in output.split()]
+			self.chatter("run numbers: " + str(runNumbers))
+			return runNumbers
+		except:
+			self.fail("Error parsing output of " + simProgArgs[0] + " [...] -q runnumbers")
 
 
-sub usage()
-{
-    my $prog = $ARG0;
-    $prog =~ s|^.*[/\\]||;
+	def createMakefileContent(self, simProgArgs, runNumbers, batchSize):
+		tmpArgs = list(simProgArgs)
+		if "-r" in tmpArgs:
+			i = tmpArgs.index("-r")
+			del tmpArgs[i:i+2]
+		tmpArgs = [arg for arg in tmpArgs if not arg.startswith("-r")]
+		if "-s" not in tmpArgs:
+			tmpArgs += ["-s"]
+		if "-u" not in tmpArgs:
+			tmpArgs += ["-u", "Cmdenv"]
+		if not any(arg.startswith("--cmdenv-redirect-output=") for arg in tmpArgs):
+			tmpArgs += ["--cmdenv-redirect-output=true"]
+		simulationCommand = " ".join(tmpArgs)
 
-    print <<END
-$prog: Generate a makefile that executes several simulation runs, and
-optionally invokes "make" as well.
+		batches = self.chunks(runNumbers, batchSize)
+		self.chatter("number of batches: " + str(len(batches)))
 
-Usage: $prog [options] <simprog> [simprog-options]
+		targets = ""
+		rules = ""
+		i = 0
+		for batch in batches:
+			target = "run" + str(batch[0]) if len(batch)==1 else "batch" + str(i)
+			targets += " " + target
+			rules += target + ":\n\t$(SIMULATIONCMD) -r " + ",".join([str(x) for x in batch]) + "\n\n"
+			i += 1
 
-Should be called with the full command (simulation program with args)
-to be executed, and the output is a Makefile that contains one target
-per run. This program basically expands the -r option; for example, a
-simulation command line containing -r 0..2,8,10 will generate 5 commands
-with the -r 0, -r 1, -r 2, -r 8 and -r 10 options, respectively. It is possible
-to take advantage of multiple CPUs or cores by using the -j make option
-(GNU Make specific).
+		argv = " ".join(sys.argv)
 
-Options:
-    -h, --help            This help text
-    -V                    Verbose
-    --export <filename>   Write a makefile but do not run it; recommended
-                          name is Runfile
-    -j<number>            Make use of multiple CPUs; this options gets passed
-                          to the "make" program without being looked at
-    --                    Denotes end of options (everything after that is
-                          treated as part of the simulation command line)
-END
-}
+		content = """
+#
+# This makefile was generated with the following command:
+# %(argv)s
+#
 
-sub makeMakefile()
-{
-    #
-    # process command line args
-    #
-    while (@ARGV)
-    {
-        my $arg = shift @ARGV;
-        if ($arg eq "-h" || $arg eq "--help") {
-            usage();
-            exit(1);
-        }
-        elsif ($arg eq "-V") {
-            $verbose = 1;
-        }
-        elsif ($arg =~ "^-j") {
-            $jOption = $arg;
-        }
-        elsif ($arg eq "--export") {
-            $makefileToExport = shift @ARGV;
-        }
-        elsif ($arg eq "--") {
-            $arg = shift @ARGV;
-            $simProg = $arg;
-            push(@simProgArgs, @ARGV);
-            last;  # end of options
-        }
-        elsif ($arg =~ /^-/) {
-            error("unrecognized option $arg");
-        }
-        else {
-            # process non-option args; first one is the simulation program, then its args
-            $simProg = $arg;
-            push(@simProgArgs, @ARGV);
-            last;  # end of options
-        }
-    }
+SIMULATIONCMD = %(simulationCommand)s
+TARGETS = %(targets)s
 
-    if (!$simProg) {
-        error("simulation program not specified");
-    }
+.PHONY: $(TARGETS)
 
-    # find -r option
-    $runNumIndex = "";  # index of the argument of the -r option in the args list
-    my $i = 0;
-    foreach my $arg (@simProgArgs) {
-        if ($arg eq "-r") {
-            $runNumIndex = $i+1;
-        }
-        $i++;
-    }
-    if ($runNumIndex eq "") {
-        error("-r option must be specified");
-    }
+all: $(TARGETS)
+	@echo All runs completed.
 
+%(rules)s
+""" % locals()
 
-    # expand run numbers to @runNumbers
-    if ($runNumIndex eq "") {
-        @runNumbers = 0;  # default run
-    }
-    else {
-        @runNumbers = ();
-        my $runSpec = $simProgArgs[$runNumIndex];
-        foreach my $r (split(",", $runSpec)) {
-            if ($r =~ /^\d+$/) {
-                push(@runNumbers, $r);
-            }
-            elsif ($r =~ /^(\d+)(\.\.|-)(\d+)$/) {
-                my $from = $1;
-                my $to = $3;
-                for (my $i=$from; $i<=$to; $i++) {
-                    push(@runNumbers, $i);
-                }
-            }
-            else {
-                error("unrecognized run number spec: $r");
-            }
-        }
-        print "-r $runSpec expands to: " . join(" ", @runNumbers) . "\n" if $verbose;
-    }
+		self.chatter("generated makefile content, " + str(len(content)) + " chars")
+		return content
 
-    # generate makefile
-    $banner  = "#\n";
-    $banner .= "# This makefile was generated with the following command:\n";
-    $banner .= "# $originalArgs\n";
-    $banner .= "#\n";
+	def runMakefile(self, makefileContent, jobs):
+		f = tempfile.NamedTemporaryFile(mode='w', prefix="Makefile.", dir=os.getcwd())
+		f.write(makefileContent)
+		f.flush()
+		makeProg = os.getenv("MAKE", "make")
+		makeCmd = [makeProg, "-f", f.name]
+		if jobs != None:
+			makeCmd += ["-j", str(jobs)]
+		self.chatter("running: " + " ".join(makeCmd))
+		try:
+			exitCode = subprocess.call(makeCmd)
+			f.close()
+			if exitCode != 0:
+				exit(1)  # no need to print an error message, "make" already does that
+		except KeyboardInterrupt:
+			self.fail("interrupted")
 
-    $targetList = "";
-    $rules = "";
-    $prefix = "r";
-    foreach my $i (@runNumbers) {
-        $targetList .= " $prefix$i";
-        $rules .= "$prefix$i:\n";
-        $simProgArgs[$runNumIndex] = $i if ($runNumIndex);
-        $rules .= "\t$simProg " . join(" ", @simProgArgs) . "\n\n";
-    }
+	def chunks(self, lst, n):
+		"""Yield successive n-sized chunks from l."""
+		n = max(1, n)
+		return list(lst[i:i+n] for i in range(0, len(lst), n))
 
-    $content = "$banner\n" . ".PHONY: $targetList\n\n" . "all: $targetList\n\n" . $rules;
+	def saveFile(self, filename, content):
+		self.chatter("saving " + filename)
+		try:
+			f = open(filename, "w")
+			f.write(content)
+			f.close()
+		except IOError as e:
+			self.fail("Cannot save makefile into " + filename + ": " + str(e))
 
-    if ($makefileToExport) {
-        $filename = $makefileToExport;
-    }
-    else {
-        # try new temporary filenames until we get one that didn't already exist
-        # http://docstore.mik.ua/orelly/perl/cookbook/ch07_06.htm
-        # see also END block below
-        do { $tempfilename = tmpnam() }
-            until IO::File->new($tempfilename, O_RDWR|O_CREAT|O_EXCL);
-        $filename = $tempfilename;
-    }
+	def chatter(self, msg):
+		if self.verbose:
+			print(msg)
 
-    open(OUT, ">$filename");
-    print OUT $content;
-    close OUT;
+	def fail(self, msg):
+		print("opp_runall: " + msg, file=sys.stderr)
+		sys.exit(1)
 
-    print "$filename created\n" if $verbose;
-
-    if (!$makefileToExport) {
-        # invoke make
-        $makeProg = $ENV{MAKE} ? $ENV{MAKE} : "make";
-        $jOption = $jOption ? " $jOption" : "";
-        $makeCommand = "$makeProg$jOption -f $filename";
-        print "running $makeCommand...\n" if $verbose;
-        runprog($makeCommand);
-        print "done\n" if $verbose;
-    }
-}
-
-# provide an END block so that when we exit or die, it automatically deletes
-# the temporary file. Note: the END block ALWAYS gets invoked, even if control
-# doesn't get here during the normal program flow!
-END {
-    if ($tempfilename) {
-        print "deleting $tempfilename\n" if $verbose;
-        unlink($tempfilename) or die "Couldn't unlink $tempfilename: $!"
-    }
-}
-
-sub runprog
-{
-    my $cmd = shift;
-    system($cmd);
-}
-
-sub error($)
-{
-    my($text) = @_;
-    print STDERR "$ARG0: error: $text\n";
-    exit(1);
-}
-
-sub warning($)
-{
-    my($text) = @_;
-    print STDERR "$ARG0: warning: $text\n";
-}
-
+tool = Runall()
+tool.run()
