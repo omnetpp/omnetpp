@@ -149,7 +149,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run
-      int runMode;                 // the current mode the simulation is executing under
+      RunMode runMode;             // the current mode the simulation is executing under
       struct RunUntil {
           simtime_t time;          // time limit in current "Run Until" execution, or zero
           eventnumber_t eventNumber;  // event number in current "Run Until" execution, or zero
@@ -306,9 +306,9 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr, bool stopOnMsgCancel=true);
-      void setSimulationRunMode(int runMode);
-      int getSimulationRunMode() const {return runMode;}
+      void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr, bool stopOnMsgCancel=true);
+      void setSimulationRunMode(RunMode runMode);
+      RunMode getSimulationRunMode() const {return runMode;}
       void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel=true);
       void setSimulationRunUntilModule(cModule *until_module);
       bool doRunSimulation();

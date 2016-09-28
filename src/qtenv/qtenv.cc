@@ -735,7 +735,7 @@ void Qtenv::doOneStep()
     }
 }
 
-void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
+void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
                           bool stopOnMsgCancel)
 {
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
@@ -804,7 +804,7 @@ void Qtenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
     refreshInspectors();
 }
 
-void Qtenv::setSimulationRunMode(int mode)
+void Qtenv::setSimulationRunMode(RunMode mode)
 {
     runMode = mode;
 }
@@ -2043,14 +2043,14 @@ void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp
 {
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     if (mainWindow->isRunning()) {
-        mainWindow->setGuiForRunmode(runMode);
+        mainWindow->setGuiForRunmode(runMode, true);
         getQtenv()->setSimulationRunMode(runMode);
         mainWindow->setRunUntilModule(insp);
     }
     else {
         if (!mainWindow->networkReady())
             return;
-        mainWindow->setGuiForRunmode(runMode);
+        mainWindow->setGuiForRunmode(runMode, true);
         if (object == nullptr && insp)
             object = insp->getObject();
 
