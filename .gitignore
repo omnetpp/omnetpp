@@ -90,8 +90,10 @@ Thumbs.db
 /samples/sockets/sockets
 /samples/tictoc/tictoc
 /samples/osg-earth/data/
+/samples/canvas/canvas
 /samples/osg-intro/osg-intro
 /samples/osg-indoor/osg-indoor
+/samples/osg-earth/osg-earth
 /samples/osg-satellites/osg-satellites
 /samples/rundemo.bat
 /samples/*/results/
