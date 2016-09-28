@@ -665,6 +665,7 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
     item->setNameVisible(showModuleNames);
     submoduleGraphicsItems[submod] = item;
     item->setParentItem(submoduleLayer);
+    item->update();
 }
 
 void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
@@ -904,35 +905,51 @@ void ModuleCanvasViewer::redrawNextEventMarker()
     }
 }
 
+void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
+{
+    if (submoduleGraphicsItems.count(submod)) {
+        auto item = submoduleGraphicsItems[submod];
+        SubmoduleItemUtil::setupFromDisplayString(item, submod);
+        bool xplct, obeys;
+        double x, y, sx, sy;
+        getSubmoduleCoords(submod, xplct, obeys, x, y, sx, sy);
+        if (xplct)
+            submodPosMap[submod] = QPointF(x, y);
+        item->setPos(getSubmodCoords(submod));
+        item->update();
+    }
+}
+
 void ModuleCanvasViewer::refreshSubmodules()
 {
-    refreshLayout();
-    for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
-        cModule *submod = *it;
-        if (submoduleGraphicsItems.count(submod)) {
-            auto item = submoduleGraphicsItems[submod];
-            SubmoduleItemUtil::setupFromDisplayString(item, submod);
-            item->setPos(getSubmodCoords(submod));
-        }
+    if (object) {
+        refreshLayout();
+        for (cModule::SubmoduleIterator it(object); !it.end(); ++it)
+            refreshSubmodule(*it);
     }
+}
+
+void ModuleCanvasViewer::refreshConnection(cGate *gate)
+{
+    if (connectionGraphicsItems.count(gate)) {
+        ConnectionItem *item = connectionGraphicsItems[gate];
+        ConnectionItemUtil::setupFromDisplayString(item, gate, item->isHalfLength());
+        item->setLine(getConnectionLine(gate));
+    }
+}
+
+void ModuleCanvasViewer::refreshConnections(cModule *module)
+{
+    for (cModule::GateIterator it(module); !it.end(); ++it)
+        refreshConnection(*it);
 }
 
 void ModuleCanvasViewer::refreshConnections()
 {
-    auto refr = [this](cModule *mod) {
-        for (cModule::GateIterator it(mod); !it.end(); ++it) {
-            cGate *gate = *it;
-            if (connectionGraphicsItems.count(gate)) {
-                ConnectionItem *item = connectionGraphicsItems[gate];
-                ConnectionItemUtil::setupFromDisplayString(item, gate, item->isHalfLength());
-                item->setLine(getConnectionLine(gate));
-            }
-        }
-    };
-
-    refr(object);
-    for (cModule::SubmoduleIterator it(object); !it.end(); ++it) {
-        refr(*it);
+    if (object) {
+        refreshConnections(object);
+        for (cModule::SubmoduleIterator it(object); !it.end(); ++it)
+            refreshConnections(*it);
     }
 }
 

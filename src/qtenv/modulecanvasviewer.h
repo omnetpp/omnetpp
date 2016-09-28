@@ -165,7 +165,10 @@ public:
     void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
     void incLayoutSeed() { ++layoutSeed; }
 
+    void refreshSubmodule(cModule *submod);
     void refreshSubmodules();
+    void refreshConnection(cGate *gate);
+    void refreshConnections(cModule *module);
     void refreshConnections();
 
     void setZoomLabelVisible(bool visible);

@@ -512,9 +512,10 @@ void ModuleInspector::connectionDeleted(cGate *srcgate)
     canvasViewer->setNeedsRedraw();
 }
 
-void ModuleInspector::displayStringChanged(cModule *)
+void ModuleInspector::displayStringChanged(cModule *submodule)
 {
-    canvasViewer->refreshSubmodules();
+    canvasViewer->refreshSubmodule(submodule);
+    canvasViewer->refreshConnections();
 }
 
 void ModuleInspector::displayStringChanged()
@@ -522,9 +523,9 @@ void ModuleInspector::displayStringChanged()
     canvasViewer->setNeedsRedraw();  // TODO check, probably only non-background tags have changed...
 }
 
-void ModuleInspector::displayStringChanged(cGate *)
+void ModuleInspector::displayStringChanged(cGate *gate)
 {
-    canvasViewer->refreshConnections();
+    canvasViewer->refreshConnection(gate);
 }
 
 int ModuleInspector::getDefaultLayoutSeed()
