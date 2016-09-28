@@ -377,8 +377,10 @@ void cMessage::doAddTag(cObject *tag)
 {
     if (tag->isOwnedObject())
         take(static_cast<cOwnedObject *>(tag));
-    if (!tags)
+    if (!tags) {
         tags = new std::vector<cObject*>;
+        tags->reserve(16);
+    }
     tags->push_back(tag);
 }
 
