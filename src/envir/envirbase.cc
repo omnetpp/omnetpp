@@ -344,7 +344,7 @@ bool EnvirBase::simulationRequired()
 
     // legacy options that map to -q
     if (args->optionGiven('x')) {
-        std::cout << "\nWarning: deprecated option -x (will be removed in future version), use -q instead\n";
+        std::cerr << "\nWarning: deprecated option -x (will be removed in future version), use -q instead\n";
         configName = args->optionValue('x');
         if (args->optionGiven('G'))
             query = "rundetails";
@@ -354,7 +354,7 @@ bool EnvirBase::simulationRequired()
             query = "numruns";
     }
     else if (args->optionGiven('X')) {
-        std::cout << "\nWarning: deprecated option -X (will be removed in a future version), use -q instead\n";
+        std::cerr << "\nWarning: deprecated option -X (will be removed in a future version), use -q instead\n";
         configName = args->optionValue('X');
         query = "sectioninheritance";
     }
@@ -362,7 +362,8 @@ bool EnvirBase::simulationRequired()
     // process -q
     if (query) {
         if (!configName) {
-            std::cout << "\nError: configuration not specified (-c option)\n";
+            std::cerr << "\nError: configuration (-c) not specified for query (-q)\n";
+            exitCode = 1;
             return false;
         }
         printRunInfo(configName, runFilter, query);
@@ -441,7 +442,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
             }
         }
         else {
-            std::cout << "Error: unrecognized -q argument '" << q << "'\n";
+            std::cerr << "Error: unrecognized -q argument '" << q << "'\n";
             exitCode = 1;
         }
     }
@@ -455,7 +456,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
         }
     }
     else {
-        std::cout << "Error: unrecognized -q argument '" << q << "'\n";
+        std::cerr << "Error: unrecognized -q argument '" << q << "'\n";
         exitCode = 1;
     }
 }
