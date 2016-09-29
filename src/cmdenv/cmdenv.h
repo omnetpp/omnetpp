@@ -35,13 +35,13 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     std::string runFilter;
     size_t extraStack;
     std::string outputFile;
+    bool redirectOutput;
     bool expressMode;
     bool interactive;
     bool autoflush; // all modes
     bool printModuleMsgs;  // if normal mode
     bool printEventBanners; // if normal mode
     bool detailedEventBanners; // if normal mode
-    bool messageTrace; // if normal mode
     long statusFrequencyMs; // if express mode
     bool printPerformanceData; // if express mode
 };

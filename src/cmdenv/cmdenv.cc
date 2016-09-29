@@ -66,7 +66,8 @@ Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING,
 Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, nullptr, "Specifies which runs to execute from the selected configuration (see `cmdenv-config-name` option). It accepts a comma-separated list of run numbers or run number ranges, e.g. `1,3..4,7..9`. If the value is missing, Cmdenv executes all runs in the selected configuration. The `-r` command line option overrides this setting.")
 Register_GlobalConfigOptionU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B", "8KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Cmdenv.")
 Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL, "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
-Register_GlobalConfigOption(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, nullptr, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host` option as well.")
+Register_PerRunConfigOption(CFGID_CMDENV_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.out", "When `cmdenv-record-output=true`: file name to redirect standard output to. See also `fname-append-host`.")
+Register_PerRunConfigOption(CFGID_CMDENV_REDIRECT_OUTPUT, "cmdenv-redirect-output", CFG_BOOL, "false", "Causes Cmdenv to redirect standard output of simulation runs to a file or separate files per run. This option can be useful with running simulation campaigns (e.g. using opp_runall), and also with parallel simulation. See also: `cmdenv-output-file`, `fname-append-host`.");
 Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects normal (debug/trace) or express mode.")
 Register_PerRunConfigOption(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call `fflush(stdout)` after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
 Register_PerRunConfigOption(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When `cmdenv-express-mode=false`: turns printing event banners on/off.")
@@ -115,9 +116,11 @@ CmdenvOptions::CmdenvOptions()
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     extraStack = 0;
+    redirectOutput = false;
     autoflush = true;
     expressMode = false;
     interactive = false;
+    printModuleMsgs = false;
     printEventBanners = true;
     detailedEventBanners = false;
     statusFrequencyMs = 2000;
@@ -158,16 +161,6 @@ void Cmdenv::readOptions()
     opt->runFilter = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
-    opt->outputFile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
-
-    if (!opt->outputFile.empty()) {
-        processFileName(opt->outputFile);
-        ::printf("Cmdenv: redirecting output to file `%s'...\n", opt->outputFile.c_str());
-        FILE *out = fopen(opt->outputFile.c_str(), "w");
-        if (!out)
-            throw cRuntimeError("Cannot open output redirection file `%s'", opt->outputFile.c_str());
-        fout = out;
-    }
 }
 
 void Cmdenv::readPerRunOptions()
@@ -183,6 +176,8 @@ void Cmdenv::readPerRunOptions()
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
     setLogFormat(getConfig()->getAsString(CFGID_LOG_PREFIX).c_str());
+    opt->outputFile = cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE).c_str();
+    opt->redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
 }
 
 void Cmdenv::doRun()
@@ -221,13 +216,23 @@ void Cmdenv::doRun()
                 ::fflush(fout);
 
                 cfg->activateConfig(opt->configName.c_str(), runNumber);
+                readPerRunOptions();
+
+                if (opt->redirectOutput) {
+                    processFileName(opt->outputFile);
+                    ::printf("Redirecting output to file `%s'...\n", opt->outputFile.c_str());
+                    FILE *out = fopen(opt->outputFile.c_str(), "w");
+                    if (!out)
+                        throw cRuntimeError("Cannot open output redirection file `%s'", opt->outputFile.c_str());
+                    fout = out;
+                    ::fprintf(fout, "\nRunning configuration %s, run #%d...\n", opt->configName.c_str(), runNumber);
+                }
 
                 const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS);
                 if (itervars && strlen(itervars) > 0)
                     ::fprintf(fout, "Scenario: %s\n", itervars);
                 ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
 
-                readPerRunOptions();
 
                 // find network
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
@@ -296,6 +301,11 @@ void Cmdenv::doRun()
                     notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
+            }
+
+            if (fout != stdout) {
+                fclose(fout);
+                fout = stdout;
             }
 
             // skip further runs if signal was caught
