@@ -78,6 +78,11 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "uA",   1e-6, "A",    "microampere" },
     { "mps",     1, "mps",  "meter/sec" },
     { "kmph",1/3.6, "mps",  "kilometer/hour" },
+    { "C",       1, "C",    "coulomb"},
+    { "As",      1, "C",    "ampere*sec"},
+    { "mAs",  1e-3, "C",    "milliampere*sec"},
+    { "Ah",   3600, "C",    "ampere*hour"},
+    { "mAh",   3.6, "C",    "milliampere*hour"},
     // this many should be enough
     { nullptr,      0, nullptr,   nullptr }
 };
