@@ -63,8 +63,16 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
     items.clear();
 
     // draw
-    if (canvas)
-        drawFigureRec(canvas->getRootFigure(), hints);
+    if (canvas) {
+        // Shouldn't draw the rootFigure itself, because then the networkLayer
+        // can't be shoved between individual "real" top-level figures.
+        auto root = canvas->getRootFigure();
+        for (int i = 0; i < root->getNumFigures(); ++i)
+            drawFigureRec(root->getFigure(i), hints);
+
+        // But we add the layer to or little map as conceptual item for it just to be sure...
+        items[root] = layer;
+    }
     else
         if (networkLayer)
             layer->addItem(networkLayer);
@@ -128,10 +136,10 @@ void CanvasRenderer::drawFigureRec(cFigure *figure, FigureRenderingHints *hints)
         for (int i = 0; i < figure->getNumFigures(); i++)
             drawFigureRec(figure->getFigure(i), hints);
 
-        if (canvas->getSubmodulesLayer() == figure)
-            if (networkLayer)
-                layer->addItem(networkLayer);
-
+        if (canvas->getSubmodulesLayer() == figure && networkLayer) {
+            layer->addItem(networkLayer);
+            networkLayer->setZValue(figure->getZIndex());
+        }
     }
 }
 
