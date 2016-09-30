@@ -44,8 +44,12 @@
 #include "filteredobjectlistdialog.h"
 #include "comboselectiondialog.h"
 #include "fileeditor.h"
+#include "animationcontrollerdialog.h"
+#include "displayupdatecontroller.h"
 
+#include <QCheckBox>
 #include <QDebug>
+#include <QToolButton>
 
 #define emit
 
@@ -70,11 +74,11 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     fileEditor = new FileEditor(this);
 
     slider = new QSlider();
-    slider->setMinimum(50);
-    slider->setMaximum(500);
+    slider->setMinimum(playbackSpeedToSliderValue(0.1));
+    slider->setMaximum(playbackSpeedToSliderValue(10));
+    slider->setValue(playbackSpeedToSliderValue(env->opt->playbackSpeed));
     slider->setOrientation(Qt::Orientation::Horizontal);
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    slider->setValue(getQtenv()->opt->animationSpeed * 100);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
 
     // This will hold the toolbar itself, the animation speed
@@ -94,6 +98,9 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // too narrow instead of the more important labels on the toolbar.
     toolBarLayout->addWidget(ui->mainToolBar);
 
+    slider->setTracking(true);
+    slider->setMinimumWidth(100);
+    slider->setFocusPolicy(Qt::NoFocus);
     toolBarLayout->addWidget(slider);
 
     // add current event status
@@ -289,11 +296,6 @@ void MainWindow::onEventNumLabelContextMenuRequested(QPoint pos)
     delete menu;
 }
 
-void MainWindow::displayText(const char *t)
-{
-    // ui->textBrowser->append(QString(t));
-}
-
 bool MainWindow::isRunning()
 {
     Qtenv::eState state = (Qtenv::eState)env->getSimulationState();
@@ -302,32 +304,13 @@ bool MainWindow::isRunning()
 
 void MainWindow::setGuiForRunmode(RunMode runMode, bool untilMode)
 {
-    ui->actionOneStep->setChecked(false);
-    ui->actionRun->setChecked(false);
-    ui->actionFastRun->setChecked(false);
-    ui->actionExpressRun->setChecked(false);
+    ui->actionOneStep->setChecked(runMode == RUNMODE_STEP);
+    ui->actionRun->setChecked(runMode == RUNMODE_NORMAL);
+    ui->actionFastRun->setChecked(runMode == RUNMODE_FAST);
+    ui->actionExpressRun->setChecked(runMode == RUNMODE_EXPRESS);
 
-    switch (runMode) {
-        case RUNMODE_STEP:
-            ui->actionOneStep->setChecked(true);
-            break;
-
-        case RUNMODE_NORMAL:
-            ui->actionRun->setChecked(true);
-            break;
-
-        case RUNMODE_FAST:
-            ui->actionFastRun->setChecked(true);
-            break;
-
-        case RUNMODE_EXPRESS:
-            ui->actionExpressRun->setChecked(true);
-            break;
-
-        case RUNMODE_NOT_RUNNING:
-            ui->actionRunUntil->setChecked(false);
-            break;
-    }
+    if (runMode == RUNMODE_NOT_RUNNING)
+        ui->actionRunUntil->setChecked(false);
 
     if (runMode == RUNMODE_EXPRESS)
         showStopDialog();
@@ -420,8 +403,6 @@ void MainWindow::on_actionOneStep_triggered()
         env->doOneStep();
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
-
-    getQtenv()->getAnimator()->hurry();
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -576,7 +557,6 @@ void MainWindow::on_actionStop_triggered()
         env->setStopSimulationFlag();
     }
 
-    getQtenv()->getAnimator()->hurry();
     closeStopDialog();
 
     // this proc doubles as "stop layouting", when in graphical module inspectors
@@ -589,7 +569,6 @@ void MainWindow::on_actionStop_triggered()
 void MainWindow::on_actionRunUntil_triggered()
 {
     // implements Simulate|Run until...
-    ui->actionRunUntil->setChecked(false);
     if (!networkReady())
         return;
 
@@ -622,7 +601,9 @@ void MainWindow::on_actionRunUntil_triggered()
 
 void MainWindow::onSliderValueChanged(int value)
 {
-    getQtenv()->setAnimationSpeed(value / 100.0);
+    double speed = sliderValueToPlaybackSpeed(value);
+    slider->setToolTip(QString::number(speed, 'f', 2));
+    getQtenv()->setAnimationSpeed(speed);
 }
 
 void MainWindow::updateStatusDisplay()
@@ -1035,7 +1016,8 @@ void MainWindow::onSplitterMoved(int, int)
 
 void MainWindow::onAnimationSpeedChanged(float speed)
 {
-    slider->setValue(speed * 100);
+    slider->setToolTip(QString::number(speed));
+    slider->setValue(playbackSpeedToSliderValue(speed));
 }
 
 void MainWindow::on_actionStatusDetails_triggered()
@@ -1404,6 +1386,52 @@ void MainWindow::on_actionInspectByPointer_triggered()
         getQtenv()->inspect(strToPtr(pointer.toStdString().c_str()), INSP_DEFAULT, true);
 }
 
+void MainWindow::on_actionRecordVideo_toggled(bool checked)
+{
+    auto duc = env->getDisplayUpdateController();
+    // have to resize the mainwindow to be a size of a multiple of 4 in both dimensions
+    // because many video encoders (like x264) demand it
+    if (checked) {
+        QString configRun = env->getConfigEx()->getActiveConfigName();
+        configRun += "#" + QString::number(env->getConfigEx()->getActiveRunNumber());
+
+        QString base = "frames/" + configRun + "_";
+
+        if (!env->getPref("videorecording-dontshowdialog", false).toBool()) {
+            QMessageBox mb (QMessageBox::Information, "Video Recording",
+                "Video recording is performed by exporting a series of numbered PNG images, starting with '" + base + "0000.png'.<br/>" +
+                "To encode them into a high quality video file, something like the following command can be used, provided that ffmpeg and x264 is installed on your system:<br/><br/>"
+                "<code>ffmpeg -r " + QString::number(duc->getVideoFps()) + " -f image2  -i \"" + base + "%04d.png\" -vcodec libx264 -crf 0 -preset veryslow -qp 0 -pix_fmt yuv444p \"" + configRun + ".mkv\"</code><br/><br/>"
+                "Before continuing, make sure there is ample disk space available, especially if you plan to record a long video, since the output is lossless, therefore can grow quite large.<br/><br/>"
+                "Also the main Qtenv window has to be resized to have its width and height both divisible by 4 to ensure compatibility with certain codecs.",
+                QMessageBox::Ok, this);
+            auto cb = new QCheckBox("Don't show again");
+            mb.setCheckBox(cb);
+            mb.exec();
+
+            if (cb->checkState() == Qt::Checked)
+                env->setPref("videorecording-dontshowdialog", true);
+        }
+
+        setFixedSize(width() / 4 * 4, height() / 4 * 4);
+        duc->setFilenameBase(base.toUtf8());
+        duc->startVideoRecording();
+    } else {
+        setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        duc->stopVideoRecording();
+    }
+}
+
+void MainWindow::on_actionShowAnimationParams_toggled(bool checked)
+{
+    auto duc = env->getDisplayUpdateController();
+    if (checked)
+        duc->showDialog(ui->actionShowAnimationParams);
+    else
+        duc->hideDialog();
+    setFocus();
+    QApplication::processEvents();
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
-

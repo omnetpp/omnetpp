@@ -28,7 +28,7 @@
 #include "mainwindow.h"
 #include "layouterenv.h"
 #include "figurerenderers.h"
-#include "animator.h"
+#include "messageanimator.h"
 #include "compoundmoduleitem.h"
 #include "connectionitem.h"
 #include "submoduleitem.h"
@@ -322,7 +322,7 @@ void ModuleCanvasViewer::relayoutAndRedrawAll()
     recalculateLayout();
     redrawFigures();
     redrawModules();
-    getQtenv()->getAnimator()->redrawMessages();
+    getQtenv()->getMessageAnimator()->redrawMessages();
     redrawNextEventMarker();
     refreshSubmodules();
 }
@@ -973,7 +973,7 @@ void ModuleCanvasViewer::redraw()
     refreshSubmodules();
 }
 
-void ModuleCanvasViewer::refresh(bool updateNextEventMarker)
+void ModuleCanvasViewer::refresh()
 {
     if (!object) {
         clear();
@@ -1001,8 +1001,7 @@ void ModuleCanvasViewer::refresh(bool updateNextEventMarker)
     }
     else {
         refreshFigures();
-        if (updateNextEventMarker)
-            redrawNextEventMarker();
+        redrawNextEventMarker();
         refreshSubmodules();
     }
 

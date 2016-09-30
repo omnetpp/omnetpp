@@ -33,12 +33,15 @@
 #include <QDialogButtonBox>
 #include <QCheckBox>
 #include <QFontDatabase>
+#include <QThread>
+#include <QPainter>
 
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/matchexpression.h"
 #include "common/fileutil.h"
 #include "common/ver.h"
+#include "common/unitconversion.h"
 #include "envir/appreg.h"
 #include "envir/speedometer.h"
 #include "envir/matchableobject.h"
@@ -51,6 +54,7 @@
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
+#include "omnetpp/cfutureeventset.h"
 #include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "qtenvdefs.h"
@@ -67,7 +71,9 @@
 #include "treeitemmodel.h"
 #include "timelineinspector.h"
 #include "objecttreeinspector.h"
-#include <osgviewer.h>
+#include "canvasinspector.h"
+#include "osgviewer.h"
+#include "displayupdatecontroller.h"
 
 #ifdef Q_OS_MAC
 #include <Carbon/Carbon.h> // for the TransformProcessType magic on startup
@@ -137,7 +143,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("nexteventmarkers", opt->showNextEventMarkers);
     setPref("senddirect_arrows", opt->showSendDirectArrows);
     setPref("anim_methodcalls", opt->animateMethodCalls);
-    setPref("methodcalls_delay", opt->methodCallAnimDelay);
+    setPref("methodcalls_duration", opt->methodCallAnimDuration);
     setPref("animation_msgnames", opt->animationMsgNames);
     setPref("animation_msgclassnames", opt->animationMsgClassNames);
     setPref("animation_msgcolors", opt->animationMsgColors);
@@ -156,7 +162,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("arrangevectorconnections", opt->arrangeVectorConnections);
     setPref("iconminsize", opt->iconMinimumSize);
     setPref("bubbles", opt->showBubbles);
-    setPref("animation_speed", opt->animationSpeed);
+    setPref("playback_speed", opt->playbackSpeed);
     setPref("expressmode_autoupdate", opt->autoupdateInExpress);
 
     QString stripNamespaceString;
@@ -224,9 +230,9 @@ void Qtenv::restoreOptsFromPrefs()
     if (pref.isValid())
         opt->animateMethodCalls = pref.toBool();
 
-    pref = getPref("methodcalls_delay");
+    pref = getPref("methodcalls_duration");
     if (pref.isValid())
-        opt->methodCallAnimDelay = pref.toInt();
+        opt->methodCallAnimDuration = pref.toInt();
 
     pref = getPref("animation_msgnames");
     if (pref.isValid())
@@ -278,7 +284,7 @@ void Qtenv::restoreOptsFromPrefs()
     if (pref.isValid())
         opt->showBubbles = pref.toBool();
 
-    pref = getPref("animation_speed");
+    pref = getPref("playback_speed");
     if (pref.isValid())
         setAnimationSpeed(pref.toDouble());
 
@@ -506,7 +512,6 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
     isConfigRun = false;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     runUntil.stopOnMsgCancel = true;
-    gettimeofday(&idleLastUICheck, nullptr);
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
@@ -519,7 +524,7 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 
 Qtenv::~Qtenv()
 {
-    delete animator;
+    delete messageAnimator;
     delete localPrefs;  // will sync it to disk
     delete globalPrefs;  // will sync it to disk
     for (int i = 0; i < (int)silentEventFilters.size(); i++)
@@ -576,7 +581,8 @@ void Qtenv::doRun()
             windowTitlePrefix = tmp;
         }
 
-        animator = new Animator();
+        displayUpdateController = new DisplayUpdateController();
+        messageAnimator = new MessageAnimator();
 
         mainWindow = new MainWindow(this);
 
@@ -600,11 +606,8 @@ void Qtenv::doRun()
         mainWindow->restoreGeometry();
         mainWindow->initialSetUpConfiguration();
 
-        //QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
-
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
         QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
-
 
         setLogFormat(opt->logFormat.c_str());
 
@@ -636,8 +639,10 @@ void Qtenv::doRun()
     // clear log
     logBuffer.clear();  // FIXME how is the log cleared between runs??????????????
 
-    delete animator;
-    animator = nullptr;
+    delete messageAnimator;
+    messageAnimator = nullptr;
+    delete displayUpdateController;
+    displayUpdateController = nullptr;
 
     // delete network if not yet done
     if (simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED)
@@ -687,6 +692,7 @@ void Qtenv::doOneStep()
 {
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
+    runMode = RUNMODE_STEP;
     animating = true;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
     updateStatusDisplay();
@@ -695,11 +701,12 @@ void Qtenv::doOneStep()
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
     try {
+        displayUpdateController->setRunMode(runMode);
+        displayUpdateController->animateUntilNextEvent();
+
         cEvent *event = getSimulation()->takeNextEvent();
         if (event) {  // takeNextEvent() not interrupted
             getSimulation()->executeEvent(event);
-            callRefreshDisplay();
-            updateGraphicalInspectorsBeforeAnimation();
             performAnimations();
         }
         simulationState = SIM_READY;  // currently must precede updateStatusDisplay(), because it depends on it...
@@ -733,6 +740,9 @@ void Qtenv::doOneStep()
         //
         finishSimulation();
     }
+
+    runMode = RUNMODE_NOT_RUNNING;
+    displayUpdateController->setRunMode(runMode);
 }
 
 void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
@@ -788,6 +798,9 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     loggingEnabled = true;
     recordEventlog = false;
     runUntil.msg = nullptr;
+
+    runMode = RUNMODE_NOT_RUNNING;
+    displayUpdateController->setRunMode(runMode);
 
     if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
@@ -851,12 +864,22 @@ bool Qtenv::doRunSimulation()
     loggingEnabled = true;
     bool firstevent = true;
 
-    struct timeval last_update;
-    gettimeofday(&last_update, nullptr);
+    QElapsedTimer uiUpdateTimer;
+    uiUpdateTimer.start();
 
     while (true) {
         if (runMode == RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
+
+        displayUpdateController->setRunMode(runMode);
+        bool reached = displayUpdateController->animateUntilNextEvent();
+        if (!reached)
+            break;
+
+        if (uiUpdateTimer.elapsed() > 100) {
+            QApplication::processEvents();
+            uiUpdateTimer.restart();
+        }
 
         // query which module will execute the next event
         cEvent *event = getSimulation()->takeNextEvent();
@@ -881,32 +904,18 @@ bool Qtenv::doRunSimulation()
         firstevent = false;
 
         animating = (runMode == RUNMODE_NORMAL) || untilmodule_reached;
-        bool frequent_updates = (runMode == RUNMODE_NORMAL);
 
         speedometer.addEvent(getSimulation()->getSimTime());
 
+        ASSERT(simTime() <= event->getArrivalTime());
         // do a simulation step
         getSimulation()->executeEvent(event);
 
-        if (animating) {
-            callRefreshDisplay();
-            updateGraphicalInspectorsBeforeAnimation();
+        if (animating)
             performAnimations();
-        }
 
         // flush so that output from different modules don't get mixed
         cLogProxy::flushLastLine();
-
-        // display update
-        if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
-            if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > (unsigned long)opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3))  // do not start new interval at every event
-                speedometer.beginNewInterval();  // should precede updateStatusDisplay()
-            callRefreshDisplay();
-            refreshInspectors();
-            updateStatusDisplay();
-            QCoreApplication::processEvents();
-            resetElapsedTime(last_update);  // exclude UI update time [bug #52]
-        }
 
         // exit conditions
         if (untilmodule_reached)
@@ -1230,6 +1239,7 @@ void Qtenv::callRefreshDisplay()
 {
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_RUNNING || simulationState == SIM_TERMINATED);
     getSimulation()->getSystemModule()->callRefreshDisplay();  // Beware: this may throw a cRuntimeError, so needs to be under a try/catch
+    ++refreshDisplayCount;
 }
 
 void Qtenv::refreshInspectors()
@@ -1242,7 +1252,7 @@ void Qtenv::refreshInspectors()
         it = next;
     }
 
-    animator->redrawMessages();
+    messageAnimator->redrawMessages();
 
     // clear the change flags on all inspected canvases
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
@@ -1267,14 +1277,12 @@ void Qtenv::createSnapshot(const char *label)
     getSimulation()->snapshot(getSimulation(), label);
 }
 
-void Qtenv::updateGraphicalInspectorsBeforeAnimation()
+void Qtenv::performAnimations()
 {
-    for (auto i : inspectors) {
-        if (auto insp = dynamic_cast<ModuleInspector *>(i))
-            insp->updateBeforeAnimation();
-        if (auto insp = dynamic_cast<LogInspector *>(i))
-            insp->refresh();
-    }
+    displayUpdateController->setRunMode(runMode);
+    messageAnimator->start();
+    displayUpdateController->animateUntilHoldEnds();
+    messageAnimator->clear();
 }
 
 std::string Qtenv::getWindowTitle()
@@ -1360,8 +1368,8 @@ void Qtenv::printEventBanner(cEvent *event)
 
 void Qtenv::setAnimationSpeed(float speed)
 {
-    opt->animationSpeed = speed;
-    setPref("animation_speed", opt->animationSpeed);
+    opt->playbackSpeed = speed;
+    setPref("playback_speed", opt->playbackSpeed);
     emit animationSpeedChanged(speed);
 }
 
@@ -1497,35 +1505,13 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
 
 bool Qtenv::idle()
 {
-    // bug #56: refresh inspectors so that there aren't dead objects on the UI
-    // while running Tk "update" (below). This only needs to be done in Fast
-    // mode, because in normal Run mode inspectors are already up to date here
-    // (they are refreshed after every event), and in Express mode all user
-    // interactions are disabled except for the STOP button.
-    if (runMode == RUNMODE_FAST) {
-        // updateInspectors() may be costly, so do not check the UI too often
-        timeval now;
-        gettimeofday(&now, nullptr);
-        if (timeval_msec(now - idleLastUICheck) < 500)
-            return false;
-
-        // refresh inspectors
-        updateStatusDisplay();
-        refreshInspectors();
-    }
-
     // process UI events
     eState origsimstate = simulationState;
     simulationState = SIM_BUSY;
-    QCoreApplication::processEvents();
+    QApplication::processEvents();
     simulationState = origsimstate;
 
-    bool stop = stopSimulationFlag;
-    stopSimulationFlag = false;
-
-    if (runMode == RUNMODE_FAST)
-        gettimeofday(&idleLastUICheck, nullptr);
-    return stop;
+    return stopSimulationFlag;
 }
 
 void Qtenv::objectDeleted(cObject *object)
@@ -1556,29 +1542,26 @@ void Qtenv::simulationEvent(cEvent *event)
     if (loggingEnabled)
         printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
+    displayUpdateController->simulationEvent(event);
+
     if (animating && opt->animationEnabled) {
-        updateSimtimeDisplay();  // so that the correct (new) simulation time is displayed during animation
-        updateGraphicalInspectorsBeforeAnimation();
-    }
+        if (event->isMessage()) {
+            cMessage *msg = static_cast<cMessage *>(event);
+            cGate *arrivalGate = msg->getArrivalGate();
+            if (!arrivalGate)
+                return;
 
-    if (animating && opt->animationEnabled && event->isMessage()) {
-        cMessage *msg = static_cast<cMessage *>(event);
-        cGate *arrivalGate = msg->getArrivalGate();
-        if (!arrivalGate)
-            return;
+            // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+            if (arrivalGate->getPreviousGate())
+                messageAnimator->animateDelivery(msg);
+            else
+                messageAnimator->animateDeliveryDirect(msg);
 
-        // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
-        if (arrivalGate->getPreviousGate()) {
-            animator->animateDelivery(msg);
+            // deliveries must be played immediately, since we
+            // are right before the processing of the message,
+            // and it would disappear otherwise
+            performAnimations();
         }
-        else {
-            animator->animateDeliveryDirect(msg);
-        }
-
-        // deliveries must be played immediately, since we
-        // are right before the processing of the message,
-        // and it would disappear otherwise
-        animator->play();
     }
 }
 
@@ -1602,10 +1585,6 @@ void Qtenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        updateGraphicalInspectorsBeforeAnimation();
-    }
-
     if (loggingEnabled)
         logBuffer.beginSend(msg);
 }
@@ -1615,7 +1594,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagatio
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg))
-        animator->animateSendDirect(msg, msg->getSenderModule(), toGate);
+        messageAnimator->animateSendDirect(msg, msg->getSenderModule(), toGate);
 
     if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
@@ -1627,7 +1606,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
-        animator->animateSendHop(msg, srcGate, isLastHop);
+        messageAnimator->animateSendHop(msg, srcGate, isLastHop);
     }
 
     if (loggingEnabled)
@@ -1640,7 +1619,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationD
 
     if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
         bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
-        animator->animateSendHop(msg, srcGate, isLastHop);
+        messageAnimator->animateSendHop(msg, srcGate, isLastHop);
     }
 
     if (loggingEnabled)
@@ -1651,15 +1630,15 @@ void Qtenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
     if (animating)
-        animator->redrawMessages();
+        messageAnimator->redrawMessages();
     if (loggingEnabled)
         logBuffer.endSend(msg);
 }
 
 void Qtenv::messageDeleted(cMessage *msg)
 {
-    if (animator)
-        animator->removeMessagePointer(msg);
+    if (messageAnimator)
+        messageAnimator->removeMessagePointer(msg);
     EnvirBase::messageDeleted(msg);
 }
 
@@ -1671,13 +1650,11 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     va_end(va2);
 
     if (!silent && animating && opt->animateMethodCalls && methodFmt) {
-        updateGraphicalInspectorsBeforeAnimation();
-
         static char methodText[MAX_METHODCALL];
         vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
         methodText[MAX_METHODCALL-1] = '\0';
 
-        animator->animateMethodcall(fromComp, toComp, methodText);
+        messageAnimator->animateMethodcall(fromComp, toComp, methodText);
     }
 }
 
@@ -1826,18 +1803,64 @@ void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, int& outW
 
 double Qtenv::getAnimationTime() const
 {
-    //TOOD
+    return displayUpdateController->getAnimationTime();
 }
 
 double Qtenv::getAnimationSpeed() const
 {
-    //TOOD
+    double animSpeed = DBL_MAX;
+
+    bool wasNan = false;
+
+    for (auto i : inspectors) {
+        if (auto mi = dynamic_cast<ModuleInspector *>(i)) {
+            auto mod = dynamic_cast<cModule *>(mi->getObject());
+            if (auto canv = mod->getCanvasIfExists()) {
+                const std::map<const cObject*,double>& speedMap = canv->getAnimationSpeedMap();
+
+                for (const auto& s : speedMap) {
+                    if (std::isnan(s.second))
+                        wasNan = true;
+                    animSpeed = std::min(animSpeed, s.second);
+                }
+            }
+        }
+
+        // TODO
+        //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
+        //
+        //}
+    }
+
+    if (animSpeed == DBL_MAX)
+        animSpeed = wasNan ? NAN : 0.0; // TODO: some smarter default
+
+    return animSpeed;
 }
 
+void Qtenv::holdSimulationFor(double s)
+{
+    displayUpdateController->holdSimulationFor(s);
+}
 
 double Qtenv::getRemainingAnimationHoldTime() const
 {
-    //TOOD
+    double holdEndTime = displayUpdateController->getAnimationHoldEndTime();
+
+    for (auto i : inspectors) {
+        if (auto mi = dynamic_cast<ModuleInspector *>(i)) {
+            auto mod = dynamic_cast<cModule *>(mi->getObject());
+            if (auto canv = mod->getCanvasIfExists())
+                holdEndTime = std::max(holdEndTime, canv->getAnimationHoldEndTime());
+        }
+
+        // TODO
+        //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
+        //
+        //}
+    }
+
+    return std::max(0.0, holdEndTime - displayUpdateController->getAnimationTime());
 }
 
 void Qtenv::channelDisplayStringChanged(cChannel *channel)
@@ -1900,11 +1923,6 @@ void Qtenv::onObjectDoubleClicked(cObject *object)
     else {
         inspect(object, INSP_DEFAULT, true);
     }
-}
-
-void Qtenv::performAnimations()
-{
-    animator->play();
 }
 
 void Qtenv::bubble(cComponent *component, const char *text)

@@ -21,7 +21,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="general">
       <attribute name="title">
@@ -109,13 +109,6 @@
           <item>
            <layout class="QFormLayout" name="formLayout_3">
             <item row="0" column="0">
-             <widget class="QLabel" name="fastText">
-              <property name="text">
-               <string>Display update frequency for Fast Run (ms):</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
              <widget class="QLabel" name="expressText">
               <property name="text">
                <string>Display update frequency for Express Run (ms):</string>
@@ -123,9 +116,6 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="fast"/>
-            </item>
-            <item row="1" column="1">
              <widget class="QLineEdit" name="express"/>
             </item>
            </layout>
@@ -525,33 +515,6 @@ Padding with spaces:
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="animSpeedLayout">
-            <item>
-             <widget class="QLabel" name="animSpeedText">
-              <property name="text">
-               <string>Animation speed:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="animSpeedSlider">
-              <property name="minimum">
-               <number>50</number>
-              </property>
-              <property name="maximum">
-               <number>500</number>
-              </property>
-              <property name="singleStep">
-               <number>1</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <widget class="QCheckBox" name="animBroadcast">
             <property name="text">
              <string>Broadcast animation</string>
@@ -601,7 +564,7 @@ Padding with spaces:
             <item>
              <widget class="QLabel" name="delayText">
               <property name="text">
-               <string>Method call delay (ms):</string>
+               <string>Method call duration (ms):</string>
               </property>
              </widget>
             </item>
@@ -794,6 +757,12 @@ Padding with spaces:
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
            <widget class="QLabel" name="userInterfaceText">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>2</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>User interface:</string>
             </property>
@@ -840,7 +809,7 @@ Padding with spaces:
            <widget class="QFontComboBox" name="userInterfaceBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
+              <horstretch>5</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
@@ -886,7 +855,7 @@ Padding with spaces:
            <widget class="QSpinBox" name="userInterfaceNumBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
+              <horstretch>1</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>

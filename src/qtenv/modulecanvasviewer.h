@@ -144,7 +144,7 @@ public:
     CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }
 
     void redraw();
-    void refresh(bool updateNextEventMarker = true);
+    void refresh();
     void recalcSceneRect(bool alignTopLeft = false);
 
     void setZoomFactor(double zoomFactor);

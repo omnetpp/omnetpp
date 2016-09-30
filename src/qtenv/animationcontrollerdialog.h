@@ -1,5 +1,5 @@
 //==========================================================================
-//  PREFERENCESDIALOG.H - part of
+//  animationcontrollerdialog.h - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,41 +14,36 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_PREFERENCESDIALOG_H
-#define __OMNETPP_QTENV_PREFERENCESDIALOG_H
+#ifndef __OMNETPP_QTENV_ANIMATIONCONTROLLERDIALOG_H
+#define __OMNETPP_QTENV_ANIMATIONCONTROLLERDIALOG_H
 
 #include <QDialog>
 
 namespace Ui {
-class PreferencesDialog;
+class AnimationControllerDialog;
 }
 
 namespace omnetpp {
 namespace qtenv {
 
-class PreferencesDialog : public QDialog
+class DisplayUpdateController;
+
+class AnimationControllerDialog : public QDialog
 {
     Q_OBJECT
 
-public:
-    explicit PreferencesDialog(int defaultPage = -1, QWidget *parent = 0);
-    ~PreferencesDialog();
+    Ui::AnimationControllerDialog *ui;
+    DisplayUpdateController *duc;
 
-private slots:
-    void restoreDefaultFonts();
+public:
+    explicit AnimationControllerDialog(QWidget *parent = 0);
+    ~AnimationControllerDialog();
 
 public slots:
-    void accept();
-
-private:
-    Ui::PreferencesDialog *ui;
-
-    void init();
-    void setFontsTabFonts(const QFont &interfaceFont, const QFont &timelineFont,
-                          const QFont &canvasFont, const QFont &logBoxFont, const QFont &timeFont);
+    void displayMetrics();
 };
 
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // __OMNETPP_QTENV_PREFERENCESDIALOG_H
+#endif // __OMNETPP_QTENV_ANIMATIONCONTROLLERDIALOG_H

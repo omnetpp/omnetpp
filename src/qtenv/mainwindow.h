@@ -45,6 +45,7 @@ namespace qtenv {
 class Qtenv;
 class Inspector;
 class StopDialog;
+class AnimationControllerDialog;
 class FileEditor;
 
 class MainWindow : public QMainWindow
@@ -59,7 +60,6 @@ public:
     explicit MainWindow(Qtenv *env, QWidget *parent = 0);
     ~MainWindow();
 
-    void displayText(const char* t);
     void updateSimtimeDisplay();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
@@ -92,6 +92,10 @@ public:
     // restores the changes made by the function above.
     // will do no harm if called multiple times, or without any enterLayoutingMode call at all
     void exitLayoutingMode();
+
+    // the slider value is an integer, we divide it by 100 to get a double value, then raise it to 10's exponent
+    static int playbackSpeedToSliderValue(double speed) { return std::round(std::log10(speed) * 100); }
+    static double sliderValueToPlaybackSpeed(int value) { return std::pow(10, value / 100.0); }
 
 public slots:
     void on_actionOneStep_triggered();
@@ -144,6 +148,8 @@ private slots:
     void on_actionRegistered_Enums_triggered();
     void on_actionSupportedConfigurationOption_triggered();
     void on_actionInspectByPointer_triggered();
+    void on_actionRecordVideo_toggled(bool checked);
+    void on_actionShowAnimationParams_toggled(bool checked);
 
 signals:
     void setNewNetwork();
@@ -151,7 +157,7 @@ signals:
 private:
     Ui::MainWindow *ui;
     Qtenv *env;
-    StopDialog *stopDialog;
+    StopDialog *stopDialog = nullptr;
     QSlider *slider;
     QList<int> timeLineSize;
     bool showStatusDetails;

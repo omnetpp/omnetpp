@@ -1,0 +1,131 @@
+//==========================================================================
+//  displayupdatecontroller.h - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __OMNETPP_QTENV_DISPLAYUPDATECONTROLLER_H
+#define __OMNETPP_QTENV_DISPLAYUPDATECONTROLLER_H
+
+#include <QElapsedTimer>
+#include <QToolButton>
+
+#include "animationcontrollerdialog.h"
+#include "qtenv.h"
+
+namespace omnetpp {
+namespace qtenv {
+
+class Qtenv;
+
+class DisplayUpdateController : public QObject
+{
+    Q_OBJECT
+
+    // simple shortcuts
+    cSimulation *sim = getSimulation();
+    Qtenv *qtenv = getQtenv();
+
+    RunMode runMode = RUNMODE_NORMAL;
+
+    AnimationControllerDialog *dialog = nullptr;
+
+    double animationTime = 0; // this is The Animation Time
+    double animationHoldEndTime = 0; // this is only for the internal hold, the real hold duration is computed in Qtenv
+
+    double targetAnimationCpuUsage = 0.5;
+
+    double targetFps = 30; // this is what we try to achieve to maintain smoothness / cpu usage
+    double currentFps = targetFps; // this is the actual measured framerate
+    double minFps = 2, maxFps = 60; // these limit the adaptive mechanism
+    double maxPossibleFps = maxFps; // this is what the computer could achieve at most
+
+    double fpsMemory = 0.0;
+
+    double videoFps = 30; // the framerate of the recorded video
+
+    QElapsedTimer frameTimer; // used to measure frame time and fps
+    QElapsedTimer animationTimer; // used to advance the animationTime
+    double now = 0; // this is a "real time" stopwatch, only incremented if the simulation is not stopped
+
+    double lastFrameAt = 0; // these are in realTime (calculated from "now")
+    double lastEventAt = 0;
+
+    SimTime lastExecutedEvent = SIMTIME_ZERO; // this is used to compute the adaptive nonlinear mapping
+
+    bool recordingVideo = false; // a simple state variable
+
+    int frameCount = 0; // this will be the sequence number of the next recorded frame
+    simtime_t lastRecordedFrame = 0; // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
+
+    std::string filenameBase = "frames/"; // the prefix of the frame files' path
+
+    void adjustFrameRate(float frameTime); // will adjust the targetFps according to the parameters, based on how much the rendering of a frame took
+    double renderFrame(bool record); // will update many parts of the gui to reflect the current state
+    void recordFrame(); // captures the main window and saves the frame into a PNG file with the next sequence number
+
+    // this is called by animateUntilNextEvent if recordingVideo is true
+    bool renderUntilNextEvent(bool onlyHold); // returns true if really reached the time for the next event, false if interrupted/stopped before
+    bool animateUntilNextEvent(bool onlyHold); // returns true if really reached the time for the next event, false if interrupted/stopped before
+
+    void setTargetFps(double fps); // obeys limits
+
+public:
+
+    DisplayUpdateController() { animationTimer.restart(); setTargetFps(maxPossibleFps * targetAnimationCpuUsage); }
+
+    double getAnimationTime() const { return animationTime; }
+
+    void setRunMode(RunMode value);
+
+    // will delegate to renderUntilNextEvent if recordingVideo is true
+    // returns true if really reached the time for the next event, false if interrupted/stopped before
+    bool animateUntilNextEvent() { return animateUntilNextEvent(false); }
+    bool animateUntilHoldEnds() { return animateUntilNextEvent(true); }
+
+    void holdSimulationFor(double s);
+    double getAnimationHoldEndTime() const { return animationHoldEndTime; }
+
+    void startVideoRecording() { recordingVideo = true; }
+    void stopVideoRecording() { recordingVideo = false; }
+
+    std::string getFilenameBase() const { return filenameBase; }
+    void setFilenameBase(const char *base) { filenameBase = base; }
+
+    double getVideoFps() const { return videoFps; }
+    void setVideoFps(double value) { videoFps = value; }
+
+    void showDialog(QAction *action);
+    void hideDialog();
+
+    double getMinFps() const { return minFps; }
+    void setMinFps(double value) { minFps = value; targetFps = std::max(targetFps, minFps); }
+
+    double getMaxFps() const { return maxFps; }
+    void setMaxFps(double value) { maxFps = value; targetFps = std::min(targetFps, maxFps); }
+
+    int getFrameCount() const { return frameCount; }
+
+    double getTargetFps() const { return targetFps; }
+    double getCurrentFps() const { return currentFps; }
+    double getMaxPossibleFps() const { return maxPossibleFps; }
+
+    void simulationEvent(cEvent *event);
+
+    ~DisplayUpdateController() { hideDialog(); }
+};
+
+} // namespace qtenv
+} // namespace omnetpp
+
+#endif // __OMNETPP_QTENV_DISPLAYUPDATECONTROLLER_H

@@ -334,7 +334,7 @@ BubbleItem::BubbleItem(QPointF position, const QString& text, QGraphicsItem *par
     : QGraphicsObject(parent), text(text)
 {
     setPos(position);
-    timer.singleShot(1000 / (0.1 + getQtenv()->opt->animationSpeed), this, SLOT(onTimerElapsed()));
+    timer.singleShot(1000 / (0.1 + getQtenv()->opt->playbackSpeed), this, SLOT(onTimerElapsed()));
 }
 
 void BubbleItem::onTimerElapsed()

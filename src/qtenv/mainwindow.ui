@@ -282,7 +282,7 @@ Total number of messages created since start of the simulation</string>
      <x>0</x>
      <y>0</y>
      <width>939</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -318,6 +318,7 @@ Total number of messages created since start of the simulation</string>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
     <addaction name="actionEventlogRecording"/>
+    <addaction name="actionRecordVideo"/>
     <addaction name="separator"/>
     <addaction name="actionConcludeSimulation"/>
     <addaction name="actionRebuildNetwork"/>
@@ -351,8 +352,10 @@ Total number of messages created since start of the simulation</string>
     </property>
     <addaction name="actionStatusDetails"/>
     <addaction name="actionTimeline"/>
+    <addaction name="actionShowAnimationParams"/>
     <addaction name="separator"/>
     <addaction name="actionFlipWindowLayout"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -419,6 +422,7 @@ Total number of messages created since start of the simulation</string>
    <addaction name="separator"/>
    <addaction name="actionPreferences"/>
    <addaction name="separator"/>
+   <addaction name="actionRecordVideo"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -599,7 +603,7 @@ Total number of messages created since start of the simulation</string>
      <normaloff>:/tools/icons/tools/recordeventlog.png</normaloff>:/tools/icons/tools/recordeventlog.png</iconset>
    </property>
    <property name="text">
-    <string>S&amp;tart/Stop Eventlog Recording</string>
+    <string>&amp;Eventlog Recording</string>
    </property>
    <property name="toolTip">
     <string>Eventlog recording on/off (Ctrl+G)</string>
@@ -700,7 +704,7 @@ Total number of messages created since start of the simulation</string>
   </action>
   <action name="actionDebugNextEvent">
    <property name="text">
-    <string>D&amp;ebug Next Event</string>
+    <string>&amp;Debug Next Event</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F9</string>
@@ -709,6 +713,9 @@ Total number of messages created since start of the simulation</string>
   <action name="actionRebuildNetwork">
    <property name="text">
     <string>Re&amp;build Network</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
    </property>
   </action>
   <action name="actionNetwork">
@@ -772,6 +779,42 @@ Total number of messages created since start of the simulation</string>
   <action name="actionAbout_OMNeT_Qtenv">
    <property name="text">
     <string>&amp;About OMNeT++/Qtenv</string>
+   </property>
+  </action>
+  <action name="actionRecordVideo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/recordvideo.png</normaloff>:/tools/icons/tools/recordvideo.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Video Recording</string>
+   </property>
+   <property name="toolTip">
+    <string>Record Video (Ctrl+M)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionShowAnimationParams">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/props.png</normaloff>:/tools/icons/tools/props.png</iconset>
+   </property>
+   <property name="text">
+    <string>Animation Parameters</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Animation Parameters (Ctrl+N)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

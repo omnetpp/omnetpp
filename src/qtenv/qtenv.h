@@ -29,12 +29,14 @@
 #include "componenthistory.h"
 #include "imagecache.h"
 #include "inspector.h"
-#include "animator.h"
+#include "messageanimator.h"
 #include <QSettings>
 #include <QSet>
 #include <QString>
 
 #include <QDebug>
+#include <QElapsedTimer>
+#include <QEventLoop>
 
 class QWidget;
 
@@ -49,6 +51,7 @@ class LogInspector;
 class ModuleInspector;
 class TimeLineInspector;
 class ObjectTreeInspector;
+class DisplayUpdateController;
 
 using namespace envir;
 
@@ -91,7 +94,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     bool showNextEventMarkers = true;      // display next event marker (red frame around modules)
     bool showSendDirectArrows = true;      // flash arrows when doing sendDirect() animation
     bool animateMethodCalls = true;        // animate method calls
-    int  methodCallAnimDelay = 500;        // hold animation of method calls (millisec)
+    int  methodCallAnimDuration = 1500;    // hold animation of method calls (millisec)
     bool animationMsgNames = true;         // msg animation: display message name or not
     bool animationMsgClassNames = true;    // msg animation: display message class name or not
     bool animationMsgColors = true;        // msg animation: display msg kind as color code or not
@@ -101,7 +104,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     bool arrangeVectorConnections = false; // arrange connections on vector gates parallel to each other
     int iconMinimumSize = 5;               // minimum size of icons when zooming out
     bool showBubbles = true;               // show result of bubble() calls
-    double animationSpeed = 1.0;     // the scaling of animationTime relative to real time
+    double playbackSpeed = 1.0;            // the scaling of animationTime relative to real time
     long updateFreqFast = 500;             // Fast Run updates display every N milliseconds
     long updateFreqExpress = 1000;         // Express Run updates display every N milliseconds
     bool autoupdateInExpress = true;       // update inspectors at every display refresh in EXPRESS mode or not
@@ -160,7 +163,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       Speedometer speedometer;
 
       bool stopSimulationFlag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
-      timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
 
       typedef std::list<Inspector*> InspectorList;
       InspectorList inspectors;    // list of inspector objects
@@ -174,7 +176,10 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       TimeLineInspector *mainTimeLine;
       ObjectTreeInspector *mainObjectTree;
 
-      Animator *animator = nullptr;
+      MessageAnimator *messageAnimator = nullptr;
+      DisplayUpdateController *displayUpdateController = nullptr;
+
+      int refreshDisplayCount = 0;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
@@ -237,8 +242,11 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
       virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+
+      // smooth animation API
       virtual double getAnimationTime() const override;
       virtual double getAnimationSpeed() const override;
+      void holdSimulationFor(double s);
       virtual double getRemainingAnimationHoldTime() const override;
 
       virtual void bubble(cComponent *component, const char *text) override;
@@ -254,7 +262,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       virtual unsigned getExtraStackForEnvir() const override;
 
       MainWindow *getMainWindow() { return mainWindow; }
-      Animator *getAnimator() { return animator; }
+      MessageAnimator *getMessageAnimator() { return messageAnimator; }
+      DisplayUpdateController *getDisplayUpdateController() { return displayUpdateController; }
       GenericObjectInspector *getMainObjectInspector() { return mainInspector; }
       ModuleInspector *getMainModuleInspector() { return mainNetworkView; }
       LogInspector *getMainLogInspector() { return mainLogView; }
@@ -327,6 +336,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void redrawInspectors();
       void storeInspectors(bool closeThem);
       void restoreInspectors();
+      int getRefreshDisplayCount() const { return refreshDisplayCount; }
       Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
@@ -344,7 +354,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);
 
-      void updateGraphicalInspectorsBeforeAnimation();
+      void performAnimations();
 
       void channelDisplayStringChanged(cChannel *channel);
       void moduleDisplayStringChanged(cModule *module);
@@ -361,7 +371,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void printEventBanner(cEvent *event);
       void setAnimationSpeed(float speed);
-      void performAnimations();
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}

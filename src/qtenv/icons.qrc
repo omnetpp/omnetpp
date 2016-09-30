@@ -89,5 +89,8 @@
         <file>icons/tools/treemode_grouped.png</file>
         <file>icons/tools/treemode_inher.png</file>
         <file>icons/tools/treemode_packet.png</file>
+        <file>icons/tools/filmstrip.png</file>
+        <file>icons/tools/camera.png</file>
+        <file>icons/tools/recordvideo.png</file>
     </qresource>
 </RCC>

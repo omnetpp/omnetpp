@@ -123,7 +123,7 @@ ModuleInspector::~ModuleInspector()
     // so the window can be closed safely, without
     // double deleting the message items (by the
     // animations and the scene itself)
-    getQtenv()->getAnimator()->clearInspector(this);
+    getQtenv()->getMessageAnimator()->clearInspector(this);
 }
 
 void ModuleInspector::createViews(bool isTopLevel)
@@ -144,7 +144,7 @@ void ModuleInspector::createViews(bool isTopLevel)
     connect(canvasViewer, SIGNAL(marqueeZoom(QRectF)), this, SLOT(onMarqueeZoom(QRectF)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
-    QToolBar *toolbar = createToolbar(isTopLevel);
+    toolbar = createToolbar(isTopLevel);
     stackedLayout = new QStackedLayout();
 
     stackedLayout->addWidget(canvasViewer);
@@ -241,7 +241,7 @@ void ModuleInspector::doSetObject(cObject *obj)
     if (obj == object)
         return;
 
-    getQtenv()->getAnimator()->clearInspector(this);
+    getQtenv()->getMessageAnimator()->clearInspector(this);
 
     Inspector::doSetObject(obj);
 
@@ -264,7 +264,7 @@ void ModuleInspector::doSetObject(cObject *obj)
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
         // so they will appear on the correct places with the updated zoom levels.
-        getQtenv()->getAnimator()->redrawMessages();
+        getQtenv()->getMessageAnimator()->redrawMessages();
     } else {
         canvasViewer->setZoomFactor(1);
         if (isToplevel())
@@ -329,6 +329,31 @@ void ModuleInspector::updateToolbarLayout()
     }
 }
 
+QPixmap ModuleInspector::getScreenshot()
+{
+    QPixmap pm = grab();
+
+#ifdef WITH_OSG
+    if (stackedLayout->currentWidget() == osgViewer) {
+
+        osgViewer->getView()->requestRedraw();
+        OsgViewer::getViewer()->frame();
+        osgViewer->update();
+
+        QPixmap osgPm = QPixmap::fromImage(osgViewer->grabFramebuffer());
+
+        QPainter p;
+        p.begin(&pm);
+        p.drawPixmap(osgViewer->mapTo(this, QPoint(0, 0)), osgPm);
+        if (!isToplevelWindow)
+            p.drawPixmap(toolbar->mapTo(this, QPoint(0, 0)), toolbar->grab());
+        p.end();
+    }
+#endif
+
+    return pm;
+}
+
 cCanvas *ModuleInspector::getCanvas()
 {
     cModule *mod = static_cast<cModule *>(object);
@@ -384,12 +409,6 @@ void ModuleInspector::clearObjectChangeFlags()
     cCanvas *canvas = getCanvas();
     if (canvas)
         canvas->getRootFigure()->clearChangeFlags();
-}
-
-void ModuleInspector::updateBeforeAnimation()
-{
-    canvasViewer->refresh(false);
-    refreshOsgViewer();
 }
 
 void ModuleInspector::runUntil()
@@ -454,9 +473,9 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         }
 
         // so animations will not wander around at the old module positions
-        getQtenv()->getAnimator()->clearInspector(this);
+        getQtenv()->getMessageAnimator()->clearInspector(this);
         canvasViewer->setZoomFactor(newZoomFactor);
-        getQtenv()->getAnimator()->redrawMessages();
+        getQtenv()->getMessageAnimator()->redrawMessages();
 
         auto center = oldModulePos * newZoomFactor - QPointF(x - cx, y - cy);
         canvasViewer->centerOn(center);
@@ -748,7 +767,7 @@ void ModuleInspector::zoomIconsBy(double mult)
         double newImageSizeFactor = imageSizeFactor * mult;
         setPref(PREF_ICONSCALE, newImageSizeFactor);
         canvasViewer->setImageSizeFactor(newImageSizeFactor);
-        getQtenv()->getAnimator()->redrawMessages();
+        getQtenv()->getMessageAnimator()->redrawMessages();
     }
 }
 

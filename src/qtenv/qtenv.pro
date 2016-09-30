@@ -81,7 +81,6 @@ SOURCES += mainwindow.cc \
     logfilterdialog.cc \
     timelinegraphicsview.cc \
     timelineinspector.cc \
-    animator.cc \
     preferencesdialog.cc \
     objecttreeinspector.cc \
     osgcanvasinspector.cc \
@@ -99,7 +98,11 @@ SOURCES += mainwindow.cc \
     canvasviewer.cc \
     layersdialog.cc \
     fileeditor.cc \
-    cameramanipulators.cc
+    cameramanipulators.cc \
+    animationcontrollerdialog.cc \
+    messageanimator.cc \
+    displayupdatecontroller.cc \
+    messageanimations.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -135,7 +138,6 @@ HEADERS += mainwindow.h \
     logfilterdialog.h \
     timelinegraphicsview.h \
     timelineinspector.h \
-    animator.h \
     preferencesdialog.h \
     objecttreeinspector.h \
     osgcanvasinspector.h \
@@ -153,7 +155,11 @@ HEADERS += mainwindow.h \
     canvasviewer.h \
     layersdialog.h \
     fileeditor.h \
-    cameramanipulators.h
+    cameramanipulators.h \
+    animationcontrollerdialog.h \
+    messageanimator.h \
+    displayupdatecontroller.h \
+    messageanimations.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -171,7 +177,8 @@ FORMS += mainwindow.ui \
     filteredobjectlistdialog.ui \
     comboselectiondialog.ui \
     layersdialog.ui \
-    fileeditor.ui
+    fileeditor.ui \
+    animationcontrollerdialog.ui
 
 RESOURCES += \
     icons.qrc

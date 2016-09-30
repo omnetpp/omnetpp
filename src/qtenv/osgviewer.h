@@ -144,6 +144,9 @@ class QTENV_API OsgViewer : public GLWidget
     void refresh();
     void resetViewer();
 
+    static osg::ref_ptr<osgViewer::CompositeViewer> getViewer() { return viewer; }
+    osg::ref_ptr<osgViewer::View> getView() { return view; }
+
     static void uninit();
 
     // coordinates in local widget frame

@@ -54,7 +54,6 @@ void PreferencesDialog::init()
     ui->eventBanners->setChecked(getQtenv()->opt->printEventBanners);
     ui->shortBanners->setChecked(getQtenv()->opt->shortBanners);
     ui->logPrefix->setText(getQtenv()->opt->logFormat.c_str());
-    ui->fast->setText(QString::number(getQtenv()->opt->updateFreqFast));
     ui->express->setText(QString::number(getQtenv()->opt->updateFreqExpress));
     ui->scrollback->setText(QString::number(getQtenv()->opt->scrollbackLimit));
     ui->overall->setText(QString::number(getQtenv()->getLogBuffer()->getMaxNumEntries()));
@@ -77,8 +76,6 @@ void PreferencesDialog::init()
 
     // Animation tab
     ui->animMsg->setChecked(getQtenv()->opt->animationEnabled);
-    ui->animSpeedSlider->setValue(getQtenv()->opt->animationSpeed*100);
-    connect(ui->animSpeedSlider, SIGNAL(valueChanged(int)), this, SLOT(onAnimationSliderMoved(int)));
     variant = getQtenv()->getPref("concurrent-anim");
     ui->animBroadcast->setChecked(variant.isValid() ? variant.value<bool>() : false);
     ui->showMarker->setChecked(getQtenv()->opt->showNextEventMarkers);
@@ -89,10 +86,7 @@ void PreferencesDialog::init()
     ui->dispClass->setChecked(getQtenv()->opt->animationMsgClassNames);
     ui->colorMsg->setChecked(getQtenv()->opt->animationMsgColors);
     ui->penguinMode->setChecked(getQtenv()->opt->penguinMode);
-    ui->delayEdit->setText(QString::number(getQtenv()->opt->methodCallAnimDelay));
-
-// to follow speed changes from other sources (possibly the mainwindow)
-    connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
+    ui->delayEdit->setText(QString::number(getQtenv()->opt->methodCallAnimDuration));
 
     // Filtering tab
     variant = getQtenv()->getPref("timeline-wantselfmsgs");
@@ -142,7 +136,6 @@ void PreferencesDialog::restoreDefaultFonts()
 
 void PreferencesDialog::accept()
 {
-    getQtenv()->opt->updateFreqFast = ui->fast->text().toLong();
     getQtenv()->opt->updateFreqExpress = ui->express->text().toLong();
     getQtenv()->setSilentEventFilters(ui->excludMsgEdit->toPlainText().toStdString().c_str());
     QString n = ui->overall->text();
@@ -179,7 +172,7 @@ void PreferencesDialog::accept()
     getQtenv()->opt->showNextEventMarkers = ui->showMarker->isChecked();
     getQtenv()->opt->showSendDirectArrows = ui->showArrows->isChecked();
     getQtenv()->opt->animateMethodCalls = ui->animCalls->isChecked();
-    getQtenv()->opt->methodCallAnimDelay = ui->delayEdit->text().toInt();
+    getQtenv()->opt->methodCallAnimDuration = ui->delayEdit->text().toInt();
     getQtenv()->opt->animationMsgNames = ui->dispName->isChecked();
     getQtenv()->opt->animationMsgClassNames = ui->dispClass->isChecked();
     getQtenv()->opt->animationMsgColors = ui->colorMsg->isChecked();
@@ -194,7 +187,6 @@ void PreferencesDialog::accept()
 
     getQtenv()->opt->arrangeVectorConnections = ui->arrange->isChecked();
     getQtenv()->opt->showBubbles = ui->showBubbles->isChecked();
-    getQtenv()->setAnimationSpeed(ui->animSpeedSlider->value() / 100.0);
     getQtenv()->setPref("keep-inspectors-on-top", ui->keepOnTop->isChecked());
     getQtenv()->setPref("reuse-inspectors", ui->reuseInsp->isChecked());
     getQtenv()->setPref("confirm-exit", ui->confirmExit->isChecked());
@@ -233,18 +225,6 @@ void PreferencesDialog::accept()
     getQtenv()->setPref("preferences-dialog-page", ui->tabWidget->currentIndex());
 
     QDialog::accept();
-}
-
-void PreferencesDialog::onAnimationSliderMoved(int value)
-{
-    if (value > 95 && value < 105)
-        value = 100;
-    getQtenv()->setAnimationSpeed(value / 100.0);
-}
-
-void PreferencesDialog::onAnimationSpeedChanged(float speed)
-{
-    ui->animSpeedSlider->setValue(speed * 100);
 }
 
 PreferencesDialog::~PreferencesDialog()

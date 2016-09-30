@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_MODULEINSPECTOR_H
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
-#include "animator.h"
+#include "messageanimator.h"
 #include "inspector.h"
 #include "modulecanvasviewer.h"
 
@@ -105,6 +105,7 @@ class QTENV_API ModuleInspector : public Inspector
 
       QStackedLayout *stackedLayout;
       QGridLayout *toolbarLayout = nullptr; // not used in topLevel mode
+      QToolBar *toolbar;
 
       ModuleCanvasViewer *canvasViewer;
 
@@ -137,7 +138,6 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void doSetObject(cObject *obj) override;
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
-      void updateBeforeAnimation();
 
       bool needsRedraw() { return canvasViewer->getNeedsRedraw(); }
 
@@ -146,6 +146,8 @@ class QTENV_API ModuleInspector : public Inspector
 
       // drawing methods:
       virtual void redraw() override { canvasViewer->redraw(); }
+
+      QPixmap getScreenshot();
 
       // notifications from envir:
       virtual void submoduleCreated(cModule *newmodule);
