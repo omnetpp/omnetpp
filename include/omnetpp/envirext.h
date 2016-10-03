@@ -379,6 +379,12 @@ class SIM_API cIEventlogManager : public cObject
      * Forces writing out all buffered output.
      */
     virtual void flush() = 0;
+
+    /**
+     * Returns the output scalar file name. Returns nullptr if this object is not
+     * producing file output.
+     */
+    virtual const char *getFileName() const = 0;
     //@}
 
     /** @name Functions called from cEnvir's similar functions */
