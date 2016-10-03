@@ -16,7 +16,7 @@
 
 #include "figurerenderers.h"
 
-#include "graphicspatharrowitem.h"
+#include "graphicsitems.h"
 #include "qtenv.h"
 #include <sstream>
 #include <cfloat>
@@ -564,8 +564,8 @@ void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, 
 
 void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, double zoom)
 {
-    GraphicsPathArrowItem *startArrow = dynamic_cast<GraphicsPathArrowItem *>(lineItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = dynamic_cast<GraphicsPathArrowItem *>(lineItem->childItems()[1]);
+    ArrowheadItem *startArrow = dynamic_cast<ArrowheadItem *>(lineItem->childItems()[0]);
+    ArrowheadItem *endArrow = dynamic_cast<ArrowheadItem *>(lineItem->childItems()[1]);
 
     const auto& start = lineFigure->getStart();
     const auto& end = lineFigure->getEnd();
@@ -576,7 +576,7 @@ void LineFigureRenderer::setArrows(cLineFigure *lineFigure, QGraphicsLineItem *l
     setArrowStyle(lineFigure, startArrow, endArrow, zoom);
 }
 
-void AbstractLineFigureRenderer::setArrowStyle(cAbstractLineFigure *figure, GraphicsPathArrowItem *startItem, GraphicsPathArrowItem *endItem, double zoom)
+void AbstractLineFigureRenderer::setArrowStyle(cAbstractLineFigure *figure, ArrowheadItem *startItem, ArrowheadItem *endItem, double zoom)
 {
     auto lc = figure->getLineColor();
     QColor color(lc.red, lc.green, lc.blue, figure->getLineOpacity()*255);
@@ -630,14 +630,14 @@ void LineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figu
 QGraphicsItem *LineFigureRenderer::newItem()
 {
     QGraphicsLineItem *lineItem = new QGraphicsLineItem();
-    new GraphicsPathArrowItem(lineItem);
-    new GraphicsPathArrowItem(lineItem);
+    new ArrowheadItem(lineItem);
+    new ArrowheadItem(lineItem);
     return lineItem;
 }
 
 void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, double zoom)
 {
-    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[0]);
+    ArrowheadItem *startArrow = static_cast<ArrowheadItem *>(arcItem->childItems()[0]);
 
     { // should set the arrow up even if it isn't visible, so the bounding box is in the right place (even if empty)
         auto b = arcFigure->getBounds();
@@ -663,7 +663,7 @@ void ArcFigureRenderer::setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcI
     startArrow->setVisible(arcFigure->getStartArrowhead() != cFigure::ARROW_NONE);
 
 
-    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(arcItem->childItems()[1]);
+    ArrowheadItem *endArrow = static_cast<ArrowheadItem *>(arcItem->childItems()[1]);
 
     {
         auto b = arcFigure->getBounds();
@@ -715,15 +715,15 @@ void ArcFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figur
 QGraphicsItem *ArcFigureRenderer::newItem()
 {
     QGraphicsPathItem *arcItem = new PathItem();
-    new GraphicsPathArrowItem(arcItem);
-    new GraphicsPathArrowItem(arcItem);
+    new ArrowheadItem(arcItem);
+    new ArrowheadItem(arcItem);
     return arcItem;
 }
 
 void PolylineFigureRenderer::setArrows(cPolylineFigure *polyFigure, FigureRenderer::PathItem *polyItem, double zoom)
 {
-    GraphicsPathArrowItem *startArrow = static_cast<GraphicsPathArrowItem *>(polyItem->childItems()[0]);
-    GraphicsPathArrowItem *endArrow = static_cast<GraphicsPathArrowItem *>(polyItem->childItems()[1]);
+    ArrowheadItem *startArrow = static_cast<ArrowheadItem *>(polyItem->childItems()[0]);
+    ArrowheadItem *endArrow = static_cast<ArrowheadItem *>(polyItem->childItems()[1]);
 
     const auto& points = polyFigure->getPoints();
 
@@ -812,8 +812,8 @@ void PolylineFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, 
 QGraphicsItem *PolylineFigureRenderer::newItem()
 {
     PathItem *polylineItem = new PathItem();
-    new GraphicsPathArrowItem(polylineItem);
-    new GraphicsPathArrowItem(polylineItem);
+    new ArrowheadItem(polylineItem);
+    new ArrowheadItem(polylineItem);
     return polylineItem;
 }
 

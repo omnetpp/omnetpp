@@ -21,6 +21,7 @@
 #include "qtutil.h"
 #include <QObject>
 #include <QLayout>
+#include <QMenu>
 
 #include <QWidget>
 #include <QDebug>

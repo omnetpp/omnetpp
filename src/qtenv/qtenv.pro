@@ -66,7 +66,6 @@ SOURCES += mainwindow.cc \
     inspectorfactory.cc \
     moduleinspector.cc \
     componenthistory.cc \
-    graphicspatharrowitem.cc \
     layouterenv.cc \
     stopdialog.cc \
     runselectiondialog.cc \
@@ -102,12 +101,12 @@ SOURCES += mainwindow.cc \
     animationcontrollerdialog.cc \
     messageanimator.cc \
     displayupdatecontroller.cc \
-    messageanimations.cc
+    messageanimations.cc \
+    graphicsitems.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
     componenthistory.h \
-    graphicspatharrowitem.h \
     layouterenv.h \
     moduleinspector.h \
     qtenv.h \
@@ -159,7 +158,8 @@ HEADERS += mainwindow.h \
     animationcontrollerdialog.h \
     messageanimator.h \
     displayupdatecontroller.h \
-    messageanimations.h
+    messageanimations.h \
+    graphicsitems.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 

@@ -19,7 +19,7 @@
 
 #include <QGraphicsObject>
 #include <omnetpp/cdisplaystring.h>
-#include "graphicspatharrowitem.h"
+#include "graphicsitems.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -54,7 +54,7 @@ protected:
 
     QGraphicsLineItem *lineItem = nullptr;
     OutlinedTextItem *textItem = nullptr; // This is a managed sibling!
-    GraphicsPathArrowItem *arrowItem = nullptr;
+    ArrowheadItem *arrowItem = nullptr;
 
 protected slots:
     void updateLineItem();

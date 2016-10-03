@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_SUBMODULEITEM_H
 #define __OMNETPP_QTENV_SUBMODULEITEM_H
 
-#include "qtutil.h"
+#include "graphicsitems.h"
 
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>

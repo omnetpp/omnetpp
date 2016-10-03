@@ -17,9 +17,7 @@
 #ifndef __OMNETPP_QTENV_COMPOUNDMODULEITEM_H
 #define __OMNETPP_QTENV_COMPOUNDMODULEITEM_H
 
-#include "qtutil.h"
-
-#include <QGraphicsObject>
+#include "graphicsitems.h"
 
 namespace omnetpp {
 

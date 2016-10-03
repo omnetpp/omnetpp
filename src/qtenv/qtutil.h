@@ -20,8 +20,6 @@
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
-#include <QGraphicsObject>
-#include <QGraphicsEffect>
 #include <QIcon>
 #include <QTimer>
 #include <QFont>
@@ -35,126 +33,6 @@ namespace qtenv {
 
 class LogInspector;
 class ModuleInspector;
-
-// does something similar to QGraphicsColorizeEffect,
-// but in a way that matches the Tkenv colorization,
-// and also preserves smooth scaling of pixmaps
-class ColorizeEffect : public QGraphicsEffect {
-    QColor color = QColor(255, 0, 0); // alpha is ignored
-    double weight = 0; // [0..1]
-
-    // if true, chachedImage has to be recomputed before the next draw
-    bool changed = true;
-    // we store the colorized pixels here, so we won't have to colorize every frame
-    QImage cachedImage;
-    QPoint offset;
-    bool smooth = false;
-
-public:
-    QColor getColor();
-    void setColor(const QColor &color);
-
-    double getWeight();
-    void setWeight(double weight);
-
-    bool getSmooth();
-    void setSmooth(double smooth);
-
-protected:
-    void draw(QPainter *painter) override;
-    void sourceChanged(ChangeFlags flags) override;
-};
-
-
-// used in the ModuleInspector and some related classes
-class GraphicsLayer : public QGraphicsObject {
-    Q_OBJECT
-
-public:
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void addItem(QGraphicsItem *item);
-    void removeItem(QGraphicsItem *item);
-    void clear();
-};
-
-
-// Used in the ModuleInspector to make text more readable on a cluttered background.
-// If the functionality is not enough, just implement more of QGraphicsSimpleTextItems
-// functions, and forward them to one or both members accordingly.
-// The occasional small "offset" of the outline relative to the text
-// itself (mostly with small fonts) is likely caused by font hinting.
-class OutlinedTextItem : public QGraphicsItem {
-protected:
-    // these are NOT PART of the scene, not even children of this object
-    // we just misuse them in the paint method
-    QGraphicsSimpleTextItem *outlineItem; // never has a Brush
-    QGraphicsSimpleTextItem *fillItem; // never has a Pen
-
-    QBrush backgroundBrush;
-    bool haloEnabled = true;
-
-    QPointF offset;
-
-public:
-    OutlinedTextItem(QGraphicsItem *parent = nullptr, QGraphicsScene *scene = nullptr);
-    virtual ~OutlinedTextItem();
-
-    QRectF boundingRect() const;
-    QRectF textRect() const;
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-    QFont font() const { return fillItem->font(); }
-    void setFont(const QFont &font);
-    void setText(const QString &text);
-    void setPen(const QPen &pen);
-    void setBrush(const QBrush &brush);
-    void setBackgroundBrush(const QBrush &brush);
-    void setOffset(const QPointF& offset);
-    void setHaloEnabled(bool enabled);
-};
-
-// Label in the bottom right corner that display zoom factor
-class ZoomLabel : public QGraphicsSimpleTextItem
-{
-private:
-    double zoomFactor;
-
-protected:
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget) override;
-
-public:
-    ZoomLabel();
-
-    void setZoomFactor(double zoomFactor);
-};
-
-class BubbleItem : public QGraphicsObject {
-    Q_OBJECT
-
-protected:
-
-    // the distance between the tip of the handle, and the bottom of the text bounding rectangle
-    // includes the bottom margin (the yellow thingy will begin a margin size lower than this)
-    static constexpr double vertOffset = 15;
-    static constexpr double margin = 3; // also acts as corner rounding radius
-
-    QString text;
-    QTimer timer;
-
-    QPainterPath path;
-    bool pathBuilt = false;
-
-protected slots:
-    void onTimerElapsed();
-
-public:
-    BubbleItem(QPointF position, const QString &text, QGraphicsItem *parent = nullptr);
-
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-};
 
 // wraps the one in common to be more convenient, also adds support for a fallback color
 // and accepts 2 special values: "-" (the fallback), and "transparent" (obvious)
@@ -201,11 +79,6 @@ const char *stripNamespace(const char *className);
 int getObjectId(cObject *object);
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);
-
-// these are the custom data "slot" indices used in QGraphicsItems
-constexpr int ITEMDATA_COBJECT = 1;
-// see modulecanvasviewer.cc for why this is necessary, and setToolTip isn't usable
-constexpr int ITEMDATA_TOOLTIP = 2;
 
 QString makeObjectTooltip(cObject *obj);
 

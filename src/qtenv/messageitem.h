@@ -17,12 +17,15 @@
 #ifndef __OMNETPP_QTENV_MESSAGEITEM_H
 #define __OMNETPP_QTENV_MESSAGEITEM_H
 
-#include "qtutil.h"
+#include "graphicsitems.h"
 
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>
 
 namespace omnetpp {
+
+class cMessage;
+
 namespace qtenv {
 
 class MessageItem;

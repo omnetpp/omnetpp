@@ -161,7 +161,7 @@ ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
     textItem->setZValue(1); // connect is to update visibility
     connect(this, SIGNAL(visibleChanged()), this, SLOT(updateTextItem()));
     // TODO arrowItem disappear when a part of lineItem is out of view.
-    arrowItem = new GraphicsPathArrowItem(lineItem);
+    arrowItem = new ArrowheadItem(lineItem);
 }
 
 ConnectionItem::~ConnectionItem()

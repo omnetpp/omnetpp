@@ -152,7 +152,7 @@ protected:
 class AbstractLineFigureRenderer : public FigureRenderer
 {
 protected:
-    void setArrowStyle(cAbstractLineFigure *figure, GraphicsPathArrowItem *startItem, GraphicsPathArrowItem *endItem, double zoom = 1.0);
+    void setArrowStyle(cAbstractLineFigure *figure, ArrowheadItem *startItem, ArrowheadItem *endItem, double zoom = 1.0);
 };
 
 class LineFigureRenderer : public AbstractLineFigureRenderer
