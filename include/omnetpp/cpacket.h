@@ -219,7 +219,7 @@ class SIM_API cPacket : public cMessage
      * Returns the packet length in bytes, that is, bitlength/8. If bitlength
      * is not a multiple of 8, the result is rounded up.
      */
-    int64_t getByteLength() const  {return (bitLength+7)>>3;}
+    int64_t getByteLength() const  {return (getBitLength()+7)>>3;}
 
     /**
      * Sets the bit error flag.
