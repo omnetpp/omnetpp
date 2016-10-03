@@ -93,6 +93,7 @@ struct ENVIR_API EnvirOptions
     bool checkSignals;
     bool fnameAppendHost;
 
+    bool verbose;
     bool warnings;
     bool printUndisposed;
 

@@ -212,7 +212,8 @@ void Cmdenv::doRun()
             bool networkSetupDone = false;
             bool startrunDone = false;
             try {
-                ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt->configName.c_str(), runNumber);
+                if (opt->verbose)
+                    ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt->configName.c_str(), runNumber);
                 ::fflush(fout);
 
                 cfg->activateConfig(opt->configName.c_str(), runNumber);
@@ -220,33 +221,38 @@ void Cmdenv::doRun()
 
                 if (opt->redirectOutput) {
                     processFileName(opt->outputFile);
-                    ::printf("Redirecting output to file `%s'...\n", opt->outputFile.c_str());
+                    if (opt->verbose)
+                        ::printf("Redirecting output to file `%s'...\n", opt->outputFile.c_str());
                     FILE *out = fopen(opt->outputFile.c_str(), "w");
                     if (!out)
                         throw cRuntimeError("Cannot open output redirection file `%s'", opt->outputFile.c_str());
                     fout = out;
-                    ::fprintf(fout, "\nRunning configuration %s, run #%d...\n", opt->configName.c_str(), runNumber);
+                    if (opt->verbose)
+                        ::fprintf(fout, "\nRunning configuration %s, run #%d...\n", opt->configName.c_str(), runNumber);
                 }
 
                 const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS);
                 if (itervars && strlen(itervars) > 0)
-                    ::fprintf(fout, "Scenario: %s\n", itervars);
-                ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
-
+                    if (opt->verbose)
+                        ::fprintf(fout, "Scenario: %s\n", itervars);
+                if (opt->verbose)
+                    ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
 
                 // find network
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
                 ASSERT(network);
 
                 // set up network
-                ::fprintf(fout, "Setting up network `%s'...\n", opt->networkName.c_str());
+                if (opt->verbose)
+                    ::fprintf(fout, "Setting up network `%s'...\n", opt->networkName.c_str());
                 ::fflush(fout);
 
                 setupNetwork(network);
                 networkSetupDone = true;
 
                 // prepare for simulation run
-                ::fprintf(fout, "Initializing...\n");
+                if (opt->verbose)
+                    ::fprintf(fout, "Initializing...\n");
                 ::fflush(fout);
 
                 loggingEnabled = !opt->expressMode;
@@ -254,7 +260,8 @@ void Cmdenv::doRun()
                 startrunDone = true;
 
                 // run the simulation
-                ::fprintf(fout, "\nRunning simulation...\n");
+                if (opt->verbose)
+                    ::fprintf(fout, "\nRunning simulation...\n");
                 ::fflush(fout);
 
                 // simulate() should only throw exception if error occurred and
@@ -263,7 +270,8 @@ void Cmdenv::doRun()
                 simulate();
                 loggingEnabled = true;
 
-                ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
+                if (opt->verbose)
+                    ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
                 ::fflush(fout);
                 getSimulation()->callFinish();
                 cLogProxy::flushLastLine();
@@ -314,7 +322,8 @@ void Cmdenv::doRun()
         }
 
         if (numRuns > 1)
-            ::fprintf(fout, "\nDone %d simulation runs, %d successful, %d error%s\n", numRuns, numRuns-numErrors, numErrors, numErrors==1 ? "" : "s");
+            if (opt->verbose)
+                ::fprintf(fout, "\nDone %d simulation runs, %d successful, %d error%s\n", numRuns, numRuns-numErrors, numErrors, numErrors==1 ? "" : "s");
 
         ::fflush(fout);
 

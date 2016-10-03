@@ -27,6 +27,7 @@
 #include "omnetpp/distrib.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmodule.h"
+#include "common/ver.h"
 #include "args.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
@@ -93,6 +94,7 @@ int setupUserInterface(int argc, char *argv[])
     cRunnableEnvir *app = nullptr;
     SectionBasedConfiguration *bootConfig = nullptr;
     cConfigurationEx *config = nullptr;
+    bool verbose = false;
     int exitcode = 0;
     try {
         // construct global lists
@@ -103,7 +105,14 @@ int setupUserInterface(int argc, char *argv[])
 
         // args
         ArgList args;
-        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvw");
+        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvws");
+
+        verbose = !args.optionGiven('s');  // "not silent"
+        if (verbose) {
+            printf(OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2016 Andras Varga, OpenSim Ltd.\n");
+            printf("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n");
+            printf("See the license for distribution terms and warranty disclaimer\n");
+        }
 
         //
         // First, load the ini file. It might contain the name of the user interface
@@ -189,13 +198,14 @@ int setupUserInterface(int argc, char *argv[])
             // look up specified user interface
             appReg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appName.c_str()));
             if (!appReg) {
-                ::printf("\n"
-                         "User interface '%s' not found (not linked in or loaded dynamically).\n"
-                         "Available ones are:\n", appName.c_str());
-                cRegistrationList *a = omnetapps.getInstance();
-                for (int i = 0; i < a->size(); i++)
-                    ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->str().c_str());
-
+                if (verbose) {
+                    ::printf("\n"
+                            "User interface '%s' not found (not linked in or loaded dynamically).\n"
+                            "Available ones are:\n", appName.c_str());
+                    cRegistrationList *a = omnetapps.getInstance();
+                    for (int i = 0; i < a->size(); i++)
+                        ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->str().c_str());
+                }
                 throw cRuntimeError("Could not start user interface '%s'", appName.c_str());
             }
         }
@@ -209,7 +219,8 @@ int setupUserInterface(int argc, char *argv[])
         //
         // Create interface object.
         //
-        ::printf("Setting up %s...\n", appReg->getName());
+        if (verbose)
+            ::printf("Setting up %s...\n", appReg->getName());
         app = appReg->createOne();
     }
     catch (std::exception& e) {
@@ -244,6 +255,10 @@ int setupUserInterface(int argc, char *argv[])
     //
     // SHUTDOWN
     //
+
+    if (verbose)
+        printf("\nEnd.\n");
+
     cSimulation::setActiveSimulation(nullptr);
     delete simulation;  // will delete app as well
 

@@ -286,7 +286,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvw");  // TODO share spec with startup.cc!
+    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvws");  // TODO share spec with startup.cc!
+    opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
@@ -481,7 +482,8 @@ bool EnvirBase::setup()
 
         // initialize coroutine library
         if (TOTAL_STACK_SIZE != 0 && opt->totalStack <= MAIN_STACK_SIZE+4096) {
-            std::cout << "Total stack size " << opt->totalStack << " increased to " << MAIN_STACK_SIZE << "\n";
+            if (opt->verbose)
+                std::cout << "Total stack size " << opt->totalStack << " increased to " << MAIN_STACK_SIZE << "\n";
             opt->totalStack = MAIN_STACK_SIZE+4096;
         }
         cCoroutine::init(opt->totalStack, MAIN_STACK_SIZE);
@@ -543,9 +545,11 @@ bool EnvirBase::setup()
         while (tokenizer.hasMoreTokens()) {
             const char *folder = tokenizer.nextToken();
             if (foldersLoaded.find(folder) == foldersLoaded.end()) {
-                std::cout << "Loading NED files from " << folder << ": ";
+                if (opt->verbose)
+                    std::cout << "Loading NED files from " << folder << ": ";
                 int count = getSimulation()->loadNedSourceFolder(folder);
-                std::cout << " " << count << endl;
+                if (opt->verbose)
+                    std::cout << " " << count << endl;
                 foldersLoaded.insert(folder);
             }
         }
