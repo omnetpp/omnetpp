@@ -17,8 +17,10 @@
 #include "messageanimations.h"
 #include "qtenv.h"
 #include "moduleinspector.h"
+#include "common/stlutil.h"
 
 namespace omnetpp {
+using namespace common;
 namespace qtenv {
 
 MethodcallAnimation::MethodcallAnimation(ModuleInspector *insp, cModule *srcMod, cModule *destMod, const char *text)
@@ -102,8 +104,6 @@ void SendAnimation::begin()
     // item if this anim is a delivery
     getQtenv()->getMessageAnimator()->redrawMessages();
 }
-
-
 
 void SendAnimation::cleanup()
 {
@@ -199,7 +199,7 @@ void AnimationGroup::prune() {
                 g->prune();
         }
     // erasing the nullptrs introduced above
-    parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());
+    remove(parts, nullptr);
 }
 
 bool AnimationGroup::isEmpty() {
@@ -228,7 +228,7 @@ void AnimationGroup::clearInspector(ModuleInspector *insp)
             }
     }
 
-    parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());
+    remove(parts, nullptr);
 }
 
 void AnimationGroup::removeMessagePointer(cMessage *msg)
@@ -241,7 +241,7 @@ void AnimationGroup::removeMessagePointer(cMessage *msg)
                 s->removeMessagePointer();
     }
 
-    parts.erase(std::remove(parts.begin(), parts.end(), nullptr), parts.end());
+    remove(parts, nullptr);
 }
 
 QString AnimationGroup::str() const {
@@ -321,7 +321,7 @@ void ParallelAnimation::advance(float delta) {
     for (auto p : parts)
         if (p->getState() == PLAYING) {
             p->advance(delta * ((flags & STRETCH_TIME) ? (p->getDuration() / duration) : 1));
-            // have to chek again, it might have ended in the advance call
+            // have to check again, it might have ended in the advance call
             if (p->getState() == PLAYING)
                 somePlaying = true;
         }

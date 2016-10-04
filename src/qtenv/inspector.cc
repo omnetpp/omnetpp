@@ -28,6 +28,7 @@
 #include <QBoxLayout>
 #include <QToolBar>
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
 #include "qtutil.h"
@@ -269,16 +270,10 @@ void Inspector::setObject(cObject *obj)
     }
 }
 
-template<typename T>
-void removeFromVector(std::vector<T>& vec, T value)
-{
-    vec.erase(std::remove(vec.begin(), vec.end(), value), vec.end());
-}
-
 void Inspector::removeFromToHistory(cObject *obj)
 {
-    removeFromVector(historyBack, obj);
-    removeFromVector(historyForward, obj);
+    remove(historyBack, obj);
+    remove(historyForward, obj);
 }
 
 void Inspector::firstObjectSet(cObject *obj)

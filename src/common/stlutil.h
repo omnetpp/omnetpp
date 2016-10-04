@@ -38,7 +38,7 @@ typename std::vector<T>::const_iterator find(const std::vector<T>& v, const T& a
 }
 
 template<typename T>
-int count(const std::vector<T>& v, const T& a) {
+inline int count(const std::vector<T>& v, const T& a) {
     return std::count(v.begin(), v.end(), a);
 }
 
@@ -68,6 +68,11 @@ template<typename T>
 void erase(std::vector<T>& v, int pos) {
     Assert(pos >= 0 && pos < (int)v.size());
     v.erase(v.begin() + pos);
+}
+
+template<typename T, typename A>
+inline void remove(std::vector<T>& v, const A& a) {
+    v.erase(std::remove(v.begin(), v.end(), a), v.end());
 }
 
 template<typename K, typename V>
