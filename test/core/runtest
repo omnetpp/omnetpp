@@ -17,7 +17,7 @@ EXTRA_INCLUDES="-I../../../src"
 
 opp_test gen $OPT -v $TESTFILES || exit 1
 echo
-(cd work; opp_makemake -f --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1
+(cd work; opp_makemake -f -o work --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1
 echo
 opp_test run $OPT -v $TESTFILES || exit 1
 echo

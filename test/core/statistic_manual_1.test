@@ -29,7 +29,7 @@ emit(signal, 6);
 %inifile: test.ini
 check-signals = false
 
-%contains: results/General-0.vec
+%contains: results/General-#0.vec
 vector 0  Test  queueLength:vector  ETV
 attr title  "Queue Length"
 attr unit  packets

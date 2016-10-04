@@ -1,5 +1,5 @@
 %description:
-Test for bug #943. Tests that calling forceTransmissionFinishTime() during an ongoing 
+Test for bug #943. Tests that calling forceTransmissionFinishTime() during an ongoing
 transmission turns the datarate channel IDLE and the busy signal is successfully recorded
 into a vector.
 
@@ -92,7 +92,7 @@ void Sink::handleMessage(cMessage *msg)
 }; //namespace
 
 
-%contains: results/General-0.vec
+%contains: results/General-#0.vec
 vector 0  Test.gen.out.channel  busy:vector  ETV
 attr interpolationmode  sample-hold
 attr source  channelBusy

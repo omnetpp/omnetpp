@@ -30,7 +30,7 @@ network Test
 
 **.scalar-recording = false
 
-%contains: results/General-0.sca
+%contains: results/General-#0.sca
 statistic Test.node 	bins:histogram
 field count 100
 field mean 19.84

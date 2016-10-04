@@ -37,7 +37,7 @@ cOutVector enumVec2("enumVec2");
 enumVec2.setEnum("Colors");
 enumVec2.record(1);
 
-%contains: results/General-0.vec
+%contains: results/General-#0.vec
 vector 0  Test  intVec  ETV
 attr interpolationmode  none
 attr max  5

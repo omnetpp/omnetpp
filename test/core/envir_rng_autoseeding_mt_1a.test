@@ -26,7 +26,7 @@ repeat = 5
 cmdenv-runs-to-execute = 0,4,3,1,4,0,2
 
 %contains-regex: stdout
-.*General-0.*
+.*General-#0.*
 ev.rng-0: 2546248239  2357136044, drawn 2
 ev.rng-1: 4282876139  1791095845, drawn 2
 ev.rng-2: 794921487  1872583848, drawn 2
@@ -46,7 +46,7 @@ ev.rng-2: 236996814  953453411, drawn 2
 ev.rng-0: 1916507803  662124363, drawn 2
 ev.rng-1: 2608511152  3340206418, drawn 2
 ev.rng-2: 3959502168  2207369835, drawn 2
-.*General-0.*
+.*General-#0.*
 ev.rng-0: 2546248239  2357136044, drawn 2
 ev.rng-1: 4282876139  1791095845, drawn 2
 ev.rng-2: 794921487  1872583848, drawn 2

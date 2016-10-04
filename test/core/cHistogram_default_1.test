@@ -15,7 +15,7 @@ recordStatistic(&doubles);
 
 %subst: /(\.[0-9][0-9])[0-9]+/\1/
 
-%contains: results/General-0.sca
+%contains: results/General-#0.sca
 statistic Test 	ints
 field count 200
 field mean 120.78

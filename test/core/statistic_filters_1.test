@@ -56,7 +56,7 @@ Define_Module(Node);
 %subst: /-?:NaN/:nan/
 %subst: /1.87[0-9]+/1.87/
 
-%contains: results/General-0.sca
+%contains: results/General-#0.sca
 scalar Test.node 	rec:count 	6
 attr source  tenToFifteen
 scalar Test.node 	rec:sum 	75

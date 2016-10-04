@@ -48,7 +48,7 @@ sim-time-limit = 3s
 %subst: /^SB .*/SB .../m
 
 %subst: /omnetpp:://
-%contains: results/General-0.elog
+%contains: results/General-#0.elog
 SB ...
 KF p -1 c "" s ""
 MC id 1 c cModule t Test n Test cm 1

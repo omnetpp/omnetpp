@@ -55,7 +55,7 @@ Define_Module(Node);
 %subst: /-?1\.#QNAN/nan/
 %subst: /-?:NaN/:nan/
 
-%contains: results/General-0.sca
+%contains: results/General-#0.sca
 scalar Test.node 	queueLength:q2:count 	2
 attr title  "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: count"
 scalar Test.node 	queueLength:q2:mean 	3

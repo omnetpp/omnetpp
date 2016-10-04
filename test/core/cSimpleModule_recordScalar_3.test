@@ -52,7 +52,7 @@ void Node::finish()
 %inifile: test.ini
 [General]
 network = Test
-output-scalar-file = results/General-0.sca
+output-scalar-file = results/General-#0.sca
 output-scalar-precision = 10
 
 # Test.defaults: left at default
@@ -66,7 +66,7 @@ Test.statsDisabled.stats.scalar-recording = false
 Test.fooAndFoobarOnly.foo*.scalar-recording = true
 Test.fooAndFoobarOnly.*.scalar-recording = false
 
-%contains: results/General-0.sca
+%contains: results/General-#0.sca
 scalar Test.defaults 	foo 	5
 scalar Test.defaults 	bar 	2.41
 attr unit  s

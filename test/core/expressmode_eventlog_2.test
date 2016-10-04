@@ -23,4 +23,4 @@ Running simulation...
 
 <!> No more events -- simulation ended.
 
-%file-not-exists: results/General-0.elog
+%file-not-exists: results/General-#0.elog

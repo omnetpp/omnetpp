@@ -58,7 +58,7 @@ Define_Module(Node);
 %subst: /-?1\.#QNAN/nan/
 %subst: /-?:NaN/:nan/
 
-%contains: results/General-0.sca
+%contains: results/General-#0.sca
 scalar Test.node 	queueLength2:count+10 	12
 attr title  "Queue Length, count+10"
 attr unit  packets
@@ -78,7 +78,7 @@ scalar Test.node 	queueLength1:timeavg 	12
 attr title  "Queue Length, timeavg"
 attr unit  packets
 
-%contains: results/General-0.vec
+%contains: results/General-#0.vec
 vector 0  Test.node  queueLength1:vector  ETV
 attr title  "Queue Length, vector"
 attr unit  packets
