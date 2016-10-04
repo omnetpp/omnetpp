@@ -73,7 +73,7 @@ namespace tkenv {
 //
 // Register the Tkenv user interface
 //
-Register_OmnetApp("Tkenv", Tkenv, 20, "graphical user interface");
+Register_OmnetApp("Tkenv", Tkenv, 20, "Tk-based legacy graphical user interface");
 
 //
 // The following function can be used to force linking with Tkenv; specify
