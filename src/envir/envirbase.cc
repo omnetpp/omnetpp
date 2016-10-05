@@ -344,7 +344,7 @@ bool EnvirBase::simulationRequired()
 
     // legacy options that map to -q
     if (args->optionGiven('x')) {
-        err << "Warning: deprecated option -x (will be removed in future version), use -q instead" << endl;
+        err << "<!> Warning: deprecated option -x (will be removed in future version), use -q instead" << endl;
         configName = args->optionValue('x');
         if (args->optionGiven('G'))
             query = "rundetails";
@@ -354,7 +354,7 @@ bool EnvirBase::simulationRequired()
             query = "numruns";
     }
     else if (args->optionGiven('X')) {
-        err << "Warning: deprecated option -X (will be removed in a future version), use -q instead" << endl;
+        err << "<!> Warning: deprecated option -X (will be removed in a future version), use -q instead" << endl;
         configName = args->optionValue('X');
         query = "sectioninheritance";
     }
@@ -362,7 +362,7 @@ bool EnvirBase::simulationRequired()
     // process -q
     if (query) {
         if (!configName) {
-            err << "Error: configuration (-c) not specified for query (-q)" << endl;
+            err << "<!> Error: -c option must be present when -q is specified" << endl;
             exitCode = 1;
             return false;
         }
@@ -391,31 +391,39 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
 
     if (q.find("run") != q.npos) {
         std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
-        out <<"Config: " << configName << endl;
-        out <<"Number of runs: " << cfg->getNumRunsInConfig(configName) << endl;
-        if (!opp_isblank(runFilter))
-            out <<"Number of runs selected: " << runNumbers.size() << endl;
+
+        if (opt->verbose) {
+            out <<"Config: " << configName << endl;
+            out <<"Number of runs: " << cfg->getNumRunsInConfig(configName) << endl;
+            if (!opp_isblank(runFilter))
+                out << "Number of runs selected: " << runNumbers.size() << endl;
+        }
 
         std::vector<cConfiguration::RunInfo> runInfos = cfg->unrollConfig(configName);
         if (q == "numruns") {
-            // nothing
+            if (!opt->verbose) // otherwise it was already printed
+                out << runNumbers.size() << endl;
         }
         else if (q == "runnumbers") {
-            out << endl;
-            out << "Run numbers:";
+            if (opt->verbose) {
+                out << endl;
+                out << "Run numbers:";
+            }
             for (int runNumber : runNumbers)
                 out << " " << runNumber;
             out << endl;
         }
         else if (q == "runs") {
-            out << endl;
+            if (opt->verbose)
+                out << endl;
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
             }
         }
         else if (q == "rundetails") {
-            out << endl;
+            if (opt->verbose)
+                out << endl;
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
@@ -425,7 +433,8 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
             }
         }
         else if (q == "runconfig") {
-            out << endl;
+            if (opt->verbose)
+                out << endl;
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
@@ -441,11 +450,13 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
             }
         }
         else {
-            err << "Error: unrecognized -q argument '" << q << "'" << endl;
+            err << "<!> Error: unrecognized -q argument '" << q << "'" << endl;
             exitCode = 1;
         }
     }
     else if (q == "sectioninheritance") {
+        if (opt->verbose)
+            out << endl;
         std::vector<std::string> configNames = cfg->getConfigChain(configName);
         for (int i = 0; i < (int)configNames.size(); i++) {
             std::string configName = configNames[i];
@@ -455,7 +466,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
         }
     }
     else {
-        err << "Error: unrecognized -q argument '" << q << "'" << endl;
+        err << "<!> Error: unrecognized -q argument '" << q << "'" << endl;
         exitCode = 1;
     }
 }
@@ -1569,12 +1580,12 @@ std::string EnvirBase::makeDebuggerCommand()
 {
     std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND);
     if (cmd == "") {
-        err << "Cannot start debugger: no debugger configured" << endl;
+        err << "<!> Cannot start debugger: no debugger configured" << endl;
         return "";
     }
     size_t pos = cmd.find('%');
     if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
-        err << "Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign." << endl;
+        err << "<!> Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign." << endl;
         return "";
     }
     pid_t pid = getpid();

@@ -210,6 +210,12 @@ void Cmdenv::doRun()
                 cfg->activateConfig(opt->configName.c_str(), runNumber);
                 readPerRunOptions();
 
+                const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
+                const char *runId = cfg->getVariable(CFGVAR_RUNID);
+                const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
+                if (!opt->verbose)
+                    out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
+
                 if (opt->redirectOutput) {
                     processFileName(opt->outputFile);
                     if (opt->verbose)
@@ -219,12 +225,11 @@ void Cmdenv::doRun()
                         out << "\nRunning configuration " << opt->configName << ", run #" << runNumber << "..." << endl;
                 }
 
-                const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS);
-                if (itervars && strlen(itervars) > 0)
-                    if (opt->verbose)
-                        out << "Scenario: " << itervars << endl;
-                if (opt->verbose)
-                    out << "Assigned runID=" << cfg->getVariable(CFGVAR_RUNID) << endl;
+                if (opt->verbose) {
+                    if (iterVars && strlen(iterVars) > 0)
+                        out << "Scenario: " << iterVars << ", $repetition=" << repetition << endl;
+                    out << "Assigned runID=" << runId << endl;
+                }
 
                 // find network
                 cModuleType *network = resolveNetwork(opt->networkName.c_str());
