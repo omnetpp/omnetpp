@@ -40,13 +40,13 @@ module Test: Test {
     submodules:
         module Test.n1: Test.Node {
             gates:
-                g$i[0]: <-- n2.g$o[0], (Test.C)channel disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
-                g$o[0]: --> n2.g$i[0], (Test.C)channel disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
+                g$i[0]: <-- n2.g$o[0], (Test.C)channel disabled=false delay=0s datarate=0bps ber=0 per=0 cost=5
+                g$o[0]: --> n2.g$i[0], (Test.C)channel disabled=false delay=0s datarate=0bps ber=0 per=0 cost=5
         }
         module Test.n2: Test.Node {
             gates:
-                g$i[0]: <-- n1.g$o[0], (Test.C)channel disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
-                g$o[0]: --> n1.g$i[0], (Test.C)channel disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
+                g$i[0]: <-- n1.g$o[0], (Test.C)channel disabled=false delay=0s datarate=0bps ber=0 per=0 cost=5
+                g$o[0]: --> n1.g$i[0], (Test.C)channel disabled=false delay=0s datarate=0bps ber=0 per=0 cost=5
         }
 }
 

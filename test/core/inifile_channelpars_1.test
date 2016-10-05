@@ -36,11 +36,11 @@ module Test: Test {
     submodules:
         module Test.n1: Node {
             gates:
-                out[0]: --> n2.in[0], (ned.DelayChannel)channel disabled=false delay=5
+                out[0]: --> n2.in[0], (ned.DelayChannel)channel disabled=false delay=5s
         }
         module Test.n2: Node {
             gates:
-                in[0]: <-- n1.out[0], (ned.DelayChannel)channel disabled=false delay=5
+                in[0]: <-- n1.out[0], (ned.DelayChannel)channel disabled=false delay=5s
         }
 }
 

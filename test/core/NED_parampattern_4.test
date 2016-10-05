@@ -36,21 +36,21 @@ module Test: Test {
     submodules:
         module Test.a: Node {
             gates:
-                g$i[0]: <-- b.g$o[0], (C)red disabled=false delay=0.001 datarate=0 ber=0 per=0
-                g$i[1]: <-- b.g$o[1], (C)green disabled=false delay=0.002 datarate=0 ber=0 per=0
-                g$i[2]: <-- b.g$o[2], (C)blue disabled=false delay=0.003 datarate=0 ber=0 per=0
-                g$o[0]: --> b.g$i[0], (C)red disabled=false delay=0.001 datarate=0 ber=0 per=0
-                g$o[1]: --> b.g$i[1], (C)green disabled=false delay=0.002 datarate=0 ber=0 per=0
-                g$o[2]: --> b.g$i[2], (C)blue disabled=false delay=0.003 datarate=0 ber=0 per=0
+                g$i[0]: <-- b.g$o[0], (C)red disabled=false delay=0.001s datarate=0bps ber=0 per=0
+                g$i[1]: <-- b.g$o[1], (C)green disabled=false delay=0.002s datarate=0bps ber=0 per=0
+                g$i[2]: <-- b.g$o[2], (C)blue disabled=false delay=0.003s datarate=0bps ber=0 per=0
+                g$o[0]: --> b.g$i[0], (C)red disabled=false delay=0.001s datarate=0bps ber=0 per=0
+                g$o[1]: --> b.g$i[1], (C)green disabled=false delay=0.002s datarate=0bps ber=0 per=0
+                g$o[2]: --> b.g$i[2], (C)blue disabled=false delay=0.003s datarate=0bps ber=0 per=0
         }
         module Test.b: Node {
             gates:
-                g$i[0]: <-- a.g$o[0], (C)red disabled=false delay=0.001 datarate=0 ber=0 per=0
-                g$i[1]: <-- a.g$o[1], (C)green disabled=false delay=0.002 datarate=0 ber=0 per=0
-                g$i[2]: <-- a.g$o[2], (C)blue disabled=false delay=0.003 datarate=0 ber=0 per=0
-                g$o[0]: --> a.g$i[0], (C)red disabled=false delay=0.001 datarate=0 ber=0 per=0
-                g$o[1]: --> a.g$i[1], (C)green disabled=false delay=0.002 datarate=0 ber=0 per=0
-                g$o[2]: --> a.g$i[2], (C)blue disabled=false delay=0.003 datarate=0 ber=0 per=0
+                g$i[0]: <-- a.g$o[0], (C)red disabled=false delay=0.001s datarate=0bps ber=0 per=0
+                g$i[1]: <-- a.g$o[1], (C)green disabled=false delay=0.002s datarate=0bps ber=0 per=0
+                g$i[2]: <-- a.g$o[2], (C)blue disabled=false delay=0.003s datarate=0bps ber=0 per=0
+                g$o[0]: --> a.g$i[0], (C)red disabled=false delay=0.001s datarate=0bps ber=0 per=0
+                g$o[1]: --> a.g$i[1], (C)green disabled=false delay=0.002s datarate=0bps ber=0 per=0
+                g$o[2]: --> a.g$i[2], (C)blue disabled=false delay=0.003s datarate=0bps ber=0 per=0
         }
 }
 

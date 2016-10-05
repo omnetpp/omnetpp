@@ -68,8 +68,8 @@ module Test: Test {
                 foobar = 99
                 foobar2 = 99
             gates:
-                out: --> node.in, (Test.X)channel disabled=false delay=0 local=1 bar=2 third=1 foobar=99 foobar2=99
-                in: <-- node.out, (Test.X)channel disabled=false delay=0 local=1 bar=2 third=1 foobar=99 foobar2=99
+                out: --> node.in, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
+                in: <-- node.out, (Test.X)channel disabled=false delay=0s local=1 bar=2 third=1 foobar=99 foobar2=99
         }
 }
 

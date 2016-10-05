@@ -48,12 +48,12 @@ module Test: Test {
     submodules:
         module Test.a: Node {
             gates:
-                g$i: <-- b.g$o, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
-                g$o: --> b.g$i, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
+                g$i: <-- b.g$o, (C)channel disabled=false delay=1e-07s datarate=0bps ber=0 per=0 length=30 speedOfLight=3e+08
+                g$o: --> b.g$i, (C)channel disabled=false delay=1e-07s datarate=0bps ber=0 per=0 length=30 speedOfLight=3e+08
         }
         module Test.b: Node {
             gates:
-                g$i: <-- a.g$o, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
-                g$o: --> a.g$i, (C)channel disabled=false delay=1e-07 datarate=0 ber=0 per=0 length=30 speedOfLight=3e+08
+                g$i: <-- a.g$o, (C)channel disabled=false delay=1e-07s datarate=0bps ber=0 per=0 length=30 speedOfLight=3e+08
+                g$o: --> a.g$i, (C)channel disabled=false delay=1e-07s datarate=0bps ber=0 per=0 length=30 speedOfLight=3e+08
         }
 }
