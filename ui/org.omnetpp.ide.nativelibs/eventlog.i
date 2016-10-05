@@ -52,7 +52,7 @@ typedef omnetpp::common::FileReader FileReader;
 typedef omnetpp::common::opp_runtime_error opp_runtime_error;
 typedef omnetpp::common::BigDecimal BigDecimal;
 
-typedef uintptr_t ptr_t;
+typedef uintptr_t omnetpp::eventlog::ptr_t;
 typedef int64_t eventnumber_t;
 typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
@@ -81,17 +81,17 @@ typedef std::vector<IMessageDependency *> IMessageDependencyList;
 %typemap(jtype)  omnetpp::eventlog::ptr_t "long"
 %typemap(jstype) omnetpp::eventlog::ptr_t "long"
 %typemap(javain) omnetpp::eventlog::ptr_t "$javainput"
-%typemap(javaout) omnetpp::eventlog::ptr_t {
-   return $jnicall;
-}
+%typemap(javaout) omnetpp::eventlog::ptr_t { return $jnicall; }
+%typemap(out) omnetpp::eventlog::ptr_t { $result = (jlong)$1; }
+%typemap(in) omnetpp::eventlog::ptr_t { $1 = (omnetpp::eventlog::ptr_t)$input; }
 
 %typemap(jni)    uintptr_t "jlong"
 %typemap(jtype)  uintptr_t "long"
 %typemap(jstype) uintptr_t "long"
 %typemap(javain) uintptr_t "$javainput"
-%typemap(javaout) uintptr_t {
-   return $jnicall;
-}
+%typemap(javaout) uintptr_t { return $jnicall; }
+%typemap(out) uintptr_t { $result = (jlong)$1; }
+%typemap(in) uintptr_t { $1 = (uintptr_t)$input; }
 
 %include "std_common.i"
 %include "std_string.i"
