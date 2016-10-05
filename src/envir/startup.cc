@@ -95,7 +95,7 @@ int setupUserInterface(int argc, char *argv[])
     SectionBasedConfiguration *bootConfig = nullptr;
     cConfigurationEx *config = nullptr;
     bool verbose = false;
-    int exitcode = 0;
+    int exitCode = 0;
     try {
         // construct global lists
         CodeFragments::executeAll(CodeFragments::STARTUP);
@@ -109,9 +109,10 @@ int setupUserInterface(int argc, char *argv[])
 
         verbose = !args.optionGiven('s');  // "not silent"
         if (verbose) {
-            printf(OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2016 Andras Varga, OpenSim Ltd.\n");
-            printf("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n");
-            printf("See the license for distribution terms and warranty disclaimer\n");
+            std::cout << OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2016 Andras Varga, OpenSim Ltd." << endl;
+            std::cout << "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION << endl;
+            std::cout << "See the license for distribution terms and warranty disclaimer" << endl;
+            std::cout << endl;
         }
 
         //
@@ -199,12 +200,11 @@ int setupUserInterface(int argc, char *argv[])
             appReg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appName.c_str()));
             if (!appReg) {
                 if (verbose) {
-                    ::printf("\n"
-                            "User interface '%s' not found (not linked in or loaded dynamically).\n"
-                            "Available ones are:\n", appName.c_str());
+                    std::cout << "User interface '%s' not found (not linked in or loaded dynamically)." << endl;
+                    std::cout << "Available ones are:" << appName.c_str() << endl;
                     cRegistrationList *a = omnetapps.getInstance();
                     for (int i = 0; i < a->size(); i++)
-                        ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->str().c_str());
+                        std::cout << "  " << a->get(i)->getName() << " : " << a->get(i)->str() << endl;
                 }
                 throw cRuntimeError("Could not start user interface '%s'", appName.c_str());
             }
@@ -220,11 +220,11 @@ int setupUserInterface(int argc, char *argv[])
         // Create interface object.
         //
         if (verbose)
-            ::printf("Setting up %s...\n", appReg->getName());
+            std::cout << "Setting up " << appReg->getName() << "..." << endl << endl;
         app = appReg->createOne();
     }
     catch (std::exception& e) {
-        ::fprintf(stderr, "\n<!> Error during startup: %s.\n", e.what());
+        std::cerr << "\n<!> Error during startup: " << e.what() << "." << endl;
         if (app) {
             delete app;
             app = nullptr;
@@ -234,6 +234,7 @@ int setupUserInterface(int argc, char *argv[])
             delete bootConfig;
         }
     }
+
     //
     // RUN
     //
@@ -241,30 +242,28 @@ int setupUserInterface(int argc, char *argv[])
         if (app) {
             simulation = new cSimulation("simulation", app);
             cSimulation::setActiveSimulation(simulation);
-            exitcode = app->run(argc, argv, config);
+            exitCode = app->run(argc, argv, config);
         }
         else {
-            exitcode = 1;
+            exitCode = 1;
         }
     }
     catch (std::exception& e) {
-        ::fprintf(stderr, "\n<!> %s.\n", e.what());
-        exitcode = 1;
+        std::cerr << "\n<!> " << e.what() << "." << endl;
+        exitCode = 1;
     }
 
     //
     // SHUTDOWN
     //
-
     if (verbose)
-        printf("\nEnd.\n");
-
+        std::cout << "\nEnd." << endl;
     cSimulation::setActiveSimulation(nullptr);
     delete simulation;  // will delete app as well
 
     CodeFragments::executeAll(CodeFragments::SHUTDOWN);
 
-    return exitcode;
+    return exitCode;
 }
 
 //---------------------------------------------------------

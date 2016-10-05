@@ -231,7 +231,7 @@ EnvirOptions::EnvirOptions()
     cpuTimeLimit = 0;
 }
 
-EnvirBase::EnvirBase()
+EnvirBase::EnvirBase() : out(std::cout.rdbuf()), err(std::cerr.rdbuf())
 {
     opt = nullptr;
     args = nullptr;
@@ -251,6 +251,7 @@ EnvirBase::EnvirBase()
     parsimComm = nullptr;
     parsimPartition = nullptr;
 #endif
+
 
     exitCode = 0;
 }
@@ -316,14 +317,13 @@ bool EnvirBase::simulationRequired()
 
     if (args->optionGiven('v')) {
         struct opp_stat_t statbuf;
-        std::cout << "\n";
-        std::cout << "Build: " OMNETPP_RELEASE " " OMNETPP_BUILDID << "\n";
-        std::cout << "Compiler: " << compilerInfo << "\n";
-        std::cout << "Options: " << opp_stringf(buildInfoFormat,
+        out << "Build: " OMNETPP_RELEASE " " OMNETPP_BUILDID << "" << endl;
+        out << "Compiler: " << compilerInfo << "" << endl;
+        out << "Options: " << opp_stringf(buildInfoFormat,
                 8*sizeof(void *),
                 opp_typename(typeid(simtime_t)),
                 sizeof(statbuf.st_size) >= 8 ? "yes" : "no");
-        std::cout << buildOptions << "\n";
+        out << buildOptions << endl;
         return false;
     }
 
@@ -331,10 +331,9 @@ bool EnvirBase::simulationRequired()
 
     // -a option: print all config names, and number of runs in them
     if (args->optionGiven('a')) {
-        std::cout << "\n";
         std::vector<std::string> configNames = cfg->getConfigNames();
         for (int i = 0; i < (int)configNames.size(); i++)
-            std::cout << "Config " << configNames[i] << ": " << cfg->getNumRunsInConfig(configNames[i].c_str()) << "\n";
+            out << "Config " << configNames[i] << ": " << cfg->getNumRunsInConfig(configNames[i].c_str()) << "" << endl;
         return false;
     }
 
@@ -345,7 +344,7 @@ bool EnvirBase::simulationRequired()
 
     // legacy options that map to -q
     if (args->optionGiven('x')) {
-        std::cerr << "\nWarning: deprecated option -x (will be removed in future version), use -q instead\n";
+        err << "Warning: deprecated option -x (will be removed in future version), use -q instead" << endl;
         configName = args->optionValue('x');
         if (args->optionGiven('G'))
             query = "rundetails";
@@ -355,7 +354,7 @@ bool EnvirBase::simulationRequired()
             query = "numruns";
     }
     else if (args->optionGiven('X')) {
-        std::cerr << "\nWarning: deprecated option -X (will be removed in a future version), use -q instead\n";
+        err << "Warning: deprecated option -X (will be removed in a future version), use -q instead" << endl;
         configName = args->optionValue('X');
         query = "sectioninheritance";
     }
@@ -363,7 +362,7 @@ bool EnvirBase::simulationRequired()
     // process -q
     if (query) {
         if (!configName) {
-            std::cerr << "\nError: configuration (-c) not specified for query (-q)\n";
+            err << "Error: configuration (-c) not specified for query (-q)" << endl;
             exitCode = 1;
             return false;
         }
@@ -389,61 +388,60 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
     //
 
     std::string q = opp_strlower(query); // make match case-insensitive
-    std::cout << "\n";
 
     if (q.find("run") != q.npos) {
         std::vector<int> runNumbers = resolveRunFilter(configName, runFilter);
-        std::cout <<"Config: " << configName << "\n";
-        std::cout <<"Number of runs: " << cfg->getNumRunsInConfig(configName) << "\n";
+        out <<"Config: " << configName << endl;
+        out <<"Number of runs: " << cfg->getNumRunsInConfig(configName) << endl;
         if (!opp_isblank(runFilter))
-            std::cout <<"Number of runs selected: " << runNumbers.size() << "\n";
+            out <<"Number of runs selected: " << runNumbers.size() << endl;
 
         std::vector<cConfiguration::RunInfo> runInfos = cfg->unrollConfig(configName);
         if (q == "numruns") {
             // nothing
         }
         else if (q == "runnumbers") {
-            std::cout << "\n";
-            std::cout << "Run numbers:";
+            out << endl;
+            out << "Run numbers:";
             for (int runNumber : runNumbers)
-                std::cout << " " << runNumber;
-            std::cout << "\n";
+                out << " " << runNumber;
+            out << endl;
         }
         else if (q == "runs") {
-            std::cout << "\n";
+            out << endl;
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
-                std::cout << "Run " << runNumber << ": " << runInfo.info << "\n";
+                out << "Run " << runNumber << ": " << runInfo.info << endl;
             }
         }
         else if (q == "rundetails") {
-            std::cout << "\n";
+            out << endl;
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
-                std::cout << "Run " << runNumber << ": " << runInfo.info << "\n";
-                std::cout << opp_indentlines(runInfo.configBrief.c_str(), "\t");
+                out << "Run " << runNumber << ": " << runInfo.info << endl;
+                out << opp_indentlines(runInfo.configBrief.c_str(), "\t");
                 if (runNumber != runNumbers.back())
-                    std::cout << "\n";
+                    out << endl;
             }
         }
         else if (q == "runconfig") {
-            std::cout << "\n";
+            out << endl;
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
-                std::cout << "Run " << runNumber << ": " << runInfo.info << "\n";
+                out << "Run " << runNumber << ": " << runInfo.info << endl;
                 cfg->activateConfig(configName, runNumber);
                 std::vector<const char *> keysValues = cfg->getKeyValuePairs();
                 for (int i = 0; i < (int)keysValues.size(); i += 2) {
                     const char *key = keysValues[i];
                     const char *value = keysValues[i+1];
-                    std::cout << "\t" << key << " = " << value << "\n";
+                    out << "\t" << key << " = " << value << endl;
                 }
                 if (runNumber != runNumbers.back())
-                    std::cout << "\n";
+                    out << endl;
             }
         }
         else {
-            std::cerr << "Error: unrecognized -q argument '" << q << "'\n";
+            err << "Error: unrecognized -q argument '" << q << "'" << endl;
             exitCode = 1;
         }
     }
@@ -453,11 +451,11 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
             std::string configName = configNames[i];
             if (configName != "General")
                 configName = "Config " + configName;
-            std::cout << configName << "\n";
+            out << configName << endl;
         }
     }
     else {
-        std::cerr << "Error: unrecognized -q argument '" << q << "'\n";
+        err << "Error: unrecognized -q argument '" << q << "'" << endl;
         exitCode = 1;
     }
 }
@@ -483,7 +481,7 @@ bool EnvirBase::setup()
         // initialize coroutine library
         if (TOTAL_STACK_SIZE != 0 && opt->totalStack <= MAIN_STACK_SIZE+4096) {
             if (opt->verbose)
-                std::cout << "Total stack size " << opt->totalStack << " increased to " << MAIN_STACK_SIZE << "\n";
+                out << "Total stack size " << opt->totalStack << " increased to " << MAIN_STACK_SIZE << endl;
             opt->totalStack = MAIN_STACK_SIZE+4096;
         }
         cCoroutine::init(opt->totalStack, MAIN_STACK_SIZE);
@@ -546,10 +544,10 @@ bool EnvirBase::setup()
             const char *folder = tokenizer.nextToken();
             if (foldersLoaded.find(folder) == foldersLoaded.end()) {
                 if (opt->verbose)
-                    std::cout << "Loading NED files from " << folder << ": ";
+                    out << "Loading NED files from " << folder << ": ";
                 int count = getSimulation()->loadNedSourceFolder(folder);
                 if (opt->verbose)
-                    std::cout << " " << count << endl;
+                    out << " " << count << endl;
                 foldersLoaded.insert(folder);
             }
         }
@@ -568,97 +566,97 @@ bool EnvirBase::setup()
 
 void EnvirBase::printHelp()
 {
-    std::cout << "\n";
-    std::cout << "Command line options:\n";
-    std::cout << "  <inifile> or -f <inifile>\n";
-    std::cout << "                Use the given ini file instead of omnetpp.ini. More than one\n";
-    std::cout << "                ini file can be specified.\n";
-    std::cout << "  --<configuration-option>=<value>\n";
-    std::cout << "                Configuration options can be specified on the command line,\n";
-    std::cout << "                and they take precedence over options specified in the\n";
-    std::cout << "                ini file(s). Examples:\n";
-    std::cout << "                      --debug-on-errors=true\n";
-    std::cout << "                      --record-eventlog=true\n";
-    std::cout << "                      --sim-time-limit=1000s\n";
-    std::cout << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv,\n";
-    std::cout << "                Qtenv and Tkenv. Specify -h userinterfaces to see the list\n";
-    std::cout << "                of the user interfaces available in your simulation program.\n";
-    std::cout << "  -c <configname>\n";
-    std::cout << "                Select a configuration for execution. With inifile-based\n";
-    std::cout << "                configuration database, this selects the [Config <configname>]\n";
-    std::cout << "                section; the default is the [General] section.\n";
-    std::cout << "                See also: -r.\n";
-    std::cout << "  -r <runfilter>\n";
-    std::cout << "                With -c: select runs from the specified configuration. A\n";
-    std::cout << "                missing -r option selects all runs in the given configuration.\n";
-    std::cout << "                <runfilter> is either a comma-separated list of run numbers or\n";
-    std::cout << "                run number ranges (for example 1,2,5-10), or a match expression.\n";
-    std::cout << "                The match expression may contain a wildcard pattern that is\n";
-    std::cout << "                matched against the iteration variables string (see -q runs),\n";
-    std::cout << "                matchers for individual iteration variables in the\n";
-    std::cout << "                name(valuepattern) syntax, or their combination using AND and\n";
-    std::cout << "                OR. Parentheses may be used to change evaluation order. Values\n";
-    std::cout << "                containing spaces etc need to be enclosed in quotes. Patterns\n";
-    std::cout << "                may contain elements matching numeric ranges, in the {a..b}\n";
-    std::cout << "                syntax. See also: -q.\n";
-    std::cout << "  -n <nedpath>  When present, overrides the NEDPATH environment variable.\n";
-    std::cout << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
-    std::cout << "                The file name should be given without the .so or .dll suffix\n";
-    std::cout << "                (it will be appended automatically.) The loaded module may\n";
-    std::cout << "                contain simple modules, plugins, etc. Multiple -l options\n";
-    std::cout << "                can be present.\n";
-    std::cout << "  -p <port>     Port number for the built-in web server.\n";
-    std::cout << "                If the port is not available, the program will exit with an\n";
-    std::cout << "                error message unless the number is suffixed with the plus\n";
-    std::cout << "                sign. The plus sign causes the program to search for the\n";
-    std::cout << "                first available port number above the given one, and not stop\n";
-    std::cout << "                with an error even if no available port was found. A plain\n";
-    std::cout << "                minus sign will turn off the built-in web server.\n";
-    std::cout << "                The default value is \"8000+\".\n";
-    std::cout << "  -v            Print version and build info, and exit.\n";
-    std::cout << "  -a            Print all config names and number of runs in them, and exit.\n";
-    std::cout << "  -q <what>     To be used together with -c and -r. Prints information about\n";
-    std::cout << "                the specified configuration and runs, and exits.\n";
-    std::cout << "    -q numruns  Prints the number of runs in the given configuration and the\n";
-    std::cout << "                number of runs selected by the run filter (-r option).\n";
-    std::cout << "    -q runnumbers\n";
-    std::cout << "                Prints the run numbers of the runs selected by the run filter\n";
-    std::cout << "                (-r option).\n";
-    std::cout << "    -q runs     Like -q numruns, but also prints one line of information with the\n";
-    std::cout << "                iteration variables about each run that the run filter matches.\n";
-    std::cout << "    -q rundetails\n";
-    std::cout << "                Like -q numruns, but also prints the values of the iteration\n";
-    std::cout << "                variables and a summary of the configuration (the expanded\n";
-    std::cout << "                values of configuration entries that contain iteration variables)\n";
-    std::cout << "                for each matching run.\n";
-    std::cout << "    -q runconfig\n";
-    std::cout << "                Like -q numruns, but also prints the values of the iteration\n";
-    std::cout << "                variables and the full configuration for each matching run.\n";
-    std::cout << "    -q sectioninheritance\n";
-    std::cout << "                Print the section fallback chain of the specified configuration.\n";
-    std::cout << "  -x <configname>\n";
-    std::cout << "                Obsolete form of -c <configname> -q numruns\n";
-    std::cout << "  -g            With -x: Obsolete form of -c <configname> -q runs\n";
-    std::cout << "  -G            With -x: Obsolete form of -c <configname> -q rundetails\n";
-    std::cout << "  -X <configname>\n";
-    std::cout << "                Obsolete form of -c <configname> -q sectioninheritance\n";
-    std::cout << "  -h            Print this help and exit.\n";
-    std::cout << "  -h <category> Lists registered components:\n";
-    std::cout << "    -h config         Prints the list of available configuration options\n";
-    std::cout << "    -h configdetails  Prints the list of available configuration options, with\n";
-    std::cout << "                      their documentation\n";
-    std::cout << "    -h userinterfaces Lists available user interfaces (see -u option)\n";
-    std::cout << "    -h classes        Lists registered C++ classes (including module classes)\n";
-    std::cout << "    -h classdesc      Lists C++ classes that have associated reflection\n";
-    std::cout << "                      information (needed for Tkenv inspectors)\n";
-    std::cout << "    -h nedfunctions   Lists registered NED functions\n";
-    std::cout << "    -h neddecls       Lists built-in NED component declarations\n";
-    std::cout << "    -h units          Lists recognized physical units\n";
-    std::cout << "    -h enums          Lists registered enums\n";
-    std::cout << "    -h resultfilters  Lists result filters\n";
-    std::cout << "    -h resultrecorders Lists result recorders\n";
-    std::cout << "    -h figures        Lists available figure types\n";
-    std::cout << "    -h all            Union of all the above\n";
+    out << "Command line options:\n";
+    out << "  <inifile> or -f <inifile>\n";
+    out << "                Use the given ini file instead of omnetpp.ini. More than one\n";
+    out << "                ini file can be specified.\n";
+    out << "  --<configuration-option>=<value>\n";
+    out << "                Configuration options can be specified on the command line,\n";
+    out << "                and they take precedence over options specified in the\n";
+    out << "                ini file(s). Examples:\n";
+    out << "                      --debug-on-errors=true\n";
+    out << "                      --record-eventlog=true\n";
+    out << "                      --sim-time-limit=1000s\n";
+    out << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv,\n";
+    out << "                Qtenv and Tkenv. Specify -h userinterfaces to see the list\n";
+    out << "                of the user interfaces available in your simulation program.\n";
+    out << "  -c <configname>\n";
+    out << "                Select a configuration for execution. With inifile-based\n";
+    out << "                configuration database, this selects the [Config <configname>]\n";
+    out << "                section; the default is the [General] section.\n";
+    out << "                See also: -r.\n";
+    out << "  -r <runfilter>\n";
+    out << "                With -c: select runs from the specified configuration. A\n";
+    out << "                missing -r option selects all runs in the given configuration.\n";
+    out << "                <runfilter> is either a comma-separated list of run numbers or\n";
+    out << "                run number ranges (for example 1,2,5-10), or a match expression.\n";
+    out << "                The match expression may contain a wildcard pattern that is\n";
+    out << "                matched against the iteration variables string (see -q runs),\n";
+    out << "                matchers for individual iteration variables in the\n";
+    out << "                name(valuepattern) syntax, or their combination using AND and\n";
+    out << "                OR. Parentheses may be used to change evaluation order. Values\n";
+    out << "                containing spaces etc need to be enclosed in quotes. Patterns\n";
+    out << "                may contain elements matching numeric ranges, in the {a..b}\n";
+    out << "                syntax. See also: -q.\n";
+    out << "  -n <nedpath>  When present, overrides the NEDPATH environment variable.\n";
+    out << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
+    out << "                The file name should be given without the .so or .dll suffix\n";
+    out << "                (it will be appended automatically.) The loaded module may\n";
+    out << "                contain simple modules, plugins, etc. Multiple -l options\n";
+    out << "                can be present.\n";
+    out << "  -p <port>     Port number for the built-in web server.\n";
+    out << "                If the port is not available, the program will exit with an\n";
+    out << "                error message unless the number is suffixed with the plus\n";
+    out << "                sign. The plus sign causes the program to search for the\n";
+    out << "                first available port number above the given one, and not stop\n";
+    out << "                with an error even if no available port was found. A plain\n";
+    out << "                minus sign will turn off the built-in web server.\n";
+    out << "                The default value is \"8000+\".\n";
+    out << "  -v            Print version and build info, and exit.\n";
+    out << "  -a            Print all config names and number of runs in them, and exit.\n";
+    out << "  -q <what>     To be used together with -c and -r. Prints information about\n";
+    out << "                the specified configuration and runs, and exits.\n";
+    out << "    -q numruns  Prints the number of runs in the given configuration and the\n";
+    out << "                number of runs selected by the run filter (-r option).\n";
+    out << "    -q runnumbers\n";
+    out << "                Prints the run numbers of the runs selected by the run filter\n";
+    out << "                (-r option).\n";
+    out << "    -q runs     Like -q numruns, but also prints one line of information with the\n";
+    out << "                iteration variables about each run that the run filter matches.\n";
+    out << "    -q rundetails\n";
+    out << "                Like -q numruns, but also prints the values of the iteration\n";
+    out << "                variables and a summary of the configuration (the expanded\n";
+    out << "                values of configuration entries that contain iteration variables)\n";
+    out << "                for each matching run.\n";
+    out << "    -q runconfig\n";
+    out << "                Like -q numruns, but also prints the values of the iteration\n";
+    out << "                variables and the full configuration for each matching run.\n";
+    out << "    -q sectioninheritance\n";
+    out << "                Print the section fallback chain of the specified configuration.\n";
+    out << "  -x <configname>\n";
+    out << "                Obsolete form of -c <configname> -q numruns\n";
+    out << "  -g            With -x: Obsolete form of -c <configname> -q runs\n";
+    out << "  -G            With -x: Obsolete form of -c <configname> -q rundetails\n";
+    out << "  -X <configname>\n";
+    out << "                Obsolete form of -c <configname> -q sectioninheritance\n";
+    out << "  -h            Print this help and exit.\n";
+    out << "  -h <category> Lists registered components:\n";
+    out << "    -h config         Prints the list of available configuration options\n";
+    out << "    -h configdetails  Prints the list of available configuration options, with\n";
+    out << "                      their documentation\n";
+    out << "    -h userinterfaces Lists available user interfaces (see -u option)\n";
+    out << "    -h classes        Lists registered C++ classes (including module classes)\n";
+    out << "    -h classdesc      Lists C++ classes that have associated reflection\n";
+    out << "                      information (needed for Tkenv inspectors)\n";
+    out << "    -h nedfunctions   Lists registered NED functions\n";
+    out << "    -h neddecls       Lists built-in NED component declarations\n";
+    out << "    -h units          Lists recognized physical units\n";
+    out << "    -h enums          Lists registered enums\n";
+    out << "    -h resultfilters  Lists result filters\n";
+    out << "    -h resultrecorders Lists result recorders\n";
+    out << "    -h figures        Lists available figure types\n";
+    out << "    -h all            Union of all the above\n";
+    out << endl;
 
     // print specific help for each user interface
     cRegistrationList *table = omnetapps.getInstance();
@@ -1161,7 +1159,7 @@ void EnvirBase::log(cLogEntry *entry)
 void EnvirBase::undisposedObject(cObject *obj)
 {
     if (opt->printUndisposed)
-        ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->getClassName(), obj->getFullPath().c_str());
+        out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
 }
 
 //-------------------------------------------------------------
@@ -1186,6 +1184,31 @@ void EnvirBase::processFileName(std::string& fname)
 
         // append
         fname += opp_stringf(".%s.%d%s", hostname, pid, extension.c_str());
+    }
+}
+
+void EnvirBase::startOutputRedirection(const char *fileName)
+{
+    Assert(out.rdbuf() == std::cout.rdbuf()); // not redirected
+
+    mkPath(directoryOf(fileName).c_str());
+
+    std::filebuf *fbuf = new std::filebuf;
+    fbuf->open(fileName, std::ios_base::out);
+    if (!fbuf->is_open())
+       throw cRuntimeError("Cannot open output redirection file `%s'", fileName);
+    out.rdbuf(fbuf);
+    err.rdbuf(fbuf);
+}
+
+void EnvirBase::stopOutputRedirection()
+{
+    if (out.rdbuf() != std::cout.rdbuf()) {
+        std::streambuf *fbuf = out.rdbuf();
+        fbuf->pubsync();
+        out.rdbuf(std::cout.rdbuf());
+        err.rdbuf(std::cerr.rdbuf());
+        delete fbuf;
     }
 }
 
@@ -1546,13 +1569,12 @@ std::string EnvirBase::makeDebuggerCommand()
 {
     std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND);
     if (cmd == "") {
-        ::printf("Cannot start debugger: no debugger configured\n");
+        err << "Cannot start debugger: no debugger configured" << endl;
         return "";
     }
     size_t pos = cmd.find('%');
     if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
-        ::printf("Cannot start debugger: debugger attach command must contain '%%u' "
-                 "and no additional percent sign.\n");
+        err << "Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign." << endl;
         return "";
     }
     pid_t pid = getpid();
@@ -1566,14 +1588,12 @@ void EnvirBase::attachDebugger()
     if (cmd == "")
         return;  // no suitable debugger command
 
-    ::printf("Starting debugger: %s\n", cmd.c_str());
-    fflush(stdout);
+    out << "Starting debugger: " << cmd << endl;
     system(cmd.c_str());
 
-    ::printf("Waiting for the debugger to start up and attach to us; note that "
-             "for the latter to work, some systems (e.g. Ubuntu) require debugging "
-             "of non-child processes to be explicitly enabled.\n");
-    fflush(stdout);
+    out << "Waiting for the debugger to start up and attach to us; note that "
+           "for the latter to work, some systems (e.g. Ubuntu) require debugging "
+           "of non-child processes to be explicitly enabled." << endl;
 
     // hold for a while to allow debugger to start up and attach to us
     int secondsToWait = (int)ceil(getConfig()->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));

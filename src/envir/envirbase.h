@@ -116,6 +116,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     EnvirOptions *opt;
 
+    std::ostream out;
+    std::ostream err;
+
 #ifdef WITH_PARSIM
     cParsimCommunications *parsimComm;
     cParsimPartition *parsimPartition;
@@ -278,6 +281,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void printHelp();
     void setupEventLog();
     virtual void printUISpecificHelp() = 0;
+
+    virtual void startOutputRedirection(const char *fileName);
+    virtual void stopOutputRedirection();
 
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
     virtual void readOptions();

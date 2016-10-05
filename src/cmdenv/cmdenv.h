@@ -57,9 +57,6 @@ class CMDENV_API Cmdenv : public EnvirBase
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
 
-     // stream to write output to
-     FILE *fout;
-
      // logging
      bool logging;
      FILE *logStream;
