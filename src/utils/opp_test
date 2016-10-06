@@ -429,6 +429,9 @@ sub testcase_run()
     $outfname = "test.out";
     $errfname = "test.err";
 
+    my $runscript = "#! /bin/sh\n#\n# Convenience script to run the simulation manually\n#\n\n";
+    $runscript .= "export NEDPATH=\"$ENV{NEDPATH}\"\n";
+
     if ($mode eq 'run')
     {
         # delete temp files before running the test case
@@ -469,6 +472,7 @@ sub testcase_run()
             my $envvar = $1;
             my $value = $2;
             $ENV{$envvar} = $value;
+            $runscript .= "export $envvar=\"$value\"\n";
             print "  setting environment variable `$envvar' = `$value'\n" if ($debug);
         }
     }
@@ -480,6 +484,7 @@ sub testcase_run()
             if ($key =~ /^prerun-command\(/)
             {
                 # execute file
+                $runscript .= "$values{$key}\n";
                 my $exitcode = exec_program("$values{$key}", "$workdir/$testname", $key.".out", $key.".err");
                 if ($exitcode != 0) {
                     unresolved($testfilename, "pre-run command \"$values{$key}\" returned nonzero exit code: $exitcode");
@@ -504,7 +509,9 @@ sub testcase_run()
 
 
         if ($values{'testprog(1)'} ne '') {
-            $exitcode = exec_program($values{'testprog(1)'}." $myargs $extraargs", "$workdir/$testname", $outfname, $errfname);
+            $cmdline = $values{'testprog(1)'} . " $myargs $extraargs";
+            $runscript .= $cmdline . " \$*\n";
+            $exitcode = exec_program($cmdline, "$workdir/$testname", $outfname, $errfname);
         }
         else {
             if (! -f "$workdir/$testprogram") {
@@ -514,7 +521,9 @@ sub testcase_run()
                 print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
             }
             $sep = $isWindows ? "\\" : "/";
-            $exitcode = exec_program("..$sep$testprogram -u Cmdenv $myargs $extraargs $inifilenames", "$workdir/$testname", $outfname, $errfname);
+            $cmdline = "..$sep$testprogram -u Cmdenv $myargs $extraargs $inifilenames";
+            $runscript .= $cmdline . " \$*\n";
+            $exitcode = exec_program($cmdline, "$workdir/$testname", $outfname, $errfname);
         }
         if ($exitcode != 0) {
             if ($exitcode == -1) {
@@ -559,6 +568,7 @@ sub testcase_run()
             if ($key =~ /^postrun-command\(/)
             {
                 # execute file
+                $runscript .= "$values{$key}\n";
                 my $exitcode = exec_program("$values{$key}", "$workdir/$testname", $key.".out", $key.".err");
                 if ($exitcode != 0) {
                     unresolved($testfilename, "post-run command \"$values{$key}\" returned nonzero exit code: $exitcode");
@@ -567,6 +577,12 @@ sub testcase_run()
             }
         }
     }
+
+    writefile("$workdir/$testname/run", $runscript);
+    chmod 0755, "$workdir/$testname/run"; # make it executable
+
+    writefile("$workdir/$testname/retest", "#! /bin/sh\ncd ../.. && ./runtest $testfilename\n");
+    chmod 0755, "$workdir/$testname/retest"; # make it executable
 
     # check output files
     foreach $key (keys(%values))
