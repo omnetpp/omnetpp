@@ -253,7 +253,7 @@ void cPacket::encapsulate(cPacket *msg)
 #ifdef REFCOUNTING
         ASSERT(encapsulatedPacket->shareCount == 0);
 #endif
-        bitLength += encapsulatedPacket->bitLength;
+        bitLength += encapsulatedPacket->getBitLength();
         transferTagsFrom(msg);
     }
 }
@@ -263,7 +263,7 @@ cPacket *cPacket::decapsulate()
     if (!encapsulatedPacket)
         return nullptr;
     if (bitLength > 0)
-        bitLength -= encapsulatedPacket->bitLength;
+        bitLength -= encapsulatedPacket->getBitLength();
     if (bitLength < 0)
         throw cRuntimeError(this, "decapsulate(): Packet length is smaller than encapsulated packet");
 
