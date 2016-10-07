@@ -92,9 +92,14 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_RUNNUMBER_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG";
 
     /**
-     * How many simulations may run in parallel during batch execution
+     * How many processes may run in parallel during batch execution
      */
     public static final String OPP_NUM_CONCURRENT_PROCESSES = OMNETPP_LAUNCH_ID + ".NUM_CONCURRENT_PROCESSES";
+
+    /**
+     * How many simulations to run per process (Cmdenv instance).
+     */
+    public static final String OPP_BATCH_SIZE = OMNETPP_LAUNCH_ID + ".BATCH_SIZE";
 
     /**
      * Which user interface to use (-u)

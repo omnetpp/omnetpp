@@ -8,6 +8,10 @@
 package org.omnetpp.launch;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -82,9 +86,12 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
 
         monitor.beginTask("Launching Simulation", 1);
 
-        int runs[] = OmnetppLaunchUtils.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
-                                                OmnetppLaunchUtils.getMaxNumberOfRuns(configuration));
-        Assert.isTrue(runs != null && runs.length > 0);
+        final int portNumber = configuration.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
+        int numConcurrentProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+        boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
+
+        String runFilter = configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
+        int batchSize = configuration.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
 
         // show the debug view if option is checked
         if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {
@@ -100,18 +107,83 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             });
         }
 
-        final int portNumber = configuration.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
-        int numProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
-        boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
+        List<Integer> runNumbers;
 
-        // start a single or batched launch job
-        Job job;
-        if (runs.length == 1)
-            job = new SimulationLauncherJob(configuration, launch, runs[0], reportProgress, portNumber);
-        else
-            job = new BatchedSimulationLauncherJob(configuration, launch, runs, numProcesses);
+        try {
+            runNumbers = OmnetppLaunchUtils.queryRunNumbers(configuration, runFilter);
+        } catch (InterruptedException e1) {
+            return; // abandon job
+        }
 
-        job.schedule();
+        System.out.println(runNumbers.toString());
+
+        List<List<Integer>> batches = splitIntoBatches(runNumbers, batchSize);
+
+        System.out.println(batches);
+
+        if (batches.size() == 1) {
+            Job job = new SimulationLauncherJob(configuration, launch, runFilter, reportProgress, portNumber);
+            job.schedule();
+        }
+        else {
+            // List<String> batchRunFilters = new ArrayList<>();
+            // for (List<Integer> batch : batches)
+            //     batchRunFilters.add(StringUtils.join(batch, ","));
+            String[] batchRunFilters = batches.stream().map(batch -> StringUtils.join(batch, ",")).collect(Collectors.toList()).toArray(new String[]{});
+            Job job = new BatchedSimulationLauncherJob(configuration, launch, batchRunFilters, numConcurrentProcesses);
+            job.schedule();
+
+            /*
+             * TODO Something like this could work instead of BatchedSimulationLauncherJob, only progress reporting
+             * is broken in Eclipse 4.6, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=505959
+             *
+            Job launcherJob = new Job("x") {
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    JobGroup jobGroup = new JobGroup("Simulation batch", numConcurrentProcesses, batchRunFilters.length) {
+                        @Override
+                        protected boolean shouldCancel(IStatus lastCompletedJobResult, int numberOfFailedJobs, int numberOfCanceledJobs) {
+                            return numberOfCanceledJobs > 0 || numberOfFailedJobs > 0;
+                        }
+                    };
+                    for (String batchRunFilter : batchRunFilters) {
+                        Job job1 = new SimulationLauncherJob(configuration, launch, batchRunFilter, reportProgress, portNumber);
+                        job1.setJobGroup(jobGroup);
+                        job1.setSystem(false);
+                        job1.schedule();
+                    }
+                    try {
+                        jobGroup.join(0, monitor);
+                    } catch (OperationCanceledException | InterruptedException e) {
+                        System.out.println("Cancelling group");
+                        jobGroup.cancel();
+                        return Status.CANCEL_STATUS;
+                    }
+                    return Status.OK_STATUS;
+                }
+            };
+            launcherJob.setSystem(false);
+            launcherJob.schedule();
+            */
+        }
+    }
+
+    private List<List<Integer>> splitIntoBatches(List<Integer> runNumbers, int batchSize) {
+        // try to evenly distribute runs across batches)
+        List<List<Integer>> result = new ArrayList<>();
+        int numBatches = (runNumbers.size() + batchSize - 1) / batchSize;
+        int cursor = 0; // for drawing from runNumbers[]
+        for (int i = 0; i < numBatches; i++) {
+            List<Integer> batch = new ArrayList<>();
+            int runsInBatch = runNumbers.size() / numBatches;
+            if (i < runNumbers.size() % numBatches)
+                runsInBatch++;
+            for (int j = 0; j < runsInBatch; j++)
+                batch.add(runNumbers.get(cursor++));
+            result.add(batch);
+        }
+        Assert.isTrue(cursor == runNumbers.size());
+        return result;
     }
 
     @Override

@@ -46,23 +46,22 @@ public class SimulationLauncherJob extends Job {
     public final static String SIMULATION_JOB_FAMILY = "simulation";
     ILaunchConfiguration configuration;
     ILaunch launch;
-    Integer runNo;
+    String runFilter;
     String taskName;
     boolean reportProgress;
     int port;
 
-    public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean reportProgress, int port) {
+    public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, String runFilter, boolean reportProgress, int port) {
         super("Simulating "+configuration.getName());
         this.configuration = configuration;
         this.launch = launch;
-        this.runNo = runNo;
-        this.taskName = "Run #"+runNo;
+        this.runFilter = runFilter;
+        this.taskName = "Run(s) " + runFilter;
         this.reportProgress = reportProgress;
         this.port = port;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+    /**
      * We are using the launch object as a group family, so we can cancel all processes associated with
      * the launch.
      */
@@ -83,10 +82,10 @@ public class SimulationLauncherJob extends Job {
         subMonitor.subTask("Initializing...");
 
         try {
+            String additionalArgs = " -r " + runFilter;
 
-            String additionalArgs = " -r "+runNo;
-        if (port != -1)
-            additionalArgs += " -p "+port;
+            if (port != -1)
+                additionalArgs += " -p  " + port;
 
             // calculate the command-line for display purposes (dump to the console before start)
             String[] cmdLineArgs = OmnetppLaunchUtils.createCommandLine(configuration, additionalArgs);
@@ -101,8 +100,8 @@ public class SimulationLauncherJob extends Job {
                 commandLine += " " + cmdLineArgs[i];
 
             // launch the process
-            Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, cmdLineArgs, false);
-            IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
+            Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, cmdLineArgs);
+            IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runFilter));
             printToConsole(iprocess, "Starting...\n\n$ cd "+workingDir+"\n$ "+commandLine+"\n\n", false);
 
             // command line will be visible in the debug view's property dialog
@@ -111,18 +110,18 @@ public class SimulationLauncherJob extends Job {
             // setup a stream monitor on the process output, so we can track the progress
             if (reportProgress && monitor != null)
                 iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
-                    int prevPct = 0;
+                    int prevPercentComplete = 0;
                     public void streamAppended(String text, IStreamMonitor ismon) {
-                        int pct = OmnetppLaunchUtils.getProgressInPercent(text);
-                        if (pct >= 0) {
-                            subMonitor.worked(pct - prevPct);
-                            prevPct = pct;
+                        int percentComplete = OmnetppLaunchUtils.getProgressInPercent(text);
+                        if (percentComplete >= 0) {
+                            subMonitor.worked(percentComplete - prevPercentComplete);
+                            prevPercentComplete = percentComplete;
                         }
 
                         if (OmnetppLaunchUtils.isWaitingForUserInput(text))
                             subMonitor.subTask("Waiting for user input... (Switch to console)");
                         else
-                            subMonitor.subTask("Executing ("+prevPct+"%)");
+                            subMonitor.subTask("Executing (" + prevPercentComplete + "%)");
                     }
                 });
 
@@ -211,14 +210,12 @@ public class SimulationLauncherJob extends Job {
     }
 
     /**
-     * @param runNo
-     * @return The process label to display with the run number.
-     * @throws CoreException
+     * Returns the process label to display.
      */
-    private String renderProcessLabel(Integer runNo) throws CoreException {
+    private String renderProcessLabel(String runFilter) throws CoreException {
         String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
         String expandedProg = StringUtils.substituteVariables(progAttr);
-        String format = "{0} ({1} - run #"+runNo +")";
+        String format = "{0} ({1} - " + runFilter + ")";
         String timestamp = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
         return MessageFormat.format(format, new Object[] {expandedProg, timestamp});
     }

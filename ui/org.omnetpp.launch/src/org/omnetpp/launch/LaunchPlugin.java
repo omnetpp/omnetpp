@@ -8,6 +8,7 @@
 package org.omnetpp.launch;
 
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
@@ -75,6 +76,10 @@ public class LaunchPlugin extends AbstractUIPlugin {
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
+
+    public static CoreException wrapIntoCoreException(String message, Throwable exception) {
+        return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
 
     /**

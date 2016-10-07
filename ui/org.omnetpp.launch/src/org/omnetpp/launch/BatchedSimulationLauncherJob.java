@@ -22,16 +22,16 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
 /**
- * A job that can execute several simulations in serial or concurrent manner
+ * A job that can execute several simulation batches in a serial or concurrent manner
  *
  * @author rhornig
  */
 public class BatchedSimulationLauncherJob extends Job implements IJobChangeListener {
     protected ILaunchConfiguration configuration;
     protected ILaunch launch;
-    protected int runs[];
-    protected int runIndex = 0;
-    protected int maxParalelJobs;
+    protected String[] batchRunFilters;  // one for each batch
+    protected int batchIndex = 0;
+    protected int maxParallelJobs;
     protected int finishedJobs = 0;
     protected boolean cancelled = false; // some simulation job cancelled
     protected IProgressMonitor monitor;
@@ -57,27 +57,28 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
     };
 
     /**
+     * Create a batched simulation launcher job.
      * @param configuration The configuration to be started
      * @param launch The launch object
-     * @param runs An integer array specifying which runs to execute
-     * @param parallelism How many simulations should be able to run concurrently
+     * @param batchRunFilters Run filters for the individual batches
+     * @param parallelism How many batches should able to run concurrently
      */
-    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, int[] runs, int parallelism) {
-        super("Running "+runs.length+" simulations in batch mode.");
+    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, String[] batchRunFilters, int parallelism) {
+        super("Running " + batchRunFilters.length + " simulation batches.");
         this.configuration = configuration;
         this.launch = launch;
-        this.runs = runs;
-        this.maxParalelJobs = parallelism;
+        this.batchRunFilters = batchRunFilters;
+        this.maxParallelJobs = parallelism;
         setSystem(false);
     }
 
     @Override
     protected IStatus run(IProgressMonitor mon) {
-        groupMonitor.beginTask("Simulating "+launch.getLaunchConfiguration().getName(), runs.length);
-        runIndex = finishedJobs = 0;
+        groupMonitor.beginTask("Simulating " + launch.getLaunchConfiguration().getName(), batchRunFilters.length);
+        batchIndex = finishedJobs = 0;
         this.monitor = mon;
         try {
-            while (finishedJobs < runs.length && canSchedule() && !mon.isCanceled()) {
+            while (finishedJobs < batchRunFilters.length && canSchedule() && !mon.isCanceled()) {
                 scheduleJobs();
                 Job.getJobManager().join(launch, null);
             }
@@ -101,7 +102,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      */
     protected synchronized void scheduleJobs() {
         while (canSchedule() && !monitor.isCanceled() && !cancelled) {
-            Job job = new SimulationLauncherJob(configuration, launch, runs[runIndex++], true, -1);
+            Job job = new SimulationLauncherJob(configuration, launch, batchRunFilters[batchIndex++], true, -1);
             job.setProgressGroup(groupMonitor, 1); // assign it to the group monitor so it will be displayed under a single progress view item
             job.addJobChangeListener(this);
             job.setPriority(Job.LONG);
@@ -114,7 +115,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      * unfinished jobs are < maxParalellJobs)
      */
     protected synchronized boolean canSchedule() {
-        return runIndex - finishedJobs < maxParalelJobs && runIndex < runs.length;
+        return batchIndex - finishedJobs < maxParallelJobs && batchIndex < batchRunFilters.length;
     }
 
     // job state change listeners to keep track of the number of finished jobs

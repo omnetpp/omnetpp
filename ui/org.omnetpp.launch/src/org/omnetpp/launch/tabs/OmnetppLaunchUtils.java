@@ -10,15 +10,14 @@ package org.omnetpp.launch.tabs;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -46,12 +45,12 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -157,7 +156,7 @@ public class OmnetppLaunchUtils {
 
         @Override
         public Object[] getChildren(Object element) {
-            List<Object> filteredChildren = new ArrayList<Object>();
+            List<Object> filteredChildren = new ArrayList<>();
             for (Object child : super.getChildren(element)) {
                 if (child instanceof IFile && ((IFile)child).getName().matches(regexp)
                         || getChildren(child).length > 0)
@@ -174,7 +173,7 @@ public class OmnetppLaunchUtils {
     public static class ProjectWorkbenchContentProvider extends WorkbenchContentProvider {
         @Override
         public Object[] getChildren(Object element) {
-            List<Object> filteredChildren = new ArrayList<Object>();
+            List<Object> filteredChildren = new ArrayList<>();
             for (Object child : super.getChildren(element)) {
                 if (child instanceof IProject && ((IProject)child).isAccessible())
                     filteredChildren.add(child);
@@ -189,7 +188,7 @@ public class OmnetppLaunchUtils {
     public static class ExecutableWorkbenchContentProvider extends WorkbenchContentProvider {
         @Override
         public Object[] getChildren(Object element) {
-            List<Object> filteredChildren = new ArrayList<Object>();
+            List<Object> filteredChildren = new ArrayList<>();
             for (Object child : super.getChildren(element)) {
                 if (child instanceof IFile && isExecutable((IFile)child)
                         || getChildren(child).length > 0)
@@ -284,6 +283,7 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "${"+VAR_IMAGE_PATH+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+workingDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
 
         // minimal CDT specific attributes required to start without errors
@@ -615,7 +615,6 @@ public class OmnetppLaunchUtils {
         try {
             javaNature = project.getNature(JAVA_NATURE_ID);
         } catch (CoreException e) {
-            //TODO should this become a show-once dialog?
             LaunchPlugin.logError("Cannot determine CLASSPATH for project with Java nature: JDT not available. Install JDT or set CLASSPATH manually.", e);
             return null;
         }
@@ -625,7 +624,7 @@ public class OmnetppLaunchUtils {
         String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaOutputLocation).getLocation().toOSString();
 
         for (IProject referencedProject : project.getReferencedProjects())
-            result += ";" + getJavaClasspath(referencedProject);  // FIXME use platform dependent path separator
+            result += File.pathSeparator + getJavaClasspath(referencedProject);
 
         return result;
     }
@@ -687,120 +686,11 @@ public class OmnetppLaunchUtils {
     }
 
     /**
-     * Expands the provided run numbers into a array for example 1..4,7,9 to 1,2,3,4,7,9.
-     * The "*" means ALL run number: 0-(maxRunNo-1). Empty runPar means: 0.
-     */
-    public static boolean containsMultipleRuns(String runPar) throws CoreException  {
-        return doParseRuns(runPar, -1).length > 1;
-    }
-
-    /**
-     * Expands the provided run numbers into a array for example 1..4,7,9 to 1,2,3,4,7,9.
-     * The "*" means ALL run number: 0-(maxRunNo-1). Empty runPar means: 0.
-     */
-    public static int[] parseRuns(String runPar, int maxRunNo) throws CoreException {
-        Assert.isTrue(maxRunNo > 0);
-        return doParseRuns(runPar, maxRunNo);
-    }
-
-    // Does not throw range error if maxRunNo = -1 and returns only the first two runs
-    private static int[] doParseRuns(String runPar, int maxRunNo) throws CoreException {
-        List<Integer> result = new ArrayList<Integer>();
-        runPar = StringUtils.deleteWhitespace(runPar);
-        if (StringUtils.isEmpty(runPar)) {
-            // empty means: just the first run (0)
-            result.add(0);
-        }
-        else if ("*".equals(runPar)) {
-            if (maxRunNo == -1)
-                return new int[] {0, 1};
-            // create ALL run numbers scenario
-            for (int i=0; i<maxRunNo; i++)
-                result.add(i);
-        }
-        else {
-            // parse hand specified numbers
-            for (String current : StringUtils.split(runPar, ',')) {
-                try {
-                    if (current.contains("..")) {
-                        String lowerUpper[] = StringUtils.splitByWholeSeparator(current, "..");
-                        int low = 0;
-                        int high = maxRunNo < 0 ? Integer.MAX_VALUE : maxRunNo-1;
-                        if (lowerUpper.length > 0 && lowerUpper[0].length() > 0)
-                            low = Integer.parseInt(lowerUpper[0]);
-
-                        // if we have an upper bound too
-                        if (lowerUpper.length > 1 && lowerUpper[1].length() > 0)
-                            high = Integer.parseInt(lowerUpper[1]);
-
-                        if (low < 0 || low > high)
-                            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run number or range: "+current));
-
-                        if (maxRunNo != -1 && high >= maxRunNo)
-                            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Run number ("+current+") is greater than the number of runs ("+maxRunNo+") supported by the current configuration"));
-
-
-                        // add all integers in the interval to the list
-                        int limitedHigh = maxRunNo == -1 ? low + 1 : high;
-
-                        for (int i = low; i<=limitedHigh; ++i)
-                            result.add(i);
-                    }
-                    else {
-                        int number = Integer.parseInt(current);
-                        if (maxRunNo != -1 && number >= maxRunNo)
-                            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Run number ("+current+") is greater than the number of runs ("+maxRunNo+") supported by the current configuration"));
-                        result.add(number);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run number or range: "+current+". The run number syntax: 0,2,7,9..11 or use * for all runs"));
-                }
-            }
-        }
-
-        int[] resArray = new int [result.size()];
-        for (int i = 0; i< resArray.length; i++)
-            resArray[i] = result.get(i);
-
-        // check for duplicate run numbers
-        int[] sortedRes = ArrayUtils.clone(resArray);
-        Arrays.sort(sortedRes);
-        for(int i = 0; i< sortedRes.length-1; i++)
-            if (sortedRes[i] == sortedRes[i+1])
-                throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Duplicate run number: "+sortedRes[i]));
-
-        return resArray;
-    }
-
-    /**
      * Starts the simulation program.
      */
-    public static Process startSimulationProcess(ILaunchConfiguration configuration,
-                         String[] cmdLine, boolean requestInfo) throws CoreException {
-        // Debug.println("starting with command line: "+StringUtils.join(cmdLine," "));
-
-        if (requestInfo) {
-            int i = ArrayUtils.indexOf(cmdLine, "-c");
-            if (i >= 0)
-                cmdLine[i] = "-x";   // replace the -c with -x
-            else {
-                cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-x");
-                cmdLine = (String[]) ArrayUtils.add(cmdLine, 2, "General");
-            }
-
-            // replace the envir command line option to use Cmdenv (or add if not exist)
-            i = ArrayUtils.indexOf(cmdLine, "-u");
-            if (i >= 0 && cmdLine.length > i+1)
-                cmdLine[i+1] = "Cmdenv";
-            else {
-                cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-u");
-                cmdLine = (String[]) ArrayUtils.add(cmdLine, 2, "Cmdenv");
-            }
-
-            cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-g");
-        }
-
+    public static Process startSimulationProcess(ILaunchConfiguration configuration, String[] cmdLine) throws CoreException {
         String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+        Debug.println("startSimulationProcess(): " + StringUtils.join(cmdLine, " "));
         return DebugPlugin.exec(cmdLine, new File(getWorkingDirectoryPath(configuration).toString()), environment);
     }
 
@@ -816,52 +706,57 @@ public class OmnetppLaunchUtils {
         String expandedProj = StringUtils.substituteVariables(projAttr);
         String expandedProg = StringUtils.substituteVariables(progAttr);
         String expandedArg = StringUtils.substituteVariables(argAttr);
-        IPath projPath = new Path(expandedProj);
         IPath progPath = new Path(expandedProg);
         // put the additional arguments at the beginning so they override the other arguments
-        expandedArg = additionalArgs +" "+expandedArg;
+        expandedArg = additionalArgs + " " + expandedArg;
         String programLocation = expandedProg;
         // if it is workspace relative path, resolve it against the workspace and get the physical location
         if (!progPath.isAbsolute() ) {
             IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getProject(expandedProj).getFile(progPath);
-            if (executableFile == null)  // FIXME cannot be null
-                throw new CoreException(Status.CANCEL_STATUS);
             programLocation = executableFile.getRawLocation().makeAbsolute().toString();
         }
-        String cmdLine[] =DebugPlugin.parseArguments(programLocation + " " + expandedArg);
+        String cmdLine[] = DebugPlugin.parseArguments(programLocation + " " + expandedArg);
+        Debug.println();
         return cmdLine;
+    }
+
+    /**
+     * Runs the simulation with the '-q runnumbers' option, and returns the resulting run numbers.
+     */
+    public static List<Integer> queryRunNumbers(ILaunchConfiguration configuration, String runFilter) throws CoreException, InterruptedException {
+        try {
+            String additionalArgs = StringUtils.isNotBlank(runFilter) ? " -r " + StringUtils.quoteStringIfNeeded(runFilter) : "";
+            additionalArgs += " -s -q runnumbers";
+            ProcessResult result = getSimulationOutput(configuration, additionalArgs);
+            if (result.exitCode != 0)
+                throw LaunchPlugin.wrapIntoCoreException("Error running simulation command with '-q runnumbers': " + result.stderr.trim() + " (exit code " + result.exitCode + ")", null);
+            String output = result.stdout.trim();
+            if (!output.matches("[0-9 ]*"))
+                throw LaunchPlugin.wrapIntoCoreException("Error running simulation command with '-q runnumbers': unexpected output", null);
+            ArrayList<Integer> runNumbers = new ArrayList<>();
+            for (String token : output.split(" +"))
+                if (token.length() > 0)
+                    runNumbers.add(Integer.parseInt(token));
+            return runNumbers;
+        }
+        catch (IOException e) {
+            throw LaunchPlugin.wrapIntoCoreException("Error running simulation command with '-q runnumbers'", e);
+        }
     }
 
     /**
      * Returns a string describing all runs in the scenario, or "" if an error occurred
      */
-    public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
+    public static String getSimulationRunInfo(ILaunchConfiguration configuration, String runFilter) {
         try {
-            // launch the program
-            long startTime = System.currentTimeMillis();
-			configuration = createUpdatedLaunchConfig(configuration, ILaunchManager.RUN_MODE);
-            Process proc = startSimulationProcess(configuration, createCommandLine(configuration, ""), true);
-
-            // read its standard output
-            final int BUFFERSIZE = 8192;
-            byte bytes[] = new byte[BUFFERSIZE];
-            StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
-            BufferedInputStream is = new BufferedInputStream(proc.getInputStream(), BUFFERSIZE);
-            int lastRead = 0;
-            while ((lastRead = is.read(bytes)) > 0)
-                stringBuffer.append(new String(bytes, 0, lastRead));
-            Debug.println("getSimulationRunInfo: read " + stringBuffer.length() + " bytes of program output in " + (System.currentTimeMillis() - startTime) + "ms");
-
-            // wait until it exits
-            proc.waitFor();
-            Debug.println("getSimulationRunInfo: program exited after total " + (System.currentTimeMillis() - startTime) + "ms");
-
-            String simulationInfo = stringBuffer.toString().replace("\r", ""); // CRLF to LF conversion
-
+            String additionalArgs = StringUtils.isNotBlank(runFilter) ? " -r " + StringUtils.quoteStringIfNeeded(runFilter) : "";
+            additionalArgs += " -s -q runs ";
+            ProcessResult result = getSimulationOutput(configuration, additionalArgs);
+            String info = result.stdout + result.stderr;
+            return info;
+            //return result.stdout; //TODO also stderr; and check exitcode!
             //FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc --Andras
-            if (proc.exitValue() == 0)
-                return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simulationInfo, "Number of runs:", "\nEnd.\n"));
-
+            //return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simulationInfo, "Number of runs:", "\n\n"));
         }
         catch (CoreException e) {
             // do not litter the log with the error: this method often fails because it is often
@@ -877,17 +772,50 @@ public class OmnetppLaunchUtils {
         return "";
     }
 
-    /**
-     * Returns the number of runs available in the given scenario
-     */
-    public static int getMaxNumberOfRuns(ILaunchConfiguration configuration) {
-        return NumberUtils.toInt(StringUtils.trimToEmpty(
-                StringUtils.substringBetween(
-                        getSimulationRunInfo(configuration), "Number of runs:", "\n")), 1);
+    static class ProcessResult {
+        int exitCode;
+        String stdout;
+        String stderr;
     }
 
     /**
-     * TODO document
+     * Returns the output from running the simulation with the given extra command-lime arguments
+     */
+    private static ProcessResult getSimulationOutput(ILaunchConfiguration configuration, String additionalArgs) throws CoreException, IOException, InterruptedException {
+        long startTime = System.currentTimeMillis();
+        configuration = createUpdatedLaunchConfig(configuration, ILaunchManager.RUN_MODE);
+        Process process = startSimulationProcess(configuration, createCommandLine(configuration, additionalArgs));
+
+        // read output
+        ProcessResult result = new ProcessResult();
+        String stdout = readFully(process.getInputStream());
+        String stderr = readFully(process.getErrorStream());
+        Debug.println("getSimulationOutput(): read " + stdout.length() + " bytes from stdout and " +
+                stderr.length() + " bytes from stderr in " + (System.currentTimeMillis() - startTime) + "ms");
+
+        result.stdout = stdout.replace("\r", ""); // CRLF to LF conversion
+        result.stderr = stderr.replace("\r", "");
+
+        // wait until it exits
+        process.waitFor();
+        result.exitCode = process.exitValue();
+        Debug.println("getSimulationOutput(): program exited with code=" + result.exitCode + " after total " + (System.currentTimeMillis() - startTime) + "ms");
+        return result;
+    }
+
+    private static String readFully(InputStream stream) throws IOException {
+        final int BUFFERSIZE = 8192;
+        byte bytes[] = new byte[BUFFERSIZE];
+        StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
+        BufferedInputStream is = new BufferedInputStream(stream, BUFFERSIZE);
+        int lastRead = 0;
+        while ((lastRead = is.read(bytes)) > 0)
+            stringBuffer.append(new String(bytes, 0, lastRead));
+        return stringBuffer.toString();
+    }
+
+    /**
+     * Parses and returns progress percentage from the given console output string.
      * @param text The text to be parsed for progress information
      * @return The process progress reported in the text or -1 if no progress info found
      */

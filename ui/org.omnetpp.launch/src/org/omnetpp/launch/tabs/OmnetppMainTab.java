@@ -40,6 +40,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -83,8 +84,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     private Button fWorkspaceButton;
     private Text workingDirText = null;
 
-    // simulation parameters group
-    protected String runTooltip;
     // configuration
     protected Text fInifileText;
     protected Combo fConfigCombo;
@@ -92,6 +91,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Text fNedPathText;
     protected Text fImagePathText;
     protected Spinner fParallelismSpinner;
+    protected Spinner fBatchSizeSpinner;
     protected Button fDefaultExternalEnvButton;
     protected Button fCmdenvButton;
     protected Button fTkenvButton;
@@ -112,7 +112,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
-    private boolean debugLaunchMode = false;
+    private boolean isDebugLaunch = false;
     private String infoText = null;
     private Button fBrowseForBinaryButton;
 
@@ -126,6 +126,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     private ModifyListener modifyListener = new ModifyListener() {
         @Override
         public void modifyText(ModifyEvent e) {
+            infoText = null; // invalidate
             updateDialogState();
         }
     };
@@ -135,9 +136,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     }
 
     public void createControl(Composite parent) {
-        debugLaunchMode = ILaunchManager.DEBUG_MODE.equals(getLaunchConfigurationDialog().getMode());
-        runTooltip = debugLaunchMode ? "The run number that should be executed (default: 0)"
-                : "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for all runs) (default: 0)";
+        isDebugLaunch = getLaunchConfigurationDialog().getMode().equals(ILaunchManager.DEBUG_MODE);
+
         final ScrolledComposite scolledComposite = new ScrolledComposite( parent, SWT.V_SCROLL | SWT.H_SCROLL );
         scolledComposite.setExpandHorizontal(true);
         scolledComposite.setExpandVertical(true);
@@ -234,29 +234,25 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fConfigCombo.setVisibleItemCount(10);
         fConfigCombo.addModifyListener(modifyListener);
 
-        SWTFactory.createLabel(composite, "Run number:",1);
+        SWTFactory.createLabel(composite, "Run(s):", 1);
 
-        int runSpan = debugLaunchMode ? 3 : 1;
+        int runSpan = isDebugLaunch ? 3 : 1;
         fRunText = SWTFactory.createSingleText(composite, runSpan);
         fRunText.addModifyListener(modifyListener);
+
+        String runTooltip = isDebugLaunch ?
+                "The run number that should be executed (default: 0)" :
+                "Filter expression or list of run numbers. Examples: $numHosts > 10; 1,5,8..13"; // TODO default=?
+
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverInfoProvider() {
             @Override
             public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 if (infoText == null)
-                    infoText = truncateHoverText(OmnetppLaunchUtils.getSimulationRunInfo(config), MAX_TOOLTIP_CHARS);
+                    infoText = truncateHoverText(OmnetppLaunchUtils.getSimulationRunInfo(config, fRunText.getText()), MAX_TOOLTIP_CHARS);
                 return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>"));
             }
         });
-
-        // parallel execution is not possible under CDT
-        if (!debugLaunchMode) {
-            SWTFactory.createLabel(composite, "Processes to run in parallel:", 1);
-            fParallelismSpinner = new Spinner(composite, SWT.BORDER);
-            fParallelismSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-            fParallelismSpinner.setMinimum(1);
-            fParallelismSpinner.addModifyListener(modifyListener);
-        }
 
         return composite;
     }
@@ -272,14 +268,38 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     }
 
     protected Composite createOptionsGroup(Composite parent, int colSpan) {
-        Composite composite = SWTFactory.createGroup(parent, "Options", 2, colSpan, GridData.FILL_HORIZONTAL);
+        Composite composite = SWTFactory.createGroup(parent, "Options", 5, colSpan, GridData.FILL_HORIZONTAL);
         GridLayout ld = (GridLayout)composite.getLayout();
         ld.marginHeight = 1;
 
-        createUIRadioButtons(composite, 2);
-        createRecordEventlogRadioButtons(composite, 2);
-        createDbgOnErrRadioButtons(composite, 2);
+        createUIRadioButtons(composite, 5);
+
+        if (!isDebugLaunch) { // parallel execution is not possible under CDT
+            SWTFactory.createLabel(composite, "Number of CPUs to use:", 1);
+            fParallelismSpinner = new Spinner(composite, SWT.BORDER);
+            fParallelismSpinner.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+            fParallelismSpinner.setMinimum(1);
+            fParallelismSpinner.addModifyListener(modifyListener);
+            setSpinnerWidthHint(fParallelismSpinner);
+
+            SWTFactory.createLabel(composite, "  ", 1);  // spacer
+
+            SWTFactory.createLabel(composite, "Batch size:", 1);
+            fBatchSizeSpinner = new Spinner(composite, SWT.BORDER);
+            fBatchSizeSpinner.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+            fBatchSizeSpinner.setMinimum(1);
+            fBatchSizeSpinner.addModifyListener(modifyListener);
+            setSpinnerWidthHint(fBatchSizeSpinner);
+        }
+
+        createRecordEventlogRadioButtons(composite, 5);
+        createDbgOnErrRadioButtons(composite, 5);
         return composite;
+    }
+
+    protected void setSpinnerWidthHint(Spinner spinner) {
+        Point size = spinner.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        ((GridData)spinner.getLayoutData()).widthHint = size.x + 16; // TODO needed on some platforms
     }
 
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
@@ -409,13 +429,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
             setConfigName(config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim());
 
-            if (debugLaunchMode)
+            if (isDebugLaunch)
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, ""));
             else
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""));
 
             if (fParallelismSpinner != null)
                 fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1));
+            if (fBatchSizeSpinner != null)
+                fBatchSizeSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1));
 
             // update UI radio buttons
             String uiArg = StringUtils.defaultIfEmpty(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
@@ -471,7 +493,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
         // if we are in debug mode, we should store the run parameter into the command line too
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
-        if (debugLaunchMode)
+        if (isDebugLaunch)
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, strippedRun);
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, strippedRun);
@@ -493,6 +515,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         // the UpdateDialogState method will set the value to 1 (the default if Tkenv is used)
         if (fParallelismSpinner != null)
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
+        if (fBatchSizeSpinner != null)
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, fBatchSizeSpinner.getSelection());
 
         if (fEventLogYesButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "true");
@@ -559,6 +583,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
                 setConfigName(currentSelection);
             }
         }
+
         // update the UI (env) state
         if (!fOtherEnvButton.getSelection())
             fOtherEnvText.setText("");
@@ -568,6 +593,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             fParallelismSpinner.setEnabled(fCmdenvButton.getSelection());
             if (!fCmdenvButton.getSelection())
                 fParallelismSpinner.setSelection(1);
+        }
+
+        if (fBatchSizeSpinner != null) {
+            fBatchSizeSpinner.setEnabled(fCmdenvButton.getSelection());
+            if (!fCmdenvButton.getSelection())
+                fBatchSizeSpinner.setSelection(1);
         }
 
         // update the state of apply and other system buttons
@@ -748,13 +779,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
         }
 
-        boolean isMultipleRuns;
-        try {
-            isMultipleRuns = OmnetppLaunchUtils.containsMultipleRuns(StringUtils.deleteWhitespace(fRunText.getText()));
-        } catch (CoreException e) {
-            setErrorMessage(e.getMessage());
-            return false;
-        }
+        boolean isMultipleRuns = true;  //FIXME
+//TODO something better!!!
+//        boolean isMultipleRuns;
+//        try {
+//            isMultipleRuns = OmnetppLaunchUtils.containsMultipleRuns(StringUtils.deleteWhitespace(fRunText.getText()));
+//        } catch (CoreException e) {
+//            setErrorMessage(e.getMessage());
+//            return false;
+//        }
 
         if (fOtherEnvButton.getSelection() && StringUtils.isEmpty(fOtherEnvText.getText())) {
             setErrorMessage("Environment type must be specified");
