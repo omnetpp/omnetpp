@@ -19,7 +19,7 @@
 
 #include "envirdefs.h"
 #include "startup.h"
-#include "include/omnetpp/cownedobject.h"
+#include "omnetpp/cownedobject.h"
 
 namespace omnetpp {
 namespace envir {
