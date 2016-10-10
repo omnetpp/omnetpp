@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.actions.AddResultFileAction;
@@ -85,7 +84,6 @@ public class InputsPage extends ScaveEditorPage {
         // set up UI
         setPageTitle("Inputs");
         setFormTitle("Inputs");
-        setBackground(ColorFactory.WHITE);
         getContent().setLayout(new GridLayout());
         createSashForm();
         createInputFilesSection();
@@ -174,7 +172,6 @@ public class InputsPage extends ScaveEditorPage {
     private void createSashForm() {
         sashform = new CustomSashForm(getContent(), SWT.VERTICAL | SWT.SMOOTH);
         getFormToolkit().adapt(sashform);
-        //sashform.setBackground(this.getBackground());
         sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
                                             GridData.GRAB_VERTICAL |
                                             GridData.FILL_BOTH));
@@ -192,6 +189,7 @@ public class InputsPage extends ScaveEditorPage {
         inputFilesSection.setExpanded(true);
         InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
         inputFilesSection.setClient(inputFilesPanel);
+        inputFilesPanel.setBackground(getBackground());
 
         // buttons
         configureViewerButton(

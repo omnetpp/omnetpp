@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -57,7 +56,6 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
         // set up UI
         setPageTitle("Datasets");
         setFormTitle("Datasets and Charts");
-        setBackground(ColorFactory.WHITE);
         getContent().setLayout(new GridLayout(2, false));
 
         createSashForm();
