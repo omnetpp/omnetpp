@@ -55,7 +55,6 @@ public class CheckboxFieldEditor extends FieldEditor {
         setLayout(gridLayout);
 
         checkbox = new Button(this, SWT.CHECK);
-        checkbox.setBackground(BGCOLOR);
         addTooltipSupport(checkbox);
         problemDecoration = new ControlDecoration(checkbox, SWT.RIGHT | SWT.TOP);
         problemDecoration.setShowOnlyOnFocus(false);

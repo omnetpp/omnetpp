@@ -23,7 +23,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -58,8 +57,6 @@ public class InifileFormEditor extends Composite {
     public static final String PARAMETERS_PAGE = "Parameters";
     public static final String CONFIGURATION_PAGE = "Configuration";
 
-    public static final Color BGCOLOR = null;
-
     protected InifileEditor inifileEditor = null;  // backreference to the containing editor
     private TreeViewer treeViewer;
     private Composite formContainer;
@@ -77,15 +74,12 @@ public class InifileFormEditor extends Composite {
 
     protected void createControl() {
         // create and layout a banner and a content area
-        setBackground(BGCOLOR);
         setLayout(new GridLayout());
         SashForm sashForm = new SashForm(this, SWT.HORIZONTAL | SWT.SMOOTH);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        sashForm.setBackground(BGCOLOR);
 
         treeViewer = createTreeViewer(sashForm);
         formContainer = new Composite(sashForm, SWT.BORDER);
-        formContainer.setBackground(BGCOLOR);
         formContainer.setLayout(new FillLayout());
         sashForm.setWeights(new int[] {1,4});
 

@@ -24,7 +24,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -48,7 +47,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  */
 public abstract class FieldEditor extends Composite {
     // colors and icons for subclasses
-    public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
     public static final Image ICON_ERROR_SMALL = UIUtils.ICON_ERROR_SMALL;
     public static final Image ICON_WARNING_SMALL = UIUtils.ICON_WARNING_SMALL;
     public static final Image ICON_INFO_SMALL = UIUtils.ICON_INFO_SMALL;
@@ -74,7 +72,7 @@ public abstract class FieldEditor extends Composite {
         this.inifile = inifile;
         this.formPage = formPage;
         this.hints = hints;
-        setBackground(BGCOLOR);
+        setBackground(formPage.getBackground());
 
     }
 
@@ -146,7 +144,6 @@ public abstract class FieldEditor extends Composite {
 
     protected Label createLabel(ConfigOption entry, String labelText) {
         Label label = new Label(this, SWT.NONE);
-        label.setBackground(BGCOLOR);
         label.setText(labelText);
         addTooltipSupport(label);
         return label;
