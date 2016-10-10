@@ -48,7 +48,8 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
         public void modelChanged() {
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
-                    updateToggleButton();
+                    if (!isDisposed())
+                        updateToggleButton();
                 }
             });
         }
