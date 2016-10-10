@@ -54,8 +54,7 @@ public class NedFileFigure extends Layer {
         setLayoutManager(fl);
         setProblemMessage(null);
         setPackageName(null);
-        packageLabel.setBackgroundColor(ColorFactory.GREY95);
-        packageLabel.setBorder(new LineBorder(ColorFactory.GREY95,2));
+        packageLabel.setBorder(new MarginBorder(2));
         packageLabel.setOpaque(true);
         packageLabel.setLabelAlignment(PositionConstants.LEFT);
         // use only the super.add(figure,constraint,index) to add figures as a direct child
