@@ -33,6 +33,8 @@ constexpr int ITEMDATA_TOOLTIP = 2;
 class ArrowheadItem : public QGraphicsPolygonItem
 {
     double arrowWidth = 6;
+    // This will offset the tail sideways. -1 is fully left, 1 is fully right.
+    double arrowSkew = 0;
     double arrowLength = 4;
     double fillRatio = 0.75;
 
@@ -46,12 +48,13 @@ public:
 
     // Sets the size of the arrow so it fits
     // a line of penWidth width well.
-    void setSizeForPenWidth(double penWidth, double scale = 1.0);
+    void setSizeForPenWidth(double penWidth, double scale = 1.0, double addSize = 10);
 
-    void setEndPoints(const QPointF &start, const QPointF &end);
+    void setEndPoints(const QPointF &start, const QPointF &end, double addAngle = 0);
 
     void setArrowWidth(double width);
     void setArrowLength(double length);
+    void setArrowSkew(double skew);
     void setFillRatio(double ratio);
     void setColor(const QColor &color);
     void setLineWidth(double width);

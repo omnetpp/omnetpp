@@ -30,10 +30,12 @@ void ArrowheadItem::updatePolygon()
 {
     QPolygonF polygon;
 
+    auto aside = arrowWidth * arrowSkew / 2;
+
     polygon.append(QPointF(0, 0));
-    polygon.append(QPointF(-arrowLength, -arrowWidth / 2));
-    polygon.append(QPointF(-arrowLength * fillRatio, 0));
-    polygon.append(QPointF(-arrowLength, arrowWidth / 2));
+    polygon.append(QPointF(-arrowLength, -arrowWidth / 2 + aside));
+    polygon.append(QPointF(-arrowLength * fillRatio, aside));
+    polygon.append(QPointF(-arrowLength, arrowWidth / 2 + aside));
 
     setPolygon(polygon);
 }
@@ -76,10 +78,10 @@ QRectF ArrowheadItem::boundingRect() const
     return isVisible() ? QGraphicsPolygonItem::boundingRect() : QRectF();
 }
 
-void ArrowheadItem::setEndPoints(const QPointF& start, const QPointF& end)
+void ArrowheadItem::setEndPoints(const QPointF& start, const QPointF& end, double addAngle)
 {
     setPos(end);
-    setRotation(atan2(end.y() - start.y(), end.x() - start.x()) * 180.0 / M_PI);
+    setRotation(atan2(end.y() - start.y(), end.x() - start.x()) * 180.0 / M_PI + addAngle);
 }
 
 void ArrowheadItem::setFillRatio(double ratio)
@@ -121,9 +123,17 @@ void ArrowheadItem::setArrowLength(double length)
     }
 }
 
-void ArrowheadItem::setSizeForPenWidth(double penWidth, double scale)
+void ArrowheadItem::setArrowSkew(double skew)
 {
-    double size = (1.25 * penWidth + 10) * scale;
+    if (skew != arrowSkew) {
+        arrowSkew = skew;
+        updatePolygon();
+    }
+}
+
+void ArrowheadItem::setSizeForPenWidth(double penWidth, double scale, double addSize)
+{
+    double size = (1.25 * penWidth + addSize) * scale;
     setArrowWidth(size);
     setArrowLength(size);
 }

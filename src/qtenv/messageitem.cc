@@ -115,6 +115,12 @@ MessageItem::MessageItem(QGraphicsItem *parent) :
     textItem = new OutlinedTextItem(this);
     shapeItem = new QGraphicsEllipseItem(this);
     imageItem = new QGraphicsPixmapItem(this);
+    lineItem = new QGraphicsLineItem(this);
+    arrowheadItem = new ArrowheadItem(this);
+    arrowheadItem->setFillRatio(1);
+    arrowheadItem->setArrowSkew(1);
+
+    textItem->setZValue(1);
 
     updateShapeItem();
 }
@@ -124,6 +130,8 @@ MessageItem::~MessageItem()
     delete shapeItem;
     delete imageItem;
     delete textItem;
+    delete lineItem;
+    delete arrowheadItem;
 }
 
 void MessageItem::setImageSizeFactor(double imageSize)
@@ -144,8 +152,8 @@ void MessageItem::setText(const QString& text)
 
 void MessageItem::setShape(Shape shape)
 {
-    if (this->shape != shape) {
-        this->shape = shape;
+    if (this->shapeType != shape) {
+        this->shapeType = shape;
         updateShapeItem();
     }
 }
@@ -190,6 +198,14 @@ void MessageItem::setOutlineWidth(double width)
     }
 }
 
+void MessageItem::setArrowheadEnabled(bool enabled)
+{
+    if (arrowheadEnabled != enabled) {
+        arrowheadEnabled = enabled;
+        updateLineItem();
+    }
+}
+
 void MessageItem::setImage(QImage *image)
 {
     if (this->image != image) {
@@ -213,14 +229,29 @@ void MessageItem::setImageColorPercentage(int percent)
     }
 }
 
-QRectF MessageItem::boundingRect() const
+void MessageItem::setLine(const QLineF& line)
 {
-    return shapeImageBoundingRect();
+    if (this->line != line) {
+        this->line = line;
+        lineItem->setLine(line);
+        setPos(line.pointAt(0.5));
+        updateShapeItem();
+    }
 }
 
-void MessageItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+QRectF MessageItem::boundingRect() const
 {
-    // nothing to do here
+    return lineItem->isVisible() ? lineItem->boundingRect() : shapeImageBoundingRect();
+}
+
+QPainterPath MessageItem::shape() const
+{
+    if (lineItem->isVisible())
+        return lineItem->shape();
+
+    QPainterPath path;
+    path.addRect(shapeImageBoundingRect());
+    return path;
 }
 
 QRectF MessageItem::shapeImageBoundingRect() const
@@ -260,7 +291,7 @@ void MessageItem::updateShapeItem()
     rect.setBottomRight(rect.bottomRight());
     rect = rect.adjusted(shapeOutlineWidth / 2, shapeOutlineWidth / 2, -shapeOutlineWidth / 2, -shapeOutlineWidth / 2);
 
-    switch (shape) {
+    switch (shapeType) {
         case SHAPE_OVAL: shapeItem = new QGraphicsEllipseItem(rect, this); break;
         case SHAPE_RECT: shapeItem = new QGraphicsRectItem(rect, this); break;
         default: break; // nothing
@@ -274,6 +305,7 @@ void MessageItem::updateShapeItem()
                            : Qt::NoPen);
     }
     updateTextItem();
+    updateLineItem();
 }
 
 void MessageItem::updateImageItem()
@@ -292,6 +324,37 @@ void MessageItem::updateImageItem()
         imageItem->setGraphicsEffect(colorizeEffect);
     }
     updateTextItem();
+}
+
+void MessageItem::updateLineItem()
+{
+    setPos(line.pointAt(0.5));
+
+    double width = (shapeWidth + shapeHeight) / 4;
+
+    QPointF offset = width / 2 * line.normalVector().unitVector().translated(-line.p1()).p2();
+
+    QPen pen(shapeFillColor, width, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
+    pen.setMiterLimit(width*10);
+
+    auto l = line.translated(offset-pos());
+    lineItem->setLine(l);
+    lineItem->setPen(pen);
+
+    arrowheadItem->setEndPoints(l.p2(), l.p1());
+    arrowheadItem->setPen(pen);
+    arrowheadItem->setBrush(shapeFillColor);
+    arrowheadItem->setSizeForPenWidth(width, 1.0, 0.0);
+
+    bool isLine = line.length() > width;
+
+    lineItem->setVisible(isLine);
+    arrowheadItem->setVisible(arrowheadEnabled && (line.length() > width * 4));
+
+    if (shapeItem)
+        shapeItem->setVisible(!isLine);
+    if (imageItem)
+        imageItem->setVisible(!isLine);
 }
 
 }  // namespace qtenv

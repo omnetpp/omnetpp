@@ -54,20 +54,25 @@ protected:
     double shapeOutlineWidth = 0;
     double shapeWidth = 10;
     double shapeHeight = 10;
-    Shape shape = SHAPE_OVAL;
+    Shape shapeType = SHAPE_OVAL;
     QString text;
+    QLineF line;
+    bool arrowheadEnabled = true;
 
     OutlinedTextItem *textItem;
     QAbstractGraphicsShapeItem *shapeItem = nullptr;
     QGraphicsPixmapItem *imageItem = nullptr;
     // TODO FIXME - this effect does not look the same as the one in tkenv
     QGraphicsColorizeEffect *colorizeEffect = nullptr; // owned by the image item
+    QGraphicsLineItem *lineItem = nullptr;
+    ArrowheadItem *arrowheadItem = nullptr;
 
     QRectF shapeImageBoundingRect() const;
 
     void updateTextItem();
     void updateShapeItem();
     void updateImageItem();
+    void updateLineItem();
 
 public:
     explicit MessageItem(QGraphicsItem *parent = nullptr);
@@ -83,13 +88,17 @@ public:
     void setFillColor(const QColor &color);
     void setOutlineColor(const QColor &color);
     void setOutlineWidth(double width);
+    void setArrowheadEnabled(bool enabled);
 
     void setImage(QImage *image);
     void setImageColor(const QColor &color);
     void setImageColorPercentage(int percent);
 
+    void setLine(const QLineF& line);
+
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QPainterPath shape() const override;
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override { /* empty */ }
 };
 
 } // namespace qtenv
