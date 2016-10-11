@@ -188,7 +188,7 @@ class cComponent extends cDefaultList
 class cChannel extends cComponent
 {
     @icon(channel);
-    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI");
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI") @editable @setter(setDisplayString) @fromstring($) @tostring(.str()) @getter(getDisplayString);
 }
 
 class cIdealChannel extends cChannel
@@ -218,7 +218,7 @@ class cModule extends cComponent
     bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
     int index @group(fields) @hint("If vector: index of this module in its module vector");
     int size @getter(size) @group(fields) @hint("If vector: size of module vector this module belongs to");
-    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI");
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromstring($) @tostring(.str()) @getter(getDisplayString);
     cGate *gate[] @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
     cCanvas *canvas @getter(getCanvasIfExists) @group(fields) @hint("Built-in canvas instance");
     cOsgCanvas *osgCanvas @getter(getOsgCanvasIfExists) @group(fields) @hint("Built-in 3D (OpenSceneGraph) canvas instance");
