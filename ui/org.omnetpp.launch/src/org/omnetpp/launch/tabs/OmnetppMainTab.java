@@ -69,7 +69,7 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements ModifyListener {
+public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
     protected static final int MAX_TOOLTIP_CHARS = 50000;
 
@@ -123,6 +123,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         }
     };
 
+    private ModifyListener modifyListener = new ModifyListener() {
+        @Override
+        public void modifyText(ModifyEvent e) {
+            updateDialogState();
+        }
+    };
+
     public OmnetppMainTab() {
         super();
     }
@@ -163,7 +170,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         setControl(group);
         workingDirText = SWTFactory.createSingleText(group, 1);
-        workingDirText.addModifyListener(this);
+        workingDirText.addModifyListener(modifyListener);
         workingDirText.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 updateMacros();
@@ -196,7 +203,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fProgOppRunButton.setSelection(true);
         fProgOtherButton = createRadioButton(innerComposite, "Other:");
         fProgText = SWTFactory.createSingleText(innerComposite, 1);
-        fProgText.addModifyListener(this);
+        fProgText.addModifyListener(modifyListener);
 
         fBrowseForBinaryButton = SWTFactory.createPushButton(composite, "Browse...", null);
         fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
@@ -210,7 +217,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         fInifileText = SWTFactory.createSingleText(composite, 2);
         fInifileText.setToolTipText("Ini file (or files), relative to the working directory");
-        fInifileText.addModifyListener(this);
+        fInifileText.addModifyListener(modifyListener);
 
         Button browseInifileButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseInifileButton.addSelectionListener(new SelectionAdapter() {
@@ -225,13 +232,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fConfigCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 3, new String[] {});
         fConfigCombo.setToolTipText("The configuration from the ini file");
         fConfigCombo.setVisibleItemCount(10);
-        fConfigCombo.addModifyListener(this);
+        fConfigCombo.addModifyListener(modifyListener);
 
         SWTFactory.createLabel(composite, "Run number:",1);
 
         int runSpan = debugLaunchMode ? 3 : 1;
         fRunText = SWTFactory.createSingleText(composite, runSpan);
-        fRunText.addModifyListener(this);
+        fRunText.addModifyListener(modifyListener);
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverInfoProvider() {
             @Override
@@ -284,7 +291,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
         fLibraryText = SWTFactory.createSingleText(composite, 1);
         fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory. Use ${opp_shared_libs:/workingdir} for automatic setting.)");
-        fLibraryText.addModifyListener(this);
+        fLibraryText.addModifyListener(modifyListener);
 
         Button browseLibrariesButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
@@ -298,18 +305,18 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fNedPathText = SWTFactory.createSingleText(composite, 2);
         fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file). " +
         "Use ${opp_ned_path:/workingdir} for automatic setting.");
-        fNedPathText.addModifyListener(this);
+        fNedPathText.addModifyListener(modifyListener);
 
         SWTFactory.createLabel(composite, "Image Path:", 1);
         fImagePathText = SWTFactory.createSingleText(composite, 2);
         fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). " +
         "Use ${opp_image_path:/workingdir} for automatic setting.");
-        fImagePathText.addModifyListener(this);
+        fImagePathText.addModifyListener(modifyListener);
 
         SWTFactory.createLabel(composite, "Additional arguments:", 1);
         fAdditionalText = SWTFactory.createSingleText(composite, 2);
         fAdditionalText.setToolTipText("Specify additional command line arguments");
-        fAdditionalText.addModifyListener(this);
+        fAdditionalText.addModifyListener(modifyListener);
 
         fShowDebugViewButton = SWTFactory.createCheckButton(composite, "Show Debug View on Launch", null, false, 3);
         fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
@@ -334,7 +341,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fQtenvButton = createRadioButton(comp, "Qtenv");
         fOtherEnvButton = createRadioButton(comp, "Other:");
         fOtherEnvText = SWTFactory.createSingleText(comp, 1);
-        fOtherEnvText.addModifyListener(this);
+        fOtherEnvText.addModifyListener(modifyListener);
 
         fDefaultExternalEnvButton.setToolTipText("Let the ini file setting or the default take effect");
         fCmdenvButton.setToolTipText("Launch the simulation with the -u Cmdenv option");
@@ -886,10 +893,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
     // ********************************************************************
     // event listeners
-
-    public void modifyText(ModifyEvent e) {
-        updateDialogState();
-    }
 
     protected void updateMacros() {
         String workingDir = getWorkingDirectoryText();
