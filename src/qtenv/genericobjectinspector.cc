@@ -326,8 +326,8 @@ void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     QString wholeText = index.data().toString();
     QString editorText = index.data(Qt::EditRole).toString();
 
-    // searching for the start of the value - if not found, it will be 2... which would still work
-    int startIndex = wholeText.indexOf(" = ") + 3;
+    // searching for the start of the value
+    int startIndex = wholeText.indexOf(editorText);
 
     // this is where the editor should start
     int editorLeft = option.fontMetrics.width(wholeText.left(startIndex));

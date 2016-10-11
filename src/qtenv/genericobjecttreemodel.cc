@@ -887,22 +887,23 @@ bool ArrayElementNode::hasChildrenImpl()
 QVariant ArrayElementNode::data(int role)
 {
     QString indexEquals = QString("[%1] ").arg(arrayIndex);
-    QString valueInfo = "";
+    QString value;
+    QString info;
     cObject *fieldObjectPointer = nullptr;
 
     if (containingDesc->getFieldIsCObject(fieldIndex)) {
         fieldObjectPointer = static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
 
-        valueInfo += (fieldObjectPointer
+        info += (fieldObjectPointer
                         ? QString("(%1) %2")
                           .arg(getObjectShortTypeName(fieldObjectPointer))
                           .arg(getObjectFullNameOrPath(fieldObjectPointer))
                          : "NULL");
 
-        std::string info = fieldObjectPointer ? fieldObjectPointer->str() : "";
-        if (!info.empty()) {
-            valueInfo += ": ";
-            valueInfo += info.c_str();
+        std::string i = fieldObjectPointer ? fieldObjectPointer->str() : "";
+        if (!i.empty()) {
+            info += ": ";
+            value += i.c_str();
         }
     }
     else if (containingDesc->getFieldIsCompound(fieldIndex)) {
@@ -910,30 +911,32 @@ QVariant ArrayElementNode::data(int role)
         std::string fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex);
 
         if (fieldType && fieldType[0])
-            valueInfo += QString("(") + stripNamespace(fieldType) + ")";
+            info += QString("(") + stripNamespace(fieldType) + ")";
 
         if (!fieldValue.empty()) {
-            if (!valueInfo.isEmpty())
-                valueInfo += " ";
-            valueInfo += fieldValue.c_str();
+            if (!info.isEmpty())
+                info += " ";
+            value += fieldValue.c_str();
         }
     }
     else {
-        valueInfo = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
+        value = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
     }
+
+    QString editable = containingDesc->getFieldIsEditable(fieldIndex) ? " [...]" : "";
 
     switch (role) {
         case Qt::DisplayRole:
-            return indexEquals + valueInfo;
+            return indexEquals + info + value + editable;
 
         case Qt::DecorationRole:
             return fieldObjectPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldObjectPointer))) : QVariant();
 
         case Qt::EditRole:
-            return valueInfo;
+            return value;
 
         case Qt::UserRole:
-            return QVariant::fromValue(HighlightRange { indexEquals.length(), valueInfo.length() });
+            return QVariant::fromValue(HighlightRange { indexEquals.length() + info.length(), value.length() });
 
         default:
             return QVariant();
