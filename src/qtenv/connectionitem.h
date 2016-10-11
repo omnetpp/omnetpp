@@ -36,10 +36,6 @@ class ConnectionItem : public QGraphicsObject
 {
     Q_OBJECT
 
-    // adds this many pixels to the collision detection shape around the line
-    // to make it easier to select the connection
-    const double clickThreshold = 3;
-
 protected:
     QPointF src, dest;
     double lineWidth = 1;
@@ -86,9 +82,9 @@ public:
     void setHalfLength(bool enabled);
     bool isHalfLength() const { return halfLength; }
 
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    QPainterPath shape() const override;
+    QRectF boundingRect() const override { return QRectF(src, dest).normalized(); }
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override { /* empty */ }
+    QPainterPath shape() const override { return lineItem->shape(); }
 };
 
 } // namespace qtenv

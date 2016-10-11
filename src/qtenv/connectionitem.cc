@@ -299,31 +299,6 @@ void ConnectionItem::setHalfLength(bool enabled)
     }
 }
 
-QRectF ConnectionItem::boundingRect() const
-{
-    return QRectF(src, dest).normalized()  // adjusting to make it easier to pick
-                   .adjusted(-clickThreshold, -clickThreshold, clickThreshold, clickThreshold);
-}
-
-void ConnectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    // nothing to do here
-}
-
-// so the tooltip will not appear while hovering anywhere in the bounding rect, only on the line
-QPainterPath ConnectionItem::shape() const
-{
-    QPainterPath shape = lineItem->shape();  // even if it is not enabled, because it is most likely half of a bidirectional
-
-    // expanding the path to make the connection easier to pick
-    // thanks: http://stackoverflow.com/a/5732289
-    QPainterPathStroker stroker;
-    stroker.setWidth(1 + 2 * clickThreshold);
-    stroker.setJoinStyle(Qt::RoundJoin);
-    stroker.setCapStyle(Qt::RoundCap);
-    return (stroker.createStroke(shape) + shape).simplified();
-}
-
 }  // namespace qtenv
 }  // namespace omnetpp
 
