@@ -20,8 +20,12 @@
 #include <set>
 #include "envir/visitor.h"
 #include "qtutil.h"
+#include "common/stringutil.h"
 
 namespace omnetpp {
+
+using namespace common;
+
 namespace qtenv {
 
 //---- helper class declarations ----
@@ -442,6 +446,8 @@ QVariant TreeNode::getDefaultObjectData(cObject *object, int role)
             return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(object))) : QVariant();
 
         case Qt::ToolTipRole:
+            return opp_nulltoempty(object->getDescriptor()->getProperty("hint"));
+
         case Qt::DisplayRole:
             return object ? getObjectFullNameOrPath(object) + " (" + getObjectShortTypeName(object) + ")" : "no object selected";
 
@@ -723,12 +729,17 @@ QVariant FieldNode::data(int role)
     if (isArray || fieldValue.isEmpty())
         equals = "";  // no need to add an " = " in these cases
 
+    QString tooltip = opp_nulltoempty(containingDesc->getFieldProperty(fieldIndex, "hint"));
+
+    if (fieldValue.contains("\n") || fieldValue.length() > 50)
+        tooltip += "\n\n" + fieldValue;
+
     switch (role) {
         case Qt::EditRole:
             return fieldValue;
 
         case Qt::ToolTipRole:
-            return ((fieldValue.contains("\n") || fieldValue.length() > 50)) ? fieldValue : QVariant();
+            return tooltip;
 
         case Qt::DisplayRole:
             return fieldName + arraySize + equals + fieldValue + objectClassName + objectName + objectInfo + editable + " (" + fieldType + ")";
