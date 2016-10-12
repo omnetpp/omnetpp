@@ -61,19 +61,19 @@ public class StyledTextInformationControl extends AbstractInformationControl imp
         styledText = new StyledText(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP | SWT.READ_ONLY);
         styledText.setMargins(8, 2, 8, 2);
         styledText.setFont(HTMLUtils.getInitialFont());
+        styledText.setBackground(styledText.getParent().getBackground());
+        styledText.setForeground(styledText.getParent().getForeground());
     }
 
     @Override
     public void setInformation(String information) {
         styledText.setText("");
-        styledText.setBackground(styledText.getParent().getBackground());
         HTMLUtils.htmlToStyledText(information, styledText, null);
     }
 
     @Override
     public void setInput(Object input) {
         styledText.setText("");
-        styledText.setBackground(styledText.getParent().getBackground());
         if (input instanceof String)
             HTMLUtils.htmlToStyledText((String)input, styledText, null);
         else {

@@ -153,6 +153,7 @@ public class StyledText extends Canvas {
     static final int PREVIOUS_OFFSET_TRAILING = 0;
     static final int OFFSET_LEADING = 1;
 
+    boolean colorLock; // KLUDGE: for correct tooltip background/foreground colors, see HTMLUtils
     Color selectionBackground;  // selection background color
     Color selectionForeground;  // selection foreground color
     StyledTextContent content;          // native content (default or user specified)
@@ -8207,10 +8208,19 @@ public void setAlignment(int alignment) {
     setAlignment();
     super.redraw();
 }
+
+// KLUDGE: for correct tooltip background/foreground colors, see HTMLUtils
+public void setColorLock(boolean value) {
+    colorLock = value;
+}
+
 /**
  * @see Control#setBackground(Color)
  */
 public void setBackground(Color color) {
+    // KLUDGE: for correct tooltip background/foreground colors, see HTMLUtils
+    if (colorLock)
+        return;
     checkWidget();
     background = color;
     super.setBackground(color);
@@ -8653,6 +8663,9 @@ public void setFont(Font font) {
     super.redraw();
 }
 public void setForeground(Color color) {
+    // KLUDGE: for correct tooltip background/foreground colors, see HTMLUtils
+    if (colorLock)
+        return;
     checkWidget();
     foreground = color;
     super.setForeground(getForeground());

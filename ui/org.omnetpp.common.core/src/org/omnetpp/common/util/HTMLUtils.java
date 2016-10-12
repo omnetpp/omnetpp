@@ -67,6 +67,8 @@ import org.omnetpp.common.swt.custom.StyledText;
  * @author levy
  */
 public class HTMLUtils {
+    private final static Color KLUDGE_NO_COLOR_SPECIFIED = new Color(1, 2, 3);
+
     /**
      * This font must be set on the StyledText before it is actually shown. See above.
      */
@@ -93,9 +95,17 @@ public class HTMLUtils {
         try {
             HTMLEditorKit editorKit = new HTMLEditorKit();
             HTMLDocument document = (HTMLDocument)editorKit.createDefaultDocument();
+            StyleSheet styles = document.getStyleSheet();
+            // KLUDGE: for correct tooltip background/foreground colors
+            styles.addRule("body { color: #010203; background-color: #010203; }");
+            styles.addRule("p { color: #010203; background-color: #010203; }");
+            styles.addRule("pre { color: #010203; background-color: #010203; }");
+            styles.addRule("code { color: #010203; background-color: #010203; }");
             editorKit.read(reader, document, 0);
             for (Element rootElement : document.getRootElements())
                 htmlToStyledTextRecursive(new Context(), rootElement, styledText, imageMap);
+            // KLUDGE: for correct tooltip background/foreground colors
+            styledText.setColorLock(true);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -149,6 +159,12 @@ public class HTMLUtils {
                     AttributeSet attributeSet = getMergedAttributes(element);
                     Color foregroundColor = document.getForeground(attributeSet);
                     Color backgroundColor = document.getBackground(attributeSet);
+                    // KLUDGE: for correct tooltip background/foreground colors
+                    if (foregroundColor != null && foregroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
+                        foregroundColor = null;
+                    // KLUDGE: for correct tooltip background/foreground colors
+                    if (backgroundColor != null && backgroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
+                        backgroundColor = null;
                     StyleRange styleRange = new StyleRange(charCount, length, ColorFactory.asColor(foregroundColor), ColorFactory.asColor(backgroundColor));
                     styleRange.font = getFont(document.getFont(attributeSet));
                     styleRange.underline = Boolean.TRUE.equals(attributeSet.getAttribute(StyleConstants.Underline));
@@ -187,10 +203,12 @@ public class HTMLUtils {
                 context.isPreformatted = true;
             else if (stringName.matches("body")) {
                 Color foregroundColor = document.getForeground(attributeSet);
-                if (foregroundColor != null)
+                // KLUDGE: for correct tooltip background/foreground colors
+                if (foregroundColor != null && !foregroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
                     styledText.setForeground(ColorFactory.asColor(foregroundColor));
+                // KLUDGE: for correct tooltip background/foreground colors
                 Color backgroundColor = document.getBackground(attributeSet);
-                if (backgroundColor != null)
+                if (backgroundColor != null && !backgroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
                     styledText.setBackground(ColorFactory.asColor(backgroundColor));
             }
             // handle space above
