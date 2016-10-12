@@ -860,7 +860,7 @@ public class OmnetppLaunchUtils {
 
             //FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc --Andras
             if (proc.exitValue() == 0)
-                return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simulationInfo, "Number of runs:", "\n\n"));
+                return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simulationInfo, "Number of runs:", "\nEnd.\n"));
 
         }
         catch (CoreException e) {
