@@ -84,6 +84,9 @@ int ModuleOutputContentProvider::getLineCount()
 
 QString ModuleOutputContentProvider::getLineText(int lineIndex)
 {
+    if (!isIndexValid())
+        rebuildIndex();
+
     int numDiscarded = logBuffer->getNumEntriesDiscarded();
     if (numDiscarded > 0) {
         if (lineIndex == 0)

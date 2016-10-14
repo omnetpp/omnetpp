@@ -98,6 +98,7 @@ protected:
     bool isMonospaceFont;
     int topLineIndex = 0;
     int topLineY = 0; // Y coordinate of where top edge of line topLineIndex gets painted (range: -(lineHeight-1)..0)
+    bool followContentEnd = true; // scroll down if new content lines are appended (stick to bottom), negated scroll lock
     int horizontalScrollOffset = 0; // in pixels
     int caretLineIndex = 0, caretColumn = 0;  // caretColumn may be greater than line length! ()
     int selectionAnchorLineIndex = 0, selectionAnchorColumn = 0; // selection is between anchor and caret
@@ -145,7 +146,8 @@ protected:
 
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void keyPressEvent(QKeyEvent *) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
     // Qt doesn't support triple clicks.
     // the events we receive on triple click are: single, double, single
@@ -174,7 +176,7 @@ protected:
     // If the parameter is true, the vertical scrollbar will
     // stay at its maximum if it has already been there,
     // to follow a growing text.
-    void updateScrollbars(bool allowStickingToBottom = true);
+    void updateScrollbars();
 
     // This does the actual handling of the change, when really needed (before painting).
     void handleContentChange();
@@ -243,9 +245,10 @@ public:
 
     void find(QString text, FindOptions options);
 
-    int getMaxVisibleLineWidth();
-    int getNumVisibleLines();
-    int getNumVisibleColumns();
+    int getMaxVisibleLineWidth() { return getMaxVisibleLineWidth(getNumVisibleLines()); }
+    int getMaxVisibleLineWidth(int numVisibleLines);
+    int getNumVisibleLines() { return getNumVisibleLines(viewport()->height()); }
+    int getNumVisibleLines(int height);
 
     // measured from the left edge of the viewport (includes margin, header positions, but not scrolling!)
     int getLinePartOffset(const QFontMetrics &metrics, int lineIndex, int partIndex);

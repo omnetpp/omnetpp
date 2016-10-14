@@ -235,29 +235,21 @@ void TextViewerWidget::find(QString text, FindOptions options)
     viewport()->update();
 }
 
-int TextViewerWidget::getMaxVisibleLineWidth()
+int TextViewerWidget::getMaxVisibleLineWidth(int numVisibleLines)
 {
     auto metrics = QFontMetrics(font, viewport());
-    int maxLength = 0;
-    // can't use getNumVisibleLines here, that would potentially cause an infinite loop
-    int n = (maximumViewportSize().height() + lineSpacing - 1) / lineSpacing;
-    for (int lineIndex = topLineIndex; lineIndex < content->getLineCount() && lineIndex < topLineIndex + n; ++lineIndex) {
+    int maxWidth = 0;
+    for (int lineIndex = topLineIndex; lineIndex < content->getLineCount() && lineIndex < topLineIndex + numVisibleLines; ++lineIndex) {
         auto line = content->getLineText(lineIndex);
-        maxLength = std::max(maxLength, getLineColumnOffset(metrics, lineIndex, line.length()));
+        maxWidth = std::max(maxWidth, getLineColumnOffset(metrics, lineIndex, line.length()));
     }
-    return maxLength;
+    return maxWidth + horizontalMargin; // left one is added in getLineColumnOffset, this is the right one
 }
 
-int TextViewerWidget::getNumVisibleLines()
+int TextViewerWidget::getNumVisibleLines(int height)
 {
     // Counts partially visible lines as well.
-    return (viewport()->height() + lineSpacing - 1) / lineSpacing;
-}
-
-int TextViewerWidget::getNumVisibleColumns()
-{
-    // Counts partially visible columns as well.
-    return (viewport()->width() + averageCharWidth - 1) / averageCharWidth;
+    return (height + lineSpacing - 1) / lineSpacing;
 }
 
 int TextViewerWidget::getLinePartOffset(const QFontMetrics& metrics, int lineIndex, int partIndex)
@@ -404,6 +396,8 @@ void TextViewerWidget::doLineUp(bool select)
     caretLineIndex = std::max(0, caretLineIndex-1);
     if (!select)
         clearSelection();
+    if (caretLineIndex <= topLineIndex)
+        followContentEnd = false;
     emit caretMoved(caretLineIndex, caretColumn);
 }
 
@@ -412,6 +406,8 @@ void TextViewerWidget::doLineDown(bool select)
     caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex+1);
     if (!select)
         clearSelection();
+    if (caretLineIndex == content->getLineCount() - 1)
+        followContentEnd = true;
     emit caretMoved(caretLineIndex, caretColumn);
 }
 
@@ -447,6 +443,7 @@ void TextViewerWidget::doPageUp(bool select)
     int pageLines = std::max(1, getNumVisibleLines()-1);
     caretLineIndex = std::max(0, caretLineIndex - pageLines);
     topLineIndex = clip(0, std::max(0, content->getLineCount()-getNumVisibleLines()), topLineIndex - pageLines);
+    followContentEnd = false;
     if (!select)
         clearSelection();
     emit caretMoved(caretLineIndex, caretColumn);
@@ -458,6 +455,8 @@ void TextViewerWidget::doPageDown(bool select)
     int lastLineIndex = content->getLineCount()-1;
     caretLineIndex = std::min(lastLineIndex, caretLineIndex + pageLines);
     topLineIndex = clip(0, std::max(0, content->getLineCount()-getNumVisibleLines()), topLineIndex + pageLines);
+    if (caretLineIndex == lastLineIndex)
+        followContentEnd = true;
     if (!select)
         clearSelection();
     emit caretMoved(caretLineIndex, caretColumn);
@@ -550,6 +549,7 @@ void TextViewerWidget::doContentStart(bool select)
 {
     caretLineIndex = 0;
     caretColumn = 0;
+    followContentEnd = false;
     if (!select)
         clearSelection();
     emit caretMoved(caretLineIndex, caretColumn);
@@ -559,6 +559,7 @@ void TextViewerWidget::doContentEnd(bool select)
 {
     caretLineIndex = content->getLineCount()-1;
     caretColumn = content->getLineText(caretLineIndex).length();
+    followContentEnd = true;
     if (!select)
         clearSelection();
     emit caretMoved(caretLineIndex, caretColumn);
@@ -774,6 +775,22 @@ void TextViewerWidget::keyPressEvent(QKeyEvent *event)
     viewport()->update();
 }
 
+void TextViewerWidget::wheelEvent(QWheelEvent *event)
+{
+    QAbstractScrollArea::wheelEvent(event);
+
+    // This way the single line offset provided by topLineY can be scrolled
+    // as well, even if the vertical scrollbar isn't visible (hence no scroll events...)
+    if (event->angleDelta().y() > 0) {
+        alignTopLine();
+        followContentEnd = false;
+    }
+    if (event->angleDelta().y() < 0 && content->getLineCount() >= getNumVisibleLines())
+        alignBottomLine();
+
+    viewport()->update();
+}
+
 void TextViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (clickCount > 0) {
@@ -891,13 +908,32 @@ void TextViewerWidget::stopAutoScroll()
     autoScrollTimer.stop();
 }
 
-void TextViewerWidget::updateScrollbars(bool allowStickingToBottom)
+void TextViewerWidget::updateScrollbars()
 {
     auto vsb = verticalScrollBar();
     auto hsb = horizontalScrollBar();
 
-    // for following scroll at the bottom
-    bool atBottom = vsb->value() == vsb->maximum();
+    QSize maxSize = contentsRect().size();
+
+    int l = getNumVisibleLines(maxSize.height() - hsb->height());
+    // first determine if we need each toolbar separately,
+    // assuming that both of them are visible (take up space)
+    bool vertNeeded = content->getLineCount() >= l;
+    bool horizNeeded = getMaxVisibleLineWidth(l) >= (maxSize.width() - vsb->width());
+
+    setVerticalScrollBarPolicy(vertNeeded ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(horizNeeded ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
+    if (!vertNeeded) {
+        topLineIndex = 0;
+        topLineY = 0;
+    }
+    if (!horizNeeded)
+        horizontalScrollOffset = 0;
+
+    hsb->setMinimum(0);
+    hsb->setMaximum(std::max(0, getMaxVisibleLineWidth() - viewport()->width() + horizontalMargin));
+    hsb->setPageStep(viewport()->width());
+    hsb->setSingleStep(4);
 
     // configure
     int visibleLines = getNumVisibleLines();
@@ -906,26 +942,16 @@ void TextViewerWidget::updateScrollbars(bool allowStickingToBottom)
     vsb->setSingleStep(1);
     vsb->setPageStep(visibleLines);
 
-    int viewportWidth = viewport()->width();
-    hsb->setMinimum(0);
-    hsb->setMaximum(std::max(0, getMaxVisibleLineWidth() - viewportWidth + horizontalMargin));
-    hsb->setPageStep(viewportWidth);
-    hsb->setSingleStep(4);
-
     // adjust
-    topLineIndex = clip(0, std::max(0, content->getLineCount() - getNumVisibleLines()), topLineIndex);
+    topLineIndex = clip(0, std::max(0, content->getLineCount() - visibleLines), topLineIndex);
     verticalScrollBar()->setValue(topLineIndex);
     horizontalScrollBar()->setValue(horizontalScrollOffset);
 
-    if (vsb->maximum() > vsb->minimum()) {  // we can scroll at all
-        // following output growth
-        if (atBottom && allowStickingToBottom) {
-            vsb->setValue(vsb->maximum());
-            alignBottomLine();
-        }
+    // following output growth
+    if (followContentEnd && content->getLineCount() >= visibleLines) {
+        vsb->setValue(vsb->maximum());
+        alignBottomLine();
     }
-    else  // content fits on the viewport entirely
-        alignTopLine();
 }
 
 void TextViewerWidget::handleContentChange()
@@ -969,6 +995,7 @@ void TextViewerWidget::revealCaret()
         topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
     topLineIndex = clip(0, std::max(0, content->getLineCount()-getNumVisibleLines()), topLineIndex);
 
+
     // if caret is in the top or bottom line, view that line fully
     if (caretLineIndex == topLineIndex)
         alignTopLine();
@@ -981,8 +1008,7 @@ void TextViewerWidget::revealCaret()
     //        if (caretLineIndex >= topLineIndex + getNumVisibleLines())
     //            topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
 
-    // we want to break free from the bottom
-    updateScrollbars(false);
+    updateScrollbars();
 }
 
 void TextViewerWidget::alignTopLine()
@@ -1089,8 +1115,13 @@ void TextViewerWidget::scrolledVertically(int value)
     // aesthetics
     if (diff > 0)
         alignBottomLine();
-    else if (diff < 0)
+    else if (diff < 0) {
         alignTopLine();
+        followContentEnd = false;
+    }
+
+    if (value == verticalScrollBar()->maximum())
+        followContentEnd = true;
 
     topLineIndex = value;
 
