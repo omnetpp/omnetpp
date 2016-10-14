@@ -67,7 +67,14 @@ import org.omnetpp.common.swt.custom.StyledText;
  * @author levy
  */
 public class HTMLUtils {
-    private final static Color KLUDGE_NO_COLOR_SPECIFIED = new Color(1, 2, 3);
+    /**
+     * WORKAROUND: document.getForeground()/getBackground() methods return "black" 
+     * when no color was specified, instead of returning null. As a workaround, 
+     * we detect the absence of explicit colors by adding a low-priority rule 
+     * to the stylesheet with this FALLBACK_COLOR -- when the methods return 
+     * that value, we take it as null.
+     */
+    private final static Color FALLBACK_COLOR = new Color(1, 2, 3);
 
     /**
      * This font must be set on the StyledText before it is actually shown. See above.
@@ -96,11 +103,9 @@ public class HTMLUtils {
             HTMLEditorKit editorKit = new HTMLEditorKit();
             HTMLDocument document = (HTMLDocument)editorKit.createDefaultDocument();
             StyleSheet styles = document.getStyleSheet();
-            // KLUDGE: for correct tooltip background/foreground colors
-            styles.addRule("body { color: #010203; background-color: #010203; }");
-            styles.addRule("p { color: #010203; background-color: #010203; }");
-            styles.addRule("pre { color: #010203; background-color: #010203; }");
-            styles.addRule("code { color: #010203; background-color: #010203; }");
+            // KLUDGE: add fallback rule to stylesheet, see FALLBACK_COLOR's comment
+            String fallbackColor = ColorFactory.asString(FALLBACK_COLOR);
+            styles.addRule("body, p, h1, h2, h3, h4, h5, h6, pre, code, ol, ul, dl, li, td, th, blockquote { color: " + fallbackColor + "; background-color: " + fallbackColor + "; }");
             editorKit.read(reader, document, 0);
             for (Element rootElement : document.getRootElements())
                 htmlToStyledTextRecursive(new Context(), rootElement, styledText, imageMap);
@@ -159,11 +164,10 @@ public class HTMLUtils {
                     AttributeSet attributeSet = getMergedAttributes(element);
                     Color foregroundColor = document.getForeground(attributeSet);
                     Color backgroundColor = document.getBackground(attributeSet);
-                    // KLUDGE: for correct tooltip background/foreground colors
-                    if (foregroundColor != null && foregroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
+                    // KLUDGE: If we get back FALLBACK_COLOR, no color was specified in the stylesheet or the document
+                    if (foregroundColor != null && foregroundColor.equals(FALLBACK_COLOR))
                         foregroundColor = null;
-                    // KLUDGE: for correct tooltip background/foreground colors
-                    if (backgroundColor != null && backgroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
+                    if (backgroundColor != null && backgroundColor.equals(FALLBACK_COLOR))
                         backgroundColor = null;
                     StyleRange styleRange = new StyleRange(charCount, length, ColorFactory.asColor(foregroundColor), ColorFactory.asColor(backgroundColor));
                     styleRange.font = getFont(document.getFont(attributeSet));
@@ -203,12 +207,11 @@ public class HTMLUtils {
                 context.isPreformatted = true;
             else if (stringName.matches("body")) {
                 Color foregroundColor = document.getForeground(attributeSet);
-                // KLUDGE: for correct tooltip background/foreground colors
-                if (foregroundColor != null && !foregroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
+                // KLUDGE: If we get back FALLBACK_COLOR, no color was specified in the stylesheet or the document
+                if (foregroundColor != null && !foregroundColor.equals(FALLBACK_COLOR))
                     styledText.setForeground(ColorFactory.asColor(foregroundColor));
-                // KLUDGE: for correct tooltip background/foreground colors
                 Color backgroundColor = document.getBackground(attributeSet);
-                if (backgroundColor != null && !backgroundColor.equals(KLUDGE_NO_COLOR_SPECIFIED))
+                if (backgroundColor != null && !backgroundColor.equals(FALLBACK_COLOR))
                     styledText.setBackground(ColorFactory.asColor(backgroundColor));
             }
             // handle space above

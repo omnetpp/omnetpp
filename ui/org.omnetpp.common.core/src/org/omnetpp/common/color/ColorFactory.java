@@ -619,11 +619,16 @@ public class ColorFactory {
         }
     }
 
+    public static String asString(Color color) {
+        return asString(color.getRGB());
+    }
+
+    public static String asString(java.awt.Color color) {
+        return asString(new RGB(color.getRed(), color.getGreen(), color.getBlue()));
+    }
+
     /**
      * Returns the color name, or #RRGGBB if no constant was found for the color.
-     *
-     * @param value RGB object to be converted (cannot be null)
-     * @return String representation of the color
      */
     public static String asString(RGB value) {
         // check for color constants first
