@@ -26,7 +26,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.batik.util;resolution:=optional,
  org.eclipse.gmf.runtime.draw2d.ui;resolution:=optional,
  org.eclipse.gmf.runtime.draw2d.ui.render;resolution:=optional,
- org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional
+ org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional,
+ org.eclipse.ui.forms
 Export-Package: au.com.bytecode.opencsv,
  au.com.bytecode.opencsv.bean,
  org.apache.commons.codec,
