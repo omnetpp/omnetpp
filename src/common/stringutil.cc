@@ -378,7 +378,9 @@ std::string opp_breaklines(const char *text, int lineLength)
 std::string opp_indentlines(const char *text, const char *indent)
 {
     std::string tmp = std::string(indent) + opp_replacesubstring(text, "\n", (std::string("\n")+indent).c_str(), true);
-    return tmp.substr(0, tmp.size() - strlen(indent)); // remove indent after last line
+    if (*(text + strlen(text) - 1) == '\n')
+        tmp = tmp.substr(0, tmp.size() - strlen(indent)); // remove indent after last line
+    return tmp;
 }
 
 bool opp_stringbeginswith(const char *s, const char *prefix)
