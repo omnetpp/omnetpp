@@ -9,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.ViewForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -16,6 +18,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
@@ -58,7 +61,8 @@ public class SWTFactory {
     }
 
     /**
-     * Creates a check box button using the parents' font
+     * Creates a check box button using the parents' font.
+     *
      * @param parent the parent to add the button to
      * @param label the label for the button
      * @param image the image for the button
@@ -81,6 +85,37 @@ public class SWTFactory {
         gd.horizontalSpan = hspan;
         button.setLayoutData(gd);
         setButtonDimensionHint(button);
+        return button;
+    }
+
+    /**
+     * Creates a normal checkbox but configures it so that user clicks
+     * take it through the unchecked -> unchecked -> grayed cycle.
+     *
+     * @param parent the parent to add the button to
+     * @param label the label for the button
+     * @param image the image for the button
+     * @param checked the initial checked state of the button
+     * @param grayed the initial grayed state of the button
+     * @param hspan the horizontal span to take up in the parent composite
+     * @return a new check button
+     */
+    public static Button createTristateCheckButton(Composite parent, String label, Image image, boolean checked, boolean grayed, int hspan) {
+        Button button = createCheckButton(parent, label, image, checked, hspan);
+        button.setGrayed(grayed);
+        button.setGrayed(true);
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (!button.getGrayed() && !button.getSelection()) {
+                    button.setSelection(true);
+                    button.setGrayed(true);
+                }
+                else if (button.getGrayed() && button.getSelection()) {
+                    button.setGrayed(false);
+                }
+            }
+        });
         return button;
     }
 
@@ -658,4 +693,23 @@ public class SWTFactory {
         c.select(0);
         return c;
     }
+
+    /**
+     * Sets horizontalIndent on a control.
+     */
+    public static <T extends Control> T setIndent(T c, int indent) {
+        ((GridData)c.getLayoutData()).horizontalIndent = indent;
+        return c;
+    }
+
+    /**
+     * Sets the margin of a composite. Call with zero for composites
+     * created solely for grouping.
+     */
+    public static Composite setMargin(Composite c, int margin) {
+        GridLayout l = (GridLayout)c.getLayout();
+        l.marginHeight = l.marginWidth = margin;
+        return c;
+    }
+
 }
