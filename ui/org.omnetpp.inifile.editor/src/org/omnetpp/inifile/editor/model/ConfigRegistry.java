@@ -57,9 +57,9 @@ public class ConfigRegistry {
     /** Inifile value keyword*/
     public static final String ASK = "ask";
 
-    private static Map<String, ConfigOption> options = new HashMap<String, ConfigOption>();
-    private static Map<String, ConfigOption> perObjectOptions = new HashMap<String, ConfigOption>();
-    private static Map<String, String> configVars = new LinkedHashMap<String, String>(); // preserve order
+    private static Map<String, ConfigOption> options = new HashMap<>();
+    private static Map<String, ConfigOption> perObjectOptions = new HashMap<>();
+    private static Map<String, String> configVars = new LinkedHashMap<>(); // preserve order
 
     private static ConfigOption addGlobalOption(String name, DataType type, String defaultValue, String description) {
         ConfigOption e = new ConfigOption(name, true, type, null, defaultValue, description);
@@ -217,17 +217,22 @@ public class ConfigRegistry {
         "followed by a single format character).  For example `%l` stands for log " +
         "level, and `%J` for source component. See the manual for the list of " +
         "available format characters.");
-    public static final ConfigOption CFGID_CMDENV_OUTPUT_FILE = addGlobalOption(
-        "cmdenv-output-file", CFG_FILENAME, null,
-        "When a filename is specified, Cmdenv redirects standard output into the " +
-        "given file. This is especially useful with parallel simulation. See the " +
-        "`fname-append-host` option as well.");
+    public static final ConfigOption CFGID_CMDENV_OUTPUT_FILE = addPerRunOption(
+        "cmdenv-output-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.out",
+        "When `cmdenv-record-output=true`: file name to redirect standard output to. " +
+        "See also `fname-append-host`.");
     public static final ConfigOption CFGID_CMDENV_PERFORMANCE_DISPLAY = addPerRunOption(
         "cmdenv-performance-display", CFG_BOOL, "true",
         "When `cmdenv-express-mode=true`: print detailed performance information. " +
         "Turning it on results in a 3-line entry printed on each update, containing " +
         "ev/sec, simsec/sec, ev/simsec, number of messages created/still " +
         "present/currently scheduled in FES.");
+    public static final ConfigOption CFGID_CMDENV_REDIRECT_OUTPUT = addPerRunOption(
+        "cmdenv-redirect-output", CFG_BOOL, "false",
+        "Causes Cmdenv to redirect standard output of simulation runs to a file or " +
+        "separate files per run. This option can be useful with running simulation " +
+        "campaigns (e.g. using opp_runall), and also with parallel simulation. See " +
+        "also: `cmdenv-output-file`, `fname-append-host`.");
     public static final ConfigOption CFGID_CMDENV_RUNS_TO_EXECUTE = addGlobalOption(
         "cmdenv-runs-to-execute", CFG_STRING, null,
         "Specifies which runs to execute from the selected configuration (see " +
@@ -292,7 +297,7 @@ public class ConfigRegistry {
         "Descriptive name for the given simulation configuration. Descriptions get " +
         "displayed in the run selection dialog.");
     public static final ConfigOption CFGID_EVENTLOG_FILE = addPerRunOption(
-        "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog",
+        "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.elog",
         "Name of the eventlog file to generate.");
     public static final ConfigOption CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addPerRunOption(
         "eventlog-message-detail-pattern", CFG_CUSTOM, null,
@@ -407,6 +412,15 @@ public class ConfigRegistry {
         "image-path", CFG_PATH, null,
         "A semicolon-separated list of directories that contain module icons and " +
         "other resources. This list with be concatenated with `OMNETPP_IMAGE_PATH`.");
+    public static final ConfigOption CFGID_ITERATION_NESTING_ORDER = addPerRunOption(
+        "iteration-nesting-order", CFG_STRING, null,
+        "Specifies the loop nesting order for iteration variables (`${}` syntax). " +
+        "The value is a comma-separated list of iteration variables; the list may " +
+        "also contain at most one asterisk. Variables that are not explicitly listed " +
+        "will be inserted at the position of the asterisk, or appended to the list " +
+        "if there is no asterisk. The first variable will become the outermost loop, " +
+        "and the last one the innermost loop. Example: " +
+        "`repetition,numHosts,*,iaTime`.");
     public static final ConfigOption CFGID_LOAD_LIBS = addGlobalOption(
         "load-libs", CFG_FILENAMES, null,
         "A space-separated list of dynamic libraries to be loaded on startup. The " +
@@ -444,7 +458,7 @@ public class ConfigRegistry {
         "num-rngs", CFG_INT, "1",
         "The number of random number generators.");
     public static final ConfigOption CFGID_OUTPUT_SCALAR_FILE = addPerRunOption(
-        "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sca",
+        "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sca",
         "Name for the output scalar file.");
     public static final ConfigOption CFGID_OUTPUT_SCALAR_FILE_APPEND = addPerRunOption(
         "output-scalar-file-append", CFG_BOOL, "false",
@@ -455,7 +469,7 @@ public class ConfigRegistry {
         "The number of significant digits for recording data into the output scalar " +
         "file. The maximum value is ~15 (IEEE double precision).");
     public static final ConfigOption CFGID_OUTPUT_VECTOR_FILE = addPerRunOption(
-        "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec",
+        "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.vec",
         "Name for the output vector file.");
     public static final ConfigOption CFGID_OUTPUT_VECTOR_PRECISION = addPerRunOption(
         "output-vector-precision", CFG_INT, "14",
@@ -561,7 +575,7 @@ public class ConfigRegistry {
         "Qtenv should set up automatically on startup. The default is to ask the " +
         "user.");
     public static final ConfigOption CFGID_QTENV_EXTRA_STACK = addGlobalOptionU(
-        "qtenv-extra-stack", "B", "48KiB",
+        "qtenv-extra-stack", "B", "80KiB",
         "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Qtenv.");
     public static final ConfigOption CFGID_REALTIMESCHEDULER_SCALING = addGlobalOption(
@@ -675,13 +689,13 @@ public class ConfigRegistry {
         "picosecond resolution, which offers a range of ~110 days.");
     public static final ConfigOption CFGID_SIMTIME_SCALE = addGlobalOption(
         "simtime-scale", CFG_INT, "-12",
-        "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus " +
-        "the resolution of time for the 64-bit fixed-point simulation time " +
+        "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and " +
+        "thus the resolution of time for the 64-bit fixed-point simulation time " +
         "representation. Accepted values are -18..0; for example, -6 selects " +
         "microsecond resolution. -12 means picosecond resolution, with a maximum " +
         "simtime of ~110 days.");
     public static final ConfigOption CFGID_SNAPSHOT_FILE = addPerRunOption(
-        "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sna",
+        "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sna",
         "Name of the snapshot file.");
     public static final ConfigOption CFGID_SNAPSHOTMANAGER_CLASS = addGlobalOption(
         "snapshotmanager-class", CFG_STRING, "omnetpp::envir::cFileSnapshotManager",
@@ -755,8 +769,8 @@ public class ConfigRegistry {
         "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, null,
         "Allows one to restrict recording of an output vector to one or more " +
         "simulation time intervals. Usage: " +
-        "<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>. " +
-        "The syntax for <intervals> is: `[<from>]..[<to>],...` That is, both start " +
+        "`<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>`. " +
+        "The syntax for `<intervals>` is: `[<from>]..[<to>],...` That is, both start " +
         "and end of an interval are optional, and intervals are separated by " +
         "comma.\n" +
         "Example: `**.roundTripTime:vector.vector-recording-intervals=..100, " +
@@ -791,7 +805,7 @@ public class ConfigRegistry {
     public static final String CFGVAR_REPETITION = addConfigVariable("repetition", "The iteration number in `0..N-1`, where `N` is the value of the `repeat` configuration option");
     public static final String CFGVAR_SEEDSET = addConfigVariable("seedset", "Value of the `seed-set` configuration option");
     public static final String CFGVAR_ITERATIONVARS = addConfigVariable("iterationvars", "Concatenation of all user-defined iteration variables in `name=value` form");
-    public static final String CFGVAR_ITERATIONVARS2 = addConfigVariable("iterationvars2", "Concatenation of all user-defined iteration variables in `name=value` form, plus `${repetition}`");
+    public static final String CFGVAR_ITERATIONVARSF = addConfigVariable("iterationvarsf", "Like ${iterationvars}, but sanitized for use as part of file names");
 
     static {
         EXTENDS = CFGID_EXTENDS.getName();
@@ -825,7 +839,7 @@ public class ConfigRegistry {
     public static final Map<String,String> OBSOLETE_OPTIONS;  // (key, error message) pairs
 
     static {
-        HashMap<String,String> map = new HashMap<String,String>();
+        HashMap<String,String> map = new HashMap<>();
         map.put("type-name", "Configuration option \"type-name\" has been renamed to \"typename\", please update the ini file");
         map.put("cmdenv-module-messages", "Obsolete configuration option, use **.cmdenv-log-level instead");
         map.put("cmdenv-message-trace", "Obsolete configuration option");

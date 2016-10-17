@@ -47,8 +47,8 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_DEBUGGING = "Debugging";
     public static final String CAT_EVENTLOG = "Event Log";
     public static final String CAT_CMDENV = "Cmdenv";
-    public static final String CAT_TKENV = "Tkenv";
     public static final String CAT_QTENV = "Qtenv";
+    public static final String CAT_TKENV = "Tkenv";
     public static final String CAT_EXTENSIONS = "Extensions";
     public static final String CAT_PARSIM = "Parallel Simulation";
 
@@ -63,8 +63,8 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_DEBUGGING,
                 CAT_EVENTLOG,
                 CAT_CMDENV,
-                CAT_TKENV,
                 CAT_QTENV,
+                CAT_TKENV,
                 CAT_EXTENSIONS,
                 CAT_PARSIM,
                 CAT_ADVANCED,
@@ -159,6 +159,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Scenario Generation");
             addTextFieldEditor(group, CFGID_REPEAT, "Repeat count", c(null, "Repeat Count"));
             addTextFieldEditor(group, CFGID_CONSTRAINT, "Constraint expression", c(null, "Expression"));
+            addTextFieldEditor(group, CFGID_ITERATION_NESTING_ORDER, "Loop nesting order", c(null, "Nesting Order"));
             addSpacer(form);
         }
         else if (category.equals(CAT_RESULTRECORDING)) {
@@ -249,7 +250,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Other");
             addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");  //TODO when opened (table), it should contain a 3rd, combobox-based column (true/false) instead of a checkbox
             addCheckboxFieldEditor(group, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
-            addTextFieldEditor(group, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
+            addTextFieldEditor(group, CFGID_CMDENV_REDIRECT_OUTPUT, "Redirect stdout to per-run file");
+            addTextFieldEditor(group, CFGID_CMDENV_OUTPUT_FILE, "Output file name");
             addTextFieldEditor(group, CFGID_CMDENV_EXTRA_STACK, "Extra coroutine stack");
         }
         else if (category.equals(CAT_TKENV)) {
