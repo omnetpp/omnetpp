@@ -111,26 +111,26 @@ public class DataTable extends Table implements IDataControl {
     }
 
     private static final Column
-        COL_DIRECTORY = new Column("Folder", null, 60, true),
-        COL_FILE = new Column("File name", FILE,100, true),
-        COL_CONFIG = new Column("Config name", CONFIGNAME, 80, true),
-        COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true),
-        COL_RUN_ID = new Column("Run id", RUN, 100, true),
-        COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 80, false),
-        COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 120, false),
-        COL_REPLICATION = new Column("Replication", REPLICATION, 60, false),
+        COL_DIRECTORY = new Column("Folder", null, 60, false),
+        COL_FILE = new Column("File name", FILE, 120, false),
+        COL_CONFIG = new Column("Config name", CONFIGNAME, 120, false),
+        COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 60, false),
+        COL_RUN_ID = new Column("Run id", RUN, 100, false),
+        COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 120, true),
+        COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 160, true),
+        COL_REPLICATION = new Column("Replication", REPLICATION, 60, true),
         COL_MODULE = new Column("Module", MODULE, 160, true),
-        COL_DATA = new Column("Name", NAME, 100, true),
-        COL_VALUE = new Column("Value", null, 80, true),
-        COL_COUNT = new Column("Count", null, 50, true),
-        COL_MEAN = new Column("Mean", null, 60, true),
-        COL_STDDEV = new Column("StdDev", null, 60, true),
-        COL_VARIANCE = new Column("Variance", null, 60, true),
-        COL_MIN = new Column("Min", null, 60, false),
-        COL_MAX = new Column("Max", null, 60, false),
+        COL_DATA = new Column("Name", NAME, 120, true),
+        COL_VALUE = new Column("Value", null, 120, true),
+        COL_COUNT = new Column("Count", null, 80, true),
+        COL_MEAN = new Column("Mean", null, 120, true),
+        COL_STDDEV = new Column("StdDev", null, 120, true),
+        COL_VARIANCE = new Column("Variance", null, 120, true),
+        COL_MIN = new Column("Min", null, 120, false),
+        COL_MAX = new Column("Max", null, 120, false),
         COL_VECTOR_ID = new Column("Vector id", null, 40, false),
-        COL_MIN_TIME = new Column("Min time", null, 60, false),
-        COL_MAX_TIME = new Column("Max time", null, 60, false);
+        COL_MIN_TIME = new Column("Min time", null, 120, false),
+        COL_MAX_TIME = new Column("Max time", null, 120, false);
 
     private static final Column[] allScalarColumns = new Column[] {
         COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
@@ -318,7 +318,7 @@ public class DataTable extends Table implements IDataControl {
     }
 
     protected void initColumns() {
-        visibleColumns = new ArrayList<Column>();
+        visibleColumns = new ArrayList<>();
         loadState();
     }
 
@@ -628,7 +628,7 @@ public class DataTable extends Table implements IDataControl {
 
     protected void fireContentChangedEvent() {
         if (listeners != null) {
-            for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
+            for (Object listener : new ArrayList<>(Arrays.asList(this.listeners.getListeners())))
                 ((IDataListener)listener).contentChanged(this);
         }
     }
@@ -750,7 +750,7 @@ public class DataTable extends Table implements IDataControl {
     }
 
     public void setSelectedIDs(IDList selectedIDList) {
-        ArrayList<Integer> indicesList = new ArrayList<Integer>();
+        ArrayList<Integer> indicesList = new ArrayList<>();
         for (int i = 0; i < selectedIDList.size(); i++) {
             int index = idList.indexOf(selectedIDList.get(i));
             if (index != -1)
