@@ -54,6 +54,7 @@ public class ComputedScalarManager implements INotifyChangedListener, IResultFil
         this.resultFileManager = context.getResultFileManager();
         this.changeNotifier = context.getChangeNotifier();
         this.analysisFile = analysisFile;
+        Assert.isNotNull(analysisFile);
 
         resultFileManager.addChangeListener(this);
         changeNotifier.addListener(this);

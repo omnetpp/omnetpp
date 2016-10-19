@@ -119,6 +119,7 @@ public class ProblemMarkerSynchronizer {
      * untouched) unless you register them with register().
      */
     public void register(IResource file) {
+        Assert.isNotNull(file);
         if (!markerTable.containsKey(file))
             markerTable.put(file, new ArrayList<MarkerData>());
     }
