@@ -100,7 +100,7 @@ void cFileOutputScalarManager::endRun()
     closeFile();
 }
 
-void cFileOutputScalarManager::init()
+void cFileOutputScalarManager::initialize()
 {
     if (!f) {
         openFile();
@@ -157,16 +157,16 @@ void cFileOutputScalarManager::recordNumericIterationVariable(const char *name, 
 
 void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    if (!run.initialized)
-        init();
-    if (!f)
-        return;
-
     if (!name || !name[0])
         name = "(unnamed)";
 
     bool enabled = getEnvir()->getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled) {
+        if (!run.initialized)
+            initialize();
+        if (!f)
+            return;
+
         CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
         if (attributes)
             for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
@@ -177,11 +177,6 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
 void cFileOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    if (!run.initialized)
-        init();
-    if (!f)
-        return;
-
     if (!name)
         name = statistic->getFullName();
     if (!name || !name[0])
@@ -191,6 +186,11 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     std::string objectFullPath = component->getFullPath() + "." + name;
     bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
+        return;
+
+    if (!run.initialized)
+        initialize();
+    if (!f)
         return;
 
     // file format:

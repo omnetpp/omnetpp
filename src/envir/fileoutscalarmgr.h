@@ -43,7 +43,7 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
   protected:
     void openFile();
     void closeFile();
-    void init();
+    void initialize();
     void writeStatisticField(const char *name, long value);
     void writeStatisticField(const char *name, double value);
     void recordNumericIterationVariable(const char *name, const char *value); // i.e. write *if* numeric
