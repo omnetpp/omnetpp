@@ -58,8 +58,8 @@ class SIM_API cNullEnvir : public cEnvir
 
   protected:
     void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
-    virtual void putsmsg(const char *msg) override {::printf("\n<!> %s\n\n", msg);}
-    virtual bool askyesno(const char *msg) override  {unsupported(); return false;}
+    virtual void alert(const char *msg) override {::printf("\n<!> %s\n\n", msg);}
+    virtual bool askYesNo(const char *prompt) override  {unsupported(); return false;}
 
   public:
     // constructor, destructor

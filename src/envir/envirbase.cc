@@ -231,7 +231,7 @@ EnvirOptions::EnvirOptions()
     cpuTimeLimit = 0;
 }
 
-EnvirBase::EnvirBase() : out(std::cout.rdbuf()), err(std::cerr.rdbuf())
+EnvirBase::EnvirBase() : out(std::cout.rdbuf())
 {
     opt = nullptr;
     args = nullptr;
@@ -311,7 +311,7 @@ bool EnvirBase::simulationRequired()
         if (!category)
             printHelp();
         else
-            EnvirUtils::dumpComponentList(category);
+            EnvirUtils::dumpComponentList(out, category);
         return false;
     }
 
@@ -344,7 +344,7 @@ bool EnvirBase::simulationRequired()
 
     // legacy options that map to -q
     if (args->optionGiven('x')) {
-        err << "<!> Warning: deprecated option -x (will be removed in future version), use -q instead" << endl;
+        warn() << "Deprecated option -x (will be removed in future version), use -q instead" << endl;
         configName = args->optionValue('x');
         if (args->optionGiven('G'))
             query = "rundetails";
@@ -354,7 +354,7 @@ bool EnvirBase::simulationRequired()
             query = "numruns";
     }
     else if (args->optionGiven('X')) {
-        err << "<!> Warning: deprecated option -X (will be removed in a future version), use -q instead" << endl;
+        warn() << "Deprecated option -X (will be removed in a future version), use -q instead" << endl;
         configName = args->optionValue('X');
         query = "sectioninheritance";
     }
@@ -362,7 +362,7 @@ bool EnvirBase::simulationRequired()
     // process -q
     if (query) {
         if (!configName) {
-            err << "<!> Error: -c option must be present when -q is specified" << endl;
+            err() << "-c option must be present when -q is specified" << endl;
             exitCode = 1;
             return false;
         }
@@ -450,7 +450,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
             }
         }
         else {
-            err << "<!> Error: unrecognized -q argument '" << q << "'" << endl;
+            err() << "Unrecognized -q argument '" << q << "'" << endl;
             exitCode = 1;
         }
     }
@@ -466,7 +466,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
         }
     }
     else {
-        err << "<!> Error: unrecognized -q argument '" << q << "'" << endl;
+        err() << "Unrecognized -q argument '" << q << "'" << endl;
         exitCode = 1;
     }
 }
@@ -733,7 +733,7 @@ void EnvirBase::setupNetwork(cModuleType *network)
     eventlogManager->flush();
 
     if (opt->debugStatisticsRecording)
-        EnvirUtils::dumpResultRecorders(getSimulation()->getSystemModule());
+        EnvirUtils::dumpResultRecorders(out, getSimulation()->getSystemModule());
 }
 
 void EnvirBase::startRun()
@@ -1200,7 +1200,7 @@ void EnvirBase::processFileName(std::string& fname)
 
 void EnvirBase::startOutputRedirection(const char *fileName)
 {
-    Assert(out.rdbuf() == std::cout.rdbuf()); // not redirected
+    Assert(!isOutputRedirected());
 
     mkPath(directoryOf(fileName).c_str());
 
@@ -1209,18 +1209,45 @@ void EnvirBase::startOutputRedirection(const char *fileName)
     if (!fbuf->is_open())
        throw cRuntimeError("Cannot open output redirection file `%s'", fileName);
     out.rdbuf(fbuf);
-    err.rdbuf(fbuf);
 }
 
 void EnvirBase::stopOutputRedirection()
 {
-    if (out.rdbuf() != std::cout.rdbuf()) {
+    if (isOutputRedirected()) {
         std::streambuf *fbuf = out.rdbuf();
         fbuf->pubsync();
         out.rdbuf(std::cout.rdbuf());
-        err.rdbuf(std::cerr.rdbuf());
         delete fbuf;
     }
+}
+
+bool EnvirBase::isOutputRedirected()
+{
+    return out.rdbuf() != std::cout.rdbuf();
+}
+
+std::ostream& EnvirBase::err()
+{
+    bool useStdout = true; //TODO config
+    std::ostream& err = useStdout || isOutputRedirected() ? out : std::cerr;
+    err << endl << "<!> Error: ";
+    return err;
+}
+
+std::ostream& EnvirBase::errWithoutPrefix()
+{
+    bool useStdout = true; //TODO config
+    std::ostream& err = useStdout || isOutputRedirected() ? out : std::cerr;
+    err << endl << "<!> ";
+    return err;
+}
+
+std::ostream& EnvirBase::warn()
+{
+    bool useStdout = true; //TODO config
+    std::ostream& err = useStdout || isOutputRedirected() ? out : std::cerr;
+    err << endl << "<!> Warning: ";
+    return err;
 }
 
 void EnvirBase::readOptions()
@@ -1580,12 +1607,12 @@ std::string EnvirBase::makeDebuggerCommand()
 {
     std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND);
     if (cmd == "") {
-        err << "<!> Cannot start debugger: no debugger configured" << endl;
+        err() << "Cannot start debugger: no debugger configured" << endl;
         return "";
     }
     size_t pos = cmd.find('%');
     if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
-        err << "<!> Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign." << endl;
+        err() << "Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign." << endl;
         return "";
     }
     pid_t pid = getpid();
@@ -1618,13 +1645,21 @@ void EnvirBase::crashHandler(int)
     cSimulation::getActiveEnvir()->attachDebugger();
 }
 
+std::string EnvirBase::getFormattedMessage(std::exception& ex)
+{
+    if (cException *e = dynamic_cast<cException *>(&ex))
+        return e->getFormattedMessage();
+    else
+        return std::string(ex.what()) + ".";
+}
+
 void EnvirBase::displayException(std::exception& ex)
 {
-    cException *e = dynamic_cast<cException *>(&ex);
-    if (!e)
-        printfmsg("Error: %s.", ex.what());
+    std::string msg = getFormattedMessage(ex);
+    if (dynamic_cast<cTerminationException*>(&ex) != nullptr || msg.substr(0,5) == "Error")
+        errWithoutPrefix() << msg << endl;
     else
-        printfmsg("%s", e->getFormattedMessage().c_str());
+        err() << msg << endl;
 }
 
 bool EnvirBase::idle()

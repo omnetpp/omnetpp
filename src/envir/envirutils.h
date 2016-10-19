@@ -35,11 +35,11 @@ class ENVIR_API EnvirUtils
 {
     private:
         static std::string getConfigOptionType(cConfigOption *option);
-        static void dumpResultRecorderChain(cResultListener *listener, int depth);
+        static void dumpResultRecorderChain(std::ostream& out, cResultListener *listener, int depth);
     public:
-        static void dumpComponentList(const char *category);
-        static void dumpResultRecorders(cComponent *component);
-        static void dumpComponentResultRecorders(cComponent *component);
+        static void dumpComponentList(std::ostream& out, const char *category);
+        static void dumpResultRecorders(std::ostream& out, cComponent *component);
+        static void dumpComponentResultRecorders(std::ostream& out, cComponent *component);
 };
 
 }  // namespace envir

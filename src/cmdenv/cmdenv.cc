@@ -497,7 +497,7 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::displayException(std::exception& ex)
 {
-    EnvirBase::displayException(ex);  // will end up in putsmsg()
+    EnvirBase::displayException(ex);
 }
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
@@ -567,14 +567,14 @@ void Cmdenv::askParameter(cPar *par, bool unassigned)
             success = true;
         }
         catch (std::exception& e) {
-            printfmsg("%s -- please try again.", e.what());
+            out << "<!> " << e.what() << " -- please try again" << endl;
         }
     }
 }
 
-void Cmdenv::putsmsg(const char *s)
+void Cmdenv::alert(const char *msg)
 {
-    out << "\n<!> " << s << endl << endl;
+    out << "\n<!> " << msg << endl << endl;
 }
 
 void Cmdenv::log(cLogEntry *entry)
@@ -608,7 +608,7 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
     }
 }
 
-bool Cmdenv::askyesno(const char *question)
+bool Cmdenv::askYesNo(const char *question)
 {
     if (!opt->interactive)
         throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
@@ -626,7 +626,7 @@ bool Cmdenv::askyesno(const char *question)
             else if (buffer == "n" || buffer == "N")
                 return false;
             else
-                putsmsg("Please type 'y' or 'n'!\n");
+                out << "Please type 'y' or 'n'!" << endl;
         }
     }
 }

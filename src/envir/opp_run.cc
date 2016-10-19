@@ -28,9 +28,9 @@
  * simulation directly if the simulation was compiled in release-mode, because
  * 'opp_run' is linked with debug-mode OMNeT++ libraries. Loading a release-mode
  * simulation using a debug-mode 'opp_run' would load both debug and release
- * simulation kenels resulting in duplicate registration lists and other data
+ * simulation kernels resulting in duplicate registration lists and other data
  * structures. The simulation kernel detects and reports double loading by
- * setting the __OPPSIM_LOADED__ envoronment variable on the first run and
+ * setting the __OPPSIM_LOADED__ environment variable on the first run and
  * testing it on subsequent library loads.
  *
  * To avoid this situation, we can use a separate 'opp_run_release' starter
@@ -73,6 +73,7 @@
 #include <string>
 #include <cstring>
 #include <cerrno>
+#include <iostream>
 #include "omnetpp/platdep/platdefs.h"
 
 #ifdef NDEBUG
@@ -89,6 +90,22 @@ extern "C" int evMain(int argc, char *argv[]);
 }  // namespace omnetpp
 
 std::string lastLoadLibError;  // contains the error message after calling oppLoadLibrary()
+
+using std::endl;
+
+static std::ostream& err()
+{
+    std::ostream& err = std::cerr;
+    err << "\n<!> Error: ";
+    return err;
+}
+
+static std::ostream& warn()
+{
+    std::ostream& err = std::cerr;
+    err << "\n<!> Warning: ";
+    return err;
+}
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
@@ -174,14 +191,15 @@ static void *getSymbol(libhandle_t handle, const char *symbol)
     HMODULE handles[1024];
     DWORD bytesNeeded = 0;
     if (!EnumProcessModules(GetCurrentProcess(), handles, sizeof(handles), &bytesNeeded)) {
-        fprintf(stderr, "<!> Error: opp_run: Could not enumerate currently loaded modules.\n");
+        err() << "opp_run: Could not enumerate currently loaded modules" << endl;
         exit(1);
     }
     int numModules = bytesNeeded / sizeof(HMODULE);
 
     if (numModules > 1024) {
-        fprintf(stderr, "<!> Warning: opp_run: Too many modules loaded, some of them will be ignored. "
-                        "opp_run may not detect correctly whether it requires release or debug libraries.\n\n");  // double "\n" to separate message from subsequent OMNeT++ startup banner
+        warn() << "opp_run: Too many modules loaded, some of them will be ignored. "
+               << "opp_run may not detect correctly whether it requires release or debug libraries."
+               << endl << endl;  // double endl to separate message from subsequent OMNeT++ startup banner
         numModules = 1024;
     }
 
@@ -197,7 +215,7 @@ static int oppExec(const char *cmd, char *const argv[])
 {
     int result = _spawnvp(_P_WAIT, cmd, argv);
     if (result == -1)
-        fprintf(stderr, "<!> Error: opp_run: Cannot exec opp_run_release: %s\n", strerror(errno));
+        err() << "opp_run: Cannot exec opp_run_release: " << strerror(errno) << endl;
 
     return result;
 }
@@ -227,7 +245,7 @@ static void *getSymbol(libhandle_t handle, const char *symbol)
 static int oppExec(const char *cmd, char *const argv[])
 {
     execvp(cmd, argv);
-    fprintf(stderr, "<!> Error: opp_run: Cannot exec opp_run_release: %s\n", strerror(errno));
+    err() << "opp_run: Cannot exec opp_run_release: " << strerror(errno) << endl;
     return 1;
 }
 
@@ -260,19 +278,18 @@ bool needsDebugSimkernel(int argc, char *argv[])
             else if (i+1 < argc)  // and -l libname format
                 libname = argv[i+1];
             else {
-                fprintf(stderr, "<!> Error: opp_run: Missing library name at the end of command line after the -l command line option.\n");
+                err() << "opp_run: Missing library name at the end of command line after the -l command line option" << endl;
                 exit(1);
             }
 
             libhandle_t handle = oppLoadLibrary(libname);
             if (!handle && lastLoadLibError != "")
-                fprintf(stderr, "<!> Warning: opp_run: Cannot check library %s: %s\n\n", libname, lastLoadLibError.c_str());  // double "\n" to separate message from subsequent OMNeT++ startup banner
+                warn() << "opp_run: Cannot check library " << libname << ": " << lastLoadLibError << endl << endl;  // double endl to separate message from subsequent OMNeT++ startup banner
 
             // Detect whether oppsim is release. If it was not loaded correctly, assume it is debug.
             if (handle && getSymbol(handle, "__is_release_oppsim__")) {
                 // Release kernel. oppsim must be reloaded later by opp_run_release
                 putenv((char *)"__OPPSIM_LOADED__=no");
-                fflush(stderr);
                 return false;
             }
         }

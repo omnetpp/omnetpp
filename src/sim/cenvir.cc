@@ -45,25 +45,13 @@ cConfigurationEx *cEnvir::getConfigEx()
     return cfg;
 }
 
-//
-// Temp buffer for vararg functions below.
-// Note: using a static buffer reduces stack usage of activity() modules;
-// it also makes the following functions non-reentrant, but we don't need
-// them to be reentrant anyway.
-//
 #define BUFLEN    1024
-static char staticbuf[BUFLEN];
 
 void cEnvir::printfmsg(const char *fmt, ...)
 {
+    static char staticbuf[BUFLEN];
     VSNPRINTF(staticbuf, BUFLEN, fmt);
-    putsmsg(staticbuf);
-}
-
-bool cEnvir::askYesNo(const char *fmt, ...)
-{
-    VSNPRINTF(staticbuf, BUFLEN, fmt);
-    return askyesno(staticbuf);
+    alert(staticbuf);
 }
 
 }  // namespace omnetpp

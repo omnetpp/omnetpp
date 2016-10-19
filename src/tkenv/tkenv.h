@@ -55,6 +55,13 @@ enum StripNamespace
     STRIPNAMESPACE_ALL
 };
 
+enum DialogKind
+{
+    INFO,
+    WARNING,
+    ERROR
+};
+
 struct TkenvOptions : public omnetpp::envir::EnvirOptions
 {
     TkenvOptions();
@@ -201,9 +208,9 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       virtual void bubble(cComponent *component, const char *text) override;
 
       virtual void log(cLogEntry *entry) override;
-      virtual void putsmsg(const char *s) override;
-      virtual std::string gets(const char *promt, const char *defaultReply) override;
-      virtual bool askyesno(const char *question) override;
+      virtual void alert(const char *msg) override;
+      virtual std::string gets(const char *prompt, const char *defaultReply) override;
+      virtual bool askYesNo(const char *question) override;
 
       virtual bool idle() override;
 
@@ -285,7 +292,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       void updateSimtimeDisplay();
       void updateStatusDisplay();
 
-      void confirm(const char *msg); // messagebox with OK button
+      void confirm(DialogKind kind, const char *msg);
       bool inputDialog(const char *title, const char *prompt,
                        const char *checkboxLabel, const char *defaultValue,
                        std::string& outResult, bool& inoutCheckState);

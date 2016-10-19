@@ -67,15 +67,15 @@ std::string EnvirUtils::getConfigOptionType(cConfigOption *option)
 
 }
 
-void EnvirUtils::dumpComponentList(const char *category)
+void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
 {
     cConfigurationEx *config = getEnvir()->getConfigEx();
     bool wantAll = !strcmp(category, "all");
     bool processed = false;
-    std::cout << "\n";
+    out << "\n";
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails")) {
         processed = true;
-        std::cout << "Supported configuration options:\n";
+        out << "Supported configuration options:\n";
         bool printDescriptions = strcmp(category, "configdetails") == 0;
 
         cRegistrationList *table = configOptions.getInstance();
@@ -84,75 +84,75 @@ void EnvirUtils::dumpComponentList(const char *category)
             cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(obj);
             if (!printDescriptions)
-                std::cout << "  ";
+                out << "  ";
             if (obj->isPerObject())
-                std::cout << "**.";
-            std::cout << obj->getName() << "=";
-            std::cout << "<" << cConfigOption::getTypeName(obj->getType()) << ">";
+                out << "**.";
+            out << obj->getName() << "=";
+            out << "<" << cConfigOption::getTypeName(obj->getType()) << ">";
             if (obj->getUnit())
-                std::cout << ", unit=\"" << obj->getUnit() << "\"";
+                out << ", unit=\"" << obj->getUnit() << "\"";
             if (obj->getDefaultValue())
-                std::cout << ", default:" << obj->getDefaultValue() << "";
+                out << ", default:" << obj->getDefaultValue() << "";
             if (!printDescriptions)
-                std::cout << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting"; // TODO getOptionKindName()
+                out << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting"; // TODO getOptionKindName()
 
-            std::cout << "\n";
+            out << "\n";
             if (printDescriptions)
-                std::cout << "    " << getConfigOptionType(obj) << ".\n";
+                out << "    " << getConfigOptionType(obj) << ".\n";
             if (printDescriptions && !opp_isempty(obj->getDescription()))
-                std::cout << opp_indentlines(opp_breaklines(obj->getDescription(), 75).c_str(), "    ") << "\n";
+                out << opp_indentlines(opp_breaklines(obj->getDescription(), 75).c_str(), "    ") << "\n";
             if (printDescriptions)
-                std::cout << "\n";
+                out << "\n";
         }
-        std::cout << "\n";
+        out << "\n";
 
-        std::cout << "Predefined variables that can be used in config values:\n";
+        out << "Predefined variables that can be used in config values:\n";
         std::vector<const char *> v = config->getPredefinedVariableNames();
         for (int i = 0; i < (int)v.size(); i++) {
             if (!printDescriptions)
-                std::cout << "  ";
-            std::cout << "${" << v[i] << "}\n";
+                out << "  ";
+            out << "${" << v[i] << "}\n";
             const char *desc = config->getVariableDescription(v[i]);
             if (printDescriptions && !opp_isempty(desc))
-                std::cout << opp_indentlines(opp_breaklines(desc, 75).c_str(), "    ") << "\n";
+                out << opp_indentlines(opp_breaklines(desc, 75).c_str(), "    ") << "\n";
         }
-        std::cout << "\n";
+        out << "\n";
     }
     if (!strcmp(category, "latexconfig")) {  // internal undocumented option, for maintenance purposes
         // generate LaTeX code for the appendix in the User Manual
         processed = true;
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
-        std::cout << "\\begin{description}\n";
+        out << "\\begin{description}\n";
         for (int i = 0; i < table->size(); i++) {
             cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(obj);
-            std::cout << "\\item[" << (obj->isPerObject() ? "**." : "") << opp_latexQuote(obj->getName()) << "] = ";
-            std::cout << "\\textit{<" << cConfigOption::getTypeName(obj->getType()) << ">}";
+            out << "\\item[" << (obj->isPerObject() ? "**." : "") << opp_latexQuote(obj->getName()) << "] = ";
+            out << "\\textit{<" << cConfigOption::getTypeName(obj->getType()) << ">}";
             if (obj->getUnit())
-                std::cout << ", unit=\\ttt{" << obj->getUnit() << "}";
+                out << ", unit=\\ttt{" << obj->getUnit() << "}";
             if (obj->getDefaultValue())
-                std::cout << ", default: \\ttt{" << opp_latexInsertBreaks(opp_latexQuote(obj->getDefaultValue()).c_str()) << "}";
-            std::cout << "\\\\\n";
-            std::cout << "    \\textit{" << getConfigOptionType(obj) << ".}\\\\\n";
-            std::cout << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(obj->getDescription()).c_str()).c_str(), 75).c_str(), "    ") << "\n";
+                out << ", default: \\ttt{" << opp_latexInsertBreaks(opp_latexQuote(obj->getDefaultValue()).c_str()) << "}";
+            out << "\\\\\n";
+            out << "    \\textit{" << getConfigOptionType(obj) << ".}\\\\\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(obj->getDescription()).c_str()).c_str(), 75).c_str(), "    ") << "\n";
         }
-        std::cout << "\\end{description}\n\n";
+        out << "\\end{description}\n\n";
 
-        std::cout << "Predefined variables that can be used in config values:\n\n";
+        out << "Predefined variables that can be used in config values:\n\n";
         std::vector<const char *> v = config->getPredefinedVariableNames();
-        std::cout << "\\begin{description}\n";
+        out << "\\begin{description}\n";
         for (int i = 0; i < (int)v.size(); i++) {
-            std::cout << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
+            out << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
             const char *desc = config->getVariableDescription(v[i]);
-            std::cout << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc).c_str()).c_str(), 75).c_str(), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc).c_str()).c_str(), 75).c_str(), "    ") << "\n";
         }
-        std::cout << "\\end{description}\n\n";
+        out << "\\end{description}\n\n";
     }
     if (!strcmp(category, "jconfig")) {  // internal undocumented option, for maintenance purposes
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
-        std::cout << "Supported configuration options (as Java code):\n";
+        out << "Supported configuration options (as Java code):\n";
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
@@ -196,20 +196,20 @@ void EnvirUtils::dumpComponentList(const char *category)
             }
             #undef CASE
 
-            std::cout << "    public static final ConfigOption " << id << " = ";
-            std::cout << method << (key->getUnit() ? "U" : "") << "(\n";
-            std::cout << "        \"" << key->getName() << "\", ";
+            out << "    public static final ConfigOption " << id << " = ";
+            out << method << (key->getUnit() ? "U" : "") << "(\n";
+            out << "        \"" << key->getName() << "\", ";
             if (key->isPerObject())
-                std::cout << kindstring << ", ";
+                out << kindstring << ", ";
             if (!key->getUnit())
-                std::cout << typestring << ", ";
+                out << typestring << ", ";
             else
-                std::cout << "\"" << key->getUnit() << "\", ";
+                out << "\"" << key->getUnit() << "\", ";
             if (!key->getDefaultValue())
-                std::cout << "null";
+                out << "null";
             else
-                std::cout << "\"" << opp_replacesubstring(key->getDefaultValue(), "\"", "\\\"", true) << "\"";
-            std::cout << ",\n";
+                out << "\"" << opp_replacesubstring(key->getDefaultValue(), "\"", "\\\"", true) << "\"";
+            out << ",\n";
 
             std::string desc = key->getDescription();
             desc = opp_replacesubstring(desc.c_str(), "\n", "\\n\n", true);  // keep explicit line breaks
@@ -219,47 +219,47 @@ void EnvirUtils::dumpComponentList(const char *category)
             desc = opp_replacesubstring(desc.c_str(), "\\n \"", "\\n\"", true);  // remove bogus space after explicit line breaks
             desc = "\"" + desc + "\"";
 
-            std::cout << opp_indentlines(desc.c_str(), "        ") << ");\n";
+            out << opp_indentlines(desc.c_str(), "        ") << ");\n";
         }
-        std::cout << "\n";
+        out << "\n";
 
         std::vector<const char *> vars = config->getPredefinedVariableNames();
         for (int i = 0; i < (int)vars.size(); i++) {
             opp_string id = vars[i];
             opp_strupr(id.buffer());
             const char *desc = config->getVariableDescription(vars[i]);
-            std::cout << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
-            std::cout << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
+            out << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
+            out << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
         }
-        std::cout << "\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "classes")) {
         processed = true;
-        std::cout << "Registered C++ classes, including modules, channels and messages:\n";
+        out << "Registered C++ classes, including modules, channels and messages:\n";
         cRegistrationList *table = classes.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  class " << obj->getFullName() << "\n";
+            out << "  class " << obj->getFullName() << "\n";
         }
-        std::cout << "Note: if your class is not listed, it needs to be registered in the\n";
-        std::cout << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
-        std::cout << "\n";
+        out << "Note: if your class is not listed, it needs to be registered in the\n";
+        out << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "classdesc")) {
         processed = true;
-        std::cout << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
+        out << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
         cRegistrationList *table = classDescriptors.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  class " << obj->getFullName() << "\n";
+            out << "  class " << obj->getFullName() << "\n";
         }
-        std::cout << "\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "nedfunctions")) {
         processed = true;
-        std::cout << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
+        out << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
         cRegistrationList *table = nedFunctions.getInstance();
         table->sort();
         std::set<std::string> categories;
@@ -270,7 +270,7 @@ void EnvirUtils::dumpComponentList(const char *category)
         }
         for (std::set<std::string>::iterator ci = categories.begin(); ci != categories.end(); ++ci) {
             std::string category = (*ci);
-            std::cout << "\n Category \"" << category << "\":\n";
+            out << "\n Category \"" << category << "\":\n";
             for (int i = 0; i < table->size(); i++) {
                 cObject *obj = table->get(i);
                 cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
@@ -278,84 +278,84 @@ void EnvirUtils::dumpComponentList(const char *category)
                 const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "???";
                 const char *desc = nf ? nf->getDescription() : mf ? mf->getDescription() : "???";
                 if (fcat == category) {
-                    std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+                    out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
                     if (desc)
-                        std::cout << "    " << desc << "\n";
+                        out << "    " << desc << "\n";
                 }
             }
         }
-        std::cout << "\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "neddecls")) {
         processed = true;
-        std::cout << "Built-in NED declarations:\n\n";
-        std::cout << "---START---\n";
-        std::cout << NEDParser::getBuiltInDeclarations();
-        std::cout << "---END---\n";
-        std::cout << "\n";
+        out << "Built-in NED declarations:\n\n";
+        out << "---START---\n";
+        out << NEDParser::getBuiltInDeclarations();
+        out << "---END---\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "units")) {
         processed = true;
-        std::cout << "Recognized physical units (note: other units can be used as well, only\n";
-        std::cout << "no automatic conversion will be available for them):\n";
+        out << "Recognized physical units (note: other units can be used as well, only\n";
+        out << "no automatic conversion will be available for them):\n";
         std::vector<const char *> units = UnitConversion::getAllUnits();
         for (int i = 0; i < (int)units.size(); i++) {
             const char *u = units[i];
             const char *bu = UnitConversion::getBaseUnit(u);
-            std::cout << "  " << u << "\t" << UnitConversion::getLongName(u);
+            out << "  " << u << "\t" << UnitConversion::getLongName(u);
             if (omnetpp::opp_strcmp(u, bu) != 0)
-                std::cout << "\t" << UnitConversion::convertUnit(1, u, bu) << bu;
-            std::cout << "\n";
+                out << "\t" << UnitConversion::convertUnit(1, u, bu) << bu;
+            out << "\n";
         }
-        std::cout << "\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "enums")) {
         processed = true;
-        std::cout << "Enums defined in .msg files\n";
+        out << "Enums defined in .msg files\n";
         cRegistrationList *table = enums.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+            out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
-        std::cout << "\n";
+        out << "\n";
     }
     if (wantAll || !strcmp(category, "userinterfaces")) {
         processed = true;
-        std::cout << "User interfaces loaded:\n";
+        out << "User interfaces loaded:\n";
         cRegistrationList *table = omnetapps.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+            out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
     }
 
     if (wantAll || !strcmp(category, "resultfilters")) {
         processed = true;
-        std::cout << "Result filters that can be used in @statistic properties:\n";
+        out << "Result filters that can be used in @statistic properties:\n";
         cRegistrationList *table = resultFilters.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+            out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
     }
 
     if (wantAll || !strcmp(category, "resultrecorders")) {
         processed = true;
-        std::cout << "Result recorders that can be used in @statistic properties:\n";
+        out << "Result recorders that can be used in @statistic properties:\n";
         cRegistrationList *table = resultRecorders.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
-            std::cout << "  " << obj->getFullName() << " : " << obj->str() << "\n";
+            out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
     }
 
     if (wantAll || !strcmp(category, "figures")) {
         processed = true;
-        std::cout << "Figure types and their accepted @figure property keys:\n";
+        out << "Figure types and their accepted @figure property keys:\n";
         cRegistrationList *table = classes.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
@@ -368,31 +368,31 @@ void EnvirUtils::dumpComponentList(const char *category)
                     opp_string type = className[0] == 'c' ? className+1 : className;
                     opp_strlwr(type.buffer());
                     type.buffer()[type.size()-6] = '\0';
-                    std::cout << "  " << type.c_str() << " (" << className << "): " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
+                    out << "  " << type.c_str() << " (" << className << "): " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
                 }
                 delete obj;
             }
         }
-        std::cout << "\n";
+        out << "\n";
     }
 
     if (!processed)
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
 
-void EnvirUtils::dumpResultRecorders(cComponent *component)
+void EnvirUtils::dumpResultRecorders(std::ostream& out, cComponent *component)
 {
-    dumpComponentResultRecorders(component);
+    dumpComponentResultRecorders(out, component);
     if (component->isModule()) {
         cModule *module = (cModule *)component;
         for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
-            dumpResultRecorders(*it);
+            dumpResultRecorders(out, *it);
         for (cModule::ChannelIterator it(module); !it.end(); ++it)
-            dumpResultRecorders(*it);
+            dumpResultRecorders(out, *it);
     }
 }
 
-void EnvirUtils::dumpComponentResultRecorders(cComponent *component)
+void EnvirUtils::dumpComponentResultRecorders(std::ostream& out, cComponent *component)
 {
     bool componentPathPrinted = false;
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();
@@ -403,38 +403,38 @@ void EnvirUtils::dumpComponentResultRecorders(cComponent *component)
         for (unsigned int j = 0; j < listeners.size(); j++) {
             if (dynamic_cast<cResultListener *>(listeners[j])) {
                 if (!componentPathPrinted) {
-                    std::cout << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
+                    out << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
                     componentPathPrinted = true;
                 }
                 if (!signalNamePrinted) {
-                    std::cout << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
+                    out << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
                     signalNamePrinted = true;
                 }
-                dumpResultRecorderChain((cResultListener *)listeners[j], 0);
+                dumpResultRecorderChain(out, (cResultListener *)listeners[j], 0);
             }
         }
     }
 }
 
-void EnvirUtils::dumpResultRecorderChain(cResultListener *listener, int depth)
+void EnvirUtils::dumpResultRecorderChain(std::ostream& out, cResultListener *listener, int depth)
 {
     std::string indent(4*depth+8, ' ');
-    std::cout << indent;
+    out << indent;
     if (ExpressionRecorder *expressionRecorder = dynamic_cast<ExpressionRecorder *>(listener))
-        std::cout << expressionRecorder->getExpression().str() << " (" << listener->getClassName() << ")";
+        out << expressionRecorder->getExpression().str() << " (" << listener->getClassName() << ")";
     else if (ExpressionFilter *expressionFilter = dynamic_cast<ExpressionFilter *>(listener))
-        std::cout << expressionFilter->getExpression().str() << " (" << listener->getClassName() << ")";
+        out << expressionFilter->getExpression().str() << " (" << listener->getClassName() << ")";
     else
-        std::cout << listener->getClassName();
+        out << listener->getClassName();
 
     if (cResultRecorder *resultRecorder = dynamic_cast<cResultRecorder *>(listener))
-        std::cout << " ==> " << resultRecorder->getResultName();
-    std::cout << "\n";
+        out << " ==> " << resultRecorder->getResultName();
+    out << "\n";
 
     if (cResultFilter *resultFilter = dynamic_cast<cResultFilter *>(listener)) {
         std::vector<cResultListener *> delegates = resultFilter->getDelegates();
         for (unsigned int i = 0; i < delegates.size(); i++)
-            dumpResultRecorderChain(delegates[i], depth+1);
+            dumpResultRecorderChain(out, delegates[i], depth+1);
     }
 }
 

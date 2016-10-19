@@ -23,7 +23,7 @@ namespace omnetpp {
 namespace envir {
 extern "C" ENVIR_API int evMain(int argc, char *argv[]);
 } // namespace envir
-}  // namespace omnetpp
+} // namespace omnetpp
 
 int main(int argc, char *argv[])
 {

@@ -63,8 +63,8 @@ class CMDENV_API Cmdenv : public EnvirBase
 
    protected:
      virtual void log(cLogEntry *entry) override;
-     virtual void putsmsg(const char *s) override;
-     virtual bool askyesno(const char *question) override;
+     virtual void alert(const char *msg) override;
+     virtual bool askYesNo(const char *question) override;
      virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
 
@@ -109,7 +109,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      static void signalHandler(int signum);
 };
 
-} // namespace cmdenv
+}  // namespace cmdenv
 }  // namespace omnetpp
 
 #endif

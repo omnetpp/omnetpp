@@ -671,11 +671,11 @@ void Qtenv::doRun()
 
 void Qtenv::printUISpecificHelp()
 {
-    std::cout << "\n";
-    std::cout << "Qtenv-specific information:\n";
-    std::cout << "    Qtenv allows the user to select a simulation run interactively.\n";
-    std::cout << "    The -c and -r options only serve as hints or default values for\n";
-    std::cout << "    the GUI.\n";
+    out << "\n";
+    out << "Qtenv-specific information:\n";
+    out << "    Qtenv allows the user to select a simulation run interactively.\n";
+    out << "    The -c and -r options only serve as hints or default values for\n";
+    out << "    the GUI.\n";
 }
 
 void Qtenv::rebuildSim()
@@ -685,7 +685,7 @@ void Qtenv::rebuildSim()
     else if (getSimulation()->getNetworkType() != nullptr)
         newNetwork(getSimulation()->getNetworkType()->getName());
     else
-        confirm("Choose File|New Network or File|New Run.");
+        confirm(INFO, "Choose File|New Network or File|New Run.");
 }
 
 void Qtenv::doOneStep()
@@ -1007,7 +1007,7 @@ bool Qtenv::doRunSimulationExpress()
 
 void Qtenv::startAll()
 {
-    confirm("Not implemented.");
+    confirm(INFO, "Not implemented.");
 }
 
 void Qtenv::finishSimulation()
@@ -1119,7 +1119,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         readPerRunOptions();
 
         if (opt->networkName.empty()) {
-            confirm("No network specified in the configuration.");
+            confirm(ERROR, "No network specified in the configuration.");
             return;
         }
 
@@ -1175,7 +1175,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
 
     InspectorFactory *factory = findInspectorFactoryFor(obj, type);
     if (!factory) {
-        confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
+        confirm(ERROR, opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
         return nullptr;
     }
 
@@ -1190,7 +1190,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
     inspector = factory->createInspector(mainWindow, true);
     if (!inspector) {
         // message: object has no such inspector
-        confirm(opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
+        confirm(ERROR, opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
         return nullptr;
     }
 
@@ -1382,8 +1382,8 @@ void Qtenv::displayException(std::exception& ex)
         logBuffer.addInfo(txt.c_str());
     }
 
-    // dialog via our printfmsg()
-    EnvirBase::displayException(ex);
+    // pop up dialog
+    confirm(ERROR, getFormattedMessage(ex).c_str());
 }
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
@@ -1521,7 +1521,7 @@ void Qtenv::objectDeleted(cObject *object)
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
-            confirm("Message to run until has just been deleted.");
+            confirm(INFO, "Message to run until has just been deleted.");
     }
 
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
@@ -1574,7 +1574,7 @@ void Qtenv::messageCancelled(cMessage *msg)
 {
     if (msg == runUntil.msg && runUntil.stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
-            confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
+            confirm(INFO, opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }
@@ -1945,17 +1945,22 @@ void Qtenv::bubble(cComponent *component, const char *text)
     }
 }
 
-void Qtenv::confirm(const char *msg)
+void Qtenv::confirm(DialogKind kind, const char *msg)
 {
-    if (mainWindow)
-        QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok);
-    else
-        ::printf("\n<!> %s\n\n", msg);  // fallback in case Qt didn't fire up correctly
+    if (!mainWindow)
+        out << "\n<!> " << msg << endl << endl;  // fallback in case Qt didn't fire up correctly
+    else {
+        switch (kind) {
+        case INFO: QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;
+        case WARNING: QMessageBox::warning(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;
+        case ERROR: QMessageBox::critical(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;
+        }
+    }
 }
 
-void Qtenv::putsmsg(const char *msg)
+void Qtenv::alert(const char *msg)
 {
-    confirm(msg);
+    confirm(WARNING, msg);
 }
 
 void Qtenv::log(cLogEntry *entry)
@@ -2034,7 +2039,7 @@ std::string Qtenv::gets(const char *promt, const char *defaultReply)
     return result;
 }
 
-bool Qtenv::askyesno(const char *question)
+bool Qtenv::askYesNo(const char *question)
 {
     cModule *mod = getSimulation()->getContextModule();
     std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();

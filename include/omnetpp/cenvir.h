@@ -87,13 +87,6 @@ class SIM_API cEnvir
     bool debugOnErrors;
     bool attachDebuggerOnErrors;
 
-  protected:
-    // internal: pop up a dialog with the given message; called from printfmsg()
-    virtual void putsmsg(const char *msg) = 0;
-
-    // internal: ask a yes/no question, throws exception if cancelled; askYesNo() delegates here
-    virtual bool askyesno(const char *msg) = 0;
-
   public:
     /** @name Constructor, destructor. */
     //@{
@@ -487,27 +480,33 @@ class SIM_API cEnvir
     virtual void bubble(cComponent *component, const char *text) = 0;
 
     /**
-     * Displays the given text in a dialog box. This function should not be
-     * used by simple modules. Delegates to putsmsg().
-     */
-    virtual void printfmsg(const char *fmt,...);
-
-    /**
-     * Writes the provided log statement to the standard output.
+     * Log a line described by the entry.
      */
     virtual void log(cLogEntry *entry) = 0;
 
     /**
-     * Interactively prompts the user to enter a string.
+     * Displays the given alert text in a conspicuous way, e.g. in a dialog box.
+     * This function should be used sparingly from models, if ever.
      */
-    virtual std::string gets(const char *prompt, const char *defaultreply=nullptr) = 0;
+    virtual void alert(const char *msg) = 0;
 
     /**
-     * Asks the user a yes/no question. The question text is expected
-     * in printf() format (format string + arguments). The return value
-     * is true for "yes", and false for "no".
+     * A printf-like frontend for alert().
      */
-    virtual bool askYesNo(const char *fmt,...);
+    virtual void printfmsg(const char *fmt,...);
+
+    /**
+     * Interactively prompts the user to enter a string. This function should
+     * be used sparingly from models, if ever.
+     */
+    virtual std::string gets(const char *prompt, const char *defaultReply=nullptr) = 0;
+
+    /**
+     * Asks the user a yes/no question with the given prompt. The return value
+     * is true for "yes", and false for "no". This function should be used
+     * sparingly from models, if ever.
+     */
+    virtual bool askYesNo(const char *prompt) = 0;
 
     /**
      * Returns the size of the image with the given name (e.g. "block/switch_l")

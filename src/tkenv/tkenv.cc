@@ -297,11 +297,11 @@ void Tkenv::doRun()
 
 void Tkenv::printUISpecificHelp()
 {
-    std::cout << "\n";
-    std::cout << "Tkenv-specific information:\n";
-    std::cout << "    Tkenv allows the user to select a simulation run interactively.\n";
-    std::cout << "    The -c and -r options only serve as hints or default values for\n";
-    std::cout << "    the GUI.\n";
+    out << "\n";
+    out << "Tkenv-specific information:\n";
+    out << "    Tkenv allows the user to select a simulation run interactively.\n";
+    out << "    The -c and -r options only serve as hints or default values for\n";
+    out << "    the GUI.\n";
 }
 
 void Tkenv::rebuildSim()
@@ -311,7 +311,7 @@ void Tkenv::rebuildSim()
     else if (getSimulation()->getNetworkType() != nullptr)
         newNetwork(getSimulation()->getNetworkType()->getName());
     else
-        confirm("Choose File|New Network or File|New Run.");
+        confirm(INFO, "Choose File|New Network or File|New Run.");
 }
 
 void Tkenv::doOneStep()
@@ -622,7 +622,7 @@ bool Tkenv::doRunSimulationExpress()
 
 void Tkenv::startAll()
 {
-    confirm("Not implemented.");
+    confirm(INFO, "Not implemented.");
 }
 
 void Tkenv::finishSimulation()
@@ -732,7 +732,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         readPerRunOptions();
 
         if (opt->networkName.empty()) {
-            confirm("No network specified in the configuration.");
+            confirm(ERROR, "No network specified in the configuration.");
             return;
         }
 
@@ -780,7 +780,7 @@ Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
 
     InspectorFactory *factory = findInspectorFactoryFor(obj, type);
     if (!factory) {
-        confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
+        confirm(ERROR, opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
         return nullptr;
     }
 
@@ -794,8 +794,7 @@ Inspector *Tkenv::inspect(cObject *obj, int type, bool ignoreEmbedded, const cha
     // create inspector
     inspector = factory->createInspector();
     if (!inspector) {
-        // message: object has no such inspector
-        confirm(opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
+        confirm(ERROR, opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
         return nullptr;
     }
 
@@ -1000,8 +999,8 @@ void Tkenv::displayException(std::exception& ex)
         logBuffer.addInfo(txt.c_str());
     }
 
-    // dialog via our printfmsg()
-    EnvirBase::displayException(ex);
+    // pop up dialog
+    confirm(ERROR, getFormattedMessage(ex).c_str());
 }
 
 void Tkenv::componentInitBegin(cComponent *component, int stage)
@@ -1158,7 +1157,7 @@ void Tkenv::objectDeleted(cObject *object)
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
-            confirm("Message to run until has just been deleted.");
+            confirm(INFO, "Message to run until has just been deleted.");
     }
 
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
@@ -1213,7 +1212,7 @@ void Tkenv::messageCancelled(cMessage *msg)
 {
     if (msg == runUntil.msg && opt->stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
-            confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
+            confirm(INFO, opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }
@@ -1710,17 +1709,19 @@ void Tkenv::bubble(cComponent *component, const char *text)
     }
 }
 
-void Tkenv::confirm(const char *msg)
+void Tkenv::confirm(DialogKind kind, const char *msg)
 {
     if (!interp)
-        ::printf("\n<!> %s\n\n", msg);  // fallback in case Tkenv didn't fire up correctly
-    else
-        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ", TclQuotedString(msg).get(), " info ok", TCL_NULL));
+        out << "<!> " << msg << endl;  // fallback in case Tkenv didn't fire up correctly
+    else {
+        const char *icon = kind==INFO ? "info" : kind==WARNING ? "warning" : "error";
+        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ", TclQuotedString(msg).get(), " ", icon, " ok", TCL_NULL));
+    }
 }
 
-void Tkenv::putsmsg(const char *msg)
+void Tkenv::alert(const char *msg)
 {
-    confirm(msg);
+    confirm(WARNING, msg);
 }
 
 void Tkenv::log(cLogEntry *entry)
@@ -1736,8 +1737,8 @@ void Tkenv::log(cLogEntry *entry)
 
     if (!interp) {
         // fallback in case Tkenv didn't fire up correctly
-        ::fputs(prefix.c_str(), stdout);
-        (void)::fwrite(s, 1, n, stdout);
+        out << prefix;
+        out.write(s, n);
         return;
     }
 
@@ -1796,7 +1797,7 @@ std::string Tkenv::gets(const char *promt, const char *defaultReply)
     return result;
 }
 
-bool Tkenv::askyesno(const char *question)
+bool Tkenv::askYesNo(const char *question)
 {
     // should return -1 when CANCEL is pressed
     CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ", TclQuotedString(question).get(), " question yesno", TCL_NULL));

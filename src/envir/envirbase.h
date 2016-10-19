@@ -117,7 +117,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     EnvirOptions *opt;
 
     std::ostream out;
-    std::ostream err;
 
 #ifdef WITH_PARSIM
     cParsimCommunications *parsimComm;
@@ -157,8 +156,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     simtime_t simulatedTime;  // sim. time after finishing simulation
 
   protected:
-    // leave to subclasses: virtual void putsmsg(const char *msg);
-    // leave to subclasses: virtual bool askyesno(const char *msg);
+    virtual std::ostream& err();
+    virtual std::ostream& errWithoutPrefix();
+    virtual std::ostream& warn();
     virtual std::string makeDebuggerCommand();
     static void crashHandler(int signum);
     virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter);
@@ -284,6 +284,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     virtual void startOutputRedirection(const char *fileName);
     virtual void stopOutputRedirection();
+    virtual bool isOutputRedirected();
 
     virtual EnvirOptions *createOptions() {return new EnvirOptions();}
     virtual void readOptions();
@@ -298,6 +299,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void askParameter(cPar *par, bool unassigned) = 0;
 
     virtual void displayException(std::exception& e);
+    virtual std::string getFormattedMessage(std::exception& ex);
 
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();

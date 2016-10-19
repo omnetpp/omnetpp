@@ -85,6 +85,13 @@ static void verifyIntTypes()
 #undef LL
 }
 
+static std::ostream& err()
+{
+    std::ostream& err = std::cerr; //TODO or std::cout
+    err << "\n<!> Error during startup: ";
+    return err;
+}
+
 int setupUserInterface(int argc, char *argv[])
 {
     //
@@ -224,7 +231,7 @@ int setupUserInterface(int argc, char *argv[])
         app = appReg->createOne();
     }
     catch (std::exception& e) {
-        std::cerr << "\n<!> Error during startup: " << e.what() << "." << endl;
+        err() << e.what() << "." << endl; //TODO delete "."
         if (app) {
             delete app;
             app = nullptr;
@@ -249,7 +256,7 @@ int setupUserInterface(int argc, char *argv[])
         }
     }
     catch (std::exception& e) {
-        std::cerr << "\n<!> " << e.what() << "." << endl;
+        err() << e.what() << "." << endl; //TODO delete "."
         exitCode = 1;
     }
 
