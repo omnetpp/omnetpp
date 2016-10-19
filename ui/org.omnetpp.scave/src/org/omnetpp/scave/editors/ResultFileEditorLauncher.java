@@ -85,23 +85,37 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
         if (resultFiles.length > 0)
         {
             IFile resultFile = resultFiles[0];
-            IPath baseName = resultFile.getFullPath().removeFileExtension();
+            String filenameBase = extractBaseName(resultFile.getName());
 
-            IContainer container = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent();
-            IPath analysisFileName = new Path(suffixPattern.matcher(baseName.lastSegment()).replaceFirst("")).addFileExtension("anf");
-            IFile analysisFile = container.getFile(analysisFileName);
+            IContainer anfContainer = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent();
+            IFile analysisFile = anfContainer.getFile(new Path(filenameBase + ".anf"));
 
             if (analysisFile.getLocation().toFile().exists()) {
                 return analysisFile; // return existing
             }
             else {
-                String fileName = suffixPattern.matcher(baseName.toString()).replaceFirst("-*");  // convert numeric suffices to *
-                openNewAnalysisWizard(analysisFile, new String[] {fileName+".vec", fileName+".sca"});
+                String basePath = resultFile.getParent().getFullPath().append(filenameBase).toString();
+                String vecFilePattern = basePath + "-*.vec";
+                String scaFilePattern = basePath + "-*.sca";
+                openNewAnalysisWizard(analysisFile, new String[] {vecFilePattern, scaFilePattern});
                 return null; // wizard opens the editor, too, so we don't need to
             }
         }
         else
             return null;
+    }
+
+    /**
+     * Expects a file name like "PureAlohaExperiment-numHosts=10,mean=5.2-#38.sca", and
+     * returns "PureAlohaExperiment" from it.
+     *
+     * Note: config names that contain hyphen ("Pure-Aloha-Experiment") should not be split!
+     */
+    private String extractBaseName(String fileName) {
+        fileName = fileName.replaceFirst("\\.[^.]+$", "");  // remove file extension
+        fileName = fileName.replaceFirst("-#\\d+$", ""); // remove trailing repetition ("-#0")
+        fileName = fileName.replaceFirst("-[^-=]+=.*$", ""); // remove potential iteration variables ("-foo=3,...")
+        return fileName;
     }
 
     private static final Pattern suffixPattern = Pattern.compile("-[0-9]+$");
