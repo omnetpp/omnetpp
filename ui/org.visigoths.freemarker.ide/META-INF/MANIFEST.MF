@@ -3,6 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Freemarker IDE Plug-in
 Bundle-SymbolicName: org.visigoths.freemarker.ide;singleton:=true
 Bundle-Version: 0.3.1.omnetpp
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Activator: freemarker.eclipse.FreemarkerPlugin
 Bundle-Vendor: Visigoth Software Society
 Require-Bundle: org.eclipse.core.runtime,
@@ -18,4 +20,3 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
  org.eclipse.ui.workbench.texteditor,
  org.visigoths.freemarker
-Bundle-ActivationPolicy: lazy

@@ -4,6 +4,9 @@ Bundle-Name: OMNeT++ NED File Data Model
 Bundle-SymbolicName: org.omnetpp.ned.model;singleton:=true
 Bundle-Version: 5.1.0.qualifier
 Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.omnetpp.ned.model.NedModelPlugin
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.ned.model,
  org.omnetpp.ned.model.ex,
@@ -19,5 +22,3 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.common,
  org.omnetpp.ide.nativelibs,
  org.eclipse.draw2d
-Eclipse-LazyStart: true
-Bundle-Activator: org.omnetpp.ned.model.NedModelPlugin

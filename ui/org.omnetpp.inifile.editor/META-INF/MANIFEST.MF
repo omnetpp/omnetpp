@@ -4,6 +4,9 @@ Bundle-Name: OMNeT++ INI File Editor
 Bundle-SymbolicName: org.omnetpp.inifile.editor; singleton:=true
 Bundle-Version: 5.1.0.qualifier
 Bundle-Activator: org.omnetpp.inifile.editor.InifileEditorPlugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.core.resources,
@@ -19,8 +22,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned.core,
  org.omnetpp.ide.nativelibs,
  org.eclipse.emf.edit.ui
-Bundle-ActivationPolicy: lazy
-Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.inifile.editor.editors,
  org.omnetpp.inifile.editor.form,
  org.omnetpp.inifile.editor.model,

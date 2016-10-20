@@ -3,6 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ NED Documatation Generator
 Bundle-SymbolicName: org.omnetpp.neddoc; singleton:=true
 Bundle-Version: 5.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.neddoc.NeddocPlugin
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
@@ -21,4 +23,3 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ide.nativelibs,
  org.eclipse.draw2d,
  org.eclipse.gef
-Eclipse-LazyStart: true

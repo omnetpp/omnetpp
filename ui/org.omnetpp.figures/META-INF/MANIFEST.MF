@@ -3,6 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Figures
 Bundle-SymbolicName: org.omnetpp.figures
 Bundle-Version: 5.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.jface,
@@ -14,4 +17,3 @@ Export-Package: org.omnetpp.figures,
  org.omnetpp.figures.anchors,
  org.omnetpp.figures.layout,
  org.omnetpp.figures.misc
-Bundle-Vendor: OpenSim Ltd.

@@ -4,6 +4,9 @@ Bundle-Name: OMNeT++ CDT Integration Plug-in
 Bundle-SymbolicName: org.omnetpp.cdt;singleton:=true
 Bundle-Version: 5.1.0.qualifier
 Bundle-Activator: org.omnetpp.cdt.Activator
+Bundle-Vendor: OpenSim Ltd.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.variables,
  org.eclipse.ui,
@@ -33,8 +36,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.swtworkbench.xswt,
  org.eclipse.linuxtools.valgrind.launch;resolution:=optional,
  org.eclipse.linuxtools.profiling.launch;resolution:=optional
-Eclipse-LazyStart: true
-Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
  org.omnetpp.cdt.build,
  org.omnetpp.cdt.cache,

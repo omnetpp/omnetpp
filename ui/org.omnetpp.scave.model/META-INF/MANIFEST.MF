@@ -4,6 +4,8 @@ Bundle-Name: OMNeT++ Scalar / Vector Chart Data Model
 Bundle-SymbolicName: org.omnetpp.scave.model; singleton:=true
 Bundle-Version: 5.1.0.qualifier
 Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.scave.model.provider.ScaveEditPlugin$Implementation
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
@@ -17,4 +19,3 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi;visibility:=reexport,
  org.eclipse.emf.edit.ui;visibility:=reexport,
  org.eclipse.ui.ide;visibility:=reexport
-Eclipse-LazyStart: true

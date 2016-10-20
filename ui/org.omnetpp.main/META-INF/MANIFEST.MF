@@ -5,6 +5,8 @@ Bundle-SymbolicName: org.omnetpp.main;singleton:=true
 Bundle-Version: 5.1.0.qualifier
 Bundle-Activator: org.omnetpp.ide.OmnetppMainPlugin
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
@@ -36,4 +38,3 @@ Export-Package: org.omnetpp.ide;
  org.omnetpp.ide.properties;uses:="org.eclipse.ui.dialogs,org.eclipse.swt.widgets",
  org.omnetpp.ide.variables;uses:="org.eclipse.core.variables",
  org.omnetpp.ide.views;uses:="org.eclipse.ui.part,org.eclipse.swt.widgets,org.eclipse.swt.browser"
-Eclipse-LazyStart: true

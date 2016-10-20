@@ -3,6 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Win32.x86 native library fragment
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs.win32.x86
 Bundle-Version: 5.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.ide.nativelibs;bundle-version="[5.1.0,6.0.0)"
 Eclipse-PlatformFilter: (& (osgi.os=win32) (osgi.arch=x86))

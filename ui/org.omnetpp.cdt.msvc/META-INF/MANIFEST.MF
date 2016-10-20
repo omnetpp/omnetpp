@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.common,
  org.omnetpp.ide.nativelibs,
  org.omnetpp.cdt
-Eclipse-LazyStart: true
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Eclipse-PlatformFilter: (osgi.os=win32)

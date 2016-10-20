@@ -4,6 +4,7 @@ Bundle-Name: Freemarker Template Engine
 Bundle-SymbolicName: org.visigoths.freemarker
 Bundle-Version: 2.3.15
 Bundle-Vendor: Visigoth Software Society
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: freemarker.jar
 Export-Package: freemarker.cache,

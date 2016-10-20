@@ -4,6 +4,8 @@ Bundle-Name: OMNeT++ Linux.x86 native library fragment
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs.linux.x86
 Bundle-Version: 5.1.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Fragment-Host: org.omnetpp.ide.nativelibs;bundle-version="[5.1.0,6.0.0)"
 Eclipse-PlatformFilter: (& (osgi.os=linux) (osgi.arch=x86))
 Eclipse-BundleShape: dir

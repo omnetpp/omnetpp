@@ -5,6 +5,8 @@ Bundle-SymbolicName: org.omnetpp.common.core
 Bundle-Version: 5.1.0.qualifier
 Bundle-Activator: org.omnetpp.common.CommonCorePlugin
 Bundle-Vendor: OpenSim Ltd
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.variables,
  org.eclipse.core.filesystem,
@@ -13,7 +15,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs;visibility:=reexport
-Bundle-ActivationPolicy: lazy
 Export-Package: org.apache.commons.lang3;uses:="org.apache.commons.lang3.text.translate,org.apache.commons.lang3.builder",
  org.apache.commons.lang3.builder;uses:="org.apache.commons.lang3.tuple",
  org.apache.commons.lang3.concurrent;uses:="org.apache.commons.lang3.builder,new org.apache.commons.lang3.concurrent",

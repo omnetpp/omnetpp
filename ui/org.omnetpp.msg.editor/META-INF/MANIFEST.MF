@@ -4,6 +4,8 @@ Bundle-Name: OMNeT++ Message File Editor
 Bundle-SymbolicName: org.omnetpp.msg.editor; singleton:=true
 Bundle-Version: 5.1.0.qualifier
 Bundle-Activator: org.omnetpp.msg.editor.MsgEditorPlugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
@@ -17,5 +19,4 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ide.nativelibs,
  org.omnetpp.ned.core,
  org.omnetpp.ned.model
-Eclipse-LazyStart: true
 Export-Package: org.omnetpp.msg.editor.highlight
