@@ -93,16 +93,18 @@ std::string lastLoadLibError;  // contains the error message after calling oppLo
 
 using std::endl;
 
+static bool useStderr = false;
+
 static std::ostream& err()
 {
-    std::ostream& err = std::cerr;
+    std::ostream& err = useStderr ? std::cerr : std::cout;
     err << "\n<!> Error: ";
     return err;
 }
 
 static std::ostream& warn()
 {
-    std::ostream& err = std::cerr;
+    std::ostream& err = useStderr ? std::cerr : std::cout;
     err << "\n<!> Warning: ";
     return err;
 }
@@ -268,6 +270,10 @@ bool needsDebugSimkernel(int argc, char *argv[])
     // We clear  the environment variable so it will not report an error if
     // the release version of oppsim is loaded during the test
     putenv((char *)"__OPPSIM_LOADED__=no");
+
+    for (int i = 1; i < argc; i++)
+        if (strcmp(argv[i], "-e") == 0)
+            useStderr = true;
 
     for (int i = 1; i < argc; i++) {
         const char *arg = argv[i];

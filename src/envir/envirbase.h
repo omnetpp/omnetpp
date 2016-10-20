@@ -93,6 +93,7 @@ struct ENVIR_API EnvirOptions
     bool checkSignals;
     bool fnameAppendHost;
 
+    bool useStderr;
     bool verbose;
     bool warnings;
     bool printUndisposed;
@@ -117,6 +118,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     EnvirOptions *opt;
 
     std::ostream out;
+    std::string redirectionFilename;
 
 #ifdef WITH_PARSIM
     cParsimCommunications *parsimComm;

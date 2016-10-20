@@ -85,9 +85,11 @@ static void verifyIntTypes()
 #undef LL
 }
 
+static bool useStderr = false;
+
 static std::ostream& err()
 {
-    std::ostream& err = std::cerr; //TODO or std::cout
+    std::ostream& err = useStderr ? std::cerr : std::cout;
     err << "\n<!> Error during startup: ";
     return err;
 }
@@ -112,7 +114,9 @@ int setupUserInterface(int argc, char *argv[])
 
         // args
         ArgList args;
-        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvws");
+        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwse");
+
+        useStderr = args.optionGiven('e');
 
         verbose = !args.optionGiven('s');  // "not silent"
         if (verbose) {

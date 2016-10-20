@@ -287,7 +287,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvws");  // TODO share spec with startup.cc!
+    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwse");  // TODO share spec with startup.cc!
+    opt->useStderr = args->optionGiven('e');
     opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
@@ -624,6 +625,8 @@ void EnvirBase::printHelp()
     out << "                minus sign will turn off the built-in web server.\n";
     out << "                The default value is \"8000+\".\n";
     out << "  -v            Print version and build info, and exit.\n";
+    out << "  -e            Use the standard error for error reporting. (The default is\n";
+    out << "                the standard output.)\n";
     out << "  -a            Print all config names and number of runs in them, and exit.\n";
     out << "  -q <what>     To be used together with -c and -r. Prints information about\n";
     out << "                the specified configuration and runs, and exits.\n";
@@ -1209,6 +1212,7 @@ void EnvirBase::startOutputRedirection(const char *fileName)
     if (!fbuf->is_open())
        throw cRuntimeError("Cannot open output redirection file `%s'", fileName);
     out.rdbuf(fbuf);
+    redirectionFilename = fileName;
 }
 
 void EnvirBase::stopOutputRedirection()
@@ -1218,6 +1222,7 @@ void EnvirBase::stopOutputRedirection()
         fbuf->pubsync();
         out.rdbuf(std::cout.rdbuf());
         delete fbuf;
+        redirectionFilename = "";
     }
 }
 
@@ -1228,24 +1233,27 @@ bool EnvirBase::isOutputRedirected()
 
 std::ostream& EnvirBase::err()
 {
-    bool useStdout = true; //TODO config
-    std::ostream& err = useStdout || isOutputRedirected() ? out : std::cerr;
+    std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
+    if (isOutputRedirected())
+        (opt->useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
     err << endl << "<!> Error: ";
     return err;
 }
 
 std::ostream& EnvirBase::errWithoutPrefix()
 {
-    bool useStdout = true; //TODO config
-    std::ostream& err = useStdout || isOutputRedirected() ? out : std::cerr;
+    std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
+    if (isOutputRedirected())
+        (opt->useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
     err << endl << "<!> ";
     return err;
 }
 
 std::ostream& EnvirBase::warn()
 {
-    bool useStdout = true; //TODO config
-    std::ostream& err = useStdout || isOutputRedirected() ? out : std::cerr;
+    std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
+    if (isOutputRedirected())
+        (opt->useStderr ? std::cerr : std::cout) << "<!> Warning -- see " << redirectionFilename << " for details" << endl;
     err << endl << "<!> Warning: ";
     return err;
 }
