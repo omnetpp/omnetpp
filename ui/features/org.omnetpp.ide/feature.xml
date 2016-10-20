@@ -9,15 +9,15 @@
       arch="x86,x86_64">
 
    <requires>
-      <import feature="org.eclipse.platform" version="4.6.0.v20160606-1342"/>
+      <import feature="org.eclipse.platform" version="4.6.1.v20160907-1200"/>
       <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.10.0.201606071959"/>
       <import feature="org.eclipse.gmf" version="1.10.0.201606071959"/>
       <import feature="org.eclipse.gef" version="3.11.0.201606061308"/>
-      <import feature="org.eclipse.emf.edit" version="2.12.0.v20160526-0356"/>
+      <import feature="org.eclipse.cdt" version="9.1.0.201609121658"/>
+      <import feature="org.eclipse.emf.common" version="2.12.0.v20160420-0247"/>
       <import feature="org.eclipse.emf.ecore" version="2.12.0.v20160420-0247"/>
       <import feature="org.eclipse.emf.ecore.edit" version="2.9.0.v20160526-0356"/>
-      <import feature="org.eclipse.emf.common" version="2.12.0.v20160420-0247"/>
-      <import feature="org.eclipse.cdt" version="9.0.0.201606062011"/>
+      <import feature="org.eclipse.emf.edit" version="2.12.0.v20160526-0356"/>
    </requires>
 
    <plugin

@@ -66,7 +66,7 @@ public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
         }
 
         @Override
-        public void createClass(IProgressMonitor monitor) throws CoreException, InterruptedException {
+        public void createClass(IProgressMonitor monitor) throws CoreException {
             super.createClass(monitor);
 
             // Replace generated comments with our own. CDT's comment generation

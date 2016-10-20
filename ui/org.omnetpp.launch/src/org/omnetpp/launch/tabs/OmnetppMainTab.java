@@ -255,7 +255,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             fParallelismSpinner = new Spinner(composite, SWT.BORDER);
             fParallelismSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
             fParallelismSpinner.setMinimum(1);
-            fParallelismSpinner.addModifyListener(this);
+            fParallelismSpinner.addModifyListener(modifyListener);
         }
 
         return composite;
