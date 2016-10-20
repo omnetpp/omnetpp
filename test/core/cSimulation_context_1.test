@@ -114,7 +114,6 @@ Running simulation...
 
 <!> No more events -- simulation ended at event #4, t=1.
 
-
 Calling finish() at end of Run #0...
 - Test.a.g$o.channel finish
 - Test.b.g$o.channel finish

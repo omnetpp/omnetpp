@@ -25,5 +25,5 @@ network Test
 
 %subst: /omnetpp:://
 %contains: stdout
-out[0]: --> b.in[0], (C)channel disabled=false delay=0.001s datarate=0bps ber=0 per=0 length=200000  (cDatarateChannel)
+out[0]: --> b.in[0], (C)channel disabled=false delay=0.001s datarate=0bps ber=0 per=0 length=200000m  (cDatarateChannel)
 

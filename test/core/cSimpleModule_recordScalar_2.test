@@ -14,7 +14,7 @@ output-scalar-file = test-${runnumber}.sca
 repeat = 2
 
 %contains-regex: test-0.sca
-run General-#0-.*?
+run General-0-.*?
 scalar Test 	one 	24.2
 scalar Test 	two 	-1.5
 

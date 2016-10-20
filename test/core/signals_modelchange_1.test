@@ -155,7 +155,6 @@ DONE
 
 <!> No more events -- simulation ended at event #1, t=0.
 
-
 Calling finish() at end of Run #0...
 FINISH on module "Test", signal "POST_MODEL_CHANGE" (id=1)
 FINISH on module "Test", signal "PRE_MODEL_CHANGE" (id=0)
