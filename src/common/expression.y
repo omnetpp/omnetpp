@@ -177,6 +177,8 @@ expr
                 %prec UMIN_
                 { *e++ = Expression::NEG; }
 
+        | expr '=' expr
+                { *e++ = Expression::EQ; }
         | expr EQ_ expr
                 { *e++ = Expression::EQ; }
         | expr NE_ expr
