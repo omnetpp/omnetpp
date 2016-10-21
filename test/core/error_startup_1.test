@@ -1,23 +1,23 @@
 %description:
 Test that the simulation exits gracefully if there's an error in the startup code.
-- exit code must be 1 (not zero and different from crash exit code)
-- nothing should be printed after "End" message and the error message (Note "$")
+Exit code must be 1 (not zero, and different from crash exit code)
 
-IMPORTANT: This test must be run in isolation, because the startup error would appear
-in ALL test cases! See below:
+%file: test.cc
+#include <omnetpp.h>
 
-%global:
-// UNCOMMENT THE NEXT LINE TO RUN THIS TEST:
-//EXECUTE_ON_STARTUP(  throw std::range_error("something bad happened");  );
-
-%activity:
-EV << "#UNRESOLVED: test currently disabled, edit it to enable\n";
+EXECUTE_ON_STARTUP( 
+    static char buf[1000];
+    if (strstr(getcwd(buf,1000), "@TESTNAME@") != nullptr) {  // if it's this test case running (because the startup code affects ALL simulations i.e. test cases!)
+        printf("throwing...\n");
+        throw std::range_error("something bad happened");
+    }  
+);
 
 %exitcode: 1
 
-%contains-regex: stdout
-End\.$
+%contains: stdout
+throwing...
 
-%contains-regex: stderr
-<!> Error during startup: something bad happened\.$
+%contains: stdout
+<!> Error during startup: something bad happened
 
