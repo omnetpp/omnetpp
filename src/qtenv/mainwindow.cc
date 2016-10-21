@@ -1403,7 +1403,7 @@ void MainWindow::on_actionRecordVideo_toggled(bool checked)
                 "To encode them into a high quality video file, something like the following command can be used, provided that ffmpeg and x264 is installed on your system:<br/><br/>"
                 "<code>ffmpeg -r " + QString::number(duc->getVideoFps()) + " -f image2  -i \"" + base + "%04d.png\" -vcodec libx264 -crf 0 -preset veryslow -qp 0 -pix_fmt yuv444p \"" + configRun + ".mkv\"</code><br/><br/>"
                 "Before continuing, make sure there is ample disk space available, especially if you plan to record a long video, since the output is lossless, therefore can grow quite large.<br/><br/>"
-                "Also the main Qtenv window has to be resized to have its width and height both divisible by 4 to ensure compatibility with certain codecs.",
+                "Also the main Qtenv window will be resized to have its width and height both divisible by 4 to ensure compatibility with certain codecs.",
                 QMessageBox::Ok, this);
             auto cb = new QCheckBox("Don't show again");
             mb.setCheckBox(cb);
