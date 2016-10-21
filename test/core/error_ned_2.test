@@ -20,5 +20,3 @@ No submodule `node\[1000\]' to be connected.*
 
 End\.$
 
-%contains-regex: stderr
-^$

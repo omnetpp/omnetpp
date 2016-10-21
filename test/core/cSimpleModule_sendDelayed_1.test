@@ -71,6 +71,3 @@ void Receiver::activity()
 %contains: stdout
 diff: 0.3456
 
-%not-contains: stderr
-Error
-
