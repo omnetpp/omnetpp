@@ -39,7 +39,7 @@ module Test: Test {
     submodules:
         module Test.derived: Derived {
             parameters:
-                param @unit(s) @prompt(Enter param) = 1
+                param @unit(s) @prompt(Enter param) = 1s
             gates:
                 out @color(LIGHTBLUE) @derived: not connected
                 vec$i[0] @color(red,GREEN) @derived: not connected
