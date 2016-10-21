@@ -144,6 +144,7 @@ class SIM_API cConfiguration : public cObject
 
     /** @name Getters for configuration options */
     //@{
+//FIXME why aren't these methods all const???
     /**
      * Returns a config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.

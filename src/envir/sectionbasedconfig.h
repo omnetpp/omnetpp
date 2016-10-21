@@ -139,10 +139,10 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     };
     NullKeyValue nullEntry;
 
-    // predefined variables (${configname} etc) and iteration variables. id-to-value map.
-    // Also stores iterator positions (i.e. the iteration counter), with key "&varname".
+    // predefined variables (${configname} etc) and iteration variables
     typedef std::map<std::string,std::string> StringMap;
-    StringMap variables;
+    StringMap variables;  // varName-to-value map
+    StringMap locationToVarName; // location-to-varName, for identifying unnamed variables inside substituteVariables()
 
     // storage for values returned by substituteVariables()
     mutable StringPool stringPool;
@@ -157,18 +157,12 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
      * ${1,2,5,10}; ${x=1,2,5,10}. (Note: ${x} is just an iteration variable
      * _reference_, not an an iteration variable itself.
      *
-     * varid identifies the variable; for named variables it's the same as
-     * varname. For unnamed ones, it is a string like "2-5-0", composed of
-     * (sectionId, entryId, index), so that it identifies the place
-     * where the value has to be substituted back.
-     *
      * It is also possible to do "parallel iterations": the ${1..9 ! varname}
      * notation means that "if variable varname is at its kth iteration,
      * take the kth value from 0..9 as well". That is, this iteration and
      * varname's iterator are advanced in lockstep.
      */
     struct IterationVariable {
-        std::string varId;   // identifies the variable, see above  ---FIXME this is surely not needed!!!!!!
         std::string varName; // printable variable name ("x"); may be a generated one like "0"; never empty
         std::string value;   // "1,2,5..10"; never empty
         std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
@@ -189,7 +183,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
     static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
-    std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
+    std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId) const;
     bool isPredefinedVariable(const char *varname) const;

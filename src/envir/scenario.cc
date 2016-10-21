@@ -35,8 +35,8 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
 {
     // store the variables along with their value iterators
     for (auto& var : iterationVariables) {
-        ASSERT(!var.varId.empty() && !var.value.empty());
-        auto& varExt = variablesByName[var.varId]; // add to map
+        ASSERT(!var.varName.empty() && !var.value.empty());
+        auto& varExt = variablesByName[var.varName]; // add to map
         static_cast<IterationVariable&>(varExt) = var;
         try {
             varExt.iterator.parse(var.value.c_str());
@@ -136,7 +136,7 @@ std::vector<std::string> Scenario::resolveNestingOrderSpec(const char *orderSpec
     else
         insertionPoint = orderedNames.size();
     for (auto var : variables) {
-        std::string varName = var->varId;
+        std::string varName = var->varName;
         if (!contains(orderedNames, varName))
             insert(orderedNames, insertionPoint++, varName);
     }
@@ -150,7 +150,7 @@ std::vector<std::string> Scenario::getIterationVariableNames() const
 {
     std::vector<std::string> result;
     for (auto var: variables)
-        result.push_back(var->varId);
+        result.push_back(var->varName);
     return result;
 }
 
@@ -289,22 +289,22 @@ void Scenario::gotoRun(int runNumber)
             throw cRuntimeError("Run number %d is out of range", runNumber);
 }
 
-std::string Scenario::getVariable(const char *varId) const
+std::string Scenario::getVariable(const char *varName) const
 {
-    auto it = variablesByName.find(varId);
+    auto it = variablesByName.find(varName);
     if (it == variablesByName.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varId);
+        throw cRuntimeError("Unknown iteration variable: %s", varName);
     const IterationVariableExt& var = it->second;
     if (var.iterator.end())
-        throw cRuntimeError("Variable '%s' has no more values", varId);
+        throw cRuntimeError("Variable '%s' has no more values", varName);
     return var.iterator.get();
 }
 
-int Scenario::getIteratorPosition(const char *varId) const
+int Scenario::getIteratorPosition(const char *varName) const
 {
-    auto it = variablesByName.find(varId);
+    auto it = variablesByName.find(varName);
     if (it == variablesByName.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varId);
+        throw cRuntimeError("Unknown iteration variable: %s", varName);
     const IterationVariableExt& var = it->second;
     return var.iterator.getPosition();
 }

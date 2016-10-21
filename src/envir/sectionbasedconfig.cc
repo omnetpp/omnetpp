@@ -322,7 +322,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     std::vector<int> sectionChain = resolveSectionChain(configName);
 
     // extract all iteration vars from values within this section
-    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
+    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarName);
 
     // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
@@ -374,7 +374,7 @@ inline std::string unquote(const std::string& txt)
 }
 
 
-void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)
+void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)  //FIXME make this RETURN the variables!
 {
     // create variables
     int runnumberWidth = std::max(0, atoi(opp_nulltoempty(internalGetValue(sectionChain, CFGID_RUNNUMBER_WIDTH->getName()))));
@@ -387,7 +387,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue()));
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
-    // store iteration variables, and also their "positions" (iteration count) as "&varid"
+    // store iteration variables
     std::vector<std::string> varNames = scenario->getIterationVariableNames();
     for (std::string varName : varNames)
         variables[varName] = scenario->getVariable(varName.c_str());
@@ -424,7 +424,8 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
 {
     // extract all iteration vars from values within this config
     std::vector<int> sectionChain = resolveSectionChain(configName);
-    std::vector<IterationVariable> v = collectIterationVariables(sectionChain);
+    StringMap locationToVarNameMap;
+    std::vector<IterationVariable> v = collectIterationVariables(sectionChain, locationToVarNameMap);
 
     // see if there's a constraint given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
@@ -442,7 +443,10 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
 {
     // extract all iteration vars from values within this section
     std::vector<int> sectionChain = resolveSectionChain(configName);
-    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
+    StringMap locationToVarNameMap;
+    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarNameMap);
+    StringMap savedLocationToVarName = locationToVarName;
+    (const_cast<SectionBasedConfiguration *>(this))->locationToVarName = locationToVarNameMap; //FIXME
 
     // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
@@ -484,20 +488,23 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
             }
         }
         (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
+        (const_cast<SectionBasedConfiguration *>(this))->locationToVarName = savedLocationToVarName;
         (const_cast<SectionBasedConfiguration *>(this))->runId = savedRunId;
         return result;
     }
     catch (std::exception& e) {
         (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
+        (const_cast<SectionBasedConfiguration *>(this))->locationToVarName = savedLocationToVarName;
         (const_cast<SectionBasedConfiguration *>(this))->runId = savedRunId;
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
 }
 
-std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(const std::vector<int>& sectionChain) const
+std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const
 {
     std::vector<IterationVariable> v;
     int unnamedCount = 0;
+    outLocationToNameMap.clear();
     for (int i = 0; i < (int)sectionChain.size(); i++) {
         int sectionId = sectionChain[i];
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
@@ -505,32 +512,31 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
             const char *pos = entry.getValue();
             int k = 0;
             while ((pos = strstr(pos, "${")) != nullptr) {
-                IterationVariable loc;
+                IterationVariable iterVar;
                 try {
-                    parseVariable(pos, loc.varName, loc.value, loc.parvar, pos);
+                    parseVariable(pos, iterVar.varName, iterVar.value, iterVar.parvar, pos);
                 }
                 catch (std::exception& e) {
                     throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
                 }
-                if (!loc.value.empty()) {
+                if (!iterVar.value.empty()) {
                     // store variable
-                    if (!loc.varName.empty()) {
+                    if (!iterVar.varName.empty()) {
                         // check it does not conflict with other iteration variables or predefined variables
                         for (int j = 0; j < (int)v.size(); j++)
-                            if (v[j].varName == loc.varName)
-                                throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varName.c_str());
+                            if (v[j].varName == iterVar.varName)
+                                throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", iterVar.varName.c_str());
 
-                        if (isPredefinedVariable(loc.varName.c_str()))
-                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varName.c_str());
-                        // use name for id
-                        loc.varId = loc.varName;
+                        if (isPredefinedVariable(iterVar.varName.c_str()))
+                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", iterVar.varName.c_str());
                     }
                     else {
-                        // unnamed variable: generate id (identifies location) and name ($0,$1,$2,etc)
-                        loc.varId = opp_stringf("%d-%d-%d", sectionId, entryId, k);
-                        loc.varName = opp_stringf("%d", unnamedCount++);
+                        // unnamed variable: generate name ($0, $1, $2, etc.), and store its location
+                        iterVar.varName = opp_stringf("%d", unnamedCount++);
+                        std::string location = opp_stringf("%d:%d:%d", sectionId, entryId, k);
+                        outLocationToNameMap[location] = iterVar.varName;
                     }
-                    v.push_back(loc);
+                    v.push_back(iterVar);
                 }
                 k++;
             }
@@ -541,7 +547,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     const char *repeat = internalGetValue(sectionChain, CFGID_REPEAT->getName());
     int repeatCount = (int)parseLong(repeat, nullptr, 1);
     IterationVariable repetition;
-    repetition.varId = repetition.varName = CFGVAR_REPETITION;
+    repetition.varName = CFGVAR_REPETITION;
     repetition.value = opp_stringf("0..%d", repeatCount-1);
     v.push_back(repetition);
 
@@ -637,16 +643,21 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
     int k = 0;  // counts "${" occurrences
     size_t pos = 0;
     while ((pos = result.find("${", pos)) != std::string::npos) {
-        std::string varname, iterationstring, parvar;
+        std::string varName, dummy1, dummy2;
         const char *endPtr;
-        parseVariable(result.c_str() + pos, varname, iterationstring, parvar, endPtr);
+        parseVariable(result.c_str() + pos, varName, dummy1, dummy2, endPtr);
         size_t endPos = endPtr - result.c_str();
 
         // handle named and unnamed iteration variable references
-        std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
-        StringMap::const_iterator it = variables.find(varid.c_str());
+        if (varName.empty()) {
+            std::string location = opp_stringf("%d:%d:%d", sectionId, entryId, k);
+            StringMap::const_iterator it = locationToVarName.find(location);
+            Assert(it != locationToVarName.end());
+            varName = it->second;
+        }
+        StringMap::const_iterator it = variables.find(varName);
         if (it == variables.end())
-            throw cRuntimeError("no such variable: ${%s}", varid.c_str());
+            throw cRuntimeError("no such variable: ${%s}", varName);
         std::string value = it->second;
 
         result.replace(pos, endPos-pos+1, value);

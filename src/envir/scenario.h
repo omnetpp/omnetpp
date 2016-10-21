@@ -44,7 +44,7 @@ class ENVIR_API Scenario
     struct IterationVariableExt : IterationVariable {
         ValueIterator iterator;
     };
-    std::map<std::string,IterationVariableExt> variablesByName;  // varId-to-iteration
+    std::map<std::string,IterationVariableExt> variablesByName;  // varId-to-iteration FIXME rename to variablesById!
     std::vector<IterationVariableExt*> variables; // in nesting order, innermost first
     ValueIterator::Expr *constraint;
 
