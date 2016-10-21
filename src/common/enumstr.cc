@@ -73,6 +73,7 @@ int EnumStringIterator::operator++(int)
         err = true;
         return -1;
     }
+    skip_whitespace(str);
     until = -1;
     if (*str == '\0')
         ;
@@ -96,6 +97,8 @@ int EnumStringIterator::operator++(int)
             err = true;
             return -1;
         }
+        if (until < current)
+            return operator++(0);
     }
     else {
         err = true;
