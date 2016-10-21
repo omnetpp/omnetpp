@@ -25,6 +25,6 @@ include a.ini
 
 %exitcode: 1
 
-%contains: stderr
+%contains: stdout
 <!> Error during startup: Ini file `a.ini' includes itself, directly or indirectly.
 

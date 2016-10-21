@@ -9,5 +9,6 @@ constraint = $bubu > 1
 %extraargs: -c Bogus -q runs
 
 %exitcode: 1
-%contains: stderr
+
+%contains: stdout
 Cannot evaluate constraint expression: unknown iteration variable: $bubu

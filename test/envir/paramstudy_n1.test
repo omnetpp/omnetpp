@@ -8,6 +8,6 @@ Tests scenario generation
 %extraargs: -c NoSuchConfig -q runs
 
 %exitcode: 1
-%contains: stderr
+%contains: stdout
 No such config: NoSuchConfig
 
