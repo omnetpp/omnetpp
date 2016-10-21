@@ -60,6 +60,21 @@ public class SWTFactory {
         }
     }
 
+    protected static Button doCreateCheckButton(Composite parent, String label, Image image, boolean checked, int hspan) {
+        Button button = new Button(parent, SWT.CHECK);
+        button.setFont(parent.getFont());
+        button.setSelection(checked);
+        if (image != null)
+            button.setImage(image);
+        if (label != null)
+            button.setText(label);
+        GridData gd = new GridData();
+        gd.horizontalSpan = hspan;
+        button.setLayoutData(gd);
+        setButtonDimensionHint(button);
+        return button;
+    }
+
     /**
      * Creates a check box button using the parents' font.
      *
@@ -72,19 +87,17 @@ public class SWTFactory {
      * @since 3.3
      */
     public static Button createCheckButton(Composite parent, String label, Image image, boolean checked, int hspan) {
-        Button button = new Button(parent, SWT.CHECK);
-        button.setFont(parent.getFont());
-        button.setSelection(checked);
-        if(image != null) {
-            button.setImage(image);
-        }
-        if(label != null) {
-            button.setText(label);
-        }
-        GridData gd = new GridData();
-        gd.horizontalSpan = hspan;
-        button.setLayoutData(gd);
-        setButtonDimensionHint(button);
+        Button button = doCreateCheckButton(parent, label, image, checked, hspan);
+
+        // make a grayed button turn into a normal button on first click (otherwise it alternates
+        // between clear and grayed, which is not what is usually needed)
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (button.getGrayed() && button.getSelection())
+                    button.setGrayed(false);
+            }
+        });
         return button;
     }
 
@@ -101,9 +114,9 @@ public class SWTFactory {
      * @return a new check button
      */
     public static Button createTristateCheckButton(Composite parent, String label, Image image, boolean checked, boolean grayed, int hspan) {
-        Button button = createCheckButton(parent, label, image, checked, hspan);
+        Button button = doCreateCheckButton(parent, label, image, checked, hspan);
         button.setGrayed(grayed);
-        button.setGrayed(true);
+        // make the button cycle through the cleared -> checked -> grayed states
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -691,6 +704,12 @@ public class SWTFactory {
         // Some platforms open up combos in bad sizes without this, see bug 245569
         c.setVisibleItemCount(30);
         c.select(0);
+        return c;
+    }
+
+    public static Composite setEqualColumnWidth(Composite c, boolean value) {
+        GridLayout l = (GridLayout)c.getLayout();
+        l.makeColumnsEqualWidth = value;
         return c;
     }
 
