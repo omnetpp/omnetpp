@@ -37,43 +37,44 @@ class QTENV_API GenericObjectInspector : public Inspector
     // The default mode for these types should be CHILDREN
     static const std::vector<std::string> containerTypes;
     static const QString PREF_MODE;
+
 public:
     using Mode = GenericObjectTreeModel::Mode;
 
 protected:
-      QTreeView *treeView;
-      GenericObjectTreeModel *model = nullptr;
+    QTreeView *treeView;
+    GenericObjectTreeModel *model = nullptr;
 
-      void mousePressEvent(QMouseEvent *) override;
-      void closeEvent(QCloseEvent *event) override;
-      void addModeActions(QToolBar *toolbar);
-      void recreateModel();
+    void mousePressEvent(QMouseEvent *) override;
+    void closeEvent(QCloseEvent *event) override;
+    void addModeActions(QToolBar *toolbar);
+    void recreateModel();
 
-      Mode mode = Mode::GROUPED;
-      QAction *toGroupedModeAction;
-      QAction *toFlatModeAction;
-      QAction *toChildrenModeAction;
-      QAction *toInheritanceModeAction;
+    Mode mode = Mode::GROUPED;
+    QAction *toGroupedModeAction;
+    QAction *toFlatModeAction;
+    QAction *toChildrenModeAction;
+    QAction *toInheritanceModeAction;
 
-      void doSetMode(Mode mode);
+    void doSetMode(Mode mode);
 
 protected slots:
-      void onTreeViewActivated(QModelIndex index);
-      void onDataChanged();
-      void createContextMenu(QPoint pos);
+    void onTreeViewActivated(QModelIndex index);
+    void onDataChanged();
+    void createContextMenu(QPoint pos);
 
-      void setMode(Mode mode);
+    void setMode(Mode mode);
 
-      void toGroupedMode()     { setMode(Mode::GROUPED);     }
-      void toFlatMode()        { setMode(Mode::FLAT);        }
-      void toChildrenMode()    { setMode(Mode::CHILDREN);    }
-      void toInheritanceMode() { setMode(Mode::INHERITANCE); }
+    void toGroupedMode()     { setMode(Mode::GROUPED);     }
+    void toFlatMode()        { setMode(Mode::FLAT);        }
+    void toChildrenMode()    { setMode(Mode::CHILDREN);    }
+    void toInheritanceMode() { setMode(Mode::INHERITANCE); }
 
 public:
-      GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-      ~GenericObjectInspector();
-      virtual void doSetObject(cObject *obj) override;
-      virtual void refresh() override;
+    GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+    ~GenericObjectInspector();
+    virtual void doSetObject(cObject *obj) override;
+    virtual void refresh() override;
 };
 
 } // namespace qtenv
