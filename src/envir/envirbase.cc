@@ -768,16 +768,19 @@ std::vector<int> EnvirBase::resolveRunFilter(const char *configName, const char 
 
     // if filter contains a list of run numbers (e.g. "0..4,9,12"), parse it accordingly
     if (strspn (runFilter, "0123456789,.- ") == strlen(runFilter)) {
+        int numRuns = cfg->getNumRunsInConfig(configName);
         EnumStringIterator it(runFilter);
-        int runNumber;
-        do {
-            runNumber = it();
-            if (runNumber != -1)
-                runNumbers.push_back(runNumber);
+        while (true) {
+            int runNumber = it();
+            if (runNumber == -1)
+                break;
+            if (runNumber >= numRuns)
+                throw cRuntimeError("Run number %d in run list `%s' is out of range 0..%d", runNumber, runFilter, numRuns-1);
+            runNumbers.push_back(runNumber);
             it++;
-        } while (runNumber != -1);
+        }
         if (it.hasError())
-            throw cRuntimeError("Error parsing list of runs to execute: `%s'", runFilter);
+            throw cRuntimeError("Syntax error in run list `%s'", runFilter);
     }
     else {
         // evaluate filter as constraint expression
