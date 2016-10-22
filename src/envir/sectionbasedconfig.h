@@ -185,10 +185,10 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
     std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
-    std::string substituteVariables(const char *text, int sectionId, int entryId) const;
+    std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
     bool isPredefinedVariable(const char *varname) const;
-    void setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
-    std::string resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain) const;
+    StringMap computeVariables(const char *configName, int runNumber, std::vector<int> sectionChain, const Scenario *scenario, const StringMap& locationToVarName) const;
+    std::string resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigOption *lookupConfigOption(const char *key);
     const std::string *getPooledBaseDir(const char *basedir);

@@ -24,6 +24,7 @@
 #include "common/stringtokenizer2.h"
 #include "common/stringutil.h"
 #include "common/fileutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/cconfigreader.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/globals.h"
@@ -336,7 +337,8 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
             throw cRuntimeError("Run number %d is out of range for configuration `%s': it contains %d run(s)", runNumber, configName, numRuns);
 
         scenario.gotoRun(runNumber);
-        setupVariables(getActiveConfigName(), getActiveRunNumber(), &scenario, sectionChain);
+        variables = computeVariables(getActiveConfigName(), getActiveRunNumber(), sectionChain, &scenario, locationToVarName);
+        runId = variables[CFGVAR_RUNID];
     }
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
@@ -356,7 +358,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
             const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
-            std::string value = substituteVariables(e.getValue(), sectionId, entryId);
+            std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
             addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
         }
@@ -365,6 +367,8 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
 
 inline std::string unquote(const std::string& txt)
 {
+    if (txt.find('"') == std::string::npos)
+        return txt;
     try {
         return opp_parsequotedstr(txt.c_str());
     }
@@ -374,23 +378,25 @@ inline std::string unquote(const std::string& txt)
 }
 
 
-void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)  //FIXME make this RETURN the variables!
+SectionBasedConfiguration::StringMap SectionBasedConfiguration::computeVariables(const char *configName, int runNumber, std::vector<int> sectionChain, const Scenario *scenario, const StringMap& locationToVarName) const
 {
+    StringMap result;
+
     // create variables
     int runnumberWidth = std::max(0, atoi(opp_nulltoempty(internalGetValue(sectionChain, CFGID_RUNNUMBER_WIDTH->getName()))));
-    variables[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
-    variables[CFGVAR_CONFIGNAME] = configName;
-    variables[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
-    variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->getName()));
-    variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int)getpid());
-    variables[CFGVAR_DATETIME] = opp_makedatetimestring();
-    variables[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue()));
-    variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
+    result[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
+    result[CFGVAR_CONFIGNAME] = configName;
+    result[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
+    result[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->getName()));
+    result[CFGVAR_PROCESSID] = opp_stringf("%d", (int)getpid());
+    result[CFGVAR_DATETIME] = opp_makedatetimestring();
+    result[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue()));
+    result[CFGVAR_RUNID] = result[CFGVAR_CONFIGNAME]+"-"+result[CFGVAR_RUNNUMBER]+"-"+result[CFGVAR_DATETIME]+"-"+result[CFGVAR_PROCESSID];
 
     // store iteration variables
     std::vector<std::string> varNames = scenario->getIterationVariableNames();
     for (std::string varName : varNames)
-        variables[varName] = scenario->getVariable(varName.c_str());
+        result[varName] = scenario->getVariable(varName.c_str());
 
     // assemble ${iterationvars} and ${iterationvarsf}
     std::string iterationvars, iterationvarsf;
@@ -403,21 +409,22 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     }
     if (!iterationvarsf.empty())
         iterationvarsf += "-";  // for filenames
-    variables[CFGVAR_ITERATIONVARS] = iterationvars;
-    variables[CFGVAR_ITERATIONVARSF] = iterationvarsf;
+    result[CFGVAR_ITERATIONVARS] = iterationvars;
+    result[CFGVAR_ITERATIONVARSF] = iterationvarsf;
 
     // experiment/measurement/replication must be done as last, because they may depend on the above vars
-    variables[CFGVAR_SEEDSET] = resolveConfigOption(CFGID_SEED_SET, sectionChain);
-    variables[CFGVAR_EXPERIMENT] = resolveConfigOption(CFGID_EXPERIMENT_LABEL, sectionChain);
-    variables[CFGVAR_MEASUREMENT] = resolveConfigOption(CFGID_MEASUREMENT_LABEL, sectionChain);
-    variables[CFGVAR_REPLICATION] = resolveConfigOption(CFGID_REPLICATION_LABEL, sectionChain);
+    result[CFGVAR_SEEDSET] = resolveConfigOption(CFGID_SEED_SET, sectionChain, result, locationToVarName);
+    result[CFGVAR_EXPERIMENT] = resolveConfigOption(CFGID_EXPERIMENT_LABEL, sectionChain, result, locationToVarName);
+    result[CFGVAR_MEASUREMENT] = resolveConfigOption(CFGID_MEASUREMENT_LABEL, sectionChain, result, locationToVarName);
+    result[CFGVAR_REPLICATION] = resolveConfigOption(CFGID_REPLICATION_LABEL, sectionChain, result, locationToVarName);
+    return result;
 }
 
-std::string SectionBasedConfiguration::resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain) const
+std::string SectionBasedConfiguration::resolveConfigOption(cConfigOption *option, const std::vector<int>& sectionChain, const StringMap& variables, const StringMap& locationToVarName) const
 {
     int sectionId, entryId;
     const char *value = internalGetValue(sectionChain, option->getName(), option->getDefaultValue(), &sectionId, &entryId);
-    return substituteVariables(value, sectionId, entryId);
+    return substituteVariables(value, sectionId, entryId, variables, locationToVarName);
 }
 
 int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
@@ -445,16 +452,10 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
     std::vector<int> sectionChain = resolveSectionChain(configName);
     StringMap locationToVarNameMap;
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarNameMap);
-    StringMap savedLocationToVarName = locationToVarName;
-    (const_cast<SectionBasedConfiguration *>(this))->locationToVarName = locationToVarNameMap; //FIXME
 
     // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
     const char *nestingSpec = internalGetValue(sectionChain, CFGID_ITERATION_NESTING_ORDER->getName(), nullptr);
-
-    // setupVariables() overwrites variables[], so we need to save/restore it
-    StringMap savedVariables = variables;
-    std::string savedRunId = runId;
 
     // iterate over all runs in the scenario
     try {
@@ -464,7 +465,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
             for (;;) {
                 RunInfo runInfo;
                 runInfo.info = scenario.str();
-                (const_cast<SectionBasedConfiguration *>(this))->setupVariables(configName, result.size(), &scenario, sectionChain);
+                StringMap variables = computeVariables(configName, result.size(), sectionChain, &scenario, locationToVarName);
                 runInfo.runAttrs = variables;
 
                 // collect entries that contain ${..}
@@ -474,7 +475,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
                     for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
                         const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
                         if (strstr(entry.getValue(), "${") != nullptr) {
-                            std::string expandedValue = substituteVariables(entry.getValue(), sectionId, entryId);
+                            std::string expandedValue = substituteVariables(entry.getValue(), sectionId, entryId, variables, locationToVarNameMap);
                             tmp += std::string(entry.getKey()) + " = " + expandedValue + "\n";
                         }
                     }
@@ -487,15 +488,9 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
                     break;
             }
         }
-        (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
-        (const_cast<SectionBasedConfiguration *>(this))->locationToVarName = savedLocationToVarName;
-        (const_cast<SectionBasedConfiguration *>(this))->runId = savedRunId;
         return result;
     }
     catch (std::exception& e) {
-        (const_cast<SectionBasedConfiguration *>(this))->variables = savedVariables;
-        (const_cast<SectionBasedConfiguration *>(this))->locationToVarName = savedLocationToVarName;
-        (const_cast<SectionBasedConfiguration *>(this))->runId = savedRunId;
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
 }
@@ -637,7 +632,7 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         outParvar.assign(parvarbegin, parvarend-parvarbegin);
 }
 
-std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId) const
+std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const
 {
     std::string result = opp_nulltoempty(text);
     int k = 0;  // counts "${" occurrences
@@ -657,7 +652,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
         }
         StringMap::const_iterator it = variables.find(varName);
         if (it == variables.end())
-            throw cRuntimeError("no such variable: ${%s}", varName);
+            throw cRuntimeError("no such variable: ${%s}", varName.c_str());
         std::string value = it->second;
 
         result.replace(pos, endPos-pos+1, value);
@@ -674,7 +669,7 @@ const char *SectionBasedConfiguration::substituteVariables(const char *value) co
         return value;
 
     // returned string needs to be stringpooled
-    std::string result = substituteVariables(value, -1, -1);
+    std::string result = substituteVariables(value, -1, -1, variables, locationToVarName);
     return stringPool.get(result.c_str());
 }
 
