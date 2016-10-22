@@ -1,0 +1,27 @@
+%description:
+Test output file names generated from iteration variables.
+
+%activity:
+cConfigurationEx *config = getEnvir()->getConfigEx();
+EV << "iterationvars: " << config->getVariable("iterationvars") << endl;
+EV << "iterationvarsf: " << config->getVariable("iterationvarsf") << endl;
+cConfigOption *scalarFileOption = cConfigOption::get("output-scalar-file");
+EV << "output-scalar-file: " << config->getAsFilename(scalarFileOption) << endl;
+EV << "." << endl;
+
+%inifile: test.ini
+[General]
+**.dummy1 = ${100} # unnamed variable
+**.dummy2 = ${pi=-3.14}  # plain numeric
+**.dummy3 = ${name=John}  # plain alpha
+**.dummy4 = ${badchars=space dollar$ slash/ backslash\\}  # value with characters unsuitable for filenames
+**.dummy5 = ${quotes = "one two three"}  # quoted values
+**.dummy6 = ${badquotes = "one"+"two"}  # contains quotes but not a single quoted value
+
+
+%contains: stdout
+iterationvars: $0=100, $pi=-3.14, $name=John, $badchars=space dollar$ slash/ backslash\, $quotes="one two three", $badquotes="one"+"two"
+iterationvarsf: 100,pi=-3.14,name=John,badchars=space_dollar#24_slash#2f_backslash#5c,quotes=one_two_three,badquotes=#22one#22+#22two#22-
+output-scalar-file: results/General-100,pi=-3.14,name=John,badchars=space_dollar#24_slash#2f_backslash#5c,quotes=one_two_three,badquotes=#22one#22+#22two#22-#0.sca
+.
+
