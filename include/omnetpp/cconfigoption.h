@@ -145,6 +145,19 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
      */
     const char *getDescription() const  {return description.c_str();}
     //@}
+
+    /** @name Lookup */
+    //@{
+    /**
+     * Finds a configuration option by name. Returns nullptr if not found.
+     */
+    static cConfigOption *find(const char *name);
+
+    /**
+     * Finds a configuration option by name. Throws an error if not found.
+     */
+    static cConfigOption *get(const char *name);
+    //@}
 };
 
 }  // namespace omnetpp

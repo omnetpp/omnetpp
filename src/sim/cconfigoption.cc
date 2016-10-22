@@ -19,6 +19,7 @@
 #include <sstream>
 #include "common/exception.h"
 #include "omnetpp/cconfigoption.h"
+#include "omnetpp/globals.h"
 
 using namespace omnetpp::common;
 
@@ -102,6 +103,19 @@ const char *cConfigOption::getObjectKindName(ObjectKind kind)
         case KIND_NONE:             return "";
         default:                    return "???";
     }
+}
+
+cConfigOption *cConfigOption::find(const char *name)
+{
+    return dynamic_cast<cConfigOption *>(configOptions.getInstance()->lookup(name));
+}
+
+cConfigOption *cConfigOption::get(const char *name)
+{
+    cConfigOption *configOption = find(name);
+    if (!configOption)
+        throw cRuntimeError("Configuration option \"%s\" not found", name);
+    return configOption;
 }
 
 }  // namespace omnetpp
