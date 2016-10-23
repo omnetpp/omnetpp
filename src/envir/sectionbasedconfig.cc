@@ -323,7 +323,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     std::vector<int> sectionChain = resolveSectionChain(configName);
 
     // extract all iteration vars from values within this section
-    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarName);
+    std::vector<Scenario::IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarName);
 
     // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
@@ -432,7 +432,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
     // extract all iteration vars from values within this config
     std::vector<int> sectionChain = resolveSectionChain(configName);
     StringMap locationToVarNameMap;
-    std::vector<IterationVariable> v = collectIterationVariables(sectionChain, locationToVarNameMap);
+    std::vector<Scenario::IterationVariable> v = collectIterationVariables(sectionChain, locationToVarNameMap);
 
     // see if there's a constraint given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
@@ -451,7 +451,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
     // extract all iteration vars from values within this section
     std::vector<int> sectionChain = resolveSectionChain(configName);
     StringMap locationToVarNameMap;
-    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarNameMap);
+    std::vector<Scenario::IterationVariable> itervars = collectIterationVariables(sectionChain, locationToVarNameMap);
 
     // see if there's a constraint and/or iteration nesting order given
     const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), nullptr);
@@ -495,9 +495,9 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
     }
 }
 
-std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const
+std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const
 {
-    std::vector<IterationVariable> v;
+    std::vector<Scenario::IterationVariable> v;
     int unnamedCount = 0;
     outLocationToNameMap.clear();
     for (int i = 0; i < (int)sectionChain.size(); i++) {
@@ -507,7 +507,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
             const char *pos = entry.getValue();
             int k = 0;
             while ((pos = strstr(pos, "${")) != nullptr) {
-                IterationVariable iterVar;
+                Scenario::IterationVariable iterVar;
                 try {
                     parseVariable(pos, iterVar.varName, iterVar.value, iterVar.parvar, pos);
                 }
@@ -541,7 +541,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     // register ${repetition}, based on the repeat= config entry
     const char *repeat = internalGetValue(sectionChain, CFGID_REPEAT->getName());
     int repeatCount = (int)parseLong(repeat, nullptr, 1);
-    IterationVariable repetition;
+    Scenario::IterationVariable repetition;
     repetition.varName = CFGVAR_REPETITION;
     repetition.value = opp_stringf("0..%d", repeatCount-1);
     v.push_back(repetition);

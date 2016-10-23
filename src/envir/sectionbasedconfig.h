@@ -26,6 +26,7 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigreader.h"
 #include "envirdefs.h"
+#include "scenario.h"
 
 namespace omnetpp {
 
@@ -150,24 +151,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // storage of section inheritance chains (precedence lists)
     mutable std::vector<std::vector<int> > sectionChains;
 
-  public:
-    /**
-     * Used during scenario resolution: an iteration variable in the
-     * configuration. An iteration spec may be in one of the following forms:
-     * ${1,2,5,10}; ${x=1,2,5,10}. (Note: ${x} is just an iteration variable
-     * _reference_, not an an iteration variable itself.
-     *
-     * It is also possible to do "parallel iterations": the ${1..9 ! varname}
-     * notation means that "if variable varname is at its kth iteration,
-     * take the kth value from 0..9 as well". That is, this iteration and
-     * varname's iterator are advanced in lockstep.
-     */
-    struct IterationVariable {
-        std::string varName; // printable variable name ("x"); may be a generated one like "0"; never empty
-        std::string value;   // "1,2,5..10"; never empty
-        std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
-    };
-
   private:
     void clear();
     void activateGlobalConfig();
@@ -183,7 +166,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
     static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
-    std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
+    std::vector<Scenario::IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
     bool isPredefinedVariable(const char *varname) const;

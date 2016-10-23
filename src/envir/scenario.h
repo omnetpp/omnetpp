@@ -24,7 +24,6 @@
 #include <string>
 #include "common/expression.h"
 #include "envirdefs.h"
-#include "sectionbasedconfig.h"
 #include "valueiterator.h"
 
 namespace omnetpp {
@@ -38,7 +37,23 @@ class ENVIR_API Scenario
 {
   public:
     typedef omnetpp::common::Expression Expression;
-    typedef SectionBasedConfiguration::IterationVariable IterationVariable;
+
+    /**
+     * Used during scenario resolution: an iteration variable in the
+     * configuration. An iteration spec may be in one of the following forms:
+     * ${1,2,5,10}; ${x=1,2,5,10}. (Note: ${x} is just an iteration variable
+     * _reference_, not an an iteration variable itself.
+     *
+     * It is also possible to do "parallel iterations": the ${1..9 ! varname}
+     * notation means that "if variable varname is at its kth iteration,
+     * take the kth value from 0..9 as well". That is, this iteration and
+     * varname's iterator are advanced in lockstep.
+     */
+    struct IterationVariable {
+        std::string varName; // printable variable name ("x"); may be a generated one like "0"; never empty
+        std::string value;   // "1,2,5..10"; never empty
+        std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
+    };
 
   private:
     struct IterationVariableExt : IterationVariable {
