@@ -49,8 +49,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
   private:
     typedef omnetpp::common::StringPool StringPool;
     typedef omnetpp::common::PatternMatcher PatternMatcher;
+    typedef std::set<std::string> StringSet;
+    typedef std::map<std::string,std::string> StringMap;
 
-  private:
     class Entry : public cConfiguration::KeyValue {
       public:
         static std::string nullBasedir;
@@ -66,27 +67,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         virtual const char *getBaseDirectory() const override {return basedirRef->c_str();}
     };
 
-    // input data
-    cConfigurationReader *ini;
-    std::vector<Entry> commandLineOptions;
-
-    // section inheritance chains, computed from the input data
-    mutable std::vector<std::vector<int> > cachedSectionChains;
-
-    // THE ACTIVE CONFIGURATION:
-
-    std::string activeConfig;
-    int activeRunNumber;
-    std::string runId;
-
-    typedef std::set<std::string> StringSet;
-    StringSet basedirs;  // stores ini file locations (absolute paths)
-
-    std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
-
-    // config entries (i.e. keys not containing a dot or wildcard)
-    std::map<std::string,Entry> config;
-
     class MatchableEntry : public Entry {
       public:
         PatternMatcher *ownerPattern; // key without the suffix
@@ -96,6 +76,20 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         MatchableEntry(const Entry& e) : Entry(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
         MatchableEntry(const MatchableEntry& e);
         ~MatchableEntry();
+    };
+
+    //
+    // getConfigEntry() etc return a reference to nullEntry when the requested key is not found
+    //
+    class NullEntry : public cConfiguration::KeyValue
+    {
+      private:
+        std::string defaultBasedir;
+      public:
+        void setBaseDirectory(const char *s) {defaultBasedir = s;}
+        virtual const char *getKey() const override   {return nullptr;}
+        virtual const char *getValue() const override {return nullptr;}
+        virtual const char *getBaseDirectory() const override {return defaultBasedir.c_str();}
     };
 
     // Some explanation. Basically we could just store all entries in order,
@@ -129,27 +123,32 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         std::vector<MatchableEntry> entries;
     };
 
+  private:
+    // input data
+    cConfigurationReader *ini;
+    std::vector<Entry> commandLineOptions;
+
+    // section inheritance chains, computed from the input data
+    mutable std::vector<std::vector<int> > cachedSectionChains;
+
+    // THE ACTIVE CONFIGURATION:
+
+    std::string activeConfig;
+    int activeRunNumber;
+    std::string runId;
+
+    StringSet basedirs;  // stores ini file locations (absolute paths)
+
+    std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
+    std::map<std::string,Entry> config; // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,SuffixGroup> suffixGroups;
     SuffixGroup wildcardSuffixGroup;
 
-    // getConfigEntry() etc return a reference to nullEntry when the
-    // requested key is not found
-    class NullEntry : public cConfiguration::KeyValue
-    {
-      private:
-        std::string defaultBasedir;
-      public:
-        void setBaseDirectory(const char *s) {defaultBasedir = s;}
-        virtual const char *getKey() const override   {return nullptr;}
-        virtual const char *getValue() const override {return nullptr;}
-        virtual const char *getBaseDirectory() const override {return defaultBasedir.c_str();}
-    };
-    NullEntry nullEntry;
-
     // predefined variables (${configname} etc) and iteration variables
-    typedef std::map<std::string,std::string> StringMap;
     StringMap variables;  // varName-to-value map
     StringMap locationToVarName; // location-to-varName, for identifying unnamed variables inside substituteVariables()
+
+    NullEntry nullEntry;
 
     // storage for values returned by substituteVariables()
     mutable StringPool stringPool;
