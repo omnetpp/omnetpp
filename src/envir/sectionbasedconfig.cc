@@ -85,7 +85,7 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 std::string SectionBasedConfiguration::KeyValue1::nullBasedir;
 
-SectionBasedConfiguration::KeyValue2::KeyValue2(const KeyValue2& e) : KeyValue1(e)
+SectionBasedConfiguration::MatchableKeyValue::MatchableKeyValue(const MatchableKeyValue& e) : KeyValue1(e)
 {
     // apparently only used for std::vector storage
     ownerPattern = e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : nullptr;
@@ -93,7 +93,7 @@ SectionBasedConfiguration::KeyValue2::KeyValue2(const KeyValue2& e) : KeyValue1(
     fullPathPattern = e.fullPathPattern ? new PatternMatcher(*e.fullPathPattern) : nullptr;
 }
 
-SectionBasedConfiguration::KeyValue2::~KeyValue2()
+SectionBasedConfiguration::MatchableKeyValue::~MatchableKeyValue()
 {
     delete ownerPattern;
     delete suffixPattern;
@@ -891,7 +891,7 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
         splitKey(key.c_str(), ownerName, suffix);
         bool suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
 
-        KeyValue2 entry2(entry);
+        MatchableKeyValue entry2(entry);
         if (!ownerName.empty())
             entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
         else
@@ -1262,7 +1262,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
 
 const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
-    const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&)getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
+    const SectionBasedConfiguration::MatchableKeyValue& entry = (MatchableKeyValue&)getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
     return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
 }
 
@@ -1274,7 +1274,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
 
     // find first match in the group
     for (int i = 0; i < (int)group->entries.size(); i++) {
-        const KeyValue2& entry = group->entries[i];
+        const MatchableKeyValue& entry = group->entries[i];
         if (entryMatches(entry, moduleFullPath, paramName))
             if (hasDefaultValue || entry.value != "default")
                 return entry;
@@ -1282,7 +1282,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
     return nullEntry;  // not found
 }
 
-bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName)
+bool SectionBasedConfiguration::entryMatches(const MatchableKeyValue& entry, const char *moduleFullPath, const char *paramName)
 {
     if (!entry.fullPathPattern) {
         // typical
@@ -1323,7 +1323,7 @@ std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs()
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const
 {
-    const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&)getPerObjectConfigEntry(objectFullPath, keySuffix);
+    const SectionBasedConfiguration::MatchableKeyValue& entry = (MatchableKeyValue&)getPerObjectConfigEntry(objectFullPath, keySuffix);
     return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
 }
 
@@ -1340,7 +1340,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
 
     // find first match in the group
     for (int i = 0; i < (int)suffixGroup->entries.size(); i++) {
-        const KeyValue2& entry = suffixGroup->entries[i];
+        const MatchableKeyValue& entry = suffixGroup->entries[i];
         if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
@@ -1374,7 +1374,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             // by checking whether one pattern matches the other one as string, and vica versa.
             const SuffixGroup& group = it->second;
             for (int i = 0; i < (int)group.entries.size(); i++) {
-                const KeyValue2& entry = group.entries[i];
+                const MatchableKeyValue& entry = group.entries[i];
                 if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
                     &&
                     (entry.suffixPattern == nullptr ||

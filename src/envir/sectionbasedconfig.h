@@ -81,15 +81,15 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,KeyValue1> config;  //XXX use const char * and CommonStringPool
 
-    class KeyValue2 : public KeyValue1 {
+    class MatchableKeyValue : public KeyValue1 {
       public:
         PatternMatcher *ownerPattern; // key without the suffix
         PatternMatcher *suffixPattern; // only filled in when this is a wildcard group
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
-        KeyValue2(const KeyValue1& e) : KeyValue1(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
-        KeyValue2(const KeyValue2& e);
-        ~KeyValue2();
+        MatchableKeyValue(const KeyValue1& e) : KeyValue1(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
+        MatchableKeyValue(const MatchableKeyValue& e);
+        ~MatchableKeyValue();
     };
 
     // Some explanation. Basically we could just store all entries in order,
@@ -120,7 +120,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     //   **.tcp.eedVector.record-*"       ==> goes into the wildcard suffix group; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
     //
     struct SuffixGroup {
-        std::vector<KeyValue2> entries;
+        std::vector<MatchableKeyValue> entries;
     };
 
     std::map<std::string,SuffixGroup> suffixGroups;
@@ -165,7 +165,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::vector<int> getBaseConfigIds(int sectionId) const;
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
-    static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
+    static bool entryMatches(const MatchableKeyValue& entry, const char *moduleFullPath, const char *paramName);
     std::vector<Scenario::IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
