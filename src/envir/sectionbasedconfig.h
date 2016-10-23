@@ -51,7 +51,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     typedef omnetpp::common::PatternMatcher PatternMatcher;
 
   private:
-    // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of
     class Entry : public cConfiguration::KeyValue {
       public:
         static std::string nullBasedir;
@@ -67,8 +66,15 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         virtual const char *getBaseDirectory() const override {return basedirRef->c_str();}
     };
 
+    // input data
     cConfigurationReader *ini;
     std::vector<Entry> commandLineOptions;
+
+    // section inheritance chains, computed from the input data
+    mutable std::vector<std::vector<int> > cachedSectionChains;
+
+    // THE ACTIVE CONFIGURATION:
+
     std::string activeConfig;
     int activeRunNumber;
     std::string runId;
@@ -147,9 +153,6 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
     // storage for values returned by substituteVariables()
     mutable StringPool stringPool;
-
-    // storage of section inheritance chains (precedence lists)
-    mutable std::vector<std::vector<int> > sectionChains;
 
   private:
     void clear();

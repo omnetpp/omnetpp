@@ -120,7 +120,7 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
     clear();
     this->ini = ini;
     nullEntry.setBaseDirectory(ini->getDefaultBaseDirectory());
-    sectionChains.assign(ini->getNumSections(), std::vector<int>());
+    cachedSectionChains.assign(ini->getNumSections(), std::vector<int>());
     activateGlobalConfig();
 }
 
@@ -724,9 +724,9 @@ std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) c
 {
     if (sectionId == -1)
         return std::vector<int>();  // assume implicit [General] section
-    if (sectionChains.at(sectionId).empty())
-        sectionChains[sectionId] = computeSectionChain(sectionId);
-    return sectionChains[sectionId];
+    if (cachedSectionChains.at(sectionId).empty())
+        cachedSectionChains[sectionId] = computeSectionChain(sectionId);
+    return cachedSectionChains[sectionId];
 }
 
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *configName) const
