@@ -27,7 +27,7 @@ class EmptyConfig : public cConfiguration
     NullKeyValue nullKeyValue;
 
   protected:
-    virtual const char *substituteVariables(const char *value) override {return value;}
+    virtual const char *substituteVariables(const char *value) const override {return value;}
 
   public:
     virtual const char *getConfigValue(const char *key) const override {return nullptr;}

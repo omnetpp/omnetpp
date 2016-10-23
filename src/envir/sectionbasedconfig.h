@@ -254,7 +254,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<const char *> getIterationVariableNames() const override;
     virtual std::vector<const char *> getPredefinedVariableNames() const override;
     virtual const char *getVariableDescription(const char *varname) const override;
-    virtual const char *substituteVariables(const char *value) override;
+    virtual const char *substituteVariables(const char *value) const override;
     virtual void dump() const override;
     //@}
 };

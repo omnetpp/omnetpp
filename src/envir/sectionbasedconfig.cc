@@ -646,7 +646,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
     return result;
 }
 
-const char *SectionBasedConfiguration::substituteVariables(const char *value)
+const char *SectionBasedConfiguration::substituteVariables(const char *value) const
 {
     if (value == nullptr || strstr(value, "${") == nullptr)
         return value;

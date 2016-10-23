@@ -143,51 +143,51 @@ static void assertType(cConfigOption *option, bool isPerObject, cConfigOption::T
                 option->getName(), cConfigOption::getTypeName(requiredType), cConfigOption::getTypeName(option->getType()));
 }
 
-const char *cConfiguration::getAsCustom(cConfigOption *option, const char *fallbackValue)
+const char *cConfiguration::getAsCustom(cConfigOption *option, const char *fallbackValue) const
 {
     assertType(option, false, cConfigOption::CFG_CUSTOM);
     TRY(return fallback(getConfigValue(option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-bool cConfiguration::getAsBool(cConfigOption *option, bool fallbackValue)
+bool cConfiguration::getAsBool(cConfigOption *option, bool fallbackValue) const
 {
     assertType(option, false, cConfigOption::CFG_BOOL);
     TRY(return parseBool(getConfigValue(option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-long cConfiguration::getAsInt(cConfigOption *option, long fallbackValue)
+long cConfiguration::getAsInt(cConfigOption *option, long fallbackValue) const
 {
     assertType(option, false, cConfigOption::CFG_INT);
     TRY(return parseLong(getConfigValue(option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-double cConfiguration::getAsDouble(cConfigOption *option, double fallbackValue)
+double cConfiguration::getAsDouble(cConfigOption *option, double fallbackValue) const
 {
     assertType(option, false, cConfigOption::CFG_DOUBLE);
     TRY(return parseDouble(getConfigValue(option->getName()), option->getUnit(), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-std::string cConfiguration::getAsString(cConfigOption *option, const char *fallbackValue)
+std::string cConfiguration::getAsString(cConfigOption *option, const char *fallbackValue) const
 {
     assertType(option, false, cConfigOption::CFG_STRING);
     TRY(return parseString(getConfigValue(option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-std::string cConfiguration::getAsFilename(cConfigOption *option)
+std::string cConfiguration::getAsFilename(cConfigOption *option) const
 {
     assertType(option, false, cConfigOption::CFG_FILENAME);
     const KeyValue& keyvalue = getConfigEntry(option->getName());
     TRY(return parseFilename(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
 
-std::vector<std::string> cConfiguration::getAsFilenames(cConfigOption *option)
+std::vector<std::string> cConfiguration::getAsFilenames(cConfigOption *option) const
 {
     assertType(option, false, cConfigOption::CFG_FILENAMES);
     const KeyValue& keyvalue = getConfigEntry(option->getName());
     TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
 
-std::string cConfiguration::getAsPath(cConfigOption *option)
+std::string cConfiguration::getAsPath(cConfigOption *option) const
 {
     assertType(option, false, cConfigOption::CFG_PATH);
     const KeyValue& keyvalue = getConfigEntry(option->getName());
@@ -196,51 +196,51 @@ std::string cConfiguration::getAsPath(cConfigOption *option)
 
 //----
 
-const char *cConfiguration::getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue)
+const char *cConfiguration::getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue) const
 {
     assertType(option, true, cConfigOption::CFG_CUSTOM);
     TRY(return fallback(getPerObjectConfigValue(objectFullPath, option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-bool cConfiguration::getAsBool(const char *objectFullPath, cConfigOption *option, bool fallbackValue)
+bool cConfiguration::getAsBool(const char *objectFullPath, cConfigOption *option, bool fallbackValue) const
 {
     assertType(option, true, cConfigOption::CFG_BOOL);
     TRY(return parseBool(getPerObjectConfigValue(objectFullPath, option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-long cConfiguration::getAsInt(const char *objectFullPath, cConfigOption *option, long fallbackValue)
+long cConfiguration::getAsInt(const char *objectFullPath, cConfigOption *option, long fallbackValue) const
 {
     assertType(option, true, cConfigOption::CFG_INT);
     TRY(return parseLong(getPerObjectConfigValue(objectFullPath, option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-double cConfiguration::getAsDouble(const char *objectFullPath, cConfigOption *option, double fallbackValue)
+double cConfiguration::getAsDouble(const char *objectFullPath, cConfigOption *option, double fallbackValue) const
 {
     assertType(option, true, cConfigOption::CFG_DOUBLE);
     TRY(return parseDouble(getPerObjectConfigValue(objectFullPath, option->getName()), option->getUnit(), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-std::string cConfiguration::getAsString(const char *objectFullPath, cConfigOption *option, const char *fallbackValue)
+std::string cConfiguration::getAsString(const char *objectFullPath, cConfigOption *option, const char *fallbackValue) const
 {
     assertType(option, true, cConfigOption::CFG_STRING);
     TRY(return parseString(getPerObjectConfigValue(objectFullPath, option->getName()), substituteVariables(option->getDefaultValue()), fallbackValue));
 }
 
-std::string cConfiguration::getAsFilename(const char *objectFullPath, cConfigOption *option)
+std::string cConfiguration::getAsFilename(const char *objectFullPath, cConfigOption *option) const
 {
     assertType(option, true, cConfigOption::CFG_FILENAME);
     const KeyValue& keyvalue = getConfigEntry(option->getName());
     TRY(return parseFilename(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
 
-std::vector<std::string> cConfiguration::getAsFilenames(const char *objectFullPath, cConfigOption *option)
+std::vector<std::string> cConfiguration::getAsFilenames(const char *objectFullPath, cConfigOption *option) const
 {
     assertType(option, true, cConfigOption::CFG_FILENAMES);
     const KeyValue& keyvalue = getConfigEntry(option->getName());
     TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(option->getDefaultValue())));
 }
 
-std::string cConfiguration::getAsPath(const char *objectFullPath, cConfigOption *option)
+std::string cConfiguration::getAsPath(const char *objectFullPath, cConfigOption *option) const
 {
     assertType(option, true, cConfigOption::CFG_FILENAMES);
     const KeyValue& keyvalue = getConfigEntry(option->getName());

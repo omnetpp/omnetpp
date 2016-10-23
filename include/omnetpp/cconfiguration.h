@@ -148,38 +148,38 @@ class SIM_API cConfiguration : public cObject
      * Returns a config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual const char *getAsCustom(cConfigOption *option, const char *fallbackValue=nullptr);
+    virtual const char *getAsCustom(cConfigOption *option, const char *fallbackValue=nullptr) const;
 
     /**
      * Returns a config value as bool.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual bool getAsBool(cConfigOption *option, bool fallbackValue=false);
+    virtual bool getAsBool(cConfigOption *option, bool fallbackValue=false) const;
 
     /**
      * Returns a config value as long.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual long getAsInt(cConfigOption *option, long fallbackValue=0);
+    virtual long getAsInt(cConfigOption *option, long fallbackValue=0) const;
 
     /**
      * Returns a config value as double.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual double getAsDouble(cConfigOption *option, double fallbackValue=0);
+    virtual double getAsDouble(cConfigOption *option, double fallbackValue=0) const;
 
     /**
      * Returns a config value as string.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual std::string getAsString(cConfigOption *option, const char *fallbackValue="");
+    virtual std::string getAsString(cConfigOption *option, const char *fallbackValue="") const;
 
     /**
      * Interprets the config value as a path. If it is relative, then it will be
      * converted to an absolute path, using the base directory (see the
      * getBaseDirectoryFor() method).
      */
-    virtual std::string getAsFilename(cConfigOption *option);
+    virtual std::string getAsFilename(cConfigOption *option) const;
 
     /**
      * Interprets the config value as a list of paths (file or directory names,
@@ -187,7 +187,7 @@ class SIM_API cConfiguration : public cObject
      * in the list will be converted to absolute, using the base directory
      * (see getBaseDirectoryFor() method).
      */
-    virtual std::vector<std::string> getAsFilenames(cConfigOption *option);
+    virtual std::vector<std::string> getAsFilenames(cConfigOption *option) const;
 
     /**
      * Interprets the config value as a list of directory names, possibly
@@ -195,7 +195,7 @@ class SIM_API cConfiguration : public cObject
      * (other OSes). The relative names in the list will be converted to absolute,
      * using the base directory (see getBaseDirectoryFor() method).
      */
-    virtual std::string getAsPath(cConfigOption *option);
+    virtual std::string getAsPath(cConfigOption *option) const;
     //@}
 
     /** @name Getters for per-object configuration options */
@@ -204,38 +204,38 @@ class SIM_API cConfiguration : public cObject
      * Returns a per-object config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual const char *getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue=nullptr);
+    virtual const char *getAsCustom(const char *objectFullPath, cConfigOption *option, const char *fallbackValue=nullptr) const;
 
     /**
      * Returns a per-object config value as bool.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual bool getAsBool(const char *objectFullPath, cConfigOption *option, bool fallbackValue=false);
+    virtual bool getAsBool(const char *objectFullPath, cConfigOption *option, bool fallbackValue=false) const;
 
     /**
      * Returns a per-object config value as long.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual long getAsInt(const char *objectFullPath, cConfigOption *option, long fallbackValue=0);
+    virtual long getAsInt(const char *objectFullPath, cConfigOption *option, long fallbackValue=0) const;
 
     /**
      * Returns a per-object config value as double.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual double getAsDouble(const char *objectFullPath, cConfigOption *option, double fallbackValue=0);
+    virtual double getAsDouble(const char *objectFullPath, cConfigOption *option, double fallbackValue=0) const;
 
     /**
      * Returns a per-object config value as string.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual std::string getAsString(const char *objectFullPath, cConfigOption *option, const char *fallbackValue="");
+    virtual std::string getAsString(const char *objectFullPath, cConfigOption *option, const char *fallbackValue="") const;
 
     /**
      * Interprets the per-object config value as a path. If it is relative,
      * then it will be converted to an absolute path, using the base directory
      * (see KeyValue::getBaseDirectory()).
      */
-    virtual std::string getAsFilename(const char *objectFullPath, cConfigOption *option);
+    virtual std::string getAsFilename(const char *objectFullPath, cConfigOption *option) const;
 
     /**
      * Interprets the per-object config value as a list of paths (file or directory
@@ -243,7 +243,7 @@ class SIM_API cConfiguration : public cObject
      * in the list will be converted to absolute, using the base directory
      * (see KeyValue::getBaseDirectory()).
      */
-    virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigOption *option);
+    virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigOption *option) const;
 
     /**
      * Interprets the per-object config value as a list of directory names, possibly
@@ -251,7 +251,7 @@ class SIM_API cConfiguration : public cObject
      * (other OSes). The relative names in the list will be converted to absolute,
      * using the base directory (see getBaseDirectoryFor() method).
      */
-    virtual std::string getAsPath(const char *objectFullPath, cConfigOption *option);
+    virtual std::string getAsPath(const char *objectFullPath, cConfigOption *option) const;
     //@}
 
     /** @name Other methods */
@@ -260,7 +260,7 @@ class SIM_API cConfiguration : public cObject
      * Substitutes ${} variables into the given string. The resulting string
      * is stored inside the configuration object.
      */
-    virtual const char *substituteVariables(const char *value) = 0;
+    virtual const char *substituteVariables(const char *value) const = 0;
     //@}
 };
 
