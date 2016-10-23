@@ -303,7 +303,7 @@ void SectionBasedConfiguration::activateGlobalConfig()
     if (sectionId != -1) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
-            const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
+            const auto& e = ini->getEntry(sectionId, entryId);
             std::string value = e.getValue(); // note: no substituteVariables(), too early for that
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
             addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
@@ -357,7 +357,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         int sectionId = sectionChain[i];
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
-            const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
+            const auto& e = ini->getEntry(sectionId, entryId);
             std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
             addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
@@ -473,7 +473,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
                 for (int i = 0; i < (int)sectionChain.size(); i++) {
                     int sectionId = sectionChain[i];
                     for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
-                        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+                        const auto& entry = ini->getEntry(sectionId, entryId);
                         if (strstr(entry.getValue(), "${") != nullptr) {
                             std::string expandedValue = substituteVariables(entry.getValue(), sectionId, entryId, variables, locationToVarNameMap);
                             tmp += std::string(entry.getKey()) + " = " + expandedValue + "\n";
@@ -503,7 +503,7 @@ std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectItera
     for (int i = 0; i < (int)sectionChain.size(); i++) {
         int sectionId = sectionChain[i];
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
-            const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+            const auto& entry = ini->getEntry(sectionId, entryId);
             const char *pos = entry.getValue();
             int k = 0;
             while ((pos = strstr(pos, "${")) != nullptr) {
