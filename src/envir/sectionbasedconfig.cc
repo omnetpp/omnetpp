@@ -83,9 +83,9 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 #define VARPOS_PREFIX    std::string("&")
 
-std::string SectionBasedConfiguration::KeyValue1::nullBasedir;
+std::string SectionBasedConfiguration::Entry::nullBasedir;
 
-SectionBasedConfiguration::MatchableKeyValue::MatchableKeyValue(const MatchableKeyValue& e) : KeyValue1(e)
+SectionBasedConfiguration::MatchableEntry::MatchableEntry(const MatchableEntry& e) : Entry(e)
 {
     // apparently only used for std::vector storage
     ownerPattern = e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : nullptr;
@@ -93,7 +93,7 @@ SectionBasedConfiguration::MatchableKeyValue::MatchableKeyValue(const MatchableK
     fullPathPattern = e.fullPathPattern ? new PatternMatcher(*e.fullPathPattern) : nullptr;
 }
 
-SectionBasedConfiguration::MatchableKeyValue::~MatchableKeyValue()
+SectionBasedConfiguration::MatchableEntry::~MatchableEntry()
 {
     delete ownerPattern;
     delete suffixPattern;
@@ -145,7 +145,7 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
             key = (tmp = std::string("**.")+key).c_str();  // prepend with "**." (XXX this should be done in inifile contents too)
         if (!value[0])
             throw cRuntimeError("Missing value for command-line configuration option --%s", key);
-        commandLineOptions.push_back(KeyValue1(basedirRef, key, value));
+        commandLineOptions.push_back(Entry(basedirRef, key, value));
     }
     activateGlobalConfig();
 }
@@ -294,10 +294,10 @@ void SectionBasedConfiguration::activateGlobalConfig()
 {
     clear();
     for (int i = 0; i < (int)commandLineOptions.size(); i++) {
-        KeyValue1& e = commandLineOptions[i];
+        Entry& e = commandLineOptions[i];
         std::string value = e.getValue(); // note: no substituteVariables(), too early for that
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-        addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
+        addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
     }
     int sectionId = resolveConfigName("General");
     if (sectionId != -1) {
@@ -306,7 +306,7 @@ void SectionBasedConfiguration::activateGlobalConfig()
             const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
             std::string value = e.getValue(); // note: no substituteVariables(), too early for that
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-            addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
+            addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
         }
     }
 
@@ -348,10 +348,10 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
     for (int i = 0; i < (int)commandLineOptions.size(); i++) {
-        KeyValue1& e = commandLineOptions[i];
+        Entry& e = commandLineOptions[i];
         std::string value = substituteVariables(e.getValue());
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-        addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
+        addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
     }
     for (int i = 0; i < (int)sectionChain.size(); i++) {
         int sectionId = sectionChain[i];
@@ -360,7 +360,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
             const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
             std::string value = substituteVariables(e.getValue(), sectionId, entryId, variables, locationToVarName);
             const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
-            addEntry(KeyValue1(basedirRef, e.getKey(), value.c_str()));
+            addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
         }
     }
 }
@@ -869,7 +869,7 @@ static int selectNext(const SectionChainList& sectionChains)
 }
 */
 
-void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
+void SectionBasedConfiguration::addEntry(const Entry& entry)
 {
     entries.push_back(entry);
     const std::string& key = entry.key;
@@ -891,7 +891,7 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
         splitKey(key.c_str(), ownerName, suffix);
         bool suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
 
-        MatchableKeyValue entry2(entry);
+        MatchableEntry entry2(entry);
         if (!ownerName.empty())
             entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
         else
@@ -1238,13 +1238,13 @@ bool SectionBasedConfiguration::isIgnorableConfigKey(const char *ignoredKeyPatte
 
 const char *SectionBasedConfiguration::getConfigValue(const char *key) const
 {
-    std::map<std::string, KeyValue1>::const_iterator it = config.find(key);
+    std::map<std::string, Entry>::const_iterator it = config.find(key);
     return it == config.end() ? nullptr : it->second.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getConfigEntry(const char *key) const
 {
-    std::map<std::string, KeyValue1>::const_iterator it = config.find(key);
+    std::map<std::string, Entry>::const_iterator it = config.find(key);
     return it == config.end() ? (KeyValue&)nullEntry : (KeyValue&)it->second;
 }
 
@@ -1254,7 +1254,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
     PatternMatcher matcher(pattern, true, true, true);
 
     // iterate over the map -- this is going to be sloooow...
-    for (std::map<std::string, KeyValue1>::const_iterator it = config.begin(); it != config.end(); ++it)
+    for (std::map<std::string, Entry>::const_iterator it = config.begin(); it != config.end(); ++it)
         if (matcher.matches(it->first.c_str()))
             result.push_back(it->first.c_str());
     return result;
@@ -1262,7 +1262,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
 
 const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
-    const SectionBasedConfiguration::MatchableKeyValue& entry = (MatchableKeyValue&)getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
+    const SectionBasedConfiguration::MatchableEntry& entry = (MatchableEntry&)getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
     return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
 }
 
@@ -1274,7 +1274,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
 
     // find first match in the group
     for (int i = 0; i < (int)group->entries.size(); i++) {
-        const MatchableKeyValue& entry = group->entries[i];
+        const MatchableEntry& entry = group->entries[i];
         if (entryMatches(entry, moduleFullPath, paramName))
             if (hasDefaultValue || entry.value != "default")
                 return entry;
@@ -1282,7 +1282,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
     return nullEntry;  // not found
 }
 
-bool SectionBasedConfiguration::entryMatches(const MatchableKeyValue& entry, const char *moduleFullPath, const char *paramName)
+bool SectionBasedConfiguration::entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName)
 {
     if (!entry.fullPathPattern) {
         // typical
@@ -1299,7 +1299,7 @@ std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs() const
 {
     std::vector<const char *> result;
     for (int i = 0; i < (int)entries.size(); i++) {
-        const KeyValue1& entry = entries[i];
+        const Entry& entry = entries[i];
         result.push_back(entry.getKey());
         result.push_back(entry.getValue());
     }
@@ -1310,7 +1310,7 @@ std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs()
 {
     std::vector<const char *> result;
     for (int i = 0; i < (int)entries.size(); i++) {
-        const KeyValue1& entry = entries[i];
+        const Entry& entry = entries[i];
         const char *lastDotPos = strrchr(entry.getKey(), '.');
         bool containsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
         if (lastDotPos && !containsHyphen) {
@@ -1323,7 +1323,7 @@ std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs()
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const
 {
-    const SectionBasedConfiguration::MatchableKeyValue& entry = (MatchableKeyValue&)getPerObjectConfigEntry(objectFullPath, keySuffix);
+    const SectionBasedConfiguration::MatchableEntry& entry = (MatchableEntry&)getPerObjectConfigEntry(objectFullPath, keySuffix);
     return entry.getKey() == nullptr ? nullptr : entry.value.c_str();
 }
 
@@ -1340,7 +1340,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
 
     // find first match in the group
     for (int i = 0; i < (int)suffixGroup->entries.size(); i++) {
-        const MatchableKeyValue& entry = suffixGroup->entries[i];
+        const MatchableEntry& entry = suffixGroup->entries[i];
         if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
@@ -1374,7 +1374,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             // by checking whether one pattern matches the other one as string, and vica versa.
             const SuffixGroup& group = it->second;
             for (int i = 0; i < (int)group.entries.size(); i++) {
-                const MatchableKeyValue& entry = group.entries[i];
+                const MatchableEntry& entry = group.entries[i];
                 if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
                     &&
                     (entry.suffixPattern == nullptr ||
@@ -1398,7 +1398,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 void SectionBasedConfiguration::dump() const
 {
     printf("Config:\n");
-    for (std::map<std::string, KeyValue1>::const_iterator it = config.begin(); it != config.end(); ++it)
+    for (std::map<std::string, Entry>::const_iterator it = config.begin(); it != config.end(); ++it)
         printf("  %s = %s\n", it->first.c_str(), it->second.value.c_str());
 
     for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it) {

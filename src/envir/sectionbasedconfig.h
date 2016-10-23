@@ -52,14 +52,14 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
   private:
     // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of
-    class KeyValue1 : public cConfiguration::KeyValue {
+    class Entry : public cConfiguration::KeyValue {
       public:
         static std::string nullBasedir;
         const std::string *basedirRef; // points into basedirs[]
         std::string key;
         std::string value;
-        KeyValue1() {basedirRef = &nullBasedir;}
-        KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
+        Entry() {basedirRef = &nullBasedir;}
+        Entry(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const override   {return key.c_str();}
@@ -68,7 +68,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     };
 
     cConfigurationReader *ini;
-    std::vector<KeyValue1> commandLineOptions;
+    std::vector<Entry> commandLineOptions;
     std::string activeConfig;
     int activeRunNumber;
     std::string runId;
@@ -76,20 +76,20 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     typedef std::set<std::string> StringSet;
     StringSet basedirs;  // stores ini file locations (absolute paths)
 
-    std::vector<KeyValue1> entries; // entries of the activated configuration, with itervars substituted
+    std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
 
     // config entries (i.e. keys not containing a dot or wildcard)
-    std::map<std::string,KeyValue1> config;  //XXX use const char * and CommonStringPool
+    std::map<std::string,Entry> config;
 
-    class MatchableKeyValue : public KeyValue1 {
+    class MatchableEntry : public Entry {
       public:
         PatternMatcher *ownerPattern; // key without the suffix
         PatternMatcher *suffixPattern; // only filled in when this is a wildcard group
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
-        MatchableKeyValue(const KeyValue1& e) : KeyValue1(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
-        MatchableKeyValue(const MatchableKeyValue& e);
-        ~MatchableKeyValue();
+        MatchableEntry(const Entry& e) : Entry(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
+        MatchableEntry(const MatchableEntry& e);
+        ~MatchableEntry();
     };
 
     // Some explanation. Basically we could just store all entries in order,
@@ -120,7 +120,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     //   **.tcp.eedVector.record-*"       ==> goes into the wildcard suffix group; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
     //
     struct SuffixGroup {
-        std::vector<MatchableKeyValue> entries;
+        std::vector<MatchableEntry> entries;
     };
 
     std::map<std::string,SuffixGroup> suffixGroups;
@@ -128,7 +128,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
     // getConfigEntry() etc return a reference to nullEntry when the
     // requested key is not found
-    class NullKeyValue : public cConfiguration::KeyValue
+    class NullEntry : public cConfiguration::KeyValue
     {
       private:
         std::string defaultBasedir;
@@ -138,7 +138,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         virtual const char *getValue() const override {return nullptr;}
         virtual const char *getBaseDirectory() const override {return defaultBasedir.c_str();}
     };
-    NullKeyValue nullEntry;
+    NullEntry nullEntry;
 
     // predefined variables (${configname} etc) and iteration variables
     typedef std::map<std::string,std::string> StringMap;
@@ -163,9 +163,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::vector<int> resolveSectionChain(const char *configName) const;
     std::vector<int> computeSectionChain(int sectionId) const;
     std::vector<int> getBaseConfigIds(int sectionId) const;
-    void addEntry(const KeyValue1& entry);
+    void addEntry(const Entry& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
-    static bool entryMatches(const MatchableKeyValue& entry, const char *moduleFullPath, const char *paramName);
+    static bool entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName);
     std::vector<Scenario::IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId, const StringMap& variables, const StringMap& locationToVarName) const;
