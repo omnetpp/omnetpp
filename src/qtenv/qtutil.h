@@ -23,6 +23,7 @@
 #include <QIcon>
 #include <QTimer>
 #include <QFont>
+#include <QDebug>
 
 namespace omnetpp {
 
@@ -87,6 +88,9 @@ ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);
 
 char *voidPtrToStr(void *ptr, char *buffer=nullptr);
 void *strToVoidPtr(const char *s);
+
+QDebug& operator<<(QDebug& d, const std::string& t);
+QDebug& operator<<(QDebug& d, const SimTime& t);
 
 inline char *ptrToStr(cObject *ptr, char *buffer=nullptr) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}

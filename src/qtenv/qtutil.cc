@@ -506,6 +506,15 @@ ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp)
     return dynamic_cast<ModuleInspector *>(insp);
 }
 
+QDebug& operator<<(QDebug& d, const std::string& s)
+{
+    return d << s.c_str();
+}
+
+QDebug& operator<<(QDebug& d, const SimTime& t)
+{
+    return d << t.format(SimTime::getScaleExp(), ".", "'", true);
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
-
