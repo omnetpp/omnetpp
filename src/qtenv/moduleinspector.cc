@@ -156,7 +156,7 @@ void ModuleInspector::createViews(bool isTopLevel)
 #endif
 
     auto layout = new QVBoxLayout(this);
-    layout->setMargin(1);
+    layout->setMargin(0);
     layout->setSpacing(0);
 
     bool onMacQt4 = false;
@@ -329,9 +329,9 @@ void ModuleInspector::updateToolbarLayout()
     }
 }
 
-QPixmap ModuleInspector::getScreenshot()
+QImage ModuleInspector::getScreenshot()
 {
-    QPixmap pm = grab();
+    QImage image = grab().toImage();
 
 #ifdef WITH_OSG
     if (stackedLayout->currentWidget() == osgViewer) {
@@ -340,18 +340,17 @@ QPixmap ModuleInspector::getScreenshot()
         OsgViewer::getViewer()->frame();
         osgViewer->update();
 
-        QPixmap osgPm = QPixmap::fromImage(osgViewer->grabFramebuffer());
-
+        QImage osgImage = osgViewer->grabFramebuffer();
         QPainter p;
-        p.begin(&pm);
-        p.drawPixmap(osgViewer->mapTo(this, QPoint(0, 0)), osgPm);
+        p.begin(&image);
+        p.drawImage(osgViewer->mapTo(this, QPoint(0, 0)), osgImage);
         if (!isToplevelWindow)
             p.drawPixmap(toolbar->mapTo(this, QPoint(0, 0)), toolbar->grab());
         p.end();
     }
 #endif
 
-    return pm;
+    return image;
 }
 
 cCanvas *ModuleInspector::getCanvas()

@@ -210,13 +210,18 @@ void DisplayUpdateController::recordFrame()
 
     auto mainWin = qtenv->getMainWindow();
     auto mainInsp = qtenv->getMainModuleInspector();
-    auto frame = mainWin->grab();
+    auto frame = mainWin->grab().toImage();
 
     const char *targetUnit = "s";
     simtime_t now = simTime();
     QPainter painter(&frame);
-    painter.drawPixmap(mainInsp->mapTo(mainWin, (mainInsp->geometry() - mainInsp->contentsMargins()).topLeft()),
-                       mainInsp->getScreenshot());
+
+    // disabling alpha blending
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    auto inspPos = mainInsp->mapTo(mainWin, (mainInsp->geometry() - mainInsp->contentsMargins()).topLeft());
+    painter.drawImage(inspPos, mainInsp->getScreenshot());
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+
     painter.setFont(QFont("Arial", 28));
     painter.setBackgroundMode(Qt::OpaqueMode);
     painter.setPen(QColor("black"));

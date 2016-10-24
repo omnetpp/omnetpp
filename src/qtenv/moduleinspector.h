@@ -147,7 +147,7 @@ class QTENV_API ModuleInspector : public Inspector
       // drawing methods:
       virtual void redraw() override { canvasViewer->redraw(); }
 
-      QPixmap getScreenshot();
+      QImage getScreenshot();
 
       // notifications from envir:
       virtual void submoduleCreated(cModule *newmodule);
