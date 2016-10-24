@@ -135,11 +135,120 @@ bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultV
 long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
 
+
+
+template <typename K, typename V>
+class OrderedMultiMap {
+
+    using keys_t = std::multimap<K, size_t>;
+    using values_t = std::vector<V>;
+
+    // this multimap indexes into the values vector
+    keys_t keys;
+    // these are the values themselves
+    values_t values;
+
+    // Does not touch the values vector, only updating the keys map.
+    // Erases the single element corresponding to the i'th element,
+    // and decreases all indices that are greater than i,
+    // so the keys map will be correct if the i'th value is erased.
+    void removeIndex(size_t i) {
+        auto it = keys.begin();
+        while (it != keys.end()) {
+            if (it->second == i) {
+                it = keys.erase(it);
+                continue;
+            }
+
+            if (it->second > i)
+                --(it->second);
+
+            ++it;
+        }
+    }
+
+public:
+
+    // operator[] would be misleading, since I don't want it to work like in std::map
+    // (the implicit insertion of a default value upon addressing a previously non-existent key thing)
+
+    V& getFirst(const K& k) {
+        auto index = keys.find(k);
+        ASSERT(index != keys.end());
+        ASSERT(index->second >= 0 && index->second < values.size());
+        return values[index->second];
+    }
+
+    V& getLast(const K& k) {
+        auto range = keys.equal_range(k);
+        ASSERT(range.first != range.second);
+        return values[(--range.second)->second];
+    }
+
+    /*
+    std::vector<V&> getAll(const K& k) {
+        auto index = keys.find(k);
+        ASSERT(index != keys.end());
+        ASSERT(index->second >= 0 && index->second < values.size());
+        return {values[index->second]};
+    }*/
+
+    void putSingle(const K& k, const V& v) {
+        ASSERT(!containsKey(k));
+        putMulti(k, v);
+    }
+
+    void putMulti(const K& k, const V& v) {
+        keys.insert({k, values.size()});
+        values.push_back(v);
+    }
+
+    bool containsKey(const K& k) const {
+        return keys.find(k) != keys.end();
+    }
+
+    void removeFirst(const K& k) {
+        //ASSERT(containsKey(k));
+        auto it = keys.find(k);
+        if (it != keys.end()) {
+            removeIndex(it->second);
+            values.erase(values.begin() + it->second);
+        }
+    }
+
+    /*
+    void removeAll(const K &k) {
+        //ASSERT(containsKey(k));
+
+    }*/
+
+    void removeValues(const V& v) {
+        size_t i = 0;
+        while (i < values.size()) {
+            if (values[i] == v) {
+                removeIndex(i); // this adjusts the keys map
+                values.erase(values.begin() + i);
+            } else
+                ++i;
+        }
+    }
+
+    bool empty() {
+        return values.empty();
+    }
+
+    void clear() {
+        keys.clear();
+        values.clear();
+    }
+
+    typename values_t::iterator begin() { return values.begin(); }
+    typename values_t::iterator end() { return values.end(); }
+};
+
+
 } // namespace qtenv
 } // namespace omnetpp
 
 
 #endif
-
-
-
