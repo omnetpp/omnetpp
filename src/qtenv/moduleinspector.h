@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_QTENV_MODULEINSPECTOR_H
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
+#include <vector>
 #include "messageanimator.h"
 #include "inspector.h"
 #include "modulecanvasviewer.h"
@@ -132,6 +133,8 @@ class QTENV_API ModuleInspector : public Inspector
 
       void renderToPrinter(QPrinter &printer);
 
+      std::map<cComponent *, std::string> bubblesToShow;
+
    public:
       ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~ModuleInspector();
@@ -157,7 +160,7 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void displayStringChanged();
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringChanged(cGate *gate);
-      virtual void bubble(cComponent *subcomponent, const char *text) { canvasViewer->bubble(subcomponent, text); }
+      virtual void bubble(cComponent *subcomponent, const char *text) { bubblesToShow[subcomponent] = text; }
 
       double getZoomFactor();
       double getImageSizeFactor();

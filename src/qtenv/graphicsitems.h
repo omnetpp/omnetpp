@@ -162,13 +162,11 @@ protected:
     static constexpr double margin = 3; // also acts as corner rounding radius
 
     QString text;
-    QTimer timer;
 
     QPainterPath path;
     bool pathBuilt = false;
 
-protected slots:
-    void onTimerElapsed() { delete this;  /* BOOM! */ }
+    void timerEvent(QTimerEvent *event) override { delete this;  /* BOOM! */ }
 
 public:
     BubbleItem(QPointF position, const QString &text, QGraphicsItem *parent = nullptr);

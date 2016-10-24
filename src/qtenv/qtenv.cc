@@ -1934,9 +1934,6 @@ void Qtenv::bubble(cComponent *component, const char *text)
 {
     EnvirBase::bubble(component, text);
 
-    if (!loggingEnabled)
-        return;
-
     if (!opt->showBubbles)
         return;
 

@@ -366,7 +366,7 @@ BubbleItem::BubbleItem(QPointF position, const QString& text, QGraphicsItem *par
     : QGraphicsObject(parent), text(text)
 {
     setPos(position);
-    timer.singleShot(1000 / (0.1 + getQtenv()->opt->playbackSpeed), this, SLOT(onTimerElapsed()));
+    startTimer(1000);
 }
 
 QRectF BubbleItem::boundingRect() const
