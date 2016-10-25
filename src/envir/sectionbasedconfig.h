@@ -145,7 +145,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     StringMap variables;
 
     // storage for values returned by substituteVariables()
-    StringPool stringPool;
+    mutable StringPool stringPool;
 
     // storage of section inheritance chains (precedence lists)
     mutable std::vector<std::vector<int> > sectionChains;

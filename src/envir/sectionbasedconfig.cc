@@ -363,6 +363,17 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     }
 }
 
+inline std::string unquote(const std::string& txt)
+{
+    try {
+        return opp_parsequotedstr(txt.c_str());
+    }
+    catch (std::exception& e) {
+        return txt;
+    }
+}
+
+
 void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)
 {
     // create variables
@@ -385,9 +396,9 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     std::string iterationvars, iterationvarsf;
     for (std::string varName : varNames) {
         if (varName != CFGVAR_REPETITION) {
-            std::string varAndValue = varName + "=" + scenario->getVariable(varName.c_str());
-            iterationvars += std::string(iterationvars.empty() ? "" : ", ") + "$" + varAndValue;
-            iterationvarsf += std::string(iterationvarsf.empty() ? "" : ",") + opp_filenameencode(varAndValue); // without dollar and space
+            std::string value = scenario->getVariable(varName.c_str());
+            iterationvars += std::string(iterationvars.empty() ? "" : ", ") + "$" + varName + "=" + value;
+            iterationvarsf += std::string(iterationvarsf.empty() ? "" : ",") + (opp_isalpha(varName[0]) ? varName + "=" : "") + opp_filenameencode(unquote(value)); // without dollar and space, possible quotes removed
         }
     }
     if (!iterationvarsf.empty())
